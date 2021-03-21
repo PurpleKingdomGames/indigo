@@ -105,13 +105,13 @@ vec4 calculateOuterBorder(float baseAlpha, float[9] alphas, float amount) {
     return outColor;
   }
   
-  if(abs(checkedAmount) >= 0.0 && abs(checkedAmount) < 0.001) {
+  if(abs(checkedAmount) >= 0.0 && abs(checkedAmount) < 0.01) {
     return outColor;
   }
-  if(abs(checkedAmount) >= 0.999 && abs(checkedAmount) < 1.001) {
+  if(abs(checkedAmount) >= 0.99 && abs(checkedAmount) < 1.01) {
     kernel = border1px;
   }
-  if(abs(checkedAmount) >= 1.999 && abs(checkedAmount) < 2.001) {
+  if(abs(checkedAmount) >= 1.99 && abs(checkedAmount) < 2.01) {
     kernel = border2px;
   }
 
@@ -142,13 +142,13 @@ vec4 calculateInnerBorder(float baseAlpha, float[9] alphas, float amount) {
     return outColor;
   }
 
-  if(abs(checkedAmount) >= 0.0 && abs(checkedAmount) < 0.001) {
+  if(abs(checkedAmount) >= 0.0 && abs(checkedAmount) < 0.01) {
     return outColor;
   }
-  if(abs(checkedAmount) >= 0.999 && abs(checkedAmount) < 1.001) {
+  if(abs(checkedAmount) >= 0.99 && abs(checkedAmount) < 1.01) {
     kernel = border1px;
   }
-  if(abs(checkedAmount) >= 1.999 && abs(checkedAmount) < 2.001) {
+  if(abs(checkedAmount) >= 1.99 && abs(checkedAmount) < 2.01) {
     kernel = border2px;
   }
 
@@ -264,18 +264,18 @@ void fragment(){
 
   COLOR = saturation;
 
-  // Effects (everything above is from ImageEffects)
+  // Effects (everything above is a copy+paste from ImageEffects.frag)
 
   float[9] sampledRegionAlphas = float[9](
-    applyBasicEffects(texture(SRC_CHANNEL, v_offsetTL)).a,
-    applyBasicEffects(texture(SRC_CHANNEL, v_offsetTC)).a,
-    applyBasicEffects(texture(SRC_CHANNEL, v_offsetTR)).a,
-    applyBasicEffects(texture(SRC_CHANNEL, v_offsetML)).a,
-    applyBasicEffects(texture(SRC_CHANNEL, v_offsetMC)).a,
-    applyBasicEffects(texture(SRC_CHANNEL, v_offsetMR)).a,
-    applyBasicEffects(texture(SRC_CHANNEL, v_offsetBL)).a,
-    applyBasicEffects(texture(SRC_CHANNEL, v_offsetBC)).a,
-    applyBasicEffects(texture(SRC_CHANNEL, v_offsetBR)).a
+    texture(SRC_CHANNEL, v_offsetTL).a,
+    texture(SRC_CHANNEL, v_offsetTC).a,
+    texture(SRC_CHANNEL, v_offsetTR).a,
+    texture(SRC_CHANNEL, v_offsetML).a,
+    texture(SRC_CHANNEL, v_offsetMC).a,
+    texture(SRC_CHANNEL, v_offsetMR).a,
+    texture(SRC_CHANNEL, v_offsetBL).a,
+    texture(SRC_CHANNEL, v_offsetBC).a,
+    texture(SRC_CHANNEL, v_offsetBR).a
   );
 
   float[9] sampledRegionAlphasInverse = float[9](
@@ -300,8 +300,7 @@ void fragment(){
   vec4 innerBorder = calculateInnerBorder(COLOR.a, sampledRegionAlphasInverse, innerBorderAmount);
   vec4 outerBorder = calculateOuterBorder(COLOR.a, sampledRegionAlphas, outerBorderAmount);
 
-  vec4 withOverlay = vec4(mix(COLOR.rgb, overlay.rgb, overlay.a), COLOR.a);
-  vec4 withInnerGlow = vec4(mix(withOverlay.rgb, innerGlow.rgb, innerGlow.a), withOverlay.a);
+  vec4 withInnerGlow = vec4(mix(COLOR.rgb, innerGlow.rgb, innerGlow.a), COLOR.a);
   vec4 withOuterGlow = mix(withInnerGlow, outerGlow, outerGlow.a);
   vec4 withInnerBorder = mix(withOuterGlow, innerBorder, innerBorder.a);
   vec4 withOuterBorder = mix(withInnerBorder, outerBorder, outerBorder.a);
