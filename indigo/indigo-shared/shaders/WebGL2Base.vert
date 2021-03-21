@@ -30,6 +30,16 @@ const float PI = 3.141592653589793;
 // Variables
 vec4 VERTEX;
 vec2 TEXTURE_COORDS;
+vec2 UV;
+vec2 SIZE;
+vec2 CHANNEL_0_ATLAS_OFFSET;
+vec2 CHANNEL_1_ATLAS_OFFSET;
+vec2 CHANNEL_2_ATLAS_OFFSET;
+vec2 CHANNEL_3_ATLAS_OFFSET;
+vec2 CHANNEL_0_TEXTURE_COORDS;
+vec2 CHANNEL_1_TEXTURE_COORDS;
+vec2 CHANNEL_2_TEXTURE_COORDS;
+vec2 CHANNEL_3_TEXTURE_COORDS;
 
 mat4 translate2d(vec2 t){
     return mat4(1, 0, 0, 0,
@@ -60,7 +70,17 @@ void main(void) {
 
   VERTEX = vec4(a_verticesAndCoords.xy, 1.0, 1.0);
   TEXTURE_COORDS = a_verticesAndCoords.zw;
+  UV = a_sizeAndFrameScale.zw;
+  SIZE = a_sizeAndFrameScale.xy;
   v_uv_size = vec4(a_verticesAndCoords.zw, a_sizeAndFrameScale.xy);
+  CHANNEL_0_ATLAS_OFFSET = a_channelOffsets01.xy;
+  CHANNEL_1_ATLAS_OFFSET = a_channelOffsets01.zw;
+  CHANNEL_2_ATLAS_OFFSET = a_channelOffsets23.xy;
+  CHANNEL_3_ATLAS_OFFSET = a_channelOffsets23.zw;
+  CHANNEL_0_TEXTURE_COORDS = scaleTexCoordsWithOffset(TEXTURE_COORDS, CHANNEL_0_ATLAS_OFFSET);
+  CHANNEL_1_TEXTURE_COORDS = scaleTexCoordsWithOffset(TEXTURE_COORDS, CHANNEL_1_ATLAS_OFFSET);
+  CHANNEL_2_TEXTURE_COORDS = scaleTexCoordsWithOffset(TEXTURE_COORDS, CHANNEL_2_ATLAS_OFFSET);
+  CHANNEL_3_TEXTURE_COORDS = scaleTexCoordsWithOffset(TEXTURE_COORDS, CHANNEL_3_ATLAS_OFFSET);
 
   vertex();
 
@@ -73,6 +93,6 @@ void main(void) {
 
   gl_Position = u_projection * transform * VERTEX;
 
-  v_channel_coords_01 = vec4(scaleTexCoordsWithOffset(TEXTURE_COORDS, a_channelOffsets01.xy), scaleTexCoordsWithOffset(TEXTURE_COORDS, a_channelOffsets01.zw));
-  v_channel_coords_23 = vec4(scaleTexCoordsWithOffset(TEXTURE_COORDS, a_channelOffsets23.xy), scaleTexCoordsWithOffset(TEXTURE_COORDS, a_channelOffsets23.zw));
+  v_channel_coords_01 = vec4(CHANNEL_0_TEXTURE_COORDS, CHANNEL_1_TEXTURE_COORDS);
+  v_channel_coords_23 = vec4(CHANNEL_2_TEXTURE_COORDS, CHANNEL_3_TEXTURE_COORDS);
 }
