@@ -242,23 +242,11 @@ package object indigo {
   type BindingKey = shared.datatypes.BindingKey
   val BindingKey: shared.datatypes.BindingKey.type = shared.datatypes.BindingKey
 
-  type Effects = shared.datatypes.Effects
-  val Effects: shared.datatypes.Effects.type = shared.datatypes.Effects
-
   type Fill = shared.datatypes.Fill
   val Fill: shared.datatypes.Fill.type = shared.datatypes.Fill
 
   type Stroke = shared.datatypes.Stroke
   val Stroke: shared.datatypes.Stroke.type = shared.datatypes.Stroke
-
-  type Thickness = shared.datatypes.Thickness
-  val Thickness: shared.datatypes.Thickness.type = shared.datatypes.Thickness
-
-  type Border = shared.datatypes.Border
-  val Border: shared.datatypes.Border.type = shared.datatypes.Border
-
-  type Glow = shared.datatypes.Glow
-  val Glow: shared.datatypes.Glow.type = shared.datatypes.Glow
 
   type RGB = shared.datatypes.RGB
   val RGB: shared.datatypes.RGB.type = shared.datatypes.RGB

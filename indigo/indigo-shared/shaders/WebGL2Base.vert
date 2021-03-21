@@ -57,7 +57,7 @@ mat4 scale2d(vec2 s){
                 );
 }
 
-vec2 scaleTexCoordsWithOffset(vec2 texcoord, vec2 offset){
+vec2 scaleCoordsWithOffset(vec2 texcoord, vec2 offset){
   mat4 transform = translate2d(offset) * scale2d(a_sizeAndFrameScale.zw);
   return (transform * vec4(texcoord, 1.0, 1.0)).xy;
 }
@@ -77,10 +77,10 @@ void main(void) {
   CHANNEL_1_ATLAS_OFFSET = a_channelOffsets01.zw;
   CHANNEL_2_ATLAS_OFFSET = a_channelOffsets23.xy;
   CHANNEL_3_ATLAS_OFFSET = a_channelOffsets23.zw;
-  CHANNEL_0_TEXTURE_COORDS = scaleTexCoordsWithOffset(TEXTURE_COORDS, CHANNEL_0_ATLAS_OFFSET);
-  CHANNEL_1_TEXTURE_COORDS = scaleTexCoordsWithOffset(TEXTURE_COORDS, CHANNEL_1_ATLAS_OFFSET);
-  CHANNEL_2_TEXTURE_COORDS = scaleTexCoordsWithOffset(TEXTURE_COORDS, CHANNEL_2_ATLAS_OFFSET);
-  CHANNEL_3_TEXTURE_COORDS = scaleTexCoordsWithOffset(TEXTURE_COORDS, CHANNEL_3_ATLAS_OFFSET);
+  CHANNEL_0_TEXTURE_COORDS = scaleCoordsWithOffset(TEXTURE_COORDS, CHANNEL_0_ATLAS_OFFSET);
+  CHANNEL_1_TEXTURE_COORDS = scaleCoordsWithOffset(TEXTURE_COORDS, CHANNEL_1_ATLAS_OFFSET);
+  CHANNEL_2_TEXTURE_COORDS = scaleCoordsWithOffset(TEXTURE_COORDS, CHANNEL_2_ATLAS_OFFSET);
+  CHANNEL_3_TEXTURE_COORDS = scaleCoordsWithOffset(TEXTURE_COORDS, CHANNEL_3_ATLAS_OFFSET);
 
   vertex();
 

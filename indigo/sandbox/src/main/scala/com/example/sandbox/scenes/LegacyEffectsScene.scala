@@ -7,6 +7,9 @@ import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxViewModel
 import com.example.sandbox.SandboxAssets
 import indigoextras.effectmaterials.LegacyEffects
+import indigoextras.effectmaterials.Border
+import indigoextras.effectmaterials.Thickness
+import indigoextras.effectmaterials.Glow
 
 object LegacyEffectsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel] {
 
@@ -87,20 +90,32 @@ object LegacyEffectsScene extends Scene[SandboxStartupData, SandboxGameModel, Sa
           },
         graphic // inner glow
           .moveTo(viewCenter)
-          .moveBy(0, 10),
-        // .withGlow(Glow(RGBA.Green, 2.0, 0.0)),
+          .moveBy(0, 10)
+          .modifyMaterial {
+            case m: LegacyEffects => m.withGlow(Glow(RGBA.Green, 2.0, 0.0))
+            case m                => m
+          },
         graphic // outer glow
           .moveTo(viewCenter)
-          .moveBy(-30, 10),
-        // .withGlow(Glow(RGBA.Blue, 0.0, 2.0)),
+          .moveBy(-30, 10)
+          .modifyMaterial {
+            case m: LegacyEffects => m.withGlow(Glow(RGBA.Blue, 0.0, 2.0))
+            case m                => m
+          },
         graphic // inner border
           .moveTo(viewCenter)
-          .moveBy(30, 60),
-        // .withBorder(Border(RGBA(1.0, 0.5, 0.0, 1.0), Thickness.Thick, Thickness.Thick)),
+          .moveBy(30, 60)
+          .modifyMaterial {
+            case m: LegacyEffects => m.withBorder(Border(RGBA(1.0, 0.5, 0.0, 1.0), Thickness.Thick, Thickness.None))
+            case m                => m
+          },
         graphic // outer border
           .moveTo(viewCenter)
-          .moveBy(60, 60),
-        // .withBorder(Border(RGBA.Yellow, Thickness.Thick, Thickness.None)),
+          .moveBy(60, 60)
+          .modifyMaterial {
+            case m: LegacyEffects => m.withBorder(Border(RGBA.Yellow, Thickness.None, Thickness.Thick))
+            case m                => m
+          },
         graphic // rotate & scale - standard transform
           .moveTo(viewCenter)
           .moveBy(30, 10)

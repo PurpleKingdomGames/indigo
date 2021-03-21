@@ -15,7 +15,15 @@ import indigo.shared.shader.ShaderPrimitive
 import indigo.shared.datatypes.Fill
 import indigo.shared.datatypes.RGB
 
-final case class LegacyEffects(diffuse: AssetName, alpha: Double, tint: RGBA, overlay: Fill, saturation: Double) extends Material {
+final case class LegacyEffects(
+    diffuse: AssetName,
+    alpha: Double,
+    tint: RGBA,
+    overlay: Fill,
+    saturation: Double,
+    border: Border,
+    glow: Glow
+) extends Material {
 
   def withAlpha(newAlpha: Double): LegacyEffects =
     this.copy(alpha = newAlpha)
@@ -30,6 +38,12 @@ final case class LegacyEffects(diffuse: AssetName, alpha: Double, tint: RGBA, ov
 
   def withSaturation(newSaturation: Double): LegacyEffects =
     this.copy(saturation = newSaturation)
+
+  def withBorder(newBorder: Border): LegacyEffects =
+    this.copy(border = newBorder)
+
+  def withGlow(newGlow: Glow): LegacyEffects =
+    this.copy(glow = newGlow)
 
   def toShaderData: ShaderData = {
     val gradientUniforms: List[(Uniform, ShaderPrimitive)] =
@@ -74,9 +88,14 @@ final case class LegacyEffects(diffuse: AssetName, alpha: Double, tint: RGBA, ov
             Uniform("TINT")                         -> vec4(tint.r, tint.g, tint.b, tint.a)
           ) ++ gradientUniforms ++
             List(
-              Uniform("BORDER_COLOR") -> vec4(tint.r, tint.g, tint.b, tint.a), // TODO
-              Uniform("GLOW_COLOR") -> vec4(tint.r, tint.g, tint.b, tint.a), // TODO
-              Uniform("EFFECT_AMOUNTS") -> vec4(tint.r, tint.g, tint.b, tint.a) // TODO // outer border, inner border, outer glow, inner glow
+              Uniform("BORDER_COLOR") -> vec4(border.color.r, border.color.g, border.color.b, border.color.a),
+              Uniform("GLOW_COLOR")   -> vec4(glow.color.r, glow.color.g, glow.color.b, glow.color.a),
+              Uniform("EFFECT_AMOUNTS") -> vec4(
+                border.outerThickness.toInt.toDouble,
+                border.innerThickness.toInt.toDouble,
+                glow.outerGlowAmount,
+                glow.innerGlowAmount
+              )
             )
         )
       ),
@@ -98,8 +117,74 @@ object LegacyEffects {
     )
 
   def apply(diffuse: AssetName): LegacyEffects =
-    LegacyEffects(diffuse, 1.0, RGBA.None, Fill.Color.default, 1.0)
+    LegacyEffects(diffuse, 1.0, RGBA.None, Fill.Color.default, 1.0, Border.default, Glow.default)
 
   def apply(diffuse: AssetName, alpha: Double): LegacyEffects =
-    LegacyEffects(diffuse, alpha, RGBA.None, Fill.Color.default, 1.0)
+    LegacyEffects(diffuse, alpha, RGBA.None, Fill.Color.default, 1.0, Border.default, Glow.default)
+}
+
+final case class Border(color: RGBA, innerThickness: Thickness, outerThickness: Thickness) {
+
+  def withColor(newColor: RGBA): Border =
+    this.copy(color = newColor)
+
+  def withInnerThickness(thickness: Thickness): Border =
+    this.copy(innerThickness = thickness)
+
+  def withOuterThickness(thickness: Thickness): Border =
+    this.copy(outerThickness = thickness)
+
+  def hash: String =
+    color.hash + innerThickness.hash + outerThickness.hash
+}
+object Border {
+  def inside(color: RGBA): Border =
+    Border(color, Thickness.Thin, Thickness.None)
+
+  def outside(color: RGBA): Border =
+    Border(color, Thickness.None, Thickness.Thin)
+
+  val default: Border =
+    Border(RGBA.Zero, Thickness.None, Thickness.None)
+}
+
+sealed trait Thickness {
+  def toInt: Int =
+    this match {
+      case Thickness.None  => 0
+      case Thickness.Thin  => 1
+      case Thickness.Thick => 2
+    }
+
+  def hash: String =
+    toInt.toString()
+}
+object Thickness {
+  case object None  extends Thickness
+  case object Thin  extends Thickness
+  case object Thick extends Thickness
+}
+
+final case class Glow(color: RGBA, innerGlowAmount: Double, outerGlowAmount: Double) {
+  def withColor(newColor: RGBA): Glow =
+    this.copy(color = newColor)
+
+  def withInnerGlowAmount(amount: Double): Glow =
+    this.copy(innerGlowAmount = Math.max(0, amount))
+
+  def withOuterGlowAmount(amount: Double): Glow =
+    this.copy(outerGlowAmount = Math.max(0, amount))
+
+  def hash: String =
+    color.hash + innerGlowAmount.toString + outerGlowAmount.toString()
+}
+object Glow {
+  def inside(color: RGBA): Glow =
+    Glow(color, 1d, 0d)
+
+  def outside(color: RGBA): Glow =
+    Glow(color, 0d, 1d)
+
+  val default: Glow =
+    Glow(RGBA.Zero, 0d, 0d)
 }

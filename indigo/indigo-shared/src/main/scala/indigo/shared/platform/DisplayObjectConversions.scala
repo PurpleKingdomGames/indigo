@@ -27,7 +27,6 @@ import indigo.shared.scenegraph.CloneBatch
 import indigo.shared.display.DisplayClone
 import indigo.shared.scenegraph.CloneTransformData
 import indigo.shared.materials.ShaderData
-import indigo.shared.display.DisplayEffects
 import indigo.shared.BoundaryLocator
 import indigo.shared.animation.AnimationRef
 import indigo.shared.datatypes.mutable.CheapMatrix4
@@ -48,7 +47,6 @@ final class DisplayObjectConversions(
   implicit private val frameCache: QuickCache[SpriteSheetFrameCoordinateOffsets] = QuickCache.empty
   implicit private val listDoCache: QuickCache[List[DisplayObject]]              = QuickCache.empty
   implicit private val cloneBatchCache: QuickCache[DisplayCloneBatch]            = QuickCache.empty
-  implicit private val effectsCache: QuickCache[DisplayEffects]                  = QuickCache.empty
   implicit private val textureAmountsCache: QuickCache[(Vector2, Double)]        = QuickCache.empty
   implicit private val uniformsCache: QuickCache[Array[Float]]                   = QuickCache.empty
 
@@ -58,7 +56,6 @@ final class DisplayObjectConversions(
     frameCache.purgeAllNow()
     listDoCache.purgeAllNow()
     cloneBatchCache.purgeAllNow()
-    effectsCache.purgeAllNow()
     textureAmountsCache.purgeAllNow()
     uniformsCache.purgeAllNow()
   }
