@@ -8,15 +8,13 @@ object StandardShaders {
     Set(
       Bitmap,
       ImageEffects,
-      NormalMinusBlue,
       ShapeBox,
       ShapeCircle,
       ShapeLine,
       ShapePolygon,
       NormalBlend,
       LightingBlend,
-      BlendEffects,
-      RefractionBlend
+      BlendEffects
     )
 
   // Entity Shaders
@@ -34,14 +32,6 @@ object StandardShaders {
       id = ShaderId("[indigo_engine_image_effects]"),
       vertex = ShaderLibrary.NoOpVertex,
       fragment = ShaderLibrary.ImageEffectsFragment,
-      light = ShaderLibrary.NoOpLight
-    )
-
-  val NormalMinusBlue: EntityShader.Source =
-    EntityShader.Source(
-      id = ShaderId("[indigo_engine_normal_minus_blue]"),
-      vertex = ShaderLibrary.NoOpVertex,
-      fragment = ShaderLibrary.NormalMinusBlueFragment,
       light = ShaderLibrary.NoOpLight
     )
 
@@ -100,10 +90,4 @@ object StandardShaders {
       fragment = ShaderLibrary.BlendEffectsFragment
     )
 
-  val RefractionBlend: BlendShader.Source =
-    BlendShader.Source(
-      id = ShaderId("[indigo_engine_blend_refraction]"),
-      vertex = ShaderLibrary.NoOpVertex,
-      fragment = ShaderLibrary.RefractionBlendFragment
-    )
 }

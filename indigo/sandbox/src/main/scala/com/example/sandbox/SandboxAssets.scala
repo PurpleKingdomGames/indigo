@@ -1,6 +1,7 @@
 package com.example.sandbox
 
 import indigo._
+import indigoextras.materials.Refraction
 
 object SandboxAssets {
 
@@ -42,8 +43,8 @@ object SandboxAssets {
   val smoothBumpMaterial: Material.Bitmap =
     Material.Bitmap(smoothBumpName)
 
-  val normalMapMaterial: Material.Refraction =
-    Material.Refraction(normalMapName)
+  val normalMapMaterial: Refraction.RefractionEntity =
+    Refraction.RefractionEntity(normalMapName)
 
   def assets: Set[AssetType] =
     Set(
