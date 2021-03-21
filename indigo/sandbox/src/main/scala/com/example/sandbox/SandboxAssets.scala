@@ -2,6 +2,7 @@ package com.example.sandbox
 
 import indigo._
 import indigoextras.effectmaterials.RefractionEntity
+import indigoextras.effectmaterials.LegacyEffects
 
 object SandboxAssets {
 
@@ -45,6 +46,9 @@ object SandboxAssets {
 
   val normalMapMaterial: RefractionEntity =
     RefractionEntity(normalMapName)
+
+  val junctionBoxEffectsMaterial: LegacyEffects =
+    LegacyEffects(junctionBoxAlbedo)
 
   def assets: Set[AssetType] =
     Set(

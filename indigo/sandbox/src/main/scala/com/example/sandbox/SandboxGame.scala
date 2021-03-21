@@ -17,6 +17,7 @@ import com.example.sandbox.scenes.LightsScene
 import com.example.sandbox.scenes.RefractionScene
 import com.example.sandbox.scenes.LegacyEffectsScene
 import indigoextras.effectmaterials.Refraction
+import indigoextras.effectmaterials.LegacyEffects
 
 @JSExportTopLevel("IndigoGame")
 object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, SandboxGameModel, SandboxViewModel] {
@@ -59,7 +60,8 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
         .withShaders(
           Shaders.circle,
           Shaders.external,
-          Shaders.sea
+          Shaders.sea,
+          LegacyEffects.entityShader
         )
         .addShaders(Refraction.shaders)
     )
