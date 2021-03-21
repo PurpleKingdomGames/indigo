@@ -35,19 +35,6 @@ object Blending {
   def Lighting(ambientLightColor: RGBA): Blending =
     Blending(Blend.LightingEntity, Blend.Normal, BlendMaterial.Lighting(ambientLightColor), Option(RGBA.Black))
 
-  /**
-    * Replicates Indigo's original refraction/distortion layer behaviour
-    *
-    * The problem with this method is that we have no "entity blend shader"
-    * capability to allow use to control how individual entities blend onto
-    * the layer below. As a result we have to use the same sort of mechanism
-    * we use for lighting to combine the entities - but this results in a
-    * weaker effect than we would like.
-    * 
-    * @param distance Max distance in pixels
-    */
-  def Refraction(distance: Double): Blending =
-    Blending(Blend.Normal, Blend.Normal, BlendMaterial.Refraction(distance), Option(RGBA.Zero))
 }
 
 sealed trait Blend {

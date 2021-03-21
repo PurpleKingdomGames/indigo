@@ -6,6 +6,7 @@ import com.example.sandbox.SandboxStartupData
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxViewModel
 import com.example.sandbox.SandboxAssets
+import indigoextras.materials.Refraction
 
 object RefractionScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel] {
 
@@ -74,7 +75,7 @@ object RefractionScene extends Scene[SandboxStartupData, SandboxGameModel, Sandb
             distortion.moveTo(viewCenter + Point(50, 0)),
             sliding.affectTime(0.3).at(context.gameTime.running)
           ).withBlending(
-            Blending.Refraction(
+            Refraction.RefractionBlending(
               Signal.SmoothPulse
                 .map(d => 0.25 * d)
                 .affectTime(0.25)

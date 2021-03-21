@@ -3,7 +3,7 @@ package indigo.shared.materials
 import indigo.shared.shader.StandardShaders
 import indigo.shared.shader.Uniform
 import indigo.shared.shader.UniformBlock
-import indigo.shared.shader.ShaderPrimitive.{float, vec4}
+import indigo.shared.shader.ShaderPrimitive.vec4
 import indigo.shared.datatypes.RGBA
 import indigo.shared.datatypes.Fill
 import indigo.shared.shader.ShaderPrimitive
@@ -32,21 +32,6 @@ object BlendMaterial {
             "IndigoLightingBlendData",
             List(
               Uniform("AMBIENT_LIGHT_COLOR") -> vec4(ambient.r, ambient.g, ambient.b, ambient.a)
-            )
-          )
-        )
-      )
-  }
-
-  final case class Refraction(multiplier: Double) extends BlendMaterial {
-    def toShaderData: BlendShaderData =
-      BlendShaderData(
-        StandardShaders.RefractionBlend.id,
-        Some(
-          UniformBlock(
-            "IndigoRefractionBlendData",
-            List(
-              Uniform("REFRACTION_AMOUNT") -> float(multiplier)
             )
           )
         )

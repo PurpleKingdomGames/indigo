@@ -102,16 +102,4 @@ object Material {
       ImageEffects(diffuse, alpha, RGBA.None, Fill.Color.default, 1.0)
   }
 
-  final case class Refraction(diffuse: AssetName) extends Material {
-    def toShaderData: ShaderData =
-      ShaderData(
-        StandardShaders.NormalMinusBlue.id,
-        None,
-        Some(diffuse),
-        None,
-        None,
-        None
-      )
-  }
-
 }
