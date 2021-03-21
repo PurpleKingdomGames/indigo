@@ -15,7 +15,7 @@ import com.example.sandbox.scenes.Shaders
 import com.example.sandbox.scenes.ShapesScene
 import com.example.sandbox.scenes.LightsScene
 import com.example.sandbox.scenes.RefractionScene
-import indigoextras.materials.Refraction
+import indigoextras.effectmaterials.Refraction
 
 @JSExportTopLevel("IndigoGame")
 object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, SandboxGameModel, SandboxViewModel] {

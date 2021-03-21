@@ -1,4 +1,4 @@
-package indigoextras.materials
+package indigoextras.effectmaterials
 
 import indigo.shared.assets.AssetName
 import indigo.shared.materials.Material
@@ -20,7 +20,7 @@ import indigo.shared.shader.Shader
 
 object Refraction {
 
-  val NormalMinusBlueShader: EntityShader.Source =
+  val entityShader: EntityShader.Source =
     EntityShader.Source(
       id = ShaderId("[indigoextras_engine_normal_minus_blue]"),
       vertex = ShaderLibrary.NoOpVertex,
@@ -28,7 +28,7 @@ object Refraction {
       light = ShaderLibrary.NoOpLight
     )
 
-  val RefractionBlendShader: BlendShader.Source =
+  val blendShader: BlendShader.Source =
     BlendShader.Source(
       id = ShaderId("[indigoextras_engine_blend_refraction]"),
       vertex = ShaderLibrary.NoOpVertex,
@@ -36,34 +36,7 @@ object Refraction {
     )
 
   val shaders: Set[Shader] =
-    Set(NormalMinusBlueShader, RefractionBlendShader)
-
-  final case class RefractionEntity(diffuse: AssetName) extends Material {
-    def toShaderData: ShaderData =
-      ShaderData(
-        NormalMinusBlueShader.id,
-        None,
-        Some(diffuse),
-        None,
-        None,
-        None
-      )
-  }
-
-  final case class RefractionBlend(multiplier: Double) extends BlendMaterial {
-    def toShaderData: BlendShaderData =
-      BlendShaderData(
-        RefractionBlendShader.id,
-        Some(
-          UniformBlock(
-            "IndigoRefractionBlendData",
-            List(
-              Uniform("REFRACTION_AMOUNT") -> float(multiplier)
-            )
-          )
-        )
-      )
-  }
+    Set(entityShader, blendShader)
 
   /**
     * Replicates Indigo's original refraction/distortion layer behaviour
@@ -73,10 +46,37 @@ object Refraction {
     * the layer below. As a result we have to use the same sort of mechanism
     * we use for lighting to combine the entities - but this results in a
     * weaker effect than we would like.
-    * 
+    *
     * @param distance Max distance in pixels
     */
-  def RefractionBlending(distance: Double): Blending =
+  def blending(distance: Double): Blending =
     Blending(Blend.Normal, Blend.Normal, RefractionBlend(distance), Option(RGBA.Zero))
 
+}
+
+final case class RefractionEntity(diffuse: AssetName) extends Material {
+  def toShaderData: ShaderData =
+    ShaderData(
+      Refraction.entityShader.id,
+      None,
+      Some(diffuse),
+      None,
+      None,
+      None
+    )
+}
+
+final case class RefractionBlend(multiplier: Double) extends BlendMaterial {
+  def toShaderData: BlendShaderData =
+    BlendShaderData(
+      Refraction.blendShader.id,
+      Some(
+        UniformBlock(
+          "IndigoRefractionBlendData",
+          List(
+            Uniform("REFRACTION_AMOUNT") -> float(multiplier)
+          )
+        )
+      )
+    )
 }
