@@ -113,6 +113,17 @@ lazy val indigoExtras =
       name := "indigo-extras",
       libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.15.3" % "test"
     )
+    .settings(
+      sourceGenerators in Compile += Def.task {
+        val cachedFun = FileFunction.cached(
+          streams.value.cacheDirectory / "shader-library"
+        ) { (files: Set[File]) =>
+          ShaderLibraryGen.makeShaderLibrary("ExtrasShaderLibrary", "indigoextras.shaders", files, (sourceManaged in Compile).value).toSet
+        }
+
+        cachedFun(IO.listFiles((baseDirectory.value / "shader-library")).toSet).toSeq
+      }.taskValue
+    )
 
 // Indigo Game
 lazy val indigo =
@@ -185,7 +196,7 @@ lazy val indigoShared =
         val cachedFun = FileFunction.cached(
           streams.value.cacheDirectory / "shader-library"
         ) { (files: Set[File]) =>
-          ShaderLibraryGen.makeShaderLibrary(files, (sourceManaged in Compile).value).toSet
+          ShaderLibraryGen.makeShaderLibrary("ShaderLibrary", "indigo.shaders", files, (sourceManaged in Compile).value).toSet
         }
 
         cachedFun(IO.listFiles((baseDirectory.value / "shader-library")).toSet).toSeq

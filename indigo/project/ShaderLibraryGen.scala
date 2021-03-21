@@ -23,10 +23,10 @@ object ShaderLibraryGen {
 
   val tripleQuotes: String = "\"\"\""
 
-  def template(contents: String): String =
-    s"""package indigo.shaders
+  def template(moduleName: String, fullyQualifiedPath: String, contents: String): String =
+    s"""package $fullyQualifiedPath
     |
-    |object ShaderLibrary {
+    |object $moduleName {
     |
     |$contents
     |
@@ -41,7 +41,7 @@ object ShaderLibraryGen {
       .map(_.split('\n').drop(1).dropRight(1).mkString("\n"))
       .map(program => ShaderSnippet(newName + tag.split("-").map(_.capitalize).mkString, program))
 
-  def makeShaderLibrary(files: Set[File], sourceManagedDir: File): Seq[File] = {
+  def makeShaderLibrary(moduleName: String, fullyQualifiedPath: String, files: Set[File], sourceManagedDir: File): Seq[File] = {
     println("Generating Indigo RawShaderCode Library...")
 
     val shaderFiles: Seq[File] =
@@ -89,10 +89,10 @@ object ShaderLibraryGen {
         .mkString("\n")
 
     val file: File =
-      sourceManagedDir / "indigo" / "shaders" / "ShaderLibrary.scala"
+      sourceManagedDir / (moduleName + ".scala")
 
     val newContents: String =
-      template(contents)
+      template(moduleName, fullyQualifiedPath, contents)
 
     IO.write(file, newContents)
 
