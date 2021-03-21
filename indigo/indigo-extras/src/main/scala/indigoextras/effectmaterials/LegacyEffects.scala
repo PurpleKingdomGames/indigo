@@ -68,11 +68,16 @@ final case class LegacyEffects(diffuse: AssetName, alpha: Double, tint: RGBA, ov
       LegacyEffects.entityShader.id,
       Some(
         UniformBlock(
-          "IndigoImageEffectsData",
+          "IndigoLegacyEffectsData",
           List(
             Uniform("ALPHA_SATURATION_OVERLAYTYPE") -> vec3(alpha, saturation, overlayType),
             Uniform("TINT")                         -> vec4(tint.r, tint.g, tint.b, tint.a)
-          ) ++ gradientUniforms
+          ) ++ gradientUniforms ++
+            List(
+              Uniform("BORDER_COLOR") -> vec4(tint.r, tint.g, tint.b, tint.a), // TODO
+              Uniform("GLOW_COLOR") -> vec4(tint.r, tint.g, tint.b, tint.a), // TODO
+              Uniform("EFFECT_AMOUNTS") -> vec4(tint.r, tint.g, tint.b, tint.a) // TODO // outer border, inner border, outer glow, inner glow
+            )
         )
       ),
       Some(diffuse),
@@ -87,7 +92,7 @@ object LegacyEffects {
   val entityShader: EntityShader.Source =
     EntityShader.Source(
       id = ShaderId("[indigoextras_engine_legacy_effects]"),
-      vertex = ShaderLibrary.NoOpVertex,
+      vertex = ExtrasShaderLibrary.LegacyEffectsVertex,
       fragment = ExtrasShaderLibrary.LegacyEffectsFragment,
       light = ShaderLibrary.NoOpLight
     )

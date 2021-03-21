@@ -2,19 +2,26 @@
 
 precision mediump float;
 
+uniform sampler2D SRC_CHANNEL;
+
 vec4 CHANNEL_0;
 vec4 COLOR;
 vec2 UV;
 vec2 SIZE;
 
 //<indigo-fragment>
-layout (std140) uniform IndigoImageEffectsData {
+layout (std140) uniform IndigoLegacyEffectsData {
   highp vec3 ALPHA_SATURATION_OVERLAYTYPE;
   vec4 TINT;
   vec4 GRADIENT_FROM_TO;
   vec4 GRADIENT_FROM_COLOR;
   vec4 GRADIENT_TO_COLOR;
+  vec4 BORDER_COLOR;
+  vec4 GLOW_COLOR;
+  vec4 EFFECT_AMOUNTS;
 };
+
+//---- inherited from ImageEffects
 
 vec4 applyBasicEffects(vec4 textureColor) {
   float alpha = ALPHA_SATURATION_OVERLAYTYPE.x;
@@ -64,7 +71,171 @@ vec4 calculateSaturation(vec4 color) {
   return mix(grayscale, color, max(0.0, min(1.0, saturation)));
 }
 
+//---- /inherited from ImageEffects
+//---- legacy effects
+
+in vec2 v_offsetTL;
+in vec2 v_offsetTC;
+in vec2 v_offsetTR;
+in vec2 v_offsetML;
+in vec2 v_offsetMC;
+in vec2 v_offsetMR;
+in vec2 v_offsetBL;
+in vec2 v_offsetBC;
+in vec2 v_offsetBR;
+
+const float border1px[9] = float[9](
+  0.0, 1.0, 0.0,
+  1.0, 0.0, 1.0,
+  0.0, 1.0, 0.0
+);
+
+const float border2px[9] = float[9](
+  1.0, 1.0, 1.0,
+  1.0, 0.0, 1.0,
+  1.0, 1.0, 1.0
+);
+
+vec4 calculateOuterBorder(float baseAlpha, float[9] alphas, float amount) {
+  vec4 outColor = vec4(0.0);
+  float checkedAmount = clamp(amount, 0.0, 2.0);
+  float[9] kernel;
+
+  if(baseAlpha > 0.001) {
+    return outColor;
+  }
+  
+  if(abs(checkedAmount) >= 0.0 && abs(checkedAmount) < 0.001) {
+    return outColor;
+  }
+  if(abs(checkedAmount) >= 0.999 && abs(checkedAmount) < 1.001) {
+    kernel = border1px;
+  }
+  if(abs(checkedAmount) >= 1.999 && abs(checkedAmount) < 2.001) {
+    kernel = border2px;
+  }
+
+  float alphaSum =
+    alphas[0] * kernel[0] +
+    alphas[1] * kernel[1] +
+    alphas[2] * kernel[2] +
+    alphas[3] * kernel[3] +
+    alphas[4] * kernel[4] +
+    alphas[5] * kernel[5] +
+    alphas[6] * kernel[6] +
+    alphas[7] * kernel[7] +
+    alphas[8] * kernel[8];
+
+  if(alphaSum > 0.0) {
+    outColor = BORDER_COLOR;
+  }
+
+  return outColor;
+}
+
+vec4 calculateInnerBorder(float baseAlpha, float[9] alphas, float amount) {
+  vec4 outColor = vec4(0.0);
+  float checkedAmount = clamp(amount, 0.0, 2.0);
+  float[9] kernel;
+
+  if(baseAlpha < 0.001) {
+    return outColor;
+  }
+
+  if(abs(checkedAmount) >= 0.0 && abs(checkedAmount) < 0.001) {
+    return outColor;
+  }
+  if(abs(checkedAmount) >= 0.999 && abs(checkedAmount) < 1.001) {
+    kernel = border1px;
+  }
+  if(abs(checkedAmount) >= 1.999 && abs(checkedAmount) < 2.001) {
+    kernel = border2px;
+  }
+
+  float alphaSum =
+    floor(alphas[0]) * kernel[0] +
+    floor(alphas[1]) * kernel[1] +
+    floor(alphas[2]) * kernel[2] +
+    floor(alphas[3]) * kernel[3] +
+    floor(alphas[4]) * kernel[4] +
+    floor(alphas[5]) * kernel[5] +
+    floor(alphas[6]) * kernel[6] +
+    floor(alphas[7]) * kernel[7] +
+    floor(alphas[8]) * kernel[8];
+
+  if(alphaSum > 0.0) {
+    outColor = BORDER_COLOR;
+  }
+
+  return outColor;
+}
+
+const float glowKernel[9] = float[9](
+  1.0, 0.5, 1.0,
+  0.5, 0.0, 0.5,
+  1.0, 0.5, 1.0
+);
+// glowKernel values summed up.
+const float glowKernelWeight = 6.0;
+
+vec4 calculateOuterGlow(float baseAlpha, float[9] alphas, float amount) {
+  vec4 outColor = vec4(0.0);
+
+  if(baseAlpha > 0.01) {
+    return outColor;
+  }
+
+  float alphaSum =
+    alphas[0] * glowKernel[0] +
+    alphas[1] * glowKernel[1] +
+    alphas[2] * glowKernel[2] +
+    alphas[3] * glowKernel[3] +
+    alphas[4] * glowKernel[4] +
+    alphas[5] * glowKernel[5] +
+    alphas[6] * glowKernel[6] +
+    alphas[7] * glowKernel[7] +
+    alphas[8] * glowKernel[8];
+
+  if(alphaSum > 0.0) {
+    float checkedAmount = max(0.0, amount);
+    float glowAmount = (alphaSum / glowKernelWeight) * checkedAmount;
+    outColor = vec4(GLOW_COLOR.rgb, GLOW_COLOR.a * glowAmount);
+  }
+
+  return outColor;
+}
+
+vec4 calculateInnerGlow(float baseAlpha, float[9] alphas, float amount) {
+  vec4 outColor = vec4(0.0);
+
+  if(baseAlpha < 0.01) {
+    return outColor;
+  }
+
+  float alphaSum =
+    floor(alphas[0]) * glowKernel[0] +
+    floor(alphas[1]) * glowKernel[1] +
+    floor(alphas[2]) * glowKernel[2] +
+    floor(alphas[3]) * glowKernel[3] +
+    floor(alphas[4]) * glowKernel[4] +
+    floor(alphas[5]) * glowKernel[5] +
+    floor(alphas[6]) * glowKernel[6] +
+    floor(alphas[7]) * glowKernel[7] +
+    floor(alphas[8]) * glowKernel[8];
+
+  if(alphaSum > 0.0) {
+    float checkedAmount = max(0.0, amount);
+    float glowAmount = (alphaSum / glowKernelWeight) * checkedAmount;
+    outColor = vec4(GLOW_COLOR.rgb, GLOW_COLOR.a * glowAmount);
+  }
+
+  return outColor;
+}
+
+//---- /legacy effects
+
 void fragment(){
+
   vec4 baseColor = applyBasicEffects(CHANNEL_0);
 
   // 0 = color; 1 = linear gradient; 2 = radial gradient
@@ -92,5 +263,49 @@ void fragment(){
   vec4 saturation = calculateSaturation(overlay);
 
   COLOR = saturation;
+
+  // Effects (everything above is from ImageEffects)
+
+  float[9] sampledRegionAlphas = float[9](
+    applyBasicEffects(texture(SRC_CHANNEL, v_offsetTL)).a,
+    applyBasicEffects(texture(SRC_CHANNEL, v_offsetTC)).a,
+    applyBasicEffects(texture(SRC_CHANNEL, v_offsetTR)).a,
+    applyBasicEffects(texture(SRC_CHANNEL, v_offsetML)).a,
+    applyBasicEffects(texture(SRC_CHANNEL, v_offsetMC)).a,
+    applyBasicEffects(texture(SRC_CHANNEL, v_offsetMR)).a,
+    applyBasicEffects(texture(SRC_CHANNEL, v_offsetBL)).a,
+    applyBasicEffects(texture(SRC_CHANNEL, v_offsetBC)).a,
+    applyBasicEffects(texture(SRC_CHANNEL, v_offsetBR)).a
+  );
+
+  float[9] sampledRegionAlphasInverse = float[9](
+    (1.0 - sampledRegionAlphas[0]),
+    (1.0 - sampledRegionAlphas[1]),
+    (1.0 - sampledRegionAlphas[2]),
+    (1.0 - sampledRegionAlphas[3]),
+    (1.0 - sampledRegionAlphas[4]),
+    (1.0 - sampledRegionAlphas[5]),
+    (1.0 - sampledRegionAlphas[6]),
+    (1.0 - sampledRegionAlphas[7]),
+    (1.0 - sampledRegionAlphas[8])
+  );
+
+  float outerBorderAmount = EFFECT_AMOUNTS.x;
+  float innerBorderAmount = EFFECT_AMOUNTS.y;
+  float outerGlowAmount = EFFECT_AMOUNTS.z;
+  float innerGlowAmount = EFFECT_AMOUNTS.w;
+
+  vec4 innerGlow = calculateInnerGlow(COLOR.a, sampledRegionAlphasInverse, innerGlowAmount);
+  vec4 outerGlow = calculateOuterGlow(COLOR.a, sampledRegionAlphas, outerGlowAmount);
+  vec4 innerBorder = calculateInnerBorder(COLOR.a, sampledRegionAlphasInverse, innerBorderAmount);
+  vec4 outerBorder = calculateOuterBorder(COLOR.a, sampledRegionAlphas, outerBorderAmount);
+
+  vec4 withOverlay = vec4(mix(COLOR.rgb, overlay.rgb, overlay.a), COLOR.a);
+  vec4 withInnerGlow = vec4(mix(withOverlay.rgb, innerGlow.rgb, innerGlow.a), withOverlay.a);
+  vec4 withOuterGlow = mix(withInnerGlow, outerGlow, outerGlow.a);
+  vec4 withInnerBorder = mix(withOuterGlow, innerBorder, innerBorder.a);
+  vec4 withOuterBorder = mix(withInnerBorder, outerBorder, outerBorder.a);
+
+  COLOR = withOuterBorder;
 }
 //</indigo-fragment>
