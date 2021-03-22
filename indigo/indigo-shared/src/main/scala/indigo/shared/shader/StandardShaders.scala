@@ -7,6 +7,7 @@ object StandardShaders {
   def all: Set[Shader] =
     Set(
       Bitmap,
+      LitBitmap,
       ImageEffects,
       ShapeBox,
       ShapeCircle,
@@ -21,10 +22,18 @@ object StandardShaders {
 
   val Bitmap: EntityShader.Source =
     EntityShader.Source(
-      id = ShaderId("[indigo_engine_blit]"),
+      id = ShaderId("[indigo_engine_bitmap]"),
       vertex = ShaderLibrary.NoOpVertex,
       fragment = ShaderLibrary.BlitFragment,
       light = ShaderLibrary.NoOpLight
+    )
+
+  val LitBitmap: EntityShader.Source =
+    EntityShader.Source(
+      id = ShaderId("[indigo_engine_lit_bitmap]"),
+      vertex = ShaderLibrary.NoOpVertex,
+      fragment = ShaderLibrary.BlitFragment,
+      light = ShaderLibrary.BlitLight
     )
 
   val ImageEffects: EntityShader.Source =
