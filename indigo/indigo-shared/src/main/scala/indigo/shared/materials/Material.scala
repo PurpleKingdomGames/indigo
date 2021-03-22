@@ -27,6 +27,121 @@ object Material {
       )
   }
 
+  final case class Lit(
+      albedo: AssetName,
+      emissive: Option[Texture],
+      normal: Option[Texture],
+      specular: Option[Texture],
+      isLit: Boolean
+  ) extends Material {
+    val default: AssetName = albedo
+
+    def withAlbedo(newAlbedo: AssetName): Lit =
+      this.copy(albedo = newAlbedo)
+
+    def withEmission(emissiveAssetName: AssetName, amount: Double): Lit =
+      this.copy(emissive = Some(Texture(emissiveAssetName, amount)))
+
+    def withNormal(normalAssetName: AssetName, amount: Double): Lit =
+      this.copy(normal = Some(Texture(normalAssetName, amount)))
+
+    def withSpecular(specularAssetName: AssetName, amount: Double): Lit =
+      this.copy(specular = Some(Texture(specularAssetName, amount)))
+
+    def lit: Lit =
+      this.copy(isLit = true)
+
+    def unlit: Lit =
+      this.copy(isLit = false)
+
+    def toShaderData: ShaderData =
+      if (isLit)
+        ShaderData(
+          StandardShaders.LitBitmap.id,
+          Some(
+            UniformBlock(
+              "IndigoMaterialLightingData",
+              List(
+                Uniform("EMISSIVE_NORMAL_SPECULAR") -> vec3(
+                  emissive.map(_.amount).getOrElse(-1.0),
+                  normal.map(_.amount).getOrElse(-1.0),
+                  specular.map(_.amount).getOrElse(-1.0)
+                )
+              )
+            )
+          ),
+          Some(albedo),
+          emissive.map(_.assetName),
+          normal.map(_.assetName),
+          specular.map(_.assetName)
+        )
+      else
+        ShaderData(
+          StandardShaders.Bitmap.id,
+          None,
+          Some(albedo),
+          None,
+          None,
+          None
+        )
+  }
+  object Lit {
+    def apply(
+        albedo: AssetName,
+        emissive: Option[Texture],
+        normal: Option[Texture],
+        specular: Option[Texture]
+    ): Lit =
+      new Lit(albedo, emissive, normal, specular, true)
+
+    def apply(
+        albedo: AssetName
+    ): Lit =
+      new Lit(albedo, None, None, None, true)
+
+    def apply(
+        albedo: AssetName,
+        emissive: AssetName
+    ): Lit =
+      new Lit(
+        albedo,
+        Some(Texture(emissive, 1.0d)),
+        None,
+        None,
+        true
+      )
+
+    def apply(
+        albedo: AssetName,
+        emissive: AssetName,
+        normal: AssetName
+    ): Lit =
+      new Lit(
+        albedo,
+        Some(Texture(emissive, 1.0d)),
+        Some(Texture(normal, 1.0d)),
+        None,
+        true
+      )
+
+    def apply(
+        albedo: AssetName,
+        emissive: AssetName,
+        normal: AssetName,
+        specular: AssetName
+    ): Lit =
+      new Lit(
+        albedo,
+        Some(Texture(emissive, 1.0d)),
+        Some(Texture(normal, 1.0d)),
+        Some(Texture(specular, 1.0d)),
+        true
+      )
+
+    def fromAlbedo(albedo: AssetName): Lit =
+      new Lit(albedo, None, None, None, true)
+  }
+
   final case class ImageEffects(diffuse: AssetName, alpha: Double, tint: RGBA, overlay: Fill, saturation: Double) extends Material {
 
     def withAlpha(newAlpha: Double): ImageEffects =
@@ -103,3 +218,5 @@ object Material {
   }
 
 }
+
+final case class Texture(assetName: AssetName, amount: Double)

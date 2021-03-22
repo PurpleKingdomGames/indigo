@@ -35,6 +35,7 @@ uniform float u_lightAttenuation[16];
 in vec4 v_channel_coords_01;
 in vec4 v_channel_coords_23;
 in vec4 v_uv_size; // Unscaled texture coordinates + Width / height of the objects
+in vec2 v_screenCoords; // Where is this pixel on the screen?
 
 // Variables
 vec2 UV; // Unscaled texture coordinates
@@ -47,14 +48,21 @@ vec2 CHANNEL_0_TEXTURE_COORDS; // Scaled texture coordinates
 vec2 CHANNEL_1_TEXTURE_COORDS; // Scaled texture coordinates
 vec2 CHANNEL_2_TEXTURE_COORDS; // Scaled texture coordinates
 vec2 CHANNEL_3_TEXTURE_COORDS; // Scaled texture coordinates
+vec2 SCREEN_COORDS;
 
 // Constants
-const float TAU = 2.0 * 3.141592653589793;
 const float PI = 3.141592653589793;
+const float PI_2 = PI * 0.5;
+const float PI_4 = PI * 0.25;
+const float TAU = 2.0 * PI;
+const float TAU_2 = PI;
+const float TAU_4 = PI_2;
+const float TAU_8 = PI_4;
 
 // Outputs
 vec4 COLOR;
 vec4 LIGHT;
+vec4 SPECULAR;
 
 //#fragment_start
 void fragment(){}
@@ -69,7 +77,8 @@ void main(void) {
   UV = v_uv_size.xy;
   SIZE = v_uv_size.zw;
   COLOR = vec4(0.0);
-  LIGHT = vec4(0.0);
+  LIGHT = vec4(1.0);
+  SPECULAR = vec4(0.0);
   CHANNEL_0_TEXTURE_COORDS = v_channel_coords_01.xy;
   CHANNEL_1_TEXTURE_COORDS = v_channel_coords_01.zw;
   CHANNEL_2_TEXTURE_COORDS = v_channel_coords_23.xy;
@@ -78,15 +87,18 @@ void main(void) {
   CHANNEL_1 = texture(SRC_CHANNEL, CHANNEL_1_TEXTURE_COORDS);
   CHANNEL_2 = texture(SRC_CHANNEL, CHANNEL_2_TEXTURE_COORDS);
   CHANNEL_3 = texture(SRC_CHANNEL, CHANNEL_3_TEXTURE_COORDS);
+  SCREEN_COORDS = v_screenCoords;
 
   // Colour
   fragment();
 
   // Lighting
-  int lightCount = min(16, max(0, u_numOfLights));
+  // int lightCount = min(16, max(0, u_numOfLights));
+  int lightCount = 1; // TODO: Remove! Tmp, while testing lights
   for(int i = 0; i < lightCount; i++) {
     light();
   }
   
-  fragColor = COLOR + LIGHT;
+  vec4 specular = vec4(SPECULAR.rgb, SPECULAR.a * COLOR.a);
+  fragColor = mix(COLOR * LIGHT, specular, specular.a);
 }

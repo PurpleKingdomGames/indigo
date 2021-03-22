@@ -22,6 +22,7 @@ layout (std140) uniform IndigoFrameData {
 out vec4 v_channel_coords_01; // Scaled to position on texture atlas
 out vec4 v_channel_coords_23; // Scaled to position on texture atlas
 out vec4 v_uv_size; // Unscaled texture coordinates + Width / height of the objects
+out vec2 v_screenCoords; // Where is this pixel on the screen?
 
 // Constants
 const float TAU = 2.0 * 3.141592653589793;
@@ -73,6 +74,7 @@ void main(void) {
   UV = a_sizeAndFrameScale.zw;
   SIZE = a_sizeAndFrameScale.xy;
   v_uv_size = vec4(a_verticesAndCoords.zw, a_sizeAndFrameScale.xy);
+ 
   CHANNEL_0_ATLAS_OFFSET = a_channelOffsets01.xy;
   CHANNEL_1_ATLAS_OFFSET = a_channelOffsets01.zw;
   CHANNEL_2_ATLAS_OFFSET = a_channelOffsets23.xy;
@@ -92,6 +94,7 @@ void main(void) {
         );
 
   gl_Position = u_projection * transform * VERTEX;
+  v_screenCoords = gl_Position.xy;
 
   v_channel_coords_01 = vec4(CHANNEL_0_TEXTURE_COORDS, CHANNEL_1_TEXTURE_COORDS);
   v_channel_coords_23 = vec4(CHANNEL_2_TEXTURE_COORDS, CHANNEL_3_TEXTURE_COORDS);

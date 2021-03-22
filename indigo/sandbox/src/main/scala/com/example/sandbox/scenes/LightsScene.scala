@@ -54,7 +54,7 @@ object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
   //   }
 
   def present(context: FrameContext[SandboxStartupData], model: SandboxGameModel, viewModel: SandboxViewModel): Outcome[SceneUpdateFragment] = {
-    val viewCenter: Point = context.startUpData.viewportCenter
+    val viewCenter: Point = context.startUpData.viewportCenter / 3 * 2
 
     Outcome(
       SceneUpdateFragment.empty
@@ -64,7 +64,7 @@ object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
           // graphic.moveBy(-30, 0).withMaterial(LightingAssets.junctionBoxMaterialGlass),
           // graphic.moveBy(30, 0).withMaterial(LightingAssets.junctionBoxMaterialFlat),
           // graphic.moveBy(60, 0).withMaterial(LightingAssets.junctionBoxMaterialFlat.unlit)
-        )
+        ).withMagnification(3)
         // .withAmbientLight(RGBA.White.withAmount(0.1))
         .withLights(
           PointLight.default
@@ -114,12 +114,12 @@ object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
 
 object LightingAssets {
 
-  val junctionBoxMaterialOn: Material.Bitmap =
-    Material.Bitmap(
-      SandboxAssets.junctionBoxAlbedo//,
-      // Some(junctionBoxEmission),
-      // Some(junctionBoxNormal),
-      // Some(junctionBoxSpecular)
+  val junctionBoxMaterialOn: Material.Lit =
+    Material.Lit(
+      SandboxAssets.junctionBoxAlbedo,
+      SandboxAssets.junctionBoxEmission,
+      SandboxAssets.junctionBoxNormal,
+      SandboxAssets.junctionBoxSpecular
     )
 
   // val junctionBoxMaterialGlass: Material.Lit =

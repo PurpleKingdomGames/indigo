@@ -31,6 +31,9 @@ package object indigo {
   type Material = shared.materials.Material
   val Material: shared.materials.Material.type = shared.materials.Material
 
+  type Texture = shared.materials.Texture
+  val Texture: shared.materials.Texture.type = shared.materials.Texture
+
   type BlendMaterial = shared.materials.BlendMaterial
   val BlendMaterial: shared.materials.BlendMaterial.type = shared.materials.BlendMaterial
 
