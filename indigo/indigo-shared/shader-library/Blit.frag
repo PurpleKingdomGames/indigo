@@ -17,8 +17,10 @@ void fragment(){
 float TAU;
 float PI;
 float PI_2;
+float PI_4;
 vec2 SCREEN_COORDS;
 float TIME;
+float ROTATION;
 
 //<indigo-light>
 const float screenGamma = 2.2;
@@ -34,6 +36,13 @@ float LIGHT_NEAR = 0.0;
 float LIGHT_FAR = 200.0;
 float LIGHT_ANGLE = 45.0;
 
+mat4 rotationZ(in float angle) {
+  return mat4(cos(angle),  -sin(angle), 0, 0,
+              sin(angle),  cos(angle),  0, 0,
+              0,           0,           1, 0,
+              0,           0,           0, 1);
+}
+
 void calculateLight(in float lightAmount,
                     in vec3 lightDir,
                     in float specularPower,
@@ -47,15 +56,16 @@ void calculateLight(in float lightAmount,
   // Normal
   vec3 normalFlipedY = vec3(normalTexture.r, 1.0 - normalTexture.g, normalTexture.b); // Flip Y
   vec3 normal = normalize((2.0f * normalFlipedY) - 1.0f); // Convert RGB 0 to 1, into -1 to 1
+  vec3 rotatedNormal = (vec4(normal, 1.0) * rotationZ(ROTATION)).xyz;
 
   vec3 halfVec = vec3(0.0, 0.0, 1.0);
 
-  float lambertian = max(dot(normal, lightDir), 0.0);
+  float lambertian = max(dot(rotatedNormal, lightDir), 0.0);
 
-  vec3 reflection = normalize(vec3(2.0 * lambertian) * (normal - lightDir));
+  vec3 reflection = normalize(vec3(2.0 * lambertian) * (rotatedNormal - lightDir));
   float specular = min(pow(dot(reflection, halfVec), shininess), lambertian) * specularPower;
 
-  vec4 color = vec4(LIGHT_COLOR * lightAmount, lightAmount);//mix(vec4(LIGHT_COLOR, lightAmount), vec4(LIGHT_COLOR, 1.0), specular);
+  vec4 color = vec4(LIGHT_COLOR * lightAmount, lightAmount);
   vec4 colorGammaCorrected = pow(color, vec4(1.0 / screenGamma));
 
   outColor = colorGammaCorrected;

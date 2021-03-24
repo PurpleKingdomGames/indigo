@@ -35,6 +35,7 @@ final case class DisplayCloneBatch(
 
 final case class DisplayObject(
     transform: CheapMatrix4,
+    rotation: Double,
     z: Double,
     width: Float,
     height: Float,
@@ -62,6 +63,7 @@ object DisplayObject {
 
   def apply(
       transform: CheapMatrix4,
+      rotation: Double,
       z: Double,
       width: Int,
       height: Int,
@@ -76,6 +78,7 @@ object DisplayObject {
   ): DisplayObject =
     DisplayObject(
       transform,
+      rotation,
       z,
       width.toFloat,
       height.toFloat,

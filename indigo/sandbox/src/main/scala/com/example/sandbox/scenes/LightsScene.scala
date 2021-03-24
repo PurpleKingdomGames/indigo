@@ -59,7 +59,7 @@ object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
     Outcome(
       SceneUpdateFragment.empty
         .addLayer(
-          graphic.moveTo(viewCenter)
+          graphic.moveTo(viewCenter)//.rotateTo(Radians.fromSeconds(context.running * Seconds(0.25)))
           // graphic.moveBy(-60, 0).withMaterial(LightingAssets.junctionBoxMaterialOff),
           // graphic.moveBy(-30, 0).withMaterial(LightingAssets.junctionBoxMaterialGlass),
           // graphic.moveBy(30, 0).withMaterial(LightingAssets.junctionBoxMaterialFlat),
