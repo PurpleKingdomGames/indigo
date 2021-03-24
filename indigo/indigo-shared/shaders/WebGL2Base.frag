@@ -61,8 +61,6 @@ const float TAU_8 = PI_4;
 
 // Outputs
 vec4 COLOR;
-vec4 LIGHT;
-vec4 SPECULAR;
 
 //#fragment_start
 void fragment(){}
@@ -77,8 +75,6 @@ void main(void) {
   UV = v_uv_size.xy;
   SIZE = v_uv_size.zw;
   COLOR = vec4(0.0);
-  LIGHT = vec4(1.0);
-  SPECULAR = vec4(0.0);
   CHANNEL_0_TEXTURE_COORDS = v_channel_coords_01.xy;
   CHANNEL_1_TEXTURE_COORDS = v_channel_coords_01.zw;
   CHANNEL_2_TEXTURE_COORDS = v_channel_coords_23.xy;
@@ -99,6 +95,5 @@ void main(void) {
     light();
   }
   
-  vec4 specular = vec4(SPECULAR.rgb, SPECULAR.a * COLOR.a);
-  fragColor = mix(COLOR * LIGHT, specular, specular.a);
+  fragColor = COLOR;
 }

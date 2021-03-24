@@ -47,8 +47,7 @@ final class DisplayObjectConversions(
   implicit private val frameCache: QuickCache[SpriteSheetFrameCoordinateOffsets] = QuickCache.empty
   implicit private val listDoCache: QuickCache[List[DisplayObject]]              = QuickCache.empty
   implicit private val cloneBatchCache: QuickCache[DisplayCloneBatch]            = QuickCache.empty
-  implicit private val textureAmountsCache: QuickCache[(Vector2, Double)]        = QuickCache.empty
-  implicit private val uniformsCache: QuickCache[Array[Float]]                   = QuickCache.empty
+  implicit private val uniformsCache: QuickCache[Array[Float]] = QuickCache.empty
 
   def purgeCaches(): Unit = {
     stringCache.purgeAllNow()
@@ -56,7 +55,6 @@ final class DisplayObjectConversions(
     frameCache.purgeAllNow()
     listDoCache.purgeAllNow()
     cloneBatchCache.purgeAllNow()
-    textureAmountsCache.purgeAllNow()
     uniformsCache.purgeAllNow()
   }
 
@@ -334,13 +332,12 @@ final class DisplayObjectConversions(
   }
 
   def graphicToDisplayObject(leaf: Graphic, assetMapping: AssetMapping): DisplayObject = {
-    val shaderData     = leaf.material.toShaderData
+    val shaderData   = leaf.material.toShaderData
     val materialName = shaderData.channel0.get.value
 
-    // val albedoAmount                     = 1.0f
-    val (emissiveOffset, _) = (Vector2.zero, 0.0d) //materialToEmissiveValues(assetMapping, leaf.material)
-    val (normalOffset, _)   = (Vector2.zero, 0.0d) //materialToNormalValues(assetMapping, leaf.material)
-    val (specularOffset, _) = (Vector2.zero, 0.0d) //materialToSpecularValues(assetMapping, leaf.material)
+    val emissiveOffset = findAssetOffsetValues(assetMapping, shaderData.channel1, shaderData.hash, "_e")
+    val normalOffset   = findAssetOffsetValues(assetMapping, shaderData.channel2, shaderData.hash, "_n")
+    val specularOffset = findAssetOffsetValues(assetMapping, shaderData.channel3, shaderData.hash, "_s")
 
     val frameInfo =
       QuickCache(s"${leaf.crop.hash}_${shaderData.hash}") {
@@ -380,13 +377,12 @@ final class DisplayObjectConversions(
 
   def spriteToDisplayObject(boundaryLocator: BoundaryLocator, leaf: Sprite, assetMapping: AssetMapping, anim: AnimationRef): DisplayObject = {
     val material     = leaf.material
-    val shaderData     = material.toShaderData
+    val shaderData   = material.toShaderData
     val materialName = shaderData.channel0.get.value
 
-    // val albedoAmount                     = 1.0f
-    val (emissiveOffset, _) = (Vector2.zero, 0.0d) //materialToEmissiveValues(assetMapping, material)
-    val (normalOffset, _)   = (Vector2.zero, 0.0d) //materialToNormalValues(assetMapping, material)
-    val (specularOffset, _) = (Vector2.zero, 0.0d) //materialToSpecularValues(assetMapping, material)
+    val emissiveOffset = findAssetOffsetValues(assetMapping, shaderData.channel1, shaderData.hash, "_e")
+    val normalOffset   = findAssetOffsetValues(assetMapping, shaderData.channel2, shaderData.hash, "_n")
+    val specularOffset = findAssetOffsetValues(assetMapping, shaderData.channel3, shaderData.hash, "_s")
 
     val frameInfo =
       QuickCache(anim.frameHash + shaderData.hash) {
@@ -431,7 +427,7 @@ final class DisplayObjectConversions(
     (line, alignmentOffsetX, yOffset) => {
 
       val material     = leaf.material
-      val shaderData     = material.toShaderData
+      val shaderData   = material.toShaderData
       val materialName = shaderData.channel0.get.value
 
       val lineHash: String =
@@ -446,9 +442,9 @@ final class DisplayObjectConversions(
       // ":" + leaf.effects.hash
 
       // val albedoAmount                     = 1.0f
-      val (emissiveOffset, _) = (Vector2.zero, 0.0d) //materialToEmissiveValues(assetMapping, fontInfo.fontSpriteSheet.material)
-      val (normalOffset, _)   = (Vector2.zero, 0.0d) //materialToNormalValues(assetMapping, fontInfo.fontSpriteSheet.material)
-      val (specularOffset, _) = (Vector2.zero, 0.0d) //materialToSpecularValues(assetMapping, fontInfo.fontSpriteSheet.material)
+      val emissiveOffset = findAssetOffsetValues(assetMapping, shaderData.channel1, shaderData.hash, "_e")
+      val normalOffset   = findAssetOffsetValues(assetMapping, shaderData.channel2, shaderData.hash, "_n")
+      val specularOffset = findAssetOffsetValues(assetMapping, shaderData.channel3, shaderData.hash, "_s")
 
       val shaderId = shaderData.shaderId
 
@@ -512,6 +508,14 @@ final class DisplayObjectConversions(
     rec(charList.map(c => (c, fontInfo.findByCharacter(c))), 0)
   }
 
+  def findAssetOffsetValues(assetMapping: AssetMapping, maybeAssetName: Option[AssetName], cacheKey: String, cacheSuffix: String): Vector2 =
+    QuickCache[Vector2](cacheKey + cacheSuffix) {
+      maybeAssetName
+        .map { t =>
+          lookupTextureOffset(assetMapping, t.value)
+        }
+        .getOrElse(Vector2.zero)
+    }
 }
 
 object DisplayObjectConversions {

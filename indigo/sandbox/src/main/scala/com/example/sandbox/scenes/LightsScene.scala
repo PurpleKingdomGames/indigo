@@ -34,7 +34,7 @@ object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
     _ => Outcome(viewModel)
 
   val graphic: Graphic =
-    Graphic(Rectangle(0, 0, 64, 64), 1, LightingAssets.junctionBoxMaterialOn)
+    Graphic(Rectangle(0, 0, 40, 40), 1, LightingAssets.junctionBoxMaterialOn)
       .withRef(20, 20)
 
   // def orbitingLight(distance: Int): Signal[PointLight] =
@@ -64,7 +64,8 @@ object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
           // graphic.moveBy(-30, 0).withMaterial(LightingAssets.junctionBoxMaterialGlass),
           // graphic.moveBy(30, 0).withMaterial(LightingAssets.junctionBoxMaterialFlat),
           // graphic.moveBy(60, 0).withMaterial(LightingAssets.junctionBoxMaterialFlat.unlit)
-        ).withMagnification(3)
+        )
+        .withMagnification(3)
         // .withAmbientLight(RGBA.White.withAmount(0.1))
         .withLights(
           PointLight.default
