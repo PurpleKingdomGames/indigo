@@ -25,8 +25,13 @@ out vec4 v_uv_size; // Unscaled texture coordinates + Width / height of the obje
 out vec2 v_screenCoords; // Where is this pixel on the screen?
 
 // Constants
-const float TAU = 2.0 * 3.141592653589793;
 const float PI = 3.141592653589793;
+const float PI_2 = PI * 0.5;
+const float PI_4 = PI * 0.25;
+const float TAU = 2.0 * PI;
+const float TAU_2 = PI;
+const float TAU_4 = PI_2;
+const float TAU_8 = PI_4;
 
 // Variables
 vec4 VERTEX;

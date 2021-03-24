@@ -18,8 +18,13 @@ out vec2 SIZE;
 out vec2 UV;
 
 // Constants
-const float TAU = 2.0 * 3.141592653589793;
 const float PI = 3.141592653589793;
+const float PI_2 = PI * 0.5;
+const float PI_4 = PI * 0.25;
+const float TAU = 2.0 * PI;
+const float TAU_2 = PI;
+const float TAU_4 = PI_2;
+const float TAU_8 = PI_4;
 
 mat4 translate2d(vec2 t){
     return mat4(1, 0, 0, 0,
