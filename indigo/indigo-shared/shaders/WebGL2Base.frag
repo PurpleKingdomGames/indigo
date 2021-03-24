@@ -35,7 +35,7 @@ uniform float u_lightAttenuation[16];
 in vec4 v_channel_coords_01;
 in vec4 v_channel_coords_23;
 in vec4 v_uv_size; // Unscaled texture coordinates + Width / height of the objects
-in vec2 v_screenCoords; // Where is this pixel on the screen?
+in vec3 v_screenCoordsRotation; // Where is this pixel on the screen?
 
 // Variables
 vec2 UV; // Unscaled texture coordinates
@@ -49,6 +49,7 @@ vec2 CHANNEL_1_TEXTURE_COORDS; // Scaled texture coordinates
 vec2 CHANNEL_2_TEXTURE_COORDS; // Scaled texture coordinates
 vec2 CHANNEL_3_TEXTURE_COORDS; // Scaled texture coordinates
 vec2 SCREEN_COORDS;
+float ROTATION;
 
 // Constants
 const float PI = 3.141592653589793;
@@ -83,7 +84,8 @@ void main(void) {
   CHANNEL_1 = texture(SRC_CHANNEL, CHANNEL_1_TEXTURE_COORDS);
   CHANNEL_2 = texture(SRC_CHANNEL, CHANNEL_2_TEXTURE_COORDS);
   CHANNEL_3 = texture(SRC_CHANNEL, CHANNEL_3_TEXTURE_COORDS);
-  SCREEN_COORDS = v_screenCoords;
+  SCREEN_COORDS = v_screenCoordsRotation.xy;
+  ROTATION = v_screenCoordsRotation.z;
 
   // Colour
   fragment();

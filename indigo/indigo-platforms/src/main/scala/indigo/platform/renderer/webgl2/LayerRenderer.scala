@@ -35,7 +35,7 @@ class LayerRenderer(
 
   // Instance Array Buffers
   private val matRotateScaleInstanceArray: WebGLBuffer    = gl2.createBuffer()
-  private val matTranslateAlphaInstanceArray: WebGLBuffer = gl2.createBuffer()
+  private val matTranslateRotationInstanceArray: WebGLBuffer = gl2.createBuffer()
   private val sizeAndFrameScaleInstanceArray: WebGLBuffer = gl2.createBuffer()
   private val channelOffsets01InstanceArray: WebGLBuffer  = gl2.createBuffer()
   private val channelOffsets23InstanceArray: WebGLBuffer  = gl2.createBuffer()
@@ -48,11 +48,11 @@ class LayerRenderer(
   }
 
   // Instance Data Arrays
-  private val matRotateScaleData: scalajs.js.Array[Float]    = scalajs.js.Array[Float](4f * maxBatchSize)
-  private val matTranslateAlphaData: scalajs.js.Array[Float] = scalajs.js.Array[Float](4f * maxBatchSize)
-  private val sizeAndFrameScaleData: scalajs.js.Array[Float] = scalajs.js.Array[Float](4f * maxBatchSize)
-  private val channelOffsets01Data: scalajs.js.Array[Float]  = scalajs.js.Array[Float](4f * maxBatchSize)
-  private val channelOffsets23Data: scalajs.js.Array[Float]  = scalajs.js.Array[Float](4f * maxBatchSize)
+  private val matRotateScaleData: scalajs.js.Array[Float]       = scalajs.js.Array[Float](4f * maxBatchSize)
+  private val matTranslateRotationData: scalajs.js.Array[Float] = scalajs.js.Array[Float](4f * maxBatchSize)
+  private val sizeAndFrameScaleData: scalajs.js.Array[Float]    = scalajs.js.Array[Float](4f * maxBatchSize)
+  private val channelOffsets01Data: scalajs.js.Array[Float]     = scalajs.js.Array[Float](4f * maxBatchSize)
+  private val channelOffsets23Data: scalajs.js.Array[Float]     = scalajs.js.Array[Float](4f * maxBatchSize)
 
   @inline private def bindData(buffer: WebGLBuffer, data: scalajs.js.Array[Float]): Unit = {
     gl2.bindBuffer(ARRAY_BUFFER, buffer)
@@ -65,10 +65,10 @@ class LayerRenderer(
     matRotateScaleData((i * 4) + 2) = matrixData1(2).toFloat
     matRotateScaleData((i * 4) + 3) = matrixData1(3).toFloat
 
-    matTranslateAlphaData((i * 4) + 0) = matrixData2(0).toFloat
-    matTranslateAlphaData((i * 4) + 1) = matrixData2(1).toFloat
-    matTranslateAlphaData((i * 4) + 2) = matrixData2(2).toFloat
-    matTranslateAlphaData((i * 4) + 3) = 0.0f
+    matTranslateRotationData((i * 4) + 0) = matrixData2(0).toFloat
+    matTranslateRotationData((i * 4) + 1) = matrixData2(1).toFloat
+    matTranslateRotationData((i * 4) + 2) = matrixData2(2).toFloat
+    matTranslateRotationData((i * 4) + 3) = d.rotation.toFloat
 
     sizeAndFrameScaleData((i * 4) + 0) = d.width
     sizeAndFrameScaleData((i * 4) + 1) = d.height
@@ -155,7 +155,7 @@ class LayerRenderer(
     // vec4 a_matRotateScale
     setupInstanceArray(matRotateScaleInstanceArray, 1, 4) //
     // vec4 a_matTranslateAlpha
-    setupInstanceArray(matTranslateAlphaInstanceArray, 2, 4) //
+    setupInstanceArray(matTranslateRotationInstanceArray, 2, 4) //
     // vec4 a_sizeAndFrameScale
     setupInstanceArray(sizeAndFrameScaleInstanceArray, 3, 4) //
     // vec4 a_channelOffsets01
@@ -167,7 +167,7 @@ class LayerRenderer(
   @inline def drawBuffer(instanceCount: Int): Unit =
     if (instanceCount > 0) {
       bindData(matRotateScaleInstanceArray, matRotateScaleData)
-      bindData(matTranslateAlphaInstanceArray, matTranslateAlphaData)
+      bindData(matTranslateRotationInstanceArray, matTranslateRotationData)
       bindData(sizeAndFrameScaleInstanceArray, sizeAndFrameScaleData)
       bindData(channelOffsets01InstanceArray, channelOffsets01Data)
       bindData(channelOffsets23InstanceArray, channelOffsets23Data)
