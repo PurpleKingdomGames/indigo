@@ -54,13 +54,13 @@ void calculateLight(in float lightAmount,
   float shininess = shinyAmount * ((specularTexture.r + specularTexture.g + specularTexture.b) / 3.0);
 
   // Normal
-  vec3 normalFlipedY = vec3(normalTexture.r, 1.0 - normalTexture.g, normalTexture.b); // Flip Y
-  vec3 normal = normalize((2.0f * normalFlipedY) - 1.0f); // Convert RGB 0 to 1, into -1 to 1
+  // Convert RGB 0 to 1, into -1 to 1
+  vec3 normal = normalize((2.0f * vec3(normalTexture.rg, 1.0)) - 1.0f);
   vec3 rotatedNormal = (vec4(normal, 1.0) * rotationZ(ROTATION)).xyz;
 
   vec3 halfVec = vec3(0.0, 0.0, 1.0);
 
-  float lambertian = max(dot(rotatedNormal, lightDir), 0.0);
+  float lambertian = max(-dot(rotatedNormal, lightDir), 0.0);
 
   vec3 reflection = normalize(vec3(2.0 * lambertian) * (rotatedNormal - lightDir));
   float specular = min(pow(dot(reflection, halfVec), shininess), lambertian) * specularPower;
@@ -76,7 +76,7 @@ void calculateDirectionLight(vec4 specularTexture, vec4 normalTexture, out vec4 
   float lightAmount = clamp(LIGHT_HEIGHT, 0.0, 1.0) * clamp(LIGHT_POWER, 0.0, 1.0);
   float specularPower = LIGHT_POWER;
   float shinyAmount = 1.0;
-  vec3 lightDir = normalize(vec3(sin(LIGHT_ROTATION), cos(LIGHT_ROTATION), 0.1));
+  vec3 lightDir = normalize(vec3(sin(LIGHT_ROTATION), cos(LIGHT_ROTATION), 0.0));
 
   calculateLight(lightAmount, lightDir, specularPower, shinyAmount, specularTexture, normalTexture, outColor, outSpecular);
 }
