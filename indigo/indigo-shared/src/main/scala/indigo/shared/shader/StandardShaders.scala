@@ -34,8 +34,8 @@ object StandardShaders {
       id = ShaderId("[indigo_engine_lit_bitmap]"),
       vertex = ShaderLibrary.NoOpVertex,
       fragment = ShaderLibrary.BlitFragment,
-      light = ShaderLibrary.BlitLight,
-      composite = ShaderLibrary.BlitComposite
+      light = ShaderLibrary.LightingLight,
+      composite = ShaderLibrary.LightingComposite
     )
 
   val ImageEffects: EntityShader.Source =
