@@ -31,7 +31,7 @@ object Material {
       albedo: AssetName,
       emissive: Option[Texture],
       normal: Option[Texture],
-      specular: Option[Texture],
+      roughness: Option[Texture],
       isLit: Boolean
   ) extends Material {
     val default: AssetName = albedo
@@ -45,8 +45,8 @@ object Material {
     def withNormal(normalAssetName: AssetName, amount: Double): Lit =
       this.copy(normal = Some(Texture(normalAssetName, amount)))
 
-    def withSpecular(specularAssetName: AssetName, amount: Double): Lit =
-      this.copy(specular = Some(Texture(specularAssetName, amount)))
+    def withRoughness(roughnessAssetName: AssetName, amount: Double): Lit =
+      this.copy(roughness = Some(Texture(roughnessAssetName, amount)))
 
     def lit: Lit =
       this.copy(isLit = true)
@@ -62,10 +62,10 @@ object Material {
             UniformBlock(
               "IndigoMaterialLightingData",
               List(
-                Uniform("EMISSIVE_NORMAL_SPECULAR") -> vec3(
+                Uniform("EMISSIVE_NORMAL_ROUGHNESS") -> vec3(
                   emissive.map(_.amount).getOrElse(-1.0),
                   normal.map(_.amount).getOrElse(-1.0),
-                  specular.map(_.amount).getOrElse(-1.0)
+                  roughness.map(_.amount).getOrElse(-1.0)
                 )
               )
             )
@@ -73,7 +73,7 @@ object Material {
           Some(albedo),
           emissive.map(_.assetName),
           normal.map(_.assetName),
-          specular.map(_.assetName)
+          roughness.map(_.assetName)
         )
       else
         ShaderData(
@@ -90,9 +90,9 @@ object Material {
         albedo: AssetName,
         emissive: Option[Texture],
         normal: Option[Texture],
-        specular: Option[Texture]
+        roughness: Option[Texture]
     ): Lit =
-      new Lit(albedo, emissive, normal, specular, true)
+      new Lit(albedo, emissive, normal, roughness, true)
 
     def apply(
         albedo: AssetName
@@ -128,13 +128,13 @@ object Material {
         albedo: AssetName,
         emissive: AssetName,
         normal: AssetName,
-        specular: AssetName
+        roughness: AssetName
     ): Lit =
       new Lit(
         albedo,
         Some(Texture(emissive, 1.0d)),
         Some(Texture(normal, 1.0d)),
-        Some(Texture(specular, 1.0d)),
+        Some(Texture(roughness, 1.0d)),
         true
       )
 
