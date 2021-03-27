@@ -35,7 +35,7 @@ object StandardShaders {
       vertex = ShaderLibrary.NoOpVertex,
       fragment = ShaderLibrary.BlitFragment,
       light = ShaderLibrary.BlitLight,
-      composite = ShaderLibrary.NoOpComposite
+      composite = ShaderLibrary.BlitComposite
     )
 
   val ImageEffects: EntityShader.Source =

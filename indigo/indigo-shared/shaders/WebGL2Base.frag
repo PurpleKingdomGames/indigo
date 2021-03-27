@@ -99,6 +99,7 @@ void main(void) {
   // Lighting - build up the LIGHT & SPECULAR
   // int lightCount = min(16, max(0, u_numOfLights));
   int lightCount = 1; // TODO: Remove! Tmp, while testing lights
+  // TODO: if lights > 0
   for(int i = 0; i < lightCount; i++) {
     light();
   }
