@@ -7,6 +7,8 @@ vec4 CHANNEL_1; // Emissive
 vec4 CHANNEL_2; // Normal
 vec4 CHANNEL_3; // Specular
 vec4 COLOR;
+vec4 SPECULAR;
+vec4 LIGHT;
 
 //<indigo-fragment>
 void fragment(){
@@ -87,21 +89,17 @@ float timeToRadians(float t) {
 
 void light(){
 
+  // TODO: Ignore / do no work on any light that is too far away.
+
   LIGHT_ROTATION = timeToRadians(TIME);
 
   // Texture order: albedo, emissive, normal, specular
 
-  float EMISSIVE_AMOUNT = 1.0;
-  float NORMAL_AMOUNT = 1.0;
-  float SPECULAR_AMOUNT = 1.0;
+  float NORMAL_AMOUNT = 1.0; // TODO: Should come from UBO?
+  float SPECULAR_AMOUNT = 1.0; // TODO: Should come from UBO?
 
-  vec4 emissive = vec4(0.0, 0.0, 0.0, 1.0);
   vec4 normal = vec4(0.5, 0.5, 1.0, 1.0);
   vec4 specular = vec4(0.0, 0.0, 0.0, 1.0);
-
-  if(EMISSIVE_AMOUNT > 0.0) {
-    emissive = mix(emissive, CHANNEL_1, CHANNEL_1.a);
-  }
 
   if(NORMAL_AMOUNT > 0.0) {
     normal = mix(normal, CHANNEL_2, CHANNEL_2.a);
@@ -114,26 +112,32 @@ void light(){
   vec4 lightResult = vec4(0.0);
   vec4 specularResult = vec4(0.0);
 
-  calculateDirectionLight(CHANNEL_3, CHANNEL_2, lightResult, specularResult);
+  calculateDirectionLight(specular, normal, lightResult, specularResult);
 
-  vec4 colorLightSpec = mix(COLOR * lightResult, specularResult, specularResult.a * COLOR.a);
-
-  // vec3 emissiveRgbMax = max(emissive.rgb, CHANNEL_1.rgb);
-  // float emissiveMaxValue = max(emissiveRgbMax.r, max(emissiveRgbMax.g, emissiveRgbMax.b));
-  // vec4 emissiveResult = vec4(emissive.rgb * emissiveMaxValue, emissiveMaxValue);
-  
-  /*
-  What am I doing?
-  I've got an RGBA that is solid
-  I need to calculate an alpha.
-  */
-  float emmisiveAlpha = clamp(emissive.r + emissive.g + emissive.b, 0.0, 1.0);
-  vec4 emissiveResult = vec4(emissive.rgb * emmisiveAlpha, emmisiveAlpha);
-
-  COLOR = mix(colorLightSpec, emissiveResult, emissiveResult.a);
+  SPECULAR = SPECULAR + specularResult;
+  LIGHT = LIGHT + lightResult;
 }
 //</indigo-light>
 
+
+//<indigo-composite>
+void composite() {
+  float EMISSIVE_AMOUNT = 1.0;
+
+  vec4 emissive = vec4(0.0, 0.0, 0.0, 1.0);
+
+  if(EMISSIVE_AMOUNT > 0.0) {
+    emissive = mix(emissive, CHANNEL_1, CHANNEL_1.a);
+  }
+
+  float emmisiveAlpha = clamp(emissive.r + emissive.g + emissive.b, 0.0, 1.0);
+  vec4 emissiveResult = vec4(emissive.rgb * emmisiveAlpha, emmisiveAlpha);
+
+  vec4 colorLightSpec = mix(COLOR * LIGHT, SPECULAR, SPECULAR.a * COLOR.a);
+
+  COLOR = mix(colorLightSpec, emissiveResult, emissiveResult.a);
+}
+//</indigo-composite>
 
 
 // vec4 calculatePointLight(vec4 specularTexture, vec4 normalTexture) {
