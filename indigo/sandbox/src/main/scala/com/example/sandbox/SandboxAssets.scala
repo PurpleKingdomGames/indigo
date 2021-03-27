@@ -22,15 +22,15 @@ object SandboxAssets {
       // .withOverlay(Overlay.LinearGradient(Point.zero, RGBA.Cyan, Point(32, 32), RGBA.Magenta))
       .withOverlay(Fill.RadialGradient(Point(4, 4), RGBA.Cyan, Point(32, 32), RGBA.Magenta))
 
-  val junctionBoxAlbedo: AssetName   = AssetName("junctionbox_albedo")
-  val junctionBoxEmission: AssetName = AssetName("junctionbox_emission")
-  val junctionBoxNormal: AssetName   = AssetName("junctionbox_normal")
-  val junctionBoxSpecular: AssetName = AssetName("junctionbox_specular")
-  val imageLightName: AssetName      = AssetName("light_texture")
-  val foliageName: AssetName         = AssetName("foliage")
-  val smoothBumpName: AssetName      = AssetName("smooth-bump2")
-  val normalMapName: AssetName       = AssetName("normal-map")
-  val trafficLightsName: AssetName   = AssetName("trafficlights")
+  val junctionBoxAlbedo: AssetName    = AssetName("junctionbox_albedo")
+  val junctionBoxEmission: AssetName  = AssetName("junctionbox_emission")
+  val junctionBoxNormal: AssetName    = AssetName("junctionbox_normal")
+  val junctionBoxRoughness: AssetName = AssetName("junctionbox_specular")
+  val imageLightName: AssetName       = AssetName("light_texture")
+  val foliageName: AssetName          = AssetName("foliage")
+  val smoothBumpName: AssetName       = AssetName("smooth-bump2")
+  val normalMapName: AssetName        = AssetName("normal-map")
+  val trafficLightsName: AssetName    = AssetName("trafficlights")
 
   val junctionBoxMaterial: Material.Bitmap =
     Material.Bitmap(junctionBoxAlbedo)
@@ -61,7 +61,7 @@ object SandboxAssets {
         AssetType.Image(junctionBoxAlbedo, AssetPath("assets/" + junctionBoxAlbedo.value + ".png")),
         AssetType.Image(junctionBoxEmission, AssetPath("assets/" + junctionBoxEmission.value + ".png")),
         AssetType.Image(junctionBoxNormal, AssetPath("assets/" + junctionBoxNormal.value + ".png")),
-        AssetType.Image(junctionBoxSpecular, AssetPath("assets/" + junctionBoxSpecular.value + ".png")),
+        AssetType.Image(junctionBoxRoughness, AssetPath("assets/" + junctionBoxRoughness.value + ".png")),
         AssetType.Image(imageLightName, AssetPath("assets/" + imageLightName.value + ".png")),
         AssetType.Image(foliageName, AssetPath("assets/" + foliageName.value + ".png")),
         AssetType.Image(smoothBumpName, AssetPath("assets/" + smoothBumpName.value + ".png")),

@@ -120,7 +120,7 @@ object LightingAssets {
       SandboxAssets.junctionBoxAlbedo,
       SandboxAssets.junctionBoxEmission,
       SandboxAssets.junctionBoxNormal,
-      SandboxAssets.junctionBoxSpecular
+      SandboxAssets.junctionBoxRoughness
     )
 
   // val junctionBoxMaterialGlass: Material.Lit =
@@ -128,7 +128,7 @@ object LightingAssets {
   //     junctionBoxAlbedo,
   //     Some(junctionBoxEmission),
   //     Some(junctionBoxNormal),
-  //     Some(junctionBoxSpecular)
+  //     Some(junctionBoxRoughness)
   //   )
 
   // val junctionBoxMaterialOff: Material.Lit =
@@ -136,7 +136,7 @@ object LightingAssets {
   //     junctionBoxAlbedo,
   //     None,
   //     Some(junctionBoxNormal),
-  //     Some(junctionBoxSpecular)
+  //     Some(junctionBoxRoughness)
   //   )
 
   // val junctionBoxMaterialFlat: Material.Textured =
