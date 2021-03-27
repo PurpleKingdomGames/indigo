@@ -35,6 +35,10 @@ vec4 COLOR;
 void fragment(){}
 //#fragment_end
 
+//#prepare_start
+void prepare(){} // Placeholder only to appease src generator. No lights used.
+//#prepare_end
+
 //#light_start
 void light(){} // Placeholder only to appease src generator. No lights used.
 //#light_end

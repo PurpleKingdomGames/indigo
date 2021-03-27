@@ -247,6 +247,9 @@ object GameEngine {
       fragment = external.fragment
         .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-fragment", a))
         .getOrElse(Shader.defaultFragmentProgram),
+      prepare = external.prepare
+        .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-prepare", a))
+        .getOrElse(Shader.defaultPrepareProgram),
       light = external.light
         .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-light", a))
         .getOrElse(Shader.defaultLightProgram),
