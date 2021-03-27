@@ -25,6 +25,7 @@ object StandardShaders {
       id = ShaderId("[indigo_engine_bitmap]"),
       vertex = ShaderLibrary.NoOpVertex,
       fragment = ShaderLibrary.BlitFragment,
+      prepare = ShaderLibrary.NoOpPrepare,
       light = ShaderLibrary.NoOpLight,
       composite = ShaderLibrary.NoOpComposite
     )
@@ -34,6 +35,7 @@ object StandardShaders {
       id = ShaderId("[indigo_engine_lit_bitmap]"),
       vertex = ShaderLibrary.NoOpVertex,
       fragment = ShaderLibrary.BlitFragment,
+      prepare = ShaderLibrary.LightingPrepare,
       light = ShaderLibrary.LightingLight,
       composite = ShaderLibrary.LightingComposite
     )
@@ -43,6 +45,7 @@ object StandardShaders {
       id = ShaderId("[indigo_engine_image_effects]"),
       vertex = ShaderLibrary.NoOpVertex,
       fragment = ShaderLibrary.ImageEffectsFragment,
+      prepare = ShaderLibrary.NoOpPrepare,
       light = ShaderLibrary.NoOpLight,
       composite = ShaderLibrary.NoOpComposite
     )
@@ -52,6 +55,7 @@ object StandardShaders {
       id = ShaderId("[indigo_engine_shape_box]"),
       vertex = ShaderLibrary.NoOpVertex,
       fragment = ShaderLibrary.ShapeBoxFragment,
+      prepare = ShaderLibrary.NoOpPrepare,
       light = ShaderLibrary.NoOpLight,
       composite = ShaderLibrary.NoOpComposite
     )
@@ -61,6 +65,7 @@ object StandardShaders {
       id = ShaderId("[indigo_engine_shape_circle]"),
       vertex = ShaderLibrary.NoOpVertex,
       fragment = ShaderLibrary.ShapeCircleFragment,
+      prepare = ShaderLibrary.NoOpPrepare,
       light = ShaderLibrary.NoOpLight,
       composite = ShaderLibrary.NoOpComposite
     )
@@ -70,6 +75,7 @@ object StandardShaders {
       id = ShaderId("[indigo_engine_shape_line]"),
       vertex = ShaderLibrary.NoOpVertex,
       fragment = ShaderLibrary.ShapeLineFragment,
+      prepare = ShaderLibrary.NoOpPrepare,
       light = ShaderLibrary.NoOpLight,
       composite = ShaderLibrary.NoOpComposite
     )
@@ -79,6 +85,7 @@ object StandardShaders {
       id = ShaderId("[indigo_engine_shape_polygon]"),
       vertex = ShaderLibrary.NoOpVertex,
       fragment = ShaderLibrary.ShapePolygonFragment,
+      prepare = ShaderLibrary.NoOpPrepare,
       light = ShaderLibrary.NoOpLight,
       composite = ShaderLibrary.NoOpComposite
     )

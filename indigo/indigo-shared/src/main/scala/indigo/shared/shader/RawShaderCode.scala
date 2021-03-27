@@ -17,6 +17,7 @@ object RawShaderCode {
       val vertex: String = ShaderTemplates.webGL2EntityVertex(Option(customShader.vertex))
       val fragment: String = ShaderTemplates.webGL2EntityFragment(
         Option(customShader.fragment),
+        Option(customShader.prepare),
         Option(customShader.light),
         Option(customShader.composite)
       )
@@ -36,10 +37,11 @@ object RawShaderCode {
 
     def webGL2EntityFragment(
         fragmentShader: Option[String],
+        prepareShader: Option[String],
         lightShader: Option[String],
         compositeShader: Option[String]
     ): String =
-      WebGL2Base.fragmentShader(fragmentShader, lightShader, compositeShader)
+      WebGL2Base.fragmentShader(fragmentShader, prepareShader, lightShader, compositeShader)
 
     def webGL2BlendVertex(vertexShader: Option[String]): String =
       WebGL2Merge.vertexShader(vertexShader)
@@ -47,7 +49,7 @@ object RawShaderCode {
     def webGL2BlendFragment(
         fragmentShader: Option[String]
     ): String =
-      WebGL2Merge.fragmentShader(fragmentShader, None, None)
+      WebGL2Merge.fragmentShader(fragmentShader, None, None, None)
 
   }
 

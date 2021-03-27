@@ -18,6 +18,10 @@ vec2 SCREEN_COORDS;
 float TIME;
 float ROTATION;
 
+//<indigo-prepare>
+void prepare(){}
+//</indigo-prepare>
+
 //<indigo-light>
 const float screenGamma = 2.2;
 

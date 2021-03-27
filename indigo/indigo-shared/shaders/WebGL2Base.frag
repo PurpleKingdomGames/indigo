@@ -69,6 +69,10 @@ vec4 SPECULAR;
 void fragment(){}
 //#fragment_end
 
+//#prepare_start
+void prepare(){}
+//#prepare_end
+
 //#light_start
 void light(){}
 //#light_end
@@ -97,6 +101,8 @@ void main(void) {
   fragment();
 
   // Lighting - build up the LIGHT & SPECULAR
+  prepare();
+
   // int lightCount = min(16, max(0, u_numOfLights));
   int lightCount = 1; // TODO: Remove! Tmp, while testing lights
   // TODO: if lights > 0

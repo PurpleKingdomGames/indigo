@@ -37,9 +37,17 @@ object ShaderGen {
           "void fragment(){}"
         )
 
-      val withLight =
+      val withPrepare =
         injectCode(
           withFragment,
+          "prepare",
+          "prepareProgram",
+          "void prepare(){}"
+        )
+
+      val withLight =
+        injectCode(
+          withPrepare,
           "light",
           "lightProgram",
           "void light(){}"
@@ -71,7 +79,7 @@ object ShaderGen {
     |    vertexShader(None)
     |
     |  val fragment: String =
-    |    fragmentShader(None, None, None)
+    |    fragmentShader(None, None, None, None)
     |
     |  ${if (useNoWarn) "@nowarn" else ""}
     |  def vertexShader(vertexProgram: Option[String]): String =
@@ -80,6 +88,7 @@ object ShaderGen {
     |  ${if (useNoWarn) "@nowarn" else ""}
     |  def fragmentShader(
     |    fragmentProgram: Option[String],
+    |    prepareProgram: Option[String],
     |    lightProgram: Option[String],
     |    compositeProgram: Option[String]
     |  ): String =

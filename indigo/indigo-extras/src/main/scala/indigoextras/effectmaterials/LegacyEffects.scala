@@ -113,6 +113,7 @@ object LegacyEffects {
       id = ShaderId("[indigoextras_engine_legacy_effects]"),
       vertex = ExtrasShaderLibrary.LegacyEffectsVertex,
       fragment = ExtrasShaderLibrary.LegacyEffectsFragment,
+      prepare = ShaderLibrary.NoOpPrepare,
       light = ShaderLibrary.NoOpLight,
       composite = ShaderLibrary.NoOpComposite
     )
