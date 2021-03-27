@@ -39,6 +39,10 @@ void fragment(){}
 void light(){} // Placeholder only to appease src generator. No lights used.
 //#light_end
 
+//#composite_start
+void composite(){} // Placeholder only to appease src generator. No compositing required.
+//#composite_end
+
 void main(void) {
 
   SRC = texture(SRC_CHANNEL, UV);

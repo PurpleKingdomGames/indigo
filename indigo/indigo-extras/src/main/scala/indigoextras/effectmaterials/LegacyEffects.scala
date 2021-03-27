@@ -113,7 +113,8 @@ object LegacyEffects {
       id = ShaderId("[indigoextras_engine_legacy_effects]"),
       vertex = ExtrasShaderLibrary.LegacyEffectsVertex,
       fragment = ExtrasShaderLibrary.LegacyEffectsFragment,
-      light = ShaderLibrary.NoOpLight
+      light = ShaderLibrary.NoOpLight,
+      composite = ShaderLibrary.NoOpComposite
     )
 
   def apply(diffuse: AssetName): LegacyEffects =

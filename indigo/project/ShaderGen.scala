@@ -45,7 +45,15 @@ object ShaderGen {
           "void light(){}"
         )
 
-      withLight
+      val withComposite =
+        injectCode(
+          withLight,
+          "composite",
+          "compositeProgram",
+          "void composite(){}"
+        )
+
+      withComposite
     }
 
     val useNoWarn: Boolean =
@@ -63,7 +71,7 @@ object ShaderGen {
     |    vertexShader(None)
     |
     |  val fragment: String =
-    |    fragmentShader(None, None)
+    |    fragmentShader(None, None, None)
     |
     |  ${if (useNoWarn) "@nowarn" else ""}
     |  def vertexShader(vertexProgram: Option[String]): String =
@@ -72,7 +80,8 @@ object ShaderGen {
     |  ${if (useNoWarn) "@nowarn" else ""}
     |  def fragmentShader(
     |    fragmentProgram: Option[String],
-    |    lightProgram: Option[String]
+    |    lightProgram: Option[String],
+    |    compositeProgram: Option[String]
     |  ): String =
     |    s${tripleQuotes}${fragmentCode}${tripleQuotes}
     |}

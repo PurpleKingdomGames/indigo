@@ -76,9 +76,7 @@ object ShaderLibraryGen {
           extractShaderCode(d.shaderCode, "vertex", d.originalName + d.ext, d.newName) ++
             extractShaderCode(d.shaderCode, "fragment", d.originalName + d.ext, d.newName) ++
             extractShaderCode(d.shaderCode, "light", d.originalName + d.ext, d.newName) ++
-            extractShaderCode(d.shaderCode, "post-vertex", d.originalName + d.ext, d.newName) ++
-            extractShaderCode(d.shaderCode, "post-fragment", d.originalName + d.ext, d.newName) ++
-            extractShaderCode(d.shaderCode, "post-light", d.originalName + d.ext, d.newName)
+            extractShaderCode(d.shaderCode, "composite", d.originalName + d.ext, d.newName)
         }
         .map { snippet =>
           s"""  val ${snippet.variableName}: String =

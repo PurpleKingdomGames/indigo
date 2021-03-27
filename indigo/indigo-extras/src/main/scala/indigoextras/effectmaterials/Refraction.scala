@@ -25,7 +25,8 @@ object Refraction {
       id = ShaderId("[indigoextras_engine_normal_minus_blue]"),
       vertex = ShaderLibrary.NoOpVertex,
       fragment = ExtrasShaderLibrary.NormalMinusBlueFragment,
-      light = ShaderLibrary.NoOpLight
+      light = ShaderLibrary.NoOpLight,
+      composite = ShaderLibrary.NoOpComposite
     )
 
   val blendShader: BlendShader.Source =

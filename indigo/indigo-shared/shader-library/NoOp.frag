@@ -5,3 +5,7 @@ void fragment(){}
 //<indigo-light>
 void light(){}
 //</indigo-light>
+
+//<indigo-composite>
+void composite(){}
+//</indigo-composite>
