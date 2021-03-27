@@ -62,8 +62,6 @@ const float TAU_8 = PI_4;
 
 // Outputs
 vec4 COLOR;
-vec4 LIGHT;
-vec4 SPECULAR;
 
 //#fragment_start
 void fragment(){}
@@ -100,7 +98,7 @@ void main(void) {
   // Colour - build up the COLOR
   fragment();
 
-  // Lighting - build up the LIGHT & SPECULAR
+  // Lighting - prepare, light, composite
   prepare();
 
   // int lightCount = min(16, max(0, u_numOfLights));

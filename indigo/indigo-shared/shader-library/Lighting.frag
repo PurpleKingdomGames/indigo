@@ -7,8 +7,6 @@ vec4 CHANNEL_1; // Emissive
 vec4 CHANNEL_2; // Normal
 vec4 CHANNEL_3; // Specular
 vec4 COLOR;
-vec4 SPECULAR;
-vec4 LIGHT;
 
 float TAU;
 float PI;
@@ -19,10 +17,6 @@ float TIME;
 float ROTATION;
 
 //<indigo-prepare>
-void prepare(){}
-//</indigo-prepare>
-
-//<indigo-light>
 const float screenGamma = 2.2;
 
 vec3 LIGHT_COLOR = vec3(0.0, 1.0, 0.0);
@@ -81,6 +75,41 @@ void calculateDirectionLight(vec4 specularTexture, vec4 normalTexture, out vec4 
   calculateLight(lightAmount, lightDir, specularPower, shinyAmount, specularTexture, normalTexture, outColor, outSpecular);
 }
 
+vec4 normalColor;
+vec4 specularColor;
+vec4 emissiveColor;
+
+vec4 LIGHT;
+vec4 SPECULAR;
+
+void prepare(){
+
+  // Texture order: albedo, emissive, normal, specular
+
+  float EMISSIVE_AMOUNT = 1.0; // TODO: Should come from UBO?
+  float NORMAL_AMOUNT = 1.0; // TODO: Should come from UBO?
+  float SPECULAR_AMOUNT = 1.0; // TODO: Should come from UBO?
+
+  normalColor = vec4(0.5, 0.5, 1.0, 1.0);
+  specularColor = vec4(0.0, 0.0, 0.0, 1.0);
+  emissiveColor = vec4(0.0, 0.0, 0.0, 1.0);
+
+  if(NORMAL_AMOUNT > 0.0) {
+    normalColor = mix(normalColor, CHANNEL_2, CHANNEL_2.a);
+  }
+
+  if(SPECULAR_AMOUNT > 0.0) {
+    specularColor = mix(specularColor, CHANNEL_3, CHANNEL_3.a);
+  }
+
+  if(EMISSIVE_AMOUNT > 0.0) {
+    emissiveColor = mix(emissiveColor, CHANNEL_1, CHANNEL_1.a);
+  }
+
+}
+//</indigo-prepare>
+
+//<indigo-light>
 float timeToRadians(float t) {
   return TAU * mod(t * 0.5, 1.0);
 }
@@ -89,28 +118,12 @@ void light(){
 
   // TODO: Ignore / do no work on any light that is too far away.
 
-  LIGHT_ROTATION = timeToRadians(TIME);
-
-  // Texture order: albedo, emissive, normal, specular
-
-  float NORMAL_AMOUNT = 1.0; // TODO: Should come from UBO?
-  float SPECULAR_AMOUNT = 1.0; // TODO: Should come from UBO?
-
-  vec4 normal = vec4(0.5, 0.5, 1.0, 1.0);
-  vec4 specular = vec4(0.0, 0.0, 0.0, 1.0);
-
-  if(NORMAL_AMOUNT > 0.0) {
-    normal = mix(normal, CHANNEL_2, CHANNEL_2.a);
-  }
-
-  if(SPECULAR_AMOUNT > 0.0) {
-    specular = mix(specular, CHANNEL_3, CHANNEL_3.a);
-  }
+  LIGHT_ROTATION = timeToRadians(TIME); //TODO: Remove
 
   vec4 lightResult = vec4(0.0);
   vec4 specularResult = vec4(0.0);
 
-  calculateDirectionLight(specular, normal, lightResult, specularResult);
+  calculateDirectionLight(specularColor, normalColor, lightResult, specularResult);
 
   SPECULAR = SPECULAR + specularResult;
   LIGHT = LIGHT + lightResult;
@@ -120,16 +133,9 @@ void light(){
 
 //<indigo-composite>
 void composite() {
-  float EMISSIVE_AMOUNT = 1.0;
 
-  vec4 emissive = vec4(0.0, 0.0, 0.0, 1.0);
-
-  if(EMISSIVE_AMOUNT > 0.0) {
-    emissive = mix(emissive, CHANNEL_1, CHANNEL_1.a);
-  }
-
-  float emmisiveAlpha = clamp(emissive.r + emissive.g + emissive.b, 0.0, 1.0);
-  vec4 emissiveResult = vec4(emissive.rgb * emmisiveAlpha, emmisiveAlpha);
+  float emmisiveAlpha = clamp(emissiveColor.r + emissiveColor.g + emissiveColor.b, 0.0, 1.0);
+  vec4 emissiveResult = vec4(emissiveColor.rgb * emmisiveAlpha, emmisiveAlpha);
 
   vec4 colorLightSpec = mix(COLOR * LIGHT, SPECULAR, SPECULAR.a * COLOR.a);
 
