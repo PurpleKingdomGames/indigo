@@ -25,7 +25,8 @@ object StandardShaders {
       id = ShaderId("[indigo_engine_bitmap]"),
       vertex = ShaderLibrary.NoOpVertex,
       fragment = ShaderLibrary.BlitFragment,
-      light = ShaderLibrary.NoOpLight
+      light = ShaderLibrary.NoOpLight,
+      composite = ShaderLibrary.NoOpComposite
     )
 
   val LitBitmap: EntityShader.Source =
@@ -33,7 +34,8 @@ object StandardShaders {
       id = ShaderId("[indigo_engine_lit_bitmap]"),
       vertex = ShaderLibrary.NoOpVertex,
       fragment = ShaderLibrary.BlitFragment,
-      light = ShaderLibrary.BlitLight
+      light = ShaderLibrary.BlitLight,
+      composite = ShaderLibrary.NoOpComposite
     )
 
   val ImageEffects: EntityShader.Source =
@@ -41,7 +43,8 @@ object StandardShaders {
       id = ShaderId("[indigo_engine_image_effects]"),
       vertex = ShaderLibrary.NoOpVertex,
       fragment = ShaderLibrary.ImageEffectsFragment,
-      light = ShaderLibrary.NoOpLight
+      light = ShaderLibrary.NoOpLight,
+      composite = ShaderLibrary.NoOpComposite
     )
 
   val ShapeBox: EntityShader.Source =
@@ -49,7 +52,8 @@ object StandardShaders {
       id = ShaderId("[indigo_engine_shape_box]"),
       vertex = ShaderLibrary.NoOpVertex,
       fragment = ShaderLibrary.ShapeBoxFragment,
-      light = ShaderLibrary.NoOpLight
+      light = ShaderLibrary.NoOpLight,
+      composite = ShaderLibrary.NoOpComposite
     )
 
   val ShapeCircle: EntityShader.Source =
@@ -57,7 +61,8 @@ object StandardShaders {
       id = ShaderId("[indigo_engine_shape_circle]"),
       vertex = ShaderLibrary.NoOpVertex,
       fragment = ShaderLibrary.ShapeCircleFragment,
-      light = ShaderLibrary.NoOpLight
+      light = ShaderLibrary.NoOpLight,
+      composite = ShaderLibrary.NoOpComposite
     )
 
   val ShapeLine: EntityShader.Source =
@@ -65,7 +70,8 @@ object StandardShaders {
       id = ShaderId("[indigo_engine_shape_line]"),
       vertex = ShaderLibrary.NoOpVertex,
       fragment = ShaderLibrary.ShapeLineFragment,
-      light = ShaderLibrary.NoOpLight
+      light = ShaderLibrary.NoOpLight,
+      composite = ShaderLibrary.NoOpComposite
     )
 
   val ShapePolygon: EntityShader.Source =
@@ -73,7 +79,8 @@ object StandardShaders {
       id = ShaderId("[indigo_engine_shape_polygon]"),
       vertex = ShaderLibrary.NoOpVertex,
       fragment = ShaderLibrary.ShapePolygonFragment,
-      light = ShaderLibrary.NoOpLight
+      light = ShaderLibrary.NoOpLight,
+      composite = ShaderLibrary.NoOpComposite
     )
 
   // Blend Shaders

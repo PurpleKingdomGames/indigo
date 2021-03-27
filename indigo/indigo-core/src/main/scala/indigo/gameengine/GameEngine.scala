@@ -100,9 +100,8 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
     initialisationEvents.foreach(globalEventStream.pushGlobalEvent)
     bootEvents.foreach(globalEventStream.pushGlobalEvent)
 
-    if(config.advanced.autoLoadStandardShaders) {
+    if (config.advanced.autoLoadStandardShaders)
       StandardShaders.all.foreach(shaderRegister.register)
-    }
 
     // Arrange config
     configAsync.map(_.getOrElse(config)).foreach { gc =>
@@ -250,7 +249,10 @@ object GameEngine {
         .getOrElse(Shader.defaultFragmentProgram),
       light = external.light
         .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-light", a))
-        .getOrElse(Shader.defaultLightProgram)
+        .getOrElse(Shader.defaultLightProgram),
+      composite = external.composite
+        .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-composite", a))
+        .getOrElse(Shader.defaultCompositeProgram)
     )
 
   def externalBlendShaderToSource(external: BlendShader.External, assetCollection: AssetCollection): BlendShader.Source =

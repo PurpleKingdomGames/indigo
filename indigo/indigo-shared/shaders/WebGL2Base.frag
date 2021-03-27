@@ -62,6 +62,8 @@ const float TAU_8 = PI_4;
 
 // Outputs
 vec4 COLOR;
+vec4 LIGHT;
+vec4 SPECULAR;
 
 //#fragment_start
 void fragment(){}
@@ -70,6 +72,10 @@ void fragment(){}
 //#light_start
 void light(){}
 //#light_end
+
+//#composite_start
+void composite(){}
+//#composite_end
 
 void main(void) {
   // Defaults
@@ -87,15 +93,18 @@ void main(void) {
   SCREEN_COORDS = v_screenCoordsRotation.xy;
   ROTATION = v_screenCoordsRotation.z;
 
-  // Colour
+  // Colour - build up the COLOR
   fragment();
 
-  // Lighting
+  // Lighting - build up the LIGHT & SPECULAR
   // int lightCount = min(16, max(0, u_numOfLights));
   int lightCount = 1; // TODO: Remove! Tmp, while testing lights
   for(int i = 0; i < lightCount; i++) {
     light();
   }
+
+  // Composite - COMBINE COLOR + Lighting into final pixel color.
+  composite();
   
   fragColor = COLOR;
 }

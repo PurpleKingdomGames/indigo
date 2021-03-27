@@ -10,6 +10,7 @@ object Shader {
   val defaultVertexProgram: String   = "void vertex(){}"
   val defaultFragmentProgram: String = "void fragment(){}"
   val defaultLightProgram: String    = "void light(){}"
+  val defaultCompositeProgram: String    = "void composite(){}"
 
 }
 
@@ -20,7 +21,8 @@ object EntityShader {
       id: ShaderId,
       vertex: String,
       fragment: String,
-      light: String
+      light: String,
+      composite: String
   ) extends EntityShader {
     def withShaderId(newId: ShaderId): Source =
       this.copy(id = newId)
@@ -42,7 +44,8 @@ object EntityShader {
         id,
         Shader.defaultVertexProgram,
         Shader.defaultFragmentProgram,
-        Shader.defaultLightProgram
+        Shader.defaultLightProgram,
+        Shader.defaultCompositeProgram
       )
 
   }
@@ -51,7 +54,8 @@ object EntityShader {
       id: ShaderId,
       vertex: Option[AssetName],
       fragment: Option[AssetName],
-      light: Option[AssetName]
+      light: Option[AssetName],
+      composite: Option[AssetName]
   ) extends EntityShader {
 
     def withShaderId(newId: ShaderId): External =
@@ -65,12 +69,16 @@ object EntityShader {
 
     def withLightProgram(program: AssetName): External =
       this.copy(light = Option(program))
+
+    def withCompositeProgram(program: AssetName): External =
+      this.copy(composite = Option(program))
   }
   object External {
 
     def apply(id: ShaderId): External =
       External(
         id,
+        None,
         None,
         None,
         None
