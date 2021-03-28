@@ -27,7 +27,8 @@ class LayerRenderer(
     textureLocations: List[TextureLookupResult],
     maxBatchSize: Int,
     projectionUBOBuffer: => WebGLBuffer,
-    frameDataUBOBuffer: => WebGLBuffer
+    frameDataUBOBuffer: => WebGLBuffer,
+    lightDataUBOBuffer: => WebGLBuffer
 ) {
 
   private val customDataUBOBuffer: WebGLBuffer =
@@ -150,6 +151,7 @@ class LayerRenderer(
 
     WebGLHelper.bindUBO(gl2, program, "IndigoProjectionData", RendererWebGL2Constants.projectionBlockPointer, projectionUBOBuffer)
     WebGLHelper.bindUBO(gl2, program, "IndigoFrameData", RendererWebGL2Constants.frameDataBlockPointer, frameDataUBOBuffer)
+    WebGLHelper.bindUBO(gl2, program, "IndigoDynamicLightingData", RendererWebGL2Constants.lightDataBlockPointer, lightDataUBOBuffer)
 
     // Instance attributes
     // vec4 a_matRotateScale

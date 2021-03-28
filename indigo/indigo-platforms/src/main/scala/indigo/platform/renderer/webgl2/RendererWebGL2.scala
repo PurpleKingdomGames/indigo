@@ -61,6 +61,8 @@ final class RendererWebGL2(
     gl2.createBuffer()
   private val frameDataUBOBuffer: WebGLBuffer =
     gl2.createBuffer()
+  private val lightDataUBOBuffer: WebGLBuffer =
+    gl2.createBuffer()
 
   private val vao = gl2.createVertexArray()
 
@@ -88,7 +90,7 @@ final class RendererWebGL2(
   def screenHeight: Int = lastHeight
 
   private val layerRenderInstance: LayerRenderer =
-    new LayerRenderer(gl2, textureLocations, config.maxBatchSize, projectionUBOBuffer, frameDataUBOBuffer)
+    new LayerRenderer(gl2, textureLocations, config.maxBatchSize, projectionUBOBuffer, frameDataUBOBuffer, lightDataUBOBuffer)
   private val layerMergeRenderInstance: LayerMergeRenderer =
     new LayerMergeRenderer(gl2, frameDataUBOBuffer)
 
@@ -207,6 +209,10 @@ final class RendererWebGL2(
     var currentBlend: Blend = Blend.Normal
 
     sceneData.layers.foreach { layer =>
+      val lightData = Array[Float](0.0f, 0.0f, 0.0f, 1.0f)
+
+      WebGLHelper.attachUBOData(gl2, lightData, lightDataUBOBuffer)
+
       // Set the entity blend mode
       if (currentBlend != layer.entityBlend) {
         currentBlend = layer.entityBlend

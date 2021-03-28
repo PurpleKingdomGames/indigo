@@ -16,15 +16,16 @@ vec2 SCREEN_COORDS;
 float TIME;
 float ROTATION;
 
+vec4 AMBIENT_LIGHT;
+
 //<indigo-prepare>
 const float SCREEN_GAMMA = 2.2;
 
-float LIGHT_TYPE = 1.0;
+vec4 LIGHT_FLAGS = vec4(1.0, 1.0, 0.0, 0.0); // vec4(active, type, ???, ???)
 vec4 LIGHT_COLOR = vec4(0.0, 1.0, 0.0, 1.0);
 vec4 LIGHT_SPECULAR = vec4(1.0, 1.0, 0.0, 1.0);
 vec4 LIGHT_POSITION_ROTATION = vec4(0.0, 0.0, 0.25, 0.0);
 vec4 LIGHT_NEAR_FAR_ANGLE_ATTENUATION = vec4(0.0, 200.0, 45.0,150.0);
-// vec3 LIGHT_FLAGS = vec3(1.0, 1.0, 1.0); // emissive texture set, normal texture set, roughness texture set
 
 // layout (std140) uniform IndigoImageEffectsData {
 //   highp vec3 ALPHA_SATURATION_OVERLAYTYPE;
@@ -86,8 +87,12 @@ void calculateDirectionLight(vec4 normalTexture, vec4 specularTexture, out vec4 
 }
 
 void prepare(){
+
   // Texture order: albedo, emissive, normal, roughness
 
+  // Initialise values
+  lightAcc = AMBIENT_LIGHT;
+  specularAcc = vec4(0.0);
   emissiveColor = vec4(0.0, 0.0, 0.0, 1.0);
   normalColor = vec4(0.5, 0.5, 1.0, 1.0);
   roughnessColor = vec4(0.0, 0.0, 0.0, 1.0);
@@ -115,38 +120,40 @@ float timeToRadians(float t) {
 void light(){
   // TODO: Ignore / do no work on any light that is too far away.
 
-  LIGHT_POSITION_ROTATION = vec4(LIGHT_POSITION_ROTATION.xyz, timeToRadians(TIME)); //TODO: Remove
+  if(LIGHT_FLAGS.x > 0.0) { // light is active
+    LIGHT_POSITION_ROTATION = vec4(LIGHT_POSITION_ROTATION.xyz, timeToRadians(TIME)); //TODO: Remove
 
-  vec4 lightResult = vec4(0.0);
-  vec4 specularResult = vec4(0.0);
+    vec4 lightResult = vec4(0.0);
+    vec4 specularResult = vec4(0.0);
 
-  // 0 = ambient, 1 = direction, 2 = point, 3 = spot
-  int lightType = int(round(LIGHT_TYPE));
+    // 0 = ambient, 1 = direction, 2 = point, 3 = spot
+    int lightType = int(round(LIGHT_FLAGS.y));
 
-  switch(lightType) {
-    case 0:
-      //
-      break;
+    switch(lightType) {
+      case 0:
+        //
+        break;
 
-    case 1:
-      calculateDirectionLight(normalColor, roughnessColor, lightResult, specularResult);
-      break;
+      case 1:
+        calculateDirectionLight(normalColor, roughnessColor, lightResult, specularResult);
+        break;
 
-    case 2:
-      //
-      break;
+      case 2:
+        //
+        break;
 
-    case 3:
-      //
-      break;
+      case 3:
+        //
+        break;
 
-    default:
-      //
-      break;
+      default:
+        //
+        break;
+    }
+
+    specularAcc = specularAcc + specularResult;
+    lightAcc = lightAcc + lightResult;
   }
-
-  specularAcc = specularAcc + specularResult;
-  lightAcc = lightAcc + lightResult;
 }
 //</indigo-light>
 
