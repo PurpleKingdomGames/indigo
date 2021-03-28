@@ -16,7 +16,11 @@ final case class PointLight(
     height: Double,
     color: RGB,
     power: Double,
-    attenuation: Int
+    specular: RGB,
+    specularPower: Double,
+    attenuation: Int,
+    near: Int,
+    far: Int
 ) extends Light {
   def moveTo(newPosition: Point): PointLight =
     this.copy(position = newPosition)
@@ -33,13 +37,28 @@ final case class PointLight(
   def withPower(newPower: Double): PointLight =
     this.copy(power = newPower)
 
+  def withSpecularColor(newColor: RGB): PointLight =
+    this.copy(specular = newColor)
+
+  def withSpecularPower(newPower: Double): PointLight =
+    this.copy(specularPower = newPower)
+
   def withAttenuation(distance: Int): PointLight =
     this.copy(attenuation = distance)
+
+  def withNear(distance: Int): PointLight =
+    this.copy(near = distance)
+
+  def withFar(distance: Int): PointLight =
+    this.copy(far = distance)
 }
 object PointLight {
 
   val default: PointLight =
-    apply(Point.zero, 100, RGB.White, 1.5d, 100)
+    PointLight(Point.zero, 1, RGB.White, 1.0d, RGB.White, 1.0d, 100, 0, 300)
+
+  def apply(position: Point, color: RGBA): PointLight =
+    PointLight(position, 1, color.toRGB, color.a, RGB.White, 1.0d, 100, 0, 300)
 
 }
 
@@ -48,6 +67,8 @@ final case class SpotLight(
     height: Double,
     color: RGB,
     power: Double,
+    specular: RGB,
+    specularPower: Double,
     attenuation: Int,
     angle: Radians,
     rotation: Radians,
@@ -55,37 +76,43 @@ final case class SpotLight(
     far: Int
 ) extends Light {
   def moveTo(newPosition: Point): SpotLight =
-    new SpotLight(newPosition, height, color, power, attenuation, angle, rotation, near, far)
+    this.copy(position = newPosition)
 
   def moveBy(amount: Point): SpotLight =
-    new SpotLight(position + amount, height, color, power, attenuation, angle, rotation, near, far)
+    this.copy(position = position + amount)
 
   def withHeight(newHeight: Double): SpotLight =
-    new SpotLight(position, newHeight, color, power, attenuation, angle, rotation, near, far)
-
-  def withNear(distance: Int): SpotLight =
-    new SpotLight(position, height, color, power, attenuation, angle, rotation, distance, far)
-
-  def withFar(distance: Int): SpotLight =
-    new SpotLight(position, height, color, power, attenuation, angle, rotation, near, distance)
+    this.copy(height = newHeight)
 
   def withColor(newColor: RGB): SpotLight =
-    new SpotLight(position, height, newColor, power, attenuation, angle, rotation, near, far)
+    this.copy(color = newColor)
 
   def withPower(newPower: Double): SpotLight =
-    new SpotLight(position, height, color, newPower, attenuation, angle, rotation, near, far)
+    this.copy(power = newPower)
+
+  def withSpecularColor(newColor: RGB): SpotLight =
+    this.copy(specular = newColor)
+
+  def withSpecularPower(newPower: Double): SpotLight =
+    this.copy(specularPower = newPower)
 
   def withAttenuation(distance: Int): SpotLight =
-    new SpotLight(position, height, color, power, distance, angle, rotation, near, far)
+    this.copy(attenuation = distance)
 
   def withAngle(newAngle: Radians): SpotLight =
-    new SpotLight(position, height, color, power, attenuation, newAngle, rotation, near, far)
+    this.copy(angle = newAngle)
 
   def rotateTo(newRotation: Radians): SpotLight =
-    new SpotLight(position, height, color, power, attenuation, angle, newRotation, near, far)
+    this.copy(rotation = newRotation)
 
   def rotateBy(amount: Radians): SpotLight =
-    new SpotLight(position, height, color, power, attenuation, angle, rotation + amount, near, far)
+    this.copy(rotation = rotation + amount)
+
+  def withNear(distance: Int): SpotLight =
+    this.copy(near = distance)
+
+  def withFar(distance: Int): SpotLight =
+    this.copy(far = distance)
 
   def lookAt(point: Point): SpotLight =
     lookDirection((point - position).toVector.normalise)
@@ -99,7 +126,10 @@ final case class SpotLight(
 object SpotLight {
 
   val default: SpotLight =
-    apply(Point.zero, 100, RGB.White, 1.5, 100, Radians.fromDegrees(45), Radians.zero, 10, 300)
+    SpotLight(Point.zero, 1, RGB.White, 1.0, RGB.White, 1.0, 100, Radians.fromDegrees(45), Radians.zero, 10, 300)
+
+  def apply(position: Point, color: RGBA): SpotLight =
+    SpotLight(position, 1, color.toRGB, color.a, RGB.White, 1.0, 100, Radians.fromDegrees(45), Radians.zero, 10, 300)
 
 }
 
@@ -129,8 +159,10 @@ final case class DirectionLight(
 object DirectionLight {
 
   val default: DirectionLight =
-    apply(100, RGB.White, 1.0, Radians.zero)
+    DirectionLight(1, RGB.White, 1.0, Radians.zero)
 
+  def apply(rotation: Radians, color: RGBA): DirectionLight =
+    DirectionLight(1, color.toRGB, color.a, rotation)
 }
 
 final case class AmbientLight(

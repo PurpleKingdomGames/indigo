@@ -7,6 +7,7 @@ import indigo.shared.datatypes.RGBA
 
 final case class DisplayLayer(
     entities: ListBuffer[DisplayEntity],
+    lightsData: Array[Float],
     bgColor: RGBA,
     magnification: Option[Int],
     depth: Int,
