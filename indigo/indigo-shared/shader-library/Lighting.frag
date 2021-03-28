@@ -93,15 +93,15 @@ void prepare(){
   roughnessColor = vec4(0.0, 0.0, 0.0, 1.0);
 
   if(LIGHT_EMISSIVE.x > 0.0) {
-    emissiveColor = mix(emissiveColor, CHANNEL_1, LIGHT_EMISSIVE.y);
+    emissiveColor = mix(emissiveColor, CHANNEL_1, CHANNEL_1.a * LIGHT_EMISSIVE.y);
   }
 
   if(LIGHT_NORMAL.x > 0.0) {
-    normalColor = mix(normalColor, CHANNEL_2, LIGHT_NORMAL.y);
+    normalColor = mix(normalColor, CHANNEL_2, CHANNEL_2.a * LIGHT_NORMAL.y);
   }
 
   if(LIGHT_ROUGHNESS.x > 0.0) {
-    roughnessColor = mix(roughnessColor, CHANNEL_3, LIGHT_ROUGHNESS.y);
+    roughnessColor = mix(roughnessColor, CHANNEL_3, CHANNEL_3.a * LIGHT_ROUGHNESS.y);
   }
 
 }
