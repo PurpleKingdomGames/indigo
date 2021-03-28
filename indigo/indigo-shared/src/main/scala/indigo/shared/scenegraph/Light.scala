@@ -4,16 +4,16 @@ import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.RGB
 import indigo.shared.datatypes.Vector2
+import indigo.shared.datatypes.RGBA
 
 sealed trait Light {
-  val height: Int
   val color: RGB
   val power: Double
 }
 
 final case class PointLight(
     position: Point,
-    height: Int,
+    height: Double,
     color: RGB,
     power: Double,
     attenuation: Int
@@ -24,7 +24,7 @@ final case class PointLight(
   def moveBy(amount: Point): PointLight =
     this.copy(position = position + amount)
 
-  def withHeight(newHeight: Int): PointLight =
+  def withHeight(newHeight: Double): PointLight =
     this.copy(height = newHeight)
 
   def withColor(newColor: RGB): PointLight =
@@ -45,7 +45,7 @@ object PointLight {
 
 final case class SpotLight(
     position: Point,
-    height: Int,
+    height: Double,
     color: RGB,
     power: Double,
     attenuation: Int,
@@ -60,7 +60,7 @@ final case class SpotLight(
   def moveBy(amount: Point): SpotLight =
     new SpotLight(position + amount, height, color, power, attenuation, angle, rotation, near, far)
 
-  def withHeight(newHeight: Int): SpotLight =
+  def withHeight(newHeight: Double): SpotLight =
     new SpotLight(position, newHeight, color, power, attenuation, angle, rotation, near, far)
 
   def withNear(distance: Int): SpotLight =
@@ -104,13 +104,13 @@ object SpotLight {
 }
 
 final case class DirectionLight(
-    height: Int,
+    height: Double,
     color: RGB,
     power: Double,
     rotation: Radians
 ) extends Light {
 
-  def withHeight(newHeight: Int): DirectionLight =
+  def withHeight(newHeight: Double): DirectionLight =
     this.copy(height = newHeight)
 
   def withColor(newColor: RGB): DirectionLight =
@@ -130,5 +130,27 @@ object DirectionLight {
 
   val default: DirectionLight =
     apply(100, RGB.White, 1.0, Radians.zero)
+
+}
+
+final case class AmbientLight(
+    color: RGB,
+    power: Double
+) extends Light {
+
+  def withColor(newColor: RGB): AmbientLight =
+    this.copy(color = newColor)
+
+  def withPower(newPower: Double): AmbientLight =
+    this.copy(power = newPower)
+
+}
+object AmbientLight {
+
+  val default: AmbientLight =
+    apply(RGB.White, 1.0)
+
+  def apply(color: RGBA): AmbientLight =
+    AmbientLight(color.toRGB, color.a)
 
 }
