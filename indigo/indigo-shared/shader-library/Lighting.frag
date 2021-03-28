@@ -16,22 +16,14 @@ vec2 SCREEN_COORDS;
 float TIME;
 float ROTATION;
 
+vec4 LIGHT_FLAGS; // vec4(active, type, unused, unused)
+vec4 LIGHT_COLOR;
+vec4 LIGHT_SPECULAR;
+vec4 LIGHT_POSITION_ROTATION;
+vec4 LIGHT_NEAR_FAR_ANGLE_ATTENUATION;
+
 //<indigo-prepare>
 const float SCREEN_GAMMA = 2.2;
-
-vec4 LIGHT_FLAGS = vec4(1.0, 1.0, 0.0, 0.0); // vec4(active, type, ???, ???)
-vec4 LIGHT_COLOR = vec4(0.0, 1.0, 0.0, 1.0);
-vec4 LIGHT_SPECULAR = vec4(1.0, 1.0, 0.0, 1.0);
-vec4 LIGHT_POSITION_ROTATION = vec4(0.0, 0.0, 0.25, 0.0);
-vec4 LIGHT_NEAR_FAR_ANGLE_ATTENUATION = vec4(0.0, 200.0, 45.0,150.0);
-
-// layout (std140) uniform IndigoImageEffectsData {
-//   highp vec3 ALPHA_SATURATION_OVERLAYTYPE;
-//   vec4 TINT;
-//   vec4 GRADIENT_FROM_TO;
-//   vec4 GRADIENT_FROM_COLOR;
-//   vec4 GRADIENT_TO_COLOR;
-// };
 
 layout (std140) uniform IndigoMaterialLightingData {
   highp vec2 LIGHT_EMISSIVE; // vec2(set?, amount)
@@ -111,15 +103,10 @@ void prepare(){
 //</indigo-prepare>
 
 //<indigo-light>
-float timeToRadians(float t) {
-  return TAU * mod(t * 0.5, 1.0);
-}
 
 void light(){
-  // TODO: Ignore / do no work on any light that is too far away.
 
   if(LIGHT_FLAGS.x > 0.0) { // light is active
-    LIGHT_POSITION_ROTATION = vec4(LIGHT_POSITION_ROTATION.xyz, timeToRadians(TIME)); //TODO: Remove
 
     vec4 lightResult = vec4(0.0);
     vec4 specularResult = vec4(0.0);
