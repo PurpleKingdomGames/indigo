@@ -450,4 +450,7 @@ package object indigo {
   type DirectionLight = shared.scenegraph.DirectionLight
   val DirectionLight: shared.scenegraph.DirectionLight.type = shared.scenegraph.DirectionLight
 
+  type AmbientLight = shared.scenegraph.AmbientLight
+  val AmbientLight: shared.scenegraph.AmbientLight.type = shared.scenegraph.AmbientLight
+
 }
