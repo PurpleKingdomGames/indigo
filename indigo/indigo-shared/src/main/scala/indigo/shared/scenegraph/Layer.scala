@@ -28,6 +28,7 @@ import indigo.shared.materials.BlendMaterial
   */
 final case class Layer(
     nodes: List[SceneNode],
+    lights: List[Light],
     key: Option[BindingKey],
     magnification: Option[Int],
     depth: Option[Depth],
@@ -53,6 +54,21 @@ final case class Layer(
     withNodes(nodes ++ moreNodes)
   def ++(moreNodes: List[SceneNode]): Layer =
     addNodes(moreNodes)
+
+  def noLights: Layer =
+    this.copy(lights = Nil)
+
+  def withLights(newLights: Light*): Layer =
+    withLights(newLights.toList)
+
+  def withLights(newLights: List[Light]): Layer =
+    this.copy(lights = newLights)
+
+  def addLights(newLights: Light*): Layer =
+    addLights(newLights.toList)
+
+  def addLights(newLights: List[Light]): Layer =
+    withLights(lights ++ newLights)
 
   def withMagnification(level: Int): Layer =
     this.copy(magnification = Option(Math.max(1, Math.min(256, level))))
@@ -87,24 +103,24 @@ final case class Layer(
 object Layer {
 
   def empty: Layer =
-    Layer(Nil, None, None, None, None, None)
+    Layer(Nil, Nil, None, None, None, None, None)
 
   def apply(nodes: SceneNode*): Layer =
-    Layer(nodes.toList, None, None, None, None, None)
+    Layer(nodes.toList, Nil, None, None, None, None, None)
 
   def apply(nodes: List[SceneNode]): Layer =
-    Layer(nodes, None, None, None, None, None)
+    Layer(nodes, Nil, None, None, None, None, None)
 
   def apply(key: BindingKey, nodes: List[SceneNode]): Layer =
-    Layer(nodes, Option(key), None, None, None, None)
+    Layer(nodes, Nil, Option(key), None, None, None, None)
 
   def apply(key: BindingKey, magnification: Int, depth: Depth)(nodes: SceneNode*): Layer =
-    Layer(nodes.toList, Option(key), Option(magnification), Option(depth), None, None)
+    Layer(nodes.toList, Nil, Option(key), Option(magnification), Option(depth), None, None)
 
   def apply(key: BindingKey): Layer =
-    Layer(Nil, Option(key), None, None, None, None)
+    Layer(Nil, Nil, Option(key), None, None, None, None)
 
   def apply(key: BindingKey, magnification: Int, depth: Depth): Layer =
-    Layer(Nil, Option(key), Option(magnification), Option(depth), None, None)
+    Layer(Nil, Nil, Option(key), Option(magnification), Option(depth), None, None)
 
 }
