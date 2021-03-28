@@ -66,6 +66,11 @@ vec2 CHANNEL_2_TEXTURE_COORDS; // Scaled texture coordinates
 vec2 CHANNEL_3_TEXTURE_COORDS; // Scaled texture coordinates
 vec2 SCREEN_COORDS;
 float ROTATION;
+vec4 LIGHT_FLAGS;
+vec4 LIGHT_COLOR;
+vec4 LIGHT_SPECULAR;
+vec4 LIGHT_POSITION_ROTATION;
+vec4 LIGHT_NEAR_FAR_ANGLE_ATTENUATION;
 
 // Constants
 const float PI = 3.141592653589793;
@@ -119,6 +124,12 @@ void main(void) {
 
   int lightCount = min(8, max(0, int(round(numOfLights))));
   for(int i = 0; i < lightCount; i++) {
+    LIGHT_FLAGS = lightFlags[i];
+    LIGHT_COLOR = lightColor[i];
+    LIGHT_SPECULAR = lightSpecular[i];
+    LIGHT_POSITION_ROTATION = lightPositionRotation[i];
+    LIGHT_NEAR_FAR_ANGLE_ATTENUATION = lightNearFarAngleAttenuation[i];
+
     light();
   }
 

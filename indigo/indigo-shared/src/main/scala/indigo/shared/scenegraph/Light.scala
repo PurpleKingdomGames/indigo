@@ -137,6 +137,8 @@ final case class DirectionLight(
     height: Double,
     color: RGB,
     power: Double,
+    specular: RGB,
+    specularPower: Double,
     rotation: Radians
 ) extends Light {
 
@@ -149,6 +151,12 @@ final case class DirectionLight(
   def withPower(newPower: Double): DirectionLight =
     this.copy(power = newPower)
 
+  def withSpecularColor(newColor: RGB): DirectionLight =
+    this.copy(specular = newColor)
+
+  def withSpecularPower(newPower: Double): DirectionLight =
+    this.copy(specularPower = newPower)
+
   def rotateTo(newRotation: Radians): DirectionLight =
     this.copy(rotation = newRotation)
 
@@ -159,10 +167,10 @@ final case class DirectionLight(
 object DirectionLight {
 
   val default: DirectionLight =
-    DirectionLight(1, RGB.White, 1.0, Radians.zero)
+    DirectionLight(1, RGB.White, 1.0, RGB.White, 1.0, Radians.zero)
 
   def apply(rotation: Radians, color: RGBA): DirectionLight =
-    DirectionLight(1, color.toRGB, color.a, rotation)
+    DirectionLight(1, color.toRGB, color.a, RGB.White, 1.0, rotation)
 }
 
 final case class AmbientLight(

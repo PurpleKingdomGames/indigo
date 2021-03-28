@@ -103,6 +103,28 @@ object SceneProcessor {
 
   val MaxLights: Int = 8
 
+  private val bareLightData: LightData =
+    LightData(
+      Array[Float](),
+      Array[Float](),
+      Array[Float](),
+      Array[Float](),
+      Array[Float]()
+    )
+
+  private val missingLightData: Map[Int, List[LightData]] =
+    (0 to 8).map { i =>
+      (i -> List.fill(i)(LightData.empty))
+    }.toMap
+
+  def makeLightsData(lights: List[Light]): Array[Float] = {
+    val limitedLights = lights.take(MaxLights)
+    val count         = limitedLights.length
+    val fullLights    = limitedLights.map(makeLightData) ++ missingLightData(MaxLights - count)
+
+    Array[Float](count.toFloat, 0.0f, 0.0f, 0.0f) ++ fullLights.foldLeft(bareLightData)(_ + _).toArray
+  }
+
   /*
     layout (std140) uniform IndigoDynamicLightingData {
       float numOfLights;
@@ -113,11 +135,6 @@ object SceneProcessor {
       vec4 lightNearFarAngleAttenuation[8];
     };
    */
-  def makeLightsData(lights: List[Light]): Array[Float] = {
-    val ls = lights.take(MaxLights)
-    Array[Float](ls.length.toFloat) ++ ls.foldLeft(LightData.empty)(_ + makeLightData(_)).toArray
-  }
-
   def makeLightData(light: Light): LightData =
     light match {
       case l: AmbientLight =>
@@ -133,7 +150,7 @@ object SceneProcessor {
         LightData(
           lightFlags = Array[Float](1.0f, 1.0f, 0.0f, 0.0f),
           lightColor = Array[Float](l.color.r.toFloat, l.color.g.toFloat, l.color.b.toFloat, l.power.toFloat),
-          lightSpecular = Array[Float](0.0f, 0.0f, 0.0f, 0.0f),
+          lightSpecular = Array[Float](l.specular.r.toFloat, l.specular.g.toFloat, l.specular.b.toFloat, l.specularPower.toFloat),
           lightPositionRotation = Array[Float](0.0f, 0.0f, l.height.toFloat, l.rotation.value.toFloat),
           lightNearFarAngleAttenuation = Array[Float](0.0f, 0.0f, 0.0f, 0.0f)
         )
