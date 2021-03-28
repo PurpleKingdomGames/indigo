@@ -17,6 +17,11 @@ layout (std140) uniform IndigoFrameData {
   vec2 VIEWPORT_SIZE; // Size of the viewport in pixels
 };
 
+
+layout (std140) uniform IndigoDynamicLightingData {
+  vec4 AMBIENT_LIGHT;
+};
+
 // Could be UBO?
 // Can be packed up.
 uniform int u_numOfLights; // max 16

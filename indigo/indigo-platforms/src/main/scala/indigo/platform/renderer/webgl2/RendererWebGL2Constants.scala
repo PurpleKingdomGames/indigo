@@ -6,6 +6,7 @@ object RendererWebGL2Constants {
   val projectionBlockPointer: Int  = 1
   val frameDataBlockPointer: Int   = 2
   val blendDataBlockPointer: Int   = 3
-  val customDataBlockPointer: Int  = 4
+  val lightDataBlockPointer: Int   = 4
+  val customDataBlockPointer: Int  = 5
 
 }
