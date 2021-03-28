@@ -16,8 +16,6 @@ vec2 SCREEN_COORDS;
 float TIME;
 float ROTATION;
 
-vec4 AMBIENT_LIGHT;
-
 //<indigo-prepare>
 const float SCREEN_GAMMA = 2.2;
 
@@ -91,7 +89,7 @@ void prepare(){
   // Texture order: albedo, emissive, normal, roughness
 
   // Initialise values
-  lightAcc = AMBIENT_LIGHT;
+  lightAcc = vec4(0.0);
   specularAcc = vec4(0.0);
   emissiveColor = vec4(0.0, 0.0, 0.0, 1.0);
   normalColor = vec4(0.5, 0.5, 1.0, 1.0);

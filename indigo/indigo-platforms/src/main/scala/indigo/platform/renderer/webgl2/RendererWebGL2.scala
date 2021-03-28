@@ -32,6 +32,8 @@ import indigo.shared.scenegraph.Blend
 import indigo.shared.scenegraph.BlendFactor
 import indigo.shared.shader.StandardShaders
 import indigo.shared.QuickCache
+import indigo.shared.platform.LightData
+import indigo.shared.platform.SceneProcessor
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
 final class RendererWebGL2(
@@ -117,6 +119,11 @@ final class RendererWebGL2(
   private var currentBlendEq: String = "add"
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var currentBlendFactors: (BlendFactor, BlendFactor) = (Blend.Normal.src, Blend.Normal.dst)
+
+  private val missingLightsDataLookUp: Map[Int, Array[Float]] =
+    (0 to 8).map { i =>
+      i -> Array.fill(i)(LightData.emptyData).flatten
+    }.toMap
 
   def init(shaders: Set[RawShaderCode]): Unit = {
 
@@ -209,9 +216,10 @@ final class RendererWebGL2(
     var currentBlend: Blend = Blend.Normal
 
     sceneData.layers.foreach { layer =>
-      val lightData = Array[Float](0.0f, 0.0f, 0.0f, 1.0f)
+      val lightCount = layer.lightsData.headOption.map(_.toInt).getOrElse(0)
+      val lightsData = layer.lightsData ++ missingLightsDataLookUp(SceneProcessor.MaxLights - lightCount)
 
-      WebGLHelper.attachUBOData(gl2, lightData, lightDataUBOBuffer)
+      WebGLHelper.attachUBOData(gl2, lightsData, lightDataUBOBuffer)
 
       // Set the entity blend mode
       if (currentBlend != layer.entityBlend) {

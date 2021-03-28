@@ -19,22 +19,33 @@ layout (std140) uniform IndigoFrameData {
 
 
 layout (std140) uniform IndigoDynamicLightingData {
-  vec4 AMBIENT_LIGHT;
+  float numOfLights;
+  vec4 lightFlags[8]; // vec4(active, type, ???, ???)
+  vec4 lightColor[8];
+  vec4 lightSpecular[8];
+  vec4 lightPositionRotation[8];
+  vec4 lightNearFarAngleAttenuation[8];
 };
 
 // Could be UBO?
 // Can be packed up.
-uniform int u_numOfLights; // max 16
-uniform int u_lightType[16];
-uniform vec3 u_lightColor[16];
-uniform vec2 u_lightPosition[16];
-uniform float u_lightRotation[16];
-uniform float u_lightAngle[16];
-uniform float u_lightHeight[16];
-uniform float u_lightNear[16];
-uniform float u_lightFar[16];
-uniform float u_lightPower[16];
-uniform float u_lightAttenuation[16];
+// uniform int u_numOfLights; // max 16
+// uniform int u_lightType[16];
+// uniform vec3 u_lightColor[16];
+// uniform vec2 u_lightPosition[16];
+// uniform float u_lightRotation[16];
+// uniform float u_lightAngle[16];
+// uniform float u_lightHeight[16];
+// uniform float u_lightNear[16];
+// uniform float u_lightFar[16];
+// uniform float u_lightPower[16];
+// uniform float u_lightAttenuation[16];
+
+// vec4 LIGHT_FLAGS = vec4(1.0, 1.0, 0.0, 0.0); // vec4(active, type, ???, ???)
+// vec4 LIGHT_COLOR = vec4(0.0, 1.0, 0.0, 1.0);
+// vec4 LIGHT_SPECULAR = vec4(1.0, 1.0, 0.0, 1.0);
+// vec4 LIGHT_POSITION_ROTATION = vec4(0.0, 0.0, 0.25, 0.0);
+// vec4 LIGHT_NEAR_FAR_ANGLE_ATTENUATION = vec4(0.0, 200.0, 45.0,150.0);
 
 // ** Varyings **
 in vec4 v_channel_coords_01;
@@ -106,9 +117,7 @@ void main(void) {
   // Lighting - prepare, light, composite
   prepare();
 
-  // int lightCount = min(16, max(0, u_numOfLights));
-  int lightCount = 1; // TODO: Remove! Tmp, while testing lights
-  // TODO: if lights > 0
+  int lightCount = min(8, max(0, int(round(numOfLights))));
   for(int i = 0; i < lightCount; i++) {
     light();
   }
