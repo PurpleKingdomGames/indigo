@@ -4,7 +4,7 @@ import indigo.shared.assets.AssetName
 import indigo.shared.shader.StandardShaders
 import indigo.shared.shader.Uniform
 import indigo.shared.shader.UniformBlock
-import indigo.shared.shader.ShaderPrimitive.{vec3, vec4}
+import indigo.shared.shader.ShaderPrimitive.{vec2, vec3, vec4}
 import indigo.shared.datatypes.RGBA
 import indigo.shared.datatypes.Fill
 import indigo.shared.shader.ShaderPrimitive
@@ -39,14 +39,38 @@ object Material {
     def withAlbedo(newAlbedo: AssetName): Lit =
       this.copy(albedo = newAlbedo)
 
-    def withEmission(emissiveAssetName: AssetName, amount: Double): Lit =
+    def withEmissive(emissiveAssetName: AssetName, amount: Double): Lit =
       this.copy(emissive = Some(Texture(emissiveAssetName, amount)))
+    def withEmissiveAsset(emissiveAssetName: AssetName): Lit =
+      this.copy(emissive =
+        emissive
+          .map(_.withAsset(emissiveAssetName))
+          .orElse(Some(Texture(emissiveAssetName, 1.0)))
+      )
+    def withEmissiveAmount(amount: Double): Lit =
+      this.copy(emissive = emissive.map(_.withAmount(amount)))
 
     def withNormal(normalAssetName: AssetName, amount: Double): Lit =
       this.copy(normal = Some(Texture(normalAssetName, amount)))
+    def withNormalAsset(normalAssetName: AssetName): Lit =
+      this.copy(normal =
+        normal
+          .map(_.withAsset(normalAssetName))
+          .orElse(Some(Texture(normalAssetName, 1.0)))
+      )
+    def withNormalAmount(amount: Double): Lit =
+      this.copy(normal = normal.map(_.withAmount(amount)))
 
     def withRoughness(roughnessAssetName: AssetName, amount: Double): Lit =
       this.copy(roughness = Some(Texture(roughnessAssetName, amount)))
+    def withRoughnessAsset(roughnessAssetName: AssetName): Lit =
+      this.copy(roughness =
+        roughness
+          .map(_.withAsset(roughnessAssetName))
+          .orElse(Some(Texture(roughnessAssetName, 1.0)))
+      )
+    def withRoughnessAmount(amount: Double): Lit =
+      this.copy(roughness = roughness.map(_.withAmount(amount)))
 
     def lit: Lit =
       this.copy(isLit = true)
@@ -62,10 +86,17 @@ object Material {
             UniformBlock(
               "IndigoMaterialLightingData",
               List(
-                Uniform("EMISSIVE_NORMAL_ROUGHNESS") -> vec3(
-                  emissive.map(_.amount).getOrElse(-1.0),
-                  normal.map(_.amount).getOrElse(-1.0),
-                  roughness.map(_.amount).getOrElse(-1.0)
+                Uniform("LIGHT_EMISSIVE") -> vec2(
+                  emissive.map(_ => 1.0).getOrElse(-1.0),
+                  emissive.map(_.amount).getOrElse(0.0)
+                ),
+                Uniform("LIGHT_NORMAL") -> vec2(
+                  normal.map(_ => 1.0).getOrElse(-1.0),
+                  normal.map(_.amount).getOrElse(0.0)
+                ),
+                Uniform("LIGHT_ROUGHNESS") -> vec2(
+                  roughness.map(_ => 1.0).getOrElse(-1.0),
+                  roughness.map(_.amount).getOrElse(0.0)
                 )
               )
             )
@@ -219,4 +250,10 @@ object Material {
 
 }
 
-final case class Texture(assetName: AssetName, amount: Double)
+final case class Texture(assetName: AssetName, amount: Double) {
+  def withAsset(newAssetName: AssetName): Texture =
+    this.copy(assetName = newAssetName)
+
+  def withAmount(newAmount: Double): Texture =
+    this.copy(amount = newAmount)
+}

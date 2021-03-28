@@ -19,11 +19,26 @@ float ROTATION;
 //<indigo-prepare>
 const float SCREEN_GAMMA = 2.2;
 
+float LIGHT_TYPE = 1.0;
 vec4 LIGHT_COLOR = vec4(0.0, 1.0, 0.0, 1.0);
 vec4 LIGHT_SPECULAR = vec4(1.0, 1.0, 0.0, 1.0);
 vec4 LIGHT_POSITION_ROTATION = vec4(0.0, 0.0, 0.25, 0.0);
 vec4 LIGHT_NEAR_FAR_ANGLE_ATTENUATION = vec4(0.0, 200.0, 45.0,150.0);
-vec4 LIGHT_FLAGS = vec4(1.0, 1.0, 1.0, 1.0); // light type, emissive texture set, normal texture set, roughness texture set
+// vec3 LIGHT_FLAGS = vec3(1.0, 1.0, 1.0); // emissive texture set, normal texture set, roughness texture set
+
+// layout (std140) uniform IndigoImageEffectsData {
+//   highp vec3 ALPHA_SATURATION_OVERLAYTYPE;
+//   vec4 TINT;
+//   vec4 GRADIENT_FROM_TO;
+//   vec4 GRADIENT_FROM_COLOR;
+//   vec4 GRADIENT_TO_COLOR;
+// };
+
+layout (std140) uniform IndigoMaterialLightingData {
+  highp vec2 LIGHT_EMISSIVE; // vec2(set?, amount)
+  highp vec2 LIGHT_NORMAL; // vec2(set?, amount)
+  highp vec2 LIGHT_ROUGHNESS; // vec2(set?, amount)
+};
 
 vec4 normalColor;
 vec4 roughnessColor;
@@ -73,24 +88,20 @@ void calculateDirectionLight(vec4 normalTexture, vec4 specularTexture, out vec4 
 void prepare(){
   // Texture order: albedo, emissive, normal, roughness
 
-  float emissiveTextureSet = LIGHT_FLAGS.y;
-  float normalTextureSet = LIGHT_FLAGS.z;
-  float roughnessTextureSet = LIGHT_FLAGS.w;
-
   emissiveColor = vec4(0.0, 0.0, 0.0, 1.0);
   normalColor = vec4(0.5, 0.5, 1.0, 1.0);
   roughnessColor = vec4(0.0, 0.0, 0.0, 1.0);
 
-  if(emissiveTextureSet > 0.0) {
-    emissiveColor = mix(emissiveColor, CHANNEL_1, CHANNEL_1.a);
+  if(LIGHT_EMISSIVE.x > 0.0) {
+    emissiveColor = mix(emissiveColor, CHANNEL_1, LIGHT_EMISSIVE.y);
   }
 
-  if(normalTextureSet > 0.0) {
-    normalColor = mix(normalColor, CHANNEL_2, CHANNEL_2.a);
+  if(LIGHT_NORMAL.x > 0.0) {
+    normalColor = mix(normalColor, CHANNEL_2, LIGHT_NORMAL.y);
   }
 
-  if(roughnessTextureSet > 0.0) {
-    roughnessColor = mix(roughnessColor, CHANNEL_3, CHANNEL_3.a);
+  if(LIGHT_ROUGHNESS.x > 0.0) {
+    roughnessColor = mix(roughnessColor, CHANNEL_3, LIGHT_ROUGHNESS.y);
   }
 
 }
@@ -110,7 +121,7 @@ void light(){
   vec4 specularResult = vec4(0.0);
 
   // 0 = ambient, 1 = direction, 2 = point, 3 = spot
-  int lightType = int(round(LIGHT_FLAGS.x));
+  int lightType = int(round(LIGHT_TYPE));
 
   switch(lightType) {
     case 0:
