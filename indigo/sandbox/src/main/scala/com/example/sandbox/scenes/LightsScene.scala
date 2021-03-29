@@ -68,7 +68,8 @@ object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
         .withMagnification(3)
         // .withAmbientLight(RGBA.White.withAmount(0.1))
         .withLights(
-          DirectionLight(1.0, RGB.Cyan, 1.2, RGB.White, 1.5, Radians.fromSeconds(context.running * Seconds(0.25))) //Radians.fromDegrees(30))//,
+          AmbientLight(RGBA.Blue.withAlpha(0.25)),
+          // DirectionLight(1.0, RGB.Cyan, 1.2, RGB.White, 1.5, Radians.fromSeconds(context.running * Seconds(0.25))) //Radians.fromDegrees(30))//,
           // PointLight.default
           //   .moveTo(viewCenter + Point(50, 0))
           //   .withAttenuation(50)
