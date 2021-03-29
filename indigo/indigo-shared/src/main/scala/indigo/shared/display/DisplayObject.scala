@@ -50,7 +50,6 @@ final case class DisplayObject(
     channelOffset2Y: Float,
     channelOffset3X: Float,
     channelOffset3Y: Float,
-    isLit: Float,
     shaderId: ShaderId,
     shaderUniformData: Option[DisplayObjectUniformData]
 ) extends DisplayEntity {
@@ -72,7 +71,6 @@ object DisplayObject {
       channelOffset1: Vector2,
       channelOffset2: Vector2,
       channelOffset3: Vector2,
-      isLit: Float,
       shaderId: ShaderId,
       shaderUniformData: Option[DisplayObjectUniformData]
   ): DisplayObject =
@@ -93,7 +91,6 @@ object DisplayObject {
       channelOffset2.y.toFloat,
       channelOffset3.x.toFloat,
       channelOffset3.y.toFloat,
-      isLit,
       shaderId,
       shaderUniformData
     )
