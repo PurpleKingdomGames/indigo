@@ -85,6 +85,10 @@ void calculateDirectionLight(vec4 normalTexture, vec4 specularTexture, out vec4 
   calculateLight(lightAmount, lightDir, specularPower, specularTexture, normalTexture, outColor, outSpecular);
 }
 
+void calculateAmbientLight(out vec4 outColor) {
+  outColor = vec4(LIGHT_COLOR * LIGHT_POWER, LIGHT_POWER);
+}
+
 void prepare(){
 
   // Texture order: albedo, emissive, normal, roughness
@@ -123,7 +127,7 @@ void light(){
     // 0 = ambient, 1 = direction, 2 = point, 3 = spot
     switch(LIGHT_TYPE) {
       case 0:
-        //
+        calculateAmbientLight(lightResult);
         break;
 
       case 1:
