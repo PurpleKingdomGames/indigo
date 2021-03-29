@@ -16,11 +16,19 @@ vec2 SCREEN_COORDS;
 float TIME;
 float ROTATION;
 
-vec4 LIGHT_FLAGS; // vec4(active, type, unused, unused)
-vec4 LIGHT_COLOR;
-vec4 LIGHT_SPECULAR;
-vec4 LIGHT_POSITION_ROTATION;
-vec4 LIGHT_NEAR_FAR_ANGLE_ATTENUATION;
+int LIGHT_ACTIVE;
+int LIGHT_TYPE;
+vec3 LIGHT_COLOR;
+float LIGHT_POWER;
+vec3 LIGHT_SPECULAR_COLOR;
+float LIGHT_SPECULAR_POWER;
+vec2 LIGHT_POSITION;
+float LIGHT_HEIGHT;
+float LIGHT_ROTATION;
+float LIGHT_NEAR;
+float LIGHT_FAR;
+float LIGHT_ANGLE;
+float LIGHT_ATTENUATION;
 
 //<indigo-prepare>
 const float SCREEN_GAMMA = 2.2;
@@ -65,13 +73,13 @@ void calculateLight(in float lightAmount,
   vec4 colorGammaCorrected = pow(color, vec4(1.0 / SCREEN_GAMMA));
 
   outColor = colorGammaCorrected;
-  outSpecular = vec4(LIGHT_SPECULAR.rgb * specular, specular);
+  outSpecular = vec4(LIGHT_SPECULAR_COLOR * specular, specular);
 }
 
 void calculateDirectionLight(vec4 normalTexture, vec4 specularTexture, out vec4 outColor, out vec4 outSpecular) {
-  float lightAmount = clamp(LIGHT_POSITION_ROTATION.z, 0.0, 1.0) * clamp(LIGHT_COLOR.a, 0.0, 1.0);
-  vec3 lightDir = normalize(vec3(sin(LIGHT_POSITION_ROTATION.w), cos(LIGHT_POSITION_ROTATION.w), 0.0));
-  float specularPower = LIGHT_SPECULAR.a;
+  float lightAmount = clamp(LIGHT_HEIGHT, 0.0, 1.0) * clamp(LIGHT_POWER, 0.0, 1.0);
+  vec3 lightDir = normalize(vec3(sin(LIGHT_ROTATION), cos(LIGHT_ROTATION), 0.0));
+  float specularPower = LIGHT_SPECULAR_POWER;
 
   calculateLight(lightAmount, lightDir, specularPower, specularTexture, normalTexture, outColor, outSpecular);
 }
@@ -106,15 +114,13 @@ void prepare(){
 
 void light(){
 
-  if(LIGHT_FLAGS.x > 0.0) { // light is active
+  if(LIGHT_ACTIVE == 1) { // light is active
 
     vec4 lightResult = vec4(0.0);
     vec4 specularResult = vec4(0.0);
 
     // 0 = ambient, 1 = direction, 2 = point, 3 = spot
-    int lightType = int(round(LIGHT_FLAGS.y));
-
-    switch(lightType) {
+    switch(LIGHT_TYPE) {
       case 0:
         //
         break;
