@@ -277,7 +277,6 @@ final class DisplayObjectConversions(
       channelOffset1 = offset,
       channelOffset2 = offset,
       channelOffset3 = offset,
-      isLit = 0.0f,
       shaderId = shader.shaderId,
       shaderUniformData = uniformData
     )
@@ -327,7 +326,6 @@ final class DisplayObjectConversions(
       channelOffset1 = frameInfo.offsetToCoords(channelOffset1),
       channelOffset2 = frameInfo.offsetToCoords(channelOffset2),
       channelOffset3 = frameInfo.offsetToCoords(channelOffset3),
-      isLit = 0.0f,
       shaderId = shaderId,
       shaderUniformData = uniformData
     )
@@ -372,7 +370,6 @@ final class DisplayObjectConversions(
       channelOffset1 = frameInfo.offsetToCoords(emissiveOffset),
       channelOffset2 = frameInfo.offsetToCoords(normalOffset),
       channelOffset3 = frameInfo.offsetToCoords(specularOffset),
-      isLit = 0.0f, // if (leaf.material.isLit) 1.0f else 0.0f,
       shaderId = shaderId,
       shaderUniformData = uniformData
     )
@@ -421,7 +418,6 @@ final class DisplayObjectConversions(
       channelOffset1 = frameInfo.offsetToCoords(emissiveOffset),
       channelOffset2 = frameInfo.offsetToCoords(normalOffset),
       channelOffset3 = frameInfo.offsetToCoords(specularOffset),
-      isLit = 0.0f, // if (material.isLit) 1.0f else 0.0f,
       shaderId = shaderId,
       shaderUniformData = uniformData
     )
@@ -487,7 +483,6 @@ final class DisplayObjectConversions(
               channelOffset1 = frameInfo.offsetToCoords(emissiveOffset),
               channelOffset2 = frameInfo.offsetToCoords(normalOffset),
               channelOffset3 = frameInfo.offsetToCoords(specularOffset),
-              isLit = 0.0f, // if (fontInfo.fontSpriteSheet.material.isLit) 1.0f else 0.0f,
               shaderId = shaderId,
               shaderUniformData = uniformData
             )
