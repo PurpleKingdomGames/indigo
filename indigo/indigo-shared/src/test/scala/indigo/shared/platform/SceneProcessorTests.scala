@@ -45,7 +45,7 @@ class SceneProcessorTests extends munit.FunSuite {
   test("convert an direction light to UBO data Array[Float]") {
 
     val light: Light =
-      DirectionLight(0.75, RGB.Cyan, 0.5, Radians(0.25))
+      DirectionLight(0.75, RGB.Cyan, 0.5, RGB.White, 1.0, Radians(0.25))
 
     val actual: LightData =
       SceneProcessor.makeLightData(light)
@@ -54,7 +54,7 @@ class SceneProcessorTests extends munit.FunSuite {
       LightData(
         Array[Float](1.0f, 1.0f, 0.0f, 0.0f),   // lightFlags
         Array[Float](0.0f, 1.0f, 1.0f, 0.5f),   // lightColor
-        Array[Float](0.0f, 0.0f, 0.0f, 0.0f),   // lightSpecular
+        Array[Float](1.0f, 1.0f, 1.0f, 1.0f),   // lightSpecular
         Array[Float](0.0f, 0.0f, 0.75f, 0.25f), // lightPositionRotation
         Array[Float](0.0f, 0.0f, 0.0f, 0.0f)    // lightNearFarAngleAttenuation
       )
@@ -67,7 +67,7 @@ class SceneProcessorTests extends munit.FunSuite {
     val lights: List[Light] =
       List(
         AmbientLight(RGBA.Red.withAmount(0.5)),
-        DirectionLight(0.75, RGB.Cyan, 0.5, Radians(0.25)),
+        DirectionLight(0.75, RGB.Cyan, 0.5, RGB.White, 1.0, Radians(0.25)),
         AmbientLight(RGBA.Green.withAmount(0.8))
       )
 
@@ -75,28 +75,34 @@ class SceneProcessorTests extends munit.FunSuite {
       SceneProcessor.makeLightsData(lights)
 
     val expected: Array[Float] =
-      Array[Float](3) ++
-        (LightData(
-          Array[Float](1.0f, 0.0f, 0.0f, 0.0f), // lightFlags
-          Array[Float](1.0f, 0.0f, 0.0f, 0.5f), // lightColor
-          Array[Float](0.0f, 0.0f, 0.0f, 0.0f), // lightSpecular
-          Array[Float](0.0f, 0.0f, 0.0f, 0.0f), // lightPositionRotation
-          Array[Float](0.0f, 0.0f, 0.0f, 0.0f)  // lightNearFarAngleAttenuation
-        ) +
-          LightData(
-            Array[Float](1.0f, 1.0f, 0.0f, 0.0f),   // lightFlags
-            Array[Float](0.0f, 1.0f, 1.0f, 0.5f),   // lightColor
-            Array[Float](0.0f, 0.0f, 0.0f, 0.0f),   // lightSpecular
-            Array[Float](0.0f, 0.0f, 0.75f, 0.25f), // lightPositionRotation
-            Array[Float](0.0f, 0.0f, 0.0f, 0.0f)    // lightNearFarAngleAttenuation
-          ) +
+      Array[Float](3, 0, 0, 0) ++ // first value, even though single float, requires space of vec4.
+        (
           LightData(
             Array[Float](1.0f, 0.0f, 0.0f, 0.0f), // lightFlags
-            Array[Float](0.0f, 1.0f, 0.0f, 0.8f), // lightColor
+            Array[Float](1.0f, 0.0f, 0.0f, 0.5f), // lightColor
             Array[Float](0.0f, 0.0f, 0.0f, 0.0f), // lightSpecular
             Array[Float](0.0f, 0.0f, 0.0f, 0.0f), // lightPositionRotation
             Array[Float](0.0f, 0.0f, 0.0f, 0.0f)  // lightNearFarAngleAttenuation
-          )).toArray
+          ) +
+            LightData(
+              Array[Float](1.0f, 1.0f, 0.0f, 0.0f),   // lightFlags
+              Array[Float](0.0f, 1.0f, 1.0f, 0.5f),   // lightColor
+              Array[Float](1.0f, 1.0f, 1.0f, 1.0f),   // lightSpecular
+              Array[Float](0.0f, 0.0f, 0.75f, 0.25f), // lightPositionRotation
+              Array[Float](0.0f, 0.0f, 0.0f, 0.0f)    // lightNearFarAngleAttenuation
+            ) +
+            LightData(
+              Array[Float](1.0f, 0.0f, 0.0f, 0.0f), // lightFlags
+              Array[Float](0.0f, 1.0f, 0.0f, 0.8f), // lightColor
+              Array[Float](0.0f, 0.0f, 0.0f, 0.0f), // lightSpecular
+              Array[Float](0.0f, 0.0f, 0.0f, 0.0f), // lightPositionRotation
+              Array[Float](0.0f, 0.0f, 0.0f, 0.0f)  // lightNearFarAngleAttenuation
+            ) + LightData.empty +                   // There are always 8 lights.
+            LightData.empty +
+            LightData.empty +
+            LightData.empty +
+            LightData.empty
+        ).toArray
 
     assertEquals(actual.toList.map(to2dp), expected.toList.map(to2dp))
   }
