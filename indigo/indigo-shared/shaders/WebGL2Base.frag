@@ -66,11 +66,20 @@ vec2 CHANNEL_2_TEXTURE_COORDS; // Scaled texture coordinates
 vec2 CHANNEL_3_TEXTURE_COORDS; // Scaled texture coordinates
 vec2 SCREEN_COORDS;
 float ROTATION;
-vec4 LIGHT_FLAGS;
-vec4 LIGHT_COLOR;
-vec4 LIGHT_SPECULAR;
-vec4 LIGHT_POSITION_ROTATION;
-vec4 LIGHT_NEAR_FAR_ANGLE_ATTENUATION;
+
+int LIGHT_ACTIVE;
+int LIGHT_TYPE;
+vec3 LIGHT_COLOR;
+float LIGHT_POWER;
+vec3 LIGHT_SPECULAR_COLOR;
+float LIGHT_SPECULAR_POWER;
+vec2 LIGHT_POSITION;
+float LIGHT_HEIGHT;
+float LIGHT_ROTATION;
+float LIGHT_NEAR;
+float LIGHT_FAR;
+float LIGHT_ANGLE;
+float LIGHT_ATTENUATION;
 
 // Constants
 const float PI = 3.141592653589793;
@@ -124,11 +133,19 @@ void main(void) {
 
   int lightCount = min(8, max(0, int(round(numOfLights))));
   for(int i = 0; i < lightCount; i++) {
-    LIGHT_FLAGS = lightFlags[i];
-    LIGHT_COLOR = lightColor[i];
-    LIGHT_SPECULAR = lightSpecular[i];
-    LIGHT_POSITION_ROTATION = lightPositionRotation[i];
-    LIGHT_NEAR_FAR_ANGLE_ATTENUATION = lightNearFarAngleAttenuation[i];
+    LIGHT_ACTIVE = int(round(lightFlags[i].x));
+    LIGHT_TYPE = int(round(lightFlags[i].y));
+    LIGHT_COLOR = lightColor[i].rgb;
+    LIGHT_POWER = lightColor[i].a;
+    LIGHT_SPECULAR_COLOR = lightSpecular[i].rgb;
+    LIGHT_SPECULAR_POWER = lightSpecular[i].a;
+    LIGHT_POSITION = lightPositionRotation[i].xy;
+    LIGHT_HEIGHT = lightPositionRotation[i].z;
+    LIGHT_ROTATION = lightPositionRotation[i].w;
+    LIGHT_NEAR = lightNearFarAngleAttenuation[i].x;
+    LIGHT_FAR = lightNearFarAngleAttenuation[i].y;
+    LIGHT_ANGLE = lightNearFarAngleAttenuation[i].z;
+    LIGHT_ATTENUATION = lightNearFarAngleAttenuation[i].w;
 
     light();
   }
