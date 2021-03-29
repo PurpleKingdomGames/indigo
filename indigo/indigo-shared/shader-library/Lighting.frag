@@ -89,7 +89,7 @@ void prepare(){
   // Texture order: albedo, emissive, normal, roughness
 
   // Initialise values
-  lightAcc = vec4(0.0);
+  lightAcc = vec4(0.0, 0.0, 0.0, 1.0);
   specularAcc = vec4(0.0);
   emissiveColor = vec4(0.0, 0.0, 0.0, 1.0);
   normalColor = vec4(0.5, 0.5, 1.0, 1.0);
