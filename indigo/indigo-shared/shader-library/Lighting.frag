@@ -77,6 +77,10 @@ void calculateLight(in float lightAmount,
   outSpecular = vec4(LIGHT_SPECULAR_COLOR * specular, specular);
 }
 
+void calculateAmbientLight(out vec4 outColor) {
+  outColor = vec4(LIGHT_COLOR * LIGHT_POWER, LIGHT_POWER);
+}
+
 void calculateDirectionLight(vec4 normalTexture, vec4 specularTexture, out vec4 outColor, out vec4 outSpecular) {
   float lightAmount = clamp(LIGHT_HEIGHT, 0.0, 1.0) * clamp(LIGHT_POWER, 0.0, 1.0);
   vec3 lightDir = normalize(vec3(sin(LIGHT_ROTATION), cos(LIGHT_ROTATION), 0.0));
@@ -85,8 +89,30 @@ void calculateDirectionLight(vec4 normalTexture, vec4 specularTexture, out vec4 
   calculateLight(lightAmount, lightDir, specularPower, normalTexture, specularTexture, outColor, outSpecular);
 }
 
-void calculateAmbientLight(out vec4 outColor) {
-  outColor = vec4(LIGHT_COLOR * LIGHT_POWER, LIGHT_POWER);
+void calculatePointLight(vec4 normalTexture, vec4 specularTexture, out vec4 outColor, out vec4 outSpecular) {
+  // LIGHT_COUNT = LIGHT_COUNT;
+  // LIGHT_ACTIVE = LIGHT_ACTIVE;
+  // LIGHT_TYPE = LIGHT_TYPE;
+  // LIGHT_COLOR = vec3(1.0);
+  // LIGHT_POWER = 1.0;
+  LIGHT_SPECULAR_COLOR = vec3(1.0);
+  LIGHT_SPECULAR_POWER = 3.0;
+  LIGHT_POSITION = vec2(0.0, 1.0);
+  // LIGHT_HEIGHT = 1.0;
+  // LIGHT_ROTATION = 0.0;
+  // LIGHT_NEAR = 0.0;
+  // LIGHT_FAR = 20.0;
+  // LIGHT_ANGLE = 0.0;
+  LIGHT_ATTENUATION = 0.075;
+
+  vec3 pixelPosition = vec3(SCREEN_COORDS, 1.0);
+  vec3 lightPosition = vec3(LIGHT_POSITION, 1.0);
+  float lightAmount = clamp(1.0 - (distance(pixelPosition, lightPosition) / LIGHT_ATTENUATION), 0.0, 1.0);
+  float specularPower = lightAmount * LIGHT_SPECULAR_POWER;
+  lightAmount = lightAmount * lightAmount * LIGHT_HEIGHT * clamp(LIGHT_POWER, 0.0, 1.0);
+  vec3 lightDir = -(normalize(lightPosition - pixelPosition));
+
+  calculateLight(lightAmount, lightDir, specularPower, normalTexture, specularTexture, outColor, outSpecular);
 }
 
 void prepare(){
@@ -135,7 +161,7 @@ void light(){
         break;
 
       case 2:
-        //
+        calculatePointLight(normalColor, roughnessColor, lightResult, specularResult);
         break;
 
       case 3:

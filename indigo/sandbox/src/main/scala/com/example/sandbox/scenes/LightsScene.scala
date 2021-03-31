@@ -54,12 +54,12 @@ object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
   //   }
 
   def present(context: FrameContext[SandboxStartupData], model: SandboxGameModel, viewModel: SandboxViewModel): Outcome[SceneUpdateFragment] = {
-    val viewCenter: Point = context.startUpData.viewportCenter / 3 * 2
+    // val viewCenter: Point = context.startUpData.viewportCenter / 3 * 2
 
     Outcome(
       SceneUpdateFragment.empty
         .addLayer(
-          graphic.moveTo(viewCenter) //.rotateTo(Radians.fromSeconds(context.running * Seconds(0.25)))
+          graphic.moveTo(Point.zero).withRef(Point.zero) //.rotateTo(Radians.fromSeconds(context.running * Seconds(0.25)))
           // graphic.moveBy(-60, 0).withMaterial(LightingAssets.junctionBoxMaterialOff),
           // graphic.moveBy(-30, 0).withMaterial(LightingAssets.junctionBoxMaterialGlass),
           // graphic.moveBy(30, 0).withMaterial(LightingAssets.junctionBoxMaterialFlat),
@@ -68,12 +68,15 @@ object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
         .withMagnification(3)
         // .withAmbientLight(RGBA.White.withAmount(0.1))
         .withLights(
-          AmbientLight(RGBA.Blue.withAlpha(0.25)),
+          // AmbientLight(RGBA.Blue.withAlpha(0.25)),
           // DirectionLight(1.0, RGB.Cyan, 1.2, RGB.White, 1.5, Radians.fromSeconds(context.running * Seconds(0.25))) //Radians.fromDegrees(30))//,
-          // PointLight.default
-          //   .moveTo(viewCenter + Point(50, 0))
-          //   .withAttenuation(50)
-          //   .withColor(RGB.Green)
+          PointLight.default
+            // .moveTo(Point(3))
+            .moveTo(Point.zero)
+            .withAttenuation(15)
+            // .moveTo(viewCenter + Point(50, 0))
+            // .withAttenuation(50)
+            // .withColor(RGB.Green)
           // PointLight.default
           //   .moveTo(config.viewport.center + Point(-50, 0))
           //   .withAttenuation(50)
