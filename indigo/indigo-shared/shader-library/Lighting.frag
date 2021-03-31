@@ -56,8 +56,8 @@ mat4 rotationZ(in float angle) {
 void calculateLight(in float lightAmount,
                     in vec3 lightDir,
                     in float specularPower,
-                    in vec4 specularTexture,
                     in vec4 normalTexture,
+                    in vec4 specularTexture,
                     out vec4 outColor,
                     out vec4 outSpecular) {
   float shininess = (specularTexture.r + specularTexture.g + specularTexture.b) / 3.0;
@@ -82,7 +82,7 @@ void calculateDirectionLight(vec4 normalTexture, vec4 specularTexture, out vec4 
   vec3 lightDir = normalize(vec3(sin(LIGHT_ROTATION), cos(LIGHT_ROTATION), 0.0));
   float specularPower = LIGHT_SPECULAR_POWER;
 
-  calculateLight(lightAmount, lightDir, specularPower, specularTexture, normalTexture, outColor, outSpecular);
+  calculateLight(lightAmount, lightDir, specularPower, normalTexture, specularTexture, outColor, outSpecular);
 }
 
 void calculateAmbientLight(out vec4 outColor) {
