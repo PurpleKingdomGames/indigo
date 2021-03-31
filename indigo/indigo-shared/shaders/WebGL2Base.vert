@@ -107,7 +107,7 @@ void main(void) {
   // vec2 screenCoords = (gl_Position.xy * 0.5 + 0.5) * (vec2(1));
   vec2 screenCoords = gl_Position.xy * 0.5 + 0.5;
 
-  v_screenCoordsRotation = vec3(screenCoords, ROTATION);
+  v_screenCoordsRotation = vec3(vec2(screenCoords.x, 1.0 - screenCoords.y), ROTATION);
 
   v_channel_coords_01 = vec4(CHANNEL_0_TEXTURE_COORDS, CHANNEL_1_TEXTURE_COORDS);
   v_channel_coords_23 = vec4(CHANNEL_2_TEXTURE_COORDS, CHANNEL_3_TEXTURE_COORDS);

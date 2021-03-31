@@ -53,9 +53,8 @@ object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
   //       .withColor(RGB.Cyan)
   //   }
 
-  def present(context: FrameContext[SandboxStartupData], model: SandboxGameModel, viewModel: SandboxViewModel): Outcome[SceneUpdateFragment] = {
+  def present(context: FrameContext[SandboxStartupData], model: SandboxGameModel, viewModel: SandboxViewModel): Outcome[SceneUpdateFragment] =
     // val viewCenter: Point = context.startUpData.viewportCenter / 3 * 2
-
     Outcome(
       SceneUpdateFragment.empty
         .addLayer(
@@ -71,12 +70,15 @@ object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
           // AmbientLight(RGBA.Blue.withAlpha(0.25)),
           // DirectionLight(1.0, RGB.Cyan, 1.2, RGB.White, 1.5, Radians.fromSeconds(context.running * Seconds(0.25))) //Radians.fromDegrees(30))//,
           PointLight.default
+            .withSpecularColor(RGB.White)
+            .withSpecularPower(3.0)
             // .moveTo(Point(3))
+            // .moveTo(Signal.Orbit(Point.zero, 2.0).affectTime(0.25).at(context.running).toPoint)
             .moveTo(Point.zero)
             .withAttenuation(15)
-            // .moveTo(viewCenter + Point(50, 0))
-            // .withAttenuation(50)
-            // .withColor(RGB.Green)
+          // .moveTo(viewCenter + Point(50, 0))
+          // .withAttenuation(50)
+          // .withColor(RGB.Green)
           // PointLight.default
           //   .moveTo(config.viewport.center + Point(-50, 0))
           //   .withAttenuation(50)
@@ -100,7 +102,6 @@ object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
       //     .withCrop(10, 10, 20, 20)
       // )
     )
-  }
 
   // val animationsKey: AnimationKey =
   //   AnimationKey("anims")
