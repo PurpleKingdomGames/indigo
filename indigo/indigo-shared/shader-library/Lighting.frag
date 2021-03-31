@@ -90,21 +90,6 @@ void calculateDirectionLight(vec4 normalTexture, vec4 specularTexture, out vec4 
 }
 
 void calculatePointLight(vec4 normalTexture, vec4 specularTexture, out vec4 outColor, out vec4 outSpecular) {
-  // LIGHT_COUNT = LIGHT_COUNT;
-  // LIGHT_ACTIVE = LIGHT_ACTIVE;
-  // LIGHT_TYPE = LIGHT_TYPE;
-  // LIGHT_COLOR = vec3(1.0);
-  // LIGHT_POWER = 1.0;
-  // LIGHT_SPECULAR_COLOR = vec3(1.0);
-  // LIGHT_SPECULAR_POWER = 3.0;
-  // LIGHT_POSITION = vec2(0.0, 0.0);
-  // LIGHT_HEIGHT = 1.0;
-  // LIGHT_ROTATION = 0.0;
-  // LIGHT_NEAR = 0.0;
-  // LIGHT_FAR = 20.0;
-  // LIGHT_ANGLE = 0.0;
-  LIGHT_ATTENUATION = 0.075;
-
   vec3 pixelPosition = vec3(SCREEN_COORDS, 0.0);
   vec3 lightPosition = vec3(LIGHT_POSITION, 0.0);
   float lightAmount = clamp(1.0 - (distance(pixelPosition, lightPosition) / LIGHT_ATTENUATION), 0.0, 1.0);

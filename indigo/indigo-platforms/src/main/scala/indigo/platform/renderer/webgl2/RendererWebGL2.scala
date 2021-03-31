@@ -200,7 +200,7 @@ final class RendererWebGL2(
 
     resize(cNc.canvas, cNc.magnification)
 
-    val frameData = Array[Float](runningTime.value.toFloat, lastWidth.toFloat, lastHeight.toFloat)
+    val frameData = Array[Float](runningTime.value.toFloat, 0.0f, lastWidth.toFloat, lastHeight.toFloat)
 
     WebGLHelper.attachUBOData(gl2, orthographicProjectionMatrixNoMag, projectionUBOBuffer)
     WebGLHelper.attachUBOData(gl2, frameData, frameDataUBOBuffer)
