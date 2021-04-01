@@ -89,10 +89,13 @@ object Signal {
   def CosWave: Signal[Double] =
     Signal(t => Math.cos(Radians.fromSeconds(t).value))
 
-  def Orbit(center: Point, distance: Double): Signal[Vector2] =
+  def Orbit(center: Point, distance: Double, offset: Radians): Signal[Vector2] =
     Signal { t =>
-      Vector2((Math.sin(Radians.fromSeconds(t).value) * distance) + center.x, (Math.cos(Radians.fromSeconds(t).value) * distance) + center.y)
+      Vector2((Math.sin((Radians.fromSeconds(t) + offset).value) * distance) + center.x, (Math.cos((Radians.fromSeconds(t) + offset).value) * distance) + center.y)
     }
+
+  def Orbit(center: Point, distance: Double): Signal[Vector2] =
+    Orbit(center, distance, Radians(0))
 
   def SmoothPulse: Signal[Double] =
     Signal.CosWave.map { a =>
