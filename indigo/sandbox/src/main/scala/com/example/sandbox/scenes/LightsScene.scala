@@ -53,27 +53,41 @@ object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
   //       .withColor(RGB.Cyan)
   //   }
 
+  val grid: List[Graphic] = {
+    val rows    = 4
+    val columns = 6
+    val offset  = Point(0)
+
+    (0 to rows).toList.flatMap { row =>
+      (0 to columns).toList.map { column =>
+        graphic.withRef(Point(0)).moveTo(Point(column * 40, row * 40) + offset)
+      }
+    }
+  }
+
   def present(context: FrameContext[SandboxStartupData], model: SandboxGameModel, viewModel: SandboxViewModel): Outcome[SceneUpdateFragment] =
     // val viewCenter: Point = context.startUpData.viewportCenter / 3 * 2
     Outcome(
       SceneUpdateFragment.empty
         .addLayer(
-          graphic.moveTo(Point.zero).withRef(Point.zero) //.rotateTo(Radians.fromSeconds(context.running * Seconds(0.25)))
+          grid
+          // graphic.moveTo(Point.zero).withRef(Point.zero) //.rotateTo(Radians.fromSeconds(context.running * Seconds(0.25)))
           // graphic.moveBy(-60, 0).withMaterial(LightingAssets.junctionBoxMaterialOff),
           // graphic.moveBy(-30, 0).withMaterial(LightingAssets.junctionBoxMaterialGlass),
           // graphic.moveBy(30, 0).withMaterial(LightingAssets.junctionBoxMaterialFlat),
           // graphic.moveBy(60, 0).withMaterial(LightingAssets.junctionBoxMaterialFlat.unlit)
         )
-        .withMagnification(3)
+        .withMagnification(2)
         // .withAmbientLight(RGBA.White.withAmount(0.1))
         .withLights(
-          // AmbientLight(RGBA.Blue.withAlpha(0.25)),
-          // DirectionLight(1.0, RGB.Cyan, 1.2, RGB.White, 1.5, Radians.fromSeconds(context.running * Seconds(0.25))) //Radians.fromDegrees(30))//,
+          AmbientLight(RGBA.Blue.withAlpha(0.2)),
+          DirectionLight(0.1, RGB.Cyan, 0.8, RGB.Cyan, 1.5, Radians(-0.75)),
           PointLight.default
             .withSpecularColor(RGB.White)
-            .withSpecularPower(3.0)
+            .withSpecularPower(2.0)
             // .moveTo(Point(3))
-            .moveTo(Signal.Orbit(Point(5), 15.0).affectTime(0.5).at(context.running).toPoint)
+            .moveTo(context.mouse.position)
+            // .moveTo(Signal.Orbit(Point(5), 15.0).affectTime(0.5).at(context.running).toPoint)
             // .moveTo(Point(10, 5))
             .withAttenuation(40)
           // .moveTo(viewCenter + Point(50, 0))
