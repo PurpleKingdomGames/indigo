@@ -120,7 +120,7 @@ void calculateSpotLight(vec4 normalTexture, vec4 specularTexture, out vec4 outCo
 
   if(distanceToLight > near && distanceToLight < far) {
 
-    vec2 lookAtRelativeToLight = vec2(sin(LIGHT_ROTATION), cos(LIGHT_ROTATION));
+    vec2 lookAtRelativeToLight = vec2(sin(LIGHT_ROTATION), -cos(LIGHT_ROTATION));
     float angleToLookAt = atan(lookAtRelativeToLight.y, lookAtRelativeToLight.x) + PI;
     float anglePlus = mod(angleToLookAt + viewingAngleBy2, 2.0 * PI);
     float angleMinus = mod(angleToLookAt - viewingAngleBy2, 2.0 * PI);
