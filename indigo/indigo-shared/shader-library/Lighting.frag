@@ -82,7 +82,7 @@ void calculateAmbientLight(out vec4 outColor) {
 }
 
 void calculateDirectionLight(vec4 normalTexture, vec4 specularTexture, out vec4 outColor, out vec4 outSpecular) {
-  float lightAmount = clamp(LIGHT_HEIGHT, 0.0, 1.0) * clamp(LIGHT_POWER, 0.0, 1.0);
+  float lightAmount = LIGHT_HEIGHT * LIGHT_POWER;
   vec3 lightDir = normalize(vec3(sin(LIGHT_ROTATION), cos(LIGHT_ROTATION), 0.0));
   float specularPower = LIGHT_SPECULAR_POWER;
 
@@ -94,7 +94,7 @@ void calculatePointLight(vec4 normalTexture, vec4 specularTexture, out vec4 outC
   vec3 lightPosition = vec3(LIGHT_POSITION, 0.0);
   float lightAmount = clamp(1.0 - (distance(pixelPosition, lightPosition) / LIGHT_ATTENUATION), 0.0, 1.0);
   float specularPower = lightAmount * LIGHT_SPECULAR_POWER;
-  lightAmount = lightAmount * lightAmount * LIGHT_HEIGHT * clamp(LIGHT_POWER, 0.0, 1.0);
+  lightAmount = lightAmount * lightAmount * LIGHT_HEIGHT * LIGHT_POWER;
   vec3 lightDir = normalize(lightPosition - pixelPosition);
 
   calculateLight(lightAmount, lightDir, specularPower, normalTexture, specularTexture, outColor, outSpecular);
@@ -105,7 +105,7 @@ void calculateSpotLight(vec4 normalTexture, vec4 specularTexture, out vec4 outCo
   vec3 lightPosition = vec3(LIGHT_POSITION, 0.0);
   float lightAmount = clamp(1.0 - (distance(pixelPosition, lightPosition) / LIGHT_ATTENUATION), 0.0, 1.0);
   float specularPower = lightAmount * LIGHT_SPECULAR_POWER;
-  lightAmount = lightAmount * lightAmount * LIGHT_HEIGHT * clamp(LIGHT_POWER, 0.0, 1.0);
+  lightAmount = lightAmount * lightAmount * LIGHT_HEIGHT * LIGHT_POWER;
   vec3 lightDir = normalize(lightPosition - pixelPosition);
 
   float near = LIGHT_NEAR;
