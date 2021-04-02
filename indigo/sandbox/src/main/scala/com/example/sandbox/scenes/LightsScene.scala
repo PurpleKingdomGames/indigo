@@ -37,22 +37,6 @@ object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
     Graphic(Rectangle(0, 0, 40, 40), 1, LightingAssets.junctionBoxMaterialOn)
       .withRef(20, 20)
 
-  // def orbitingLight(distance: Int): Signal[PointLight] =
-  //   Signal.Orbit(config.viewport.center, distance.toDouble).map { vec =>
-  //     PointLight.default
-  //       .moveTo(vec.toPoint)
-  //       .withAttenuation(150)
-  //       .withColor(RGB.Magenta)
-  //   }
-
-  // def pulsingLight: Signal[PointLight] =
-  //   Signal.SmoothPulse.map { amount =>
-  //     PointLight.default
-  //       .moveTo(config.viewport.center + Point(30, -60))
-  //       .withAttenuation((amount * 70).toInt)
-  //       .withColor(RGB.Cyan)
-  //   }
-
   val grid: List[Graphic] = {
     val rows    = 4
     val columns = 6
