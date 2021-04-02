@@ -209,7 +209,7 @@ void composite() {
   float emmisiveAlpha = clamp(emissiveColor.r + emissiveColor.g + emissiveColor.b, 0.0, 1.0);
   vec4 emissiveResult = vec4(emissiveColor.rgb * emmisiveAlpha, emmisiveAlpha);
 
-  vec4 colorLightSpec = mix(COLOR * lightAcc, specularAcc, specularAcc.a * COLOR.a);
+  vec4 colorLightSpec = vec4(COLOR.rgb * (lightAcc.rgb + specularAcc.rgb), COLOR.a);
 
   COLOR = mix(colorLightSpec, emissiveResult, emissiveResult.a);
 }
