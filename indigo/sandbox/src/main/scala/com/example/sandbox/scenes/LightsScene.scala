@@ -56,25 +56,23 @@ object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
         .withMagnification(2)
         .withLights(
           AmbientLight(RGBA.Blue.withAlpha(0.2)),
-          DirectionLight(0.1, RGB.Cyan, 0.8, RGB.Cyan, 1.5, Radians(-0.75)),
+          DirectionLight(RGBA.Cyan.withAmount(0.1), RGBA.Cyan.withAmount(1.5), Radians.zero),
           PointLight.default
-            .withSpecularColor(RGB.White)
-            .withSpecularPower(2.0)
+            .withSpecular(RGBA.White.withAmount(2.0))
             .moveTo(context.mouse.position)
             .withAttenuation(40),
           SpotLight.default
-            .withColor(RGB.Yellow)
+            .withColor(RGBA.Yellow)
             .moveTo(Point(10))
-            .rotateBy(Radians.fromDegrees(45))
-            .withHeight(1)
-            .withPower(1.0)
-            .withSpecularColor(RGB(1, 1, 0.3))
-            .withSpecularPower(2)
-            .withAttenuation(300),
+            .rotateBy(Radians.fromDegrees(135))
+            .withSpecular(RGBA(1, 1, 0.3, 2.0))
+            .withAttenuation(200)
+            .withAngle(Radians.fromDegrees(45))
+            .withNear(5)
+            .withFar(200),
           PointLight.default
-            .withColor(RGB.Red)
-            .withSpecularColor(RGB.Red)
-            .withSpecularPower(1.0)
+            .withColor(RGBA.Red)
+            .withSpecular(RGBA.Red)
             .withAttenuation(60)
             .moveTo(
               Signal
@@ -84,9 +82,8 @@ object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
                 .toPoint
             ),
           PointLight.default
-            .withColor(RGB.Green)
-            .withSpecularColor(RGB.Green)
-            .withSpecularPower(1.0)
+            .withColor(RGBA.Green)
+            .withSpecular(RGBA.Green)
             .withAttenuation(60)
             .moveTo(
               Signal
@@ -96,9 +93,8 @@ object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
                 .toPoint
             ),
           PointLight.default
-            .withColor(RGB.Blue)
-            .withSpecularColor(RGB.Blue)
-            .withSpecularPower(1.0)
+            .withColor(RGBA.Blue)
+            .withSpecular(RGBA.Blue)
             .withAttenuation(60)
             .moveTo(
               Signal

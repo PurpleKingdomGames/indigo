@@ -149,27 +149,27 @@ object SceneProcessor {
       case l: DirectionLight =>
         LightData(
           lightFlags = Array[Float](1.0f, 1.0f, 0.0f, 0.0f),
-          lightColor = Array[Float](l.color.r.toFloat, l.color.g.toFloat, l.color.b.toFloat, l.power.toFloat),
-          lightSpecular = Array[Float](l.specular.r.toFloat, l.specular.g.toFloat, l.specular.b.toFloat, l.specularPower.toFloat),
-          lightPositionRotation = Array[Float](0.0f, 0.0f, l.height.toFloat, l.rotation.value.toFloat),
+          lightColor = Array[Float](l.color.r.toFloat, l.color.g.toFloat, l.color.b.toFloat, l.color.a.toFloat),
+          lightSpecular = Array[Float](l.specular.r.toFloat, l.specular.g.toFloat, l.specular.b.toFloat, l.specular.a.toFloat),
+          lightPositionRotation = Array[Float](0.0f, 0.0f, 0.0f, l.rotation.value.toFloat),
           lightNearFarAngleAttenuation = Array[Float](0.0f, 0.0f, 0.0f, 0.0f)
         )
 
       case l: PointLight =>
         LightData(
           lightFlags = Array[Float](1.0f, 2.0f, 0.0f, 0.0f),
-          lightColor = Array[Float](l.color.r.toFloat, l.color.g.toFloat, l.color.b.toFloat, l.power.toFloat),
-          lightSpecular = Array[Float](l.specular.r.toFloat, l.specular.g.toFloat, l.specular.b.toFloat, l.specularPower.toFloat),
-          lightPositionRotation = Array[Float](l.position.x.toFloat, l.position.y.toFloat, l.height.toFloat, 0.0f),
+          lightColor = Array[Float](l.color.r.toFloat, l.color.g.toFloat, l.color.b.toFloat, l.color.a.toFloat),
+          lightSpecular = Array[Float](l.specular.r.toFloat, l.specular.g.toFloat, l.specular.b.toFloat, l.specular.a.toFloat),
+          lightPositionRotation = Array[Float](l.position.x.toFloat, l.position.y.toFloat, 0.0f, 0.0f),
           lightNearFarAngleAttenuation = Array[Float](l.near.toFloat, l.far.toFloat, 0.0f, l.attenuation.toFloat)
         )
 
       case l: SpotLight =>
         LightData(
           lightFlags = Array[Float](1.0f, 3.0f, 0.0f, 0.0f),
-          lightColor = Array[Float](l.color.r.toFloat, l.color.g.toFloat, l.color.b.toFloat, l.power.toFloat),
-          lightSpecular = Array[Float](l.specular.r.toFloat, l.specular.g.toFloat, l.specular.b.toFloat, l.specularPower.toFloat),
-          lightPositionRotation = Array[Float](l.position.x.toFloat, l.position.y.toFloat, l.height.toFloat, l.rotation.value.toFloat),
+          lightColor = Array[Float](l.color.r.toFloat, l.color.g.toFloat, l.color.b.toFloat, l.color.a.toFloat),
+          lightSpecular = Array[Float](l.specular.r.toFloat, l.specular.g.toFloat, l.specular.b.toFloat, l.specular.a.toFloat),
+          lightPositionRotation = Array[Float](l.position.x.toFloat, l.position.y.toFloat, 0.0f, l.rotation.value.toFloat),
           lightNearFarAngleAttenuation = Array[Float](l.near.toFloat, l.far.toFloat, l.angle.value.toFloat, l.attenuation.toFloat)
         )
 
