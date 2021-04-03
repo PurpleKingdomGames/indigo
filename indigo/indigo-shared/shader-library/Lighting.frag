@@ -87,35 +87,44 @@ void calculateDirectionLight(vec4 normalTexture, vec4 specularTexture, out vec4 
 }
 
 void calculatePointLight(vec4 normalTexture, vec4 specularTexture, out vec4 outColor, out vec4 outSpecular) {
+  // -- spot and point light are identical here --
   vec3 pixelPosition = vec3(SCREEN_COORDS, 0.0);
   vec3 lightPosition = vec3(LIGHT_POSITION, 0.0);
   float lightAmount = clamp(1.0 - (distance(pixelPosition, lightPosition) / LIGHT_ATTENUATION), 0.0, 1.0);
   float specularPower = lightAmount * LIGHT_SPECULAR.a;
   lightAmount = lightAmount * lightAmount * LIGHT_COLOR.a;
   vec3 lightDir = normalize(lightPosition - pixelPosition);
-
-  calculateLight(lightAmount, lightDir, specularPower, normalTexture, specularTexture, outColor, outSpecular);
-}
-
-void calculateSpotLight(vec4 normalTexture, vec4 specularTexture, out vec4 outColor, out vec4 outSpecular) {
-  vec3 pixelPosition = vec3(SCREEN_COORDS, 0.0);
-  vec3 lightPosition = vec3(LIGHT_POSITION, 0.0);
-  float lightAmount = clamp(1.0 - (distance(pixelPosition, lightPosition) / LIGHT_ATTENUATION), 0.0, 1.0);
-  float specularPower = lightAmount * LIGHT_SPECULAR.a;
-  lightAmount = lightAmount * lightAmount * LIGHT_COLOR.a;
-  vec3 lightDir = normalize(lightPosition - pixelPosition);
-
-  float near = LIGHT_NEAR;
-  float far = LIGHT_FAR;
-  float viewingAngle = LIGHT_ANGLE;
-  float viewingAngleBy2 = viewingAngle / 2.0;
 
   float distanceToLight = distance(SCREEN_COORDS, LIGHT_POSITION);
 
   outColor = vec4(0.0);
   outSpecular = vec4(0.0);
+  // -- spot and point light are identical here --
 
-  if(distanceToLight > near && distanceToLight < far) {
+  if(distanceToLight > LIGHT_NEAR && distanceToLight < LIGHT_FAR) {
+    calculateLight(lightAmount, lightDir, specularPower, normalTexture, specularTexture, outColor, outSpecular);
+  }
+}
+
+void calculateSpotLight(vec4 normalTexture, vec4 specularTexture, out vec4 outColor, out vec4 outSpecular) {
+  // -- spot and point light are identical here --
+  vec3 pixelPosition = vec3(SCREEN_COORDS, 0.0);
+  vec3 lightPosition = vec3(LIGHT_POSITION, 0.0);
+  float lightAmount = clamp(1.0 - (distance(pixelPosition, lightPosition) / LIGHT_ATTENUATION), 0.0, 1.0);
+  float specularPower = lightAmount * LIGHT_SPECULAR.a;
+  lightAmount = lightAmount * lightAmount * LIGHT_COLOR.a;
+  vec3 lightDir = normalize(lightPosition - pixelPosition);
+
+  float distanceToLight = distance(SCREEN_COORDS, LIGHT_POSITION);
+
+  outColor = vec4(0.0);
+  outSpecular = vec4(0.0);
+  // -- spot and point light are identical here --
+
+  if(distanceToLight > LIGHT_NEAR && distanceToLight < LIGHT_FAR) {
+
+    float viewingAngle = LIGHT_ANGLE;
+    float viewingAngleBy2 = viewingAngle / 2.0;
 
     vec2 lookAtRelativeToLight = vec2(sin(LIGHT_ROTATION), -cos(LIGHT_ROTATION));
     float angleToLookAt = atan(lookAtRelativeToLight.y, lookAtRelativeToLight.x) + PI;
