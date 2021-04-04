@@ -26,7 +26,9 @@ float LIGHT_ROTATION;
 float LIGHT_NEAR;
 float LIGHT_FAR;
 float LIGHT_ANGLE;
-float LIGHT_ATTENUATION;
+float LIGHT_INTENSITY;
+int LIGHT_FAR_CUT_OFF;
+int LIGHT_FALLOFF_TYPE;
 
 //<indigo-prepare>
 const float SCREEN_GAMMA = 2.2;
@@ -87,21 +89,60 @@ void calculateDirectionLight(vec4 normalTexture, vec4 specularTexture, out vec4 
 }
 
 void calculatePointLight(vec4 normalTexture, vec4 specularTexture, out vec4 outColor, out vec4 outSpecular) {
-  // -- spot and point light are identical here --
+  // -- spot and point light should identical from here... --
   vec3 pixelPosition = vec3(SCREEN_COORDS, 0.0);
   vec3 lightPosition = vec3(LIGHT_POSITION, 0.0);
-  float lightAmount = clamp(1.0 - (distance(pixelPosition, lightPosition) / LIGHT_ATTENUATION), 0.0, 1.0);
-  float specularPower = lightAmount * LIGHT_SPECULAR.a;
-  lightAmount = lightAmount * lightAmount * LIGHT_COLOR.a;
   vec3 lightDir = normalize(lightPosition - pixelPosition);
+
+  float boundedDistance = clamp(1.0 - ((distance(pixelPosition, lightPosition) - LIGHT_NEAR) / LIGHT_FAR), 0.0, 1.0);
+
+  float lightAmount = 0.0;
+
+  // !!!! TMP
+  LIGHT_TYPE = 2;
+  // LIGHT_INTENSITY = 1.0; // Smooth
+  LIGHT_INTENSITY = 500.0; // linear
+  // LIGHT_INTENSITY = 1.0; // Smooth
+  LIGHT_FAR_CUT_OFF = 0;
+  // !!!!
+
+  // 0 = smooth, 1 = linear, 2 = quadratic
+  switch(LIGHT_TYPE) {
+    case 0:
+      // Smooth
+      lightAmount = pow(LIGHT_INTENSITY * boundedDistance, 2.0);
+      break;
+
+    case 1:
+      // Linear (inverse-linear)
+      lightAmount = LIGHT_INTENSITY * (1.0 / (distance(pixelPosition, lightPosition) - LIGHT_NEAR));
+      break;
+
+    case 2:
+      // Quadratic
+      lightAmount = LIGHT_INTENSITY * (1.0 / pow((distance(pixelPosition, lightPosition) - LIGHT_NEAR), 2.0));
+      break;
+
+    default:
+      //
+      break;
+  }
+
+  if(LIGHT_FAR_CUT_OFF == 0) {
+    boundedDistance = 1.0; // Light attenuates forever.
+  }
+
+  lightAmount = lightAmount * boundedDistance * LIGHT_COLOR.a;
+
+  float specularPower = lightAmount * LIGHT_SPECULAR.a;
 
   float distanceToLight = distance(SCREEN_COORDS, LIGHT_POSITION);
 
   outColor = vec4(0.0);
   outSpecular = vec4(0.0);
-  // -- spot and point light are identical here --
 
-  if(distanceToLight > LIGHT_NEAR && distanceToLight < LIGHT_FAR) {
+  if(distanceToLight > LIGHT_NEAR && (LIGHT_FAR_CUT_OFF == 0 || distanceToLight < LIGHT_FAR)) {
+    // -- spot and point light should identical ...to here --
     calculateLight(lightAmount, lightDir, specularPower, normalTexture, specularTexture, outColor, outSpecular);
   }
 }
@@ -110,7 +151,7 @@ void calculateSpotLight(vec4 normalTexture, vec4 specularTexture, out vec4 outCo
   // -- spot and point light are identical here --
   vec3 pixelPosition = vec3(SCREEN_COORDS, 0.0);
   vec3 lightPosition = vec3(LIGHT_POSITION, 0.0);
-  float lightAmount = clamp(1.0 - (distance(pixelPosition, lightPosition) / LIGHT_ATTENUATION), 0.0, 1.0);
+  float lightAmount = clamp(1.0 - (distance(pixelPosition, lightPosition) / LIGHT_FAR), 0.0, 1.0);
   float specularPower = lightAmount * LIGHT_SPECULAR.a;
   lightAmount = lightAmount * lightAmount * LIGHT_COLOR.a;
   vec3 lightDir = normalize(lightPosition - pixelPosition);

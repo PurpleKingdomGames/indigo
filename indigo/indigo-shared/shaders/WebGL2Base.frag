@@ -20,11 +20,11 @@ layout (std140) uniform IndigoFrameData {
 
 layout (std140) uniform IndigoDynamicLightingData {
   float numOfLights;
-  vec4 lightFlags[8]; // vec4(active, type, ???, ???)
+  vec4 lightFlags[8]; // vec4(active, type, useFar?, fallOffType?)
   vec4 lightColor[8];
   vec4 lightSpecular[8];
-  vec4 lightPositionRotation[8];
-  vec4 lightNearFarAngleAttenuation[8];
+  vec4 lightPositionRotation[8]; // vec4(x, y, ????, rotation)
+  vec4 lightNearFarAngleIntensity[8]; // vec4(near, far, angle, intensity)
 };
 
 // ** Varyings **
@@ -57,7 +57,9 @@ float LIGHT_ROTATION;
 float LIGHT_NEAR;
 float LIGHT_FAR;
 float LIGHT_ANGLE;
-float LIGHT_ATTENUATION;
+float LIGHT_INTENSITY;
+int LIGHT_FAR_CUT_OFF;
+int LIGHT_FALLOFF_TYPE;
 
 // Constants
 const float PI = 3.141592653589793;
@@ -114,14 +116,16 @@ void main(void) {
   for(int i = 0; i < LIGHT_COUNT; i++) {
     LIGHT_ACTIVE = int(round(lightFlags[i].x));
     LIGHT_TYPE = int(round(lightFlags[i].y));
+    LIGHT_FAR_CUT_OFF = int(round(lightFlags[i].z));
+    LIGHT_FALLOFF_TYPE = int(round(lightFlags[i].w));
     LIGHT_COLOR = lightColor[i];
     LIGHT_SPECULAR = lightSpecular[i];
     LIGHT_POSITION = lightPositionRotation[i].xy;
     LIGHT_ROTATION = lightPositionRotation[i].w;
-    LIGHT_NEAR = lightNearFarAngleAttenuation[i].x;
-    LIGHT_FAR = lightNearFarAngleAttenuation[i].y;
-    LIGHT_ANGLE = lightNearFarAngleAttenuation[i].z;
-    LIGHT_ATTENUATION = lightNearFarAngleAttenuation[i].w;
+    LIGHT_NEAR = lightNearFarAngleIntensity[i].x;
+    LIGHT_FAR = lightNearFarAngleIntensity[i].y;
+    LIGHT_ANGLE = lightNearFarAngleIntensity[i].z;
+    LIGHT_INTENSITY = lightNearFarAngleIntensity[i].w;
 
     light();
   }
