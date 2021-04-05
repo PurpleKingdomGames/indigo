@@ -124,11 +124,11 @@ class LayerRenderer(
     // UBO data
     val uniformHash: String = d.shaderUniformData.map(_.uniformHash).mkString
     if (uniformHash.nonEmpty && uniformHash != currentUniformHash)
-      d.shaderUniformData.zipWithIndex.foreach { case (ud, i) =>
-        val buff = customDataUBOBuffers.getOrElseUpdate(ud.uniformHash, gl2.createBuffer())
-        
-        WebGLHelper.attachUBOData(gl2, ud.data, buff)
-        if (d.shaderId != currentShader)
+      d.shaderUniformData.zipWithIndex.foreach {
+        case (ud, i) =>
+          val buff = customDataUBOBuffers.getOrElseUpdate(ud.uniformHash, gl2.createBuffer())
+
+          WebGLHelper.attachUBOData(gl2, ud.data, buff)
           WebGLHelper.bindUBO(gl2, activeShader, ud.blockName, RendererWebGL2Constants.customDataBlockOffsetPointer + i, buff)
       }
 
