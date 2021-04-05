@@ -17,8 +17,8 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
 
   private val displayObjectUBOBuffer: WebGLBuffer =
     gl2.createBuffer()
-  private val blendDataUBOBuffer: WebGLBuffer =
-    gl2.createBuffer()
+  private val customDataUBOBuffers: HashMap[String, WebGLBuffer] =
+    HashMap.empty[String, WebGLBuffer]
 
   // They're all blocks of 16, it's the only block length allowed in WebGL.
   private val displayObjectUBODataSize: Int = 16
@@ -50,7 +50,7 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
       isCanvasMerge: Boolean,
       customShaders: HashMap[ShaderId, WebGLProgram],
       shaderId: ShaderId,
-      shaderUniformData: Option[DisplayObjectUniformData]
+      shaderUniformData: List[DisplayObjectUniformData]
   ): Unit = {
 
     if (isCanvasMerge)
@@ -72,10 +72,11 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
       }
 
     // UBO data
-    shaderUniformData.foreach { ud =>
+    shaderUniformData.zipWithIndex.foreach { case (ud, i) =>
       if (ud.uniformHash.nonEmpty) {
-        WebGLHelper.attachUBOData(gl2, ud.data, blendDataUBOBuffer)
-        WebGLHelper.bindUBO(gl2, activeShader, ud.blockName, RendererWebGL2Constants.blendDataBlockPointer, blendDataUBOBuffer)
+        val buff = customDataUBOBuffers.getOrElseUpdate(ud.uniformHash, gl2.createBuffer())
+        WebGLHelper.attachUBOData(gl2, ud.data, buff)
+        WebGLHelper.bindUBO(gl2, activeShader, ud.blockName, RendererWebGL2Constants.blendDataBlockOffsetPointer + i, buff)
       }
     }
 

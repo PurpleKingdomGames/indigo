@@ -19,7 +19,7 @@ object BlendMaterial {
     def toShaderData: BlendShaderData =
       BlendShaderData(
         StandardShaders.NormalBlend.id,
-        None
+        Nil
       )
   }
 
@@ -27,7 +27,7 @@ object BlendMaterial {
     def toShaderData: BlendShaderData =
       BlendShaderData(
         StandardShaders.LightingBlend.id,
-        Some(
+        List(
           UniformBlock(
             "IndigoLightingBlendData",
             List(
@@ -96,7 +96,7 @@ object BlendMaterial {
 
       BlendShaderData(
         StandardShaders.BlendEffects.id,
-        Some(
+        List(
           UniformBlock(
             "IndigoBlendEffectsData",
             List(

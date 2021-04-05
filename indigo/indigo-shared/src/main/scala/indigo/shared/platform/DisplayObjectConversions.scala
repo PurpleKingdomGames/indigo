@@ -257,8 +257,8 @@ final class DisplayObjectConversions(
   def shapeToDisplayObject(leaf: Shape): DisplayObject = {
     val shader: ShaderData = leaf.toShaderData
     val offset             = Vector2.zero
-    val uniformData: Option[DisplayObjectUniformData] =
-      shader.uniformBlock.map { ub =>
+    val uniformData: List[DisplayObjectUniformData] =
+      shader.uniformBlocks.map { ub =>
         DisplayObjectUniformData(
           uniformHash = ub.uniformHash,
           blockName = ub.blockName,
@@ -306,8 +306,8 @@ final class DisplayObjectConversions(
 
     val shaderId = shader.shaderId
 
-    val uniformData: Option[DisplayObjectUniformData] =
-      shader.uniformBlock.map { ub =>
+    val uniformData: List[DisplayObjectUniformData] =
+      shader.uniformBlocks.map { ub =>
         DisplayObjectUniformData(
           uniformHash = ub.uniformHash,
           blockName = ub.blockName,
@@ -350,8 +350,8 @@ final class DisplayObjectConversions(
 
     val shaderId = shaderData.shaderId
 
-    val uniformData: Option[DisplayObjectUniformData] =
-      shaderData.uniformBlock.map { ub =>
+    val uniformData: List[DisplayObjectUniformData] =
+      shaderData.uniformBlocks.map { ub =>
         DisplayObjectUniformData(
           uniformHash = ub.uniformHash,
           blockName = ub.blockName,
@@ -398,8 +398,8 @@ final class DisplayObjectConversions(
 
     val shaderId = shaderData.shaderId
 
-    val uniformData: Option[DisplayObjectUniformData] =
-      shaderData.uniformBlock.map { ub =>
+    val uniformData: List[DisplayObjectUniformData] =
+      shaderData.uniformBlocks.map { ub =>
         DisplayObjectUniformData(
           uniformHash = ub.uniformHash,
           blockName = ub.blockName,
@@ -448,8 +448,8 @@ final class DisplayObjectConversions(
 
       val shaderId = shaderData.shaderId
 
-      val uniformData: Option[DisplayObjectUniformData] =
-        shaderData.uniformBlock.map { ub =>
+      val uniformData: List[DisplayObjectUniformData] =
+        shaderData.uniformBlocks.map { ub =>
           DisplayObjectUniformData(
             uniformHash = ub.uniformHash,
             blockName = ub.blockName,

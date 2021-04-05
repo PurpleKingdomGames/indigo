@@ -14,5 +14,5 @@ final case class DisplayLayer(
     entityBlend: Blend,
     layerBlend: Blend,
     shaderId: ShaderId,
-    shaderUniformData: Option[DisplayObjectUniformData]
+    shaderUniformData: List[DisplayObjectUniformData]
 )

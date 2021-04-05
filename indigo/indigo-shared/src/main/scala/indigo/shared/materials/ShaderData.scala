@@ -6,7 +6,7 @@ import indigo.shared.shader.UniformBlock
 
 final case class ShaderData(
     shaderId: ShaderId,
-    uniformBlock: Option[UniformBlock],
+    uniformBlocks: List[UniformBlock],
     channel0: Option[AssetName],
     channel1: Option[AssetName],
     channel2: Option[AssetName],
@@ -16,8 +16,10 @@ final case class ShaderData(
   def withShaderId(newShaderId: ShaderId): ShaderData =
     this.copy(shaderId = newShaderId)
 
-  def withUniformBlock(newUniformBlock: UniformBlock): ShaderData =
-    this.copy(uniformBlock = Option(newUniformBlock))
+  def withUniformBlocks(newUniformBlocks: List[UniformBlock]): ShaderData =
+    this.copy(uniformBlocks = newUniformBlocks)
+  def withUniformBlocks(newUniformBlocks: UniformBlock*): ShaderData =
+    withUniformBlocks(newUniformBlocks.toList)
 
   def withChannel0(assetName: AssetName): ShaderData =
     this.copy(channel0 = Some(assetName))
@@ -30,7 +32,9 @@ final case class ShaderData(
 
   lazy val hash: String =
     s"custom-${shaderId.value}" +
-      s"-${uniformBlock.map(_.uniformHash).getOrElse("")}" +
+      uniformBlocks.map { uniformBlock =>
+        s"-${uniformBlock.uniformHash}"
+      }.mkString +
       s"-${channel0.map(_.value).getOrElse("")}" +
       s"-${channel1.map(_.value).getOrElse("")}" +
       s"-${channel2.map(_.value).getOrElse("")}" +
@@ -43,12 +47,12 @@ final case class ShaderData(
 object ShaderData {
 
   def apply(shaderId: ShaderId): ShaderData =
-    ShaderData(shaderId, None, None, None, None, None)
+    ShaderData(shaderId, Nil, None, None, None, None)
 
-  def apply(shaderId: ShaderId, uniformBlock: UniformBlock): ShaderData =
-    ShaderData(shaderId, Option(uniformBlock), None, None, None, None)
+  def apply(shaderId: ShaderId, uniformBlocks: UniformBlock*): ShaderData =
+    ShaderData(shaderId, uniformBlocks.toList, None, None, None, None)
 
   def apply(shaderId: ShaderId, channel0: AssetName, channel1: AssetName, channel2: AssetName, channel3: AssetName): ShaderData =
-    ShaderData(shaderId, None, Option(channel0), Option(channel1), Option(channel2), Option(channel3))
+    ShaderData(shaderId, Nil, Option(channel0), Option(channel1), Option(channel2), Option(channel3))
 
 }

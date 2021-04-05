@@ -51,7 +51,7 @@ final case class DisplayObject(
     channelOffset3X: Float,
     channelOffset3Y: Float,
     shaderId: ShaderId,
-    shaderUniformData: Option[DisplayObjectUniformData]
+    shaderUniformData: List[DisplayObjectUniformData]
 ) extends DisplayEntity {
 
   def applyTransform(matrix: CheapMatrix4): DisplayObject =
@@ -72,7 +72,7 @@ object DisplayObject {
       channelOffset2: Vector2,
       channelOffset3: Vector2,
       shaderId: ShaderId,
-      shaderUniformData: Option[DisplayObjectUniformData]
+      shaderUniformData: List[DisplayObjectUniformData]
   ): DisplayObject =
     DisplayObject(
       transform,

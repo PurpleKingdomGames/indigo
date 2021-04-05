@@ -9,10 +9,15 @@ object StandardShaders {
       Bitmap,
       LitBitmap,
       ImageEffects,
+      LitImageEffects,
       ShapeBox,
+      LitShapeBox,
       ShapeCircle,
+      LitShapeCircle,
       ShapeLine,
+      LitShapeLine,
       ShapePolygon,
+      LitShapePolygon,
       NormalBlend,
       LightingBlend,
       BlendEffects
@@ -50,9 +55,29 @@ object StandardShaders {
       composite = ShaderLibrary.NoOpComposite
     )
 
+  val LitImageEffects: EntityShader.Source =
+    EntityShader.Source(
+      id = ShaderId("[indigo_engine_lit_image_effects]"),
+      vertex = ShaderLibrary.NoOpVertex,
+      fragment = ShaderLibrary.ImageEffectsFragment,
+      prepare = ShaderLibrary.LightingPrepare,
+      light = ShaderLibrary.LightingLight,
+      composite = ShaderLibrary.LightingComposite
+    )
+
   val ShapeBox: EntityShader.Source =
     EntityShader.Source(
       id = ShaderId("[indigo_engine_shape_box]"),
+      vertex = ShaderLibrary.NoOpVertex,
+      fragment = ShaderLibrary.ShapeBoxFragment,
+      prepare = ShaderLibrary.NoOpPrepare,
+      light = ShaderLibrary.NoOpLight,
+      composite = ShaderLibrary.NoOpComposite
+    )
+
+  val LitShapeBox: EntityShader.Source =
+    EntityShader.Source(
+      id = ShaderId("[indigo_engine_lit_shape_box]"),
       vertex = ShaderLibrary.NoOpVertex,
       fragment = ShaderLibrary.ShapeBoxFragment,
       prepare = ShaderLibrary.NoOpPrepare,
@@ -70,6 +95,16 @@ object StandardShaders {
       composite = ShaderLibrary.NoOpComposite
     )
 
+  val LitShapeCircle: EntityShader.Source =
+    EntityShader.Source(
+      id = ShaderId("[indigo_engine_lit_shape_circle]"),
+      vertex = ShaderLibrary.NoOpVertex,
+      fragment = ShaderLibrary.ShapeCircleFragment,
+      prepare = ShaderLibrary.NoOpPrepare,
+      light = ShaderLibrary.NoOpLight,
+      composite = ShaderLibrary.NoOpComposite
+    )
+
   val ShapeLine: EntityShader.Source =
     EntityShader.Source(
       id = ShaderId("[indigo_engine_shape_line]"),
@@ -80,9 +115,29 @@ object StandardShaders {
       composite = ShaderLibrary.NoOpComposite
     )
 
+  val LitShapeLine: EntityShader.Source =
+    EntityShader.Source(
+      id = ShaderId("[indigo_engine_lit_shape_line]"),
+      vertex = ShaderLibrary.NoOpVertex,
+      fragment = ShaderLibrary.ShapeLineFragment,
+      prepare = ShaderLibrary.NoOpPrepare,
+      light = ShaderLibrary.NoOpLight,
+      composite = ShaderLibrary.NoOpComposite
+    )
+
   val ShapePolygon: EntityShader.Source =
     EntityShader.Source(
       id = ShaderId("[indigo_engine_shape_polygon]"),
+      vertex = ShaderLibrary.NoOpVertex,
+      fragment = ShaderLibrary.ShapePolygonFragment,
+      prepare = ShaderLibrary.NoOpPrepare,
+      light = ShaderLibrary.NoOpLight,
+      composite = ShaderLibrary.NoOpComposite
+    )
+
+  val LitShapePolygon: EntityShader.Source =
+    EntityShader.Source(
+      id = ShaderId("[indigo_engine_lit_shape_polygon]"),
       vertex = ShaderLibrary.NoOpVertex,
       fragment = ShaderLibrary.ShapePolygonFragment,
       prepare = ShaderLibrary.NoOpPrepare,
