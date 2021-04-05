@@ -13,6 +13,17 @@ final case class RGB(r: Double, g: Double, b: Double) {
   def withBlue(newBlue: Double): RGB =
     this.copy(b = newBlue)
 
+  def mix(other: RGB, amount: Double): RGB = {
+    val mix = Math.min(1.0, Math.max(0.0, amount))
+    RGB(
+      (r * (1.0 - mix)) + (other.r * mix),
+      (g * (1.0 - mix)) + (other.g * mix),
+      (b * (1.0 - mix)) + (other.b * mix)
+    )
+  }
+  def mix(other: RGB): RGB =
+    mix(other, 0.5)
+
   def toRGBA: RGBA =
     RGBA(r, g, b, 1.0)
 

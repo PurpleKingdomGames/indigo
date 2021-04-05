@@ -25,6 +25,18 @@ final case class RGBA(r: Double, g: Double, b: Double, a: Double) {
   def makeTransparent: RGBA =
     this.copy(a = 0d)
 
+  def mix(other: RGBA, amount: Double): RGBA = {
+    val mix = Math.min(1.0, Math.max(0.0, amount))
+    RGBA(
+      (r * (1.0 - mix)) + (other.r * mix),
+      (g * (1.0 - mix)) + (other.g * mix),
+      (b * (1.0 - mix)) + (other.b * mix),
+      (a * (1.0 - mix)) + (other.a * mix)
+    )
+  }
+  def mix(other: RGBA): RGBA =
+    mix(other, 0.5)
+
   def toRGB: RGB =
     RGB(r, g, b)
 
