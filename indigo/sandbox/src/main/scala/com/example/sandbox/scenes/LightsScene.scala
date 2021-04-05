@@ -56,7 +56,7 @@ object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
         .addLayer(grid)
         .withMagnification(2)
         .withLights(
-          AmbientLight(RGBA.Blue.withAlpha(0.2)),
+          AmbientLight(RGBA.Blue.withAlpha(0.1)),
           DirectionLight(RGBA.Cyan.withAmount(0.1), RGBA.Cyan, Radians.zero),
           PointLight.default
             .withSpecular(RGBA.White)
@@ -83,7 +83,7 @@ object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
                 .at(context.running)
                 .toPoint
             )
-            .modifyFalloff(_.withRange(10, 30)),
+            .modifyFalloff(_.withRange(0, 50)),
           PointLight.default
             .withColor(RGBA.Green)
             .withSpecular(RGBA.Green.mix(RGBA.White))
@@ -94,7 +94,8 @@ object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
                 .affectTime(0.1)
                 .at(context.running)
                 .toPoint
-            ),
+            )
+            .modifyFalloff(_.withRange(0, 50)),
           PointLight.default
             .withColor(RGBA.Blue)
             .withSpecular(RGBA.Blue.mix(RGBA.White))
@@ -106,6 +107,7 @@ object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
                 .at(context.running)
                 .toPoint
             )
+            .modifyFalloff(_.withRange(0, 50))
         )
     )
 

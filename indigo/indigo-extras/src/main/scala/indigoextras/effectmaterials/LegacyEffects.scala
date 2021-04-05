@@ -80,7 +80,7 @@ final case class LegacyEffects(
 
     ShaderData(
       LegacyEffects.entityShader.id,
-      Some(
+      List(
         UniformBlock(
           "IndigoLegacyEffectsData",
           List(

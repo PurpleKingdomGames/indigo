@@ -31,15 +31,15 @@ class LayerRenderer(
     lightDataUBOBuffer: => WebGLBuffer
 ) {
 
-  private val customDataUBOBuffer: WebGLBuffer =
-    gl2.createBuffer()
+  private val customDataUBOBuffers: HashMap[String, WebGLBuffer] =
+    HashMap.empty[String, WebGLBuffer]
 
   // Instance Array Buffers
-  private val matRotateScaleInstanceArray: WebGLBuffer    = gl2.createBuffer()
+  private val matRotateScaleInstanceArray: WebGLBuffer       = gl2.createBuffer()
   private val matTranslateRotationInstanceArray: WebGLBuffer = gl2.createBuffer()
-  private val sizeAndFrameScaleInstanceArray: WebGLBuffer = gl2.createBuffer()
-  private val channelOffsets01InstanceArray: WebGLBuffer  = gl2.createBuffer()
-  private val channelOffsets23InstanceArray: WebGLBuffer  = gl2.createBuffer()
+  private val sizeAndFrameScaleInstanceArray: WebGLBuffer    = gl2.createBuffer()
+  private val channelOffsets01InstanceArray: WebGLBuffer     = gl2.createBuffer()
+  private val channelOffsets23InstanceArray: WebGLBuffer     = gl2.createBuffer()
 
   def setupInstanceArray(buffer: WebGLBuffer, location: Int, size: Int): Unit = {
     gl2.bindBuffer(ARRAY_BUFFER, buffer)
@@ -88,7 +88,7 @@ class LayerRenderer(
   }
 
   def requiresContextChange(d: DisplayObject, atlasName: Option[String], currentShader: ShaderId, currentUniformHash: String): Boolean = {
-    val uniformHash: String = d.shaderUniformData.map(_.uniformHash).getOrElse("")
+    val uniformHash: String = d.shaderUniformData.map(_.uniformHash).mkString
 
     d.shaderId != currentShader ||
     (uniformHash.nonEmpty && uniformHash != currentUniformHash) ||
@@ -122,13 +122,15 @@ class LayerRenderer(
       else currentProgram
 
     // UBO data
-    d.shaderUniformData.foreach { ud =>
-      if (ud.uniformHash.nonEmpty && ud.uniformHash != currentUniformHash) {
-        WebGLHelper.attachUBOData(gl2, ud.data, customDataUBOBuffer)
+    val uniformHash: String = d.shaderUniformData.map(_.uniformHash).mkString
+    if (uniformHash.nonEmpty && uniformHash != currentUniformHash)
+      d.shaderUniformData.zipWithIndex.foreach { case (ud, i) =>
+        val buff = customDataUBOBuffers.getOrElseUpdate(ud.uniformHash, gl2.createBuffer())
+        
+        WebGLHelper.attachUBOData(gl2, ud.data, buff)
         if (d.shaderId != currentShader)
-          WebGLHelper.bindUBO(gl2, activeShader, ud.blockName, RendererWebGL2Constants.customDataBlockPointer, customDataUBOBuffer)
+          WebGLHelper.bindUBO(gl2, activeShader, ud.blockName, RendererWebGL2Constants.customDataBlockOffsetPointer + i, buff)
       }
-    }
 
     // Atlas
     if (d.atlasName != atlasName)
@@ -212,7 +214,7 @@ class LayerRenderer(
             currentShaderHash,
             customShaders
           )
-          rec(remaining, 0, d.atlasName, d.shaderId, d.shaderUniformData.map(_.uniformHash).getOrElse(""))
+          rec(remaining, 0, d.atlasName, d.shaderId, d.shaderUniformData.map(_.uniformHash).mkString)
 
         case (d: DisplayObject) :: ds =>
           val data = d.transform.data
@@ -234,11 +236,11 @@ class LayerRenderer(
                   currentShaderHash,
                   customShaders
                 )
-                rec(remaining, 0, d.atlasName, d.shaderId, d.shaderUniformData.map(_.uniformHash).getOrElse(""))
+                rec(remaining, 0, d.atlasName, d.shaderId, d.shaderUniformData.map(_.uniformHash).mkString)
               } else {
                 val data = c.transform.data
                 updateData(d, batchCount, data._1, data._2)
-                rec(ds, batchCount + 1, d.atlasName, d.shaderId, d.shaderUniformData.map(_.uniformHash).getOrElse(""))
+                rec(ds, batchCount + 1, d.atlasName, d.shaderId, d.shaderUniformData.map(_.uniformHash).mkString)
               }
           }
 
@@ -257,12 +259,12 @@ class LayerRenderer(
                   currentShaderHash,
                   customShaders
                 )
-                rec(remaining, 0, d.atlasName, d.shaderId, d.shaderUniformData.map(_.uniformHash).getOrElse(""))
+                rec(remaining, 0, d.atlasName, d.shaderId, d.shaderUniformData.map(_.uniformHash).mkString)
               } else {
                 val numberProcessed: Int =
                   processCloneBatch(c, d, batchCount)
 
-                rec(ds, batchCount + numberProcessed, d.atlasName, d.shaderId, d.shaderUniformData.map(_.uniformHash).getOrElse(""))
+                rec(ds, batchCount + numberProcessed, d.atlasName, d.shaderId, d.shaderUniformData.map(_.uniformHash).mkString)
               }
           }
 

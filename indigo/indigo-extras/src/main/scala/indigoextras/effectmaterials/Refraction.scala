@@ -60,7 +60,7 @@ final case class RefractionEntity(diffuse: AssetName) extends Material {
   def toShaderData: ShaderData =
     ShaderData(
       Refraction.entityShader.id,
-      None,
+      Nil,
       Some(diffuse),
       None,
       None,
@@ -72,7 +72,7 @@ final case class RefractionBlend(multiplier: Double) extends BlendMaterial {
   def toShaderData: BlendShaderData =
     BlendShaderData(
       Refraction.blendShader.id,
-      Some(
+      List(
         UniformBlock(
           "IndigoRefractionBlendData",
           List(

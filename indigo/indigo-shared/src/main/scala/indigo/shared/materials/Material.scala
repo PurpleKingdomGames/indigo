@@ -19,7 +19,7 @@ object Material {
     def toShaderData: ShaderData =
       ShaderData(
         StandardShaders.Bitmap.id,
-        None,
+        Nil,
         Some(diffuse),
         None,
         None,
@@ -82,7 +82,7 @@ object Material {
       if (isLit)
         ShaderData(
           StandardShaders.LitBitmap.id,
-          Some(
+          List(
             UniformBlock(
               "IndigoMaterialLightingData",
               List(
@@ -109,7 +109,7 @@ object Material {
       else
         ShaderData(
           StandardShaders.Bitmap.id,
-          None,
+          Nil,
           Some(albedo),
           None,
           None,
@@ -224,7 +224,7 @@ object Material {
 
       ShaderData(
         StandardShaders.ImageEffects.id,
-        Some(
+        List(
           UniformBlock(
             "IndigoImageEffectsData",
             List(

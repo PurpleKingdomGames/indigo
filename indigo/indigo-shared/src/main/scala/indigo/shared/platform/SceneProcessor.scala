@@ -238,8 +238,8 @@ object SceneProcessor {
         LightData.empty
     }
 
-  def mergeShaderToUniformData(shaderData: BlendShaderData): Option[DisplayObjectUniformData] =
-    shaderData.uniformBlock.map { ub =>
+  def mergeShaderToUniformData(shaderData: BlendShaderData): List[DisplayObjectUniformData] =
+    shaderData.uniformBlocks.map { ub =>
       DisplayObjectUniformData(
         uniformHash = ub.uniformHash,
         blockName = ub.blockName,

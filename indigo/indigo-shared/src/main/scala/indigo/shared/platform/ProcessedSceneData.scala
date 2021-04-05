@@ -9,5 +9,5 @@ final class ProcessedSceneData(
     val layers: List[DisplayLayer],
     val cloneBlankDisplayObjects: Map[String, DisplayObject],
     val shaderId: ShaderId,
-    val shaderUniformData: Option[DisplayObjectUniformData]
+    val shaderUniformData: List[DisplayObjectUniformData]
 )
