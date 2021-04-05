@@ -22,6 +22,7 @@ import indigo.shared.scenegraph.AmbientLight
 import indigo.shared.scenegraph.DirectionLight
 import indigo.shared.scenegraph.PointLight
 import indigo.shared.scenegraph.SpotLight
+import indigo.shared.scenegraph.Falloff
 
 final class SceneProcessor(
     boundaryLocator: BoundaryLocator,
@@ -125,25 +126,15 @@ object SceneProcessor {
     Array[Float](count.toFloat, 0.0f, 0.0f, 0.0f) ++ fullLights.foldLeft(bareLightData)(_ + _).toArray
   }
 
-  /*
-    layout (std140) uniform IndigoDynamicLightingData {
-      float numOfLights;
-      vec4 lightFlags[8]; // vec4(active, type, ???, ???)
-      vec4 lightColor[8];
-      vec4 lightSpecular[8];
-      vec4 lightPositionRotation[8];
-      vec4 lightNearFarAngleAttenuation[8];
-    };
-   */
   def makeLightData(light: Light): LightData =
     light match {
       case l: AmbientLight =>
         LightData(
           lightFlags = Array[Float](1.0f, 0.0f, 0.0f, 0.0f),
-          lightColor = Array[Float](l.color.r.toFloat, l.color.g.toFloat, l.color.b.toFloat, l.power.toFloat),
+          lightColor = Array[Float](l.color.r.toFloat, l.color.g.toFloat, l.color.b.toFloat, l.color.a.toFloat),
           lightSpecular = Array[Float](0.0f, 0.0f, 0.0f, 0.0f),
           lightPositionRotation = Array[Float](0.0f, 0.0f, 0.0f, 0.0f),
-          lightNearFarAngleAttenuation = Array[Float](0.0f, 0.0f, 0.0f, 0.0f)
+          lightNearFarAngleIntensity = Array[Float](0.0f, 0.0f, 0.0f, 0.0f)
         )
 
       case l: DirectionLight =>
@@ -151,26 +142,96 @@ object SceneProcessor {
           lightFlags = Array[Float](1.0f, 1.0f, 0.0f, 0.0f),
           lightColor = Array[Float](l.color.r.toFloat, l.color.g.toFloat, l.color.b.toFloat, l.color.a.toFloat),
           lightSpecular = Array[Float](l.specular.r.toFloat, l.specular.g.toFloat, l.specular.b.toFloat, l.specular.a.toFloat),
-          lightPositionRotation = Array[Float](0.0f, 0.0f, 0.0f, l.rotation.value.toFloat),
-          lightNearFarAngleAttenuation = Array[Float](0.0f, 0.0f, 0.0f, 0.0f)
+          lightPositionRotation = Array[Float](0.0f, 0.0f, l.rotation.value.toFloat, 0.0f),
+          lightNearFarAngleIntensity = Array[Float](0.0f, 0.0f, 0.0f, 0.0f)
         )
 
       case l: PointLight =>
+        val useFarCuttOff: Float =
+          l.falloff match {
+            case Falloff.None(_, far)      => if (far.isDefined) 1.0f else 0.0f
+            case Falloff.Linear(_, far)    => if (far.isDefined) 1.0f else 0.0f
+            case Falloff.Quadratic(_, far) => if (far.isDefined) 1.0f else 0.0f
+            case _                         => 1.0f
+          }
+
+        val falloffType: Float =
+          l.falloff match {
+            case _: Falloff.None            => 0.0f
+            case _: Falloff.SmoothLinear    => 1.0f
+            case _: Falloff.SmoothQuadratic => 2.0f
+            case _: Falloff.Linear          => 3.0f
+            case _: Falloff.Quadratic       => 4.0f
+          }
+
+        val near: Float =
+          l.falloff match {
+            case Falloff.None(near, _)            => near.toFloat
+            case Falloff.SmoothLinear(near, _)    => near.toFloat
+            case Falloff.SmoothQuadratic(near, _) => near.toFloat
+            case Falloff.Linear(near, _)          => near.toFloat
+            case Falloff.Quadratic(near, _)       => near.toFloat
+          }
+
+        val far: Float =
+          l.falloff match {
+            case Falloff.None(_, far)            => far.map(_.toFloat).getOrElse(10000.0f)
+            case Falloff.SmoothLinear(_, far)    => far.toFloat
+            case Falloff.SmoothQuadratic(_, far) => far.toFloat
+            case Falloff.Linear(_, far)          => far.map(_.toFloat).getOrElse(10000.0f)
+            case Falloff.Quadratic(_, far)       => far.map(_.toFloat).getOrElse(10000.0f)
+          }
+
         LightData(
-          lightFlags = Array[Float](1.0f, 2.0f, 0.0f, 0.0f),
+          lightFlags = Array[Float](1.0f, 2.0f, useFarCuttOff, falloffType),
           lightColor = Array[Float](l.color.r.toFloat, l.color.g.toFloat, l.color.b.toFloat, l.color.a.toFloat),
           lightSpecular = Array[Float](l.specular.r.toFloat, l.specular.g.toFloat, l.specular.b.toFloat, l.specular.a.toFloat),
           lightPositionRotation = Array[Float](l.position.x.toFloat, l.position.y.toFloat, 0.0f, 0.0f),
-          lightNearFarAngleAttenuation = Array[Float](l.near.toFloat, l.far.toFloat, 0.0f, l.attenuation.toFloat)
+          lightNearFarAngleIntensity = Array[Float](near, far, 0.0f, l.intensity.toFloat)
         )
 
       case l: SpotLight =>
+        val useFarCuttOff: Float =
+          l.falloff match {
+            case Falloff.None(_, far)      => if (far.isDefined) 1.0f else 0.0f
+            case Falloff.Linear(_, far)    => if (far.isDefined) 1.0f else 0.0f
+            case Falloff.Quadratic(_, far) => if (far.isDefined) 1.0f else 0.0f
+            case _                         => 1.0f
+          }
+
+        val falloffType: Float =
+          l.falloff match {
+            case _: Falloff.None            => 0.0f
+            case _: Falloff.SmoothLinear    => 1.0f
+            case _: Falloff.SmoothQuadratic => 2.0f
+            case _: Falloff.Linear          => 3.0f
+            case _: Falloff.Quadratic       => 4.0f
+          }
+
+        val near: Float =
+          l.falloff match {
+            case Falloff.None(near, _)            => near.toFloat
+            case Falloff.SmoothLinear(near, _)    => near.toFloat
+            case Falloff.SmoothQuadratic(near, _) => near.toFloat
+            case Falloff.Linear(near, _)          => near.toFloat
+            case Falloff.Quadratic(near, _)       => near.toFloat
+          }
+
+        val far: Float =
+          l.falloff match {
+            case Falloff.None(_, far)            => far.map(_.toFloat).getOrElse(10000.0f)
+            case Falloff.SmoothLinear(_, far)    => far.toFloat
+            case Falloff.SmoothQuadratic(_, far) => far.toFloat
+            case Falloff.Linear(_, far)          => far.map(_.toFloat).getOrElse(10000.0f)
+            case Falloff.Quadratic(_, far)       => far.map(_.toFloat).getOrElse(10000.0f)
+          }
+
         LightData(
-          lightFlags = Array[Float](1.0f, 3.0f, 0.0f, 0.0f),
+          lightFlags = Array[Float](1.0f, 3.0f, useFarCuttOff, falloffType),
           lightColor = Array[Float](l.color.r.toFloat, l.color.g.toFloat, l.color.b.toFloat, l.color.a.toFloat),
           lightSpecular = Array[Float](l.specular.r.toFloat, l.specular.g.toFloat, l.specular.b.toFloat, l.specular.a.toFloat),
-          lightPositionRotation = Array[Float](l.position.x.toFloat, l.position.y.toFloat, 0.0f, l.rotation.value.toFloat),
-          lightNearFarAngleAttenuation = Array[Float](l.near.toFloat, l.far.toFloat, l.angle.value.toFloat, l.attenuation.toFloat)
+          lightPositionRotation = Array[Float](l.position.x.toFloat, l.position.y.toFloat, l.rotation.value.toFloat, 0.0f),
+          lightNearFarAngleIntensity = Array[Float](near, far, l.angle.value.toFloat, l.intensity.toFloat)
         )
 
       case _ =>
@@ -192,7 +253,7 @@ final case class LightData(
     lightColor: Array[Float],
     lightSpecular: Array[Float],
     lightPositionRotation: Array[Float],
-    lightNearFarAngleAttenuation: Array[Float]
+    lightNearFarAngleIntensity: Array[Float]
 ) {
   def +(other: LightData): LightData =
     this.copy(
@@ -200,7 +261,7 @@ final case class LightData(
       lightColor = lightColor ++ other.lightColor,
       lightSpecular = lightSpecular ++ other.lightSpecular,
       lightPositionRotation = lightPositionRotation ++ other.lightPositionRotation,
-      lightNearFarAngleAttenuation = lightNearFarAngleAttenuation ++ other.lightNearFarAngleAttenuation
+      lightNearFarAngleIntensity = lightNearFarAngleIntensity ++ other.lightNearFarAngleIntensity
     )
 
   def toArray: Array[Float] =
@@ -208,7 +269,7 @@ final case class LightData(
       lightColor ++
       lightSpecular ++
       lightPositionRotation ++
-      lightNearFarAngleAttenuation
+      lightNearFarAngleIntensity
 }
 object LightData {
   val empty: LightData =

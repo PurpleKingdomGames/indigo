@@ -453,4 +453,7 @@ package object indigo {
   type AmbientLight = shared.scenegraph.AmbientLight
   val AmbientLight: shared.scenegraph.AmbientLight.type = shared.scenegraph.AmbientLight
 
+  type Falloff = shared.scenegraph.Falloff
+  val Falloff: shared.scenegraph.Falloff.type = shared.scenegraph.Falloff
+
 }

@@ -4,7 +4,6 @@ import indigo.shared.scenegraph.Light
 import indigo.shared.scenegraph.AmbientLight
 import indigo.shared.datatypes.RGBA
 import indigo.shared.scenegraph.DirectionLight
-import indigo.shared.datatypes.RGB
 import indigo.shared.datatypes.Radians
 
 class SceneProcessorTests extends munit.FunSuite {
@@ -13,11 +12,11 @@ class SceneProcessorTests extends munit.FunSuite {
   For reference, this is what the shader is expecting.
   layout (std140) uniform IndigoDynamicLightingData {
     float numOfLights;
-    vec4 lightFlags[8]; // vec4(active, type, ???, ???)
+    vec4 lightFlags[8]; // vec4(active, type, use far, falloff type)
     vec4 lightColor[8];
     vec4 lightSpecular[8];
     vec4 lightPositionRotation[8];
-    vec4 lightNearFarAngleAttenuation[8];
+    vec4 lightNearFarAngleIntensity[8];
   };
    */
 
@@ -35,17 +34,17 @@ class SceneProcessorTests extends munit.FunSuite {
         Array[Float](1.0f, 0.0f, 0.0f, 0.5f), // lightColor
         Array[Float](0.0f, 0.0f, 0.0f, 0.0f), // lightSpecular
         Array[Float](0.0f, 0.0f, 0.0f, 0.0f), // lightPositionRotation
-        Array[Float](0.0f, 0.0f, 0.0f, 0.0f)  // lightNearFarAngleAttenuation
+        Array[Float](0.0f, 0.0f, 0.0f, 0.0f)  // lightNearFarAngleIntensity
       )
 
     assertEquals(actual.toArray.toList, expected.toArray.toList)
 
   }
 
-  test("convert an direction light to UBO data Array[Float]") {
+  test("convert a direction light to UBO data Array[Float]") {
 
     val light: Light =
-      DirectionLight(0.75, RGB.Cyan, 0.5, RGB.White, 1.0, Radians(0.25))
+      DirectionLight(RGBA.Cyan.withAlpha(0.5), RGBA.White, Radians(0.25))
 
     val actual: LightData =
       SceneProcessor.makeLightData(light)
@@ -55,7 +54,7 @@ class SceneProcessorTests extends munit.FunSuite {
         Array[Float](1.0f, 1.0f, 0.0f, 0.0f),   // lightFlags
         Array[Float](0.0f, 1.0f, 1.0f, 0.5f),   // lightColor
         Array[Float](1.0f, 1.0f, 1.0f, 1.0f),   // lightSpecular
-        Array[Float](0.0f, 0.0f, 0.75f, 0.25f), // lightPositionRotation
+        Array[Float](0.0f, 0.0f, 0.25f, 0.0f), // lightPositionRotation
         Array[Float](0.0f, 0.0f, 0.0f, 0.0f)    // lightNearFarAngleAttenuation
       )
 
@@ -67,7 +66,7 @@ class SceneProcessorTests extends munit.FunSuite {
     val lights: List[Light] =
       List(
         AmbientLight(RGBA.Red.withAmount(0.5)),
-        DirectionLight(0.75, RGB.Cyan, 0.5, RGB.White, 1.0, Radians(0.25)),
+        DirectionLight(RGBA.Cyan.withAlpha(0.5), RGBA.White, Radians(0.25)),
         AmbientLight(RGBA.Green.withAmount(0.8))
       )
 
@@ -88,7 +87,7 @@ class SceneProcessorTests extends munit.FunSuite {
               Array[Float](1.0f, 1.0f, 0.0f, 0.0f),   // lightFlags
               Array[Float](0.0f, 1.0f, 1.0f, 0.5f),   // lightColor
               Array[Float](1.0f, 1.0f, 1.0f, 1.0f),   // lightSpecular
-              Array[Float](0.0f, 0.0f, 0.75f, 0.25f), // lightPositionRotation
+              Array[Float](0.0f, 0.0f, 0.25f, 0.0f), // lightPositionRotation
               Array[Float](0.0f, 0.0f, 0.0f, 0.0f)    // lightNearFarAngleAttenuation
             ) +
             LightData(
