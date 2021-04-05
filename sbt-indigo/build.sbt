@@ -12,7 +12,7 @@ lazy val sbtIndigo =
       libraryDependencies ++= Seq(
         "commons-io"       % "commons-io"    % "2.6",
         "io.indigoengine" %% "indigo-plugin" % IndigoVersion.getVersion,
-        "com.lihaoyi"     %% "os-lib"        % "0.7.1"
+        "com.lihaoyi"     %% "os-lib"        % "0.7.4"
       ),
       publishTo := sonatypePublishToBundle.value,
       publishMavenStyle := true,

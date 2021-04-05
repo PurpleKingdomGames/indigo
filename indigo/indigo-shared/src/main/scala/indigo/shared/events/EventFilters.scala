@@ -56,6 +56,7 @@ object EventFilters {
     case _: ViewEvent                                    => None
     case e if ac.allowCustomEvents                       => Some(e)
     case _ if ac.allowCustomEvents                       => None
+    case _                                               => None
   }
 
   /**

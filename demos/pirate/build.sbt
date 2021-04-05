@@ -16,7 +16,7 @@ lazy val pirate =
       scalaVersion := dottyVersion,
       organization := "pirate",
       libraryDependencies ++= Seq(
-        "org.scalameta" %%% "munit" % "0.7.22" % Test,
+        "org.scalameta" %%% "munit" % "0.7.23" % Test,
         "org.scalacheck" %%% "scalacheck" % "1.15.3" % "test"
       ),
       testFrameworks += new TestFramework("munit.Framework"),

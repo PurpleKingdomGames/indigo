@@ -62,6 +62,9 @@ final class SceneProcessor(
               case Some(anim) =>
                 acc + (blank.id.value -> displayObjectConverterClone.spriteToDisplayObject(boundaryLocator, s, assetMapping, anim))
             }
+
+          case _ =>
+            acc
         }
       }
 

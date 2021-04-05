@@ -69,6 +69,9 @@ class OutcomeTests extends munit.FunSuite {
         .replaceGlobalEvents(_.filter {
           case TestEvent(msg) =>
             msg == "b"
+
+          case _ =>
+            fail("Boom.")
         })
 
     val expected =
@@ -99,6 +102,9 @@ class OutcomeTests extends munit.FunSuite {
         .mapGlobalEvents {
           case TestEvent(msg) =>
             TestEvent(msg + msg)
+
+          case _ =>
+            fail("Boom.")
         }
 
     val expected =
@@ -118,6 +124,9 @@ class OutcomeTests extends munit.FunSuite {
           _.filter {
             case TestEvent(msg) =>
               msg == "b"
+
+            case _ =>
+              fail("Boom.")
           }
         )
 
