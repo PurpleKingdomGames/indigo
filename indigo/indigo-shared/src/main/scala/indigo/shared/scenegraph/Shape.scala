@@ -17,6 +17,7 @@ import indigo.shared.datatypes.Fill
 import indigo.shared.datatypes.Stroke
 import indigo.shared.materials.LightingModel.Unlit
 import indigo.shared.materials.LightingModel.Lit
+import indigo.shared.shader.ShaderId
 
 sealed trait Shape extends EntityNode with Cloneable with SpatialModifiers[Shape] {
   def moveTo(pt: Point): Shape
@@ -55,7 +56,8 @@ object Shape {
       scale: Vector2,
       depth: Depth,
       ref: Point,
-      flip: Flip
+      flip: Flip,
+      shaderId: Option[ShaderId]
   ) extends Shape {
 
     private lazy val square: Int =
@@ -146,6 +148,9 @@ object Shape {
     def withFlip(newFlip: Flip): Box =
       this.copy(flip = newFlip)
 
+    def withShaderId(newShaderId: ShaderId): Box =
+      this.copy(shaderId = Option(newShaderId))
+
     def toShaderData: ShaderData = {
       val shapeUniformBlock =
         UniformBlock(
@@ -161,12 +166,12 @@ object Shape {
       lighting match {
         case Unlit =>
           ShaderData(
-            StandardShaders.ShapeBox.id,
+            shaderId.getOrElse(StandardShaders.ShapeBox.id),
             shapeUniformBlock
           )
 
         case l: Lit =>
-          l.toShaderData(StandardShaders.LitShapeBox.id)
+          l.toShaderData(shaderId.getOrElse(StandardShaders.LitShapeBox.id))
             .addUniformBlock(shapeUniformBlock)
       }
     }
@@ -183,7 +188,8 @@ object Shape {
         Vector2.one,
         Depth(1),
         Point.zero,
-        Flip.default
+        Flip.default,
+        None
       )
 
     def apply(dimensions: Rectangle, fill: Fill, stroke: Stroke): Box =
@@ -196,7 +202,8 @@ object Shape {
         Vector2.one,
         Depth(1),
         Point.zero,
-        Flip.default
+        Flip.default,
+        None
       )
 
   }
@@ -211,7 +218,8 @@ object Shape {
       scale: Vector2,
       depth: Depth,
       ref: Point,
-      flip: Flip
+      flip: Flip,
+      shaderId: Option[ShaderId]
   ) extends Shape {
 
     lazy val position: Point =
@@ -294,6 +302,9 @@ object Shape {
     def withFlip(newFlip: Flip): Circle =
       this.copy(flip = newFlip)
 
+    def withShaderId(newShaderId: ShaderId): Circle =
+      this.copy(shaderId = Option(newShaderId))
+
     def toShaderData: ShaderData = {
       val shapeUniformBlock =
         UniformBlock(
@@ -308,12 +319,12 @@ object Shape {
       lighting match {
         case Unlit =>
           ShaderData(
-            StandardShaders.ShapeCircle.id,
+            shaderId.getOrElse(StandardShaders.ShapeCircle.id),
             shapeUniformBlock
           )
 
         case l: Lit =>
-          l.toShaderData(StandardShaders.LitShapeCircle.id)
+          l.toShaderData(shaderId.getOrElse(StandardShaders.LitShapeCircle.id))
             .addUniformBlock(shapeUniformBlock)
       }
     }
@@ -331,7 +342,8 @@ object Shape {
         Vector2.one,
         Depth(1),
         Point.zero,
-        Flip.default
+        Flip.default,
+        None
       )
 
     def apply(center: Point, radius: Int, fill: Fill, stroke: Stroke): Circle =
@@ -345,7 +357,8 @@ object Shape {
         Vector2.one,
         Depth(1),
         Point.zero,
-        Flip.default
+        Flip.default,
+        None
       )
 
   }
@@ -359,7 +372,8 @@ object Shape {
       scale: Vector2,
       depth: Depth,
       ref: Point,
-      flip: Flip
+      flip: Flip,
+      shaderId: Option[ShaderId]
   ) extends Shape {
 
     lazy val position: Point =
@@ -455,6 +469,9 @@ object Shape {
     def withFlip(newFlip: Flip): Line =
       this.copy(flip = newFlip)
 
+    def withShaderId(newShaderId: ShaderId): Line =
+      this.copy(shaderId = Option(newShaderId))
+
     def toShaderData: ShaderData = {
       val bounds: Rectangle =
         Rectangle.fromTwoPoints(start, end)
@@ -477,12 +494,12 @@ object Shape {
       lighting match {
         case Unlit =>
           ShaderData(
-            StandardShaders.ShapeLine.id,
+            shaderId.getOrElse(StandardShaders.ShapeLine.id),
             shapeUniformBlock
           )
 
         case l: Lit =>
-          l.toShaderData(StandardShaders.LitShapeLine.id)
+          l.toShaderData(shaderId.getOrElse(StandardShaders.LitShapeLine.id))
             .addUniformBlock(shapeUniformBlock)
       }
     }
@@ -499,7 +516,8 @@ object Shape {
         Vector2.one,
         Depth(1),
         Point.zero,
-        Flip.default
+        Flip.default,
+        None
       )
 
   }
@@ -513,7 +531,8 @@ object Shape {
       scale: Vector2,
       depth: Depth,
       ref: Point,
-      flip: Flip
+      flip: Flip,
+      shaderId: Option[ShaderId]
   ) extends Shape {
 
     lazy val position: Point =
@@ -589,6 +608,9 @@ object Shape {
     def withFlip(newFlip: Flip): Polygon =
       this.copy(flip = newFlip)
 
+    def withShaderId(newShaderId: ShaderId): Polygon =
+      this.copy(shaderId = Option(newShaderId))
+
     def toShaderData: ShaderData = {
       val verts: Array[vec2] =
         vertices.map { v =>
@@ -612,12 +634,12 @@ object Shape {
       lighting match {
         case Unlit =>
           ShaderData(
-            StandardShaders.ShapePolygon.id,
+            shaderId.getOrElse(StandardShaders.ShapePolygon.id),
             shapeUniformBlock
           )
 
         case l: Lit =>
-          l.toShaderData(StandardShaders.LitShapePolygon.id)
+          l.toShaderData(shaderId.getOrElse(StandardShaders.LitShapePolygon.id))
             .addUniformBlock(shapeUniformBlock)
       }
     }
@@ -634,7 +656,8 @@ object Shape {
         Vector2.one,
         Depth(1),
         Point.zero,
-        Flip.default
+        Flip.default,
+        None
       )
 
     def apply(vertices: List[Point], fill: Fill, stroke: Stroke): Polygon =
@@ -647,7 +670,8 @@ object Shape {
         Vector2.one,
         Depth(1),
         Point.zero,
-        Flip.default
+        Flip.default,
+        None
       )
 
     def apply(fill: Fill, stroke: Stroke)(vertices: Point*): Polygon =
@@ -660,7 +684,8 @@ object Shape {
         Vector2.one,
         Depth(1),
         Point.zero,
-        Flip.default
+        Flip.default,
+        None
       )
 
   }

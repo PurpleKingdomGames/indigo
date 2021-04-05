@@ -11,13 +11,14 @@ import indigo.shared.shader.ShaderPrimitive
 import indigo.shared.datatypes.RGB
 import indigo.shared.materials.LightingModel.Unlit
 import indigo.shared.materials.LightingModel.Lit
+import indigo.shared.shader.ShaderId
 
 trait Material {
   def toShaderData: ShaderData
 }
 object Material {
 
-  final case class Bitmap(diffuse: AssetName, lighting: LightingModel) extends Material {
+  final case class Bitmap(diffuse: AssetName, lighting: LightingModel, shaderId: Option[ShaderId]) extends Material {
 
     def withDiffuse(newDiffuse: AssetName): Bitmap =
       this.copy(diffuse = newDiffuse)
@@ -27,11 +28,14 @@ object Material {
     def modifyLighting(modifier: LightingModel => LightingModel): Bitmap =
       this.copy(lighting = modifier(lighting))
 
+    def withShaderId(newShaderId: ShaderId): Bitmap =
+      this.copy(shaderId = Option(newShaderId))
+
     def toShaderData: ShaderData =
       lighting match {
         case Unlit =>
           ShaderData(
-            StandardShaders.Bitmap.id,
+            shaderId.getOrElse(StandardShaders.Bitmap.id),
             Nil,
             Some(diffuse),
             None,
@@ -40,16 +44,19 @@ object Material {
           )
 
         case l: Lit =>
-          l.toShaderData(StandardShaders.LitBitmap.id)
+          l.toShaderData(shaderId.getOrElse(StandardShaders.LitBitmap.id))
             .withChannel0(diffuse)
       }
   }
   object Bitmap {
     def apply(diffuse: AssetName): Bitmap =
-      Bitmap(diffuse, LightingModel.Unlit)
+      Bitmap(diffuse, LightingModel.Unlit, None)
+
+    def apply(diffuse: AssetName, lighting: LightingModel): Bitmap =
+      Bitmap(diffuse, lighting, None)
   }
 
-  final case class ImageEffects(diffuse: AssetName, alpha: Double, tint: RGBA, overlay: Fill, saturation: Double, lighting: LightingModel) extends Material {
+  final case class ImageEffects(diffuse: AssetName, alpha: Double, tint: RGBA, overlay: Fill, saturation: Double, lighting: LightingModel, shaderId: Option[ShaderId]) extends Material {
 
     def withDiffuse(newDiffuse: AssetName): ImageEffects =
       this.copy(diffuse = newDiffuse)
@@ -72,6 +79,9 @@ object Material {
       this.copy(lighting = newLighting)
     def modifyLighting(modifier: LightingModel => LightingModel): ImageEffects =
       this.copy(lighting = modifier(lighting))
+
+    def withShaderId(newShaderId: ShaderId): ImageEffects =
+      this.copy(shaderId = Option(newShaderId))
 
     def toShaderData: ShaderData = {
       val gradientUniforms: List[(Uniform, ShaderPrimitive)] =
@@ -118,7 +128,7 @@ object Material {
       lighting match {
         case Unlit =>
           ShaderData(
-            StandardShaders.ImageEffects.id,
+            shaderId.getOrElse(StandardShaders.ImageEffects.id),
             List(effectsUniformBlock),
             Some(diffuse),
             None,
@@ -127,7 +137,7 @@ object Material {
           )
 
         case l: Lit =>
-          l.toShaderData(StandardShaders.LitImageEffects.id)
+          l.toShaderData(shaderId.getOrElse(StandardShaders.LitImageEffects.id))
             .withChannel0(diffuse)
             .addUniformBlock(effectsUniformBlock)
       }
@@ -135,13 +145,13 @@ object Material {
   }
   object ImageEffects {
     def apply(diffuse: AssetName): ImageEffects =
-      ImageEffects(diffuse, 1.0, RGBA.None, Fill.Color.default, 1.0, LightingModel.Unlit)
+      ImageEffects(diffuse, 1.0, RGBA.None, Fill.Color.default, 1.0, LightingModel.Unlit, None)
 
     def apply(diffuse: AssetName, alpha: Double): ImageEffects =
-      ImageEffects(diffuse, alpha, RGBA.None, Fill.Color.default, 1.0, LightingModel.Unlit)
+      ImageEffects(diffuse, alpha, RGBA.None, Fill.Color.default, 1.0, LightingModel.Unlit, None)
 
     def apply(diffuse: AssetName, lighting: LightingModel): ImageEffects =
-      ImageEffects(diffuse, 1.0, RGBA.None, Fill.Color.default, 1.0, lighting)
+      ImageEffects(diffuse, 1.0, RGBA.None, Fill.Color.default, 1.0, lighting, None)
   }
 
 }
