@@ -20,6 +20,10 @@ final case class ShaderData(
     this.copy(uniformBlocks = newUniformBlocks)
   def withUniformBlocks(newUniformBlocks: UniformBlock*): ShaderData =
     withUniformBlocks(newUniformBlocks.toList)
+  def addUniformBlock(additional: List[UniformBlock]): ShaderData =
+    this.copy(uniformBlocks = uniformBlocks ++ additional)
+  def addUniformBlock(additional: UniformBlock*): ShaderData =
+    addUniformBlock(additional.toList)
 
   def withChannel0(assetName: AssetName): ShaderData =
     this.copy(channel0 = Some(assetName))

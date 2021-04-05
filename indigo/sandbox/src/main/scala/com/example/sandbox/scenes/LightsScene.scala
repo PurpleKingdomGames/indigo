@@ -6,7 +6,6 @@ import com.example.sandbox.SandboxStartupData
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxViewModel
 import com.example.sandbox.SandboxAssets
-import indigo.shared.scenegraph.Falloff
 
 object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel] {
 
@@ -53,7 +52,15 @@ object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
   def present(context: FrameContext[SandboxStartupData], model: SandboxGameModel, viewModel: SandboxViewModel): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment.empty
-        .addLayer(grid)
+        .addLayer(
+          grid :+
+          graphic
+            .moveTo(context.startUpData.viewportCenter + Point(10))
+            .withMaterial(
+              LightingAssets.junctionBoxEffects
+                .withOverlay(Fill.Color(RGBA.Magenta))
+            )
+        )
         .withMagnification(2)
         .withLights(
           AmbientLight(RGBA.Blue.withAlpha(0.1)),
@@ -115,12 +122,24 @@ object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
 
 object LightingAssets {
 
-  val junctionBoxMaterialOn: Material.Lit =
-    Material.Lit(
+  val junctionBoxMaterialOn: Material.Bitmap =
+    Material.Bitmap(
       SandboxAssets.junctionBoxAlbedo,
-      SandboxAssets.junctionBoxEmission,
-      SandboxAssets.junctionBoxNormal,
-      SandboxAssets.junctionBoxRoughness
+      LightingModel.Lit(
+        SandboxAssets.junctionBoxEmission,
+        SandboxAssets.junctionBoxNormal,
+        SandboxAssets.junctionBoxRoughness
+      )
+    )
+
+  val junctionBoxEffects: Material.ImageEffects =
+    Material.ImageEffects(
+      SandboxAssets.junctionBoxAlbedo,
+      LightingModel.Lit(
+        SandboxAssets.junctionBoxEmission,
+        SandboxAssets.junctionBoxNormal,
+        SandboxAssets.junctionBoxRoughness
+      )
     )
 
 }

@@ -4,176 +4,54 @@ import indigo.shared.assets.AssetName
 import indigo.shared.shader.StandardShaders
 import indigo.shared.shader.Uniform
 import indigo.shared.shader.UniformBlock
-import indigo.shared.shader.ShaderPrimitive.{vec2, vec3, vec4}
+import indigo.shared.shader.ShaderPrimitive.{vec3, vec4}
 import indigo.shared.datatypes.RGBA
 import indigo.shared.datatypes.Fill
 import indigo.shared.shader.ShaderPrimitive
 import indigo.shared.datatypes.RGB
+import indigo.shared.materials.LightingModel.Unlit
+import indigo.shared.materials.LightingModel.Lit
 
 trait Material {
   def toShaderData: ShaderData
 }
 object Material {
 
-  final case class Bitmap(diffuse: AssetName) extends Material {
-    def toShaderData: ShaderData =
-      ShaderData(
-        StandardShaders.Bitmap.id,
-        Nil,
-        Some(diffuse),
-        None,
-        None,
-        None
-      )
-  }
+  final case class Bitmap(diffuse: AssetName, lighting: LightingModel) extends Material {
 
-  final case class Lit(
-      albedo: AssetName,
-      emissive: Option[Texture],
-      normal: Option[Texture],
-      roughness: Option[Texture],
-      isLit: Boolean
-  ) extends Material {
-    val default: AssetName = albedo
+    def withDiffuse(newDiffuse: AssetName): Bitmap =
+      this.copy(diffuse = newDiffuse)
 
-    def withAlbedo(newAlbedo: AssetName): Lit =
-      this.copy(albedo = newAlbedo)
-
-    def withEmissive(emissiveAssetName: AssetName, amount: Double): Lit =
-      this.copy(emissive = Some(Texture(emissiveAssetName, amount)))
-    def withEmissiveAsset(emissiveAssetName: AssetName): Lit =
-      this.copy(emissive =
-        emissive
-          .map(_.withAsset(emissiveAssetName))
-          .orElse(Some(Texture(emissiveAssetName, 1.0)))
-      )
-    def withEmissiveAmount(amount: Double): Lit =
-      this.copy(emissive = emissive.map(_.withAmount(amount)))
-
-    def withNormal(normalAssetName: AssetName, amount: Double): Lit =
-      this.copy(normal = Some(Texture(normalAssetName, amount)))
-    def withNormalAsset(normalAssetName: AssetName): Lit =
-      this.copy(normal =
-        normal
-          .map(_.withAsset(normalAssetName))
-          .orElse(Some(Texture(normalAssetName, 1.0)))
-      )
-    def withNormalAmount(amount: Double): Lit =
-      this.copy(normal = normal.map(_.withAmount(amount)))
-
-    def withRoughness(roughnessAssetName: AssetName, amount: Double): Lit =
-      this.copy(roughness = Some(Texture(roughnessAssetName, amount)))
-    def withRoughnessAsset(roughnessAssetName: AssetName): Lit =
-      this.copy(roughness =
-        roughness
-          .map(_.withAsset(roughnessAssetName))
-          .orElse(Some(Texture(roughnessAssetName, 1.0)))
-      )
-    def withRoughnessAmount(amount: Double): Lit =
-      this.copy(roughness = roughness.map(_.withAmount(amount)))
-
-    def lit: Lit =
-      this.copy(isLit = true)
-
-    def unlit: Lit =
-      this.copy(isLit = false)
+    def withLighting(newLighting: LightingModel): Bitmap =
+      this.copy(lighting = newLighting)
+    def modifyLighting(modifier: LightingModel => LightingModel): Bitmap =
+      this.copy(lighting = modifier(lighting))
 
     def toShaderData: ShaderData =
-      if (isLit)
-        ShaderData(
-          StandardShaders.LitBitmap.id,
-          List(
-            UniformBlock(
-              "IndigoMaterialLightingData",
-              List(
-                Uniform("LIGHT_EMISSIVE") -> vec2(
-                  emissive.map(_ => 1.0).getOrElse(-1.0),
-                  emissive.map(_.amount).getOrElse(0.0)
-                ),
-                Uniform("LIGHT_NORMAL") -> vec2(
-                  normal.map(_ => 1.0).getOrElse(-1.0),
-                  normal.map(_.amount).getOrElse(0.0)
-                ),
-                Uniform("LIGHT_ROUGHNESS") -> vec2(
-                  roughness.map(_ => 1.0).getOrElse(-1.0),
-                  roughness.map(_.amount).getOrElse(0.0)
-                )
-              )
-            )
-          ),
-          Some(albedo),
-          emissive.map(_.assetName),
-          normal.map(_.assetName),
-          roughness.map(_.assetName)
-        )
-      else
-        ShaderData(
-          StandardShaders.Bitmap.id,
-          Nil,
-          Some(albedo),
-          None,
-          None,
-          None
-        )
+      lighting match {
+        case Unlit =>
+          ShaderData(
+            StandardShaders.Bitmap.id,
+            Nil,
+            Some(diffuse),
+            None,
+            None,
+            None
+          )
+
+        case l: Lit =>
+          l.toShaderData(StandardShaders.LitBitmap.id, diffuse)
+      }
   }
-  object Lit {
-    def apply(
-        albedo: AssetName,
-        emissive: Option[Texture],
-        normal: Option[Texture],
-        roughness: Option[Texture]
-    ): Lit =
-      new Lit(albedo, emissive, normal, roughness, true)
-
-    def apply(
-        albedo: AssetName
-    ): Lit =
-      new Lit(albedo, None, None, None, true)
-
-    def apply(
-        albedo: AssetName,
-        emissive: AssetName
-    ): Lit =
-      new Lit(
-        albedo,
-        Some(Texture(emissive, 1.0d)),
-        None,
-        None,
-        true
-      )
-
-    def apply(
-        albedo: AssetName,
-        emissive: AssetName,
-        normal: AssetName
-    ): Lit =
-      new Lit(
-        albedo,
-        Some(Texture(emissive, 1.0d)),
-        Some(Texture(normal, 1.0d)),
-        None,
-        true
-      )
-
-    def apply(
-        albedo: AssetName,
-        emissive: AssetName,
-        normal: AssetName,
-        roughness: AssetName
-    ): Lit =
-      new Lit(
-        albedo,
-        Some(Texture(emissive, 1.0d)),
-        Some(Texture(normal, 1.0d)),
-        Some(Texture(roughness, 1.0d)),
-        true
-      )
-
-    def fromAlbedo(albedo: AssetName): Lit =
-      new Lit(albedo, None, None, None, true)
+  object Bitmap {
+    def apply(diffuse: AssetName): Bitmap =
+      Bitmap(diffuse, LightingModel.Unlit)
   }
 
-  final case class ImageEffects(diffuse: AssetName, alpha: Double, tint: RGBA, overlay: Fill, saturation: Double) extends Material {
+  final case class ImageEffects(diffuse: AssetName, alpha: Double, tint: RGBA, overlay: Fill, saturation: Double, lighting: LightingModel) extends Material {
+
+    def withDiffuse(newDiffuse: AssetName): ImageEffects =
+      this.copy(diffuse = newDiffuse)
 
     def withAlpha(newAlpha: Double): ImageEffects =
       this.copy(alpha = newAlpha)
@@ -188,6 +66,11 @@ object Material {
 
     def withSaturation(newSaturation: Double): ImageEffects =
       this.copy(saturation = newSaturation)
+
+    def withLighting(newLighting: LightingModel): ImageEffects =
+      this.copy(lighting = newLighting)
+    def modifyLighting(modifier: LightingModel => LightingModel): ImageEffects =
+      this.copy(lighting = modifier(lighting))
 
     def toShaderData: ShaderData = {
       val gradientUniforms: List[(Uniform, ShaderPrimitive)] =
@@ -222,38 +105,41 @@ object Material {
           case _: Fill.RadialGradient => 2.0
         }
 
-      ShaderData(
-        StandardShaders.ImageEffects.id,
-        List(
-          UniformBlock(
-            "IndigoImageEffectsData",
-            List(
-              Uniform("ALPHA_SATURATION_OVERLAYTYPE") -> vec3(alpha, saturation, overlayType),
-              Uniform("TINT")                         -> vec4(tint.r, tint.g, tint.b, tint.a)
-            ) ++ gradientUniforms
+      val effectsUniformBlock: UniformBlock =
+        UniformBlock(
+          "IndigoImageEffectsData",
+          List(
+            Uniform("ALPHA_SATURATION_OVERLAYTYPE") -> vec3(alpha, saturation, overlayType),
+            Uniform("TINT")                         -> vec4(tint.r, tint.g, tint.b, tint.a)
+          ) ++ gradientUniforms
+        )
+
+      lighting match {
+        case Unlit =>
+          ShaderData(
+            StandardShaders.ImageEffects.id,
+            List(effectsUniformBlock),
+            Some(diffuse),
+            None,
+            None,
+            None
           )
-        ),
-        Some(diffuse),
-        None,
-        None,
-        None
-      )
+
+        case l: Lit =>
+          l.toShaderData(StandardShaders.LitImageEffects.id, diffuse)
+            .addUniformBlock(effectsUniformBlock)
+      }
     }
   }
   object ImageEffects {
     def apply(diffuse: AssetName): ImageEffects =
-      ImageEffects(diffuse, 1.0, RGBA.None, Fill.Color.default, 1.0)
+      ImageEffects(diffuse, 1.0, RGBA.None, Fill.Color.default, 1.0, LightingModel.Unlit)
 
     def apply(diffuse: AssetName, alpha: Double): ImageEffects =
-      ImageEffects(diffuse, alpha, RGBA.None, Fill.Color.default, 1.0)
+      ImageEffects(diffuse, alpha, RGBA.None, Fill.Color.default, 1.0, LightingModel.Unlit)
+
+    def apply(diffuse: AssetName, lighting: LightingModel): ImageEffects =
+      ImageEffects(diffuse, 1.0, RGBA.None, Fill.Color.default, 1.0, lighting)
   }
 
-}
-
-final case class Texture(assetName: AssetName, amount: Double) {
-  def withAsset(newAssetName: AssetName): Texture =
-    this.copy(assetName = newAssetName)
-
-  def withAmount(newAmount: Double): Texture =
-    this.copy(amount = newAmount)
 }
