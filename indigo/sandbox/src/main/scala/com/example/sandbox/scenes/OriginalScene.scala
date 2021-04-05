@@ -36,7 +36,7 @@ object OriginalScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
     _ => Outcome(viewModel)
 
   def present(context: FrameContext[SandboxStartupData], model: SandboxGameModel, viewModel: SandboxViewModel): Outcome[SceneUpdateFragment] = {
-    val scene =
+    val scene: SceneUpdateFragment =
       SandboxView
         .updateView(model, viewModel, context.inputState)
         .addLayer(
@@ -45,18 +45,18 @@ object OriginalScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
             viewModel.multi.draw(context.gameTime, context.boundaryLocator)
           ).withDepth(Depth(1000))
         )
+
     Outcome(
       SceneUpdateFragment.empty
         .addLayer(
           Layer.empty
             .withKey(BindingKey("bg"))
-            // .withMagnification(1) // TODO: This one should be enough!
+            .withMagnification(1)
         ) |+| scene
         .addLayer(
           Layer(
             CustomShape(0, 0, 228 * 3, 140 * 3, Depth(10), ShaderData(Shaders.seaId))
           ).withKey(BindingKey("bg"))
-            .withMagnification(1)
         )
         .addLayer(
           Layer(

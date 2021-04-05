@@ -89,7 +89,7 @@ object SceneUpdateFragment {
 
   def append(a: SceneUpdateFragment, b: SceneUpdateFragment): SceneUpdateFragment =
     SceneUpdateFragment(
-      a.layers ++ b.layers,
+      b.layers.foldLeft(a.layers) { case (als, bl) => addLayer(als, bl) },
       a.lights ++ b.lights,
       a.audio |+| b.audio,
       b.blendMaterial.orElse(a.blendMaterial),
@@ -98,6 +98,8 @@ object SceneUpdateFragment {
 
   def addLayer(layers: List[Layer], layer: Layer): List[Layer] =
     if (layer.key.isDefined && layers.exists(_.key == layer.key))
-      layers.map(l => if (l.key == layer.key) l.addNodes(layer.nodes) else l)
+      layers.map { l =>
+        if (l.key == layer.key) l |+| layer else l
+      }
     else layers :+ layer
 }
