@@ -36,4 +36,43 @@ class RGBATests extends munit.FunSuite {
     assertEquals((transparent.a > 0.48 && transparent.a < 0.52), true)
   }
 
+  test("mixing colours 50-50 red blue") {
+    val colorA = RGBA.Red
+    val colorB = RGBA.Blue
+
+    val expected =
+      RGBA(0.5, 0.0, 0.5, 1.0)
+
+    val actual =
+      colorA.mix(colorB)
+
+    assertEquals(actual, expected)
+  }
+
+  test("mixing colours 50-50 red white") {
+    val colorA = RGBA.Red
+    val colorB = RGBA.White
+
+    val expected =
+      RGBA(1.0, 0.5, 0.5, 1.0)
+
+    val actual =
+      colorA.mix(colorB)
+
+    assertEquals(actual, expected)
+  }
+
+  test("mixing colours 90-10 red white") {
+    val colorA = RGBA.Red
+    val colorB = RGBA.White
+
+    val expected =
+      RGBA(1.0, 0.1, 0.1, 1.0)
+
+    val actual =
+      colorA.mix(colorB, 0.1)
+
+    assertEquals(actual, expected)
+  }
+
 }
