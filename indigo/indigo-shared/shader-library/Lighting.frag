@@ -82,9 +82,8 @@ void calculateAmbientLight(out vec4 outColor) {
 void calculateDirectionLight(vec4 normalTexture, vec4 specularTexture, out vec4 outColor, out vec4 outSpecular) {
   float lightAmount = LIGHT_COLOR.a;
   vec3 lightDir = normalize(vec3(sin(LIGHT_ROTATION), cos(LIGHT_ROTATION), 0.0));
-  // float specularPower = LIGHT_SPECULAR.a;
 
-  calculateLight(lightAmount, lightDir/*, specularPower*/, normalTexture, specularTexture, outColor, outSpecular);
+  calculateLight(lightAmount, lightDir, normalTexture, specularTexture, outColor, outSpecular);
 }
 
 void calculatePointLight(vec4 normalTexture, vec4 specularTexture, out vec4 outColor, out vec4 outSpecular) {
@@ -138,7 +137,6 @@ void calculatePointLight(vec4 normalTexture, vec4 specularTexture, out vec4 outC
 
   lightAmount = lightAmount * boundedDistance * LIGHT_COLOR.a;
 
-  // float specularPower = lightAmount * LIGHT_SPECULAR.a;
 
   float distanceToLight = distance(SCREEN_COORDS, LIGHT_POSITION);
 
@@ -147,7 +145,7 @@ void calculatePointLight(vec4 normalTexture, vec4 specularTexture, out vec4 outC
 
   if(distanceToLight > LIGHT_NEAR && (LIGHT_FAR_CUT_OFF == 0 || distanceToLight < LIGHT_FAR)) {
     // -- spot and point light should identical ...to here --
-    calculateLight(lightAmount, lightDir/*, specularPower*/, normalTexture, specularTexture, outColor, outSpecular);
+    calculateLight(lightAmount, lightDir, normalTexture, specularTexture, outColor, outSpecular);
   }
 }
 
@@ -202,8 +200,6 @@ void calculateSpotLight(vec4 normalTexture, vec4 specularTexture, out vec4 outCo
 
   lightAmount = lightAmount * boundedDistance * LIGHT_COLOR.a;
 
-  // float specularPower = lightAmount * LIGHT_SPECULAR.a;
-
   float distanceToLight = distance(SCREEN_COORDS, LIGHT_POSITION);
 
   outColor = vec4(0.0);
@@ -223,11 +219,11 @@ void calculateSpotLight(vec4 normalTexture, vec4 specularTexture, out vec4 outCo
     float angleToPixel = atan(pixelRelativeToLight.y, pixelRelativeToLight.x) + PI;
 
     if(anglePlus < angleMinus && (angleToPixel < anglePlus || angleToPixel > angleMinus)) {
-      calculateLight(lightAmount, lightDir/*, specularPower*/, normalTexture, specularTexture, outColor, outSpecular);
+      calculateLight(lightAmount, lightDir, normalTexture, specularTexture, outColor, outSpecular);
     }
 
     if(anglePlus > angleMinus && (angleToPixel < anglePlus && angleToPixel > angleMinus)) {
-      calculateLight(lightAmount, lightDir/*, specularPower*/, normalTexture, specularTexture, outColor, outSpecular);
+      calculateLight(lightAmount, lightDir, normalTexture, specularTexture, outColor, outSpecular);
     }
 
   }
