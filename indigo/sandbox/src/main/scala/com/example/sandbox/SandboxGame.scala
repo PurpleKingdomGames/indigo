@@ -56,7 +56,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
         SandboxBootData(flags.getOrElse("key", "No entry for 'key'."), gameViewport)
       ).withAssets(SandboxAssets.assets ++ Shaders.assets)
         .withFonts(Fonts.fontInfo)
-        .withSubSystems(FPSCounter(Fonts.fontKey, Point(5, 165), targetFPS, Depth(200), SandboxAssets.fontMaterial))
+        .withSubSystems(FPSCounter(Fonts.fontKey, Point(5, 165), targetFPS, Depth(200), None, SandboxAssets.fontMaterial))
         .withShaders(
           Shaders.circle,
           Shaders.external,
