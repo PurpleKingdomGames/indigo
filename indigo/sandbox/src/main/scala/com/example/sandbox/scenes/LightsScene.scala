@@ -6,6 +6,7 @@ import com.example.sandbox.SandboxStartupData
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxViewModel
 import com.example.sandbox.SandboxAssets
+import indigo.shared.scenegraph.Falloff
 
 object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel] {
 
@@ -56,50 +57,52 @@ object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
         .withMagnification(2)
         .withLights(
           AmbientLight(RGBA.Blue.withAlpha(0.2)),
-          DirectionLight(RGBA.Cyan.withAmount(0.1), RGBA.Cyan.withAmount(1.5), Radians.zero),
+          DirectionLight(RGBA.Cyan.withAmount(0.1), RGBA.Cyan, Radians.zero),
           PointLight.default
-            .withSpecular(RGBA.White.withAmount(2.0))
+            .withSpecular(RGBA.White)
             .moveTo(context.mouse.position)
-            .withAttenuation(40),
+            .withColor(RGBA.Red.mix(RGBA.White, 0.1))
+            .withIntensity(2)
+            .withFalloff(Falloff.smoothQuadratic.withRange(0, 80)),
           SpotLight.default
             .withColor(RGBA.Yellow)
             .moveTo(Point(10))
             .rotateBy(Radians.fromDegrees(135))
             .withSpecular(RGBA(1, 1, 0.3, 2.0))
-            .withAttenuation(200)
+            .withIntensity(1)
             .withAngle(Radians.fromDegrees(45))
-            .withNear(5)
-            .withFar(200),
+            .modifyFalloff(_ => Falloff.smoothLinear.withRange(5, 200)),
           PointLight.default
             .withColor(RGBA.Red)
-            .withSpecular(RGBA.Red)
-            .withAttenuation(60)
+            .withSpecular(RGBA.Red.mix(RGBA.White))
+            .withIntensity(1)
             .moveTo(
               Signal
                 .Orbit(context.startUpData.viewportCenter, 80, Radians(0))
-                .affectTime(0.3)
+                .affectTime(0.1)
                 .at(context.running)
                 .toPoint
-            ),
+            )
+            .modifyFalloff(_.withRange(10, 30)),
           PointLight.default
             .withColor(RGBA.Green)
-            .withSpecular(RGBA.Green)
-            .withAttenuation(60)
+            .withSpecular(RGBA.Green.mix(RGBA.White))
+            .withIntensity(1)
             .moveTo(
               Signal
                 .Orbit(context.startUpData.viewportCenter, 80, Radians(Radians.TAU.value / 3))
-                .affectTime(0.3)
+                .affectTime(0.1)
                 .at(context.running)
                 .toPoint
             ),
           PointLight.default
             .withColor(RGBA.Blue)
-            .withSpecular(RGBA.Blue)
-            .withAttenuation(60)
+            .withSpecular(RGBA.Blue.mix(RGBA.White))
+            .withIntensity(1)
             .moveTo(
               Signal
                 .Orbit(context.startUpData.viewportCenter, 80, Radians(Radians.TAU.value / 3 * 2))
-                .affectTime(0.3)
+                .affectTime(0.1)
                 .at(context.running)
                 .toPoint
             )
