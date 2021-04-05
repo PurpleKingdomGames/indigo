@@ -160,7 +160,7 @@ void calculateSpotLight(vec4 normalTexture, vec4 specularTexture, out vec4 outCo
 
   float lightAmount = 0.0;
 
-  // 0 = none, 1 = smooth, 2 = smooth quadtratic, 3 = linear, 4 = quadratic
+  // 0 = none, 1 = smooth linear, 2 = smooth quadtratic, 3 = linear, 4 = quadratic
   switch(LIGHT_FALLOFF_TYPE) {
     case 0:
       // None
