@@ -16,7 +16,7 @@ import indigo.shared.temporal.{Signal, SignalReader}
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.datatypes.BindingKey
 
-final case class Automata(poolKey: AutomataPoolKey, automaton: Automaton, layerKey: BindingKey, maxPoolSize: Option[Int]) extends SubSystem {
+final case class Automata(poolKey: AutomataPoolKey, automaton: Automaton, layerKey: Option[BindingKey], maxPoolSize: Option[Int]) extends SubSystem {
   type EventType      = AutomataEvent
   type SubSystemModel = AutomataState
 
@@ -102,9 +102,10 @@ final case class Automata(poolKey: AutomataPoolKey, automaton: Automaton, layerK
 
   def present(frameContext: SubSystemFrameContext, state: AutomataState): Outcome[SceneUpdateFragment] = {
     val updated = Automata.renderNoLayer(state.pool, frameContext.gameTime)
+    val layer = Layer(updated.nodes)
 
     Outcome(
-      SceneUpdateFragment(Layer(layerKey, updated.nodes)),
+      SceneUpdateFragment(layerKey.map(layer.withKey).getOrElse(layer)),
       updated.events
     )
 
@@ -112,8 +113,11 @@ final case class Automata(poolKey: AutomataPoolKey, automaton: Automaton, layerK
 }
 object Automata {
 
+  def apply(poolKey: AutomataPoolKey, automaton: Automaton): Automata =
+    Automata(poolKey, automaton, None, None)
+
   def apply(poolKey: AutomataPoolKey, automaton: Automaton, layerKey: BindingKey): Automata =
-    Automata(poolKey, automaton, layerKey, None)
+    Automata(poolKey, automaton, Some(layerKey), None)
 
   def renderNoLayer(pool: List[SpawnedAutomaton], gameTime: GameTime): AutomatonUpdate =
     AutomatonUpdate.sequence(
