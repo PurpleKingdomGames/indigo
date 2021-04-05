@@ -103,7 +103,6 @@ final case class Automata(poolKey: AutomataPoolKey, automaton: Automaton, layerK
   def present(frameContext: SubSystemFrameContext, state: AutomataState): Outcome[SceneUpdateFragment] = {
     val updated = Automata.renderNoLayer(state.pool, frameContext.gameTime)
 
-    // TODO: How to control what layer you end up on? Pass in layer key?
     Outcome(
       SceneUpdateFragment(Layer(layerKey, updated.nodes)),
       updated.events

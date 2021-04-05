@@ -79,7 +79,7 @@ class LineSegmentTests extends munit.FunSuite {
     assert(!line.isFacingVertex(vertex))
   }
 
-  //TODO: Can do a property based check here. Forall vertices on a line
+  // Could do a property based check here? Forall vertices on a line
   // (i.e. start vertex * slope m < end vertex)
   test("Vertex on a line.should be able to check if a vertex is on a line.horizontal") {
     val line: LineSegment = LineSegment((10d, 10d), (20d, 10d))
