@@ -40,7 +40,8 @@ object Material {
           )
 
         case l: Lit =>
-          l.toShaderData(StandardShaders.LitBitmap.id, diffuse)
+          l.toShaderData(StandardShaders.LitBitmap.id)
+            .withChannel0(diffuse)
       }
   }
   object Bitmap {
@@ -126,7 +127,8 @@ object Material {
           )
 
         case l: Lit =>
-          l.toShaderData(StandardShaders.LitImageEffects.id, diffuse)
+          l.toShaderData(StandardShaders.LitImageEffects.id)
+            .withChannel0(diffuse)
             .addUniformBlock(effectsUniformBlock)
       }
     }

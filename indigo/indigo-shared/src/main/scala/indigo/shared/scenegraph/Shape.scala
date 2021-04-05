@@ -7,6 +7,7 @@ import indigo.shared.datatypes.Vector2
 import indigo.shared.datatypes.Flip
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.materials.ShaderData
+import indigo.shared.materials.LightingModel
 import indigo.shared.shader.Uniform
 import indigo.shared.shader.UniformBlock
 import indigo.shared.shader.ShaderPrimitive._
@@ -14,6 +15,8 @@ import indigo.shared.datatypes.RGBA
 import indigo.shared.shader.StandardShaders
 import indigo.shared.datatypes.Fill
 import indigo.shared.datatypes.Stroke
+import indigo.shared.materials.LightingModel.Unlit
+import indigo.shared.materials.LightingModel.Lit
 
 sealed trait Shape extends EntityNode with Cloneable with SpatialModifiers[Shape] {
   def moveTo(pt: Point): Shape
@@ -47,6 +50,7 @@ object Shape {
       dimensions: Rectangle,
       fill: Fill,
       stroke: Stroke,
+      lighting: LightingModel,
       rotation: Radians,
       scale: Vector2,
       depth: Depth,
@@ -83,6 +87,11 @@ object Shape {
 
     def withStrokeWidth(newWidth: Int): Box =
       this.copy(stroke = stroke.withWidth(newWidth))
+
+    def withLighting(newLighting: LightingModel): Box =
+      this.copy(lighting = newLighting)
+    def modifyLighting(modifier: LightingModel => LightingModel): Box =
+      this.copy(lighting = modifier(lighting))
 
     private lazy val aspect: Vector2 =
       if (bounds.size.x > bounds.size.y)
@@ -137,9 +146,8 @@ object Shape {
     def withFlip(newFlip: Flip): Box =
       this.copy(flip = newFlip)
 
-    def toShaderData: ShaderData =
-      ShaderData(
-        StandardShaders.ShapeBox.id,
+    def toShaderData: ShaderData = {
+      val shapeUniformBlock =
         UniformBlock(
           "IndigoShapeData",
           List(
@@ -149,7 +157,19 @@ object Shape {
             Uniform("STROKE_COLOR") -> vec4(stroke.color.r, stroke.color.g, stroke.color.b, stroke.color.a)
           ) ++ gradientUniforms(fill)
         )
-      )
+
+      lighting match {
+        case Unlit =>
+          ShaderData(
+            StandardShaders.ShapeBox.id,
+            shapeUniformBlock
+          )
+
+        case l: Lit =>
+          l.toShaderData(StandardShaders.LitShapeBox.id)
+            .addUniformBlock(shapeUniformBlock)
+      }
+    }
   }
   object Box {
 
@@ -158,6 +178,7 @@ object Shape {
         dimensions,
         fill,
         Stroke.None,
+        LightingModel.Unlit,
         Radians.zero,
         Vector2.one,
         Depth(1),
@@ -170,6 +191,7 @@ object Shape {
         dimensions,
         fill,
         stroke,
+        LightingModel.Unlit,
         Radians.zero,
         Vector2.one,
         Depth(1),
@@ -184,6 +206,7 @@ object Shape {
       radius: Int,
       fill: Fill,
       stroke: Stroke,
+      lighting: LightingModel,
       rotation: Radians,
       scale: Vector2,
       depth: Depth,
@@ -218,6 +241,11 @@ object Shape {
       withRadius(newRadius)
     def resizeBy(amount: Int): Circle =
       withRadius(radius + amount)
+
+    def withLighting(newLighting: LightingModel): Circle =
+      this.copy(lighting = newLighting)
+    def modifyLighting(modifier: LightingModel => LightingModel): Circle =
+      this.copy(lighting = modifier(lighting))
 
     def moveTo(pt: Point): Circle =
       this.copy(center = pt)
@@ -266,9 +294,8 @@ object Shape {
     def withFlip(newFlip: Flip): Circle =
       this.copy(flip = newFlip)
 
-    def toShaderData: ShaderData =
-      ShaderData(
-        StandardShaders.ShapeCircle.id,
+    def toShaderData: ShaderData = {
+      val shapeUniformBlock =
         UniformBlock(
           "IndigoShapeData",
           List(
@@ -277,7 +304,19 @@ object Shape {
             Uniform("STROKE_COLOR") -> vec4(stroke.color.r, stroke.color.g, stroke.color.b, stroke.color.a)
           ) ++ gradientUniforms(fill)
         )
-      )
+
+      lighting match {
+        case Unlit =>
+          ShaderData(
+            StandardShaders.ShapeCircle.id,
+            shapeUniformBlock
+          )
+
+        case l: Lit =>
+          l.toShaderData(StandardShaders.LitShapeCircle.id)
+            .addUniformBlock(shapeUniformBlock)
+      }
+    }
   }
   object Circle {
 
@@ -287,6 +326,7 @@ object Shape {
         radius,
         fill,
         Stroke.None,
+        LightingModel.Unlit,
         Radians.zero,
         Vector2.one,
         Depth(1),
@@ -300,6 +340,7 @@ object Shape {
         radius,
         fill,
         stroke,
+        LightingModel.Unlit,
         Radians.zero,
         Vector2.one,
         Depth(1),
@@ -313,6 +354,7 @@ object Shape {
       start: Point,
       end: Point,
       stroke: Stroke,
+      lighting: LightingModel,
       rotation: Radians,
       scale: Vector2,
       depth: Depth,
@@ -341,6 +383,11 @@ object Shape {
 
     def withStrokeWidth(newWidth: Int): Line =
       this.copy(stroke = stroke.withWidth(newWidth))
+
+    def withLighting(newLighting: LightingModel): Line =
+      this.copy(lighting = newLighting)
+    def modifyLighting(modifier: LightingModel => LightingModel): Line =
+      this.copy(lighting = modifier(lighting))
 
     def moveTo(newPosition: Point): Line =
       this.copy(start = newPosition, end = newPosition + (end - start))
@@ -416,8 +463,7 @@ object Shape {
       val s = start - bounds.position + (stroke.width / 2)
       val e = end - bounds.position + (stroke.width / 2)
 
-      ShaderData(
-        StandardShaders.ShapeLine.id,
+      val shapeUniformBlock =
         UniformBlock(
           "IndigoShapeData",
           List(
@@ -427,7 +473,18 @@ object Shape {
             Uniform("END")          -> vec2(e.x.toFloat, e.y.toFloat)
           )
         )
-      )
+
+      lighting match {
+        case Unlit =>
+          ShaderData(
+            StandardShaders.ShapeLine.id,
+            shapeUniformBlock
+          )
+
+        case l: Lit =>
+          l.toShaderData(StandardShaders.LitShapeLine.id)
+            .addUniformBlock(shapeUniformBlock)
+      }
     }
   }
   object Line {
@@ -437,6 +494,7 @@ object Shape {
         start,
         end,
         stroke,
+        LightingModel.Unlit,
         Radians.zero,
         Vector2.one,
         Depth(1),
@@ -450,6 +508,7 @@ object Shape {
       vertices: List[Point],
       fill: Fill,
       stroke: Stroke,
+      lighting: LightingModel,
       rotation: Radians,
       scale: Vector2,
       depth: Depth,
@@ -474,6 +533,11 @@ object Shape {
 
     def withStrokeWidth(newWidth: Int): Polygon =
       this.copy(stroke = stroke.withWidth(newWidth))
+
+    def withLighting(newLighting: LightingModel): Polygon =
+      this.copy(lighting = newLighting)
+    def modifyLighting(modifier: LightingModel => LightingModel): Polygon =
+      this.copy(lighting = modifier(lighting))
 
     private def relativeShift(by: Point): List[Point] =
       vertices.map(_.moveBy(by - position))
@@ -534,8 +598,7 @@ object Shape {
           )
         }.toArray
 
-      ShaderData(
-        StandardShaders.ShapePolygon.id,
+      val shapeUniformBlock =
         UniformBlock(
           "IndigoShapeData",
           List(
@@ -545,7 +608,18 @@ object Shape {
             Uniform("STROKE_COLOR") -> vec4(stroke.color.r, stroke.color.g, stroke.color.b, stroke.color.a)
           ) ++ gradientUniforms(fill) ++ List(Uniform("VERTICES") -> array(16, verts))
         )
-      )
+
+      lighting match {
+        case Unlit =>
+          ShaderData(
+            StandardShaders.ShapePolygon.id,
+            shapeUniformBlock
+          )
+
+        case l: Lit =>
+          l.toShaderData(StandardShaders.LitShapePolygon.id)
+            .addUniformBlock(shapeUniformBlock)
+      }
     }
   }
   object Polygon {
@@ -555,6 +629,7 @@ object Shape {
         vertices,
         fill,
         Stroke.None,
+        LightingModel.Unlit,
         Radians.zero,
         Vector2.one,
         Depth(1),
@@ -567,6 +642,7 @@ object Shape {
         vertices,
         fill,
         stroke,
+        LightingModel.Unlit,
         Radians.zero,
         Vector2.one,
         Depth(1),
@@ -579,6 +655,7 @@ object Shape {
         vertices.toList,
         fill,
         stroke,
+        LightingModel.Unlit,
         Radians.zero,
         Vector2.one,
         Depth(1),
