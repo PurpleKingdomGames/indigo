@@ -51,7 +51,7 @@ object LightingModel {
     def withRoughnessAmount(amount: Double): Lit =
       this.copy(roughness = roughness.map(_.withAmount(amount)))
 
-    def toShaderData(shaderId: ShaderId, albedo: AssetName): ShaderData =
+    def toShaderData(shaderId: ShaderId): ShaderData =
       ShaderData(
         shaderId,
         List(
@@ -73,13 +73,19 @@ object LightingModel {
             )
           )
         ),
-        Some(albedo),
+        None,
         emissive.map(_.assetName),
         normal.map(_.assetName),
         roughness.map(_.assetName)
       )
   }
   object Lit {
+    def apply(): Lit =
+      new Lit(None, None, None)
+
+    val flat: Lit =
+      Lit()
+
     def apply(
         emissive: Option[Texture],
         normal: Option[Texture],

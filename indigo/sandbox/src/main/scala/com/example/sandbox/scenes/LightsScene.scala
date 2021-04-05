@@ -54,12 +54,21 @@ object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
       SceneUpdateFragment.empty
         .addLayer(
           grid :+
-          graphic
-            .moveTo(context.startUpData.viewportCenter + Point(10))
-            .withMaterial(
-              LightingAssets.junctionBoxEffects
-                .withOverlay(Fill.Color(RGBA.Magenta))
-            )
+            graphic
+              .moveTo(context.startUpData.viewportCenter + Point(10))
+              .withMaterial(
+                LightingAssets.junctionBoxEffects
+                  .withOverlay(Fill.Color(RGBA.Magenta))
+              ) :+
+            Shape
+              .Polygon(Fill.LinearGradient(Point(0), RGBA.Magenta, Point(45), RGBA.Cyan), Stroke(4, RGBA.Black.withAlpha(0.75)))(
+                Point(10, 10),
+                Point(20, 70),
+                Point(90, 90),
+                Point(70, 20)
+              )
+              .moveTo(175, 10)
+              .withLighting(LightingModel.Lit.flat)
         )
         .withMagnification(2)
         .withLights(
