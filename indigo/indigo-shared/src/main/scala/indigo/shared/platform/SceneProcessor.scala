@@ -233,9 +233,6 @@ object SceneProcessor {
           lightPositionRotation = Array[Float](l.position.x.toFloat, l.position.y.toFloat, l.rotation.value.toFloat, 0.0f),
           lightNearFarAngleIntensity = Array[Float](near, far, l.angle.value.toFloat, l.intensity.toFloat)
         )
-
-      case _ =>
-        LightData.empty
     }
 
   def mergeShaderToUniformData(shaderData: BlendShaderData): List[DisplayObjectUniformData] =
