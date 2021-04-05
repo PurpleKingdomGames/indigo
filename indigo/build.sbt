@@ -9,20 +9,20 @@ val scala213Version = "2.13.5"
 lazy val scalaFixSettings: Seq[sbt.Def.Setting[_]] =
   Seq(
     scalacOptions ++= (
-      if (isDotty.value) Nil else Seq(s"-P:semanticdb:targetroot:${baseDirectory.value}/target/.semanticdb", "-Yrangepos")
+      if (scalaVersion.value.startsWith("3.")) Nil else Seq(s"-P:semanticdb:targetroot:${baseDirectory.value}/target/.semanticdb", "-Yrangepos")
     ),
-    scalafixOnCompile := (if (isDotty.value) false else true)
+    scalafixOnCompile := (if (scalaVersion.value.startsWith("3.")) false else true)
   )
 
 lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
   version := indigoVersion,
   scalaVersion := dottyVersion,
-  semanticdbEnabled := !isDotty.value,
+  semanticdbEnabled := !scalaVersion.value.startsWith("3."),
   semanticdbVersion := scalafixSemanticdb.revision, // use Scalafix compatible version
   crossScalaVersions := Seq(dottyVersion, scala213Version),
   organization := "io.indigoengine",
   libraryDependencies ++= Seq(
-    "org.scalameta" %%% "munit" % "0.7.22" % Test
+    "org.scalameta" %%% "munit" % "0.7.23" % Test
   ),
   testFrameworks += new TestFramework("munit.Framework"),
   Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
@@ -114,11 +114,11 @@ lazy val indigoExtras =
       libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.15.3" % "test"
     )
     .settings(
-      sourceGenerators in Compile += Def.task {
+      Compile / sourceGenerators += Def.task {
         val cachedFun = FileFunction.cached(
           streams.value.cacheDirectory / "shader-library"
         ) { (files: Set[File]) =>
-          ShaderLibraryGen.makeShaderLibrary("ExtrasShaderLibrary", "indigoextras.shaders", files, (sourceManaged in Compile).value).toSet
+          ShaderLibraryGen.makeShaderLibrary("ExtrasShaderLibrary", "indigoextras.shaders", files, (Compile / sourceManaged).value).toSet
         }
 
         cachedFun(IO.listFiles((baseDirectory.value / "shader-library")).toSet).toSeq
@@ -148,7 +148,7 @@ lazy val indigoFacades =
     .settings(
       name := "indigo-facades",
       libraryDependencies ++= Seq(
-        ("org.scala-js" %%% "scalajs-dom" % "1.1.0").withDottyCompat(scalaVersion.value)
+        ("org.scala-js" %%% "scalajs-dom" % "1.1.0").cross(CrossVersion.for3Use2_13)
       )
     )
 
@@ -163,7 +163,7 @@ lazy val indigoPlatforms =
       name := "indigo-platforms",
       libraryDependencies ++= Seq(
         "org.scalacheck" %%% "scalacheck"  % "1.15.3" % "test",
-        ("org.scala-js"  %%% "scalajs-dom" % "1.1.0").withDottyCompat(scalaVersion.value)
+        ("org.scala-js"  %%% "scalajs-dom" % "1.1.0").cross(CrossVersion.for3Use2_13)
       )
     )
     .dependsOn(indigoShared)
@@ -181,22 +181,22 @@ lazy val indigoShared =
       libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.15.3" % "test"
     )
     .settings(
-      sourceGenerators in Compile += Def.task {
+      Compile / sourceGenerators += Def.task {
         val cachedFun = FileFunction.cached(
           streams.value.cacheDirectory / "shaders"
         ) { (files: Set[File]) =>
-          ShaderGen.makeShader(files, (sourceManaged in Compile).value).toSet
+          ShaderGen.makeShader(files, (Compile / sourceManaged).value).toSet
         }
 
         cachedFun(IO.listFiles((baseDirectory.value / "shaders")).toSet).toSeq
       }.taskValue
     )
     .settings(
-      sourceGenerators in Compile += Def.task {
+      Compile / sourceGenerators += Def.task {
         val cachedFun = FileFunction.cached(
           streams.value.cacheDirectory / "shader-library"
         ) { (files: Set[File]) =>
-          ShaderLibraryGen.makeShaderLibrary("ShaderLibrary", "indigo.shaders", files, (sourceManaged in Compile).value).toSet
+          ShaderLibraryGen.makeShaderLibrary("ShaderLibrary", "indigo.shaders", files, (Compile / sourceManaged).value).toSet
         }
 
         cachedFun(IO.listFiles((baseDirectory.value / "shader-library")).toSet).toSeq
@@ -228,7 +228,7 @@ lazy val indigoShaders =
       scalaVersion := dottyVersion,
       organization := "io.indigoengine",
       libraryDependencies ++= Seq(
-        "org.scalameta" %%% "munit" % "0.7.22" % Test
+        "org.scalameta" %%% "munit" % "0.7.23" % Test
       ),
       testFrameworks += new TestFramework("munit.Framework"),
       Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }

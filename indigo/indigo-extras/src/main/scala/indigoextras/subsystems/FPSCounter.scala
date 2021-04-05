@@ -43,6 +43,9 @@ object FPSCounter {
           )
         else
           Outcome(model.copy(frameCountSinceInterval = model.frameCountSinceInterval + 1))
+
+      case _ =>
+        Outcome(model)
     }
 
   def present(fontKey: FontKey, position: Point, targetFPS: Int, depth: Depth, material: Material.ImageEffects): (SubSystemFrameContext, FPSCounterState) => Outcome[SceneUpdateFragment] =

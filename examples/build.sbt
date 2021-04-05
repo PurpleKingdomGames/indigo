@@ -9,7 +9,7 @@ lazy val commonSettings = Seq(
   scalaVersion := dottyVersion,
   organization := "indigo-examples",
   libraryDependencies ++= Seq(
-    "org.scalameta"   %%% "munit"         % "0.7.22" % Test,
+    "org.scalameta"   %%% "munit"         % "0.7.23" % Test,
     "io.indigoengine" %%% "indigo"        % IndigoVersion.getVersion,
     "io.indigoengine" %%% "indigo-extras" % IndigoVersion.getVersion
   ),

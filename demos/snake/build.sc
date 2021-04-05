@@ -11,7 +11,7 @@ import $ivy.`io.indigoengine::mill-indigo:0.6.1-SNAPSHOT`, millindigo._
 
 object snake extends ScalaJSModule with MillIndigo {
   def scalaVersion   = "2.13.5"
-  def scalaJSVersion = "1.5.0"
+  def scalaJSVersion = "1.5.1"
 
   val gameAssetsDirectory: os.Path = os.pwd / "assets"
   val showCursor: Boolean          = true
@@ -56,7 +56,7 @@ object snake extends ScalaJSModule with MillIndigo {
 
   object test extends Tests {
     def ivyDeps = Agg(
-      ivy"org.scalameta::munit::0.7.22",
+      ivy"org.scalameta::munit::0.7.23",
       ivy"org.scalacheck::scalacheck::1.15.3"
     )
 

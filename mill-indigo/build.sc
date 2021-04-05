@@ -5,10 +5,15 @@ import mill.scalajslib._
 import publish._
 import coursier.maven.MavenRepository
 
+object `mill-indigo` extends Cross[IndigoPluginModule]("2.13"/*, "3.0.0-RC1"*/)
+class IndigoPluginModule(val crossScalaVersion: String) extends CrossScalaModule with PublishModule {
 
-object `mill-indigo` extends ScalaModule with PublishModule {
-
-  def scalaVersion = "2.13.5"
+  def scalaVersion =
+    crossScalaVersion match {
+      case "2.13" => "2.13.5"
+      case _ => "2.13.5"
+      // case _=> "3.0.0-RC1"
+    }
 
   def millLibVersion = "0.9.6"
 
@@ -30,7 +35,7 @@ object `mill-indigo` extends ScalaModule with PublishModule {
   // def scalacPluginIvyDeps = T { super.scalacPluginIvyDeps() ++ Agg(ivy"org.wartremover:::wartremover:2.4.13") }
 
   object test extends Tests {
-    def ivyDeps = Agg(ivy"org.scalameta::munit:0.7.22")
+    def ivyDeps = Agg(ivy"org.scalameta::munit:0.7.23")
 
     def testFrameworks = Seq("munit.Framework")
   }
