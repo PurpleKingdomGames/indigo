@@ -233,6 +233,10 @@ lazy val indigoShaders =
       testFrameworks += new TestFramework("munit.Framework"),
       Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
     )
+    .settings(
+      publish := {},
+      publishLocal := {}
+    )
 
 // Root
 lazy val indigoProject =
