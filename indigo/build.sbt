@@ -3,7 +3,7 @@ import scala.language.postfixOps
 
 lazy val indigoVersion = IndigoVersion.getVersion
 
-val dottyVersion    = "3.0.0-RC2"
+val scala3Version    = "3.0.0-RC2"
 val scala213Version = "2.13.5"
 
 lazy val scalaFixSettings: Seq[sbt.Def.Setting[_]] =
@@ -16,17 +16,17 @@ lazy val scalaFixSettings: Seq[sbt.Def.Setting[_]] =
 
 lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
   version := indigoVersion,
-  scalaVersion := dottyVersion,
+  scalaVersion := scala3Version,
   semanticdbEnabled := !scalaVersion.value.startsWith("3."),
   semanticdbVersion := scalafixSemanticdb.revision, // use Scalafix compatible version
-  crossScalaVersions := Seq(dottyVersion, scala213Version),
+  crossScalaVersions := Seq(scala3Version, scala213Version),
   organization := "io.indigoengine",
   libraryDependencies ++= Seq(
     "org.scalameta" %%% "munit" % "0.7.23" % Test
   ),
   testFrameworks += new TestFramework("munit.Framework"),
   Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
-  crossScalaVersions := Seq(dottyVersion, scala213Version)
+  crossScalaVersions := Seq(scala3Version, scala213Version)
 ) ++ scalaFixSettings
 
 lazy val publishSettings = {
@@ -213,8 +213,8 @@ lazy val indigoJsonCirce =
     .settings(
       name := "indigo-json-circe",
       libraryDependencies ++= Seq(
-        "io.circe" %%% "circe-core"   % "0.14.0-M4",
-        "io.circe" %%% "circe-parser" % "0.14.0-M4"
+        "io.circe" %%% "circe-core"   % "0.14.0-M5",
+        "io.circe" %%% "circe-parser" % "0.14.0-M5"
       )
     )
     .dependsOn(indigoExtras)
@@ -225,7 +225,7 @@ lazy val indigoShaders =
     .settings(
       name := "indigo-shaders",
       version := indigoVersion,
-      scalaVersion := dottyVersion,
+      scalaVersion := scala3Version,
       organization := "io.indigoengine",
       libraryDependencies ++= Seq(
         "org.scalameta" %%% "munit" % "0.7.23" % Test

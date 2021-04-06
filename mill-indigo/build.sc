@@ -5,14 +5,14 @@ import mill.scalajslib._
 import publish._
 import coursier.maven.MavenRepository
 
-object `mill-indigo` extends Cross[IndigoPluginModule]("2.13"/*, "3.0.0-RC1"*/)
+object `mill-indigo` extends Cross[IndigoPluginModule]("2.13"/*, "3.0.0-RC2"*/)
 class IndigoPluginModule(val crossScalaVersion: String) extends CrossScalaModule with PublishModule {
 
   def scalaVersion =
     crossScalaVersion match {
       case "2.13" => "2.13.5"
       case _ => "2.13.5"
-      // case _=> "3.0.0-RC1"
+      // case _=> "3.0.0-RC2"
     }
 
   def millLibVersion = "0.9.6"

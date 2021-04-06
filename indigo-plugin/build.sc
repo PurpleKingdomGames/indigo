@@ -8,7 +8,7 @@ import mill.scalajslib.api._
 import coursier.maven.MavenRepository
 import publish._
 
-object `indigo-plugin` extends Cross[IndigoPluginModule]("2.12", "2.13", "3.0.0-RC2")
+object `indigo-plugin` extends Cross[IndigoPluginModule]("2.12", "2.13"/*, "3.0.0-RC2"*/)
 class IndigoPluginModule(val crossScalaVersion: String) extends CrossScalaModule with PublishModule {
 
   def scalaVersion =
