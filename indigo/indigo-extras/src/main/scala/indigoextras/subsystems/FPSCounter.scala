@@ -12,7 +12,6 @@ import indigo.shared.datatypes.RGBA
 import indigo.shared.scenegraph.Text
 import indigo.shared.events.FrameTick
 import indigo.shared.scenegraph.Layer
-import indigo.shared.datatypes.Depth
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.materials.Material
 
