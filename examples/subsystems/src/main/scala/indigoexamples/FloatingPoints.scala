@@ -31,7 +31,7 @@ final case class FloatingPoints(fontKey: FontKey) extends SubSystem {
   }
 
   val text: Text =
-    Text("10", 0, 0, 1, fontKey).alignCenter
+    Text("10", 0, 0, 1, fontKey, Material.Bitmap(AssetName(FontDetails.fontName))).alignCenter
 
   def present(context: SubSystemFrameContext, entities: List[FloatingPointEntity]): Outcome[SceneUpdateFragment] =
     entities
@@ -39,7 +39,7 @@ final case class FloatingPoints(fontKey: FontKey) extends SubSystem {
         FloatingPoints.modifier(e, text).at(context.gameTime.running)
       }
       .sequence
-      .map(SceneUpdateFragment.empty.addUiLayerNodes)
+      .map(SceneUpdateFragment.apply)
 
 }
 
