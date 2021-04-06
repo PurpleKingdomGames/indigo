@@ -97,7 +97,7 @@ final class DisplayObjectConversions(
     def convert(): DisplayCloneBatch =
       new DisplayCloneBatch(
         id = batch.id.value,
-        z = batch.depth.zIndex.toDouble,
+        z = batch.depth.value.toDouble,
         clones = batch.clones.map { td =>
           DisplayObjectConversions.cloneTransformDataToMatrix4(batch.transform |+| td, blankTransform)
         }
@@ -180,7 +180,7 @@ final class DisplayObjectConversions(
             List(
               cloneDataToDisplayEntity(
                 c.id.value,
-                c.depth.zIndex.toDouble,
+                c.depth.value.toDouble,
                 c.transform,
                 refDisplayObject.transform
               )
@@ -269,7 +269,7 @@ final class DisplayObjectConversions(
     DisplayObject(
       transform = DisplayObjectConversions.nodeToMatrix4(leaf, Vector3(leaf.bounds.size.x.toDouble, leaf.bounds.size.y.toDouble, 1.0d)),
       rotation = leaf.rotation.value,
-      z = leaf.depth.zIndex.toDouble,
+      z = leaf.depth.value.toDouble,
       width = leaf.bounds.size.x,
       height = leaf.bounds.size.y,
       atlasName = None,
@@ -318,7 +318,7 @@ final class DisplayObjectConversions(
     DisplayObject(
       transform = DisplayObjectConversions.nodeToMatrix4(leaf, Vector3(leaf.bounds.size.x.toDouble, leaf.bounds.size.y.toDouble, 1.0d)),
       rotation = leaf.rotation.value,
-      z = leaf.depth.zIndex.toDouble,
+      z = leaf.depth.value.toDouble,
       width = leaf.bounds.size.x,
       height = leaf.bounds.size.y,
       atlasName = shader.channel0.map(assetName => lookupAtlasName(assetMapping, assetName.value)),
@@ -362,7 +362,7 @@ final class DisplayObjectConversions(
     DisplayObject(
       transform = DisplayObjectConversions.nodeToMatrix4(leaf, Vector3(leaf.crop.size.x.toDouble, leaf.crop.size.y.toDouble, 1.0d)),
       rotation = leaf.rotation.value,
-      z = leaf.depth.zIndex.toDouble,
+      z = leaf.depth.value.toDouble,
       width = leaf.crop.size.x,
       height = leaf.crop.size.y,
       atlasName = Some(lookupAtlasName(assetMapping, materialName)),
@@ -410,7 +410,7 @@ final class DisplayObjectConversions(
     DisplayObject(
       transform = DisplayObjectConversions.nodeToMatrix4(leaf, Vector3(width.toDouble, height.toDouble, 1.0d)),
       rotation = leaf.rotation.value,
-      z = leaf.depth.zIndex.toDouble,
+      z = leaf.depth.value.toDouble,
       width = width,
       height = height,
       atlasName = Some(lookupAtlasName(assetMapping, materialName)),
@@ -475,7 +475,7 @@ final class DisplayObjectConversions(
                 Vector3(fontChar.bounds.width.toDouble, fontChar.bounds.height.toDouble, 1.0d)
               ),
               rotation = leaf.rotation.value,
-              z = leaf.depth.zIndex.toDouble,
+              z = leaf.depth.value.toDouble,
               width = fontChar.bounds.width,
               height = fontChar.bounds.height,
               atlasName = Some(lookupAtlasName(assetMapping, materialName)),
