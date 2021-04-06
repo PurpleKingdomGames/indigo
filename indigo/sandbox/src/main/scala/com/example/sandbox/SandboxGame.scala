@@ -56,7 +56,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
         SandboxBootData(flags.getOrElse("key", "No entry for 'key'."), gameViewport)
       ).withAssets(SandboxAssets.assets ++ Shaders.assets)
         .withFonts(Fonts.fontInfo)
-        .withSubSystems(FPSCounter(Fonts.fontKey, Point(5, 165), targetFPS, Depth(200), None, SandboxAssets.fontMaterial))
+        .withSubSystems(FPSCounter(Fonts.fontKey, Point(5, 165), targetFPS, Option(BindingKey("fps counter")), SandboxAssets.fontMaterial))
         .withShaders(
           Shaders.circle,
           Shaders.external,
@@ -165,7 +165,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
   }
 
   def present(context: FrameContext[SandboxStartupData], model: SandboxGameModel, viewModel: SandboxViewModel): Outcome[SceneUpdateFragment] =
-    Outcome(SceneUpdateFragment.empty)
+    Outcome(SceneUpdateFragment(Layer(BindingKey("fps counter")).withDepth(Depth(200))))
 }
 
 final case class Dude(aseprite: Aseprite, sprite: Sprite)

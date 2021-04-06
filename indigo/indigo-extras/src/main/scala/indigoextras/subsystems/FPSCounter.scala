@@ -18,12 +18,12 @@ import indigo.shared.materials.Material
 
 object FPSCounter {
 
-  def apply(fontKey: FontKey, position: Point, targetFPS: Int, depth: Depth, layerKey: Option[BindingKey], material: Material.ImageEffects): SubSystem =
+  def apply(fontKey: FontKey, position: Point, targetFPS: Int, layerKey: Option[BindingKey], material: Material.ImageEffects): SubSystem =
     SubSystem[GlobalEvent, FPSCounterState](
       _eventFilter = eventFilter,
       _initialModel = Outcome(FPSCounterState.default),
       _update = update(targetFPS),
-      _present = present(fontKey, position, targetFPS, depth, layerKey, material)
+      _present = present(fontKey, position, targetFPS, layerKey, material)
     )
 
   lazy val eventFilter: GlobalEvent => Option[GlobalEvent] = {
@@ -49,22 +49,30 @@ object FPSCounter {
         Outcome(model)
     }
 
-  def present(fontKey: FontKey, position: Point, targetFPS: Int, depth: Depth, layerKey: Option[BindingKey], material: Material.ImageEffects): (SubSystemFrameContext, FPSCounterState) => Outcome[SceneUpdateFragment] =
+  def present(
+      fontKey: FontKey,
+      position: Point,
+      targetFPS: Int,
+      layerKey: Option[BindingKey],
+      material: Material.ImageEffects
+  ): (SubSystemFrameContext, FPSCounterState) => Outcome[SceneUpdateFragment] =
     (_, model) => {
-      val layer =
-        Layer(
-          Text(
-            s"""FPS ${model.fps.toString}""",
-            position.x,
-            position.y,
-            1,
-            fontKey,
-            material.withTint(pickTint(targetFPS, model.fps))
-          )
-        ).withDepth(depth)
-
       Outcome(
-        SceneUpdateFragment(layerKey.map(layer.withKey).getOrElse(layer))
+        SceneUpdateFragment(
+          Layer(
+            layerKey,
+            List(
+              Text(
+                s"""FPS ${model.fps.toString}""",
+                position.x,
+                position.y,
+                1,
+                fontKey,
+                material.withTint(pickTint(targetFPS, model.fps))
+              )
+            )
+          )
+        )
       )
     }
 
