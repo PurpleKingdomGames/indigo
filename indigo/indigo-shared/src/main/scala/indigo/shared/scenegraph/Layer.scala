@@ -104,6 +104,10 @@ object Layer {
 
   def empty: Layer =
     Layer(Nil, Nil, None, None, None, None, None)
+  def empty(key: BindingKey): Layer =
+    Layer(Nil, Nil, Option(key), None, None, None, None)
+  def empty(key: Option[BindingKey]): Layer =
+    Layer(Nil, Nil, key, None, None, None, None)
 
   def apply(nodes: SceneNode*): Layer =
     Layer(nodes.toList, Nil, None, None, None, None, None)
@@ -120,11 +124,6 @@ object Layer {
     Layer(nodes.toList, Nil, Option(key), None, None, None, None)
   def apply(key: BindingKey, magnification: Int, depth: Depth)(nodes: SceneNode*): Layer =
     Layer(nodes.toList, Nil, Option(key), Option(magnification), Option(depth), None, None)
-
-  def apply(key: BindingKey): Layer =
-    Layer(Nil, Nil, Option(key), None, None, None, None)
-  def apply(key: Option[BindingKey]): Layer =
-    Layer(Nil, Nil, key, None, None, None, None)
 
   def apply(key: BindingKey, magnification: Int, depth: Depth): Layer =
     Layer(Nil, Nil, Option(key), Option(magnification), Option(depth), None, None)

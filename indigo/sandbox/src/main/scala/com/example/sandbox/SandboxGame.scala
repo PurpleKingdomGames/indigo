@@ -165,7 +165,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
   }
 
   def present(context: FrameContext[SandboxStartupData], model: SandboxGameModel, viewModel: SandboxViewModel): Outcome[SceneUpdateFragment] =
-    Outcome(SceneUpdateFragment(Layer(BindingKey("fps counter")).withDepth(Depth(200))))
+    Outcome(SceneUpdateFragment(Layer.empty(BindingKey("fps counter")).withDepth(Depth(200))))
 }
 
 final case class Dude(aseprite: Aseprite, sprite: Sprite)
