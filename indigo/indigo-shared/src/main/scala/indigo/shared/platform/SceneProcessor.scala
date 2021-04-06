@@ -82,7 +82,7 @@ final class SceneProcessor(
               SceneProcessor.makeLightsData(scene.lights ++ l.lights),
               blending.clearColor.getOrElse(RGBA.Zero),
               l.magnification,
-              l.depth.map(_.zIndex).getOrElse(i),
+              l.depth.map(_.value).getOrElse(i),
               blending.entity,
               blending.layer,
               shaderData.shaderId,

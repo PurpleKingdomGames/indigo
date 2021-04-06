@@ -249,7 +249,7 @@ final case class InputField(
             field,
             assets.cursor
               .moveTo(cursorPositionPoint)
-              .withDepth(Depth(-(depth.zIndex + 100000)))
+              .withDepth(Depth(-(depth.value + 100000)))
           )
 
         case Some(seconds) =>
@@ -265,7 +265,7 @@ final case class InputField(
                   field,
                   assets.cursor
                     .moveTo(cursorPositionPoint)
-                    .withDepth(Depth(-(depth.zIndex + 100000)))
+                    .withDepth(Depth(-(depth.value + 100000)))
                 )
             }
             .at(gameTime.running)
