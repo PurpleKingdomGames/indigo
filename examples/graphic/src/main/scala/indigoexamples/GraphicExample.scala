@@ -15,6 +15,8 @@ object GraphicExample extends IndigoSandbox[Unit, Unit] {
 
   val animations: Set[Animation] = Set()
 
+  val shaders: Set[Shader] = Set()
+
   def setup(assetCollection: AssetCollection, dice: Dice): Outcome[Startup[Unit]] =
     Outcome(Startup.Success(()))
 
@@ -25,7 +27,7 @@ object GraphicExample extends IndigoSandbox[Unit, Unit] {
     _ => Outcome(model)
 
   val graphic: Graphic =
-    Graphic(0, 0, 256, 256, 1, Material.Textured(AssetName("graphics")))
+    Graphic(0, 0, 256, 256, 1, Material.ImageEffects(AssetName("graphics")))
       .withRef(48, 48)
 
   val basic: Graphic =
@@ -38,14 +40,23 @@ object GraphicExample extends IndigoSandbox[Unit, Unit] {
   def present(context: FrameContext[Unit], model: Unit): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment.empty
-        .addGameLayerNodes(
-          basic.withAlpha(0.5),
+        .addLayer(
+          basic.modifyMaterial {
+            case m: Material.ImageEffects => m.withAlpha(0.5)
+            case m                        => m
+          },
           basic
             .rotateTo(Radians(Math.PI / 8))
-            .withAlpha(0.75),
+            .modifyMaterial {
+              case m: Material.ImageEffects => m.withAlpha(0.75)
+              case m                        => m
+            },
           basic
             .rotateTo(Radians(Math.PI / 4))
-            .withAlpha(0.75),
+            .modifyMaterial {
+              case m: Material.ImageEffects => m.withAlpha(0.75)
+              case m                        => m
+            },
           graphic
             .withCrop(128, 0, 96, 96)
             .moveTo(137 * 1, 100),
@@ -61,11 +72,17 @@ object GraphicExample extends IndigoSandbox[Unit, Unit] {
           graphic
             .withCrop(128, 0, 96, 96)
             .moveTo(137 * 1, 300)
-            .withAlpha(0.5),
+            .modifyMaterial {
+              case m: Material.ImageEffects => m.withAlpha(0.5)
+              case m                        => m
+            },
           graphic
             .withCrop(128, 0, 96, 96)
             .moveTo(137 * 2, 300)
-            .withTint(RGBA.Red),
+            .modifyMaterial {
+              case m: Material.ImageEffects => m.withTint(RGBA.Red)
+              case m                        => m
+            },
           graphic
             .withCrop(128, 0, 96, 96)
             .moveTo(137 * 3, 300)

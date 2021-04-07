@@ -30,11 +30,13 @@ object LightingGame extends IndigoSandbox[Unit, Unit] {
   val animationsKey: AnimationKey =
     AnimationKey("anims")
 
+  val shaders: Set[Shader] =
+    Set()
+
   val animations: Set[Animation] =
     Set(
       Animation(
         animationsKey,
-        LightingAssets.trafficLightsMaterial,
         Frame(Rectangle(0, 0, 64, 64), Millis(500)),
         Frame(Rectangle(64, 0, 64, 64), Millis(500)),
         Frame(Rectangle(0, 64, 64, 64), Millis(500))
@@ -59,30 +61,28 @@ object LightingGame extends IndigoSandbox[Unit, Unit] {
     Signal.Orbit(config.viewport.center, distance.toDouble).map { vec =>
       PointLight.default
         .moveTo(vec.toPoint)
-        .withAttenuation(150)
-        .withColor(RGB.Magenta)
+        .withFalloff(Falloff.SmoothQuadratic(0, 150))
+        .withColor(RGBA.Magenta)
     }
 
   def pulsingLight: Signal[PointLight] =
     Signal.SmoothPulse.map { amount =>
       PointLight.default
         .moveTo(config.viewport.center + Point(30, -60))
-        .withAttenuation((amount * 70).toInt)
-        .withColor(RGB.Cyan)
+        .withFalloff(Falloff.SmoothQuadratic(0, (amount * 70).toInt))
+        .withColor(RGBA.Cyan)
     }
 
   def present(context: FrameContext[Unit], model: Unit): Outcome[SceneUpdateFragment] =
     Outcome(
-      SceneUpdateFragment.empty
-        .addGameLayerNodes(
-          graphic,
-          graphic.moveBy(-60, 0).withMaterial(LightingAssets.junctionBoxMaterialOff),
-          graphic.moveBy(-30, 0).withMaterial(LightingAssets.junctionBoxMaterialGlass),
-          graphic.moveBy(30, 0).withMaterial(LightingAssets.junctionBoxMaterialFlat),
-          graphic.moveBy(60, 0).withMaterial(LightingAssets.junctionBoxMaterialFlat.unlit)
-        )
-        .withAmbientLight(RGBA.White.withAmount(0.1))
-        .withLights(
+      SceneUpdateFragment(
+        graphic,
+        graphic.moveBy(-60, 0).withMaterial(LightingAssets.junctionBoxMaterialOff),
+        graphic.moveBy(-30, 0).withMaterial(LightingAssets.junctionBoxMaterialOn),
+        graphic.moveBy(30, 0).withMaterial(LightingAssets.junctionBoxMaterialFlat),
+        graphic.moveBy(60, 0).withMaterial(LightingAssets.junctionBoxMaterialFlat.withLighting(LightingModel.Unlit))
+      ).withLights(
+          AmbientLight(RGBA.White.withAmount(0.1)),
           // PointLight.default
           //   .moveTo(config.viewport.center + Point(50, 0))
           //   .withAttenuation(50)
@@ -101,8 +101,8 @@ object LightingGame extends IndigoSandbox[Unit, Unit] {
           //   .withHeight(25)
           //   .withPower(1.5)
         )
-        .addGameLayerNodes(
-          Sprite(BindingKey("lights animation"), 0, 0, 1, animationsKey).play()
+        .addLayer(
+          Sprite(BindingKey("lights animation"), 0, 0, 1, animationsKey, LightingAssets.trafficLightsMaterial).play()
         )
       // .addGameLayerNodes(
       //   graphic
@@ -120,40 +120,31 @@ object LightingAssets {
   val junctionBoxSpecular: Texture = Texture(AssetName("junctionbox_specular"), 1.0d)
   val trafficLightsName: AssetName = AssetName("trafficlights")
 
-  val junctionBoxMaterialOn: Material.Lit =
-    Material.Lit(
-      junctionBoxAlbedo,
+  val lightingModel: LightingModel.Lit =
+    LightingModel.Lit(
       Some(junctionBoxEmission),
       Some(junctionBoxNormal),
       Some(junctionBoxSpecular)
     )
 
-  val junctionBoxMaterialGlass: Material.Lit =
-    Material.Lit(
+  val junctionBoxMaterialOn: Material.Bitmap =
+    Material.Bitmap(junctionBoxAlbedo, lightingModel)
+
+  val junctionBoxMaterialOff: Material.Bitmap =
+    Material.Bitmap(
       junctionBoxAlbedo,
-      Some(junctionBoxEmission),
-      Some(junctionBoxNormal),
-      Some(junctionBoxSpecular)
+      LightingModel.Lit(
+        None,
+        Some(junctionBoxNormal),
+        Some(junctionBoxSpecular)
+      )
     )
 
-  val junctionBoxMaterialOff: Material.Lit =
-    Material.Lit(
-      junctionBoxAlbedo,
-      None,
-      Some(junctionBoxNormal),
-      Some(junctionBoxSpecular)
-    )
+  val junctionBoxMaterialFlat: Material.Bitmap =
+    Material.Bitmap(junctionBoxAlbedo, LightingModel.Lit.flat)
 
-  val junctionBoxMaterialFlat: Material.Textured =
-    Material.Textured(junctionBoxAlbedo).lit
-
-  val trafficLightsMaterial: Material.Lit =
-    Material.Lit(
-      trafficLightsName,
-      Some(Texture(trafficLightsName, 1.0d)),
-      None,
-      None
-    )
+  val trafficLightsMaterial: Material.Bitmap =
+    Material.Bitmap(trafficLightsName, LightingModel.Unlit)
 
   def assets: Set[AssetType] =
     Set(

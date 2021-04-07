@@ -4,11 +4,11 @@ import indigo._
 
 object FontStuff {
 
-  val fontKey: FontKey = FontKey("MyFontKey")
+  val fontKey: FontKey    = FontKey("MyFontKey")
   val fontName: AssetName = AssetName("My boxy font")
 
   val fontInfo: FontInfo =
-    FontInfo(fontKey, Material.Textured(fontName), 320, 230, FontChar("?", 93, 52, 23, 23))
+    FontInfo(fontKey, 320, 230, FontChar("?", 93, 52, 23, 23))
       .addChar(FontChar("A", 3, 78, 23, 23))
       .addChar(FontChar("B", 26, 78, 23, 23))
       .addChar(FontChar("C", 50, 78, 23, 23))

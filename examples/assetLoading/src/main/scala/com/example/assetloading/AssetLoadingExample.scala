@@ -119,8 +119,8 @@ object Assets {
       AssetType.Audio(AssetName("sfx"), AssetPath("assets/RetroGameJump.mp3"))
     )
 
-  val junctionBoxMaterial: Material.Lit =
-    Material.Lit(
+  val junctionBoxMaterial: Material.Bitmap =
+    Material.Bitmap(
       junctionBoxAlbedo,
       junctionBoxEmission,
       junctionBoxNormal,
@@ -134,9 +134,9 @@ object Assets {
 
   val buttonAssets: ButtonAssets =
     ButtonAssets(
-      up = Graphic(0, 0, 16, 16, 2, Material.Textured(AssetName("graphics"))).withCrop(32, 0, 16, 16),
-      over = Graphic(0, 0, 16, 16, 2, Material.Textured(AssetName("graphics"))).withCrop(32, 16, 16, 16),
-      down = Graphic(0, 0, 16, 16, 2, Material.Textured(AssetName("graphics"))).withCrop(32, 32, 16, 16)
+      up = Graphic(0, 0, 16, 16, 2, Material.Bitmap(AssetName("graphics"))).withCrop(32, 0, 16, 16),
+      over = Graphic(0, 0, 16, 16, 2, Material.Bitmap(AssetName("graphics"))).withCrop(32, 16, 16, 16),
+      down = Graphic(0, 0, 16, 16, 2, Material.Bitmap(AssetName("graphics"))).withCrop(32, 32, 16, 16)
     )
 
 }

@@ -11,6 +11,6 @@ object Assets {
     )
 
   val cross: Graphic =
-    Graphic(0, 0, 3, 3, 1, Material.Textured(AssetName("graphics")))
+    Graphic(0, 0, 3, 3, 1, Material.ImageEffects(AssetName("graphics")))
 
 }

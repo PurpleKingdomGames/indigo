@@ -13,15 +13,15 @@ object Assets {
       AssetType.Image(font, AssetPath("assets/boxy_font.png"))
     )
 
-  val redDot: Graphic    = Graphic(Rectangle(0, 0, 16, 16), 1, Material.Textured(dots)).withRef(8, 8)
-  val greenDot: Graphic  = Graphic(Rectangle(16, 0, 16, 16), 1, Material.Textured(dots)).withRef(8, 8)
-  val blueDot: Graphic   = Graphic(Rectangle(0, 16, 16, 16), 1, Material.Textured(dots)).withRef(8, 8)
-  val yellowDot: Graphic = Graphic(Rectangle(16, 16, 16, 16), 1, Material.Textured(dots)).withRef(8, 8)
+  val redDot: Graphic    = Graphic(Rectangle(0, 0, 16, 16), 1, Material.Bitmap(dots)).withRef(8, 8)
+  val greenDot: Graphic  = Graphic(Rectangle(16, 0, 16, 16), 1, Material.Bitmap(dots)).withRef(8, 8)
+  val blueDot: Graphic   = Graphic(Rectangle(0, 16, 16, 16), 1, Material.Bitmap(dots)).withRef(8, 8)
+  val yellowDot: Graphic = Graphic(Rectangle(16, 16, 16, 16), 1, Material.Bitmap(dots)).withRef(8, 8)
 
   val fontKey: FontKey = FontKey("Game font")
 
   val fontInfo: FontInfo =
-    FontInfo(fontKey, Material.Textured(font), 320, 230, FontChar(" ", 145, 52, 23, 23)).isCaseInSensitive
+    FontInfo(fontKey, Material.Bitmap(font), 320, 230, FontChar(" ", 145, 52, 23, 23)).isCaseInSensitive
       .addChar(FontChar("0", 3, 26, 23, 23))
       .addChar(FontChar("1", 26, 26, 15, 23))
       .addChar(FontChar("2", 41, 26, 23, 23))

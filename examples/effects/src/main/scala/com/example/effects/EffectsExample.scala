@@ -90,8 +90,8 @@ object EffectsAssets {
 
   val junctionBoxAlbedo: AssetName = AssetName("junctionbox_albedo")
 
-  val junctionBoxMaterial: Material.Textured =
-    Material.Textured(junctionBoxAlbedo)
+  val junctionBoxMaterial: Material.Bitmap =
+    Material.Bitmap(junctionBoxAlbedo)
 
   def assets: Set[AssetType] =
     Set(

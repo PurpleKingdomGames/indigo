@@ -14,7 +14,7 @@ object FlareAutomata {
     AutomataPoolKey("flare")
 
   def automata(toScreenSpace: Vertex => Point): Automata =
-    Automata(poolKey, automaton(toScreenSpace), Automata.Layer.Game)
+    Automata(poolKey, automaton(toScreenSpace))
 
   def automaton(toScreenSpace: Vertex => Point): Automaton =
     Automaton(
@@ -32,11 +32,11 @@ object FlareAutomata {
 
   object ModifierFunctions {
 
-    def signal(toScreenSpace: Vertex => Point): SignalReader[(AutomatonSeedValues, SceneGraphNode), AutomatonUpdate] =
+    def signal(toScreenSpace: Vertex => Point): SignalReader[(AutomatonSeedValues, SceneNode), AutomatonUpdate] =
       SignalReader {
         case (sa, n) =>
           (sa.payload, n) match {
-            case (Some(Flare(_, moveSignal, tint)), r: Renderable) =>
+            case (Some(Flare(_, moveSignal, tint)), r: Graphic) =>
               for {
                 position <- moveSignal |> SignalFunction(toScreenSpace)
                 events   <- Projectiles.emitTrailEvents(position, tint, Millis(25).toSeconds)

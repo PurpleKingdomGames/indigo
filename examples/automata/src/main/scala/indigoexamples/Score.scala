@@ -11,10 +11,9 @@ object Score {
     Automata(
       AutomataPoolKey("points"),
       Automaton(
-        AutomatonNode.Fixed(Text("0", 0, 0, 1, fontKey).alignCenter),
+        AutomatonNode.Fixed(Text("0", 0, 0, 1, fontKey, Material.ImageEffects(FontStuff.fontName)).alignCenter),
         Seconds(1.5d)
-      ).withModifier(ModiferFunctions.signal),
-      Automata.Layer.Game
+      ).withModifier(ModiferFunctions.signal)
     )
 
   def spawnEvent(position: Point, dice: Dice): AutomataEvent =
@@ -46,7 +45,13 @@ object Score {
     val alphaSF: SignalFunction[(Double, Text), Double] =
       SignalFunction {
         case (multiplier, sceneGraphNode) =>
-          sceneGraphNode.effects.alpha * multiplier
+          sceneGraphNode.material match {
+            case m: Material.ImageEffects =>
+              m.alpha * multiplier
+
+            case _ =>
+              1.0
+          }
       }
 
     val tintSF: SignalFunction[Double, RGBA] =
@@ -63,7 +68,7 @@ object Score {
     val newTint: AutomatonSeedValues => Signal[RGBA] =
       seed => multiplierS(seed) |> tintSF
 
-    val signal: SignalReader[(AutomatonSeedValues, SceneGraphNode), AutomatonUpdate] =
+    val signal: SignalReader[(AutomatonSeedValues, SceneNode), AutomatonUpdate] =
       SignalReader {
         case (seed, sceneGraphNode) =>
           sceneGraphNode match {
@@ -74,9 +79,13 @@ object Score {
                     case (position, alpha, tint) =>
                       AutomatonUpdate(
                         t.moveTo(position)
-                          .withAlpha(alpha)
-                          .withTint(tint)
                           .withText(score)
+                          .modifyMaterial {
+                            case m: Material.ImageEffects =>
+                              m.withAlpha(alpha)
+                                .withTint(tint)
+                            case m => m
+                          }
                       )
                   }
                 case _ =>

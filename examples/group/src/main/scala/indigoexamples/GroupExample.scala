@@ -22,6 +22,9 @@ object GroupExample extends IndigoSandbox[Unit, Radians] {
   val animations: Set[Animation] =
     Set()
 
+  val shaders: Set[Shader] =
+    Set()
+
   def setup(assetCollection: AssetCollection, dice: Dice): Outcome[Startup[Unit]] =
     Outcome(Startup.Success(()))
 
@@ -36,13 +39,13 @@ object GroupExample extends IndigoSandbox[Unit, Radians] {
   }
 
   val graphic =
-    Graphic(0, 0, 32, 32, 1, Material.Textured(assetName))
+    Graphic(0, 0, 32, 32, 1, Material.Bitmap(assetName))
       .withCrop(32, 0, 32, 32)
       .withRef(16, 16)
 
   def present(context: FrameContext[Unit], model: Radians): Outcome[SceneUpdateFragment] =
     Outcome(
-      SceneUpdateFragment.empty.addGameLayerNodes(
+      SceneUpdateFragment(
         graphic.moveTo(16, 16),
         Group(
           graphic,

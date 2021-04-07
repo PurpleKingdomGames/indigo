@@ -17,7 +17,7 @@ object TrailAutomata {
     ).withModifier(Modifer.signal)
 
   val automata: Automata =
-    Automata(poolKey, automaton, Automata.Layer.Game)
+    Automata(poolKey, automaton)
       .withMaxPoolSize(500)
 
   def spawnEvent(at: Point, tint: RGBA): AutomataEvent.Spawn =
@@ -34,12 +34,16 @@ object TrailAutomata {
       SignalFunction { alpha =>
         AutomatonUpdate(
           r.moveTo(position)
-            .withAlpha(alpha)
-            .withTint(tint)
+            .modifyMaterial {
+              case m: Material.ImageEffects =>
+                m.withAlpha(alpha).withTint(tint)
+
+              case m => m
+            }
         )
       }
 
-    val signal: SignalReader[(AutomatonSeedValues, SceneGraphNode), AutomatonUpdate] =
+    val signal: SignalReader[(AutomatonSeedValues, SceneNode), AutomatonUpdate] =
       SignalReader {
         case (sa, n) =>
           (sa.payload, n) match {

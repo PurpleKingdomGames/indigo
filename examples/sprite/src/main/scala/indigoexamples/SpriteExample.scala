@@ -18,12 +18,13 @@ object SpriteExample extends IndigoSandbox[Unit, Unit] {
   val animations: Set[Animation] = Set(
     Animation(
       animationsKey,
-      Material.Textured(AssetName("trafficlights")),
       Frame(Rectangle(0, 0, 64, 64), Millis(250)),
       Frame(Rectangle(64, 0, 64, 64), Millis(250)),
       Frame(Rectangle(0, 64, 64, 64), Millis(250))
     )
   )
+
+  val shaders: Set[Shader] = Set()
 
   def setup(assetCollection: AssetCollection, dice: Dice): Outcome[Startup[Unit]] =
     Outcome(Startup.Success(()))
@@ -48,7 +49,7 @@ object SpriteExample extends IndigoSandbox[Unit, Unit] {
   def present(context: FrameContext[Unit], model: Unit): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
-        Sprite(BindingKey("lights animation"), 0, 0, 1, animationsKey).play()
+        Sprite(BindingKey("lights animation"), 0, 0, 1, animationsKey, Material.Bitmap(AssetName("trafficlights"))).play()
       )
     )
 }

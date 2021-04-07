@@ -60,7 +60,7 @@ object InputMapperExample extends IndigoSandbox[Unit, Model] {
   def drawDot(
       dot: Dot
   ): Graphic =
-    Graphic(Rectangle(0, 0, 32, 32), 1, Material.Textured(assetName))
+    Graphic(Rectangle(0, 0, 32, 32), 1, Material.Bitmap(assetName))
       .withCrop(Rectangle(16, 16, 16, 16))
       .withRef(8, 8)
       .moveTo(dot.center)

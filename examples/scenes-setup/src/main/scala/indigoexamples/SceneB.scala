@@ -48,10 +48,9 @@ object SceneB extends Scene[StartUpData, GameModel, Unit] {
       if (context.inputState.mouse.wasMouseClickedWithin(Rectangle(0, 0, 550, 400))) List(SceneEvent.JumpTo(SceneA.name))
       else Nil
 
-    val text: Text = Text(sceneModel.value, 20, 20, 1, FontStuff.fontKey)
+    val text: Text = Text(sceneModel.value, 20, 20, 1, FontStuff.fontKey, FontStuff.fontMaterial)
     Outcome(
-      SceneUpdateFragment.empty
-        .addGameLayerNodes(text)
+      SceneUpdateFragment(text)
     ).addGlobalEvents(events)
   }
 }
