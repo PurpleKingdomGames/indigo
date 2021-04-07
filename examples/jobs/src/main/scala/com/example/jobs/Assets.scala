@@ -21,7 +21,7 @@ object Assets {
   val fontKey: FontKey = FontKey("Game font")
 
   val fontInfo: FontInfo =
-    FontInfo(fontKey, Material.Bitmap(font), 320, 230, FontChar(" ", 145, 52, 23, 23)).isCaseInSensitive
+    FontInfo(fontKey, 320, 230, FontChar(" ", 145, 52, 23, 23)).isCaseInSensitive
       .addChar(FontChar("0", 3, 26, 23, 23))
       .addChar(FontChar("1", 26, 26, 15, 23))
       .addChar(FontChar("2", 41, 26, 23, 23))

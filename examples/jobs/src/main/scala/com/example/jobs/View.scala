@@ -5,14 +5,13 @@ import indigo._
 object View {
 
   def present(model: Model): SceneUpdateFragment =
-    SceneUpdateFragment.empty
-      .addGameLayerNodes(
-        drawHut.moveTo(150, 50),
-        drawWood(model.woodPiles),
-        drawBob(model.bob),
-        drawTrees(model.grove),
-        Text(model.woodCollected.toString(), 10, 10, 1, Assets.fontKey)
-      )
+    SceneUpdateFragment(
+      drawHut.moveTo(150, 50),
+      drawWood(model.woodPiles),
+      drawBob(model.bob),
+      drawTrees(model.grove),
+      Text(model.woodCollected.toString(), 10, 10, 1, Assets.fontKey, Material.Bitmap(Assets.font))
+    )
 
   def drawHut: Group =
     Group(

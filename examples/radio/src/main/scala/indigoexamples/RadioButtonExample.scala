@@ -34,7 +34,7 @@ object RadioButtonExample extends IndigoDemo[Unit, Unit, MyGameModel, MyViewMode
     )
 
   val background: Graphic =
-    Graphic(0, 0, 66, 26, 3, Material.Bitmap(AssetName("background")))
+    Graphic(0, 0, 66, 26, 3, Material.ImageEffects(AssetName("background")))
 
   def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[Unit]] =
     Outcome(Startup.Success(()))
@@ -84,7 +84,14 @@ object RadioButtonExample extends IndigoDemo[Unit, Unit, MyGameModel, MyViewMode
 
   def present(context: FrameContext[Unit], model: MyGameModel, viewModel: MyViewModel): Outcome[SceneUpdateFragment] =
     Outcome(
-      SceneUpdateFragment(viewModel.radioButtons.draw, viewModel.background.withTint(model.tint))
+      SceneUpdateFragment(
+        viewModel.radioButtons.draw,
+        viewModel.background
+          .modifyMaterial {
+            case m: Material.ImageEffects => m.withTint(model.tint)
+            case m                        => m
+          }
+      )
     )
 }
 

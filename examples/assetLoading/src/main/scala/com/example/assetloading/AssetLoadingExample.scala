@@ -122,9 +122,11 @@ object Assets {
   val junctionBoxMaterial: Material.Bitmap =
     Material.Bitmap(
       junctionBoxAlbedo,
-      junctionBoxEmission,
-      junctionBoxNormal,
-      junctionBoxSpecular
+      LightingModel.Lit(
+        junctionBoxEmission,
+        junctionBoxNormal,
+        junctionBoxSpecular
+      )
     )
 
   def assets: Set[AssetType] =
