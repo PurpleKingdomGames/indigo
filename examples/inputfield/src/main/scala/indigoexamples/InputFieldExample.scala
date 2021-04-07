@@ -28,8 +28,13 @@ object InputFieldExample extends IndigoDemo[Unit, Unit, Unit, MyViewModel] {
     Outcome {
       val assets =
         InputFieldAssets(
-          Text("placeholder", 0, 0, 0, FontStuff.fontKey).alignLeft,
-          Graphic(0, 0, 16, 16, 2, Material.Textured(FontStuff.fontName)).withCrop(188, 78, 14, 23).withTint(0, 0, 1)
+          Text("placeholder", 0, 0, 0, FontStuff.fontKey, Material.Bitmap(FontStuff.fontName)).alignLeft,
+          Graphic(0, 0, 16, 16, 2, Material.Bitmap(FontStuff.fontName))
+            .withCrop(188, 78, 14, 23)
+            .modifyMaterial {
+              case m: Material.ImageEffects => m.withTint(RGBA.Blue)
+              case m                        => m
+            }
         )
 
       MyViewModel(
@@ -79,7 +84,7 @@ object InputFieldExample extends IndigoDemo[Unit, Unit, Unit, MyViewModel] {
       context.boundaryLocator
     )
 
-    Outcome(single |+| multi)
+    Outcome(SceneUpdateFragment(single ++ multi))
 
   }
 
@@ -96,7 +101,7 @@ object FontStuff {
   val fontName: AssetName = AssetName("My boxy font")
 
   val fontInfo: FontInfo =
-    FontInfo(fontKey, Material.Textured(fontName), 320, 230, FontChar("?", 93, 52, 23, 23))
+    FontInfo(fontKey, 320, 230, FontChar("?", 93, 52, 23, 23))
       .addChar(FontChar("A", 3, 78, 23, 23))
       .addChar(FontChar("B", 26, 78, 23, 23))
       .addChar(FontChar("C", 50, 78, 23, 23))

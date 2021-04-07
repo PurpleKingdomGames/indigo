@@ -28,13 +28,13 @@ object RadioButtonExample extends IndigoDemo[Unit, Unit, MyGameModel, MyViewMode
 
   val buttonAssets: ButtonAssets =
     ButtonAssets(
-      up = Graphic(0, 0, 16, 16, 2, Material.Textured(radioButtonGraphic)).withCrop(0, 0, 16, 16),
-      over = Graphic(0, 0, 16, 16, 2, Material.Textured(radioButtonGraphic)).withCrop(16, 0, 16, 16),
-      down = Graphic(0, 0, 16, 16, 2, Material.Textured(radioButtonGraphic)).withCrop(32, 0, 16, 16)
+      up = Graphic(0, 0, 16, 16, 2, Material.Bitmap(radioButtonGraphic)).withCrop(0, 0, 16, 16),
+      over = Graphic(0, 0, 16, 16, 2, Material.Bitmap(radioButtonGraphic)).withCrop(16, 0, 16, 16),
+      down = Graphic(0, 0, 16, 16, 2, Material.Bitmap(radioButtonGraphic)).withCrop(32, 0, 16, 16)
     )
 
   val background: Graphic =
-    Graphic(0, 0, 66, 26, 3, Material.Textured(AssetName("background")))
+    Graphic(0, 0, 66, 26, 3, Material.Bitmap(AssetName("background")))
 
   def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[Unit]] =
     Outcome(Startup.Success(()))

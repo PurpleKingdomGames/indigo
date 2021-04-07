@@ -22,6 +22,9 @@ object TextExample extends IndigoSandbox[Unit, Model] {
   val animations: Set[Animation] =
     Set()
 
+  val shaders: Set[Shader] =
+    Set()
+
   def setup(assetCollection: AssetCollection, dice: Dice): Outcome[Startup[Unit]] =
     Outcome(Startup.Success(()))
 
@@ -39,9 +42,14 @@ object TextExample extends IndigoSandbox[Unit, Model] {
   def present(context: FrameContext[Unit], model: Model): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
-        Text("Hello, world!\nThis is some text!", config.viewport.width - 10, 20, 1, fontKey)
-          .withTint(model.tint)
-          .alignRight
+        Text(
+          "Hello, world!\nThis is some text!",
+          config.viewport.width - 10,
+          20,
+          1,
+          fontKey,
+          Material.ImageEffects(fontName).withTint(model.tint)
+        ).alignRight
           .onEvent {
             case (bounds, MouseEvent.Click(_, _)) if context.inputState.mouse.wasMouseClickedWithin(bounds) =>
               List(ChangeColour)
@@ -78,7 +86,7 @@ object FontStuff {
   def fontKey: FontKey = FontKey("My Font")
 
   def fontInfo: FontInfo =
-    FontInfo(fontKey, Material.Textured(fontName), 320, 230, FontChar("?", 93, 52, 23, 23))
+    FontInfo(fontKey, 320, 230, FontChar("?", 93, 52, 23, 23))
       .addChar(FontChar("A", 3, 78, 23, 23))
       .addChar(FontChar("B", 26, 78, 23, 23))
       .addChar(FontChar("C", 50, 78, 23, 23))

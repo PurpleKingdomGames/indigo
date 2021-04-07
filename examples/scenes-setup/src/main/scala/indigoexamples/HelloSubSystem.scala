@@ -17,7 +17,6 @@ final case class HelloSubSystem(initialMessage: String, fontKey: FontKey) extend
 
   def present(context: SubSystemFrameContext, message: String): Outcome[SceneUpdateFragment] =
     Outcome(
-      SceneUpdateFragment.empty
-        .addUiLayerNodes(Text(message, 20, 50, 1, fontKey))
+      SceneUpdateFragment(Text(message, 20, 50, 1, fontKey, FontStuff.fontMaterial))
     )
 }

@@ -104,41 +104,41 @@ object DistortionAssets {
   val foliageName: AssetName       = AssetName("foliage")
   val smoothBumpName: AssetName    = AssetName("smooth-bump2")
 
-  val junctionBoxMaterialOn: Material.Lit =
-    Material.Lit(
+  val junctionBoxMaterialOn: Material.Bitmap =
+    Material.Bitmap(
       junctionBoxAlbedo,
       Some(junctionBoxEmission),
       Some(junctionBoxNormal),
       Some(junctionBoxSpecular)
     )
 
-  val junctionBoxMaterialGlass: Material.Lit =
-    Material.Lit(
+  val junctionBoxMaterialGlass: Material.Bitmap =
+    Material.Bitmap(
       junctionBoxAlbedo,
       Some(junctionBoxEmission),
       Some(junctionBoxNormal),
       Some(junctionBoxSpecular)
     )
 
-  val junctionBoxMaterialOff: Material.Lit =
-    Material.Lit(
+  val junctionBoxMaterialOff: Material.Bitmap =
+    Material.Bitmap(
       junctionBoxAlbedo,
       None,
       Some(junctionBoxNormal),
       Some(junctionBoxSpecular)
     )
 
-  val junctionBoxMaterialFlat: Material.Textured =
-    Material.Textured(junctionBoxAlbedo).lit
+  val junctionBoxMaterialFlat: Material.Bitmap =
+    Material.Bitmap(junctionBoxAlbedo).lit
 
-  val foliageMaterial: Material.Textured =
-    Material.Textured(foliageName).lit
+  val foliageMaterial: Material.Bitmap =
+    Material.Bitmap(foliageName).lit
 
-  val imageLightMaterial: Material.Textured =
-    Material.Textured(imageLightName)
+  val imageLightMaterial: Material.Bitmap =
+    Material.Bitmap(imageLightName)
 
-  val smoothBumpMaterial: Material.Textured =
-    Material.Textured(smoothBumpName)
+  val smoothBumpMaterial: Material.Bitmap =
+    Material.Bitmap(smoothBumpName)
 
   def assets: Set[AssetType] =
     Set(

@@ -31,7 +31,7 @@ object LaunchPadAutomata {
     }
 
   val automata: Automata =
-    Automata(poolKey, automaton, Automata.Layer.Game)
+    Automata(poolKey, automaton)
 
   def spawnEvent(launchPad: LaunchPad, toScreenSpace: Vertex => Point): AutomataEvent.Spawn =
     AutomataEvent.Spawn(
