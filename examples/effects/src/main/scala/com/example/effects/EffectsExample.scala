@@ -4,6 +4,11 @@ import indigo._
 
 import scala.scalajs.js.annotation._
 
+import indigoextras.effectmaterials.LegacyEffects
+import indigoextras.effectmaterials.Border
+import indigoextras.effectmaterials.Thickness
+import indigoextras.effectmaterials.Glow
+
 @JSExportTopLevel("IndigoGame")
 object EffectsExample extends IndigoSandbox[Unit, Unit] {
 
@@ -30,6 +35,9 @@ object EffectsExample extends IndigoSandbox[Unit, Unit] {
   val animations: Set[Animation] =
     Set()
 
+  val shaders: Set[Shader] =
+    Set()
+
   def setup(assetCollection: AssetCollection, dice: Dice): Outcome[Startup[Unit]] =
     Outcome(Startup.Success(()))
 
@@ -42,48 +50,95 @@ object EffectsExample extends IndigoSandbox[Unit, Unit] {
   val graphic: Graphic =
     Graphic(Rectangle(0, 0, 64, 64), 1, EffectsAssets.junctionBoxMaterial)
       .withRef(20, 20)
-      .moveTo(config.viewport.giveDimensions(config.magnification).center + Point(0, -25))
 
-  def present(context: FrameContext[Unit], model: Unit): Outcome[SceneUpdateFragment] =
+  def present(context: FrameContext[Unit], model: Unit): Outcome[SceneUpdateFragment] = {
+    val viewCenter: Point = config.viewport.giveDimensions(config.magnification).center + Point(0, -25)
+
     Outcome(
-      SceneUpdateFragment.empty
-        .addGameLayerNodes(
-          graphic
-            .withTint(RGBA.Magenta),
-          graphic
-            .moveBy(-60, 0)
-            .withOverlay(Overlay.Color(RGBA.Magenta.withAmount(0.75))),
-          graphic
-            .moveBy(-30, 0)
-            .withOverlay(
-              Overlay.LinearGradiant(Point.zero, RGBA.Magenta, Point(64, 64), RGBA.Cyan.withAmount(0.5))
-            ),
-          graphic
-            .moveBy(30, 0)
-            .withBorder(Border(RGBA.Yellow, Thickness.Thick, Thickness.None)),
-          graphic
-            .moveBy(60, 0)
-            .withBorder(Border(RGBA.Red, Thickness.None, Thickness.Thick)),
-          graphic
-            .moveBy(-60, 50)
-            .withBorder(Border(RGBA(1.0, 0.5, 0.0, 1.0), Thickness.Thick, Thickness.Thick)),
-          graphic
-            .moveBy(0, 50)
-            .withGlow(Glow(RGBA.Green, 2.0, 0.0)),
-          graphic
-            .moveBy(-30, 50)
-            .withGlow(Glow(RGBA.Blue, 0.0, 2.0)),
-          graphic
-            .moveBy(30, 50)
-            .withGlow(Glow(RGBA.Cyan, 2.0, 2.0)),
-          graphic
-            .withRef(32, 32)
-            .moveBy(48, 39)
-            .withAlpha(0.5)
-            .flipHorizontal(true)
-            .flipVertical(true)
-        )
+      SceneUpdateFragment(
+        graphic // tint - identical to ImageEffects material
+          .moveTo(viewCenter)
+          .moveBy(0, -40)
+          .modifyMaterial {
+            case m: LegacyEffects => m.withTint(RGBA.Red)
+            case m                => m
+          },
+        graphic // alpha - identical to ImageEffects material
+          .moveTo(viewCenter)
+          .moveBy(-60, -40)
+          .modifyMaterial {
+            case m: LegacyEffects => m.withAlpha(0.5)
+            case m                => m
+          },
+        graphic // saturation - identical to ImageEffects material
+          .moveTo(viewCenter)
+          .moveBy(-30, -40)
+          .modifyMaterial {
+            case m: LegacyEffects => m.withSaturation(0.0)
+            case m                => m
+          },
+        graphic //color overlay - identical to ImageEffects material
+          .moveTo(viewCenter)
+          .moveBy(30, -40)
+          .modifyMaterial {
+            case m: LegacyEffects => m.withOverlay(Fill.Color(RGBA.Magenta.withAmount(0.75)))
+            case m                => m
+          },
+        graphic // linear gradient overlay - identical to ImageEffects material
+          .moveTo(viewCenter)
+          .moveBy(60, -40)
+          .modifyMaterial {
+            case m: LegacyEffects => m.withOverlay(Fill.LinearGradient(Point.zero, RGBA.Magenta, Point(40), RGBA.Cyan.withAmount(0.5)))
+            case m                => m
+          },
+        graphic // radial gradient overlay - identical to ImageEffects material
+          .moveTo(viewCenter)
+          .moveBy(-60, 10)
+          .modifyMaterial {
+            case m: LegacyEffects => m.withOverlay(Fill.RadialGradient(Point(20), 10, RGBA.Magenta.withAmount(0.5), RGBA.Cyan.withAmount(0.25)))
+            case m                => m
+          },
+        graphic // inner glow
+          .moveTo(viewCenter)
+          .moveBy(0, 10)
+          .modifyMaterial {
+            case m: LegacyEffects => m.withGlow(Glow(RGBA.Green, 2.0, 0.0))
+            case m                => m
+          },
+        graphic // outer glow
+          .moveTo(viewCenter)
+          .moveBy(-30, 10)
+          .modifyMaterial {
+            case m: LegacyEffects => m.withGlow(Glow(RGBA.Blue, 0.0, 2.0))
+            case m                => m
+          },
+        graphic // inner border
+          .moveTo(viewCenter)
+          .moveBy(30, 60)
+          .modifyMaterial {
+            case m: LegacyEffects => m.withBorder(Border(RGBA(1.0, 0.5, 0.0, 1.0), Thickness.Thick, Thickness.None))
+            case m                => m
+          },
+        graphic // outer border
+          .moveTo(viewCenter)
+          .moveBy(60, 60)
+          .modifyMaterial {
+            case m: LegacyEffects => m.withBorder(Border(RGBA.Yellow, Thickness.None, Thickness.Thick))
+            case m                => m
+          },
+        graphic // rotate & scale - standard transform
+          .moveTo(viewCenter)
+          .moveBy(30, 10)
+          .rotateBy(Radians(0.2))
+          .scaleBy(1.25, 1.25),
+        graphic // flipped - standard transform
+          .moveTo(viewCenter)
+          .moveBy(60, 10)
+          .flipHorizontal(true)
+          .flipVertical(true)
+      )
     )
+  }
 }
 
 object EffectsAssets {

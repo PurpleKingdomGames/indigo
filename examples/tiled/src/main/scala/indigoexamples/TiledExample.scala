@@ -25,6 +25,8 @@ object TiledExample extends IndigoSandbox[Group, Unit] {
 
   val animations: Set[Animation] = Set()
 
+  val shaders: Set[Shader] = Set()
+
   def setup(assetCollection: AssetCollection, dice: Dice): Outcome[Startup[Group]] =
     Outcome {
       val maybeTiledMap = for {

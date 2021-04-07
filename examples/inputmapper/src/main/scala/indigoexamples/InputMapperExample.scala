@@ -24,6 +24,9 @@ object InputMapperExample extends IndigoSandbox[Unit, Model] {
   val fonts: Set[FontInfo] =
     Set()
 
+  val shaders: Set[Shader] =
+    Set()
+
   def setup(
       assetCollection: AssetCollection,
       dice: Dice
@@ -53,8 +56,7 @@ object InputMapperExample extends IndigoSandbox[Unit, Model] {
       model: Model
   ): Outcome[SceneUpdateFragment] =
     Outcome(
-      SceneUpdateFragment.empty
-        .addGameLayerNodes(drawDot(model.dot))
+      SceneUpdateFragment(drawDot(model.dot))
     )
 
   def drawDot(
