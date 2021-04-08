@@ -20,7 +20,7 @@ object CloudsAutomata {
   Lerp then is a function `t: Seconds => position: Point`, and to make use of it we
   map the signal to our renderable cloud graphic.
    */
-  val signal: SignalReader[(AutomatonSeedValues, SceneGraphNode), AutomatonUpdate] =
+  val signal: SignalReader[(AutomatonSeedValues, SceneNode), AutomatonUpdate] =
     SignalReader {
       case (seed, node) =>
         node match {
@@ -56,7 +56,7 @@ object CloudsAutomata {
     Automata(
       poolKey,
       automaton,
-      Automata.Layer.Game
+      BindingKey("small clouds")
     ).withMaxPoolSize(15)
 
 }

@@ -29,10 +29,15 @@ object LevelView {
       levelDataStore
         .map { assets =>
           SceneUpdateFragment.empty
-            .addGameLayerNodes(
-              List(Graphic(Rectangle(0, 0, 640, 360), 50, Material.Textured(Assets.Static.backgroundRef))) ++
-                drawWater(assets.waterReflections) ++
-                drawForeground(assets)
+            .addLayer(
+              Layer(
+                Option(BindingKey("background")),
+                List(Graphic(Rectangle(0, 0, 640, 360), 50, Material.Bitmap(Assets.Static.backgroundRef))) ++
+                  drawWater(assets.waterReflections)
+              )
+            )
+            .addLayer(
+              Layer(BindingKey("game"), drawForeground(assets))
             )
             .withAudio(
               SceneAudio(
@@ -47,14 +52,14 @@ object LevelView {
         }
         .getOrElse(SceneUpdateFragment.empty)
 
-    def drawWater(waterReflections: Sprite): List[SceneGraphNode] =
+    def drawWater(waterReflections: Sprite): List[SceneNode] =
       List(
         waterReflections.play(),
         waterReflections.moveBy(150, 30).play(),
         waterReflections.moveBy(-100, 60).play()
       )
 
-    def drawForeground(assets: LevelDataStore): List[SceneGraphNode] =
+    def drawForeground(assets: LevelDataStore): List[SceneNode] =
       List(
         assets.flag.play(),
         assets.helm.play(),
@@ -80,12 +85,14 @@ object LevelView {
         toScreenSpace: Vertex => Point
     ): SceneUpdateFragment =
       SceneUpdateFragment.empty
-        .addGameLayerNodes(
-          respawnEffect(
-            gameTime,
-            pirate.lastRespawn,
-            updatedCaptain(pirate, pirateViewState, captain, toScreenSpace)
-          )
+        .addLayer(
+          Layer(BindingKey("game")) {
+            respawnEffect(
+              gameTime,
+              pirate.lastRespawn,
+              updatedCaptain(pirate, pirateViewState, captain, toScreenSpace)
+            )
+          }
         )
 
     val respawnFlashSignal: Seconds => Signal[(Boolean, Boolean)] =
@@ -94,9 +101,22 @@ object LevelView {
     val captainWithAlpha: Sprite => SignalFunction[(Boolean, Boolean), Sprite] =
       captain =>
         SignalFunction {
-          case (false, _)    => captain
-          case (true, true)  => captain.withAlpha(1)
-          case (true, false) => captain.withAlpha(0)
+          case (false, _) =>
+            captain
+
+          case (true, true) =>
+            captain
+              .modifyMaterial {
+                case m: Material.ImageEffects => m.withAlpha(1)
+                case m                        => m
+              }
+
+          case (true, false) =>
+            captain
+              .modifyMaterial {
+                case m: Material.ImageEffects => m.withAlpha(0)
+                case m                        => m
+              }
         }
 
     def respawnEffect(gameTime: GameTime, lastRespawn: Seconds, captain: Sprite): Sprite =

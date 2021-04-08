@@ -140,7 +140,15 @@ object InitialLoad {
     Startup
       .Success(
         StartupData(
-          captain.sprite.withRef(37, 64).moveTo(300, 271),
+          captain.sprite
+            .withMaterial {
+              captain.sprite.material match {
+                case m: Material.ImageEffects => m
+                case m: Material.Bitmap       => Material.ImageEffects(m.diffuse)
+              }
+            }
+            .withRef(37, 64)
+            .moveTo(300, 271),
           levelDataStore.map(_._1)
         )
       )

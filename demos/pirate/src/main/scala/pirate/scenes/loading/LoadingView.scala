@@ -35,10 +35,14 @@ object LoadingView {
         x,
         y + 10,
         1,
-        Assets.Fonts.fontKey
+        Assets.Fonts.fontKey,
+        Assets.Fonts.fontMaterial
       ).alignCenter,
       captain
-        .withOverlay(Overlay.Color(RGBA.White))
+        .modifyMaterial {
+          case m: Material.ImageEffects => m.withOverlay(Fill.Color(RGBA.White))
+          case m                        => m
+        }
         .moveTo(x, y)
         .changeCycle(CycleLabel("Run"))
         .play()
