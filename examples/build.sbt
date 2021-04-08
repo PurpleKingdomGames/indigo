@@ -133,6 +133,8 @@ lazy val tiled =
       showCursor := true,
       title := "Tiled example",
       gameAssetsDirectory := "assets",
+      windowStartWidth := 19 * 32,
+      windowStartHeight := 11 * 32,
       libraryDependencies ++= Seq(
         "io.indigoengine" %%% "indigo-json-circe" % IndigoVersion.getVersion
       )
