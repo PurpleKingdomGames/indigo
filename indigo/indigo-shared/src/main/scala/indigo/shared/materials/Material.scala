@@ -31,6 +31,9 @@ object Material {
     def withShaderId(newShaderId: ShaderId): Bitmap =
       this.copy(shaderId = Option(newShaderId))
 
+    def toImageEffects: Material.ImageEffects =
+      Material.ImageEffects(diffuse, lighting, shaderId)
+
     def toShaderData: ShaderData =
       lighting match {
         case Unlit =>
@@ -82,6 +85,9 @@ object Material {
 
     def withShaderId(newShaderId: ShaderId): ImageEffects =
       this.copy(shaderId = Option(newShaderId))
+
+    def toBitmap: Material.Bitmap =
+      Material.Bitmap(diffuse, lighting, shaderId)
 
     def toShaderData: ShaderData = {
       val gradientUniforms: List[(Uniform, ShaderPrimitive)] =
@@ -151,6 +157,9 @@ object Material {
       ImageEffects(diffuse, alpha, RGBA.None, Fill.Color.default, 1.0, LightingModel.Unlit, None)
 
     def apply(diffuse: AssetName, lighting: LightingModel): ImageEffects =
+      ImageEffects(diffuse, 1.0, RGBA.None, Fill.Color.default, 1.0, lighting, None)
+
+    def apply(diffuse: AssetName, lighting: LightingModel, shaderId: Option[ShaderId]): ImageEffects =
       ImageEffects(diffuse, 1.0, RGBA.None, Fill.Color.default, 1.0, lighting, None)
   }
 
