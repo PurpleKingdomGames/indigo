@@ -64,23 +64,26 @@ object CloudsSubSystem {
   val render: (SubSystemFrameContext, CloudsState) => Outcome[SceneUpdateFragment] =
     (_, model) =>
       Outcome(
-        SceneUpdateFragment(
-          Assets.Clouds.bigCloudsGraphic
-            .moveTo(
-              model.bigCloudPosition.toInt - Assets.Clouds.bigCloudsWidth,
-              verticalCenter
-            ),
-          Assets.Clouds.bigCloudsGraphic
-            .moveTo(
-              model.bigCloudPosition.toInt,
-              verticalCenter
-            ),
-          Assets.Clouds.bigCloudsGraphic
-            .moveTo(
-              model.bigCloudPosition.toInt + Assets.Clouds.bigCloudsWidth,
-              verticalCenter
+        SceneUpdateFragment.empty
+          .addLayer(
+            Layer(BindingKey("big clouds"))(
+              Assets.Clouds.bigCloudsGraphic
+                .moveTo(
+                  model.bigCloudPosition.toInt - Assets.Clouds.bigCloudsWidth,
+                  verticalCenter
+                ),
+              Assets.Clouds.bigCloudsGraphic
+                .moveTo(
+                  model.bigCloudPosition.toInt,
+                  verticalCenter
+                ),
+              Assets.Clouds.bigCloudsGraphic
+                .moveTo(
+                  model.bigCloudPosition.toInt + Assets.Clouds.bigCloudsWidth,
+                  verticalCenter
+                )
             )
-        )
+          )
       )
 
   def generateSmallCloudStartPoint(screenWidth: Int, dice: Dice): Point =

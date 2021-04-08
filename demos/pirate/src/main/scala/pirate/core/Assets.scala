@@ -9,7 +9,7 @@ that lists the assets to be loaded. No need in this case.
 
 We also declare information about fonts, graphics, and animations here.
 It doesn't matter that none of their assets have loaded yet.
-*/
+ */
 object Assets {
 
   object Static {
@@ -19,7 +19,7 @@ object Assets {
     val terrainRef: AssetName     = AssetName("terrain")
 
     val chestRef: AssetName   = AssetName("Chest Close 01")
-    val chestGraphic: Graphic = Graphic(Rectangle(0, 0, 64, 35), 4, Material.Textured(chestRef)).withRef(33, 34)
+    val chestGraphic: Graphic = Graphic(Rectangle(0, 0, 64, 35), 4, Material.Bitmap(chestRef)).withRef(33, 34)
 
     def assets(baseUrl: String): Set[AssetType] =
       Set(
@@ -51,12 +51,12 @@ object Assets {
     val smallCloudsRef: AssetName = AssetName("small_clouds")
 
     val bigCloudsGraphic: Graphic =
-      Graphic(Rectangle(0, 0, 448, 101), 40, Material.Textured(bigCloudsRef)).withRef(0, 101)
+      Graphic(Rectangle(0, 0, 448, 101), 40, Material.Bitmap(bigCloudsRef)).withRef(0, 101)
     val bigCloudsWidth: Int = bigCloudsGraphic.crop.width
 
-    val cloud1: Graphic = Graphic(Rectangle(0, 0, 140, 39), 45, Material.Textured(smallCloudsRef))
-    val cloud2: Graphic = Graphic(Rectangle(0, 39, 140, 39), 45, Material.Textured(smallCloudsRef))
-    val cloud3: Graphic = Graphic(Rectangle(0, 78, 140, 39), 45, Material.Textured(smallCloudsRef))
+    val cloud1: Graphic = Graphic(Rectangle(0, 0, 140, 39), 45, Material.Bitmap(smallCloudsRef))
+    val cloud2: Graphic = Graphic(Rectangle(0, 39, 140, 39), 45, Material.Bitmap(smallCloudsRef))
+    val cloud3: Graphic = Graphic(Rectangle(0, 78, 140, 39), 45, Material.Bitmap(smallCloudsRef))
 
     def assets(baseUrl: String): Set[AssetType] =
       Set(
@@ -106,15 +106,15 @@ object Assets {
     val trunksRef: AssetName = AssetName("Front Palm Trees")
 
     val tallTrunkGraphic: Graphic =
-      Graphic(Rectangle(0, 0, 96, 96), 1, Material.Textured(trunksRef))
+      Graphic(Rectangle(0, 0, 96, 96), 1, Material.Bitmap(trunksRef))
         .withCrop(Rectangle(8, 0, 16, 60))
 
     val leftLeaningTrunkGraphic: Graphic =
-      Graphic(Rectangle(0, 0, 96, 96), 1, Material.Textured(trunksRef))
+      Graphic(Rectangle(0, 0, 96, 96), 1, Material.Bitmap(trunksRef))
         .withCrop(Rectangle(43, 0, 50, 22))
 
     val rightLeaningTrunkGraphic: Graphic =
-      Graphic(Rectangle(0, 0, 96, 96), 1, Material.Textured(trunksRef))
+      Graphic(Rectangle(0, 0, 96, 96), 1, Material.Bitmap(trunksRef))
         .withCrop(Rectangle(36, 32, 48, 23))
 
     def assets(baseUrl: String): Set[AssetType] =
@@ -137,11 +137,12 @@ object Assets {
   }
 
   object Fonts {
-    val smallFontName: AssetName = AssetName("smallFontName")
-    val fontKey: FontKey         = FontKey("boxy font")
+    val smallFontName: AssetName             = AssetName("smallFontName")
+    val fontKey: FontKey                     = FontKey("boxy font")
+    val fontMaterial: Material.ImageEffects = Material.ImageEffects(smallFontName)
 
     val fontInfo: FontInfo =
-      FontInfo(fontKey, Material.Textured(smallFontName), 320, 230, FontChar("?", 47, 26, 11, 12))
+      FontInfo(fontKey, 320, 230, FontChar("?", 47, 26, 11, 12))
         .addChar(FontChar("A", 2, 39, 10, 12))
         .addChar(FontChar("B", 14, 39, 9, 12))
         .addChar(FontChar("C", 25, 39, 10, 12))
