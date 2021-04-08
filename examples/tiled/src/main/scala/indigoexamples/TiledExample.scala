@@ -11,6 +11,7 @@ object TiledExample extends IndigoSandbox[Group, Unit] {
   val config: GameConfig =
     defaultGameConfig
       .withViewport(19 * 32, 11 * 32)
+      .withClearColor(RGBA.Blue.mix(RGBA.White.withAlpha(0.75)))
 
   val terrianData: AssetName  = AssetName("terrain-data")
   val terrianImage: AssetName = AssetName("terrain-image")
