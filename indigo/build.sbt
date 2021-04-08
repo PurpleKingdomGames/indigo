@@ -3,7 +3,7 @@ import scala.language.postfixOps
 
 lazy val indigoVersion = IndigoVersion.getVersion
 
-val dottyVersion    = "3.0.0-RC1"
+val dottyVersion    = "3.0.0-RC2"
 val scala213Version = "2.13.5"
 
 lazy val scalaFixSettings: Seq[sbt.Def.Setting[_]] =
@@ -207,9 +207,9 @@ lazy val indigoProject =
     .settings(commonSettings: _*)
     .settings(
       code := { "code ." ! },
-      openshareddocs := { "open -a Firefox indigo-shared/.jvm/target/scala-3.0.0-RC1/api/indigo/index.html" ! },
-      openindigodocs := { "open -a Firefox indigo/.jvm/target/scala-3.0.0-RC1/api/indigo/index.html" ! },
-      openindigoextsdocs := { "open -a Firefox indigo-exts/.jvm/target/scala-3.0.0-RC1/api/indigoexts/index.html" ! }
+      openshareddocs := { "open -a Firefox indigo-shared/.jvm/target/scala-3.0.0-RC2/api/indigo/index.html" ! },
+      openindigodocs := { "open -a Firefox indigo/.jvm/target/scala-3.0.0-RC2/api/indigo/index.html" ! },
+      openindigoextsdocs := { "open -a Firefox indigo-exts/.jvm/target/scala-3.0.0-RC2/api/indigoexts/index.html" ! }
     )
     .aggregate(
       indigoShared,

@@ -8,21 +8,21 @@ import mill.scalajslib.api._
 import coursier.maven.MavenRepository
 import publish._
 
-object `indigo-plugin` extends Cross[IndigoPluginModule]("2.12", "2.13"/*, "3.0.0-RC1"*/)
+object `indigo-plugin` extends Cross[IndigoPluginModule]("2.12", "2.13", "3.0.0-RC2")
 class IndigoPluginModule(val crossScalaVersion: String) extends CrossScalaModule with PublishModule {
 
   def scalaVersion =
     crossScalaVersion match {
       case "2.12" => "2.12.10"
       case "2.13" => "2.13.5"
-      // case _=> "3.0.0-RC1"
+      case _ => "3.0.0-RC2"
     }
 
   def artifactName = "indigo-plugin"
 
   def ivyDeps =
     Agg(
-      ivy"com.lihaoyi::os-lib:0.7.1"
+      ivy"com.lihaoyi::os-lib:0.7.4"
     )
 
   def repositories =
