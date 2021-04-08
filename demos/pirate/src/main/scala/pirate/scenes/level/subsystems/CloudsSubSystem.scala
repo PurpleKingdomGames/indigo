@@ -66,7 +66,8 @@ object CloudsSubSystem {
       Outcome(
         SceneUpdateFragment.empty
           .addLayer(
-            Layer(BindingKey("big clouds"))(
+            Layer(
+              BindingKey("big clouds"),
               Assets.Clouds.bigCloudsGraphic
                 .moveTo(
                   model.bigCloudPosition.toInt - Assets.Clouds.bigCloudsWidth,
