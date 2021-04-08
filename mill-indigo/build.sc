@@ -10,14 +10,14 @@ object `mill-indigo` extends ScalaModule with PublishModule {
 
   def scalaVersion = "2.13.5"
 
-  def millLibVersion = "0.9.4"
+  def millLibVersion = "0.9.6"
 
   def ivyDeps = Agg(
     ivy"com.lihaoyi::mill-main:${millLibVersion}",
     ivy"com.lihaoyi::mill-main-api:${millLibVersion}",
     ivy"com.lihaoyi::mill-scalalib:${millLibVersion}",
     ivy"com.lihaoyi::mill-scalalib-api:${millLibVersion}",
-    ivy"com.lihaoyi::os-lib:0.7.1",
+    ivy"com.lihaoyi::os-lib:0.7.4",
     ivy"io.indigoengine::indigo-plugin:${IndigoVersion.getVersion}"
   )
 
