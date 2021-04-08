@@ -61,8 +61,13 @@ object StartScene extends Scene[StartupData, GameModel, ViewModel] {
       val verticalMiddle: Int   = context.startUpData.viewConfig.verticalMiddle
 
       SceneUpdateFragment.empty
-        .addUiLayerNodes(drawTitleText(horizontalCenter, verticalMiddle))
-        .addUiLayerNodes(SharedElements.drawHitSpaceToStart(horizontalCenter, Seconds(1), context.gameTime))
+        .addLayer(
+          Layer(
+            BindingKey("ui"),
+            drawTitleText(horizontalCenter, verticalMiddle) ++
+              SharedElements.drawHitSpaceToStart(horizontalCenter, Seconds(1), context.gameTime)
+          )
+        )
         .withAudio(
           SceneAudio(
             SceneAudioSource(
@@ -75,10 +80,10 @@ object StartScene extends Scene[StartupData, GameModel, ViewModel] {
         )
     }
 
-  def drawTitleText(center: Int, middle: Int): List[SceneGraphNode] =
+  def drawTitleText(center: Int, middle: Int): List[SceneNode] =
     List(
-      Text("snake!", center, middle - 20, 1, GameAssets.fontKey).alignCenter,
-      Text("presented in glorious 1 bit graphics", center, middle - 5, 1, GameAssets.fontKey).alignCenter,
-      Text("Made by Dave", center, middle + 10, 1, GameAssets.fontKey).alignCenter
+      Text("snake!", center, middle - 20, 1, GameAssets.fontKey, GameAssets.fontMaterial).alignCenter,
+      Text("presented in glorious 1 bit graphics", center, middle - 5, 1, GameAssets.fontKey, GameAssets.fontMaterial).alignCenter,
+      Text("Made by Dave", center, middle + 10, 1, GameAssets.fontKey, GameAssets.fontMaterial).alignCenter
     )
 }

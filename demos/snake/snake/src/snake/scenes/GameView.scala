@@ -11,14 +11,18 @@ object GameView {
 
   def update(viewConfig: ViewConfig, model: GameModel, walls: Group, staticAssets: StaticAssets): Outcome[SceneUpdateFragment] =
     Outcome(
-      SceneUpdateFragment(
-        gameLayer(
-          viewConfig,
-          model,
-          staticAssets,
-          walls
+      SceneUpdateFragment.empty
+        .addLayer(
+          Layer(
+            BindingKey("game"),
+            gameLayer(
+              viewConfig,
+              model,
+              staticAssets,
+              walls
+            )
+          )
         )
-      )
     )
 
   def gameLayer(
@@ -26,7 +30,7 @@ object GameView {
       currentState: GameModel,
       staticAssets: StaticAssets,
       walls: Group
-  ): List[SceneGraphNode] =
+  ): List[SceneNode] =
     walls ::
       drawApple(viewConfig, currentState.gameMap, staticAssets) ++
         drawSnake(viewConfig, currentState, staticAssets.snake) ++
@@ -43,14 +47,15 @@ object GameView {
       snakeAsset.moveTo(gridPointToPoint(pt, currentState.gameMap.gridSize, viewConfig.gridSquareSize))
     }
 
-  def drawScore(viewConfig: ViewConfig, score: Int): List[SceneGraphNode] =
+  def drawScore(viewConfig: ViewConfig, score: Int): List[SceneNode] =
     List(
       Text(
         score.toString,
         (viewConfig.viewport.width / viewConfig.magnificationLevel) - 3,
         (viewConfig.viewport.height / viewConfig.magnificationLevel) - viewConfig.footerHeight + 21,
         1,
-        GameAssets.fontKey
+        GameAssets.fontKey,
+        GameAssets.fontMaterial
       ).alignRight
     )
 

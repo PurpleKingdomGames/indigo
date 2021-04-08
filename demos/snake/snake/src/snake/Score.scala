@@ -2,6 +2,7 @@ package snake
 
 import indigo._
 import indigoextras.subsystems._
+import snake.init.GameAssets
 
 object Score {
 
@@ -12,10 +13,10 @@ object Score {
     Automata(
       poolKey,
       Automaton(
-        AutomatonNode.Fixed(Text(scoreAmount, 0, 0, 1, fontKey).alignCenter),
+        AutomatonNode.Fixed(Text(scoreAmount, 0, 0, 1, fontKey, GameAssets.fontMaterial).alignCenter),
         Seconds(1.5)
       ).withModifier(ModiferFunctions.signal),
-      Automata.Layer.UI
+      BindingKey("score")
     )
 
   val spawnEvent: Point => AutomataEvent =
@@ -33,7 +34,7 @@ object Score {
             )
         }
 
-    val signal: SignalReader[(AutomatonSeedValues, SceneGraphNode), AutomatonUpdate] =
+    val signal: SignalReader[(AutomatonSeedValues, SceneNode), AutomatonUpdate] =
       SignalReader {
         case (seed, sceneGraphNode) =>
           sceneGraphNode match {

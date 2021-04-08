@@ -41,7 +41,7 @@ object SnakeGame extends IndigoGame[ViewConfig, StartupData, GameModel, ViewMode
         .withAssets(GameAssets.assets(assetPath))
         .withFonts(GameAssets.fontInfo)
         .withSubSystems(
-          Set(FPSCounter(GameAssets.fontKey, Point(5, 5), 60))
+          Set(FPSCounter(GameAssets.fontKey, Point(5, 5), 60, Option(BindingKey("fps")), GameAssets.fontMaterial))
         )
     }
 
@@ -74,7 +74,13 @@ object SnakeGame extends IndigoGame[ViewConfig, StartupData, GameModel, ViewMode
       model: GameModel,
       viewModel: ViewModel
   ): Outcome[SceneUpdateFragment] =
-    Outcome(SceneUpdateFragment.empty)
+    Outcome(
+      SceneUpdateFragment.empty
+        .addLayer(Layer.empty(BindingKey("game")))
+        .addLayer(Layer.empty(BindingKey("score")))
+        .addLayer(Layer.empty(BindingKey("ui")))
+        .addLayer(Layer.empty(BindingKey("fps")))
+    )
 
 }
 

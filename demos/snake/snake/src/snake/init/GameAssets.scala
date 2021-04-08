@@ -10,7 +10,7 @@ object GameAssets {
   val soundPoint: AssetName    = AssetName("pointSound")
   val soundLose: AssetName     = AssetName("loseSound")
 
-  val snakeMaterial: Material.Textured = Material.Textured(snakeTexture)
+  val snakeMaterial: Material.Bitmap = Material.Bitmap(snakeTexture)
 
   def apple(blockSize: Int): Graphic =
     Graphic(0, 0, blockSize, blockSize, 2, GameAssets.snakeMaterial)
@@ -34,8 +34,11 @@ object GameAssets {
 
   val fontKey: FontKey = FontKey("boxy font")
 
+  val fontMaterial: Material.ImageEffects =
+    Material.ImageEffects(smallFontName)
+
   val fontInfo: FontInfo =
-    FontInfo(fontKey, Material.Textured(smallFontName), 320, 230, FontChar("?", 47, 26, 11, 12))
+    FontInfo(fontKey, 320, 230, FontChar("?", 47, 26, 11, 12))
       .addChar(FontChar("A", 2, 39, 10, 12))
       .addChar(FontChar("B", 14, 39, 9, 12))
       .addChar(FontChar("C", 25, 39, 10, 12))
