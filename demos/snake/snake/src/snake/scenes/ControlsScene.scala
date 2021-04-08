@@ -58,31 +58,36 @@ object ControlsScene extends Scene[StartupData, GameModel, ViewModel] {
       val verticalMiddle: Int   = context.startUpData.viewConfig.verticalMiddle
 
       SceneUpdateFragment.empty
-        .addUiLayerNodes(drawControlsText(24, verticalMiddle, sceneModel))
-        .addUiLayerNodes(drawSelectText(horizontalCenter))
-        .addUiLayerNodes(SharedElements.drawHitSpaceToStart(horizontalCenter, Seconds(1), context.gameTime))
+        .addLayer(
+          Layer(
+            BindingKey("ui"),
+            drawControlsText(24, verticalMiddle, sceneModel) ++
+              List(drawSelectText(horizontalCenter)) ++
+              SharedElements.drawHitSpaceToStart(horizontalCenter, Seconds(1), context.gameTime)
+          )
+        )
     }
 
-  def drawControlsText(center: Int, middle: Int, controlScheme: ControlScheme): List[SceneGraphNode] =
+  def drawControlsText(center: Int, middle: Int, controlScheme: ControlScheme): List[SceneNode] =
     List(
-      Text("select controls", center, middle - 20, 1, GameAssets.fontKey).alignLeft
+      Text("select controls", center, middle - 20, 1, GameAssets.fontKey, GameAssets.fontMaterial).alignLeft
     ) ++ {
       controlScheme match {
         case ControlScheme.Turning(_, _) =>
           List(
-            Text("[_] direction (all arrow keys)", center, middle - 5, 1, GameAssets.fontKey).alignLeft,
-            Text("[x] turn (left and right arrows)", center, middle + 10, 1, GameAssets.fontKey).alignLeft
+            Text("[_] direction (all arrow keys)", center, middle - 5, 1, GameAssets.fontKey, GameAssets.fontMaterial).alignLeft,
+            Text("[x] turn (left and right arrows)", center, middle + 10, 1, GameAssets.fontKey, GameAssets.fontMaterial).alignLeft
           )
 
         case ControlScheme.Directed(_, _, _, _) =>
           List(
-            Text("[x] direction (all arrow keys)", center, middle - 5, 1, GameAssets.fontKey).alignLeft,
-            Text("[_] turn (left and right arrows)", center, middle + 10, 1, GameAssets.fontKey).alignLeft
+            Text("[x] direction (all arrow keys)", center, middle - 5, 1, GameAssets.fontKey, GameAssets.fontMaterial).alignLeft,
+            Text("[_] turn (left and right arrows)", center, middle + 10, 1, GameAssets.fontKey, GameAssets.fontMaterial).alignLeft
           )
       }
     }
 
-  def drawSelectText(center: Int): SceneGraphNode =
-    Text("Up / Down arrows to select.", center, 205, 1, GameAssets.fontKey).alignCenter
+  def drawSelectText(center: Int): SceneNode =
+    Text("Up / Down arrows to select.", center, 205, 1, GameAssets.fontKey, GameAssets.fontMaterial).alignCenter
 
 }
