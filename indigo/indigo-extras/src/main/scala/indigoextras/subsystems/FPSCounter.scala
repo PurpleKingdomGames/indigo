@@ -70,7 +70,7 @@ object FPSCounter {
         SceneUpdateFragment(
           layerKey match {
             case None      => Layer(text)
-            case Some(key) => Layer(key)(text)
+            case Some(key) => Layer(key, text)
           }
         )
       )
