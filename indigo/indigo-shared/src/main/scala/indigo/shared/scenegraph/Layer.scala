@@ -117,13 +117,13 @@ object Layer {
   def apply(key: BindingKey, nodes: List[SceneNode]): Layer =
     Layer(nodes, Nil, Option(key), None, None, None, None)
 
-  def apply(key: BindingKey)(nodes: SceneNode*): Layer =
+  def apply(key: BindingKey, nodes: SceneNode*): Layer =
     Layer(nodes.toList, Nil, Option(key), None, None, None, None)
-
-  def apply(key: BindingKey, magnification: Int, depth: Depth)(nodes: SceneNode*): Layer =
-    Layer(nodes.toList, Nil, Option(key), Option(magnification), Option(depth), None, None)
 
   def apply(key: BindingKey, magnification: Int, depth: Depth): Layer =
     Layer(Nil, Nil, Option(key), Option(magnification), Option(depth), None, None)
+
+  def apply(key: BindingKey, magnification: Int, depth: Depth, nodes: List[SceneNode]): Layer =
+    Layer(nodes.toList, Nil, Option(key), Option(magnification), Option(depth), None, None)
 
 }
