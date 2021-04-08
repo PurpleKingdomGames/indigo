@@ -76,10 +76,10 @@ object SnakeGame extends IndigoGame[ViewConfig, StartupData, GameModel, ViewMode
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment.empty
-        .addLayer(Layer.empty(BindingKey("game")))
-        .addLayer(Layer.empty(BindingKey("score")))
-        .addLayer(Layer.empty(BindingKey("ui")))
-        .addLayer(Layer.empty(BindingKey("fps")))
+        .addLayer(Layer(BindingKey("game")))
+        .addLayer(Layer(BindingKey("score")))
+        .addLayer(Layer(BindingKey("ui")))
+        .addLayer(Layer(BindingKey("fps")))
     )
 
 }
