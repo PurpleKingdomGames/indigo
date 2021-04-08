@@ -31,7 +31,7 @@ object LevelView {
           SceneUpdateFragment.empty
             .addLayer(
               Layer(
-                Option(BindingKey("background")),
+                BindingKey("background"),
                 List(Graphic(Rectangle(0, 0, 640, 360), 50, Material.Bitmap(Assets.Static.backgroundRef))) ++
                   drawWater(assets.waterReflections)
               )
@@ -86,13 +86,14 @@ object LevelView {
     ): SceneUpdateFragment =
       SceneUpdateFragment.empty
         .addLayer(
-          Layer(BindingKey("game")) {
+          Layer(
+            BindingKey("game"),
             respawnEffect(
               gameTime,
               pirate.lastRespawn,
               updatedCaptain(pirate, pirateViewState, captain, toScreenSpace)
             )
-          }
+          )
         )
 
     val respawnFlashSignal: Seconds => Signal[(Boolean, Boolean)] =

@@ -90,12 +90,12 @@ object CursedPirateDemo extends IndigoGame[BootInformation, StartupData, Model, 
   def present(context: FrameContext[StartupData], model: Model, viewModel: ViewModel): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment.empty
-        .addLayer(Layer.empty(BindingKey("background")))
-        .addLayer(Layer.empty(BindingKey("big clouds")))
-        .addLayer(Layer.empty(BindingKey("small clouds")))
-        .addLayer(Layer.empty(BindingKey("game")))
-        .addLayer(Layer.empty(BindingKey("ui")))
-        .addLayer(Layer.empty(BindingKey("fps")))
+        .addLayer(Layer(BindingKey("background")))
+        .addLayer(Layer(BindingKey("big clouds")))
+        .addLayer(Layer(BindingKey("small clouds")))
+        .addLayer(Layer(BindingKey("game")))
+        .addLayer(Layer(BindingKey("ui")))
+        .addLayer(Layer(BindingKey("fps")))
     )
 
 }
