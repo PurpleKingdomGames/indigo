@@ -160,7 +160,7 @@ object Material {
       ImageEffects(diffuse, 1.0, RGBA.None, Fill.Color.default, 1.0, lighting, None)
 
     def apply(diffuse: AssetName, lighting: LightingModel, shaderId: Option[ShaderId]): ImageEffects =
-      ImageEffects(diffuse, 1.0, RGBA.None, Fill.Color.default, 1.0, lighting, None)
+      ImageEffects(diffuse, 1.0, RGBA.None, Fill.Color.default, 1.0, lighting, shaderId)
   }
 
 }
