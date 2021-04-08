@@ -56,21 +56,22 @@ object FPSCounter {
       material: Material.ImageEffects
   ): (SubSystemFrameContext, FPSCounterState) => Outcome[SceneUpdateFragment] =
     (_, model) => {
+      val text =
+        Text(
+          s"""FPS ${model.fps.toString}""",
+          position.x,
+          position.y,
+          1,
+          fontKey,
+          material.withTint(pickTint(targetFPS, model.fps))
+        )
+
       Outcome(
         SceneUpdateFragment(
-          Layer(
-            layerKey,
-            List(
-              Text(
-                s"""FPS ${model.fps.toString}""",
-                position.x,
-                position.y,
-                1,
-                fontKey,
-                material.withTint(pickTint(targetFPS, model.fps))
-              )
-            )
-          )
+          layerKey match {
+            case None      => Layer(text)
+            case Some(key) => Layer(key)(text)
+          }
         )
       )
     }

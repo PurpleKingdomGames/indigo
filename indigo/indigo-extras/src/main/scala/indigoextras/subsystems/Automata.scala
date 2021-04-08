@@ -104,7 +104,12 @@ final case class Automata(poolKey: AutomataPoolKey, automaton: Automaton, layerK
     val updated = Automata.renderNoLayer(state.pool, frameContext.gameTime)
 
     Outcome(
-      SceneUpdateFragment(Layer(layerKey, updated.nodes)),
+      SceneUpdateFragment(
+        layerKey match {
+          case None      => Layer(updated.nodes)
+          case Some(key) => Layer(key, updated.nodes)
+        }
+      ),
       updated.events
     )
 
