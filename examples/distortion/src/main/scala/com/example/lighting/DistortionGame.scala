@@ -24,6 +24,9 @@ object DistortionGame extends IndigoSandbox[Unit, Unit] {
       magnification = magnificationLevel
     )
 
+  val viewCenter: Point =
+    config.viewport.giveDimensions(magnificationLevel).center
+
   val assets: Set[AssetType] =
     DistortionAssets.assets
 
@@ -37,7 +40,10 @@ object DistortionGame extends IndigoSandbox[Unit, Unit] {
     Set()
 
   val shaders: Set[Shader] =
-    Set()
+    Set(
+      Refraction.entityShader,
+      Refraction.blendShader
+    )
 
   def setup(assetCollection: AssetCollection, dice: Dice): Outcome[Startup[Unit]] =
     Outcome(Startup.Success(()))
@@ -49,25 +55,25 @@ object DistortionGame extends IndigoSandbox[Unit, Unit] {
     _ => Outcome(())
 
   val graphic: Graphic =
-    Graphic(Rectangle(0, 0, 64, 64), 1, DistortionAssets.junctionBoxMaterialOn)
+    Graphic(Rectangle(0, 0, 64, 64), 1, DistortionAssets.junctionBoxMaterial)
       .withRef(20, 20)
-      .moveTo(config.viewport.giveDimensions(config.magnification).center)
+      .moveTo(viewCenter)
 
   val imageLight: Graphic =
     Graphic(Rectangle(0, 0, 320, 240), 1, DistortionAssets.imageLightMaterial)
       .moveBy(-14, -60)
 
   val distortion: Graphic =
-    Graphic(Rectangle(0, 0, 64, 64), 1, DistortionAssets.smoothBumpMaterial)
-      .moveTo(config.viewport.giveDimensions(config.magnification).center)
-      .withRef(32, 32)
+    Graphic(Rectangle(0, 0, 240, 240), 1, DistortionAssets.normalMapMaterial)
+      .scaleBy(0.5, 0.5)
+      .withRef(120, 120)
 
   val background: Graphic =
     Graphic(Rectangle(0, 0, 790, 380), 1, DistortionAssets.foliageMaterial)
 
-  def orbiting(distance: Int): Signal[Graphic] =
-    Signal.Orbit(config.viewport.giveDimensions(config.magnification).center, distance.toDouble).map { vec =>
-      distortion.moveTo(vec.toPoint)
+  def sliding: Signal[Graphic] =
+    Signal.SmoothPulse.map { d =>
+      distortion.moveTo(Point(70, 70 + (50 * d).toInt))
     }
 
   def present(context: FrameContext[Unit], model: Unit): Outcome[SceneUpdateFragment] =
@@ -75,30 +81,26 @@ object DistortionGame extends IndigoSandbox[Unit, Unit] {
       SceneUpdateFragment(
         background,
         graphic,
-        graphic.moveBy(-60, 0).withMaterial(DistortionAssets.junctionBoxMaterialOff),
-        graphic.moveBy(-30, 0).withMaterial(DistortionAssets.junctionBoxMaterialGlass),
-        graphic.moveBy(30, 0).withMaterial(DistortionAssets.junctionBoxMaterialFlat),
-        graphic.moveBy(60, 0).withMaterial(DistortionAssets.junctionBoxMaterialFlat.withLighting(LightingModel.Unlit))
-      ).withLights(
-          AmbientLight(RGBA.White.withAmount(0.1)),
-          PointLight.default
-            .moveTo(config.viewport.center + Point(50, 0))
-            .withFalloff(Falloff.SmoothQuadratic(0, 50))
-            .withColor(RGBA.Magenta.withAmount(0.4)),
-          DirectionLight(RGBA.Green.withAmount(1.2), RGBA.Green, Radians.fromDegrees(30))
-        )
-        .addLayer(
-          Layer(imageLight).withBlending(Blending.Lighting(RGBA.White.withAlpha(0.75)))
-        )
-        .addLayer(
-          Layer(
-            distortion.modifyMaterial {
-              case m: Material.ImageEffects => m.withAlpha(1.0)
-              case m                        => m
-            },
-            orbiting(40).affectTime(0.25).at(context.gameTime.running)
-          ).withBlending(Refraction.blending(1.0))
-        )
+        graphic.moveBy(-60, 0),
+        graphic.moveBy(-30, 0),
+        graphic.moveBy(30, 0),
+        graphic.moveBy(60, 0)
+      ).addLayer(
+        Layer(imageLight).withBlending(Blending.Lighting(RGBA(0.2, 0.5, 0.3, 0.5)))
+      )
+      .addLayer(
+        Layer(
+            distortion.moveTo(viewCenter + Point(50, 0)),
+            sliding.affectTime(0.3).at(context.gameTime.running)
+          ).withBlending(
+            Refraction.blending(
+              Signal.SmoothPulse
+                .map(d => 0.25 * d)
+                .affectTime(0.25)
+                .at(context.running)
+            )
+          )
+      )
     )
 }
 
@@ -110,52 +112,19 @@ object DistortionAssets {
   val junctionBoxSpecular: Texture = Texture(AssetName("junctionbox_specular"), 1.0d)
   val imageLightName: AssetName    = AssetName("light_texture")
   val foliageName: AssetName       = AssetName("foliage")
-  val smoothBumpName: AssetName    = AssetName("smooth-bump2")
+  val normalName: AssetName        = AssetName("normal-map")
 
   val normalMapMaterial: RefractionEntity =
-    RefractionEntity(smoothBumpName)
+    RefractionEntity(normalName)
 
-  val junctionBoxMaterialOn: Material.Bitmap =
-    Material.Bitmap(
-      junctionBoxAlbedo,
-      LightingModel.Lit(
-        Some(junctionBoxEmission),
-        Some(junctionBoxNormal),
-        Some(junctionBoxSpecular)
-      )
-    )
-
-  val junctionBoxMaterialGlass: Material.Bitmap =
-    Material.Bitmap(
-      junctionBoxAlbedo,
-      LightingModel.Lit(
-        Some(junctionBoxEmission),
-        Some(junctionBoxNormal),
-        Some(junctionBoxSpecular)
-      )
-    )
-
-  val junctionBoxMaterialOff: Material.Bitmap =
-    Material.Bitmap(
-      junctionBoxAlbedo,
-      LightingModel.Lit(
-        None,
-        Some(junctionBoxNormal),
-        Some(junctionBoxSpecular)
-      )
-    )
-
-  val junctionBoxMaterialFlat: Material.Bitmap =
-    Material.Bitmap(junctionBoxAlbedo, LightingModel.Lit.flat)
+  val junctionBoxMaterial: Material.Bitmap =
+    Material.Bitmap(junctionBoxAlbedo)
 
   val foliageMaterial: Material.Bitmap =
-    Material.Bitmap(foliageName, LightingModel.Lit.flat)
+    Material.Bitmap(foliageName)
 
   val imageLightMaterial: Material.Bitmap =
     Material.Bitmap(imageLightName)
-
-  val smoothBumpMaterial: Material.Bitmap =
-    Material.Bitmap(smoothBumpName)
 
   def assets: Set[AssetType] =
     Set(
@@ -166,7 +135,7 @@ object DistortionAssets {
         AssetType.Image(junctionBoxSpecular.assetName, AssetPath("assets/" + junctionBoxSpecular.assetName.value + ".png")),
         AssetType.Image(imageLightName, AssetPath("assets/" + imageLightName.value + ".png")),
         AssetType.Image(foliageName, AssetPath("assets/" + foliageName.value + ".png")),
-        AssetType.Image(smoothBumpName, AssetPath("assets/" + smoothBumpName.value + ".png"))
+        AssetType.Image(normalName, AssetPath("assets/" + normalName.value + ".png"))
       )
     )
 

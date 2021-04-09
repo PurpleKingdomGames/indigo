@@ -250,7 +250,9 @@ lazy val distortion =
       name := "distortion",
       showCursor := true,
       title := "Distortion Example",
-      gameAssetsDirectory := "assets"
+      gameAssetsDirectory := "assets",
+      windowStartWidth := 684,
+      windowStartHeight := 384
     )
     .settings(
       publish := {},
