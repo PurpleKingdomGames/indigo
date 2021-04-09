@@ -111,10 +111,26 @@ addCommandAlias(
 )
 
 addCommandAlias(
+  "fireworksRun",
+  List(
+    "fireworks/fastOptJS",
+    "fireworks/indigoRun"
+  ).mkString(";", ";", "")
+)
+
+addCommandAlias(
   "lightingBuild",
   List(
     "lighting/fastOptJS",
     "lighting/indigoBuild"
+  ).mkString(";", ";", "")
+)
+
+addCommandAlias(
+  "lightingRun",
+  List(
+    "lighting/fastOptJS",
+    "lighting/indigoRun"
   ).mkString(";", ";", "")
 )
 
@@ -127,10 +143,26 @@ addCommandAlias(
 )
 
 addCommandAlias(
+  "distortionRun",
+  List(
+    "distortion/fastOptJS",
+    "distortion/indigoRun"
+  ).mkString(";", ";", "")
+)
+
+addCommandAlias(
   "effectsBuild",
   List(
     "effects/fastOptJS",
     "effects/indigoBuild"
+  ).mkString(";", ";", "")
+)
+
+addCommandAlias(
+  "effectsRun",
+  List(
+    "effects/fastOptJS",
+    "effects/indigoRun"
   ).mkString(";", ";", "")
 )
 
