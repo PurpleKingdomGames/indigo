@@ -14,9 +14,9 @@ object EffectsExample extends IndigoSandbox[Unit, Unit] {
 
   val targetFPS: Int = 60
 
-  private val magnificationLevel: Int = 3
-  private val viewportWidth: Int      = 228 * magnificationLevel
-  private val viewportHeight: Int     = 128 * magnificationLevel
+  private val magnificationLevel: Int = 2
+  private val viewportWidth: Int      = 550
+  private val viewportHeight: Int     = 400
 
   val config: GameConfig =
     GameConfig(
@@ -36,7 +36,7 @@ object EffectsExample extends IndigoSandbox[Unit, Unit] {
     Set()
 
   val shaders: Set[Shader] =
-    Set()
+    Set(LegacyEffects.entityShader)
 
   def setup(assetCollection: AssetCollection, dice: Dice): Outcome[Startup[Unit]] =
     Outcome(Startup.Success(()))
@@ -145,8 +145,8 @@ object EffectsAssets {
 
   val junctionBoxAlbedo: AssetName = AssetName("junctionbox_albedo")
 
-  val junctionBoxMaterial: Material.Bitmap =
-    Material.Bitmap(junctionBoxAlbedo)
+  val junctionBoxMaterial: LegacyEffects =
+    LegacyEffects(junctionBoxAlbedo)
 
   def assets: Set[AssetType] =
     Set(

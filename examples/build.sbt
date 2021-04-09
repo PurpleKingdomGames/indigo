@@ -282,7 +282,9 @@ lazy val effects =
       name := "effects",
       showCursor := true,
       title := "Effects Example",
-      gameAssetsDirectory := "assets"
+      gameAssetsDirectory := "assets",
+      windowStartWidth := 550,
+      windowStartHeight := 400
     )
     .settings(
       publish := {},
