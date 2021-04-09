@@ -17,7 +17,15 @@ object LaunchPadAutomata {
   val automaton: Automaton =
     Automaton(
       AutomatonNode.Fixed(Assets.cross),
-      Seconds.zero
+      Seconds.zero,
+      (pt: Point, node: SceneNode) =>
+        node match {
+          case g: Graphic =>
+            g.moveTo(pt)
+
+          case _ =>
+            node
+        }
     ).withOnCullEvent { seed =>
       seed.payload match {
         case Some(LaunchPad(_, _, rocket)) =>
