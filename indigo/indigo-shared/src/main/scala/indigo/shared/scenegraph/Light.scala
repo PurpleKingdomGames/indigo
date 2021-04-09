@@ -192,6 +192,12 @@ object Falloff {
   object None {
     def default: None =
       None(0, scala.None)
+
+    def apply(far: Int): None =
+      None(0, Option(far))
+
+    def apply(near: Int, far: Int): None =
+      None(near, Option(far))
   }
 
   /**
@@ -213,6 +219,9 @@ object Falloff {
   object SmoothLinear {
     def default: SmoothLinear =
       SmoothLinear(0, 100)
+
+    def apply(far: Int): SmoothLinear =
+      SmoothLinear(0, far)
   }
 
   /**
@@ -234,6 +243,9 @@ object Falloff {
   object SmoothQuadratic {
     def default: SmoothQuadratic =
       SmoothQuadratic(0, 100)
+
+    def apply(far: Int): SmoothQuadratic =
+      SmoothQuadratic(0, far)
   }
 
   /**
@@ -259,6 +271,12 @@ object Falloff {
   object Linear {
     def default: Linear =
       Linear(0, scala.None)
+
+    def apply(far: Int): Linear =
+      Linear(0, Option(far))
+
+    def apply(near: Int, far: Int): Linear =
+      Linear(near, Option(far))
   }
 
   /**
@@ -284,6 +302,12 @@ object Falloff {
   object Quadratic {
     def default: Quadratic =
       Quadratic(0, scala.None)
+
+    def apply(far: Int): Quadratic =
+      Quadratic(0, Option(far))
+
+    def apply(near: Int, far: Int): Quadratic =
+      Quadratic(near, Option(far))
   }
 
 }
