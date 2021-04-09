@@ -21,6 +21,9 @@ object LightingGame extends IndigoSandbox[Unit, Unit] {
       magnification = magnificationLevel
     )
 
+  val viewCenter: Point =
+    config.viewport.giveDimensions(magnificationLevel).center
+
   val assets: Set[AssetType] =
     LightingAssets.assets
 
@@ -58,19 +61,22 @@ object LightingGame extends IndigoSandbox[Unit, Unit] {
       .moveTo(config.viewport.giveDimensions(config.magnification).center)
 
   def orbitingLight(distance: Int): Signal[PointLight] =
-    Signal.Orbit(config.viewport.center, distance.toDouble).map { vec =>
+    Signal.Orbit(viewCenter, distance.toDouble).map { vec =>
       PointLight.default
         .moveTo(vec.toPoint)
-        .withFalloff(Falloff.SmoothQuadratic(0, 150))
+        .withFalloff(Falloff.SmoothQuadratic(0, 50))
+        .withIntensity(2)
         .withColor(RGBA.Magenta)
+        .withSpecular(RGBA.Magenta)
     }
 
   def pulsingLight: Signal[PointLight] =
     Signal.SmoothPulse.map { amount =>
       PointLight.default
-        .moveTo(config.viewport.center + Point(30, -60))
-        .withFalloff(Falloff.SmoothQuadratic(0, (amount * 70).toInt))
+        .moveTo(viewCenter + Point(30, -60))
+        .withFalloff(Falloff.SmoothQuadratic(0, (amount * 100).toInt))
         .withColor(RGBA.Cyan)
+        .withSpecular(RGBA.Cyan)
     }
 
   def present(context: FrameContext[Unit], model: Unit): Outcome[SceneUpdateFragment] =
@@ -80,35 +86,30 @@ object LightingGame extends IndigoSandbox[Unit, Unit] {
         graphic.moveBy(-60, 0).withMaterial(LightingAssets.junctionBoxMaterialOff),
         graphic.moveBy(-30, 0).withMaterial(LightingAssets.junctionBoxMaterialOn),
         graphic.moveBy(30, 0).withMaterial(LightingAssets.junctionBoxMaterialFlat),
-        graphic.moveBy(60, 0).withMaterial(LightingAssets.junctionBoxMaterialFlat.withLighting(LightingModel.Unlit))
+        graphic.moveBy(60, 0).withMaterial(LightingAssets.junctionBoxMaterialFlat.withLighting(LightingModel.Unlit)),
+        Sprite(BindingKey("lights animation"), 0, 0, 1, animationsKey, LightingAssets.trafficLightsMaterial).play()
       ).withLights(
-          AmbientLight(RGBA.White.withAmount(0.1)),
-          // PointLight.default
-          //   .moveTo(config.viewport.center + Point(50, 0))
-          //   .withAttenuation(50)
-          //   .withColor(RGB.Green),
-          // PointLight.default
-          //   .moveTo(config.viewport.center + Point(-50, 0))
-          //   .withAttenuation(50)
-          //   .withColor(RGB.Red),
-          orbitingLight(120).affectTime(0.25).at(context.gameTime.running),
-          pulsingLight.affectTime(0.5).at(context.gameTime.running)
-          // DirectionLight(30, RGB.Green, 1.2, Radians.fromDegrees(30)),
-          // SpotLight.default
-          //   .withColor(RGB.Yellow)
-          //   .moveTo(config.viewport.center + Point(-150, -60))
-          //   .rotateBy(Radians.fromDegrees(45))
-          //   .withHeight(25)
-          //   .withPower(1.5)
-        )
-        .addLayer(
-          Sprite(BindingKey("lights animation"), 0, 0, 1, animationsKey, LightingAssets.trafficLightsMaterial).play()
-        )
-      // .addGameLayerNodes(
-      //   graphic
-      //     .moveTo(config.viewport.giveDimensions(config.magnification).center.x, 30)
-      //     .withCrop(10, 10, 20, 20)
-      // )
+        AmbientLight(RGBA.White.withAmount(0.1)),
+        PointLight.default
+          .moveTo(viewCenter + Point(50, 0))
+          .withFalloff(Falloff.SmoothQuadratic(75))
+          .withIntensity(1)
+          .withColor(RGBA.Green),
+        PointLight.default
+          .moveTo(viewCenter + Point(-50, 0))
+          .withFalloff(Falloff.Quadratic(0, 50))
+          .withIntensity(100)
+          .withColor(RGBA.Red),
+        orbitingLight(60).affectTime(0.25).at(context.gameTime.running),
+        pulsingLight.affectTime(0.5).at(context.gameTime.running),
+        DirectionLight(RGBA.Green.withAlpha(0.1), RGBA.White.withAlpha(0.5), Radians.fromDegrees(30)),
+        SpotLight.default
+          .withColor(RGBA.Yellow)
+          .withSpecular(RGBA.Yellow)
+          .moveTo(viewCenter + Point(-50, -30))
+          .rotateBy(Radians.fromDegrees(135))
+          .withFalloff(Falloff.None(15, 100))
+      )
     )
 }
 
