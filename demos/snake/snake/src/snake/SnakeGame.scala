@@ -84,4 +84,4 @@ object SnakeGame extends IndigoGame[ViewConfig, StartupData, GameModel, ViewMode
 
 }
 
-final case object GameReset extends GlobalEvent
+case object GameReset extends GlobalEvent
