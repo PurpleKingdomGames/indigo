@@ -1,6 +1,8 @@
 import scala.sys.process._
 import scala.language.postfixOps
 
+ThisBuild / versionScheme := Some("early-semver")
+
 lazy val indigoVersion = IndigoVersion.getVersion
 
 val scala3Version    = "3.0.0-RC2"
