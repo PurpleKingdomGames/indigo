@@ -4,15 +4,13 @@
 
 # Indigo
 
-Indigo is a non-traditional, proof of concept game engine written in Scala. It aims to allow programmers to build games using a purely functional set of APIs, focusing on developer productivity and testing.
+Indigo is a game engine written in Scala for functional programmers. It allows game developers to build games using a set of purely functional APIs that are focused on productivity and testing.
 
-Currently Indigo only exports web games, we hope to support more platforms in the future.
+Indigo is built entirely on Scala.js + WebGL, but it's sbt and Mill plugins will export games for web, desktop (via Electron), and mobile (via Cordova). Hypothetically consoles could also be supported.
 
 Documentation can be found on [indigoengine.io](https://indigoengine.io).
 
 ## Full local build and test instructions
-
-> Updated! The 0.5.0 release was Scala 2 only, the master branch is now built primarily against the Scala 3 compiler. Though we intend to publish to Scala 2 & 3 in the short term, as soon as is viable Scala 2 support will be dropped.
 
 ### Build requirements
 
@@ -20,7 +18,7 @@ You will need:
 
 - Mill
 - SBT
-- JDK (Update: 1.8 works, 11 should be fine too and is an LTS version)
+- JDK (Update: 1.8 works, 11 is used in Indigo's development)
 - [glslang validator](https://github.com/KhronosGroup/glslang) - can be installed with your favorite package manager.
 
 ### Running the build
@@ -33,7 +31,7 @@ bash build.sh
 
 > Windows users: Most of the things in the script mentioned above should work, but Indigo is not routinely built on Windows machines so we currently offer no guarantees or support. We hope to in the future.
 
-There is also another script which is faster since it doesn't build the examples or demos.
+There is also another script which is a bit faster since it doesn't build the examples or demos.
 
 ```bash
 bash localpublish.sh
