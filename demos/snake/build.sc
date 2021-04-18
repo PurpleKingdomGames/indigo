@@ -10,7 +10,7 @@ import coursier.maven.MavenRepository
 import $ivy.`io.indigoengine::mill-indigo:0.7.1-SNAPSHOT`, millindigo._
 
 object snake extends ScalaJSModule with MillIndigo {
-  def scalaVersion   = "2.13.5"
+  def scalaVersion   = "3.0.0-RC2"
   def scalaJSVersion = "1.5.1"
 
   val gameAssetsDirectory: os.Path = os.pwd / "assets"
@@ -43,7 +43,7 @@ object snake extends ScalaJSModule with MillIndigo {
     ivy"io.indigoengine::indigo-extras::$indigoVersion"
   )
 
-  def scalacOptions = ScalacOptions.compile
+  def scalacOptions = super.scalacOptions() ++ ScalacOptions.compile
 
   object test extends Tests {
     def ivyDeps = Agg(
@@ -54,7 +54,7 @@ object snake extends ScalaJSModule with MillIndigo {
 
     override def moduleKind = T(mill.scalajslib.api.ModuleKind.CommonJSModule)
 
-    def scalacOptions = ScalacOptions.test
+    def scalacOptions = super.scalacOptions() ++ ScalacOptions.test
   }
 
 }
