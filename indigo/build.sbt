@@ -118,25 +118,12 @@ lazy val indigo =
     .enablePlugins(ScalaJSPlugin)
     .settings(commonSettings: _*)
     .settings(publishSettings: _*)
-    .dependsOn(indigoShared)
     .settings(
       name := "indigo",
       libraryDependencies ++= Seq(
         "org.scalacheck" %%% "scalacheck"  % "1.15.3" % "test",
         ("org.scala-js"  %%% "scalajs-dom" % "1.1.0").cross(CrossVersion.for3Use2_13)
       )
-    )
-
-// Shared
-lazy val indigoShared =
-  project
-    .in(file("indigo-shared"))
-    .enablePlugins(ScalaJSPlugin)
-    .settings(commonSettings: _*)
-    .settings(publishSettings: _*)
-    .settings(
-      name := "indigo-shared",
-      libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.15.3" % "test"
     )
     .settings(
       Compile / sourceGenerators += Def.task {
@@ -160,6 +147,40 @@ lazy val indigoShared =
         cachedFun(IO.listFiles((baseDirectory.value / "shader-library")).toSet).toSeq
       }.taskValue
     )
+
+// Shared
+// lazy val indigoShared =
+//   project
+//     .in(file("indigo-shared"))
+//     .enablePlugins(ScalaJSPlugin)
+//     .settings(commonSettings: _*)
+//     .settings(publishSettings: _*)
+//     .settings(
+//       name := "indigo-shared",
+//       libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.15.3" % "test"
+//     )
+//     .settings(
+//       Compile / sourceGenerators += Def.task {
+//         val cachedFun = FileFunction.cached(
+//           streams.value.cacheDirectory / "shaders"
+//         ) { (files: Set[File]) =>
+//           ShaderGen.makeShader(files, (Compile / sourceManaged).value).toSet
+//         }
+
+//         cachedFun(IO.listFiles((baseDirectory.value / "shaders")).toSet).toSeq
+//       }.taskValue
+//     )
+//     .settings(
+//       Compile / sourceGenerators += Def.task {
+//         val cachedFun = FileFunction.cached(
+//           streams.value.cacheDirectory / "shader-library"
+//         ) { (files: Set[File]) =>
+//           ShaderLibraryGen.makeShaderLibrary("ShaderLibrary", "indigo.shaders", files, (Compile / sourceManaged).value).toSet
+//         }
+
+//         cachedFun(IO.listFiles((baseDirectory.value / "shader-library")).toSet).toSeq
+//       }.taskValue
+//     )
 
 // Circe
 lazy val indigoJsonCirce =
@@ -208,7 +229,6 @@ lazy val indigoProject =
       openindigoextsdocs := { "open -a Firefox indigo-exts/.jvm/target/scala-3.0.0-RC2/api/indigoexts/index.html" ! }
     )
     .aggregate(
-      indigoShared,
       indigo,
       indigoExtras,
       indigoJsonCirce,
