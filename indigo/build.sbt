@@ -100,7 +100,6 @@ lazy val indigoCore =
         "org.scalacheck" %%% "scalacheck" % "1.15.3" % "test"
       )
     )
-    .dependsOn(indigoShared)
     .dependsOn(indigoPlatforms)
 
 // Indigo Extensions
