@@ -6,30 +6,19 @@ ThisBuild / versionScheme := Some("early-semver")
 lazy val indigoVersion = IndigoVersion.getVersion
 
 val scala3Version   = "3.0.0-RC2"
-val scala213Version = "2.13.5"
-
-lazy val scalaFixSettings: Seq[sbt.Def.Setting[_]] =
-  Seq(
-    scalacOptions ++= (
-      if (scalaVersion.value.startsWith("3.")) Nil else Seq(s"-P:semanticdb:targetroot:${baseDirectory.value}/target/.semanticdb", "-Yrangepos")
-    ),
-    scalafixOnCompile := (if (scalaVersion.value.startsWith("3.")) false else true)
-  )
 
 lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
   version := indigoVersion,
   scalaVersion := scala3Version,
-  semanticdbEnabled := !scalaVersion.value.startsWith("3."),
-  semanticdbVersion := scalafixSemanticdb.revision, // use Scalafix compatible version
-  crossScalaVersions := Seq(scala3Version, scala213Version),
+  crossScalaVersions := Seq(scala3Version),
   organization := "io.indigoengine",
   libraryDependencies ++= Seq(
     "org.scalameta" %%% "munit" % "0.7.23" % Test
   ),
   testFrameworks += new TestFramework("munit.Framework"),
   Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
-  crossScalaVersions := Seq(scala3Version, scala213Version)
-) ++ scalaFixSettings
+  crossScalaVersions := Seq(scala3Version)
+)
 
 lazy val publishSettings = {
   import xerial.sbt.Sonatype._
