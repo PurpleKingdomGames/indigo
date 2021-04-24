@@ -87,21 +87,6 @@ lazy val perf =
     .dependsOn(indigoExtras)
     .dependsOn(indigoJsonCirce)
 
-// Indigo
-lazy val indigoCore =
-  project
-    .in(file("indigo-core"))
-    .enablePlugins(ScalaJSPlugin)
-    .settings(commonSettings: _*)
-    .settings(publishSettings: _*)
-    .settings(
-      name := "indigo-core",
-      libraryDependencies ++= Seq(
-        "org.scalacheck" %%% "scalacheck" % "1.15.3" % "test"
-      )
-    )
-    .dependsOn(indigoPlatforms)
-
 // Indigo Extensions
 lazy val indigoExtras =
   project
@@ -126,14 +111,14 @@ lazy val indigoExtras =
       }.taskValue
     )
 
-// Indigo Game
+// Indigo
 lazy val indigo =
   project
     .in(file("indigo"))
     .enablePlugins(ScalaJSPlugin)
     .settings(commonSettings: _*)
     .settings(publishSettings: _*)
-    .dependsOn(indigoCore)
+    .dependsOn(indigoPlatforms)
     .settings(
       name := "indigo",
       libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.15.3" % "test"
@@ -238,10 +223,9 @@ lazy val indigoProject =
     .aggregate(
       indigoShared,
       indigoPlatforms,
-      indigoJsonCirce,
-      indigoCore,
-      indigoExtras,
       indigo,
+      indigoExtras,
+      indigoJsonCirce,
       indigoShaders,
       sandbox,
       perf
