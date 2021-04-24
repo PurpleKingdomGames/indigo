@@ -139,20 +139,6 @@ lazy val indigo =
       libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.15.3" % "test"
     )
 
-// Indigo Facades
-lazy val indigoFacades =
-  project
-    .in(file("indigo-facades"))
-    .enablePlugins(ScalaJSPlugin)
-    .settings(commonSettings: _*)
-    .settings(publishSettings: _*)
-    .settings(
-      name := "indigo-facades",
-      libraryDependencies ++= Seq(
-        ("org.scala-js" %%% "scalajs-dom" % "1.1.0").cross(CrossVersion.for3Use2_13)
-      )
-    )
-
 // Indigo Platforms
 lazy val indigoPlatforms =
   project
@@ -168,7 +154,6 @@ lazy val indigoPlatforms =
       )
     )
     .dependsOn(indigoShared)
-    .dependsOn(indigoFacades)
 
 // Shared
 lazy val indigoShared =
@@ -257,7 +242,6 @@ lazy val indigoProject =
       indigoCore,
       indigoExtras,
       indigo,
-      indigoFacades,
       indigoShaders,
       sandbox,
       perf
