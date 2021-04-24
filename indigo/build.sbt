@@ -188,7 +188,7 @@ lazy val indigoJsonCirce =
         "io.circe" %%% "circe-parser" % "0.14.0-M5"
       )
     )
-    .dependsOn(indigoExtras)
+    .dependsOn(indigoShared)
 
 lazy val indigoShaders =
   project
