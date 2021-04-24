@@ -94,7 +94,7 @@ lazy val indigoExtras =
     .enablePlugins(ScalaJSPlugin)
     .settings(commonSettings: _*)
     .settings(publishSettings: _*)
-    .dependsOn(indigoShared)
+    .dependsOn(indigo)
     .settings(
       name := "indigo-extras",
       libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.15.3" % "test"
@@ -188,7 +188,7 @@ lazy val indigoJsonCirce =
         "io.circe" %%% "circe-parser" % "0.14.0-M5"
       )
     )
-    .dependsOn(indigoShared)
+    .dependsOn(indigo)
 
 lazy val indigoShaders =
   project
