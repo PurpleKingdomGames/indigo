@@ -1,10 +1,9 @@
 lazy val releaseProjects: List[String] =
   List(
     "indigoShared",
+    "indigo",
     "indigoJsonCirce",
-    "indigoPlatforms",
-    "indigoExtras",
-    "indigo"
+    "indigoExtras"
   )
 
 lazy val coreProjects: List[String] =

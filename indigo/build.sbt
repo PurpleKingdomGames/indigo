@@ -5,7 +5,7 @@ ThisBuild / versionScheme := Some("early-semver")
 
 lazy val indigoVersion = IndigoVersion.getVersion
 
-val scala3Version    = "3.0.0-RC2"
+val scala3Version   = "3.0.0-RC2"
 val scala213Version = "2.13.5"
 
 lazy val scalaFixSettings: Seq[sbt.Def.Setting[_]] =
@@ -118,27 +118,14 @@ lazy val indigo =
     .enablePlugins(ScalaJSPlugin)
     .settings(commonSettings: _*)
     .settings(publishSettings: _*)
-    .dependsOn(indigoPlatforms)
+    .dependsOn(indigoShared)
     .settings(
       name := "indigo",
-      libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.15.3" % "test"
-    )
-
-// Indigo Platforms
-lazy val indigoPlatforms =
-  project
-    .in(file("indigo-platforms"))
-    .enablePlugins(ScalaJSPlugin)
-    .settings(commonSettings: _*)
-    .settings(publishSettings: _*)
-    .settings(
-      name := "indigo-platforms",
       libraryDependencies ++= Seq(
         "org.scalacheck" %%% "scalacheck"  % "1.15.3" % "test",
         ("org.scala-js"  %%% "scalajs-dom" % "1.1.0").cross(CrossVersion.for3Use2_13)
       )
     )
-    .dependsOn(indigoShared)
 
 // Shared
 lazy val indigoShared =
@@ -222,7 +209,6 @@ lazy val indigoProject =
     )
     .aggregate(
       indigoShared,
-      indigoPlatforms,
       indigo,
       indigoExtras,
       indigoJsonCirce,
