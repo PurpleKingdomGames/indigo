@@ -96,10 +96,10 @@ object Shape {
       this.copy(lighting = modifier(lighting))
 
     private lazy val aspect: Vector2 =
-      if (bounds.size.x > bounds.size.y)
-        Vector2(1.0, bounds.size.y.toDouble / bounds.size.x.toDouble)
+      if (dimensions.size.x > dimensions.size.y)
+        Vector2(1.0, dimensions.size.y.toDouble / dimensions.size.x.toDouble)
       else
-        Vector2(bounds.size.x.toDouble / bounds.size.y.toDouble, 1.0)
+        Vector2(dimensions.size.x.toDouble / dimensions.size.y.toDouble, 1.0)
 
     def moveTo(pt: Point): Box =
       this.copy(dimensions = dimensions.moveTo(pt))
