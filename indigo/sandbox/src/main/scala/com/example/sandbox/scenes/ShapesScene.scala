@@ -44,7 +44,10 @@ object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
       Signal.SmoothPulse.map(d => (10 * d).toInt).at(context.running)
 
     val squareSize: Point =
-      Point(Signal.SmoothPulse.map(d => 20 + (80 * d).toInt).affectTime(0.25).at(context.running))
+      Point(
+        Signal.SmoothPulse.map(d => 20 + (80 * d).toInt).affectTime(0.25).at(context.running),
+        100 - Signal.SmoothPulse.map(d => 20 + (80 * d).toInt).affectTime(0.25).at(context.running)
+      )
 
     Outcome(
       SceneUpdateFragment.empty
@@ -62,9 +65,12 @@ object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
               Point(90, 90) + (Math.sin(Radians.fromSeconds(context.running * Seconds(0.8)).value) * 6).toInt,
               Point(70, 20) - (Math.cos(Radians.fromSeconds(context.running * Seconds(1.5)).value) * 8).toInt
             )
-            .moveTo(175, 10)
+            .moveTo(175, 10),
+          Shape
+            .Box(Rectangle(0, 0, 50, 25), Fill.None, Stroke(3, RGBA.White))
+            .moveTo(180, 100)
         )
-        .addCloneBlanks(CloneBlank(CloneId("shape clone"), Shape.Circle(Point.zero, 5, Fill.Color(RGBA.Green), Stroke(2, RGBA.White))))
+      // .addCloneBlanks(CloneBlank(CloneId("shape clone"), Shape.Circle(Point.zero, 5, Fill.Color(RGBA.Green), Stroke(2, RGBA.White))))
     )
   }
 
