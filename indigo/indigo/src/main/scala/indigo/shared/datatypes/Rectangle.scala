@@ -3,6 +3,12 @@ package indigo.shared.datatypes
 import scala.annotation.tailrec
 
 final case class Rectangle(position: Point, size: Point) {
+  if (size.x < 0 || size.y < 0)
+    IndigoLogger.error(
+      s"Rectangle size (${size.x}, ${size.y}) is not permitted",
+      "negatively sized rectangles may cause computation errors"
+    )
+  
   lazy val x: Int       = position.x
   lazy val y: Int       = position.y
   lazy val width: Int   = size.x
