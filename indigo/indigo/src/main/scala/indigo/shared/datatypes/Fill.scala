@@ -5,6 +5,9 @@ sealed trait Fill {
 }
 object Fill {
 
+  def None: Color =
+    Color(RGBA.Zero)
+
   final case class Color(color: RGBA) extends Fill {
 
     def withColor(newColor: RGBA): Color =
