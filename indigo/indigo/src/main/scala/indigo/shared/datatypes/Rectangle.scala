@@ -130,6 +130,9 @@ object Rectangle {
     b.x >= a.x && b.y >= a.y && (b.width + (b.x - a.x)) <= a.width && (b.height + (b.y - a.y)) <= a.height
 
   def overlapping(a: Rectangle, b: Rectangle): Boolean =
-    Math.abs(a.center.x - b.center.x) < a.halfSize.x + b.halfSize.x && Math.abs(a.center.y - b.center.y) < a.halfSize.y + b.halfSize.y
+    a.topLeft.x     < b.bottomRight.x &&
+    a.bottomRight.x > a.topLeft.x &&
+    a.topLeft.y     < b.bottomRight.y &&
+    a.bottomRight.y > b.topLeft.y
 
 }
