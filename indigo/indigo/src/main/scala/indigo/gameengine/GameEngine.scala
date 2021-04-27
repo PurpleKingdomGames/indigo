@@ -276,7 +276,7 @@ object GameEngine {
         program
 
       case None =>
-        val msg = s"Error parsing external shader could not match '$tag' tag pair in asset '${assetName.value}' - Halting."
+        val msg = s"Error parsing external shader could not match '$tag' tag pair in asset '${assetName}' - Halting."
         IndigoLogger.error(msg)
         throw new Exception(msg)
     }

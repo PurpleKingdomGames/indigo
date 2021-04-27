@@ -39,10 +39,10 @@ final case class ShaderData(
       uniformBlocks.map { uniformBlock =>
         s"-${uniformBlock.uniformHash}"
       }.mkString +
-      s"-${channel0.map(_.value).getOrElse("")}" +
-      s"-${channel1.map(_.value).getOrElse("")}" +
-      s"-${channel2.map(_.value).getOrElse("")}" +
-      s"-${channel3.map(_.value).getOrElse("")}"
+      s"-${channel0.getOrElse("")}" +
+      s"-${channel1.getOrElse("")}" +
+      s"-${channel2.getOrElse("")}" +
+      s"-${channel3.getOrElse("")}"
 
   def toShaderData: ShaderData =
     this

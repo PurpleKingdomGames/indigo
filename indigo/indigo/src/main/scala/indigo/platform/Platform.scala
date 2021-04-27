@@ -28,6 +28,7 @@ import indigo.shared.events.FullScreenEnterError
 import indigo.shared.events.FullScreenExited
 import indigo.shared.events.FullScreenExitError
 import indigo.shared.shader.RawShaderCode
+import indigo.shared.assets.AssetName
 
 class Platform(
     gameConfig: GameConfig,
@@ -69,7 +70,7 @@ class Platform(
     Outcome(
       TextureAtlas.create(
         assetCollection.images.map(i => ImageRef(i.name, i.data.width, i.data.height, i.tag.map(_.value))),
-        (name: String) => assetCollection.images.find(_.name.value == name),
+        (name: AssetName) => assetCollection.images.find(_.name == name),
         TextureAtlasFunctions.createAtlasData
       )
     )
@@ -88,7 +89,11 @@ class Platform(
           .map { p =>
             p._1 -> new TextureRefAndOffset(
               atlasName = p._2.id.id,
-              atlasSize = textureAtlas.atlases.get(p._2.id).map(_.size.value).map(i => Vector2(i.toDouble)).getOrElse(Vector2.one),
+              atlasSize = textureAtlas.atlases
+                .get(p._2.id)
+                .map(_.size.value)
+                .map(i => Vector2(i.toDouble))
+                .getOrElse(Vector2.one),
               offset = p._2.offset
             )
           }

@@ -1,3 +1,5 @@
 package indigo.shared.platform
 
-final class AssetMapping(val mappings: Map[String, TextureRefAndOffset])
+import indigo.shared.assets.AssetName
+
+final class AssetMapping(val mappings: Map[AssetName, TextureRefAndOffset])

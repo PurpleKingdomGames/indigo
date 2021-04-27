@@ -23,37 +23,46 @@ object TextureAtlas {
   def createWithMaxSize(
       max: PowerOfTwo,
       imageRefs: List[ImageRef],
-      lookupByName: String => Option[LoadedImageAsset],
-      createAtlasFunc: (TextureMap, String => Option[LoadedImageAsset]) => Atlas
+      lookupByName: AssetName => Option[LoadedImageAsset],
+      createAtlasFunc: (TextureMap, AssetName => Option[LoadedImageAsset]) => Atlas
   ): TextureAtlas =
-    (inflateAndSortByPowerOfTwo andThen groupTexturesIntoAtlasBuckets(max) andThen convertToAtlas(createAtlasFunc)(lookupByName))(
+    (inflateAndSortByPowerOfTwo andThen groupTexturesIntoAtlasBuckets(max) andThen convertToAtlas(createAtlasFunc)(
+      lookupByName
+    ))(
       imageRefs
     )
 
-  def create(imageRefs: List[ImageRef], lookupByName: String => Option[LoadedImageAsset], createAtlasFunc: (TextureMap, String => Option[LoadedImageAsset]) => Atlas): TextureAtlas = {
-    IndigoLogger.info(s"Creating atlases. Max size: ${MaxTextureSize.value.toString()}x${MaxTextureSize.value.toString()}")
-    val textureAtlas = (inflateAndSortByPowerOfTwo andThen groupTexturesIntoAtlasBuckets(MaxTextureSize) andThen convertToAtlas(
-      createAtlasFunc
-    )(lookupByName))(imageRefs)
+  def create(
+      imageRefs: List[ImageRef],
+      lookupByName: AssetName => Option[LoadedImageAsset],
+      createAtlasFunc: (TextureMap, AssetName => Option[LoadedImageAsset]) => Atlas
+  ): TextureAtlas = {
+    IndigoLogger.info(
+      s"Creating atlases. Max size: ${MaxTextureSize.value.toString()}x${MaxTextureSize.value.toString()}"
+    )
+    val textureAtlas =
+      (inflateAndSortByPowerOfTwo andThen groupTexturesIntoAtlasBuckets(MaxTextureSize) andThen convertToAtlas(
+        createAtlasFunc
+      )(lookupByName))(imageRefs)
 
     IndigoLogger.info(textureAtlas.report)
 
     textureAtlas
   }
 
-  val identity: TextureAtlas = TextureAtlas(Map.empty[AtlasId, Atlas], Map.empty[String, AtlasIndex])
+  val identity: TextureAtlas = TextureAtlas(Map.empty[AtlasId, Atlas], Map.empty[AssetName, AtlasIndex])
 
 }
 
 // Output
-final case class TextureAtlas(atlases: Map[AtlasId, Atlas], legend: Map[String, AtlasIndex]) {
+final case class TextureAtlas(atlases: Map[AtlasId, Atlas], legend: Map[AssetName, AtlasIndex]) {
   def +(other: TextureAtlas): TextureAtlas =
     TextureAtlas(
       this.atlases ++ other.atlases,
       this.legend ++ other.legend
     )
 
-  def lookUpByName(name: String): Option[AtlasLookupResult] =
+  def lookUpByName(name: AssetName): Option[AtlasLookupResult] =
     legend.get(name).flatMap { i =>
       atlases.get(i.id).map { a =>
         new AtlasLookupResult(name, i.id, a, i.offset)
@@ -61,9 +70,9 @@ final case class TextureAtlas(atlases: Map[AtlasId, Atlas], legend: Map[String, 
     }
 
   def report: String = {
-    val atlasRecordToString: Map[String, AtlasIndex] => ((AtlasId, Atlas)) => String = leg =>
+    val atlasRecordToString: Map[AssetName, AtlasIndex] => ((AtlasId, Atlas)) => String = leg =>
       at => {
-        val relevant = leg.filter { (k: (String, AtlasIndex)) =>
+        val relevant = leg.filter { (k: (AssetName, AtlasIndex)) =>
           k._2.id == at._1
         }
 
@@ -84,14 +93,16 @@ final case class AtlasId(id: String) extends AnyVal
 
 final case class AtlasIndex(id: AtlasId, offset: Point)
 
-final case class Atlas(size: PowerOfTwo, imageData: Option[raw.ImageData]) // Yuk. Only optional so that testing is bearable.
+final case class Atlas(
+    size: PowerOfTwo,
+    imageData: Option[raw.ImageData]
+) // Yuk. Only optional so that testing is bearable.
 
-final case class AtlasLookupResult(name: String, atlasId: AtlasId, atlas: Atlas, offset: Point)
+final case class AtlasLookupResult(name: AssetName, atlasId: AtlasId, atlas: Atlas, offset: Point)
 
 object TextureAtlasFunctions {
 
-  /**
-    * Type fails all over the place, no guarantee that this list is in the right order...
+  /** Type fails all over the place, no guarantee that this list is in the right order...
     * so instead of just going through the set until we find a bigger value, we have to filter and fold all
     */
   def pickPowerOfTwoSizeFor(supportedSizes: Set[PowerOfTwo], width: Int, height: Int): PowerOfTwo =
@@ -99,11 +110,18 @@ object TextureAtlasFunctions {
       .filter(s => s.value >= width && s.value >= height)
       .foldLeft(PowerOfTwo.Max)(PowerOfTwo.min)
 
-  def isTooBig(max: PowerOfTwo, width: Int, height: Int): Boolean = if (width > max.value || height > max.value) true else false
+  def isTooBig(max: PowerOfTwo, width: Int, height: Int): Boolean =
+    if (width > max.value || height > max.value) true else false
 
   val inflateAndSortByPowerOfTwo: List[ImageRef] => List[TextureDetails] = images =>
     images
-      .map(i => TextureDetails(i, TextureAtlasFunctions.pickPowerOfTwoSizeFor(TextureAtlas.supportedSizes, i.width, i.height), i.tag))
+      .map(i =>
+        TextureDetails(
+          i,
+          TextureAtlasFunctions.pickPowerOfTwoSizeFor(TextureAtlas.supportedSizes, i.width, i.height),
+          i.tag
+        )
+      )
       .sortBy(_.size.value)
       .reverse
 
@@ -147,9 +165,8 @@ object TextureAtlasFunctions {
         _.groupBy(_.tag.getOrElse("")).toList.sortBy(_._1)
 
       // val x: List[List[TextureDetails]] =
-      sortAndGroupByTag(list).flatMap {
-        case (_, tds) =>
-          createBuckets(tds, Nil, Nil, Nil, max)
+      sortAndGroupByTag(list).flatMap { case (_, tds) =>
+        createBuckets(tds, Nil, Nil, Nil, max)
       }
 
       // x
@@ -169,12 +186,12 @@ object TextureAtlasFunctions {
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
-  val createAtlasData: (TextureMap, String => Option[LoadedImageAsset]) => Atlas = (textureMap, lookupByName) => {
+  val createAtlasData: (TextureMap, AssetName => Option[LoadedImageAsset]) => Atlas = (textureMap, lookupByName) => {
     val canvas: html.Canvas = createCanvas(textureMap.size.value, textureMap.size.value)
     val ctx                 = canvas.getContext("2d")
 
     textureMap.textureCoords.foreach { tex =>
-      lookupByName(tex.imageRef.name.value).foreach { img =>
+      lookupByName(tex.imageRef.name).foreach { img =>
         ctx.drawImage(img.data, tex.coords.x, tex.coords.y, tex.imageRef.width, tex.imageRef.height)
       }
 
@@ -186,10 +203,11 @@ object TextureAtlasFunctions {
     new Atlas(textureMap.size, Option(imageData))
   }
 
-  val convertTextureDetailsToTree: TextureDetails => AtlasQuadTree = textureDetails => AtlasQuadNode(textureDetails.size, AtlasTexture(textureDetails.imageRef))
+  val convertTextureDetailsToTree: TextureDetails => AtlasQuadTree = textureDetails =>
+    AtlasQuadNode(textureDetails.size, AtlasTexture(textureDetails.imageRef))
 
-  val convertToTextureAtlas: ((TextureMap, String => Option[LoadedImageAsset]) => Atlas) => (
-      String => Option[LoadedImageAsset]
+  val convertToTextureAtlas: ((TextureMap, AssetName => Option[LoadedImageAsset]) => Atlas) => (
+      AssetName => Option[LoadedImageAsset]
   ) => (AtlasId, List[TextureDetails]) => TextureAtlas = createAtlasFunc =>
     lookupByName =>
       (atlasId, list) =>
@@ -198,8 +216,10 @@ object TextureAtlasFunctions {
           case n: AtlasQuadNode =>
             val textureMap = n.toTextureMap
 
-            val legend: Map[String, AtlasIndex] =
-              textureMap.textureCoords.foldLeft(Map.empty[String, AtlasIndex])((m, t) => m ++ Map(t.imageRef.name.value -> new AtlasIndex(atlasId, t.coords)))
+            val legend: Map[AssetName, AtlasIndex] =
+              textureMap.textureCoords.foldLeft(Map.empty[AssetName, AtlasIndex])((m, t) =>
+                m ++ Map(t.imageRef.name -> new AtlasIndex(atlasId, t.coords))
+              )
 
             val atlas = createAtlasFunc(textureMap, lookupByName)
 
@@ -213,14 +233,19 @@ object TextureAtlasFunctions {
 
   val combineTextureAtlases: List[TextureAtlas] => TextureAtlas = list => list.foldLeft(TextureAtlas.identity)(_ + _)
 
-  val convertToAtlas: ((TextureMap, String => Option[LoadedImageAsset]) => Atlas) => (
-      String => Option[LoadedImageAsset]
+  val convertToAtlas: ((TextureMap, AssetName => Option[LoadedImageAsset]) => Atlas) => (
+      AssetName => Option[LoadedImageAsset]
   ) => List[List[TextureDetails]] => TextureAtlas = createAtlasFunc =>
     lookupByName =>
       list =>
         combineTextureAtlases(
           list.zipWithIndex
-            .map(p => convertToTextureAtlas(createAtlasFunc)(lookupByName)(new AtlasId(TextureAtlas.IdPrefix + p._2.toString), p._1))
+            .map(p =>
+              convertToTextureAtlas(createAtlasFunc)(lookupByName)(
+                new AtlasId(TextureAtlas.IdPrefix + p._2.toString),
+                p._1
+              )
+            )
         )
 
   def mergeTrees(a: AtlasQuadTree, b: AtlasQuadTree, max: PowerOfTwo): Option[AtlasQuadTree] =
@@ -369,11 +394,13 @@ final case class AtlasTexture(imageRef: ImageRef) extends AtlasSum {
   def canAccommodate(requiredSize: PowerOfTwo): Boolean = false
 }
 
-final case class AtlasQuadDivision(q1: AtlasQuadTree, q2: AtlasQuadTree, q3: AtlasQuadTree, q4: AtlasQuadTree) extends AtlasSum {
+final case class AtlasQuadDivision(q1: AtlasQuadTree, q2: AtlasQuadTree, q3: AtlasQuadTree, q4: AtlasQuadTree)
+    extends AtlasSum {
   def canAccommodate(requiredSize: PowerOfTwo): Boolean =
-    q1.canAccommodate(requiredSize) || q2.canAccommodate(requiredSize) || q3.canAccommodate(requiredSize) || q4.canAccommodate(
-      requiredSize
-    )
+    q1.canAccommodate(requiredSize) || q2.canAccommodate(requiredSize) || q3.canAccommodate(requiredSize) || q4
+      .canAccommodate(
+        requiredSize
+      )
 }
 
 object AtlasQuadDivision {
