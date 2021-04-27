@@ -65,5 +65,6 @@ object Scene {
 
 opaque type SceneName = String
 object SceneName:
+  def apply(sceneName: String): SceneName = sceneName
   given CanEqual[SceneName, SceneName] = CanEqual.derived
   given CanEqual[Option[SceneName], Option[SceneName]] = CanEqual.derived

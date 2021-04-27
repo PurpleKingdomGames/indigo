@@ -70,7 +70,7 @@ final case class SceneFinder(previous: List[ScenePosition], current: ScenePositi
         sf
 
       case None =>
-        IndigoLogger.errorOnce("Failed to find scene called: " + name.name)
+        IndigoLogger.errorOnce("Failed to find scene called: " + name)
         this
     }
 
@@ -78,7 +78,9 @@ final case class SceneFinder(previous: List[ScenePosition], current: ScenePositi
 
 object SceneFinder {
 
-  def fromScenes[StartUpData, GameModel, ViewModel](scenesList: NonEmptyList[Scene[StartUpData, GameModel, ViewModel]]): SceneFinder = {
+  def fromScenes[StartUpData, GameModel, ViewModel](
+      scenesList: NonEmptyList[Scene[StartUpData, GameModel, ViewModel]]
+  ): SceneFinder = {
     val a = scenesList.map(_.name).zipWithIndex.map(p => ScenePosition(p._2, p._1))
 
     SceneFinder(Nil, a.head, a.tail)
