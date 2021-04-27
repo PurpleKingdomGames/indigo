@@ -5,7 +5,7 @@ ThisBuild / versionScheme := Some("early-semver")
 
 lazy val indigoVersion = IndigoVersion.getVersion
 
-val scala3Version   = "3.0.0-RC3"
+val scala3Version = "3.0.0-RC3"
 
 lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
   version := indigoVersion,
@@ -29,7 +29,12 @@ lazy val publishSettings = {
     licenses := Seq("MIT" -> url("https://opensource.org/licenses/MIT")),
     sonatypeProjectHosting := Some(GitHubHosting("PurpleKingdomGames", "indigo", "indigo@purplekingdomgames.com")),
     developers := List(
-      Developer(id = "davesmith00000", name = "David Smith", email = "indigo@purplekingdomgames.com", url = url("https://github.com/davesmith00000"))
+      Developer(
+        id = "davesmith00000",
+        name = "David Smith",
+        email = "indigo@purplekingdomgames.com",
+        url = url("https://github.com/davesmith00000")
+      )
     )
   )
 }
@@ -93,7 +98,9 @@ lazy val indigoExtras =
         val cachedFun = FileFunction.cached(
           streams.value.cacheDirectory / "shader-library"
         ) { (files: Set[File]) =>
-          ShaderLibraryGen.makeShaderLibrary("ExtrasShaderLibrary", "indigoextras.shaders", files, (Compile / sourceManaged).value).toSet
+          ShaderLibraryGen
+            .makeShaderLibrary("ExtrasShaderLibrary", "indigoextras.shaders", files, (Compile / sourceManaged).value)
+            .toSet
         }
 
         cachedFun(IO.listFiles((baseDirectory.value / "shader-library")).toSet).toSeq
@@ -130,7 +137,9 @@ lazy val indigo =
         val cachedFun = FileFunction.cached(
           streams.value.cacheDirectory / "shader-library"
         ) { (files: Set[File]) =>
-          ShaderLibraryGen.makeShaderLibrary("ShaderLibrary", "indigo.shaders", files, (Compile / sourceManaged).value).toSet
+          ShaderLibraryGen
+            .makeShaderLibrary("ShaderLibrary", "indigo.shaders", files, (Compile / sourceManaged).value)
+            .toSet
         }
 
         cachedFun(IO.listFiles((baseDirectory.value / "shader-library")).toSet).toSeq
