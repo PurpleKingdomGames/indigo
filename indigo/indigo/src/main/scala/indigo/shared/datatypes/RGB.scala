@@ -1,6 +1,6 @@
 package indigo.shared.datatypes
 
-final case class RGB(r: Double, g: Double, b: Double) {
+final case class RGB(r: Double, g: Double, b: Double) derives CanEqual {
   def +(other: RGB): RGB =
     RGB.combine(this, other)
 
