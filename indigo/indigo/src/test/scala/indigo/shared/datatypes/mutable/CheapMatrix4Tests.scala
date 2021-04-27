@@ -53,7 +53,7 @@ class CheapCheapMatrix4Tests extends munit.FunSuite {
     val expected =
       Matrix4.identity.rotate(Radians.PI)
 
-    assertEquals(CheapMatrix4.identity.rotate(Radians.PI.value).toMatrix4, expected)
+    assertEquals(CheapMatrix4.identity.rotate(Radians.PI).toMatrix4, expected)
   }
 
   test("scale") {
@@ -77,9 +77,9 @@ class CheapCheapMatrix4Tests extends munit.FunSuite {
     val actual =
       CheapMatrix4.identity
         .scale(2.0, 3.0, 1.0)
-        .rotate(Radians.TAUby4.value)
+        .rotate(Radians.TAUby4)
         .translate(100, 0.0, 0.0)
-        .rotate(Radians.TAUby2.value)
+        .rotate(Radians.TAUby2)
 
     assertEquals(actual.toMatrix4, expected)
 

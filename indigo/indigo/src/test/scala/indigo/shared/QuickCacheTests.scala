@@ -8,9 +8,9 @@ class QuickCacheTests extends munit.FunSuite {
 
     assertEquals(QuickCache("ten")(10), 10)
 
-    assertEquals(cache.keys.map(_.value), List("ten"))
+    assertEquals(cache.keys.map(_.toString), List("ten"))
 
-    assertEquals(cache.all.map(p => (p._1.value, p._2)), List(("ten" -> 10)))
+    assertEquals(cache.all.map(p => (p._1.toString, p._2)), List(("ten" -> 10)))
 
     assertEquals(cache.fetch(CacheKey("ten")), Some(10))
 
@@ -68,7 +68,7 @@ class QuickCacheTests extends munit.FunSuite {
       )
 
     val actual: Map[String, Int] =
-      cache.toMap(_.value)
+      cache.toMap(_.toString)
 
     assertEquals(actual, expected)
   }
@@ -79,9 +79,9 @@ class QuickCacheTests extends munit.FunSuite {
     assertEquals(QuickCache("ten")(10), 10)
     assertEquals(QuickCache("ten", true)(20), 20) // disabled)
 
-    assertEquals(cache.keys.map(_.value), List("ten"))
+    assertEquals(cache.keys.map(_.toString), List("ten"))
 
-    assertEquals(cache.all.map(p => (p._1.value, p._2)), List(("ten" -> 10)))
+    assertEquals(cache.all.map(p => (p._1.toString, p._2)), List(("ten" -> 10)))
   }
 
 }

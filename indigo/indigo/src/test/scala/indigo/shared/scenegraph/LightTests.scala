@@ -8,7 +8,7 @@ class LightTests extends munit.FunSuite {
 
   val spot = SpotLight.default
 
-  val tau = Radians.TAU.value
+  val tau = Radians.TAU.toDouble
 
   test("The lookDirection(..) method returns the same SpotLight as a manual rotation") {
     // 0

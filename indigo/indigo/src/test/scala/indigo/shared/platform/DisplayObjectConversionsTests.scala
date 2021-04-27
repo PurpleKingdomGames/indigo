@@ -22,6 +22,8 @@ import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.shared.datatypes.Radians
 import indigo.shared.shader.Uniform
 import indigo.shared.scenegraph.RenderNode
+import indigo.shared.assets.AssetName
+import indigo.platform.assets.AtlasId
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
 class DisplayObjectConversionsTests extends munit.FunSuite {
@@ -32,8 +34,8 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
   val animationRegister          = new AnimationsRegister
   val fontRegister               = new FontRegister
   val boundaryLocator            = new BoundaryLocator(animationRegister, fontRegister)
-  val texture                    = new TextureRefAndOffset("texture", Vector2(100, 100), Point.zero)
-  val assetMapping: AssetMapping = new AssetMapping(Map("texture" -> texture))
+  val texture                    = new TextureRefAndOffset(AtlasId("texture"), Vector2(100, 100), Point.zero)
+  val assetMapping: AssetMapping = new AssetMapping(Map(AssetName("texture") -> texture))
 
   val cloneBlankMapping: Map[String, DisplayObject] = Map.empty[String, DisplayObject]
 
