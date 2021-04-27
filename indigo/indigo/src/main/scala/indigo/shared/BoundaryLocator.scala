@@ -59,7 +59,7 @@ final class BoundaryLocator(animationsRegister: AnimationsRegister, fontRegister
     }
 
   def spriteBounds(sprite: Sprite): Rectangle =
-    QuickCache(s"""sprite-${sprite.bindingKey.value}-${sprite.animationKey.value}""") {
+    QuickCache(s"""sprite-${sprite.bindingKey.value}-${sprite.animationKey}""") {
       animationsRegister.fetchAnimationInLastState(sprite.bindingKey, sprite.animationKey) match {
         case Some(animation) =>
           Rectangle(sprite.position, animation.currentFrame.crop.size)

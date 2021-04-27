@@ -9,6 +9,7 @@ import org.scalajs.dom.{html, raw}
 
 import scala.annotation.tailrec
 import indigo.shared.assets.AssetName
+import indigo.shared.assets.AssetTag
 
 object TextureAtlas {
 
@@ -76,7 +77,7 @@ final case class TextureAtlas(atlases: Map[AtlasId, Atlas], legend: Map[AssetNam
           k._2.id == at._1
         }
 
-        s"Atlas [${at._1.id}] [${at._2.size.value.toString()}] contains images: ${relevant.toList.map(_._1).mkString(", ")}"
+        s"Atlas [${at._1}] [${at._2.size.value.toString()}] contains images: ${relevant.toList.map(_._1).mkString(", ")}"
       }
 
     s"""Atlas details:
@@ -89,7 +90,9 @@ final case class TextureAtlas(atlases: Map[AtlasId, Atlas], legend: Map[AssetNam
 
 }
 
-final case class AtlasId(id: String) extends AnyVal
+opaque type AtlasId = String
+object AtlasId:
+  def apply(id: String): AtlasId = id
 
 final case class AtlasIndex(id: AtlasId, offset: Point)
 
@@ -162,7 +165,7 @@ object TextureAtlasFunctions {
       //   }
 
       def sortAndGroupByTag: List[TextureDetails] => List[(String, List[TextureDetails])] =
-        _.groupBy(_.tag.getOrElse("")).toList.sortBy(_._1)
+        _.groupBy(_.tag.map(_.toString).getOrElse("")).toList.sortBy(_._1)
 
       // val x: List[List[TextureDetails]] =
       sortAndGroupByTag(list).flatMap { case (_, tds) =>
@@ -242,7 +245,7 @@ object TextureAtlasFunctions {
           list.zipWithIndex
             .map(p =>
               convertToTextureAtlas(createAtlasFunc)(lookupByName)(
-                new AtlasId(TextureAtlas.IdPrefix + p._2.toString),
+                AtlasId(TextureAtlas.IdPrefix + p._2.toString),
                 p._1
               )
             )
@@ -295,9 +298,9 @@ object TextureAtlasFunctions {
 }
 
 // Input
-final case class ImageRef(name: AssetName, width: Int, height: Int, tag: Option[String])
+final case class ImageRef(name: AssetName, width: Int, height: Int, tag: Option[AssetTag])
 
-final case class TextureDetails(imageRef: ImageRef, size: PowerOfTwo, tag: Option[String])
+final case class TextureDetails(imageRef: ImageRef, size: PowerOfTwo, tag: Option[AssetTag])
 
 final case class TextureMap(size: PowerOfTwo, textureCoords: List[TextureAndCoords])
 final case class TextureAndCoords(imageRef: ImageRef, coords: Point)

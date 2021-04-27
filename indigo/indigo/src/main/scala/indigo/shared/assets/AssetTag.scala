@@ -1,3 +1,6 @@
 package indigo.shared.assets
 
-final case class AssetTag(value: String) extends AnyVal
+opaque type AssetTag = String
+
+object AssetTag:
+  def apply(value: String): AssetTag = value

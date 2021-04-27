@@ -18,6 +18,7 @@ import indigo.platform.renderer.shared.FrameBufferComponents
 import indigo.shared.datatypes.RGBA
 import scala.collection.mutable.HashMap
 import indigo.shared.shader.ShaderId
+import indigo.platform.assets.AtlasId
 
 import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.platform.renderer.shared.WebGLHelper
@@ -87,7 +88,7 @@ class LayerRenderer(
     channelOffsets23Data((i * 4) + 3) = d.channelOffset3Y
   }
 
-  def requiresContextChange(d: DisplayObject, atlasName: Option[String], currentShader: ShaderId, currentUniformHash: String): Boolean = {
+  def requiresContextChange(d: DisplayObject, atlasName: Option[AtlasId], currentShader: ShaderId, currentUniformHash: String): Boolean = {
     val uniformHash: String = d.shaderUniformData.map(_.uniformHash).mkString
 
     d.shaderId != currentShader ||
@@ -101,7 +102,7 @@ class LayerRenderer(
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def doContextChange(
       d: DisplayObject,
-      atlasName: Option[String],
+      atlasName: Option[AtlasId],
       currentShader: ShaderId,
       currentUniformHash: String,
       customShaders: HashMap[ShaderId, WebGLProgram]
@@ -196,7 +197,7 @@ class LayerRenderer(
     gl2.activeTexture(TEXTURE0);
 
     @tailrec
-    def rec(remaining: List[DisplayEntity], batchCount: Int, atlasName: Option[String], currentShader: ShaderId, currentShaderHash: String): Unit =
+    def rec(remaining: List[DisplayEntity], batchCount: Int, atlasName: Option[AtlasId], currentShader: ShaderId, currentShaderHash: String): Unit =
       remaining match {
         case Nil =>
           drawBuffer(batchCount)

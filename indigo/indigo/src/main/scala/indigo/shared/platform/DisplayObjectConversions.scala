@@ -35,6 +35,7 @@ import indigo.shared.scenegraph.EntityNode
 import indigo.shared.shader.Uniform
 import indigo.shared.shader.ShaderPrimitive
 import indigo.shared.scenegraph.Shape
+import indigo.platform.assets.AtlasId
 
 final class DisplayObjectConversions(
     boundaryLocator: BoundaryLocator,
@@ -42,7 +43,7 @@ final class DisplayObjectConversions(
     fontRegister: FontRegister
 ) {
 
-  implicit private val stringCache: QuickCache[String]                           = QuickCache.empty
+  implicit private val atlasIdCache: QuickCache[AtlasId]                           = QuickCache.empty
   implicit private val vector2Cache: QuickCache[Vector2]                         = QuickCache.empty
   implicit private val frameCache: QuickCache[SpriteSheetFrameCoordinateOffsets] = QuickCache.empty
   implicit private val listDoCache: QuickCache[List[DisplayObject]]              = QuickCache.empty
@@ -50,7 +51,7 @@ final class DisplayObjectConversions(
   implicit private val uniformsCache: QuickCache[Array[Float]]                   = QuickCache.empty
 
   def purgeCaches(): Unit = {
-    stringCache.purgeAllNow()
+    atlasIdCache.purgeAllNow()
     vector2Cache.purgeAllNow()
     frameCache.purgeAllNow()
     listDoCache.purgeAllNow()
@@ -71,7 +72,7 @@ final class DisplayObjectConversions(
     }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  def lookupAtlasName(assetMapping: AssetMapping, name: AssetName): String =
+  def lookupAtlasName(assetMapping: AssetMapping, name: AssetName): AtlasId =
     QuickCache("atlas-" + name) {
       assetMapping.mappings.find(p => p._1 == name).map(_._2.atlasName).getOrElse {
         throw new Exception("Failed to find atlas name for texture: " + name)

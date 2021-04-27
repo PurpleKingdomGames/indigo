@@ -3,6 +3,7 @@ package indigo.shared.display
 import indigo.shared.datatypes.Vector2
 import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.shared.shader.ShaderId
+import indigo.platform.assets.AtlasId
 
 sealed trait DisplayEntity {
   def z: Double
@@ -39,7 +40,7 @@ final case class DisplayObject(
     z: Double,
     width: Float,
     height: Float,
-    atlasName: Option[String],
+    atlasName: Option[AtlasId],
     frameScaleX: Float,
     frameScaleY: Float,
     channelOffset0X: Float,
@@ -66,7 +67,7 @@ object DisplayObject {
       z: Double,
       width: Int,
       height: Int,
-      atlasName: Option[String],
+      atlasName: Option[AtlasId],
       frame: SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets,
       channelOffset1: Vector2,
       channelOffset2: Vector2,

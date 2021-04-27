@@ -69,7 +69,7 @@ class Platform(
   def createTextureAtlas(assetCollection: AssetCollection): Outcome[TextureAtlas] =
     Outcome(
       TextureAtlas.create(
-        assetCollection.images.map(i => ImageRef(i.name, i.data.width, i.data.height, i.tag.map(_.value))),
+        assetCollection.images.map(i => ImageRef(i.name, i.data.width, i.data.height, i.tag)),
         (name: AssetName) => assetCollection.images.find(_.name == name),
         TextureAtlasFunctions.createAtlasData
       )
@@ -78,7 +78,7 @@ class Platform(
   def extractLoadedTextures(textureAtlas: TextureAtlas): Outcome[List[LoadedTextureAsset]] =
     Outcome(
       textureAtlas.atlases.toList
-        .map(a => a._2.imageData.map(data => new LoadedTextureAsset(a._1.id, data)))
+        .map(a => a._2.imageData.map(data => new LoadedTextureAsset(a._1, data)))
         .collect { case Some(s) => s }
     )
 
@@ -88,7 +88,7 @@ class Platform(
         mappings = textureAtlas.legend
           .map { p =>
             p._1 -> new TextureRefAndOffset(
-              atlasName = p._2.id.id,
+              atlasName = p._2.id,
               atlasSize = textureAtlas.atlases
                 .get(p._2.id)
                 .map(_.size.value)
