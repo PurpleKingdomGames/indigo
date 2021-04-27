@@ -1,6 +1,6 @@
 package indigo.shared.datatypes
 
-final case class Point(x: Int, y: Int) {
+final case class Point(x: Int, y: Int) derives CanEqual {
   def +(pt: Point): Point = Point(x + pt.x, y + pt.y)
   def +(i: Int): Point    = Point(x + i, y + i)
   def -(pt: Point): Point = Point(x - pt.x, y - pt.y)
