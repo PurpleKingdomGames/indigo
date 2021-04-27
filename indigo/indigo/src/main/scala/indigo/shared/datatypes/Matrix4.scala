@@ -27,7 +27,7 @@ final case class Matrix4(private val mat: List[Double]) {
     this * Matrix4.translate(byX, byY, byZ)
 
   def rotate(angle: Radians): Matrix4 =
-    this * Matrix4.rotation(angle.value)
+    this * Matrix4.rotation(angle)
 
   def scale(by: Vector2): Matrix4 =
     scale(by.x, by.y, 1.0d)
@@ -163,9 +163,9 @@ object Matrix4 {
   /**
     * This is really z-rotation
     */
-  def rotation(angleInRadians: Double): Matrix4 = {
-    val c = Math.cos(angleInRadians)
-    val s = Math.sin(angleInRadians)
+  def rotation(angleInRadians: Radians): Matrix4 = {
+    val c = Math.cos(angleInRadians.toDouble)
+    val s = Math.sin(angleInRadians.toDouble)
 
     Matrix4(
       c,

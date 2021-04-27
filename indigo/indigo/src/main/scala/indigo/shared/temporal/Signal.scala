@@ -6,8 +6,7 @@ import indigo.shared.datatypes.Vector2
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Radians
 
-/**
-  * A Signal is function t: Seconds -> A
+/** A Signal is function t: Seconds -> A
   */
 final class Signal[A](val run: Seconds => A) extends AnyVal {
 
@@ -42,9 +41,8 @@ final class Signal[A](val run: Seconds => A) extends AnyVal {
   def ap[B](f: Signal[A => B]): Signal[B] =
     Signal { (t: Seconds) =>
       f.map { ff =>
-          ff(at(t))
-        }
-        .at(t)
+        ff(at(t))
+      }.at(t)
     }
 
   def flatMap[B](f: A => Signal[B]): Signal[B] =
@@ -84,14 +82,17 @@ object Signal {
     Signal(t => (t.toMillis / interval.toMillis).value % 2 == 0)
 
   def SinWave: Signal[Double] =
-    Signal(t => Math.sin(Radians.fromSeconds(t).value))
+    Signal(t => Math.sin(Radians.fromSeconds(t).toDouble))
 
   def CosWave: Signal[Double] =
-    Signal(t => Math.cos(Radians.fromSeconds(t).value))
+    Signal(t => Math.cos(Radians.fromSeconds(t).toDouble))
 
   def Orbit(center: Point, distance: Double, offset: Radians): Signal[Vector2] =
     Signal { t =>
-      Vector2((Math.sin((Radians.fromSeconds(t) + offset).value) * distance) + center.x, (Math.cos((Radians.fromSeconds(t) + offset).value) * distance) + center.y)
+      Vector2(
+        (Math.sin((Radians.fromSeconds(t) + offset).toDouble) * distance) + center.x,
+        (Math.cos((Radians.fromSeconds(t) + offset).toDouble) * distance) + center.y
+      )
     }
 
   def Orbit(center: Point, distance: Double): Signal[Vector2] =
@@ -129,7 +130,7 @@ object Signal {
     }
 
   @inline private def easeInOut(t: Double): Double =
-    (1 + Math.sin((Radians.TAUby2.value * Math.min(1.0d, Math.max(0.0, t))) - Radians.TAUby4.value)) / 2
+    (1 + Math.sin((Radians.TAUby2.toDouble * Math.min(1.0d, Math.max(0.0, t))) - Radians.TAUby4.toDouble)) / 2
 
   def EaseInOut(duration: Seconds): Signal[Double] =
     Signal { t =>

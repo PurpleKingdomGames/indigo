@@ -4,6 +4,7 @@ import indigo.shared.datatypes.Vector2
 import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.shared.shader.ShaderId
 import indigo.platform.assets.AtlasId
+import indigo.shared.datatypes.Radians
 
 sealed trait DisplayEntity {
   def z: Double
@@ -36,7 +37,7 @@ final case class DisplayCloneBatch(
 
 final case class DisplayObject(
     transform: CheapMatrix4,
-    rotation: Double,
+    rotation: Radians,
     z: Double,
     width: Float,
     height: Float,
@@ -63,7 +64,7 @@ object DisplayObject {
 
   def apply(
       transform: CheapMatrix4,
-      rotation: Double,
+      rotation: Radians,
       z: Double,
       width: Int,
       height: Int,

@@ -43,7 +43,7 @@ final class DisplayObjectConversions(
     fontRegister: FontRegister
 ) {
 
-  implicit private val atlasIdCache: QuickCache[AtlasId]                           = QuickCache.empty
+  implicit private val atlasIdCache: QuickCache[AtlasId]                         = QuickCache.empty
   implicit private val vector2Cache: QuickCache[Vector2]                         = QuickCache.empty
   implicit private val frameCache: QuickCache[SpriteSheetFrameCoordinateOffsets] = QuickCache.empty
   implicit private val listDoCache: QuickCache[List[DisplayObject]]              = QuickCache.empty
@@ -278,7 +278,7 @@ final class DisplayObjectConversions(
     DisplayObject(
       transform = DisplayObjectConversions
         .nodeToMatrix4(leaf, Vector3(leaf.bounds.size.x.toDouble, leaf.bounds.size.y.toDouble, 1.0d)),
-      rotation = leaf.rotation.value,
+      rotation = leaf.rotation,
       z = leaf.depth.value.toDouble,
       width = leaf.bounds.size.x,
       height = leaf.bounds.size.y,
@@ -328,7 +328,7 @@ final class DisplayObjectConversions(
     DisplayObject(
       transform = DisplayObjectConversions
         .nodeToMatrix4(leaf, Vector3(leaf.bounds.size.x.toDouble, leaf.bounds.size.y.toDouble, 1.0d)),
-      rotation = leaf.rotation.value,
+      rotation = leaf.rotation,
       z = leaf.depth.value.toDouble,
       width = leaf.bounds.size.x,
       height = leaf.bounds.size.y,
@@ -373,7 +373,7 @@ final class DisplayObjectConversions(
     DisplayObject(
       transform = DisplayObjectConversions
         .nodeToMatrix4(leaf, Vector3(leaf.crop.size.x.toDouble, leaf.crop.size.y.toDouble, 1.0d)),
-      rotation = leaf.rotation.value,
+      rotation = leaf.rotation,
       z = leaf.depth.value.toDouble,
       width = leaf.crop.size.x,
       height = leaf.crop.size.y,
@@ -426,7 +426,7 @@ final class DisplayObjectConversions(
 
     DisplayObject(
       transform = DisplayObjectConversions.nodeToMatrix4(leaf, Vector3(width.toDouble, height.toDouble, 1.0d)),
-      rotation = leaf.rotation.value,
+      rotation = leaf.rotation,
       z = leaf.depth.value.toDouble,
       width = width,
       height = height,
@@ -494,7 +494,7 @@ final class DisplayObjectConversions(
               leaf.moveBy(xPosition + alignmentOffsetX, yOffset),
               Vector3(fontChar.bounds.width.toDouble, fontChar.bounds.height.toDouble, 1.0d)
             ),
-            rotation = leaf.rotation.value,
+            rotation = leaf.rotation,
             z = leaf.depth.value.toDouble,
             width = fontChar.bounds.width,
             height = fontChar.bounds.height,
@@ -562,7 +562,7 @@ object DisplayObjectConversions {
         size.y * node.scale.y,
         size.z
       )
-      .rotate(node.rotation.value)
+      .rotate(node.rotation)
       .translate(
         node.position.x.toDouble,
         node.position.y.toDouble,
@@ -578,7 +578,7 @@ object DisplayObjectConversions {
         1.0d
       )
       .scale(data.scale.x, data.scale.y, 1.0d)
-      .rotate(data.rotation.value)
+      .rotate(data.rotation)
       .translate(
         data.position.x.toDouble,
         data.position.y.toDouble,

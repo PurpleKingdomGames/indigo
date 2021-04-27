@@ -106,7 +106,7 @@ object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
             .withIntensity(1)
             .moveTo(
               Signal
-                .Orbit(context.startUpData.viewportCenter, 80, Radians(Radians.TAU.value / 3))
+                .Orbit(context.startUpData.viewportCenter, 80, Radians(Radians.TAU.toDouble / 3))
                 .affectTime(0.1)
                 .at(context.running)
                 .toPoint
@@ -118,7 +118,7 @@ object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
             .withIntensity(1)
             .moveTo(
               Signal
-                .Orbit(context.startUpData.viewportCenter, 80, Radians(Radians.TAU.value / 3 * 2))
+                .Orbit(context.startUpData.viewportCenter, 80, Radians(Radians.TAU.toDouble / 3 * 2))
                 .affectTime(0.1)
                 .at(context.running)
                 .toPoint
