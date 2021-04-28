@@ -34,8 +34,20 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
     uboData(1) = height.toFloat
 
     WebGLHelper.attachUBOData(gl2, projection ++ uboData, displayObjectUBOBuffer)
-    WebGLHelper.bindUBO(gl2, program, "IndigoMergeData", RendererWebGL2Constants.mergeObjectBlockPointer, displayObjectUBOBuffer)
-    WebGLHelper.bindUBO(gl2, program, "IndigoFrameData", RendererWebGL2Constants.frameDataBlockPointer, frameDataUBOBuffer)
+    WebGLHelper.bindUBO(
+      gl2,
+      program,
+      "IndigoMergeData",
+      RendererWebGL2Constants.mergeObjectBlockPointer,
+      displayObjectUBOBuffer
+    )
+    WebGLHelper.bindUBO(
+      gl2,
+      program,
+      "IndigoFrameData",
+      RendererWebGL2Constants.frameDataBlockPointer,
+      frameDataUBOBuffer
+    )
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null", "scalafix:DisableSyntax.throw"))
@@ -68,7 +80,9 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
           s
 
         case None =>
-          throw new Exception(s"Missing blend shader '${shaderId.value}'. Have you remembered to add the shader to the boot sequence or disabled auto-loading of default shaders?")
+          throw new Exception(
+            s"Missing blend shader '${shaderId}'. Have you remembered to add the shader to the boot sequence or disabled auto-loading of default shaders?"
+          )
       }
 
     // UBO data
@@ -76,7 +90,13 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
       if (ud.uniformHash.nonEmpty) {
         val buff = customDataUBOBuffers.getOrElseUpdate(ud.uniformHash, gl2.createBuffer())
         WebGLHelper.attachUBOData(gl2, ud.data, buff)
-        WebGLHelper.bindUBO(gl2, activeShader, ud.blockName, RendererWebGL2Constants.blendDataBlockOffsetPointer + i, buff)
+        WebGLHelper.bindUBO(
+          gl2,
+          activeShader,
+          ud.blockName,
+          RendererWebGL2Constants.blendDataBlockOffsetPointer + i,
+          buff
+        )
       }
     }
 

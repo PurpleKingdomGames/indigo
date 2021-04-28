@@ -17,7 +17,7 @@ final case class BlendShaderData(
     withUniformBlock(newUniformBlocks.toList)
 
   lazy val hash: String =
-    s"custom-${shaderId.value}" +
+    s"custom-${shaderId}" +
       uniformBlocks.map { uniformBlock =>
         s"-${uniformBlock.uniformHash}"
       }.mkString

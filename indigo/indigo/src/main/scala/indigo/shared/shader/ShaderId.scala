@@ -1,3 +1,5 @@
 package indigo.shared.shader
 
-final case class ShaderId(value: String) extends AnyVal
+opaque type ShaderId = String
+object ShaderId:
+  def apply(value: String): ShaderId = value

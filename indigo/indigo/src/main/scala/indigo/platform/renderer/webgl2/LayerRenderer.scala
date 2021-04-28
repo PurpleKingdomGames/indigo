@@ -125,7 +125,7 @@ class LayerRenderer(
 
           case None =>
             throw new Exception(
-              s"Missing entity shader '${d.shaderId.value}'. Have you remembered to add the shader to the boot sequence or disabled auto-loading of default shaders?"
+              s"Missing entity shader '${d.shaderId}'. Have you remembered to add the shader to the boot sequence or disabled auto-loading of default shaders?"
             )
         }
       else currentProgram

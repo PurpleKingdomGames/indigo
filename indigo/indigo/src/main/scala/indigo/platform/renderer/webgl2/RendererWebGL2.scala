@@ -131,7 +131,7 @@ final class RendererWebGL2(
       if (!customShaders.contains(shader.id))
         customShaders.put(
           shader.id,
-          WebGLHelper.shaderProgramSetup(gl, shader.id.value, shader)
+          WebGLHelper.shaderProgramSetup(gl, shader.id.toString, shader)
         )
     }
 

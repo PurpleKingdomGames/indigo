@@ -81,7 +81,7 @@ final class BoundaryLocator(animationsRegister: AnimationsRegister, fontRegister
       }
 
   def textAsLinesWithBounds(text: String, fontKey: FontKey): List[TextLine] =
-    QuickCache(s"""text-lines-${fontKey.key}-${text}""") {
+    QuickCache(s"""text-lines-${fontKey}-${text}""") {
       fontRegister
         .findByFontKey(fontKey)
         .map { fontInfo =>
@@ -99,7 +99,7 @@ final class BoundaryLocator(animationsRegister: AnimationsRegister, fontRegister
     }
 
   def textBounds(text: Text): Rectangle =
-    QuickCache(s"""text-bounds-${text.fontKey.key}-${text.text}""") {
+    QuickCache(s"""text-bounds-${text.fontKey}-${text.text}""") {
       val unaligned =
         textAsLinesWithBounds(text.text, text.fontKey)
           .map(_.lineBounds)

@@ -25,14 +25,14 @@ final class ShaderRegister {
     }
 
   def registerEntityShader(shader: EntityShader.Source): Unit = {
-    QuickCache(shader.id.value) {
+    QuickCache(shader.id.toString) {
       RawShaderCode.fromEntityShader(shader)
     }
     ()
   }
 
   def registerBlendShader(shader: BlendShader.Source): Unit = {
-    QuickCache(shader.id.value) {
+    QuickCache(shader.id.toString) {
       RawShaderCode.fromBlendShader(shader)
     }
     ()

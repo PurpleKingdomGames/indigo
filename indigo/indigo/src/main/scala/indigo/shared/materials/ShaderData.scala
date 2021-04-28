@@ -35,7 +35,7 @@ final case class ShaderData(
     this.copy(channel3 = Some(assetName))
 
   lazy val hash: String =
-    s"custom-${shaderId.value}" +
+    s"custom-${shaderId}" +
       uniformBlocks.map { uniformBlock =>
         s"-${uniformBlock.uniformHash}"
       }.mkString +
@@ -56,7 +56,13 @@ object ShaderData {
   def apply(shaderId: ShaderId, uniformBlocks: UniformBlock*): ShaderData =
     ShaderData(shaderId, uniformBlocks.toList, None, None, None, None)
 
-  def apply(shaderId: ShaderId, channel0: AssetName, channel1: AssetName, channel2: AssetName, channel3: AssetName): ShaderData =
+  def apply(
+      shaderId: ShaderId,
+      channel0: AssetName,
+      channel1: AssetName,
+      channel2: AssetName,
+      channel3: AssetName
+  ): ShaderData =
     ShaderData(shaderId, Nil, Option(channel0), Option(channel1), Option(channel2), Option(channel3))
 
 }

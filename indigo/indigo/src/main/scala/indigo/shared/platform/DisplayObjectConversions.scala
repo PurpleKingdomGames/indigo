@@ -453,7 +453,7 @@ final class DisplayObjectConversions(
       val materialName = shaderData.channel0.get
 
       val lineHash: String =
-        leaf.fontKey.key +
+        leaf.fontKey.toString +
           ":" + line.hash +
           ":" + alignmentOffsetX.toString() +
           ":" + yOffset.toString() +
