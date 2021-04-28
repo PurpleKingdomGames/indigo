@@ -16,7 +16,12 @@ import indigo.shared.temporal.{Signal, SignalReader}
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.datatypes.BindingKey
 
-final case class Automata(poolKey: AutomataPoolKey, automaton: Automaton, layerKey: Option[BindingKey], maxPoolSize: Option[Int]) extends SubSystem {
+final case class Automata(
+    poolKey: AutomataPoolKey,
+    automaton: Automaton,
+    layerKey: Option[BindingKey],
+    maxPoolSize: Option[Int]
+) extends SubSystem {
   type EventType      = AutomataEvent
   type SubSystemModel = AutomataState
 
@@ -136,7 +141,8 @@ final case class AutomataState(totalSpawned: Long, pool: List[SpawnedAutomaton])
 
 sealed trait AutomataEvent extends SubSystemEvent
 object AutomataEvent {
-  final case class Spawn(key: AutomataPoolKey, at: Point, lifeSpan: Option[Seconds], payload: Option[AutomatonPayload]) extends AutomataEvent
+  final case class Spawn(key: AutomataPoolKey, at: Point, lifeSpan: Option[Seconds], payload: Option[AutomatonPayload])
+      extends AutomataEvent
   object Spawn {
     def apply(key: AutomataPoolKey, at: Point): Spawn =
       Spawn(key, at, None, None)
@@ -147,16 +153,11 @@ object AutomataEvent {
 
 trait AutomatonPayload
 
-final case class AutomataPoolKey(key: String) extends AnyVal {
-  override def toString: String =
-    s"AutomataPoolKey(key = $key)"
-}
-object AutomataPoolKey {
-
+opaque type AutomataPoolKey = String
+object AutomataPoolKey:
+  def apply(key: String): AutomataPoolKey = key
   def fromDice(dice: Dice): AutomataPoolKey =
     AutomataPoolKey(dice.rollAlphaNumeric)
-
-}
 
 final case class Automaton(
     node: AutomatonNode,
@@ -175,15 +176,15 @@ final case class Automaton(
 object Automaton {
 
   def NoOpModifier: SignalReader[(AutomatonSeedValues, SceneNode), AutomatonUpdate] =
-    SignalReader {
-      case (_, n) =>
-        Signal.fixed(AutomatonUpdate(n))
+    SignalReader { case (_, n) =>
+      Signal.fixed(AutomatonUpdate(n))
     }
 
-  def FixedModifier(transform: (AutomatonSeedValues, SceneNode) => SceneNode): SignalReader[(AutomatonSeedValues, SceneNode), AutomatonUpdate] =
-    SignalReader {
-      case (sa, n) =>
-        Signal.fixed(AutomatonUpdate(transform(sa, n)))
+  def FixedModifier(
+      transform: (AutomatonSeedValues, SceneNode) => SceneNode
+  ): SignalReader[(AutomatonSeedValues, SceneNode), AutomatonUpdate] =
+    SignalReader { case (sa, n) =>
+      Signal.fixed(AutomatonUpdate(transform(sa, n)))
     }
 
   val NoCullEvent: AutomatonSeedValues => List[GlobalEvent] =
@@ -244,8 +245,7 @@ final case class AutomatonSeedValues(
     payload: Option[AutomatonPayload]
 ) {
 
-  /**
-    * A value progressing from 0 to 1 as the automaton reaches its end.
+  /** A value progressing from 0 to 1 as the automaton reaches its end.
     */
   def progression(timeAlive: Seconds): Double =
     timeAlive.toDouble / lifeSpan.toDouble
