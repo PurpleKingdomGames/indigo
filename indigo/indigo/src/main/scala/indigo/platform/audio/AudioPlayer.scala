@@ -19,7 +19,11 @@ object AudioPlayer {
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def giveAudioContext(): AudioContextProxy =
-    if (js.Dynamic.global.window.webkitAudioContext != null && !js.isUndefined(js.Dynamic.global.window.webkitAudioContext))
+    if (
+      js.Dynamic.global.window.webkitAudioContext != null && !js.isUndefined(
+        js.Dynamic.global.window.webkitAudioContext
+      )
+    )
       AudioContextProxy.WebKitAudioContext(js.Dynamic.newInstance(js.Dynamic.global.window.webkitAudioContext)())
     else AudioContextProxy.StandardAudioContext(new AudioContext)
 
@@ -61,7 +65,9 @@ object AudioContextProxy {
       context.destination
   }
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.null", "scalafix:DisableSyntax.throw", "scalafix:DisableSyntax.asInstanceOf"))
+  @SuppressWarnings(
+    Array("scalafix:DisableSyntax.null", "scalafix:DisableSyntax.throw", "scalafix:DisableSyntax.asInstanceOf")
+  )
   final case class WebKitAudioContext(context: js.Dynamic) extends AudioContextProxy {
     import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
     import scalajs.js.JSConverters._
@@ -108,7 +114,7 @@ final class AudioPlayer(context: AudioContextProxy) {
     val gainNode = context.createGain()
     source.connect(gainNode)
     gainNode.connect(context.destination)
-    gainNode.gain.value = volume.amount
+    gainNode.gain.value = volume.toDouble
 
     new AudioNodes(source, gainNode)
   }
@@ -140,7 +146,10 @@ final class AudioPlayer(context: AudioContextProxy) {
     }
   }
 
-  private def updateSource(sceneAudioSource: SceneAudioSource, currentSource: AudioSourceState): Option[AudioSourceState] =
+  private def updateSource(
+      sceneAudioSource: SceneAudioSource,
+      currentSource: AudioSourceState
+  ): Option[AudioSourceState] =
     if (sceneAudioSource.bindingKey == currentSource.bindingKey) None
     else
       Option {
