@@ -32,8 +32,7 @@ final case class AnimationRef(
     this.copy(
       currentCycleLabel =
         if (cycles.contains(memento.currentCycleLabel)) memento.currentCycleLabel
-        else currentCycleLabel,
-      cycles = cycles.updatedWith(memento.currentCycleLabel) {
+        else currentCycleLabel, cycles = cycles.updatedWith(memento.currentCycleLabel) {
         case None =>
           None
 
@@ -88,7 +87,7 @@ final case class CycleRef(
     frames(playheadPosition % frameCount)
 
   def saveMemento: CycleMemento =
-    new CycleMemento(playheadPosition, lastFrameAdvance)
+    CycleMemento(playheadPosition, lastFrameAdvance)
 
   def updatePlayheadAndLastAdvance(playheadPosition: Int, lastFrameAdvance: Millis): CycleRef =
     CycleRef(label, frames, playheadPosition, lastFrameAdvance)
@@ -138,18 +137,30 @@ object CycleRef {
   def create(label: CycleLabel, frames: List[Frame]): CycleRef =
     new CycleRef(label, frames, 0, Millis.zero)
 
-  def calculateNextPlayheadPosition(currentPosition: Int, frameDuration: Millis, frameCount: Int, lastFrameAdvance: Millis): Signal[CycleMemento] =
+  def calculateNextPlayheadPosition(
+      currentPosition: Int,
+      frameDuration: Millis,
+      frameCount: Int,
+      lastFrameAdvance: Millis
+  ): Signal[CycleMemento] =
     Signal { t =>
       if (t.toMillis >= lastFrameAdvance + frameDuration) {
-        val framestoAdvance = ((t.toMillis.value - lastFrameAdvance.value) / frameDuration.value).toInt
+        val framestoAdvance = ((t.toMillis - lastFrameAdvance) / frameDuration).toInt
         CycleMemento((currentPosition + framestoAdvance) % frameCount, t.toMillis)
-      } else
-        CycleMemento(currentPosition, lastFrameAdvance)
+      } else CycleMemento(currentPosition, lastFrameAdvance)
     }
 }
 
-final case class AnimationMemento(bindingKey: BindingKey, currentCycleLabel: CycleLabel, currentCycleMemento: CycleMemento)
+final case class AnimationMemento(
+    bindingKey: BindingKey,
+    currentCycleLabel: CycleLabel,
+    currentCycleMemento: CycleMemento
+)
 object AnimationMemento {
-  def apply(bindingKey: BindingKey, currentCycleLabel: CycleLabel, currentCycleMemento: CycleMemento): AnimationMemento =
+  def apply(
+      bindingKey: BindingKey,
+      currentCycleLabel: CycleLabel,
+      currentCycleMemento: CycleMemento
+  ): AnimationMemento =
     new AnimationMemento(bindingKey, currentCycleLabel, currentCycleMemento)
 }

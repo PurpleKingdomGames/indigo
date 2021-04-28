@@ -79,7 +79,7 @@ object Signal {
     Signal(identity)
 
   def Pulse(interval: Seconds): Signal[Boolean] =
-    Signal(t => (t.toMillis / interval.toMillis).value % 2 == 0)
+    Signal(t => (t.toMillis / interval.toMillis).toLong % 2 == 0)
 
   def SinWave: Signal[Double] =
     Signal(t => Math.sin(Radians.fromSeconds(t).toDouble))

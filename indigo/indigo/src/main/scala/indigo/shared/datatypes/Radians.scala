@@ -21,7 +21,7 @@ object Radians:
     Radians((TAU / 360d) * (degrees % 360d))
 
   def fromSeconds(seconds: Seconds): Radians =
-    Radians(TAU * (seconds.value % 1.0d))
+    Radians(TAU * (seconds.toDouble % 1.0d))
 
   extension (r: Radians)
     def +(other: Radians): Radians =
