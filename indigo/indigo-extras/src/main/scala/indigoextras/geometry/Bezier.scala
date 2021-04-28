@@ -6,73 +6,74 @@ import indigo.shared.temporal.Signal
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.time.Seconds
 
-final case class Bezier(vertices: List[Vertex]) extends AnyVal {
-
-  def at(unitInterval: Double): Vertex =
-    Bezier.at(this, unitInterval)
-
-  def toVertices(subdivisions: Int): List[Vertex] =
-    Bezier.toVertices(this, subdivisions)
-
-  def toPolygon(subdivisions: Int): Polygon =
-    Bezier.toPolygon(this, subdivisions)
-
-  def toLineSegments(subdivisions: Int): List[LineSegment] =
-    Bezier.toLineSegments(this, subdivisions)
-
-  def toSignal(duration: Seconds): Signal[Vertex] =
-    Bezier.toSignal(this, duration)
-
-  def bounds: BoundingBox =
-    BoundingBox.fromVertices(vertices)
-
-}
-
+opaque type Bezier = List[Vertex]
 object Bezier {
 
+  def apply(vertices: List[Vertex]): Bezier = vertices
+
   def apply(start: Vertex, vertices: Vertex*): Bezier =
-    new Bezier(start :: vertices.toList)
+    Bezier(start :: vertices.toList)
+
+  extension (b: Bezier) {
+
+    /** Calculate the position of a Bezier curve using specialised calculations
+      * for linear, quadratic and cubic curves.
+      */
+    def at(unitInterval: Double): Vertex =
+      b match {
+        case Nil =>
+          Vertex.zero
+
+        case x :: Nil =>
+          x
+
+        case p0 :: p1 :: Nil =>
+          BezierMath.linearNormalised(unitInterval, p0, p1)
+
+        case p0 :: p1 :: p2 :: Nil =>
+          BezierMath.quadraticNormalised(unitInterval, p0, p1, p2)
+
+        case p0 :: p1 :: p2 :: p3 :: Nil =>
+          BezierMath.cubicNormalised(unitInterval, p0, p1, p2, p3)
+
+        case _ =>
+          reduce(b, Math.max(0, Math.min(1, unitInterval)))
+      }
+
+    def toVertices(subdivisions: Int): List[Vertex] =
+      (0 to subdivisions).toList.map { i =>
+        b.at((1 / subdivisions.toDouble) * i.toDouble)
+      }
+
+    def toPolygon(subdivisions: Int): Polygon =
+      Polygon.Open(toVertices(subdivisions))
+
+    def toLineSegments(subdivisions: Int): List[LineSegment] =
+      Polygon.Open(toVertices(subdivisions)).lineSegments
+
+    def toSignal(duration: Seconds): Signal[Vertex] =
+      Signal { t =>
+        b.at(t.toDouble / duration.toDouble)
+      }
+
+    def bounds: BoundingBox =
+      BoundingBox.fromVertices(b)
+  }
 
   def pure(start: Vertex, vertices: List[Vertex]): Bezier =
-    new Bezier(start :: vertices.toList)
+    Bezier(start :: vertices.toList)
 
   def fromPoints(vertices: List[Vertex]): Option[Bezier] =
     NonEmptyList.fromList(vertices).map(fromVerticesNel)
 
   def fromVerticesNel(vertices: NonEmptyList[Vertex]): Bezier =
-    new Bezier(vertices.toList)
+    Bezier(vertices.toList)
 
-  /**
-    * Calculate the position of a Bezier curve using specialised calculations
-    * for linear, quadratic and cubic curves.
-    */
-  def at(bezier: Bezier, unitInterval: Double): Vertex =
-    bezier.vertices match {
-      case Nil =>
-        Vertex.zero
-
-      case x :: Nil =>
-        x
-
-      case p0 :: p1 :: Nil =>
-        BezierMath.linearNormalised(unitInterval, p0, p1)
-
-      case p0 :: p1 :: p2 :: Nil =>
-        BezierMath.quadraticNormalised(unitInterval, p0, p1, p2)
-
-      case p0 :: p1 :: p2 :: p3 :: Nil =>
-        BezierMath.cubicNormalised(unitInterval, p0, p1, p2, p3)
-
-      case _ =>
-        reduce(bezier.vertices, Math.max(0, Math.min(1, unitInterval)))
-    }
-
-  /**
-    * Calculate the position of a Bezier curve using the same calculation
+  /** Calculate the position of a Bezier curve using the same calculation
     * method regardless of vertex count.
     */
   def atUnspecialised(bezier: Bezier, unitInterval: Double): Vertex =
-    reduce(bezier.vertices, Math.max(0, Math.min(1, unitInterval)))
+    reduce(bezier, Math.max(0, Math.min(1, unitInterval)))
 
   def interpolate(a: Vertex, b: Vertex, unitInterval: Double): Vertex =
     a + ((b - a) * unitInterval)
@@ -107,21 +108,6 @@ object Bezier {
     }
   }
 
-  def toVertices(bezier: Bezier, subdivisions: Int): List[Vertex] =
-    (0 to subdivisions).toList.map { i =>
-      bezier.at((1 / subdivisions.toDouble) * i.toDouble)
-    }
-
-  def toPolygon(bezier: Bezier, subdivisions: Int): Polygon =
-    Polygon.Open(toVertices(bezier, subdivisions))
-
-  def toLineSegments(bezier: Bezier, subdivisions: Int): List[LineSegment] =
-    Polygon.Open(toVertices(bezier, subdivisions)).lineSegments
-
-  def toSignal(bezier: Bezier, duration: Seconds): Signal[Vertex] =
-    Signal { t =>
-      bezier.at(t.toDouble / duration.toDouble)
-    }
 }
 
 object BezierMath {
