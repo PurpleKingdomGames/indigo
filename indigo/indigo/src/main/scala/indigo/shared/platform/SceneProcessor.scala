@@ -23,6 +23,8 @@ import indigo.shared.scenegraph.DirectionLight
 import indigo.shared.scenegraph.PointLight
 import indigo.shared.scenegraph.SpotLight
 import indigo.shared.scenegraph.Falloff
+import indigo.shared.scenegraph.CloneId
+import indigo.shared.datatypes.Depth
 
 final class SceneProcessor(
     boundaryLocator: BoundaryLocator,
@@ -46,13 +48,13 @@ final class SceneProcessor(
   ): ProcessedSceneData = {
 
     val cloneBlankDisplayObjects =
-      scene.cloneBlanks.foldLeft(Map.empty[String, DisplayObject]) { (acc, blank) =>
+      scene.cloneBlanks.foldLeft(Map.empty[CloneId, DisplayObject]) { (acc, blank) =>
         blank.cloneable match {
           case s: Shape =>
-            acc + (blank.id.value -> displayObjectConverterClone.shapeToDisplayObject(s))
+            acc + (blank.id -> displayObjectConverterClone.shapeToDisplayObject(s))
 
           case g: Graphic =>
-            acc + (blank.id.value -> displayObjectConverterClone.graphicToDisplayObject(g, assetMapping))
+            acc + (blank.id -> displayObjectConverterClone.graphicToDisplayObject(g, assetMapping))
 
           case s: Sprite =>
             animationsRegister.fetchAnimationForSprite(
@@ -65,7 +67,7 @@ final class SceneProcessor(
                 acc
 
               case Some(anim) =>
-                acc + (blank.id.value -> displayObjectConverterClone.spriteToDisplayObject(
+                acc + (blank.id -> displayObjectConverterClone.spriteToDisplayObject(
                   boundaryLocator,
                   s,
                   assetMapping,
@@ -92,14 +94,14 @@ final class SceneProcessor(
             SceneProcessor.makeLightsData(scene.lights ++ l.lights),
             blending.clearColor.getOrElse(RGBA.Zero),
             l.magnification,
-            l.depth.map(_.value).getOrElse(i),
+            l.depth.getOrElse(Depth(i)),
             blending.entity,
             blending.layer,
             shaderData.shaderId,
             SceneProcessor.mergeShaderToUniformData(shaderData)
           )
         }
-        .sortBy(_.depth)
+        .sortBy(_.depth.toInt)
 
     val sceneBlend = scene.blendMaterial.getOrElse(BlendMaterial.Normal).toShaderData
 
@@ -246,8 +248,7 @@ object SceneProcessor {
           lightColor = Array[Float](l.color.r.toFloat, l.color.g.toFloat, l.color.b.toFloat, l.color.a.toFloat),
           lightSpecular =
             Array[Float](l.specular.r.toFloat, l.specular.g.toFloat, l.specular.b.toFloat, l.specular.a.toFloat),
-          lightPositionRotation =
-            Array[Float](l.position.x.toFloat, l.position.y.toFloat, l.rotation.toFloat, 0.0f),
+          lightPositionRotation = Array[Float](l.position.x.toFloat, l.position.y.toFloat, l.rotation.toFloat, 0.0f),
           lightNearFarAngleIntensity = Array[Float](near, far, l.angle.toFloat, l.intensity.toFloat)
         )
     }

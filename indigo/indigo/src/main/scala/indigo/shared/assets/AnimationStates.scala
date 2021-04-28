@@ -6,6 +6,6 @@ import indigo.shared.datatypes.BindingKey
 final case class AnimationStates(states: List[AnimationMemento]) extends AnyVal {
 
   def findStateWithBindingKey(bindingKey: BindingKey): Option[AnimationMemento] =
-    states.find(_.bindingKey.value == bindingKey.value)
+    states.find(_.bindingKey == bindingKey)
 
 }

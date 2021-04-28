@@ -5,6 +5,7 @@ import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.shared.shader.ShaderId
 import indigo.platform.assets.AtlasId
 import indigo.shared.datatypes.Radians
+import indigo.shared.scenegraph.CloneId
 
 sealed trait DisplayEntity {
   def z: Double
@@ -12,7 +13,7 @@ sealed trait DisplayEntity {
 }
 
 final case class DisplayClone(
-    val id: String,
+    val id: CloneId,
     val transform: CheapMatrix4,
     val z: Double
 ) extends DisplayEntity {
@@ -26,7 +27,7 @@ object DisplayClone {
 }
 
 final case class DisplayCloneBatch(
-    val id: String,
+    val id: CloneId,
     val z: Double,
     val clones: List[CheapMatrix4]
 ) extends DisplayEntity {

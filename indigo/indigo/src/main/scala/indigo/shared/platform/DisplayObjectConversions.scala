@@ -23,6 +23,7 @@ import scala.collection.mutable.ListBuffer
 import indigo.shared.display.DisplayEntity
 import indigo.shared.display.DisplayObjectUniformData
 import indigo.shared.scenegraph.Clone
+import indigo.shared.scenegraph.CloneId
 import indigo.shared.scenegraph.CloneBatch
 import indigo.shared.display.DisplayClone
 import indigo.shared.scenegraph.CloneTransformData
@@ -88,7 +89,7 @@ final class DisplayObjectConversions(
     }
 
   private def cloneDataToDisplayEntity(
-      id: String,
+      id: CloneId,
       cloneDepth: Double,
       data: CloneTransformData,
       blankTransform: CheapMatrix4
@@ -102,8 +103,8 @@ final class DisplayObjectConversions(
   private def cloneBatchDataToDisplayEntities(batch: CloneBatch, blankTransform: CheapMatrix4): DisplayCloneBatch = {
     def convert(): DisplayCloneBatch =
       new DisplayCloneBatch(
-        id = batch.id.value,
-        z = batch.depth.value.toDouble,
+        id = batch.id,
+        z = batch.depth.toDouble,
         clones = batch.clones.map { td =>
           DisplayObjectConversions.cloneTransformDataToMatrix4(batch.transform |+| td, blankTransform)
         }
@@ -114,7 +115,7 @@ final class DisplayObjectConversions(
         convert()
 
       case Some(bindingKey) =>
-        QuickCache(bindingKey.value) {
+        QuickCache(bindingKey.toString) {
           convert()
         }
     }
@@ -124,7 +125,7 @@ final class DisplayObjectConversions(
       sceneNodes: List[SceneNode],
       gameTime: GameTime,
       assetMapping: AssetMapping,
-      cloneBlankDisplayObjects: Map[String, DisplayObject]
+      cloneBlankDisplayObjects: Map[CloneId, DisplayObject]
   ): ListBuffer[DisplayEntity] =
     deGroup(sceneNodes).flatMap { node =>
       sceneNodeToDisplayObject(node, gameTime, assetMapping, cloneBlankDisplayObjects)
@@ -164,7 +165,7 @@ final class DisplayObjectConversions(
       sceneNode: SceneNode,
       gameTime: GameTime,
       assetMapping: AssetMapping,
-      cloneBlankDisplayObjects: Map[String, DisplayObject]
+      cloneBlankDisplayObjects: Map[CloneId, DisplayObject]
   ): List[DisplayEntity] =
     sceneNode match {
 
@@ -178,15 +179,15 @@ final class DisplayObjectConversions(
         List(sceneEntityToDisplayObject(s, assetMapping))
 
       case c: Clone =>
-        cloneBlankDisplayObjects.get(c.id.value) match {
+        cloneBlankDisplayObjects.get(c.id) match {
           case None =>
             Nil
 
           case Some(refDisplayObject) =>
             List(
               cloneDataToDisplayEntity(
-                c.id.value,
-                c.depth.value.toDouble,
+                c.id,
+                c.depth.toDouble,
                 c.transform,
                 refDisplayObject.transform
               )
@@ -194,7 +195,7 @@ final class DisplayObjectConversions(
         }
 
       case c: CloneBatch =>
-        cloneBlankDisplayObjects.get(c.id.value) match {
+        cloneBlankDisplayObjects.get(c.id) match {
           case None =>
             Nil
 
@@ -279,7 +280,7 @@ final class DisplayObjectConversions(
       transform = DisplayObjectConversions
         .nodeToMatrix4(leaf, Vector3(leaf.bounds.size.x.toDouble, leaf.bounds.size.y.toDouble, 1.0d)),
       rotation = leaf.rotation,
-      z = leaf.depth.value.toDouble,
+      z = leaf.depth.toDouble,
       width = leaf.bounds.size.x,
       height = leaf.bounds.size.y,
       atlasName = None,
@@ -329,7 +330,7 @@ final class DisplayObjectConversions(
       transform = DisplayObjectConversions
         .nodeToMatrix4(leaf, Vector3(leaf.bounds.size.x.toDouble, leaf.bounds.size.y.toDouble, 1.0d)),
       rotation = leaf.rotation,
-      z = leaf.depth.value.toDouble,
+      z = leaf.depth.toDouble,
       width = leaf.bounds.size.x,
       height = leaf.bounds.size.y,
       atlasName = shader.channel0.map(assetName => lookupAtlasName(assetMapping, assetName)),
@@ -374,7 +375,7 @@ final class DisplayObjectConversions(
       transform = DisplayObjectConversions
         .nodeToMatrix4(leaf, Vector3(leaf.crop.size.x.toDouble, leaf.crop.size.y.toDouble, 1.0d)),
       rotation = leaf.rotation,
-      z = leaf.depth.value.toDouble,
+      z = leaf.depth.toDouble,
       width = leaf.crop.size.x,
       height = leaf.crop.size.y,
       atlasName = Some(lookupAtlasName(assetMapping, materialName)),
@@ -427,7 +428,7 @@ final class DisplayObjectConversions(
     DisplayObject(
       transform = DisplayObjectConversions.nodeToMatrix4(leaf, Vector3(width.toDouble, height.toDouble, 1.0d)),
       rotation = leaf.rotation,
-      z = leaf.depth.value.toDouble,
+      z = leaf.depth.toDouble,
       width = width,
       height = height,
       atlasName = Some(lookupAtlasName(assetMapping, materialName)),
@@ -495,7 +496,7 @@ final class DisplayObjectConversions(
               Vector3(fontChar.bounds.width.toDouble, fontChar.bounds.height.toDouble, 1.0d)
             ),
             rotation = leaf.rotation,
-            z = leaf.depth.value.toDouble,
+            z = leaf.depth.toDouble,
             width = fontChar.bounds.width,
             height = fontChar.bounds.height,
             atlasName = Some(lookupAtlasName(assetMapping, materialName)),
