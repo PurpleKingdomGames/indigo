@@ -8,47 +8,51 @@ import indigo.shared.datatypes.Radians
 
 /** A Signal is function t: Seconds -> A
   */
-final class Signal[A](val run: Seconds => A) extends AnyVal {
+opaque type Signal[A] = Seconds => A
 
-  def at(t: Seconds): A =
-    run(t)
-
-  def merge[B, C](other: Signal[B])(f: (A, B) => C): Signal[C] =
-    Signal.merge(this, other)(f)
-
-  def |>[B](sf: SignalFunction[A, B]): Signal[B] =
-    pipe(sf)
-  def pipe[B](sf: SignalFunction[A, B]): Signal[B] =
-    sf.run(this)
-
-  def |*|[B](other: Signal[B]): Signal[(A, B)] =
-    combine(other)
-  def combine[B](other: Signal[B]): Signal[(A, B)] =
-    Signal.product(this, other)
-
-  def clampTime(from: Seconds, to: Seconds): Signal[A] =
-    Signal.clampTime(this, from, to)
-
-  def wrapTime(at: Seconds): Signal[A] =
-    Signal.wrapTime(this, at)
-
-  def affectTime(multiplyBy: Double): Signal[A] =
-    Signal.affectTime(this, multiplyBy)
-
-  def map[B](f: A => B): Signal[B] =
-    Signal(t => f(at(t)))
-
-  def ap[B](f: Signal[A => B]): Signal[B] =
-    Signal { (t: Seconds) =>
-      f.map { ff =>
-        ff(at(t))
-      }.at(t)
-    }
-
-  def flatMap[B](f: A => Signal[B]): Signal[B] =
-    Signal(t => f(at(t)).at(t))
-}
 object Signal {
+
+  def apply[A](run: Seconds => A): Signal[A] = run
+
+  extension [A](s: Signal[A])
+    def run: Seconds => A = s
+
+    def at(t: Seconds): A =
+      run(t)
+
+    def merge[B, C](other: Signal[B])(f: (A, B) => C): Signal[C] =
+      Signal.mergeSignals(s, other)(f)
+
+    def |>[B](sf: SignalFunction[A, B]): Signal[B] =
+      pipe(sf)
+    def pipe[B](sf: SignalFunction[A, B]): Signal[B] =
+      sf.run(s)
+
+    def |*|[B](other: Signal[B]): Signal[(A, B)] =
+      combine(other)
+    def combine[B](other: Signal[B]): Signal[(A, B)] =
+      Signal.product(s, other)
+
+    def clampTime(from: Seconds, to: Seconds): Signal[A] =
+      Signal.clampSignalTime(s, from, to)
+
+    def wrapTime(at: Seconds): Signal[A] =
+      Signal.wrapSignalTime(s, at)
+
+    def affectTime(multiplyBy: Double): Signal[A] =
+      Signal.affectSignalTime(s, multiplyBy)
+
+    def map[B](f: A => B): Signal[B] =
+      (t: Seconds) => f(at(t))
+
+    def ap[B](f: Signal[A => B]): Signal[B] =
+      (t: Seconds) =>
+        f.map { ff =>
+          ff(at(t))
+        }.at(t)
+
+    def flatMap[B](f: A => Signal[B]): Signal[B] =
+      (t: Seconds) => f(at(t)).at(t)
 
   implicit class SignalTuple2ToSignal[A, B](t: (Signal[A], Signal[B])) {
     def toSignal: Signal[(A, B)] =
@@ -147,7 +151,7 @@ object Signal {
       (easeInOut(0.5 + ((t.toDouble / duration.toDouble) * 0.5)) - 0.5) * 2
     }
 
-  def clampTime[A](signal: Signal[A], from: Seconds, to: Seconds): Signal[A] =
+  def clampSignalTime[A](signal: Signal[A], from: Seconds, to: Seconds): Signal[A] =
     Signal { t =>
       if (from < to)
         if (t < from) from
@@ -160,12 +164,12 @@ object Signal {
       signal.at(t)
     }
 
-  def wrapTime[A](signal: Signal[A], at: Seconds): Signal[A] =
+  def wrapSignalTime[A](signal: Signal[A], at: Seconds): Signal[A] =
     Signal { t =>
       signal.at(t % at)
     }
 
-  def affectTime[A](sa: Signal[A], multiplyBy: Double): Signal[A] =
+  def affectSignalTime[A](sa: Signal[A], multiplyBy: Double): Signal[A] =
     Signal { t =>
       sa.at(Seconds((t.toDouble * multiplyBy)))
     }
@@ -173,16 +177,13 @@ object Signal {
   def fixed[A](a: A): Signal[A] =
     apply(_ => a)
 
-  def apply[A](f: Seconds => A): Signal[A] =
-    new Signal[A](f)
-
-  def merge[A, B, C](sa: Signal[A], sb: Signal[B])(f: (A, B) => C): Signal[C] =
+  def mergeSignals[A, B, C](sa: Signal[A], sb: Signal[B])(f: (A, B) => C): Signal[C] =
     sa.flatMap(a => sb.map(b => (a, b))).map(p => f(p._1, p._2))
 
   def product[A, B](sa: Signal[A], sb: Signal[B]): Signal[(A, B)] =
-    merge(sa, sb)((_, _))
+    mergeSignals(sa, sb)((_, _))
 
   def triple[A, B, C](sa: Signal[A], sb: Signal[B], sc: Signal[C]): Signal[(A, B, C)] =
-    merge(merge(sa, sb)((a, b) => (a, b)), sc)((ab, c) => (ab._1, ab._2, c))
+    mergeSignals(mergeSignals(sa, sb)((a, b) => (a, b)), sc)((ab, c) => (ab._1, ab._2, c))
 
 }
