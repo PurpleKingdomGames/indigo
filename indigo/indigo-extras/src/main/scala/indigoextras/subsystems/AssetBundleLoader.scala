@@ -78,7 +78,7 @@ object AssetBundleLoader extends SubSystem {
 
     val events: List[GlobalEvent] =
       assetPrimitives.toList
-        .map(asset => AssetEvent.LoadAsset(asset, BindingKey(asset.path.value), false))
+        .map(asset => AssetEvent.LoadAsset(asset, BindingKey(asset.path.toString), false))
 
     Outcome(
       tracker.addBundle(key, assetPrimitives)
@@ -107,7 +107,8 @@ object AssetBundleLoader extends SubSystem {
             case AssetBundleStatus.LoadFailed(percent, completed, count, _) =>
               List[GlobalEvent](
                 AssetBundleLoaderEvent.LoadProgress(bundle.key, percent, completed, count),
-                AssetEvent.AssetBatchLoadError(bundle.key, s"Asset batch with key '${bundle.key.toString}' failed to load")
+                AssetEvent
+                  .AssetBatchLoadError(bundle.key, s"Asset batch with key '${bundle.key.toString}' failed to load")
               )
 
             case AssetBundleStatus.LoadInProgress(percent, completed, count) =>
