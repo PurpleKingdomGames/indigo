@@ -48,6 +48,8 @@ final class RendererInitialiser(renderingTechnology: RenderingTechnology, global
   def createCanvas(width: Int, height: Int, parent: Element): html.Canvas =
     createNamedCanvas(width, height, "indigo", Some(parent))
 
+  private given CanEqual[Option[Element], Option[Element]] = CanEqual.derived
+
   @SuppressWarnings(
     Array(
       "scalafix:DisableSyntax.null",

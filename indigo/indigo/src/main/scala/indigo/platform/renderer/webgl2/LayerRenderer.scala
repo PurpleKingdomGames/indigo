@@ -104,6 +104,7 @@ class LayerRenderer(
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
   private var currentProgram: WebGLProgram = null
+  private given CanEqual[Option[WebGLProgram], Option[WebGLProgram]] = CanEqual.derived
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def doContextChange(
@@ -210,6 +211,8 @@ class LayerRenderer(
 
       gl2.drawArraysInstanced(TRIANGLE_STRIP, 0, 4, instanceCount)
     }
+
+  private given CanEqual[List[DisplayEntity], List[DisplayEntity]] = CanEqual.derived
 
   def drawLayer(
       cloneBlankDisplayObjects: Map[CloneId, DisplayObject],

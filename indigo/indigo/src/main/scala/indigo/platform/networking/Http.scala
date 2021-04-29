@@ -9,6 +9,8 @@ import org.scalajs.dom.XMLHttpRequest
 
 object Http {
 
+  private given CanEqual[Option[String], Option[String]] = CanEqual.derived
+
   def processRequest(request: HttpRequest, globalEventStream: GlobalEventStream): Unit =
     try {
 

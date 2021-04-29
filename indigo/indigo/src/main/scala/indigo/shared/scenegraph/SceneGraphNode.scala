@@ -29,6 +29,8 @@ import indigo.shared.BoundaryLocator
 sealed trait SceneNode extends Product with Serializable
 object SceneNode {
   def empty: Group = Group.empty
+
+  given CanEqual[List[SceneNode], List[SceneNode]] = CanEqual.derived
 }
 
 sealed trait RenderNode extends SceneNode {
@@ -41,6 +43,8 @@ sealed trait RenderNode extends SceneNode {
 
   def withDepth(newDepth: Depth): RenderNode
 }
+object RenderNode:
+  given CanEqual[List[RenderNode], List[RenderNode]] = CanEqual.derived
 
 /** Can be extended to create custom scene elements.
   *

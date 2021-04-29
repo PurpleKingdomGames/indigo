@@ -86,6 +86,8 @@ object Mouse {
       case Some(position) => position
     }
 
+  private given CanEqual[List[MouseEvent], List[MouseEvent]] = CanEqual.derived
+
   @tailrec
   private def isLeftMouseDown(isDown: Boolean, events: List[MouseEvent]): Boolean =
     events match {

@@ -269,6 +269,8 @@ object GameEngine {
         .getOrElse(Shader.defaultFragmentProgram)
     )
 
+  private given CanEqual[Option[String], Option[String]] = CanEqual.derived
+
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def extractShaderCode(maybeText: Option[String], tag: String, assetName: AssetName): String =
     maybeText.flatMap(s"""//<$tag>\n((.|\n|\r)*)//</$tag>""".r.findFirstIn) match {

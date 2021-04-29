@@ -50,6 +50,8 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
     )
   }
 
+  private given CanEqual[Option[WebGLProgram], Option[WebGLProgram]] = CanEqual.derived
+
   @SuppressWarnings(Array("scalafix:DisableSyntax.null", "scalafix:DisableSyntax.throw"))
   def merge(
       projection: Array[Float],

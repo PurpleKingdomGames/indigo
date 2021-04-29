@@ -513,6 +513,8 @@ final class DisplayObjectConversions(
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var accCharDetails: ListBuffer[(FontChar, Int)] = new ListBuffer()
 
+  private given CanEqual[List[(Char, FontChar)], List[(Char, FontChar)]] = CanEqual.derived
+
   private def zipWithCharDetails(charList: List[Char], fontInfo: FontInfo): ListBuffer[(FontChar, Int)] = {
     @tailrec
     def rec(remaining: List[(Char, FontChar)], nextX: Int): ListBuffer[(FontChar, Int)] =

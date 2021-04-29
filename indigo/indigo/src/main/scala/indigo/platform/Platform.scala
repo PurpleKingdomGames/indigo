@@ -20,6 +20,7 @@ import indigo.platform.assets.ImageRef
 
 import org.scalajs.dom
 import org.scalajs.dom.html.Canvas
+import org.scalajs.dom.Element
 import scala.util.Success
 import scala.util.Failure
 import indigo.facades.FullScreenElement
@@ -99,6 +100,8 @@ class Platform(
           }
       )
     )
+
+  private given CanEqual[Option[Element], Option[Element]] = CanEqual.derived
 
   def createCanvas(gameConfig: GameConfig): Outcome[Canvas] =
     Option(dom.document.getElementById("indigo-container")) match {

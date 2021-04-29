@@ -8,7 +8,7 @@ import indigo.shared.subsystems.SubSystem
 import indigo.shared.FrameContext
 import indigo.shared.events.EventFilters
 
-trait Scene[StartUpData, GameModel, ViewModel] {
+trait Scene[StartUpData, GameModel, ViewModel] derives CanEqual {
   type SceneModel
   type SceneViewModel
 

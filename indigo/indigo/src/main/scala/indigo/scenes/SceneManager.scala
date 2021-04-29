@@ -17,6 +17,10 @@ class SceneManager[StartUpData, GameModel, ViewModel](
     scenesFinder: SceneFinder
 ) {
 
+  private
+  given CanEqual[Option[Scene[StartUpData, GameModel, ViewModel]], Option[Scene[StartUpData, GameModel, ViewModel]]] =
+    CanEqual.derived
+
   // Scene management
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var finderInstance: SceneFinder = scenesFinder

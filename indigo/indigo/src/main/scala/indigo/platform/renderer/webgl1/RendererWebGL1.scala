@@ -85,6 +85,9 @@ final class RendererWebGL1(
     gl.bindFramebuffer(FRAMEBUFFER, null)
   }
 
+  private
+  given CanEqual[Option[Int], Option[Int]] = CanEqual.derived
+
   def drawScene(sceneData: ProcessedSceneData, runningTime: Seconds): Unit = {
     resize(cNc.canvas, cNc.magnification)
 

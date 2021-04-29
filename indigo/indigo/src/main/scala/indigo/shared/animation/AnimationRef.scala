@@ -128,6 +128,8 @@ final case class CycleRef(
     }
 }
 object CycleRef {
+  given CanEqual[Option[CycleRef], Option[CycleRef]] = CanEqual.derived
+
   def fromCycle(cycle: Cycle): CycleRef =
     new CycleRef(
       cycle.label,

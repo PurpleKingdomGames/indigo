@@ -27,6 +27,8 @@ object Keyboard {
     )
   }
 
+  private given CanEqual[List[KeyboardEvent], List[KeyboardEvent]] = CanEqual.derived
+
   def calculateKeysDown(keyboardEvents: List[KeyboardEvent], previousKeysDown: List[Key]): List[Key] = {
     @tailrec
     def rec(remaining: List[KeyboardEvent], keysDownAcc: List[Key]): List[Key] =

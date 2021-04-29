@@ -1,11 +1,11 @@
 package indigo.shared.input
 
-final class Gamepad(val connected: Boolean, val analog: GamepadAnalogControls, val dpad: GamepadDPad, val buttons: GamepadButtons)
+final case class Gamepad(connected: Boolean, analog: GamepadAnalogControls, dpad: GamepadDPad, buttons: GamepadButtons) derives CanEqual
 
 object Gamepad {
 
   val default: Gamepad =
-    new Gamepad(
+    Gamepad(
       connected = false,
       GamepadAnalogControls.default,
       GamepadDPad.default,
@@ -74,29 +74,20 @@ object GamepadButtons {
     )
 }
 
-final class GamepadDPad(val up: Boolean, val down: Boolean, val left: Boolean, val right: Boolean)
+final case class GamepadDPad(up: Boolean, down: Boolean, left: Boolean, right: Boolean)
 object GamepadDPad {
   val default: GamepadDPad =
-    new GamepadDPad(false, false, false, false)
-
-  def unapply(value: GamepadDPad): Option[(Boolean, Boolean, Boolean, Boolean)] =
-    Some((value.up, value.down, value.left, value.right))
+    GamepadDPad(false, false, false, false)
 }
 
-final class GamepadAnalogControls(val left: AnalogAxis, val right: AnalogAxis)
+final case class GamepadAnalogControls(left: AnalogAxis, right: AnalogAxis)
 object GamepadAnalogControls {
   val default: GamepadAnalogControls =
-    new GamepadAnalogControls(AnalogAxis.default, AnalogAxis.default)
-
-  def unapply(value: GamepadAnalogControls): Option[(AnalogAxis, AnalogAxis)] =
-    Some((value.left, value.right))
+    GamepadAnalogControls(AnalogAxis.default, AnalogAxis.default)
 }
 
-final class AnalogAxis(val x: Double, val y: Double, val pressed: Boolean)
+final case class AnalogAxis(x: Double, y: Double, pressed: Boolean)
 object AnalogAxis {
   val default: AnalogAxis =
-    new AnalogAxis(0d, 0d, false)
-
-  def unapply(value: AnalogAxis): Option[(Double, Double, Boolean)] =
-    Some((value.x, value.y, value.pressed))
+    AnalogAxis(0d, 0d, false)
 }

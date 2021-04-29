@@ -45,6 +45,8 @@ final case class TiledMap(
         tiledLayer.height
       )
 
+    given CanEqual[List[(A, Int)], List[(A, Int)]] = CanEqual.derived
+
     @tailrec
     def rec(remaining: List[(A, Int)], columnCount: Int, acc: List[TiledGridCell[A]]): List[TiledGridCell[A]] =
       remaining match {
@@ -154,6 +156,8 @@ final case class TiledGridMap[A](layers: NonEmptyList[TiledGridLayer[A]]) derive
     layers.map(_.grid)
 
   lazy val toList2DPerLayer: NonEmptyList[List[List[TiledGridCell[A]]]] = {
+    given CanEqual[List[TiledGridCell[A]], List[TiledGridCell[A]]] = CanEqual.derived
+
     @tailrec
     def rec(remaining: List[TiledGridCell[A]], columnCount: Int, current: List[TiledGridCell[A]], acc: List[List[TiledGridCell[A]]]): List[List[TiledGridCell[A]]] =
       remaining match {
