@@ -34,7 +34,7 @@ final case class Layer(
     depth: Option[Depth],
     visible: Option[Boolean],
     blending: Option[Blending]
-) {
+) derives CanEqual {
 
   def |+|(other: Layer): Layer =
     this.copy(

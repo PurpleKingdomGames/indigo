@@ -3,7 +3,7 @@ package indigo.shared.scenegraph
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.audio.Volume
 
-final case class SceneAudioSource(bindingKey: BindingKey, playbackPattern: PlaybackPattern, masterVolume: Volume) {
+final case class SceneAudioSource(bindingKey: BindingKey, playbackPattern: PlaybackPattern, masterVolume: Volume) derives CanEqual {
   def |+|(other: SceneAudioSource): SceneAudioSource =
     SceneAudioSource.combine(this, other)
 }

@@ -63,6 +63,8 @@ final case class DisplayObject(
 }
 object DisplayObject {
 
+  given CanEqual[Option[DisplayObject], Option[DisplayObject]] = CanEqual.derived
+
   def apply(
       transform: CheapMatrix4,
       rotation: Radians,

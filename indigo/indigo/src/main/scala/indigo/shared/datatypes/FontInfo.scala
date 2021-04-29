@@ -9,7 +9,7 @@ final case class FontInfo(
     unknownChar: FontChar,
     fontChars: List[FontChar],
     caseSensitive: Boolean
-) {
+) derives CanEqual {
   import FontInfo.fontCharCache
 
   private val nonEmptyChars: List[FontChar] = unknownChar +: fontChars
@@ -61,13 +61,13 @@ opaque type FontKey = String
 object FontKey:
   def apply(key: String): FontKey = key
 
-final case class FontSpriteSheet(material: Material, size: Point)
+final case class FontSpriteSheet(material: Material, size: Point) derives CanEqual
 
-final case class FontChar(character: String, bounds: Rectangle)
+final case class FontChar(character: String, bounds: Rectangle) derives CanEqual
 object FontChar {
   def apply(character: String, x: Int, y: Int, width: Int, height: Int): FontChar =
     FontChar(character, Rectangle(x, y, width, height))
 }
 
-enum TextAlignment:
+enum TextAlignment derives CanEqual:
   case Left, Center, Right

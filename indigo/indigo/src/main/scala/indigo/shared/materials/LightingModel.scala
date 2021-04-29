@@ -10,6 +10,8 @@ sealed trait LightingModel
 
 object LightingModel {
 
+  given CanEqual[LightingModel, LightingModel] = CanEqual.derived
+
   case object Unlit extends LightingModel
 
   final case class Lit(

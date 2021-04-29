@@ -40,6 +40,8 @@ final case class Point(x: Int, y: Int) derives CanEqual {
 
 object Point {
 
+  given CanEqual[Option[Point], Option[Point]] = CanEqual.derived
+
   def apply(xy: Int): Point =
     Point(xy, xy)
 
