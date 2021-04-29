@@ -34,7 +34,7 @@ final case class TiledMap(
     staggeraxis: Option[String],    // For staggered and hexagonal maps, determines which axis ("x" or "y") is staggered
     staggerindex: Option[String],   // For staggered and hexagonal maps, determines whether the "even" or "odd" indexes along the staggered axis are shifted.
     backgroundcolor: Option[String] // #AARRGGBB
-) {
+) derives CanEqual {
 
   def toGrid[A](mapper: Int => A): Option[TiledGridMap[A]] = {
 
@@ -84,7 +84,7 @@ final case class TiledLayer(
     opacity: Double,
     `type`: String, // tilelayer, objectgroup, or imagelayer
     visible: Boolean
-)
+) derives CanEqual
 
 final case class TileSet(
     columns: Option[Int],
@@ -101,10 +101,10 @@ final case class TileSet(
     tiles: Option[Map[String, TiledTerrainCorner]],
     tilewidth: Option[Int],
     source: Option[String]
-)
+) derives CanEqual
 
-final case class TiledTerrain(name: String, tile: Int)
-final case class TiledTerrainCorner(terrain: List[Int])
+final case class TiledTerrain(name: String, tile: Int) derives CanEqual
+final case class TiledTerrainCorner(terrain: List[Int]) derives CanEqual
 
 object TiledMap {
 
@@ -148,7 +148,7 @@ object TiledMap {
 
 }
 
-final case class TiledGridMap[A](layers: NonEmptyList[TiledGridLayer[A]]) {
+final case class TiledGridMap[A](layers: NonEmptyList[TiledGridLayer[A]]) derives CanEqual {
 
   lazy val toListPerLayer: NonEmptyList[List[TiledGridCell[A]]] =
     layers.map(_.grid)
@@ -173,8 +173,8 @@ final case class TiledGridMap[A](layers: NonEmptyList[TiledGridLayer[A]]) {
   }
 
 }
-final case class TiledGridLayer[A](grid: List[TiledGridCell[A]], columnCount: Int, rowCount: Int)
-final case class TiledGridCell[A](column: Int, row: Int, tile: A) {
+final case class TiledGridLayer[A](grid: List[TiledGridCell[A]], columnCount: Int, rowCount: Int) derives CanEqual
+final case class TiledGridCell[A](column: Int, row: Int, tile: A) derives CanEqual {
   lazy val x: Int = column
   lazy val y: Int = row
 }

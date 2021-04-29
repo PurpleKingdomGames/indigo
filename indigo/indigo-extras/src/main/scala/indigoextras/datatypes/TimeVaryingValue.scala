@@ -4,7 +4,7 @@ import indigo.shared.time.Seconds
 
 /** Represents one of the type of values that changes over time.
   */
-sealed trait TimeVaryingValue {
+sealed trait TimeVaryingValue derives CanEqual {
 
   /** The current value
     *

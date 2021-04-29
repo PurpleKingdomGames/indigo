@@ -6,7 +6,7 @@ package indigo.shared.collections
   * unsafely accessing the `head` element.
   * @tparam A The type of element to be stored in the list.
   */
-final case class NonEmptyList[A](head: A, tail: List[A]) {
+final case class NonEmptyList[A](head: A, tail: List[A]) derives CanEqual {
 
   /**
     * Alias for `head`

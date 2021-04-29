@@ -55,7 +55,7 @@ trait EntityNode extends RenderNode {
 // Utility Nodes
 //------------------
 
-final case class Transformer(node: SceneNode, transform: CheapMatrix4) extends SceneNode {
+final case class Transformer(node: SceneNode, transform: CheapMatrix4) extends SceneNode derives CanEqual {
   def addTransform(matrix: CheapMatrix4): Transformer =
     this.copy(transform = transform * matrix)
 }
@@ -82,7 +82,7 @@ sealed trait DependentNode extends SceneNode {
   */
 final case class Clone(id: CloneId, depth: Depth, transform: CloneTransformData)
     extends DependentNode
-    with BasicSpatialModifiers[Clone] {
+    with BasicSpatialModifiers[Clone] derives CanEqual {
   lazy val x: Int                  = transform.position.x
   lazy val y: Int                  = transform.position.y
   lazy val rotation: Radians       = transform.rotation
@@ -150,7 +150,7 @@ final case class CloneBatch(
     clones: List[CloneTransformData],
     staticBatchKey: Option[BindingKey]
 ) extends DependentNode
-    with BasicSpatialModifiers[CloneBatch] {
+    with BasicSpatialModifiers[CloneBatch] derives CanEqual {
   lazy val x: Int                  = transform.position.x
   lazy val y: Int                  = transform.position.y
   lazy val rotation: Radians       = transform.rotation
@@ -225,7 +225,7 @@ final case class Group(
     ref: Point,
     flip: Flip
 ) extends CompositeNode
-    with SpatialModifiers[Group] {
+    with SpatialModifiers[Group] derives CanEqual {
 
   lazy val x: Int = position.x
   lazy val y: Int = position.y
@@ -374,7 +374,7 @@ final case class Sprite(
 ) extends CompositeNode
     with EventHandler
     with Cloneable
-    with SpatialModifiers[Sprite] {
+    with SpatialModifiers[Sprite] derives CanEqual {
 
   lazy val x: Int = position.x
   lazy val y: Int = position.y
@@ -541,7 +541,7 @@ final case class Text(
     flip: Flip
 ) extends CompositeNode
     with EventHandler
-    with SpatialModifiers[Text] {
+    with SpatialModifiers[Text] derives CanEqual {
 
   def calculatedBounds(locator: BoundaryLocator): Rectangle =
     locator.findBounds(this)

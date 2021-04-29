@@ -2,7 +2,7 @@ package indigoextras.geometry
 
 import indigo.shared.datatypes.Vector2
 
-final case class BoundingCircle(position: Vertex, radius: Double) {
+final case class BoundingCircle(position: Vertex, radius: Double) derives CanEqual {
   lazy val x: Double        = position.x
   lazy val y: Double        = position.y
   lazy val diameter: Double = radius * 2
@@ -157,7 +157,7 @@ object BoundingCircle {
 
 }
 
-sealed trait BoundingCircleLineIntersect {
+sealed trait BoundingCircleLineIntersect derives CanEqual {
   def nearest: Option[Vertex] =
     this match {
       case BoundingCircleLineIntersect.Zero         => None

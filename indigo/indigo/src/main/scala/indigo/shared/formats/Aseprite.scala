@@ -20,24 +20,24 @@ import indigo.shared.animation.Cycle
 import indigo.shared.time.Millis
 import indigo.shared.animation.Frame
 
-final case class Aseprite(frames: List[AsepriteFrame], meta: AsepriteMeta) {
+final case class Aseprite(frames: List[AsepriteFrame], meta: AsepriteMeta) derives CanEqual {
 
   def toSpriteAndAnimations(dice: Dice, assetName: AssetName): Option[SpriteAndAnimations] =
     Aseprite.toSpriteAndAnimations(this, dice, assetName)
 
 }
 
-final case class AsepriteFrame(filename: String, frame: AsepriteRectangle, rotated: Boolean, trimmed: Boolean, spriteSourceSize: AsepriteRectangle, sourceSize: AsepriteSize, duration: Int)
+final case class AsepriteFrame(filename: String, frame: AsepriteRectangle, rotated: Boolean, trimmed: Boolean, spriteSourceSize: AsepriteRectangle, sourceSize: AsepriteSize, duration: Int) derives CanEqual
 
-final case class AsepriteRectangle(x: Int, y: Int, w: Int, h: Int)
+final case class AsepriteRectangle(x: Int, y: Int, w: Int, h: Int) derives CanEqual
 
-final case class AsepriteMeta(app: String, version: String, image: String, format: String, size: AsepriteSize, scale: String, frameTags: List[AsepriteFrameTag])
+final case class AsepriteMeta(app: String, version: String, image: String, format: String, size: AsepriteSize, scale: String, frameTags: List[AsepriteFrameTag]) derives CanEqual
 
-final case class AsepriteSize(w: Int, h: Int)
+final case class AsepriteSize(w: Int, h: Int) derives CanEqual
 
-final case class AsepriteFrameTag(name: String, from: Int, to: Int, direction: String)
+final case class AsepriteFrameTag(name: String, from: Int, to: Int, direction: String) derives CanEqual
 
-final case class SpriteAndAnimations(sprite: Sprite, animations: Animation)
+final case class SpriteAndAnimations(sprite: Sprite, animations: Animation) derives CanEqual
 object Aseprite {
 
   def toSpriteAndAnimations(aseprite: Aseprite, dice: Dice, assetName: AssetName): Option[SpriteAndAnimations] =

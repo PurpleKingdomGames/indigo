@@ -4,7 +4,7 @@ import indigoextras.geometry.Vertex
 import indigoextras.geometry.BoundingBox
 import indigoextras.geometry.LineSegment
 
-sealed trait QuadTree[T] {
+sealed trait QuadTree[T] derives CanEqual {
 
   val bounds: BoundingBox
 

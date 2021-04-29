@@ -4,7 +4,7 @@ import indigo.shared.materials.BlendMaterial
 import indigo.shared.datatypes.RGBA
 import scala.annotation.nowarn
 
-final case class Blending(entity: Blend, layer: Blend, blendMaterial: BlendMaterial, clearColor: Option[RGBA]) {
+final case class Blending(entity: Blend, layer: Blend, blendMaterial: BlendMaterial, clearColor: Option[RGBA]) derives CanEqual {
 
   def withClearColor(clearColor: RGBA): Blending =
     this.copy(clearColor = Option(clearColor))

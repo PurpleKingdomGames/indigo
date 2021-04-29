@@ -2,11 +2,11 @@ package indigo.shared.networking
 
 import indigo.shared.events.{NetworkSendEvent, NetworkReceiveEvent}
 
-final case class WebSocketId(id: String)
+final case class WebSocketId(id: String) derives CanEqual
 
-final case class WebSocketConfig(id: WebSocketId, address: String)
+final case class WebSocketConfig(id: WebSocketId, address: String) derives CanEqual
 
-sealed trait WebSocketReadyState {
+sealed trait WebSocketReadyState derives CanEqual {
   val value: Int
   val isConnecting: Boolean
   val isOpen: Boolean
@@ -58,7 +58,7 @@ object WebSocketReadyState {
 
 }
 
-sealed trait WebSocketEvent {
+sealed trait WebSocketEvent derives CanEqual {
   def giveId: WebSocketId =
     this match {
       case WebSocketEvent.ConnectOnly(config) =>

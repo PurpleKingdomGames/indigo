@@ -139,7 +139,7 @@ object Automata {
 
 final case class AutomataState(totalSpawned: Long, pool: List[SpawnedAutomaton])
 
-sealed trait AutomataEvent extends SubSystemEvent
+sealed trait AutomataEvent extends SubSystemEvent derives CanEqual
 object AutomataEvent {
   final case class Spawn(key: AutomataPoolKey, at: Point, lifeSpan: Option[Seconds], payload: Option[AutomatonPayload])
       extends AutomataEvent
@@ -198,7 +198,7 @@ object Automaton {
 
 }
 
-sealed trait AutomatonNode {
+sealed trait AutomatonNode derives CanEqual {
   def giveNode(totalSpawned: Long, dice: Dice): SceneNode
 }
 object AutomatonNode {
@@ -243,7 +243,7 @@ final case class AutomatonSeedValues(
     lifeSpan: Seconds,
     randomSeed: Int,
     payload: Option[AutomatonPayload]
-) {
+) derives CanEqual {
 
   /** A value progressing from 0 to 1 as the automaton reaches its end.
     */
@@ -257,12 +257,12 @@ final case class SpawnedAutomaton(
     modifier: SignalReader[(AutomatonSeedValues, SceneNode), AutomatonUpdate],
     onCull: AutomatonSeedValues => List[GlobalEvent],
     seedValues: AutomatonSeedValues
-) {
+) derives CanEqual {
   def isAlive(currentTime: Seconds): Boolean =
     seedValues.createdAt + seedValues.lifeSpan > currentTime
 }
 
-final case class AutomatonUpdate(nodes: List[SceneNode], events: List[GlobalEvent]) {
+final case class AutomatonUpdate(nodes: List[SceneNode], events: List[GlobalEvent]) derives CanEqual {
 
   def |+|(other: AutomatonUpdate): AutomatonUpdate =
     AutomatonUpdate(nodes ++ other.nodes, events ++ other.events)

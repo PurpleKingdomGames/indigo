@@ -1,6 +1,6 @@
 package indigo.shared.datatypes
 
-final case class Flip(horizontal: Boolean, vertical: Boolean) {
+final case class Flip(horizontal: Boolean, vertical: Boolean) derives CanEqual {
 
   def flipHorizontally: Flip =
     this.copy(horizontal = !horizontal)

@@ -1,6 +1,6 @@
 package indigo.shared.shader
 
-final case class UniformBlock(blockName: String, uniforms: List[(Uniform, ShaderPrimitive)]) {
+final case class UniformBlock(blockName: String, uniforms: List[(Uniform, ShaderPrimitive)]) derives CanEqual {
 
   lazy val uniformHash: String =
     uniforms.toList.map(p => p._1.toString + p._2.hash).mkString

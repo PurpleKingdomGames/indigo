@@ -16,7 +16,7 @@ final case class DisplayClone(
     val id: CloneId,
     val transform: CheapMatrix4,
     val z: Double
-) extends DisplayEntity {
+) extends DisplayEntity derives CanEqual {
 
   def applyTransform(matrix: CheapMatrix4): DisplayClone =
     this.copy(transform = transform * matrix)
@@ -30,7 +30,7 @@ final case class DisplayCloneBatch(
     val id: CloneId,
     val z: Double,
     val clones: List[CheapMatrix4]
-) extends DisplayEntity {
+) extends DisplayEntity derives CanEqual {
 
   def applyTransform(matrix: CheapMatrix4): DisplayCloneBatch =
     this.copy(clones = clones.map(_ * matrix))
@@ -55,7 +55,7 @@ final case class DisplayObject(
     channelOffset3Y: Float,
     shaderId: ShaderId,
     shaderUniformData: List[DisplayObjectUniformData]
-) extends DisplayEntity {
+) extends DisplayEntity derives CanEqual {
 
   def applyTransform(matrix: CheapMatrix4): DisplayObject =
     this.copy(transform * matrix)
@@ -101,4 +101,4 @@ object DisplayObject {
     )
 }
 
-final case class DisplayObjectUniformData(uniformHash: String, blockName: String, data: Array[Float])
+final case class DisplayObjectUniformData(uniformHash: String, blockName: String, data: Array[Float]) derives CanEqual

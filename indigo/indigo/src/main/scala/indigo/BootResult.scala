@@ -11,7 +11,7 @@ final case class BootResult[A](
     fonts: Set[FontInfo],
     subSystems: Set[SubSystem],
     shaders: Set[Shader]
-) {
+) derives CanEqual {
 
   def addAnimations(newAnimations: Set[Animation]): BootResult[A] =
     this.copy(animations = animations ++ newAnimations)

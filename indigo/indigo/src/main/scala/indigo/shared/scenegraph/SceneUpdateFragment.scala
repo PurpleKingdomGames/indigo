@@ -22,7 +22,7 @@ final case class SceneUpdateFragment(
     audio: SceneAudio,
     blendMaterial: Option[BlendMaterial],
     cloneBlanks: List[CloneBlank]
-) {
+) derives CanEqual {
   def |+|(other: SceneUpdateFragment): SceneUpdateFragment =
     SceneUpdateFragment.append(this, other)
 

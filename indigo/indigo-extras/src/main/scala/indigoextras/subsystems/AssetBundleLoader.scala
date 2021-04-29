@@ -122,7 +122,7 @@ object AssetBundleLoader extends SubSystem {
   }
 }
 
-sealed trait AssetBundleLoaderEvent extends GlobalEvent
+sealed trait AssetBundleLoaderEvent extends GlobalEvent derives CanEqual
 object AssetBundleLoaderEvent {
   // commands
   final case class Load(key: BindingKey, assets: Set[AssetType]) extends AssetBundleLoaderEvent with SubSystemEvent

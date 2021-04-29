@@ -1,6 +1,6 @@
 package indigo.shared.datatypes
 
-final case class Vector4(x: Double, y: Double, z: Double, w: Double) {
+final case class Vector4(x: Double, y: Double, z: Double, w: Double) derives CanEqual {
 
   def withX(newX: Double): Vector4 =
     this.copy(x = newX)

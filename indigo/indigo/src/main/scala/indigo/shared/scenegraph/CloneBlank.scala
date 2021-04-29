@@ -5,7 +5,7 @@ package indigo.shared.scenegraph
   * @param id
   * @param cloneable
   */
-final case class CloneBlank(id: CloneId, cloneable: Cloneable) {
+final case class CloneBlank(id: CloneId, cloneable: Cloneable) derives CanEqual {
   def withCloneId(newCloneId: CloneId): CloneBlank =
     this.copy(id = newCloneId)
 

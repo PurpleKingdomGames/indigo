@@ -92,4 +92,4 @@ final class SubSystemsRegister() {
 
 }
 
-final case class RegisteredSubSystem(id: String, subSystem: SubSystem)
+final case class RegisteredSubSystem(id: String, subSystem: SubSystem) derives CanEqual

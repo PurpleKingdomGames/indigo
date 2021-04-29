@@ -3,7 +3,7 @@ package indigo.shared.datatypes.mutable
 import indigo.shared.datatypes.Matrix4
 import indigo.shared.datatypes.Radians
 
-final case class CheapMatrix4(mat: Array[Double]) {
+final case class CheapMatrix4(mat: Array[Double]) derives CanEqual {
 
   lazy val x: Double = mat(12)
   lazy val y: Double = mat(13)

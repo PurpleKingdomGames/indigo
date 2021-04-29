@@ -12,7 +12,7 @@ import indigo.shared.dice.Dice
   * @param id
   * @param jobStack
   */
-final case class WorkSchedule[Actor, Context](val id: BindingKey, val worker: Worker[Actor, Context], val jobStack: List[Job]) {
+final case class WorkSchedule[Actor, Context](val id: BindingKey, val worker: Worker[Actor, Context], val jobStack: List[Job]) derives CanEqual {
 
   /**
     * Give the job currently being worked on
@@ -138,4 +138,4 @@ object WorkSchedule {
   * @param workSchedule The updated work schedule.
   * @param actor The updated actor.
   */
-final case class WorkProgressReport[Actor, Context](workSchedule: WorkSchedule[Actor, Context], actor: Actor)
+final case class WorkProgressReport[Actor, Context](workSchedule: WorkSchedule[Actor, Context], actor: Actor) derives CanEqual

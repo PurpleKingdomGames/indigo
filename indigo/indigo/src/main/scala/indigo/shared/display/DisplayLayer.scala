@@ -16,4 +16,4 @@ final case class DisplayLayer(
     layerBlend: Blend,
     shaderId: ShaderId,
     shaderUniformData: List[DisplayObjectUniformData]
-)
+) derives CanEqual

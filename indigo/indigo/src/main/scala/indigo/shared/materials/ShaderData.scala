@@ -11,7 +11,7 @@ final case class ShaderData(
     channel1: Option[AssetName],
     channel2: Option[AssetName],
     channel3: Option[AssetName]
-) extends Material {
+) extends Material derives CanEqual {
 
   def withShaderId(newShaderId: ShaderId): ShaderData =
     this.copy(shaderId = newShaderId)

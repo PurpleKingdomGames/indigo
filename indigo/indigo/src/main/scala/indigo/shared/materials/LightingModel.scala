@@ -12,13 +12,13 @@ object LightingModel {
 
   given CanEqual[LightingModel, LightingModel] = CanEqual.derived
 
-  case object Unlit extends LightingModel
+  case object Unlit extends LightingModel derives CanEqual
 
   final case class Lit(
       emissive: Option[Texture],
       normal: Option[Texture],
       roughness: Option[Texture]
-  ) extends LightingModel {
+  ) extends LightingModel derives CanEqual {
 
     def withEmissive(emissiveAssetName: AssetName, amount: Double): Lit =
       this.copy(emissive = Some(Texture(emissiveAssetName, amount)))

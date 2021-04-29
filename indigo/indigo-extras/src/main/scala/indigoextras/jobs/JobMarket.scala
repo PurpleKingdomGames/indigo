@@ -86,7 +86,7 @@ object JobMarket {
 /**
   * Events that are used to manage the JobMarket
   */
-sealed trait JobMarketEvent extends GlobalEvent with Product with Serializable
+sealed trait JobMarketEvent extends GlobalEvent with Product with Serializable derives CanEqual
 object JobMarketEvent {
 
   /**

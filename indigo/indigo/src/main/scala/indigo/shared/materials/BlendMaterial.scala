@@ -15,7 +15,7 @@ trait BlendMaterial {
 
 object BlendMaterial {
 
-  case object Normal extends BlendMaterial {
+  case object Normal extends BlendMaterial derives CanEqual {
     def toShaderData: BlendShaderData =
       BlendShaderData(
         StandardShaders.NormalBlend.id,
@@ -23,7 +23,7 @@ object BlendMaterial {
       )
   }
 
-  final case class Lighting(ambient: RGBA) extends BlendMaterial {
+  final case class Lighting(ambient: RGBA) extends BlendMaterial derives CanEqual {
     def toShaderData: BlendShaderData =
       BlendShaderData(
         StandardShaders.LightingBlend.id,
@@ -38,7 +38,7 @@ object BlendMaterial {
       )
   }
 
-  final case class BlendEffects(alpha: Double, tint: RGBA, overlay: Fill, saturation: Double, affectsBackground: Boolean) extends BlendMaterial {
+  final case class BlendEffects(alpha: Double, tint: RGBA, overlay: Fill, saturation: Double, affectsBackground: Boolean) extends BlendMaterial derives CanEqual {
 
     def withAlpha(newAlpha: Double): BlendEffects =
       this.copy(alpha = newAlpha)

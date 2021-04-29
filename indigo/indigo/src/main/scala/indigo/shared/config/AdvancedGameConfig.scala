@@ -20,7 +20,7 @@ final case class AdvancedGameConfig(
     disableSkipModelUpdates: Boolean,
     disableSkipViewUpdates: Boolean,
     autoLoadStandardShaders: Boolean
-) {
+) derives CanEqual {
 
   def withRenderingTechnology(tech: RenderingTechnology): AdvancedGameConfig =
     this.copy(renderingTechnology = tech)

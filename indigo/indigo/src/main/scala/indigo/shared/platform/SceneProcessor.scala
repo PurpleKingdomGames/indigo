@@ -269,7 +269,7 @@ final case class LightData(
     lightSpecular: Array[Float],
     lightPositionRotation: Array[Float],
     lightNearFarAngleIntensity: Array[Float]
-) {
+) derives CanEqual {
   def +(other: LightData): LightData =
     this.copy(
       lightFlags = lightFlags ++ other.lightFlags,

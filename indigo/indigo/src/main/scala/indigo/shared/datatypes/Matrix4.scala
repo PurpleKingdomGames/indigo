@@ -2,7 +2,7 @@ package indigo.shared.datatypes
 
 import util.control.Breaks._
 
-final case class Matrix4(private val mat: List[Double]) {
+final case class Matrix4(private val mat: List[Double]) derives CanEqual {
 
   lazy val row1: List[Double] = List(mat(0), mat(1), mat(2), mat(3))
   lazy val row2: List[Double] = List(mat(4), mat(5), mat(6), mat(7))

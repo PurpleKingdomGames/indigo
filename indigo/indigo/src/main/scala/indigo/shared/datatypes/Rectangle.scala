@@ -2,7 +2,7 @@ package indigo.shared.datatypes
 
 import scala.annotation.tailrec
 
-final case class Rectangle(position: Point, size: Point) {
+final case class Rectangle(position: Point, size: Point) derives CanEqual {
   lazy val x: Int       = position.x
   lazy val y: Int       = position.y
   lazy val width: Int   = size.x

@@ -19,7 +19,7 @@ import indigo.shared.materials.LightingModel.Unlit
 import indigo.shared.materials.LightingModel.Lit
 import indigo.shared.shader.ShaderId
 
-sealed trait Shape extends EntityNode with Cloneable with SpatialModifiers[Shape] {
+sealed trait Shape extends EntityNode with Cloneable with SpatialModifiers[Shape] derives CanEqual {
   def moveTo(pt: Point): Shape
   def moveTo(x: Int, y: Int): Shape
   def withPosition(newPosition: Point): Shape

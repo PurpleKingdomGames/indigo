@@ -1,6 +1,6 @@
 package indigo.shared.time
 
-final case class GameTime(running: Seconds, delta: Seconds, targetFPS: GameTime.FPS):
+final case class GameTime(running: Seconds, delta: Seconds, targetFPS: GameTime.FPS) derives CanEqual:
   lazy val frameDuration: Millis = Millis((1000d / targetFPS.asDouble).toLong)
   lazy val multiplier: Double    = delta.toDouble / frameDuration.toDouble
 

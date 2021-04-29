@@ -88,4 +88,4 @@ object SceneFinder {
 
 }
 
-final case class ScenePosition(index: Int, name: SceneName)
+final case class ScenePosition(index: Int, name: SceneName) derives CanEqual

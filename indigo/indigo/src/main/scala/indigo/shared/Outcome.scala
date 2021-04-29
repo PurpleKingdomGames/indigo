@@ -6,7 +6,7 @@ import scala.util.control.NonFatal
 
 import scala.annotation.tailrec
 
-sealed trait Outcome[+A] {
+sealed trait Outcome[+A] derives CanEqual {
 
   def isResult: Boolean
   def isError: Boolean

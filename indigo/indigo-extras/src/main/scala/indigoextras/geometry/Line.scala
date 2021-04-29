@@ -3,7 +3,7 @@ package indigoextras.geometry
 /**
   * Defines a line in terms of y = mx + b
   */
-sealed trait Line {
+sealed trait Line derives CanEqual {
   def intersectsWith(other: Line): Boolean
   def intersectsAt(other: Line): Option[Vertex]
 }

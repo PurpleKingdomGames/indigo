@@ -4,7 +4,7 @@ import indigo.shared.collections.NonEmptyList
 
 import indigo.shared.time.Millis
 
-final case class Cycle(label: CycleLabel, frames: NonEmptyList[Frame], playheadPosition: Int, lastFrameAdvance: Millis):
+final case class Cycle(label: CycleLabel, frames: NonEmptyList[Frame], playheadPosition: Int, lastFrameAdvance: Millis) derives CanEqual:
   def addFrame(newFrame: Frame): Cycle =
     this.copy(frames = frames :+ newFrame)
 
@@ -19,4 +19,4 @@ opaque type CycleLabel = String
 object CycleLabel:
   def apply(value: String): CycleLabel = value
 
-final case class CycleMemento(playheadPosition: Int, lastFrameAdvance: Millis)
+final case class CycleMemento(playheadPosition: Int, lastFrameAdvance: Millis) derives CanEqual

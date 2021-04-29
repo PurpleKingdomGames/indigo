@@ -1,6 +1,6 @@
 package indigo.shared.constants
 
-final case class Key(code: Int, key: String) {
+final case class Key(code: Int, key: String) derives CanEqual {
   def isPrintable: Boolean =
     (key != "") && Key.printable.map(_.code).contains(this.code)
 

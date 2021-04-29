@@ -1,6 +1,6 @@
 package indigo.shared.datatypes
 
-final case class Stroke(width: Int, color: RGBA) {
+final case class Stroke(width: Int, color: RGBA) derives CanEqual {
 
   def withWidth(newWidth: Int): Stroke =
     this.copy(width = newWidth)

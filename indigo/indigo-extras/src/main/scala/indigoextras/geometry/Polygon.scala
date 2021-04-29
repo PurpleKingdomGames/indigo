@@ -4,7 +4,7 @@ import indigo.shared.datatypes.Rectangle
 
 import scala.annotation.tailrec
 
-sealed trait Polygon {
+sealed trait Polygon derives CanEqual {
   val vertices: List[Vertex]
 
   def bounds: BoundingBox =

@@ -6,7 +6,7 @@ import indigo.shared.shader.UniformBlock
 final case class BlendShaderData(
     shaderId: ShaderId,
     uniformBlocks: List[UniformBlock]
-) extends BlendMaterial {
+) extends BlendMaterial derives CanEqual {
 
   def withShaderId(newShaderId: ShaderId): BlendShaderData =
     this.copy(shaderId = newShaderId)

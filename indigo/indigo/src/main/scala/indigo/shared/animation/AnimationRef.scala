@@ -14,7 +14,7 @@ final case class AnimationRef(
     animationKey: AnimationKey,
     currentCycleLabel: CycleLabel,
     cycles: Map[CycleLabel, CycleRef]
-) {
+) derives CanEqual {
 
   lazy val frameHash: String =
     currentFrame.crop.hash
@@ -71,6 +71,8 @@ object AnimationRef {
       animation.currentCycleLabel,
       animation.cycles.toList.map(c => (c.label, CycleRef.fromCycle(c))).toMap
     )
+
+  given CanEqual[Option[AnimationRef], Option[AnimationRef]] = CanEqual.derived
 }
 
 final case class CycleRef(
@@ -78,7 +80,7 @@ final case class CycleRef(
     frames: List[Frame],
     playheadPosition: Int,
     lastFrameAdvance: Millis
-) {
+) derives CanEqual {
 
   lazy val frameCount: Int =
     frames.length
@@ -155,7 +157,7 @@ final case class AnimationMemento(
     bindingKey: BindingKey,
     currentCycleLabel: CycleLabel,
     currentCycleMemento: CycleMemento
-)
+) derives CanEqual
 object AnimationMemento {
   def apply(
       bindingKey: BindingKey,

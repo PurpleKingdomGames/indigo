@@ -23,7 +23,7 @@ final case class Button(
     onDown: () => List[GlobalEvent],
     onHoverOver: () => List[GlobalEvent],
     onHoverOut: () => List[GlobalEvent]
-) {
+) derives CanEqual {
 
   def update(mouse: Mouse): Outcome[Button] = {
     val mouseInBounds = bounds.isPointWithin(mouse.position)
@@ -149,4 +149,4 @@ final case class ButtonAssets(
     up: RenderNode,
     over: RenderNode,
     down: RenderNode
-)
+) derives CanEqual
