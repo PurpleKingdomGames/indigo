@@ -17,6 +17,9 @@ sealed trait AssetTypePrimitive extends AssetType {
 
 object AssetType {
 
+  given CanEqual[AssetType, AssetType] = CanEqual.derived
+  given CanEqual[Option[AssetType], Option[AssetType]] = CanEqual.derived
+
   /** Flattens assets arranged in a Tagged hierarchy into a flat list of loadable assets, appropriately tagged.
     *
     * @param assets The potentially tagged hierarchy list.

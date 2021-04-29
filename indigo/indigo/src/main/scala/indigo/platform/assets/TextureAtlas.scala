@@ -93,6 +93,8 @@ final case class TextureAtlas(atlases: Map[AtlasId, Atlas], legend: Map[AssetNam
 opaque type AtlasId = String
 object AtlasId:
   def apply(id: String): AtlasId = id
+  given CanEqual[AtlasId, AtlasId] = CanEqual.derived
+  given CanEqual[Option[AtlasId], Option[AtlasId]] = CanEqual.derived
 
 final case class AtlasIndex(id: AtlasId, offset: Point) derives CanEqual
 
