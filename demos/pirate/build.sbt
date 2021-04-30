@@ -19,6 +19,7 @@ lazy val pirate =
         "org.scalameta" %%% "munit" % "0.7.25" % Test,
         "org.scalacheck" %%% "scalacheck" % "1.15.3" % "test"
       ),
+      scalacOptions ++= Seq("-language:strictEquality"),
       testFrameworks += new TestFramework("munit.Framework"),
       // wartremoverWarnings in (Compile, compile) ++= Warts.unsafe,
       Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }

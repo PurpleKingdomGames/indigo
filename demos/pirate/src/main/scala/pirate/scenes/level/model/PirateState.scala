@@ -3,7 +3,7 @@ package pirate.scenes.level.model
 /*
 An ADT of all the states the pirate can find himself in.
 */
-sealed trait PirateState {
+sealed trait PirateState derives CanEqual {
 
   val isFalling: Boolean =
     this match {

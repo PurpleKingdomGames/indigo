@@ -7,10 +7,8 @@ object LoadingModel {
 }
 
 // An ADT representing the states we can be in during loading.
-sealed trait LoadingState
-object LoadingState {
-  case object NotStarted                    extends LoadingState
-  final case class InProgress(percent: Int) extends LoadingState
-  case object Complete                      extends LoadingState
-  case object Error                         extends LoadingState
-}
+enum LoadingState derives CanEqual:
+  case NotStarted               extends LoadingState
+  case InProgress(percent: Int) extends LoadingState
+  case Complete                 extends LoadingState
+  case Error                    extends LoadingState
