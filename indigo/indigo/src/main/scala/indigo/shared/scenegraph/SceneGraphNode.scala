@@ -14,22 +14,9 @@ import indigo.shared.BoundaryLocator
 
 /** The parent type of anything that can affect the visual representation of the game.
   */
-// sealed trait SceneNode extends Product with Serializable {
-//   def position: Point
-//   def rotation: Radians
-//   def scale: Vector2
-//   def depth: Depth
-//   def ref: Point
-//   def flip: Flip
-// }
-// object SceneNode {
-//   def empty: Group = Group.empty
-// }
-
-sealed trait SceneNode extends Product with Serializable
+sealed trait SceneNode extends Product with Serializable derives CanEqual
 object SceneNode {
-  def empty: Group = Group.empty
-
+  given CanEqual[Option[SceneNode], Option[SceneNode]] = CanEqual.derived
   given CanEqual[List[SceneNode], List[SceneNode]] = CanEqual.derived
 }
 
@@ -44,6 +31,7 @@ sealed trait RenderNode extends SceneNode {
   def withDepth(newDepth: Depth): RenderNode
 }
 object RenderNode:
+  given CanEqual[Option[RenderNode], Option[RenderNode]] = CanEqual.derived
   given CanEqual[List[RenderNode], List[RenderNode]] = CanEqual.derived
 
 /** Can be extended to create custom scene elements.
