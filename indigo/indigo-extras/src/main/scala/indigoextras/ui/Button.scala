@@ -4,7 +4,6 @@ import indigo.shared.datatypes.{Depth, Rectangle}
 import indigo.shared.events.GlobalEvent
 import indigo.shared.input.Mouse
 import indigo.shared.Outcome
-import indigo.shared.scenegraph.SceneNode
 import indigo.shared.scenegraph.EntityNode
 import indigo.shared.scenegraph.Shape
 import indigo.shared.scenegraph.Graphic
@@ -62,7 +61,7 @@ final case class Button(
       case n: EntityNode    => n
     }
 
-  def draw: SceneNode =
+  def draw: RenderNode =
     state match {
       case ButtonState.Up =>
         applyPositionAndDepth(buttonAssets.up, bounds.position, depth)
