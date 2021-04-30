@@ -73,6 +73,8 @@ opaque type CacheKey = String
 object CacheKey:
   def apply(value: String): CacheKey = value
 
+  given CanEqual[CacheKey, CacheKey] = CanEqual.derived
+
 trait ToCacheKey[A] {
   def toKey(a: A): CacheKey
 }
