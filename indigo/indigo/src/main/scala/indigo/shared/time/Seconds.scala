@@ -3,6 +3,9 @@ package indigo.shared.time
 opaque type Seconds = Double
 object Seconds:
 
+  given CanEqual[Seconds, Seconds] = CanEqual.derived
+  given CanEqual[Option[Seconds], Option[Seconds]] = CanEqual.derived
+
   def apply(seconds: Double): Seconds = seconds
 
   val zero: Seconds =

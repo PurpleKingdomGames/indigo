@@ -3,7 +3,7 @@ package indigoextras.jobs
 /** A trait that when extended represents a job that can be done.
   * Jobs have names and can be local to the worker, or globalablly available
   */
-trait Job extends Product with Serializable {
+trait Job extends Product with Serializable derives CanEqual {
   val jobName: JobName
   val isLocal: Boolean
   val priority: Int

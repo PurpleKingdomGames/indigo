@@ -9,6 +9,8 @@ import indigo.shared.assets.AssetTag
 
 class TextureAtlasTests extends munit.FunSuite {
 
+  given CanEqual[Option[AtlasLookupResult], Option[AtlasLookupResult]] = CanEqual.derived
+
   test("A texture atlas.should be able to generate a TextureAtlas with the default maximum") {
 
     val imageRefs = List(
@@ -19,38 +21,64 @@ class TextureAtlasTests extends munit.FunSuite {
       ImageRef(AssetName("e"), 5000, 300, None)
     )
 
-    val lookupByName: AssetName => Option[LoadedImageAsset]                           = _ => None
-    val createAtlasFunc: (TextureMap, AssetName => Option[LoadedImageAsset]) => Atlas = (_, _) => new Atlas(PowerOfTwo.Max, None)
+    val lookupByName: AssetName => Option[LoadedImageAsset] = _ => None
+    val createAtlasFunc: (TextureMap, AssetName => Option[LoadedImageAsset]) => Atlas =
+      (_, _) => new Atlas(PowerOfTwo.Max, None)
 
     val actual: TextureAtlas = TextureAtlas.create(imageRefs, lookupByName, createAtlasFunc)
 
     assert(
       actual.lookUpByName(AssetName("a")) == Some(
-        new AtlasLookupResult(AssetName("a"), AtlasId(TextureAtlas.IdPrefix + "0"), new Atlas(PowerOfTwo.Max, None), Point(512, 0))
+        new AtlasLookupResult(
+          AssetName("a"),
+          AtlasId(TextureAtlas.IdPrefix + "0"),
+          new Atlas(PowerOfTwo.Max, None),
+          Point(512, 0)
+        )
       )
     )
 
     assert(
       actual.lookUpByName(AssetName("b")) == Some(
-        new AtlasLookupResult(AssetName("b"), AtlasId(TextureAtlas.IdPrefix + "0"), new Atlas(PowerOfTwo.Max, None), Point(1024, 0))
+        new AtlasLookupResult(
+          AssetName("b"),
+          AtlasId(TextureAtlas.IdPrefix + "0"),
+          new Atlas(PowerOfTwo.Max, None),
+          Point(1024, 0)
+        )
       )
     )
 
     assert(
       actual.lookUpByName(AssetName("c")) == Some(
-        new AtlasLookupResult(AssetName("c"), AtlasId(TextureAtlas.IdPrefix + "0"), new Atlas(PowerOfTwo.Max, None), Point.zero)
+        new AtlasLookupResult(
+          AssetName("c"),
+          AtlasId(TextureAtlas.IdPrefix + "0"),
+          new Atlas(PowerOfTwo.Max, None),
+          Point.zero
+        )
       )
     )
 
     assert(
       actual.lookUpByName(AssetName("d")) == Some(
-        new AtlasLookupResult(AssetName("d"), AtlasId(TextureAtlas.IdPrefix + "0"), new Atlas(PowerOfTwo.Max, None), Point(0, 1024))
+        new AtlasLookupResult(
+          AssetName("d"),
+          AtlasId(TextureAtlas.IdPrefix + "0"),
+          new Atlas(PowerOfTwo.Max, None),
+          Point(0, 1024)
+        )
       )
     )
 
     assert(
       actual.lookUpByName(AssetName("e")) == Some(
-        new AtlasLookupResult(AssetName("e"), AtlasId(TextureAtlas.IdPrefix + "1"), new Atlas(PowerOfTwo.Max, None), Point.zero)
+        new AtlasLookupResult(
+          AssetName("e"),
+          AtlasId(TextureAtlas.IdPrefix + "1"),
+          new Atlas(PowerOfTwo.Max, None),
+          Point.zero
+        )
       )
     )
 
@@ -66,38 +94,64 @@ class TextureAtlasTests extends munit.FunSuite {
       ImageRef(AssetName("e"), 64, 64, None)
     )
 
-    val lookupByName: AssetName => Option[LoadedImageAsset]                           = _ => None
-    val createAtlasFunc: (TextureMap, AssetName => Option[LoadedImageAsset]) => Atlas = (_, _) => new Atlas(PowerOfTwo._128, None)
+    val lookupByName: AssetName => Option[LoadedImageAsset] = _ => None
+    val createAtlasFunc: (TextureMap, AssetName => Option[LoadedImageAsset]) => Atlas =
+      (_, _) => new Atlas(PowerOfTwo._128, None)
 
     val actual: TextureAtlas = TextureAtlas.createWithMaxSize(PowerOfTwo._128, imageRefs, lookupByName, createAtlasFunc)
 
     assert(
       actual.lookUpByName(AssetName("a")) == Some(
-        new AtlasLookupResult(AssetName("a"), AtlasId(TextureAtlas.IdPrefix + "0"), new Atlas(PowerOfTwo._128, None), Point(0, 0))
+        new AtlasLookupResult(
+          AssetName("a"),
+          AtlasId(TextureAtlas.IdPrefix + "0"),
+          new Atlas(PowerOfTwo._128, None),
+          Point(0, 0)
+        )
       )
     )
 
     assert(
       actual.lookUpByName(AssetName("b")) == Some(
-        new AtlasLookupResult(AssetName("b"), AtlasId(TextureAtlas.IdPrefix + "1"), new Atlas(PowerOfTwo._128, None), Point(0, 0))
+        new AtlasLookupResult(
+          AssetName("b"),
+          AtlasId(TextureAtlas.IdPrefix + "1"),
+          new Atlas(PowerOfTwo._128, None),
+          Point(0, 0)
+        )
       )
     )
 
     assert(
       actual.lookUpByName(AssetName("c")) == Some(
-        new AtlasLookupResult(AssetName("c"), AtlasId(TextureAtlas.IdPrefix + "2"), new Atlas(PowerOfTwo._128, None), Point(0, 0))
+        new AtlasLookupResult(
+          AssetName("c"),
+          AtlasId(TextureAtlas.IdPrefix + "2"),
+          new Atlas(PowerOfTwo._128, None),
+          Point(0, 0)
+        )
       )
     )
 
     assert(
       actual.lookUpByName(AssetName("d")) == Some(
-        new AtlasLookupResult(AssetName("d"), AtlasId(TextureAtlas.IdPrefix + "0"), new Atlas(PowerOfTwo._128, None), Point(64, 0))
+        new AtlasLookupResult(
+          AssetName("d"),
+          AtlasId(TextureAtlas.IdPrefix + "0"),
+          new Atlas(PowerOfTwo._128, None),
+          Point(64, 0)
+        )
       )
     )
 
     assert(
       actual.lookUpByName(AssetName("e")) == Some(
-        new AtlasLookupResult(AssetName("e"), AtlasId(TextureAtlas.IdPrefix + "0"), new Atlas(PowerOfTwo._128, None), Point(0, 64))
+        new AtlasLookupResult(
+          AssetName("e"),
+          AtlasId(TextureAtlas.IdPrefix + "0"),
+          new Atlas(PowerOfTwo._128, None),
+          Point(0, 64)
+        )
       )
     )
 
@@ -152,7 +206,9 @@ class TextureAtlasTests extends munit.FunSuite {
 
   }
 
-  test("The texture atlas functions.should be able to take a list of texture details and group them into 'atlasable' groups") {
+  test(
+    "The texture atlas functions.should be able to take a list of texture details and group them into 'atlasable' groups"
+  ) {
 
     val tex = (name: AssetName, pow: PowerOfTwo) => TextureDetails(ImageRef(name, 1, 1, None), pow, None)
 
@@ -179,7 +235,8 @@ class TextureAtlasTests extends munit.FunSuite {
 
   test("The texture atlas functions.grouping with tags") {
 
-    val tex = (name: AssetName, pow: PowerOfTwo, tag: AssetTag) => TextureDetails(ImageRef(name, 1, 1, None), pow, if (tag.toString.isEmpty()) None else Some(tag))
+    val tex = (name: AssetName, pow: PowerOfTwo, tag: AssetTag) =>
+      TextureDetails(ImageRef(name, 1, 1, None), pow, if (tag.toString.isEmpty()) None else Some(tag))
 
     val list: List[TextureDetails] = List(
       tex(AssetName("a"), PowerOfTwo._256, AssetTag("tag 1")),
@@ -531,10 +588,22 @@ class TextureAtlasTests extends munit.FunSuite {
 
         assertEquals(textureMap.size == PowerOfTwo._16, true)
 
-        assertEquals(textureMap.textureCoords.find(_.imageRef.name == AssetName("8_1")).map(_.coords) == Some(Point(0, 0)), true)
-        assertEquals(textureMap.textureCoords.find(_.imageRef.name == AssetName("8_2")).map(_.coords) == Some(Point(8, 0)), true)
-        assertEquals(textureMap.textureCoords.find(_.imageRef.name == AssetName("8_3")).map(_.coords) == Some(Point(0, 8)), true)
-        assertEquals(textureMap.textureCoords.find(_.imageRef.name == AssetName("8_4")).map(_.coords) == Some(Point(8, 8)), true)
+        assertEquals(
+          textureMap.textureCoords.find(_.imageRef.name == AssetName("8_1")).map(_.coords) == Some(Point(0, 0)),
+          true
+        )
+        assertEquals(
+          textureMap.textureCoords.find(_.imageRef.name == AssetName("8_2")).map(_.coords) == Some(Point(8, 0)),
+          true
+        )
+        assertEquals(
+          textureMap.textureCoords.find(_.imageRef.name == AssetName("8_3")).map(_.coords) == Some(Point(0, 8)),
+          true
+        )
+        assertEquals(
+          textureMap.textureCoords.find(_.imageRef.name == AssetName("8_4")).map(_.coords) == Some(Point(8, 8)),
+          true
+        )
 
       case _ =>
         fail("error")

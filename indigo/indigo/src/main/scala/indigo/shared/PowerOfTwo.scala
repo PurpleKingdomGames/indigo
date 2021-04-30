@@ -2,7 +2,7 @@ package indigo.shared
 
 import indigo.shared.datatypes.Point
 
-sealed trait PowerOfTwo {
+sealed trait PowerOfTwo derives CanEqual {
   val value: Int
   val halved: PowerOfTwo
   val doubled: PowerOfTwo

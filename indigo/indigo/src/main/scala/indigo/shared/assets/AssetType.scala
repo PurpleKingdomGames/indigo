@@ -4,7 +4,7 @@ import scala.annotation.tailrec
 
 /** Parent type of the different kinds of assets Indigo understands.
   */
-sealed trait AssetType {
+sealed trait AssetType derives CanEqual {
   def toList: List[AssetType]
 }
 

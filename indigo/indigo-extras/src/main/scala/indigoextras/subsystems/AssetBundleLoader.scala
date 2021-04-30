@@ -26,6 +26,8 @@ object AssetBundleLoader extends SubSystem {
   def initialModel: Outcome[AssetBundleTracker] =
     Outcome(AssetBundleTracker.empty)
 
+  private given CanEqual[Option[Set[AssetType]], Option[Set[AssetType]]] = CanEqual.derived
+
   def update(
       frameContext: SubSystemFrameContext,
       tracker: AssetBundleTracker
@@ -126,9 +128,11 @@ sealed trait AssetBundleLoaderEvent extends GlobalEvent derives CanEqual
 object AssetBundleLoaderEvent {
   // commands
   final case class Load(key: BindingKey, assets: Set[AssetType]) extends AssetBundleLoaderEvent with SubSystemEvent
-  final case class Retry(key: BindingKey)                        extends AssetBundleLoaderEvent with SubSystemEvent
+  final case class Retry(key: BindingKey)
+      extends AssetBundleLoaderEvent
+      with SubSystemEvent
 
-  // result events
+      // result events
   final case class Started(key: BindingKey) extends AssetBundleLoaderEvent
   final case class LoadProgress(key: BindingKey, percent: Int, completed: Int, total: Int)
       extends AssetBundleLoaderEvent
@@ -181,6 +185,8 @@ object AssetBundleTracker {
     new AssetBundleTracker(Nil)
 }
 final case class AssetBundle(key: BindingKey, assetCount: Int, assets: Map[AssetPath, AssetToLoad]) {
+  private given CanEqual[Option[AssetToLoad], Option[AssetToLoad]] = CanEqual.derived
+
   def assetLoadComplete(assetPath: AssetPath, loaded: Boolean): AssetBundle =
     AssetBundle(
       key,
@@ -219,7 +225,7 @@ final case class AssetBundle(key: BindingKey, assetCount: Int, assets: Map[Asset
   def containsAsset(path: AssetPath): Boolean =
     assets.contains(path)
 }
-final case class AssetToLoad(asset: AssetTypePrimitive, complete: Boolean, loaded: Boolean)
+final case class AssetToLoad(asset: AssetTypePrimitive, complete: Boolean, loaded: Boolean) derives CanEqual
 
 sealed trait AssetBundleStatus {
   val percent: Int

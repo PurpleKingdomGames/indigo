@@ -125,6 +125,8 @@ final case class InputField(
   def addCharacter(char: Char): InputField =
     addCharacterText(char.toString())
 
+  private given CanEqual[List[Char], List[Char]] = CanEqual.derived
+
   def addCharacterText(textToInsert: String): InputField = {
     @tailrec
     def rec(remaining: List[Char], textHead: String, textTail: String, position: Int): InputField =

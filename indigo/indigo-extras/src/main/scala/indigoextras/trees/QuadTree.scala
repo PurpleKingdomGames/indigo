@@ -60,7 +60,7 @@ sealed trait QuadTree[T] derives CanEqual {
     rec(this, "")
   }
 
-  def ===(other: QuadTree[T]): Boolean = {
+  def ===(other: QuadTree[T])(using CanEqual[T, T]): Boolean = {
 
     def rec(a: QuadTree[T], b: QuadTree[T]): Boolean =
       (a, b) match {

@@ -160,22 +160,19 @@ object Border {
     Border(RGBA.Zero, Thickness.None, Thickness.None)
 }
 
-sealed trait Thickness {
-  def toInt: Int =
-    this match {
-      case Thickness.None  => 0
-      case Thickness.Thin  => 1
-      case Thickness.Thick => 2
-    }
+enum Thickness derives CanEqual:
+  case None, Thin, Thick
 
-  def hash: String =
-    toInt.toString()
-}
-object Thickness {
-  case object None  extends Thickness
-  case object Thin  extends Thickness
-  case object Thick extends Thickness
-}
+object Thickness:
+  extension (t: Thickness)
+    def toInt: Int =
+      t match
+        case Thickness.None  => 0
+        case Thickness.Thin  => 1
+        case Thickness.Thick => 2
+
+    def hash: String =
+      t.toInt.toString()
 
 final case class Glow(color: RGBA, innerGlowAmount: Double, outerGlowAmount: Double) derives CanEqual {
   def withColor(newColor: RGBA): Glow =

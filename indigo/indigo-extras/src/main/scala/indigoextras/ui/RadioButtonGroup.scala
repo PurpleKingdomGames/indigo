@@ -406,7 +406,7 @@ object RadioButtonGroup {
 
 }
 
-sealed trait RadioButtonState {
+sealed trait RadioButtonState derives CanEqual {
   def toButtonState: ButtonState =
     this match {
       case RadioButtonState.Selected => ButtonState.Down

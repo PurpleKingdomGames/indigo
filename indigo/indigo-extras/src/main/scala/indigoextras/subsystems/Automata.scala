@@ -42,6 +42,8 @@ final case class Automata(
   val initialModel: Outcome[AutomataState] =
     Outcome(AutomataState(0, Nil))
 
+  private given CanEqual[Option[Int], Option[Int]] = CanEqual.derived
+
   def update(frameContext: SubSystemFrameContext, state: AutomataState): AutomataEvent => Outcome[AutomataState] = {
     case Spawn(key, position, lifeSpan, payload) if key == poolKey =>
       val spawned =
@@ -158,6 +160,9 @@ object AutomataPoolKey:
   def apply(key: String): AutomataPoolKey = key
   def fromDice(dice: Dice): AutomataPoolKey =
     AutomataPoolKey(dice.rollAlphaNumeric)
+
+  given CanEqual[AutomataPoolKey, AutomataPoolKey] = CanEqual.derived
+  given CanEqual[Option[AutomataPoolKey], Option[AutomataPoolKey]] = CanEqual.derived
 
 final case class Automaton(
     node: AutomatonNode,

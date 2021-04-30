@@ -5,6 +5,9 @@ opaque type Millis = Long
 object Millis:
   def apply(millis: Long): Millis = millis
 
+  given CanEqual[Millis, Millis] = CanEqual.derived
+  given CanEqual[Option[Millis], Option[Millis]] = CanEqual.derived
+
   val zero: Millis =
     Millis(0)
 

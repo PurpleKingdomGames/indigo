@@ -41,7 +41,7 @@ final case class DudeModel(dude: Dude, walkDirection: DudeDirection) {
   def walkDown: DudeModel  = this.copy(walkDirection = DudeDown)
 }
 
-sealed trait DudeDirection {
+sealed trait DudeDirection derives CanEqual {
   val cycleName: CycleLabel
 }
 case object DudeIdle  extends DudeDirection { val cycleName: CycleLabel = CycleLabel("blink")      }

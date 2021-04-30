@@ -120,7 +120,7 @@ object Button {
 
 }
 
-sealed trait ButtonState {
+sealed trait ButtonState derives CanEqual {
   def isUp: Boolean
   def isDown: Boolean
   def isOver: Boolean
