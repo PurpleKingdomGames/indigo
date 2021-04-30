@@ -1,7 +1,8 @@
 package indigo.shared.time
 
-opaque type Millis = Long
+import annotation.targetName
 
+opaque type Millis = Long
 object Millis:
   def apply(millis: Long): Millis = millis
 
@@ -15,17 +16,32 @@ object Millis:
 
     def +(other: Millis): Millis =
       Millis(ms + other)
+    @targetName("+_Long")
+    def +(other: Long): Millis =
+      Millis(ms + other)
 
     def -(other: Millis): Millis =
+      Millis(ms - other)
+    @targetName("-_Long")
+    def -(other: Long): Millis =
       Millis(ms - other)
 
     def *(other: Millis): Millis =
       Millis(ms * other)
+    @targetName("*_Long")
+    def *(other: Long): Millis =
+      Millis(ms * other)
 
     def /(other: Millis): Millis =
       Millis(ms / other)
+    @targetName("/_Long")
+    def /(other: Long): Millis =
+      Millis(ms / other)
 
     def %(other: Millis): Millis =
+      Millis(ms % other)
+    @targetName("%_Long")
+    def %(other: Long): Millis =
       Millis(ms % other)
 
     def <(other: Millis): Boolean =

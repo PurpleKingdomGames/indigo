@@ -1,5 +1,7 @@
 package indigo.shared.audio
 
+import annotation.targetName
+
 opaque type Volume = Double
 object Volume:
   def apply(volume: Double): Volume =
@@ -9,5 +11,20 @@ object Volume:
   val Max: Volume = Volume(1)
 
   extension (v: Volume)
+    def +(other: Volume): Volume = Volume(v + other)
+    @targetName("+_Double")
+    def +(other: Double): Volume = Volume(v + other)
+
+    def -(other: Volume): Volume = Volume(v - other)
+    @targetName("-_Double")
+    def -(other: Double): Volume = Volume(v - other)
+
     def *(other: Volume): Volume = Volume(v * other)
-    def toDouble: Double         = v
+    @targetName("*_Double")
+    def *(other: Double): Volume = Volume(v * other)
+
+    def /(other: Volume): Volume = Volume(v / other)
+    @targetName("/_Double")
+    def /(other: Double): Volume = Volume(v / other)
+
+    def toDouble: Double = v

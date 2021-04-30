@@ -1,5 +1,7 @@
 package indigo.shared.datatypes
 
+import annotation.targetName
+
 import indigo.shared.time.Seconds
 
 opaque type Radians = Double
@@ -26,14 +28,26 @@ object Radians:
   extension (r: Radians)
     def +(other: Radians): Radians =
       Radians(r + other)
+    @targetName("+_Double")
+    def +(other: Double): Radians =
+      Radians(r + other)
 
     def -(other: Radians): Radians =
+      Radians(r - other)
+    @targetName("-_Double")
+    def -(other: Double): Radians =
       Radians(r - other)
 
     def *(other: Radians): Radians =
       Radians(r * other)
+    @targetName("*_Double")
+    def *(other: Double): Radians =
+      Radians(r * other)
 
     def /(other: Radians): Radians =
+      Radians(r / other)
+    @targetName("/_Double")
+    def /(other: Double): Radians =
       Radians(r / other)
 
     def wrap: Radians =

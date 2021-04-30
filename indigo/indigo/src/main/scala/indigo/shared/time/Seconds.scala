@@ -1,5 +1,7 @@
 package indigo.shared.time
 
+import annotation.targetName
+
 opaque type Seconds = Double
 object Seconds:
 
@@ -14,17 +16,32 @@ object Seconds:
   extension (s: Seconds)
     def +(other: Seconds): Seconds =
       Seconds(s + other)
+    @targetName("+_Double")
+    def +(other: Double): Seconds =
+      Seconds(s + other)
 
     def -(other: Seconds): Seconds =
+      Seconds(s - other)
+    @targetName("-_Double")
+    def -(other: Double): Seconds =
       Seconds(s - other)
 
     def *(other: Seconds): Seconds =
       Seconds(s * other)
+    @targetName("*_Double")
+    def *(other: Double): Seconds =
+      Seconds(s * other)
 
     def /(other: Seconds): Seconds =
       Seconds(s / other)
+    @targetName("/_Double")
+    def /(other: Double): Seconds =
+      Seconds(s / other)
 
     def %(other: Seconds): Seconds =
+      Seconds(s % other)
+    @targetName("%_Double")
+    def %(other: Double): Seconds =
       Seconds(s % other)
 
     def <(other: Seconds): Boolean =
