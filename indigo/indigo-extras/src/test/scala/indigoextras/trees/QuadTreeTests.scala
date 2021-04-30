@@ -40,6 +40,8 @@ class QuadTreeTests extends munit.FunSuite {
     .insertElement("d", Vertex(20, 50))
 
   test("should be able insert multiple items") {
+    given CanEqual[Option[String], Option[String]] = CanEqual.derived
+
     val actual =
       QuadTree(
         ("a", Vertex(9, 2)),

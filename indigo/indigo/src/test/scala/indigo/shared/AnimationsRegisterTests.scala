@@ -6,6 +6,7 @@ import indigo.shared.datatypes.Point
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.animation.Cycle
 import indigo.shared.animation.Animation
+import indigo.shared.animation.AnimationMemento
 import indigo.shared.animation.AnimationKey
 import indigo.shared.time.Seconds
 import indigo.shared.datatypes.BindingKey
@@ -16,6 +17,8 @@ import indigo.shared.time.Millis
 import indigo.shared.animation.AnimationAction.Play
 
 class AnimationsRegisterTests extends munit.FunSuite {
+
+  given CanEqual[Option[AnimationMemento], Option[AnimationMemento]] = CanEqual.derived
 
   test("can look up an animation by key") {
     val register = new AnimationsRegister()

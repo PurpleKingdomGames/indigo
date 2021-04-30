@@ -18,5 +18,6 @@ object Cycle:
 opaque type CycleLabel = String
 object CycleLabel:
   def apply(value: String): CycleLabel = value
+  given CanEqual[CycleLabel, CycleLabel] = CanEqual.derived
 
 final case class CycleMemento(playheadPosition: Int, lastFrameAdvance: Millis) derives CanEqual
