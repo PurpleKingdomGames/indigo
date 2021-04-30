@@ -17,7 +17,7 @@ lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
   ),
   testFrameworks += new TestFramework("munit.Framework"),
   Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
-  // scalacOptions ++= Seq("-language:strictEquality"),
+  scalacOptions ++= Seq("-language:strictEquality"),
   crossScalaVersions := Seq(scala3Version)
 )
 
