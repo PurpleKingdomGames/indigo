@@ -125,6 +125,8 @@ final class RendererWebGL2(
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var currentBlendFactors: (BlendFactor, BlendFactor) = (Blend.Normal.src, Blend.Normal.dst)
 
+  private given CanEqual[(BlendFactor, BlendFactor), (BlendFactor, BlendFactor)] = CanEqual.derived
+
   def init(shaders: Set[RawShaderCode]): Unit = {
 
     shaders.foreach { shader =>
@@ -200,6 +202,8 @@ final class RendererWebGL2(
       WebGLHelper.setBlendFunc(gl, blend.src, blend.dst)
     }
   }
+
+  private given CanEqual[Option[Int], Option[Int]] = CanEqual.derived
 
   def drawScene(sceneData: ProcessedSceneData, runningTime: Seconds): Unit = {
 

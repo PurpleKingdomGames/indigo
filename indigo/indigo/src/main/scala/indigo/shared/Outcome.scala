@@ -244,6 +244,8 @@ object Outcome {
     Outcome.Error(throwable)
 
   def sequence[A](l: List[Outcome[A]]): Outcome[List[A]] = {
+    given CanEqual[Outcome[A], Outcome[A]] = CanEqual.derived
+
     @tailrec
     def rec(remaining: List[Outcome[A]], accA: List[A], accEvents: List[GlobalEvent]): Outcome[List[A]] =
       remaining match {
