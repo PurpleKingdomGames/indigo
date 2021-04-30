@@ -98,8 +98,8 @@ class Vector3Tests extends munit.FunSuite {
   test("normalise") {
     assert(clue(Vector3(10, 10, 10).normalise) ~== clue(Vector3(0.5773, 0.5773, 0.5773)))
     assert(clue(Vector3(-10, -10, -10).normalise) ~== clue(Vector3(-0.5773, -0.5773, -0.5773)))
-    assert(clue(Vector3(10, 0, 0).normalise) === clue(Vector3(1, 0, 0)))
-    assert(clue(Vector3(0, 0, 0).normalise) === clue(Vector3(0, 0, 0)))
+    assert(clue(Vector3(10, 0, 0).normalise) == clue(Vector3(1, 0, 0)))
+    assert(clue(Vector3(0, 0, 0).normalise) == clue(Vector3(0, 0, 0)))
     assert(clue(Vector3(-50, 1000, 1000).normalise) ~== clue(Vector3(-0.0353, 0.7066, 0.7066)))
   }
 

@@ -32,9 +32,6 @@ final case class Point(x: Int, y: Int) derives CanEqual {
   def toVector: Vector2 =
     Vector2(x.toDouble, y.toDouble)
 
-  def ===(other: Point): Boolean =
-    x == other.x && y == other.y
-
   val hash: String = s"${x.toString()}${y.toString()}"
 }
 

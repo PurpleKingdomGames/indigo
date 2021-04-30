@@ -31,7 +31,7 @@ final class Mouse(mouseEvents: List[MouseEvent], val position: Point, val leftMo
 
   private def wasMouseAt(position: Point, maybePosition: Option[Point]): Boolean =
     maybePosition match {
-      case Some(pt) => position === pt
+      case Some(pt) => position == pt
       case None     => false
     }
 
@@ -44,7 +44,7 @@ final class Mouse(mouseEvents: List[MouseEvent], val position: Point, val leftMo
   def wasMouseDownAt(position: Point): Boolean = wasMouseAt(position, mouseDownAt)
   def wasMouseDownAt(x: Int, y: Int): Boolean  = wasMouseDownAt(Point(x, y))
 
-  def wasMousePositionAt(target: Point): Boolean  = target === position
+  def wasMousePositionAt(target: Point): Boolean  = target == position
   def wasMousePositionAt(x: Int, y: Int): Boolean = wasMousePositionAt(Point(x, y))
 
   //Within

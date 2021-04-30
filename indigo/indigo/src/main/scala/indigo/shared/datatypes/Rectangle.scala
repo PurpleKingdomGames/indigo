@@ -65,9 +65,6 @@ final case class Rectangle(position: Point, size: Point) derives CanEqual {
   def toSquare: Rectangle =
     this.copy(size = Point(Math.max(size.x, size.y)))
 
-  def ===(other: Rectangle): Boolean =
-    position === other.position && size === other.size
-
 }
 
 object Rectangle {

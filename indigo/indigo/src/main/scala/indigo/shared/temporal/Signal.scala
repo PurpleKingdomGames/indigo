@@ -108,7 +108,7 @@ object Signal {
     }
 
   def Lerp(from: Point, to: Point, over: Seconds): Signal[Point] =
-    if (from === to) Signal.fixed(from)
+    if (from == to) Signal.fixed(from)
     else {
       def linear(t: Double, p0: Vector2, p1: Vector2): Vector2 =
         Vector2(

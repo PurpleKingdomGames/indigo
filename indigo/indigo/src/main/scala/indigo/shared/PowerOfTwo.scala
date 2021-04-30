@@ -11,13 +11,11 @@ sealed trait PowerOfTwo derives CanEqual {
   def >=(powerOfTwo: PowerOfTwo): Boolean  = value >= powerOfTwo.value
   def <(powerOfTwo: PowerOfTwo): Boolean   = value < powerOfTwo.value
   def <=(powerOfTwo: PowerOfTwo): Boolean  = value <= powerOfTwo.value
-  def ===(powerOfTwo: PowerOfTwo): Boolean = value == powerOfTwo.value
 
   def >(i: Int): Boolean   = value > i
   def >=(i: Int): Boolean  = value >= i
   def <(i: Int): Boolean   = value < i
   def <=(i: Int): Boolean  = value <= i
-  def ===(i: Int): Boolean = value == i
 
   def toPoint: Point = Point(value, value)
 

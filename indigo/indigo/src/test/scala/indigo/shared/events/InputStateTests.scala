@@ -38,7 +38,7 @@ class InputStateTests extends munit.FunSuite {
   val state = InputState.calculateNext(inputState, events1, gamepadState1)
 
   test("Mouse state.position") {
-    assertEquals(state.mouse.position === Point(10, 10), true)
+    assertEquals(state.mouse.position == Point(10, 10), true)
   }
 
   test("Mouse state.mousePressed") {

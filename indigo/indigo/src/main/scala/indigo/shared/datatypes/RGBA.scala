@@ -40,9 +40,6 @@ final case class RGBA(r: Double, g: Double, b: Double, a: Double) derives CanEqu
   def toRGB: RGB =
     RGB(r, g, b)
 
-  def ===(other: RGBA): Boolean =
-    r == other.r && g == other.g && b == other.b && a == other.a
-
   def toArray: Array[Float] =
     Array(r.toFloat, g.toFloat, b.toFloat, a.toFloat)
 

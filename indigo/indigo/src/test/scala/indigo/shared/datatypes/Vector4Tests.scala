@@ -98,8 +98,8 @@ class Vector4Tests extends munit.FunSuite {
   test("normalise") {
     assert(clue(Vector4(10, 10, 10, 10).normalise) ~== clue(Vector4(0.5, 0.5, 0.5, 0.5)))
     assert(clue(Vector4(-10, -10, -10, -10).normalise) ~== clue(Vector4(-0.5, -0.5, -0.5, -0.5)))
-    assert(clue(Vector4(10, 0, 0, 0).normalise) === clue(Vector4(1, 0, 0, 0)))
-    assert(clue(Vector4(0, 0, 0, 10).normalise) === clue(Vector4(0, 0, 0, 1)))
+    assert(clue(Vector4(10, 0, 0, 0).normalise) == clue(Vector4(1, 0, 0, 0)))
+    assert(clue(Vector4(0, 0, 0, 10).normalise) == clue(Vector4(0, 0, 0, 1)))
     assert(clue(Vector4(-50, 1000, 1000, 2000).normalise) ~== clue(Vector4(-0.0204, 0.4081, 0.4081, 0.8163)))
   }
 

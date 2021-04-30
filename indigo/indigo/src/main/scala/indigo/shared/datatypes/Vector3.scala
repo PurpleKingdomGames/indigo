@@ -94,9 +94,6 @@ final case class Vector3(x: Double, y: Double, z: Double) derives CanEqual {
   def distanceTo(other: Vector3): Double =
     Vector3.distance(this, other)
 
-  def ===(other: Vector3): Boolean =
-    x == other.x && y == other.y && z == other.z
-
   def ~==(other: Vector3): Boolean =
     Math.abs(x - other.x) < 0.0001 &&
       Math.abs(y - other.y) < 0.0001 &&

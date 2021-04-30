@@ -335,13 +335,13 @@ final case class AtlasQuadNode(size: PowerOfTwo, atlas: AtlasSum) extends AtlasQ
     this.copy(atlas = atlas match {
       case AtlasTexture(_) => this.atlas
 
-      case d @ AtlasQuadDivision(AtlasQuadEmpty(s), _, _, _) if s === tree.size =>
+      case d @ AtlasQuadDivision(AtlasQuadEmpty(s), _, _, _) if s == tree.size =>
         d.copy(q1 = tree)
-      case d @ AtlasQuadDivision(_, AtlasQuadEmpty(s), _, _) if s === tree.size =>
+      case d @ AtlasQuadDivision(_, AtlasQuadEmpty(s), _, _) if s == tree.size =>
         d.copy(q2 = tree)
-      case d @ AtlasQuadDivision(_, _, AtlasQuadEmpty(s), _) if s === tree.size =>
+      case d @ AtlasQuadDivision(_, _, AtlasQuadEmpty(s), _) if s == tree.size =>
         d.copy(q3 = tree)
-      case d @ AtlasQuadDivision(_, _, _, AtlasQuadEmpty(s)) if s === tree.size =>
+      case d @ AtlasQuadDivision(_, _, _, AtlasQuadEmpty(s)) if s == tree.size =>
         d.copy(q4 = tree)
 
       case d @ AtlasQuadDivision(AtlasQuadEmpty(s), _, _, _) if s > tree.size =>

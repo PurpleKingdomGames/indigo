@@ -96,9 +96,6 @@ final case class Vector2(x: Double, y: Double) derives CanEqual {
   def toVector4: Vector4 =
     Vector4(x, y, 1, 1)
 
-  def ===(other: Vector2): Boolean =
-    x == other.x && y == other.y
-
   def ~==(other: Vector2): Boolean =
     Math.abs(x - other.x) < 0.0001 &&
       Math.abs(y - other.y) < 0.0001
