@@ -72,7 +72,8 @@ object ScalacOptions {
       "-language:higherKinds",         // Allow higher-kinded types
       "-language:implicitConversions", // Allow definition of implicit functions called views
       "-unchecked",                    // Enable additional warnings where generated code depends on assumptions.
-      "-Xfatal-warnings"               // Fail the compilation if there are any warnings.
+      "-Xfatal-warnings",              // Fail the compilation if there are any warnings.
+      "-language:strictEquality"       // Scala 3 - Multiversal Equality
     )
 
   lazy val test: Seq[String] =

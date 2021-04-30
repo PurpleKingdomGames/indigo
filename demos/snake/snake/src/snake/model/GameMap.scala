@@ -19,7 +19,7 @@ final case class GameMap(quadTree: QuadTree[MapElement], gridSize: BoundingBox) 
 
   def insertElements(elements: List[MapElement]): GameMap =
     this.copy(
-      quadTree = quadTree.insertElements(elements.map(me => (me, me.gridPoint))).prune
+      quadTree = quadTree.insertElements(elements.map(me => (me, me.giveGridPoint))).prune
     )
 
   def findEmptySpace(dice: Dice, not: List[Vertex]): Vertex =
@@ -53,7 +53,9 @@ object GameMap {
   def apply(gridSize: BoundingBox): GameMap =
     GameMap(QuadTree.empty[MapElement](gridSize.size), gridSize)
 
-  def findEmptySpace[T](quadTree: QuadTree[T], dice: Dice, gridSize: BoundingBox, not: List[Vertex]): Vertex = {
+  def findEmptySpace[T](quadTree: QuadTree[T], dice: Dice, gridSize: BoundingBox, not: List[Vertex])(using CanEqual[T, T]): Vertex = {
+
+    given CanEqual[Option[T], Option[T]] = CanEqual.derived
 
     def randomVertex(dice: Dice, maxX: Int, maxY: Int): Vertex =
       Vertex(
@@ -122,11 +124,11 @@ object GameMap {
     a.x <= b.x && a.y <= b.y
 }
 
-sealed trait MapElement {
-  val gridPoint: Vertex
-}
-
-object MapElement {
-  final case class Wall(gridPoint: Vertex)  extends MapElement
-  final case class Apple(gridPoint: Vertex) extends MapElement
-}
+enum MapElement derives CanEqual:
+  case Wall(gridPoint: Vertex)  extends MapElement
+  case Apple(gridPoint: Vertex) extends MapElement
+object MapElement:
+  extension (me: MapElement) def giveGridPoint: Vertex =
+    me match
+      case Wall(gp) => gp
+      case Apple(gp) => gp

@@ -2,53 +2,51 @@ package snake.model.snakemodel
 
 import indigoextras.geometry.Vertex
 
-sealed trait SnakeDirection {
+enum SnakeDirection derives CanEqual:
+  case Up    extends SnakeDirection
+  case Down  extends SnakeDirection
+  case Left  extends SnakeDirection
+  case Right extends SnakeDirection
 
-  def makeLegalTurn(snake: Snake): Option[Snake] =
-    (this, snake.direction) match {
-      case (SnakeDirection.Up, SnakeDirection.Up)       => Some(snake)
-      case (SnakeDirection.Up, SnakeDirection.Left)     => Some(snake)
-      case (SnakeDirection.Up, SnakeDirection.Right)    => Some(snake)
-      case (SnakeDirection.Down, SnakeDirection.Down)   => Some(snake)
-      case (SnakeDirection.Down, SnakeDirection.Left)   => Some(snake)
-      case (SnakeDirection.Down, SnakeDirection.Right)  => Some(snake)
-      case (SnakeDirection.Left, SnakeDirection.Left)   => Some(snake)
-      case (SnakeDirection.Left, SnakeDirection.Up)     => Some(snake)
-      case (SnakeDirection.Left, SnakeDirection.Down)   => Some(snake)
-      case (SnakeDirection.Right, SnakeDirection.Right) => Some(snake)
-      case (SnakeDirection.Right, SnakeDirection.Up)    => Some(snake)
-      case (SnakeDirection.Right, SnakeDirection.Down)  => Some(snake)
-      case _                                            => None
-    }
+object SnakeDirection:
+  extension (sd: SnakeDirection)
+    def makeLegalTurn(snake: Snake): Option[Snake] =
+      (sd, snake.direction) match {
+        case (SnakeDirection.Up, SnakeDirection.Up)       => Some(snake)
+        case (SnakeDirection.Up, SnakeDirection.Left)     => Some(snake)
+        case (SnakeDirection.Up, SnakeDirection.Right)    => Some(snake)
+        case (SnakeDirection.Down, SnakeDirection.Down)   => Some(snake)
+        case (SnakeDirection.Down, SnakeDirection.Left)   => Some(snake)
+        case (SnakeDirection.Down, SnakeDirection.Right)  => Some(snake)
+        case (SnakeDirection.Left, SnakeDirection.Left)   => Some(snake)
+        case (SnakeDirection.Left, SnakeDirection.Up)     => Some(snake)
+        case (SnakeDirection.Left, SnakeDirection.Down)   => Some(snake)
+        case (SnakeDirection.Right, SnakeDirection.Right) => Some(snake)
+        case (SnakeDirection.Right, SnakeDirection.Up)    => Some(snake)
+        case (SnakeDirection.Right, SnakeDirection.Down)  => Some(snake)
+        case _                                            => None
+      }
 
-  def turnLeft: SnakeDirection =
-    SnakeDirection.turn(this, TurnDirection.Left)
+    def turnLeft: SnakeDirection =
+      SnakeDirection.turn(sd, TurnDirection.Left)
 
-  def turnRight: SnakeDirection =
-    SnakeDirection.turn(this, TurnDirection.Right)
+    def turnRight: SnakeDirection =
+      SnakeDirection.turn(sd, TurnDirection.Right)
 
-  def goUp: SnakeDirection =
-    SnakeDirection.go(this, SnakeDirection.Up)
+    def goUp: SnakeDirection =
+      SnakeDirection.go(sd, SnakeDirection.Up)
 
-  def goDown: SnakeDirection =
-    SnakeDirection.go(this, SnakeDirection.Down)
+    def goDown: SnakeDirection =
+      SnakeDirection.go(sd, SnakeDirection.Down)
 
-  def goLeft: SnakeDirection =
-    SnakeDirection.go(this, SnakeDirection.Left)
+    def goLeft: SnakeDirection =
+      SnakeDirection.go(sd, SnakeDirection.Left)
 
-  def goRight: SnakeDirection =
-    SnakeDirection.go(this, SnakeDirection.Right)
+    def goRight: SnakeDirection =
+      SnakeDirection.go(sd, SnakeDirection.Right)
 
-  def oneSquareForward(current: Vertex): Vertex =
-    SnakeDirection.oneSquareForward(this, current)
-
-}
-object SnakeDirection {
-
-  case object Up    extends SnakeDirection
-  case object Down  extends SnakeDirection
-  case object Left  extends SnakeDirection
-  case object Right extends SnakeDirection
+    def oneSquareForward(current: Vertex): Vertex =
+      SnakeDirection.moveOneSquareForward(sd, current)
 
   def go(snakeDirection: SnakeDirection, goDirection: SnakeDirection): SnakeDirection =
     (snakeDirection, goDirection) match {
@@ -107,7 +105,7 @@ object SnakeDirection {
         Down
     }
 
-  def oneSquareForward(snakeDirection: SnakeDirection, current: Vertex): Vertex =
+  def moveOneSquareForward(snakeDirection: SnakeDirection, current: Vertex): Vertex =
     snakeDirection match {
       case Up =>
         current + MoveUp
@@ -126,5 +124,3 @@ object SnakeDirection {
   val MoveDown: Vertex  = Vertex(0, -1)
   val MoveLeft: Vertex  = Vertex(-1, 0)
   val MoveRight: Vertex = Vertex(1, 0)
-
-}
