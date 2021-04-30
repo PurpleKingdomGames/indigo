@@ -42,7 +42,7 @@ object LevelView {
             .withAudio(
               SceneAudio(
                 SceneAudioSource(
-                  BindingKey(Assets.Sounds.shanty.value),
+                  BindingKey(Assets.Sounds.shanty.toString),
                   PlaybackPattern.SingleTrackLoop(
                     Track(Assets.Sounds.shanty, Volume(0.5))
                   )

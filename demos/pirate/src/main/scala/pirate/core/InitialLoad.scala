@@ -104,7 +104,7 @@ object InitialLoad {
         Right(spriteAndAnimations)
 
       case None =>
-        Left("Failed to load " + name.value)
+        Left("Failed to load " + name)
     }
   }
 

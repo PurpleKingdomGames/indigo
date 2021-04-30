@@ -97,7 +97,7 @@ object CloudsSubSystem {
     if (bigCloudPosition <= 0.0d)
       assetWidth.toDouble
     else
-      bigCloudPosition - (scrollSpeed * gameTime.delta.value)
+      bigCloudPosition - (scrollSpeed * gameTime.delta.toDouble)
 
 }
 
