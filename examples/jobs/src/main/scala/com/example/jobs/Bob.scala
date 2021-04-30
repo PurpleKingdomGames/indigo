@@ -35,13 +35,13 @@ object Bob {
     new Worker[Bob, Unit] {
 
       def isJobComplete(context: WorkContext[Bob, Unit]): Job => Boolean = {
-        case ChopDown(_, position) if context.actor.position === position =>
+        case ChopDown(_, position) if context.actor.position == position =>
           true
 
-        case CollectWood(wood) if context.actor.position === wood.position =>
+        case CollectWood(wood) if context.actor.position == wood.position =>
           true
 
-        case Wander(to) if context.actor.position === to =>
+        case Wander(to) if context.actor.position == to =>
           true
 
         case Idle(percentDone) if percentDone.value == 100 =>

@@ -107,10 +107,10 @@ object Assets {
 
   def junctionboxImageAssets: Set[AssetType] =
     Set(
-      AssetType.Image(junctionBoxAlbedo, AssetPath("assets/" + junctionBoxAlbedo.value + ".png")),
-      AssetType.Image(junctionBoxEmission, AssetPath("assets/" + junctionBoxEmission.value + ".png")),
-      AssetType.Image(junctionBoxNormal, AssetPath("assets/" + junctionBoxNormal.value + ".png")),
-      AssetType.Image(junctionBoxSpecular, AssetPath("assets/" + junctionBoxSpecular.value + ".png"))
+      AssetType.Image(junctionBoxAlbedo, AssetPath("assets/" + junctionBoxAlbedo + ".png")),
+      AssetType.Image(junctionBoxEmission, AssetPath("assets/" + junctionBoxEmission + ".png")),
+      AssetType.Image(junctionBoxNormal, AssetPath("assets/" + junctionBoxNormal + ".png")),
+      AssetType.Image(junctionBoxSpecular, AssetPath("assets/" + junctionBoxSpecular + ".png"))
     )
 
   def otherAssetsToLoad: Set[AssetType] =

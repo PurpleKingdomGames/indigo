@@ -32,12 +32,12 @@ object Projectiles {
       .toSignal(lifeSpan)
 
   def pickFlightTime(dice: Dice, min: Seconds, max: Seconds): Seconds =
-    if (max === min) {
+    if (max == min) {
       min
     } else if (max > min) {
-      Seconds(min.value + (dice.rollDouble * (max.value - min.value)).toLong)
+      min + ((max - min) * dice.rollDouble).toDouble
     } else {
-      Seconds(max.value + (dice.rollDouble * (min.value - max.value)).toLong)
+      max + ((min - max) * dice.rollDouble).toDouble
     }
 
   def emitTrailEvents(position: Point, tint: RGBA, interval: Seconds): Signal[List[AutomataEvent.Spawn]] =
