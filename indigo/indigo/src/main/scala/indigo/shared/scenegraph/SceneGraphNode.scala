@@ -17,7 +17,7 @@ import indigo.shared.BoundaryLocator
 sealed trait SceneNode extends Product with Serializable derives CanEqual
 object SceneNode {
   given CanEqual[Option[SceneNode], Option[SceneNode]] = CanEqual.derived
-  given CanEqual[List[SceneNode], List[SceneNode]] = CanEqual.derived
+  given CanEqual[List[SceneNode], List[SceneNode]]     = CanEqual.derived
 }
 
 sealed trait RenderNode extends SceneNode {
@@ -32,7 +32,7 @@ sealed trait RenderNode extends SceneNode {
 }
 object RenderNode:
   given CanEqual[Option[RenderNode], Option[RenderNode]] = CanEqual.derived
-  given CanEqual[List[RenderNode], List[RenderNode]] = CanEqual.derived
+  given CanEqual[List[RenderNode], List[RenderNode]]     = CanEqual.derived
 
 /** Can be extended to create custom scene elements.
   *
@@ -69,7 +69,7 @@ sealed trait DependentNode extends SceneNode {
 /** A single cloned instance of a cloneblank
   *
   * @param id
-  * @param depth
+  *   @param depth
   * @param transform
   */
 final case class Clone(id: CloneId, depth: Depth, transform: CloneTransformData)
@@ -130,9 +130,9 @@ object Clone {
 /** Represents many clones of the same cloneblank, differentiated only by their transform data.
   *
   * @param id
-  * @param depth
+  *   @param depth
   * @param transform
-  * @param clones
+  *   @param clones
   * @param staticBatchKey
   */
 final case class CloneBatch(
