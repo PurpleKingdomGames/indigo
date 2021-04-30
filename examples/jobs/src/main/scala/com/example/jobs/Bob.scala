@@ -161,7 +161,7 @@ object Bob {
 
 }
 
-sealed trait BobState
+sealed trait BobState derives CanEqual
 object BobState {
   final case class Idle(count: Int) extends BobState
   case object Wandering             extends BobState

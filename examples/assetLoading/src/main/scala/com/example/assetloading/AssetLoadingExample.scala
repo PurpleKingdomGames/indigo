@@ -21,6 +21,8 @@ object AssetLoadingExample extends IndigoDemo[Unit, Unit, MyGameModel, MyViewMod
         .withSubSystems(AssetBundleLoader)
     }
 
+  given CanEqual[Option[String], Option[String]] = CanEqual.derived
+
   def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[Unit]] =
     Outcome {
       assetCollection.findTextDataByName(AssetName("text")) match {
