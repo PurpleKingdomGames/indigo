@@ -153,11 +153,17 @@ val Combo: shared.events.Combo.type = shared.events.Combo
 type GamepadInput = shared.events.GamepadInput
 val GamepadInput: shared.events.GamepadInput.type = shared.events.GamepadInput
 
+type Mouse = shared.input.Mouse
+val Mouse: shared.input.Mouse.type = shared.input.Mouse
+
 type MouseInput = shared.events.MouseInput
 val MouseInput: shared.events.MouseInput.type = shared.events.MouseInput
 
 type MouseEvent = shared.events.MouseEvent
 val MouseEvent: shared.events.MouseEvent.type = shared.events.MouseEvent
+
+type Keyboard = shared.input.Keyboard
+val Keyboard: shared.input.Keyboard.type = shared.input.Keyboard
 
 type KeyboardEvent = shared.events.KeyboardEvent
 val KeyboardEvent: shared.events.KeyboardEvent.type = shared.events.KeyboardEvent
