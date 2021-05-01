@@ -55,7 +55,7 @@ object Generators {
   def nowNextSeconds(min: Double, max: Double): Gen[(Seconds, Seconds)] =
     for {
       t1 <- clampedSecondsGen(min, max - 1)
-      t2 <- clampedSecondsGen(t1.value + 1, max)
+      t2 <- clampedSecondsGen(t1.toDouble + 1, max)
     } yield (t1, t2)
 
   // Doubles
