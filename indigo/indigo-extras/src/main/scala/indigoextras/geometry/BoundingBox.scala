@@ -10,10 +10,10 @@ final case class BoundingBox(position: Vertex, size: Vertex) derives CanEqual {
   lazy val height: Double = size.y
   lazy val hash: String   = s"${x.toString()}${y.toString()}${width.toString()}${height.toString()}"
 
-  lazy val left: Double   = x
-  lazy val right: Double  = x + width
-  lazy val top: Double    = y
-  lazy val bottom: Double = y + height
+  lazy val left: Double   = if width >= 0 then x else x + width
+  lazy val right: Double  = if width >= 0 then x + width else x
+  lazy val top: Double    = if height >= 0 then y else y + height
+  lazy val bottom: Double = if height >= 0 then y + height else y
 
   lazy val horizontalCenter: Double = x + (width / 2)
   lazy val verticalCenter: Double   = y + (height / 2)
@@ -23,7 +23,7 @@ final case class BoundingBox(position: Vertex, size: Vertex) derives CanEqual {
   lazy val bottomRight: Vertex = Vertex(right, bottom)
   lazy val bottomLeft: Vertex  = Vertex(left, bottom)
   lazy val center: Vertex      = Vertex(horizontalCenter, verticalCenter)
-  lazy val halfSize: Vertex    = size / 2
+  lazy val halfSize: Vertex    = (size / 2).abs
 
   lazy val corners: List[Vertex] =
     List(topLeft, topRight, bottomRight, bottomLeft)
@@ -131,11 +131,10 @@ object BoundingBox {
     rec(vertices, Double.MaxValue, Double.MaxValue, Double.MinValue, Double.MinValue)
   }
 
-  /**
-   * Produces a bounding box that could include all of the vertices. Since the `contains`
-   * methods right and bottom checks are < not <= (to allow bounds to sit next to each other with
-   * no overlap), a small fixed margin of 0.001 is add to the size values.
-   */
+  /** Produces a bounding box that could include all of the vertices. Since the `contains` methods right and bottom
+    * checks are < not <= (to allow bounds to sit next to each other with no overlap), a small fixed margin of 0.001 is
+    * add to the size values.
+    */
   def fromVertexCloud(vertices: List[Vertex]): BoundingBox =
     fromVertices(vertices)
 
@@ -177,7 +176,8 @@ object BoundingBox {
     b.x >= a.x && b.y >= a.y && (b.width + (b.x - a.x)) <= a.width && (b.height + (b.y - a.y)) <= a.height
 
   def overlapping(a: BoundingBox, b: BoundingBox): Boolean =
-    Math.abs(a.center.x - b.center.x) < a.halfSize.x + b.halfSize.x && Math.abs(a.center.y - b.center.y) < a.halfSize.y + b.halfSize.y
+    Math.abs(a.center.x - b.center.x) < a.halfSize.x + b.halfSize.x &&
+      Math.abs(a.center.y - b.center.y) < a.halfSize.y + b.halfSize.y
 
   def lineIntersects(boundingBox: BoundingBox, line: LineSegment): Boolean = {
     @tailrec

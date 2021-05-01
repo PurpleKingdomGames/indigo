@@ -13,6 +13,22 @@ final case class Point(x: Int, y: Int) derives CanEqual {
   def withX(newX: Int): Point = this.copy(x = newX)
   def withY(newY: Int): Point = this.copy(y = newY)
 
+  def abs: Point =
+    Point(Math.abs(x), Math.abs(y))
+
+  def min(other: Point): Point =
+    Point(Math.min(other.x, x), Math.min(other.y, y))
+  def min(value: Int): Point =
+    Point(Math.min(value, x), Math.min(value, y))
+
+  def max(other: Point): Point =
+    Point(Math.max(other.x, x), Math.max(other.y, y))
+  def max(value: Int): Point =
+    Point(Math.max(value, x), Math.max(value, y))
+
+  def clamp(min: Int, max: Int): Point =
+    Point(Math.min(max, Math.max(min, x)), Math.min(max, Math.max(min, y)))
+
   def invert: Point =
     Point(-x, -y)
 

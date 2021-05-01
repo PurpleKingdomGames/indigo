@@ -157,6 +157,20 @@ class BoundingBoxTests extends munit.FunSuite {
     assertEquals(BoundingBox.overlapping(a, b), false)
   }
 
+  test("overlapping rectangles.should return true when A overlaps B and A has a negative size.") {
+    val a = BoundingBox(105, 105, -20, -20)
+    val b = BoundingBox(10, 10, 90, 90)
+
+    assertEquals(BoundingBox.overlapping(a, b), true)
+  }
+
+  test("overlapping rectangles.should return false when A and B do not overlap and A has a negative size.") {
+    val a = BoundingBox(125, 125, -10, -10)
+    val b = BoundingBox(10, 10, 90, 90)
+
+    assertEquals(BoundingBox.overlapping(a, b), false)
+  }
+
   test("Expand should be able to expand in size by a given amount") {
     val a = BoundingBox(10, 10, 20, 20)
     val b = BoundingBox(0, 10, 100, 5)
@@ -204,6 +218,24 @@ class BoundingBoxTests extends munit.FunSuite {
     val br = Vertex(45, 70)
     assertEquals(bb.sdf(br), br.distanceTo(bb.bottomRight))
 
+  }
+
+  test("should be able to find edges (positive)") {
+     val a = BoundingBox(10, 20, 30, 40)
+
+     assert(a.left == 10)
+     assert(a.right == 40)
+     assert(a.top == 20)
+     assert(a.bottom == 60)
+  }
+
+  test("should be able to find edges (negative)") {
+     val a = BoundingBox(10, 20, -30, -40)
+
+     assert(a.left == -20)
+     assert(a.right == 10)
+     assert(a.top == -20)
+     assert(a.bottom == 20)
   }
 
 }

@@ -90,11 +90,43 @@ class RectangleTests extends munit.FunSuite {
     assertEquals(Rectangle.overlapping(a, b), false)
   }
 
+  test("overlapping rectangles.should return true when A overlaps B and A has a negative size.") {
+    val a = Rectangle(105, 105, -20, -20)
+    val b = Rectangle(10, 10, 90, 90)
+
+    assertEquals(Rectangle.overlapping(a, b), true)
+  }
+
+  test("overlapping rectangles.should return false when A and B do not overlap and A has a negative size.") {
+    val a = Rectangle(125, 125, -10, -10)
+    val b = Rectangle(10, 10, 90, 90)
+
+    assertEquals(Rectangle.overlapping(a, b), false)
+  }
+
   test("Expand should be able to expand in size by a given amount") {
     val a = Rectangle(10, 10, 20, 20)
     val b = Rectangle(0, 10, 100, 5)
 
     assertEquals(Rectangle.expand(a, 10) == Rectangle(0, 0, 40, 40), true)
     assertEquals(Rectangle.expand(b, 50) == Rectangle(-50, -40, 200, 105), true)
+  }
+
+  test("should be able to find edges (positive)") {
+     val a = Rectangle(10, 20, 30, 40)
+
+     assert(a.left == 10)
+     assert(a.right == 40)
+     assert(a.top == 20)
+     assert(a.bottom == 60)
+  }
+
+  test("should be able to find edges (negative)") {
+     val a = Rectangle(10, 20, -30, -40)
+
+     assert(a.left == -20)
+     assert(a.right == 10)
+     assert(a.top == -20)
+     assert(a.bottom == 20)
   }
 }
