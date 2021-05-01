@@ -105,10 +105,10 @@ object Rectangle {
 
   def expand(rectangle: Rectangle, amount: Int): Rectangle =
     Rectangle(
-      x = rectangle.x - amount,
-      y = rectangle.y - amount,
-      width = rectangle.width + (amount * 2),
-      height = rectangle.height + (amount * 2)
+      x = if rectangle.width >= 0 then rectangle.x - amount else rectangle.x + amount,
+      y = if rectangle.height >= 0 then rectangle.y - amount else rectangle.y + amount,
+      width = if rectangle.width >= 0 then rectangle.width + (amount * 2) else rectangle.width - (amount * 2),
+      height = if rectangle.height >= 0 then rectangle.height + (amount * 2) else rectangle.height - (amount * 2)
     )
 
   def expandToInclude(a: Rectangle, b: Rectangle): Rectangle = {

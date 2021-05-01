@@ -52,6 +52,9 @@ final case class BoundingBox(position: Vertex, size: Vertex) derives CanEqual {
   def distanceToBoundary(vertex: Vertex): Double =
     sdf(vertex)
 
+  def expand(amount: Double): BoundingBox =
+    BoundingBox.expand(this, amount)
+
   def expandToInclude(other: BoundingBox): BoundingBox =
     BoundingBox.expandToInclude(this, other)
 
@@ -154,10 +157,10 @@ object BoundingBox {
 
   def expand(boundingBox: BoundingBox, amount: Double): BoundingBox =
     BoundingBox(
-      x = boundingBox.x - amount,
-      y = boundingBox.y - amount,
-      width = boundingBox.width + (amount * 2),
-      height = boundingBox.height + (amount * 2)
+      x = if boundingBox.width >= 0 then boundingBox.x - amount else boundingBox.x + amount,
+      y = if boundingBox.height >= 0 then boundingBox.y - amount else boundingBox.y + amount,
+      width = if boundingBox.width >= 0 then boundingBox.width + (amount * 2) else boundingBox.width - (amount * 2),
+      height = if boundingBox.height >= 0 then boundingBox.height + (amount * 2) else boundingBox.height - (amount * 2)
     )
 
   def expandToInclude(a: BoundingBox, b: BoundingBox): BoundingBox = {

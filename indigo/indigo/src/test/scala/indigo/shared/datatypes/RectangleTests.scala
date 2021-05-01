@@ -47,6 +47,19 @@ class RectangleTests extends munit.FunSuite {
     assertEquals(Rectangle.expandToInclude(a, b) == Rectangle(10, 10, 190, 190), true)
   }
 
+  test("expand a rectangle with negative size") {
+    val a = Rectangle(10, 10, -20, -20)
+
+    assertEquals(a.expand(10), Rectangle(20, 20, -40, -40))
+  }
+
+  test("expand a rectangle to include another rectangle with negative size") {
+    val a = Rectangle(50, 50, -20, -20)
+    val b = Rectangle(100, 100, 100, 100)
+
+    assertEquals(Rectangle.expandToInclude(a, b) == Rectangle(30, 30, 170, 170), true)
+  }
+
   test("intersecting points.should be able to detect if the point is inside the Rectangle") {
     assertEquals(Rectangle(0, 0, 10, 10).isPointWithin(Point(5, 5)), true)
   }
@@ -58,6 +71,13 @@ class RectangleTests extends munit.FunSuite {
   test("encompasing rectangles.should return true when A encompases B") {
     val a = Rectangle(10, 10, 110, 110)
     val b = Rectangle(20, 20, 10, 10)
+
+    assertEquals(Rectangle.encompassing(a, b), true)
+  }
+
+  test("encompasing rectangles.should return true when A encompases B and B has a negative size") {
+    val a = Rectangle(10, 10, 110, 110)
+    val b = Rectangle(30, 30, -10, -10)
 
     assertEquals(Rectangle.encompassing(a, b), true)
   }
