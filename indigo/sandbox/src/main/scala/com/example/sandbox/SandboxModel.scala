@@ -5,6 +5,8 @@ import indigoextras.ui.InputFieldChange
 
 object SandboxModel {
 
+  private given CanEqual[Option[String], Option[String]] = CanEqual.derived
+
   def initialModel(startupData: SandboxStartupData): SandboxGameModel =
     SandboxGameModel(
       DudeModel(startupData.dude, DudeIdle),
@@ -111,7 +113,7 @@ object SandboxModel {
 
 }
 
-final case class SandboxGameModel(dude: DudeModel, saveLoadPhase: SaveLoadPhase, data: Option[String])
+final case class SandboxGameModel(dude: DudeModel, saveLoadPhase: SaveLoadPhases, data: Option[String])
 
 final case class DudeModel(dude: Dude, walkDirection: DudeDirection) {
   def idle: DudeModel      = this.copy(walkDirection = DudeIdle)
@@ -121,7 +123,7 @@ final case class DudeModel(dude: Dude, walkDirection: DudeDirection) {
   def walkDown: DudeModel  = this.copy(walkDirection = DudeDown)
 }
 
-sealed trait DudeDirection {
+sealed trait DudeDirection derives CanEqual {
   val cycleName: CycleLabel
 }
 case object DudeIdle  extends DudeDirection { val cycleName: CycleLabel = CycleLabel("blink")      }
@@ -131,11 +133,5 @@ case object DudeUp    extends DudeDirection { val cycleName: CycleLabel = CycleL
 case object DudeDown  extends DudeDirection { val cycleName: CycleLabel = CycleLabel("walk down")  }
 
 // States of a state machine - could use Phantom types to force order but...
-sealed trait SaveLoadPhase
-object SaveLoadPhases {
-  case object NotStarted   extends SaveLoadPhase
-  case object InitialClear extends SaveLoadPhase
-  case object SaveIt       extends SaveLoadPhase
-  case object LoadIt       extends SaveLoadPhase
-  case object Complete     extends SaveLoadPhase
-}
+enum SaveLoadPhases derives CanEqual:
+  case NotStarted, InitialClear, SaveIt, LoadIt, Complete

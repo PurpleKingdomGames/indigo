@@ -1,35 +1,13 @@
 package indigo.shared.datatypes
 
+import annotation.targetName
+
 import indigo.shared.time.Seconds
 
-final case class Radians(value: Double) extends AnyVal {
+opaque type Radians = Double
+object Radians:
 
-  def +(other: Radians): Radians =
-    Radians(this.value + other.value)
-
-  def -(other: Radians): Radians =
-    Radians(this.value - other.value)
-
-  def *(other: Radians): Radians =
-    Radians(this.value * other.value)
-
-  def /(other: Radians): Radians =
-    Radians(this.value / other.value)
-
-  def wrap: Radians =
-    Radians(((this.value % Radians.TAU.value) + Radians.TAU.value) % Radians.TAU.value)
-
-  def negative: Radians =
-    Radians(-value)
-
-  def hash: String =
-    value.toString()
-
-  def ===(other: Radians): Boolean =
-    value == other.value
-
-}
-object Radians {
+  def apply(radians: Double): Radians = radians
 
   val `2PI`: Radians  = Radians(Math.PI * 2)
   val PI: Radians     = Radians(Math.PI)
@@ -42,9 +20,47 @@ object Radians {
     Radians(0)
 
   def fromDegrees(degrees: Double): Radians =
-    Radians((TAU.value / 360d) * (degrees % 360d))
+    Radians((TAU / 360d) * (degrees % 360d))
 
   def fromSeconds(seconds: Seconds): Radians =
-    Radians(TAU.value * (seconds.value % 1.0d))
+    Radians(TAU * (seconds.toDouble % 1.0d))
 
-}
+  extension (r: Radians)
+    def +(other: Radians): Radians =
+      Radians(r + other)
+    @targetName("+_Double")
+    def +(other: Double): Radians =
+      Radians(r + other)
+
+    def -(other: Radians): Radians =
+      Radians(r - other)
+    @targetName("-_Double")
+    def -(other: Double): Radians =
+      Radians(r - other)
+
+    def *(other: Radians): Radians =
+      Radians(r * other)
+    @targetName("*_Double")
+    def *(other: Double): Radians =
+      Radians(r * other)
+
+    def /(other: Radians): Radians =
+      Radians(r / other)
+    @targetName("/_Double")
+    def /(other: Double): Radians =
+      Radians(r / other)
+
+    def wrap: Radians =
+      Radians(((r % Radians.TAU) + Radians.TAU) % Radians.TAU)
+
+    def negative: Radians =
+      Radians(-r)
+
+    def hash: String =
+      r.toString()
+
+    def toDouble: Double =
+      r
+
+    def toFloat: Float =
+      r.toFloat

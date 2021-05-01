@@ -3,7 +3,7 @@ package indigo.shared
 import indigo.shared.animation.Animation
 import indigo.shared.datatypes.FontInfo
 
-sealed trait Startup[+SuccessType] extends Product with Serializable {
+sealed trait Startup[+SuccessType] extends Product with Serializable derives CanEqual {
   def additionalAnimations: Set[Animation] =
     this match {
       case Startup.Failure(_) =>
@@ -26,7 +26,7 @@ sealed trait Startup[+SuccessType] extends Product with Serializable {
 
 object Startup {
 
-  final case class Failure(errors: List[String]) extends Startup[Nothing] {
+  final case class Failure(errors: List[String]) extends Startup[Nothing] derives CanEqual {
     def report: String = errors.mkString("\n")
   }
   object Failure {
@@ -38,7 +38,7 @@ object Startup {
       success: SuccessType,
       animations: Set[Animation],
       fonts: Set[FontInfo]
-  ) extends Startup[SuccessType] {
+  ) extends Startup[SuccessType] derives CanEqual {
     def addAnimations(value: Animation*): Success[SuccessType] =
       addAnimations(value.toList)
     def addAnimations(value: List[Animation]): Success[SuccessType] =

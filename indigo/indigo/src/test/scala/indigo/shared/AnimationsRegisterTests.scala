@@ -6,6 +6,7 @@ import indigo.shared.datatypes.Point
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.animation.Cycle
 import indigo.shared.animation.Animation
+import indigo.shared.animation.AnimationMemento
 import indigo.shared.animation.AnimationKey
 import indigo.shared.time.Seconds
 import indigo.shared.datatypes.BindingKey
@@ -16,6 +17,8 @@ import indigo.shared.time.Millis
 import indigo.shared.animation.AnimationAction.Play
 
 class AnimationsRegisterTests extends munit.FunSuite {
+
+  given CanEqual[Option[AnimationMemento], Option[AnimationMemento]] = CanEqual.derived
 
   test("can look up an animation by key") {
     val register = new AnimationsRegister()
@@ -193,10 +196,10 @@ object AnimationSample {
     CycleLabel("cycle 2")
 
   val cycle1: Cycle =
-    Cycle.create(cycleLabel1.value, NonEmptyList(frame1, frame2, frame3))
+    Cycle.create(cycleLabel1.toString, NonEmptyList(frame1, frame2, frame3))
 
   val cycle2: Cycle =
-    Cycle.create(cycleLabel2.value, NonEmptyList(frame4, frame5, frame6))
+    Cycle.create(cycleLabel2.toString, NonEmptyList(frame4, frame5, frame6))
 
   val cycles: NonEmptyList[Cycle] =
     NonEmptyList(cycle1, cycle2)

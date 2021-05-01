@@ -5,7 +5,7 @@ import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.Vector2
 import indigo.shared.datatypes.RGBA
 
-sealed trait Light
+sealed trait Light derives CanEqual
 
 final case class PointLight(
     position: Point,

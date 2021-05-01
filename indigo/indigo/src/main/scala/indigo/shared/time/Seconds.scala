@@ -1,77 +1,73 @@
 package indigo.shared.time
 
-final case class Seconds(value: Double) extends AnyVal {
+import annotation.targetName
 
-  def +(other: Seconds): Seconds =
-    Seconds.plus(this, other)
+opaque type Seconds = Double
+object Seconds:
 
-  def -(other: Seconds): Seconds =
-    Seconds.minus(this, other)
+  given CanEqual[Seconds, Seconds] = CanEqual.derived
+  given CanEqual[Option[Seconds], Option[Seconds]] = CanEqual.derived
 
-  def *(other: Seconds): Seconds =
-    Seconds.multiply(this, other)
-
-  def /(other: Seconds): Seconds =
-    Seconds.divide(this, other)
-
-  def %(other: Seconds): Seconds =
-    Seconds.modulo(this, other)
-
-  def <(other: Seconds): Boolean =
-    Seconds.lessThan(this, other)
-
-  def >(other: Seconds): Boolean =
-    Seconds.greaterThan(this, other)
-
-  def <=(other: Seconds): Boolean =
-    Seconds.lessThan(this, other) || this.value == other.value
-
-  def >=(other: Seconds): Boolean =
-    Seconds.greaterThan(this, other) || this.value == other.value
-
-  def toInt: Int =
-    value.toInt
-
-  def toLong: Long =
-    value.toLong
-
-  def toFloat: Float =
-    value.toFloat
-
-  def toDouble: Double =
-    value
-
-  def toMillis: Millis =
-    Millis(Math.floor(value * 1000).toLong)
-    
-  def ===(other: Seconds): Boolean =
-    this.value == other.value
-
-}
-object Seconds {
+  def apply(seconds: Double): Seconds = seconds
 
   val zero: Seconds =
     Seconds(0)
 
-  @inline def plus(a: Seconds, b: Seconds): Seconds =
-    Seconds(a.value + b.value)
+  extension (s: Seconds)
+    def +(other: Seconds): Seconds =
+      Seconds(s + other)
+    @targetName("+_Double")
+    def +(other: Double): Seconds =
+      Seconds(s + other)
 
-  @inline def minus(a: Seconds, b: Seconds): Seconds =
-    Seconds(a.value - b.value)
+    def -(other: Seconds): Seconds =
+      Seconds(s - other)
+    @targetName("-_Double")
+    def -(other: Double): Seconds =
+      Seconds(s - other)
 
-  @inline def multiply(a: Seconds, b: Seconds): Seconds =
-    Seconds(a.value * b.value)
+    def *(other: Seconds): Seconds =
+      Seconds(s * other)
+    @targetName("*_Double")
+    def *(other: Double): Seconds =
+      Seconds(s * other)
 
-  @inline def divide(a: Seconds, b: Seconds): Seconds =
-    Seconds(a.value / b.value)
+    def /(other: Seconds): Seconds =
+      Seconds(s / other)
+    @targetName("/_Double")
+    def /(other: Double): Seconds =
+      Seconds(s / other)
 
-  @inline def modulo(a: Seconds, b: Seconds): Seconds =
-    Seconds(a.value % b.value)
+    def %(other: Seconds): Seconds =
+      Seconds(s % other)
+    @targetName("%_Double")
+    def %(other: Double): Seconds =
+      Seconds(s % other)
 
-  @inline def greaterThan(a: Seconds, b: Seconds): Boolean =
-    a.value > b.value
+    def <(other: Seconds): Boolean =
+      s < other
 
-  @inline def lessThan(a: Seconds, b: Seconds): Boolean =
-    a.value < b.value
+    def >(other: Seconds): Boolean =
+      s > other
 
-}
+    def <=(other: Seconds): Boolean =
+      s <= other
+
+    def >=(other: Seconds): Boolean =
+      s >= other
+
+    def toInt: Int =
+      s.toInt
+
+    def toLong: Long =
+      s.toLong
+
+    def toFloat: Float =
+      s.toFloat
+
+    def toDouble: Double =
+      s
+
+    def toMillis: Millis =
+      Millis(Math.floor(s * 1000).toLong)
+

@@ -1,6 +1,6 @@
 package indigo.shared.datatypes
 
-final case class RGB(r: Double, g: Double, b: Double) {
+final case class RGB(r: Double, g: Double, b: Double) derives CanEqual {
   def +(other: RGB): RGB =
     RGB.combine(this, other)
 
@@ -26,9 +26,6 @@ final case class RGB(r: Double, g: Double, b: Double) {
 
   def toRGBA: RGBA =
     RGBA(r, g, b, 1.0)
-
-  def ===(other: RGB): Boolean =
-    r == other.r && g == other.g && b == other.b
 
   def toArray: Array[Float] =
     Array(r.toFloat, g.toFloat, b.toFloat)

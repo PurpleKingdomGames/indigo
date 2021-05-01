@@ -4,11 +4,11 @@ class PointTests extends munit.FunSuite {
 
   test("should be able to calculate a linear interpolation") {
 
-    assertEquals(Point.linearInterpolation(Point(10, 10), Point(20, 20), 10, 5) === Point(15, 15), true)
-    assertEquals(Point.linearInterpolation(Point(10, 20), Point(20, 20), 10, 5) === Point(15, 20), true)
-    assertEquals(Point.linearInterpolation(Point(20, 10), Point(20, 20), 10, 5) === Point(20, 15), true)
-    assertEquals(Point.linearInterpolation(Point(10, 10), Point(20, 20), 10, 1) === Point(11, 11), true)
-    assertEquals(Point.linearInterpolation(Point(10, 10), Point(-10, -10), 100, 99) === Point(-9, -9), true)
+    assertEquals(Point.linearInterpolation(Point(10, 10), Point(20, 20), 10, 5) == Point(15, 15), true)
+    assertEquals(Point.linearInterpolation(Point(10, 20), Point(20, 20), 10, 5) == Point(15, 20), true)
+    assertEquals(Point.linearInterpolation(Point(20, 10), Point(20, 20), 10, 5) == Point(20, 15), true)
+    assertEquals(Point.linearInterpolation(Point(10, 10), Point(20, 20), 10, 1) == Point(11, 11), true)
+    assertEquals(Point.linearInterpolation(Point(10, 10), Point(-10, -10), 100, 99) == Point(-9, -9), true)
 
   }
 

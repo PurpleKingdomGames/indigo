@@ -12,7 +12,7 @@ import indigo.shared.datatypes.RGBA
   * @param magnification Pixel magnification level. Defaults to 1.
   * @param advanced Additional settings to help tune your game.
   */
-final case class GameConfig(viewport: GameViewport, frameRate: Int, clearColor: RGBA, magnification: Int, advanced: AdvancedGameConfig) {
+final case class GameConfig(viewport: GameViewport, frameRate: Int, clearColor: RGBA, magnification: Int, advanced: AdvancedGameConfig) derives CanEqual {
   val frameRateDeltaMillis: Int = 1000 / frameRate
   val haltViewUpdatesAt: Int    = frameRateDeltaMillis * 2
   val haltModelUpdatesAt: Int   = frameRateDeltaMillis * 3

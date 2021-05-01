@@ -12,24 +12,12 @@ import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.shared.animation.AnimationAction
 import indigo.shared.BoundaryLocator
 
-/**
-  * The parent type of anything that can affect the visual representation of the game.
+/** The parent type of anything that can affect the visual representation of the game.
   */
-// sealed trait SceneNode extends Product with Serializable {
-//   def position: Point
-//   def rotation: Radians
-//   def scale: Vector2
-//   def depth: Depth
-//   def ref: Point
-//   def flip: Flip
-// }
-// object SceneNode {
-//   def empty: Group = Group.empty
-// }
-
-sealed trait SceneNode extends Product with Serializable
+sealed trait SceneNode extends Product with Serializable derives CanEqual
 object SceneNode {
-  def empty: Group = Group.empty
+  given CanEqual[Option[SceneNode], Option[SceneNode]] = CanEqual.derived
+  given CanEqual[List[SceneNode], List[SceneNode]]     = CanEqual.derived
 }
 
 sealed trait RenderNode extends SceneNode {
@@ -42,9 +30,11 @@ sealed trait RenderNode extends SceneNode {
 
   def withDepth(newDepth: Depth): RenderNode
 }
+object RenderNode:
+  given CanEqual[Option[RenderNode], Option[RenderNode]] = CanEqual.derived
+  given CanEqual[List[RenderNode], List[RenderNode]]     = CanEqual.derived
 
-/**
-  * Can be extended to create custom scene elements.
+/** Can be extended to create custom scene elements.
   *
   * May be used in conjunction with `EventHandler` and `Cloneable`.
   */
@@ -57,7 +47,7 @@ trait EntityNode extends RenderNode {
 // Utility Nodes
 //------------------
 
-final case class Transformer(node: SceneNode, transform: CheapMatrix4) extends SceneNode {
+final case class Transformer(node: SceneNode, transform: CheapMatrix4) extends SceneNode derives CanEqual {
   def addTransform(matrix: CheapMatrix4): Transformer =
     this.copy(transform = transform * matrix)
 }
@@ -76,14 +66,15 @@ sealed trait DependentNode extends SceneNode {
   def withDepth(newDepth: Depth): DependentNode
 }
 
-/**
-  * A single cloned instance of a cloneblank
+/** A single cloned instance of a cloneblank
   *
   * @param id
-  * @param depth
+  *   @param depth
   * @param transform
   */
-final case class Clone(id: CloneId, depth: Depth, transform: CloneTransformData) extends DependentNode with BasicSpatialModifiers[Clone] {
+final case class Clone(id: CloneId, depth: Depth, transform: CloneTransformData)
+    extends DependentNode
+    with BasicSpatialModifiers[Clone] derives CanEqual {
   lazy val x: Int                  = transform.position.x
   lazy val y: Int                  = transform.position.y
   lazy val rotation: Radians       = transform.rotation
@@ -100,7 +91,13 @@ final case class Clone(id: CloneId, depth: Depth, transform: CloneTransformData)
   def withDepth(newDepth: Depth): Clone =
     this.copy(depth = newDepth)
 
-  def withTransforms(newPosition: Point, newRotation: Radians, newScale: Vector2, flipHorizontal: Boolean, flipVertical: Boolean): Clone =
+  def withTransforms(
+      newPosition: Point,
+      newRotation: Radians,
+      newScale: Vector2,
+      flipHorizontal: Boolean,
+      flipVertical: Boolean
+  ): Clone =
     this.copy(transform = CloneTransformData(newPosition, newRotation, newScale, flipHorizontal, flipVertical))
 
   def withPosition(newPosition: Point): Clone =
@@ -130,18 +127,22 @@ object Clone {
     Clone(id, Depth(1), CloneTransformData.identity)
 }
 
-/**
-  * Represents many clones of the same cloneblank, differentiated only by their transform data.
+/** Represents many clones of the same cloneblank, differentiated only by their transform data.
   *
   * @param id
-  * @param depth
+  *   @param depth
   * @param transform
-  * @param clones
+  *   @param clones
   * @param staticBatchKey
   */
-final case class CloneBatch(id: CloneId, depth: Depth, transform: CloneTransformData, clones: List[CloneTransformData], staticBatchKey: Option[BindingKey])
-    extends DependentNode
-    with BasicSpatialModifiers[CloneBatch] {
+final case class CloneBatch(
+    id: CloneId,
+    depth: Depth,
+    transform: CloneTransformData,
+    clones: List[CloneTransformData],
+    staticBatchKey: Option[BindingKey]
+) extends DependentNode
+    with BasicSpatialModifiers[CloneBatch] derives CanEqual {
   lazy val x: Int                  = transform.position.x
   lazy val y: Int                  = transform.position.y
   lazy val rotation: Radians       = transform.rotation
@@ -158,7 +159,13 @@ final case class CloneBatch(id: CloneId, depth: Depth, transform: CloneTransform
   def withDepth(newDepth: Depth): CloneBatch =
     this.copy(depth = newDepth)
 
-  def withTransforms(newPosition: Point, newRotation: Radians, newScale: Vector2, flipHorizontal: Boolean, flipVertical: Boolean): CloneBatch =
+  def withTransforms(
+      newPosition: Point,
+      newRotation: Radians,
+      newScale: Vector2,
+      flipHorizontal: Boolean,
+      flipVertical: Boolean
+  ): CloneBatch =
     this.copy(transform = CloneTransformData(newPosition, newRotation, newScale, flipHorizontal, flipVertical))
 
   def withPosition(newPosition: Point): CloneBatch =
@@ -199,10 +206,18 @@ final case class CloneBatch(id: CloneId, depth: Depth, transform: CloneTransform
     withMaybeStaticBatchKey(None)
 }
 
-/**
-  * Used to group elements to allow them to be manipulated as a collection.
+/** Used to group elements to allow them to be manipulated as a collection.
   */
-final case class Group(children: List[RenderNode], position: Point, rotation: Radians, scale: Vector2, depth: Depth, ref: Point, flip: Flip) extends CompositeNode with SpatialModifiers[Group] {
+final case class Group(
+    children: List[RenderNode],
+    position: Point,
+    rotation: Radians,
+    scale: Vector2,
+    depth: Depth,
+    ref: Point,
+    flip: Flip
+) extends CompositeNode
+    with SpatialModifiers[Group] derives CanEqual {
 
   lazy val x: Int = position.x
   lazy val y: Int = position.y
@@ -297,7 +312,7 @@ final case class Group(children: List[RenderNode], position: Point, rotation: Ra
         0.0d
       )
       .scale(scale.x, scale.y, 1.0d)
-      .rotate(rotation.value)
+      .rotate(rotation)
       .translate(
         position.x.toDouble,
         position.y.toDouble,
@@ -334,8 +349,7 @@ sealed trait CompositeNode extends RenderNode {
   def calculatedBounds(locator: BoundaryLocator): Rectangle
 }
 
-/**
-  * Sprites are used to represented key-frame animated screen elements.
+/** Sprites are used to represented key-frame animated screen elements.
   */
 final case class Sprite(
     bindingKey: BindingKey,
@@ -352,7 +366,7 @@ final case class Sprite(
 ) extends CompositeNode
     with EventHandler
     with Cloneable
-    with SpatialModifiers[Sprite] {
+    with SpatialModifiers[Sprite] derives CanEqual {
 
   lazy val x: Int = position.x
   lazy val y: Int = position.y
@@ -440,7 +454,14 @@ final case class Sprite(
 }
 
 object Sprite {
-  def apply(bindingKey: BindingKey, x: Int, y: Int, depth: Int, animationKey: AnimationKey, material: Material): Sprite =
+  def apply(
+      bindingKey: BindingKey,
+      x: Int,
+      y: Int,
+      depth: Int,
+      animationKey: AnimationKey,
+      material: Material
+  ): Sprite =
     Sprite(
       position = Point(x, y),
       rotation = Radians.zero,
@@ -496,8 +517,7 @@ object Sprite {
     )
 }
 
-/**
-  * Used to draw text onto the screen.
+/** Used to draw text onto the screen.
   */
 final case class Text(
     text: String,
@@ -513,7 +533,7 @@ final case class Text(
     flip: Flip
 ) extends CompositeNode
     with EventHandler
-    with SpatialModifiers[Text] {
+    with SpatialModifiers[Text] derives CanEqual {
 
   def calculatedBounds(locator: BoundaryLocator): Rectangle =
     locator.findBounds(this)

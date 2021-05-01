@@ -1,52 +1,45 @@
 package indigo.shared.collections
 
-/**
-  * An ordered list-type object that requires there to always be
+/** An ordered list-type object that requires there to always be
   * at least one element present, ruling out the possibility of
   * unsafely accessing the `head` element.
   * @tparam A The type of element to be stored in the list.
   */
-final case class NonEmptyList[A](head: A, tail: List[A]) {
+final case class NonEmptyList[A](head: A, tail: List[A]) derives CanEqual {
 
-  /**
-    * Alias for `head`
+  /** Alias for `head`
     * @return `A`
     */
   def first: A = head
 
-  /**
-    * Returns the last element in the list
+  /** Returns the last element in the list
     * @return `A`
     */
   def last: A =
     tail.reverse.headOption match {
       case Some(s) => s
-      case None    => head
+      case _       => head
     }
 
-  /**
-    * A count of the elements in the list
+  /** A count of the elements in the list
     * @return Int
     */
   def length: Int =
     NonEmptyList.length(this)
 
-  /**
-    * Reverse the order of the list
+  /** Reverse the order of the list
     * @return `NonEmptyList[A]`
     */
   def reverse: NonEmptyList[A] =
     NonEmptyList.reverse(this)
 
-  /**
-    * Converts the NonEmptyList back to a regular List.
+  /** Converts the NonEmptyList back to a regular List.
     * @return
     */
   def toList: List[A] =
     head :: tail
 
-  /**
-    * `foldLeft` differs from reduce it two important ways:
+  /** `foldLeft` differs from reduce it two important ways:
     * 1. It has an initial value onto which all other values are applied
     * 1. It does not require the result type to be the same as the list type.
     * @example `NonEmptyList(1, 2, 3)("")((a, b) => a + b) results in "123"`
@@ -58,48 +51,42 @@ final case class NonEmptyList[A](head: A, tail: List[A]) {
   def foldLeft[Z](acc: Z)(f: (Z, A) => Z): Z =
     NonEmptyList.foldLeft(this)(acc)(f)
 
-  /**
-    * @example `NonEmptyList(1, 2, 3)((a, b) => a + b) results in 6`
+  /** @example `NonEmptyList(1, 2, 3)((a, b) => a + b) results in 6`
     * @param f a function for combining to `A`'s into a single `A`
     * @return The final `A` value
     */
   def reduce(f: (A, A) => A): A =
     NonEmptyList.reduce(this)(f)
 
-  /**
-    * Append an element
+  /** Append an element
     * @param next The next element of the same type
     * @return `NonEmptyList[A]`
     */
   def :+(next: A): NonEmptyList[A] =
     NonEmptyList.append(this)(next)
 
-  /**
-    * Prepend an element
+  /** Prepend an element
     * @param first The new head element of the same type
     * @return `NonEmptyList[A]`
     */
   def ::(first: A): NonEmptyList[A] =
     NonEmptyList.cons(this)(first)
 
-  /**
-    * Concatenate two `NonEmptyList`'s together
+  /** Concatenate two `NonEmptyList`'s together
     * @param other A second NonEmptyList of the same type
     * @return A new NonEmptyList containing the elements of both lists
     */
   def ++(other: NonEmptyList[A]): NonEmptyList[A] =
     NonEmptyList.combine(this)(other)
 
-  /**
-    * Concatenate a `NonEmptyList` with a `List`
+  /** Concatenate a `NonEmptyList` with a `List`
     * @param other A List of the same type
     * @return A new NonEmptyList containing the elements of both lists
     */
   def ++(other: List[A]): NonEmptyList[A] =
     NonEmptyList.combineWithList(this)(other)
 
-  /**
-    * Apply a function `f` to each element of the list to produce a new list.
+  /** Apply a function `f` to each element of the list to produce a new list.
     * @example `NonEmptyList(1, 2, 3).map(_ * 10)` results in `NonEmptyList(10, 20, 30)`
     * @param f function to apply to each element
     * @tparam B Resultant type of the new NonEmptyList
@@ -108,8 +95,7 @@ final case class NonEmptyList[A](head: A, tail: List[A]) {
   def map[B](f: A => B): NonEmptyList[B] =
     NonEmptyList.map(this)(f)
 
-  /**
-    * Apply a function `f` to each element of the list to produce a new list.
+  /** Apply a function `f` to each element of the list to produce a new list.
     * Differs from map because f produces another NonEmptyList, which is then flattened.
     * Useful in monadic comprehensions.
     * @example `NonEmptyList(1, 2, 3).flatMap(i => NonEmptyList(i * 10))` results in `NonEmptyList(10, 20, 30)`
@@ -120,15 +106,13 @@ final case class NonEmptyList[A](head: A, tail: List[A]) {
   def flatMap[B](f: A => NonEmptyList[B]): NonEmptyList[B] =
     NonEmptyList.flatMap(this)(f)
 
-  /**
-    * @example `NonEmptyList("a", "b", "c").zipWithIndex` results in `NonEmptyList(("a", 0), ("b", 1), ("c",2))`
+  /** @example `NonEmptyList("a", "b", "c").zipWithIndex` results in `NonEmptyList(("a", 0), ("b", 1), ("c",2))`
     * @return
     */
   def zipWithIndex: NonEmptyList[(A, Int)] =
     NonEmptyList.zipWithIndex(this)
 
-  /**
-    * Takes two NonEmptyLists and creates a new NonEmptyList of the elements of both inputs tupled together.
+  /** Takes two NonEmptyLists and creates a new NonEmptyList of the elements of both inputs tupled together.
     * @example `NonEmptyList("a", "b", "c").zip(NonEmptyList(1, 2, 3))` results in `NonEmptyList(("a", 1), ("b", 2), ("c", 3))`
     * @param other The second NonEmptyList to zip with.
     * @tparam B The type of the second NonEmptyList
@@ -137,24 +121,21 @@ final case class NonEmptyList[A](head: A, tail: List[A]) {
   def zip[B](other: NonEmptyList[B]): NonEmptyList[(A, B)] =
     NonEmptyList.zip(this, other)
 
-  /**
-    * Checks that a predicate holds for all elements
+  /** Checks that a predicate holds for all elements
     * @param p Predicate function
     * @return Boolean
     */
   def forall(p: A => Boolean): Boolean =
     NonEmptyList.forall(this)(p)
 
-  /**
-    * Search the NonEmptyList using a predicate and return the first element that matches
+  /** Search the NonEmptyList using a predicate and return the first element that matches
     * @param p Predicate, returns the first elements for which this predicate holds true
     * @return Optional A, if no match can be found None is returned.
     */
   def find(p: A => Boolean): Option[A] =
     NonEmptyList.find(this)(p)
 
-  /**
-    * List find, but only returns a Boolean indicating if an element matching the predicate was found.
+  /** List find, but only returns a Boolean indicating if an element matching the predicate was found.
     * @param p Predicate function
     * @return Boolean
     */
@@ -164,15 +145,13 @@ final case class NonEmptyList[A](head: A, tail: List[A]) {
   override def toString: String =
     s"NonEmptyList[$head][${tail.mkString(", ")}]"
 
-  /**
-    * Delegates to `mkString(separator: String): String`
+  /** Delegates to `mkString(separator: String): String`
     * @return `String`
     */
   def mkString: String =
     mkString("")
 
-  /**
-    * Converts the list into a String
+  /** Converts the list into a String
     * @param separator A string to add between the elements
     * @return `String`
     */
@@ -195,11 +174,11 @@ object NonEmptyList {
 
   def fromList[A](l: List[A]): Option[NonEmptyList[A]] =
     l match {
-      case Nil =>
-        None
-
       case x :: xs =>
         Some(pure(x, xs))
+
+      case _ =>
+        None
     }
 
   def length[A](fa: NonEmptyList[A]): Int =
@@ -207,11 +186,11 @@ object NonEmptyList {
 
   def reverse[A](fa: NonEmptyList[A]): NonEmptyList[A] =
     fa.tail.reverse match {
-      case Nil =>
-        fa
-
       case x :: xs =>
         pure(x, xs ++ List(fa.head))
+
+      case _ =>
+        fa
     }
 
   def map[A, B](fa: NonEmptyList[A])(f: A => B): NonEmptyList[B] =
@@ -234,11 +213,11 @@ object NonEmptyList {
 
   def reduce[A](fa: NonEmptyList[A])(f: (A, A) => A): A =
     fa.tail match {
-      case Nil =>
-        fa.head
-
       case x :: xs =>
         foldLeft(NonEmptyList.pure(x, xs))(fa.head)(f)
+
+      case _ =>
+        fa.head
     }
 
   def append[A](fa: NonEmptyList[A])(next: A): NonEmptyList[A] =

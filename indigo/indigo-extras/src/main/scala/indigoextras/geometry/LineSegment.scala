@@ -2,7 +2,7 @@ package indigoextras.geometry
 
 import indigo.shared.datatypes.Vector2
 
-final case class LineSegment(start: Vertex, end: Vertex) {
+final case class LineSegment(start: Vertex, end: Vertex) derives CanEqual {
   val center: Vertex =
     Vertex(
       ((end.x - start.x) / 2) + start.x,

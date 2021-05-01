@@ -217,7 +217,7 @@ Where a thing moves in a circle for 2 seconds and then stops.
     val daysOfTheWeek =
       Signal { t =>
         // Clearly this will blow up for < 0 or > 6
-        days(t.value.toInt)
+        days(t.toInt)
       }
 
     val clamped =
@@ -253,7 +253,7 @@ Where a thing moves in a circle for 2 seconds and then stops.
     val daysOfTheWeek =
       Signal { t =>
         // Clearly this will blow up for < 0 or > 6
-        days(t.value.toInt)
+        days(t.toInt)
       }
 
     val wrapped =

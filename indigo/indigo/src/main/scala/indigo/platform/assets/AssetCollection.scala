@@ -44,6 +44,6 @@ object AssetCollection {
     new AssetCollection(Nil, Nil, Nil)
 }
 
-final class LoadedAudioAsset(val name: AssetName, val data: dom.AudioBuffer)
-final class LoadedImageAsset(val name: AssetName, val data: html.Image, val tag: Option[AssetTag])
-final class LoadedTextAsset(val name: AssetName, val data: String)
+final case class LoadedAudioAsset(val name: AssetName, val data: dom.AudioBuffer)
+final case class LoadedImageAsset(val name: AssetName, val data: html.Image, val tag: Option[AssetTag])
+final case class LoadedTextAsset(val name: AssetName, val data: String)

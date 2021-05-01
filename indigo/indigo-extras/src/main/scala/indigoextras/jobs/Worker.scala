@@ -100,4 +100,4 @@ final case class WorkContext[Actor, Context](
     dice: Dice,
     actor: Actor,
     context: Context
-)
+) derives CanEqual

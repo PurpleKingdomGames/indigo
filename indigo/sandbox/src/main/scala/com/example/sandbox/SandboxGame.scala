@@ -28,7 +28,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
   private val viewportHeight: Int     = 128 * magnificationLevel
 
   def initialScene(bootData: SandboxBootData): Option[SceneName] =
-    Some(ShapesScene.name)
+    Some(LightsScene.name)
 
   def scenes(bootData: SandboxBootData): NonEmptyList[Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]] =
     NonEmptyList(OriginalScene, ShapesScene, LightsScene, RefractionScene, LegacyEffectsScene)
@@ -91,7 +91,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
         .addAnimations(spriteAndAnimations.animations)
 
     val res: Option[Startup.Success[SandboxStartupData]] = for {
-      json                <- assetCollection.findTextDataByName(AssetName(SandboxAssets.dudeName.value + "-json"))
+      json                <- assetCollection.findTextDataByName(AssetName(SandboxAssets.dudeName.toString + "-json"))
       aseprite            <- Json.asepriteFromJson(json)
       spriteAndAnimations <- aseprite.toSpriteAndAnimations(dice, SandboxAssets.dudeName)
     } yield makeStartupData(aseprite, spriteAndAnimations)

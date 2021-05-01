@@ -150,11 +150,11 @@ object LightingAssets {
   def assets: Set[AssetType] =
     Set(
       AssetType.Tagged("atlas1")(
-        AssetType.Image(junctionBoxAlbedo, AssetPath("assets/" + junctionBoxAlbedo.value + ".png")),
-        AssetType.Image(junctionBoxEmission.assetName, AssetPath("assets/" + junctionBoxEmission.assetName.value + ".png")),
-        AssetType.Image(junctionBoxNormal.assetName, AssetPath("assets/" + junctionBoxNormal.assetName.value + ".png")),
-        AssetType.Image(junctionBoxSpecular.assetName, AssetPath("assets/" + junctionBoxSpecular.assetName.value + ".png")),
-        AssetType.Image(trafficLightsName, AssetPath("assets/" + trafficLightsName.value + ".png"))
+        AssetType.Image(junctionBoxAlbedo, AssetPath("assets/" + junctionBoxAlbedo + ".png")),
+        AssetType.Image(junctionBoxEmission.assetName, AssetPath("assets/" + junctionBoxEmission.assetName + ".png")),
+        AssetType.Image(junctionBoxNormal.assetName, AssetPath("assets/" + junctionBoxNormal.assetName + ".png")),
+        AssetType.Image(junctionBoxSpecular.assetName, AssetPath("assets/" + junctionBoxSpecular.assetName + ".png")),
+        AssetType.Image(trafficLightsName, AssetPath("assets/" + trafficLightsName + ".png"))
       )
     )
 

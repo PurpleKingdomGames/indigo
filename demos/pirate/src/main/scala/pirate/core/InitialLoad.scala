@@ -84,8 +84,7 @@ object InitialLoad {
         flag        <- loader(Assets.Flag.jsonRef, Assets.Flag.ref, Depth(10)).toOption
         terrain     <- terrainData
       } yield makeAdditionalAssets(screenDimensions, helm, palm, reflections, flag, terrain._1, terrain._2, terrain._3)
-    } else
-      None
+    } else None
   }
 
   // Helper function that loads Aseprite animations.
@@ -93,6 +92,8 @@ object InitialLoad {
       assetCollection: AssetCollection,
       dice: Dice
   )(jsonRef: AssetName, name: AssetName, depth: Depth): Either[String, SpriteAndAnimations] = {
+    given CanEqual[Option[SpriteAndAnimations], Option[SpriteAndAnimations]] = CanEqual.derived
+
     val res = for {
       json                <- assetCollection.findTextDataByName(jsonRef)
       aseprite            <- Json.asepriteFromJson(json)
@@ -104,7 +105,7 @@ object InitialLoad {
         Right(spriteAndAnimations)
 
       case None =>
-        Left("Failed to load " + name.value)
+        Left("Failed to load " + name)
     }
   }
 
@@ -176,8 +177,5 @@ final case class LevelDataStore(
       .withDepth(Depth(10))
 }
 
-sealed trait TileType
-object TileType {
-  case object Empty extends TileType
-  case object Solid extends TileType
-}
+enum TileType derives CanEqual:
+  case Empty, Solid

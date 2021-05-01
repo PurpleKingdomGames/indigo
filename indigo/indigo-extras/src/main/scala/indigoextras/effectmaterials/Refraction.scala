@@ -56,7 +56,7 @@ object Refraction {
 
 }
 
-final case class RefractionEntity(diffuse: AssetName) extends Material {
+final case class RefractionEntity(diffuse: AssetName) extends Material derives CanEqual {
   def toShaderData: ShaderData =
     ShaderData(
       Refraction.entityShader.id,
@@ -68,7 +68,7 @@ final case class RefractionEntity(diffuse: AssetName) extends Material {
     )
 }
 
-final case class RefractionBlend(multiplier: Double) extends BlendMaterial {
+final case class RefractionBlend(multiplier: Double) extends BlendMaterial derives CanEqual {
   def toShaderData: BlendShaderData =
     BlendShaderData(
       Refraction.blendShader.id,

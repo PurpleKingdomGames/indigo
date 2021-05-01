@@ -19,11 +19,17 @@ import indigo.platform.audio.AudioPlayer
 
 object AssetLoader {
 
-  def backgroundLoadAssets(rebuildGameLoop: AssetCollection => Unit, globalEventStream: GlobalEventStream, assets: Set[AssetType], key: BindingKey, makeAvailable: Boolean): Unit = {
+  def backgroundLoadAssets(
+      rebuildGameLoop: AssetCollection => Unit,
+      globalEventStream: GlobalEventStream,
+      assets: Set[AssetType],
+      key: BindingKey,
+      makeAvailable: Boolean
+  ): Unit = {
     val assetList: List[AssetType] =
       assets.toList.flatMap(_.toList)
 
-    IndigoLogger.info(s"Background loading ${assetList.length.toString()} assets with key: ${key.value}")
+    IndigoLogger.info(s"Background loading ${assetList.length.toString()} assets with key: ${key}")
 
     loadAssets(assets)
       .onComplete {
@@ -98,13 +104,13 @@ object AssetLoader {
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
   def loadImageAsset(imageAsset: AssetType.Image): Future[LoadedImageAsset] = {
-    IndigoLogger.info(s"[Image] Loading ${imageAsset.path.value}")
+    IndigoLogger.info(s"[Image] Loading ${imageAsset.path}")
 
     val image: html.Image = dom.document.createElement("img").asInstanceOf[html.Image]
-    image.src = imageAsset.path.value
+    image.src = imageAsset.path.toString
 
     onLoadFuture(image).map { i =>
-      IndigoLogger.info(s"[Image] Success ${imageAsset.path.value}")
+      IndigoLogger.info(s"[Image] Success ${imageAsset.path}")
       new LoadedImageAsset(imageAsset.name, i, imageAsset.tag)
     }
   }
@@ -113,10 +119,10 @@ object AssetLoader {
     textAssets => Future.sequence(textAssets.map(loadTextAsset))
 
   def loadTextAsset(textAsset: AssetType.Text): Future[LoadedTextAsset] = {
-    IndigoLogger.info(s"[Text] Loading ${textAsset.path.value}")
+    IndigoLogger.info(s"[Text] Loading ${textAsset.path}")
 
-    Ajax.get(textAsset.path.value, responseType = "text").map { xhr =>
-      IndigoLogger.info(s"[Text] Success ${textAsset.path.value}")
+    Ajax.get(textAsset.path.toString, responseType = "text").map { xhr =>
+      IndigoLogger.info(s"[Text] Success ${textAsset.path}")
       new LoadedTextAsset(textAsset.name, xhr.responseText)
     }
   }
@@ -126,16 +132,16 @@ object AssetLoader {
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
   def loadAudioAsset(audioAsset: AssetType.Audio): Future[LoadedAudioAsset] = {
-    IndigoLogger.info(s"[Audio] Loading ${audioAsset.path.value}")
+    IndigoLogger.info(s"[Audio] Loading ${audioAsset.path}")
 
-    Ajax.get(audioAsset.path.value, responseType = "arraybuffer").flatMap { xhr =>
-      IndigoLogger.info(s"[Audio] Success ${audioAsset.path.value}")
+    Ajax.get(audioAsset.path.toString, responseType = "arraybuffer").flatMap { xhr =>
+      IndigoLogger.info(s"[Audio] Success ${audioAsset.path}")
       val context = AudioPlayer.giveAudioContext()
 
       val p = context.decodeAudioData(
         xhr.response.asInstanceOf[ArrayBuffer],
         (audioBuffer: AudioBuffer) => audioBuffer,
-        () => IndigoLogger.info("Error decoding audio from: " + audioAsset.path.value)
+        () => IndigoLogger.info("Error decoding audio from: " + audioAsset.path)
       )
 
       p.toFuture.map(audioBuffer => new LoadedAudioAsset(audioAsset.name, audioBuffer))

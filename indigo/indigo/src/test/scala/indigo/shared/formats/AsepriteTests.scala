@@ -26,7 +26,7 @@ class AsepriteTests extends munit.FunSuite {
     assertEquals(sprite.animationKey, AsepriteSampleData.sprite.animationKey)
 
     assertEquals(animation.cycles.length, 1)
-    assertEquals(animation.currentCycleLabel.value, "lights")
+    assertEquals(animation.currentCycleLabel, CycleLabel("lights"))
     assertEquals(animation.cycles.find(c => c.label == animation.currentCycleLabel).get.frames.length, 3)
   }
 

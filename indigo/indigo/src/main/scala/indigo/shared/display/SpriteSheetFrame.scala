@@ -19,7 +19,7 @@ object SpriteSheetFrame {
   val defaultOffset: SpriteSheetFrameCoordinateOffsets =
     calculateFrameOffset(Vector2(1.0, 1.0), Rectangle(0, 0, 1, 1), Vector2.zero)
 
-  final case class SpriteSheetFrameCoordinateOffsets(scale: Vector2, translate: Vector2, translateCoords: Vector2 => Vector2) {
+  final case class SpriteSheetFrameCoordinateOffsets(scale: Vector2, translate: Vector2, translateCoords: Vector2 => Vector2) derives CanEqual {
     def offsetToCoords(textureOffset: Vector2): Vector2 =
       translateCoords(textureOffset)
   }

@@ -1,7 +1,6 @@
 package indigo.shared.time
 
-final case class GameTime(running: Seconds, delta: Seconds, targetFPS: GameTime.FPS) {
-
+final case class GameTime(running: Seconds, delta: Seconds, targetFPS: GameTime.FPS) derives CanEqual:
   lazy val frameDuration: Millis = Millis((1000d / targetFPS.asDouble).toLong)
   lazy val multiplier: Double    = delta.toDouble / frameDuration.toDouble
 
@@ -12,9 +11,7 @@ final case class GameTime(running: Seconds, delta: Seconds, targetFPS: GameTime.
   def setTargetFPS(fps: Int): GameTime =
     this.copy(targetFPS = GameTime.FPS(fps))
 
-}
-
-object GameTime {
+object GameTime:
 
   def zero: GameTime =
     GameTime(Seconds.zero, Seconds.zero, FPS.Default)
@@ -25,16 +22,16 @@ object GameTime {
   def withDelta(running: Seconds, delta: Seconds): GameTime =
     GameTime(running, delta, FPS.Default)
 
-  final case class FPS(value: Int) extends AnyVal {
-    def asLong: Long     = value.toLong
-    def asDouble: Double = value.toDouble
-  }
-  object FPS {
+  opaque type FPS = Int
 
+  object FPS:
     val `30`: FPS    = FPS(30)
     val `60`: FPS    = FPS(60)
     val Default: FPS = `30`
 
-  }
+    def apply(fps: Int): FPS = fps
 
-}
+    extension (fps: FPS)
+      def asLong: Long     = fps.toLong
+      def asDouble: Double = fps.toDouble
+  end FPS

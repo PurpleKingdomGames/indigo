@@ -10,4 +10,12 @@ class SecondsTests extends munit.FunSuite {
 
   }
 
+  test("Can operate on doubles") {
+    assertEquals(Seconds(1) + 2, Seconds(3))
+    assertEquals(Seconds(1) - 2, Seconds(-1))
+    assertEquals(Seconds(2) * 2, Seconds(4))
+    assertEquals(Seconds(4) / 2, Seconds(2))
+    assertEquals(Seconds(3) % 2, Seconds(1))
+  }
+
 }

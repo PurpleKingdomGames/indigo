@@ -12,7 +12,14 @@ import indigo.shared.subsystems.SubSystemFrameContext._
 import indigo.shared.events.EventFilters
 import indigo.shared.subsystems.SubSystemFrameContext
 
-class SceneManager[StartUpData, GameModel, ViewModel](scenes: NonEmptyList[Scene[StartUpData, GameModel, ViewModel]], scenesFinder: SceneFinder) {
+class SceneManager[StartUpData, GameModel, ViewModel](
+    scenes: NonEmptyList[Scene[StartUpData, GameModel, ViewModel]],
+    scenesFinder: SceneFinder
+) {
+
+  private
+  given CanEqual[Option[Scene[StartUpData, GameModel, ViewModel]], Option[Scene[StartUpData, GameModel, ViewModel]]] =
+    CanEqual.derived
 
   // Scene management
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
@@ -61,7 +68,7 @@ class SceneManager[StartUpData, GameModel, ViewModel](scenes: NonEmptyList[Scene
     case event =>
       scenes.find(_.name == finderInstance.current.name) match {
         case None =>
-          IndigoLogger.errorOnce("Could not find scene called: " + finderInstance.current.name.name)
+          IndigoLogger.errorOnce("Could not find scene called: " + finderInstance.current.name)
           Outcome(model)
 
         case Some(scene) =>
@@ -70,7 +77,10 @@ class SceneManager[StartUpData, GameModel, ViewModel](scenes: NonEmptyList[Scene
       }
   }
 
-  def updateSubSystems(frameContext: SubSystemFrameContext, globalEvents: List[GlobalEvent]): Outcome[SubSystemsRegister] =
+  def updateSubSystems(
+      frameContext: SubSystemFrameContext,
+      globalEvents: List[GlobalEvent]
+  ): Outcome[SubSystemsRegister] =
     scenes
       .find(_.name == finderInstance.current.name)
       .flatMap { scene =>
@@ -80,22 +90,34 @@ class SceneManager[StartUpData, GameModel, ViewModel](scenes: NonEmptyList[Scene
             _.update(frameContext, globalEvents)
           }
       }
-      .getOrElse(Outcome.raiseError(new Exception(s"Couldn't find scene with name '${finderInstance.current.name}' in order to update subsystems")))
+      .getOrElse(
+        Outcome.raiseError(
+          new Exception(s"Couldn't find scene with name '${finderInstance.current.name}' in order to update subsystems")
+        )
+      )
 
-  def updateViewModel(frameContext: FrameContext[StartUpData], model: GameModel, viewModel: ViewModel): GlobalEvent => Outcome[ViewModel] =
+  def updateViewModel(
+      frameContext: FrameContext[StartUpData],
+      model: GameModel,
+      viewModel: ViewModel
+  ): GlobalEvent => Outcome[ViewModel] =
     scenes.find(_.name == finderInstance.current.name) match {
       case None =>
-        IndigoLogger.errorOnce("Could not find scene called: " + finderInstance.current.name.name)
+        IndigoLogger.errorOnce("Could not find scene called: " + finderInstance.current.name)
         _ => Outcome(viewModel)
 
       case Some(scene) =>
         Scene.updateViewModel(scene, frameContext, model, viewModel)
     }
 
-  def updateView(frameContext: FrameContext[StartUpData], model: GameModel, viewModel: ViewModel): Outcome[SceneUpdateFragment] =
+  def updateView(
+      frameContext: FrameContext[StartUpData],
+      model: GameModel,
+      viewModel: ViewModel
+  ): Outcome[SceneUpdateFragment] =
     scenes.find(_.name == finderInstance.current.name) match {
       case None =>
-        IndigoLogger.errorOnce("Could not find scene called: " + finderInstance.current.name.name)
+        IndigoLogger.errorOnce("Could not find scene called: " + finderInstance.current.name)
         Outcome(SceneUpdateFragment.empty)
 
       case Some(scene) =>
@@ -124,7 +146,13 @@ class SceneManager[StartUpData, GameModel, ViewModel](scenes: NonEmptyList[Scene
 
 object SceneManager {
 
-  def apply[StartUpData, GameModel, ViewModel](scenes: NonEmptyList[Scene[StartUpData, GameModel, ViewModel]], initialScene: SceneName): SceneManager[StartUpData, GameModel, ViewModel] =
-    new SceneManager[StartUpData, GameModel, ViewModel](scenes, SceneFinder.fromScenes[StartUpData, GameModel, ViewModel](scenes).jumpToSceneByName(initialScene))
+  def apply[StartUpData, GameModel, ViewModel](
+      scenes: NonEmptyList[Scene[StartUpData, GameModel, ViewModel]],
+      initialScene: SceneName
+  ): SceneManager[StartUpData, GameModel, ViewModel] =
+    new SceneManager[StartUpData, GameModel, ViewModel](
+      scenes,
+      SceneFinder.fromScenes[StartUpData, GameModel, ViewModel](scenes).jumpToSceneByName(initialScene)
+    )
 
 }

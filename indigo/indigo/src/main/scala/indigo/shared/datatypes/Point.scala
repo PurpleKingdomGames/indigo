@@ -1,6 +1,6 @@
 package indigo.shared.datatypes
 
-final case class Point(x: Int, y: Int) {
+final case class Point(x: Int, y: Int) derives CanEqual {
   def +(pt: Point): Point = Point(x + pt.x, y + pt.y)
   def +(i: Int): Point    = Point(x + i, y + i)
   def -(pt: Point): Point = Point(x - pt.x, y - pt.y)
@@ -32,13 +32,12 @@ final case class Point(x: Int, y: Int) {
   def toVector: Vector2 =
     Vector2(x.toDouble, y.toDouble)
 
-  def ===(other: Point): Boolean =
-    x == other.x && y == other.y
-
   val hash: String = s"${x.toString()}${y.toString()}"
 }
 
 object Point {
+
+  given CanEqual[Option[Point], Option[Point]] = CanEqual.derived
 
   def apply(xy: Int): Point =
     Point(xy, xy)

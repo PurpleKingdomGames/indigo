@@ -3,7 +3,7 @@ package indigoextras.geometry
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Vector2
 
-final case class Vertex(x: Double, y: Double) {
+final case class Vertex(x: Double, y: Double) derives CanEqual {
 
   def withX(newX: Double): Vertex =
     this.copy(x = newX)
@@ -11,8 +11,7 @@ final case class Vertex(x: Double, y: Double) {
   def withY(newY: Double): Vertex =
     this.copy(y = newY)
 
-  /**
-    * Dot product. Here for convenience but really this is vector operation.
+  /** Dot product. Here for convenience but really this is vector operation.
     */
   def dot(other: Vertex): Double =
     (x * other.x) + (y * other.y)
@@ -89,7 +88,7 @@ final case class Vertex(x: Double, y: Double) {
 
   def ~==(other: Vertex): Boolean =
     Math.abs(x - other.x) < 0.0001 &&
-    Math.abs(y - other.y) < 0.0001
+      Math.abs(y - other.y) < 0.0001
 
 }
 

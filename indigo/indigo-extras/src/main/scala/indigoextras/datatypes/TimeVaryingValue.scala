@@ -2,55 +2,47 @@ package indigoextras.datatypes
 
 import indigo.shared.time.Seconds
 
-/**
-  * Represents one of the type of values that changes over time.
+/** Represents one of the type of values that changes over time.
   */
-sealed trait TimeVaryingValue {
+sealed trait TimeVaryingValue derives CanEqual {
 
-  /**
-    * The current value
+  /** The current value
     *
     * @return Double
     */
   val value: Double
 
-  /**
-    * The rate of change
+  /** The rate of change
     *
     * @return Double
     */
   val unitsPerSecond: Double
 
-  /**
-    * Value as an Int
+  /** Value as an Int
     *
     * @return Int
     */
   def toInt: Int = value.toInt
 
-  /**
-    * Value as an Long
+  /** Value as an Long
     *
     * @return Long
     */
   def toLong: Long = value.toLong
 
-  /**
-    * Value as an Float
+  /** Value as an Float
     *
     * @return Float
     */
   def toFloat: Float = value.toFloat
 
-  /**
-    * Value as an Double
+  /** Value as an Double
     *
     * @return Double
     */
   def toDouble: Double = value
 
-  /**
-    * Update the time varying value based on a time delta
+  /** Update the time varying value based on a time delta
     *
     * @param timeDelta the time delta typically supplied from GameTime(..).delta
     * @return TimeVaryingValue
@@ -59,8 +51,7 @@ sealed trait TimeVaryingValue {
 
 }
 
-/**
-  * A value that increases over time.
+/** A value that increases over time.
   *
   * @param value The current value
   * @param unitsPerSecond The rate of change
@@ -68,12 +59,11 @@ sealed trait TimeVaryingValue {
 final case class Increasing(value: Double, unitsPerSecond: Double) extends TimeVaryingValue {
   def update(timeDelta: Seconds): Increasing =
     this.copy(
-      value = value + unitsPerSecond * timeDelta.value
+      value = value + unitsPerSecond * timeDelta.toDouble
     )
 }
 
-/**
-  * A value that increases over time until it hits a limit.
+/** A value that increases over time until it hits a limit.
   *
   * @param value The current value
   * @param unitsPerSecond The rate of change
@@ -82,7 +72,7 @@ final case class Increasing(value: Double, unitsPerSecond: Double) extends TimeV
 final case class IncreaseTo(value: Double, unitsPerSecond: Double, limit: Double) extends TimeVaryingValue {
   def update(timeDelta: Seconds): IncreaseTo =
     this.copy(
-      value = value + unitsPerSecond * timeDelta.value match {
+      value = value + unitsPerSecond * timeDelta.toDouble match {
         case x if x == limit || x > limit =>
           limit
 
@@ -92,8 +82,7 @@ final case class IncreaseTo(value: Double, unitsPerSecond: Double, limit: Double
     )
 }
 
-/**
-  * A value that increases over time and wraps back to zero when it hits the limit
+/** A value that increases over time and wraps back to zero when it hits the limit
   *
   * @param value The current/starting value
   * @param unitsPerSecond The rate of change
@@ -102,13 +91,12 @@ final case class IncreaseTo(value: Double, unitsPerSecond: Double, limit: Double
 final case class IncreaseWrapAt(value: Double, unitsPerSecond: Double, limit: Double) extends TimeVaryingValue {
   def update(timeDelta: Seconds): IncreaseWrapAt =
     this.copy(
-      value = (value + unitsPerSecond * timeDelta.value) % (limit + 1.0d)
+      value = (value + unitsPerSecond * timeDelta.toDouble) % (limit + 1.0d)
     )
 }
 object IncreaseWrapAt {
 
-  /**
-    * Constructor for a value that increases over time and wraps back to zero when it hits the limit.
+  /** Constructor for a value that increases over time and wraps back to zero when it hits the limit.
     * This constructor assumes the start value is zero.
     *
     * @param unitsPerSecond The rate of change
@@ -120,8 +108,7 @@ object IncreaseWrapAt {
 
 }
 
-/**
-  * A value that decreases over time.
+/** A value that decreases over time.
   *
   * @param value The current value
   * @param unitsPerSecond The rate of change
@@ -129,12 +116,11 @@ object IncreaseWrapAt {
 final case class Decreasing(value: Double, unitsPerSecond: Double) extends TimeVaryingValue {
   def update(timeDelta: Seconds): Decreasing =
     this.copy(
-      value = value - unitsPerSecond * timeDelta.value
+      value = value - unitsPerSecond * timeDelta.toDouble
     )
 }
 
-/**
-  * A value that decreases over time until it hits a limit.
+/** A value that decreases over time until it hits a limit.
   *
   * @param value The current value
   * @param unitsPerSecond The rate of change
@@ -143,7 +129,7 @@ final case class Decreasing(value: Double, unitsPerSecond: Double) extends TimeV
 final case class DecreaseTo(value: Double, unitsPerSecond: Double, limit: Double) extends TimeVaryingValue {
   def update(timeDelta: Seconds): DecreaseTo =
     this.copy(
-      value = value - unitsPerSecond * timeDelta.value match {
+      value = value - unitsPerSecond * timeDelta.toDouble match {
         case x if x == limit || x < limit =>
           limit
 
@@ -153,8 +139,7 @@ final case class DecreaseTo(value: Double, unitsPerSecond: Double, limit: Double
     )
 }
 
-/**
-  * A value that decreases over time and wraps back to zero when it hits the limit
+/** A value that decreases over time and wraps back to zero when it hits the limit
   *
   * @param value The current/starting value
   * @param unitsPerSecond The rate of change
@@ -163,13 +148,12 @@ final case class DecreaseTo(value: Double, unitsPerSecond: Double, limit: Double
 final case class DecreaseWrapAt(value: Double, unitsPerSecond: Double, limit: Double) extends TimeVaryingValue {
   def update(timeDelta: Seconds): DecreaseWrapAt =
     this.copy(
-      value = (value - unitsPerSecond * timeDelta.value) % (limit + 1.0d)
+      value = (value - unitsPerSecond * timeDelta.toDouble) % (limit + 1.0d)
     )
 }
 object DecreaseWrapAt {
 
-  /**
-    * Constructor for a value that decreases over time and wraps back to zero when it hits the limit.
+  /** Constructor for a value that decreases over time and wraps back to zero when it hits the limit.
     * This constructor assumes the start value is zero.
     *
     * @param value The current value

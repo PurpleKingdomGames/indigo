@@ -12,6 +12,7 @@ import indigo.shared.time.Seconds
 import indigo.shared.datatypes.Vector2
 import indigo.shared.datatypes.Vector3
 import indigo.shared.datatypes.Point
+import indigo.shared.scenegraph.CloneId
 import indigo.shared.display.DisplayObject
 import indigo.shared.display.DisplayClone
 import indigo.shared.display.DisplayCloneBatch
@@ -22,6 +23,8 @@ import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.shared.datatypes.Radians
 import indigo.shared.shader.Uniform
 import indigo.shared.scenegraph.RenderNode
+import indigo.shared.assets.AssetName
+import indigo.platform.assets.AtlasId
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
 class DisplayObjectConversionsTests extends munit.FunSuite {
@@ -32,10 +35,10 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
   val animationRegister          = new AnimationsRegister
   val fontRegister               = new FontRegister
   val boundaryLocator            = new BoundaryLocator(animationRegister, fontRegister)
-  val texture                    = new TextureRefAndOffset("texture", Vector2(100, 100), Point.zero)
-  val assetMapping: AssetMapping = new AssetMapping(Map("texture" -> texture))
+  val texture                    = new TextureRefAndOffset(AtlasId("texture"), Vector2(100, 100), Point.zero)
+  val assetMapping: AssetMapping = new AssetMapping(Map(AssetName("texture") -> texture))
 
-  val cloneBlankMapping: Map[String, DisplayObject] = Map.empty[String, DisplayObject]
+  val cloneBlankMapping: Map[CloneId, DisplayObject] = Map.empty[CloneId, DisplayObject]
 
   val doc = new DisplayObjectConversions(
     boundaryLocator,

@@ -1,9 +1,9 @@
 package indigo.shared.shader
 
-final case class UniformBlock(blockName: String, uniforms: List[(Uniform, ShaderPrimitive)]) {
+final case class UniformBlock(blockName: String, uniforms: List[(Uniform, ShaderPrimitive)]) derives CanEqual {
 
   lazy val uniformHash: String =
-    uniforms.toList.map(p => p._1.name + p._2.hash).mkString
+    uniforms.toList.map(p => p._1.toString + p._2.hash).mkString
 
   def withUniformBlockName(newBlockName: String): UniformBlock =
     this.copy(blockName = newBlockName)
@@ -20,4 +20,6 @@ final case class UniformBlock(blockName: String, uniforms: List[(Uniform, Shader
 
 }
 
-final case class Uniform(name: String) extends AnyVal
+opaque type Uniform = String
+object Uniform:
+  def apply(name: String): Uniform = name

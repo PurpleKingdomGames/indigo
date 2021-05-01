@@ -4,7 +4,6 @@ import indigo.shared.datatypes.{Depth, Rectangle}
 import indigo.shared.events.GlobalEvent
 import indigo.shared.input.Mouse
 import indigo.shared.Outcome
-import indigo.shared.scenegraph.SceneNode
 import indigo.shared.scenegraph.EntityNode
 import indigo.shared.scenegraph.Shape
 import indigo.shared.scenegraph.Graphic
@@ -23,7 +22,7 @@ final case class Button(
     onDown: () => List[GlobalEvent],
     onHoverOver: () => List[GlobalEvent],
     onHoverOut: () => List[GlobalEvent]
-) {
+) derives CanEqual {
 
   def update(mouse: Mouse): Outcome[Button] = {
     val mouseInBounds = bounds.isPointWithin(mouse.position)
@@ -62,7 +61,7 @@ final case class Button(
       case n: EntityNode    => n
     }
 
-  def draw: SceneNode =
+  def draw: RenderNode =
     state match {
       case ButtonState.Up =>
         applyPositionAndDepth(buttonAssets.up, bounds.position, depth)
@@ -120,7 +119,7 @@ object Button {
 
 }
 
-sealed trait ButtonState {
+sealed trait ButtonState derives CanEqual {
   def isUp: Boolean
   def isDown: Boolean
   def isOver: Boolean
@@ -149,4 +148,4 @@ final case class ButtonAssets(
     up: RenderNode,
     over: RenderNode,
     down: RenderNode
-)
+) derives CanEqual

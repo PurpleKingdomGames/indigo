@@ -109,6 +109,8 @@ object Pirate {
     )
   }
 
+  given CanEqual[Option[BoundingBox], Option[BoundingBox]] = CanEqual.derived
+
   def adjustOnCollision(platform: Platform, proposedBounds: BoundingBox): (BoundingBox, Boolean) =
     platform.hitTest(proposedBounds) match {
       case Some(value) =>

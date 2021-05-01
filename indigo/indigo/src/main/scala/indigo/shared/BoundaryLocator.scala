@@ -59,7 +59,7 @@ final class BoundaryLocator(animationsRegister: AnimationsRegister, fontRegister
     }
 
   def spriteBounds(sprite: Sprite): Rectangle =
-    QuickCache(s"""sprite-${sprite.bindingKey.value}-${sprite.animationKey.value}""") {
+    QuickCache(s"""sprite-${sprite.bindingKey}-${sprite.animationKey}""") {
       animationsRegister.fetchAnimationInLastState(sprite.bindingKey, sprite.animationKey) match {
         case Some(animation) =>
           Rectangle(sprite.position, animation.currentFrame.crop.size)
@@ -81,15 +81,14 @@ final class BoundaryLocator(animationsRegister: AnimationsRegister, fontRegister
       }
 
   def textAsLinesWithBounds(text: String, fontKey: FontKey): List[TextLine] =
-    QuickCache(s"""text-lines-${fontKey.key}-${text}""") {
+    QuickCache(s"""text-lines-${fontKey}-${text}""") {
       fontRegister
         .findByFontKey(fontKey)
         .map { fontInfo =>
           text.linesIterator.toList
             .map(lineText => new TextLine(lineText, textLineBounds(lineText, fontInfo)))
-            .foldLeft((0, List[TextLine]())) {
-              case ((yPos, lines), textLine) =>
-                (yPos + textLine.lineBounds.height, lines ++ List(textLine.moveTo(0, yPos)))
+            .foldLeft((0, List[TextLine]())) { case ((yPos, lines), textLine) =>
+              (yPos + textLine.lineBounds.height, lines ++ List(textLine.moveTo(0, yPos)))
             }
             ._2
         }
@@ -100,7 +99,7 @@ final class BoundaryLocator(animationsRegister: AnimationsRegister, fontRegister
     }
 
   def textBounds(text: Text): Rectangle =
-    QuickCache(s"""text-bounds-${text.fontKey.key}-${text.text}""") {
+    QuickCache(s"""text-bounds-${text.fontKey}-${text.text}""") {
       val unaligned =
         textAsLinesWithBounds(text.text, text.fontKey)
           .map(_.lineBounds)

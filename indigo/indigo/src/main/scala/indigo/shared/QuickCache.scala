@@ -41,7 +41,7 @@ final class QuickCache[A](private val cache: mutable.HashMap[CacheKey, A]) {
     cache.toList
 
   def entryExistsFor(key: CacheKey): Boolean =
-    cache.keys.exists(_.value == key.value)
+    cache.keys.exists(_ == key)
 
   def unsafeFetch(key: CacheKey): A =
     cache(key)
@@ -69,11 +69,11 @@ object QuickCache {
 
 }
 
-final class CacheKey(val value: String) extends AnyVal
-object CacheKey {
-  def apply(value: String): CacheKey =
-    new CacheKey(value)
-}
+opaque type CacheKey = String
+object CacheKey:
+  def apply(value: String): CacheKey = value
+
+  given CanEqual[CacheKey, CacheKey] = CanEqual.derived
 
 trait ToCacheKey[A] {
   def toKey(a: A): CacheKey

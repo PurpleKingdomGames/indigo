@@ -15,8 +15,8 @@ object PerfAssets {
     Set(
       AssetType.Image(smallFontName, AssetPath("assets/boxy_font.png")),
       AssetType.Image(light, AssetPath("assets/light_texture.png")),
-      AssetType.Text(AssetName(dudeName.value + "-json"), AssetPath("assets/" + dudeName.value + ".json")),
-      AssetType.Image(dudeName, AssetPath("assets/" + dudeName.value + ".png"))
+      AssetType.Text(AssetName(dudeName.toString + "-json"), AssetPath("assets/" + dudeName + ".json")),
+      AssetType.Image(dudeName, AssetPath("assets/" + dudeName + ".png"))
     )
 
 }

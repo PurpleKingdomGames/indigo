@@ -48,17 +48,17 @@ class ProjectilesSpecification extends Properties("Projectiles") {
 
   property("specific toScreenSpace checks") = Prop.all(
     s"0,0 was ${vertexToScreenPoint(Vertex(0, 0))} not ${Point(safeSpace.horizontalCenter, safeSpace.bottom)}" |:
-      vertexToScreenPoint(Vertex(0, 0)) === Point(safeSpace.horizontalCenter, safeSpace.bottom),
+      vertexToScreenPoint(Vertex(0, 0)) == Point(safeSpace.horizontalCenter, safeSpace.bottom),
     s"0,1 was ${vertexToScreenPoint(Vertex(0, 1))} not ${Point(safeSpace.horizontalCenter, safeSpace.top)}" |:
-      vertexToScreenPoint(Vertex(0, 1)) === Point(safeSpace.horizontalCenter, safeSpace.top),
+      vertexToScreenPoint(Vertex(0, 1)) == Point(safeSpace.horizontalCenter, safeSpace.top),
     s"-1,0 was ${vertexToScreenPoint(Vertex(-1, 0))} not ${Point(safeSpace.left, safeSpace.bottom)}" |:
-      vertexToScreenPoint(Vertex(-1, 0)) === Point(safeSpace.left, safeSpace.bottom),
+      vertexToScreenPoint(Vertex(-1, 0)) == Point(safeSpace.left, safeSpace.bottom),
     s"-1,1 was ${vertexToScreenPoint(Vertex(-1, 1))} not ${Point(safeSpace.left, safeSpace.top)}" |:
-      vertexToScreenPoint(Vertex(-1, 1)) === Point(safeSpace.left, safeSpace.top),
+      vertexToScreenPoint(Vertex(-1, 1)) == Point(safeSpace.left, safeSpace.top),
     s"1,0 was ${vertexToScreenPoint(Vertex(1, 0))} not ${Point(safeSpace.right, safeSpace.bottom)}" |:
-      vertexToScreenPoint(Vertex(1, 0)) === Point(safeSpace.right, safeSpace.bottom),
+      vertexToScreenPoint(Vertex(1, 0)) == Point(safeSpace.right, safeSpace.bottom),
     s"1,1 was ${vertexToScreenPoint(Vertex(1, 1))} not ${Point(safeSpace.right, safeSpace.top)}" |:
-      vertexToScreenPoint(Vertex(1, 1)) === Point(safeSpace.right, safeSpace.top)
+      vertexToScreenPoint(Vertex(1, 1)) == Point(safeSpace.right, safeSpace.top)
   )
 
   def vertexToScreenPoint(vertex: Vertex): Point =

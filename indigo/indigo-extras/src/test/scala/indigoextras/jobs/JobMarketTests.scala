@@ -65,9 +65,9 @@ class JobMarketTests extends munit.FunSuite {
     val job: Job          = SampleJobs.CantHave()
     val market: JobMarket = JobMarket(List(job))
 
-    val report = market.availableJobs.map(_.jobName.value).mkString(",")
+    val report = market.availableJobs.map(_.jobName.toString).mkString(",")
 
-    assertEquals(report.contains(job.jobName.value), true)
+    assertEquals(report.contains(job.jobName.toString), true)
   }
 
   test("The job market.should not render anything") {

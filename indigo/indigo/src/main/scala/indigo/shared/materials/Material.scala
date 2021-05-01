@@ -18,7 +18,7 @@ trait Material {
 }
 object Material {
 
-  final case class Bitmap(diffuse: AssetName, lighting: LightingModel, shaderId: Option[ShaderId]) extends Material {
+  final case class Bitmap(diffuse: AssetName, lighting: LightingModel, shaderId: Option[ShaderId]) extends Material derives CanEqual {
 
     def withDiffuse(newDiffuse: AssetName): Bitmap =
       this.copy(diffuse = newDiffuse)
@@ -59,7 +59,7 @@ object Material {
       Bitmap(diffuse, lighting, None)
   }
 
-  final case class ImageEffects(diffuse: AssetName, alpha: Double, tint: RGBA, overlay: Fill, saturation: Double, lighting: LightingModel, shaderId: Option[ShaderId]) extends Material {
+  final case class ImageEffects(diffuse: AssetName, alpha: Double, tint: RGBA, overlay: Fill, saturation: Double, lighting: LightingModel, shaderId: Option[ShaderId]) extends Material derives CanEqual {
 
     def withDiffuse(newDiffuse: AssetName): ImageEffects =
       this.copy(diffuse = newDiffuse)

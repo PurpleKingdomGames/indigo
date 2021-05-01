@@ -57,8 +57,8 @@ class Vector2Tests extends munit.FunSuite {
   }
 
   test("Construction.build a vector from two points") {
-    assertEquals(Vector2.fromPoints(Point.zero, Point(2, 2)) === Vector2(2, 2), true)
-    assertEquals(Vector2.fromPoints(Point(10, 2), Point(2, 2)) === Vector2(-8, 0), true)
+    assertEquals(Vector2.fromPoints(Point.zero, Point(2, 2)) == Vector2(2, 2), true)
+    assertEquals(Vector2.fromPoints(Point(10, 2), Point(2, 2)) == Vector2(-8, 0), true)
   }
 
   test("dot product") {
@@ -123,8 +123,8 @@ class Vector2Tests extends munit.FunSuite {
   test("normalise") {
     assert(clue(Vector2(10, 10).normalise) ~== clue(Vector2(0.7071, 0.7071)))
     assert(clue(Vector2(-10, -10).normalise) ~== clue(Vector2(-0.7071, -0.7071)))
-    assert(clue(Vector2(10, 0).normalise) === clue(Vector2(1, 0)))
-    assert(clue(Vector2(0, 10).normalise) === clue(Vector2(0, 1)))
+    assert(clue(Vector2(10, 0).normalise) == clue(Vector2(1, 0)))
+    assert(clue(Vector2(0, 10).normalise) == clue(Vector2(0, 1)))
     assert(clue(Vector2(-50, 1000).normalise) ~== clue(Vector2(-0.0499, 0.9987)))
   }
 

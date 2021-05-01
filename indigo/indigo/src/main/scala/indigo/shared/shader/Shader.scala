@@ -2,7 +2,7 @@ package indigo.shared.shader
 
 import indigo.shared.assets.AssetName
 
-sealed trait Shader {
+sealed trait Shader derives CanEqual {
   def id: ShaderId
 }
 object Shader {

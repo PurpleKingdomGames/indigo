@@ -5,7 +5,7 @@ import indigo.shared.collections.NonEmptyList
 
 import scala.annotation.tailrec
 
-final case class SceneFinder(previous: List[ScenePosition], current: ScenePosition, next: List[ScenePosition]) {
+final case class SceneFinder(previous: List[ScenePosition], current: ScenePosition, next: List[ScenePosition]) derives CanEqual {
 
   val sceneCount: Int =
     toList.length
@@ -70,15 +70,18 @@ final case class SceneFinder(previous: List[ScenePosition], current: ScenePositi
         sf
 
       case None =>
-        IndigoLogger.errorOnce("Failed to find scene called: " + name.name)
+        IndigoLogger.errorOnce("Failed to find scene called: " + name)
         this
     }
 
 }
 
 object SceneFinder {
+  given CanEqual[Option[SceneFinder], Option[SceneFinder]] = CanEqual.derived
 
-  def fromScenes[StartUpData, GameModel, ViewModel](scenesList: NonEmptyList[Scene[StartUpData, GameModel, ViewModel]]): SceneFinder = {
+  def fromScenes[StartUpData, GameModel, ViewModel](
+      scenesList: NonEmptyList[Scene[StartUpData, GameModel, ViewModel]]
+  ): SceneFinder = {
     val a = scenesList.map(_.name).zipWithIndex.map(p => ScenePosition(p._2, p._1))
 
     SceneFinder(Nil, a.head, a.tail)
@@ -86,4 +89,4 @@ object SceneFinder {
 
 }
 
-final case class ScenePosition(index: Int, name: SceneName)
+final case class ScenePosition(index: Int, name: SceneName) derives CanEqual

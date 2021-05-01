@@ -1,6 +1,6 @@
 package indigoextras.pathfinding
 
-sealed trait GridSquare extends Product with Serializable {
+sealed trait GridSquare extends Product with Serializable derives CanEqual {
   val index: Int
   val coords: Coords
   val name: String

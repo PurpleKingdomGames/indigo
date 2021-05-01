@@ -1,12 +1,14 @@
 package indigo.shared.constants
 
-final case class Key(code: Int, key: String) {
+final case class Key(code: Int, key: String) derives CanEqual {
   def isPrintable: Boolean =
     (key != "") && Key.printable.map(_.code).contains(this.code)
 
+  // DO NOT REMOVE
   def ===(other: Key): Boolean =
     code == other.code
 
+  // DO NOT REMOVE
   // This is not an accident, or it was, but now it's a feature...
   // This allows us to pattern match on specific key instances.
   // Hopefully we can replace with Scala 3 enums or something...

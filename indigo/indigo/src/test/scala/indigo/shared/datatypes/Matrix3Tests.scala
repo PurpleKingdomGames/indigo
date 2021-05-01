@@ -247,7 +247,7 @@ class Matrix3Tests extends munit.FunSuite {
 
     val mat2: Matrix3 =
       Matrix3.identity
-        .rotate(Radians(Radians.TAUby4.value + 0.0005))
+        .rotate(Radians(Radians.TAUby4.toDouble + 0.0005))
 
     assert(clue(mat1) ~== clue(mat2))
   }

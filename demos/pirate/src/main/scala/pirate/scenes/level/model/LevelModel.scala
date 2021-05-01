@@ -8,7 +8,7 @@ some data during the loading screen, parse it, and use it to generate part
 of the model. We _could_ represent that with an Option, but that could get
 messy.
 */
-sealed trait LevelModel {
+sealed trait LevelModel derives CanEqual {
   val notReady: Boolean
 
   def update(gameTime: GameTime, inputState: InputState): Outcome[LevelModel]

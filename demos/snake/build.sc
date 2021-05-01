@@ -10,7 +10,7 @@ import coursier.maven.MavenRepository
 import $ivy.`io.indigoengine::mill-indigo:0.7.2-SNAPSHOT`, millindigo._
 
 object snake extends ScalaJSModule with MillIndigo {
-  def scalaVersion   = "3.0.0-RC2"
+  def scalaVersion   = "3.0.0-RC3"
   def scalaJSVersion = "1.5.1"
 
   val gameAssetsDirectory: os.Path = os.pwd / "assets"
@@ -47,7 +47,7 @@ object snake extends ScalaJSModule with MillIndigo {
 
   object test extends Tests {
     def ivyDeps = Agg(
-      ivy"org.scalameta::munit::0.7.23"
+      ivy"org.scalameta::munit::0.7.25"
     )
 
     def testFrameworks = Seq("munit.Framework")
@@ -72,7 +72,8 @@ object ScalacOptions {
       "-language:higherKinds",         // Allow higher-kinded types
       "-language:implicitConversions", // Allow definition of implicit functions called views
       "-unchecked",                    // Enable additional warnings where generated code depends on assumptions.
-      "-Xfatal-warnings"               // Fail the compilation if there are any warnings.
+      "-Xfatal-warnings",              // Fail the compilation if there are any warnings.
+      "-language:strictEquality"       // Scala 3 - Multiversal Equality
     )
 
   lazy val test: Seq[String] =

@@ -23,6 +23,8 @@ import indigo.shared.scenegraph.DirectionLight
 import indigo.shared.scenegraph.PointLight
 import indigo.shared.scenegraph.SpotLight
 import indigo.shared.scenegraph.Falloff
+import indigo.shared.scenegraph.CloneId
+import indigo.shared.datatypes.Depth
 
 final class SceneProcessor(
     boundaryLocator: BoundaryLocator,
@@ -46,21 +48,31 @@ final class SceneProcessor(
   ): ProcessedSceneData = {
 
     val cloneBlankDisplayObjects =
-      scene.cloneBlanks.foldLeft(Map.empty[String, DisplayObject]) { (acc, blank) =>
+      scene.cloneBlanks.foldLeft(Map.empty[CloneId, DisplayObject]) { (acc, blank) =>
         blank.cloneable match {
           case s: Shape =>
-            acc + (blank.id.value -> displayObjectConverterClone.shapeToDisplayObject(s))
+            acc + (blank.id -> displayObjectConverterClone.shapeToDisplayObject(s))
 
           case g: Graphic =>
-            acc + (blank.id.value -> displayObjectConverterClone.graphicToDisplayObject(g, assetMapping))
+            acc + (blank.id -> displayObjectConverterClone.graphicToDisplayObject(g, assetMapping))
 
           case s: Sprite =>
-            animationsRegister.fetchAnimationForSprite(gameTime, s.bindingKey, s.animationKey, s.animationActions) match {
+            animationsRegister.fetchAnimationForSprite(
+              gameTime,
+              s.bindingKey,
+              s.animationKey,
+              s.animationActions
+            ) match {
               case None =>
                 acc
 
               case Some(anim) =>
-                acc + (blank.id.value -> displayObjectConverterClone.spriteToDisplayObject(boundaryLocator, s, assetMapping, anim))
+                acc + (blank.id -> displayObjectConverterClone.spriteToDisplayObject(
+                  boundaryLocator,
+                  s,
+                  assetMapping,
+                  anim
+                ))
             }
 
           case _ =>
@@ -72,24 +84,24 @@ final class SceneProcessor(
       scene.layers
         .filter(l => l.visible.getOrElse(true))
         .zipWithIndex
-        .map {
-          case (l, i) =>
-            val blending   = l.blending.getOrElse(Blending.Normal)
-            val shaderData = blending.blendMaterial.toShaderData
+        .map { case (l, i) =>
+          val blending   = l.blending.getOrElse(Blending.Normal)
+          val shaderData = blending.blendMaterial.toShaderData
 
-            DisplayLayer(
-              displayObjectConverter.sceneNodesToDisplayObjects(l.nodes, gameTime, assetMapping, cloneBlankDisplayObjects),
-              SceneProcessor.makeLightsData(scene.lights ++ l.lights),
-              blending.clearColor.getOrElse(RGBA.Zero),
-              l.magnification,
-              l.depth.map(_.value).getOrElse(i),
-              blending.entity,
-              blending.layer,
-              shaderData.shaderId,
-              SceneProcessor.mergeShaderToUniformData(shaderData)
-            )
+          DisplayLayer(
+            displayObjectConverter
+              .sceneNodesToDisplayObjects(l.nodes, gameTime, assetMapping, cloneBlankDisplayObjects),
+            SceneProcessor.makeLightsData(scene.lights ++ l.lights),
+            blending.clearColor.getOrElse(RGBA.Zero),
+            l.magnification,
+            l.depth.getOrElse(Depth(i)),
+            blending.entity,
+            blending.layer,
+            shaderData.shaderId,
+            SceneProcessor.mergeShaderToUniformData(shaderData)
+          )
         }
-        .sortBy(_.depth)
+        .sortBy(_.depth.toInt)
 
     val sceneBlend = scene.blendMaterial.getOrElse(BlendMaterial.Normal).toShaderData
 
@@ -144,8 +156,9 @@ object SceneProcessor {
         LightData(
           lightFlags = Array[Float](1.0f, 1.0f, 0.0f, 0.0f),
           lightColor = Array[Float](l.color.r.toFloat, l.color.g.toFloat, l.color.b.toFloat, l.color.a.toFloat),
-          lightSpecular = Array[Float](l.specular.r.toFloat, l.specular.g.toFloat, l.specular.b.toFloat, l.specular.a.toFloat),
-          lightPositionRotation = Array[Float](0.0f, 0.0f, l.rotation.value.toFloat, 0.0f),
+          lightSpecular =
+            Array[Float](l.specular.r.toFloat, l.specular.g.toFloat, l.specular.b.toFloat, l.specular.a.toFloat),
+          lightPositionRotation = Array[Float](0.0f, 0.0f, l.rotation.toFloat, 0.0f),
           lightNearFarAngleIntensity = Array[Float](0.0f, 0.0f, 0.0f, 0.0f)
         )
 
@@ -188,7 +201,8 @@ object SceneProcessor {
         LightData(
           lightFlags = Array[Float](1.0f, 2.0f, useFarCuttOff, falloffType),
           lightColor = Array[Float](l.color.r.toFloat, l.color.g.toFloat, l.color.b.toFloat, l.color.a.toFloat),
-          lightSpecular = Array[Float](l.specular.r.toFloat, l.specular.g.toFloat, l.specular.b.toFloat, l.specular.a.toFloat),
+          lightSpecular =
+            Array[Float](l.specular.r.toFloat, l.specular.g.toFloat, l.specular.b.toFloat, l.specular.a.toFloat),
           lightPositionRotation = Array[Float](l.position.x.toFloat, l.position.y.toFloat, 0.0f, 0.0f),
           lightNearFarAngleIntensity = Array[Float](near, far, 0.0f, l.intensity.toFloat)
         )
@@ -232,9 +246,10 @@ object SceneProcessor {
         LightData(
           lightFlags = Array[Float](1.0f, 3.0f, useFarCuttOff, falloffType),
           lightColor = Array[Float](l.color.r.toFloat, l.color.g.toFloat, l.color.b.toFloat, l.color.a.toFloat),
-          lightSpecular = Array[Float](l.specular.r.toFloat, l.specular.g.toFloat, l.specular.b.toFloat, l.specular.a.toFloat),
-          lightPositionRotation = Array[Float](l.position.x.toFloat, l.position.y.toFloat, l.rotation.value.toFloat, 0.0f),
-          lightNearFarAngleIntensity = Array[Float](near, far, l.angle.value.toFloat, l.intensity.toFloat)
+          lightSpecular =
+            Array[Float](l.specular.r.toFloat, l.specular.g.toFloat, l.specular.b.toFloat, l.specular.a.toFloat),
+          lightPositionRotation = Array[Float](l.position.x.toFloat, l.position.y.toFloat, l.rotation.toFloat, 0.0f),
+          lightNearFarAngleIntensity = Array[Float](near, far, l.angle.toFloat, l.intensity.toFloat)
         )
     }
 
@@ -254,7 +269,7 @@ final case class LightData(
     lightSpecular: Array[Float],
     lightPositionRotation: Array[Float],
     lightNearFarAngleIntensity: Array[Float]
-) {
+) derives CanEqual {
   def +(other: LightData): LightData =
     this.copy(
       lightFlags = lightFlags ++ other.lightFlags,

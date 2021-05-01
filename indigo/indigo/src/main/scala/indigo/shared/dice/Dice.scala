@@ -7,8 +7,7 @@ import scala.util.Random
 import indigo.shared.time.Millis
 import indigo.shared.time.Seconds
 
-/**
-  * All dice rolls are from value 1 to N inclusive.
+/** All dice rolls are from value 1 to N inclusive.
   * Like a dice.
   */
 trait Dice {
@@ -27,10 +26,10 @@ trait Dice {
 object Dice {
 
   def fromSeconds(time: Seconds): Dice =
-    Sides.MaxInt(time.toMillis.value)
+    Sides.MaxInt(time.toMillis.toLong)
 
   def fromMillis(time: Millis): Dice =
-    Sides.MaxInt(time.value)
+    Sides.MaxInt(time.toLong)
 
   def fromSeed(seed: Long): Dice =
     Sides.MaxInt(seed)

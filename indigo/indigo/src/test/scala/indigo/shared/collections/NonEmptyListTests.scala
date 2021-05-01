@@ -1,6 +1,5 @@
 package indigo.shared.collections
 
-
 @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
 class NonEmptyListTests extends munit.FunSuite {
 
@@ -68,12 +67,19 @@ class NonEmptyListTests extends munit.FunSuite {
     assertEquals(1 :: NonEmptyList(2) == NonEmptyList(1, 2), true)
   }
 
+  given CanEqual[(String, Int), (String, Int)] = CanEqual.derived
+
   test("NonEmptyList ops.should have: zipWithIndex") {
     assertEquals(NonEmptyList("a", "b", "c").zipWithIndex == NonEmptyList(("a", 0), ("b", 1), ("c", 2)), true)
   }
 
+  given CanEqual[(Int, String), (Int, String)] = CanEqual.derived
+
   test("NonEmptyList ops.should have: zip") {
-    assertEquals((NonEmptyList(1, 2, 3) zip NonEmptyList("a", "b", "c")) == NonEmptyList((1, "a"), (2, "b"), (3, "c")), true)
+    assertEquals(
+      (NonEmptyList(1, 2, 3) zip NonEmptyList("a", "b", "c")) == NonEmptyList((1, "a"), (2, "b"), (3, "c")),
+      true
+    )
   }
 
   test("NonEmptyList ops.should have: forall") {

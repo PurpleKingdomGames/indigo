@@ -35,9 +35,9 @@ class RadiansTests extends munit.FunSuite {
   }
 
   def doubleCloseEnough(r1: Radians, r2: Radians): Boolean =
-    r1.value - 0.001 < r2.value && r1.value + 0.001 > r2.value
+    r1.toDouble - 0.001 < r2.toDouble && r1.toDouble + 0.001 > r2.toDouble
 
   def round(d: Radians): Double =
-    Math.floor(d.value * 100d) / 100d
+    Math.floor(d.toDouble * 100d) / 100d
 
 }

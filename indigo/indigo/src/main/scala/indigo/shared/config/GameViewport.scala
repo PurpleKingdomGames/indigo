@@ -9,7 +9,7 @@ import indigo.shared.datatypes.Point
   * @param width Width in pixels
   * @param height Height in pixels
   */
-final case class GameViewport(width: Int, height: Int) {
+final case class GameViewport(width: Int, height: Int) derives CanEqual {
   val horizontalMiddle: Int = width / 2
   val verticalMiddle: Int   = height / 2
   val center: Point         = Point(horizontalMiddle, verticalMiddle)

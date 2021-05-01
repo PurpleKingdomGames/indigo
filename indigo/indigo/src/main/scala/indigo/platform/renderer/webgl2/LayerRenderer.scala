@@ -18,6 +18,8 @@ import indigo.platform.renderer.shared.FrameBufferComponents
 import indigo.shared.datatypes.RGBA
 import scala.collection.mutable.HashMap
 import indigo.shared.shader.ShaderId
+import indigo.platform.assets.AtlasId
+import indigo.shared.scenegraph.CloneId
 
 import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.platform.renderer.shared.WebGLHelper
@@ -87,7 +89,12 @@ class LayerRenderer(
     channelOffsets23Data((i * 4) + 3) = d.channelOffset3Y
   }
 
-  def requiresContextChange(d: DisplayObject, atlasName: Option[String], currentShader: ShaderId, currentUniformHash: String): Boolean = {
+  def requiresContextChange(
+      d: DisplayObject,
+      atlasName: Option[AtlasId],
+      currentShader: ShaderId,
+      currentUniformHash: String
+  ): Boolean = {
     val uniformHash: String = d.shaderUniformData.map(_.uniformHash).mkString
 
     d.shaderId != currentShader ||
@@ -97,11 +104,12 @@ class LayerRenderer(
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
   private var currentProgram: WebGLProgram = null
+  private given CanEqual[Option[WebGLProgram], Option[WebGLProgram]] = CanEqual.derived
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def doContextChange(
       d: DisplayObject,
-      atlasName: Option[String],
+      atlasName: Option[AtlasId],
       currentShader: ShaderId,
       currentUniformHash: String,
       customShaders: HashMap[ShaderId, WebGLProgram]
@@ -117,19 +125,26 @@ class LayerRenderer(
             s
 
           case None =>
-            throw new Exception(s"Missing entity shader '${d.shaderId.value}'. Have you remembered to add the shader to the boot sequence or disabled auto-loading of default shaders?")
+            throw new Exception(
+              s"Missing entity shader '${d.shaderId}'. Have you remembered to add the shader to the boot sequence or disabled auto-loading of default shaders?"
+            )
         }
       else currentProgram
 
     // UBO data
     val uniformHash: String = d.shaderUniformData.map(_.uniformHash).mkString
     if (uniformHash.nonEmpty && uniformHash != currentUniformHash)
-      d.shaderUniformData.zipWithIndex.foreach {
-        case (ud, i) =>
-          val buff = customDataUBOBuffers.getOrElseUpdate(ud.uniformHash, gl2.createBuffer())
+      d.shaderUniformData.zipWithIndex.foreach { case (ud, i) =>
+        val buff = customDataUBOBuffers.getOrElseUpdate(ud.uniformHash, gl2.createBuffer())
 
-          WebGLHelper.attachUBOData(gl2, ud.data, buff)
-          WebGLHelper.bindUBO(gl2, activeShader, ud.blockName, RendererWebGL2Constants.customDataBlockOffsetPointer + i, buff)
+        WebGLHelper.attachUBOData(gl2, ud.data, buff)
+        WebGLHelper.bindUBO(
+          gl2,
+          activeShader,
+          ud.blockName,
+          RendererWebGL2Constants.customDataBlockOffsetPointer + i,
+          buff
+        )
       }
 
     // Atlas
@@ -151,9 +166,27 @@ class LayerRenderer(
 
     gl2.useProgram(program)
 
-    WebGLHelper.bindUBO(gl2, program, "IndigoProjectionData", RendererWebGL2Constants.projectionBlockPointer, projectionUBOBuffer)
-    WebGLHelper.bindUBO(gl2, program, "IndigoFrameData", RendererWebGL2Constants.frameDataBlockPointer, frameDataUBOBuffer)
-    WebGLHelper.bindUBO(gl2, program, "IndigoDynamicLightingData", RendererWebGL2Constants.lightDataBlockPointer, lightDataUBOBuffer)
+    WebGLHelper.bindUBO(
+      gl2,
+      program,
+      "IndigoProjectionData",
+      RendererWebGL2Constants.projectionBlockPointer,
+      projectionUBOBuffer
+    )
+    WebGLHelper.bindUBO(
+      gl2,
+      program,
+      "IndigoFrameData",
+      RendererWebGL2Constants.frameDataBlockPointer,
+      frameDataUBOBuffer
+    )
+    WebGLHelper.bindUBO(
+      gl2,
+      program,
+      "IndigoDynamicLightingData",
+      RendererWebGL2Constants.lightDataBlockPointer,
+      lightDataUBOBuffer
+    )
 
     // Instance attributes
     // vec4 a_matRotateScale
@@ -179,8 +212,10 @@ class LayerRenderer(
       gl2.drawArraysInstanced(TRIANGLE_STRIP, 0, 4, instanceCount)
     }
 
+  private given CanEqual[List[DisplayEntity], List[DisplayEntity]] = CanEqual.derived
+
   def drawLayer(
-      cloneBlankDisplayObjects: Map[String, DisplayObject],
+      cloneBlankDisplayObjects: Map[CloneId, DisplayObject],
       displayEntities: ListBuffer[DisplayEntity],
       frameBufferComponents: FrameBufferComponents,
       clearColor: RGBA,
@@ -196,7 +231,13 @@ class LayerRenderer(
     gl2.activeTexture(TEXTURE0);
 
     @tailrec
-    def rec(remaining: List[DisplayEntity], batchCount: Int, atlasName: Option[String], currentShader: ShaderId, currentShaderHash: String): Unit =
+    def rec(
+        remaining: List[DisplayEntity],
+        batchCount: Int,
+        atlasName: Option[AtlasId],
+        currentShader: ShaderId,
+        currentShaderHash: String
+    ): Unit =
       remaining match {
         case Nil =>
           drawBuffer(batchCount)
@@ -264,7 +305,13 @@ class LayerRenderer(
                 val numberProcessed: Int =
                   processCloneBatch(c, d, batchCount)
 
-                rec(ds, batchCount + numberProcessed, d.atlasName, d.shaderId, d.shaderUniformData.map(_.uniformHash).mkString)
+                rec(
+                  ds,
+                  batchCount + numberProcessed,
+                  d.atlasName,
+                  d.shaderId,
+                  d.shaderUniformData.map(_.uniformHash).mkString
+                )
               }
           }
 

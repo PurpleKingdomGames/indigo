@@ -4,8 +4,7 @@ import indigo.shared.config.RenderingTechnology.WebGL2WithFallback
 import indigo.shared.config.RenderingTechnology.WebGL1
 import indigo.shared.config.RenderingTechnology.WebGL2
 
-/**
-  * Additional settings to help tune a games performance.
+/** Additional settings to help tune a games performance.
   *
   * @param renderingTechnology Use WebGL 1.0 or 2.0? Defaults to 2.0 with fallback to 1.0.
   * @param antiAliasing Smooth the rendered view? Defaults to false.
@@ -20,7 +19,7 @@ final case class AdvancedGameConfig(
     disableSkipModelUpdates: Boolean,
     disableSkipViewUpdates: Boolean,
     autoLoadStandardShaders: Boolean
-) {
+) derives CanEqual {
 
   def withRenderingTechnology(tech: RenderingTechnology): AdvancedGameConfig =
     this.copy(renderingTechnology = tech)
@@ -73,20 +72,17 @@ object AdvancedGameConfig {
     )
 }
 
-/**
-  * ADT that specifies which renderer to use.
+/** ADT that specifies which renderer to use.
   * The default is to try and use WebGL 2.0 and fallback to WebGL 1.0, but you can force one or the other.
   */
-sealed trait RenderingTechnology {
-  def name: String =
-    this match {
-      case WebGL1             => "WebGL 1.0"
-      case WebGL2             => "WebGL 2.0"
-      case WebGL2WithFallback => "WebGL 2.0 (will fallback to WebGL 1.0)"
-    }
-}
-object RenderingTechnology {
-  case object WebGL1             extends RenderingTechnology
-  case object WebGL2             extends RenderingTechnology
-  case object WebGL2WithFallback extends RenderingTechnology
-}
+enum RenderingTechnology derives CanEqual:
+  case WebGL1, WebGL2, WebGL2WithFallback
+
+object RenderingTechnology:
+  extension(t: RenderingTechnology)
+    def name: String =
+      t match {
+        case WebGL1             => "WebGL 1.0"
+        case WebGL2             => "WebGL 2.0"
+        case WebGL2WithFallback => "WebGL 2.0 (will fallback to WebGL 1.0)"
+      }

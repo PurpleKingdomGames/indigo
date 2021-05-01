@@ -5,7 +5,7 @@ import indigoextras.pathfinding.GridSquare.{EmptySquare, EndSquare, ImpassableSq
 import scala.annotation.tailrec
 import indigo.shared.dice.Dice
 
-final case class SearchGrid(validationWidth: Int, validationHeight: Int, start: Coords, end: Coords, grid: List[GridSquare]) {
+final case class SearchGrid(validationWidth: Int, validationHeight: Int, start: Coords, end: Coords, grid: List[GridSquare]) derives CanEqual {
 
   def isValid: Boolean =
     SearchGrid.isValid(this)

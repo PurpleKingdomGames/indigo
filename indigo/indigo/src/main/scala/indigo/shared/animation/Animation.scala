@@ -8,7 +8,7 @@ final case class Animation(
     animationKey: AnimationKey,
     currentCycleLabel: CycleLabel,
     cycles: NonEmptyList[Cycle]
-) {
+) derives CanEqual {
 
   def addCycle(cycle: Cycle): Animation =
     this.copy(cycles = cycle :: cycles)

@@ -1,12 +1,11 @@
 package indigo.shared.scenegraph
 
-/**
-  * Used as the blueprint for any clones that want to copy it.
+/** Used as the blueprint for any clones that want to copy it.
   *
   * @param id
   * @param cloneable
   */
-final case class CloneBlank(id: CloneId, cloneable: Cloneable) {
+final case class CloneBlank(id: CloneId, cloneable: Cloneable) derives CanEqual {
   def withCloneId(newCloneId: CloneId): CloneBlank =
     this.copy(id = newCloneId)
 
@@ -14,14 +13,12 @@ final case class CloneBlank(id: CloneId, cloneable: Cloneable) {
     this.copy(cloneable = newCloneable)
 }
 
-/**
-  * Used to distingush between cloneable and non-clonable scene graph nodes.
+/** Used to distingush between cloneable and non-clonable scene graph nodes.
   */
 trait Cloneable
 
-/**
-  * A CloneId is used to connect a Clone instance to a CloneBlank.
-  *
-  * @param value
+/** A CloneId is used to connect a Clone instance to a CloneBlank.
   */
-final case class CloneId(value: String) extends AnyVal
+opaque type CloneId = String
+object CloneId:
+  def apply(value: String): CloneId = value

@@ -1,6 +1,6 @@
 package indigo.shared.datatypes
 
-final case class Vector4(x: Double, y: Double, z: Double, w: Double) {
+final case class Vector4(x: Double, y: Double, z: Double, w: Double) derives CanEqual {
 
   def withX(newX: Double): Vector4 =
     this.copy(x = newX)
@@ -100,9 +100,6 @@ final case class Vector4(x: Double, y: Double, z: Double, w: Double) {
 
   override def toString: String =
     s"Vector4(x = ${x.toString()}, y = ${y.toString()}, z = ${z.toString()}, w = ${z.toString()})"
-
-  def ===(other: Vector4): Boolean =
-    x == other.x && y == other.y && z == other.z && w == other.w
 
   def ~==(other: Vector4): Boolean =
     Math.abs(x - other.x) < 0.0001 &&

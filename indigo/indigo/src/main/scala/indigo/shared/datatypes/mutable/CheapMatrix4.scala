@@ -1,8 +1,9 @@
 package indigo.shared.datatypes.mutable
 
 import indigo.shared.datatypes.Matrix4
+import indigo.shared.datatypes.Radians
 
-final case class CheapMatrix4(mat: Array[Double]) {
+final case class CheapMatrix4(mat: Array[Double]) derives CanEqual {
 
   lazy val x: Double = mat(12)
   lazy val y: Double = mat(13)
@@ -13,7 +14,7 @@ final case class CheapMatrix4(mat: Array[Double]) {
   def translate(byX: Double, byY: Double, byZ: Double): CheapMatrix4 =
     this * CheapMatrix4.translate(byX, byY, byZ)
 
-  def rotate(angle: Double): CheapMatrix4 =
+  def rotate(angle: Radians): CheapMatrix4 =
     this * CheapMatrix4.rotation(angle)
 
   def scale(byX: Double, byY: Double, byZ: Double): CheapMatrix4 =
@@ -150,9 +151,9 @@ object CheapMatrix4 {
       1
     )
 
-  def rotation(angleInRadians: Double): Array[Double] = {
-    val c = Math.cos(angleInRadians)
-    val s = Math.sin(angleInRadians)
+  def rotation(angleInRadians: Radians): Array[Double] = {
+    val c = Math.cos(angleInRadians.toDouble)
+    val s = Math.sin(angleInRadians.toDouble)
 
     Array(
       c,

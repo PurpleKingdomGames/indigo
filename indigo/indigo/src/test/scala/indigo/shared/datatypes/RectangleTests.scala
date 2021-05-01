@@ -8,7 +8,7 @@ class RectangleTests extends munit.FunSuite {
 
     val expected = Rectangle(1, 3, 4, 3)
 
-    assertEquals(Rectangle.fromTwoPoints(pt1, pt2) === expected, true)
+    assertEquals(Rectangle.fromTwoPoints(pt1, pt2) == expected, true)
   }
 
   test("should be able to construct a rectangle from a cloud of points") {
@@ -30,21 +30,21 @@ class RectangleTests extends munit.FunSuite {
     val actual: Rectangle =
       Rectangle.fromPointCloud(points)
 
-    assertEquals(actual === expected, true)
+    assertEquals(actual == expected, true)
   }
 
   test("Expand to include two rectangles.should return the original rectangle when it already encompasses the second one") {
     val a = Rectangle(10, 20, 100, 200)
     val b = Rectangle(20, 20, 50, 50)
 
-    assertEquals(Rectangle.expandToInclude(a, b) === a, true)
+    assertEquals(Rectangle.expandToInclude(a, b) == a, true)
   }
 
   test("Expand to include two rectangles.should expand to meet the bounds of both") {
     val a = Rectangle(10, 10, 20, 20)
     val b = Rectangle(100, 100, 100, 100)
 
-    assertEquals(Rectangle.expandToInclude(a, b) === Rectangle(10, 10, 190, 190), true)
+    assertEquals(Rectangle.expandToInclude(a, b) == Rectangle(10, 10, 190, 190), true)
   }
 
   test("intersecting points.should be able to detect if the point is inside the Rectangle") {
@@ -94,7 +94,7 @@ class RectangleTests extends munit.FunSuite {
     val a = Rectangle(10, 10, 20, 20)
     val b = Rectangle(0, 10, 100, 5)
 
-    assertEquals(Rectangle.expand(a, 10) === Rectangle(0, 0, 40, 40), true)
-    assertEquals(Rectangle.expand(b, 50) === Rectangle(-50, -40, 200, 105), true)
+    assertEquals(Rectangle.expand(a, 10) == Rectangle(0, 0, 40, 40), true)
+    assertEquals(Rectangle.expand(b, 50) == Rectangle(-50, -40, 200, 105), true)
   }
 }

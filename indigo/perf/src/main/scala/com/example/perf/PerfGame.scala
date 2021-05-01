@@ -82,7 +82,7 @@ object PerfGame extends IndigoDemo[Unit, Dude, DudeModel, Unit] {
         .addAnimations(spriteAndAnimations.animations)
 
     val res: Option[Startup.Success[Dude]] = for {
-      json                <- assetCollection.findTextDataByName(AssetName(PerfAssets.dudeName.value + "-json"))
+      json                <- assetCollection.findTextDataByName(AssetName(PerfAssets.dudeName.toString + "-json"))
       aseprite            <- Json.asepriteFromJson(json)
       spriteAndAnimations <- aseprite.toSpriteAndAnimations(dice, PerfAssets.dudeName)
     } yield makeStartupData(aseprite, spriteAndAnimations)

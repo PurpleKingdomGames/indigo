@@ -3,9 +3,10 @@ package indigo.shared.assets
 import indigo.shared.animation.AnimationMemento
 import indigo.shared.datatypes.BindingKey
 
-final case class AnimationStates(states: List[AnimationMemento]) extends AnyVal {
+opaque type AnimationStates = List[AnimationMemento]
+object AnimationStates:
+  def apply(states: List[AnimationMemento]): AnimationStates = states
 
-  def findStateWithBindingKey(bindingKey: BindingKey): Option[AnimationMemento] =
-    states.find(_.bindingKey.value == bindingKey.value)
-
-}
+  extension (as: AnimationStates)
+    def findStateWithBindingKey(bindingKey: BindingKey): Option[AnimationMemento] =
+      as.find(_.bindingKey == bindingKey)

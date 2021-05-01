@@ -8,7 +8,7 @@ object Fill {
   def None: Color =
     Color(RGBA.Zero)
 
-  final case class Color(color: RGBA) extends Fill {
+  final case class Color(color: RGBA) extends Fill derives CanEqual {
 
     def withColor(newColor: RGBA): Color =
       this.copy(color = newColor)
@@ -26,7 +26,7 @@ object Fill {
       fromColor: RGBA,
       toPoint: Point,
       toColor: RGBA
-  ) extends Fill {
+  ) extends Fill derives CanEqual {
 
     def withFromColor(newColor: RGBA): LinearGradient =
       this.copy(fromColor = newColor)

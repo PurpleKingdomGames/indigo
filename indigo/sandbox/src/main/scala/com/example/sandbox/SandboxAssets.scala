@@ -54,20 +54,20 @@ object SandboxAssets {
     Set(
       AssetType.Image(smallFontName, AssetPath("assets/boxy_font.png")),
       AssetType.Image(light, AssetPath("assets/light_texture.png")),
-      AssetType.Text(AssetName(dudeName.value + "-json"), AssetPath("assets/" + dudeName.value + ".json")),
-      AssetType.Image(dudeName, AssetPath("assets/" + dudeName.value + ".png")),
-      AssetType.Image(dots, AssetPath("assets/" + dots.value + ".png")),
+      AssetType.Text(AssetName(dudeName.toString + "-json"), AssetPath("assets/" + dudeName + ".json")),
+      AssetType.Image(dudeName, AssetPath("assets/" + dudeName + ".png")),
+      AssetType.Image(dots, AssetPath("assets/" + dots + ".png")),
       AssetType.Tagged("atlas1")(
-        AssetType.Image(junctionBoxAlbedo, AssetPath("assets/" + junctionBoxAlbedo.value + ".png")),
-        AssetType.Image(junctionBoxEmission, AssetPath("assets/" + junctionBoxEmission.value + ".png")),
-        AssetType.Image(junctionBoxNormal, AssetPath("assets/" + junctionBoxNormal.value + ".png")),
-        AssetType.Image(junctionBoxRoughness, AssetPath("assets/" + junctionBoxRoughness.value + ".png")),
-        AssetType.Image(imageLightName, AssetPath("assets/" + imageLightName.value + ".png")),
-        AssetType.Image(foliageName, AssetPath("assets/" + foliageName.value + ".png")),
-        AssetType.Image(smoothBumpName, AssetPath("assets/" + smoothBumpName.value + ".png")),
-        AssetType.Image(normalMapName, AssetPath("assets/" + normalMapName.value + ".png"))
+        AssetType.Image(junctionBoxAlbedo, AssetPath("assets/" + junctionBoxAlbedo + ".png")),
+        AssetType.Image(junctionBoxEmission, AssetPath("assets/" + junctionBoxEmission + ".png")),
+        AssetType.Image(junctionBoxNormal, AssetPath("assets/" + junctionBoxNormal + ".png")),
+        AssetType.Image(junctionBoxRoughness, AssetPath("assets/" + junctionBoxRoughness + ".png")),
+        AssetType.Image(imageLightName, AssetPath("assets/" + imageLightName + ".png")),
+        AssetType.Image(foliageName, AssetPath("assets/" + foliageName + ".png")),
+        AssetType.Image(smoothBumpName, AssetPath("assets/" + smoothBumpName + ".png")),
+        AssetType.Image(normalMapName, AssetPath("assets/" + normalMapName + ".png"))
       ),
-      AssetType.Image(trafficLightsName, AssetPath("assets/" + trafficLightsName.value + ".png"))
+      AssetType.Image(trafficLightsName, AssetPath("assets/" + trafficLightsName + ".png"))
     )
 
 }

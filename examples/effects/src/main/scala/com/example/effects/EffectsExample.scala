@@ -150,7 +150,7 @@ object EffectsAssets {
 
   def assets: Set[AssetType] =
     Set(
-      AssetType.Image(junctionBoxAlbedo, AssetPath("assets/" + junctionBoxAlbedo.value + ".png"))
+      AssetType.Image(junctionBoxAlbedo, AssetPath("assets/" + junctionBoxAlbedo + ".png"))
     )
 
 }

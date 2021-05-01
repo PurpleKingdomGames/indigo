@@ -54,7 +54,7 @@ final class RendererWebGL1(
   private val standardShaderProgram     = WebGLHelper.shaderProgramSetup(gl, "Pixel", indigo.shaders.WebGL1)
 
   private val textureLocations: List[TextureLookupResult] =
-    loadedTextureAssets.map(li => new TextureLookupResult(li.name, WebGLHelper.organiseImage(gl, li.data)))
+    loadedTextureAssets.map(li => TextureLookupResult(li.name, WebGLHelper.organiseImage(gl, li.data)))
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def init(shaders: Set[RawShaderCode]): Unit = {
@@ -85,6 +85,9 @@ final class RendererWebGL1(
     gl.bindFramebuffer(FRAMEBUFFER, null)
   }
 
+  private
+  given CanEqual[Option[Int], Option[Int]] = CanEqual.derived
+
   def drawScene(sceneData: ProcessedSceneData, runningTime: Seconds): Unit = {
     resize(cNc.canvas, cNc.magnification)
 
@@ -100,7 +103,10 @@ final class RendererWebGL1(
             gameProjection
 
           case Some(m) =>
-            CheapMatrix4.orthographic(cNc.canvas.width.toDouble / m.toDouble, cNc.canvas.height.toDouble / m.toDouble).mat.toJSArray
+            CheapMatrix4
+              .orthographic(cNc.canvas.width.toDouble / m.toDouble, cNc.canvas.height.toDouble / m.toDouble)
+              .mat
+              .toJSArray
         }
 
       drawLayer(layer.entities, standardShaderProgram, projection)
@@ -162,7 +168,8 @@ final class RendererWebGL1(
       resizeRun = true
       lastWidth = actualWidth
       lastHeight = actualHeight
-      orthographicProjectionMatrix = CheapMatrix4.orthographic(actualWidth.toDouble / magnification, actualHeight.toDouble / magnification)
+      orthographicProjectionMatrix =
+        CheapMatrix4.orthographic(actualWidth.toDouble / magnification, actualHeight.toDouble / magnification)
 
       gl.viewport(0, 0, actualWidth.toDouble, actualHeight.toDouble)
 

@@ -17,7 +17,7 @@ object LaunchPad {
       Millis(
         dice
           .roll(
-            (LaunchPadAutomata.MaxCountDown - LaunchPadAutomata.MinCountDown).toMillis.value.toInt
+            (LaunchPadAutomata.MaxCountDown - LaunchPadAutomata.MinCountDown).toMillis.toInt
           )
           .toLong
       ).toSeconds

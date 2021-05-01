@@ -3,7 +3,7 @@ package indigoextras.geometry
 import scala.annotation.tailrec
 import indigo.shared.datatypes.Rectangle
 
-final case class BoundingBox(position: Vertex, size: Vertex) {
+final case class BoundingBox(position: Vertex, size: Vertex) derives CanEqual {
   lazy val x: Double      = position.x
   lazy val y: Double      = position.y
   lazy val width: Double  = size.x

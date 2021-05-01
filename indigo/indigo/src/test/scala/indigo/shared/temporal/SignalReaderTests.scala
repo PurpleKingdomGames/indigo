@@ -52,7 +52,7 @@ class SignalReaderTests extends munit.FunSuite {
 
     val actual: SignalReader[String, (String, Int)] =
       for {
-        a <- SignalReader.fromSignal(Signal(_.value))
+        a <- SignalReader.fromSignal(Signal.Time)
         b <- SignalReader((msg: String) => Signal.fixed(msg + a.toString()))
         c <- SignalReader.fixed((b, b.length))
       } yield c

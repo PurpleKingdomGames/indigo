@@ -33,7 +33,7 @@ final case class RadioButton(
     hitArea: Option[Rectangle],
     buttonAssets: Option[ButtonAssets],
     state: RadioButtonState
-) {
+) derives CanEqual {
 
   /**
     * Events to fire when selected.
@@ -202,7 +202,7 @@ final case class RadioButtonGroup(
     hitArea: Rectangle,
     depth: Depth,
     options: List[RadioButton]
-) {
+) derives CanEqual {
 
   /**
     * Specify a new hit area for the radio buttons
@@ -406,7 +406,7 @@ object RadioButtonGroup {
 
 }
 
-sealed trait RadioButtonState {
+sealed trait RadioButtonState derives CanEqual {
   def toButtonState: ButtonState =
     this match {
       case RadioButtonState.Selected => ButtonState.Down

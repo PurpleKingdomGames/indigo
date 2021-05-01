@@ -1,6 +1,6 @@
 package indigo.shared.scenegraph
 
-final case class SceneAudio(sourceA: SceneAudioSource, sourceB: SceneAudioSource, sourceC: SceneAudioSource) {
+final case class SceneAudio(sourceA: SceneAudioSource, sourceB: SceneAudioSource, sourceC: SceneAudioSource) derives CanEqual {
   def |+|(other: SceneAudio): SceneAudio =
     SceneAudio.combine(this, other)
 }

@@ -23,6 +23,7 @@ import scala.collection.mutable.ListBuffer
 import indigo.shared.display.DisplayEntity
 import indigo.shared.display.DisplayObjectUniformData
 import indigo.shared.scenegraph.Clone
+import indigo.shared.scenegraph.CloneId
 import indigo.shared.scenegraph.CloneBatch
 import indigo.shared.display.DisplayClone
 import indigo.shared.scenegraph.CloneTransformData
@@ -35,6 +36,7 @@ import indigo.shared.scenegraph.EntityNode
 import indigo.shared.shader.Uniform
 import indigo.shared.shader.ShaderPrimitive
 import indigo.shared.scenegraph.Shape
+import indigo.platform.assets.AtlasId
 
 final class DisplayObjectConversions(
     boundaryLocator: BoundaryLocator,
@@ -42,7 +44,7 @@ final class DisplayObjectConversions(
     fontRegister: FontRegister
 ) {
 
-  implicit private val stringCache: QuickCache[String]                           = QuickCache.empty
+  implicit private val atlasIdCache: QuickCache[AtlasId]                         = QuickCache.empty
   implicit private val vector2Cache: QuickCache[Vector2]                         = QuickCache.empty
   implicit private val frameCache: QuickCache[SpriteSheetFrameCoordinateOffsets] = QuickCache.empty
   implicit private val listDoCache: QuickCache[List[DisplayObject]]              = QuickCache.empty
@@ -50,7 +52,7 @@ final class DisplayObjectConversions(
   implicit private val uniformsCache: QuickCache[Array[Float]]                   = QuickCache.empty
 
   def purgeCaches(): Unit = {
-    stringCache.purgeAllNow()
+    atlasIdCache.purgeAllNow()
     vector2Cache.purgeAllNow()
     frameCache.purgeAllNow()
     listDoCache.purgeAllNow()
@@ -59,7 +61,7 @@ final class DisplayObjectConversions(
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  def lookupTextureOffset(assetMapping: AssetMapping, name: String): Vector2 =
+  def lookupTextureOffset(assetMapping: AssetMapping, name: AssetName): Vector2 =
     QuickCache("tex-offset-" + name) {
       assetMapping.mappings
         .find(p => p._1 == name)
@@ -71,7 +73,7 @@ final class DisplayObjectConversions(
     }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  def lookupAtlasName(assetMapping: AssetMapping, name: String): String =
+  def lookupAtlasName(assetMapping: AssetMapping, name: AssetName): AtlasId =
     QuickCache("atlas-" + name) {
       assetMapping.mappings.find(p => p._1 == name).map(_._2.atlasName).getOrElse {
         throw new Exception("Failed to find atlas name for texture: " + name)
@@ -79,14 +81,19 @@ final class DisplayObjectConversions(
     }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  private def lookupAtlasSize(assetMapping: AssetMapping, name: String): Vector2 =
+  private def lookupAtlasSize(assetMapping: AssetMapping, name: AssetName): Vector2 =
     QuickCache("atlas-size-" + name) {
       assetMapping.mappings.find(p => p._1 == name).map(_._2.atlasSize).getOrElse {
         throw new Exception("Failed to find atlas size for texture: " + name)
       }
     }
 
-  private def cloneDataToDisplayEntity(id: String, cloneDepth: Double, data: CloneTransformData, blankTransform: CheapMatrix4): DisplayClone =
+  private def cloneDataToDisplayEntity(
+      id: CloneId,
+      cloneDepth: Double,
+      data: CloneTransformData,
+      blankTransform: CheapMatrix4
+  ): DisplayClone =
     new DisplayClone(
       id = id,
       transform = DisplayObjectConversions.cloneTransformDataToMatrix4(data, blankTransform),
@@ -96,8 +103,8 @@ final class DisplayObjectConversions(
   private def cloneBatchDataToDisplayEntities(batch: CloneBatch, blankTransform: CheapMatrix4): DisplayCloneBatch = {
     def convert(): DisplayCloneBatch =
       new DisplayCloneBatch(
-        id = batch.id.value,
-        z = batch.depth.value.toDouble,
+        id = batch.id,
+        z = batch.depth.toDouble,
         clones = batch.clones.map { td =>
           DisplayObjectConversions.cloneTransformDataToMatrix4(batch.transform |+| td, blankTransform)
         }
@@ -108,7 +115,7 @@ final class DisplayObjectConversions(
         convert()
 
       case Some(bindingKey) =>
-        QuickCache(bindingKey.value) {
+        QuickCache(bindingKey.toString) {
           convert()
         }
     }
@@ -118,7 +125,7 @@ final class DisplayObjectConversions(
       sceneNodes: List[SceneNode],
       gameTime: GameTime,
       assetMapping: AssetMapping,
-      cloneBlankDisplayObjects: Map[String, DisplayObject]
+      cloneBlankDisplayObjects: Map[CloneId, DisplayObject]
   ): ListBuffer[DisplayEntity] =
     deGroup(sceneNodes).flatMap { node =>
       sceneNodeToDisplayObject(node, gameTime, assetMapping, cloneBlankDisplayObjects)
@@ -158,7 +165,7 @@ final class DisplayObjectConversions(
       sceneNode: SceneNode,
       gameTime: GameTime,
       assetMapping: AssetMapping,
-      cloneBlankDisplayObjects: Map[String, DisplayObject]
+      cloneBlankDisplayObjects: Map[CloneId, DisplayObject]
   ): List[DisplayEntity] =
     sceneNode match {
 
@@ -172,15 +179,15 @@ final class DisplayObjectConversions(
         List(sceneEntityToDisplayObject(s, assetMapping))
 
       case c: Clone =>
-        cloneBlankDisplayObjects.get(c.id.value) match {
+        cloneBlankDisplayObjects.get(c.id) match {
           case None =>
             Nil
 
           case Some(refDisplayObject) =>
             List(
               cloneDataToDisplayEntity(
-                c.id.value,
-                c.depth.value.toDouble,
+                c.id,
+                c.depth.toDouble,
                 c.transform,
                 refDisplayObject.transform
               )
@@ -188,7 +195,7 @@ final class DisplayObjectConversions(
         }
 
       case c: CloneBatch =>
-        cloneBlankDisplayObjects.get(c.id.value) match {
+        cloneBlankDisplayObjects.get(c.id) match {
           case None =>
             Nil
 
@@ -238,7 +245,10 @@ final class DisplayObjectConversions(
           boundaryLocator
             .textAsLinesWithBounds(x.text, x.fontKey)
             .foldLeft(0 -> List[DisplayObject]()) { (acc, textLine) =>
-              (acc._1 + textLine.lineBounds.height, acc._2 ++ converterFunc(textLine, alignmentOffsetX(textLine.lineBounds), acc._1))
+              (
+                acc._1 + textLine.lineBounds.height,
+                acc._2 ++ converterFunc(textLine, alignmentOffsetX(textLine.lineBounds), acc._1)
+              )
             }
             ._2
 
@@ -251,7 +261,7 @@ final class DisplayObjectConversions(
         Vector2.zero
 
       case Some(assetName) =>
-        lookupTextureOffset(assetMapping, assetName.value)
+        lookupTextureOffset(assetMapping, assetName)
     }
 
   def shapeToDisplayObject(leaf: Shape): DisplayObject = {
@@ -267,9 +277,10 @@ final class DisplayObjectConversions(
       }
 
     DisplayObject(
-      transform = DisplayObjectConversions.nodeToMatrix4(leaf, Vector3(leaf.bounds.size.x.toDouble, leaf.bounds.size.y.toDouble, 1.0d)),
-      rotation = leaf.rotation.value,
-      z = leaf.depth.value.toDouble,
+      transform = DisplayObjectConversions
+        .nodeToMatrix4(leaf, Vector3(leaf.bounds.size.x.toDouble, leaf.bounds.size.y.toDouble, 1.0d)),
+      rotation = leaf.rotation,
+      z = leaf.depth.toDouble,
       width = leaf.bounds.size.x,
       height = leaf.bounds.size.y,
       atlasName = None,
@@ -297,9 +308,9 @@ final class DisplayObjectConversions(
         case Some(assetName) =>
           QuickCache(s"${leaf.bounds.hash}_${shader.hash}") {
             SpriteSheetFrame.calculateFrameOffset(
-              atlasSize = lookupAtlasSize(assetMapping, assetName.value),
+              atlasSize = lookupAtlasSize(assetMapping, assetName),
               frameCrop = leaf.bounds,
-              textureOffset = lookupTextureOffset(assetMapping, assetName.value)
+              textureOffset = lookupTextureOffset(assetMapping, assetName)
             )
           }
       }
@@ -316,12 +327,13 @@ final class DisplayObjectConversions(
       }
 
     DisplayObject(
-      transform = DisplayObjectConversions.nodeToMatrix4(leaf, Vector3(leaf.bounds.size.x.toDouble, leaf.bounds.size.y.toDouble, 1.0d)),
-      rotation = leaf.rotation.value,
-      z = leaf.depth.value.toDouble,
+      transform = DisplayObjectConversions
+        .nodeToMatrix4(leaf, Vector3(leaf.bounds.size.x.toDouble, leaf.bounds.size.y.toDouble, 1.0d)),
+      rotation = leaf.rotation,
+      z = leaf.depth.toDouble,
       width = leaf.bounds.size.x,
       height = leaf.bounds.size.y,
-      atlasName = shader.channel0.map(assetName => lookupAtlasName(assetMapping, assetName.value)),
+      atlasName = shader.channel0.map(assetName => lookupAtlasName(assetMapping, assetName)),
       frame = frameInfo,
       channelOffset1 = frameInfo.offsetToCoords(channelOffset1),
       channelOffset2 = frameInfo.offsetToCoords(channelOffset2),
@@ -333,7 +345,7 @@ final class DisplayObjectConversions(
 
   def graphicToDisplayObject(leaf: Graphic, assetMapping: AssetMapping): DisplayObject = {
     val shaderData   = leaf.material.toShaderData
-    val materialName = shaderData.channel0.get.value
+    val materialName = shaderData.channel0.get
 
     val emissiveOffset = findAssetOffsetValues(assetMapping, shaderData.channel1, shaderData.hash, "_e")
     val normalOffset   = findAssetOffsetValues(assetMapping, shaderData.channel2, shaderData.hash, "_n")
@@ -360,9 +372,10 @@ final class DisplayObjectConversions(
       }
 
     DisplayObject(
-      transform = DisplayObjectConversions.nodeToMatrix4(leaf, Vector3(leaf.crop.size.x.toDouble, leaf.crop.size.y.toDouble, 1.0d)),
-      rotation = leaf.rotation.value,
-      z = leaf.depth.value.toDouble,
+      transform = DisplayObjectConversions
+        .nodeToMatrix4(leaf, Vector3(leaf.crop.size.x.toDouble, leaf.crop.size.y.toDouble, 1.0d)),
+      rotation = leaf.rotation,
+      z = leaf.depth.toDouble,
       width = leaf.crop.size.x,
       height = leaf.crop.size.y,
       atlasName = Some(lookupAtlasName(assetMapping, materialName)),
@@ -375,10 +388,15 @@ final class DisplayObjectConversions(
     )
   }
 
-  def spriteToDisplayObject(boundaryLocator: BoundaryLocator, leaf: Sprite, assetMapping: AssetMapping, anim: AnimationRef): DisplayObject = {
+  def spriteToDisplayObject(
+      boundaryLocator: BoundaryLocator,
+      leaf: Sprite,
+      assetMapping: AssetMapping,
+      anim: AnimationRef
+  ): DisplayObject = {
     val material     = leaf.material
     val shaderData   = material.toShaderData
-    val materialName = shaderData.channel0.get.value
+    val materialName = shaderData.channel0.get
 
     val emissiveOffset = findAssetOffsetValues(assetMapping, shaderData.channel1, shaderData.hash, "_e")
     val normalOffset   = findAssetOffsetValues(assetMapping, shaderData.channel2, shaderData.hash, "_n")
@@ -409,8 +427,8 @@ final class DisplayObjectConversions(
 
     DisplayObject(
       transform = DisplayObjectConversions.nodeToMatrix4(leaf, Vector3(width.toDouble, height.toDouble, 1.0d)),
-      rotation = leaf.rotation.value,
-      z = leaf.depth.value.toDouble,
+      rotation = leaf.rotation,
+      z = leaf.depth.toDouble,
       width = width,
       height = height,
       atlasName = Some(lookupAtlasName(assetMapping, materialName)),
@@ -423,15 +441,19 @@ final class DisplayObjectConversions(
     )
   }
 
-  def textLineToDisplayObjects(leaf: Text, assetMapping: AssetMapping, fontInfo: FontInfo): (TextLine, Int, Int) => List[DisplayObject] =
+  def textLineToDisplayObjects(
+      leaf: Text,
+      assetMapping: AssetMapping,
+      fontInfo: FontInfo
+  ): (TextLine, Int, Int) => List[DisplayObject] =
     (line, alignmentOffsetX, yOffset) => {
 
       val material     = leaf.material
       val shaderData   = material.toShaderData
-      val materialName = shaderData.channel0.get.value
+      val materialName = shaderData.channel0.get
 
       val lineHash: String =
-        leaf.fontKey.key +
+        leaf.fontKey.toString +
           ":" + line.hash +
           ":" + alignmentOffsetX.toString() +
           ":" + yOffset.toString() +
@@ -458,39 +480,40 @@ final class DisplayObjectConversions(
         }
 
       QuickCache(lineHash) {
-        zipWithCharDetails(line.text.toList, fontInfo).toList.map {
-          case (fontChar, xPosition) =>
-            val frameInfo =
-              QuickCache(fontChar.bounds.hash + "_" + shaderData.hash) {
-                SpriteSheetFrame.calculateFrameOffset(
-                  atlasSize = lookupAtlasSize(assetMapping, materialName),
-                  frameCrop = fontChar.bounds,
-                  textureOffset = lookupTextureOffset(assetMapping, materialName)
-                )
-              }
+        zipWithCharDetails(line.text.toList, fontInfo).toList.map { case (fontChar, xPosition) =>
+          val frameInfo =
+            QuickCache(fontChar.bounds.hash + "_" + shaderData.hash) {
+              SpriteSheetFrame.calculateFrameOffset(
+                atlasSize = lookupAtlasSize(assetMapping, materialName),
+                frameCrop = fontChar.bounds,
+                textureOffset = lookupTextureOffset(assetMapping, materialName)
+              )
+            }
 
-            DisplayObject(
-              transform = DisplayObjectConversions.nodeToMatrix4(
-                leaf.moveBy(xPosition + alignmentOffsetX, yOffset),
-                Vector3(fontChar.bounds.width.toDouble, fontChar.bounds.height.toDouble, 1.0d)
-              ),
-              rotation = leaf.rotation.value,
-              z = leaf.depth.value.toDouble,
-              width = fontChar.bounds.width,
-              height = fontChar.bounds.height,
-              atlasName = Some(lookupAtlasName(assetMapping, materialName)),
-              frame = frameInfo,
-              channelOffset1 = frameInfo.offsetToCoords(emissiveOffset),
-              channelOffset2 = frameInfo.offsetToCoords(normalOffset),
-              channelOffset3 = frameInfo.offsetToCoords(specularOffset),
-              shaderId = shaderId,
-              shaderUniformData = uniformData
-            )
+          DisplayObject(
+            transform = DisplayObjectConversions.nodeToMatrix4(
+              leaf.moveBy(xPosition + alignmentOffsetX, yOffset),
+              Vector3(fontChar.bounds.width.toDouble, fontChar.bounds.height.toDouble, 1.0d)
+            ),
+            rotation = leaf.rotation,
+            z = leaf.depth.toDouble,
+            width = fontChar.bounds.width,
+            height = fontChar.bounds.height,
+            atlasName = Some(lookupAtlasName(assetMapping, materialName)),
+            frame = frameInfo,
+            channelOffset1 = frameInfo.offsetToCoords(emissiveOffset),
+            channelOffset2 = frameInfo.offsetToCoords(normalOffset),
+            channelOffset3 = frameInfo.offsetToCoords(specularOffset),
+            shaderId = shaderId,
+            shaderUniformData = uniformData
+          )
         }
       }
     }
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var accCharDetails: ListBuffer[(FontChar, Int)] = new ListBuffer()
+
+  private given CanEqual[List[(Char, FontChar)], List[(Char, FontChar)]] = CanEqual.derived
 
   private def zipWithCharDetails(charList: List[Char], fontInfo: FontInfo): ListBuffer[(FontChar, Int)] = {
     @tailrec
@@ -508,11 +531,16 @@ final class DisplayObjectConversions(
     rec(charList.map(c => (c, fontInfo.findByCharacter(c))), 0)
   }
 
-  def findAssetOffsetValues(assetMapping: AssetMapping, maybeAssetName: Option[AssetName], cacheKey: String, cacheSuffix: String): Vector2 =
+  def findAssetOffsetValues(
+      assetMapping: AssetMapping,
+      maybeAssetName: Option[AssetName],
+      cacheKey: String,
+      cacheSuffix: String
+  ): Vector2 =
     QuickCache[Vector2](cacheKey + cacheSuffix) {
       maybeAssetName
         .map { t =>
-          lookupTextureOffset(assetMapping, t.value)
+          lookupTextureOffset(assetMapping, t)
         }
         .getOrElse(Vector2.zero)
     }
@@ -537,7 +565,7 @@ object DisplayObjectConversions {
         size.y * node.scale.y,
         size.z
       )
-      .rotate(node.rotation.value)
+      .rotate(node.rotation)
       .translate(
         node.position.x.toDouble,
         node.position.y.toDouble,
@@ -553,7 +581,7 @@ object DisplayObjectConversions {
         1.0d
       )
       .scale(data.scale.x, data.scale.y, 1.0d)
-      .rotate(data.rotation.value)
+      .rotate(data.rotation)
       .translate(
         data.position.x.toDouble,
         data.position.y.toDouble,

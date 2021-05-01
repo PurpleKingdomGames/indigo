@@ -103,6 +103,7 @@ object GameModel {
   }
 
   def hitTest(gameMap: GameMap, body: List[Vertex]): Vertex => CollisionCheckOutcome =
+    given CanEqual[Option[MapElement], Option[MapElement]] = CanEqual.derived
     pt => {
       if (body.contains(pt)) CollisionCheckOutcome.Crashed(pt)
       else

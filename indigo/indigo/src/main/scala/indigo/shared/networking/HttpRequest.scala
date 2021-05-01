@@ -9,7 +9,7 @@ object HttpMethod {
   val DELETE: String = "DELETE"
 }
 
-sealed trait HttpRequest extends NetworkSendEvent {
+sealed trait HttpRequest extends NetworkSendEvent derives CanEqual {
   val params: Map[String, String]
   val url: String
   val headers: Map[String, String]

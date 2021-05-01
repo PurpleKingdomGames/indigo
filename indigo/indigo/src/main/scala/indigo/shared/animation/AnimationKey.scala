@@ -2,9 +2,9 @@ package indigo.shared.animation
 
 import indigo.shared.dice.Dice
 
-final case class AnimationKey(value: String) extends AnyVal
+opaque type AnimationKey = String
 
-object AnimationKey {
+object AnimationKey:
+  def apply(key: String): AnimationKey = key
   def fromDice(dice: Dice): AnimationKey =
     AnimationKey(dice.rollAlphaNumeric)
-}

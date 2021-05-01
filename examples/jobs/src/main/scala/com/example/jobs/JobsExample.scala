@@ -31,8 +31,8 @@ object JobsExample extends IndigoDemo[Unit, StartupData, Model, Unit] {
       TreeData(
         i,
         Vertex(
-          Math.sin(dice.rollDouble * Radians.TAU.value),
-          Math.cos(dice.rollDouble * Radians.TAU.value)
+          Math.sin(dice.rollDouble * Radians.TAU.toDouble),
+          Math.cos(dice.rollDouble * Radians.TAU.toDouble)
         ),
         dice.rollDouble
       )

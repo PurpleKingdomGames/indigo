@@ -1,30 +1,18 @@
 package indigo.shared.animation
 
-sealed trait AnimationAction {
-  val hash: String
+enum AnimationAction derives CanEqual:
+  case Play extends AnimationAction
+  case ChangeCycle(label: CycleLabel) extends AnimationAction
+  case JumpToFirstFrame extends AnimationAction
+  case JumpToLastFrame extends AnimationAction
+  case JumpToFrame(number: Int) extends AnimationAction
 
-  override def toString(): String =
-    hash
-}
-object AnimationAction {
-
-  case object Play extends AnimationAction {
-    val hash: String = "Play"
-  }
-
-  final case class ChangeCycle(label: CycleLabel) extends AnimationAction {
-    val hash: String = s"ChangeCycle(${label.value})"
-  }
-
-  case object JumpToFirstFrame extends AnimationAction {
-    val hash: String = "JumpToFirstFrame"
-  }
-
-  case object JumpToLastFrame extends AnimationAction {
-    val hash: String = "JumpToLastFrame"
-  }
-
-  final case class JumpToFrame(number: Int) extends AnimationAction {
-    val hash: String = s"JumpToFrame(${number.toString()})"
-  }
-}
+object AnimationAction:
+  extension (aa: AnimationAction)
+    def hash: String =
+      aa match
+        case Play => "Play"
+        case ChangeCycle(label) => s"ChangeCycle(${label})"
+        case JumpToFirstFrame => "JumpToFirstFrame"
+        case JumpToLastFrame => "JumpToLastFrame"
+        case JumpToFrame(number) => s"JumpToFrame(${number.toString()})"

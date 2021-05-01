@@ -95,7 +95,7 @@ class TiledMapTests extends munit.FunSuite {
 
 }
 
-sealed trait TileTypes
+sealed trait TileTypes derives CanEqual
 object TileTypes {
   case object Empty extends TileTypes
   case object Solid extends TileTypes

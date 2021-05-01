@@ -2,7 +2,7 @@ package indigo.shared.shader
 
 import scala.reflect.ClassTag
 
-sealed trait ShaderPrimitive {
+sealed trait ShaderPrimitive derives CanEqual {
   def hash: String
   def length: Int
   def toArray: Array[Float]

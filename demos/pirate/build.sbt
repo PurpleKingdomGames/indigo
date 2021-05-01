@@ -2,7 +2,7 @@
 // The essentials.
 //-----------------------------------
 
-val scala3Version    = "3.0.0-RC2"
+val scala3Version    = "3.0.0-RC3"
 
 lazy val pirate =
   (project in file("."))
@@ -16,9 +16,10 @@ lazy val pirate =
       scalaVersion := scala3Version,
       organization := "pirate",
       libraryDependencies ++= Seq(
-        "org.scalameta" %%% "munit" % "0.7.23" % Test,
+        "org.scalameta" %%% "munit" % "0.7.25" % Test,
         "org.scalacheck" %%% "scalacheck" % "1.15.3" % "test"
       ),
+      scalacOptions ++= Seq("-language:strictEquality"),
       testFrameworks += new TestFramework("munit.Framework"),
       // wartremoverWarnings in (Compile, compile) ++= Warts.unsafe,
       Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }

@@ -29,7 +29,7 @@ final case class InputField(
     key: Option[BindingKey],
     onFocus: () => List[GlobalEvent],
     onLoseFocus: () => List[GlobalEvent]
-) {
+) derives CanEqual {
 
   def bounds(boundaryLocator: BoundaryLocator): Rectangle =
     assets.text.withText(text).moveTo(position).calculatedBounds(boundaryLocator)
@@ -125,6 +125,8 @@ final case class InputField(
   def addCharacter(char: Char): InputField =
     addCharacterText(char.toString())
 
+  private given CanEqual[List[Char], List[Char]] = CanEqual.derived
+
   def addCharacterText(textToInsert: String): InputField = {
     @tailrec
     def rec(remaining: List[Char], textHead: String, textTail: String, position: Int): InputField =
@@ -162,7 +164,12 @@ final case class InputField(
 
   def update(frameContext: FrameContext[_]): Outcome[InputField] = {
     @tailrec
-    def rec(keysReleased: List[Key], acc: InputField, touched: Boolean, changeEvent: Option[InputFieldChange]): Outcome[InputField] =
+    def rec(
+        keysReleased: List[Key],
+        acc: InputField,
+        touched: Boolean,
+        changeEvent: Option[InputFieldChange]
+    ): Outcome[InputField] =
       keysReleased match {
         case Nil =>
           if (touched)
@@ -249,7 +256,7 @@ final case class InputField(
             field,
             assets.cursor
               .moveTo(cursorPositionPoint)
-              .withDepth(Depth(-(depth.value + 100000)))
+              .withDepth(Depth(-(depth.toInt + 100000)))
           )
 
         case Some(seconds) =>
@@ -265,7 +272,7 @@ final case class InputField(
                   field,
                   assets.cursor
                     .moveTo(cursorPositionPoint)
-                    .withDepth(Depth(-(depth.value + 100000)))
+                    .withDepth(Depth(-(depth.toInt + 100000)))
                 )
             }
             .at(gameTime.running)
@@ -279,18 +286,46 @@ final case class InputField(
 object InputField {
 
   def apply(text: String, assets: InputFieldAssets): InputField =
-    InputField(text, 255, false, assets, Some(Millis(400).toSeconds), Point.zero, Depth(1), false, text.length(), Seconds.zero, None, () => Nil, () => Nil)
+    InputField(
+      text,
+      255,
+      false,
+      assets,
+      Some(Millis(400).toSeconds),
+      Point.zero,
+      Depth(1),
+      false,
+      text.length(),
+      Seconds.zero,
+      None,
+      () => Nil,
+      () => Nil
+    )
 
   def apply(text: String, characterLimit: Int, multiLine: Boolean, assets: InputFieldAssets): InputField =
-    InputField(text, characterLimit, multiLine, assets, Some(Millis(400).toSeconds), Point.zero, Depth(1), false, text.length(), Seconds.zero, None, () => Nil, () => Nil)
+    InputField(
+      text,
+      characterLimit,
+      multiLine,
+      assets,
+      Some(Millis(400).toSeconds),
+      Point.zero,
+      Depth(1),
+      false,
+      text.length(),
+      Seconds.zero,
+      None,
+      () => Nil,
+      () => Nil
+    )
 
 }
 
-final case class InputFieldAssets(text: Text, cursor: Graphic) {
+final case class InputFieldAssets(text: Text, cursor: Graphic) derives CanEqual {
   def withText(newText: Text): InputFieldAssets =
     this.copy(text = newText)
   def withCursor(newCursor: Graphic): InputFieldAssets =
     this.copy(cursor = newCursor)
 }
 
-final case class InputFieldChange(key: BindingKey, updatedText: String) extends GlobalEvent
+final case class InputFieldChange(key: BindingKey, updatedText: String) extends GlobalEvent derives CanEqual

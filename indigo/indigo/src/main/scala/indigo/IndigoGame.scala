@@ -9,8 +9,7 @@ import indigo.entry.ScenesFrameProcessor
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-/**
-  * A trait representing a game with scene management baked in
+/** A trait representing a game with scene management baked in
   *
   * @example `object MyGame extends IndigoGame[BootData, StartUpData, Model, ViewModel]`
   *
@@ -21,16 +20,14 @@ import scala.concurrent.Future
   */
 trait IndigoGame[BootData, StartUpData, Model, ViewModel] extends GameLauncher {
 
-  /**
-    * A non-empty ordered list of scenes
+  /** A non-empty ordered list of scenes
     *
     * @param bootData Data created during initial game boot.
     * @return A list of scenes that ensures at least one scene exists.
     */
   def scenes(bootData: BootData): NonEmptyList[Scene[StartUpData, Model, ViewModel]]
 
-  /**
-    * Optional name of the first scene. If None is provided
+  /** Optional name of the first scene. If None is provided
     * then the first scene is the head of the scenes list.
     *
     * @param bootData Data created during initial game boot.
@@ -39,15 +36,13 @@ trait IndigoGame[BootData, StartUpData, Model, ViewModel] extends GameLauncher {
     */
   def initialScene(bootData: BootData): Option[SceneName]
 
-  /**
-    * Event filters represent a mapping from events to possible events,
+  /** Event filters represent a mapping from events to possible events,
     * and act like a firewall to prevent unnecessary event processing
     * by the model or view model.
     */
   def eventFilters: EventFilters
 
-  /**
-    * `boot` provides the initial boot up function for your game, accepting
+  /** `boot` provides the initial boot up function for your game, accepting
     * commandline-like arguments and allowing you to declare pre-requist
     * assets assets and data that must be in place for your game to get going.
     *
@@ -57,8 +52,7 @@ trait IndigoGame[BootData, StartUpData, Model, ViewModel] extends GameLauncher {
     */
   def boot(flags: Map[String, String]): Outcome[BootResult[BootData]]
 
-  /**
-    * The `setup` function is your only opportunity to do an initial work
+  /** The `setup` function is your only opportunity to do an initial work
     * to set up your game. For example, perhaps one of your assets was a
     * JSON description of a map or an animation sequence, you could process
     * that now, which is why you have access to the `AssetCollection` object.
@@ -75,24 +69,21 @@ trait IndigoGame[BootData, StartUpData, Model, ViewModel] extends GameLauncher {
     */
   def setup(bootData: BootData, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[StartUpData]]
 
-  /**
-    * Set up of your initial model state
+  /** Set up of your initial model state
     *
     * @param startupData Access to Startup data in case you need it for the model
     * @return An instance of your game model
     */
   def initialModel(startupData: StartUpData): Outcome[Model]
 
-  /**
-    * Set up of your initial view model state
+  /** Set up of your initial view model state
     *
     * @param startupData Access to Startup data in case you need it for the view model
     * @return An instance of your game's view model
     */
   def initialViewModel(startupData: StartUpData, model: Model): Outcome[ViewModel]
 
-  /**
-    * A pure function for updating your game's model in the context of the
+  /** A pure function for updating your game's model in the context of the
     * running frame and the events acting upon it.
     *
     *  @param context The context the frame should be produced in, including the time,
@@ -104,8 +95,7 @@ trait IndigoGame[BootData, StartUpData, Model, ViewModel] extends GameLauncher {
     */
   def updateModel(context: FrameContext[StartUpData], model: Model): GlobalEvent => Outcome[Model]
 
-  /**
-    * A pure function for updating your game's view model in the context of the
+  /** A pure function for updating your game's view model in the context of the
     * running frame and the events acting upon it.
     *
     * @param context The context the frame should be produced in, including the time,
@@ -116,10 +106,13 @@ trait IndigoGame[BootData, StartUpData, Model, ViewModel] extends GameLauncher {
     * @return A function that maps GlobalEvent's to the next version of your view model,
     *         and encapsuates failures or resulting events within the Outcome wrapper.
     */
-  def updateViewModel(context: FrameContext[StartUpData], model: Model, viewModel: ViewModel): GlobalEvent => Outcome[ViewModel]
+  def updateViewModel(
+      context: FrameContext[StartUpData],
+      model: Model,
+      viewModel: ViewModel
+  ): GlobalEvent => Outcome[ViewModel]
 
-  /**
-    * A pure function for presenting your game. The result is a side effect
+  /** A pure function for presenting your game. The result is a side effect
     * free declaration of what you intend to be presented to the player next.
     *
     * @param context The context the frame should be produced in, including the time,
@@ -137,6 +130,7 @@ trait IndigoGame[BootData, StartUpData, Model, ViewModel] extends GameLauncher {
     new SubSystemsRegister()
 
   private def indigoGame(bootUp: BootResult[BootData]): GameEngine[StartUpData, Model, ViewModel] = {
+
     val subSystemEvents = subSystemsRegister.register(bootUp.subSystems.toList)
 
     val sceneManager: SceneManager[StartUpData, Model, ViewModel] = {
@@ -151,7 +145,7 @@ trait IndigoGame[BootData, StartUpData, Model, ViewModel] extends GameLauncher {
       }
     }
 
-    val frameProcessor: ScenesFrameProcessor[StartUpData, Model, ViewModel] = {
+    val frameProcessor: ScenesFrameProcessor[StartUpData, Model, ViewModel] =
       new ScenesFrameProcessor(
         subSystemsRegister,
         sceneManager,
@@ -160,7 +154,6 @@ trait IndigoGame[BootData, StartUpData, Model, ViewModel] extends GameLauncher {
         updateViewModel,
         present
       )
-    }
 
     new GameEngine[StartUpData, Model, ViewModel](
       bootUp.fonts,

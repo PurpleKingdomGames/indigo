@@ -1,7 +1,7 @@
 import scala.sys.process._
 import scala.language.postfixOps
 
-val scala3Version    = "3.0.0-RC2"
+val scala3Version    = "3.0.0-RC3"
 val scala213Version = "2.13.5"
 
 lazy val commonSettings = Seq(
@@ -9,10 +9,11 @@ lazy val commonSettings = Seq(
   scalaVersion := scala3Version,
   organization := "indigo-examples",
   libraryDependencies ++= Seq(
-    "org.scalameta"   %%% "munit"         % "0.7.23" % Test,
+    "org.scalameta"   %%% "munit"         % "0.7.25" % Test,
     "io.indigoengine" %%% "indigo"        % IndigoVersion.getVersion,
     "io.indigoengine" %%% "indigo-extras" % IndigoVersion.getVersion
   ),
+  scalacOptions ++= Seq("-language:strictEquality"),
   testFrameworks += new TestFramework("munit.Framework"),
   Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
 )

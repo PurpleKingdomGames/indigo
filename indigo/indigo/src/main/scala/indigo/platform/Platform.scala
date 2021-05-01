@@ -20,6 +20,7 @@ import indigo.platform.assets.ImageRef
 
 import org.scalajs.dom
 import org.scalajs.dom.html.Canvas
+import org.scalajs.dom.Element
 import scala.util.Success
 import scala.util.Failure
 import indigo.facades.FullScreenElement
@@ -28,6 +29,7 @@ import indigo.shared.events.FullScreenEnterError
 import indigo.shared.events.FullScreenExited
 import indigo.shared.events.FullScreenExitError
 import indigo.shared.shader.RawShaderCode
+import indigo.shared.assets.AssetName
 
 class Platform(
     gameConfig: GameConfig,
@@ -68,8 +70,8 @@ class Platform(
   def createTextureAtlas(assetCollection: AssetCollection): Outcome[TextureAtlas] =
     Outcome(
       TextureAtlas.create(
-        assetCollection.images.map(i => ImageRef(i.name, i.data.width, i.data.height, i.tag.map(_.value))),
-        (name: String) => assetCollection.images.find(_.name.value == name),
+        assetCollection.images.map(i => ImageRef(i.name, i.data.width, i.data.height, i.tag)),
+        (name: AssetName) => assetCollection.images.find(_.name == name),
         TextureAtlasFunctions.createAtlasData
       )
     )
@@ -77,7 +79,7 @@ class Platform(
   def extractLoadedTextures(textureAtlas: TextureAtlas): Outcome[List[LoadedTextureAsset]] =
     Outcome(
       textureAtlas.atlases.toList
-        .map(a => a._2.imageData.map(data => new LoadedTextureAsset(a._1.id, data)))
+        .map(a => a._2.imageData.map(data => new LoadedTextureAsset(a._1, data)))
         .collect { case Some(s) => s }
     )
 
@@ -87,13 +89,19 @@ class Platform(
         mappings = textureAtlas.legend
           .map { p =>
             p._1 -> new TextureRefAndOffset(
-              atlasName = p._2.id.id,
-              atlasSize = textureAtlas.atlases.get(p._2.id).map(_.size.value).map(i => Vector2(i.toDouble)).getOrElse(Vector2.one),
+              atlasName = p._2.id,
+              atlasSize = textureAtlas.atlases
+                .get(p._2.id)
+                .map(_.size.value)
+                .map(i => Vector2(i.toDouble))
+                .getOrElse(Vector2.one),
               offset = p._2.offset
             )
           }
       )
     )
+
+  private given CanEqual[Option[Element], Option[Element]] = CanEqual.derived
 
   def createCanvas(gameConfig: GameConfig): Outcome[Canvas] =
     Option(dom.document.getElementById("indigo-container")) match {

@@ -10,8 +10,8 @@ class MillisTests extends munit.FunSuite {
 
   test("Operations.modulo") {
 
-    assertEquals(Millis(1) % Millis(2) === Millis(1), true)
-    assertEquals(Millis(2) % Millis(2) === Millis(0), true)
+    assertEquals(Millis(1) % Millis(2), Millis(1))
+    assertEquals(Millis(2) % Millis(2), Millis(0))
 
   }
 

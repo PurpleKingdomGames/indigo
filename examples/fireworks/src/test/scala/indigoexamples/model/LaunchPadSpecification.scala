@@ -3,6 +3,7 @@ package indigoexamples.model
 import org.scalacheck._
 
 import indigo.Dice
+import indigo.Seconds
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
 import indigoexamples.automata.LaunchPadAutomata
@@ -17,8 +18,8 @@ class LaunchPadSpecification extends Properties("LaunchPad") {
   implicit val arbLaunchPad: Arbitrary[LaunchPad] =
     Arbitrary(launchPadGen)
 
-  property("generate a launch pad with a timer up to " + LaunchPadAutomata.MaxCountDown.value + " seconds") = Prop.forAll { (launchPad: LaunchPad) =>
-    launchPad.countDown.value >= 0.1 && launchPad.countDown.value <= LaunchPadAutomata.MaxCountDown.value
+  property("generate a launch pad with a timer up to " + LaunchPadAutomata.MaxCountDown + " seconds") = Prop.forAll { (launchPad: LaunchPad) =>
+    launchPad.countDown >= Seconds(0.1) && launchPad.countDown <= LaunchPadAutomata.MaxCountDown
   }
 
   property("generate a launch pad vertex y=0 and x=-1 to 1") = Prop.forAll { (dice: Dice) =>

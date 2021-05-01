@@ -6,7 +6,7 @@ import scala.util.control.NonFatal
 
 import scala.annotation.tailrec
 
-sealed trait Outcome[+A] {
+sealed trait Outcome[+A] derives CanEqual {
 
   def isResult: Boolean
   def isError: Boolean
@@ -244,6 +244,8 @@ object Outcome {
     Outcome.Error(throwable)
 
   def sequence[A](l: List[Outcome[A]]): Outcome[List[A]] = {
+    given CanEqual[Outcome[A], Outcome[A]] = CanEqual.derived
+
     @tailrec
     def rec(remaining: List[Outcome[A]], accA: List[A], accEvents: List[GlobalEvent]): Outcome[List[A]] =
       remaining match {

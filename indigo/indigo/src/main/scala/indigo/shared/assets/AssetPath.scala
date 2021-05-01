@@ -1,3 +1,6 @@
 package indigo.shared.assets
 
-final case class AssetPath(value: String) extends AnyVal
+opaque type AssetPath = String
+object AssetPath:
+  def apply(value: String): AssetPath = value
+  given CanEqual[AssetPath, AssetPath] = CanEqual.derived

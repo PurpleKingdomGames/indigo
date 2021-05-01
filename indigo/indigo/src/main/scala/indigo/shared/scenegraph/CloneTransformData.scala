@@ -14,7 +14,7 @@ import indigo.shared.datatypes.Vector2
   * @param flipHorizontal
   * @param flipVertical
   */
-final case class CloneTransformData(position: Point, rotation: Radians, scale: Vector2, flipHorizontal: Boolean, flipVertical: Boolean) {
+final case class CloneTransformData(position: Point, rotation: Radians, scale: Vector2, flipHorizontal: Boolean, flipVertical: Boolean) derives CanEqual {
 
   def |+|(other: CloneTransformData): CloneTransformData =
     CloneTransformData(

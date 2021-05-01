@@ -5,31 +5,21 @@ ThisBuild / versionScheme := Some("early-semver")
 
 lazy val indigoVersion = IndigoVersion.getVersion
 
-val scala3Version   = "3.0.0-RC2"
-val scala213Version = "2.13.5"
-
-lazy val scalaFixSettings: Seq[sbt.Def.Setting[_]] =
-  Seq(
-    scalacOptions ++= (
-      if (scalaVersion.value.startsWith("3.")) Nil else Seq(s"-P:semanticdb:targetroot:${baseDirectory.value}/target/.semanticdb", "-Yrangepos")
-    ),
-    scalafixOnCompile := (if (scalaVersion.value.startsWith("3.")) false else true)
-  )
+val scala3Version = "3.0.0-RC3"
 
 lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
   version := indigoVersion,
   scalaVersion := scala3Version,
-  semanticdbEnabled := !scalaVersion.value.startsWith("3."),
-  semanticdbVersion := scalafixSemanticdb.revision, // use Scalafix compatible version
-  crossScalaVersions := Seq(scala3Version, scala213Version),
+  crossScalaVersions := Seq(scala3Version),
   organization := "io.indigoengine",
   libraryDependencies ++= Seq(
-    "org.scalameta" %%% "munit" % "0.7.23" % Test
+    "org.scalameta" %%% "munit" % "0.7.25" % Test
   ),
   testFrameworks += new TestFramework("munit.Framework"),
   Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
-  crossScalaVersions := Seq(scala3Version, scala213Version)
-) ++ scalaFixSettings
+  scalacOptions ++= Seq("-language:strictEquality"),
+  crossScalaVersions := Seq(scala3Version)
+)
 
 lazy val publishSettings = {
   import xerial.sbt.Sonatype._
@@ -40,7 +30,12 @@ lazy val publishSettings = {
     licenses := Seq("MIT" -> url("https://opensource.org/licenses/MIT")),
     sonatypeProjectHosting := Some(GitHubHosting("PurpleKingdomGames", "indigo", "indigo@purplekingdomgames.com")),
     developers := List(
-      Developer(id = "davesmith00000", name = "David Smith", email = "indigo@purplekingdomgames.com", url = url("https://github.com/davesmith00000"))
+      Developer(
+        id = "davesmith00000",
+        name = "David Smith",
+        email = "indigo@purplekingdomgames.com",
+        url = url("https://github.com/davesmith00000")
+      )
     )
   )
 }
@@ -104,7 +99,9 @@ lazy val indigoExtras =
         val cachedFun = FileFunction.cached(
           streams.value.cacheDirectory / "shader-library"
         ) { (files: Set[File]) =>
-          ShaderLibraryGen.makeShaderLibrary("ExtrasShaderLibrary", "indigoextras.shaders", files, (Compile / sourceManaged).value).toSet
+          ShaderLibraryGen
+            .makeShaderLibrary("ExtrasShaderLibrary", "indigoextras.shaders", files, (Compile / sourceManaged).value)
+            .toSet
         }
 
         cachedFun(IO.listFiles((baseDirectory.value / "shader-library")).toSet).toSeq
@@ -141,7 +138,9 @@ lazy val indigo =
         val cachedFun = FileFunction.cached(
           streams.value.cacheDirectory / "shader-library"
         ) { (files: Set[File]) =>
-          ShaderLibraryGen.makeShaderLibrary("ShaderLibrary", "indigo.shaders", files, (Compile / sourceManaged).value).toSet
+          ShaderLibraryGen
+            .makeShaderLibrary("ShaderLibrary", "indigo.shaders", files, (Compile / sourceManaged).value)
+            .toSet
         }
 
         cachedFun(IO.listFiles((baseDirectory.value / "shader-library")).toSet).toSeq
@@ -158,8 +157,8 @@ lazy val indigoJsonCirce =
     .settings(
       name := "indigo-json-circe",
       libraryDependencies ++= Seq(
-        "io.circe" %%% "circe-core"   % "0.14.0-M5",
-        "io.circe" %%% "circe-parser" % "0.14.0-M5"
+        "io.circe" %%% "circe-core"   % "0.14.0-M6",
+        "io.circe" %%% "circe-parser" % "0.14.0-M6"
       )
     )
     .dependsOn(indigo)
@@ -173,7 +172,7 @@ lazy val indigoShaders =
       scalaVersion := scala3Version,
       organization := "io.indigoengine",
       libraryDependencies ++= Seq(
-        "org.scalameta" %%% "munit" % "0.7.23" % Test
+        "org.scalameta" %%% "munit" % "0.7.25" % Test
       ),
       testFrameworks += new TestFramework("munit.Framework"),
       Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
@@ -190,9 +189,9 @@ lazy val indigoProject =
     .settings(commonSettings: _*)
     .settings(
       code := { "code ." ! },
-      openshareddocs := { "open -a Firefox indigo-shared/.jvm/target/scala-3.0.0-RC2/api/indigo/index.html" ! },
-      openindigodocs := { "open -a Firefox indigo/.jvm/target/scala-3.0.0-RC2/api/indigo/index.html" ! },
-      openindigoextsdocs := { "open -a Firefox indigo-exts/.jvm/target/scala-3.0.0-RC2/api/indigoexts/index.html" ! }
+      openshareddocs := { "open -a Firefox indigo-shared/.jvm/target/scala-3.0.0-RC3/api/indigo/index.html" ! },
+      openindigodocs := { "open -a Firefox indigo/.jvm/target/scala-3.0.0-RC3/api/indigo/index.html" ! },
+      openindigoextsdocs := { "open -a Firefox indigo-exts/.jvm/target/scala-3.0.0-RC3/api/indigoexts/index.html" ! }
     )
     .aggregate(
       indigo,

@@ -1,7 +1,6 @@
 package indigo.shared.events
 
-/**
-  * EventFilter's control which events will be processed by your model
+/** EventFilter's control which events will be processed by your model
   * or view model. You can think of event filters like a firewall for
   * events, that only permit the wanted events into the model and
   * view model update functions to avoid conflicts, duplicate, and
@@ -21,16 +20,14 @@ package indigo.shared.events
 final case class EventFilters(
     modelFilter: GlobalEvent => Option[GlobalEvent],
     viewModelFilter: GlobalEvent => Option[GlobalEvent]
-) {
+) derives CanEqual {
 
-  /**
-    * Modify the existing model event filter.
+  /** Modify the existing model event filter.
     */
   def withModelFilter(filter: GlobalEvent => Option[GlobalEvent]): EventFilters =
     this.copy(modelFilter = filter)
 
-  /**
-    * Modify the existing view model event filter.
+  /** Modify the existing view model event filter.
     */
   def withViewModelFilter(filter: GlobalEvent => Option[GlobalEvent]): EventFilters =
     this.copy(viewModelFilter = filter)
@@ -59,8 +56,7 @@ object EventFilters {
     case _                                               => None
   }
 
-  /**
-    * Access controlled event filters are a convienient way to have explicit
+  /** Access controlled event filters are a convienient way to have explicit
     * control which events arrive at which function.
     *
     * @param model An AccessControl instance defining what type of events can
@@ -71,8 +67,7 @@ object EventFilters {
   def withAccessControl(model: AccessControl, viewModel: AccessControl): EventFilters =
     EventFilters(fromAccessControl(model), fromAccessControl(viewModel))
 
-  /**
-    * Allow all events to model and view model. This is likely
+  /** Allow all events to model and view model. This is likely
     * not the desired effect since your game will hear about
     * events intended for things like subsystems, and do
     * unnecessary processing.
@@ -83,8 +78,7 @@ object EventFilters {
       (e: GlobalEvent) => Some(e)
     )
 
-  /**
-    * Block all events to model and view model. This is likely
+  /** Block all events to model and view model. This is likely
     * not the effect you want since your game will not hear
     * about any events at all. However, one use case is a
     * game with scenes where no global processing is required.
@@ -95,8 +89,7 @@ object EventFilters {
       { case _: GlobalEvent => None }
     )
 
-  /**
-    * Model and view model receive all events _apart_ from
+  /** Model and view model receive all events _apart_ from
     * messages intended for subsystems. Inefficient, but
     * easy to develop against since you can listen for anything
     * anywhere.
@@ -119,8 +112,7 @@ object EventFilters {
       }
     )
 
-  /**
-    * The model receives all events that are not subsystem and view specific
+  /** The model receives all events that are not subsystem and view specific
     * events. The view model only receives view events and the frametick.
     *
     * These settings are a good default - and used to be the default - but can
@@ -151,8 +143,7 @@ object EventFilters {
       }
     )
 
-  /**
-    * Block all events to model and view model. Useful for games
+  /** Block all events to model and view model. Useful for games
     * that only require a frame tick to update and, for example,
     * process input via input mapping rather than events.
     */
@@ -176,8 +167,7 @@ object EventFilters {
 
 }
 
-/**
-  * A simple type containing flags allowing exact control over the access
+/** A simple type containing flags allowing exact control over the access
   * rights of different types of events.
   */
 final case class AccessControl(
@@ -190,4 +180,4 @@ final case class AccessControl(
     allowStorageEvents: Boolean,
     allowSubSystemEvents: Boolean,
     allowViewEvents: Boolean
-)
+) derives CanEqual

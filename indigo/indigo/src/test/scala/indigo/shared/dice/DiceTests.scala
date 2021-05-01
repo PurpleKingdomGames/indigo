@@ -5,6 +5,8 @@ import indigo.shared.collections.NonEmptyList
 @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
 class DiceTests extends munit.FunSuite {
 
+  given CanEqual[List[Int], List[Int]] = CanEqual.derived
+
   def checkDice(roll: Int, to: Int): Boolean =
     roll >= 1 && roll <= to
 

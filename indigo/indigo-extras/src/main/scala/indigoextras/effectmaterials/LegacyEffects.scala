@@ -23,7 +23,7 @@ final case class LegacyEffects(
     saturation: Double,
     border: Border,
     glow: Glow
-) extends Material {
+) extends Material derives CanEqual {
 
   def withAlpha(newAlpha: Double): LegacyEffects =
     this.copy(alpha = newAlpha)
@@ -58,14 +58,24 @@ final case class LegacyEffects(
 
         case Fill.LinearGradient(fromPoint, fromColor, toPoint, toColor) =>
           List(
-            Uniform("GRADIENT_FROM_TO")    -> vec4(fromPoint.x.toDouble, fromPoint.y.toDouble, toPoint.x.toDouble, toPoint.y.toDouble),
+            Uniform("GRADIENT_FROM_TO") -> vec4(
+              fromPoint.x.toDouble,
+              fromPoint.y.toDouble,
+              toPoint.x.toDouble,
+              toPoint.y.toDouble
+            ),
             Uniform("GRADIENT_FROM_COLOR") -> vec4(fromColor.r, fromColor.g, fromColor.b, fromColor.a),
             Uniform("GRADIENT_TO_COLOR")   -> vec4(toColor.r, toColor.g, toColor.b, toColor.a)
           )
 
         case Fill.RadialGradient(fromPoint, fromColor, toPoint, toColor) =>
           List(
-            Uniform("GRADIENT_FROM_TO")    -> vec4(fromPoint.x.toDouble, fromPoint.y.toDouble, toPoint.x.toDouble, toPoint.y.toDouble),
+            Uniform("GRADIENT_FROM_TO") -> vec4(
+              fromPoint.x.toDouble,
+              fromPoint.y.toDouble,
+              toPoint.x.toDouble,
+              toPoint.y.toDouble
+            ),
             Uniform("GRADIENT_FROM_COLOR") -> vec4(fromColor.r, fromColor.g, fromColor.b, fromColor.a),
             Uniform("GRADIENT_TO_COLOR")   -> vec4(toColor.r, toColor.g, toColor.b, toColor.a)
           )
@@ -125,7 +135,7 @@ object LegacyEffects {
     LegacyEffects(diffuse, alpha, RGBA.None, Fill.Color.default, 1.0, Border.default, Glow.default)
 }
 
-final case class Border(color: RGBA, innerThickness: Thickness, outerThickness: Thickness) {
+final case class Border(color: RGBA, innerThickness: Thickness, outerThickness: Thickness) derives CanEqual {
 
   def withColor(newColor: RGBA): Border =
     this.copy(color = newColor)
@@ -150,24 +160,21 @@ object Border {
     Border(RGBA.Zero, Thickness.None, Thickness.None)
 }
 
-sealed trait Thickness {
-  def toInt: Int =
-    this match {
-      case Thickness.None  => 0
-      case Thickness.Thin  => 1
-      case Thickness.Thick => 2
-    }
+enum Thickness derives CanEqual:
+  case None, Thin, Thick
 
-  def hash: String =
-    toInt.toString()
-}
-object Thickness {
-  case object None  extends Thickness
-  case object Thin  extends Thickness
-  case object Thick extends Thickness
-}
+object Thickness:
+  extension (t: Thickness)
+    def toInt: Int =
+      t match
+        case Thickness.None  => 0
+        case Thickness.Thin  => 1
+        case Thickness.Thick => 2
 
-final case class Glow(color: RGBA, innerGlowAmount: Double, outerGlowAmount: Double) {
+    def hash: String =
+      t.toInt.toString()
+
+final case class Glow(color: RGBA, innerGlowAmount: Double, outerGlowAmount: Double) derives CanEqual {
   def withColor(newColor: RGBA): Glow =
     this.copy(color = newColor)
 

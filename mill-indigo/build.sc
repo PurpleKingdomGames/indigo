@@ -29,7 +29,7 @@ class IndigoPluginModule(val crossScalaVersion: String) extends CrossScalaModule
   )
 
   object test extends Tests {
-    def ivyDeps = Agg(ivy"org.scalameta::munit:0.7.23")
+    def ivyDeps = Agg(ivy"org.scalameta::munit:0.7.25")
 
     def testFrameworks = Seq("munit.Framework")
   }

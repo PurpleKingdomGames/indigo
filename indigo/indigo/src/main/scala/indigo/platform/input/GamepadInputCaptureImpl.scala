@@ -8,6 +8,9 @@ import indigo.shared.input.GamepadAnalogControls
 
 object GamepadInputCaptureImpl {
 
+  private
+  given CanEqual[Option[GamepadJS], Option[GamepadJS]] = CanEqual.derived
+
   def apply(): GamepadInputCapture =
     new GamepadInputCapture {
       def giveGamepadState: Gamepad =

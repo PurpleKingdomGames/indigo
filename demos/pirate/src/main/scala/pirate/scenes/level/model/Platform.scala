@@ -41,6 +41,8 @@ final case class Platform(navMesh: List[BoundingBox], rowCount: Int) {
 
 object Platform {
 
+  given CanEqual[Option[BoundingBox], Option[BoundingBox]] = CanEqual.derived
+
   def fromTerrainMap(terrainMap: TiledGridMap[TileType]): Platform = {
     val layer = terrainMap.toListPerLayer.head
 

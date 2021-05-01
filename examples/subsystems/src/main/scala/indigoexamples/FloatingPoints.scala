@@ -51,7 +51,7 @@ object FloatingPoints {
         Outcome(
           text.moveTo(
             seed.spawnedAt.x,
-            seed.spawnedAt.y - ((t - seed.createdAt).value * 30).toInt
+            seed.spawnedAt.y - ((t - seed.createdAt) * 30).toInt
           )
         )
       }
