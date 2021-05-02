@@ -60,16 +60,13 @@ object Shape {
       shaderId: Option[ShaderId]
   ) extends Shape {
 
-    private lazy val square: Int =
-      Math.max(dimensions.size.x, dimensions.size.y)
-
     lazy val position: Point =
-      dimensions.position - (Point(square) / 2) - (stroke.width / 2)
+      bounds.position
 
     lazy val bounds: Rectangle =
       Rectangle(
-        position,
-        Point(square) + stroke.width
+        dimensions.position - (stroke.width / 2),
+        dimensions.size + stroke.width
       )
 
     def withDimensions(newDimensions: Rectangle): Box =
@@ -94,12 +91,6 @@ object Shape {
       this.copy(lighting = newLighting)
     def modifyLighting(modifier: LightingModel => LightingModel): Box =
       this.copy(lighting = modifier(lighting))
-
-    private lazy val aspect: Vector2 =
-      if (dimensions.size.x > dimensions.size.y)
-        Vector2(1.0, dimensions.size.y.toDouble / dimensions.size.x.toDouble)
-      else
-        Vector2(dimensions.size.x.toDouble / dimensions.size.y.toDouble, 1.0)
 
     def moveTo(pt: Point): Box =
       this.copy(dimensions = dimensions.moveTo(pt))
@@ -150,6 +141,12 @@ object Shape {
 
     def withShaderId(newShaderId: ShaderId): Box =
       this.copy(shaderId = Option(newShaderId))
+
+    private lazy val aspect: Vector2 =
+      if (dimensions.size.x > dimensions.size.y)
+        Vector2(1.0, dimensions.size.y.toDouble / dimensions.size.x.toDouble)
+      else
+        Vector2(dimensions.size.x.toDouble / dimensions.size.y.toDouble, 1.0)
 
     def toShaderData: ShaderData = {
       val shapeUniformBlock =
@@ -386,7 +383,7 @@ object Shape {
       val w = Math.max(start.x, end.x) - position.x
       val h = Math.max(start.y, end.y) - position.y
 
-      Rectangle(position, Point(Math.max(w, h)) + stroke.width)
+      Rectangle(position, Point(w, h) + stroke.width)
     }
 
     def withStroke(newStroke: Stroke): Line =
@@ -539,7 +536,7 @@ object Shape {
       bounds.position
 
     lazy val bounds: Rectangle =
-      Rectangle.fromPointCloud(vertices).toSquare.expand(stroke.width / 2)
+      Rectangle.fromPointCloud(vertices).expand(stroke.width / 2)
 
     def withFillColor(newFill: Fill): Polygon =
       this.copy(fill = newFill)
@@ -702,14 +699,24 @@ object Shape {
 
       case Fill.LinearGradient(fromPoint, fromColor, toPoint, toColor) =>
         List(
-          Uniform("GRADIENT_FROM_TO")    -> vec4(fromPoint.x.toDouble, fromPoint.y.toDouble, toPoint.x.toDouble, toPoint.y.toDouble),
+          Uniform("GRADIENT_FROM_TO") -> vec4(
+            fromPoint.x.toDouble,
+            fromPoint.y.toDouble,
+            toPoint.x.toDouble,
+            toPoint.y.toDouble
+          ),
           Uniform("GRADIENT_FROM_COLOR") -> vec4(fromColor.r, fromColor.g, fromColor.b, fromColor.a),
           Uniform("GRADIENT_TO_COLOR")   -> vec4(toColor.r, toColor.g, toColor.b, toColor.a)
         )
 
       case Fill.RadialGradient(fromPoint, fromColor, toPoint, toColor) =>
         List(
-          Uniform("GRADIENT_FROM_TO")    -> vec4(fromPoint.x.toDouble, fromPoint.y.toDouble, toPoint.x.toDouble, toPoint.y.toDouble),
+          Uniform("GRADIENT_FROM_TO") -> vec4(
+            fromPoint.x.toDouble,
+            fromPoint.y.toDouble,
+            toPoint.x.toDouble,
+            toPoint.y.toDouble
+          ),
           Uniform("GRADIENT_FROM_COLOR") -> vec4(fromColor.r, fromColor.g, fromColor.b, fromColor.a),
           Uniform("GRADIENT_TO_COLOR")   -> vec4(toColor.r, toColor.g, toColor.b, toColor.a)
         )
