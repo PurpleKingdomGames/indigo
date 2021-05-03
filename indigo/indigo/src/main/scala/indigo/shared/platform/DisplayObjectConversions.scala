@@ -276,30 +276,7 @@ final class DisplayObjectConversions(
         )
       }
 
-    val bounds =
-      leaf match
-        case s: Shape.Box =>
-          val size       = s.dimensions.size
-          // val halfStroke = s.stroke.width / 2
-
-          val offset =
-            if size.x == size.y then Point.zero
-            else if size.x < size.y then Point(-Math.round((size.y.toDouble - size.x.toDouble) / 2).toInt, 0)
-            else Point(0, -Math.round((size.x.toDouble - size.y.toDouble) / 2).toInt)
-
-          Rectangle(
-            s.bounds.position + offset,
-            s.bounds.toSquare.size
-          )
-
-        case s: Shape.Circle =>
-          s.bounds.toSquare
-
-        case s: Shape.Line =>
-          s.bounds.toSquare
-
-        case s: Shape.Polygon =>
-          s.bounds.toSquare
+    val bounds = DisplayObjectConversions.calculateShapeBounds(leaf)
 
     DisplayObject(
       transform = DisplayObjectConversions
@@ -676,5 +653,30 @@ object DisplayObjectConversions {
 
     rec(uniforms.map(_._2), empty0, empty0)
   }
+
+  def calculateShapeBounds(shape: Shape): Rectangle =
+    shape match
+      case s: Shape.Box =>
+        val size = s.dimensions.size
+        // val halfStroke = s.stroke.width / 2
+
+        val offset =
+          if size.x == size.y then Point.zero
+          else if size.x < size.y then Point(-Math.round((size.y.toDouble - size.x.toDouble) / 2).toInt, 0)
+          else Point(0, -Math.round((size.x.toDouble - size.y.toDouble) / 2).toInt)
+
+        Rectangle(
+          s.bounds.position + offset,
+          s.bounds.toSquare.size
+        )
+
+      case s: Shape.Circle =>
+        s.bounds.toSquare
+
+      case s: Shape.Line =>
+        s.bounds.toSquare
+
+      case s: Shape.Polygon =>
+        s.bounds.toSquare
 
 }
