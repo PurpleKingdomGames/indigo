@@ -374,16 +374,18 @@ object Shape {
   ) extends Shape {
 
     lazy val position: Point =
-      Point(
-        Math.min(start.x, end.x),
-        Math.min(start.y, end.y)
-      ) - (stroke.width / 2)
+      bounds.position
 
     lazy val bounds: Rectangle = {
-      val w = Math.max(start.x, end.x) - position.x
-      val h = Math.max(start.y, end.y) - position.y
+      val x = Math.min(start.x, end.x)
+      val y = Math.min(start.y, end.y)
+      val w = Math.max(start.x, end.x) - x
+      val h = Math.max(start.y, end.y) - y
 
-      Rectangle(position, Point(w, h) + stroke.width)
+      Rectangle(
+        Point(x, y) - (stroke.width / 2),
+        Point(w, h) + stroke.width
+      )
     }
 
     def withStroke(newStroke: Stroke): Line =

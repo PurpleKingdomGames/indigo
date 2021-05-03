@@ -36,7 +36,7 @@ class ShapeTests extends munit.FunSuite:
       s.bounds
 
     val expected =
-      Rectangle(50 - 17 - 3, 50 - 17 - 3, 50 + 17 + 7, 50 + 17 + 7)
+      Rectangle(50 - 17 - 3, 50 - 17 - 3, 17 + 17 + 7, 17 + 17 + 7)
 
     assertEquals(actual, expected)
   }
@@ -54,7 +54,7 @@ class ShapeTests extends munit.FunSuite:
       s.bounds
 
     val expected =
-      Rectangle(25 - 2, 10 - 2, 25 + 5, 50 + 5)
+      Rectangle(50 - 2, 10 - 2, 25 + 5, 50 + 5)
 
     assertEquals(actual, expected)
   }
