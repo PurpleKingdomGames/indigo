@@ -143,10 +143,10 @@ object Shape {
       this.copy(shaderId = Option(newShaderId))
 
     private lazy val aspect: Vector2 =
-      if (dimensions.size.x > dimensions.size.y)
-        Vector2(1.0, dimensions.size.y.toDouble / dimensions.size.x.toDouble)
+      if (bounds.size.x > bounds.size.y)
+        Vector2(1.0, bounds.size.y.toDouble / bounds.size.x.toDouble)
       else
-        Vector2(dimensions.size.x.toDouble / dimensions.size.y.toDouble, 1.0)
+        Vector2(bounds.size.x.toDouble / bounds.size.y.toDouble, 1.0)
 
     def toShaderData: ShaderData = {
       val shapeUniformBlock =
