@@ -70,6 +70,19 @@ class BoundingBoxTests extends munit.FunSuite {
     assertEquals(BoundingBox.expandToInclude(a, b) == BoundingBox(10, 10, 190, 190), true)
   }
 
+  test("expand a bounding box with negative size") {
+    val a = BoundingBox(10, 10, -20, -20)
+
+    assertEquals(a.expand(10), BoundingBox(20, 20, -40, -40))
+  }
+
+  test("expand a bounding box to include another bounding box with negative size") {
+    val a = BoundingBox(50, 50, -20, -20)
+    val b = BoundingBox(100, 100, 100, 100)
+
+    assertEquals(BoundingBox.expandToInclude(a, b) == BoundingBox(30, 30, 170, 170), true)
+  }
+
   test("intersecting vertices.should be able to detect if the point is inside the BoundingBox") {
     assertEquals(BoundingBox(0, 0, 10, 10).contains(Vertex(5, 5)), true)
   }
@@ -122,21 +135,28 @@ class BoundingBoxTests extends munit.FunSuite {
     assert(!BoundingBox(5, 5, 4, 4).lineIntersects(LineSegment((0d, 0d), (3d, 3d))))
   }
 
-  test("encompasing rectangles.should return true when A encompases B") {
+  test("encompasing bounding box.should return true when A encompases B") {
     val a = BoundingBox(10, 10, 110, 110)
     val b = BoundingBox(20, 20, 10, 10)
 
     assertEquals(BoundingBox.encompassing(a, b), true)
   }
 
-  test("encompasing rectangles.should return false when A does not encompass B") {
+  test("encompasing bounding box.should return false when A does not encompass B") {
     val a = BoundingBox(20, 20, 10, 10)
     val b = BoundingBox(10, 10, 110, 110)
 
     assertEquals(BoundingBox.encompassing(a, b), false)
   }
 
-  test("encompasing rectangles.should return false when A and B merely intersect") {
+  test("encompasing bounding box.should return true when A encompases B and B has a negative size") {
+    val a = Rectangle(10, 10, 110, 110)
+    val b = Rectangle(30, 30, -10, -10)
+
+    assertEquals(Rectangle.encompassing(a, b), true)
+  }
+
+  test("encompasing bounding box.should return false when A and B merely intersect") {
     val a = BoundingBox(10, 10, 20, 200)
     val b = BoundingBox(15, 15, 100, 10)
 
@@ -153,6 +173,20 @@ class BoundingBoxTests extends munit.FunSuite {
   test("overlapping bounding boxes.should return false when A and B do not overlap") {
     val a = BoundingBox(10, 10, 20, 20)
     val b = BoundingBox(100, 100, 100, 100)
+
+    assertEquals(BoundingBox.overlapping(a, b), false)
+  }
+
+  test("overlapping rectangles.should return true when A overlaps B and A has a negative size.") {
+    val a = BoundingBox(105, 105, -20, -20)
+    val b = BoundingBox(10, 10, 90, 90)
+
+    assertEquals(BoundingBox.overlapping(a, b), true)
+  }
+
+  test("overlapping rectangles.should return false when A and B do not overlap and A has a negative size.") {
+    val a = BoundingBox(125, 125, -10, -10)
+    val b = BoundingBox(10, 10, 90, 90)
 
     assertEquals(BoundingBox.overlapping(a, b), false)
   }
@@ -204,6 +238,24 @@ class BoundingBoxTests extends munit.FunSuite {
     val br = Vertex(45, 70)
     assertEquals(bb.sdf(br), br.distanceTo(bb.bottomRight))
 
+  }
+
+  test("should be able to find edges (positive)") {
+     val a = BoundingBox(10, 20, 30, 40)
+
+     assert(a.left == 10)
+     assert(a.right == 40)
+     assert(a.top == 20)
+     assert(a.bottom == 60)
+  }
+
+  test("should be able to find edges (negative)") {
+     val a = BoundingBox(10, 20, -30, -40)
+
+     assert(a.left == -20)
+     assert(a.right == 10)
+     assert(a.top == -20)
+     assert(a.bottom == 20)
   }
 
 }

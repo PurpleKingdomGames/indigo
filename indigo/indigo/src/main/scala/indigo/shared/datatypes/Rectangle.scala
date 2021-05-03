@@ -9,10 +9,10 @@ final case class Rectangle(position: Point, size: Point) derives CanEqual {
   lazy val height: Int  = size.y
   lazy val hash: String = s"${x.toString()}${y.toString()}${width.toString()}${height.toString()}"
 
-  lazy val left: Int   = x
-  lazy val right: Int  = x + width
-  lazy val top: Int    = y
-  lazy val bottom: Int = y + height
+  lazy val left: Int   = if width >= 0 then x else x + width
+  lazy val right: Int  = if width >= 0 then x + width else x
+  lazy val top: Int    = if height >= 0 then y else y + height
+  lazy val bottom: Int = if height >= 0 then y + height else y
 
   lazy val horizontalCenter: Int = x + (width / 2)
   lazy val verticalCenter: Int   = y + (height / 2)
@@ -22,7 +22,7 @@ final case class Rectangle(position: Point, size: Point) derives CanEqual {
   lazy val bottomRight: Point = Point(right, bottom)
   lazy val bottomLeft: Point  = Point(left, bottom)
   lazy val center: Point      = Point(horizontalCenter, verticalCenter)
-  lazy val halfSize: Point    = size / 2
+  lazy val halfSize: Point    = (size / 2).abs
 
   lazy val corners: List[Point] =
     List(topLeft, topRight, bottomRight, bottomLeft)
@@ -105,10 +105,10 @@ object Rectangle {
 
   def expand(rectangle: Rectangle, amount: Int): Rectangle =
     Rectangle(
-      x = rectangle.x - amount,
-      y = rectangle.y - amount,
-      width = rectangle.width + (amount * 2),
-      height = rectangle.height + (amount * 2)
+      x = if rectangle.width >= 0 then rectangle.x - amount else rectangle.x + amount,
+      y = if rectangle.height >= 0 then rectangle.y - amount else rectangle.y + amount,
+      width = if rectangle.width >= 0 then rectangle.width + (amount * 2) else rectangle.width - (amount * 2),
+      height = if rectangle.height >= 0 then rectangle.height + (amount * 2) else rectangle.height - (amount * 2)
     )
 
   def expandToInclude(a: Rectangle, b: Rectangle): Rectangle = {
@@ -127,8 +127,7 @@ object Rectangle {
     b.x >= a.x && b.y >= a.y && (b.width + (b.x - a.x)) <= a.width && (b.height + (b.y - a.y)) <= a.height
 
   def overlapping(a: Rectangle, b: Rectangle): Boolean =
-    Math.abs(a.center.x - b.center.x) < a.halfSize.x + b.halfSize.x && Math.abs(
-      a.center.y - b.center.y
-    ) < a.halfSize.y + b.halfSize.y
+    Math.abs(a.center.x - b.center.x) < a.halfSize.x + b.halfSize.x &&
+      Math.abs(a.center.y - b.center.y) < a.halfSize.y + b.halfSize.y
 
 }

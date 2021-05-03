@@ -47,6 +47,19 @@ class RectangleTests extends munit.FunSuite {
     assertEquals(Rectangle.expandToInclude(a, b) == Rectangle(10, 10, 190, 190), true)
   }
 
+  test("expand a rectangle with negative size") {
+    val a = Rectangle(10, 10, -20, -20)
+
+    assertEquals(a.expand(10), Rectangle(20, 20, -40, -40))
+  }
+
+  test("expand a rectangle to include another rectangle with negative size") {
+    val a = Rectangle(50, 50, -20, -20)
+    val b = Rectangle(100, 100, 100, 100)
+
+    assertEquals(Rectangle.expandToInclude(a, b) == Rectangle(30, 30, 170, 170), true)
+  }
+
   test("intersecting points.should be able to detect if the point is inside the Rectangle") {
     assertEquals(Rectangle(0, 0, 10, 10).isPointWithin(Point(5, 5)), true)
   }
@@ -58,6 +71,13 @@ class RectangleTests extends munit.FunSuite {
   test("encompasing rectangles.should return true when A encompases B") {
     val a = Rectangle(10, 10, 110, 110)
     val b = Rectangle(20, 20, 10, 10)
+
+    assertEquals(Rectangle.encompassing(a, b), true)
+  }
+
+  test("encompasing rectangles.should return true when A encompases B and B has a negative size") {
+    val a = Rectangle(10, 10, 110, 110)
+    val b = Rectangle(30, 30, -10, -10)
 
     assertEquals(Rectangle.encompassing(a, b), true)
   }
@@ -90,11 +110,43 @@ class RectangleTests extends munit.FunSuite {
     assertEquals(Rectangle.overlapping(a, b), false)
   }
 
+  test("overlapping rectangles.should return true when A overlaps B and A has a negative size.") {
+    val a = Rectangle(105, 105, -20, -20)
+    val b = Rectangle(10, 10, 90, 90)
+
+    assertEquals(Rectangle.overlapping(a, b), true)
+  }
+
+  test("overlapping rectangles.should return false when A and B do not overlap and A has a negative size.") {
+    val a = Rectangle(125, 125, -10, -10)
+    val b = Rectangle(10, 10, 90, 90)
+
+    assertEquals(Rectangle.overlapping(a, b), false)
+  }
+
   test("Expand should be able to expand in size by a given amount") {
     val a = Rectangle(10, 10, 20, 20)
     val b = Rectangle(0, 10, 100, 5)
 
     assertEquals(Rectangle.expand(a, 10) == Rectangle(0, 0, 40, 40), true)
     assertEquals(Rectangle.expand(b, 50) == Rectangle(-50, -40, 200, 105), true)
+  }
+
+  test("should be able to find edges (positive)") {
+     val a = Rectangle(10, 20, 30, 40)
+
+     assert(a.left == 10)
+     assert(a.right == 40)
+     assert(a.top == 20)
+     assert(a.bottom == 60)
+  }
+
+  test("should be able to find edges (negative)") {
+     val a = Rectangle(10, 20, -30, -40)
+
+     assert(a.left == -20)
+     assert(a.right == 10)
+     assert(a.top == -20)
+     assert(a.bottom == 20)
   }
 }

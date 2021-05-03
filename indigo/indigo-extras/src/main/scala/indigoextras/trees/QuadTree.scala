@@ -94,7 +94,8 @@ object QuadTree {
   def apply[T](elements: List[(T, Vertex)]): QuadTree[T] =
     QuadEmpty(BoundingBox.fromVertexCloud(elements.map(_._2))).insertElements(elements)
 
-  final case class QuadBranch[T](bounds: BoundingBox, a: QuadTree[T], b: QuadTree[T], c: QuadTree[T], d: QuadTree[T]) extends QuadTree[T] {
+  final case class QuadBranch[T](bounds: BoundingBox, a: QuadTree[T], b: QuadTree[T], c: QuadTree[T], d: QuadTree[T])
+      extends QuadTree[T] {
     def isEmpty: Boolean =
       a.isEmpty && b.isEmpty && c.isEmpty && d.isEmpty
   }
@@ -111,29 +112,34 @@ object QuadTree {
       fromBoundsAndQuads(bounds, subdivide(bounds))
 
     def subdivide(quadBounds: BoundingBox): (BoundingBox, BoundingBox, BoundingBox, BoundingBox) =
+      val newWidth  = quadBounds.width / 2
+      val newHeight = quadBounds.height / 2
       (
-        BoundingBox(quadBounds.x, quadBounds.y, quadBounds.width / 2, quadBounds.height / 2),
+        BoundingBox(quadBounds.x, quadBounds.y, newWidth, newHeight),
         BoundingBox(
-          quadBounds.x + (quadBounds.width / 2),
+          quadBounds.x + newWidth,
           quadBounds.y,
-          quadBounds.width - (quadBounds.width / 2),
-          quadBounds.height / 2
+          newWidth,
+          newHeight
         ),
         BoundingBox(
           quadBounds.x,
-          quadBounds.y + (quadBounds.height / 2),
-          quadBounds.width / 2,
-          quadBounds.height - (quadBounds.height / 2)
+          quadBounds.y + newHeight,
+          newWidth,
+          newHeight
         ),
         BoundingBox(
-          quadBounds.x + (quadBounds.width / 2),
-          quadBounds.y + (quadBounds.height / 2),
-          quadBounds.width - (quadBounds.width / 2),
-          quadBounds.height - (quadBounds.height / 2)
+          quadBounds.x + newWidth,
+          quadBounds.y + newHeight,
+          newWidth,
+          newHeight
         )
       )
 
-    def fromBoundsAndQuads[T](bounds: BoundingBox, quads: (BoundingBox, BoundingBox, BoundingBox, BoundingBox)): QuadBranch[T] =
+    def fromBoundsAndQuads[T](
+        bounds: BoundingBox,
+        quads: (BoundingBox, BoundingBox, BoundingBox, BoundingBox)
+    ): QuadBranch[T] =
       QuadBranch(
         bounds,
         QuadEmpty(quads._1),
