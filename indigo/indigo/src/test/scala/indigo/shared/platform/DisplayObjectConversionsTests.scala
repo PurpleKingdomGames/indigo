@@ -126,7 +126,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
       )
 
     val actual =
-      DisplayObjectConversions.nodeToMatrix4(node, Vector3(100.0d, 100.0d, 1.0d))
+      DisplayObjectConversions.nodeToMatrix4(node, node.position.toVector, Vector3(100.0d, 100.0d, 1.0d))
 
     assertEquals(actual.toMatrix4, expected.toMatrix4)
   }
@@ -147,7 +147,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
       )
 
     val actual =
-      DisplayObjectConversions.nodeToMatrix4(node, Vector3(100.0d, 100.0d, 1.0d))
+      DisplayObjectConversions.nodeToMatrix4(node, node.position.toVector, Vector3(100.0d, 100.0d, 1.0d))
 
     assertEquals(actual.toMatrix4, expected.toMatrix4)
   }
@@ -167,7 +167,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
       )
 
     val actual =
-      DisplayObjectConversions.nodeToMatrix4(node, Vector3(100.0d, 100.0d, 1.0d))
+      DisplayObjectConversions.nodeToMatrix4(node, node.position.toVector, Vector3(100.0d, 100.0d, 1.0d))
 
     assertEquals(actual.toMatrix4, expected.toMatrix4)
   }
@@ -190,7 +190,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
       )
 
     val actual =
-      DisplayObjectConversions.nodeToMatrix4(node, Vector3(100.0d, 100.0d, 1.0d))
+      DisplayObjectConversions.nodeToMatrix4(node, node.position.toVector, Vector3(100.0d, 100.0d, 1.0d))
 
     assert(clue(actual.toMatrix4) ~== clue(expected.toMatrix4))
   }
@@ -215,7 +215,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
       )
 
     val actual =
-      DisplayObjectConversions.nodeToMatrix4(node, Vector3(width.toDouble, height.toDouble, 1.0d))
+      DisplayObjectConversions.nodeToMatrix4(node, node.position.toVector, Vector3(width.toDouble, height.toDouble, 1.0d))
 
     assertEquals(actual.toMatrix4, expected.toMatrix4)
   }
