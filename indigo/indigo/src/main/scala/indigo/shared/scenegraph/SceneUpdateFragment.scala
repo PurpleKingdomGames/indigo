@@ -1,20 +1,29 @@
 package indigo.shared.scenegraph
 
+import annotation.targetName
+
 import indigo.shared.materials.BlendMaterial
 
-/**
-  * A description of what the engine should next present to the player.
+/** A description of what the engine should next present to the player.
   *
-  * SceneUpdateFragments are predicatably composable, so you can make a scene in pieces and then combine them all at the end.
+  * SceneUpdateFragments are predicatably composable, so you can make a scene in pieces and then combine them all at the
+  * end.
   *
-  * Note that a SceneUpdateFragment represents what is to happen next. It is not a diff. If you remove a sprite from the definition it will not be drawn.
+  * Note that a SceneUpdateFragment represents what is to happen next. It is not a diff. If you remove a sprite from the
+  * definition it will not be drawn.
   *
-  * @param layers The layers game elements are placed on.
-  * @param ambientLight The scene's ambient light levels.
-  * @param lights Dynamic lights.
-  * @param audio Background audio.
-  * @param screenEffects Effects to be applied at screen level.
-  * @param cloneBlanks A list of elements that will be referenced by clones in the main layers.
+  * @param layers
+  *   The layers game elements are placed on.
+  * @param ambientLight
+  *   The scene's ambient light levels.
+  * @param lights
+  *   Dynamic lights.
+  * @param audio
+  *   Background audio.
+  * @param screenEffects
+  *   Effects to be applied at screen level.
+  * @param cloneBlanks
+  *   A list of elements that will be referenced by clones in the main layers.
   */
 final case class SceneUpdateFragment(
     layers: List[Layer],
@@ -83,6 +92,10 @@ object SceneUpdateFragment {
 
   def apply(layer: Layer): SceneUpdateFragment =
     SceneUpdateFragment(List(layer), Nil, SceneAudio.None, None, Nil)
+
+  @targetName("suf-apply-many-layers")
+  def apply(layers: Layer*): SceneUpdateFragment =
+    SceneUpdateFragment(layers.toList, Nil, SceneAudio.None, None, Nil)
 
   val empty: SceneUpdateFragment =
     SceneUpdateFragment(Nil, Nil, SceneAudio.None, None, Nil)
