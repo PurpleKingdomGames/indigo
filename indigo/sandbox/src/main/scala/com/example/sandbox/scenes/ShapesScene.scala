@@ -55,10 +55,22 @@ object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
       Signal.SmoothPulse.map(d => (10 * d).toInt).at(context.running)
 
     val squareSize: Point =
+      val signal = Signal.SmoothPulse.map(d => (100 * d).toInt).affectTime(0.25).at(context.running)
+
       Point(
-        Signal.SmoothPulse.map(d => 20 + (80 * d).toInt).affectTime(0.25).at(context.running),
-        100 - Signal.SmoothPulse.map(d => 20 + (80 * d).toInt).affectTime(0.25).at(context.running)
+        signal,
+        99 - signal
       )
+
+    val blue =
+      Shape
+        .Box(Rectangle(0, 0, 24, 60), Fill.Color(RGBA.Blue.withAlpha(0.5)), Stroke(10, RGBA.Blue.withAlpha(0.5)))
+        .moveTo(100, 100)
+
+    val red =
+      Shape
+        .Box(Rectangle(0, 0, 60, 24), Fill.Color(RGBA.Red.withAlpha(0.5)), Stroke(10, RGBA.Red.withAlpha(0.5)))
+        .moveTo(100, 100)
 
     Outcome(
       SceneUpdateFragment.empty
@@ -70,11 +82,13 @@ object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
             Stroke(1, RGBA.Red)
           ),
           Shape.Line(Point(30, 80), Point(100, 20), Stroke(lineThickness, RGBA.Cyan)),
-          Shape.Box(
-            Rectangle(Point(100, 100), squareSize),
-            Fill.Color(RGBA.White),
-            Stroke(10, RGBA.Black.withAlpha(0.75))
-          ),
+          Shape
+            .Box(
+              Rectangle(Point(100, 100), squareSize),
+              Fill.Color(RGBA.White),
+              Stroke(11, RGBA.Black.withAlpha(0.75))
+            )
+            .withRef(squareSize / 2),
           Clone(CloneId("shape clone")).withPosition(Point(10, 10)),
           Clone(CloneId("shape clone")).withPosition(Point(20, 10)),
           Clone(CloneId("shape clone")).withPosition(Point(30, 10)),
@@ -89,9 +103,12 @@ object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
               Point(70, 20) - (Math.cos(Radians.fromSeconds(context.running * Seconds(1.5)).toDouble) * 8).toInt
             )
             .moveTo(175, 10),
+          blue,
+          Shape.Box(blue.bounds, Fill.None, Stroke(1, RGBA.Blue)), //outline blue
+          red,
+          Shape.Box(red.bounds, Fill.None, Stroke(1, RGBA.Red)), //outline red
           Shape
-            .Box(Rectangle(0, 0, 50, 25), Fill.None, Stroke(3, RGBA.White))
-            .moveTo(180, 100)
+            .Box(Rectangle(0, 0, 100, 100), Fill.Color(RGBA.Green.withAlpha(0.5)), Stroke.None)
         )
         .addCloneBlanks(
           CloneBlank(CloneId("shape clone"), Shape.Circle(Point.zero, 5, Fill.Color(RGBA.Green), Stroke(2, RGBA.White)))

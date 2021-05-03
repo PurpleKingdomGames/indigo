@@ -1,7 +1,7 @@
 package indigo.shared.platform
 
 import indigo.shared.display.{DisplayObject, SpriteSheetFrame, DisplayCloneBatch}
-import indigo.shared.datatypes.{FontInfo, Rectangle, TextAlignment, FontChar}
+import indigo.shared.datatypes.{FontInfo, Rectangle, TextAlignment, FontChar, Point}
 import indigo.shared.display.SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets
 import indigo.shared.IndigoLogger
 import indigo.shared.time.GameTime
@@ -276,13 +276,19 @@ final class DisplayObjectConversions(
         )
       }
 
+    val bounds = DisplayObjectConversions.calculateShapeBounds(leaf)
+
     DisplayObject(
       transform = DisplayObjectConversions
-        .nodeToMatrix4(leaf, Vector3(leaf.bounds.size.x.toDouble, leaf.bounds.size.y.toDouble, 1.0d)),
+        .nodeToMatrix4(
+          leaf,
+          bounds.position.toVector,
+          Vector3(bounds.size.x.toDouble, bounds.size.y.toDouble, 1.0d)
+        ),
       rotation = leaf.rotation,
       z = leaf.depth.toDouble,
-      width = leaf.bounds.size.x,
-      height = leaf.bounds.size.y,
+      width = bounds.size.x,
+      height = bounds.size.y,
       atlasName = None,
       frame = SpriteSheetFrame.defaultOffset,
       channelOffset1 = offset,
@@ -328,7 +334,11 @@ final class DisplayObjectConversions(
 
     DisplayObject(
       transform = DisplayObjectConversions
-        .nodeToMatrix4(leaf, Vector3(leaf.bounds.size.x.toDouble, leaf.bounds.size.y.toDouble, 1.0d)),
+        .nodeToMatrix4(
+          leaf,
+          leaf.position.toVector,
+          Vector3(leaf.bounds.size.x.toDouble, leaf.bounds.size.y.toDouble, 1.0d)
+        ),
       rotation = leaf.rotation,
       z = leaf.depth.toDouble,
       width = leaf.bounds.size.x,
@@ -373,7 +383,11 @@ final class DisplayObjectConversions(
 
     DisplayObject(
       transform = DisplayObjectConversions
-        .nodeToMatrix4(leaf, Vector3(leaf.crop.size.x.toDouble, leaf.crop.size.y.toDouble, 1.0d)),
+        .nodeToMatrix4(
+          leaf,
+          leaf.position.toVector,
+          Vector3(leaf.crop.size.x.toDouble, leaf.crop.size.y.toDouble, 1.0d)
+        ),
       rotation = leaf.rotation,
       z = leaf.depth.toDouble,
       width = leaf.crop.size.x,
@@ -426,7 +440,11 @@ final class DisplayObjectConversions(
       }
 
     DisplayObject(
-      transform = DisplayObjectConversions.nodeToMatrix4(leaf, Vector3(width.toDouble, height.toDouble, 1.0d)),
+      transform = DisplayObjectConversions.nodeToMatrix4(
+        leaf,
+        leaf.position.toVector,
+        Vector3(width.toDouble, height.toDouble, 1.0d)
+      ),
       rotation = leaf.rotation,
       z = leaf.depth.toDouble,
       width = width,
@@ -492,7 +510,8 @@ final class DisplayObjectConversions(
 
           DisplayObject(
             transform = DisplayObjectConversions.nodeToMatrix4(
-              leaf.moveBy(xPosition + alignmentOffsetX, yOffset),
+              leaf,
+              leaf.position.moveBy(xPosition + alignmentOffsetX, yOffset).toVector,
               Vector3(fontChar.bounds.width.toDouble, fontChar.bounds.height.toDouble, 1.0d)
             ),
             rotation = leaf.rotation,
@@ -548,7 +567,7 @@ final class DisplayObjectConversions(
 
 object DisplayObjectConversions {
 
-  def nodeToMatrix4(node: RenderNode, size: Vector3): CheapMatrix4 =
+  def nodeToMatrix4(node: RenderNode, position: Vector2, size: Vector3): CheapMatrix4 =
     CheapMatrix4.identity
       .scale(
         if (node.flip.horizontal) -1.0 else 1.0,
@@ -567,8 +586,8 @@ object DisplayObjectConversions {
       )
       .rotate(node.rotation)
       .translate(
-        node.position.x.toDouble,
-        node.position.y.toDouble,
+        position.x, //node.position.x.toDouble,
+        position.y, //node.position.y.toDouble,
         0.0d
       )
 
@@ -634,5 +653,30 @@ object DisplayObjectConversions {
 
     rec(uniforms.map(_._2), empty0, empty0)
   }
+
+  def calculateShapeBounds(shape: Shape): Rectangle =
+    shape match
+      case s: Shape.Box =>
+        val size = s.dimensions.size
+        // val halfStroke = s.stroke.width / 2
+
+        val offset =
+          if size.x == size.y then Point.zero
+          else if size.x < size.y then Point(-Math.round((size.y.toDouble - size.x.toDouble) / 2).toInt, 0)
+          else Point(0, -Math.round((size.x.toDouble - size.y.toDouble) / 2).toInt)
+
+        Rectangle(
+          s.bounds.position + offset,
+          s.bounds.toSquare.size
+        )
+
+      case s: Shape.Circle =>
+        s.bounds.toSquare
+
+      case s: Shape.Line =>
+        s.bounds.toSquare
+
+      case s: Shape.Polygon =>
+        s.bounds.toSquare
 
 }
