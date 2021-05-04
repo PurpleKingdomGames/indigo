@@ -11,6 +11,9 @@ import scala.scalajs.js.typedarray.Float32Array
 import indigo.facades.WebGL2RenderingContext
 import indigo.shared.datatypes.mutable.CheapMatrix4
 import org.scalajs.dom.html
+import org.scalajs.dom
+import org.scalajs.dom.{Element, raw}
+import scala.scalajs.js.Dynamic
 
 import indigo.shared.platform.ProcessedSceneData
 import indigo.platform.renderer.shared.LoadedTextureAsset
@@ -127,6 +130,8 @@ final class RendererWebGL2(
 
   private given CanEqual[(BlendFactor, BlendFactor), (BlendFactor, BlendFactor)] = CanEqual.derived
 
+  private var textContext: raw.CanvasRenderingContext2D = createTextContext()
+
   def init(shaders: Set[RawShaderCode]): Unit = {
 
     shaders.foreach { shader =>
@@ -234,7 +239,8 @@ final class RendererWebGL2(
         layer.entities,
         layerEntityFrameBuffer,
         layer.bgColor,
-        customShaders
+        customShaders,
+        textContext
       )
 
       val projection =
@@ -381,5 +387,12 @@ final class RendererWebGL2(
       ()
     }
   }
+
+  def createTextContext(): raw.CanvasRenderingContext2D =
+    dom.document
+      .createElement("canvas")
+      .asInstanceOf[html.Canvas]
+      .getContext("2d", Dynamic.literal())
+      .asInstanceOf[raw.CanvasRenderingContext2D]
 
 }

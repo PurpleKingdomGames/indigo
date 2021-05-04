@@ -10,7 +10,7 @@ import indigo.shared.datatypes.Vector3
 import indigo.shared.AnimationsRegister
 import indigo.shared.FontRegister
 import indigo.shared.platform.AssetMapping
-import indigo.shared.scenegraph.{Graphic, Sprite, Text, TextLine}
+import indigo.shared.scenegraph.{Graphic, Sprite, Text, TextLine, TextBox}
 
 import indigo.shared.scenegraph.SceneNode
 import indigo.shared.scenegraph.RenderNode
@@ -22,6 +22,7 @@ import scala.annotation.tailrec
 import scala.collection.mutable.ListBuffer
 import indigo.shared.display.DisplayEntity
 import indigo.shared.display.DisplayObjectUniformData
+import indigo.shared.display.DisplayText
 import indigo.shared.scenegraph.Clone
 import indigo.shared.scenegraph.CloneId
 import indigo.shared.scenegraph.CloneBatch
@@ -175,6 +176,9 @@ final class DisplayObjectConversions(
       case s: Shape =>
         List(shapeToDisplayObject(s))
 
+      case t: TextBox =>
+        List(textBoxToDisplayText(t))
+
       case s: EntityNode =>
         List(sceneEntityToDisplayObject(s, assetMapping))
 
@@ -253,6 +257,9 @@ final class DisplayObjectConversions(
             ._2
 
         letters
+
+      case _ =>
+        Nil
     }
 
   def optionalAssetToOffset(assetMapping: AssetMapping, maybeAssetName: Option[AssetName]): Vector2 =
@@ -352,6 +359,54 @@ final class DisplayObjectConversions(
       shaderUniformData = uniformData
     )
   }
+
+  def textBoxToDisplayText(leaf: TextBox): DisplayText =
+    // val shaderData   = leaf.material.toShaderData
+    // val materialName = shaderData.channel0.get
+
+    // val emissiveOffset = findAssetOffsetValues(assetMapping, shaderData.channel1, shaderData.hash, "_e")
+    // val normalOffset   = findAssetOffsetValues(assetMapping, shaderData.channel2, shaderData.hash, "_n")
+    // val specularOffset = findAssetOffsetValues(assetMapping, shaderData.channel3, shaderData.hash, "_s")
+
+    // val frameInfo =
+    //   QuickCache(s"${leaf.crop.hash}_${shaderData.hash}") {
+    //     SpriteSheetFrame.calculateFrameOffset(
+    //       atlasSize = lookupAtlasSize(assetMapping, materialName),
+    //       frameCrop = leaf.crop,
+    //       textureOffset = lookupTextureOffset(assetMapping, materialName)
+    //     )
+    //   }
+
+    // val shaderId = shaderData.shaderId
+
+    // val uniformData: List[DisplayObjectUniformData] =
+    //   shaderData.uniformBlocks.map { ub =>
+    //     DisplayObjectUniformData(
+    //       uniformHash = ub.uniformHash,
+    //       blockName = ub.blockName,
+    //       data = DisplayObjectConversions.packUBO(ub.uniforms)
+    //     )
+    //   }
+    DisplayText(
+      text = leaf.text,
+      transform = DisplayObjectConversions
+        .nodeToMatrix4(
+          leaf,
+          leaf.position.toVector,
+          Vector3(leaf.bounds.size.x.toDouble, leaf.bounds.size.y.toDouble, 1.0d)
+        ),
+      rotation = leaf.rotation,
+      z = leaf.depth.toDouble,
+      width = leaf.bounds.size.x,
+      height = leaf.bounds.size.y
+      // atlasName = Some(lookupAtlasName(assetMapping, materialName)),
+      // frame = frameInfo,
+      // channelOffset1 = frameInfo.offsetToCoords(emissiveOffset),
+      // channelOffset2 = frameInfo.offsetToCoords(normalOffset),
+      // channelOffset3 = frameInfo.offsetToCoords(specularOffset),
+      // shaderId = shaderId,
+      // shaderUniformData = uniformData
+    )
 
   def graphicToDisplayObject(leaf: Graphic, assetMapping: AssetMapping): DisplayObject = {
     val shaderData   = leaf.material.toShaderData

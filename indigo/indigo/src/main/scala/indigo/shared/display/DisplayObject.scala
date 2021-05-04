@@ -58,7 +58,7 @@ final case class DisplayObject(
 ) extends DisplayEntity derives CanEqual {
 
   def applyTransform(matrix: CheapMatrix4): DisplayObject =
-    this.copy(transform * matrix)
+    this.copy(transform = transform * matrix)
 
 }
 object DisplayObject {
@@ -102,3 +102,17 @@ object DisplayObject {
 }
 
 final case class DisplayObjectUniformData(uniformHash: String, blockName: String, data: Array[Float]) derives CanEqual
+
+final case class DisplayText(
+    text: String,
+    transform: CheapMatrix4,
+    rotation: Radians,
+    z: Double,
+    width: Int,
+    height: Int
+) extends DisplayEntity derives CanEqual {
+
+  def applyTransform(matrix: CheapMatrix4): DisplayText =
+    this.copy(transform = transform * matrix)
+
+}

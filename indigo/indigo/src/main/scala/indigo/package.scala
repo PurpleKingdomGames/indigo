@@ -426,6 +426,9 @@ val Sprite: shared.scenegraph.Sprite.type = shared.scenegraph.Sprite
 type Text = shared.scenegraph.Text
 val Text: shared.scenegraph.Text.type = shared.scenegraph.Text
 
+type TextBox = shared.scenegraph.TextBox
+val TextBox: shared.scenegraph.TextBox.type = shared.scenegraph.TextBox
+
 type Graphic = shared.scenegraph.Graphic
 val Graphic: shared.scenegraph.Graphic.type = shared.scenegraph.Graphic
 
