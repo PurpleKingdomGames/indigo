@@ -7,6 +7,7 @@ import indigo.shared.datatypes.FontInfo
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.TextAlignment
 import indigo.shared.scenegraph.Text
+import indigo.shared.scenegraph.TextBox
 import indigo.shared.scenegraph.Sprite
 import indigo.shared.scenegraph.Group
 import indigo.shared.scenegraph.Clone
@@ -36,6 +37,9 @@ final class BoundaryLocator(animationsRegister: AnimationsRegister, fontRegister
       case g: Graphic =>
         g.bounds
 
+      case t: TextBox =>
+        Rectangle.zero
+
       case s: EntityNode =>
         s.bounds
 
@@ -56,6 +60,9 @@ final class BoundaryLocator(animationsRegister: AnimationsRegister, fontRegister
 
       case t: Text =>
         textBounds(t)
+
+      case _ =>
+        Rectangle.zero
     }
 
   def spriteBounds(sprite: Sprite): Rectangle =

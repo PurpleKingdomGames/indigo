@@ -16,6 +16,7 @@ import com.example.sandbox.scenes.ShapesScene
 import com.example.sandbox.scenes.LightsScene
 import com.example.sandbox.scenes.RefractionScene
 import com.example.sandbox.scenes.LegacyEffectsScene
+import com.example.sandbox.scenes.TextBoxScene
 import indigoextras.effectmaterials.Refraction
 import indigoextras.effectmaterials.LegacyEffects
 
@@ -28,10 +29,10 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
   private val viewportHeight: Int     = 128 * magnificationLevel
 
   def initialScene(bootData: SandboxBootData): Option[SceneName] =
-    Some(ShapesScene.name)
+    Some(TextBoxScene.name)
 
   def scenes(bootData: SandboxBootData): NonEmptyList[Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]] =
-    NonEmptyList(OriginalScene, ShapesScene, LightsScene, RefractionScene, LegacyEffectsScene)
+    NonEmptyList(OriginalScene, ShapesScene, LightsScene, RefractionScene, LegacyEffectsScene, TextBoxScene)
 
   val eventFilters: EventFilters = EventFilters.Permissive
 
@@ -56,7 +57,15 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
         SandboxBootData(flags.getOrElse("key", "No entry for 'key'."), gameViewport)
       ).withAssets(SandboxAssets.assets ++ Shaders.assets)
         .withFonts(Fonts.fontInfo)
-        .withSubSystems(FPSCounter(Fonts.fontKey, Point(5, 165), targetFPS, Option(BindingKey("fps counter")), SandboxAssets.fontMaterial))
+        .withSubSystems(
+          FPSCounter(
+            Fonts.fontKey,
+            Point(5, 165),
+            targetFPS,
+            Option(BindingKey("fps counter")),
+            SandboxAssets.fontMaterial
+          )
+        )
         .withShaders(
           Shaders.circle,
           Shaders.external,
@@ -67,13 +76,20 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
     )
   }
 
-  def setup(bootData: SandboxBootData, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[SandboxStartupData]] = {
+  def setup(
+      bootData: SandboxBootData,
+      assetCollection: AssetCollection,
+      dice: Dice
+  ): Outcome[Startup[SandboxStartupData]] = {
     println(bootData.message)
 
     val screenCenter: Point =
       bootData.gameViewport.giveDimensions(magnificationLevel).center
 
-    def makeStartupData(aseprite: Aseprite, spriteAndAnimations: SpriteAndAnimations): Startup.Success[SandboxStartupData] =
+    def makeStartupData(
+        aseprite: Aseprite,
+        spriteAndAnimations: SpriteAndAnimations
+    ): Startup.Success[SandboxStartupData] =
       Startup
         .Success(
           SandboxStartupData(
@@ -120,10 +136,17 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
     )
   }
 
-  def updateModel(context: FrameContext[SandboxStartupData], model: SandboxGameModel): GlobalEvent => Outcome[SandboxGameModel] =
+  def updateModel(
+      context: FrameContext[SandboxStartupData],
+      model: SandboxGameModel
+  ): GlobalEvent => Outcome[SandboxGameModel] =
     SandboxModel.updateModel(model)
 
-  def updateViewModel(context: FrameContext[SandboxStartupData], model: SandboxGameModel, viewModel: SandboxViewModel): GlobalEvent => Outcome[SandboxViewModel] = {
+  def updateViewModel(
+      context: FrameContext[SandboxStartupData],
+      model: SandboxGameModel,
+      viewModel: SandboxViewModel
+  ): GlobalEvent => Outcome[SandboxViewModel] = {
     case RendererDetails(RenderingTechnology.WebGL1, _, _) =>
       Outcome(viewModel.copy(useLightingLayer = false))
 
@@ -164,7 +187,11 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
       Outcome(viewModel)
   }
 
-  def present(context: FrameContext[SandboxStartupData], model: SandboxGameModel, viewModel: SandboxViewModel): Outcome[SceneUpdateFragment] =
+  def present(
+      context: FrameContext[SandboxStartupData],
+      model: SandboxGameModel,
+      viewModel: SandboxViewModel
+  ): Outcome[SceneUpdateFragment] =
     Outcome(SceneUpdateFragment(Layer(BindingKey("fps counter")).withDepth(Depth(200))))
 }
 

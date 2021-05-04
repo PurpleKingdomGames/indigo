@@ -5,6 +5,7 @@ import indigo.shared.display.DisplayObject
 import org.scalajs.dom.raw.WebGLProgram
 import org.scalajs.dom.raw.WebGLRenderingContext._
 import org.scalajs.dom.raw.WebGLBuffer
+import org.scalajs.dom.raw
 
 import scala.annotation.tailrec
 import scala.scalajs.js.typedarray.Float32Array
@@ -12,6 +13,7 @@ import scala.collection.mutable.ListBuffer
 import indigo.shared.display.DisplayEntity
 import indigo.shared.display.DisplayClone
 import indigo.shared.display.DisplayCloneBatch
+import indigo.shared.display.DisplayText
 import indigo.platform.renderer.shared.TextureLookupResult
 import indigo.platform.renderer.shared.FrameBufferFunctions
 import indigo.platform.renderer.shared.FrameBufferComponents
@@ -89,6 +91,33 @@ class LayerRenderer(
     channelOffsets23Data((i * 4) + 3) = d.channelOffset3Y
   }
 
+  private def updateTextData(d: DisplayText, i: Int, matrixData1: List[Double], matrixData2: List[Double]): Unit = {
+    matRotateScaleData((i * 4) + 0) = matrixData1(0).toFloat
+    matRotateScaleData((i * 4) + 1) = matrixData1(1).toFloat
+    matRotateScaleData((i * 4) + 2) = matrixData1(2).toFloat
+    matRotateScaleData((i * 4) + 3) = matrixData1(3).toFloat
+
+    matTranslateRotationData((i * 4) + 0) = matrixData2(0).toFloat
+    matTranslateRotationData((i * 4) + 1) = matrixData2(1).toFloat
+    matTranslateRotationData((i * 4) + 2) = matrixData2(2).toFloat
+    matTranslateRotationData((i * 4) + 3) = d.rotation.toFloat
+
+    sizeAndFrameScaleData((i * 4) + 0) = d.width.toFloat
+    sizeAndFrameScaleData((i * 4) + 1) = d.height.toFloat
+    sizeAndFrameScaleData((i * 4) + 2) = 1
+    sizeAndFrameScaleData((i * 4) + 3) = 1
+
+    channelOffsets01Data((i * 4) + 0) = 0
+    channelOffsets01Data((i * 4) + 1) = 0
+    channelOffsets01Data((i * 4) + 2) = 0
+    channelOffsets01Data((i * 4) + 3) = 0
+
+    channelOffsets23Data((i * 4) + 0) = 0
+    channelOffsets23Data((i * 4) + 1) = 0
+    channelOffsets23Data((i * 4) + 2) = 0
+    channelOffsets23Data((i * 4) + 3) = 0
+  }
+
   def requiresContextChange(
       d: DisplayObject,
       atlasName: Option[AtlasId],
@@ -103,7 +132,7 @@ class LayerRenderer(
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  private var currentProgram: WebGLProgram = null
+  private var currentProgram: WebGLProgram                           = null
   private given CanEqual[Option[WebGLProgram], Option[WebGLProgram]] = CanEqual.derived
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
@@ -219,7 +248,8 @@ class LayerRenderer(
       displayEntities: ListBuffer[DisplayEntity],
       frameBufferComponents: FrameBufferComponents,
       clearColor: RGBA,
-      customShaders: HashMap[ShaderId, WebGLProgram]
+      customShaders: HashMap[ShaderId, WebGLProgram],
+      textContext: raw.CanvasRenderingContext2D
   ): Unit = {
 
     FrameBufferFunctions.switchToFramebuffer(gl2, frameBufferComponents.frameBuffer, clearColor, true)
@@ -315,9 +345,75 @@ class LayerRenderer(
               }
           }
 
+        case (t: DisplayText) :: ds =>
+          import org.scalajs.dom.raw.WebGLRenderingContext
+          import org.scalajs.dom.raw.WebGLRenderingContext._
+
+          // TODO: Skip for now...
+          // rec(ds, batchCount, atlasName, currentShader, currentShaderHash)
+
+          // Always change context
+          val shaderId = indigo.shared.shader.StandardShaders.Bitmap.id
+          customShaders.get(shaderId) match {
+            case Some(s) =>
+              currentProgram = s
+              setupShader(s)
+              s
+
+            case None =>
+              throw new Exception(
+                s"(TextBox) Missing entity shader '$shaderId'. Have you remembered to add the shader to the boot sequence or disabled auto-loading of default shaders?"
+              )
+          }
+          //
+
+          // create text texture.
+          val textCanvas = makeTextCanvas(textContext, t.text, t.width, t.height);
+          // var textWidth  = textCanvas.width;
+          // var textHeight = textCanvas.height;
+          val textTex = gl2.createTexture();
+
+          gl2.bindTexture(TEXTURE_2D, textTex);
+          // gl2.texImage2D(TEXTURE_2D, 0, RGBA, RGBA, UNSIGNED_BYTE, image)
+          gl2.texImage2D(
+            TEXTURE_2D,
+            0,
+            WebGLRenderingContext.RGBA,
+            WebGLRenderingContext.RGBA,
+            UNSIGNED_BYTE,
+            textCanvas
+          )
+          // make sure we can render it even if it's not a power of 2
+          gl2.texParameteri(TEXTURE_2D, TEXTURE_MIN_FILTER, LINEAR);
+          gl2.texParameteri(TEXTURE_2D, TEXTURE_WRAP_S, CLAMP_TO_EDGE);
+          gl2.texParameteri(TEXTURE_2D, TEXTURE_WRAP_T, CLAMP_TO_EDGE);
+
+          val data = t.transform.data
+          updateTextData(t, batchCount, data._1, data._2)
+          rec(ds, batchCount + 1, atlasName, currentShader, currentShaderHash)
+
       }
 
     rec(sorted.toList, 0, None, ShaderId(""), "")
+  }
+
+  // Puts text in center of canvas.
+  private def makeTextCanvas(
+      textCtx: raw.CanvasRenderingContext2D,
+      text: String,
+      width: Int,
+      height: Int
+  ): raw.HTMLCanvasElement = {
+    textCtx.canvas.width = width
+    textCtx.canvas.height = height
+    textCtx.font = "20px monospace"
+    textCtx.textAlign = "center"
+    textCtx.textBaseline = "middle"
+    textCtx.fillStyle = "black"
+    textCtx.clearRect(0, 0, textCtx.canvas.width, textCtx.canvas.height)
+    textCtx.fillText(text, width / 2, height / 2)
+
+    textCtx.canvas
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))

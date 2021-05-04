@@ -56,7 +56,7 @@ final case class Transformer(node: SceneNode, transform: CheapMatrix4) extends S
 // Dependent Nodes
 //------------------
 
-sealed trait DependentNode extends SceneNode {
+trait DependentNode extends SceneNode {
   def position: Point
   def rotation: Radians
   def scale: Vector2
@@ -345,7 +345,7 @@ object Group {
 // Composite Nodes
 //------------------
 
-sealed trait CompositeNode extends RenderNode {
+trait CompositeNode extends RenderNode {
   def calculatedBounds(locator: BoundaryLocator): Rectangle
 }
 
