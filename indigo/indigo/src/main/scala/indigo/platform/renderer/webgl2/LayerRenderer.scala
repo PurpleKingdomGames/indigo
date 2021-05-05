@@ -3,8 +3,10 @@ package indigo.platform.renderer.webgl2
 import indigo.facades.WebGL2RenderingContext
 import indigo.shared.display.DisplayObject
 import org.scalajs.dom.raw.WebGLProgram
+import org.scalajs.dom.raw.WebGLRenderingContext
 import org.scalajs.dom.raw.WebGLRenderingContext._
 import org.scalajs.dom.raw.WebGLBuffer
+import org.scalajs.dom.raw.WebGLTexture
 import org.scalajs.dom.raw
 
 import scala.annotation.tailrec
@@ -32,7 +34,9 @@ class LayerRenderer(
     maxBatchSize: Int,
     projectionUBOBuffer: => WebGLBuffer,
     frameDataUBOBuffer: => WebGLBuffer,
-    lightDataUBOBuffer: => WebGLBuffer
+    lightDataUBOBuffer: => WebGLBuffer,
+    textContext: raw.CanvasRenderingContext2D,
+    textTexture: WebGLTexture
 ) {
 
   private val customDataUBOBuffers: HashMap[String, WebGLBuffer] =
@@ -248,8 +252,7 @@ class LayerRenderer(
       displayEntities: ListBuffer[DisplayEntity],
       frameBufferComponents: FrameBufferComponents,
       clearColor: RGBA,
-      customShaders: HashMap[ShaderId, WebGLProgram],
-      textContext: raw.CanvasRenderingContext2D
+      customShaders: HashMap[ShaderId, WebGLProgram]
   ): Unit = {
 
     FrameBufferFunctions.switchToFramebuffer(gl2, frameBufferComponents.frameBuffer, clearColor, true)
@@ -346,74 +349,57 @@ class LayerRenderer(
           }
 
         case (t: DisplayText) :: ds =>
-          import org.scalajs.dom.raw.WebGLRenderingContext
-          import org.scalajs.dom.raw.WebGLRenderingContext._
+          drawBuffer(batchCount)
 
-          // TODO: Skip for now...
-          // rec(ds, batchCount, atlasName, currentShader, currentShaderHash)
-
-          // Always change context
+          // Change context
           val shaderId = indigo.shared.shader.StandardShaders.Bitmap.id
-          customShaders.get(shaderId) match {
-            case Some(s) =>
-              currentProgram = s
-              setupShader(s)
-              s
+          if (currentShader != shaderId) {
+            customShaders.get(shaderId) match {
+              case Some(s) =>
+                currentProgram = s
+                setupShader(s)
 
-            case None =>
-              throw new Exception(
-                s"(TextBox) Missing entity shader '$shaderId'. Have you remembered to add the shader to the boot sequence or disabled auto-loading of default shaders?"
-              )
+              case None =>
+                throw new Exception(
+                  s"(TextBox) Missing entity shader '$shaderId'. Have you remembered to add the shader to the boot sequence or disabled auto-loading of default shaders?"
+                )
+            }
           }
-          //
 
-          // create text texture.
-          val textCanvas = makeTextCanvas(textContext, t.text, t.width, t.height);
-          // var textWidth  = textCanvas.width;
-          // var textHeight = textCanvas.height;
-          val textTex = gl2.createTexture();
+          gl2.bindTexture(TEXTURE_2D, textTexture)
 
-          gl2.bindTexture(TEXTURE_2D, textTex);
-          // gl2.texImage2D(TEXTURE_2D, 0, RGBA, RGBA, UNSIGNED_BYTE, image)
           gl2.texImage2D(
             TEXTURE_2D,
             0,
             WebGLRenderingContext.RGBA,
             WebGLRenderingContext.RGBA,
             UNSIGNED_BYTE,
-            textCanvas
+            makeTextImageData(t.text, t.width, t.height)
           )
-          // make sure we can render it even if it's not a power of 2
-          gl2.texParameteri(TEXTURE_2D, TEXTURE_MIN_FILTER, LINEAR);
-          gl2.texParameteri(TEXTURE_2D, TEXTURE_WRAP_S, CLAMP_TO_EDGE);
-          gl2.texParameteri(TEXTURE_2D, TEXTURE_WRAP_T, CLAMP_TO_EDGE);
 
           val data = t.transform.data
-          updateTextData(t, batchCount, data._1, data._2)
-          rec(ds, batchCount + 1, atlasName, currentShader, currentShaderHash)
-
+          updateTextData(t, 0, data._1, data._2)
+          rec(ds, 0 + 1, None, shaderId, "")
       }
 
     rec(sorted.toList, 0, None, ShaderId(""), "")
   }
 
-  // Puts text in center of canvas.
-  private def makeTextCanvas(
-      textCtx: raw.CanvasRenderingContext2D,
+  private def makeTextImageData(
       text: String,
       width: Int,
       height: Int
   ): raw.HTMLCanvasElement = {
-    textCtx.canvas.width = width
-    textCtx.canvas.height = height
-    textCtx.font = "14px monospace"
-    textCtx.textAlign = "center"
-    textCtx.textBaseline = "middle"
-    textCtx.fillStyle = "white"
-    textCtx.clearRect(0, 0, textCtx.canvas.width, textCtx.canvas.height)
-    textCtx.fillText(text, width / 2, height / 2)
+    textContext.canvas.width = width
+    textContext.canvas.height = height
+    textContext.font = "14px monospace"
+    textContext.textAlign = "center"
+    textContext.textBaseline = "middle"
+    textContext.fillStyle = "white"
+    textContext.clearRect(0, 0, textContext.canvas.width, textContext.canvas.height)
+    textContext.fillText(text, width / 2, height / 2)
 
-    textCtx.canvas
+    textContext.canvas
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))

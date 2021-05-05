@@ -81,7 +81,6 @@ final case class TextBox(
       None,
       None
     )
-// material.toShaderData
 
 object TextBox:
   def apply(text: String): TextBox =

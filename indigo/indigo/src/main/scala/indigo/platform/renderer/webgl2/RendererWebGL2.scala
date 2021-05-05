@@ -92,6 +92,8 @@ final class RendererWebGL2(
   def screenWidth: Int  = lastWidth
   def screenHeight: Int = lastHeight
 
+  private val textContext: raw.CanvasRenderingContext2D = createTextContext()
+
   private val layerRenderInstance: LayerRenderer =
     new LayerRenderer(
       gl2,
@@ -99,7 +101,9 @@ final class RendererWebGL2(
       config.maxBatchSize,
       projectionUBOBuffer,
       frameDataUBOBuffer,
-      lightDataUBOBuffer
+      lightDataUBOBuffer,
+      textContext,
+      WebGLHelper.createAndBindTexture(gl2)
     )
   private val layerMergeRenderInstance: LayerMergeRenderer =
     new LayerMergeRenderer(gl2, frameDataUBOBuffer)
@@ -129,8 +133,6 @@ final class RendererWebGL2(
   private var currentBlendFactors: (BlendFactor, BlendFactor) = (Blend.Normal.src, Blend.Normal.dst)
 
   private given CanEqual[(BlendFactor, BlendFactor), (BlendFactor, BlendFactor)] = CanEqual.derived
-
-  private var textContext: raw.CanvasRenderingContext2D = createTextContext()
 
   def init(shaders: Set[RawShaderCode]): Unit = {
 
@@ -239,8 +241,7 @@ final class RendererWebGL2(
         layer.entities,
         layerEntityFrameBuffer,
         layer.bgColor,
-        customShaders,
-        textContext
+        customShaders
       )
 
       val projection =
