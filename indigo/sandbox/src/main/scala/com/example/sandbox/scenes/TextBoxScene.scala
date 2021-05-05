@@ -49,10 +49,13 @@ object TextBoxScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxV
         Layer(
           Graphic(
             Rectangle(0, 0, 40, 40),
-            3,
+            4,
             LightingAssets.junctionBoxMaterialOn.modifyLighting(_ => LightingModel.Unlit)
           ).moveTo(10, 10),
-          TextBox("Indigo... with fonts?", 200, 100).moveTo(50, 50).withDepth(Depth(2)),
+          TextBox("Indigo... with fonts?", 200, 100).moveTo(50, 50).withDepth(Depth(3)),
+          TextBox("Fishcakes", 200, 100)
+            .moveTo(Signal.Orbit(Point(70, 70), 20).affectTime(0.25).at(context.running).toPoint)
+            .withDepth(Depth(2)),
           model.dude.dude.sprite.play().withDepth(Depth(1))
         )
       )
