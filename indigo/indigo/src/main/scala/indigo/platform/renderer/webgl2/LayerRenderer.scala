@@ -406,10 +406,10 @@ class LayerRenderer(
   ): raw.HTMLCanvasElement = {
     textCtx.canvas.width = width
     textCtx.canvas.height = height
-    textCtx.font = "20px monospace"
+    textCtx.font = "14px monospace"
     textCtx.textAlign = "center"
     textCtx.textBaseline = "middle"
-    textCtx.fillStyle = "black"
+    textCtx.fillStyle = "white"
     textCtx.clearRect(0, 0, textCtx.canvas.width, textCtx.canvas.height)
     textCtx.fillText(text, width / 2, height / 2)
 

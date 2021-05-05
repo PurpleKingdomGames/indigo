@@ -47,7 +47,13 @@ object TextBoxScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxV
     Outcome(
       SceneUpdateFragment(
         Layer(
-          TextBox("Hello", 200, 100)
+          Graphic(
+            Rectangle(0, 0, 40, 40),
+            1,
+            LightingAssets.junctionBoxMaterialOn.modifyLighting(_ => LightingModel.Unlit)
+          ).moveTo(10, 10),
+          TextBox("Indigo... with fonts?", 200, 100).moveTo(50, 50),
+          model.dude.dude.sprite.play()
         )
       )
     )
