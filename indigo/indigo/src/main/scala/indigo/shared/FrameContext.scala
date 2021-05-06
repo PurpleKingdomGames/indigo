@@ -36,7 +36,7 @@ final class FrameContext[StartUpData](
   val keyboard: Keyboard = inputState.keyboard
   val gamepad: Gamepad   = inputState.gamepad
 
-  def findBounds(sceneNode: SceneNode): Rectangle =
+  def findBounds(sceneNode: SceneNode): Boundary =
     boundaryLocator.findBounds(sceneNode)
 
 }

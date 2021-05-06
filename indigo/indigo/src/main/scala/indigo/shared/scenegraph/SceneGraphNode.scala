@@ -11,6 +11,7 @@ import indigo.shared.datatypes.mutable.CheapMatrix4
 
 import indigo.shared.animation.AnimationAction
 import indigo.shared.BoundaryLocator
+import indigo.shared.Boundary
 
 /** The parent type of anything that can affect the visual representation of the game.
   */
@@ -269,27 +270,36 @@ final case class Group(
   def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): Group =
     transformTo(position + positionDiff, rotation + rotationDiff, scale * scaleDiff)
 
-  def calculatedBounds(locator: BoundaryLocator): Rectangle = {
-    def giveBounds(n: SceneNode): Rectangle =
+  def calculatedBounds(locator: BoundaryLocator): Boundary = {
+    def giveBounds(n: SceneNode): Boundary =
       n match {
         case n: EntityNode =>
-          n.bounds
+          Boundary.Found(n.bounds)
 
         case n: CompositeNode =>
           n.calculatedBounds(locator)
 
         case _ =>
-          Rectangle.zero
+          Boundary.Unavailable
       }
 
     children match {
       case Nil =>
-        Rectangle.zero
+        Boundary.Found(Rectangle.zero)
 
       case x :: xs =>
-        xs.foldLeft(giveBounds(x)) { (acc, node) =>
-          Rectangle.expandToInclude(acc, giveBounds(node))
-        }
+        val maybe: Option[Rectangle] =
+          xs.foldLeft(giveBounds(x).toOption) { (acc, node) =>
+            (acc, giveBounds(node).toOption) match
+              case (Some(a), Some(b)) => Option(Rectangle.expandToInclude(a, b))
+              case (r @ Some(_), _)   => r
+              case (_, r @ Some(_))   => r
+              case (r, _)             => r
+          }
+
+        maybe match
+          case None    => Boundary.Unavailable
+          case Some(b) => Boundary.Found(b)
     }
   }
 
@@ -346,7 +356,7 @@ object Group {
 //------------------
 
 trait CompositeNode extends RenderNode {
-  def calculatedBounds(locator: BoundaryLocator): Rectangle
+  def calculatedBounds(locator: BoundaryLocator): Boundary
 }
 
 /** Sprites are used to represented key-frame animated screen elements.
@@ -371,7 +381,7 @@ final case class Sprite(
   lazy val x: Int = position.x
   lazy val y: Int = position.y
 
-  def calculatedBounds(locator: BoundaryLocator): Rectangle =
+  def calculatedBounds(locator: BoundaryLocator): Boundary =
     locator.findBounds(this)
 
   def withDepth(newDepth: Depth): Sprite =
@@ -535,7 +545,7 @@ final case class Text(
     with EventHandler
     with SpatialModifiers[Text] derives CanEqual {
 
-  def calculatedBounds(locator: BoundaryLocator): Rectangle =
+  def calculatedBounds(locator: BoundaryLocator): Boundary =
     locator.findBounds(this)
 
   lazy val x: Int = position.x

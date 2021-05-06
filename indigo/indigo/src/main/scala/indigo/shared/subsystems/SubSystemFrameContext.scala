@@ -10,6 +10,7 @@ import indigo.shared.input.Keyboard
 import indigo.shared.input.Gamepad
 import indigo.shared.time.Seconds
 import indigo.shared.BoundaryLocator
+import indigo.shared.Boundary
 import indigo.shared.FrameContext
 
 /**
@@ -36,7 +37,7 @@ final class SubSystemFrameContext(
   val keyboard: Keyboard = inputState.keyboard
   val gamepad: Gamepad   = inputState.gamepad
 
-  def findBounds(sceneGraphNode: SceneNode): Rectangle =
+  def findBounds(sceneGraphNode: SceneNode): Boundary =
     boundaryLocator.findBounds(sceneGraphNode)
 
 }

@@ -18,6 +18,7 @@ import indigo.shared.datatypes.Stroke
 import indigo.shared.datatypes.RGBA
 import indigo.shared.scenegraph.CloneId
 import indigo.shared.display.DisplayObject
+import indigo.shared.display.DisplayText
 import indigo.shared.display.DisplayClone
 import indigo.shared.display.DisplayCloneBatch
 import indigo.shared.scenegraph.SceneNode
@@ -66,6 +67,9 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
 
       case _: DisplayCloneBatch =>
         throw new Exception("failed (DisplayCloneBatch)")
+
+      case _: DisplayText =>
+        throw new Exception("failed (DisplayText)")
 
       case d: DisplayObject =>
         d

@@ -20,7 +20,7 @@ import indigo.shared.scenegraph.EntityNode
 
 final class BoundaryLocator(animationsRegister: AnimationsRegister, fontRegister: FontRegister) {
 
-  implicit private val boundsCache: QuickCache[Rectangle]         = QuickCache.empty
+  implicit private val boundsCache: QuickCache[Boundary]          = QuickCache.empty
   implicit private val textLinesCache: QuickCache[List[TextLine]] = QuickCache.empty
 
   def purgeCache(): Unit = {
@@ -29,31 +29,31 @@ final class BoundaryLocator(animationsRegister: AnimationsRegister, fontRegister
   }
 
   // General
-  def findBounds(sceneGraphNode: SceneNode): Rectangle =
+  def findBounds(sceneGraphNode: SceneNode): Boundary =
     sceneGraphNode match {
       case s: Shape =>
-        s.bounds
+        Boundary.Found(s.bounds)
 
       case g: Graphic =>
-        g.bounds
+        Boundary.Found(g.bounds)
 
       case t: TextBox =>
-        Rectangle.zero
+        Boundary.Unavailable
 
       case s: EntityNode =>
-        s.bounds
+        Boundary.Found(s.bounds)
 
       case g: Group =>
         g.calculatedBounds(this)
 
       case _: Transformer =>
-        Rectangle.zero
+        Boundary.Unavailable
 
       case _: Clone =>
-        Rectangle.zero
+        Boundary.Unavailable
 
       case _: CloneBatch =>
-        Rectangle.zero
+        Boundary.Unavailable
 
       case s: Sprite =>
         spriteBounds(s)
@@ -62,18 +62,18 @@ final class BoundaryLocator(animationsRegister: AnimationsRegister, fontRegister
         textBounds(t)
 
       case _ =>
-        Rectangle.zero
+        Boundary.Unavailable
     }
 
-  def spriteBounds(sprite: Sprite): Rectangle =
+  def spriteBounds(sprite: Sprite): Boundary =
     QuickCache(s"""sprite-${sprite.bindingKey}-${sprite.animationKey}""") {
       animationsRegister.fetchAnimationInLastState(sprite.bindingKey, sprite.animationKey) match {
         case Some(animation) =>
-          Rectangle(sprite.position, animation.currentFrame.crop.size)
+          Boundary.Found(Rectangle(sprite.position, animation.currentFrame.crop.size))
 
         case None =>
           IndigoLogger.errorOnce(s"Cannot build bounds for Sprite with bindingKey: ${sprite.bindingKey.toString()}")
-          Rectangle(sprite.position, Point.zero)
+          Boundary.Unavailable
       }
     }
 
@@ -88,7 +88,7 @@ final class BoundaryLocator(animationsRegister: AnimationsRegister, fontRegister
       }
 
   def textAsLinesWithBounds(text: String, fontKey: FontKey): List[TextLine] =
-    QuickCache(s"""text-lines-${fontKey}-${text}""") {
+    QuickCache(s"""text-lines-$fontKey-$text""") {
       fontRegister
         .findByFontKey(fontKey)
         .map { fontInfo =>
@@ -105,7 +105,7 @@ final class BoundaryLocator(animationsRegister: AnimationsRegister, fontRegister
         }
     }
 
-  def textBounds(text: Text): Rectangle =
+  def textBounds(text: Text): Boundary =
     QuickCache(s"""text-bounds-${text.fontKey}-${text.text}""") {
       val unaligned =
         textAsLinesWithBounds(text.text, text.fontKey)
@@ -116,10 +116,27 @@ final class BoundaryLocator(animationsRegister: AnimationsRegister, fontRegister
           .moveTo(text.position)
 
       (text.alignment, unaligned) match {
-        case (TextAlignment.Left, b)   => b
-        case (TextAlignment.Center, b) => b.moveTo(Point(b.x - (b.width / 2), b.y))
-        case (TextAlignment.Right, b)  => b.moveTo(Point(b.x - b.width, b.y))
+        case (TextAlignment.Left, b) =>
+          Boundary.Found(b)
+
+        case (TextAlignment.Center, b) =>
+          Boundary.Found(b.moveTo(Point(b.x - (b.width / 2), b.y)))
+
+        case (TextAlignment.Right, b) =>
+          Boundary.Found(b.moveTo(Point(b.x - b.width, b.y)))
       }
     }
 
 }
+
+enum Boundary derives CanEqual:
+  case Unavailable              extends Boundary
+  case Calculating              extends Boundary
+  case Found(bounds: Rectangle) extends Boundary
+
+object Boundary:
+  extension (b: Boundary)
+    def toOption: Option[Rectangle] =
+      b match
+        case Boundary.Found(r) => Some(r)
+        case _                 => None

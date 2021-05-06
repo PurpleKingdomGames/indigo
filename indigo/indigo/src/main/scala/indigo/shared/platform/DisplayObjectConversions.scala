@@ -30,6 +30,7 @@ import indigo.shared.display.DisplayClone
 import indigo.shared.scenegraph.CloneTransformData
 import indigo.shared.materials.ShaderData
 import indigo.shared.BoundaryLocator
+import indigo.shared.Boundary
 import indigo.shared.animation.AnimationRef
 import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.shared.assets.AssetName
@@ -480,8 +481,9 @@ final class DisplayObjectConversions(
         )
       }
 
-    val width: Int  = leaf.calculatedBounds(boundaryLocator).size.x
-    val height: Int = leaf.calculatedBounds(boundaryLocator).size.y
+    val (width, height) = leaf.calculatedBounds(boundaryLocator) match
+      case Boundary.Found(bounds) => (bounds.size.x, bounds.size.y)
+      case _                      => (0, 0)
 
     val shaderId = shaderData.shaderId
 

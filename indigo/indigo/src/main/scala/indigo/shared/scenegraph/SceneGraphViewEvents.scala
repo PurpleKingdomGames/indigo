@@ -3,6 +3,7 @@ package indigo.shared.scenegraph
 import indigo.shared.events.GlobalEvent
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.BoundaryLocator
+import indigo.shared.Boundary
 
 object SceneGraphViewEvents {
 
@@ -18,18 +19,32 @@ object SceneGraphViewEvents {
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  def applyInputEvents(node: EventHandler, bounds: Rectangle, inputEvents: List[GlobalEvent], sendEvent: GlobalEvent => Unit): Unit = {
-    val count = inputEvents.length
-    var index = 0
+  def applyInputEvents(
+      node: EventHandler,
+      boundary: Boundary,
+      inputEvents: List[GlobalEvent],
+      sendEvent: GlobalEvent => Unit
+  ): Unit =
+    boundary match
+      case Boundary.Found(bounds) =>
+        val count = inputEvents.length
+        var index = 0
 
-    while (index < count) {
-      pushEvents(node.eventHandler((bounds, inputEvents(index))), sendEvent)
-      index += 1
-    }
-  }
+        while (index < count) {
+          pushEvents(node.eventHandler((bounds, inputEvents(index))), sendEvent)
+          index += 1
+        }
+
+      case _ =>
+        ()
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  def collectViewEvents(boundaryLocator: BoundaryLocator, nodes: List[SceneNode], inputEvents: List[GlobalEvent], sendEvent: GlobalEvent => Unit): Unit = {
+  def collectViewEvents(
+      boundaryLocator: BoundaryLocator,
+      nodes: List[SceneNode],
+      inputEvents: List[GlobalEvent],
+      sendEvent: GlobalEvent => Unit
+  ): Unit = {
     val count = nodes.length
     var index = 0
 

@@ -6,6 +6,7 @@ import indigo.shared.scenegraph.{Graphic, SceneNode, Text}
 
 import indigo.shared.temporal.Signal
 import indigo.shared.BoundaryLocator
+import indigo.shared.Boundary
 import scala.collection.immutable.Nil
 import scala.annotation.tailrec
 import indigo.shared.time.Seconds
@@ -31,7 +32,7 @@ final case class InputField(
     onLoseFocus: () => List[GlobalEvent]
 ) derives CanEqual {
 
-  def bounds(boundaryLocator: BoundaryLocator): Rectangle =
+  def bounds(boundaryLocator: BoundaryLocator): Boundary =
     assets.text.withText(text).moveTo(position).calculatedBounds(boundaryLocator)
 
   def withText(newText: String): InputField =
@@ -215,9 +216,12 @@ final case class InputField(
       else Outcome(this)
 
     if (frameContext.inputState.mouse.mouseReleased)
-      if (frameContext.inputState.mouse.wasMouseUpWithin(bounds(frameContext.boundaryLocator)))
-        updated.flatMap(_.giveFocus)
-      else updated.flatMap(_.loseFocus)
+      bounds(frameContext.boundaryLocator) match
+        case Boundary.Found(bounds) =>
+          if frameContext.inputState.mouse.wasMouseUpWithin(bounds) then updated.flatMap(_.giveFocus)
+          else updated.flatMap(_.loseFocus)
+        case _ =>
+          updated
     else updated
   }
 
