@@ -36,6 +36,8 @@ import indigo.shared.scenegraph.BlendFactor
 import indigo.shared.shader.StandardShaders
 import indigo.shared.QuickCache
 
+import indigo.facades.IndigoCanvasRenderingContext2D
+
 @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
 final class RendererWebGL2(
     config: RendererConfig,
@@ -92,7 +94,7 @@ final class RendererWebGL2(
   def screenWidth: Int  = lastWidth
   def screenHeight: Int = lastHeight
 
-  private val textContext: raw.CanvasRenderingContext2D = createTextContext()
+  private val textContext: IndigoCanvasRenderingContext2D = createTextContext()
 
   private val layerRenderInstance: LayerRenderer =
     new LayerRenderer(
@@ -389,11 +391,11 @@ final class RendererWebGL2(
     }
   }
 
-  def createTextContext(): raw.CanvasRenderingContext2D =
+  def createTextContext(): IndigoCanvasRenderingContext2D =
     dom.document
       .createElement("canvas")
       .asInstanceOf[html.Canvas]
       .getContext("2d", Dynamic.literal())
-      .asInstanceOf[raw.CanvasRenderingContext2D]
+      .asInstanceOf[IndigoCanvasRenderingContext2D]
 
 }

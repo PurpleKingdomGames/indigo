@@ -28,6 +28,8 @@ import indigo.shared.scenegraph.CloneId
 import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.platform.renderer.shared.WebGLHelper
 
+import indigo.facades.IndigoCanvasRenderingContext2D
+
 class LayerRenderer(
     gl2: WebGL2RenderingContext,
     textureLocations: List[TextureLookupResult],
@@ -35,7 +37,7 @@ class LayerRenderer(
     projectionUBOBuffer: => WebGLBuffer,
     frameDataUBOBuffer: => WebGLBuffer,
     lightDataUBOBuffer: => WebGLBuffer,
-    textContext: raw.CanvasRenderingContext2D,
+    textContext: IndigoCanvasRenderingContext2D,
     textTexture: WebGLTexture
 ) {
 
@@ -390,14 +392,33 @@ class LayerRenderer(
       width: Int,
       height: Int
   ): raw.HTMLCanvasElement = {
+    val maxWidth: Option[Int] = None // Some(50) // condense of uses lower font size to achieve width.
+
+    // Formal "font" css string syntax:
+    // [ [ <'font-style'> || <font-variant-css21> || <'font-weight'> || <'font-stretch'> ]? <'font-size'> [ / <'line-height'> ]? <'font-family'> ]
+
     textContext.canvas.width = width
     textContext.canvas.height = height
-    textContext.font = "14px monospace"
-    textContext.textAlign = "center"
-    textContext.textBaseline = "middle"
-    textContext.fillStyle = "white"
+    textContext.font = "normal 14px monospace" // bold 48px serif
+    textContext.textAlign = "center"         // "left" || "right" || "center" || "start" || "end"
+    textContext.textBaseline =
+      "alphabetic" // "top" || "hanging" || "middle" || "alphabetic" || "ideographic" || "bottom"
+    textContext.direction = "ltr" // "ltr" || "rtl" || "inherit"
+    textContext.fillStyle = "black" // can be hex string like #000
+    textContext.strokeStyle = "none"
     textContext.clearRect(0, 0, textContext.canvas.width, textContext.canvas.height)
-    textContext.fillText(text, width / 2, height / 2)
+
+    val x = width / 2
+    val y = height / 2
+
+    maxWidth match
+      case Some(mw) =>
+        textContext.strokeText(text, x, y, mw)
+        textContext.fillText(text, x, y, mw)
+
+      case _ =>
+        textContext.strokeText(text, x, y)
+        textContext.fillText(text, x, y)
 
     textContext.canvas
   }
