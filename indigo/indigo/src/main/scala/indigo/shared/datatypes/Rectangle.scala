@@ -69,6 +69,8 @@ final case class Rectangle(position: Point, size: Point) derives CanEqual {
 
 object Rectangle {
 
+  given CanEqual[Option[Rectangle], Option[Rectangle]] = CanEqual.derived
+
   val zero: Rectangle = Rectangle(0, 0, 0, 0)
 
   def apply(x: Int, y: Int, width: Int, height: Int): Rectangle =

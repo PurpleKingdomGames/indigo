@@ -5,6 +5,7 @@ import indigo.shared.events.GlobalEvent
 import indigo.shared.input.Mouse
 import indigo.shared.Outcome
 import indigo.shared.scenegraph.EntityNode
+import indigo.shared.scenegraph.CompositeNode
 import indigo.shared.scenegraph.Shape
 import indigo.shared.scenegraph.Graphic
 import indigo.shared.scenegraph.Sprite
@@ -59,6 +60,7 @@ final case class Button(
       case n: Text          => n.withPosition(pt).withDepth(d)
       case n: Group         => n.withPosition(pt).withDepth(d)
       case n: EntityNode    => n
+      case n: CompositeNode => n.withDepth(d)
     }
 
   def draw: RenderNode =

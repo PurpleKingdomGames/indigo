@@ -143,7 +143,7 @@ class InputFieldTests extends munit.FunSuite {
 
   test("Multi line boxes have bounds correctly caluculated") {
     val actual =
-      InputField("ab\nc", assets).moveTo(50, 50).bounds(boundaryLocator)
+      InputField("ab\nc", assets).moveTo(50, 50).bounds(boundaryLocator).toOption.get
 
     val expected =
       Rectangle(50, 50, 26, 36)
