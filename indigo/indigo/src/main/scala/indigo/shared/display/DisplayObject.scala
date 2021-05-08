@@ -2,6 +2,7 @@ package indigo.shared.display
 
 import indigo.shared.datatypes.Vector2
 import indigo.shared.datatypes.mutable.CheapMatrix4
+import indigo.shared.datatypes.TextStyle
 import indigo.shared.shader.ShaderId
 import indigo.platform.assets.AtlasId
 import indigo.shared.datatypes.Radians
@@ -105,6 +106,7 @@ final case class DisplayObjectUniformData(uniformHash: String, blockName: String
 
 final case class DisplayText(
     text: String,
+    style: TextStyle,
     transform: CheapMatrix4,
     rotation: Radians,
     z: Double,
