@@ -390,6 +390,7 @@ final class DisplayObjectConversions(
     //   }
     DisplayText(
       text = leaf.text,
+      style = leaf.style,
       transform = DisplayObjectConversions
         .nodeToMatrix4(
           leaf,

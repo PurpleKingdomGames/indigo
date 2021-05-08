@@ -27,6 +27,10 @@ import indigo.shared.scenegraph.CloneId
 
 import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.platform.renderer.shared.WebGLHelper
+import indigo.shared.datatypes.TextStyle
+import indigo.shared.datatypes.TextAlign
+import indigo.shared.datatypes.TextBaseLine
+import indigo.shared.datatypes.TextDirection
 
 import indigo.facades.IndigoCanvasRenderingContext2D
 
@@ -376,7 +380,7 @@ class LayerRenderer(
             WebGLRenderingContext.RGBA,
             WebGLRenderingContext.RGBA,
             UNSIGNED_BYTE,
-            makeTextImageData(t.text, t.width, t.height)
+            makeTextImageData(t.text, t.style, t.width, t.height)
           )
 
           val data = t.transform.data
@@ -389,36 +393,73 @@ class LayerRenderer(
 
   private def makeTextImageData(
       text: String,
+      style: TextStyle,
       width: Int,
       height: Int
   ): raw.HTMLCanvasElement = {
-    val maxWidth: Option[Int] = None // Some(50) // condense of uses lower font size to achieve width.
 
     // Formal "font" css string syntax:
     // [ [ <'font-style'> || <font-variant-css21> || <'font-weight'> || <'font-stretch'> ]? <'font-size'> [ / <'line-height'> ]? <'font-family'> ]
 
+    /*
+If font is specified as a shorthand for several font-related properties, then:
+
+it must include values for:
+<font-size>
+<font-family>
+it may optionally include values for:
+<font-style>
+<font-variant>
+<font-weight>
+<font-stretch>
+<line-height>
+font-style, font-variant and font-weight must precede font-size
+font-variant may only specify the values defined in CSS 2.1, that is normal and small-caps
+font-stretch may only be a single keyword value.
+line-height must immediately follow font-size, preceded by "/", like this: "16px/3"
+font-family must be the last value specified.
+     */
+
     textContext.canvas.width = width
     textContext.canvas.height = height
+
     textContext.font = "normal 14px monospace" // bold 48px serif
-    textContext.textAlign = "center"         // "left" || "right" || "center" || "start" || "end"
-    textContext.textBaseline =
-      "alphabetic" // "top" || "hanging" || "middle" || "alphabetic" || "ideographic" || "bottom"
-    textContext.direction = "ltr" // "ltr" || "rtl" || "inherit"
+
+    textContext.textAlign = style.alignment match
+      case TextAlign.Left   => "left"
+      case TextAlign.Right  => "right"
+      case TextAlign.Center => "center"
+      case TextAlign.Start  => "start"
+      case TextAlign.End    => "end"
+
+    textContext.textBaseline = style.baseLine match
+      case TextBaseLine.Top         => "top"
+      case TextBaseLine.Hanging     => "hanging"
+      case TextBaseLine.Middle      => "middle"
+      case TextBaseLine.Alphabetic  => "alphabetic"
+      case TextBaseLine.Ideographic => "ideographic"
+      case TextBaseLine.Bottom      => "bottom"
+
+    textContext.direction = style.direction match
+      case TextDirection.LeftToRight => "ltr"
+      case TextDirection.RightToLeft => "rtl"
+      case TextDirection.Inherit     => "inherit"
+
     textContext.fillStyle = "black" // can be hex string like #000
-    textContext.strokeStyle = "none"
+    textContext.strokeStyle = "white"
+    textContext.lineWidth = style.stroke.width.toInt
+
     textContext.clearRect(0, 0, textContext.canvas.width, textContext.canvas.height)
 
     val x = width / 2
     val y = height / 2
 
-    maxWidth match
-      case Some(mw) =>
-        textContext.strokeText(text, x, y, mw)
-        textContext.fillText(text, x, y, mw)
-
-      case _ =>
-        textContext.strokeText(text, x, y)
-        textContext.fillText(text, x, y)
+    if style.scaleTextToFit then
+      textContext.strokeText(text, x, y, width)
+      textContext.fillText(text, x, y, width)
+    else
+      textContext.strokeText(text, x, y)
+      textContext.fillText(text, x, y)
 
     textContext.canvas
   }
