@@ -36,6 +36,8 @@ final case class TextStyle(
   def scaleToFit: TextStyle = withScaleToFit(true)
   def noScale: TextStyle    = withScaleToFit(false)
 
+  // convenience methods
+
   def bold: TextStyle =
     modifyFont(_.withWeight(FontWeight.Bold))
   def noBold: TextStyle =
@@ -45,6 +47,21 @@ final case class TextStyle(
     modifyFont(_.withStyle(FontStyle.Italic))
   def noItalic: TextStyle =
     modifyFont(_.withStyle(FontStyle.Normal))
+
+  def withFontFamily(newFamily: FontFamily): TextStyle =
+    modifyFont(_.withFontFamily(newFamily))
+
+  def withSize(newSize: Pixels): TextStyle =
+    modifyFont(_.withSize(newSize))
+
+  def withStyle(newStyle: FontStyle): TextStyle =
+    modifyFont(_.withStyle(newStyle))
+
+  def withVariant(newVariant: FontVariant): TextStyle =
+    modifyFont(_.withVariant(newVariant))
+
+  def withWeight(newWeight: FontWeight): TextStyle =
+    modifyFont(_.withWeight(newWeight))
 
 object TextStyle:
   def default: TextStyle =
