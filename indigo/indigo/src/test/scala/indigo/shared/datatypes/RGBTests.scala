@@ -19,6 +19,12 @@ class RGBTests extends munit.FunSuite {
     assertEquals(RGB.fromHexString("0xFF0000FF"), RGB.Red)
   }
 
+  test("Can convert RGBA to Hex") {
+    assertEquals(RGB.Red.toHexString, "FF0000")
+    assertEquals(RGB.Green.toHexString, "00FF00")
+    assertEquals(RGB.Blue.toHexString, "0000FF")
+  }
+
   test("mixing colours 50-50 red blue") {
     val colorA = RGB.Red
     val colorB = RGB.Blue

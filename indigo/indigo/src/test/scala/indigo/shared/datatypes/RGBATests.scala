@@ -36,6 +36,13 @@ class RGBATests extends munit.FunSuite {
     assertEquals((transparent.a > 0.48 && transparent.a < 0.52), true)
   }
 
+  test("Can convert RGBA to Hex") {
+    assertEquals(RGBA.Red.toHexString, "FF0000FF")
+    assertEquals(RGBA.Green.toHexString, "00FF00FF")
+    assertEquals(RGBA.Blue.toHexString, "0000FFFF")
+    assertEquals(RGBA.Blue.toHexString("#"), "#0000FFFF")
+  }
+
   test("mixing colours 50-50 red blue") {
     val colorA = RGBA.Red
     val colorB = RGBA.Blue
