@@ -31,6 +31,12 @@ import indigo.shared.datatypes.TextStyle
 import indigo.shared.datatypes.TextAlign
 import indigo.shared.datatypes.TextBaseLine
 import indigo.shared.datatypes.TextDirection
+import indigo.shared.datatypes.Font
+import indigo.shared.datatypes.FontFamily
+import indigo.shared.datatypes.Pixels
+import indigo.shared.datatypes.FontStyle
+import indigo.shared.datatypes.FontVariant
+import indigo.shared.datatypes.FontWeight
 
 import indigo.facades.IndigoCanvasRenderingContext2D
 
@@ -398,32 +404,27 @@ class LayerRenderer(
       height: Int
   ): raw.HTMLCanvasElement = {
 
-    // Formal "font" css string syntax:
-    // [ [ <'font-style'> || <font-variant-css21> || <'font-weight'> || <'font-stretch'> ]? <'font-size'> [ / <'line-height'> ]? <'font-family'> ]
+    val toFontStatement: Font => String = f =>
+      val style = f.style match
+        case FontStyle.Normal => "normal"
+        case FontStyle.Italic => "italic"
 
-    /*
-If font is specified as a shorthand for several font-related properties, then:
+      val variant = f.variant match
+        case FontVariant.Normal    => "normal"
+        case FontVariant.SmallCaps => "small-caps"
 
-it must include values for:
-<font-size>
-<font-family>
-it may optionally include values for:
-<font-style>
-<font-variant>
-<font-weight>
-<font-stretch>
-<line-height>
-font-style, font-variant and font-weight must precede font-size
-font-variant may only specify the values defined in CSS 2.1, that is normal and small-caps
-font-stretch may only be a single keyword value.
-line-height must immediately follow font-size, preceded by "/", like this: "16px/3"
-font-family must be the last value specified.
-     */
+      val weight = f.weight match
+        case FontWeight.Normal  => "normal"
+        case FontWeight.Bold    => "bold"
+        case FontWeight.Lighter => "lighter"
+        case FontWeight.Bolder  => "bolder"
+
+      s"$style $variant $weight ${f.size.toInt}px ${f.family.name}"
 
     textContext.canvas.width = width
     textContext.canvas.height = height
 
-    textContext.font = "normal 14px monospace" // bold 48px serif
+    textContext.font = toFontStatement(style.font) //"normal 14px monospace" // bold 48px serif
 
     textContext.textAlign = style.alignment match
       case TextAlign.Left   => "left"
