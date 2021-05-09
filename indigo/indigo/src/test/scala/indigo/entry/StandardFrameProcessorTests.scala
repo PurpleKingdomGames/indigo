@@ -14,13 +14,14 @@ import indigo.shared.events.EventFilters
 import indigo.shared.subsystems.SubSystemsRegister
 import indigo.shared.materials.BlendMaterial
 import indigo.shared.datatypes.RGBA
+import indigo.platform.assets.DynamicText
 
 class StandardFrameProcessorTests extends munit.FunSuite {
 
   import TestFixtures._
 
   val boundaryLocator: BoundaryLocator =
-    new BoundaryLocator(new AnimationsRegister, new FontRegister)
+    new BoundaryLocator(new AnimationsRegister, new FontRegister, new DynamicText)
 
   test("standard frame processor") {
 

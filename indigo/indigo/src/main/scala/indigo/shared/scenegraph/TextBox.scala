@@ -3,6 +3,7 @@ package indigo.shared.scenegraph
 import indigo.shared.datatypes.{Point, Radians, Vector2, Rectangle, Depth, Flip, TextStyle}
 import indigo.shared.materials.ShaderData
 import indigo.shared.shader.StandardShaders
+import indigo.shared.BoundaryLocator
 
 final case class TextBox(
     text: String,
@@ -14,7 +15,7 @@ final case class TextBox(
     depth: Depth,
     ref: Point,
     flip: Flip
-) extends EntityNode
+) extends CompositeNode
     with SpatialModifiers[TextBox] derives CanEqual:
 
   def withText(newText: String): TextBox =
@@ -25,8 +26,8 @@ final case class TextBox(
   def modifyStyle(modifier: TextStyle => TextStyle): TextBox =
     this.copy(style = modifier(style))
 
-  def bounds: Rectangle =
-    Rectangle(position, maxSize)
+  def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] =
+    locator.findBounds(this)
 
   lazy val x: Int = position.x
   lazy val y: Int = position.y
@@ -77,16 +78,6 @@ final case class TextBox(
     this.copy(ref = newRef)
   def withRef(x: Int, y: Int): TextBox =
     withRef(Point(x, y))
-
-  def toShaderData: ShaderData =
-    ShaderData(
-      StandardShaders.Bitmap.id,
-      Nil,
-      None,
-      None,
-      None,
-      None
-    )
 
 object TextBox:
   def apply(text: String): TextBox =

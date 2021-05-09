@@ -16,3 +16,13 @@ class IndigoCanvasRenderingContext2D extends CanvasRenderingContext2D {
   var direction: String = js.native
 
 }
+
+@js.native
+@JSGlobal
+class IndigoTextMetrics extends js.Object {
+  var width: Double                    = js.native
+  var actualBoundingBoxLeft: Double    = js.native
+  var actualBoundingBoxRight: Double   = js.native
+  var actualBoundingBoxAscent: Double  = js.native
+  var actualBoundingBoxDescent: Double = js.native
+}

@@ -25,20 +25,10 @@ import indigo.shared.shader.ShaderId
 import indigo.platform.assets.AtlasId
 import indigo.shared.scenegraph.CloneId
 
+import indigo.platform.assets.DynamicText
+
 import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.platform.renderer.shared.WebGLHelper
-import indigo.shared.datatypes.TextStyle
-import indigo.shared.datatypes.TextAlign
-import indigo.shared.datatypes.TextBaseLine
-import indigo.shared.datatypes.TextDirection
-import indigo.shared.datatypes.Font
-import indigo.shared.datatypes.FontFamily
-import indigo.shared.datatypes.Pixels
-import indigo.shared.datatypes.FontStyle
-import indigo.shared.datatypes.FontVariant
-import indigo.shared.datatypes.FontWeight
-
-import indigo.facades.IndigoCanvasRenderingContext2D
 
 class LayerRenderer(
     gl2: WebGL2RenderingContext,
@@ -47,7 +37,7 @@ class LayerRenderer(
     projectionUBOBuffer: => WebGLBuffer,
     frameDataUBOBuffer: => WebGLBuffer,
     lightDataUBOBuffer: => WebGLBuffer,
-    textContext: IndigoCanvasRenderingContext2D,
+    dynamicText: DynamicText,
     textTexture: WebGLTexture
 ) {
 
@@ -386,7 +376,7 @@ class LayerRenderer(
             WebGLRenderingContext.RGBA,
             WebGLRenderingContext.RGBA,
             UNSIGNED_BYTE,
-            makeTextImageData(t.text, t.style, t.width, t.height)
+            dynamicText.makeTextImageData(t.text, t.style, t.width, t.height)
           )
 
           val data = t.transform.data
@@ -395,74 +385,6 @@ class LayerRenderer(
       }
 
     rec(sorted.toList, 0, None, ShaderId(""), "")
-  }
-
-  private def makeTextImageData(
-      text: String,
-      style: TextStyle,
-      width: Int,
-      height: Int
-  ): raw.HTMLCanvasElement = {
-
-    val toFontStatement: Font => String = f =>
-      val style = f.style match
-        case FontStyle.Normal => "normal"
-        case FontStyle.Italic => "italic"
-
-      val variant = f.variant match
-        case FontVariant.Normal    => "normal"
-        case FontVariant.SmallCaps => "small-caps"
-
-      val weight = f.weight match
-        case FontWeight.Normal  => "normal"
-        case FontWeight.Bold    => "bold"
-        case FontWeight.Lighter => "lighter"
-        case FontWeight.Bolder  => "bolder"
-
-      s"$style $variant $weight ${f.size.toInt}px ${f.family.name}"
-
-    textContext.canvas.width = width
-    textContext.canvas.height = height
-
-    textContext.font = toFontStatement(style.font) //"normal 14px monospace" // bold 48px serif
-
-    textContext.textAlign = style.alignment match
-      case TextAlign.Left   => "left"
-      case TextAlign.Right  => "right"
-      case TextAlign.Center => "center"
-      case TextAlign.Start  => "start"
-      case TextAlign.End    => "end"
-
-    textContext.textBaseline = style.baseLine match
-      case TextBaseLine.Top         => "top"
-      case TextBaseLine.Hanging     => "hanging"
-      case TextBaseLine.Middle      => "middle"
-      case TextBaseLine.Alphabetic  => "alphabetic"
-      case TextBaseLine.Ideographic => "ideographic"
-      case TextBaseLine.Bottom      => "bottom"
-
-    textContext.direction = style.direction match
-      case TextDirection.LeftToRight => "ltr"
-      case TextDirection.RightToLeft => "rtl"
-      case TextDirection.Inherit     => "inherit"
-
-    textContext.fillStyle = style.color.toHexString("#")
-    textContext.strokeStyle = style.stroke.color.toHexString("#")
-    textContext.lineWidth = style.stroke.width.toInt
-
-    textContext.clearRect(0, 0, textContext.canvas.width, textContext.canvas.height)
-
-    val x = width / 2
-    val y = height / 2
-
-    if style.scaleTextToFit then
-      textContext.strokeText(text, x, y, width)
-      textContext.fillText(text, x, y, width)
-    else
-      textContext.strokeText(text, x, y)
-      textContext.fillText(text, x, y)
-
-    textContext.canvas
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))

@@ -10,18 +10,20 @@ import indigo.shared.input.Keyboard
 import indigo.shared.input.Gamepad
 import indigo.shared.time.Seconds
 import indigo.shared.BoundaryLocator
-import indigo.shared.Boundary
 import indigo.shared.FrameContext
 
-/**
-  * Similar to [FrameContext] but without access to start up data.
-  * The SubSystemFrameContext is the context in which the current frame will be processed.
-  * In includes values that are unique to this frame, and also globally available services.
+/** Similar to [FrameContext] but without access to start up data. The SubSystemFrameContext is the context in which the
+  * current frame will be processed. In includes values that are unique to this frame, and also globally available
+  * services.
   *
-  * @param gameTime A sampled instance of time that you should use everywhere that you need a time value.
-  * @param dice A psuedorandom number generator, made predicatable/reproducable by being seeded on the current running time.
-  * @param inputState A snapshot of the state of the various input methods, also allows input mapping of combinations of inputs.
-  * @param boundaryLocator A service that can be interogated for the calculated dimensions of screen elements.
+  * @param gameTime
+  *   A sampled instance of time that you should use everywhere that you need a time value.
+  * @param dice
+  *   A psuedorandom number generator, made predicatable/reproducable by being seeded on the current running time.
+  * @param inputState
+  *   A snapshot of the state of the various input methods, also allows input mapping of combinations of inputs.
+  * @param boundaryLocator
+  *   A service that can be interogated for the calculated dimensions of screen elements.
   */
 final class SubSystemFrameContext(
     val gameTime: GameTime,
@@ -37,7 +39,7 @@ final class SubSystemFrameContext(
   val keyboard: Keyboard = inputState.keyboard
   val gamepad: Gamepad   = inputState.gamepad
 
-  def findBounds(sceneGraphNode: SceneNode): Boundary =
+  def findBounds(sceneGraphNode: SceneNode): Option[Rectangle] =
     boundaryLocator.findBounds(sceneGraphNode)
 
 }

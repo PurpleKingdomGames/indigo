@@ -10,6 +10,7 @@ import indigo.shared.BoundaryLocator
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.events.FrameTick
 import indigo.shared.scenegraph.SceneAudio
+import indigo.platform.assets.DynamicText
 
 class JobMarketTests extends munit.FunSuite {
 
@@ -18,7 +19,7 @@ class JobMarketTests extends munit.FunSuite {
       GameTime.zero,
       Dice.loaded(6),
       InputState.default,
-      new BoundaryLocator(new AnimationsRegister, new FontRegister)
+      new BoundaryLocator(new AnimationsRegister, new FontRegister, new DynamicText)
     )
 
   val workContext =

@@ -17,6 +17,7 @@ import indigo.platform.assets.AssetCollection
 import indigo.platform.assets.TextureAtlas
 import indigo.platform.assets.TextureAtlasFunctions
 import indigo.platform.assets.ImageRef
+import indigo.platform.assets.DynamicText
 
 import org.scalajs.dom
 import org.scalajs.dom.html.Canvas
@@ -34,11 +35,12 @@ import indigo.shared.assets.AssetName
 class Platform(
     gameConfig: GameConfig,
     assetCollection: AssetCollection,
-    globalEventStream: GlobalEventStream
+    globalEventStream: GlobalEventStream,
+    dynamicText: DynamicText
 ) extends PlatformFullScreen {
 
   val rendererInit: RendererInitialiser =
-    new RendererInitialiser(gameConfig.advanced.renderingTechnology, globalEventStream)
+    new RendererInitialiser(gameConfig.advanced.renderingTechnology, globalEventStream, dynamicText)
 
   @SuppressWarnings(
     Array(

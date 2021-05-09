@@ -30,7 +30,6 @@ import indigo.shared.display.DisplayClone
 import indigo.shared.scenegraph.CloneTransformData
 import indigo.shared.materials.ShaderData
 import indigo.shared.BoundaryLocator
-import indigo.shared.Boundary
 import indigo.shared.animation.AnimationRef
 import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.shared.assets.AssetName
@@ -362,32 +361,6 @@ final class DisplayObjectConversions(
   }
 
   def textBoxToDisplayText(leaf: TextBox): DisplayText =
-    // val shaderData   = leaf.material.toShaderData
-    // val materialName = shaderData.channel0.get
-
-    // val emissiveOffset = findAssetOffsetValues(assetMapping, shaderData.channel1, shaderData.hash, "_e")
-    // val normalOffset   = findAssetOffsetValues(assetMapping, shaderData.channel2, shaderData.hash, "_n")
-    // val specularOffset = findAssetOffsetValues(assetMapping, shaderData.channel3, shaderData.hash, "_s")
-
-    // val frameInfo =
-    //   QuickCache(s"${leaf.crop.hash}_${shaderData.hash}") {
-    //     SpriteSheetFrame.calculateFrameOffset(
-    //       atlasSize = lookupAtlasSize(assetMapping, materialName),
-    //       frameCrop = leaf.crop,
-    //       textureOffset = lookupTextureOffset(assetMapping, materialName)
-    //     )
-    //   }
-
-    // val shaderId = shaderData.shaderId
-
-    // val uniformData: List[DisplayObjectUniformData] =
-    //   shaderData.uniformBlocks.map { ub =>
-    //     DisplayObjectUniformData(
-    //       uniformHash = ub.uniformHash,
-    //       blockName = ub.blockName,
-    //       data = DisplayObjectConversions.packUBO(ub.uniforms)
-    //     )
-    //   }
     DisplayText(
       text = leaf.text,
       style = leaf.style,
@@ -395,19 +368,12 @@ final class DisplayObjectConversions(
         .nodeToMatrix4(
           leaf,
           leaf.position.toVector,
-          Vector3(leaf.bounds.size.x.toDouble, leaf.bounds.size.y.toDouble, 1.0d)
+          Vector3(leaf.maxSize.x.toDouble, leaf.maxSize.y.toDouble, 1.0d)
         ),
       rotation = leaf.rotation,
       z = leaf.depth.toDouble,
-      width = leaf.bounds.size.x,
-      height = leaf.bounds.size.y
-      // atlasName = Some(lookupAtlasName(assetMapping, materialName)),
-      // frame = frameInfo,
-      // channelOffset1 = frameInfo.offsetToCoords(emissiveOffset),
-      // channelOffset2 = frameInfo.offsetToCoords(normalOffset),
-      // channelOffset3 = frameInfo.offsetToCoords(specularOffset),
-      // shaderId = shaderId,
-      // shaderUniformData = uniformData
+      width = leaf.maxSize.x,
+      height = leaf.maxSize.y
     )
 
   def graphicToDisplayObject(leaf: Graphic, assetMapping: AssetMapping): DisplayObject = {
@@ -482,9 +448,7 @@ final class DisplayObjectConversions(
         )
       }
 
-    val (width, height) = leaf.calculatedBounds(boundaryLocator) match
-      case Boundary.Found(bounds) => (bounds.size.x, bounds.size.y)
-      case _                      => (0, 0)
+    val bounds = leaf.calculatedBounds(boundaryLocator).getOrElse(Rectangle.zero)
 
     val shaderId = shaderData.shaderId
 
@@ -501,12 +465,12 @@ final class DisplayObjectConversions(
       transform = DisplayObjectConversions.nodeToMatrix4(
         leaf,
         leaf.position.toVector,
-        Vector3(width.toDouble, height.toDouble, 1.0d)
+        Vector3(bounds.width.toDouble, bounds.height.toDouble, 1.0d)
       ),
       rotation = leaf.rotation,
       z = leaf.depth.toDouble,
-      width = width,
-      height = height,
+      width = bounds.width,
+      height = bounds.height,
       atlasName = Some(lookupAtlasName(assetMapping, materialName)),
       frame = frameInfo,
       channelOffset1 = frameInfo.offsetToCoords(emissiveOffset),

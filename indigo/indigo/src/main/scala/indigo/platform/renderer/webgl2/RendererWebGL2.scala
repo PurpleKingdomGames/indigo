@@ -36,14 +36,15 @@ import indigo.shared.scenegraph.BlendFactor
 import indigo.shared.shader.StandardShaders
 import indigo.shared.QuickCache
 
-import indigo.facades.IndigoCanvasRenderingContext2D
+import indigo.platform.assets.DynamicText
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
 final class RendererWebGL2(
     config: RendererConfig,
     loadedTextureAssets: List[LoadedTextureAsset],
     cNc: ContextAndCanvas,
-    globalEventStream: GlobalEventStream
+    globalEventStream: GlobalEventStream,
+    dynamicText: DynamicText
 ) extends Renderer {
 
   implicit private val projectionsCache: QuickCache[Array[Float]] = QuickCache.empty
@@ -94,8 +95,6 @@ final class RendererWebGL2(
   def screenWidth: Int  = lastWidth
   def screenHeight: Int = lastHeight
 
-  private val textContext: IndigoCanvasRenderingContext2D = createTextContext()
-
   private val layerRenderInstance: LayerRenderer =
     new LayerRenderer(
       gl2,
@@ -104,7 +103,7 @@ final class RendererWebGL2(
       projectionUBOBuffer,
       frameDataUBOBuffer,
       lightDataUBOBuffer,
-      textContext,
+      dynamicText,
       WebGLHelper.createAndBindTexture(gl2)
     )
   private val layerMergeRenderInstance: LayerMergeRenderer =
@@ -390,12 +389,5 @@ final class RendererWebGL2(
       ()
     }
   }
-
-  def createTextContext(): IndigoCanvasRenderingContext2D =
-    dom.document
-      .createElement("canvas")
-      .asInstanceOf[html.Canvas]
-      .getContext("2d", Dynamic.literal())
-      .asInstanceOf[IndigoCanvasRenderingContext2D]
 
 }
