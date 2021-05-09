@@ -445,8 +445,8 @@ font-family must be the last value specified.
       case TextDirection.RightToLeft => "rtl"
       case TextDirection.Inherit     => "inherit"
 
-    textContext.fillStyle = "black" // can be hex string like #000
-    textContext.strokeStyle = "white"
+    textContext.fillStyle = style.color.toHexString("#")
+    textContext.strokeStyle = style.stroke.color.toHexString("#")
     textContext.lineWidth = style.stroke.width.toInt
 
     textContext.clearRect(0, 0, textContext.canvas.width, textContext.canvas.height)
