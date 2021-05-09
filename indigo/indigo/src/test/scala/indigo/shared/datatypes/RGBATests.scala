@@ -37,10 +37,10 @@ class RGBATests extends munit.FunSuite {
   }
 
   test("Can convert RGBA to Hex") {
-    assertEquals(RGBA.Red.toHexString, "FF0000FF")
-    assertEquals(RGBA.Green.toHexString, "00FF00FF")
-    assertEquals(RGBA.Blue.toHexString, "0000FFFF")
-    assertEquals(RGBA.Blue.toHexString("#"), "#0000FFFF")
+    assertEquals(RGBA.Red.toHexString, "ff0000ff")
+    assertEquals(RGBA.Green.toHexString, "00ff00ff")
+    assertEquals(RGBA.Blue.toHexString, "0000ffff")
+    assertEquals(RGBA.Blue.toHexString("#"), "#0000ffff")
   }
 
   test("mixing colours 50-50 red blue") {
