@@ -56,7 +56,17 @@ object TextBoxScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxV
             4,
             LightingAssets.junctionBoxMaterialOn.modifyLighting(_ => LightingModel.Unlit)
           ).moveTo(10, 10),
-          TextBox("Indigo... with fonts?", 200, 100).moveTo(50, 50).withDepth(Depth(3)),
+          TextBox("Indigo... with fonts?", 200, 100)
+            .moveTo(50, 50)
+            .withDepth(Depth(3))
+            .modifyStyle(_.bold),
+          TextBox("Indigo... with fonts?", 200, 115)
+            .moveTo(50, 50)
+            .withDepth(Depth(3)),
+          TextBox("Indigo... with fonts?", 200, 130)
+            .moveTo(50, 50)
+            .withDepth(Depth(3))
+            .modifyStyle(_.withFontFamily(FontFamily.cursive)),
           fishcakes
             .moveTo(Signal.Orbit(Point(70, 70), 20).affectTime(0.25).at(context.running).toPoint)
             .withDepth(Depth(2)),
