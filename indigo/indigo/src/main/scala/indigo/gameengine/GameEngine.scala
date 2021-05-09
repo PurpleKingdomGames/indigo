@@ -16,6 +16,7 @@ import indigo.platform.events.GlobalEventStream
 import indigo.platform.renderer.Renderer
 import indigo.platform.Platform
 import indigo.shared.platform.AssetMapping
+import indigo.platform.assets.DynamicText
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -50,8 +51,11 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
     new FontRegister()
   val shaderRegister: ShaderRegister =
     new ShaderRegister()
+
+  val dynamicText: DynamicText =
+    new DynamicText()
   val boundaryLocator: BoundaryLocator =
-    new BoundaryLocator(animationsRegister, fontRegister)
+    new BoundaryLocator(animationsRegister, fontRegister, dynamicText)
   val sceneProcessor: SceneProcessor =
     new SceneProcessor(boundaryLocator, animationsRegister, fontRegister)
 
@@ -143,11 +147,14 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
 
       val time = if (firstRun) 0 else gameLoopInstance.runningTimeReference
 
-      platform = new Platform(gameConfig, accumulatedAssetCollection, globalEventStream)
+      platform = new Platform(gameConfig, accumulatedAssetCollection, globalEventStream, dynamicText)
 
       initialise(accumulatedAssetCollection)(Dice.fromSeed(time)) match {
         case oe @ Outcome.Error(error, _) =>
-          IndigoLogger.error(if (firstRun) "Error during first initialisation - Halting." else "Error during re-initialisation - Halting.")
+          IndigoLogger.error(
+            if (firstRun) "Error during first initialisation - Halting."
+            else "Error during re-initialisation - Halting."
+          )
           IndigoLogger.error("Crash report:")
           IndigoLogger.error(oe.reportCrash)
           throw error
@@ -238,7 +245,10 @@ object GameEngine {
         ()
     }
 
-  def externalEntityShaderToSource(external: EntityShader.External, assetCollection: AssetCollection): EntityShader.Source =
+  def externalEntityShaderToSource(
+      external: EntityShader.External,
+      assetCollection: AssetCollection
+  ): EntityShader.Source =
     EntityShader.Source(
       id = external.id,
       vertex = external.vertex
@@ -258,7 +268,10 @@ object GameEngine {
         .getOrElse(Shader.defaultCompositeProgram)
     )
 
-  def externalBlendShaderToSource(external: BlendShader.External, assetCollection: AssetCollection): BlendShader.Source =
+  def externalBlendShaderToSource(
+      external: BlendShader.External,
+      assetCollection: AssetCollection
+  ): BlendShader.Source =
     BlendShader.Source(
       id = external.id,
       vertex = external.vertex
@@ -278,7 +291,7 @@ object GameEngine {
         program
 
       case None =>
-        val msg = s"Error parsing external shader could not match '$tag' tag pair in asset '${assetName}' - Halting."
+        val msg = s"Error parsing external shader could not match '$tag' tag pair in asset '$assetName' - Halting."
         IndigoLogger.error(msg)
         throw new Exception(msg)
     }

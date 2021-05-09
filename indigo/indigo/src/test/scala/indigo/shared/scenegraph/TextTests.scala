@@ -7,6 +7,7 @@ import indigo.shared.assets.AssetName
 import indigo.shared.materials.Material
 import indigo.shared.BoundaryLocator
 import indigo.shared.AnimationsRegister
+import indigo.platform.assets.DynamicText
 
 class TextTests extends munit.FunSuite {
 
@@ -16,7 +17,7 @@ class TextTests extends munit.FunSuite {
     new FontRegister
 
   val boundaryLocator: BoundaryLocator =
-    new BoundaryLocator(new AnimationsRegister, fontRegister)
+    new BoundaryLocator(new AnimationsRegister, fontRegister, new DynamicText())
 
   test("Text entities should be able to correctly calculate the bounds where all are equal") {
 
@@ -35,7 +36,7 @@ class TextTests extends munit.FunSuite {
     val t = Text("abc", 10, 20, 1, fontKey, material)
 
     assertEquals(
-      t.calculatedBounds(boundaryLocator).toOption.get,
+      t.calculatedBounds(boundaryLocator).get,
       Rectangle(10, 20, 16 * 3, 16)
     )
 
@@ -58,7 +59,7 @@ class TextTests extends munit.FunSuite {
 
     val t = Text("abc", 10, 20, 1, fontKey, material)
 
-    val actual   = t.calculatedBounds(boundaryLocator).toOption.get // 48 x 16
+    val actual   = t.calculatedBounds(boundaryLocator).get // 48 x 16
     val expected = Rectangle(10, 20, 10 + 20 + 30, 30)              // 60 x 30
 
     assertEquals(actual == expected, true)

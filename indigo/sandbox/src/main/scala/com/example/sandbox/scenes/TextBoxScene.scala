@@ -48,6 +48,13 @@ object TextBoxScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxV
       model: SandboxGameModel,
       viewModel: SandboxViewModel
   ): Outcome[SceneUpdateFragment] =
+    val tb = TextBox("Indigo... with fonts?", 200, 100)
+      .modifyStyle(
+        _.withColor(RGBA.White)
+          .modifyStroke(_.withColor(RGBA.Red).withWidth(Pixels(0)))
+      )
+      .moveTo(50, 50)
+
     Outcome(
       SceneUpdateFragment(
         Layer(
@@ -56,15 +63,10 @@ object TextBoxScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxV
             4,
             LightingAssets.junctionBoxMaterialOn.modifyLighting(_ => LightingModel.Unlit)
           ).moveTo(10, 10),
-          TextBox("Indigo... with fonts?", 200, 100)
-            .moveTo(50, 50)
-            .withDepth(Depth(3))
-            .modifyStyle(_.bold),
-          TextBox("Indigo... with fonts?", 200, 115)
-            .moveTo(50, 50)
-            .withDepth(Depth(3)),
-          TextBox("Indigo... with fonts?", 200, 130)
-            .moveTo(50, 50)
+          Shape.Box(context.findBounds(tb).getOrElse(Rectangle.zero), Fill.Color(RGBA.Cyan.withAlpha(0.5))),
+          tb.withDepth(Depth(3)).modifyStyle(_.bold),
+          tb.moveTo(50, 65).withDepth(Depth(3)),
+          tb.moveTo(50, 80)
             .withDepth(Depth(3))
             .modifyStyle(_.withFontFamily(FontFamily.cursive)),
           fishcakes

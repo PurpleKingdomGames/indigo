@@ -3,6 +3,7 @@ package indigo.platform.renderer
 import indigo.shared.platform.RendererConfig
 import indigo.platform.renderer.shared.LoadedTextureAsset
 import indigo.platform.renderer.shared.ContextAndCanvas
+import indigo.platform.assets.DynamicText
 
 import org.scalajs.dom
 import org.scalajs.dom.raw.WebGLRenderingContext
@@ -17,7 +18,11 @@ import indigo.platform.events.GlobalEventStream
 import indigo.shared.events.RendererDetails
 import indigo.shared.shader.RawShaderCode
 
-final class RendererInitialiser(renderingTechnology: RenderingTechnology, globalEventStream: GlobalEventStream) {
+final class RendererInitialiser(
+    renderingTechnology: RenderingTechnology,
+    globalEventStream: GlobalEventStream,
+    dynamicText: DynamicText
+) {
 
   def setup(
       config: RendererConfig,
@@ -35,10 +40,10 @@ final class RendererInitialiser(renderingTechnology: RenderingTechnology, global
           new RendererWebGL1(config, loadedTextureAssets, cNc, globalEventStream)
 
         case RenderingTechnology.WebGL2 =>
-          new RendererWebGL2(config, loadedTextureAssets, cNc, globalEventStream)
+          new RendererWebGL2(config, loadedTextureAssets, cNc, globalEventStream, dynamicText)
 
         case RenderingTechnology.WebGL2WithFallback =>
-          new RendererWebGL2(config, loadedTextureAssets, cNc, globalEventStream)
+          new RendererWebGL2(config, loadedTextureAssets, cNc, globalEventStream, dynamicText)
       }
 
     r.init(shaders)
@@ -106,7 +111,7 @@ final class RendererInitialiser(renderingTechnology: RenderingTechnology, global
     val args =
       Dynamic.literal("premultipliedAlpha" -> true, "alpha" -> false, "antialias" -> antiAliasing)
 
-    val tech: RenderingTechnology.WebGL1.type | RenderingTechnology.WebGL2.type = 
+    val tech: RenderingTechnology.WebGL1.type | RenderingTechnology.WebGL2.type =
       chooseRenderingTechnology(renderingTechnology, args)
 
     def useWebGL1(): (WebGLRenderingContext, RenderingTechnology) = {

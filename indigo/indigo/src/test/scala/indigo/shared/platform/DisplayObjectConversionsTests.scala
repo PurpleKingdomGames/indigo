@@ -30,6 +30,7 @@ import indigo.shared.shader.Uniform
 import indigo.shared.scenegraph.RenderNode
 import indigo.shared.assets.AssetName
 import indigo.platform.assets.AtlasId
+import indigo.platform.assets.DynamicText
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
 class DisplayObjectConversionsTests extends munit.FunSuite {
@@ -39,7 +40,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
 
   val animationRegister          = new AnimationsRegister
   val fontRegister               = new FontRegister
-  val boundaryLocator            = new BoundaryLocator(animationRegister, fontRegister)
+  val boundaryLocator            = new BoundaryLocator(animationRegister, fontRegister, new DynamicText)
   val texture                    = new TextureRefAndOffset(AtlasId("texture"), Vector2(100, 100), Point.zero)
   val assetMapping: AssetMapping = new AssetMapping(Map(AssetName("texture") -> texture))
 

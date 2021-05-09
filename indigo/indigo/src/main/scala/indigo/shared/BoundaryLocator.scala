@@ -17,10 +17,15 @@ import indigo.shared.scenegraph.Transformer
 import indigo.shared.datatypes.FontKey
 import indigo.shared.scenegraph.Shape
 import indigo.shared.scenegraph.EntityNode
+import indigo.platform.assets.DynamicText
 
-final class BoundaryLocator(animationsRegister: AnimationsRegister, fontRegister: FontRegister) {
+final class BoundaryLocator(
+    animationsRegister: AnimationsRegister,
+    fontRegister: FontRegister,
+    dynamicText: DynamicText
+) {
 
-  implicit private val boundsCache: QuickCache[Boundary]          = QuickCache.empty
+  implicit private val boundsCache: QuickCache[Option[Rectangle]] = QuickCache.empty
   implicit private val textLinesCache: QuickCache[List[TextLine]] = QuickCache.empty
 
   def purgeCache(): Unit = {
@@ -29,31 +34,40 @@ final class BoundaryLocator(animationsRegister: AnimationsRegister, fontRegister
   }
 
   // General
-  def findBounds(sceneGraphNode: SceneNode): Boundary =
+  def findBounds(sceneGraphNode: SceneNode): Option[Rectangle] =
     sceneGraphNode match {
       case s: Shape =>
-        Boundary.Found(s.bounds)
+        Option(s.bounds)
 
       case g: Graphic =>
-        Boundary.Found(g.bounds)
+        Option(g.bounds)
 
       case t: TextBox =>
-        Boundary.Unavailable
+        Option(
+          dynamicText
+            .measureText(
+              t.text,
+              t.style,
+              t.maxSize.x,
+              t.maxSize.y
+            )
+            .moveTo(t.position)
+        )
 
       case s: EntityNode =>
-        Boundary.Found(s.bounds)
+        Option(s.bounds)
 
       case g: Group =>
         g.calculatedBounds(this)
 
       case _: Transformer =>
-        Boundary.Unavailable
+        None
 
       case _: Clone =>
-        Boundary.Unavailable
+        None
 
       case _: CloneBatch =>
-        Boundary.Unavailable
+        None
 
       case s: Sprite =>
         spriteBounds(s)
@@ -62,18 +76,18 @@ final class BoundaryLocator(animationsRegister: AnimationsRegister, fontRegister
         textBounds(t)
 
       case _ =>
-        Boundary.Unavailable
+        None
     }
 
-  def spriteBounds(sprite: Sprite): Boundary =
+  def spriteBounds(sprite: Sprite): Option[Rectangle] =
     QuickCache(s"""sprite-${sprite.bindingKey}-${sprite.animationKey}""") {
       animationsRegister.fetchAnimationInLastState(sprite.bindingKey, sprite.animationKey) match {
         case Some(animation) =>
-          Boundary.Found(Rectangle(sprite.position, animation.currentFrame.crop.size))
+          Option(Rectangle(sprite.position, animation.currentFrame.crop.size))
 
         case None =>
           IndigoLogger.errorOnce(s"Cannot build bounds for Sprite with bindingKey: ${sprite.bindingKey.toString()}")
-          Boundary.Unavailable
+          None
       }
     }
 
@@ -105,7 +119,7 @@ final class BoundaryLocator(animationsRegister: AnimationsRegister, fontRegister
         }
     }
 
-  def textBounds(text: Text): Boundary =
+  def textBounds(text: Text): Option[Rectangle] =
     QuickCache(s"""text-bounds-${text.fontKey}-${text.text}""") {
       val unaligned =
         textAsLinesWithBounds(text.text, text.fontKey)
@@ -117,26 +131,14 @@ final class BoundaryLocator(animationsRegister: AnimationsRegister, fontRegister
 
       (text.alignment, unaligned) match {
         case (TextAlignment.Left, b) =>
-          Boundary.Found(b)
+          Option(b)
 
         case (TextAlignment.Center, b) =>
-          Boundary.Found(b.moveTo(Point(b.x - (b.width / 2), b.y)))
+          Option(b.moveTo(Point(b.x - (b.width / 2), b.y)))
 
         case (TextAlignment.Right, b) =>
-          Boundary.Found(b.moveTo(Point(b.x - b.width, b.y)))
+          Option(b.moveTo(Point(b.x - b.width, b.y)))
       }
     }
 
 }
-
-enum Boundary derives CanEqual:
-  case Unavailable              extends Boundary
-  case Calculating              extends Boundary
-  case Found(bounds: Rectangle) extends Boundary
-
-object Boundary:
-  extension (b: Boundary)
-    def toOption: Option[Rectangle] =
-      b match
-        case Boundary.Found(r) => Some(r)
-        case _                 => None
