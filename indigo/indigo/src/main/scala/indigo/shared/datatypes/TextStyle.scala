@@ -36,6 +36,16 @@ final case class TextStyle(
   def scaleToFit: TextStyle = withScaleToFit(true)
   def noScale: TextStyle    = withScaleToFit(false)
 
+  def bold: TextStyle =
+    modifyFont(_.withWeight(FontWeight.Bold))
+  def noBold: TextStyle =
+    modifyFont(_.withWeight(FontWeight.Normal))
+
+  def italic: TextStyle =
+    modifyFont(_.withStyle(FontStyle.Italic))
+  def noItalic: TextStyle =
+    modifyFont(_.withStyle(FontStyle.Normal))
+
 object TextStyle:
   def default: TextStyle =
     TextStyle(
@@ -55,6 +65,16 @@ final case class Font(
     variant: FontVariant,
     weight: FontWeight
 ):
+  def bold: Font =
+    withWeight(FontWeight.Bold)
+  def noBold: Font =
+    withWeight(FontWeight.Normal)
+
+  def italic: Font =
+    withStyle(FontStyle.Italic)
+  def noItalic: Font =
+    withStyle(FontStyle.Normal)
+
   def withFontFamily(newFamily: FontFamily): Font =
     this.copy(family = newFamily)
 
@@ -100,6 +120,8 @@ object FontFamily:
   val emoji: FontFamily       = FontFamily("emoji")
   val math: FontFamily        = FontFamily("math")
   val fangsong: FontFamily    = FontFamily("fangsong")
+
+  extension (f: FontFamily) def name: String = f
 
 enum FontVariant derives CanEqual:
   case Normal, SmallCaps
