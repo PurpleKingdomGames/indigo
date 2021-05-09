@@ -42,10 +42,10 @@ final case class RGBA(r: Double, g: Double, b: Double, a: Double) derives CanEqu
 
   def toHexString: String =
     val convert: Double => String = d =>
-      val i = (Math.min(1, Math.max(0, d)) * 255).toInt
-      if i < 10 then "0" + Integer.toHexString(i) else Integer.toHexString(i)
+      val hex = Integer.toHexString((Math.min(1, Math.max(0, d)) * 255).toInt)
+      if hex.length == 1 then "0" + hex else hex
 
-    (convert(r) + convert(g) + convert(b) + convert(a)).toUpperCase
+    convert(r) + convert(g) + convert(b) + convert(a)
 
   def toHexString(prefix: String): String =
     prefix + toHexString
