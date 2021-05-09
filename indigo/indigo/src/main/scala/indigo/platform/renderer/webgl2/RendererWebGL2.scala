@@ -137,6 +137,8 @@ final class RendererWebGL2(
 
   def init(shaders: Set[RawShaderCode]): Unit = {
 
+    gl.pixelStorei(UNPACK_PREMULTIPLY_ALPHA_WEBGL, 1);
+
     shaders.foreach { shader =>
       if (!customShaders.contains(shader.id))
         customShaders.put(

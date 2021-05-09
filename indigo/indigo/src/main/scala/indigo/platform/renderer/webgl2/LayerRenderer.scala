@@ -369,7 +369,6 @@ class LayerRenderer(
           }
 
           gl2.bindTexture(TEXTURE_2D, textTexture)
-
           gl2.texImage2D(
             TEXTURE_2D,
             0,
