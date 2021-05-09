@@ -39,6 +39,10 @@ object TextBoxScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxV
   ): GlobalEvent => Outcome[SandboxViewModel] =
     _ => Outcome(viewModel)
 
+  val fishcakes: TextBox =
+    TextBox("Fishcakes", 200, 100)
+      .modifyStyle(_.withColor(RGBA.Magenta).modifyStroke(_.withWidth(Pixels(3)).withColor(RGBA.Cyan)))
+
   def present(
       context: FrameContext[SandboxStartupData],
       model: SandboxGameModel,
@@ -53,7 +57,7 @@ object TextBoxScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxV
             LightingAssets.junctionBoxMaterialOn.modifyLighting(_ => LightingModel.Unlit)
           ).moveTo(10, 10),
           TextBox("Indigo... with fonts?", 200, 100).moveTo(50, 50).withDepth(Depth(3)),
-          TextBox("Fishcakes", 200, 100)
+          fishcakes
             .moveTo(Signal.Orbit(Point(70, 70), 20).affectTime(0.25).at(context.running).toPoint)
             .withDepth(Depth(2)),
           model.dude.dude.sprite.play().withDepth(Depth(1))
