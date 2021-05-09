@@ -40,6 +40,16 @@ final case class RGBA(r: Double, g: Double, b: Double, a: Double) derives CanEqu
   def toRGB: RGB =
     RGB(r, g, b)
 
+  def toHexString: String =
+    val convert: Double => String = d =>
+      val i = (Math.min(1, Math.max(0, d)) * 255).toInt
+      if i < 10 then "0" + Integer.toHexString(i) else Integer.toHexString(i)
+
+    (convert(r) + convert(g) + convert(b) + convert(a)).toUpperCase
+
+  def toHexString(prefix: String): String =
+    prefix + toHexString
+
   def toArray: Array[Float] =
     Array(r.toFloat, g.toFloat, b.toFloat, a.toFloat)
 
