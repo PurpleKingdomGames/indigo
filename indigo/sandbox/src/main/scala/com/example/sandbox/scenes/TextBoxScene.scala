@@ -39,9 +39,9 @@ object TextBoxScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxV
   ): GlobalEvent => Outcome[SandboxViewModel] =
     _ => Outcome(viewModel)
 
-  val fishcakes: TextBox =
-    TextBox("Fishcakes", 200, 100)
-      .modifyStyle(_.withColor(RGBA.Magenta).modifyStroke(_.withWidth(Pixels(3)).withColor(RGBA.Cyan)))
+  val hello: TextBox =
+    TextBox("Hello!", 200, 100)
+      .modifyStyle(_.withColor(RGB.Magenta).modifyStroke(_.withWidth(Pixels(3)).withColor(RGB.Cyan)))
 
   def present(
       context: FrameContext[SandboxStartupData],
@@ -50,8 +50,7 @@ object TextBoxScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxV
   ): Outcome[SceneUpdateFragment] =
     val tb = TextBox("Indigo... with fonts?", 200, 100)
       .modifyStyle(
-        _.withColor(RGBA.White)
-          .modifyStroke(_.withColor(RGBA.Red).withWidth(Pixels(0)))
+        _.withColor(RGB.White)
       )
       .moveTo(50, 50)
 
@@ -63,14 +62,18 @@ object TextBoxScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxV
             4,
             LightingAssets.junctionBoxMaterialOn.modifyLighting(_ => LightingModel.Unlit)
           ).moveTo(10, 10),
-          Shape.Box(context.findBounds(tb).getOrElse(Rectangle.zero), Fill.Color(RGBA.Cyan.withAlpha(0.5))),
+          Shape.Box(context.findBounds(tb).getOrElse(Rectangle.zero), Fill.None).withStroke(Stroke(1, RGBA.Cyan)),
           tb.withDepth(Depth(3)).modifyStyle(_.bold),
           tb.moveTo(50, 65).withDepth(Depth(3)),
           tb.moveTo(50, 80)
             .withDepth(Depth(3))
-            .modifyStyle(_.withFontFamily(FontFamily.cursive)),
-          fishcakes
-            .moveTo(Signal.Orbit(Point(70, 70), 20).affectTime(0.25).at(context.running).toPoint)
+            .modifyStyle(
+              _.withFontFamily(FontFamily.cursive)
+                .withSize(Pixels(16))
+                .modifyStroke(_.withColor(RGB.Red).withWidth(Pixels(1)))
+            ),
+          hello.modifyStyle(_.withSize(Pixels(20)))
+            .moveTo(Signal.Orbit(Point(180, 70), 20).affectTime(0.25).at(context.running).toPoint)
             .withDepth(Depth(2)),
           model.dude.dude.sprite.play().withDepth(Depth(1))
         )

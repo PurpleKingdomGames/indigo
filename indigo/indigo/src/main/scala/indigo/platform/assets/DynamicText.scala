@@ -46,7 +46,7 @@ class DynamicText:
     textContext.canvas.width = width
     textContext.canvas.height = height
 
-    textContext.font = toFontStatement(style.font) //"normal 14px monospace" // bold 48px serif
+    textContext.font = toFontStatement(style.font)
 
     textContext.textAlign = style.alignment match
       case TextAlign.Left   => "left"
@@ -68,10 +68,11 @@ class DynamicText:
       case TextDirection.RightToLeft => "rtl"
       case TextDirection.Inherit     => "inherit"
 
-    textContext.fillStyle = style.color.toHexString("#")
-
+    textContext.miterLimit = 2
+    textContext.lineJoin = "round"
     textContext.strokeStyle = style.stroke.color.toHexString("#")
     textContext.lineWidth = style.stroke.width.toInt
+    textContext.fillStyle = style.color.toHexString("#")
 
     textContext.clearRect(0, 0, width, height)
 
@@ -89,10 +90,10 @@ class DynamicText:
     val y = style.font.size.toInt
 
     if style.scaleTextToFit then
-      textContext.strokeText(text, x, y, width)
+      if style.stroke.width.toInt > 0 then textContext.strokeText(text, x, y, width)
       textContext.fillText(text, x, y, width)
     else
-      textContext.strokeText(text, x, y)
+      if style.stroke.width.toInt > 0 then textContext.strokeText(text, x, y)
       textContext.fillText(text, x, y)
 
     textContext.canvas
