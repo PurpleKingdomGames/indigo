@@ -1,9 +1,17 @@
 package indigo.shared.scenegraph
 
-import indigo.shared.datatypes.{Point, Radians, Vector2, Rectangle, Depth, Flip, TextStyle}
+import indigo.shared.datatypes.{Point, Radians, Vector2, Rectangle, Depth, Flip}
 import indigo.shared.materials.ShaderData
 import indigo.shared.shader.StandardShaders
 import indigo.shared.BoundaryLocator
+import indigo.shared.datatypes.TextStyle
+import indigo.shared.datatypes.TextAlign
+import indigo.shared.datatypes.TextStroke
+import indigo.shared.datatypes.FontWeight
+import indigo.shared.datatypes.FontStyle
+import indigo.shared.datatypes.FontFamily
+import indigo.shared.datatypes.Pixels
+import indigo.shared.datatypes.RGB
 
 final case class TextBox(
     text: String,
@@ -25,6 +33,42 @@ final case class TextBox(
     this.copy(style = newStyle)
   def modifyStyle(modifier: TextStyle => TextStyle): TextBox =
     this.copy(style = modifier(style))
+
+  // convenience methods
+
+  def withColor(newColor: RGB): TextBox =
+    modifyStyle(_.withColor(newColor))
+
+  def withStroke(newStroke: TextStroke): TextBox =
+    modifyStyle(_.withStroke(newStroke))
+
+  def withFontFamily(newFamily: FontFamily): TextBox =
+    modifyStyle(_.modifyFont(_.withFontFamily(newFamily)))
+
+  def withSize(newSize: Pixels): TextBox =
+    modifyStyle(_.modifyFont(_.withSize(newSize)))
+
+  def bold: TextBox =
+    modifyStyle(_.modifyFont(_.withWeight(FontWeight.Bold)))
+  def noBold: TextBox =
+    modifyStyle(_.modifyFont(_.withWeight(FontWeight.Normal)))
+
+  def italic: TextBox =
+    modifyStyle(_.modifyFont(_.withStyle(FontStyle.Italic)))
+  def noItalic: TextBox =
+    modifyStyle(_.modifyFont(_.withStyle(FontStyle.Normal)))
+
+  def alignLeft: TextBox =
+    modifyStyle(_.withAlign(TextAlign.Left))
+  def alignCenter: TextBox =
+    modifyStyle(_.withAlign(TextAlign.Center))
+  def alignRight: TextBox =
+    modifyStyle(_.withAlign(TextAlign.Right))
+  def alignStart: TextBox =
+    modifyStyle(_.withAlign(TextAlign.Start))
+  def alignEnd: TextBox =
+    modifyStyle(_.withAlign(TextAlign.End))
+  //
 
   def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] =
     locator.findBounds(this)
