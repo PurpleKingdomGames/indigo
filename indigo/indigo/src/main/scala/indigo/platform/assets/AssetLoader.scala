@@ -2,10 +2,12 @@ package indigo.platform.assets
 
 import indigo.shared.IndigoLogger
 import indigo.shared.assets.AssetType
+import indigo.shared.assets.AssetName
 import org.scalajs.dom
 import org.scalajs.dom.ext.Ajax
 import org.scalajs.dom.raw.HTMLImageElement
 import org.scalajs.dom.{html, _}
+import scala.scalajs.js
 
 import scala.concurrent.{Future, Promise}
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
@@ -16,6 +18,8 @@ import indigo.shared.datatypes.BindingKey
 import scala.util.Success
 import scala.util.Failure
 import indigo.platform.audio.AudioPlayer
+
+import indigo.facades.FontFace
 
 object AssetLoader {
 
@@ -29,7 +33,7 @@ object AssetLoader {
     val assetList: List[AssetType] =
       assets.toList.flatMap(_.toList)
 
-    IndigoLogger.info(s"Background loading ${assetList.length.toString()} assets with key: ${key}")
+    IndigoLogger.info(s"Background loading ${assetList.length.toString()} assets with key: $key")
 
     loadAssets(assets)
       .onComplete {
@@ -57,7 +61,8 @@ object AssetLoader {
       t <- loadTextAssets(filterOutTextAssets(assetList))
       i <- loadImageAssets(filterOutImageAssets(assetList))
       a <- loadAudioAssets(filterOutAudioAssets(assetList))
-    } yield new AssetCollection(i, t, a)
+      f <- loadFontAssets(filterOutFontAssets(assetList))
+    } yield new AssetCollection(i, t, a, f)
   }
 
   def filterOutTextAssets(l: List[AssetType]): List[AssetType.Text] =
@@ -84,10 +89,18 @@ object AssetLoader {
       }
     }
 
+  def filterOutFontAssets(l: List[AssetType]): List[AssetType.Font] =
+    l.flatMap { at =>
+      at match {
+        case t: AssetType.Font => List(t)
+        case _                 => Nil
+      }
+    }
+
   val loadImageAssets: List[AssetType.Image] => Future[List[LoadedImageAsset]] =
     imageAssets => Future.sequence(imageAssets.map(loadImageAsset))
 
-  def onLoadFuture(image: HTMLImageElement): Future[HTMLImageElement] =
+  def onLoadImageFuture(image: HTMLImageElement): Future[HTMLImageElement] =
     if (image.complete) Future.successful(image)
     else {
       val p = Promise[HTMLImageElement]()
@@ -102,6 +115,8 @@ object AssetLoader {
       p.future
     }
 
+  // Images
+
   @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
   def loadImageAsset(imageAsset: AssetType.Image): Future[LoadedImageAsset] = {
     IndigoLogger.info(s"[Image] Loading ${imageAsset.path}")
@@ -109,11 +124,13 @@ object AssetLoader {
     val image: html.Image = dom.document.createElement("img").asInstanceOf[html.Image]
     image.src = imageAsset.path.toString
 
-    onLoadFuture(image).map { i =>
+    onLoadImageFuture(image).map { i =>
       IndigoLogger.info(s"[Image] Success ${imageAsset.path}")
       new LoadedImageAsset(imageAsset.name, i, imageAsset.tag)
     }
   }
+
+  // Audio
 
   val loadTextAssets: List[AssetType.Text] => Future[List[LoadedTextAsset]] =
     textAssets => Future.sequence(textAssets.map(loadTextAsset))
@@ -126,6 +143,8 @@ object AssetLoader {
       new LoadedTextAsset(textAsset.name, xhr.responseText)
     }
   }
+
+  // Audio
 
   val loadAudioAssets: List[AssetType.Audio] => Future[List[LoadedAudioAsset]] =
     audioAssets => Future.sequence(audioAssets.map(loadAudioAsset))
@@ -148,4 +167,25 @@ object AssetLoader {
     }
   }
 
+  // Fonts
+
+  val loadFontAssets: List[AssetType.Font] => Future[List[LoadedFontAsset]] =
+    fontAssets => Future.sequence(fontAssets.map(loadFontAsset))
+
+  @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
+  def loadFontAsset(fontAsset: AssetType.Font): Future[LoadedFontAsset] =
+    IndigoLogger.info(s"[Font] Loading ${fontAsset.path}")
+
+    val font = new FontFace(fontAsset.name.toString, s"url(${fontAsset.path.toString})")
+
+    font.load().toFuture.map { fontFace =>
+      IndigoLogger.info(s"[Font] Success ${fontAsset.path}")
+
+      // add font to document
+      js.Dynamic.global.document.fonts.add(font)
+      // enable font with CSS class
+      js.Dynamic.global.document.body.classList.add("indigo-fonts-loaded")
+
+      LoadedFontAsset(AssetName(fontFace.family))
+    }
 }
