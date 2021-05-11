@@ -42,7 +42,7 @@ object TextBoxScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxV
 
   val hello: TextBox =
     TextBox("Hello!", 200, 100)
-      .modifyStyle(_.withColor(RGB.Magenta).modifyStroke(_.withWidth(Pixels(3)).withColor(RGB.Cyan)))
+      .modifyStyle(_.withColor(RGBA.Magenta).modifyStroke(_.withWidth(Pixels(3)).withColor(RGBA.Cyan)))
 
   def present(
       context: FrameContext[SandboxStartupData],
@@ -50,7 +50,7 @@ object TextBoxScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxV
       viewModel: SandboxViewModel
   ): Outcome[SceneUpdateFragment] =
     val tb = TextBox("Indigo... with fonts?", 200, 30)
-      .withColor(RGB.White)
+      .withColor(RGBA.White)
       .withFontFamily(FontFamily(SandboxAssets.pixelFont.toString))
       .moveTo(50, 50)
 
@@ -70,7 +70,7 @@ object TextBoxScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxV
             .withDepth(Depth(3))
             .withFontFamily(FontFamily.cursive)
             .withSize(Pixels(16))
-            .withStroke(TextStroke(RGB.Red, Pixels(1))),
+            .withStroke(TextStroke(RGBA.Red, Pixels(1))),
           hello
             .modifyStyle(_.withSize(Pixels(20)))
             .moveTo(Signal.Orbit(Point(180, 70), 20).affectTime(0.25).at(context.running).toPoint)
