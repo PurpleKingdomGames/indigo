@@ -49,36 +49,39 @@ object TextBoxScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxV
       model: SandboxGameModel,
       viewModel: SandboxViewModel
   ): Outcome[SceneUpdateFragment] =
-    val tb = TextBox("Indigo... with fonts?", 200, 100)
-      .modifyStyle(
-        _.withColor(RGB.White)
-          .withFontFamily(FontFamily(SandboxAssets.pixelFont.toString))
-      )
+    val tb = TextBox("Indigo... with fonts?", 200, 30)
+      .withColor(RGB.White)
+      .withFontFamily(FontFamily(SandboxAssets.pixelFont.toString))
       .moveTo(50, 50)
 
     Outcome(
       SceneUpdateFragment(
         Layer(
+          tb.moveTo(0, 0),
           Graphic(
             Rectangle(0, 0, 40, 40),
             4,
             LightingAssets.junctionBoxMaterialOn.modifyLighting(_ => LightingModel.Unlit)
           ).moveTo(10, 10),
           Shape.Box(context.findBounds(tb).getOrElse(Rectangle.zero), Fill.None).withStroke(Stroke(1, RGBA.Cyan)),
-          tb.withDepth(Depth(3)).modifyStyle(_.bold),
+          tb.withDepth(Depth(3)).bold,
           tb.moveTo(50, 65).withDepth(Depth(3)),
           tb.moveTo(50, 80)
             .withDepth(Depth(3))
-            .modifyStyle(
-              _.withFontFamily(FontFamily.cursive)
-                .withSize(Pixels(16))
-                .modifyStroke(_.withColor(RGB.Red).withWidth(Pixels(1)))
-            ),
+            .withFontFamily(FontFamily.cursive)
+            .withSize(Pixels(16))
+            .withStroke(TextStroke(RGB.Red, Pixels(1))),
           hello
             .modifyStyle(_.withSize(Pixels(20)))
             .moveTo(Signal.Orbit(Point(180, 70), 20).affectTime(0.25).at(context.running).toPoint)
             .withDepth(Depth(2)),
-          model.dude.dude.sprite.play().withDepth(Depth(1))
+          model.dude.dude.sprite.play().withDepth(Depth(1)),
+          tb.moveTo(50, 120).withDepth(Depth(3)).alignLeft,
+          tb.moveTo(50, 135).withDepth(Depth(3)).alignCenter.withSize(Pixels(8)),
+          tb.moveTo(50, 150).withDepth(Depth(3)).alignRight,
+          Shape
+            .Box(Rectangle(50, 120, tb.maxSize.x, 14 * 3), Fill.None)
+            .withStroke(Stroke(1, RGBA.Cyan))
         )
       )
     )
