@@ -86,7 +86,13 @@ class DynamicText:
   def makeTextImageData(text: String, style: TextStyle, width: Int, height: Int): raw.HTMLCanvasElement =
     setupText(text, style, width, height)
 
-    val x = 0
+    val x: Int =
+      style.alignment match
+        case TextAlign.Left   => 0
+        case TextAlign.Right  => width
+        case TextAlign.Center => width / 2
+        case TextAlign.Start  => 0
+        case TextAlign.End    => width
     val y = style.font.size.toInt
 
     if style.scaleTextToFit then
@@ -104,9 +110,18 @@ class DynamicText:
     val textMetrics: IndigoTextMetrics =
       textContext.measureText(text).asInstanceOf[IndigoTextMetrics]
 
+    val x: Int =
+      style.alignment match
+        case TextAlign.Left   => 0
+        case TextAlign.Right  => width
+        case TextAlign.Center => width / 2
+        case TextAlign.Start  => 0
+        case TextAlign.End    => width
+    val y = style.font.size.toInt
+
     Rectangle(
-      x = 0,
-      y = 0,
+      x = x,
+      y = y,
       width = (Math.abs(textMetrics.actualBoundingBoxLeft) + Math.abs(textMetrics.actualBoundingBoxRight)).toInt,
       height = (Math.abs(textMetrics.actualBoundingBoxAscent) + Math.abs(textMetrics.actualBoundingBoxAscent)).toInt
     )
