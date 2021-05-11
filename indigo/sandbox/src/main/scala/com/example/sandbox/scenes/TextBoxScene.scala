@@ -5,6 +5,7 @@ import indigo.scenes._
 import com.example.sandbox.SandboxStartupData
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxViewModel
+import com.example.sandbox.SandboxAssets
 
 object TextBoxScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel] {
 
@@ -51,6 +52,7 @@ object TextBoxScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxV
     val tb = TextBox("Indigo... with fonts?", 200, 100)
       .modifyStyle(
         _.withColor(RGB.White)
+          .withFontFamily(FontFamily(SandboxAssets.pixelFont.toString))
       )
       .moveTo(50, 50)
 
@@ -72,7 +74,8 @@ object TextBoxScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxV
                 .withSize(Pixels(16))
                 .modifyStroke(_.withColor(RGB.Red).withWidth(Pixels(1)))
             ),
-          hello.modifyStyle(_.withSize(Pixels(20)))
+          hello
+            .modifyStyle(_.withSize(Pixels(20)))
             .moveTo(Signal.Orbit(Point(180, 70), 20).affectTime(0.25).at(context.running).toPoint)
             .withDepth(Depth(2)),
           model.dude.dude.sprite.play().withDepth(Depth(1))
