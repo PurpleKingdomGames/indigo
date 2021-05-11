@@ -2,7 +2,7 @@ package indigo.shared.datatypes
 
 final case class TextStyle(
     font: Font,
-    color: RGB,
+    color: RGBA,
     stroke: TextStroke,
     alignment: TextAlign,
     baseLine: TextBaseLine,
@@ -14,7 +14,7 @@ final case class TextStyle(
   def modifyFont(modifier: Font => Font): TextStyle =
     this.copy(font = modifier(font))
 
-  def withColor(newColor: RGB): TextStyle =
+  def withColor(newColor: RGBA): TextStyle =
     this.copy(color = newColor)
 
   def withStroke(newStroke: TextStroke): TextStyle =
@@ -78,8 +78,8 @@ object TextStyle:
   def default: TextStyle =
     TextStyle(
       font = Font.default,
-      color = RGB.Black,
-      stroke = TextStroke(RGB.Zero, Pixels.zero),
+      color = RGBA.Black,
+      stroke = TextStroke(RGBA.Zero, Pixels.zero),
       alignment = TextAlign.Left,
       baseLine = TextBaseLine.Alphabetic,
       direction = TextDirection.LeftToRight,
@@ -160,8 +160,8 @@ enum FontStyle derives CanEqual:
 enum FontWeight derives CanEqual:
   case Normal, Bold, Lighter, Bolder
 
-final case class TextStroke(color: RGB, width: Pixels):
-  def withColor(newColor: RGB): TextStroke =
+final case class TextStroke(color: RGBA, width: Pixels):
+  def withColor(newColor: RGBA): TextStroke =
     this.copy(color = newColor)
 
   def withWidth(newWidth: Pixels): TextStroke =

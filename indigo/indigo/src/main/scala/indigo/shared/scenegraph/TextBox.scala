@@ -11,7 +11,7 @@ import indigo.shared.datatypes.FontWeight
 import indigo.shared.datatypes.FontStyle
 import indigo.shared.datatypes.FontFamily
 import indigo.shared.datatypes.Pixels
-import indigo.shared.datatypes.RGB
+import indigo.shared.datatypes.RGBA
 
 final case class TextBox(
     text: String,
@@ -36,7 +36,7 @@ final case class TextBox(
 
   // convenience methods
 
-  def withColor(newColor: RGB): TextBox =
+  def withColor(newColor: RGBA): TextBox =
     modifyStyle(_.withColor(newColor))
 
   def withStroke(newStroke: TextStroke): TextBox =
