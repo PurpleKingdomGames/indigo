@@ -25,6 +25,17 @@ final case class TextStyle(
   def withAlign(newAlign: TextAlign): TextStyle =
     this.copy(alignment = newAlign)
 
+  def alignLeft: TextStyle =
+    withAlign(TextAlign.Left)
+  def alignCenter: TextStyle =
+    withAlign(TextAlign.Center)
+  def alignRight: TextStyle =
+    withAlign(TextAlign.Right)
+  def alignStart: TextStyle =
+    withAlign(TextAlign.Start)
+  def alignEnd: TextStyle =
+    withAlign(TextAlign.End)
+
   def withBaseLine(newBaseLine: TextBaseLine): TextStyle =
     this.copy(baseLine = newBaseLine)
 
