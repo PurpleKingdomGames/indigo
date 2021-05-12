@@ -8,6 +8,7 @@ import indigo.shared.datatypes.Vector2
 import indigo.shared.datatypes.Depth
 import indigo.shared.datatypes.Flip
 import indigo.shared.materials.ShaderData
+import indigo.shared.BoundaryLocator
 
 /**
   * Graphics are used to draw images on the screen, in a cheap efficient but expressive way.
@@ -36,7 +37,8 @@ final case class Graphic(
     with SpatialModifiers[Graphic] derives CanEqual {
 
   def bounds: Rectangle =
-    Rectangle(position, crop.size)
+    BoundaryLocator.findBounds(this, crop.size)
+    // Rectangle(position, crop.size)
 
   lazy val x: Int = position.x
   lazy val y: Int = position.y

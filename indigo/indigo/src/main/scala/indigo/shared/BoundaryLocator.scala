@@ -18,6 +18,9 @@ import indigo.shared.datatypes.FontKey
 import indigo.shared.scenegraph.Shape
 import indigo.shared.scenegraph.EntityNode
 import indigo.platform.assets.DynamicText
+import indigo.shared.datatypes.Vector3
+import indigo.shared.platform.DisplayObjectConversions
+import indigo.shared.datatypes.mutable.CheapMatrix4
 
 final class BoundaryLocator(
     animationsRegister: AnimationsRegister,
@@ -142,3 +145,34 @@ final class BoundaryLocator(
     }
 
 }
+
+object BoundaryLocator:
+
+  def findBounds(entity: EntityNode, size: Point): Rectangle =
+    val m =
+      CheapMatrix4.identity
+        .rotate(entity.rotation)
+        .translate(
+          -entity.ref.x,
+          -entity.ref.y,
+          0.0d
+        )
+        .scale(
+          entity.scale.x,
+          entity.scale.y,
+          1
+        )
+        .translate(
+          entity.position.x,
+          entity.position.y,
+          0.0d
+        )
+
+    Rectangle.fromPointCloud(
+      List(
+        m.transform(Vector3(0, 0, 0)).toPoint,
+        m.transform(Vector3(size.x, 0, 0)).toPoint,
+        m.transform(Vector3(size.x, size.y, 0)).toPoint,
+        m.transform(Vector3(0, size.y, 0)).toPoint
+      )
+    )
