@@ -2,6 +2,7 @@ package indigo.shared.datatypes.mutable
 
 import indigo.shared.datatypes.Matrix4
 import indigo.shared.datatypes.Radians
+import indigo.shared.datatypes.Vector3
 
 final case class CheapMatrix4(mat: Array[Double]) derives CanEqual {
 
@@ -97,6 +98,17 @@ final case class CheapMatrix4(mat: Array[Double]) derives CanEqual {
 
   def deepClone: CheapMatrix4 =
     CheapMatrix4(Array[Double]().concat(mat))
+
+  def transform(vector: Vector3): Vector3 =
+    val col1: List[Double] = List(mat(0), mat(4), mat(8), mat(12))
+    val col2: List[Double] = List(mat(1), mat(5), mat(9), mat(13))
+    val col3: List[Double] = List(mat(2), mat(6), mat(10), mat(14))
+
+    Vector3(
+      x = col1(0) * vector.x + col1(1) * vector.y + col1(2) * vector.z + col1(3),
+      y = col2(0) * vector.x + col2(1) * vector.y + col2(2) * vector.z + col2(3),
+      z = col3(0) * vector.x + col3(1) * vector.y + col3(2) * vector.z + col3(3)
+    )
 }
 
 object CheapMatrix4 {
