@@ -134,6 +134,33 @@ final class DisplayObjectConversions(
 
   private val accSceneNodes: ListBuffer[SceneNode] = new ListBuffer()
 
+  private def groupToMatrix(group: Group): CheapMatrix4 =
+    CheapMatrix4.identity
+      .scale(
+        if (group.flip.horizontal) -1.0 else 1.0,
+        if (group.flip.vertical) -1.0 else 1.0,
+        1.0d
+      )
+      .translate(
+        -group.ref.x.toDouble,
+        -group.ref.y.toDouble,
+        0.0d
+      )
+      .scale(group.scale.x, group.scale.y, 1.0d)
+      .rotate(group.rotation)
+      .translate(
+        group.position.x.toDouble,
+        group.position.y.toDouble,
+        0.0d
+      )
+
+  private def toTransformers(group: Group, parentTransform: CheapMatrix4): List[Transformer] = {
+    val mat = groupToMatrix(group) * parentTransform // to avoid re-evaluation
+    group.children.map { n =>
+      Transformer(n.withDepth(n.depth + group.depth), mat)
+    }
+  }
+
   def deGroup(
       sceneNodes: List[SceneNode]
   ): ListBuffer[SceneNode] = {
@@ -144,13 +171,13 @@ final class DisplayObjectConversions(
           accSceneNodes
 
         case Transformer(g: Group, mat) :: xs =>
-          rec(g.toTransformers(mat) ++ xs)
+          rec(toTransformers(g, mat) ++ xs)
 
         case Transformer(t: Transformer, mat) :: xs =>
           rec(t.addTransform(mat) :: xs)
 
         case (g: Group) :: xs =>
-          rec(g.toTransformers ++ xs)
+          rec(toTransformers(g, CheapMatrix4.identity) ++ xs)
 
         case node :: xs =>
           accSceneNodes += node

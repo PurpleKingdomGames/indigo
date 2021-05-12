@@ -2,7 +2,6 @@ package indigo.shared.scenegraph
 
 import indigo.shared.datatypes._
 import indigo.shared.BoundaryLocator
-import indigo.shared.datatypes.mutable.CheapMatrix4
 
 /** Used to group elements to allow them to be manipulated as a collection.
   */
@@ -105,35 +104,6 @@ final case class Group(
 
   def addChildren(additionalChildren: List[RenderNode]): Group =
     this.copy(children = children ++ additionalChildren)
-
-  def toMatrix: CheapMatrix4 =
-    CheapMatrix4.identity
-      .scale(
-        if (flip.horizontal) -1.0 else 1.0,
-        if (flip.vertical) -1.0 else 1.0,
-        1.0d
-      )
-      .translate(
-        -ref.x.toDouble,
-        -ref.y.toDouble,
-        0.0d
-      )
-      .scale(scale.x, scale.y, 1.0d)
-      .rotate(rotation)
-      .translate(
-        position.x.toDouble,
-        position.y.toDouble,
-        0.0d
-      )
-
-  def toTransformers: List[Transformer] =
-    toTransformers(CheapMatrix4.identity)
-  def toTransformers(parentTransform: CheapMatrix4): List[Transformer] = {
-    val mat = toMatrix * parentTransform // to avoid re-evaluation
-    children.map { n =>
-      Transformer(n.withDepth(n.depth + depth), mat)
-    }
-  }
 }
 
 object Group {
