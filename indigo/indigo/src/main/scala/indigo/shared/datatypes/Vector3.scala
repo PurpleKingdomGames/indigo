@@ -85,6 +85,9 @@ final case class Vector3(x: Double, y: Double, z: Double) derives CanEqual {
   def applyMatrix4(matrix4: Matrix4): Vector3 =
     matrix4.transform(this)
 
+  def toPoint: Point =
+    Point(x.toInt, y.toInt)
+
   def toVector2: Vector2 =
     Vector2(x, y)
 

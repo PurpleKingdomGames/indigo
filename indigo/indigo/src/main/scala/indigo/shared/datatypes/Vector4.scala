@@ -89,6 +89,9 @@ final case class Vector4(x: Double, y: Double, z: Double, w: Double) derives Can
   def transform(matrix4: Matrix4): Vector4 =
     matrix4.transform(toVector3).toVector4
 
+  def toPoint: Point =
+    Point(x.toInt, y.toInt)
+
   def toVector2: Vector2 =
     Vector2(x, y)
 
