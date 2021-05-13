@@ -62,9 +62,10 @@ object BoundsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
 
     val shape: Shape.Box =
       Shape
-        .Box(Rectangle(0, 0, 100, 50), Fill.Color(RGBA.Red))
-        .moveTo(200, 30)
-        .withRef(10, 20)
+        .Box(Rectangle(0, 0, 60, 30), Fill.Color(RGBA.Red), Stroke(4, RGBA.Yellow))
+        .moveTo(200, 130)
+        // .withRef(10, 10)
+        // .rotateTo(Radians.TAUby4)
         .rotateTo(Radians.fromSeconds(context.running * speed))
 
     val sprite: Sprite =
@@ -92,28 +93,32 @@ object BoundsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
       SceneUpdateFragment(
         Layer(
           List(
-            graphic,
-            Shape.Box(graphic.bounds, Fill.None, Stroke(1, RGBA.Green)),
-            sprite,
+            // graphic,
+            // Shape.Box(graphic.bounds, Fill.None, Stroke(1, RGBA.Green)),
+            // sprite,
+            // Shape.Box(
+            //   sprite.calculatedBounds(context.boundaryLocator).getOrElse(Rectangle.zero),
+            //   Fill.None,
+            //   Stroke(1, RGBA.Red)
+            // ),
+            // text,
+            // Shape.Box(
+            //   text.calculatedBounds(context.boundaryLocator).getOrElse(Rectangle.zero),
+            //   Fill.None,
+            //   Stroke(1, RGBA.Cyan)
+            // ),
+            shape,
             Shape.Box(
-              sprite.calculatedBounds(context.boundaryLocator).getOrElse(Rectangle.zero),
+              shape.calculatedBounds(context.boundaryLocator).getOrElse(Rectangle.zero),
               Fill.None,
-              Stroke(1, RGBA.Red)
+              Stroke(1, RGBA.Magenta)
             ),
-            text,
-            Shape.Box(
-              text.calculatedBounds(context.boundaryLocator).getOrElse(Rectangle.zero),
-              Fill.None,
-              Stroke(1, RGBA.Cyan)
-            ),
-            // shape,
-            // Shape.Box(shape.bounds, Fill.None, Stroke(1, RGBA.Magenta)),
-            group,
-            Shape.Box(
-              group.calculatedBounds(context.boundaryLocator).getOrElse(Rectangle.zero),
-              Fill.None,
-              Stroke(1, RGBA.Yellow)
-            ),
+            // group,
+            // Shape.Box(
+            //   group.calculatedBounds(context.boundaryLocator).getOrElse(Rectangle.zero),
+            //   Fill.None,
+            //   Stroke(1, RGBA.Yellow)
+            // ),
             textBox,
             Shape.Box(
               textBox.calculatedBounds(context.boundaryLocator).getOrElse(Rectangle.zero),

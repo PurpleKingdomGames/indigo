@@ -54,7 +54,7 @@ final class BoundaryLocator(
   def findBounds(sceneGraphNode: SceneNode): Option[Rectangle] =
     sceneGraphNode match {
       case s: Shape =>
-        Option(s.bounds)
+        Option(shapeBounds(s)).map(rect => BoundaryLocator.findBounds(s, rect.position, rect.size))
 
       case g: Graphic =>
         Option(g.bounds)
@@ -173,6 +173,34 @@ final class BoundaryLocator(
           Option(b.moveTo(Point(b.x - b.width, b.y)))
 
     }
+
+  def shapeBounds(shape: Shape): Rectangle =
+    shape match
+      case s: Shape.Box =>
+        Rectangle(
+          (s.dimensions.position - (s.stroke.width / 2)),
+          s.dimensions.size + s.stroke.width
+        )
+
+      case s: Shape.Circle =>
+        Rectangle(
+          s.position,
+          Point(s.radius * 2) + s.stroke.width
+        )
+
+      case s: Shape.Line =>
+        val x = Math.min(s.start.x, s.end.x)
+        val y = Math.min(s.start.y, s.end.y)
+        val w = Math.max(s.start.x, s.end.x) - x
+        val h = Math.max(s.start.y, s.end.y) - y
+
+        Rectangle(
+          Point(x, y) - (s.stroke.width / 2),
+          Point(w, h) + s.stroke.width
+        )
+
+      case s: Shape.Polygon =>
+        Rectangle.fromPointCloud(s.vertices).expand(s.stroke.width / 2)
 
 }
 

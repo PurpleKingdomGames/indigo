@@ -104,9 +104,17 @@ object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
             )
             .moveTo(175, 10),
           blue,
-          Shape.Box(blue.bounds, Fill.None, Stroke(1, RGBA.Blue)), //outline blue
+          Shape.Box(
+            blue.calculatedBounds(context.boundaryLocator).getOrElse(Rectangle.zero),
+            Fill.None,
+            Stroke(1, RGBA.Blue)
+          ), //outline blue
           red,
-          Shape.Box(red.bounds, Fill.None, Stroke(1, RGBA.Red)), //outline red
+          Shape.Box(
+            red.calculatedBounds(context.boundaryLocator).getOrElse(Rectangle.zero),
+            Fill.None,
+            Stroke(1, RGBA.Red)
+          ), //outline red
           Shape
             .Box(Rectangle(0, 0, 100, 100), Fill.Color(RGBA.Green.withAlpha(0.5)), Stroke.None)
         )
