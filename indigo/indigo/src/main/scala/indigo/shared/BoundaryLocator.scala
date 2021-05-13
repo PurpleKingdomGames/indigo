@@ -66,7 +66,7 @@ final class BoundaryLocator(
         Option(s.bounds)
 
       case g: Group =>
-        g.calculatedBounds(this)
+        groupBounds(g).map(rect => BoundaryLocator.findBounds(g, rect.position, rect.size))
 
       case _: Transformer =>
         None
@@ -85,6 +85,21 @@ final class BoundaryLocator(
 
       case _ =>
         None
+    }
+
+  def groupBounds(group: Group): Option[Rectangle] =
+    group.children match {
+      case Nil =>
+        Option(Rectangle.zero)
+
+      case x :: xs =>
+        xs.foldLeft(findBounds(x)) { (acc, node) =>
+          (acc, findBounds(node)) match
+            case (Some(a), Some(b)) => Option(Rectangle.expandToInclude(a, b))
+            case (r @ Some(_), _)   => r
+            case (_, r @ Some(_))   => r
+            case (r, _)             => r
+        }.map(_.moveBy(group.position))
     }
 
   def spriteBounds(sprite: Sprite): Option[Rectangle] =
