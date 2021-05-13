@@ -129,7 +129,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
       def productElement(n: Int): Any = ???
     }
 
-    val actual   = BoundaryLocator.findBounds(entity, Point(40, 40))
+    val actual   = BoundaryLocator.findBounds(entity, entity.position, Point(40, 40))
     val expected = Rectangle(0, 0, 40, 40)
 
     assertEquals(actual, expected)
@@ -155,7 +155,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
       def productElement(n: Int): Any = ???
     }
 
-    val actual   = BoundaryLocator.findBounds(entity, Point(30, 40))
+    val actual   = BoundaryLocator.findBounds(entity, entity.position, Point(30, 40))
     val expected = Rectangle(10, 20, 30, 40)
 
     assertEquals(actual, expected)
@@ -181,7 +181,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
       def productElement(n: Int): Any = ???
     }
 
-    val actual   = BoundaryLocator.findBounds(entity, Point(40, 40))
+    val actual   = BoundaryLocator.findBounds(entity, entity.position, Point(40, 40))
     val expected = Rectangle(0, 0, 40, 40)
 
     assertEquals(actual, expected)
@@ -207,7 +207,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
       def productElement(n: Int): Any = ???
     }
 
-    val actual   = BoundaryLocator.findBounds(entity, Point(40, 40))
+    val actual   = BoundaryLocator.findBounds(entity, entity.position, Point(40, 40))
     val expected = Rectangle(-20, -20, 40, 40)
 
     assertEquals(actual, expected)
@@ -233,7 +233,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
       def productElement(n: Int): Any = ???
     }
 
-    val actual   = BoundaryLocator.findBounds(entity, Point(40, 40))
+    val actual   = BoundaryLocator.findBounds(entity, entity.position, Point(40, 40))
     val expected = Rectangle(-40, -40, 40, 40)
 
     assertEquals(actual, expected)
@@ -259,7 +259,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
       def productElement(n: Int): Any = ???
     }
 
-    val actual   = BoundaryLocator.findBounds(entity, Point(40, 40))
+    val actual   = BoundaryLocator.findBounds(entity, entity.position, Point(40, 40))
     val expected = Rectangle(10, 0, 40, 40)
 
     assertEquals(actual, expected)
@@ -285,7 +285,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
       def productElement(n: Int): Any = ???
     }
 
-    val actual   = BoundaryLocator.findBounds(entity, Point(40, 40))
+    val actual   = BoundaryLocator.findBounds(entity, entity.position, Point(40, 40))
     val expected = Rectangle(0, 0, 40, 40)
 
     assertEquals(actual, expected)
@@ -311,7 +311,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
       def productElement(n: Int): Any = ???
     }
 
-    val actual   = BoundaryLocator.findBounds(entity, Point(40, 40))
+    val actual   = BoundaryLocator.findBounds(entity, entity.position, Point(40, 40))
     val expected = Rectangle(0, 0, 80, 80)
 
     assertEquals(actual, expected)
@@ -337,7 +337,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
       def productElement(n: Int): Any = ???
     }
 
-    val actual   = BoundaryLocator.findBounds(entity, Point(40, 40))
+    val actual   = BoundaryLocator.findBounds(entity, entity.position, Point(40, 40))
     val expected = Rectangle(-60, -60, 120, 120)
 
     assertEquals(actual, expected)
@@ -363,7 +363,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
       def productElement(n: Int): Any = ???
     }
 
-    val actual   = BoundaryLocator.findBounds(entity, Point(20, 40))
+    val actual   = BoundaryLocator.findBounds(entity, entity.position, Point(20, 40))
     val expected = Rectangle(-40, -80, 40, 80)
 
     assertEquals(actual, expected)
