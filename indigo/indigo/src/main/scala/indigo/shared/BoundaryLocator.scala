@@ -81,7 +81,18 @@ final class BoundaryLocator(
         spriteBounds(s).map(rect => BoundaryLocator.findBounds(s, rect.position, rect.size))
 
       case t: Text =>
-        textBounds(t)
+        textBounds(t).map { rect =>
+          val tt = t.alignment match
+            case TextAlignment.Left   => t
+            case TextAlignment.Center => t.withRef((rect.width / 2), (rect.height / 2))
+            case TextAlignment.Right  => t.withRef(rect.width, (rect.height / 2))
+
+          BoundaryLocator.findBounds(
+            tt,
+            t.position,
+            rect.size
+          )
+        }
 
       case _ =>
         None
@@ -150,9 +161,8 @@ final class BoundaryLocator(
           .fold(Rectangle.zero) { (acc, next) =>
             acc.resize(Point(Math.max(acc.width, next.width), acc.height + next.height))
           }
-          .moveTo(text.position)
 
-      (text.alignment, unaligned) match {
+      (text.alignment, unaligned) match
         case (TextAlignment.Left, b) =>
           Option(b)
 
@@ -161,7 +171,7 @@ final class BoundaryLocator(
 
         case (TextAlignment.Right, b) =>
           Option(b.moveTo(Point(b.x - b.width, b.y)))
-      }
+
     }
 
 }

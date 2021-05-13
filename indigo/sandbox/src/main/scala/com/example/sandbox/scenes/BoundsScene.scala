@@ -55,10 +55,10 @@ object BoundsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
         .rotateTo(Radians.fromSeconds(context.running * speed))
 
     val text: Text =
-      Text("boom!", Fonts.fontKey, SandboxAssets.fontMaterial).alignCenter
-        .moveTo(60, 60)
+      Text("boom!", Fonts.fontKey, SandboxAssets.fontMaterial).alignRight
+        .moveTo(100, 100)
         .withRef(0, 10)
-        .rotateTo(Radians.fromSeconds(context.running * speed))
+        .rotateTo(Radians.fromSeconds(context.running * speed).negative)
 
     val shape: Shape.Box =
       Shape
@@ -101,11 +101,11 @@ object BoundsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
               Stroke(1, RGBA.Red)
             ),
             text,
-            // Shape.Box(
-            //   text.calculatedBounds(context.boundaryLocator).getOrElse(Rectangle.zero),
-            //   Fill.None,
-            //   Stroke(1, RGBA.Cyan)
-            // ),
+            Shape.Box(
+              text.calculatedBounds(context.boundaryLocator).getOrElse(Rectangle.zero),
+              Fill.None,
+              Stroke(1, RGBA.Cyan)
+            ),
             // shape,
             // Shape.Box(shape.bounds, Fill.None, Stroke(1, RGBA.Magenta)),
             group,
