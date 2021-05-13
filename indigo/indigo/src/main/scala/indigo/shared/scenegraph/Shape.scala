@@ -18,8 +18,9 @@ import indigo.shared.datatypes.Stroke
 import indigo.shared.materials.LightingModel.Unlit
 import indigo.shared.materials.LightingModel.Lit
 import indigo.shared.shader.ShaderId
+import indigo.shared.BoundaryLocator
 
-sealed trait Shape extends EntityNode with Cloneable with SpatialModifiers[Shape] derives CanEqual {
+sealed trait Shape extends CompositeNode with Cloneable with SpatialModifiers[Shape] derives CanEqual {
   def moveTo(pt: Point): Shape
   def moveTo(x: Int, y: Int): Shape
   def withPosition(newPosition: Point): Shape
@@ -61,13 +62,10 @@ object Shape {
   ) extends Shape {
 
     lazy val position: Point =
-      bounds.position
+      dimensions.position - (stroke.width / 2)
 
-    lazy val bounds: Rectangle =
-      Rectangle(
-        dimensions.position - (stroke.width / 2),
-        dimensions.size + stroke.width
-      )
+    def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] =
+      locator.findBounds(this)
 
     def withDimensions(newDimensions: Rectangle): Box =
       this.copy(dimensions = newDimensions)
@@ -141,37 +139,6 @@ object Shape {
 
     def withShaderId(newShaderId: ShaderId): Box =
       this.copy(shaderId = Option(newShaderId))
-
-    private lazy val aspect: Vector2 =
-      if (bounds.size.x > bounds.size.y)
-        Vector2(1.0, bounds.size.y.toDouble / bounds.size.x.toDouble)
-      else
-        Vector2(bounds.size.x.toDouble / bounds.size.y.toDouble, 1.0)
-
-    def toShaderData: ShaderData = {
-      val shapeUniformBlock =
-        UniformBlock(
-          "IndigoShapeData",
-          List(
-            Uniform("ASPECT_RATIO") -> vec2(aspect.x, aspect.y),
-            Uniform("STROKE_WIDTH") -> float(stroke.width.toFloat),
-            Uniform("FILL_TYPE")    -> fillType(fill),
-            Uniform("STROKE_COLOR") -> vec4(stroke.color.r, stroke.color.g, stroke.color.b, stroke.color.a)
-          ) ++ gradientUniforms(fill)
-        )
-
-      lighting match {
-        case Unlit =>
-          ShaderData(
-            shaderId.getOrElse(StandardShaders.ShapeBox.id),
-            shapeUniformBlock
-          )
-
-        case l: Lit =>
-          l.toShaderData(shaderId.getOrElse(StandardShaders.LitShapeBox.id))
-            .addUniformBlock(shapeUniformBlock)
-      }
-    }
   }
   object Box {
 
@@ -222,11 +189,8 @@ object Shape {
     lazy val position: Point =
       center - radius - (stroke.width / 2)
 
-    lazy val bounds: Rectangle =
-      Rectangle(
-        position,
-        Point(radius * 2) + stroke.width
-      )
+    def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] =
+      locator.findBounds(this)
 
     def withFillColor(newFill: Fill): Circle =
       this.copy(fill = newFill)
@@ -302,29 +266,6 @@ object Shape {
     def withShaderId(newShaderId: ShaderId): Circle =
       this.copy(shaderId = Option(newShaderId))
 
-    def toShaderData: ShaderData = {
-      val shapeUniformBlock =
-        UniformBlock(
-          "IndigoShapeData",
-          List(
-            Uniform("STROKE_WIDTH") -> float(stroke.width.toFloat),
-            Uniform("FILL_TYPE")    -> fillType(fill),
-            Uniform("STROKE_COLOR") -> vec4(stroke.color.r, stroke.color.g, stroke.color.b, stroke.color.a)
-          ) ++ gradientUniforms(fill)
-        )
-
-      lighting match {
-        case Unlit =>
-          ShaderData(
-            shaderId.getOrElse(StandardShaders.ShapeCircle.id),
-            shapeUniformBlock
-          )
-
-        case l: Lit =>
-          l.toShaderData(shaderId.getOrElse(StandardShaders.LitShapeCircle.id))
-            .addUniformBlock(shapeUniformBlock)
-      }
-    }
   }
   object Circle {
 
@@ -374,19 +315,12 @@ object Shape {
   ) extends Shape {
 
     lazy val position: Point =
-      bounds.position
-
-    lazy val bounds: Rectangle = {
       val x = Math.min(start.x, end.x)
       val y = Math.min(start.y, end.y)
-      val w = Math.max(start.x, end.x) - x
-      val h = Math.max(start.y, end.y) - y
+      Point(x, y) - (stroke.width / 2)
 
-      Rectangle(
-        Point(x, y) - (stroke.width / 2),
-        Point(w, h) + stroke.width
-      )
-    }
+    def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] =
+      locator.findBounds(this)
 
     def withStroke(newStroke: Stroke): Line =
       this.copy(stroke = newStroke)
@@ -470,38 +404,6 @@ object Shape {
 
     def withShaderId(newShaderId: ShaderId): Line =
       this.copy(shaderId = Option(newShaderId))
-
-    def toShaderData: ShaderData = {
-      val bounds: Rectangle =
-        Rectangle.fromTwoPoints(start, end)
-
-      // Relative to bounds
-      val s = start - bounds.position + (stroke.width / 2)
-      val e = end - bounds.position + (stroke.width / 2)
-
-      val shapeUniformBlock =
-        UniformBlock(
-          "IndigoShapeData",
-          List(
-            Uniform("STROKE_WIDTH") -> float(stroke.width.toFloat),
-            Uniform("STROKE_COLOR") -> vec4(stroke.color.r, stroke.color.g, stroke.color.b, stroke.color.a),
-            Uniform("START")        -> vec2(s.x.toFloat, s.y.toFloat),
-            Uniform("END")          -> vec2(e.x.toFloat, e.y.toFloat)
-          )
-        )
-
-      lighting match {
-        case Unlit =>
-          ShaderData(
-            shaderId.getOrElse(StandardShaders.ShapeLine.id),
-            shapeUniformBlock
-          )
-
-        case l: Lit =>
-          l.toShaderData(shaderId.getOrElse(StandardShaders.LitShapeLine.id))
-            .addUniformBlock(shapeUniformBlock)
-      }
-    }
   }
   object Line {
 
@@ -535,10 +437,10 @@ object Shape {
   ) extends Shape {
 
     lazy val position: Point =
-      bounds.position
+      Rectangle.fromPointCloud(vertices).expand(stroke.width / 2).position
 
-    lazy val bounds: Rectangle =
-      Rectangle.fromPointCloud(vertices).expand(stroke.width / 2)
+    def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] =
+      locator.findBounds(this)
 
     def withFillColor(newFill: Fill): Polygon =
       this.copy(fill = newFill)
@@ -610,38 +512,6 @@ object Shape {
     def withShaderId(newShaderId: ShaderId): Polygon =
       this.copy(shaderId = Option(newShaderId))
 
-    def toShaderData: ShaderData = {
-      val verts: Array[vec2] =
-        vertices.map { v =>
-          vec2(
-            (v.x - bounds.x).toFloat,
-            (v.y - bounds.y).toFloat
-          )
-        }.toArray
-
-      val shapeUniformBlock =
-        UniformBlock(
-          "IndigoShapeData",
-          List(
-            Uniform("STROKE_WIDTH") -> float(stroke.width.toFloat),
-            Uniform("FILL_TYPE")    -> fillType(fill),
-            Uniform("COUNT")        -> float(verts.length.toFloat),
-            Uniform("STROKE_COLOR") -> vec4(stroke.color.r, stroke.color.g, stroke.color.b, stroke.color.a)
-          ) ++ gradientUniforms(fill) ++ List(Uniform("VERTICES") -> array(16, verts))
-        )
-
-      lighting match {
-        case Unlit =>
-          ShaderData(
-            shaderId.getOrElse(StandardShaders.ShapePolygon.id),
-            shapeUniformBlock
-          )
-
-        case l: Lit =>
-          l.toShaderData(shaderId.getOrElse(StandardShaders.LitShapePolygon.id))
-            .addUniformBlock(shapeUniformBlock)
-      }
-    }
   }
   object Polygon {
 
@@ -731,4 +601,121 @@ object Shape {
       case _: Fill.RadialGradient => float(2.0)
     }
 
+  def toShaderData(shape: Shape, bounds: Rectangle): ShaderData =
+    shape match
+      case s: Shape.Box =>
+        val aspect: Vector2 =
+          if (bounds.size.x > bounds.size.y)
+            Vector2(1.0, bounds.size.y.toDouble / bounds.size.x.toDouble)
+          else
+            Vector2(bounds.size.x.toDouble / bounds.size.y.toDouble, 1.0)
+
+        val shapeUniformBlock =
+          UniformBlock(
+            "IndigoShapeData",
+            List(
+              Uniform("ASPECT_RATIO") -> vec2(aspect.x, aspect.y),
+              Uniform("STROKE_WIDTH") -> float(s.stroke.width.toFloat),
+              Uniform("FILL_TYPE")    -> fillType(s.fill),
+              Uniform("STROKE_COLOR") -> vec4(s.stroke.color.r, s.stroke.color.g, s.stroke.color.b, s.stroke.color.a)
+            ) ++ gradientUniforms(s.fill)
+          )
+
+        s.lighting match {
+          case Unlit =>
+            ShaderData(
+              s.shaderId.getOrElse(StandardShaders.ShapeBox.id),
+              shapeUniformBlock
+            )
+
+          case l: Lit =>
+            l.toShaderData(s.shaderId.getOrElse(StandardShaders.LitShapeBox.id))
+              .addUniformBlock(shapeUniformBlock)
+        }
+
+      case s: Shape.Circle =>
+        val shapeUniformBlock =
+          UniformBlock(
+            "IndigoShapeData",
+            List(
+              Uniform("STROKE_WIDTH") -> float(s.stroke.width.toFloat),
+              Uniform("FILL_TYPE")    -> fillType(s.fill),
+              Uniform("STROKE_COLOR") -> vec4(s.stroke.color.r, s.stroke.color.g, s.stroke.color.b, s.stroke.color.a)
+            ) ++ gradientUniforms(s.fill)
+          )
+
+        s.lighting match {
+          case Unlit =>
+            ShaderData(
+              s.shaderId.getOrElse(StandardShaders.ShapeCircle.id),
+              shapeUniformBlock
+            )
+
+          case l: Lit =>
+            l.toShaderData(s.shaderId.getOrElse(StandardShaders.LitShapeCircle.id))
+              .addUniformBlock(shapeUniformBlock)
+        }
+
+      case s: Shape.Line =>
+        // val bounds: Rectangle =
+        //   Rectangle.fromTwoPoints(s.start, s.end)
+
+        // Relative to bounds
+        val ss = s.start - bounds.position + (s.stroke.width / 2)
+        val ee = s.end - bounds.position + (s.stroke.width / 2)
+
+        val shapeUniformBlock =
+          UniformBlock(
+            "IndigoShapeData",
+            List(
+              Uniform("STROKE_WIDTH") -> float(s.stroke.width.toFloat),
+              Uniform("STROKE_COLOR") -> vec4(s.stroke.color.r, s.stroke.color.g, s.stroke.color.b, s.stroke.color.a),
+              Uniform("START")        -> vec2(ss.x.toFloat, ss.y.toFloat),
+              Uniform("END")          -> vec2(ee.x.toFloat, ee.y.toFloat)
+            )
+          )
+
+        s.lighting match {
+          case Unlit =>
+            ShaderData(
+              s.shaderId.getOrElse(StandardShaders.ShapeLine.id),
+              shapeUniformBlock
+            )
+
+          case l: Lit =>
+            l.toShaderData(s.shaderId.getOrElse(StandardShaders.LitShapeLine.id))
+              .addUniformBlock(shapeUniformBlock)
+        }
+
+      case s: Shape.Polygon =>
+        val verts: Array[vec2] =
+          s.vertices.map { v =>
+            vec2(
+              (v.x - bounds.x).toFloat,
+              (v.y - bounds.y).toFloat
+            )
+          }.toArray
+
+        val shapeUniformBlock =
+          UniformBlock(
+            "IndigoShapeData",
+            List(
+              Uniform("STROKE_WIDTH") -> float(s.stroke.width.toFloat),
+              Uniform("FILL_TYPE")    -> fillType(s.fill),
+              Uniform("COUNT")        -> float(verts.length.toFloat),
+              Uniform("STROKE_COLOR") -> vec4(s.stroke.color.r, s.stroke.color.g, s.stroke.color.b, s.stroke.color.a)
+            ) ++ gradientUniforms(s.fill) ++ List(Uniform("VERTICES") -> array(16, verts))
+          )
+
+        s.lighting match {
+          case Unlit =>
+            ShaderData(
+              s.shaderId.getOrElse(StandardShaders.ShapePolygon.id),
+              shapeUniformBlock
+            )
+
+          case l: Lit =>
+            l.toShaderData(s.shaderId.getOrElse(StandardShaders.LitShapePolygon.id))
+              .addUniformBlock(shapeUniformBlock)
+        }
 }

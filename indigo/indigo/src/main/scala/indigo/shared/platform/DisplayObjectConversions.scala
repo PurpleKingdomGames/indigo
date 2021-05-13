@@ -299,8 +299,25 @@ final class DisplayObjectConversions(
     }
 
   def shapeToDisplayObject(leaf: Shape): DisplayObject = {
-    val shader: ShaderData = leaf.toShaderData
-    val offset             = Vector2.zero
+
+    val offset = leaf match
+      case s: Shape.Box =>
+        // val size = s.dimensions.size
+
+        // if size.x == size.y then Point.zero
+        // else if size.x < size.y then Point(-Math.round((size.y.toDouble - size.x.toDouble) / 2).toInt, 0)
+        // else Point(0, -Math.round((size.x.toDouble - size.y.toDouble) / 2).toInt)
+
+        Point.zero
+      case _ =>
+        Point.zero
+
+    val boundsActual = boundaryLocator.shapeBounds(leaf).moveBy(offset)
+
+    val shader: ShaderData = Shape.toShaderData(leaf, boundsActual)
+    val bounds             = boundsActual.toSquare
+
+    val channelOffset = Vector2.zero
     val uniformData: List[DisplayObjectUniformData] =
       shader.uniformBlocks.map { ub =>
         DisplayObjectUniformData(
@@ -310,12 +327,10 @@ final class DisplayObjectConversions(
         )
       }
 
-    val bounds = DisplayObjectConversions.calculateShapeBounds(leaf)
-
     DisplayObject(
       transform = DisplayObjectConversions
         .nodeToMatrix4(
-          leaf,
+          leaf.withRef(leaf.ref),
           bounds.position.toVector,
           Vector3(bounds.size.x.toDouble, bounds.size.y.toDouble, 1.0d)
         ),
@@ -325,9 +340,9 @@ final class DisplayObjectConversions(
       height = bounds.size.y,
       atlasName = None,
       frame = SpriteSheetFrame.defaultOffset,
-      channelOffset1 = offset,
-      channelOffset2 = offset,
-      channelOffset3 = offset,
+      channelOffset1 = channelOffset,
+      channelOffset2 = channelOffset,
+      channelOffset3 = channelOffset,
       shaderId = shader.shaderId,
       shaderUniformData = uniformData
     )
@@ -701,29 +716,5 @@ object DisplayObjectConversions {
 
     rec(uniforms.map(_._2), empty0, empty0)
   }
-
-  def calculateShapeBounds(shape: Shape): Rectangle =
-    shape match
-      case s: Shape.Box =>
-        val size = s.dimensions.size
-
-        val offset =
-          if size.x == size.y then Point.zero
-          else if size.x < size.y then Point(-Math.round((size.y.toDouble - size.x.toDouble) / 2).toInt, 0)
-          else Point(0, -Math.round((size.x.toDouble - size.y.toDouble) / 2).toInt)
-
-        Rectangle(
-          s.bounds.position + offset,
-          s.bounds.toSquare.size
-        )
-
-      case s: Shape.Circle =>
-        s.bounds.toSquare
-
-      case s: Shape.Line =>
-        s.bounds.toSquare
-
-      case s: Shape.Polygon =>
-        s.bounds.toSquare
 
 }
