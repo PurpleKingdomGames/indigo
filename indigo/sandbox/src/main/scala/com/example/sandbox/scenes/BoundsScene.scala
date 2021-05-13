@@ -78,6 +78,7 @@ object BoundsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
       )
         .moveTo(200, 120)
         .rotateTo(Radians.fromSeconds(context.running * speed))
+        .withRef(50, 50)
 
     val textBox = TextBox("Hello, World!", 100, 10).alignRight
       .withColor(RGBA.White)
@@ -106,12 +107,12 @@ object BoundsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
             // ),
             // shape,
             // Shape.Box(shape.bounds, Fill.None, Stroke(1, RGBA.Magenta)),
-            // group,
-            // Shape.Box(
-            //   group.calculatedBounds(context.boundaryLocator).getOrElse(Rectangle.zero),
-            //   Fill.None,
-            //   Stroke(1, RGBA.Yellow)
-            // ),
+            group,
+            Shape.Box(
+              group.calculatedBounds(context.boundaryLocator).getOrElse(Rectangle.zero),
+              Fill.None,
+              Stroke(1, RGBA.Yellow)
+            ),
             textBox,
             Shape.Box(
               textBox.calculatedBounds(context.boundaryLocator).getOrElse(Rectangle.zero),

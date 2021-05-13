@@ -66,38 +66,8 @@ final case class Group(
   def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): Group =
     transformTo(position + positionDiff, rotation + rotationDiff, scale * scaleDiff)
 
-  def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] = {
-    def giveBounds(n: SceneNode): Option[Rectangle] =
-      n match {
-        case n: EntityNode =>
-          Option(n.bounds)
-
-        case n: CompositeNode =>
-          n.calculatedBounds(locator)
-
-        case _ =>
-          None
-      }
-
-    children match {
-      case Nil =>
-        Option(Rectangle.zero)
-
-      case x :: xs =>
-        val maybe: Option[Rectangle] =
-          xs.foldLeft(giveBounds(x)) { (acc, node) =>
-            (acc, giveBounds(node)) match
-              case (Some(a), Some(b)) => Option(Rectangle.expandToInclude(a, b))
-              case (r @ Some(_), _)   => r
-              case (_, r @ Some(_))   => r
-              case (r, _)             => r
-          }
-
-        maybe match
-          case None    => None
-          case Some(b) => Option(b)
-    }
-  }
+  def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] =
+    locator.findBounds(this)
 
   def addChild(child: RenderNode): Group =
     this.copy(children = children ++ List(child))
