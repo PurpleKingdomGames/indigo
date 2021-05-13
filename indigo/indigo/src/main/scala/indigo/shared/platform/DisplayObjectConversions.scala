@@ -525,12 +525,11 @@ final class DisplayObjectConversions(
           ":" + alignmentOffsetX.toString() +
           ":" + yOffset.toString() +
           ":" + leaf.position.hash +
+          ":" + leaf.ref.hash +
           ":" + leaf.rotation.hash +
           ":" + leaf.scale.hash +
-          ":" + shaderData.hash // +
-      // ":" + leaf.effects.hash
+          ":" + shaderData.hash
 
-      // val albedoAmount                     = 1.0f
       val emissiveOffset = findAssetOffsetValues(assetMapping, shaderData.channel1, shaderData.hash, "_e")
       val normalOffset   = findAssetOffsetValues(assetMapping, shaderData.channel2, shaderData.hash, "_n")
       val specularOffset = findAssetOffsetValues(assetMapping, shaderData.channel3, shaderData.hash, "_s")
@@ -559,8 +558,8 @@ final class DisplayObjectConversions(
 
           DisplayObject(
             transform = DisplayObjectConversions.nodeToMatrix4(
-              leaf,
-              leaf.position.moveBy(xPosition + alignmentOffsetX, yOffset).toVector,
+              leaf.withRef(leaf.ref.x + -(xPosition + alignmentOffsetX), leaf.ref.y + yOffset),
+              leaf.position.toVector,
               Vector3(fontChar.bounds.width.toDouble, fontChar.bounds.height.toDouble, 1.0d)
             ),
             rotation = leaf.rotation,
