@@ -707,7 +707,6 @@ object DisplayObjectConversions {
     shape match
       case s: Shape.Box =>
         val size = s.dimensions.size
-        // val halfStroke = s.stroke.width / 2
 
         val offset =
           if size.x == size.y then Point.zero

@@ -74,7 +74,7 @@ final class BoundaryLocator(
         None
 
       case s: Sprite =>
-        spriteBounds(s).map(rect => BoundaryLocator.findBounds(s, rect.size))
+        spriteBounds(s).map(rect => BoundaryLocator.findBounds(s, rect.position, rect.size))
 
       case t: Text =>
         textBounds(t)
@@ -149,7 +149,7 @@ final class BoundaryLocator(
 
 object BoundaryLocator:
 
-  def findBounds(entity: RenderNode, size: Point): Rectangle =
+  def findBounds(entity: RenderNode, position: Point, size: Point): Rectangle =
     val m =
       CheapMatrix4.identity
         .translate(
@@ -164,8 +164,8 @@ object BoundaryLocator:
           1
         )
         .translate(
-          entity.position.x,
-          entity.position.y,
+          position.x,
+          position.y,
           0.0d
         )
 
