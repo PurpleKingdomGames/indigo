@@ -16,7 +16,7 @@ import indigo.shared.datatypes.RGBA
 final case class TextBox(
     text: String,
     style: TextStyle,
-    maxSize: Point,
+    size: Point,
     position: Point,
     rotation: Radians,
     scale: Vector2,
@@ -26,6 +26,9 @@ final case class TextBox(
 ) extends CompositeNode
     with SpatialModifiers[TextBox] derives CanEqual:
 
+  def bounds: Rectangle =
+    BoundaryLocator.findBounds(this, position, size)
+
   def withText(newText: String): TextBox =
     this.copy(text = newText)
 
@@ -33,6 +36,9 @@ final case class TextBox(
     this.copy(style = newStyle)
   def modifyStyle(modifier: TextStyle => TextStyle): TextBox =
     this.copy(style = modifier(style))
+
+  def withSize(newSize: Point): TextBox =
+    this.copy(size = newSize)
 
   // convenience methods
 
@@ -45,7 +51,7 @@ final case class TextBox(
   def withFontFamily(newFamily: FontFamily): TextBox =
     modifyStyle(_.modifyFont(_.withFontFamily(newFamily)))
 
-  def withSize(newSize: Pixels): TextBox =
+  def withFontSize(newSize: Pixels): TextBox =
     modifyStyle(_.modifyFont(_.withSize(newSize)))
 
   def bold: TextBox =
