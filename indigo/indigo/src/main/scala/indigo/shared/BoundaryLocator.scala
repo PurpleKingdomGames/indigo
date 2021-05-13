@@ -17,6 +17,7 @@ import indigo.shared.scenegraph.Transformer
 import indigo.shared.datatypes.FontKey
 import indigo.shared.scenegraph.Shape
 import indigo.shared.scenegraph.EntityNode
+import indigo.shared.scenegraph.RenderNode
 import indigo.platform.assets.DynamicText
 import indigo.shared.datatypes.Vector3
 import indigo.shared.platform.DisplayObjectConversions
@@ -73,7 +74,7 @@ final class BoundaryLocator(
         None
 
       case s: Sprite =>
-        spriteBounds(s)
+        spriteBounds(s).map(rect => BoundaryLocator.findBounds(s, rect.size))
 
       case t: Text =>
         textBounds(t)
@@ -148,15 +149,15 @@ final class BoundaryLocator(
 
 object BoundaryLocator:
 
-  def findBounds(entity: EntityNode, size: Point): Rectangle =
+  def findBounds(entity: RenderNode, size: Point): Rectangle =
     val m =
       CheapMatrix4.identity
-        .rotate(entity.rotation)
         .translate(
           -entity.ref.x,
           -entity.ref.y,
           0.0d
         )
+        .rotate(entity.rotation)
         .scale(
           entity.scale.x,
           entity.scale.y,

@@ -475,7 +475,7 @@ final class DisplayObjectConversions(
         )
       }
 
-    val bounds = leaf.calculatedBounds(boundaryLocator).getOrElse(Rectangle.zero)
+    val bounds = boundaryLocator.spriteBounds(leaf).getOrElse(Rectangle.zero)
 
     val shaderId = shaderData.shaderId
 
