@@ -395,12 +395,12 @@ final class DisplayObjectConversions(
         .nodeToMatrix4(
           leaf,
           leaf.position.toVector,
-          Vector3(leaf.maxSize.x.toDouble, leaf.maxSize.y.toDouble, 1.0d)
+          Vector3(leaf.size.x.toDouble, leaf.size.y.toDouble, 1.0d)
         ),
       rotation = leaf.rotation,
       z = leaf.depth.toDouble,
-      width = leaf.maxSize.x,
-      height = leaf.maxSize.y
+      width = leaf.size.x,
+      height = leaf.size.y
     )
 
   def graphicToDisplayObject(leaf: Graphic, assetMapping: AssetMapping): DisplayObject = {

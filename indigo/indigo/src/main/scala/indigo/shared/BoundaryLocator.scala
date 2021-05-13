@@ -37,6 +37,19 @@ final class BoundaryLocator(
     textLinesCache.purgeAllNow()
   }
 
+  def measureText(t: TextBox): Rectangle =
+    val rect =
+      dynamicText
+        .measureText(
+          t.text,
+          t.style,
+          t.size.x,
+          t.size.y
+        )
+        .moveTo(t.position)
+
+    BoundaryLocator.findBounds(t, rect.position, rect.size)
+
   // General
   def findBounds(sceneGraphNode: SceneNode): Option[Rectangle] =
     sceneGraphNode match {
@@ -47,16 +60,7 @@ final class BoundaryLocator(
         Option(g.bounds)
 
       case t: TextBox =>
-        Option(
-          dynamicText
-            .measureText(
-              t.text,
-              t.style,
-              t.maxSize.x,
-              t.maxSize.y
-            )
-            .moveTo(t.position)
-        )
+        Option(t.bounds)
 
       case s: EntityNode =>
         Option(s.bounds)
