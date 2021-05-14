@@ -12,7 +12,7 @@ import indigo.shared.scenegraph.Text
 import indigo.shared.scenegraph.TextBox
 import indigo.shared.scenegraph.Group
 import indigo.shared.datatypes.Point
-import indigo.shared.scenegraph.SceneNodeInternal
+import indigo.shared.scenegraph.SceneNode
 
 final case class Button(
     buttonAssets: ButtonAssets,
@@ -52,18 +52,18 @@ final case class Button(
     }
   }
 
-  private def applyPositionAndDepth(sceneNode: SceneNodeInternal, pt: Point, d: Depth): SceneNodeInternal =
+  private def applyPositionAndDepth(sceneNode: SceneNode, pt: Point, d: Depth): SceneNode =
     sceneNode match {
-      case n: Shape      => n.withPosition(pt).withDepth(d)
-      case n: Graphic    => n.withPosition(pt).withDepth(d)
-      case n: Sprite     => n.withPosition(pt).withDepth(d)
-      case n: Text       => n.withPosition(pt).withDepth(d)
-      case n: TextBox    => n.withPosition(pt).withDepth(d)
-      case n: Group      => n.withPosition(pt).withDepth(d)
-      case n => n
+      case n: Shape   => n.withPosition(pt).withDepth(d)
+      case n: Graphic => n.withPosition(pt).withDepth(d)
+      case n: Sprite  => n.withPosition(pt).withDepth(d)
+      case n: Text    => n.withPosition(pt).withDepth(d)
+      case n: TextBox => n.withPosition(pt).withDepth(d)
+      case n: Group   => n.withPosition(pt).withDepth(d)
+      case n          => n
     }
 
-  def draw: SceneNodeInternal =
+  def draw: SceneNode =
     state match {
       case ButtonState.Up =>
         applyPositionAndDepth(buttonAssets.up, bounds.position, depth)
@@ -147,7 +147,7 @@ object ButtonState {
 }
 
 final case class ButtonAssets(
-    up: SceneNodeInternal,
-    over: SceneNodeInternal,
-    down: SceneNodeInternal
+    up: SceneNode,
+    over: SceneNode,
+    down: SceneNode
 ) derives CanEqual

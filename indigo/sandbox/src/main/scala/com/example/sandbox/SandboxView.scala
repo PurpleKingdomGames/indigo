@@ -34,7 +34,7 @@ object SandboxView {
     // .withGameColorOverlay(RGBA.Red.withAmount(0.5))
   }
 
-  def gameLayer(currentState: SandboxGameModel, viewModel: SandboxViewModel): List[SceneNodeInternal] =
+  def gameLayer(currentState: SandboxGameModel, viewModel: SandboxViewModel): List[SceneNode] =
     List(
       currentState.dude.walkDirection match {
         case d @ DudeLeft =>
@@ -84,7 +84,7 @@ object SandboxView {
         .withHorizontalFlip(true)
     )
 
-  def lightingLayer(inputState: InputState): List[SceneNodeInternal] =
+  def lightingLayer(inputState: InputState): List[SceneNode] =
     List(
       Graphic(114, 64 - 20, 320, 240, 1, SandboxAssets.lightMaterial.withTint(RGBA.Red))
         .withRef(Point(160, 120)),
@@ -97,7 +97,7 @@ object SandboxView {
         .moveTo(inputState.mouse.position.x, inputState.mouse.position.y)
     )
 
-  def uiLayer(inputState: InputState): List[SceneNodeInternal] =
+  def uiLayer(inputState: InputState): List[SceneNode] =
     List(
       Text("AB!\n!C", 2, 2, 5, Fonts.fontKey, SandboxAssets.fontMaterial).alignLeft,
       Text("AB!\n!C", 100, 2, 5, Fonts.fontKey, SandboxAssets.fontMaterial).alignCenter,

@@ -19,7 +19,7 @@ object PerfView {
         CloneBlank(cloneId, model.dude.sprite)
       )
 
-  private val herdCount: Int = 19999
+  private val herdCount: Int      = 19999
   private val cloneBatchSize: Int = 32
 
   private val positions: List[Point] =
@@ -53,7 +53,7 @@ object PerfView {
     rec(positions, cloneBatchSize, 0, Nil)
   }
 
-  def gameLayer(currentState: DudeModel): List[SceneNodeInternal] =
+  def gameLayer(currentState: DudeModel): List[SceneNode] =
     List(
       currentState.walkDirection match {
         case d @ DudeLeft =>
@@ -83,9 +83,16 @@ object PerfView {
       }
     ) ++ theHerd
 
-  val uiLayer: List[SceneNodeInternal] =
+  val uiLayer: List[SceneNode] =
     List(
-      Text((herdCount + 1).toString + " Naked dudes!", PerfGame.viewportWidth / 2, 40, 5, Fonts.fontKey, PerfAssets.fontMaterial).alignCenter,
+      Text(
+        (herdCount + 1).toString + " Naked dudes!",
+        PerfGame.viewportWidth / 2,
+        40,
+        5,
+        Fonts.fontKey,
+        PerfAssets.fontMaterial
+      ).alignCenter,
       Text("Thundering Herd!", PerfGame.viewportWidth / 2, 10, 5, Fonts.fontKey, PerfAssets.fontMaterial).alignCenter
     )
 

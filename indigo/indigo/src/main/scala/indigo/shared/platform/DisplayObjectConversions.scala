@@ -34,7 +34,7 @@ import indigo.shared.animation.AnimationRef
 import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.shared.assets.AssetName
 import indigo.shared.scenegraph.EntityNode
-import indigo.shared.scenegraph.SceneNodeInternal
+import indigo.shared.scenegraph.SceneNode
 import indigo.shared.shader.Uniform
 import indigo.shared.shader.ShaderPrimitive
 import indigo.shared.scenegraph.Shape
@@ -633,7 +633,7 @@ final class DisplayObjectConversions(
 
 object DisplayObjectConversions {
 
-  def nodeToMatrix4(node: SceneNodeInternal, position: Vector2, size: Vector3): CheapMatrix4 =
+  def nodeToMatrix4(node: SceneNode, position: Vector2, size: Vector3): CheapMatrix4 =
     CheapMatrix4.identity
       .scale(
         if (node.flip.horizontal) -1.0 else 1.0,

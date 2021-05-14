@@ -376,8 +376,8 @@ val Blend: shared.scenegraph.Blend.type = shared.scenegraph.Blend
 type BlendFactor = shared.scenegraph.BlendFactor
 val BlendFactor: shared.scenegraph.BlendFactor.type = shared.scenegraph.BlendFactor
 
-type SceneNodeInternal = shared.scenegraph.SceneNodeInternal
-val SceneNodeInternal: shared.scenegraph.SceneNodeInternal.type = shared.scenegraph.SceneNodeInternal
+type SceneNode = shared.scenegraph.SceneNode
+val SceneNode: shared.scenegraph.SceneNode.type = shared.scenegraph.SceneNode
 
 type EntityNode    = shared.scenegraph.EntityNode
 type DependentNode = shared.scenegraph.DependentNode

@@ -6,7 +6,7 @@ import indigo.shared.BoundaryLocator
 /** Used to group elements to allow them to be manipulated as a collection.
   */
 final case class Group(
-    children: List[SceneNodeInternal],
+    children: List[SceneNode],
     position: Point,
     rotation: Radians,
     scale: Vector2,
@@ -69,19 +69,19 @@ final case class Group(
   def calculatedBounds(locator: BoundaryLocator): Rectangle =
     locator.groupBounds(this)
 
-  def addChild(child: SceneNodeInternal): Group =
+  def addChild(child: SceneNode): Group =
     this.copy(children = children ++ List(child))
 
-  def addChildren(additionalChildren: List[SceneNodeInternal]): Group =
+  def addChildren(additionalChildren: List[SceneNode]): Group =
     this.copy(children = children ++ additionalChildren)
 }
 
 object Group {
 
-  def apply(children: SceneNodeInternal*): Group =
+  def apply(children: SceneNode*): Group =
     Group(children.toList, Point.zero, Radians.zero, Vector2.one, Depth.Zero, Point.zero, Flip.default)
 
-  def apply(children: List[SceneNodeInternal]): Group =
+  def apply(children: List[SceneNode]): Group =
     Group(children, Point.zero, Radians.zero, Vector2.one, Depth.Zero, Point.zero, Flip.default)
 
   def empty: Group =
