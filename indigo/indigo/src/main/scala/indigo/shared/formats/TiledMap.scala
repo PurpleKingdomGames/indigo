@@ -1,6 +1,7 @@
 package indigo.shared.formats
 
 import indigo.shared.datatypes.Point
+import indigo.shared.datatypes.Size
 import indigo.shared.scenegraph.Group
 import indigo.shared.assets.AssetName
 import indigo.shared.scenegraph.Graphic
@@ -118,7 +119,7 @@ object TiledMap {
 
   def toGroup(tiledMap: TiledMap, assetName: AssetName): Option[Group] =
     tiledMap.tilesets.headOption.flatMap(_.columns).map { tileSheetColumnCount =>
-      val tileSize: Point = Point(tiledMap.tilewidth, tiledMap.tileheight)
+      val tileSize: Size = Size(tiledMap.tilewidth, tiledMap.tileheight)
 
       val layers = tiledMap.layers.map { layer =>
         val tilesInUse: Map[Int, Graphic] =
@@ -127,7 +128,7 @@ object TiledMap {
               i ->
                 Graphic(Rectangle(Point.zero, tileSize), 1, Material.Bitmap(assetName))
                   .withCrop(
-                    Rectangle(fromIndex(i - 1, tileSheetColumnCount) * tileSize, tileSize)
+                    Rectangle(fromIndex(i - 1, tileSheetColumnCount) * tileSize.toPoint, tileSize)
                   )
             )
           }
@@ -139,7 +140,7 @@ object TiledMap {
               else
                 tilesInUse
                   .get(tileIndex)
-                  .map(g => List(g.moveTo(fromIndex(positionIndex, tiledMap.width) * tileSize)))
+                  .map(g => List(g.moveTo(fromIndex(positionIndex, tiledMap.width) * tileSize.toPoint)))
                   .getOrElse(Nil)
           }
         )

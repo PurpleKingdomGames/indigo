@@ -5,6 +5,7 @@ import indigo.shared.datatypes.Rectangle
 import indigo.shared.scenegraph.TextLine
 import indigo.shared.datatypes.FontInfo
 import indigo.shared.datatypes.Point
+import indigo.shared.datatypes.Size
 import indigo.shared.datatypes.TextAlignment
 import indigo.shared.scenegraph.Text
 import indigo.shared.scenegraph.TextBox
@@ -43,8 +44,8 @@ final class BoundaryLocator(
         .measureText(
           t.text,
           t.style,
-          t.size.x,
-          t.size.y
+          t.size.width,
+          t.size.height
         )
         .moveTo(t.position)
 
@@ -159,7 +160,7 @@ final class BoundaryLocator(
         textAsLinesWithBounds(text.text, text.fontKey)
           .map(_.lineBounds)
           .fold(Rectangle.zero) { (acc, next) =>
-            acc.resize(Point(Math.max(acc.width, next.width), acc.height + next.height))
+            acc.resize(Size(Math.max(acc.width, next.width), acc.height + next.height))
           }
 
       (text.alignment, unaligned) match
@@ -185,7 +186,7 @@ final class BoundaryLocator(
       case s: Shape.Circle =>
         Rectangle(
           s.position,
-          Point(s.radius * 2) + s.stroke.width
+          Size(s.radius * 2) + s.stroke.width
         )
 
       case s: Shape.Line =>
@@ -196,7 +197,7 @@ final class BoundaryLocator(
 
         Rectangle(
           Point(x, y) - (s.stroke.width / 2),
-          Point(w, h) + s.stroke.width
+          Size(w, h) + s.stroke.width
         )
 
       case s: Shape.Polygon =>
@@ -206,7 +207,7 @@ final class BoundaryLocator(
 
 object BoundaryLocator:
 
-  def findBounds(entity: RenderNode, position: Point, size: Point): Rectangle =
+  def findBounds(entity: RenderNode, position: Point, size: Size): Rectangle =
     val m =
       CheapMatrix4.identity
         .translate(
@@ -229,8 +230,8 @@ object BoundaryLocator:
     Rectangle.fromPointCloud(
       List(
         m.transform(Vector3(0, 0, 0)).toPoint,
-        m.transform(Vector3(size.x, 0, 0)).toPoint,
-        m.transform(Vector3(size.x, size.y, 0)).toPoint,
-        m.transform(Vector3(0, size.y, 0)).toPoint
+        m.transform(Vector3(size.width, 0, 0)).toPoint,
+        m.transform(Vector3(size.width, size.height, 0)).toPoint,
+        m.transform(Vector3(0, size.height, 0)).toPoint
       )
     )

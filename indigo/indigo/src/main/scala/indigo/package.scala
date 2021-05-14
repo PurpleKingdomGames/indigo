@@ -231,6 +231,9 @@ val Rectangle: shared.datatypes.Rectangle.type = shared.datatypes.Rectangle
 type Point = shared.datatypes.Point
 val Point: shared.datatypes.Point.type = shared.datatypes.Point
 
+type Size = shared.datatypes.Size
+val Size: shared.datatypes.Size.type = shared.datatypes.Size
+
 type Vector2 = shared.datatypes.Vector2
 val Vector2: shared.datatypes.Vector2.type = shared.datatypes.Vector2
 

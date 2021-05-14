@@ -2,11 +2,11 @@ package indigo.shared.datatypes
 
 import scala.annotation.tailrec
 
-final case class Rectangle(position: Point, size: Point) derives CanEqual {
+final case class Rectangle(position: Point, size: Size) derives CanEqual {
   lazy val x: Int       = position.x
   lazy val y: Int       = position.y
-  lazy val width: Int   = size.x
-  lazy val height: Int  = size.y
+  lazy val width: Int   = size.width
+  lazy val height: Int  = size.height
   lazy val hash: String = s"${x.toString()}${y.toString()}${width.toString()}${height.toString()}"
 
   lazy val left: Int   = if width >= 0 then x else x + width
@@ -22,7 +22,7 @@ final case class Rectangle(position: Point, size: Point) derives CanEqual {
   lazy val bottomRight: Point = Point(right, bottom)
   lazy val bottomLeft: Point  = Point(left, bottom)
   lazy val center: Point      = Point(horizontalCenter, verticalCenter)
-  lazy val halfSize: Point    = (size / 2).abs
+  lazy val halfSize: Size    = (size / 2).abs
 
   lazy val corners: List[Point] =
     List(topLeft, topRight, bottomRight, bottomLeft)
@@ -59,11 +59,11 @@ final case class Rectangle(position: Point, size: Point) derives CanEqual {
   def moveTo(point: Point): Rectangle =
     this.copy(position = point)
 
-  def resize(newSize: Point): Rectangle =
+  def resize(newSize: Size): Rectangle =
     this.copy(size = newSize)
 
   def toSquare: Rectangle =
-    this.copy(size = Point(Math.max(size.x, size.y)))
+    this.copy(size = Size(Math.max(size.width, size.height)))
 
 }
 
@@ -74,7 +74,7 @@ object Rectangle {
   val zero: Rectangle = Rectangle(0, 0, 0, 0)
 
   def apply(x: Int, y: Int, width: Int, height: Int): Rectangle =
-    Rectangle(Point(x, y), Point(width, height))
+    Rectangle(Point(x, y), Size(width, height))
 
   def fromTwoPoints(pt1: Point, pt2: Point): Rectangle = {
     val x = Math.min(pt1.x, pt2.x)
@@ -129,7 +129,7 @@ object Rectangle {
     b.x >= a.x && b.y >= a.y && (b.width + (b.x - a.x)) <= a.width && (b.height + (b.y - a.y)) <= a.height
 
   def overlapping(a: Rectangle, b: Rectangle): Boolean =
-    Math.abs(a.center.x - b.center.x) < a.halfSize.x + b.halfSize.x &&
-      Math.abs(a.center.y - b.center.y) < a.halfSize.y + b.halfSize.y
+    Math.abs(a.center.x - b.center.x) < a.halfSize.width + b.halfSize.width &&
+      Math.abs(a.center.y - b.center.y) < a.halfSize.height + b.halfSize.height
 
 }

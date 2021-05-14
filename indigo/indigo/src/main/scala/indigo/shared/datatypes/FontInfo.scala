@@ -5,7 +5,7 @@ import indigo.shared.materials.Material
 
 final case class FontInfo(
     fontKey: FontKey,
-    fontSheetBounds: Point,
+    fontSheetBounds: Size,
     unknownChar: FontChar,
     fontChars: List[FontChar],
     caseSensitive: Boolean
@@ -50,7 +50,7 @@ object FontInfo {
   def apply(fontKey: FontKey, sheetWidth: Int, sheetHeight: Int, unknownChar: FontChar, chars: FontChar*): FontInfo =
     FontInfo(
       fontKey = fontKey,
-      fontSheetBounds = Point(sheetWidth, sheetHeight),
+      fontSheetBounds = Size(sheetWidth, sheetHeight),
       unknownChar = unknownChar,
       fontChars = chars.toList,
       caseSensitive = false
@@ -61,7 +61,7 @@ opaque type FontKey = String
 object FontKey:
   def apply(key: String): FontKey = key
 
-final case class FontSpriteSheet(material: Material, size: Point) derives CanEqual
+final case class FontSpriteSheet(material: Material, size: Size) derives CanEqual
 
 final case class FontChar(character: String, bounds: Rectangle) derives CanEqual
 object FontChar {

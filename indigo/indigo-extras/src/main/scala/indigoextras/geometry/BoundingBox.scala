@@ -2,6 +2,7 @@ package indigoextras.geometry
 
 import scala.annotation.tailrec
 import indigo.shared.datatypes.Rectangle
+import indigo.shared.datatypes.Size
 
 final case class BoundingBox(position: Vertex, size: Vertex) derives CanEqual {
   lazy val x: Double      = position.x
@@ -78,7 +79,7 @@ final case class BoundingBox(position: Vertex, size: Vertex) derives CanEqual {
     this.copy(size = newSize)
 
   def toRectangle: Rectangle =
-    Rectangle(position.toPoint, size.toPoint)
+    Rectangle(position.toPoint, Size(size.x.toInt, size.y.toInt))
 
   def toBoundingCircle: BoundingCircle =
     BoundingCircle.fromBoundingBox(this)
@@ -142,7 +143,10 @@ object BoundingBox {
     fromVertices(vertices)
 
   def fromRectangle(rectangle: Rectangle): BoundingBox =
-    BoundingBox(Vertex.fromPoint(rectangle.position), Vertex.fromPoint(rectangle.size))
+    BoundingBox(
+      Vertex.fromPoint(rectangle.position),
+      Vertex(rectangle.size.width.toDouble, rectangle.size.height.toDouble)
+    )
 
   def fromBoundingCircle(boundingCircle: BoundingCircle): BoundingBox =
     boundingCircle.toBoundingBox

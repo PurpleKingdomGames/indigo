@@ -1,6 +1,6 @@
 package indigo.shared.scenegraph
 
-import indigo.shared.datatypes.{Point, Radians, Vector2, Rectangle, Depth, Flip}
+import indigo.shared.datatypes.{Point, Size, Radians, Vector2, Rectangle, Depth, Flip}
 import indigo.shared.materials.ShaderData
 import indigo.shared.shader.StandardShaders
 import indigo.shared.BoundaryLocator
@@ -16,7 +16,7 @@ import indigo.shared.datatypes.RGBA
 final case class TextBox(
     text: String,
     style: TextStyle,
-    size: Point,
+    size: Size,
     position: Point,
     rotation: Radians,
     scale: Vector2,
@@ -37,7 +37,7 @@ final case class TextBox(
   def modifyStyle(modifier: TextStyle => TextStyle): TextBox =
     this.copy(style = modifier(style))
 
-  def withSize(newSize: Point): TextBox =
+  def withSize(newSize: Size): TextBox =
     this.copy(size = newSize)
 
   // convenience methods
@@ -134,7 +134,7 @@ object TextBox:
     TextBox(
       text,
       TextStyle.default,
-      Point(300),
+      Size(300),
       Point.zero,
       Radians.zero,
       Vector2.one,
@@ -147,7 +147,7 @@ object TextBox:
     TextBox(
       text,
       TextStyle.default,
-      Point(maxWidth, maxHeight),
+      Size(maxWidth, maxHeight),
       Point.zero,
       Radians.zero,
       Vector2.one,

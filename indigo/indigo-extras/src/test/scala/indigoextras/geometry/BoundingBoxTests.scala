@@ -2,6 +2,7 @@ package indigoextras.geometry
 
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Point
+import indigo.shared.datatypes.Size
 
 class BoundingBoxTests extends munit.FunSuite {
 
@@ -45,7 +46,7 @@ class BoundingBoxTests extends munit.FunSuite {
 
   test("creating rectangles.should be able to construct a bounding box from a rectangle") {
 
-    val rectangle = Rectangle(Point(10, 20), Point(30, 40))
+    val rectangle = Rectangle(Point(10, 20), Size(30, 40))
 
     val actual = BoundingBox.fromRectangle(rectangle)
 

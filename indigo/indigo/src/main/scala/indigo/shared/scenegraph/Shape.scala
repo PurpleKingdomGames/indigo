@@ -1,6 +1,7 @@
 package indigo.shared.scenegraph
 
 import indigo.shared.datatypes.Point
+import indigo.shared.datatypes.Size
 import indigo.shared.datatypes.Depth
 import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.Vector2
@@ -70,7 +71,7 @@ object Shape {
     def withDimensions(newDimensions: Rectangle): Box =
       this.copy(dimensions = newDimensions)
 
-    def resize(size: Point): Box =
+    def resize(size: Size): Box =
       this.copy(dimensions = dimensions.resize(size))
 
     def withFill(newFill: Fill): Box =
@@ -605,10 +606,10 @@ object Shape {
     shape match
       case s: Shape.Box =>
         val aspect: Vector2 =
-          if (bounds.size.x > bounds.size.y)
-            Vector2(1.0, bounds.size.y.toDouble / bounds.size.x.toDouble)
+          if (bounds.size.width > bounds.size.height)
+            Vector2(1.0, bounds.size.height.toDouble / bounds.size.width.toDouble)
           else
-            Vector2(bounds.size.x.toDouble / bounds.size.y.toDouble, 1.0)
+            Vector2(bounds.size.width.toDouble / bounds.size.height.toDouble, 1.0)
 
         val shapeUniformBlock =
           UniformBlock(
