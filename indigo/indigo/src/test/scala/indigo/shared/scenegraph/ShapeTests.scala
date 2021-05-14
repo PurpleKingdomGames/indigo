@@ -1,8 +1,15 @@
 package indigo.shared.scenegraph
 
 import indigo._
+import indigo.shared.BoundaryLocator
+import indigo.shared.AnimationsRegister
+import indigo.shared.FontRegister
+import indigo.platform.assets.DynamicText
 
 class ShapeTests extends munit.FunSuite:
+
+  val boundaryLocator: BoundaryLocator =
+    new BoundaryLocator(new AnimationsRegister, new FontRegister, new DynamicText)
 
   test("Bounds calculation - box") {
 
@@ -14,7 +21,7 @@ class ShapeTests extends munit.FunSuite:
       )
 
     val actual =
-      s.bounds
+      s.calculatedBounds(boundaryLocator).get
 
     val expected =
       Rectangle(15 - 4, 25 - 4, 100 + 8, 200 + 8)
@@ -33,7 +40,7 @@ class ShapeTests extends munit.FunSuite:
       )
 
     val actual =
-      s.bounds
+      s.calculatedBounds(boundaryLocator).get
 
     val expected =
       Rectangle(50 - 17 - 3, 50 - 17 - 3, 17 + 17 + 7, 17 + 17 + 7)
@@ -51,7 +58,7 @@ class ShapeTests extends munit.FunSuite:
       )
 
     val actual =
-      s.bounds
+      s.calculatedBounds(boundaryLocator).get
 
     val expected =
       Rectangle(50 - 2, 10 - 2, 25 + 5, 50 + 5)
@@ -76,7 +83,7 @@ class ShapeTests extends munit.FunSuite:
       )
 
     val actual =
-      s.bounds
+      s.calculatedBounds(boundaryLocator).get
 
     val expected =
       Rectangle(25 - 2, 10 - 2, 50 + 4, 50 + 4)

@@ -390,7 +390,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
     val expected =
       Rectangle(0, -50, 200, 100).toSquare
 
-    assertEquals(DisplayObjectConversions.calculateShapeBounds(s), expected)
+    assertEquals(boundaryLocator.shapeBounds(s), expected)
   }
 
   test("calculateShapeBounds - box (with stroke)") {
@@ -405,7 +405,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
     val expected =
       Rectangle(15 - 4 - 50, 25 - 4, 100 + 8, 200 + 8).toSquare
 
-    assertEquals(DisplayObjectConversions.calculateShapeBounds(s), expected)
+    assertEquals(boundaryLocator.shapeBounds(s), expected)
   }
 
   test("calculateShapeBounds - circle") {
@@ -421,7 +421,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
     val expected =
       Rectangle(50 - 17 - 3, 50 - 17 - 3, 17 + 17 + 7, 17 + 17 + 7).toSquare
 
-    assertEquals(DisplayObjectConversions.calculateShapeBounds(s), expected)
+    assertEquals(boundaryLocator.shapeBounds(s), expected)
   }
 
   test("calculateShapeBounds - line") {
@@ -436,7 +436,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
     val expected =
       Rectangle(50 - 2, 10 - 2, 25 + 5, 50 + 5).toSquare
 
-    assertEquals(DisplayObjectConversions.calculateShapeBounds(s), expected)
+    assertEquals(boundaryLocator.shapeBounds(s), expected)
   }
 
   test("calculateShapeBounds - polygon") {
@@ -458,7 +458,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
     val expected =
       Rectangle(25 - 2, 10 - 2, 50 + 4, 50 + 4).toSquare
 
-    assertEquals(DisplayObjectConversions.calculateShapeBounds(s), expected)
+    assertEquals(boundaryLocator.shapeBounds(s), expected)
   }
 
 }
