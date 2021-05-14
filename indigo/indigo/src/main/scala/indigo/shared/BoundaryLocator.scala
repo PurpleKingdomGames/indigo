@@ -153,28 +153,25 @@ final class BoundaryLocator(
 
   def textBounds(text: Text): Option[Rectangle] =
     QuickCache(s"""text-bounds-${text.fontKey}-${text.text}""") {
-      val unaligned: Option[Rectangle] =
+      val unaligned =
         textAsLinesWithBounds(text.text, text.fontKey)
           .map(_.lineBounds)
-          .foldLeft(Option.empty[Rectangle]) { (maybeAcc, next) =>
-            maybeAcc match
-              case None =>
-                Option(next)
-
-              case Some(acc) =>
-                Option(acc.resize(Size(Math.max(acc.width, next.width), acc.height + next.height)))
+          .fold(Rectangle.zero) { (acc, next) =>
+            acc.resize(Size(Math.max(acc.width, next.width), acc.height + next.height))
           }
 
-      (text.alignment, unaligned) match
-        case (TextAlignment.Left, bounds) =>
-          bounds
+      val res =
+        (text.alignment, unaligned) match
+          case (TextAlignment.Left, b) =>
+            Option(b)
 
-        case (TextAlignment.Center, bounds) =>
-          bounds.map(b => b.moveTo(Point(b.x - (b.width / 2), b.y)))
+          case (TextAlignment.Center, b) =>
+            Option(b.moveTo(Point(b.x - (b.width / 2), b.y)))
 
-        case (TextAlignment.Right, bounds) =>
-          bounds.map(b => b.moveTo(Point(b.x - b.width, b.y)))
+          case (TextAlignment.Right, b) =>
+            Option(b.moveTo(Point(b.x - b.width, b.y)))
 
+      res.map(_.moveTo(text.position))
     }
 
   def shapeBounds(shape: Shape): Rectangle =

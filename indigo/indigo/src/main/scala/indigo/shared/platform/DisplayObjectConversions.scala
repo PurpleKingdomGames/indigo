@@ -576,8 +576,8 @@ final class DisplayObjectConversions(
 
           DisplayObject(
             transform = DisplayObjectConversions.nodeToMatrix4(
-              leaf.withRef(leaf.ref.x + -(xPosition + alignmentOffsetX), leaf.ref.y + yOffset),
-              leaf.position.toVector,
+              leaf.withRef(leaf.ref.x + -(xPosition + alignmentOffsetX), leaf.ref.y),
+              leaf.position.moveBy(0, yOffset).toVector,
               Vector3(fontChar.bounds.width.toDouble, fontChar.bounds.height.toDouble, 1.0d)
             ),
             rotation = leaf.rotation,
