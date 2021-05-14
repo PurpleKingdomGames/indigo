@@ -76,9 +76,6 @@ final case class TextBox(
     modifyStyle(_.withAlign(TextAlign.End))
   //
 
-  // def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] =
-  //   locator.te(this)
-
   lazy val x: Int = position.x
   lazy val y: Int = position.y
 

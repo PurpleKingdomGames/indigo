@@ -67,7 +67,8 @@ final case class Group(
     transformTo(position + positionDiff, rotation + rotationDiff, scale * scaleDiff)
 
   def calculatedBounds(locator: BoundaryLocator): Rectangle =
-    locator.groupBounds(this)
+    val rect = locator.groupBounds(this)
+    BoundaryLocator.findBounds(this, rect.position, rect.size)
 
   def addChild(child: SceneNode): Group =
     this.copy(children = children ++ List(child))

@@ -115,13 +115,13 @@ object BoundsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
             ),
             // group,
             // Shape.Box(
-            //   group.calculatedBounds(context.boundaryLocator).getOrElse(Rectangle.zero),
+            //   group.calculatedBounds(context.boundaryLocator),
             //   Fill.None,
             //   Stroke(1, RGBA.Yellow)
             // ),
             textBox,
             Shape.Box(
-              textBox.bounds,//.calculatedBounds(context.boundaryLocator).getOrElse(Rectangle.zero),
+              textBox.bounds,
               Fill.None,
               Stroke(1, RGBA.Blue)
             )
