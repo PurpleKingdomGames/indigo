@@ -189,15 +189,7 @@ final class BoundaryLocator(
         )
 
       case s: Shape.Line =>
-        val x = Math.min(s.start.x, s.end.x)
-        val y = Math.min(s.start.y, s.end.y)
-        val w = Math.max(s.start.x, s.end.x) - x
-        val h = Math.max(s.start.y, s.end.y) - y
-
-        Rectangle(
-          Point(x, y) - (s.stroke.width / 2),
-          Size(w, h) + s.stroke.width
-        )
+        Rectangle(s.position, s.size)
 
       case s: Shape.Polygon =>
         Rectangle.fromPointCloud(s.vertices).expand(s.stroke.width / 2)
