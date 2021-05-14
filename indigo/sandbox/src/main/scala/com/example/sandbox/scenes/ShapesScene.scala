@@ -54,10 +54,10 @@ object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
     val lineThickness: Int =
       Signal.SmoothPulse.map(d => (10 * d).toInt).at(context.running)
 
-    val squareSize: Point =
+    val squareSize: Size =
       val signal = Signal.SmoothPulse.map(d => (100 * d).toInt).affectTime(0.25).at(context.running)
 
-      Point(
+      Size(
         signal,
         99 - signal
       )
@@ -88,7 +88,7 @@ object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
               Fill.Color(RGBA.White),
               Stroke(11, RGBA.Black.withAlpha(0.75))
             )
-            .withRef(squareSize / 2),
+            .withRef(squareSize.toPoint / 2),
           Clone(CloneId("shape clone")).withPosition(Point(10, 10)),
           Clone(CloneId("shape clone")).withPosition(Point(20, 10)),
           Clone(CloneId("shape clone")).withPosition(Point(30, 10)),

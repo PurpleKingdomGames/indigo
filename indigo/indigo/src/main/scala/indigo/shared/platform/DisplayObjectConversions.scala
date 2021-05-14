@@ -256,9 +256,9 @@ final class DisplayObjectConversions(
           x.alignment match {
             case TextAlignment.Left => 0
 
-            case TextAlignment.Center => -(lineBounds.size.x / 2)
+            case TextAlignment.Center => -(lineBounds.size.width / 2)
 
-            case TextAlignment.Right => -lineBounds.size.x
+            case TextAlignment.Right => -lineBounds.size.width
           }
 
         val converterFunc: (TextLine, Int, Int) => List[DisplayObject] =
@@ -304,9 +304,9 @@ final class DisplayObjectConversions(
       case s: Shape.Box =>
         // val size = s.dimensions.size
 
-        // if size.x == size.y then Point.zero
-        // else if size.x < size.y then Point(-Math.round((size.y.toDouble - size.x.toDouble) / 2).toInt, 0)
-        // else Point(0, -Math.round((size.x.toDouble - size.y.toDouble) / 2).toInt)
+        // if size.width == size.height then Point.zero
+        // else if size.width < size.height then Point(-Math.round((size.height.toDouble - size.width.toDouble) / 2).toInt, 0)
+        // else Point(0, -Math.round((size.width.toDouble - size.height.toDouble) / 2).toInt)
 
         Point.zero
       case _ =>
@@ -332,12 +332,12 @@ final class DisplayObjectConversions(
         .nodeToMatrix4(
           leaf.withRef(leaf.ref),
           bounds.position.toVector,
-          Vector3(bounds.size.x.toDouble, bounds.size.y.toDouble, 1.0d)
+          Vector3(bounds.size.width.toDouble, bounds.size.height.toDouble, 1.0d)
         ),
       rotation = leaf.rotation,
       z = leaf.depth.toDouble,
-      width = bounds.size.x,
-      height = bounds.size.y,
+      width = bounds.size.width,
+      height = bounds.size.height,
       atlasName = None,
       frame = SpriteSheetFrame.defaultOffset,
       channelOffset1 = channelOffset,
@@ -386,12 +386,12 @@ final class DisplayObjectConversions(
         .nodeToMatrix4(
           leaf,
           leaf.position.toVector,
-          Vector3(leaf.bounds.size.x.toDouble, leaf.bounds.size.y.toDouble, 1.0d)
+          Vector3(leaf.bounds.size.width.toDouble, leaf.bounds.size.height.toDouble, 1.0d)
         ),
       rotation = leaf.rotation,
       z = leaf.depth.toDouble,
-      width = leaf.bounds.size.x,
-      height = leaf.bounds.size.y,
+      width = leaf.bounds.size.width,
+      height = leaf.bounds.size.height,
       atlasName = shader.channel0.map(assetName => lookupAtlasName(assetMapping, assetName)),
       frame = frameInfo,
       channelOffset1 = frameInfo.offsetToCoords(channelOffset1),
@@ -410,12 +410,12 @@ final class DisplayObjectConversions(
         .nodeToMatrix4(
           leaf,
           leaf.position.toVector,
-          Vector3(leaf.size.x.toDouble, leaf.size.y.toDouble, 1.0d)
+          Vector3(leaf.size.width.toDouble, leaf.size.height.toDouble, 1.0d)
         ),
       rotation = leaf.rotation,
       z = leaf.depth.toDouble,
-      width = leaf.size.x,
-      height = leaf.size.y
+      width = leaf.size.width,
+      height = leaf.size.height
     )
 
   def graphicToDisplayObject(leaf: Graphic, assetMapping: AssetMapping): DisplayObject = {
@@ -451,12 +451,12 @@ final class DisplayObjectConversions(
         .nodeToMatrix4(
           leaf,
           leaf.position.toVector,
-          Vector3(leaf.crop.size.x.toDouble, leaf.crop.size.y.toDouble, 1.0d)
+          Vector3(leaf.crop.size.width.toDouble, leaf.crop.size.height.toDouble, 1.0d)
         ),
       rotation = leaf.rotation,
       z = leaf.depth.toDouble,
-      width = leaf.crop.size.x,
-      height = leaf.crop.size.y,
+      width = leaf.crop.size.width,
+      height = leaf.crop.size.height,
       atlasName = Some(lookupAtlasName(assetMapping, materialName)),
       frame = frameInfo,
       channelOffset1 = frameInfo.offsetToCoords(emissiveOffset),

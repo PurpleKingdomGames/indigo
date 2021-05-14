@@ -1,8 +1,8 @@
 package indigoextras.geometry
 
 import indigo.shared.datatypes.Rectangle
-
 import indigo.shared.datatypes.Point
+import indigo.shared.datatypes.Size
 
 class PolygonTests extends munit.FunSuite {
 
@@ -35,13 +35,13 @@ class PolygonTests extends munit.FunSuite {
 
   // Rectangles
   val intersectingRectangle: Rectangle =
-    Rectangle(Point(0, 5), Point(5, 0))
+    Rectangle(Point(0, 5), Size(5, 0))
 
   val noneIntersectingRectangle: Rectangle =
-    Rectangle(Point(0, 5), Point(1, 1))
+    Rectangle(Point(0, 5), Size(1, 1))
 
   val intersectingRectangleWithClosed: Rectangle =
-    Rectangle(Point(0, -5), Point(4, 4))
+    Rectangle(Point(0, -5), Size(4, 4))
 
   test("Construction.should be able to create an open polygon") {
     assertEquals(open.edgeCount, 3)
@@ -69,7 +69,7 @@ class PolygonTests extends munit.FunSuite {
       )
 
     val actual: Polygon =
-      Polygon.fromRectangle(Rectangle(Point(0, 0), Point(10, 10)))
+      Polygon.fromRectangle(Rectangle(Point(0, 0), Size(10, 10)))
 
     assertEquals(expected == actual, true)
   }

@@ -7,7 +7,7 @@ import indigo.shared.collections.NonEmptyList
 class CycleTests extends munit.FunSuite {
 
   val frame1: Frame =
-    Frame(Rectangle(Point(0, 0), Point(10, 10)), Millis(10))
+    Frame(Rectangle(Point(0, 0), Size(10, 10)), Millis(10))
 
   val frame2: Frame =
     Frame(Rectangle(0, 0, 20, 10), Millis(10))

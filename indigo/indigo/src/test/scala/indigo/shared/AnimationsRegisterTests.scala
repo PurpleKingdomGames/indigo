@@ -3,6 +3,7 @@ package indigo.shared
 import indigo.shared.animation.Frame
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Point
+import indigo.shared.datatypes.Size
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.animation.Cycle
 import indigo.shared.animation.Animation
@@ -172,7 +173,7 @@ class AnimationsRegisterTests extends munit.FunSuite {
 object AnimationSample {
 
   val frame1: Frame =
-    Frame(Rectangle(Point(0, 0), Point(10, 10)), Millis(100))
+    Frame(Rectangle(Point(0, 0), Size(10, 10)), Millis(100))
 
   val frame2: Frame =
     Frame(Rectangle(0, 0, 20, 10), Millis(100))

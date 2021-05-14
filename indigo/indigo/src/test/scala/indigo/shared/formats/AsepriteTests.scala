@@ -143,15 +143,15 @@ object AsepriteSampleData {
           label = "lights",
           frames = NonEmptyList(
             Frame(
-              crop = Rectangle(Point(0, 0), Point(64, 64)),
+              crop = Rectangle(Point(0, 0), Size(64, 64)),
               duration = Millis(100)
             ),
             Frame(
-              crop = Rectangle(Point(64, 0), Point(64, 64)),
+              crop = Rectangle(Point(64, 0), Size(64, 64)),
               duration = Millis(100)
             ),
             Frame(
-              crop = Rectangle(Point(0, 64), Point(64, 64)),
+              crop = Rectangle(Point(0, 64), Size(64, 64)),
               duration = Millis(100)
             )
           )

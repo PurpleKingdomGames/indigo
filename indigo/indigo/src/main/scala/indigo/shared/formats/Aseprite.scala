@@ -12,8 +12,8 @@ import indigo.shared.collections.NonEmptyList
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.Point
+import indigo.shared.datatypes.Size
 import indigo.shared.datatypes.Vector2
-// import indigo.shared.datatypes.Effects
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.events.GlobalEvent
 import indigo.shared.animation.Cycle
@@ -90,7 +90,7 @@ object Aseprite {
       Frame(
         crop = Rectangle(
           position = Point(aseFrame.frame.x, aseFrame.frame.y),
-          size = Point(aseFrame.frame.w, aseFrame.frame.h)
+          size = Size(aseFrame.frame.w, aseFrame.frame.h)
         ),
         duration = Millis(aseFrame.duration.toLong)
       )
