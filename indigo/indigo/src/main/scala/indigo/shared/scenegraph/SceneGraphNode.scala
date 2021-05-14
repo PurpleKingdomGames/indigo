@@ -7,13 +7,13 @@ import indigo.shared.BoundaryLocator
 
 /** The parent type of anything that can affect the visual representation of the game, including internal elements.
   */
-sealed trait SceneNode derives CanEqual
-object SceneNode {
-  given CanEqual[Option[SceneNode], Option[SceneNode]] = CanEqual.derived
-  given CanEqual[List[SceneNode], List[SceneNode]]     = CanEqual.derived
+sealed trait SceneGraphNode derives CanEqual
+object SceneGraphNode {
+  given CanEqual[Option[SceneGraphNode], Option[SceneGraphNode]] = CanEqual.derived
+  given CanEqual[List[SceneGraphNode], List[SceneGraphNode]]     = CanEqual.derived
 }
 
-sealed trait SceneNodeInternal extends SceneNode:
+sealed trait SceneNodeInternal extends SceneGraphNode:
   def position: Point
   def rotation: Radians
   def scale: Vector2
@@ -30,7 +30,7 @@ object SceneNodeInternal {
   */
 trait RenderNode extends SceneNodeInternal:
   def size: Size
-  def withDepth(newDepth: Depth): RenderNode
+  override def withDepth(newDepth: Depth): RenderNode
 
 object RenderNode:
   given CanEqual[Option[RenderNode], Option[RenderNode]] = CanEqual.derived
@@ -57,6 +57,6 @@ object DependentNode:
   given CanEqual[Option[DependentNode], Option[DependentNode]] = CanEqual.derived
   given CanEqual[List[DependentNode], List[DependentNode]]     = CanEqual.derived
 
-final case class Transformer(node: SceneNode, transform: CheapMatrix4) extends SceneNode derives CanEqual:
+final case class Transformer(node: SceneGraphNode, transform: CheapMatrix4) extends SceneGraphNode derives CanEqual:
   def addTransform(matrix: CheapMatrix4): Transformer =
     this.copy(transform = transform * matrix)
