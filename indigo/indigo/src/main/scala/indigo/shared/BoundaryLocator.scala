@@ -1,6 +1,6 @@
 package indigo.shared
 
-import indigo.shared.scenegraph.SceneNode
+import indigo.shared.scenegraph.SceneNodeInternal
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.scenegraph.TextLine
 import indigo.shared.datatypes.FontInfo
@@ -18,7 +18,7 @@ import indigo.shared.scenegraph.Transformer
 import indigo.shared.datatypes.FontKey
 import indigo.shared.scenegraph.Shape
 import indigo.shared.scenegraph.EntityNode
-import indigo.shared.scenegraph.RenderNode
+import indigo.shared.scenegraph.SceneNodeInternal
 import indigo.platform.assets.DynamicText
 import indigo.shared.datatypes.Vector3
 import indigo.shared.platform.DisplayObjectConversions
@@ -51,8 +51,7 @@ final class BoundaryLocator(
 
     BoundaryLocator.findBounds(t, rect.position, rect.size)
 
-  // General
-  def findBounds(sceneGraphNode: SceneNode): Option[Rectangle] =
+  def findBounds(sceneGraphNode: SceneNodeInternal): Option[Rectangle] =
     sceneGraphNode match {
       case s: Shape =>
         Option(shapeBounds(s)).map(rect => BoundaryLocator.findBounds(s, rect.position, rect.size))
@@ -64,13 +63,10 @@ final class BoundaryLocator(
         Option(t.bounds)
 
       case s: EntityNode =>
-        Option(s.bounds)
+        Option(BoundaryLocator.findBounds(s, s.position, s.size))
 
       case g: Group =>
-        groupBounds(g).map(rect => BoundaryLocator.findBounds(g, rect.position, rect.size))
-
-      case _: Transformer =>
-        None
+        Option(groupBounds(g)).map(rect => BoundaryLocator.findBounds(g, rect.position, rect.size))
 
       case _: Clone =>
         None
@@ -99,10 +95,10 @@ final class BoundaryLocator(
         None
     }
 
-  def groupBounds(group: Group): Option[Rectangle] =
+  def groupBounds(group: Group): Rectangle =
     group.children match {
       case Nil =>
-        Option(Rectangle.zero)
+        Rectangle.zero
 
       case x :: xs =>
         xs.foldLeft(findBounds(x)) { (acc, node) =>
@@ -112,6 +108,7 @@ final class BoundaryLocator(
             case (_, r @ Some(_))   => r
             case (r, _)             => r
         }.map(_.moveBy(group.position))
+          .getOrElse(Rectangle.zero)
     }
 
   def spriteBounds(sprite: Sprite): Option[Rectangle] =
@@ -156,22 +153,27 @@ final class BoundaryLocator(
 
   def textBounds(text: Text): Option[Rectangle] =
     QuickCache(s"""text-bounds-${text.fontKey}-${text.text}""") {
-      val unaligned =
+      val unaligned: Option[Rectangle] =
         textAsLinesWithBounds(text.text, text.fontKey)
           .map(_.lineBounds)
-          .fold(Rectangle.zero) { (acc, next) =>
-            acc.resize(Size(Math.max(acc.width, next.width), acc.height + next.height))
+          .foldLeft(Option.empty[Rectangle]) { (maybeAcc, next) =>
+            maybeAcc match
+              case None =>
+                Option(next)
+
+              case Some(acc) =>
+                Option(acc.resize(Size(Math.max(acc.width, next.width), acc.height + next.height)))
           }
 
       (text.alignment, unaligned) match
-        case (TextAlignment.Left, b) =>
-          Option(b)
+        case (TextAlignment.Left, bounds) =>
+          bounds
 
-        case (TextAlignment.Center, b) =>
-          Option(b.moveTo(Point(b.x - (b.width / 2), b.y)))
+        case (TextAlignment.Center, bounds) =>
+          bounds.map(b => b.moveTo(Point(b.x - (b.width / 2), b.y)))
 
-        case (TextAlignment.Right, b) =>
-          Option(b.moveTo(Point(b.x - b.width, b.y)))
+        case (TextAlignment.Right, bounds) =>
+          bounds.map(b => b.moveTo(Point(b.x - b.width, b.y)))
 
     }
 
@@ -207,25 +209,13 @@ final class BoundaryLocator(
 
 object BoundaryLocator:
 
-  def findBounds(entity: RenderNode, position: Point, size: Size): Rectangle =
+  def findBounds(entity: SceneNodeInternal, position: Point, size: Size): Rectangle =
     val m =
       CheapMatrix4.identity
-        .translate(
-          -entity.ref.x,
-          -entity.ref.y,
-          0.0d
-        )
+        .translate(-entity.ref.x, -entity.ref.y, 0.0d)
         .rotate(entity.rotation)
-        .scale(
-          entity.scale.x,
-          entity.scale.y,
-          1
-        )
-        .translate(
-          position.x,
-          position.y,
-          0.0d
-        )
+        .scale(entity.scale.x, entity.scale.y, 1)
+        .translate(position.x, position.y, 0.0d)
 
     Rectangle.fromPointCloud(
       List(

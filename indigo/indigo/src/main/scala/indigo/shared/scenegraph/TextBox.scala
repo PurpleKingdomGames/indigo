@@ -23,7 +23,7 @@ final case class TextBox(
     depth: Depth,
     ref: Point,
     flip: Flip
-) extends CompositeNode
+) extends RenderNode
     with SpatialModifiers[TextBox] derives CanEqual:
 
   def bounds: Rectangle =
@@ -76,8 +76,8 @@ final case class TextBox(
     modifyStyle(_.withAlign(TextAlign.End))
   //
 
-  def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] =
-    locator.findBounds(this)
+  // def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] =
+  //   locator.te(this)
 
   lazy val x: Int = position.x
   lazy val y: Int = position.y

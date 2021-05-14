@@ -24,7 +24,7 @@ final case class Sprite(
     depth: Depth,
     ref: Point,
     flip: Flip
-) extends CompositeNode
+) extends DependentNode
     with EventHandler
     with Cloneable
     with SpatialModifiers[Sprite] derives CanEqual {
@@ -33,7 +33,7 @@ final case class Sprite(
   lazy val y: Int = position.y
 
   def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] =
-    locator.findBounds(this)
+    locator.spriteBounds(this)
 
   def withDepth(newDepth: Depth): Sprite =
     this.copy(depth = newDepth)

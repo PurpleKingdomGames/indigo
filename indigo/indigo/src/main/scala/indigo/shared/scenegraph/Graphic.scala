@@ -3,6 +3,7 @@ package indigo.shared.scenegraph
 import indigo.shared.materials.Material
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Point
+import indigo.shared.datatypes.Size
 import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.Vector2
 import indigo.shared.datatypes.Depth
@@ -10,18 +11,17 @@ import indigo.shared.datatypes.Flip
 import indigo.shared.materials.ShaderData
 import indigo.shared.BoundaryLocator
 
-/**
-  * Graphics are used to draw images on the screen, in a cheap efficient but expressive way.
-  * Graphics party trick is it's ability to crop images.
+/** Graphics are used to draw images on the screen, in a cheap efficient but expressive way. Graphics party trick is
+  * it's ability to crop images.
   *
   * @param position
-  * @param rotation
+  *   @param rotation
   * @param scale
-  * @param depth
+  *   @param depth
   * @param ref
-  * @param flip
+  *   @param flip
   * @param crop
-  * @param material
+  *   @param material
   */
 final case class Graphic(
     material: Material,
@@ -32,12 +32,15 @@ final case class Graphic(
     depth: Depth,
     ref: Point,
     flip: Flip
-) extends EntityNode
+) extends RenderNode
     with Cloneable
     with SpatialModifiers[Graphic] derives CanEqual {
 
   def bounds: Rectangle =
     BoundaryLocator.findBounds(this, position, crop.size)
+
+  lazy val size: Size =
+    crop.size
 
   lazy val x: Int = position.x
   lazy val y: Int = position.y

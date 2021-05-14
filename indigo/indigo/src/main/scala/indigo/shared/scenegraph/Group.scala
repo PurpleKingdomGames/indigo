@@ -6,14 +6,14 @@ import indigo.shared.BoundaryLocator
 /** Used to group elements to allow them to be manipulated as a collection.
   */
 final case class Group(
-    children: List[RenderNode],
+    children: List[SceneNodeInternal],
     position: Point,
     rotation: Radians,
     scale: Vector2,
     depth: Depth,
     ref: Point,
     flip: Flip
-) extends CompositeNode
+) extends DependentNode
     with SpatialModifiers[Group] derives CanEqual {
 
   lazy val x: Int = position.x
@@ -66,22 +66,22 @@ final case class Group(
   def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): Group =
     transformTo(position + positionDiff, rotation + rotationDiff, scale * scaleDiff)
 
-  def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] =
-    locator.findBounds(this)
+  def calculatedBounds(locator: BoundaryLocator): Rectangle =
+    locator.groupBounds(this)
 
-  def addChild(child: RenderNode): Group =
+  def addChild(child: SceneNodeInternal): Group =
     this.copy(children = children ++ List(child))
 
-  def addChildren(additionalChildren: List[RenderNode]): Group =
+  def addChildren(additionalChildren: List[SceneNodeInternal]): Group =
     this.copy(children = children ++ additionalChildren)
 }
 
 object Group {
 
-  def apply(children: RenderNode*): Group =
+  def apply(children: SceneNodeInternal*): Group =
     Group(children.toList, Point.zero, Radians.zero, Vector2.one, Depth.Zero, Point.zero, Flip.default)
 
-  def apply(children: List[RenderNode]): Group =
+  def apply(children: List[SceneNodeInternal]): Group =
     Group(children, Point.zero, Radians.zero, Vector2.one, Depth.Zero, Point.zero, Flip.default)
 
   def empty: Group =
