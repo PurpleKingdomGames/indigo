@@ -1,6 +1,5 @@
 package indigo.shared.platform
 
-import indigo.shared.scenegraph.Shape
 import indigo.shared.scenegraph.Graphic
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.materials.Material
@@ -13,9 +12,6 @@ import indigo.shared.time.Seconds
 import indigo.shared.datatypes.Vector2
 import indigo.shared.datatypes.Vector3
 import indigo.shared.datatypes.Point
-import indigo.shared.datatypes.Fill
-import indigo.shared.datatypes.Stroke
-import indigo.shared.datatypes.RGBA
 import indigo.shared.scenegraph.CloneId
 import indigo.shared.display.DisplayObject
 import indigo.shared.display.DisplayText
@@ -376,89 +372,6 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
         List[Float](0, 0, 0, 0)
     )
 
-  }
-
-  test("calculateShapeBounds - box (no stroke)") {
-
-    val s: Shape.Box =
-      Shape.Box(
-        dimensions = Rectangle(0, 0, 200, 100),
-        fill = Fill.None,
-        stroke = Stroke.None
-      )
-
-    val expected =
-      Rectangle(0, -50, 200, 100).toSquare
-
-    assertEquals(boundaryLocator.shapeBounds(s), expected)
-  }
-
-  test("calculateShapeBounds - box (with stroke)") {
-
-    val s: Shape.Box =
-      Shape.Box(
-        dimensions = Rectangle(15, 25, 100, 200),
-        fill = Fill.None,
-        stroke = Stroke(8, RGBA.Red)
-      )
-
-    val expected =
-      Rectangle(15 - 4 - 50, 25 - 4, 100 + 8, 200 + 8).toSquare
-
-    assertEquals(boundaryLocator.shapeBounds(s), expected)
-  }
-
-  test("calculateShapeBounds - circle") {
-
-    val s: Shape.Circle =
-      Shape.Circle(
-        center = Point(50, 50),
-        radius = 17,
-        fill = Fill.None,
-        stroke = Stroke(7, RGBA.Red)
-      )
-
-    val expected =
-      Rectangle(50 - 17 - 3, 50 - 17 - 3, 17 + 17 + 7, 17 + 17 + 7).toSquare
-
-    assertEquals(boundaryLocator.shapeBounds(s), expected)
-  }
-
-  test("calculateShapeBounds - line") {
-
-    val s: Shape.Line =
-      Shape.Line(
-        start = Point(50, 10),
-        end = Point(75, 60),
-        stroke = Stroke(5, RGBA.Red)
-      )
-
-    val expected =
-      Rectangle(50 - 2, 10 - 2, 25 + 5, 50 + 5).toSquare
-
-    assertEquals(boundaryLocator.shapeBounds(s), expected)
-  }
-
-  test("calculateShapeBounds - polygon") {
-
-    val verts =
-      List(
-        Point(50, 10),
-        Point(75, 60),
-        Point(25, 60)
-      )
-
-    val s: Shape.Polygon =
-      Shape.Polygon(
-        vertices = verts,
-        fill = Fill.None,
-        stroke = Stroke(4, RGBA.Red)
-      )
-
-    val expected =
-      Rectangle(25 - 2, 10 - 2, 50 + 4, 50 + 4).toSquare
-
-    assertEquals(boundaryLocator.shapeBounds(s), expected)
   }
 
 }
