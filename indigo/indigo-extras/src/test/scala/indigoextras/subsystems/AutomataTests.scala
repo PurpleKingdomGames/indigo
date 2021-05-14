@@ -7,7 +7,7 @@ import indigo.shared.datatypes.Point
 import indigo.shared.assets.AssetName
 import indigo.shared.materials.Material
 import indigo.shared.time.Seconds
-import indigo.shared.scenegraph.SceneNodeInternal
+import indigo.shared.scenegraph.SceneNode
 import indigo.shared.temporal.{Signal, SignalReader}
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.datatypes.BindingKey
@@ -135,14 +135,14 @@ class AutomataTests extends munit.FunSuite {
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  def toRenderNode(node: SceneNodeInternal): RenderNode =
+  def toRenderNode(node: SceneNode): RenderNode =
     node match {
       case r: RenderNode => r
       case _             => throw new Exception("Wasn't a render node")
     }
 
   test("AutomatonNode.one of") {
-    val nodeList: NonEmptyList[SceneNodeInternal] =
+    val nodeList: NonEmptyList[SceneNode] =
       NonEmptyList(
         graphic.moveTo(0, 0),
         graphic.moveTo(0, 10),
@@ -169,7 +169,7 @@ class AutomataTests extends munit.FunSuite {
   }
 
   test("AutomatonNode.cycle") {
-    val nodeList: NonEmptyList[SceneNodeInternal] =
+    val nodeList: NonEmptyList[SceneNode] =
       NonEmptyList(
         graphic.moveTo(0, 0),
         graphic.moveTo(0, 10),
@@ -200,21 +200,20 @@ class AutomataTests extends munit.FunSuite {
             )
         }
 
-    val signal: SignalReader[(AutomatonSeedValues, SceneNodeInternal), AutomatonUpdate] =
-      SignalReader {
-        case (seed, sceneGraphNode) =>
-          makePosition(seed).map { position =>
-            AutomatonUpdate(
-              sceneGraphNode match {
-                case g: Graphic =>
-                  List(g.moveTo(position))
+    val signal: SignalReader[(AutomatonSeedValues, SceneNode), AutomatonUpdate] =
+      SignalReader { case (seed, sceneGraphNode) =>
+        makePosition(seed).map { position =>
+          AutomatonUpdate(
+            sceneGraphNode match {
+              case g: Graphic =>
+                List(g.moveTo(position))
 
-                case _ =>
-                  Nil
-              },
-              Nil
-            )
-          }
+              case _ =>
+                Nil
+            },
+            Nil
+          )
+        }
       }
 
   }

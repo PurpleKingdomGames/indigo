@@ -12,7 +12,7 @@ import indigo.shared.scenegraph.Text
 import indigo.shared.scenegraph.TextBox
 import indigo.shared.scenegraph.Group
 import scala.annotation.tailrec
-import indigo.shared.scenegraph.SceneNodeInternal
+import indigo.shared.scenegraph.SceneNode
 
 /** Represents an individual option button in a radio button group. This class just containing the distinct information
   * for this option: it's position and the events fired on interacting with it. Attributes shared between options are
@@ -355,7 +355,7 @@ final case class RadioButtonGroup(
     updatedOptions.sequence.map(opts => this.copy(options = opts))
   }
 
-  private def applyPositionAndDepth(sceneNode: SceneNodeInternal, pt: Point, d: Depth): SceneNodeInternal =
+  private def applyPositionAndDepth(sceneNode: SceneNode, pt: Point, d: Depth): SceneNode =
     sceneNode match {
       case n: Shape   => n.withPosition(pt).withDepth(d)
       case n: Graphic => n.withPosition(pt).withDepth(d)

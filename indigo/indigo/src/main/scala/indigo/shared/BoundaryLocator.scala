@@ -1,6 +1,6 @@
 package indigo.shared
 
-import indigo.shared.scenegraph.SceneNodeInternal
+import indigo.shared.scenegraph.SceneNode
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.scenegraph.TextLine
 import indigo.shared.datatypes.FontInfo
@@ -18,7 +18,7 @@ import indigo.shared.scenegraph.Transformer
 import indigo.shared.datatypes.FontKey
 import indigo.shared.scenegraph.Shape
 import indigo.shared.scenegraph.EntityNode
-import indigo.shared.scenegraph.SceneNodeInternal
+import indigo.shared.scenegraph.SceneNode
 import indigo.platform.assets.DynamicText
 import indigo.shared.datatypes.Vector3
 import indigo.shared.platform.DisplayObjectConversions
@@ -51,7 +51,7 @@ final class BoundaryLocator(
 
     BoundaryLocator.findBounds(t, rect.position, rect.size)
 
-  def findBounds(sceneGraphNode: SceneNodeInternal): Option[Rectangle] =
+  def findBounds(sceneGraphNode: SceneNode): Option[Rectangle] =
     sceneGraphNode match {
       case s: Shape =>
         Option(shapeBounds(s)).map(rect => BoundaryLocator.findBounds(s, rect.position, rect.size))
@@ -209,7 +209,7 @@ final class BoundaryLocator(
 
 object BoundaryLocator:
 
-  def findBounds(entity: SceneNodeInternal, position: Point, size: Size): Rectangle =
+  def findBounds(entity: SceneNode, position: Point, size: Size): Rectangle =
     val m =
       CheapMatrix4.identity
         .translate(-entity.ref.x, -entity.ref.y, 0.0d)

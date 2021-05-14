@@ -11,7 +11,7 @@ import indigo.shared.subsystems.SubSystemFrameContext
 import indigo.shared.datatypes.Point
 import indigo.shared.time.Seconds
 import indigo.shared.dice.Dice
-import indigo.shared.scenegraph.SceneNodeInternal
+import indigo.shared.scenegraph.SceneNode
 import indigo.shared.temporal.{Signal, SignalReader}
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.datatypes.BindingKey
@@ -161,17 +161,17 @@ object AutomataPoolKey:
   def fromDice(dice: Dice): AutomataPoolKey =
     AutomataPoolKey(dice.rollAlphaNumeric)
 
-  given CanEqual[AutomataPoolKey, AutomataPoolKey] = CanEqual.derived
+  given CanEqual[AutomataPoolKey, AutomataPoolKey]                 = CanEqual.derived
   given CanEqual[Option[AutomataPoolKey], Option[AutomataPoolKey]] = CanEqual.derived
 
 final case class Automaton(
     node: AutomatonNode,
     lifespan: Seconds,
-    modifier: SignalReader[(AutomatonSeedValues, SceneNodeInternal), AutomatonUpdate],
+    modifier: SignalReader[(AutomatonSeedValues, SceneNode), AutomatonUpdate],
     onCull: AutomatonSeedValues => List[GlobalEvent]
 ) {
 
-  def withModifier(newModifier: SignalReader[(AutomatonSeedValues, SceneNodeInternal), AutomatonUpdate]): Automaton =
+  def withModifier(newModifier: SignalReader[(AutomatonSeedValues, SceneNode), AutomatonUpdate]): Automaton =
     this.copy(modifier = newModifier)
 
   def withOnCullEvent(onCullEvent: AutomatonSeedValues => List[GlobalEvent]): Automaton =
@@ -180,14 +180,14 @@ final case class Automaton(
 
 object Automaton {
 
-  def NoOpModifier: SignalReader[(AutomatonSeedValues, SceneNodeInternal), AutomatonUpdate] =
+  def NoOpModifier: SignalReader[(AutomatonSeedValues, SceneNode), AutomatonUpdate] =
     SignalReader { case (_, n) =>
       Signal.fixed(AutomatonUpdate(n))
     }
 
   def FixedModifier(
-      transform: (AutomatonSeedValues, SceneNodeInternal) => SceneNodeInternal
-  ): SignalReader[(AutomatonSeedValues, SceneNodeInternal), AutomatonUpdate] =
+      transform: (AutomatonSeedValues, SceneNode) => SceneNode
+  ): SignalReader[(AutomatonSeedValues, SceneNode), AutomatonUpdate] =
     SignalReader { case (sa, n) =>
       Signal.fixed(AutomatonUpdate(transform(sa, n)))
     }
@@ -198,45 +198,45 @@ object Automaton {
   def apply(node: AutomatonNode, lifespan: Seconds): Automaton =
     Automaton(node, lifespan, NoOpModifier, NoCullEvent)
 
-  def apply(node: AutomatonNode, lifespan: Seconds, placeModifier: (Point, SceneNodeInternal) => SceneNodeInternal): Automaton =
+  def apply(node: AutomatonNode, lifespan: Seconds, placeModifier: (Point, SceneNode) => SceneNode): Automaton =
     Automaton(node, lifespan, FixedModifier((sa, n) => placeModifier(sa.spawnedAt, n)), NoCullEvent)
 
 }
 
 sealed trait AutomatonNode derives CanEqual {
-  def giveNode(totalSpawned: Long, dice: Dice): SceneNodeInternal
+  def giveNode(totalSpawned: Long, dice: Dice): SceneNode
 }
 object AutomatonNode {
 
-  final case class Fixed(node: SceneNodeInternal) extends AutomatonNode {
-    def giveNode(totalSpawned: Long, dice: Dice): SceneNodeInternal =
+  final case class Fixed(node: SceneNode) extends AutomatonNode {
+    def giveNode(totalSpawned: Long, dice: Dice): SceneNode =
       node
   }
 
-  final case class OneOf(nodes: NonEmptyList[SceneNodeInternal]) extends AutomatonNode {
-    def giveNode(totalSpawned: Long, dice: Dice): SceneNodeInternal = {
+  final case class OneOf(nodes: NonEmptyList[SceneNode]) extends AutomatonNode {
+    def giveNode(totalSpawned: Long, dice: Dice): SceneNode = {
       val nodeList = nodes.toList
 
       nodeList(dice.rollFromZero(nodeList.length - 1))
     }
   }
   object OneOf {
-    def apply(node: SceneNodeInternal, nodes: SceneNodeInternal*): OneOf =
+    def apply(node: SceneNode, nodes: SceneNode*): OneOf =
       OneOf(NonEmptyList(node, nodes.toList))
   }
 
-  final case class Cycle(nodes: NonEmptyList[SceneNodeInternal]) extends AutomatonNode {
+  final case class Cycle(nodes: NonEmptyList[SceneNode]) extends AutomatonNode {
     private def correctMod(dividend: Double, divisor: Double): Int =
       (((dividend % divisor) + divisor) % divisor).toInt
 
-    def giveNode(totalSpawned: Long, dice: Dice): SceneNodeInternal = {
+    def giveNode(totalSpawned: Long, dice: Dice): SceneNode = {
       val nodeList = nodes.toList
 
       nodeList(correctMod(totalSpawned.toDouble, nodeList.length.toDouble))
     }
   }
   object Cycle {
-    def apply(node: SceneNodeInternal, nodes: SceneNodeInternal*): Cycle =
+    def apply(node: SceneNode, nodes: SceneNode*): Cycle =
       Cycle(NonEmptyList(node, nodes.toList))
   }
 
@@ -258,8 +258,8 @@ final case class AutomatonSeedValues(
 }
 
 final case class SpawnedAutomaton(
-    sceneGraphNode: SceneNodeInternal,
-    modifier: SignalReader[(AutomatonSeedValues, SceneNodeInternal), AutomatonUpdate],
+    sceneGraphNode: SceneNode,
+    modifier: SignalReader[(AutomatonSeedValues, SceneNode), AutomatonUpdate],
     onCull: AutomatonSeedValues => List[GlobalEvent],
     seedValues: AutomatonSeedValues
 ) derives CanEqual {
@@ -267,7 +267,7 @@ final case class SpawnedAutomaton(
     seedValues.createdAt + seedValues.lifeSpan > currentTime
 }
 
-final case class AutomatonUpdate(nodes: List[SceneNodeInternal], events: List[GlobalEvent]) derives CanEqual {
+final case class AutomatonUpdate(nodes: List[SceneNode], events: List[GlobalEvent]) derives CanEqual {
 
   def |+|(other: AutomatonUpdate): AutomatonUpdate =
     AutomatonUpdate(nodes ++ other.nodes, events ++ other.events)
@@ -285,10 +285,10 @@ object AutomatonUpdate {
   def empty: AutomatonUpdate =
     new AutomatonUpdate(Nil, Nil)
 
-  def apply(nodes: SceneNodeInternal*): AutomatonUpdate =
+  def apply(nodes: SceneNode*): AutomatonUpdate =
     new AutomatonUpdate(nodes.toList, Nil)
 
-  def apply(nodes: List[SceneNodeInternal]): AutomatonUpdate =
+  def apply(nodes: List[SceneNode]): AutomatonUpdate =
     new AutomatonUpdate(nodes, Nil)
 
   def sequence(l: List[AutomatonUpdate]): AutomatonUpdate =

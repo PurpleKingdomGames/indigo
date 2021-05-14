@@ -4,30 +4,26 @@ import indigo.shared.datatypes.BindingKey
 import indigo.shared.datatypes.Depth
 import indigo.shared.materials.BlendMaterial
 
-/**
-  * A layers are used to stack collections screen elements on top of one another.
+/** A layers are used to stack collections screen elements on top of one another.
   *
-  * During the scene render, each layer in depth order is _blended_ into the one
-  * below it, a bit like doing a foldLeft over a list. You can control how the blend
-  * is performed to create effects.
+  * During the scene render, each layer in depth order is _blended_ into the one below it, a bit like doing a foldLeft
+  * over a list. You can control how the blend is performed to create effects.
   *
-  * Layer fields are all either Lists or options to denote that you _can_ have them
-  * but that it isn't necessary. Layers are "monoids" which just means that they
-  * can be empty and they can be combined. It is important to note that when they
-  * combine they are left bias in the case of all optional fields, which means, that
-  * if you do: a.show |+| b.hide, the layer will be visible. This may look odd, and maybe
-  * it is (time will tell!), but the idea is that you can set empty placeholder layers
-  * early in your scene and then add things to them, confident of the outcome.
+  * Layer fields are all either Lists or options to denote that you _can_ have them but that it isn't necessary. Layers
+  * are "monoids" which just means that they can be empty and they can be combined. It is important to note that when
+  * they combine they are left bias in the case of all optional fields, which means, that if you do: a.show |+| b.hide,
+  * the layer will be visible. This may look odd, and maybe it is (time will tell!), but the idea is that you can set
+  * empty placeholder layers early in your scene and then add things to them, confident of the outcome.
   *
   * @param nodes
-  * @param key
+  *   @param key
   * @param magnification
-  * @param depth
+  *   @param depth
   * @param visible
-  * @param blending
+  *   @param blending
   */
 final case class Layer(
-    nodes: List[SceneNodeInternal],
+    nodes: List[SceneNode],
     lights: List[Light],
     key: Option[BindingKey],
     magnification: Option[Int],
@@ -48,11 +44,11 @@ final case class Layer(
   def combine(other: Layer): Layer =
     this |+| other
 
-  def withNodes(newNodes: List[SceneNodeInternal]): Layer =
+  def withNodes(newNodes: List[SceneNode]): Layer =
     this.copy(nodes = newNodes)
-  def addNodes(moreNodes: List[SceneNodeInternal]): Layer =
+  def addNodes(moreNodes: List[SceneNode]): Layer =
     withNodes(nodes ++ moreNodes)
-  def ++(moreNodes: List[SceneNodeInternal]): Layer =
+  def ++(moreNodes: List[SceneNode]): Layer =
     addNodes(moreNodes)
 
   def noLights: Layer =
@@ -108,22 +104,22 @@ object Layer {
   def apply(key: BindingKey): Layer =
     Layer(Nil, Nil, Option(key), None, None, None, None)
 
-  def apply(nodes: SceneNodeInternal*): Layer =
+  def apply(nodes: SceneNode*): Layer =
     Layer(nodes.toList, Nil, None, None, None, None, None)
 
-  def apply(nodes: List[SceneNodeInternal]): Layer =
+  def apply(nodes: List[SceneNode]): Layer =
     Layer(nodes, Nil, None, None, None, None, None)
 
-  def apply(key: BindingKey, nodes: List[SceneNodeInternal]): Layer =
+  def apply(key: BindingKey, nodes: List[SceneNode]): Layer =
     Layer(nodes, Nil, Option(key), None, None, None, None)
 
-  def apply(key: BindingKey, nodes: SceneNodeInternal*): Layer =
+  def apply(key: BindingKey, nodes: SceneNode*): Layer =
     Layer(nodes.toList, Nil, Option(key), None, None, None, None)
 
   def apply(key: BindingKey, magnification: Int, depth: Depth): Layer =
     Layer(Nil, Nil, Option(key), Option(magnification), Option(depth), None, None)
 
-  def apply(key: BindingKey, magnification: Int, depth: Depth, nodes: List[SceneNodeInternal]): Layer =
+  def apply(key: BindingKey, magnification: Int, depth: Depth, nodes: List[SceneNode]): Layer =
     Layer(nodes.toList, Nil, Option(key), Option(magnification), Option(depth), None, None)
 
 }
