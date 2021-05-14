@@ -33,7 +33,7 @@ final case class Sprite(
   lazy val y: Int = position.y
 
   def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] =
-    locator.spriteBounds(this)
+    locator.spriteBounds(this).map(rect => BoundaryLocator.findBounds(this, rect.position, rect.size))
 
   def withDepth(newDepth: Depth): Sprite =
     this.copy(depth = newDepth)

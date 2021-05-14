@@ -47,7 +47,8 @@ sealed trait Shape extends RenderNode with Cloneable with SpatialModifiers[Shape
   def withFlip(newFlip: Flip): Shape
 
   def calculatedBounds(locator: BoundaryLocator): Rectangle =
-    locator.shapeBounds(this)
+    val rect = locator.shapeBounds(this)
+    BoundaryLocator.findBounds(this, rect.position, rect.size)
 }
 
 object Shape {
