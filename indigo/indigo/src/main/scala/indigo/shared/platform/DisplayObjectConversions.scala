@@ -303,17 +303,16 @@ final class DisplayObjectConversions(
 
     val offset = leaf match
       case s: Shape.Box =>
-        // val size = s.dimensions.size
+        val size = s.dimensions.size
 
-        // if size.width == size.height then Point.zero
-        // else if size.width < size.height then Point(-Math.round((size.height.toDouble - size.width.toDouble) / 2).toInt, 0)
-        // else Point(0, -Math.round((size.width.toDouble - size.height.toDouble) / 2).toInt)
+        if size.width == size.height then Point.zero
+        else if size.width < size.height then Point(-Math.round((size.height.toDouble - size.width.toDouble) / 2).toInt, 0)
+        else Point(0, -Math.round((size.width.toDouble - size.height.toDouble) / 2).toInt)
 
-        Point.zero
       case _ =>
         Point.zero
 
-    val boundsActual = boundaryLocator.shapeBounds(leaf).moveBy(offset)
+    val boundsActual = boundaryLocator.shapeBounds(leaf)
 
     val shader: ShaderData = Shape.toShaderData(leaf, boundsActual)
     val bounds             = boundsActual.toSquare
@@ -331,7 +330,7 @@ final class DisplayObjectConversions(
     DisplayObject(
       transform = DisplayObjectConversions
         .nodeToMatrix4(
-          leaf.withRef(leaf.ref),
+          leaf.withRef(leaf.ref - offset),
           bounds.position.toVector,
           Vector3(bounds.size.width.toDouble, bounds.size.height.toDouble, 1.0d)
         ),
