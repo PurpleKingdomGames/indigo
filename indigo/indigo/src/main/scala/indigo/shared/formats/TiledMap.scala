@@ -32,8 +32,10 @@ final case class TiledMap(
     tilesets: List[TileSet],
     `type`: String, // "map"
     hexsidelength: Option[Int],
-    staggeraxis: Option[String],    // For staggered and hexagonal maps, determines which axis ("x" or "y") is staggered
-    staggerindex: Option[String],   // For staggered and hexagonal maps, determines whether the "even" or "odd" indexes along the staggered axis are shifted.
+    staggeraxis: Option[String], // For staggered and hexagonal maps, determines which axis ("x" or "y") is staggered
+    staggerindex: Option[
+      String
+    ],                              // For staggered and hexagonal maps, determines whether the "even" or "odd" indexes along the staggered axis are shifted.
     backgroundcolor: Option[String] // #AARRGGBB
 ) derives CanEqual {
 
@@ -121,30 +123,30 @@ object TiledMap {
     tiledMap.tilesets.headOption.flatMap(_.columns).map { tileSheetColumnCount =>
       val tileSize: Size = Size(tiledMap.tilewidth, tiledMap.tileheight)
 
-      val layers = tiledMap.layers.map { layer =>
-        val tilesInUse: Map[Int, Graphic] =
-          layer.data.toSet.foldLeft(Map.empty[Int, Graphic]) { (tiles, i) =>
-            tiles ++ Map(
-              i ->
-                Graphic(Rectangle(Point.zero, tileSize), 1, Material.Bitmap(assetName))
-                  .withCrop(
-                    Rectangle(fromIndex(i - 1, tileSheetColumnCount) * tileSize.toPoint, tileSize)
-                  )
-            )
-          }
+      val layers: List[Group] =
+        tiledMap.layers.map { layer =>
+          val tilesInUse: Map[Int, Graphic] =
+            layer.data.toSet.foldLeft(Map.empty[Int, Graphic]) { (tiles, i) =>
+              tiles ++ Map(
+                i ->
+                  Graphic(Rectangle(Point.zero, tileSize), 1, Material.Bitmap(assetName))
+                    .withCrop(
+                      Rectangle(fromIndex(i - 1, tileSheetColumnCount) * tileSize.toPoint, tileSize)
+                    )
+              )
+            }
 
-        Group(
-          layer.data.zipWithIndex.flatMap {
-            case (tileIndex, positionIndex) =>
+          Group(
+            layer.data.zipWithIndex.flatMap { case (tileIndex, positionIndex) =>
               if (tileIndex == 0) Nil
               else
                 tilesInUse
                   .get(tileIndex)
                   .map(g => List(g.moveTo(fromIndex(positionIndex, tiledMap.width) * tileSize.toPoint)))
                   .getOrElse(Nil)
-          }
-        )
-      }
+            }
+          )
+        }
 
       Group(layers)
     }
@@ -160,7 +162,12 @@ final case class TiledGridMap[A](layers: NonEmptyList[TiledGridLayer[A]]) derive
     given CanEqual[List[TiledGridCell[A]], List[TiledGridCell[A]]] = CanEqual.derived
 
     @tailrec
-    def rec(remaining: List[TiledGridCell[A]], columnCount: Int, current: List[TiledGridCell[A]], acc: List[List[TiledGridCell[A]]]): List[List[TiledGridCell[A]]] =
+    def rec(
+        remaining: List[TiledGridCell[A]],
+        columnCount: Int,
+        current: List[TiledGridCell[A]],
+        acc: List[List[TiledGridCell[A]]]
+    ): List[List[TiledGridCell[A]]] =
       remaining match {
         case Nil =>
           acc.reverse

@@ -5,7 +5,7 @@ import indigo.shared.datatypes._
 /** A single cloned instance of a cloneblank
   *
   * @param id
-  * @param depth
+  *   @param depth
   * @param transform
   */
 final case class Clone(id: CloneId, depth: Depth, transform: CloneTransformData)
@@ -17,6 +17,7 @@ final case class Clone(id: CloneId, depth: Depth, transform: CloneTransformData)
   lazy val scale: Vector2          = transform.scale
   lazy val flipHorizontal: Boolean = transform.flipHorizontal
   lazy val flipVertical: Boolean   = transform.flipVertical
+  lazy val ref: Point              = Point.zero
 
   def position: Point = Point(transform.position.x, transform.position.y)
   def flip: Flip      = Flip(transform.flipHorizontal, transform.flipVertical)
@@ -85,6 +86,7 @@ final case class CloneBatch(
   lazy val scale: Vector2          = transform.scale
   lazy val flipHorizontal: Boolean = transform.flipHorizontal
   lazy val flipVertical: Boolean   = transform.flipVertical
+  lazy val ref: Point              = Point.zero
 
   def position: Point = Point(transform.position.x, transform.position.y)
   def flip: Flip      = Flip(transform.flipHorizontal, transform.flipVertical)

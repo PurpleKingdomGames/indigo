@@ -113,6 +113,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
   test("EntityNode bounds - normal") {
     val entity: EntityNode = new EntityNode {
       def position: Point   = Point.zero
+      def size: Size        = Size(40, 40)
       def rotation: Radians = Radians.zero
       def scale: Vector2    = Vector2.one
       def depth: Depth      = Depth(0)
@@ -130,7 +131,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
       def productElement(n: Int): Any = ???
     }
 
-    val actual   = BoundaryLocator.findBounds(entity, entity.position, Size(40, 40))
+    val actual   = BoundaryLocator.findBounds(entity, entity.position, entity.size)
     val expected = Rectangle(0, 0, 40, 40)
 
     assertEquals(actual, expected)
@@ -139,6 +140,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
   test("EntityNode bounds - normal moved") {
     val entity: EntityNode = new EntityNode {
       def position: Point   = Point(10, 20)
+      def size: Size        = Size(40, 40)
       def rotation: Radians = Radians.zero
       def scale: Vector2    = Vector2.one
       def depth: Depth      = Depth(0)
@@ -165,6 +167,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
   test("EntityNode bounds - flipped") {
     val entity: EntityNode = new EntityNode {
       def position: Point   = Point.zero
+      def size: Size        = Size(40, 40)
       def rotation: Radians = Radians.zero
       def scale: Vector2    = Vector2.one
       def depth: Depth      = Depth(0)
@@ -182,7 +185,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
       def productElement(n: Int): Any = ???
     }
 
-    val actual   = BoundaryLocator.findBounds(entity, entity.position, Size(40, 40))
+    val actual   = BoundaryLocator.findBounds(entity, entity.position, entity.size)
     val expected = Rectangle(0, 0, 40, 40)
 
     assertEquals(actual, expected)
@@ -191,6 +194,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
   test("EntityNode bounds - centered ref") {
     val entity: EntityNode = new EntityNode {
       def position: Point   = Point.zero
+      def size: Size        = Size(40, 40)
       def rotation: Radians = Radians.zero
       def scale: Vector2    = Vector2.one
       def depth: Depth      = Depth(0)
@@ -208,7 +212,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
       def productElement(n: Int): Any = ???
     }
 
-    val actual   = BoundaryLocator.findBounds(entity, entity.position, Size(40, 40))
+    val actual   = BoundaryLocator.findBounds(entity, entity.position, entity.size)
     val expected = Rectangle(-20, -20, 40, 40)
 
     assertEquals(actual, expected)
@@ -217,6 +221,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
   test("EntityNode bounds - bottom right ref") {
     val entity: EntityNode = new EntityNode {
       def position: Point   = Point.zero
+      def size: Size        = Size(40, 40)
       def rotation: Radians = Radians.zero
       def scale: Vector2    = Vector2.one
       def depth: Depth      = Depth(0)
@@ -234,7 +239,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
       def productElement(n: Int): Any = ???
     }
 
-    val actual   = BoundaryLocator.findBounds(entity, entity.position, Size(40, 40))
+    val actual   = BoundaryLocator.findBounds(entity, entity.position, entity.size)
     val expected = Rectangle(-40, -40, 40, 40)
 
     assertEquals(actual, expected)
@@ -243,6 +248,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
   test("EntityNode bounds - bottom negative ref") {
     val entity: EntityNode = new EntityNode {
       def position: Point   = Point.zero
+      def size: Size        = Size(40, 40)
       def rotation: Radians = Radians.zero
       def scale: Vector2    = Vector2.one
       def depth: Depth      = Depth(0)
@@ -260,7 +266,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
       def productElement(n: Int): Any = ???
     }
 
-    val actual   = BoundaryLocator.findBounds(entity, entity.position, Size(40, 40))
+    val actual   = BoundaryLocator.findBounds(entity, entity.position, entity.size)
     val expected = Rectangle(10, 0, 40, 40)
 
     assertEquals(actual, expected)
@@ -269,6 +275,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
   test("EntityNode bounds - normal scaled x1") {
     val entity: EntityNode = new EntityNode {
       def position: Point   = Point.zero
+      def size: Size        = Size(40, 40)
       def rotation: Radians = Radians.zero
       def scale: Vector2    = Vector2(1, 1)
       def depth: Depth      = Depth(0)
@@ -286,7 +293,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
       def productElement(n: Int): Any = ???
     }
 
-    val actual   = BoundaryLocator.findBounds(entity, entity.position, Size(40, 40))
+    val actual   = BoundaryLocator.findBounds(entity, entity.position, entity.size)
     val expected = Rectangle(0, 0, 40, 40)
 
     assertEquals(actual, expected)
@@ -295,6 +302,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
   test("EntityNode bounds - normal scaled x2") {
     val entity: EntityNode = new EntityNode {
       def position: Point   = Point.zero
+      def size: Size        = Size(40, 40)
       def rotation: Radians = Radians.zero
       def scale: Vector2    = Vector2(2, 2)
       def depth: Depth      = Depth(0)
@@ -312,7 +320,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
       def productElement(n: Int): Any = ???
     }
 
-    val actual   = BoundaryLocator.findBounds(entity, entity.position, Size(40, 40))
+    val actual   = BoundaryLocator.findBounds(entity, entity.position, entity.size)
     val expected = Rectangle(0, 0, 80, 80)
 
     assertEquals(actual, expected)
@@ -321,6 +329,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
   test("EntityNode bounds - center ref scaled x3") {
     val entity: EntityNode = new EntityNode {
       def position: Point   = Point.zero
+      def size: Size        = Size(40, 40)
       def rotation: Radians = Radians.zero
       def scale: Vector2    = Vector2(3, 3)
       def depth: Depth      = Depth(0)
@@ -338,7 +347,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
       def productElement(n: Int): Any = ???
     }
 
-    val actual   = BoundaryLocator.findBounds(entity, entity.position, Size(40, 40))
+    val actual   = BoundaryLocator.findBounds(entity, entity.position, entity.size)
     val expected = Rectangle(-60, -60, 120, 120)
 
     assertEquals(actual, expected)
@@ -347,6 +356,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
   test("EntityNode bounds - normal scaled x2 rotated tau / 2") {
     val entity: EntityNode = new EntityNode {
       def position: Point   = Point.zero
+      def size: Size        = Size(20, 40)
       def rotation: Radians = Radians.TAUby2
       def scale: Vector2    = Vector2(2, 2)
       def depth: Depth      = Depth(0)
@@ -364,7 +374,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
       def productElement(n: Int): Any = ???
     }
 
-    val actual   = BoundaryLocator.findBounds(entity, entity.position, Size(20, 40))
+    val actual   = BoundaryLocator.findBounds(entity, entity.position, entity.size)
     val expected = Rectangle(-40, -80, 40, 80)
 
     assertEquals(actual, expected)

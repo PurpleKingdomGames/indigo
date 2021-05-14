@@ -6,7 +6,7 @@ import indigo.shared.datatypes.Vector2
 import indigo.shared.datatypes.Depth
 import indigo.shared.datatypes.Flip
 
-trait BasicSpatialModifiers[T <: SceneNode] {
+trait BasicSpatialModifiers[T <: SceneNodeInternal] {
   def withPosition(newPosition: Point): T
   def withRotation(newRotation: Radians): T
   def withScale(newScale: Vector2): T
@@ -14,7 +14,7 @@ trait BasicSpatialModifiers[T <: SceneNode] {
   def withFlip(newFlip: Flip): T
 }
 
-trait SpatialModifiers[T <: SceneNode] extends BasicSpatialModifiers[T] {
+trait SpatialModifiers[T <: SceneNodeInternal] extends BasicSpatialModifiers[T] {
   def moveTo(pt: Point): T
   def moveTo(x: Int, y: Int): T
 

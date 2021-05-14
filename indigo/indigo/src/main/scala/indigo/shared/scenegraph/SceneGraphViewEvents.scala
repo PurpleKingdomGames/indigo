@@ -40,7 +40,7 @@ object SceneGraphViewEvents {
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   def collectViewEvents(
       boundaryLocator: BoundaryLocator,
-      nodes: List[SceneNode],
+      nodes: List[SceneNodeInternal],
       inputEvents: List[GlobalEvent],
       sendEvent: GlobalEvent => Unit
   ): Unit = {

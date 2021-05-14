@@ -20,12 +20,12 @@ final case class Text(
     depth: Depth,
     ref: Point,
     flip: Flip
-) extends CompositeNode
+) extends DependentNode
     with EventHandler
     with SpatialModifiers[Text] derives CanEqual {
 
   def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] =
-    locator.findBounds(this)
+    locator.textBounds(this)
 
   lazy val x: Int = position.x
   lazy val y: Int = position.y

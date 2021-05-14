@@ -27,7 +27,7 @@ import indigo.shared.materials.BlendMaterial
   * @param blending
   */
 final case class Layer(
-    nodes: List[SceneNode],
+    nodes: List[SceneNodeInternal],
     lights: List[Light],
     key: Option[BindingKey],
     magnification: Option[Int],
@@ -48,11 +48,11 @@ final case class Layer(
   def combine(other: Layer): Layer =
     this |+| other
 
-  def withNodes(newNodes: List[SceneNode]): Layer =
+  def withNodes(newNodes: List[SceneNodeInternal]): Layer =
     this.copy(nodes = newNodes)
-  def addNodes(moreNodes: List[SceneNode]): Layer =
+  def addNodes(moreNodes: List[SceneNodeInternal]): Layer =
     withNodes(nodes ++ moreNodes)
-  def ++(moreNodes: List[SceneNode]): Layer =
+  def ++(moreNodes: List[SceneNodeInternal]): Layer =
     addNodes(moreNodes)
 
   def noLights: Layer =
@@ -108,22 +108,22 @@ object Layer {
   def apply(key: BindingKey): Layer =
     Layer(Nil, Nil, Option(key), None, None, None, None)
 
-  def apply(nodes: SceneNode*): Layer =
+  def apply(nodes: SceneNodeInternal*): Layer =
     Layer(nodes.toList, Nil, None, None, None, None, None)
 
-  def apply(nodes: List[SceneNode]): Layer =
+  def apply(nodes: List[SceneNodeInternal]): Layer =
     Layer(nodes, Nil, None, None, None, None, None)
 
-  def apply(key: BindingKey, nodes: List[SceneNode]): Layer =
+  def apply(key: BindingKey, nodes: List[SceneNodeInternal]): Layer =
     Layer(nodes, Nil, Option(key), None, None, None, None)
 
-  def apply(key: BindingKey, nodes: SceneNode*): Layer =
+  def apply(key: BindingKey, nodes: SceneNodeInternal*): Layer =
     Layer(nodes.toList, Nil, Option(key), None, None, None, None)
 
   def apply(key: BindingKey, magnification: Int, depth: Depth): Layer =
     Layer(Nil, Nil, Option(key), Option(magnification), Option(depth), None, None)
 
-  def apply(key: BindingKey, magnification: Int, depth: Depth, nodes: List[SceneNode]): Layer =
+  def apply(key: BindingKey, magnification: Int, depth: Depth, nodes: List[SceneNodeInternal]): Layer =
     Layer(nodes.toList, Nil, Option(key), Option(magnification), Option(depth), None, None)
 
 }

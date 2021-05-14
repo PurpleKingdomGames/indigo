@@ -5,14 +5,14 @@ import indigo.shared.events.GlobalEvent
 import indigo.shared.input.Mouse
 import indigo.shared.Outcome
 import indigo.shared.scenegraph.EntityNode
-import indigo.shared.scenegraph.CompositeNode
 import indigo.shared.scenegraph.Shape
 import indigo.shared.scenegraph.Graphic
 import indigo.shared.scenegraph.Sprite
 import indigo.shared.scenegraph.Text
+import indigo.shared.scenegraph.TextBox
 import indigo.shared.scenegraph.Group
 import indigo.shared.datatypes.Point
-import indigo.shared.scenegraph.RenderNode
+import indigo.shared.scenegraph.SceneNodeInternal
 
 final case class Button(
     buttonAssets: ButtonAssets,
@@ -52,18 +52,18 @@ final case class Button(
     }
   }
 
-  private def applyPositionAndDepth(sceneNode: RenderNode, pt: Point, d: Depth): RenderNode =
+  private def applyPositionAndDepth(sceneNode: SceneNodeInternal, pt: Point, d: Depth): SceneNodeInternal =
     sceneNode match {
-      case n: Shape         => n.withPosition(pt).withDepth(d)
-      case n: Graphic       => n.withPosition(pt).withDepth(d)
-      case n: Sprite        => n.withPosition(pt).withDepth(d)
-      case n: Text          => n.withPosition(pt).withDepth(d)
-      case n: Group         => n.withPosition(pt).withDepth(d)
-      case n: EntityNode    => n
-      case n: CompositeNode => n.withDepth(d)
+      case n: Shape      => n.withPosition(pt).withDepth(d)
+      case n: Graphic    => n.withPosition(pt).withDepth(d)
+      case n: Sprite     => n.withPosition(pt).withDepth(d)
+      case n: Text       => n.withPosition(pt).withDepth(d)
+      case n: TextBox    => n.withPosition(pt).withDepth(d)
+      case n: Group      => n.withPosition(pt).withDepth(d)
+      case n => n
     }
 
-  def draw: RenderNode =
+  def draw: SceneNodeInternal =
     state match {
       case ButtonState.Up =>
         applyPositionAndDepth(buttonAssets.up, bounds.position, depth)
@@ -147,7 +147,7 @@ object ButtonState {
 }
 
 final case class ButtonAssets(
-    up: RenderNode,
-    over: RenderNode,
-    down: RenderNode
+    up: SceneNodeInternal,
+    over: SceneNodeInternal,
+    down: SceneNodeInternal
 ) derives CanEqual

@@ -109,7 +109,7 @@ object BoundsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
             // ),
             shape,
             Shape.Box(
-              shape.calculatedBounds(context.boundaryLocator).getOrElse(Rectangle.zero),
+              shape.calculatedBounds(context.boundaryLocator),
               Fill.None,
               Stroke(1, RGBA.Magenta)
             ),
@@ -121,7 +121,7 @@ object BoundsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
             // ),
             textBox,
             Shape.Box(
-              textBox.calculatedBounds(context.boundaryLocator).getOrElse(Rectangle.zero),
+              textBox.bounds,//.calculatedBounds(context.boundaryLocator).getOrElse(Rectangle.zero),
               Fill.None,
               Stroke(1, RGBA.Blue)
             )

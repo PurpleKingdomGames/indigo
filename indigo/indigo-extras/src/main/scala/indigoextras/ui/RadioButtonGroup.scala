@@ -5,14 +5,14 @@ import indigo.shared.datatypes.{Depth, Point, Rectangle}
 import indigo.shared.events.GlobalEvent
 import indigo.shared.input.Mouse
 import indigo.shared.scenegraph.EntityNode
-import indigo.shared.scenegraph.CompositeNode
 import indigo.shared.scenegraph.Shape
 import indigo.shared.scenegraph.Graphic
 import indigo.shared.scenegraph.Sprite
 import indigo.shared.scenegraph.Text
+import indigo.shared.scenegraph.TextBox
 import indigo.shared.scenegraph.Group
 import scala.annotation.tailrec
-import indigo.shared.scenegraph.RenderNode
+import indigo.shared.scenegraph.SceneNodeInternal
 
 /** Represents an individual option button in a radio button group. This class just containing the distinct information
   * for this option: it's position and the events fired on interacting with it. Attributes shared between options are
@@ -355,15 +355,15 @@ final case class RadioButtonGroup(
     updatedOptions.sequence.map(opts => this.copy(options = opts))
   }
 
-  private def applyPositionAndDepth(sceneNode: RenderNode, pt: Point, d: Depth): RenderNode =
+  private def applyPositionAndDepth(sceneNode: SceneNodeInternal, pt: Point, d: Depth): SceneNodeInternal =
     sceneNode match {
-      case n: Shape         => n.withPosition(pt).withDepth(d)
-      case n: Graphic       => n.withPosition(pt).withDepth(d)
-      case n: Sprite        => n.withPosition(pt).withDepth(d)
-      case n: Text          => n.withPosition(pt).withDepth(d)
-      case n: Group         => n.withPosition(pt).withDepth(d)
-      case n: EntityNode    => n
-      case n: CompositeNode => n.withDepth(d)
+      case n: Shape   => n.withPosition(pt).withDepth(d)
+      case n: Graphic => n.withPosition(pt).withDepth(d)
+      case n: Sprite  => n.withPosition(pt).withDepth(d)
+      case n: Text    => n.withPosition(pt).withDepth(d)
+      case n: TextBox => n.withPosition(pt).withDepth(d)
+      case n: Group   => n.withPosition(pt).withDepth(d)
+      case n          => n
     }
 
   /** Returns graphics to present the current state of the radio button.

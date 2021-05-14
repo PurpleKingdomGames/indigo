@@ -105,13 +105,13 @@ object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
             .moveTo(175, 10),
           blue,
           Shape.Box(
-            blue.calculatedBounds(context.boundaryLocator).getOrElse(Rectangle.zero),
+            blue.calculatedBounds(context.boundaryLocator),
             Fill.None,
             Stroke(1, RGBA.Blue)
           ), //outline blue
           red,
           Shape.Box(
-            red.calculatedBounds(context.boundaryLocator).getOrElse(Rectangle.zero),
+            red.calculatedBounds(context.boundaryLocator),
             Fill.None,
             Stroke(1, RGBA.Red)
           ), //outline red

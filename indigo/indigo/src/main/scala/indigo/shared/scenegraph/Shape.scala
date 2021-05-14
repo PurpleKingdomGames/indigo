@@ -21,7 +21,7 @@ import indigo.shared.materials.LightingModel.Lit
 import indigo.shared.shader.ShaderId
 import indigo.shared.BoundaryLocator
 
-sealed trait Shape extends CompositeNode with Cloneable with SpatialModifiers[Shape] derives CanEqual {
+sealed trait Shape extends RenderNode with Cloneable with SpatialModifiers[Shape] derives CanEqual {
   def moveTo(pt: Point): Shape
   def moveTo(x: Int, y: Int): Shape
   def withPosition(newPosition: Point): Shape
@@ -45,6 +45,9 @@ sealed trait Shape extends CompositeNode with Cloneable with SpatialModifiers[Sh
   def flipHorizontal(isFlipped: Boolean): Shape
   def flipVertical(isFlipped: Boolean): Shape
   def withFlip(newFlip: Flip): Shape
+
+  def calculatedBounds(locator: BoundaryLocator): Rectangle =
+    locator.shapeBounds(this)
 }
 
 object Shape {
@@ -64,9 +67,8 @@ object Shape {
 
     lazy val position: Point =
       dimensions.position - (stroke.width / 2)
-
-    def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] =
-      locator.findBounds(this)
+    lazy val size: Size =
+      dimensions.size + stroke.width
 
     def withDimensions(newDimensions: Rectangle): Box =
       this.copy(dimensions = newDimensions)
@@ -189,9 +191,8 @@ object Shape {
 
     lazy val position: Point =
       center - radius - (stroke.width / 2)
-
-    def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] =
-      locator.findBounds(this)
+    lazy val size: Size =
+      Size(radius * 2) + stroke.width
 
     def withFillColor(newFill: Fill): Circle =
       this.copy(fill = newFill)
@@ -316,12 +317,10 @@ object Shape {
   ) extends Shape {
 
     lazy val position: Point =
-      val x = Math.min(start.x, end.x)
-      val y = Math.min(start.y, end.y)
-      Point(x, y) - (stroke.width / 2)
+      Point(Math.min(start.x, end.x), Math.min(start.y, end.y)) - (stroke.width / 2)
 
-    def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] =
-      locator.findBounds(this)
+    lazy val size: Size =
+      Size(Math.max(start.x, end.x) - position.x, Math.max(start.y, end.y) - position.y) + stroke.width
 
     def withStroke(newStroke: Stroke): Line =
       this.copy(stroke = newStroke)
@@ -437,11 +436,14 @@ object Shape {
       shaderId: Option[ShaderId]
   ) extends Shape {
 
-    lazy val position: Point =
-      Rectangle.fromPointCloud(vertices).expand(stroke.width / 2).position
+    private lazy val verticesBounds: Rectangle =
+      Rectangle.fromPointCloud(vertices).expand(stroke.width / 2)
 
-    def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] =
-      locator.findBounds(this)
+    lazy val position: Point =
+      verticesBounds.position
+
+    lazy val size: Size =
+      verticesBounds.size
 
     def withFillColor(newFill: Fill): Polygon =
       this.copy(fill = newFill)

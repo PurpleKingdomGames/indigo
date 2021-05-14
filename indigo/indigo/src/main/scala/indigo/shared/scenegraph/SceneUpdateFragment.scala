@@ -38,9 +38,9 @@ final case class SceneUpdateFragment(
   def addLayer(newLayer: Layer): SceneUpdateFragment =
     this.copy(layers = SceneUpdateFragment.addLayer(layers, newLayer))
 
-  def addLayer(nodes: SceneNode*): SceneUpdateFragment =
+  def addLayer(nodes: SceneNodeInternal*): SceneUpdateFragment =
     addLayer(nodes.toList)
-  def addLayer(nodes: List[SceneNode]): SceneUpdateFragment =
+  def addLayer(nodes: List[SceneNodeInternal]): SceneUpdateFragment =
     this.copy(layers = SceneUpdateFragment.addLayer(layers, Layer(nodes.toList)))
 
   def addLayers(newLayers: Layer*): SceneUpdateFragment =
@@ -84,10 +84,10 @@ final case class SceneUpdateFragment(
 }
 object SceneUpdateFragment {
 
-  def apply(nodes: SceneNode*): SceneUpdateFragment =
+  def apply(nodes: SceneNodeInternal*): SceneUpdateFragment =
     SceneUpdateFragment(nodes.toList)
 
-  def apply(nodes: List[SceneNode]): SceneUpdateFragment =
+  def apply(nodes: List[SceneNodeInternal]): SceneUpdateFragment =
     SceneUpdateFragment(List(Layer(nodes)), Nil, SceneAudio.None, None, Nil)
 
   def apply(layer: Layer): SceneUpdateFragment =

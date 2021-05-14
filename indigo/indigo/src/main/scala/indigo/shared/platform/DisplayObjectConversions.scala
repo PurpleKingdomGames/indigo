@@ -34,6 +34,7 @@ import indigo.shared.animation.AnimationRef
 import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.shared.assets.AssetName
 import indigo.shared.scenegraph.EntityNode
+import indigo.shared.scenegraph.SceneNodeInternal
 import indigo.shared.shader.Uniform
 import indigo.shared.shader.ShaderPrimitive
 import indigo.shared.scenegraph.Shape
@@ -355,16 +356,18 @@ final class DisplayObjectConversions(
     val channelOffset2 = optionalAssetToOffset(assetMapping, shader.channel2)
     val channelOffset3 = optionalAssetToOffset(assetMapping, shader.channel3)
 
+    val bounds = Rectangle(leaf.position, leaf.size)
+
     val frameInfo: SpriteSheetFrameCoordinateOffsets =
       shader.channel0 match {
         case None =>
           SpriteSheetFrame.defaultOffset
 
         case Some(assetName) =>
-          QuickCache(s"${leaf.bounds.hash}_${shader.hash}") {
+          QuickCache(s"${bounds.hash}_${shader.hash}") {
             SpriteSheetFrame.calculateFrameOffset(
               atlasSize = lookupAtlasSize(assetMapping, assetName),
-              frameCrop = leaf.bounds,
+              frameCrop = bounds,
               textureOffset = lookupTextureOffset(assetMapping, assetName)
             )
           }
@@ -386,12 +389,12 @@ final class DisplayObjectConversions(
         .nodeToMatrix4(
           leaf,
           leaf.position.toVector,
-          Vector3(leaf.bounds.size.width.toDouble, leaf.bounds.size.height.toDouble, 1.0d)
+          Vector3(bounds.size.width.toDouble, bounds.size.height.toDouble, 1.0d)
         ),
       rotation = leaf.rotation,
       z = leaf.depth.toDouble,
-      width = leaf.bounds.size.width,
-      height = leaf.bounds.size.height,
+      width = bounds.size.width,
+      height = bounds.size.height,
       atlasName = shader.channel0.map(assetName => lookupAtlasName(assetMapping, assetName)),
       frame = frameInfo,
       channelOffset1 = frameInfo.offsetToCoords(channelOffset1),
@@ -630,7 +633,7 @@ final class DisplayObjectConversions(
 
 object DisplayObjectConversions {
 
-  def nodeToMatrix4(node: RenderNode, position: Vector2, size: Vector3): CheapMatrix4 =
+  def nodeToMatrix4(node: SceneNodeInternal, position: Vector2, size: Vector3): CheapMatrix4 =
     CheapMatrix4.identity
       .scale(
         if (node.flip.horizontal) -1.0 else 1.0,
@@ -649,8 +652,8 @@ object DisplayObjectConversions {
       )
       .rotate(node.rotation)
       .translate(
-        position.x, //node.position.x.toDouble,
-        position.y, //node.position.y.toDouble,
+        position.x,
+        position.y,
         0.0d
       )
 
