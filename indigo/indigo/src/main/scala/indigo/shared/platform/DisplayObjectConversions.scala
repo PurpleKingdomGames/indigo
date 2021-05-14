@@ -12,7 +12,7 @@ import indigo.shared.FontRegister
 import indigo.shared.platform.AssetMapping
 import indigo.shared.scenegraph.{Graphic, Sprite, Text, TextLine, TextBox}
 
-import indigo.shared.scenegraph.SceneNode
+import indigo.shared.scenegraph.SceneGraphNode
 import indigo.shared.scenegraph.RenderNode
 import indigo.shared.scenegraph.Group
 import indigo.shared.scenegraph.Transformer
@@ -124,7 +124,7 @@ final class DisplayObjectConversions(
   }
 
   def sceneNodesToDisplayObjects(
-      sceneNodes: List[SceneNode],
+      sceneNodes: List[SceneGraphNode],
       gameTime: GameTime,
       assetMapping: AssetMapping,
       cloneBlankDisplayObjects: Map[CloneId, DisplayObject]
@@ -133,7 +133,7 @@ final class DisplayObjectConversions(
       sceneNodeToDisplayObject(node, gameTime, assetMapping, cloneBlankDisplayObjects)
     }
 
-  private val accSceneNodes: ListBuffer[SceneNode] = new ListBuffer()
+  private val accSceneNodes: ListBuffer[SceneGraphNode] = new ListBuffer()
 
   private def groupToMatrix(group: Group): CheapMatrix4 =
     CheapMatrix4.identity
@@ -163,10 +163,10 @@ final class DisplayObjectConversions(
   }
 
   def deGroup(
-      sceneNodes: List[SceneNode]
-  ): ListBuffer[SceneNode] = {
+      sceneNodes: List[SceneGraphNode]
+  ): ListBuffer[SceneGraphNode] = {
     @tailrec
-    def rec(remaining: List[SceneNode]): ListBuffer[SceneNode] =
+    def rec(remaining: List[SceneGraphNode]): ListBuffer[SceneGraphNode] =
       remaining match {
         case Nil =>
           accSceneNodes
@@ -191,7 +191,7 @@ final class DisplayObjectConversions(
   }
 
   def sceneNodeToDisplayObject(
-      sceneNode: SceneNode,
+      sceneNode: SceneGraphNode,
       gameTime: GameTime,
       assetMapping: AssetMapping,
       cloneBlankDisplayObjects: Map[CloneId, DisplayObject]

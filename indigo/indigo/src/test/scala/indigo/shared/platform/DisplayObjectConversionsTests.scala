@@ -21,7 +21,7 @@ import indigo.shared.display.DisplayObject
 import indigo.shared.display.DisplayText
 import indigo.shared.display.DisplayClone
 import indigo.shared.display.DisplayCloneBatch
-import indigo.shared.scenegraph.SceneNode
+import indigo.shared.scenegraph.SceneGraphNode
 import indigo.shared.scenegraph.Group
 import indigo.shared.datatypes.Depth
 import indigo.shared.datatypes.mutable.CheapMatrix4
@@ -52,7 +52,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
     fontRegister
   )
 
-  def convert(node: SceneNode): DisplayObject = {
+  def convert(node: SceneGraphNode): DisplayObject = {
     doc.purgeCaches()
 
     doc
@@ -120,7 +120,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
     assertEquals(actual.height, 100.0f)
   }
 
-  test("create a CheapMatrix4 from a SceneNode.translation") {
+  test("create a CheapMatrix4 from a SceneGraphNode.translation") {
 
     val node: RenderNode =
       Graphic(100, 100, Material.Bitmap(AssetName("test")))
@@ -140,7 +140,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
     assertEquals(actual.toMatrix4, expected.toMatrix4)
   }
 
-  test("create a CheapMatrix4 from a SceneNode.translation with ref") {
+  test("create a CheapMatrix4 from a SceneGraphNode.translation with ref") {
 
     val node: RenderNode =
       Graphic(100, 100, Material.Bitmap(AssetName("test")))
@@ -161,7 +161,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
     assertEquals(actual.toMatrix4, expected.toMatrix4)
   }
 
-  test("create a CheapMatrix4 from a SceneNode.scale") {
+  test("create a CheapMatrix4 from a SceneGraphNode.scale") {
 
     val node: RenderNode =
       Graphic(100, 100, Material.Bitmap(AssetName("test")))
@@ -181,7 +181,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
     assertEquals(actual.toMatrix4, expected.toMatrix4)
   }
 
-  test("create a CheapMatrix4 from a SceneNode.rotation") {
+  test("create a CheapMatrix4 from a SceneGraphNode.rotation") {
 
     val node: RenderNode =
       Graphic(100, 100, Material.Bitmap(AssetName("test")))
@@ -204,7 +204,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
     assert(clue(actual.toMatrix4) ~== clue(expected.toMatrix4))
   }
 
-  test("create a CheapMatrix4 from a SceneNode.translation with flip") {
+  test("create a CheapMatrix4 from a SceneGraphNode.translation with flip") {
 
     val width: Int  = 100
     val height: Int = 100
