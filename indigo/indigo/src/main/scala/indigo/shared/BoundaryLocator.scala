@@ -31,8 +31,8 @@ final class BoundaryLocator(
 ) {
 
   implicit private val maybeBoundsCache: QuickCache[Option[Rectangle]] = QuickCache.empty
-  implicit private val boundsCache: QuickCache[Rectangle] = QuickCache.empty
-  implicit private val textLinesCache: QuickCache[List[TextLine]] = QuickCache.empty
+  implicit private val boundsCache: QuickCache[Rectangle]              = QuickCache.empty
+  implicit private val textLinesCache: QuickCache[List[TextLine]]      = QuickCache.empty
 
   def purgeCache(): Unit = {
     maybeBoundsCache.purgeAllNow()
@@ -51,12 +51,12 @@ final class BoundaryLocator(
         )
         .moveTo(t.position)
 
-    BoundaryLocator.findBounds(t, rect.position, rect.size)
+    BoundaryLocator.findBounds(t, rect.position, rect.size, t.ref)
 
   def findBounds(sceneGraphNode: SceneNode): Option[Rectangle] =
     sceneGraphNode match {
       case s: Shape =>
-        Option(shapeBounds(s)).map(rect => BoundaryLocator.findBounds(s, rect.position, rect.size))
+        Option(shapeBounds(s)).map(rect => BoundaryLocator.findBounds(s, rect.position, rect.size, s.ref))
 
       case g: Graphic =>
         Option(g.bounds)
@@ -65,10 +65,10 @@ final class BoundaryLocator(
         Option(t.bounds)
 
       case s: EntityNode =>
-        Option(BoundaryLocator.findBounds(s, s.position, s.size))
+        Option(BoundaryLocator.findBounds(s, s.position, s.size, s.ref))
 
       case g: Group =>
-        Option(groupBounds(g)).map(rect => BoundaryLocator.findBounds(g, rect.position, rect.size))
+        Option(groupBounds(g)).map(rect => BoundaryLocator.findBounds(g, rect.position, rect.size, g.ref))
 
       case _: Clone =>
         None
@@ -77,10 +77,20 @@ final class BoundaryLocator(
         None
 
       case s: Sprite =>
-        spriteBounds(s).map(rect => BoundaryLocator.findBounds(s, rect.position, rect.size))
+        spriteBounds(s).map(rect => BoundaryLocator.findBounds(s, rect.position, rect.size, s.ref))
 
       case t: Text =>
-        Option(textBounds(t)).map(rect => BoundaryLocator.findBounds(t, rect.position, rect.size))
+        Option(textBounds(t)).map { rect =>
+
+          val offset: Int =
+            t.alignment match {
+              case TextAlignment.Left   => 0
+              case TextAlignment.Center => rect.size.width / 2
+              case TextAlignment.Right  => rect.size.width
+            }
+
+          BoundaryLocator.findBounds(t, rect.position, rect.size, t.ref + Point(offset, 0))
+        }
 
       case _ =>
         None
@@ -143,23 +153,14 @@ final class BoundaryLocator(
     }
 
   def textBounds(text: Text): Rectangle =
-    QuickCache(s"""text-bounds-${text.fontKey}-${text.text}-${text.alignment.toString}""") {
-      val unaligned =
-        textAsLinesWithBounds(text.text, text.fontKey)
-          .map(_.lineBounds)
-          .fold(Rectangle.zero) { (acc, next) =>
-            acc.resize(Size(Math.max(acc.width, next.width), acc.height + next.height))
-          }
-
-      val offset: Int =
-        text.alignment match {
-          case TextAlignment.Left => 0
-          case TextAlignment.Center => -(unaligned.size.width / 2)
-          case TextAlignment.Right => -unaligned.size.width
+    val unaligned =
+      textAsLinesWithBounds(text.text, text.fontKey)
+        .map(_.lineBounds)
+        .fold(Rectangle.zero) { (acc, next) =>
+          acc.resize(Size(Math.max(acc.width, next.width), acc.height + next.height))
         }
 
-      unaligned.moveTo(text.position + Point(offset, 0))
-    }
+    unaligned.moveTo(text.position)
 
   def shapeBounds(shape: Shape): Rectangle =
     shape match
@@ -184,11 +185,10 @@ final class BoundaryLocator(
 }
 
 object BoundaryLocator:
-
-  def findBounds(entity: SceneNode, position: Point, size: Size): Rectangle =
+  def findBounds(entity: SceneNode, position: Point, size: Size, ref: Point): Rectangle =
     val m =
       CheapMatrix4.identity
-        .translate(-entity.ref.x, -entity.ref.y, 0.0d)
+        .translate(-ref.x, -ref.y, 0.0d)
         .rotate(entity.rotation)
         .scale(entity.scale.x, entity.scale.y, 1)
         .translate(position.x, position.y, 0.0d)

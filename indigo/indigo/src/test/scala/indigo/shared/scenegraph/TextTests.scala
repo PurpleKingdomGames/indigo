@@ -1,7 +1,7 @@
 package indigo.shared.scenegraph
 
 import indigo.shared.FontRegister
-import indigo.shared.datatypes.{FontChar, FontInfo, FontKey, Rectangle}
+import indigo.shared.datatypes.{FontChar, FontInfo, FontKey, Rectangle, Radians}
 
 import indigo.shared.assets.AssetName
 import indigo.shared.materials.Material
@@ -113,6 +113,34 @@ class TextTests extends munit.FunSuite {
 
     val actual   = t.calculatedBounds(boundaryLocator).get
     val expected = Rectangle(10 - width, 20, width, 16)
+
+    assertEquals(actual, expected)
+    assertEquals(actual, boundaryLocator.findBounds(t).get)
+
+    fontRegister.clearRegister()
+  }
+
+  test("Text entities should be able to correctly calculate the bounds where all are equal (align right, rotated)") {
+
+    val chars = List(
+      FontChar("a", 0, 16, 16, 16),
+      FontChar("b", 16, 16, 16, 16),
+      FontChar("c", 32, 16, 16, 16)
+    )
+
+    val fontKey = FontKey("test1")
+
+    val fontInfo = FontInfo(fontKey, 256, 256, FontChar("?", 0, 0, 16, 16)).addChars(chars)
+
+    fontRegister.register(fontInfo)
+
+    val t = Text("abc", 0, 0, 1, fontKey, material).alignRight
+      .rotateTo(Radians.TAUby2)
+
+    val width = 16 * 3
+
+    val actual   = t.calculatedBounds(boundaryLocator).get
+    val expected = Rectangle(0, -16, width, 16)
 
     assertEquals(actual, expected)
     assertEquals(actual, boundaryLocator.findBounds(t).get)
