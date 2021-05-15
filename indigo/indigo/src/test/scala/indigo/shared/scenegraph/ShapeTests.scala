@@ -49,6 +49,8 @@ class ShapeTests extends munit.FunSuite:
   }
 
   test("Bounds calculation - line") {
+    // There is an almost duplicate of this test in BoundaryLocatorTests
+    // that has a better explaination of the calculation.
 
     val s: Shape.Line =
       Shape.Line(
@@ -61,7 +63,7 @@ class ShapeTests extends munit.FunSuite:
       s.calculatedBounds(boundaryLocator)
 
     val expected =
-      Rectangle(50 - 2, 10 - 2, 25 + 5, 50 + 5)
+      Rectangle(50 - 2, 10 - 2, 25 + 5 + 2, 50 + 5 + 2)
 
     assertEquals(actual, expected)
   }
