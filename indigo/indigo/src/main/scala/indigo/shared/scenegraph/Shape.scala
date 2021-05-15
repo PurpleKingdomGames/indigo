@@ -321,11 +321,12 @@ object Shape {
       Point(Math.min(start.x, end.x), Math.min(start.y, end.y)) - (stroke.width / 2)
 
     lazy val size: Size =
-      val x = Math.min(start.x, end.x)
-      val y = Math.min(start.y, end.y)
-      val w = Math.max(start.x, end.x) - x
-      val h = Math.max(start.y, end.y) - y
-      Size(w, h) + stroke.width
+      Rectangle
+        .fromTwoPoints(
+          position,
+          Point(Math.max(start.x, end.x), Math.max(start.y, end.y)) + stroke.width
+        )
+        .size
 
     def withStroke(newStroke: Stroke): Line =
       this.copy(stroke = newStroke)

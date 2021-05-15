@@ -406,15 +406,44 @@ class BoundaryLocatorTests extends munit.FunSuite {
 
   test("calculateShapeBounds - line") {
 
+    val start = Point(50, 10)
+    val end   = Point(75, 60)
+
+    val strokeWidth    = 5
+    val strokeWidthBy2 = strokeWidth / 2
+
     val s: Shape.Line =
-      Shape.Line(
-        start = Point(50, 10),
-        end = Point(75, 60),
-        stroke = Stroke(5, RGBA.Red)
-      )
+      Shape.Line(start, end, Stroke(strokeWidth, RGBA.Red))
 
     val expected =
-      Rectangle(50 - 2, 10 - 2, 25 + 5, 50 + 5)
+      Rectangle(
+        start.x - strokeWidthBy2,
+        start.y - strokeWidthBy2,
+        end.x - start.x + strokeWidth + strokeWidthBy2,
+        end.y - start.y + strokeWidth + strokeWidthBy2
+      )
+
+    assertEquals(boundaryLocator.shapeBounds(s), expected)
+  }
+
+  test("calculateShapeBounds - line 2") {
+
+    val start = Point(30, 80)
+    val end   = Point(100, 20)
+
+    val strokeWidth    = 10
+    val strokeWidthBy2 = strokeWidth / 2
+
+    val s: Shape.Line =
+      Shape.Line(start, end, Stroke(strokeWidth, RGBA.Red))
+
+    val expected =
+      Rectangle(
+        start.x - strokeWidthBy2,
+        end.y - strokeWidthBy2,
+        end.x - start.x + strokeWidth + strokeWidthBy2,
+        start.y - end.y + strokeWidth + strokeWidthBy2
+      )
 
     assertEquals(boundaryLocator.shapeBounds(s), expected)
   }
