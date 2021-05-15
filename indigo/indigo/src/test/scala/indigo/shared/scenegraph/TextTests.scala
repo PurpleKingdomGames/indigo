@@ -115,6 +115,7 @@ class TextTests extends munit.FunSuite {
     val expected = Rectangle(10 - width, 20, width, 16)
 
     assertEquals(actual, expected)
+    assertEquals(actual, boundaryLocator.findBounds(t).get)
 
     fontRegister.clearRegister()
   }
