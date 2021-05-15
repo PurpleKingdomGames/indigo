@@ -30,10 +30,12 @@ final class BoundaryLocator(
     dynamicText: DynamicText
 ) {
 
-  implicit private val boundsCache: QuickCache[Option[Rectangle]] = QuickCache.empty
+  implicit private val maybeBoundsCache: QuickCache[Option[Rectangle]] = QuickCache.empty
+  implicit private val boundsCache: QuickCache[Rectangle] = QuickCache.empty
   implicit private val textLinesCache: QuickCache[List[TextLine]] = QuickCache.empty
 
   def purgeCache(): Unit = {
+    maybeBoundsCache.purgeAllNow()
     boundsCache.purgeAllNow()
     textLinesCache.purgeAllNow()
   }
@@ -78,18 +80,7 @@ final class BoundaryLocator(
         spriteBounds(s).map(rect => BoundaryLocator.findBounds(s, rect.position, rect.size))
 
       case t: Text =>
-        textBounds(t).map { rect =>
-          val tt = t.alignment match
-            case TextAlignment.Left   => t
-            case TextAlignment.Center => t.withRef((rect.width / 2), (rect.height / 2))
-            case TextAlignment.Right  => t.withRef(rect.width, (rect.height / 2))
-
-          BoundaryLocator.findBounds(
-            tt,
-            t.position,
-            rect.size
-          )
-        }
+        Option(textBounds(t)).map(rect => BoundaryLocator.findBounds(t, rect.position, rect.size))
 
       case _ =>
         None
@@ -151,7 +142,7 @@ final class BoundaryLocator(
         }
     }
 
-  def textBounds(text: Text): Option[Rectangle] =
+  def textBounds(text: Text): Rectangle =
     QuickCache(s"""text-bounds-${text.fontKey}-${text.text}-${text.alignment.toString}""") {
       val unaligned =
         textAsLinesWithBounds(text.text, text.fontKey)
@@ -160,18 +151,14 @@ final class BoundaryLocator(
             acc.resize(Size(Math.max(acc.width, next.width), acc.height + next.height))
           }
 
-      val res =
-        (text.alignment, unaligned) match
-          case (TextAlignment.Left, b) =>
-            Option(b)
+      val offset: Int =
+        text.alignment match {
+          case TextAlignment.Left => 0
+          case TextAlignment.Center => -(unaligned.size.width / 2)
+          case TextAlignment.Right => -unaligned.size.width
+        }
 
-          case (TextAlignment.Center, b) =>
-            Option(b.moveTo(Point(b.x - (b.width / 2), b.y)))
-
-          case (TextAlignment.Right, b) =>
-            Option(b.moveTo(Point(b.x - b.width, b.y)))
-
-      res.map(_.moveBy(text.position))
+      unaligned.moveTo(text.position + Point(offset, 0))
     }
 
   def shapeBounds(shape: Shape): Rectangle =

@@ -55,7 +55,7 @@ object BoundsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
         .rotateTo(Radians.fromSeconds(context.running * speed))
 
     val text: Text =
-      Text("boom!", Fonts.fontKey, SandboxAssets.fontMaterial).alignRight
+      Text("boom!\nfish", Fonts.fontKey, SandboxAssets.fontMaterial).alignRight
         .moveTo(100, 100)
         .withRef(0, 10)
         .rotateTo(Radians.fromSeconds(context.running * speed).negative)
@@ -92,40 +92,47 @@ object BoundsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
       SceneUpdateFragment(
         Layer(
           List(
-            graphic,
-            Shape.Box(graphic.bounds, Fill.None, Stroke(1, RGBA.Green)),
-            sprite,
-            Shape.Box(
-              sprite.calculatedBounds(context.boundaryLocator).getOrElse(Rectangle.zero),
-              Fill.None,
-              Stroke(1, RGBA.Red)
-            ),
+            // graphic,
+            // Shape.Box(graphic.bounds, Fill.None, Stroke(1, RGBA.Green)),
+            // sprite,
+            // Shape.Box(
+            //   sprite.calculatedBounds(context.boundaryLocator).getOrElse(Rectangle.zero),
+            //   Fill.None,
+            //   Stroke(1, RGBA.Red)
+            // ),
             text,
             Shape.Box(
               text.calculatedBounds(context.boundaryLocator).getOrElse(Rectangle.zero),
               Fill.None,
               Stroke(1, RGBA.Cyan)
             ),
-            shape,
-            Shape.Circle(shape.position, 3, Fill.None, Stroke(2, RGBA.White)),
-            Shape.Circle(shape.calculatedBounds(context.boundaryLocator).center, 5, Fill.None, Stroke(2, RGBA.White)),
-            Shape.Box(
-              shape.calculatedBounds(context.boundaryLocator),
+            Shape.Circle(text.position, 3, Fill.None, Stroke(2, RGBA.White)),
+            Shape.Circle(
+              text.calculatedBounds(context.boundaryLocator).getOrElse(Rectangle.zero).center,
+              5,
               Fill.None,
-              Stroke(1, RGBA.Magenta)
-            ),
-            group,
-            Shape.Box(
-              group.calculatedBounds(context.boundaryLocator),
-              Fill.None,
-              Stroke(1, RGBA.Yellow)
-            ),
-            textBox,
-            Shape.Box(
-              textBox.bounds,
-              Fill.None,
-              Stroke(1, RGBA.Blue)
+              Stroke(2, RGBA.White)
             )
+            // shape,
+            // Shape.Circle(shape.position, 3, Fill.None, Stroke(2, RGBA.White)),
+            // Shape.Circle(shape.calculatedBounds(context.boundaryLocator).center, 5, Fill.None, Stroke(2, RGBA.White)),
+            // Shape.Box(
+            //   shape.calculatedBounds(context.boundaryLocator),
+            //   Fill.None,
+            //   Stroke(1, RGBA.Magenta)
+            // ),
+            // group,
+            // Shape.Box(
+            //   group.calculatedBounds(context.boundaryLocator),
+            //   Fill.None,
+            //   Stroke(1, RGBA.Yellow)
+            // ),
+            // textBox,
+            // Shape.Box(
+            //   textBox.bounds,
+            //   Fill.None,
+            //   Stroke(1, RGBA.Blue)
+            // )
           )
         )
       )
