@@ -27,7 +27,7 @@ final case class TextBox(
     with SpatialModifiers[TextBox] derives CanEqual:
 
   def bounds: Rectangle =
-    BoundaryLocator.findBounds(this, position, size)
+    BoundaryLocator.findBounds(this, position, size, ref)
 
   def withText(newText: String): TextBox =
     this.copy(text = newText)

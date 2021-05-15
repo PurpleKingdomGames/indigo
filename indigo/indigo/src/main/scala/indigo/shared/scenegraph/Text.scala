@@ -25,7 +25,16 @@ final case class Text(
     with SpatialModifiers[Text] derives CanEqual {
 
   def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] =
-    Option(locator.textBounds(this)).map(rect => BoundaryLocator.findBounds(this, rect.position, rect.size))
+    Option(locator.textBounds(this)).map { rect =>
+      val offset: Int =
+        alignment match {
+          case TextAlignment.Left   => 0
+          case TextAlignment.Center => rect.size.width / 2
+          case TextAlignment.Right  => rect.size.width
+        }
+
+      BoundaryLocator.findBounds(this, rect.position, rect.size, ref + Point(offset, 0))
+    }
 
   lazy val x: Int = position.x
   lazy val y: Int = position.y

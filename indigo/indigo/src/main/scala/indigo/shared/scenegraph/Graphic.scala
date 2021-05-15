@@ -37,7 +37,7 @@ final case class Graphic(
     with SpatialModifiers[Graphic] derives CanEqual {
 
   def bounds: Rectangle =
-    BoundaryLocator.findBounds(this, position, crop.size)
+    BoundaryLocator.findBounds(this, position, crop.size, ref)
 
   lazy val size: Size =
     crop.size
