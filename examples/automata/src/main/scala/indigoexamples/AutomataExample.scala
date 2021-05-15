@@ -6,11 +6,11 @@ import indigoextras.ui._
 import scala.scalajs.js.annotation._
 
 @JSExportTopLevel("IndigoGame")
-object AutomataExample extends IndigoDemo[Point, Point, Unit, ViewModel] {
+object AutomataExample extends IndigoDemo[Size, Size, Unit, ViewModel] {
 
   val eventFilters: EventFilters = EventFilters.Permissive
 
-  def boot(flags: Map[String, String]): Outcome[BootResult[Point]] =
+  def boot(flags: Map[String, String]): Outcome[BootResult[Size]] =
     Outcome {
       val config = defaultGameConfig
 
@@ -18,20 +18,19 @@ object AutomataExample extends IndigoDemo[Point, Point, Unit, ViewModel] {
         config,
         config.viewport.size
       ).withAssets(
-          AssetType.Image(AssetName("graphics"), AssetPath("assets/graphics.png")),
-          AssetType.Image(FontStuff.fontName, AssetPath("assets/boxy_font.png"))
-        )
-        .withFonts(FontStuff.fontInfo)
+        AssetType.Image(AssetName("graphics"), AssetPath("assets/graphics.png")),
+        AssetType.Image(FontStuff.fontName, AssetPath("assets/boxy_font.png"))
+      ).withFonts(FontStuff.fontInfo)
         .withSubSystems(Score.automataSubSystem(FontStuff.fontKey))
     }
 
-  def setup(bootData: Point, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[Point]] =
+  def setup(bootData: Size, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[Size]] =
     Outcome(Startup.Success(bootData))
 
-  def initialModel(startupData: Point): Outcome[Unit] =
+  def initialModel(startupData: Size): Outcome[Unit] =
     Outcome(())
 
-  def initialViewModel(startupData: Point, model: Unit): Outcome[ViewModel] =
+  def initialViewModel(startupData: Size, model: Unit): Outcome[ViewModel] =
     Outcome(
       ViewModel(
         Button(
@@ -47,12 +46,11 @@ object AutomataExample extends IndigoDemo[Point, Point, Unit, ViewModel] {
       )
     )
 
-  def updateModel(context: FrameContext[Point], model: Unit): GlobalEvent => Outcome[Unit] = {
-    case _ =>
-      Outcome(model)
+  def updateModel(context: FrameContext[Size], model: Unit): GlobalEvent => Outcome[Unit] = { case _ =>
+    Outcome(model)
   }
 
-  def updateViewModel(context: FrameContext[Point], model: Unit, viewModel: ViewModel): GlobalEvent => Outcome[ViewModel] = {
+  def updateViewModel(context: FrameContext[Size], model: Unit, viewModel: ViewModel): GlobalEvent => Outcome[ViewModel] = {
     case FrameTick =>
       viewModel.button
         .update(context.inputState.mouse)
@@ -65,7 +63,7 @@ object AutomataExample extends IndigoDemo[Point, Point, Unit, ViewModel] {
       Outcome(viewModel)
   }
 
-  def present(context: FrameContext[Point], model: Unit, viewModel: ViewModel): Outcome[SceneUpdateFragment] =
+  def present(context: FrameContext[Size], model: Unit, viewModel: ViewModel): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
         viewModel.button.draw,
@@ -75,7 +73,7 @@ object AutomataExample extends IndigoDemo[Point, Point, Unit, ViewModel] {
 
 }
 
-final case class ViewModel(button: Button, viewportSize: Point) {
+final case class ViewModel(button: Button, viewportSize: Size) {
   def withButton(btn: Button): ViewModel =
     this.copy(button = btn)
 }
