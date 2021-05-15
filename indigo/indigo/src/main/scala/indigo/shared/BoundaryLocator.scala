@@ -152,7 +152,7 @@ final class BoundaryLocator(
     }
 
   def textBounds(text: Text): Option[Rectangle] =
-    QuickCache(s"""text-bounds-${text.fontKey}-${text.text}""") {
+    QuickCache(s"""text-bounds-${text.fontKey}-${text.text}-${text.alignment.toString}""") {
       val unaligned =
         textAsLinesWithBounds(text.text, text.fontKey)
           .map(_.lineBounds)
@@ -171,7 +171,7 @@ final class BoundaryLocator(
           case (TextAlignment.Right, b) =>
             Option(b.moveTo(Point(b.x - b.width, b.y)))
 
-      res.map(_.moveTo(text.position))
+      res.map(_.moveBy(text.position))
     }
 
   def shapeBounds(shape: Shape): Rectangle =

@@ -67,4 +67,56 @@ class TextTests extends munit.FunSuite {
     fontRegister.clearRegister()
   }
 
+  test("Text entities should be able to correctly calculate the bounds where all are equal (align center)") {
+
+    val chars = List(
+      FontChar("a", 0, 16, 16, 16),
+      FontChar("b", 16, 16, 16, 16),
+      FontChar("c", 32, 16, 16, 16)
+    )
+
+    val fontKey = FontKey("test1")
+
+    val fontInfo = FontInfo(fontKey, 256, 256, FontChar("?", 0, 0, 16, 16)).addChars(chars)
+
+    fontRegister.register(fontInfo)
+
+    val t = Text("abc", 10, 20, 1, fontKey, material).alignCenter
+
+    val width = 16 * 3
+
+    val actual   = t.calculatedBounds(boundaryLocator).get
+    val expected = Rectangle(10 - (width / 2), 20, width, 16)
+
+    assertEquals(actual, expected)
+
+    fontRegister.clearRegister()
+  }
+
+  test("Text entities should be able to correctly calculate the bounds where all are equal (align right)") {
+
+    val chars = List(
+      FontChar("a", 0, 16, 16, 16),
+      FontChar("b", 16, 16, 16, 16),
+      FontChar("c", 32, 16, 16, 16)
+    )
+
+    val fontKey = FontKey("test1")
+
+    val fontInfo = FontInfo(fontKey, 256, 256, FontChar("?", 0, 0, 16, 16)).addChars(chars)
+
+    fontRegister.register(fontInfo)
+
+    val t = Text("abc", 10, 20, 1, fontKey, material).alignRight
+
+    val width = 16 * 3
+
+    val actual   = t.calculatedBounds(boundaryLocator).get
+    val expected = Rectangle(10 - width, 20, width, 16)
+
+    assertEquals(actual, expected)
+
+    fontRegister.clearRegister()
+  }
+
 }
