@@ -56,7 +56,7 @@ object IndigoBuild {
       throw new Exception("Supplied game assets path was not a directory")
     else {
       println("Copying assets...")
-      os.copy(gameAssetsDirectoryPath, destAssetsFolder, true, true, true)
+      CustomOSLibCopy.copy(gameAssetsDirectoryPath, destAssetsFolder, true, true, true, false, false)
     }
 
   @SuppressWarnings(Array("org.wartremover.warts.Throw"))
@@ -64,7 +64,7 @@ object IndigoBuild {
     val scriptFile = templateOptions.scriptPathBase / fileName
 
     if (os.exists(scriptFile))
-      os.copy(scriptFile, destScriptsFolder / fileName)
+      CustomOSLibCopy.copy(scriptFile, destScriptsFolder / fileName, true, false, false, false, false)
     else
       throw new Exception("Script file does not exist, have you compiled the JS file? Tried: " + scriptFile.toString())
   }

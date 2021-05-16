@@ -1,7 +1,7 @@
 import scala.sys.process._
 import scala.language.postfixOps
 
-val scala3Version    = "3.0.0-RC3"
+val scala3Version    = "3.0.0"
 val scala213Version = "2.13.5"
 
 lazy val commonSettings = Seq(
@@ -9,7 +9,7 @@ lazy val commonSettings = Seq(
   scalaVersion := scala3Version,
   organization := "indigo-examples",
   libraryDependencies ++= Seq(
-    "org.scalameta"   %%% "munit"         % "0.7.25" % Test,
+    "org.scalameta"   %%% "munit"         % "0.7.26" % Test,
     "io.indigoengine" %%% "indigo"        % IndigoVersion.getVersion,
     "io.indigoengine" %%% "indigo-extras" % IndigoVersion.getVersion
   ),

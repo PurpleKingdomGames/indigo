@@ -5,7 +5,7 @@ ThisBuild / versionScheme := Some("early-semver")
 
 lazy val indigoVersion = IndigoVersion.getVersion
 
-val scala3Version = "3.0.0-RC3"
+val scala3Version = "3.0.0"
 
 lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
   version := indigoVersion,
@@ -13,7 +13,7 @@ lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
   crossScalaVersions := Seq(scala3Version),
   organization := "io.indigoengine",
   libraryDependencies ++= Seq(
-    "org.scalameta" %%% "munit" % "0.7.25" % Test
+    "org.scalameta" %%% "munit" % "0.7.26" % Test
   ),
   testFrameworks += new TestFramework("munit.Framework"),
   Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
@@ -157,8 +157,8 @@ lazy val indigoJsonCirce =
     .settings(
       name := "indigo-json-circe",
       libraryDependencies ++= Seq(
-        "io.circe" %%% "circe-core"   % "0.14.0-M6",
-        "io.circe" %%% "circe-parser" % "0.14.0-M6"
+        "io.circe" %%% "circe-core"   % "0.14.0-M7",
+        "io.circe" %%% "circe-parser" % "0.14.0-M7"
       )
     )
     .dependsOn(indigo)
@@ -172,7 +172,7 @@ lazy val indigoShaders =
       scalaVersion := scala3Version,
       organization := "io.indigoengine",
       libraryDependencies ++= Seq(
-        "org.scalameta" %%% "munit" % "0.7.25" % Test
+        "org.scalameta" %%% "munit" % "0.7.26" % Test
       ),
       testFrameworks += new TestFramework("munit.Framework"),
       Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
@@ -189,9 +189,9 @@ lazy val indigoProject =
     .settings(commonSettings: _*)
     .settings(
       code := { "code ." ! },
-      openshareddocs := { "open -a Firefox indigo-shared/.jvm/target/scala-3.0.0-RC3/api/indigo/index.html" ! },
-      openindigodocs := { "open -a Firefox indigo/.jvm/target/scala-3.0.0-RC3/api/indigo/index.html" ! },
-      openindigoextsdocs := { "open -a Firefox indigo-exts/.jvm/target/scala-3.0.0-RC3/api/indigoexts/index.html" ! }
+      openshareddocs := { "open -a Firefox indigo-shared/.jvm/target/scala-3.0.0/api/indigo/index.html" ! },
+      openindigodocs := { "open -a Firefox indigo/.jvm/target/scala-3.0.0/api/indigo/index.html" ! },
+      openindigoextsdocs := { "open -a Firefox indigo-exts/.jvm/target/scala-3.0.0/api/indigoexts/index.html" ! }
     )
     .aggregate(
       indigo,

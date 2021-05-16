@@ -17,7 +17,7 @@ object IndigoRun {
     }
 
     os.list(buildDir).foreach { file =>
-      os.copy.into(file, outputDir, true, true, true, true)
+      CustomOSLibCopy.copyInto(file, outputDir, true, true, true, true, false)
     }
 
     // Write support js script

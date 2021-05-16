@@ -2,7 +2,7 @@
 // The essentials.
 //-----------------------------------
 
-val scala3Version    = "3.0.0-RC3"
+val scala3Version    = "3.0.0"
 
 lazy val pirate =
   (project in file("."))
@@ -16,7 +16,7 @@ lazy val pirate =
       scalaVersion := scala3Version,
       organization := "pirate",
       libraryDependencies ++= Seq(
-        "org.scalameta" %%% "munit" % "0.7.25" % Test,
+        "org.scalameta" %%% "munit" % "0.7.26" % Test,
         "org.scalacheck" %%% "scalacheck" % "1.15.3" % "test"
       ),
       scalacOptions ++= Seq("-language:strictEquality"),

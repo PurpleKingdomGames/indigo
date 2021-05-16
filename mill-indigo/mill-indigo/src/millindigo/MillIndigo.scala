@@ -2,7 +2,7 @@ package millindigo
 
 import mill._
 import mill.scalalib._
-import os._
+import os.Path
 import mill.define.Command
 import java.io.File
 import mill.define.Persistent
