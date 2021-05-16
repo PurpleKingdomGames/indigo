@@ -8,4 +8,4 @@ export GPG_TTY=$(tty)
 
 source credentials.sh
 
-sbt crossIndigoRelease 
+sbt clean crossIndigoRelease 
