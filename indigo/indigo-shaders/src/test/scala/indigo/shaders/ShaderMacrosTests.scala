@@ -6,7 +6,9 @@ class ShaderMacrosTests extends munit.FunSuite {
 
     val out = ShaderMacros.toGLSL((x: Float) => x + 1.0f)
 
+    println("here")
     println(out)
+    println("here...")
 
     assert(1 == 1)
   }

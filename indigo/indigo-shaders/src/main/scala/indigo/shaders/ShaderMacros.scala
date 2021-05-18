@@ -2,6 +2,8 @@ package indigo.shaders
 
 import scala.quoted._
 
+import ShaderDSL._
+
 object ShaderMacros:
 
   inline def debugSingle(inline expr: Any): Unit = ${debugSingleImpl('expr)} 
@@ -29,12 +31,59 @@ object ShaderMacros:
 
   private def toGLSLImpl(expr: Expr[Function1[Float, Float]])(using Quotes): Expr[String] = {
     
-    expr match {
-      // case Expr()
+    println(">>" + expr.show)
 
-      case x =>
-        println(expr.show)
+    val x = {
+      val fieldName = 
+
+        import quotes.reflect._
+
+        println("term" + expr.asTerm.show)
+
+        expr.asTerm match {
+          case Inlined(
+            _,
+            List(),
+            Block(
+              List(
+                DefDef(name, valueDefinitions, returnType, statementTerm)
+                // DefDef(_,List(List(ValDef(x,Ident(Float),EmptyTree))))
+              ),
+              Closure(_,_)
+            )
+          ) =>
+            name + " :: " + valueDefinitions + " :: " + returnType.show + " :: " + statementTerm.map(_.show)
+        }
+          
+      Expr(fieldName)
     }
+
+    println(x.show)
+
+/*
+def getNameImpl[T](f: Expr[T => Any])(using Quotes): Expr[String] = {
+  import quotes.reflect._
+    
+  val fieldName = f.asTerm match {
+    case Inlined(
+      _,
+      List(),
+      Block(
+        List(DefDef(
+          _,
+          List(),
+          List(List(ValDef(_, _, _))),
+          _,
+          Some(Select(Ident(_), fn))
+        )),
+        Closure(_, _)
+      )
+    ) => fn
+  }
+    
+  Expr(fieldName)
+}
+*/
 
     Expr(routine("fish", Ref("z"))(float(10.0)).render)
   }

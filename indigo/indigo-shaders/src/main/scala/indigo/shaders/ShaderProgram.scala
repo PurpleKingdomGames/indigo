@@ -1,5 +1,7 @@
 package indigo.shaders
 
+import ShaderDSL._
+
 trait GLSLProgram[Varyings <: VaryingsProduct] {
   val varyings: Varyings
   val vertex: VertexShader[Varyings]
