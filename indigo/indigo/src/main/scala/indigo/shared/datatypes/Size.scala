@@ -10,8 +10,8 @@ final case class Size(width: Int, height: Int) derives CanEqual {
   def /(size: Size): Size = Size(width / size.width, height / size.height)
   def /(i: Int): Size     = Size(width / i, height / i)
 
-  def withX(newX: Int): Size = this.copy(width = newX)
-  def withY(newY: Int): Size = this.copy(height = newY)
+  def withWidth(newX: Int): Size = this.copy(width = newX)
+  def withHeight(newY: Int): Size = this.copy(height = newY)
 
   def abs: Size =
     Size(Math.abs(width), Math.abs(height))
