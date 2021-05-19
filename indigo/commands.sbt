@@ -135,6 +135,15 @@ addCommandAlias(
 )
 
 addCommandAlias(
+  "sandboxBuildFull",
+  List(
+    "buildAllNoClean",
+    "sandbox/fullOptJS",
+    "sandbox/indigoBuildFull"
+  ).mkString(";", ";", "")
+)
+
+addCommandAlias(
   "sandboxRun",
   List(
     "buildAllNoClean",
