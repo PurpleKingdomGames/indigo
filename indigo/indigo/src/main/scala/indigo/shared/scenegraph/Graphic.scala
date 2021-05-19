@@ -1,5 +1,8 @@
 package indigo.shared.scenegraph
 
+import indigo.shared.scenegraph.syntax.BasicSpatial
+import indigo.shared.scenegraph.syntax.Spatial
+
 import indigo.shared.materials.Material
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Point
@@ -33,8 +36,7 @@ final case class Graphic(
     ref: Point,
     flip: Flip
 ) extends RenderNode
-    with Cloneable
-    with SpatialModifiers[Graphic] derives CanEqual {
+    with Cloneable derives CanEqual {
 
   def bounds: Rectangle =
     BoundaryLocator.findBounds(this, position, crop.size, ref)
@@ -51,52 +53,8 @@ final case class Graphic(
   def modifyMaterial(alter: Material => Material): Graphic =
     this.copy(material = alter(material))
 
-  def moveTo(pt: Point): Graphic =
-    this.copy(position = pt)
-  def moveTo(x: Int, y: Int): Graphic =
-    moveTo(Point(x, y))
-  def withPosition(newPosition: Point): Graphic =
-    moveTo(newPosition)
-
-  def moveBy(pt: Point): Graphic =
-    this.copy(position = position + pt)
-  def moveBy(x: Int, y: Int): Graphic =
-    moveBy(Point(x, y))
-
-  def rotateTo(angle: Radians): Graphic =
-    this.copy(rotation = angle)
-  def rotateBy(angle: Radians): Graphic =
-    rotateTo(rotation + angle)
-  def withRotation(newRotation: Radians): Graphic =
-    rotateTo(newRotation)
-
-  def scaleBy(amount: Vector2): Graphic =
-    this.copy(scale = scale * amount)
-  def scaleBy(x: Double, y: Double): Graphic =
-    scaleBy(Vector2(x, y))
-  def withScale(newScale: Vector2): Graphic =
-    this.copy(scale = newScale)
-
-  def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): Graphic =
-    this.copy(position = newPosition, rotation = newRotation, scale = newScale)
-
-  def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): Graphic =
-    transformTo(position + positionDiff, rotation + rotationDiff, scale * scaleDiff)
-
   def withDepth(newDepth: Depth): Graphic =
     this.copy(depth = newDepth)
-
-  def flipHorizontal(isFlipped: Boolean): Graphic =
-    this.copy(flip = flip.withHorizontalFlip(isFlipped))
-  def flipVertical(isFlipped: Boolean): Graphic =
-    this.copy(flip = flip.withVerticalFlip(isFlipped))
-  def withFlip(newFlip: Flip): Graphic =
-    this.copy(flip = newFlip)
-
-  def withRef(newRef: Point): Graphic =
-    this.copy(ref = newRef)
-  def withRef(x: Int, y: Int): Graphic =
-    withRef(Point(x, y))
 
   def withCrop(newCrop: Rectangle): Graphic =
     this.copy(crop = newCrop)
@@ -145,4 +103,54 @@ object Graphic {
       crop = Rectangle(0, 0, width, height),
       material = material
     )
+
+  given BasicSpatial[Graphic] with
+    extension (graphic: Graphic)
+      def withPosition(newPosition: Point): Graphic =
+        graphic.copy(position = newPosition)
+      def withRotation(newRotation: Radians): Graphic =
+        graphic.copy(rotation = newRotation)
+      def withScale(newScale: Vector2): Graphic =
+        graphic.copy(scale = newScale)
+      def withDepth(newDepth: Depth): Graphic =
+        graphic.copy(depth = newDepth)
+      def withFlip(newFlip: Flip): Graphic =
+        graphic.copy(flip = newFlip)
+
+  given spatialGraphic(using bs: BasicSpatial[Graphic]): Spatial[Graphic] with
+    extension (graphic: Graphic)
+      def moveTo(pt: Point): Graphic =
+        graphic.withPosition(pt)
+      def moveTo(x: Int, y: Int): Graphic =
+        moveTo(Point(x, y))
+
+      def moveBy(pt: Point): Graphic =
+        moveTo(graphic.position + pt)
+      def moveBy(x: Int, y: Int): Graphic =
+        moveBy(Point(x, y))
+
+      def rotateTo(angle: Radians): Graphic =
+        graphic.withRotation(angle)
+      def rotateBy(angle: Radians): Graphic =
+        rotateTo(graphic.rotation + angle)
+
+      def scaleBy(amount: Vector2): Graphic =
+        graphic.withScale(graphic.scale * amount)
+      def scaleBy(x: Double, y: Double): Graphic =
+        scaleBy(Vector2(x, y))
+
+      def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): Graphic =
+        graphic.copy(position = newPosition, rotation = newRotation, scale = newScale)
+      def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): Graphic =
+        transformTo(graphic.position + positionDiff, graphic.rotation + rotationDiff, graphic.scale * scaleDiff)
+
+      def withRef(newRef: Point): Graphic =
+        graphic.copy(ref = newRef)
+      def withRef(x: Int, y: Int): Graphic =
+        withRef(Point(x, y))
+
+      def flipHorizontal(isFlipped: Boolean): Graphic =
+        graphic.withFlip(graphic.flip.withHorizontalFlip(isFlipped))
+      def flipVertical(isFlipped: Boolean): Graphic =
+        graphic.withFlip(graphic.flip.withVerticalFlip(isFlipped))
 }

@@ -29,6 +29,26 @@ class ShapeTests extends munit.FunSuite:
     assertEquals(actual, expected)
   }
 
+  test("Spatial calculation - box moveBy") {
+    val s: Shape.Box =
+      Shape.Box(
+        dimensions = Rectangle(15, 25, 100, 200),
+        fill = Fill.None,
+        stroke = Stroke(8, RGBA.Red)
+      )
+
+    val actual = s.moveBy(10, 10)
+
+    val expected =
+      Shape.Box(
+        dimensions = Rectangle(25 - 4, 35 - 4, 100, 200),
+        fill = Fill.None,
+        stroke = Stroke(8, RGBA.Red)
+      )
+
+    assertEquals(actual, expected)
+  }
+
   test("Bounds calculation - circle") {
 
     val s: Shape.Circle =

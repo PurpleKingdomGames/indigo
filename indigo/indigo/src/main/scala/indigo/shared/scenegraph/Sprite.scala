@@ -1,5 +1,8 @@
 package indigo.shared.scenegraph
 
+import indigo.shared.scenegraph.syntax.BasicSpatial
+import indigo.shared.scenegraph.syntax.Spatial
+
 import indigo.shared.events.GlobalEvent
 import indigo.shared.animation.AnimationAction
 import indigo.shared.animation.AnimationAction._
@@ -26,8 +29,7 @@ final case class Sprite(
     flip: Flip
 ) extends DependentNode
     with EventHandler
-    with Cloneable
-    with SpatialModifiers[Sprite] derives CanEqual {
+    with Cloneable derives CanEqual {
 
   lazy val x: Int = position.x
   lazy val y: Int = position.y
@@ -44,52 +46,8 @@ final case class Sprite(
   def modifyMaterial(alter: Material => Material): Sprite =
     this.copy(material = alter(material))
 
-  def moveTo(pt: Point): Sprite =
-    this.copy(position = pt)
-  def moveTo(x: Int, y: Int): Sprite =
-    moveTo(Point(x, y))
-  def withPosition(newPosition: Point): Sprite =
-    moveTo(newPosition)
-
-  def moveBy(pt: Point): Sprite =
-    this.copy(position = position + pt)
-  def moveBy(x: Int, y: Int): Sprite =
-    moveBy(Point(x, y))
-
-  def rotateTo(angle: Radians): Sprite =
-    this.copy(rotation = angle)
-  def rotateBy(angle: Radians): Sprite =
-    rotateTo(rotation + angle)
-  def withRotation(newRotation: Radians): Sprite =
-    rotateTo(newRotation)
-
-  def scaleBy(amount: Vector2): Sprite =
-    this.copy(scale = scale * amount)
-  def scaleBy(x: Double, y: Double): Sprite =
-    scaleBy(Vector2(x, y))
-  def withScale(newScale: Vector2): Sprite =
-    this.copy(scale = newScale)
-
-  def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): Sprite =
-    this.copy(position = newPosition, rotation = newRotation, scale = newScale)
-
-  def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): Sprite =
-    transformTo(position + positionDiff, rotation + rotationDiff, scale * scaleDiff)
-
   def withBindingKey(newBindingKey: BindingKey): Sprite =
     this.copy(bindingKey = newBindingKey)
-
-  def flipHorizontal(isFlipped: Boolean): Sprite =
-    this.copy(flip = flip.withHorizontalFlip(isFlipped))
-  def flipVertical(isFlipped: Boolean): Sprite =
-    this.copy(flip = flip.withVerticalFlip(isFlipped))
-  def withFlip(newFlip: Flip): Sprite =
-    this.copy(flip = newFlip)
-
-  def withRef(newRef: Point): Sprite =
-    this.copy(ref = newRef)
-  def withRef(x: Int, y: Int): Sprite =
-    withRef(Point(x, y))
 
   def withAnimationKey(newAnimationKey: AnimationKey): Sprite =
     this.copy(animationKey = newAnimationKey)
@@ -176,4 +134,54 @@ object Sprite {
       animationActions = Nil,
       material = material
     )
+
+  given BasicSpatial[Sprite] with
+    extension (sprite: Sprite)
+      def withPosition(newPosition: Point): Sprite =
+        sprite.copy(position = newPosition)
+      def withRotation(newRotation: Radians): Sprite =
+        sprite.copy(rotation = newRotation)
+      def withScale(newScale: Vector2): Sprite =
+        sprite.copy(scale = newScale)
+      def withDepth(newDepth: Depth): Sprite =
+        sprite.copy(depth = newDepth)
+      def withFlip(newFlip: Flip): Sprite =
+        sprite.copy(flip = newFlip)
+
+  given spatialSprite(using bs: BasicSpatial[Sprite]): Spatial[Sprite] with
+    extension (sprite: Sprite)
+      def moveTo(pt: Point): Sprite =
+        sprite.withPosition(pt)
+      def moveTo(x: Int, y: Int): Sprite =
+        moveTo(Point(x, y))
+
+      def moveBy(pt: Point): Sprite =
+        moveTo(sprite.position + pt)
+      def moveBy(x: Int, y: Int): Sprite =
+        moveBy(Point(x, y))
+
+      def rotateTo(angle: Radians): Sprite =
+        sprite.withRotation(angle)
+      def rotateBy(angle: Radians): Sprite =
+        rotateTo(sprite.rotation + angle)
+
+      def scaleBy(amount: Vector2): Sprite =
+        sprite.withScale(sprite.scale * amount)
+      def scaleBy(x: Double, y: Double): Sprite =
+        scaleBy(Vector2(x, y))
+
+      def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): Sprite =
+        sprite.copy(position = newPosition, rotation = newRotation, scale = newScale)
+      def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): Sprite =
+        transformTo(sprite.position + positionDiff, sprite.rotation + rotationDiff, sprite.scale * scaleDiff)
+
+      def withRef(newRef: Point): Sprite =
+        sprite.copy(ref = newRef)
+      def withRef(x: Int, y: Int): Sprite =
+        sprite.copy(ref = Point(x, y))
+
+      def flipHorizontal(isFlipped: Boolean): Sprite =
+        sprite.withFlip(sprite.flip.withHorizontalFlip(isFlipped))
+      def flipVertical(isFlipped: Boolean): Sprite =
+        sprite.withFlip(sprite.flip.withVerticalFlip(isFlipped))
 }

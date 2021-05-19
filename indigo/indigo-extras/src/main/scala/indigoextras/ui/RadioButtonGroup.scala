@@ -11,8 +11,8 @@ import indigo.shared.scenegraph.Sprite
 import indigo.shared.scenegraph.Text
 import indigo.shared.scenegraph.TextBox
 import indigo.shared.scenegraph.Group
-import scala.annotation.tailrec
 import indigo.shared.scenegraph.SceneNode
+import scala.annotation.tailrec
 
 /** Represents an individual option button in a radio button group. This class just containing the distinct information
   * for this option: it's position and the events fired on interacting with it. Attributes shared between options are

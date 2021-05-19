@@ -1,5 +1,8 @@
 package indigo.shared.scenegraph
 
+import indigo.shared.scenegraph.syntax.BasicSpatial
+import indigo.shared.scenegraph.syntax.Spatial
+
 import indigo.shared.datatypes._
 
 /** A single cloned instance of a cloneblank
@@ -8,9 +11,8 @@ import indigo.shared.datatypes._
   *   @param depth
   * @param transform
   */
-final case class Clone(id: CloneId, depth: Depth, transform: CloneTransformData)
-    extends DependentNode
-    with BasicSpatialModifiers[Clone] derives CanEqual {
+final case class Clone(id: CloneId, depth: Depth, transform: CloneTransformData) extends DependentNode
+    derives CanEqual {
   lazy val x: Int                  = transform.position.x
   lazy val y: Int                  = transform.position.y
   lazy val rotation: Radians       = transform.rotation
@@ -37,32 +39,33 @@ final case class Clone(id: CloneId, depth: Depth, transform: CloneTransformData)
   ): Clone =
     this.copy(transform = CloneTransformData(newPosition, newRotation, newScale, flipHorizontal, flipVertical))
 
-  def withPosition(newPosition: Point): Clone =
-    this.copy(transform = transform.withPosition(newPosition))
-
-  def withRotation(newRotation: Radians): Clone =
-    this.copy(transform = transform.withRotation(newRotation))
-
-  def withScale(newScale: Vector2): Clone =
-    this.copy(transform = transform.withScale(newScale))
-
   def withHorizontalFlip(isFlipped: Boolean): Clone =
     this.copy(transform = transform.withHorizontalFlip(isFlipped))
 
   def withVerticalFlip(isFlipped: Boolean): Clone =
     this.copy(transform = transform.withVerticalFlip(isFlipped))
-
-  def withFlip(newFlip: Flip): Clone =
-    this.copy(
-      transform = transform
-        .withVerticalFlip(newFlip.vertical)
-        .withHorizontalFlip(newFlip.horizontal)
-    )
 }
-object Clone {
+
+object Clone:
   def apply(id: CloneId): Clone =
     Clone(id, Depth(1), CloneTransformData.identity)
-}
+
+  given BasicSpatial[Clone] with
+    extension (clone: Clone)
+      def withPosition(newPosition: Point): Clone =
+        clone.copy(transform = clone.transform.withPosition(newPosition))
+      def withRotation(newRotation: Radians): Clone =
+        clone.copy(transform = clone.transform.withRotation(newRotation))
+      def withScale(newScale: Vector2): Clone =
+        clone.copy(transform = clone.transform.withScale(newScale))
+      def withDepth(newDepth: Depth): Clone =
+        clone.copy(depth = newDepth)
+      def withFlip(newFlip: Flip): Clone =
+        clone.copy(
+          transform = clone.transform
+            .withVerticalFlip(newFlip.vertical)
+            .withHorizontalFlip(newFlip.horizontal)
+        )
 
 /** Represents many clones of the same cloneblank, differentiated only by their transform data.
   *
@@ -78,8 +81,7 @@ final case class CloneBatch(
     transform: CloneTransformData,
     clones: List[CloneTransformData],
     staticBatchKey: Option[BindingKey]
-) extends DependentNode
-    with BasicSpatialModifiers[CloneBatch] derives CanEqual {
+) extends DependentNode derives CanEqual {
   lazy val x: Int                  = transform.position.x
   lazy val y: Int                  = transform.position.y
   lazy val rotation: Radians       = transform.rotation
@@ -106,27 +108,11 @@ final case class CloneBatch(
   ): CloneBatch =
     this.copy(transform = CloneTransformData(newPosition, newRotation, newScale, flipHorizontal, flipVertical))
 
-  def withPosition(newPosition: Point): CloneBatch =
-    this.copy(transform = transform.withPosition(newPosition))
-
-  def withRotation(newRotation: Radians): CloneBatch =
-    this.copy(transform = transform.withRotation(newRotation))
-
-  def withScale(newScale: Vector2): CloneBatch =
-    this.copy(transform = transform.withScale(newScale))
-
   def withHorizontalFlip(isFlipped: Boolean): CloneBatch =
     this.copy(transform = transform.withHorizontalFlip(isFlipped))
 
   def withVerticalFlip(isFlipped: Boolean): CloneBatch =
     this.copy(transform = transform.withVerticalFlip(isFlipped))
-
-  def withFlip(newFlip: Flip): CloneBatch =
-    this.copy(
-      transform = transform
-        .withVerticalFlip(newFlip.vertical)
-        .withHorizontalFlip(newFlip.horizontal)
-    )
 
   def withClones(newClones: List[CloneTransformData]): CloneBatch =
     this.copy(clones = newClones)
@@ -143,3 +129,22 @@ final case class CloneBatch(
   def clearStaticBatchKey: CloneBatch =
     withMaybeStaticBatchKey(None)
 }
+
+object CloneBatch:
+
+  given BasicSpatial[CloneBatch] with
+    extension (cloneBatch: CloneBatch)
+      def withPosition(newPosition: Point): CloneBatch =
+        cloneBatch.copy(transform = cloneBatch.transform.withPosition(newPosition))
+      def withRotation(newRotation: Radians): CloneBatch =
+        cloneBatch.copy(transform = cloneBatch.transform.withRotation(newRotation))
+      def withScale(newScale: Vector2): CloneBatch =
+        cloneBatch.copy(transform = cloneBatch.transform.withScale(newScale))
+      def withDepth(newDepth: Depth): CloneBatch =
+        cloneBatch.copy(depth = newDepth)
+      def withFlip(newFlip: Flip): CloneBatch =
+        cloneBatch.copy(
+          transform = cloneBatch.transform
+            .withVerticalFlip(newFlip.vertical)
+            .withHorizontalFlip(newFlip.horizontal)
+        )

@@ -1,5 +1,8 @@
 package indigo.shared.scenegraph
 
+import indigo.shared.scenegraph.syntax.BasicSpatial
+import indigo.shared.scenegraph.syntax.Spatial
+
 import indigo.shared.datatypes._
 import indigo.shared.materials.Material
 import indigo.shared.materials.ShaderData
@@ -21,8 +24,7 @@ final case class Text(
     ref: Point,
     flip: Flip
 ) extends DependentNode
-    with EventHandler
-    with SpatialModifiers[Text] derives CanEqual {
+    with EventHandler derives CanEqual {
 
   def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] =
     Option(locator.textBounds(this)).map { rect =>
@@ -45,52 +47,8 @@ final case class Text(
   def modifyMaterial(alter: Material => Material): Text =
     this.copy(material = alter(material))
 
-  def moveTo(pt: Point): Text =
-    this.copy(position = pt)
-  def moveTo(x: Int, y: Int): Text =
-    moveTo(Point(x, y))
-  def withPosition(newPosition: Point): Text =
-    moveTo(newPosition)
-
-  def moveBy(pt: Point): Text =
-    this.copy(position = position + pt)
-  def moveBy(x: Int, y: Int): Text =
-    moveBy(Point(x, y))
-
-  def rotateTo(angle: Radians): Text =
-    this.copy(rotation = angle)
-  def rotateBy(angle: Radians): Text =
-    rotateTo(rotation + angle)
-  def withRotation(newRotation: Radians): Text =
-    rotateTo(newRotation)
-
-  def scaleBy(amount: Vector2): Text =
-    this.copy(scale = scale * amount)
-  def scaleBy(x: Double, y: Double): Text =
-    scaleBy(Vector2(x, y))
-  def withScale(newScale: Vector2): Text =
-    this.copy(scale = newScale)
-
-  def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): Text =
-    this.copy(position = newPosition, rotation = newRotation, scale = newScale)
-
-  def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): Text =
-    transformTo(position + positionDiff, rotation + rotationDiff, scale * scaleDiff)
-
   def withDepth(newDepth: Depth): Text =
     this.copy(depth = newDepth)
-
-  def withRef(newRef: Point): Text =
-    this.copy(ref = newRef)
-  def withRef(x: Int, y: Int): Text =
-    withRef(Point(x, y))
-
-  def flipHorizontal(isFlipped: Boolean): Text =
-    this.copy(flip = flip.withHorizontalFlip(isFlipped))
-  def flipVertical(isFlipped: Boolean): Text =
-    this.copy(flip = flip.withVerticalFlip(isFlipped))
-  def withFlip(newFlip: Flip): Text =
-    this.copy(flip = newFlip)
 
   def withAlignment(newAlignment: TextAlignment): Text =
     this.copy(alignment = newAlignment)
@@ -144,5 +102,55 @@ object Text {
       eventHandler = (_: (Rectangle, GlobalEvent)) => Nil,
       material = material
     )
+
+  given BasicSpatial[Text] with
+    extension (text: Text)
+      def withPosition(newPosition: Point): Text =
+        text.copy(position = newPosition)
+      def withRotation(newRotation: Radians): Text =
+        text.copy(rotation = newRotation)
+      def withScale(newScale: Vector2): Text =
+        text.copy(scale = newScale)
+      def withDepth(newDepth: Depth): Text =
+        text.copy(depth = newDepth)
+      def withFlip(newFlip: Flip): Text =
+        text.copy(flip = newFlip)
+
+  given spatialText(using bs: BasicSpatial[Text]): Spatial[Text] with
+    extension (text: Text)
+      def moveTo(pt: Point): Text =
+        text.withPosition(pt)
+      def moveTo(x: Int, y: Int): Text =
+        moveTo(Point(x, y))
+
+      def moveBy(pt: Point): Text =
+        moveTo(text.position + pt)
+      def moveBy(x: Int, y: Int): Text =
+        moveBy(Point(x, y))
+
+      def rotateTo(angle: Radians): Text =
+        text.withRotation(angle)
+      def rotateBy(angle: Radians): Text =
+        rotateTo(text.rotation + angle)
+
+      def scaleBy(amount: Vector2): Text =
+        text.withScale(text.scale * amount)
+      def scaleBy(x: Double, y: Double): Text =
+        scaleBy(Vector2(x, y))
+
+      def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): Text =
+        text.copy(position = newPosition, rotation = newRotation, scale = newScale)
+      def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): Text =
+        transformTo(text.position + positionDiff, text.rotation + rotationDiff, text.scale * scaleDiff)
+
+      def withRef(newRef: Point): Text =
+        text.copy(ref = newRef)
+      def withRef(x: Int, y: Int): Text =
+        text.copy(ref = Point(x, y))
+
+      def flipHorizontal(isFlipped: Boolean): Text =
+        text.withFlip(text.flip.withHorizontalFlip(isFlipped))
+      def flipVertical(isFlipped: Boolean): Text =
+        text.withFlip(text.flip.withVerticalFlip(isFlipped))
 
 }

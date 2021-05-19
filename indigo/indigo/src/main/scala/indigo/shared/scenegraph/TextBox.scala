@@ -1,5 +1,8 @@
 package indigo.shared.scenegraph
 
+import indigo.shared.scenegraph.syntax.BasicSpatial
+import indigo.shared.scenegraph.syntax.Spatial
+
 import indigo.shared.datatypes.{Point, Size, Radians, Vector2, Rectangle, Depth, Flip}
 import indigo.shared.materials.ShaderData
 import indigo.shared.shader.StandardShaders
@@ -23,8 +26,7 @@ final case class TextBox(
     depth: Depth,
     ref: Point,
     flip: Flip
-) extends RenderNode
-    with SpatialModifiers[TextBox] derives CanEqual:
+) extends RenderNode derives CanEqual:
 
   def bounds: Rectangle =
     BoundaryLocator.findBounds(this, position, size, ref)
@@ -41,7 +43,6 @@ final case class TextBox(
     this.copy(size = newSize)
 
   // convenience methods
-
   def withColor(newColor: RGBA): TextBox =
     modifyStyle(_.withColor(newColor))
 
@@ -79,52 +80,8 @@ final case class TextBox(
   lazy val x: Int = position.x
   lazy val y: Int = position.y
 
-  def moveTo(pt: Point): TextBox =
-    this.copy(position = pt)
-  def moveTo(x: Int, y: Int): TextBox =
-    moveTo(Point(x, y))
-  def withPosition(newPosition: Point): TextBox =
-    moveTo(newPosition)
-
-  def moveBy(pt: Point): TextBox =
-    this.copy(position = position + pt)
-  def moveBy(x: Int, y: Int): TextBox =
-    moveBy(Point(x, y))
-
-  def rotateTo(angle: Radians): TextBox =
-    this.copy(rotation = angle)
-  def rotateBy(angle: Radians): TextBox =
-    rotateTo(rotation + angle)
-  def withRotation(newRotation: Radians): TextBox =
-    rotateTo(newRotation)
-
-  def scaleBy(amount: Vector2): TextBox =
-    this.copy(scale = scale * amount)
-  def scaleBy(x: Double, y: Double): TextBox =
-    scaleBy(Vector2(x, y))
-  def withScale(newScale: Vector2): TextBox =
-    this.copy(scale = newScale)
-
-  def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): TextBox =
-    this.copy(position = newPosition, rotation = newRotation, scale = newScale)
-
-  def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): TextBox =
-    transformTo(position + positionDiff, rotation + rotationDiff, scale * scaleDiff)
-
   def withDepth(newDepth: Depth): TextBox =
     this.copy(depth = newDepth)
-
-  def flipHorizontal(isFlipped: Boolean): TextBox =
-    this.copy(flip = flip.withHorizontalFlip(isFlipped))
-  def flipVertical(isFlipped: Boolean): TextBox =
-    this.copy(flip = flip.withVerticalFlip(isFlipped))
-  def withFlip(newFlip: Flip): TextBox =
-    this.copy(flip = newFlip)
-
-  def withRef(newRef: Point): TextBox =
-    this.copy(ref = newRef)
-  def withRef(x: Int, y: Int): TextBox =
-    withRef(Point(x, y))
 
 object TextBox:
   def apply(text: String): TextBox =
@@ -152,3 +109,53 @@ object TextBox:
       Point.zero,
       Flip.default
     )
+
+  given BasicSpatial[TextBox] with
+    extension (textBox: TextBox)
+      def withPosition(newPosition: Point): TextBox =
+        textBox.copy(position = newPosition)
+      def withRotation(newRotation: Radians): TextBox =
+        textBox.copy(rotation = newRotation)
+      def withScale(newScale: Vector2): TextBox =
+        textBox.copy(scale = newScale)
+      def withDepth(newDepth: Depth): TextBox =
+        textBox.copy(depth = newDepth)
+      def withFlip(newFlip: Flip): TextBox =
+        textBox.copy(flip = newFlip)
+
+  given spatialTextBox(using bs: BasicSpatial[TextBox]): Spatial[TextBox] with
+    extension (textBox: TextBox)
+      def moveTo(pt: Point): TextBox =
+        textBox.withPosition(pt)
+      def moveTo(x: Int, y: Int): TextBox =
+        moveTo(Point(x, y))
+
+      def moveBy(pt: Point): TextBox =
+        moveTo(textBox.position + pt)
+      def moveBy(x: Int, y: Int): TextBox =
+        moveBy(Point(x, y))
+
+      def rotateTo(angle: Radians): TextBox =
+        textBox.withRotation(angle)
+      def rotateBy(angle: Radians): TextBox =
+        rotateTo(textBox.rotation + angle)
+
+      def scaleBy(amount: Vector2): TextBox =
+        textBox.withScale(textBox.scale * amount)
+      def scaleBy(x: Double, y: Double): TextBox =
+        scaleBy(Vector2(x, y))
+
+      def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): TextBox =
+        textBox.copy(position = newPosition, rotation = newRotation, scale = newScale)
+      def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): TextBox =
+        transformTo(textBox.position + positionDiff, textBox.rotation + rotationDiff, textBox.scale * scaleDiff)
+
+      def withRef(newRef: Point): TextBox =
+        textBox.copy(ref = newRef)
+      def withRef(x: Int, y: Int): TextBox =
+        textBox.copy(ref = Point(x, y))
+
+      def flipHorizontal(isFlipped: Boolean): TextBox =
+        textBox.withFlip(textBox.flip.withHorizontalFlip(isFlipped))
+      def flipVertical(isFlipped: Boolean): TextBox =
+        textBox.withFlip(textBox.flip.withVerticalFlip(isFlipped))

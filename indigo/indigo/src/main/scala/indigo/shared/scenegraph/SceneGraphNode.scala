@@ -36,7 +36,6 @@ object SceneNode {
   */
 trait RenderNode extends SceneNode:
   def size: Size
-  override def withDepth(newDepth: Depth): RenderNode
 
 object RenderNode:
   given CanEqual[Option[RenderNode], Option[RenderNode]] = CanEqual.derived
@@ -45,8 +44,8 @@ object RenderNode:
 /** DependentNodes are built-in node types where Indigo understands how to build the shader data, and the bounds are
   * dependant on the contents of the node.
   */
-trait DependentNode extends SceneNode:
-  override def withDepth(newDepth: Depth): DependentNode
+trait DependentNode extends SceneNode
+
 object DependentNode:
   given CanEqual[Option[DependentNode], Option[DependentNode]] = CanEqual.derived
   given CanEqual[List[DependentNode], List[DependentNode]]     = CanEqual.derived
@@ -57,7 +56,6 @@ object DependentNode:
   */
 trait EntityNode extends RenderNode:
   def toShaderData: ShaderData
-  override def withDepth(newDepth: Depth): EntityNode
 
 object EntityNode:
   given CanEqual[Option[EntityNode], Option[EntityNode]] = CanEqual.derived
