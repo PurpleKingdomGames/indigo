@@ -61,13 +61,8 @@ object Group {
 
   given spatialGroup(using bs: BasicSpatial[Group]): Spatial[Group] with
     extension (group: Group)
-      def moveTo(pt: Point): Group =
-        group.copy(position = pt)
-      def moveTo(x: Int, y: Int): Group =
-        moveTo(Point(x, y))
-
       def moveBy(pt: Point): Group =
-        moveTo(group.position + pt)
+        group.moveTo(group.position + pt)
       def moveBy(x: Int, y: Int): Group =
         moveBy(Point(x, y))
 

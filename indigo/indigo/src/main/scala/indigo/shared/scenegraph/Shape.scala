@@ -125,13 +125,8 @@ object Shape {
 
     given spatialBox(using bs: BasicSpatial[Box]): Spatial[Box] with
       extension (box: Box)
-        def moveTo(pt: Point): Box =
-          box.withPosition(pt)
-        def moveTo(x: Int, y: Int): Box =
-          moveTo(Point(x, y))
-
         def moveBy(pt: Point): Box =
-          moveTo(box.position + pt)
+          box.moveTo(box.position + pt)
         def moveBy(x: Int, y: Int): Box =
           moveBy(Point(x, y))
 
@@ -258,13 +253,8 @@ object Shape {
 
     given spatialCircle(using bs: BasicSpatial[Circle]): Spatial[Circle] with
       extension (circle: Circle)
-        def moveTo(pt: Point): Circle =
-          circle.withPosition(pt)
-        def moveTo(x: Int, y: Int): Circle =
-          moveTo(Point(x, y))
-
         def moveBy(pt: Point): Circle =
-          moveTo(circle.center + pt)
+          circle.moveTo(circle.center + pt)
         def moveBy(x: Int, y: Int): Circle =
           moveBy(Point(x, y))
 
@@ -370,13 +360,8 @@ object Shape {
 
     given spatialLine(using bs: BasicSpatial[Line]): Spatial[Line] with
       extension (line: Line)
-        def moveTo(pt: Point): Line =
-          line.withPosition(pt)
-        def moveTo(x: Int, y: Int): Line =
-          moveTo(Point(x, y))
-
         def moveBy(pt: Point): Line =
-          moveTo(line.start + pt)
+          line.moveTo(line.start + pt)
         def moveBy(x: Int, y: Int): Line =
           moveBy(Point(x, y))
 
@@ -535,13 +520,8 @@ object Shape {
 
     given spatialPolygon(using bs: BasicSpatial[Polygon]): Spatial[Polygon] with
       extension (polygon: Polygon)
-        def moveTo(pt: Point): Polygon =
-          polygon.withPosition(pt)
-        def moveTo(x: Int, y: Int): Polygon =
-          moveTo(Point(x, y))
-
         def moveBy(pt: Point): Polygon =
-          moveTo(polygon.position + pt)
+          polygon.moveTo(polygon.position + pt)
         def moveBy(x: Int, y: Int): Polygon =
           moveBy(Point(x, y))
 

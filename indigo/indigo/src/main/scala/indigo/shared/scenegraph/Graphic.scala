@@ -119,13 +119,8 @@ object Graphic {
 
   given spatialGraphic(using bs: BasicSpatial[Graphic]): Spatial[Graphic] with
     extension (graphic: Graphic)
-      def moveTo(pt: Point): Graphic =
-        graphic.withPosition(pt)
-      def moveTo(x: Int, y: Int): Graphic =
-        moveTo(Point(x, y))
-
       def moveBy(pt: Point): Graphic =
-        moveTo(graphic.position + pt)
+        graphic.moveTo(graphic.position + pt)
       def moveBy(x: Int, y: Int): Graphic =
         moveBy(Point(x, y))
 

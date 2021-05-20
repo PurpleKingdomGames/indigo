@@ -125,13 +125,8 @@ object TextBox:
 
   given spatialTextBox(using bs: BasicSpatial[TextBox]): Spatial[TextBox] with
     extension (textBox: TextBox)
-      def moveTo(pt: Point): TextBox =
-        textBox.withPosition(pt)
-      def moveTo(x: Int, y: Int): TextBox =
-        moveTo(Point(x, y))
-
       def moveBy(pt: Point): TextBox =
-        moveTo(textBox.position + pt)
+        textBox.moveTo(textBox.position + pt)
       def moveBy(x: Int, y: Int): TextBox =
         moveBy(Point(x, y))
 

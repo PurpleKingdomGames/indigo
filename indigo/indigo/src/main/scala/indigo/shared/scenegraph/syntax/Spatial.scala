@@ -6,10 +6,12 @@ import indigo.shared.datatypes.Vector2
 import indigo.shared.datatypes.Depth
 import indigo.shared.datatypes.Flip
 
-trait Spatial[T]:
+trait Spatial[T: BasicSpatial]:
   extension (spatial: T)
-    def moveTo(pt: Point): T
-    def moveTo(x: Int, y: Int): T
+    def moveTo(pt: Point): T =
+      spatial.withPosition(pt)
+    def moveTo(x: Int, y: Int): T =
+      moveTo(Point(x, y))
 
     def moveBy(pt: Point): T
     def moveBy(x: Int, y: Int): T
@@ -33,16 +35,13 @@ object Spatial:
   import scala.deriving.*
   import scala.compiletime.summonAll
 
-  private def spatialSum[T](s: Mirror.SumOf[T], instances: => List[Spatial[?]]): Spatial[T] =
+  private def spatialSum[T: BasicSpatial](s: Mirror.SumOf[T], instances: => List[Spatial[?]]): Spatial[T] =
     def usingInstanceFor[O](input: T)(f: Spatial[input.type] => O): O =
       val ordx = s.ordinal(input)
       f(instances(ordx).asInstanceOf[Spatial[input.type]])
 
     new Spatial[T]:
       extension (spatial: T)
-        def moveTo(pt: Point): T      = usingInstanceFor(spatial)(_.moveTo(spatial)(pt))
-        def moveTo(x: Int, y: Int): T = usingInstanceFor(spatial)(_.moveTo(spatial)(x, y))
-
         def moveBy(pt: Point): T      = usingInstanceFor(spatial)(_.moveBy(spatial)(pt))
         def moveBy(x: Int, y: Int): T = usingInstanceFor(spatial)(_.moveBy(spatial)(x, y))
 
@@ -63,7 +62,7 @@ object Spatial:
         def flipHorizontal(isFlipped: Boolean): T = usingInstanceFor(spatial)(_.flipHorizontal(spatial)(isFlipped))
         def flipVertical(isFlipped: Boolean): T   = usingInstanceFor(spatial)(_.flipVertical(spatial)(isFlipped))
 
-  inline given derived[T](using m: Mirror.SumOf[T]): Spatial[T] =
+  inline given derived[T: BasicSpatial](using m: Mirror.SumOf[T]): Spatial[T] =
     type SpatialInstances = Tuple.Map[m.MirroredElemTypes, Spatial]
     lazy val spatialInstances = summonAll[SpatialInstances].toList.asInstanceOf[List[Spatial[?]]]
     spatialSum(m, spatialInstances)

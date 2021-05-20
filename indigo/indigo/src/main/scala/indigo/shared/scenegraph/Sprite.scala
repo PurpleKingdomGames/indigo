@@ -150,13 +150,8 @@ object Sprite {
 
   given spatialSprite(using bs: BasicSpatial[Sprite]): Spatial[Sprite] with
     extension (sprite: Sprite)
-      def moveTo(pt: Point): Sprite =
-        sprite.withPosition(pt)
-      def moveTo(x: Int, y: Int): Sprite =
-        moveTo(Point(x, y))
-
       def moveBy(pt: Point): Sprite =
-        moveTo(sprite.position + pt)
+        sprite.moveTo(sprite.position + pt)
       def moveBy(x: Int, y: Int): Sprite =
         moveBy(Point(x, y))
 

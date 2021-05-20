@@ -118,13 +118,8 @@ object Text {
 
   given spatialText(using bs: BasicSpatial[Text]): Spatial[Text] with
     extension (text: Text)
-      def moveTo(pt: Point): Text =
-        text.withPosition(pt)
-      def moveTo(x: Int, y: Int): Text =
-        moveTo(Point(x, y))
-
       def moveBy(pt: Point): Text =
-        moveTo(text.position + pt)
+        text.moveTo(text.position + pt)
       def moveBy(x: Int, y: Int): Text =
         moveBy(Point(x, y))
 
