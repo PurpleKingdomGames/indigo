@@ -112,45 +112,32 @@ object TextBox:
 
   given BasicSpatial[TextBox] with
     extension (textBox: TextBox)
+      def position: Point =
+        textBox.position
+      def rotation: Radians =
+        textBox.rotation
+      def scale: Vector2 =
+        textBox.scale
+      def depth: Depth =
+        textBox.depth
+      def ref: Point =
+        textBox.ref
+      def flip: Flip =
+        textBox.flip
+
       def withPosition(newPosition: Point): TextBox =
         textBox.copy(position = newPosition)
       def withRotation(newRotation: Radians): TextBox =
         textBox.copy(rotation = newRotation)
       def withScale(newScale: Vector2): TextBox =
         textBox.copy(scale = newScale)
+      def withRef(newRef: Point): TextBox =
+        textBox.copy(ref = newRef)
+      def withRef(x: Int, y: Int): TextBox =
+        withRef(Point(x, y))
       def withDepth(newDepth: Depth): TextBox =
         textBox.copy(depth = newDepth)
       def withFlip(newFlip: Flip): TextBox =
         textBox.copy(flip = newFlip)
 
-  given spatialTextBox(using bs: BasicSpatial[TextBox]): Spatial[TextBox] with
-    extension (textBox: TextBox)
-      def moveBy(pt: Point): TextBox =
-        textBox.moveTo(textBox.position + pt)
-      def moveBy(x: Int, y: Int): TextBox =
-        moveBy(Point(x, y))
-
-      def rotateTo(angle: Radians): TextBox =
-        textBox.withRotation(angle)
-      def rotateBy(angle: Radians): TextBox =
-        rotateTo(textBox.rotation + angle)
-
-      def scaleBy(amount: Vector2): TextBox =
-        textBox.withScale(textBox.scale * amount)
-      def scaleBy(x: Double, y: Double): TextBox =
-        scaleBy(Vector2(x, y))
-
-      def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): TextBox =
-        textBox.copy(position = newPosition, rotation = newRotation, scale = newScale)
-      def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): TextBox =
-        transformTo(textBox.position + positionDiff, textBox.rotation + rotationDiff, textBox.scale * scaleDiff)
-
-      def withRef(newRef: Point): TextBox =
-        textBox.copy(ref = newRef)
-      def withRef(x: Int, y: Int): TextBox =
-        textBox.copy(ref = Point(x, y))
-
-      def flipHorizontal(isFlipped: Boolean): TextBox =
-        textBox.withFlip(textBox.flip.withHorizontalFlip(isFlipped))
-      def flipVertical(isFlipped: Boolean): TextBox =
-        textBox.withFlip(textBox.flip.withVerticalFlip(isFlipped))
+  given Spatial[TextBox] = Spatial.default[TextBox]

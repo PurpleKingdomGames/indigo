@@ -105,47 +105,33 @@ object Text {
 
   given BasicSpatial[Text] with
     extension (text: Text)
+      def position: Point =
+        text.position
+      def rotation: Radians =
+        text.rotation
+      def scale: Vector2 =
+        text.scale
+      def depth: Depth =
+        text.depth
+      def ref: Point =
+        text.ref
+      def flip: Flip =
+        text.flip
+
       def withPosition(newPosition: Point): Text =
         text.copy(position = newPosition)
       def withRotation(newRotation: Radians): Text =
         text.copy(rotation = newRotation)
       def withScale(newScale: Vector2): Text =
         text.copy(scale = newScale)
+      def withRef(newRef: Point): Text =
+        text.copy(ref = newRef)
+      def withRef(x: Int, y: Int): Text =
+        withRef(Point(x, y))
       def withDepth(newDepth: Depth): Text =
         text.copy(depth = newDepth)
       def withFlip(newFlip: Flip): Text =
         text.copy(flip = newFlip)
 
-  given spatialText(using bs: BasicSpatial[Text]): Spatial[Text] with
-    extension (text: Text)
-      def moveBy(pt: Point): Text =
-        text.moveTo(text.position + pt)
-      def moveBy(x: Int, y: Int): Text =
-        moveBy(Point(x, y))
-
-      def rotateTo(angle: Radians): Text =
-        text.withRotation(angle)
-      def rotateBy(angle: Radians): Text =
-        rotateTo(text.rotation + angle)
-
-      def scaleBy(amount: Vector2): Text =
-        text.withScale(text.scale * amount)
-      def scaleBy(x: Double, y: Double): Text =
-        scaleBy(Vector2(x, y))
-
-      def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): Text =
-        text.copy(position = newPosition, rotation = newRotation, scale = newScale)
-      def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): Text =
-        transformTo(text.position + positionDiff, text.rotation + rotationDiff, text.scale * scaleDiff)
-
-      def withRef(newRef: Point): Text =
-        text.copy(ref = newRef)
-      def withRef(x: Int, y: Int): Text =
-        text.copy(ref = Point(x, y))
-
-      def flipHorizontal(isFlipped: Boolean): Text =
-        text.withFlip(text.flip.withHorizontalFlip(isFlipped))
-      def flipVertical(isFlipped: Boolean): Text =
-        text.withFlip(text.flip.withVerticalFlip(isFlipped))
-
+  given Spatial[Text] = Spatial.default[Text]
 }

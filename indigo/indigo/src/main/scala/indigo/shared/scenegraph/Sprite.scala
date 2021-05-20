@@ -137,46 +137,33 @@ object Sprite {
 
   given BasicSpatial[Sprite] with
     extension (sprite: Sprite)
+      def position: Point =
+        sprite.position
+      def rotation: Radians =
+        sprite.rotation
+      def scale: Vector2 =
+        sprite.scale
+      def depth: Depth =
+        sprite.depth
+      def ref: Point =
+        sprite.ref
+      def flip: Flip =
+        sprite.flip
+
       def withPosition(newPosition: Point): Sprite =
         sprite.copy(position = newPosition)
       def withRotation(newRotation: Radians): Sprite =
         sprite.copy(rotation = newRotation)
       def withScale(newScale: Vector2): Sprite =
         sprite.copy(scale = newScale)
+      def withRef(newRef: Point): Sprite =
+        sprite.copy(ref = newRef)
+      def withRef(x: Int, y: Int): Sprite =
+        withRef(Point(x, y))
       def withDepth(newDepth: Depth): Sprite =
         sprite.copy(depth = newDepth)
       def withFlip(newFlip: Flip): Sprite =
         sprite.copy(flip = newFlip)
 
-  given spatialSprite(using bs: BasicSpatial[Sprite]): Spatial[Sprite] with
-    extension (sprite: Sprite)
-      def moveBy(pt: Point): Sprite =
-        sprite.moveTo(sprite.position + pt)
-      def moveBy(x: Int, y: Int): Sprite =
-        moveBy(Point(x, y))
-
-      def rotateTo(angle: Radians): Sprite =
-        sprite.withRotation(angle)
-      def rotateBy(angle: Radians): Sprite =
-        rotateTo(sprite.rotation + angle)
-
-      def scaleBy(amount: Vector2): Sprite =
-        sprite.withScale(sprite.scale * amount)
-      def scaleBy(x: Double, y: Double): Sprite =
-        scaleBy(Vector2(x, y))
-
-      def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): Sprite =
-        sprite.copy(position = newPosition, rotation = newRotation, scale = newScale)
-      def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): Sprite =
-        transformTo(sprite.position + positionDiff, sprite.rotation + rotationDiff, sprite.scale * scaleDiff)
-
-      def withRef(newRef: Point): Sprite =
-        sprite.copy(ref = newRef)
-      def withRef(x: Int, y: Int): Sprite =
-        sprite.copy(ref = Point(x, y))
-
-      def flipHorizontal(isFlipped: Boolean): Sprite =
-        sprite.withFlip(sprite.flip.withHorizontalFlip(isFlipped))
-      def flipVertical(isFlipped: Boolean): Sprite =
-        sprite.withFlip(sprite.flip.withVerticalFlip(isFlipped))
+  given Spatial[Sprite] = Spatial.default[Sprite]
 }

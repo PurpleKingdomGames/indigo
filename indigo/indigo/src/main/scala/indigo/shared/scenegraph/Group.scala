@@ -48,46 +48,33 @@ object Group {
 
   given BasicSpatial[Group] with
     extension (group: Group)
+      def position: Point =
+        group.position
+      def rotation: Radians =
+        group.rotation
+      def scale: Vector2 =
+        group.scale
+      def depth: Depth =
+        group.depth
+      def ref: Point =
+        group.ref
+      def flip: Flip =
+        group.flip
+
       def withPosition(newPosition: Point): Group =
         group.copy(position = newPosition)
       def withRotation(newRotation: Radians): Group =
         group.copy(rotation = newRotation)
       def withScale(newScale: Vector2): Group =
         group.copy(scale = newScale)
+      def withRef(newRef: Point): Group =
+        group.copy(ref = newRef)
+      def withRef(x: Int, y: Int): Group =
+        withRef(Point(x, y))
       def withDepth(newDepth: Depth): Group =
         group.copy(depth = newDepth)
       def withFlip(newFlip: Flip): Group =
         group.copy(flip = newFlip)
 
-  given spatialGroup(using bs: BasicSpatial[Group]): Spatial[Group] with
-    extension (group: Group)
-      def moveBy(pt: Point): Group =
-        group.moveTo(group.position + pt)
-      def moveBy(x: Int, y: Int): Group =
-        moveBy(Point(x, y))
-
-      def rotateTo(angle: Radians): Group =
-        group.copy(rotation = angle)
-      def rotateBy(angle: Radians): Group =
-        rotateTo(group.rotation + angle)
-
-      def scaleBy(amount: Vector2): Group =
-        group.copy(scale = group.scale * amount)
-      def scaleBy(x: Double, y: Double): Group =
-        scaleBy(Vector2(x, y))
-
-      def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): Group =
-        group.copy(position = newPosition, rotation = newRotation, scale = newScale)
-      def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): Group =
-        transformTo(group.position + positionDiff, group.rotation + rotationDiff, group.scale * scaleDiff)
-
-      def withRef(newRef: Point): Group =
-        group.copy(ref = newRef)
-      def withRef(x: Int, y: Int): Group =
-        withRef(Point(x, y))
-
-      def flipHorizontal(isFlipped: Boolean): Group =
-        group.copy(flip = group.flip.withHorizontalFlip(isFlipped))
-      def flipVertical(isFlipped: Boolean): Group =
-        group.copy(flip = group.flip.withVerticalFlip(isFlipped))
+  given Spatial[Group] = Spatial.default[Group]
 }

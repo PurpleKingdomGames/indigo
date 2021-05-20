@@ -106,46 +106,33 @@ object Graphic {
 
   given BasicSpatial[Graphic] with
     extension (graphic: Graphic)
+      def position: Point =
+        graphic.position
+      def rotation: Radians =
+        graphic.rotation
+      def scale: Vector2 =
+        graphic.scale
+      def depth: Depth =
+        graphic.depth
+      def ref: Point =
+        graphic.ref
+      def flip: Flip =
+        graphic.flip
+
       def withPosition(newPosition: Point): Graphic =
         graphic.copy(position = newPosition)
       def withRotation(newRotation: Radians): Graphic =
         graphic.copy(rotation = newRotation)
       def withScale(newScale: Vector2): Graphic =
         graphic.copy(scale = newScale)
+      def withRef(newRef: Point): Graphic =
+        graphic.copy(ref = newRef)
+      def withRef(x: Int, y: Int): Graphic =
+        withRef(Point(x, y))
       def withDepth(newDepth: Depth): Graphic =
         graphic.copy(depth = newDepth)
       def withFlip(newFlip: Flip): Graphic =
         graphic.copy(flip = newFlip)
 
-  given spatialGraphic(using bs: BasicSpatial[Graphic]): Spatial[Graphic] with
-    extension (graphic: Graphic)
-      def moveBy(pt: Point): Graphic =
-        graphic.moveTo(graphic.position + pt)
-      def moveBy(x: Int, y: Int): Graphic =
-        moveBy(Point(x, y))
-
-      def rotateTo(angle: Radians): Graphic =
-        graphic.withRotation(angle)
-      def rotateBy(angle: Radians): Graphic =
-        rotateTo(graphic.rotation + angle)
-
-      def scaleBy(amount: Vector2): Graphic =
-        graphic.withScale(graphic.scale * amount)
-      def scaleBy(x: Double, y: Double): Graphic =
-        scaleBy(Vector2(x, y))
-
-      def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): Graphic =
-        graphic.copy(position = newPosition, rotation = newRotation, scale = newScale)
-      def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): Graphic =
-        transformTo(graphic.position + positionDiff, graphic.rotation + rotationDiff, graphic.scale * scaleDiff)
-
-      def withRef(newRef: Point): Graphic =
-        graphic.copy(ref = newRef)
-      def withRef(x: Int, y: Int): Graphic =
-        withRef(Point(x, y))
-
-      def flipHorizontal(isFlipped: Boolean): Graphic =
-        graphic.withFlip(graphic.flip.withHorizontalFlip(isFlipped))
-      def flipVertical(isFlipped: Boolean): Graphic =
-        graphic.withFlip(graphic.flip.withVerticalFlip(isFlipped))
+  given Spatial[Graphic] = Spatial.default[Graphic]
 }

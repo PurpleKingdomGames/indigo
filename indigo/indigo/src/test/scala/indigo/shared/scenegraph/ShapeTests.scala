@@ -68,6 +68,44 @@ class ShapeTests extends munit.FunSuite:
     assertEquals(actual, expected)
   }
 
+  test("Spatial calculation - circle transformBy") {
+
+    val s: Shape =
+      Shape
+        .Circle(
+          center = Point(50, 50),
+          radius = 10,
+          fill = Fill.None,
+          stroke = Stroke(4, RGBA.Black)
+        )
+        .withScale(Vector2(1.5, 1.5))
+
+    // Should call the correct spatial autoderived instance
+    val actual = s
+      .transformBy(
+        positionDiff = Point(10, 10),
+        rotationDiff = Radians.PI,
+        scaleDiff = Vector2(2, 2)
+      )
+
+    val expected =
+      Shape.Circle(
+        center = Point(60, 60),
+        radius = 10,
+        fill = Fill.None,
+        stroke = Stroke(4, RGBA.Black),
+        lighting = LightingModel.Unlit,
+        rotation = Radians.PI,
+        scale = Vector2(3, 3),
+        depth = Depth(1),
+        ref = Point.zero,
+        flip = Flip.default,
+        shaderId = None
+      )
+
+    assertEquals(actual, expected)
+  }
+
   test("Bounds calculation - line") {
     // There is an almost duplicate of this test in BoundaryLocatorTests
     // that has a better explaination of the calculation.

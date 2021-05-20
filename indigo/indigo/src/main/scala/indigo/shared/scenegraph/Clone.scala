@@ -1,7 +1,6 @@
 package indigo.shared.scenegraph
 
 import indigo.shared.scenegraph.syntax.BasicSpatial
-import indigo.shared.scenegraph.syntax.Spatial
 
 import indigo.shared.datatypes._
 
@@ -52,12 +51,29 @@ object Clone:
 
   given BasicSpatial[Clone] with
     extension (clone: Clone)
+      def position: Point =
+        clone.position
+      def rotation: Radians =
+        clone.rotation
+      def scale: Vector2 =
+        clone.scale
+      def depth: Depth =
+        clone.depth
+      def ref: Point =
+        clone.ref
+      def flip: Flip =
+        clone.flip
+
       def withPosition(newPosition: Point): Clone =
         clone.copy(transform = clone.transform.withPosition(newPosition))
       def withRotation(newRotation: Radians): Clone =
         clone.copy(transform = clone.transform.withRotation(newRotation))
       def withScale(newScale: Vector2): Clone =
         clone.copy(transform = clone.transform.withScale(newScale))
+      def withRef(newRef: Point): Clone =
+        clone
+      def withRef(x: Int, y: Int): Clone =
+        withRef(Point(x, y))
       def withDepth(newDepth: Depth): Clone =
         clone.copy(depth = newDepth)
       def withFlip(newFlip: Flip): Clone =
@@ -108,12 +124,6 @@ final case class CloneBatch(
   ): CloneBatch =
     this.copy(transform = CloneTransformData(newPosition, newRotation, newScale, flipHorizontal, flipVertical))
 
-  def withHorizontalFlip(isFlipped: Boolean): CloneBatch =
-    this.copy(transform = transform.withHorizontalFlip(isFlipped))
-
-  def withVerticalFlip(isFlipped: Boolean): CloneBatch =
-    this.copy(transform = transform.withVerticalFlip(isFlipped))
-
   def withClones(newClones: List[CloneTransformData]): CloneBatch =
     this.copy(clones = newClones)
 
@@ -134,12 +144,29 @@ object CloneBatch:
 
   given BasicSpatial[CloneBatch] with
     extension (cloneBatch: CloneBatch)
+      def position: Point =
+        cloneBatch.position
+      def rotation: Radians =
+        cloneBatch.rotation
+      def scale: Vector2 =
+        cloneBatch.scale
+      def depth: Depth =
+        cloneBatch.depth
+      def ref: Point =
+        cloneBatch.ref
+      def flip: Flip =
+        cloneBatch.flip
+
       def withPosition(newPosition: Point): CloneBatch =
         cloneBatch.copy(transform = cloneBatch.transform.withPosition(newPosition))
       def withRotation(newRotation: Radians): CloneBatch =
         cloneBatch.copy(transform = cloneBatch.transform.withRotation(newRotation))
       def withScale(newScale: Vector2): CloneBatch =
         cloneBatch.copy(transform = cloneBatch.transform.withScale(newScale))
+      def withRef(newRef: Point): CloneBatch =
+        cloneBatch
+      def withRef(x: Int, y: Int): CloneBatch =
+        withRef(Point(x, y))
       def withDepth(newDepth: Depth): CloneBatch =
         cloneBatch.copy(depth = newDepth)
       def withFlip(newFlip: Flip): CloneBatch =

@@ -112,48 +112,35 @@ object Shape {
 
     given BasicSpatial[Box] with
       extension (box: Box)
+        def position: Point =
+          box.position
+        def rotation: Radians =
+          box.rotation
+        def scale: Vector2 =
+          box.scale
+        def depth: Depth =
+          box.depth
+        def ref: Point =
+          box.ref
+        def flip: Flip =
+          box.flip
+
         def withPosition(newPosition: Point): Box =
           box.copy(dimensions = box.dimensions.moveTo(newPosition))
         def withRotation(newRotation: Radians): Box =
           box.copy(rotation = newRotation)
         def withScale(newScale: Vector2): Box =
           box.copy(scale = newScale)
+        def withRef(newRef: Point): Box =
+          box.copy(ref = newRef)
+        def withRef(x: Int, y: Int): Box =
+          withRef(Point(x, y))
         def withDepth(newDepth: Depth): Box =
           box.copy(depth = newDepth)
         def withFlip(newFlip: Flip): Box =
           box.copy(flip = newFlip)
 
-    given spatialBox(using bs: BasicSpatial[Box]): Spatial[Box] with
-      extension (box: Box)
-        def moveBy(pt: Point): Box =
-          box.moveTo(box.position + pt)
-        def moveBy(x: Int, y: Int): Box =
-          moveBy(Point(x, y))
-
-        def rotateTo(angle: Radians): Box =
-          box.withRotation(angle)
-        def rotateBy(angle: Radians): Box =
-          rotateTo(box.rotation + angle)
-
-        def scaleBy(amount: Vector2): Box =
-          box.withScale(box.scale * amount)
-        def scaleBy(x: Double, y: Double): Box =
-          scaleBy(Vector2(x, y))
-
-        def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): Box =
-          box.copy(dimensions = box.dimensions.moveTo(newPosition), rotation = newRotation, scale = newScale)
-        def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): Box =
-          transformTo(box.position + positionDiff, box.rotation + rotationDiff, box.scale * scaleDiff)
-
-        def withRef(newRef: Point): Box =
-          box.copy(ref = newRef)
-        def withRef(x: Int, y: Int): Box =
-          box.copy(ref = Point(x, y))
-
-        def flipHorizontal(isFlipped: Boolean): Box =
-          box.withFlip(box.flip.withHorizontalFlip(isFlipped))
-        def flipVertical(isFlipped: Boolean): Box =
-          box.withFlip(box.flip.withVerticalFlip(isFlipped))
+    given Spatial[Box] = Spatial.default[Box]
   }
 
   final case class Circle(
@@ -240,49 +227,43 @@ object Shape {
 
     given BasicSpatial[Circle] with
       extension (circle: Circle)
+        def position: Point =
+          circle.position
+        def rotation: Radians =
+          circle.rotation
+        def scale: Vector2 =
+          circle.scale
+        def depth: Depth =
+          circle.depth
+        def ref: Point =
+          circle.ref
+        def flip: Flip =
+          circle.flip
+
         def withPosition(newPosition: Point): Circle =
           circle.copy(center = newPosition)
         def withRotation(newRotation: Radians): Circle =
           circle.copy(rotation = newRotation)
         def withScale(newScale: Vector2): Circle =
           circle.copy(scale = newScale)
+        def withRef(newRef: Point): Circle =
+          circle.copy(ref = newRef)
+        def withRef(x: Int, y: Int): Circle =
+          withRef(Point(x, y))
         def withDepth(newDepth: Depth): Circle =
           circle.copy(depth = newDepth)
         def withFlip(newFlip: Flip): Circle =
           circle.copy(flip = newFlip)
 
-    given spatialCircle(using bs: BasicSpatial[Circle]): Spatial[Circle] with
-      extension (circle: Circle)
-        def moveBy(pt: Point): Circle =
-          circle.moveTo(circle.center + pt)
-        def moveBy(x: Int, y: Int): Circle =
-          moveBy(Point(x, y))
-
-        def rotateTo(angle: Radians): Circle =
-          circle.withRotation(angle)
-        def rotateBy(angle: Radians): Circle =
-          rotateTo(circle.rotation + angle)
-
-        def scaleBy(amount: Vector2): Circle =
-          circle.withScale(circle.scale * amount)
-        def scaleBy(x: Double, y: Double): Circle =
-          scaleBy(Vector2(x, y))
-
-        def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): Circle =
+        override def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): Circle =
           circle.copy(center = newPosition, rotation = newRotation, scale = newScale)
-        def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): Circle =
+        override def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): Circle =
           transformTo(circle.center + positionDiff, circle.rotation + rotationDiff, circle.scale * scaleDiff)
 
-        def withRef(newRef: Point): Circle =
-          circle.copy(ref = newRef)
-        def withRef(x: Int, y: Int): Circle =
-          circle.copy(ref = Point(x, y))
-
-        def flipHorizontal(isFlipped: Boolean): Circle =
-          circle.withFlip(circle.flip.withHorizontalFlip(isFlipped))
-        def flipVertical(isFlipped: Boolean): Circle =
-          circle.withFlip(circle.flip.withVerticalFlip(isFlipped))
-
+    given Spatial[Circle] = new Spatial.Provided[Circle]:
+      extension (circle: Circle)
+        override def moveBy(pt: Point): Circle =
+          circle.moveTo(circle.center + pt)
   }
 
   final case class Line(
@@ -347,23 +328,43 @@ object Shape {
 
     given BasicSpatial[Line] with
       extension (line: Line)
+        def position: Point =
+          line.position
+        def rotation: Radians =
+          line.rotation
+        def scale: Vector2 =
+          line.scale
+        def depth: Depth =
+          line.depth
+        def ref: Point =
+          line.ref
+        def flip: Flip =
+          line.flip
+
         def withPosition(newPosition: Point): Line =
           line.copy(start = newPosition, end = newPosition + (line.end - line.start))
         def withRotation(newRotation: Radians): Line =
           line.copy(rotation = newRotation)
         def withScale(newScale: Vector2): Line =
           line.copy(scale = newScale)
+        def withRef(newRef: Point): Line =
+          line.copy(ref = newRef)
+        def withRef(x: Int, y: Int): Line =
+          withRef(Point(x, y))
         def withDepth(newDepth: Depth): Line =
           line.copy(depth = newDepth)
         def withFlip(newFlip: Flip): Line =
           line.copy(flip = newFlip)
 
-    given spatialLine(using bs: BasicSpatial[Line]): Spatial[Line] with
+        override def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): Line =
+          line.copy(rotation = newRotation, scale = newScale).moveTo(newPosition)
+        override def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): Line =
+          transformTo(line.position + positionDiff, line.rotation + rotationDiff, line.scale * scaleDiff)
+
+    given Spatial[Line] = new Spatial.Provided[Line]:
       extension (line: Line)
-        def moveBy(pt: Point): Line =
+        override def moveBy(pt: Point): Line =
           line.moveTo(line.start + pt)
-        def moveBy(x: Int, y: Int): Line =
-          moveBy(Point(x, y))
 
         // Extra operations to move line start and end vertices
         def moveStartTo(newPosition: Point): Line =
@@ -383,33 +384,6 @@ object Shape {
           moveEndTo(line.end + amount)
         def moveEndBy(x: Int, y: Int): Line =
           moveEndBy(Point(x, y))
-        // End of line extra operations
-
-        def rotateTo(angle: Radians): Line =
-          line.withRotation(angle)
-        def rotateBy(angle: Radians): Line =
-          rotateTo(line.rotation + angle)
-
-        def scaleBy(amount: Vector2): Line =
-          line.withScale(line.scale * amount)
-        def scaleBy(x: Double, y: Double): Line =
-          scaleBy(Vector2(x, y))
-
-        def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): Line =
-          line.copy(rotation = newRotation, scale = newScale).moveTo(newPosition)
-        def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): Line =
-          transformTo(line.position + positionDiff, line.rotation + rotationDiff, line.scale * scaleDiff)
-
-        def withRef(newRef: Point): Line =
-          line.copy(ref = newRef)
-        def withRef(x: Int, y: Int): Line =
-          line.copy(ref = Point(x, y))
-
-        def flipHorizontal(isFlipped: Boolean): Line =
-          line.withFlip(line.flip.withHorizontalFlip(isFlipped))
-        def flipVertical(isFlipped: Boolean): Line =
-          line.withFlip(line.flip.withVerticalFlip(isFlipped))
-
   }
 
   final case class Polygon(
@@ -504,6 +478,19 @@ object Shape {
 
     given BasicSpatial[Polygon] with
       extension (polygon: Polygon)
+        def position: Point =
+          polygon.position
+        def rotation: Radians =
+          polygon.rotation
+        def scale: Vector2 =
+          polygon.scale
+        def depth: Depth =
+          polygon.depth
+        def ref: Point =
+          polygon.ref
+        def flip: Flip =
+          polygon.flip
+
         private def relativeShift(by: Point): List[Point] =
           polygon.vertices.map(_.moveBy(by - polygon.position))
 
@@ -513,42 +500,16 @@ object Shape {
           polygon.copy(rotation = newRotation)
         def withScale(newScale: Vector2): Polygon =
           polygon.copy(scale = newScale)
+        def withRef(newRef: Point): Polygon =
+          polygon.copy(ref = newRef)
+        def withRef(x: Int, y: Int): Polygon =
+          withRef(Point(x, y))
         def withDepth(newDepth: Depth): Polygon =
           polygon.copy(depth = newDepth)
         def withFlip(newFlip: Flip): Polygon =
           polygon.copy(flip = newFlip)
 
-    given spatialPolygon(using bs: BasicSpatial[Polygon]): Spatial[Polygon] with
-      extension (polygon: Polygon)
-        def moveBy(pt: Point): Polygon =
-          polygon.moveTo(polygon.position + pt)
-        def moveBy(x: Int, y: Int): Polygon =
-          moveBy(Point(x, y))
-
-        def rotateTo(angle: Radians): Polygon =
-          polygon.withRotation(angle)
-        def rotateBy(angle: Radians): Polygon =
-          rotateTo(polygon.rotation + angle)
-
-        def scaleBy(amount: Vector2): Polygon =
-          polygon.withScale(polygon.scale * amount)
-        def scaleBy(x: Double, y: Double): Polygon =
-          scaleBy(Vector2(x, y))
-
-        def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): Polygon =
-          polygon.copy(rotation = newRotation, scale = newScale).withPosition(newPosition)
-        def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): Polygon =
-          transformTo(polygon.position + positionDiff, polygon.rotation + rotationDiff, polygon.scale * scaleDiff)
-
-        def withRef(newRef: Point): Polygon =
-          polygon.copy(ref = newRef)
-        def withRef(x: Int, y: Int): Polygon =
-          polygon.copy(ref = Point(x, y))
-
-        def flipHorizontal(isFlipped: Boolean): Polygon =
-          polygon.withFlip(polygon.flip.withHorizontalFlip(isFlipped))
-        def flipVertical(isFlipped: Boolean): Polygon =
-          polygon.withFlip(polygon.flip.withVerticalFlip(isFlipped))
+    given Spatial[Polygon] = Spatial.default[Polygon]
   }
 
   def gradientUniforms(fill: Fill): List[(Uniform, vec4)] =
