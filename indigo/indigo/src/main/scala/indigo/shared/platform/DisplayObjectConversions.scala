@@ -355,7 +355,7 @@ final class DisplayObjectConversions(
     val channelOffset2 = optionalAssetToOffset(assetMapping, shader.channel2)
     val channelOffset3 = optionalAssetToOffset(assetMapping, shader.channel3)
 
-    val bounds = Rectangle(leaf.position, leaf.size)
+    val bounds = Rectangle(Point.zero, leaf.size)
 
     val frameInfo: SpriteSheetFrameCoordinateOffsets =
       shader.channel0 match {
