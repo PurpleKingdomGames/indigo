@@ -47,6 +47,7 @@ vec2 CHANNEL_3_TEXTURE_COORDS; // Scaled texture coordinates
 vec2 SCREEN_COORDS;
 float ROTATION;
 
+int LIGHT_INDEX;
 int LIGHT_COUNT;
 int LIGHT_ACTIVE;
 int LIGHT_TYPE;
@@ -114,6 +115,7 @@ void main(void) {
   LIGHT_COUNT = min(8, max(0, int(round(numOfLights))));
   
   for(int i = 0; i < LIGHT_COUNT; i++) {
+    LIGHT_INDEX = i;
     LIGHT_ACTIVE = int(round(lightFlags[i].x));
     LIGHT_TYPE = int(round(lightFlags[i].y));
     LIGHT_FAR_CUT_OFF = int(round(lightFlags[i].z));
