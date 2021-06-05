@@ -178,6 +178,7 @@ type NetworkSendEvent    = shared.events.NetworkSendEvent
 type NetworkReceiveEvent = shared.events.NetworkReceiveEvent
 
 type StorageEvent = shared.events.StorageEvent
+val StorageEvent: shared.events.StorageEvent.type = shared.events.StorageEvent
 
 type Save = shared.events.StorageEvent.Save
 val Save: shared.events.StorageEvent.Save.type = shared.events.StorageEvent.Save
@@ -194,6 +195,7 @@ type Loaded = shared.events.StorageEvent.Loaded
 val Loaded: shared.events.StorageEvent.Loaded.type = shared.events.StorageEvent.Loaded
 
 type AssetEvent = shared.events.AssetEvent
+val AssetEvent: shared.events.AssetEvent.type = shared.events.AssetEvent
 
 type LoadAsset = shared.events.AssetEvent.LoadAsset
 val LoadAsset: shared.events.AssetEvent.LoadAsset.type = shared.events.AssetEvent.LoadAsset
