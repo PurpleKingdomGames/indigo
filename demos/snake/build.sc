@@ -11,7 +11,7 @@ import $ivy.`io.indigoengine::mill-indigo:0.8.3-SNAPSHOT`, millindigo._
 
 object snake extends ScalaJSModule with MillIndigo {
   def scalaVersion   = "3.0.0"
-  def scalaJSVersion = "1.5.1"
+  def scalaJSVersion = "1.6.0"
 
   val gameAssetsDirectory: os.Path = os.pwd / "assets"
   val showCursor: Boolean          = true
