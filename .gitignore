@@ -35,3 +35,4 @@ elm-stuff
 metals.sbt
 .bsp/
 .ammonite
+.coursier
