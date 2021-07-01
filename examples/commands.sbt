@@ -175,6 +175,14 @@ addCommandAlias(
 )
 
 addCommandAlias(
+  "assetLoadingRun",
+  List(
+    "assetLoading/fastOptJS",
+    "assetLoading/indigoRun"
+  ).mkString(";", ";", "")
+)
+
+addCommandAlias(
   "tiledBuild",
   List(
     "tiled/fastOptJS",

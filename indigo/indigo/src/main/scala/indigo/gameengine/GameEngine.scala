@@ -164,7 +164,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
 
           GameEngine.registerAnimations(animationsRegister, animations ++ startupData.additionalAnimations)
           GameEngine.registerFonts(fontRegister, fonts ++ startupData.additionalFonts)
-          GameEngine.registerShaders(shaderRegister, shaders, accumulatedAssetCollection)
+          GameEngine.registerShaders(shaderRegister, shaders ++ startupData.additionalShaders, accumulatedAssetCollection)
 
           def modelToUse(startUpSuccessData: => StartUpData): Outcome[GameModel] =
             if (firstRun) initialModel(startUpSuccessData)
@@ -230,15 +230,19 @@ object GameEngine {
   def registerShaders(shaderRegister: ShaderRegister, shaders: Set[Shader], assetCollection: AssetCollection): Unit =
     shaders.foreach {
       case s: EntityShader.Source =>
+        shaderRegister.remove(s.id)
         shaderRegister.registerEntityShader(s)
 
       case s: EntityShader.External =>
+        shaderRegister.remove(s.id)
         shaderRegister.registerEntityShader(externalEntityShaderToSource(s, assetCollection))
 
       case s: BlendShader.Source =>
+        shaderRegister.remove(s.id)
         shaderRegister.registerBlendShader(s)
 
       case s: BlendShader.External =>
+        shaderRegister.remove(s.id)
         shaderRegister.registerBlendShader(externalBlendShaderToSource(s, assetCollection))
 
       case _ =>

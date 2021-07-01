@@ -1,6 +1,7 @@
 package indigo.shared.shader
 
 import indigo.shared.QuickCache
+import indigo.shared.CacheKey
 
 final class ShaderRegister {
 
@@ -23,6 +24,9 @@ final class ShaderRegister {
       case _ =>
         ()
     }
+
+  def remove(id: ShaderId): Unit =
+    cache.purge(CacheKey(id.toString))
 
   def registerEntityShader(shader: EntityShader.Source): Unit = {
     QuickCache(shader.id.toString) {
