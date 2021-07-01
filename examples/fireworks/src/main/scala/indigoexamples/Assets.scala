@@ -6,8 +6,7 @@ object Assets {
 
   val assets: Set[AssetType] =
     Set(
-      AssetType.Image(AssetName("graphics"), AssetPath("assets/graphics.png")),
-      AssetType.Image(FontDetails.fontName, AssetPath("assets/boxy_font_small.png"))
+      AssetType.Image(AssetName("graphics"), AssetPath("assets/graphics.png"))
     )
 
   val cross: Graphic =

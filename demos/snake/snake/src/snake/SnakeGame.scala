@@ -41,7 +41,7 @@ object SnakeGame extends IndigoGame[ViewConfig, StartupData, GameModel, ViewMode
         .withAssets(GameAssets.assets(assetPath))
         .withFonts(GameAssets.fontInfo)
         .withSubSystems(
-          Set(FPSCounter(GameAssets.fontKey, Point(5, 5), 60, Option(BindingKey("fps")), GameAssets.fontMaterial))
+          Set(FPSCounter(Point(5, 5), 60, Option(BindingKey("fps"))))
         )
     }
 

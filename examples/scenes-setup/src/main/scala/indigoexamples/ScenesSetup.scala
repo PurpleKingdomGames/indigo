@@ -29,7 +29,7 @@ object ScenesSetup extends IndigoGame[Unit, StartUpData, GameModel, Unit] {
         )
         .withAssets(AssetType.Image(FontStuff.fontName, AssetPath("assets/boxy_font.png")))
         .withFonts(FontStuff.fontInfo)
-        .withSubSystems(FPSCounter(FontStuff.fontKey, Point(10, 360), targetFPS, None, FontStuff.fontMaterial))
+        .withSubSystems(FPSCounter(Point(10, 360), targetFPS, None))
     )
 
   def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[StartUpData]] =
