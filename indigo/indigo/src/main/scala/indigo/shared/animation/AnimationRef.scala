@@ -17,7 +17,7 @@ final case class AnimationRef(
 ) derives CanEqual {
 
   lazy val frameHash: String =
-    currentFrame.crop.hash
+    currentFrame.crop.hashCode().toString
 
   def currentCycle: CycleRef =
     cycles.get(currentCycleLabel).getOrElse(cycles.head._2)
@@ -32,7 +32,8 @@ final case class AnimationRef(
     this.copy(
       currentCycleLabel =
         if (cycles.contains(memento.currentCycleLabel)) memento.currentCycleLabel
-        else currentCycleLabel, cycles = cycles.updatedWith(memento.currentCycleLabel) {
+        else currentCycleLabel,
+      cycles = cycles.updatedWith(memento.currentCycleLabel) {
         case None =>
           None
 
@@ -127,7 +128,7 @@ final case class CycleRef(
       }
     }
 }
-object CycleRef {
+object CycleRef:
   given CanEqual[Option[CycleRef], Option[CycleRef]] = CanEqual.derived
 
   def fromCycle(cycle: Cycle): CycleRef =
@@ -148,23 +149,14 @@ object CycleRef {
       lastFrameAdvance: Millis
   ): Signal[CycleMemento] =
     Signal { t =>
-      if (t.toMillis >= lastFrameAdvance + frameDuration) {
+      if t.toMillis >= lastFrameAdvance + frameDuration then
         val framestoAdvance = ((t.toMillis - lastFrameAdvance) / frameDuration).toInt
         CycleMemento((currentPosition + framestoAdvance) % frameCount, t.toMillis)
-      } else CycleMemento(currentPosition, lastFrameAdvance)
+      else CycleMemento(currentPosition, lastFrameAdvance)
     }
-}
 
 final case class AnimationMemento(
     bindingKey: BindingKey,
     currentCycleLabel: CycleLabel,
     currentCycleMemento: CycleMemento
 ) derives CanEqual
-object AnimationMemento {
-  def apply(
-      bindingKey: BindingKey,
-      currentCycleLabel: CycleLabel,
-      currentCycleMemento: CycleMemento
-  ): AnimationMemento =
-    new AnimationMemento(bindingKey, currentCycleLabel, currentCycleMemento)
-}

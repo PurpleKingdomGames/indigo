@@ -47,8 +47,6 @@ final case class Point(x: Int, y: Int) derives CanEqual {
 
   def toVector: Vector2 =
     Vector2(x.toDouble, y.toDouble)
-
-  val hash: String = s"${x.toString()}${y.toString()}"
 }
 
 object Point {

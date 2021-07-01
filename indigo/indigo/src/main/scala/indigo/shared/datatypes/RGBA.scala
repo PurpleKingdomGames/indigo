@@ -1,6 +1,6 @@
 package indigo.shared.datatypes
 
-final case class RGBA(r: Double, g: Double, b: Double, a: Double) derives CanEqual {
+final case class RGBA(r: Double, g: Double, b: Double, a: Double) derives CanEqual:
   def +(other: RGBA): RGBA =
     RGBA.combine(this, other)
 
@@ -53,10 +53,7 @@ final case class RGBA(r: Double, g: Double, b: Double, a: Double) derives CanEqu
   def toArray: Array[Float] =
     Array(r.toFloat, g.toFloat, b.toFloat, a.toFloat)
 
-  def hash: String =
-    r.toString() + g.toString() + b.toString() + a.toString()
-}
-object RGBA {
+object RGBA:
 
   val Red: RGBA     = RGBA(1, 0, 0, 1)
   val Green: RGBA   = RGBA(0, 1, 0, 1)
@@ -125,5 +122,3 @@ object RGBA {
 
   def fromColorInts(r: Int, g: Int, b: Int, a: Int): RGBA =
     RGBA((1.0 / 255) * r, (1.0 / 255) * g, (1.0 / 255) * b, (1.0 / 255) * a)
-
-}

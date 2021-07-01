@@ -4,12 +4,11 @@ import scala.annotation.tailrec
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Size
 
-final case class BoundingBox(position: Vertex, size: Vertex) derives CanEqual {
+final case class BoundingBox(position: Vertex, size: Vertex) derives CanEqual:
   lazy val x: Double      = position.x
   lazy val y: Double      = position.y
   lazy val width: Double  = size.x
   lazy val height: Double = size.y
-  lazy val hash: String   = s"${x.toString()}${y.toString()}${width.toString()}${height.toString()}"
 
   lazy val left: Double   = if width >= 0 then x else x + width
   lazy val right: Double  = if width >= 0 then x + width else x
@@ -95,9 +94,8 @@ final case class BoundingBox(position: Vertex, size: Vertex) derives CanEqual {
 
   def ~==(other: BoundingBox): Boolean =
     (position ~== other.position) && (size ~== other.size)
-}
 
-object BoundingBox {
+object BoundingBox:
 
   val zero: BoundingBox =
     BoundingBox(0, 0, 0, 0)
@@ -213,5 +211,3 @@ object BoundingBox {
         else acc
       }
       ._1
-
-}

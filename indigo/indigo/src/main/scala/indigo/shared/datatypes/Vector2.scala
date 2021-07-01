@@ -1,6 +1,6 @@
 package indigo.shared.datatypes
 
-final case class Vector2(x: Double, y: Double) derives CanEqual {
+final case class Vector2(x: Double, y: Double) derives CanEqual:
 
   def withX(newX: Double): Vector2 =
     this.copy(x = newX)
@@ -69,7 +69,7 @@ final case class Vector2(x: Double, y: Double) derives CanEqual {
 
   def normalise: Vector2 = {
     val magnitude = length
-    
+
     if (magnitude == 0) Vector2.zero
     else
       Vector2(
@@ -100,11 +100,7 @@ final case class Vector2(x: Double, y: Double) derives CanEqual {
     Math.abs(x - other.x) < 0.0001 &&
       Math.abs(y - other.y) < 0.0001
 
-  def hash: String =
-    x.toString() + y.toString()
-}
-
-object Vector2 {
+object Vector2:
 
   def apply(d: Double): Vector2 =
     Vector2(d, d)
@@ -136,5 +132,3 @@ object Vector2 {
 
   def distance(v1: Vector2, v2: Vector2): Double =
     Math.sqrt(Math.abs(Math.pow(v2.x - v1.x, 2) + Math.pow(v2.y - v1.y, 2)))
-
-}

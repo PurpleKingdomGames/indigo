@@ -11,7 +11,7 @@ final case class ShaderData(
     channel1: Option[AssetName],
     channel2: Option[AssetName],
     channel3: Option[AssetName]
-) extends Material derives CanEqual {
+) extends Material derives CanEqual:
 
   def withShaderId(newShaderId: ShaderId): ShaderData =
     this.copy(shaderId = newShaderId)
@@ -34,21 +34,10 @@ final case class ShaderData(
   def withChannel3(assetName: AssetName): ShaderData =
     this.copy(channel3 = Some(assetName))
 
-  lazy val hash: String =
-    s"custom-${shaderId}" +
-      uniformBlocks.map { uniformBlock =>
-        s"-${uniformBlock.uniformHash}"
-      }.mkString +
-      s"-${channel0.getOrElse("")}" +
-      s"-${channel1.getOrElse("")}" +
-      s"-${channel2.getOrElse("")}" +
-      s"-${channel3.getOrElse("")}"
-
   def toShaderData: ShaderData =
     this
 
-}
-object ShaderData {
+object ShaderData:
 
   def apply(shaderId: ShaderId): ShaderData =
     ShaderData(shaderId, Nil, None, None, None, None)
@@ -64,5 +53,3 @@ object ShaderData {
       channel3: AssetName
   ): ShaderData =
     ShaderData(shaderId, Nil, Option(channel0), Option(channel1), Option(channel2), Option(channel3))
-
-}

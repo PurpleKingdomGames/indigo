@@ -1,6 +1,6 @@
 package indigo.shared.datatypes
 
-final case class Size(width: Int, height: Int) derives CanEqual {
+final case class Size(width: Int, height: Int) derives CanEqual:
   def +(size: Size): Size = Size(width + size.width, height + size.height)
   def +(i: Int): Size     = Size(width + i, height + i)
   def -(size: Size): Size = Size(width - size.width, height - size.height)
@@ -10,7 +10,7 @@ final case class Size(width: Int, height: Int) derives CanEqual {
   def /(size: Size): Size = Size(width / size.width, height / size.height)
   def /(i: Int): Size     = Size(width / i, height / i)
 
-  def withWidth(newX: Int): Size = this.copy(width = newX)
+  def withWidth(newX: Int): Size  = this.copy(width = newX)
   def withHeight(newY: Int): Size = this.copy(height = newY)
 
   def abs: Size =
@@ -43,10 +43,7 @@ final case class Size(width: Int, height: Int) derives CanEqual {
   def toPoint: Point =
     Point(width, height)
 
-  val hash: String = s"${width.toString()}${height.toString()}"
-}
-
-object Size {
+object Size:
 
   given CanEqual[Option[Size], Option[Size]] = CanEqual.derived
 
@@ -56,5 +53,3 @@ object Size {
   val zero: Size = Size(0, 0)
 
   def tuple2ToSize(t: (Int, Int)): Size = Size(t._1, t._2)
-
-}

@@ -23,7 +23,7 @@ final case class LegacyEffects(
     saturation: Double,
     border: Border,
     glow: Glow
-) extends Material derives CanEqual {
+) extends Material derives CanEqual:
 
   def withAlpha(newAlpha: Double): LegacyEffects =
     this.copy(alpha = newAlpha)
@@ -45,7 +45,7 @@ final case class LegacyEffects(
   def withGlow(newGlow: Glow): LegacyEffects =
     this.copy(glow = newGlow)
 
-  def toShaderData: ShaderData = {
+  def toShaderData: ShaderData =
     val gradientUniforms: List[(Uniform, ShaderPrimitive)] =
       overlay match {
         case Fill.Color(color) =>
@@ -82,11 +82,10 @@ final case class LegacyEffects(
       }
 
     val overlayType: Double =
-      overlay match {
+      overlay match
         case _: Fill.Color          => 0.0
         case _: Fill.LinearGradient => 1.0
         case _: Fill.RadialGradient => 2.0
-      }
 
     ShaderData(
       LegacyEffects.entityShader.id,
@@ -114,9 +113,8 @@ final case class LegacyEffects(
       None,
       None
     )
-  }
-}
-object LegacyEffects {
+
+object LegacyEffects:
 
   val entityShader: EntityShader.Source =
     EntityShader.Source(
@@ -133,9 +131,8 @@ object LegacyEffects {
 
   def apply(diffuse: AssetName, alpha: Double): LegacyEffects =
     LegacyEffects(diffuse, alpha, RGBA.None, Fill.Color.default, 1.0, Border.default, Glow.default)
-}
 
-final case class Border(color: RGBA, innerThickness: Thickness, outerThickness: Thickness) derives CanEqual {
+final case class Border(color: RGBA, innerThickness: Thickness, outerThickness: Thickness) derives CanEqual:
 
   def withColor(newColor: RGBA): Border =
     this.copy(color = newColor)
@@ -146,10 +143,7 @@ final case class Border(color: RGBA, innerThickness: Thickness, outerThickness: 
   def withOuterThickness(thickness: Thickness): Border =
     this.copy(outerThickness = thickness)
 
-  def hash: String =
-    color.hash + innerThickness.hash + outerThickness.hash
-}
-object Border {
+object Border:
   def inside(color: RGBA): Border =
     Border(color, Thickness.Thin, Thickness.None)
 
@@ -158,7 +152,6 @@ object Border {
 
   val default: Border =
     Border(RGBA.Zero, Thickness.None, Thickness.None)
-}
 
 enum Thickness derives CanEqual:
   case None, Thin, Thick
@@ -171,10 +164,7 @@ object Thickness:
         case Thickness.Thin  => 1
         case Thickness.Thick => 2
 
-    def hash: String =
-      t.toInt.toString()
-
-final case class Glow(color: RGBA, innerGlowAmount: Double, outerGlowAmount: Double) derives CanEqual {
+final case class Glow(color: RGBA, innerGlowAmount: Double, outerGlowAmount: Double) derives CanEqual:
   def withColor(newColor: RGBA): Glow =
     this.copy(color = newColor)
 
@@ -184,10 +174,7 @@ final case class Glow(color: RGBA, innerGlowAmount: Double, outerGlowAmount: Dou
   def withOuterGlowAmount(amount: Double): Glow =
     this.copy(outerGlowAmount = Math.max(0, amount))
 
-  def hash: String =
-    color.hash + innerGlowAmount.toString + outerGlowAmount.toString()
-}
-object Glow {
+object Glow:
   def inside(color: RGBA): Glow =
     Glow(color, 1d, 0d)
 
@@ -196,4 +183,3 @@ object Glow {
 
   val default: Glow =
     Glow(RGBA.Zero, 0d, 0d)
-}

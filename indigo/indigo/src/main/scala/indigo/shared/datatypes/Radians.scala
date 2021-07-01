@@ -59,9 +59,6 @@ object Radians:
     def invert: Radians =
       negative
 
-    def hash: String =
-      r.toString()
-
     def toDouble: Double =
       r
 

@@ -113,7 +113,7 @@ final class BoundaryLocator(
     }
 
   def spriteBounds(sprite: Sprite): Option[Rectangle] =
-    QuickCache(s"""sprite-${sprite.bindingKey}-${sprite.animationKey}""") {
+    QuickCache(s"""sprite-${sprite.bindingKey.toString}-${sprite.animationKey.toString}""") {
       animationsRegister.fetchAnimationInLastState(sprite.bindingKey, sprite.animationKey) match {
         case Some(animation) =>
           Option(Rectangle(sprite.position, animation.currentFrame.crop.size))

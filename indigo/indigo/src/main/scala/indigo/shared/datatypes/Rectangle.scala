@@ -2,12 +2,11 @@ package indigo.shared.datatypes
 
 import scala.annotation.tailrec
 
-final case class Rectangle(position: Point, size: Size) derives CanEqual {
-  lazy val x: Int       = position.x
-  lazy val y: Int       = position.y
-  lazy val width: Int   = size.width
-  lazy val height: Int  = size.height
-  lazy val hash: String = s"${x.toString()}${y.toString()}${width.toString()}${height.toString()}"
+final case class Rectangle(position: Point, size: Size) derives CanEqual:
+  lazy val x: Int      = position.x
+  lazy val y: Int      = position.y
+  lazy val width: Int  = size.width
+  lazy val height: Int = size.height
 
   lazy val left: Int   = if width >= 0 then x else x + width
   lazy val right: Int  = if width >= 0 then x + width else x
@@ -22,7 +21,7 @@ final case class Rectangle(position: Point, size: Size) derives CanEqual {
   lazy val bottomRight: Point = Point(right, bottom)
   lazy val bottomLeft: Point  = Point(left, bottom)
   lazy val center: Point      = Point(horizontalCenter, verticalCenter)
-  lazy val halfSize: Size    = (size / 2).abs
+  lazy val halfSize: Size     = (size / 2).abs
 
   lazy val corners: List[Point] =
     List(topLeft, topRight, bottomRight, bottomLeft)
@@ -65,9 +64,7 @@ final case class Rectangle(position: Point, size: Size) derives CanEqual {
   def toSquare: Rectangle =
     this.copy(size = Size(Math.max(size.width, size.height)))
 
-}
-
-object Rectangle {
+object Rectangle:
 
   given CanEqual[Option[Rectangle], Option[Rectangle]] = CanEqual.derived
 
@@ -131,5 +128,3 @@ object Rectangle {
   def overlapping(a: Rectangle, b: Rectangle): Boolean =
     Math.abs(a.center.x - b.center.x) < a.halfSize.width + b.halfSize.width &&
       Math.abs(a.center.y - b.center.y) < a.halfSize.height + b.halfSize.height
-
-}

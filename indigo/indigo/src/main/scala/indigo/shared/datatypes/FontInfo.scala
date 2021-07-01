@@ -9,7 +9,7 @@ final case class FontInfo(
     unknownChar: FontChar,
     fontChars: List[FontChar],
     caseSensitive: Boolean
-) derives CanEqual {
+) derives CanEqual:
   import FontInfo.fontCharCache
 
   private val nonEmptyChars: List[FontChar] = unknownChar +: fontChars
@@ -24,7 +24,7 @@ final case class FontInfo(
     addChars(chars.toList)
 
   def findByCharacter(character: String): FontChar =
-    QuickCache("char-" + character + "-" + fontKey) {
+    QuickCache("char-" + character + "-" + fontKey.toString) {
       nonEmptyChars
         .find { p =>
           if (caseSensitive) p.character == character else p.character.toLowerCase == character.toLowerCase
@@ -41,9 +41,8 @@ final case class FontInfo(
     makeCaseSensitive(true)
   def isCaseInSensitive: FontInfo =
     makeCaseSensitive(false)
-}
 
-object FontInfo {
+object FontInfo:
 
   implicit val fontCharCache: QuickCache[FontChar] = QuickCache.empty
 
@@ -55,19 +54,19 @@ object FontInfo {
       fontChars = chars.toList,
       caseSensitive = false
     )
-}
 
 opaque type FontKey = String
 object FontKey:
   def apply(key: String): FontKey = key
 
+  extension (f: FontKey) def toString: String = f
+
 final case class FontSpriteSheet(material: Material, size: Size) derives CanEqual
 
 final case class FontChar(character: String, bounds: Rectangle) derives CanEqual
-object FontChar {
+object FontChar:
   def apply(character: String, x: Int, y: Int, width: Int, height: Int): FontChar =
     FontChar(character, Rectangle(x, y, width, height))
-}
 
 enum TextAlignment derives CanEqual:
   case Left, Center, Right

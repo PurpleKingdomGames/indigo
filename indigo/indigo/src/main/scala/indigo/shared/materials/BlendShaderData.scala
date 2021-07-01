@@ -6,7 +6,7 @@ import indigo.shared.shader.UniformBlock
 final case class BlendShaderData(
     shaderId: ShaderId,
     uniformBlocks: List[UniformBlock]
-) extends BlendMaterial derives CanEqual {
+) extends BlendMaterial derives CanEqual:
 
   def withShaderId(newShaderId: ShaderId): BlendShaderData =
     this.copy(shaderId = newShaderId)
@@ -16,22 +16,13 @@ final case class BlendShaderData(
   def withUniformBlock(newUniformBlocks: UniformBlock*): BlendShaderData =
     withUniformBlock(newUniformBlocks.toList)
 
-  lazy val hash: String =
-    s"custom-${shaderId}" +
-      uniformBlocks.map { uniformBlock =>
-        s"-${uniformBlock.uniformHash}"
-      }.mkString
-
   def toShaderData: BlendShaderData =
     this
 
-}
-object BlendShaderData {
+object BlendShaderData:
 
   def apply(shaderId: ShaderId): BlendShaderData =
     BlendShaderData(shaderId, Nil)
 
   def apply(shaderId: ShaderId, uniformBlocks: UniformBlock*): BlendShaderData =
     BlendShaderData(shaderId, uniformBlocks.toList)
-
-}
