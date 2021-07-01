@@ -68,11 +68,9 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
         .withFonts(Fonts.fontInfo)
         .withSubSystems(
           FPSCounter(
-            Fonts.fontKey,
             Point(5, 165),
             targetFPS,
-            Option(BindingKey("fps counter")),
-            SandboxAssets.fontMaterial
+            Option(BindingKey("fps counter"))
           )
         )
         .withShaders(
