@@ -43,6 +43,22 @@ object FPSCounter {
       _present = present(position, targetFPS, layerKey, FontFamily.sansSerif, Pixels(12))
     )
 
+  def apply(position: Point, targetFPS: Int, layerKey: BindingKey): SubSystem =
+    SubSystem[GlobalEvent, FPSCounterState](
+      _eventFilter = eventFilter,
+      _initialModel = Outcome(FPSCounterState.default),
+      _update = update(targetFPS),
+      _present = present(position, targetFPS, Option(layerKey), FontFamily.sansSerif, Pixels(12))
+    )
+
+  def apply(position: Point, targetFPS: Int): SubSystem =
+    SubSystem[GlobalEvent, FPSCounterState](
+      _eventFilter = eventFilter,
+      _initialModel = Outcome(FPSCounterState.default),
+      _update = update(targetFPS),
+      _present = present(position, targetFPS, None, FontFamily.sansSerif, Pixels(12))
+    )
+
   lazy val eventFilter: GlobalEvent => Option[GlobalEvent] = {
     case FrameTick => Option(FrameTick)
     case _         => None
@@ -85,10 +101,17 @@ object FPSCounter {
         ctx.boundaryLocator
           .measureText(text)
 
+      val boxSize =
+        ({ (s: Size) =>
+          Size(
+            if s.width  % 2 == 0 then s.width else s.width + 1,
+            if s.height % 2 == 0 then s.height else s.height + 1
+          )
+        })(size.expand(2).size)
+
       val bg: Shape.Box =
         Shape
-          .Box(size.expand(2), Fill.Color(RGBA.Black.withAlpha(0.5)))
-          .moveTo(position)
+          .Box(Rectangle(position, boxSize), Fill.Color(RGBA.Black.withAlpha(0.5)))
 
       Outcome(
         SceneUpdateFragment(
