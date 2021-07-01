@@ -25,6 +25,7 @@ import indigo.shared.scenegraph.SpotLight
 import indigo.shared.scenegraph.Falloff
 import indigo.shared.scenegraph.CloneId
 import indigo.shared.datatypes.Depth
+import indigo.shared.QuickCache
 
 final class SceneProcessor(
     boundaryLocator: BoundaryLocator,
@@ -36,9 +37,12 @@ final class SceneProcessor(
   private val displayObjectConverterClone: DisplayObjectConversions =
     new DisplayObjectConversions(boundaryLocator, animationsRegister, fontRegister)
 
+  implicit private val uniformsCache: QuickCache[Array[Float]] = QuickCache.empty
+
   def purgeCaches(): Unit = {
     displayObjectConverter.purgeCaches()
     displayObjectConverterClone.purgeCaches()
+    uniformsCache.purgeAllNow()
   }
 
   def processScene(
@@ -253,7 +257,7 @@ object SceneProcessor {
         )
     }
 
-  def mergeShaderToUniformData(shaderData: BlendShaderData): List[DisplayObjectUniformData] =
+  def mergeShaderToUniformData(shaderData: BlendShaderData)(using QuickCache[Array[Float]]): List[DisplayObjectUniformData] =
     shaderData.uniformBlocks.map { ub =>
       DisplayObjectUniformData(
         uniformHash = ub.uniformHash,

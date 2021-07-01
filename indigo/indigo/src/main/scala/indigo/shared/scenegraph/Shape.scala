@@ -697,13 +697,13 @@ object Shape {
         }
 
       case s: Shape.Polygon =>
-        val verts: Array[vec2] =
+        val verts: List[vec2] =
           s.vertices.map { v =>
             vec2(
               (v.x - bounds.x).toFloat,
               (v.y - bounds.y).toFloat
             )
-          }.toArray
+          }
 
         val shapeUniformBlock =
           UniformBlock(
@@ -713,7 +713,7 @@ object Shape {
               Uniform("FILL_TYPE")    -> fillType(s.fill),
               Uniform("COUNT")        -> float(verts.length.toFloat),
               Uniform("STROKE_COLOR") -> vec4(s.stroke.color.r, s.stroke.color.g, s.stroke.color.b, s.stroke.color.a)
-            ) ++ gradientUniforms(s.fill) ++ List(Uniform("VERTICES") -> array(16, verts))
+            ) ++ gradientUniforms(s.fill) ++ List(Uniform("VERTICES") -> array[vec2](16, verts))
           )
 
         s.lighting match {

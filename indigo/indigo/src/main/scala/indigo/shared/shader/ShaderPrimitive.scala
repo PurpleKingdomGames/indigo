@@ -1,6 +1,7 @@
 package indigo.shared.shader
 
 import scala.reflect.ClassTag
+import scala.collection.immutable.ArraySeq
 
 sealed trait ShaderPrimitive derives CanEqual:
   def length: Int
@@ -99,13 +100,13 @@ object ShaderPrimitive:
     *   Implicit proof that T is a Shader value (float, vec2, vec3, vec4)
     */
   @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
-  final case class array[T](size: Int, values: Array[T])(implicit ev: IsShaderValue[T]) extends ShaderPrimitive:
+  final case class array[T](size: Int, values: ArraySeq[T])(implicit ev: IsShaderValue[T]) extends ShaderPrimitive:
     val length: Int      = values.length * 4
     val isArray: Boolean = true
 
     def toArray: Array[Float] =
       val data =
-        values
+        values.unsafeArray
           .map(p => expandTo4(ev.toArray(p.asInstanceOf[ShaderPrimitive])))
           .flatten
           .toArray
@@ -135,4 +136,8 @@ object ShaderPrimitive:
 
   object array:
     def apply[T: ClassTag](size: Int)(values: T*)(implicit ev: IsShaderValue[T]): array[T] =
-      array(size, values.toArray[T])
+      array(size, ArraySeq.from[T](values.toArray[T]))
+    def apply[T: ClassTag](size: Int, values: Array[T])(implicit ev: IsShaderValue[T]): array[T] =
+      array(size, ArraySeq.from[T](values))
+    def apply[T: ClassTag](size: Int, values: List[T])(implicit ev: IsShaderValue[T]): array[T] =
+      array(size, ArraySeq.from[T](values))

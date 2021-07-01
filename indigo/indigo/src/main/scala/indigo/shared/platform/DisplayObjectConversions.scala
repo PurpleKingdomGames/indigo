@@ -691,7 +691,7 @@ object DisplayObjectConversions {
       case _ => arr
     }
 
-  def packUBO(uniforms: List[(Uniform, ShaderPrimitive)]): Array[Float] = {
+  def packUBO(uniforms: List[(Uniform, ShaderPrimitive)])(using QuickCache[Array[Float]]): Array[Float] = {
     def rec(remaining: List[ShaderPrimitive], current: Array[Float], acc: Array[Float]): Array[Float] =
       remaining match {
         case Nil =>
@@ -720,7 +720,9 @@ object DisplayObjectConversions {
           rec(us, current ++ u.toArray, acc)
       }
 
-    rec(uniforms.map(_._2), empty0, empty0)
+    QuickCache("u" + uniforms.hashCode.toString) {
+      rec(uniforms.map(_._2), empty0, empty0)
+    }
   }
 
 }

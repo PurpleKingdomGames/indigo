@@ -27,6 +27,7 @@ import indigo.shared.scenegraph.RenderNode
 import indigo.shared.assets.AssetName
 import indigo.platform.assets.AtlasId
 import indigo.platform.assets.DynamicText
+import indigo.shared.QuickCache
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
 class DisplayObjectConversionsTests extends munit.FunSuite {
@@ -41,6 +42,8 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
   val assetMapping: AssetMapping = new AssetMapping(Map(AssetName("texture") -> texture))
 
   val cloneBlankMapping: Map[CloneId, DisplayObject] = Map.empty[CloneId, DisplayObject]
+
+  implicit val cache: QuickCache[Array[Float]] = QuickCache.empty
 
   val doc = new DisplayObjectConversions(
     boundaryLocator,
@@ -72,6 +75,9 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
         d
     }
   }
+
+  override def beforeEach(context: BeforeEach): Unit =
+    cache.purgeAllNow()
 
   test("convert a graphic to a display object") {
     val actual: DisplayObject =
