@@ -46,8 +46,12 @@ final case class Layer(
 
   def withNodes(newNodes: List[SceneNode]): Layer =
     this.copy(nodes = newNodes)
+  def withNodes(newNodes: SceneNode*): Layer =
+    withNodes(newNodes.toList)
   def addNodes(moreNodes: List[SceneNode]): Layer =
     withNodes(nodes ++ moreNodes)
+  def addNodes(moreNodes: SceneNode*): Layer =
+    addNodes(moreNodes.toList)
   def ++(moreNodes: List[SceneNode]): Layer =
     addNodes(moreNodes)
 
@@ -56,13 +60,11 @@ final case class Layer(
 
   def withLights(newLights: Light*): Layer =
     withLights(newLights.toList)
-
   def withLights(newLights: List[Light]): Layer =
     this.copy(lights = newLights)
 
   def addLights(newLights: Light*): Layer =
     addLights(newLights.toList)
-
   def addLights(newLights: List[Light]): Layer =
     withLights(lights ++ newLights)
 
