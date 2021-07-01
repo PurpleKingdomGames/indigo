@@ -62,10 +62,12 @@ class RectangleTests extends munit.FunSuite {
 
   test("intersecting points.should be able to detect if the point is inside the Rectangle") {
     assertEquals(Rectangle(0, 0, 10, 10).isPointWithin(Point(5, 5)), true)
+    assertEquals(Rectangle(0, 0, 10, 10).contains(Point(5, 5)), true)
   }
 
   test("intersecting points.should be able to detect that a point is outside the Rectangle") {
     assertEquals(Rectangle(0, 0, 10, 10).isPointWithin(Point(20, 5)), false)
+    assertEquals(Rectangle(0, 0, 10, 10).contains(Point(20, 5)), false)
   }
 
   test("encompasing rectangles.should return true when A encompases B") {

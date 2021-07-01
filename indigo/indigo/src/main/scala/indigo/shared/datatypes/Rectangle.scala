@@ -26,10 +26,14 @@ final case class Rectangle(position: Point, size: Size) derives CanEqual:
   lazy val corners: List[Point] =
     List(topLeft, topRight, bottomRight, bottomLeft)
 
-  def isPointWithin(pt: Point): Boolean =
+  def contains(pt: Point): Boolean =
     pt.x >= left && pt.x < right && pt.y >= top && pt.y < bottom
-
-  def isPointWithin(x: Int, y: Int): Boolean = isPointWithin(Point(x, y))
+  def contains(x: Int, y: Int): Boolean =
+    contains(Point(x, y))
+  def isPointWithin(pt: Point): Boolean =
+    contains(pt)
+  def isPointWithin(x: Int, y: Int): Boolean =
+    contains(Point(x, y))
 
   def +(rect: Rectangle): Rectangle = Rectangle(x + rect.x, y + rect.y, width + rect.width, height + rect.height)
   def +(i: Int): Rectangle          = Rectangle(x + i, y + i, width + i, height + i)
