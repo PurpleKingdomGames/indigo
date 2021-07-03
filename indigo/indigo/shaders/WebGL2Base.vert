@@ -8,6 +8,7 @@ layout (location = 2) in vec4 a_matTranslateRotation; // mat(12,13,14), rotation
 layout (location = 3) in vec4 a_sizeAndFrameScale;
 layout (location = 4) in vec4 a_channelOffsets01;
 layout (location = 5) in vec4 a_channelOffsets23;
+layout (location = 6) in vec4 a_textureSize; // vec2 textureSize + vec2 ???
 
 // public
 layout (std140) uniform IndigoProjectionData {
@@ -23,6 +24,7 @@ out vec4 v_channel_coords_01; // Scaled to position on texture atlas
 out vec4 v_channel_coords_23; // Scaled to position on texture atlas
 out vec4 v_uv_size; // Unscaled texture coordinates + Width / height of the objects
 out vec3 v_screenCoordsRotation; // Where is this pixel on the screen? How much is it rotated by
+out vec2 v_textureSize; // Actual size of the texture in pixels
 
 // Constants
 const float PI = 3.141592653589793;
@@ -36,6 +38,7 @@ const float TAU_8 = PI_4;
 // Variables
 vec4 VERTEX;
 vec2 TEXTURE_COORDS;
+vec2 TEXTURE_SIZE;
 vec2 UV;
 vec2 SIZE;
 vec2 CHANNEL_0_ATLAS_OFFSET;
@@ -77,6 +80,7 @@ void main(void) {
 
   VERTEX = vec4(a_verticesAndCoords.xy, 1.0, 1.0);
   TEXTURE_COORDS = a_verticesAndCoords.zw;
+  TEXTURE_SIZE = a_textureSize.xy;
   UV = a_sizeAndFrameScale.zw;
   SIZE = a_sizeAndFrameScale.xy;
   v_uv_size = vec4(a_verticesAndCoords.zw, a_sizeAndFrameScale.xy);
@@ -108,4 +112,6 @@ void main(void) {
 
   v_channel_coords_01 = vec4(CHANNEL_0_TEXTURE_COORDS, CHANNEL_1_TEXTURE_COORDS);
   v_channel_coords_23 = vec4(CHANNEL_2_TEXTURE_COORDS, CHANNEL_3_TEXTURE_COORDS);
+
+  v_textureSize = a_textureSize.xy;
 }

@@ -32,6 +32,7 @@ in vec4 v_channel_coords_01;
 in vec4 v_channel_coords_23;
 in vec4 v_uv_size; // Unscaled texture coordinates + Width / height of the objects
 in vec3 v_screenCoordsRotation; // Where is this pixel on the screen?
+in vec2 v_textureSize; // Actual size of the texture in pixels
 
 // Variables
 vec2 UV; // Unscaled texture coordinates
@@ -46,6 +47,7 @@ vec2 CHANNEL_2_TEXTURE_COORDS; // Scaled texture coordinates
 vec2 CHANNEL_3_TEXTURE_COORDS; // Scaled texture coordinates
 vec2 SCREEN_COORDS;
 float ROTATION;
+vec2 TEXTURE_SIZE;
 
 int LIGHT_INDEX;
 int LIGHT_COUNT;
@@ -105,6 +107,7 @@ void main(void) {
   CHANNEL_3 = texture(SRC_CHANNEL, CHANNEL_3_TEXTURE_COORDS);
   SCREEN_COORDS = v_screenCoordsRotation.xy;
   ROTATION = v_screenCoordsRotation.z;
+  TEXTURE_SIZE = v_textureSize;
 
   // Colour - build up the COLOR
   fragment();

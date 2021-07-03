@@ -96,7 +96,7 @@ object AtlasId:
   given CanEqual[AtlasId, AtlasId] = CanEqual.derived
   given CanEqual[Option[AtlasId], Option[AtlasId]] = CanEqual.derived
 
-final case class AtlasIndex(id: AtlasId, offset: Point) derives CanEqual
+final case class AtlasIndex(id: AtlasId, offset: Point, size: Point) derives CanEqual
 
 final case class Atlas(
     size: PowerOfTwo,
@@ -222,9 +222,11 @@ object TextureAtlasFunctions {
             val textureMap = n.toTextureMap
 
             val legend: Map[AssetName, AtlasIndex] =
-              textureMap.textureCoords.foldLeft(Map.empty[AssetName, AtlasIndex])((m, t) =>
-                m ++ Map(t.imageRef.name -> new AtlasIndex(atlasId, t.coords))
-              )
+              textureMap.textureCoords.foldLeft(Map.empty[AssetName, AtlasIndex])((m, t) => {
+                val name = t.imageRef.name
+                val size = lookupByName(name).map(img => Point(img.data.width, img.data.height)).getOrElse(Point.zero)
+                m ++ Map(name -> new AtlasIndex(atlasId, t.coords, size))
+              })
 
             val atlas = createAtlasFunc(textureMap, lookupByName)
 
