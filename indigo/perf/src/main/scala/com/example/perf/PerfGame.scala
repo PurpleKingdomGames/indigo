@@ -105,4 +105,4 @@ object PerfGame extends IndigoDemo[Unit, Dude, DudeModel, Unit] {
 
 }
 
-final case class Dude(aseprite: Aseprite, sprite: Sprite)
+final case class Dude(aseprite: Aseprite, sprite: Sprite[_])

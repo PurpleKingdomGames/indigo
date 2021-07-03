@@ -421,13 +421,13 @@ val AnimationAction: indigo.shared.animation.AnimationAction.type = indigo.share
 type Shape = shared.scenegraph.Shape
 val Shape: shared.scenegraph.Shape.type = shared.scenegraph.Shape
 
-type Sprite = shared.scenegraph.Sprite
+type Sprite[M <: Material] = shared.scenegraph.Sprite[M]
 val Sprite: shared.scenegraph.Sprite.type = shared.scenegraph.Sprite
 
-type Text = shared.scenegraph.Text
+type Text[M <: Material] = shared.scenegraph.Text[M]
 val Text: shared.scenegraph.Text.type = shared.scenegraph.Text
 
-type Graphic = shared.scenegraph.Graphic
+type Graphic[M <: Material] = shared.scenegraph.Graphic[M]
 val Graphic: shared.scenegraph.Graphic.type = shared.scenegraph.Graphic
 
 type Group = shared.scenegraph.Group

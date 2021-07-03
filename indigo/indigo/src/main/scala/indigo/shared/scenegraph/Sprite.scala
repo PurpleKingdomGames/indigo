@@ -12,9 +12,9 @@ import indigo.shared.datatypes._
 
 /** Sprites are used to represented key-frame animated screen elements.
   */
-final case class Sprite(
+final case class Sprite[M <: Material](
     bindingKey: BindingKey,
-    material: Material,
+    material: M,
     animationKey: AnimationKey,
     animationActions: List[AnimationAction],
     eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent],
@@ -27,7 +27,7 @@ final case class Sprite(
 ) extends DependentNode
     with EventHandler
     with Cloneable
-    with SpatialModifiers[Sprite] derives CanEqual {
+    with SpatialModifiers[Sprite[M]] derives CanEqual {
 
   lazy val x: Int = position.x
   lazy val y: Int = position.y
@@ -35,94 +35,94 @@ final case class Sprite(
   def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] =
     locator.spriteBounds(this).map(rect => BoundaryLocator.findBounds(this, rect.position, rect.size, ref))
 
-  def withDepth(newDepth: Depth): Sprite =
+  def withDepth(newDepth: Depth): Sprite[M]=
     this.copy(depth = newDepth)
 
-  def withMaterial(newMaterial: Material): Sprite =
+  def withMaterial[MB <: Material](newMaterial: MB): Sprite[MB]=
     this.copy(material = newMaterial)
 
-  def modifyMaterial(alter: Material => Material): Sprite =
+  def modifyMaterial[MB <: Material](alter: M => MB): Sprite[MB]=
     this.copy(material = alter(material))
 
-  def moveTo(pt: Point): Sprite =
+  def moveTo(pt: Point): Sprite[M]=
     this.copy(position = pt)
-  def moveTo(x: Int, y: Int): Sprite =
+  def moveTo(x: Int, y: Int): Sprite[M]=
     moveTo(Point(x, y))
-  def withPosition(newPosition: Point): Sprite =
+  def withPosition(newPosition: Point): Sprite[M]=
     moveTo(newPosition)
 
-  def moveBy(pt: Point): Sprite =
+  def moveBy(pt: Point): Sprite[M]=
     this.copy(position = position + pt)
-  def moveBy(x: Int, y: Int): Sprite =
+  def moveBy(x: Int, y: Int): Sprite[M]=
     moveBy(Point(x, y))
 
-  def rotateTo(angle: Radians): Sprite =
+  def rotateTo(angle: Radians): Sprite[M]=
     this.copy(rotation = angle)
-  def rotateBy(angle: Radians): Sprite =
+  def rotateBy(angle: Radians): Sprite[M]=
     rotateTo(rotation + angle)
-  def withRotation(newRotation: Radians): Sprite =
+  def withRotation(newRotation: Radians): Sprite[M]=
     rotateTo(newRotation)
 
-  def scaleBy(amount: Vector2): Sprite =
+  def scaleBy(amount: Vector2): Sprite[M]=
     this.copy(scale = scale * amount)
-  def scaleBy(x: Double, y: Double): Sprite =
+  def scaleBy(x: Double, y: Double): Sprite[M]=
     scaleBy(Vector2(x, y))
-  def withScale(newScale: Vector2): Sprite =
+  def withScale(newScale: Vector2): Sprite[M]=
     this.copy(scale = newScale)
 
-  def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): Sprite =
+  def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): Sprite[M]=
     this.copy(position = newPosition, rotation = newRotation, scale = newScale)
 
-  def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): Sprite =
+  def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): Sprite[M]=
     transformTo(position + positionDiff, rotation + rotationDiff, scale * scaleDiff)
 
-  def withBindingKey(newBindingKey: BindingKey): Sprite =
+  def withBindingKey(newBindingKey: BindingKey): Sprite[M]=
     this.copy(bindingKey = newBindingKey)
 
-  def flipHorizontal(isFlipped: Boolean): Sprite =
+  def flipHorizontal(isFlipped: Boolean): Sprite[M]=
     this.copy(flip = flip.withHorizontalFlip(isFlipped))
-  def flipVertical(isFlipped: Boolean): Sprite =
+  def flipVertical(isFlipped: Boolean): Sprite[M]=
     this.copy(flip = flip.withVerticalFlip(isFlipped))
-  def withFlip(newFlip: Flip): Sprite =
+  def withFlip(newFlip: Flip): Sprite[M]=
     this.copy(flip = newFlip)
 
-  def withRef(newRef: Point): Sprite =
+  def withRef(newRef: Point): Sprite[M]=
     this.copy(ref = newRef)
-  def withRef(x: Int, y: Int): Sprite =
+  def withRef(x: Int, y: Int): Sprite[M]=
     withRef(Point(x, y))
 
-  def withAnimationKey(newAnimationKey: AnimationKey): Sprite =
+  def withAnimationKey(newAnimationKey: AnimationKey): Sprite[M]=
     this.copy(animationKey = newAnimationKey)
 
-  def play(): Sprite =
+  def play(): Sprite[M]=
     this.copy(animationActions = animationActions ++ List(Play))
 
-  def changeCycle(label: CycleLabel): Sprite =
+  def changeCycle(label: CycleLabel): Sprite[M]=
     this.copy(animationActions = animationActions ++ List(ChangeCycle(label)))
 
-  def jumpToFirstFrame(): Sprite =
+  def jumpToFirstFrame(): Sprite[M]=
     this.copy(animationActions = animationActions ++ List(JumpToFirstFrame))
 
-  def jumpToLastFrame(): Sprite =
+  def jumpToLastFrame(): Sprite[M]=
     this.copy(animationActions = animationActions ++ List(JumpToLastFrame))
 
-  def jumpToFrame(number: Int): Sprite =
+  def jumpToFrame(number: Int): Sprite[M]=
     this.copy(animationActions = animationActions ++ List(JumpToFrame(number)))
 
-  def onEvent(e: ((Rectangle, GlobalEvent)) => List[GlobalEvent]): Sprite =
+  def onEvent(e: ((Rectangle, GlobalEvent)) => List[GlobalEvent]): Sprite[M]=
     this.copy(eventHandler = e)
 
 }
 
 object Sprite {
-  def apply(
+  def apply[M <: Material](
       bindingKey: BindingKey,
       x: Int,
       y: Int,
       depth: Int,
       animationKey: AnimationKey,
-      material: Material
-  ): Sprite =
+      material: M
+  ): Sprite[M]=
     Sprite(
       position = Point(x, y),
       rotation = Radians.zero,
@@ -137,7 +137,7 @@ object Sprite {
       material = material
     )
 
-  def apply(
+  def apply[M <: Material](
       bindingKey: BindingKey,
       position: Point,
       depth: Depth,
@@ -146,8 +146,8 @@ object Sprite {
       animationKey: AnimationKey,
       ref: Point,
       eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent],
-      material: Material
-  ): Sprite =
+      material: M
+  ): Sprite[M]=
     Sprite(
       position = position,
       rotation = rotation,
@@ -162,7 +162,7 @@ object Sprite {
       material = material
     )
 
-  def apply(bindingKey: BindingKey, animationKey: AnimationKey, material: Material): Sprite =
+  def apply[M <: Material](bindingKey: BindingKey, animationKey: AnimationKey, material: M): Sprite[M]=
     Sprite(
       position = Point.zero,
       rotation = Radians.zero,

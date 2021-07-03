@@ -54,13 +54,13 @@ final case class Button(
 
   private def applyPositionAndDepth(sceneNode: SceneNode, pt: Point, d: Depth): SceneNode =
     sceneNode match {
-      case n: Shape   => n.withPosition(pt).withDepth(d)
-      case n: Graphic => n.withPosition(pt).withDepth(d)
-      case n: Sprite  => n.withPosition(pt).withDepth(d)
-      case n: Text    => n.withPosition(pt).withDepth(d)
-      case n: TextBox => n.withPosition(pt).withDepth(d)
-      case n: Group   => n.withPosition(pt).withDepth(d)
-      case n          => n
+      case n: Shape      => n.withPosition(pt).withDepth(d)
+      case n: Graphic[_] => n.withPosition(pt).withDepth(d)
+      case n: Sprite[_]  => n.withPosition(pt).withDepth(d)
+      case n: Text[_]    => n.withPosition(pt).withDepth(d)
+      case n: TextBox    => n.withPosition(pt).withDepth(d)
+      case n: Group      => n.withPosition(pt).withDepth(d)
+      case n             => n
     }
 
   def draw: SceneNode =

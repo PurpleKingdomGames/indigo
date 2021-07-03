@@ -125,8 +125,8 @@ object TiledMap {
 
       val layers: List[Group] =
         tiledMap.layers.map { layer =>
-          val tilesInUse: Map[Int, Graphic] =
-            layer.data.toSet.foldLeft(Map.empty[Int, Graphic]) { (tiles, i) =>
+          val tilesInUse: Map[Int, Graphic[Material.Bitmap]] =
+            layer.data.toSet.foldLeft(Map.empty[Int, Graphic[Material.Bitmap]]) { (tiles, i) =>
               tiles ++ Map(
                 i ->
                   Graphic(Rectangle(Point.zero, tileSize), 1, Material.Bitmap(assetName))
