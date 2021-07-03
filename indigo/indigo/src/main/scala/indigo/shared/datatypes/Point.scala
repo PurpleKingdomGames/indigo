@@ -47,6 +47,9 @@ final case class Point(x: Int, y: Int) derives CanEqual {
 
   def toVector: Vector2 =
     Vector2(x.toDouble, y.toDouble)
+
+  def toSize: Size =
+    Size(x, y)
 }
 
 object Point {
