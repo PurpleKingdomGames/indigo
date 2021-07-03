@@ -159,7 +159,7 @@ object AsepriteSampleData {
       )
     )
 
-  val sprite: Sprite =
+  val sprite: Sprite[_] =
     Sprite(
       bindingKey = BindingKey("0000000000000000"),
       position = Point.zero,
