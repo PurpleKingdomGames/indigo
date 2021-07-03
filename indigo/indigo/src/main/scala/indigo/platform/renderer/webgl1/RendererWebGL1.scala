@@ -5,6 +5,7 @@ import indigo.platform.renderer.shared.WebGLHelper
 import indigo.platform.renderer.shared.LoadedTextureAsset
 import indigo.platform.renderer.shared.TextureLookupResult
 import indigo.platform.renderer.shared.ContextAndCanvas
+import indigo.platform.renderer.shared.CameraHelper
 import indigo.platform.events.GlobalEventStream
 
 import indigo.shared.platform.RendererConfig
@@ -97,13 +98,49 @@ final class RendererWebGL1(
 
     sceneData.layers.foreach { layer =>
       val projection =
-        layer.magnification match {
-          case None =>
+        (layer.magnification, sceneData.camera) match {
+          case (None, None) =>
             gameProjection
 
-          case Some(m) =>
-            CheapMatrix4
-              .orthographic(cNc.canvas.width.toDouble / m.toDouble, cNc.canvas.height.toDouble / m.toDouble)
+          case (Some(m), None) =>
+            CameraHelper
+              .calculateCameraMatrix(
+                cNc.canvas.width.toDouble,
+                cNc.canvas.height.toDouble,
+                m.toDouble,
+                0,
+                0,
+                1,
+                false
+              )
+              .mat
+              .toJSArray
+
+          case (None, Some(c)) =>
+            CameraHelper
+              .calculateCameraMatrix(
+                cNc.canvas.width.toDouble,
+                cNc.canvas.height.toDouble,
+                cNc.magnification.toDouble,
+                c.position.x.toDouble,
+                c.position.y.toDouble,
+                c.zoom.toDouble,
+                false
+              )
+              .mat
+              .toJSArray
+
+          case (Some(m), Some(c)) =>
+            CameraHelper
+              .calculateCameraMatrix(
+                cNc.canvas.width.toDouble,
+                cNc.canvas.height.toDouble,
+                m.toDouble,
+                c.position.x.toDouble,
+                c.position.y.toDouble,
+                c.zoom.toDouble,
+                false
+              )
               .mat
               .toJSArray
         }

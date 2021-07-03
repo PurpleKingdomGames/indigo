@@ -30,7 +30,8 @@ final case class SceneUpdateFragment(
     lights: List[Light],
     audio: SceneAudio,
     blendMaterial: Option[BlendMaterial],
-    cloneBlanks: List[CloneBlank]
+    cloneBlanks: List[CloneBlank],
+    camera: Option[Camera]
 ) derives CanEqual {
   def |+|(other: SceneUpdateFragment): SceneUpdateFragment =
     SceneUpdateFragment.append(this, other)
@@ -81,6 +82,12 @@ final case class SceneUpdateFragment(
     this.copy(
       layers = layers.map(_.withMagnification(level))
     )
+
+  def withCamera(newCamera: Camera): SceneUpdateFragment =
+    this.copy(camera = Option(newCamera))
+
+  def modifyCamera(modifier: Camera => Camera): SceneUpdateFragment =
+    this.copy(camera = Option(modifier(camera.getOrElse(Camera.default))))
 }
 object SceneUpdateFragment {
 
@@ -88,17 +95,17 @@ object SceneUpdateFragment {
     SceneUpdateFragment(nodes.toList)
 
   def apply(nodes: List[SceneNode]): SceneUpdateFragment =
-    SceneUpdateFragment(List(Layer(nodes)), Nil, SceneAudio.None, None, Nil)
+    SceneUpdateFragment(List(Layer(nodes)), Nil, SceneAudio.None, None, Nil, None)
 
   def apply(layer: Layer): SceneUpdateFragment =
-    SceneUpdateFragment(List(layer), Nil, SceneAudio.None, None, Nil)
+    SceneUpdateFragment(List(layer), Nil, SceneAudio.None, None, Nil, None)
 
   @targetName("suf-apply-many-layers")
   def apply(layers: Layer*): SceneUpdateFragment =
-    SceneUpdateFragment(layers.toList, Nil, SceneAudio.None, None, Nil)
+    SceneUpdateFragment(layers.toList, Nil, SceneAudio.None, None, Nil, None)
 
   val empty: SceneUpdateFragment =
-    SceneUpdateFragment(Nil, Nil, SceneAudio.None, None, Nil)
+    SceneUpdateFragment(Nil, Nil, SceneAudio.None, None, Nil, None)
 
   def append(a: SceneUpdateFragment, b: SceneUpdateFragment): SceneUpdateFragment =
     SceneUpdateFragment(
@@ -106,7 +113,8 @@ object SceneUpdateFragment {
       a.lights ++ b.lights,
       a.audio |+| b.audio,
       b.blendMaterial.orElse(a.blendMaterial),
-      a.cloneBlanks ++ b.cloneBlanks
+      a.cloneBlanks ++ b.cloneBlanks,
+      b.camera.orElse(a.camera)
     )
 
   def addLayer(layers: List[Layer], layer: Layer): List[Layer] =
