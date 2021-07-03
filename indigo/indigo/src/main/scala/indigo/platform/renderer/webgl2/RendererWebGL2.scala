@@ -273,38 +273,32 @@ final class RendererWebGL2(
             }
 
           case (None, Some(c)) =>
-            QuickCache(
-              makeCacheName(cNc.magnification, lastWidth, lastHeight, c.position.x, c.position.y, c.zoom.toDouble)
-            ) {
-              CameraHelper
-                .calculateCameraMatrix(
-                  lastWidth.toDouble,
-                  lastHeight.toDouble,
-                  cNc.magnification.toDouble,
-                  c.position.x.toDouble,
-                  c.position.y.toDouble,
-                  c.zoom.toDouble,
-                  true
-                )
-                .mat
-                .map(_.toFloat)
-            }
+            CameraHelper
+              .calculateCameraMatrix(
+                lastWidth.toDouble,
+                lastHeight.toDouble,
+                cNc.magnification.toDouble,
+                c.position.x.toDouble,
+                c.position.y.toDouble,
+                c.zoom.toDouble,
+                true
+              )
+              .mat
+              .map(_.toFloat)
 
           case (Some(m), Some(c)) =>
-            QuickCache(makeCacheName(m, lastWidth, lastHeight, c.position.x, c.position.y, c.zoom.toDouble)) {
-              CameraHelper
-                .calculateCameraMatrix(
-                  lastWidth.toDouble,
-                  lastHeight.toDouble,
-                  m.toDouble,
-                  c.position.x.toDouble,
-                  c.position.y.toDouble,
-                  c.zoom.toDouble,
-                  true
-                )
-                .mat
-                .map(_.toFloat)
-            }
+            CameraHelper
+              .calculateCameraMatrix(
+                lastWidth.toDouble,
+                lastHeight.toDouble,
+                m.toDouble,
+                c.position.x.toDouble,
+                c.position.y.toDouble,
+                c.zoom.toDouble,
+                true
+              )
+              .mat
+              .map(_.toFloat)
         }
 
       // Clear the blend mode
