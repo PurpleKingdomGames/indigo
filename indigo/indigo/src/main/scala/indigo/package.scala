@@ -221,9 +221,6 @@ val FontInfo: shared.datatypes.FontInfo.type = shared.datatypes.FontInfo
 type FontKey = shared.datatypes.FontKey
 val FontKey: shared.datatypes.FontKey.type = shared.datatypes.FontKey
 
-type FontSpriteSheet = shared.datatypes.FontSpriteSheet
-val FontSpriteSheet: shared.datatypes.FontSpriteSheet.type = shared.datatypes.FontSpriteSheet
-
 type TextAlignment = shared.datatypes.TextAlignment
 val TextAlignment: shared.datatypes.TextAlignment.type = shared.datatypes.TextAlignment
 
