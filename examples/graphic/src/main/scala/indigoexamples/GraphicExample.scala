@@ -26,11 +26,11 @@ object GraphicExample extends IndigoSandbox[Unit, Unit] {
   def updateModel(context: FrameContext[Unit], model: Unit): GlobalEvent => Outcome[Unit] =
     _ => Outcome(model)
 
-  val graphic: Graphic =
+  val graphic: Graphic[Material.ImageEffects] =
     Graphic(0, 0, 256, 256, 1, Material.ImageEffects(AssetName("graphics")))
       .withRef(48, 48)
 
-  val basic: Graphic =
+  val basic: Graphic[Material.ImageEffects] =
     graphic
       .withCrop(128, 0, 96, 96)
       .moveTo(200, 200)
@@ -41,22 +41,13 @@ object GraphicExample extends IndigoSandbox[Unit, Unit] {
     Outcome(
       SceneUpdateFragment.empty
         .addLayer(
-          basic.modifyMaterial {
-            case m: Material.ImageEffects => m.withAlpha(0.5)
-            case m                        => m
-          },
+          basic.modifyMaterial(_.withAlpha(0.5)),
           basic
             .rotateTo(Radians(Math.PI / 8))
-            .modifyMaterial {
-              case m: Material.ImageEffects => m.withAlpha(0.75)
-              case m                        => m
-            },
+            .modifyMaterial(_.withAlpha(0.75)),
           basic
             .rotateTo(Radians(Math.PI / 4))
-            .modifyMaterial {
-              case m: Material.ImageEffects => m.withAlpha(0.75)
-              case m                        => m
-            },
+            .modifyMaterial(_.withAlpha(0.75)),
           graphic
             .withCrop(128, 0, 96, 96)
             .moveTo(137 * 1, 100),
@@ -72,17 +63,11 @@ object GraphicExample extends IndigoSandbox[Unit, Unit] {
           graphic
             .withCrop(128, 0, 96, 96)
             .moveTo(137 * 1, 300)
-            .modifyMaterial {
-              case m: Material.ImageEffects => m.withAlpha(0.5)
-              case m                        => m
-            },
+            .modifyMaterial(_.withAlpha(0.5)),
           graphic
             .withCrop(128, 0, 96, 96)
             .moveTo(137 * 2, 300)
-            .modifyMaterial {
-              case m: Material.ImageEffects => m.withTint(RGBA.Red)
-              case m                        => m
-            },
+            .modifyMaterial(_.withTint(RGBA.Red)),
           graphic
             .withCrop(128, 0, 96, 96)
             .moveTo(137 * 3, 300)

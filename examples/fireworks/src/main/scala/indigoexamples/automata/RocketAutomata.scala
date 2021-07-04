@@ -41,7 +41,7 @@ object RocketAutomata {
       SignalReader {
         case (sa, n) =>
           (sa.payload, n) match {
-            case (Some(Rocket(_, moveSignal, _, tint)), r: Graphic) =>
+            case (Some(Rocket(_, moveSignal, _, tint)), r: Graphic[_]) =>
               for {
                 position <- moveSignal |> SignalFunction(toScreenSpace)
                 events   <- Projectiles.emitTrailEvents(position, tint, Millis(25).toSeconds)

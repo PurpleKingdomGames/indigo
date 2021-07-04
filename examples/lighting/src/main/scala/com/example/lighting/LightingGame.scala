@@ -55,7 +55,7 @@ object LightingGame extends IndigoSandbox[Unit, Unit] {
   def updateModel(context: FrameContext[Unit], model: Unit): GlobalEvent => Outcome[Unit] =
     _ => Outcome(())
 
-  val graphic: Graphic =
+  val graphic: Graphic[Material.Bitmap] =
     Graphic(Rectangle(0, 0, 64, 64), 1, LightingAssets.junctionBoxMaterialOn)
       .withRef(20, 20)
       .moveTo(config.viewport.giveDimensions(config.magnification).center)

@@ -36,7 +36,7 @@ object FlareAutomata {
       SignalReader {
         case (sa, n) =>
           (sa.payload, n) match {
-            case (Some(Flare(_, moveSignal, tint)), r: Graphic) =>
+            case (Some(Flare(_, moveSignal, tint)), r: Graphic[_]) =>
               for {
                 position <- moveSignal |> SignalFunction(toScreenSpace)
                 events   <- Projectiles.emitTrailEvents(position, tint, Millis(25).toSeconds)

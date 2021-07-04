@@ -30,7 +30,7 @@ object TrailAutomata {
 
   object Modifer {
 
-    def present(r: Graphic, position: Point, tint: RGBA): SignalFunction[Double, AutomatonUpdate] =
+    def present(r: Graphic[_], position: Point, tint: RGBA): SignalFunction[Double, AutomatonUpdate] =
       SignalFunction { alpha =>
         AutomatonUpdate(
           r.moveTo(position)
@@ -47,7 +47,7 @@ object TrailAutomata {
       SignalReader {
         case (sa, n) =>
           (sa.payload, n) match {
-            case (Some(TrailParticle(_, t)), g: Graphic) =>
+            case (Some(TrailParticle(_, t)), g: Graphic[_]) =>
               TrailParticle.fade(sa.lifeSpan) |> present(g, sa.spawnedAt, t)
 
             case _ =>

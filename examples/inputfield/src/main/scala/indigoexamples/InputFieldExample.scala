@@ -29,12 +29,9 @@ object InputFieldExample extends IndigoDemo[Unit, Unit, Unit, MyViewModel] {
       val assets =
         InputFieldAssets(
           Text("placeholder", 0, 0, 0, FontStuff.fontKey, Material.Bitmap(FontStuff.fontName)).alignLeft,
-          Graphic(0, 0, 16, 16, 2, Material.Bitmap(FontStuff.fontName))
+          Graphic(0, 0, 16, 16, 2, Material.ImageEffects(FontStuff.fontName))
             .withCrop(188, 78, 14, 23)
-            .modifyMaterial {
-              case m: Material.ImageEffects => m.withTint(RGBA.Blue)
-              case m                        => m
-            }
+            .modifyMaterial(_.withTint(RGBA.Blue))
         )
 
       MyViewModel(

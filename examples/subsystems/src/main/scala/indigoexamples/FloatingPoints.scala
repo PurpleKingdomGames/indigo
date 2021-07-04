@@ -30,7 +30,7 @@ final case class FloatingPoints(fontKey: FontKey) extends SubSystem {
       )
   }
 
-  val text: Text =
+  val text: Text[Material.Bitmap] =
     Text("10", 0, 0, 1, fontKey, Material.Bitmap(AssetName(FontDetails.fontName))).alignCenter
 
   def present(context: SubSystemFrameContext, entities: List[FloatingPointEntity]): Outcome[SceneUpdateFragment] =
@@ -45,7 +45,7 @@ final case class FloatingPoints(fontKey: FontKey) extends SubSystem {
 
 object FloatingPoints {
 
-  val modifier: (FloatingPointEntity, Text) => Signal[Outcome[Text]] =
+  val modifier: (FloatingPointEntity, Text[_]) => Signal[Outcome[Text[_]]] =
     (seed, text) =>
       Signal { t =>
         Outcome(

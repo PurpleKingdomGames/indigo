@@ -20,7 +20,7 @@ object LaunchPadAutomata {
       Seconds.zero,
       (pt: Point, node: SceneNode) =>
         node match {
-          case g: Graphic =>
+          case g: Graphic[_] =>
             g.moveTo(pt)
 
           case _ =>

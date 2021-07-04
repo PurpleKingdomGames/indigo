@@ -4,9 +4,7 @@ import indigo._
 import indigoextras.ui._
 import scala.scalajs.js.annotation._
 
-/**
-  * Presents an example of a radio button. The demo shows three options in a row that can be selected between.
-  * On selecting different options, the background changes colour.
+/** Presents an example of a radio button. The demo shows three options in a row that can be selected between. On selecting different options, the background changes colour.
   */
 @JSExportTopLevel("IndigoGame")
 object RadioButtonExample extends IndigoDemo[Unit, Unit, MyGameModel, MyViewModel] {
@@ -33,7 +31,7 @@ object RadioButtonExample extends IndigoDemo[Unit, Unit, MyGameModel, MyViewMode
       down = Graphic(0, 0, 16, 16, 2, Material.Bitmap(radioButtonGraphic)).withCrop(32, 0, 16, 16)
     )
 
-  val background: Graphic =
+  val background: Graphic[Material.ImageEffects] =
     Graphic(0, 0, 66, 26, 3, Material.ImageEffects(AssetName("background")))
 
   def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[Unit]] =
@@ -87,10 +85,7 @@ object RadioButtonExample extends IndigoDemo[Unit, Unit, MyGameModel, MyViewMode
       SceneUpdateFragment(
         viewModel.radioButtons.draw,
         viewModel.background
-          .modifyMaterial {
-            case m: Material.ImageEffects => m.withTint(model.tint)
-            case m                        => m
-          }
+          .modifyMaterial(_.withTint(model.tint))
       )
     )
 }
@@ -98,6 +93,6 @@ object RadioButtonExample extends IndigoDemo[Unit, Unit, MyGameModel, MyViewMode
 // The game model says how to tint the background
 final case class MyGameModel(tint: RGBA)
 // The view model contains the current state of the radio button group and the background graphic
-final case class MyViewModel(radioButtons: RadioButtonGroup, background: Graphic)
+final case class MyViewModel(radioButtons: RadioButtonGroup, background: Graphic[Material.ImageEffects])
 // This event is fired when a new radio button option is selected
 final case class MyRadioButtonEvent(tint: RGBA) extends GlobalEvent
