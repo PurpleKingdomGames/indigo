@@ -10,7 +10,7 @@ import pirate.core.Assets
 // your players feedback, as we do below.
 object LoadingView {
 
-  def draw(screenDimensions: Rectangle, captain: Sprite, loadingState: LoadingState): SceneUpdateFragment = {
+  def draw(screenDimensions: Rectangle, captain: Sprite[Material.ImageEffects], loadingState: LoadingState): SceneUpdateFragment = {
     val x = screenDimensions.horizontalCenter
     val y = screenDimensions.verticalCenter
 
@@ -39,10 +39,7 @@ object LoadingView {
         Assets.Fonts.fontMaterial
       ).alignCenter,
       captain
-        .modifyMaterial {
-          case m: Material.ImageEffects => m.withOverlay(Fill.Color(RGBA.White))
-          case m                        => m
-        }
+        .modifyMaterial(_.withOverlay(Fill.Color(RGBA.White)))
         .moveTo(x, y)
         .changeCycle(CycleLabel("Run"))
         .play()

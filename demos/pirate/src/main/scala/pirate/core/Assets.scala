@@ -18,8 +18,9 @@ object Assets {
     val terrainJsonRef: AssetName = AssetName("terrainJson")
     val terrainRef: AssetName     = AssetName("terrain")
 
-    val chestRef: AssetName   = AssetName("Chest Close 01")
-    val chestGraphic: Graphic = Graphic(Rectangle(0, 0, 64, 35), 4, Material.Bitmap(chestRef)).withRef(33, 34)
+    val chestRef: AssetName = AssetName("Chest Close 01")
+    val chestGraphic: Graphic[Material.Bitmap] =
+      Graphic(Rectangle(0, 0, 64, 35), 4, Material.Bitmap(chestRef)).withRef(33, 34)
 
     def assets(baseUrl: String): Set[AssetType] =
       Set(
@@ -50,13 +51,13 @@ object Assets {
     val bigCloudsRef: AssetName   = AssetName("Big Clouds")
     val smallCloudsRef: AssetName = AssetName("small_clouds")
 
-    val bigCloudsGraphic: Graphic =
+    val bigCloudsGraphic: Graphic[Material.Bitmap] =
       Graphic(Rectangle(0, 0, 448, 101), 40, Material.Bitmap(bigCloudsRef)).withRef(0, 101)
     val bigCloudsWidth: Int = bigCloudsGraphic.crop.width
 
-    val cloud1: Graphic = Graphic(Rectangle(0, 0, 140, 39), 45, Material.Bitmap(smallCloudsRef))
-    val cloud2: Graphic = Graphic(Rectangle(0, 39, 140, 39), 45, Material.Bitmap(smallCloudsRef))
-    val cloud3: Graphic = Graphic(Rectangle(0, 78, 140, 39), 45, Material.Bitmap(smallCloudsRef))
+    val cloud1: Graphic[Material.Bitmap] = Graphic(Rectangle(0, 0, 140, 39), 45, Material.Bitmap(smallCloudsRef))
+    val cloud2: Graphic[Material.Bitmap] = Graphic(Rectangle(0, 39, 140, 39), 45, Material.Bitmap(smallCloudsRef))
+    val cloud3: Graphic[Material.Bitmap] = Graphic(Rectangle(0, 78, 140, 39), 45, Material.Bitmap(smallCloudsRef))
 
     def assets(baseUrl: String): Set[AssetType] =
       Set(
@@ -105,15 +106,15 @@ object Assets {
 
     val trunksRef: AssetName = AssetName("Front Palm Trees")
 
-    val tallTrunkGraphic: Graphic =
+    val tallTrunkGraphic: Graphic[Material.Bitmap] =
       Graphic(Rectangle(0, 0, 96, 96), 1, Material.Bitmap(trunksRef))
         .withCrop(Rectangle(8, 0, 16, 60))
 
-    val leftLeaningTrunkGraphic: Graphic =
+    val leftLeaningTrunkGraphic: Graphic[Material.Bitmap] =
       Graphic(Rectangle(0, 0, 96, 96), 1, Material.Bitmap(trunksRef))
         .withCrop(Rectangle(43, 0, 50, 22))
 
-    val rightLeaningTrunkGraphic: Graphic =
+    val rightLeaningTrunkGraphic: Graphic[Material.Bitmap] =
       Graphic(Rectangle(0, 0, 96, 96), 1, Material.Bitmap(trunksRef))
         .withCrop(Rectangle(36, 32, 48, 23))
 
@@ -137,8 +138,8 @@ object Assets {
   }
 
   object Fonts {
-    val smallFontName: AssetName             = AssetName("smallFontName")
-    val fontKey: FontKey                     = FontKey("boxy font")
+    val smallFontName: AssetName            = AssetName("smallFontName")
+    val fontKey: FontKey                    = FontKey("boxy font")
     val fontMaterial: Material.ImageEffects = Material.ImageEffects(smallFontName)
 
     val fontInfo: FontInfo =

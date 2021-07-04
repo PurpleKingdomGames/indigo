@@ -24,7 +24,7 @@ object CloudsAutomata {
     SignalReader {
       case (seed, node) =>
         node match {
-          case cloud: Graphic =>
+          case cloud: Graphic[_] =>
             Signal
               .Lerp(seed.spawnedAt, Point(-150, seed.spawnedAt.y), seed.lifeSpan)
               .map { position =>

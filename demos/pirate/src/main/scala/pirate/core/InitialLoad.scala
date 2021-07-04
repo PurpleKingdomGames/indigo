@@ -142,12 +142,7 @@ object InitialLoad {
       .Success(
         StartupData(
           captain.sprite
-            .withMaterial {
-              captain.sprite.material match {
-                case m: Material.ImageEffects => m
-                case m: Material.Bitmap       => Material.ImageEffects(m.diffuse)
-              }
-            }
+            .modifyMaterial(m => Material.ImageEffects(m.diffuse))
             .withRef(37, 64)
             .moveTo(300, 271),
           levelDataStore.map(_._1)
@@ -159,19 +154,19 @@ object InitialLoad {
 }
 
 final case class StartupData(
-    captain: Sprite,
+    captain: Sprite[Material.ImageEffects],
     levelDataStore: Option[LevelDataStore]
 )
 final case class LevelDataStore(
-    waterReflections: Sprite,
-    flag: Sprite,
-    helm: Sprite,
-    palm: Sprite,
+    waterReflections: Sprite[Material.Bitmap],
+    flag: Sprite[Material.Bitmap],
+    helm: Sprite[Material.Bitmap],
+    palm: Sprite[Material.Bitmap],
     tileSize: Point,
     terrainMap: TiledGridMap[TileType],
     terrain: Group
 ) {
-  val backTallPalm: Sprite =
+  val backTallPalm: Sprite[Material.Bitmap] =
     palm
       .withBindingKey(BindingKey("Back Tall Palm"))
       .withDepth(Depth(10))

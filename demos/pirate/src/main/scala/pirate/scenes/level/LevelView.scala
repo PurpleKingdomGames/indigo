@@ -17,7 +17,7 @@ object LevelView {
       gameTime: GameTime,
       model: LevelModel.Ready,
       viewModel: LevelViewModel.Ready,
-      captain: Sprite,
+      captain: Sprite[Material.ImageEffects],
       levelDataStore: Option[LevelDataStore]
   ): SceneUpdateFragment =
     Level.draw(levelDataStore) |+|
@@ -52,7 +52,7 @@ object LevelView {
         }
         .getOrElse(SceneUpdateFragment.empty)
 
-    def drawWater(waterReflections: Sprite): List[SceneNode] =
+    def drawWater(waterReflections: Sprite[Material.Bitmap]): List[SceneNode] =
       List(
         waterReflections.play(),
         waterReflections.moveBy(150, 30).play(),
@@ -81,7 +81,7 @@ object LevelView {
         gameTime: GameTime,
         pirate: Pirate,
         pirateViewState: PirateViewState,
-        captain: Sprite,
+        captain: Sprite[Material.ImageEffects],
         toScreenSpace: Vertex => Point
     ): SceneUpdateFragment =
       SceneUpdateFragment.empty
@@ -99,7 +99,7 @@ object LevelView {
     val respawnFlashSignal: Seconds => Signal[(Boolean, Boolean)] =
       lastRespawn => Signal(_ < lastRespawn + Seconds(1.2)) |*| Signal.Pulse(Seconds(0.1))
 
-    val captainWithAlpha: Sprite => SignalFunction[(Boolean, Boolean), Sprite] =
+    val captainWithAlpha: Sprite[Material.ImageEffects] => SignalFunction[(Boolean, Boolean), Sprite[Material.ImageEffects]] =
       captain =>
         SignalFunction {
           case (false, _) =>
@@ -107,28 +107,22 @@ object LevelView {
 
           case (true, true) =>
             captain
-              .modifyMaterial {
-                case m: Material.ImageEffects => m.withAlpha(1)
-                case m                        => m
-              }
+              .modifyMaterial(_.withAlpha(1))
 
           case (true, false) =>
             captain
-              .modifyMaterial {
-                case m: Material.ImageEffects => m.withAlpha(0)
-                case m                        => m
-              }
+              .modifyMaterial(_.withAlpha(0))
         }
 
-    def respawnEffect(gameTime: GameTime, lastRespawn: Seconds, captain: Sprite): Sprite =
+    def respawnEffect(gameTime: GameTime, lastRespawn: Seconds, captain: Sprite[Material.ImageEffects]): Sprite[Material.ImageEffects] =
       (respawnFlashSignal(lastRespawn) |> captainWithAlpha(captain)).at(gameTime.running)
 
     def updatedCaptain(
         pirate: Pirate,
         pirateViewState: PirateViewState,
-        captain: Sprite,
+        captain: Sprite[Material.ImageEffects],
         toScreenSpace: Vertex => Point
-    ): Sprite =
+    ): Sprite[Material.ImageEffects] =
       pirate.state match {
         case PirateState.Idle if pirateViewState.facingRight =>
           captain
