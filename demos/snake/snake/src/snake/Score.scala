@@ -38,7 +38,7 @@ object Score {
       SignalReader {
         case (seed, sceneGraphNode) =>
           sceneGraphNode match {
-            case t: Text =>
+            case t: Text[_] =>
               workOutPosition(seed).map { position =>
                 AutomatonUpdate(List(t.moveTo(position)), Nil)
               }

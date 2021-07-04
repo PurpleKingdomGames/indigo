@@ -12,14 +12,14 @@ object GameAssets {
 
   val snakeMaterial: Material.Bitmap = Material.Bitmap(snakeTexture)
 
-  def apple(blockSize: Int): Graphic =
+  def apple(blockSize: Int): Graphic[Material.Bitmap] =
     Graphic(0, 0, blockSize, blockSize, 2, GameAssets.snakeMaterial)
       .withCrop(blockSize, 0, blockSize, blockSize)
 
-  def snake(blockSize: Int): Graphic =
+  def snake(blockSize: Int): Graphic[Material.Bitmap] =
     Graphic(0, 0, blockSize, blockSize, 2, GameAssets.snakeMaterial)
 
-  def wall(blockSize: Int): Graphic =
+  def wall(blockSize: Int): Graphic[Material.Bitmap] =
     Graphic(0, 0, blockSize, blockSize, 2, GameAssets.snakeMaterial)
       .withCrop(blockSize * 2, 0, blockSize, blockSize)
 

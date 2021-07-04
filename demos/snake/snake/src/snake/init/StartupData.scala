@@ -29,7 +29,7 @@ object StartupData {
 
 final case class StartupData(viewConfig: ViewConfig, staticAssets: StaticAssets)
 
-final case class StaticAssets(apple: Graphic, snake: Graphic, wall: Graphic)
+final case class StaticAssets(apple: Graphic[Material.Bitmap], snake: Graphic[Material.Bitmap], wall: Graphic[Material.Bitmap])
 
 final case class ViewConfig(
     gridSize: BoundingBox,
