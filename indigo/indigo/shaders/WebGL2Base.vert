@@ -51,9 +51,10 @@ vec2 CHANNEL_0_TEXTURE_COORDS;
 vec2 CHANNEL_1_TEXTURE_COORDS;
 vec2 CHANNEL_2_TEXTURE_COORDS;
 vec2 CHANNEL_3_TEXTURE_COORDS;
-vec2 CHANNEL_0_ATLAS_POSITION;
+vec2 CHANNEL_0_POSITION_ON_ATLAS;
 vec2 CHANNEL_0_SIZE_ON_ATLAS;
 float ROTATION;
+vec2 TEXTURE_COORDS; // Redundant, equal to UV
 
 mat4 translate2d(vec2 t){
     return mat4(1, 0, 0, 0,
@@ -89,6 +90,7 @@ void main(void) {
   SIZE = a_sizeAndFrameScale.xy;
   FRAME_SIZE = a_sizeAndFrameScale.zw;
   ROTATION = a_matTranslateRotation.w;
+  TEXTURE_COORDS = UV; // Redundant.
  
   CHANNEL_0_ATLAS_OFFSET = a_channelOffsets01.xy;
   CHANNEL_1_ATLAS_OFFSET = a_channelOffsets01.zw;
@@ -98,7 +100,7 @@ void main(void) {
   CHANNEL_1_TEXTURE_COORDS = scaleCoordsWithOffset(UV, CHANNEL_1_ATLAS_OFFSET);
   CHANNEL_2_TEXTURE_COORDS = scaleCoordsWithOffset(UV, CHANNEL_2_ATLAS_OFFSET);
   CHANNEL_3_TEXTURE_COORDS = scaleCoordsWithOffset(UV, CHANNEL_3_ATLAS_OFFSET);
-  CHANNEL_0_ATLAS_POSITION = scaleCoordsWithOffset(vec2(0.0), CHANNEL_0_ATLAS_OFFSET);
+  CHANNEL_0_POSITION_ON_ATLAS = scaleCoordsWithOffset(vec2(0.0), CHANNEL_0_ATLAS_OFFSET);
   CHANNEL_0_SIZE_ON_ATLAS = TEXTURE_SIZE / ATLAS_SIZE;
 
   vertex();
@@ -118,6 +120,6 @@ void main(void) {
   v_uv_size = vec4(UV, SIZE);
   v_channel_coords_01 = vec4(CHANNEL_0_TEXTURE_COORDS, CHANNEL_1_TEXTURE_COORDS);
   v_channel_coords_23 = vec4(CHANNEL_2_TEXTURE_COORDS, CHANNEL_3_TEXTURE_COORDS);
-  v_textureSizeTopLeft = vec4(TEXTURE_SIZE, CHANNEL_0_ATLAS_POSITION);
+  v_textureSizeTopLeft = vec4(TEXTURE_SIZE, CHANNEL_0_POSITION_ON_ATLAS);
   v_atlasSizeAsUV = vec4(ATLAS_SIZE, CHANNEL_0_SIZE_ON_ATLAS);
 }
