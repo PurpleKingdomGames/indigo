@@ -46,7 +46,7 @@ final class DisplayObjectConversions(
     fontRegister: FontRegister
 ) {
 
-  implicit private val atlasIdCache: QuickCache[AtlasId]                         = QuickCache.empty
+  implicit private val textureRefAndOffsetCache: QuickCache[TextureRefAndOffset] = QuickCache.empty
   implicit private val vector2Cache: QuickCache[Vector2]                         = QuickCache.empty
   implicit private val frameCache: QuickCache[SpriteSheetFrameCoordinateOffsets] = QuickCache.empty
   implicit private val listDoCache: QuickCache[List[DisplayObject]]              = QuickCache.empty
@@ -54,7 +54,7 @@ final class DisplayObjectConversions(
   implicit private val uniformsCache: QuickCache[Array[Float]]                   = QuickCache.empty
 
   def purgeCaches(): Unit = {
-    atlasIdCache.purgeAllNow()
+    textureRefAndOffsetCache.purgeAllNow()
     vector2Cache.purgeAllNow()
     frameCache.purgeAllNow()
     listDoCache.purgeAllNow()
@@ -63,31 +63,14 @@ final class DisplayObjectConversions(
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  def lookupTextureOffset(assetMapping: AssetMapping, name: AssetName): Vector2 =
-    QuickCache("tex-offset-" + name.toString) {
+  private def lookupTexture(assetMapping: AssetMapping, name: AssetName): TextureRefAndOffset =
+    QuickCache("tex-" + name.toString) {
       assetMapping.mappings
         .find(p => p._1 == name)
-        .map(_._2.offset)
-        .map(pt => Vector2(pt.x.toDouble, pt.y.toDouble))
+        .map(_._2)
         .getOrElse {
-          throw new Exception("Failed to find atlas offset for texture: " + name)
+          throw new Exception("Failed to find texture ref + offset for: " + name)
         }
-    }
-
-  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  def lookupAtlasName(assetMapping: AssetMapping, name: AssetName): AtlasId =
-    QuickCache("atlas-" + name.toString) {
-      assetMapping.mappings.find(p => p._1 == name).map(_._2.atlasName).getOrElse {
-        throw new Exception("Failed to find atlas name for texture: " + name)
-      }
-    }
-
-  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  private def lookupAtlasSize(assetMapping: AssetMapping, name: AssetName): Vector2 =
-    QuickCache("atlas-size-" + name.toString) {
-      assetMapping.mappings.find(p => p._1 == name).map(_._2.atlasSize).getOrElse {
-        throw new Exception("Failed to find atlas size for texture: " + name)
-      }
     }
 
   private def cloneDataToDisplayEntity(
@@ -296,7 +279,7 @@ final class DisplayObjectConversions(
         Vector2.zero
 
       case Some(assetName) =>
-        lookupTextureOffset(assetMapping, assetName)
+        lookupTexture(assetMapping, assetName).offset
     }
 
   def shapeToDisplayObject(leaf: Shape): DisplayObject = {
@@ -318,7 +301,7 @@ final class DisplayObjectConversions(
     val shader: ShaderData = Shape.toShaderData(leaf, boundsActual)
     val bounds             = boundsActual.toSquare
 
-    val channelOffset = Vector2.zero
+    val vec2Zero = Vector2.zero
     val uniformData: List[DisplayObjectUniformData] =
       shader.uniformBlocks.map { ub =>
         DisplayObjectUniformData(
@@ -341,13 +324,17 @@ final class DisplayObjectConversions(
       height = bounds.size.height,
       atlasName = None,
       frame = SpriteSheetFrame.defaultOffset,
-      channelOffset1 = channelOffset,
-      channelOffset2 = channelOffset,
-      channelOffset3 = channelOffset,
+      channelOffset1 = vec2Zero,
+      channelOffset2 = vec2Zero,
+      channelOffset3 = vec2Zero,
+      textureSize = vec2Zero,
+      atlasSize = vec2Zero,
       shaderId = shader.shaderId,
       shaderUniformData = uniformData
     )
   }
+
+  private given CanEqual[Option[TextureRefAndOffset], Option[TextureRefAndOffset]] = CanEqual.derived
 
   def sceneEntityToDisplayObject(leaf: EntityNode, assetMapping: AssetMapping): DisplayObject = {
     val shader: ShaderData = leaf.toShaderData
@@ -358,17 +345,20 @@ final class DisplayObjectConversions(
 
     val bounds = Rectangle(Point.zero, leaf.size)
 
+    val texture =
+      shader.channel0.map(assetName => lookupTexture(assetMapping, assetName))
+
     val frameInfo: SpriteSheetFrameCoordinateOffsets =
-      shader.channel0 match {
+      texture match {
         case None =>
           SpriteSheetFrame.defaultOffset
 
-        case Some(assetName) =>
+        case Some(texture) =>
           QuickCache(s"${bounds.hashCode().toString}_${shader.hashCode().toString}") {
             SpriteSheetFrame.calculateFrameOffset(
-              atlasSize = lookupAtlasSize(assetMapping, assetName),
+              atlasSize = texture.atlasSize,
               frameCrop = bounds,
-              textureOffset = lookupTextureOffset(assetMapping, assetName)
+              textureOffset = texture.offset
             )
           }
       }
@@ -395,11 +385,13 @@ final class DisplayObjectConversions(
       z = leaf.depth.toDouble,
       width = bounds.size.width,
       height = bounds.size.height,
-      atlasName = shader.channel0.map(assetName => lookupAtlasName(assetMapping, assetName)),
+      atlasName = texture.map(_.atlasName),
       frame = frameInfo,
       channelOffset1 = frameInfo.offsetToCoords(channelOffset1),
       channelOffset2 = frameInfo.offsetToCoords(channelOffset2),
       channelOffset3 = frameInfo.offsetToCoords(channelOffset3),
+      textureSize = texture.map(_.size).getOrElse(Vector2.zero),
+      atlasSize = texture.map(_.atlasSize).getOrElse(Vector2.zero),
       shaderId = shaderId,
       shaderUniformData = uniformData
     )
@@ -430,12 +422,14 @@ final class DisplayObjectConversions(
     val normalOffset   = findAssetOffsetValues(assetMapping, shaderData.channel2, shaderDataHash, "_n")
     val specularOffset = findAssetOffsetValues(assetMapping, shaderData.channel3, shaderDataHash, "_s")
 
+    val texture = lookupTexture(assetMapping, materialName)
+
     val frameInfo =
       QuickCache(s"${leaf.crop.hashCode().toString}_$shaderDataHash") {
         SpriteSheetFrame.calculateFrameOffset(
-          atlasSize = lookupAtlasSize(assetMapping, materialName),
+          atlasSize = texture.atlasSize,
           frameCrop = leaf.crop,
-          textureOffset = lookupTextureOffset(assetMapping, materialName)
+          textureOffset = texture.offset
         )
       }
 
@@ -461,11 +455,13 @@ final class DisplayObjectConversions(
       z = leaf.depth.toDouble,
       width = leaf.crop.size.width,
       height = leaf.crop.size.height,
-      atlasName = Some(lookupAtlasName(assetMapping, materialName)),
+      atlasName = Some(texture.atlasName),
       frame = frameInfo,
       channelOffset1 = frameInfo.offsetToCoords(emissiveOffset),
       channelOffset2 = frameInfo.offsetToCoords(normalOffset),
       channelOffset3 = frameInfo.offsetToCoords(specularOffset),
+      textureSize = texture.size,
+      atlasSize = texture.atlasSize,
       shaderId = shaderId,
       shaderUniformData = uniformData
     )
@@ -486,12 +482,14 @@ final class DisplayObjectConversions(
     val normalOffset   = findAssetOffsetValues(assetMapping, shaderData.channel2, shaderDataHash, "_n")
     val specularOffset = findAssetOffsetValues(assetMapping, shaderData.channel3, shaderDataHash, "_s")
 
+    val texture = lookupTexture(assetMapping, materialName)
+
     val frameInfo =
       QuickCache(anim.frameHash + shaderDataHash) {
         SpriteSheetFrame.calculateFrameOffset(
-          atlasSize = lookupAtlasSize(assetMapping, materialName),
+          atlasSize = texture.atlasSize,
           frameCrop = anim.currentFrame.crop,
-          textureOffset = lookupTextureOffset(assetMapping, materialName)
+          textureOffset = texture.offset
         )
       }
 
@@ -518,11 +516,13 @@ final class DisplayObjectConversions(
       z = leaf.depth.toDouble,
       width = bounds.width,
       height = bounds.height,
-      atlasName = Some(lookupAtlasName(assetMapping, materialName)),
+      atlasName = Some(texture.atlasName),
       frame = frameInfo,
       channelOffset1 = frameInfo.offsetToCoords(emissiveOffset),
       channelOffset2 = frameInfo.offsetToCoords(normalOffset),
       channelOffset3 = frameInfo.offsetToCoords(specularOffset),
+      textureSize = texture.size,
+      atlasSize = texture.atlasSize,
       shaderId = shaderId,
       shaderUniformData = uniformData
     )
@@ -555,6 +555,8 @@ final class DisplayObjectConversions(
       val normalOffset   = findAssetOffsetValues(assetMapping, shaderData.channel2, shaderDataHash, "_n")
       val specularOffset = findAssetOffsetValues(assetMapping, shaderData.channel3, shaderDataHash, "_s")
 
+      val texture = lookupTexture(assetMapping, materialName)
+
       val shaderId = shaderData.shaderId
 
       val uniformData: List[DisplayObjectUniformData] =
@@ -571,9 +573,9 @@ final class DisplayObjectConversions(
           val frameInfo =
             QuickCache(fontChar.bounds.hashCode().toString + "_" + shaderDataHash) {
               SpriteSheetFrame.calculateFrameOffset(
-                atlasSize = lookupAtlasSize(assetMapping, materialName),
+                atlasSize = texture.atlasSize,
                 frameCrop = fontChar.bounds,
-                textureOffset = lookupTextureOffset(assetMapping, materialName)
+                textureOffset = texture.offset
               )
             }
 
@@ -587,11 +589,13 @@ final class DisplayObjectConversions(
             z = leaf.depth.toDouble,
             width = fontChar.bounds.width,
             height = fontChar.bounds.height,
-            atlasName = Some(lookupAtlasName(assetMapping, materialName)),
+            atlasName = Some(texture.atlasName),
             frame = frameInfo,
             channelOffset1 = frameInfo.offsetToCoords(emissiveOffset),
             channelOffset2 = frameInfo.offsetToCoords(normalOffset),
             channelOffset3 = frameInfo.offsetToCoords(specularOffset),
+            textureSize = texture.size,
+            atlasSize = texture.atlasSize,
             shaderId = shaderId,
             shaderUniformData = uniformData
           )
@@ -628,7 +632,7 @@ final class DisplayObjectConversions(
     QuickCache[Vector2](cacheKey + cacheSuffix) {
       maybeAssetName
         .map { t =>
-          lookupTextureOffset(assetMapping, t)
+          lookupTexture(assetMapping, t).offset
         }
         .getOrElse(Vector2.zero)
     }

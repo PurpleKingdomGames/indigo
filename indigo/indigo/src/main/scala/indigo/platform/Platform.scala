@@ -97,7 +97,8 @@ class Platform(
                 .map(_.size.value)
                 .map(i => Vector2(i.toDouble))
                 .getOrElse(Vector2.one),
-              offset = p._2.offset
+              offset = p._2.offset.toVector,
+              size = p._2.size.toVector
             )
           }
       )

@@ -38,7 +38,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
   val animationRegister          = new AnimationsRegister
   val fontRegister               = new FontRegister
   val boundaryLocator            = new BoundaryLocator(animationRegister, fontRegister, new DynamicText)
-  val texture                    = new TextureRefAndOffset(AtlasId("texture"), Vector2(100, 100), Point.zero)
+  val texture                    = new TextureRefAndOffset(AtlasId("texture"), Vector2(100, 100), Vector2.zero, Vector2(200, 100))
   val assetMapping: AssetMapping = new AssetMapping(Map(AssetName("texture") -> texture))
 
   val cloneBlankMapping: Map[CloneId, DisplayObject] = Map.empty[CloneId, DisplayObject]
