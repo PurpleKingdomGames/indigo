@@ -46,8 +46,8 @@ vec2 CHANNEL_0_TEXTURE_COORDS; // Scaled texture coordinates
 vec2 CHANNEL_1_TEXTURE_COORDS; // Scaled texture coordinates
 vec2 CHANNEL_2_TEXTURE_COORDS; // Scaled texture coordinates
 vec2 CHANNEL_3_TEXTURE_COORDS; // Scaled texture coordinates
-vec2 CHANNEL_0_POSITION_ON_ATLAS; // top left position of this texture on the atlas in UV coords
-vec2 CHANNEL_0_SIZE_ON_ATLAS; // size of this texture on the atlas in UV coords
+vec2 CHANNEL_0_POSITION; // top left position of this texture on the atlas in UV coords
+vec2 CHANNEL_0_SIZE; // size of this texture on the atlas in UV coords
 vec2 SCREEN_COORDS;
 float ROTATION;
 vec2 TEXTURE_SIZE; // Size of the texture in pixels
@@ -113,8 +113,8 @@ void main(void) {
   ROTATION = v_screenCoordsRotation.z;
   TEXTURE_SIZE = v_textureSizeTopLeft.xy;
   ATLAS_SIZE = v_atlasSizeAsUV.xy;
-  CHANNEL_0_POSITION_ON_ATLAS = v_textureSizeTopLeft.zw;
-  CHANNEL_0_SIZE_ON_ATLAS = v_atlasSizeAsUV.zw;
+  CHANNEL_0_POSITION = v_textureSizeTopLeft.zw;
+  CHANNEL_0_SIZE = v_atlasSizeAsUV.zw;
 
   // Colour - build up the COLOR
   fragment();
