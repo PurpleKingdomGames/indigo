@@ -113,7 +113,8 @@ final class SceneProcessor(
       displayLayers,
       cloneBlankDisplayObjects,
       sceneBlend.shaderId,
-      SceneProcessor.mergeShaderToUniformData(sceneBlend)
+      SceneProcessor.mergeShaderToUniformData(sceneBlend),
+      scene.camera
     )
   }
 
@@ -257,7 +258,9 @@ object SceneProcessor {
         )
     }
 
-  def mergeShaderToUniformData(shaderData: BlendShaderData)(using QuickCache[Array[Float]]): List[DisplayObjectUniformData] =
+  def mergeShaderToUniformData(
+      shaderData: BlendShaderData
+  )(using QuickCache[Array[Float]]): List[DisplayObjectUniformData] =
     shaderData.uniformBlocks.map { ub =>
       DisplayObjectUniformData(
         uniformHash = ub.uniformHash,

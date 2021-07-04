@@ -366,6 +366,12 @@ val HttpResponse: shared.networking.HttpReceiveEvent.HttpResponse.type = shared.
 type SceneUpdateFragment = shared.scenegraph.SceneUpdateFragment
 val SceneUpdateFragment: shared.scenegraph.SceneUpdateFragment.type = shared.scenegraph.SceneUpdateFragment
 
+type Camera = shared.scenegraph.Camera
+val Camera: shared.scenegraph.Camera.type = shared.scenegraph.Camera
+
+type Zoom = shared.scenegraph.Zoom
+val Zoom: shared.scenegraph.Zoom.type = shared.scenegraph.Zoom
+
 type Layer = shared.scenegraph.Layer
 val Layer: shared.scenegraph.Layer.type = shared.scenegraph.Layer
 

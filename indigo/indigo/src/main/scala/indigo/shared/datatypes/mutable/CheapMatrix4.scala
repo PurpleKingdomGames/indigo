@@ -143,6 +143,9 @@ object CheapMatrix4 {
   def orthographic(width: Double, height: Double): CheapMatrix4 =
     orthographic(0, width, height, 0, -10000, 10000)
 
+  def orthographic(x: Double, y: Double, width: Double, height: Double): CheapMatrix4 =
+    orthographic(x, x + width, y + height, y, -10000, 10000)
+
   def translate(tx: Double, ty: Double, tz: Double): Array[Double] =
     Array(
       1,

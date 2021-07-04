@@ -19,6 +19,7 @@ import indigo.shared.platform.ProcessedSceneData
 import indigo.platform.renderer.shared.LoadedTextureAsset
 import indigo.platform.renderer.shared.TextureLookupResult
 import indigo.platform.renderer.shared.ContextAndCanvas
+import indigo.platform.renderer.shared.CameraHelper
 import indigo.platform.renderer.shared.WebGLHelper
 import indigo.platform.renderer.shared.FrameBufferFunctions
 import indigo.platform.renderer.shared.FrameBufferComponents
@@ -247,19 +248,57 @@ final class RendererWebGL2(
         customShaders
       )
 
+      def makeCacheName(m: Int, w: Int, h: Int, cx: Int, cy: Int, cz: Double): String =
+        s"${m.toString}_${w.toString()}x${h.toString()}-${cx.toString},${cy.toString}_${cz.toString}"
+
       val projection =
-        layer.magnification match {
-          case None =>
+        (layer.magnification, sceneData.camera) match {
+          case (None, None) =>
             defaultLayerProjectionMatrix
 
-          case Some(m) =>
-            QuickCache(s"${m.toString}_${lastWidth.toString()}x${lastHeight.toString()}") {
-              CheapMatrix4
-                .orthographic(lastWidth.toDouble / m.toDouble, lastHeight.toDouble / m.toDouble)
-                .scale(1.0, -1.0, 1.0)
+          case (Some(m), None) =>
+            QuickCache(makeCacheName(m, lastWidth, lastHeight, 0, 0, 1.0d)) {
+              CameraHelper
+                .calculateCameraMatrix(
+                  lastWidth.toDouble,
+                  lastHeight.toDouble,
+                  m.toDouble,
+                  0,
+                  0,
+                  1,
+                  true
+                )
                 .mat
                 .map(_.toFloat)
             }
+
+          case (None, Some(c)) =>
+            CameraHelper
+              .calculateCameraMatrix(
+                lastWidth.toDouble,
+                lastHeight.toDouble,
+                cNc.magnification.toDouble,
+                c.position.x.toDouble,
+                c.position.y.toDouble,
+                c.zoom.toDouble,
+                true
+              )
+              .mat
+              .map(_.toFloat)
+
+          case (Some(m), Some(c)) =>
+            CameraHelper
+              .calculateCameraMatrix(
+                lastWidth.toDouble,
+                lastHeight.toDouble,
+                m.toDouble,
+                c.position.x.toDouble,
+                c.position.y.toDouble,
+                c.zoom.toDouble,
+                true
+              )
+              .mat
+              .map(_.toFloat)
         }
 
       // Clear the blend mode

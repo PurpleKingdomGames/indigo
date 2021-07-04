@@ -13,6 +13,7 @@ import scala.scalajs.js.annotation._
 import com.example.sandbox.scenes.OriginalScene
 import com.example.sandbox.scenes.Shaders
 import com.example.sandbox.scenes.ShapesScene
+import com.example.sandbox.scenes.CameraScene
 import com.example.sandbox.scenes.LightsScene
 import com.example.sandbox.scenes.RefractionScene
 import com.example.sandbox.scenes.LegacyEffectsScene
@@ -43,6 +44,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
       LegacyEffectsScene,
       TextBoxScene,
       BoundsScene,
+      CameraScene,
       TextureTileScene
     )
 
