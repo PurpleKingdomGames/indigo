@@ -5,7 +5,7 @@ precision lowp float;
 // These variables and functions are all placeholders and will be replaced
 // with the real ones at compile time. No values or implementations are
 // needed beyond making the linter happy.
-vec2 TEXTURE_COORDS;
+vec2 UV;
 vec2 SIZE;
 vec2 CHANNEL_0_ATLAS_OFFSET;
 
@@ -58,7 +58,7 @@ vec2[9] generateTexCoords3x3(vec2 texcoords, vec2 onePixel) {
 
 void vertex(){
   vec2 onePixel = (scale2d(1.0 / SIZE) * vec4(1.0)).xy;
-  vec2 offsets[9] = generateTexCoords3x3(TEXTURE_COORDS, onePixel);
+  vec2 offsets[9] = generateTexCoords3x3(UV, onePixel);
 
   v_offsetTL = offsets[0];
   v_offsetTC = offsets[1];

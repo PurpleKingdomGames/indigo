@@ -328,6 +328,7 @@ final class DisplayObjectConversions(
       channelOffset2 = vec2Zero,
       channelOffset3 = vec2Zero,
       textureSize = vec2Zero,
+      atlasSize = vec2Zero,
       shaderId = shader.shaderId,
       shaderUniformData = uniformData
     )
@@ -390,6 +391,7 @@ final class DisplayObjectConversions(
       channelOffset2 = frameInfo.offsetToCoords(channelOffset2),
       channelOffset3 = frameInfo.offsetToCoords(channelOffset3),
       textureSize = texture.map(_.size).getOrElse(Vector2.zero),
+      atlasSize = texture.map(_.atlasSize).getOrElse(Vector2.zero),
       shaderId = shaderId,
       shaderUniformData = uniformData
     )
@@ -459,6 +461,7 @@ final class DisplayObjectConversions(
       channelOffset2 = frameInfo.offsetToCoords(normalOffset),
       channelOffset3 = frameInfo.offsetToCoords(specularOffset),
       textureSize = texture.size,
+      atlasSize = texture.atlasSize,
       shaderId = shaderId,
       shaderUniformData = uniformData
     )
@@ -519,6 +522,7 @@ final class DisplayObjectConversions(
       channelOffset2 = frameInfo.offsetToCoords(normalOffset),
       channelOffset3 = frameInfo.offsetToCoords(specularOffset),
       textureSize = texture.size,
+      atlasSize = texture.atlasSize,
       shaderId = shaderId,
       shaderUniformData = uniformData
     )
@@ -591,6 +595,7 @@ final class DisplayObjectConversions(
             channelOffset2 = frameInfo.offsetToCoords(normalOffset),
             channelOffset3 = frameInfo.offsetToCoords(specularOffset),
             textureSize = texture.size,
+            atlasSize = texture.atlasSize,
             shaderId = shaderId,
             shaderUniformData = uniformData
           )

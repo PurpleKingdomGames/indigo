@@ -50,7 +50,7 @@ class LayerRenderer(
   private val sizeAndFrameScaleInstanceArray: WebGLBuffer    = gl2.createBuffer()
   private val channelOffsets01InstanceArray: WebGLBuffer     = gl2.createBuffer()
   private val channelOffsets23InstanceArray: WebGLBuffer     = gl2.createBuffer()
-  private val textureSizeInstanceArray: WebGLBuffer          = gl2.createBuffer()
+  private val textureSizeAtlasSizeInstanceArray: WebGLBuffer          = gl2.createBuffer()
 
   def setupInstanceArray(buffer: WebGLBuffer, location: Int, size: Int): Unit = {
     gl2.bindBuffer(ARRAY_BUFFER, buffer)
@@ -65,7 +65,7 @@ class LayerRenderer(
   private val sizeAndFrameScaleData: scalajs.js.Array[Float]    = scalajs.js.Array[Float](4f * maxBatchSize)
   private val channelOffsets01Data: scalajs.js.Array[Float]     = scalajs.js.Array[Float](4f * maxBatchSize)
   private val channelOffsets23Data: scalajs.js.Array[Float]     = scalajs.js.Array[Float](4f * maxBatchSize)
-  private val textureSizeData: scalajs.js.Array[Float]          = scalajs.js.Array[Float](4f * maxBatchSize)
+  private val textureSizeAtlasSizeData: scalajs.js.Array[Float]          = scalajs.js.Array[Float](4f * maxBatchSize)
 
   @inline private def bindData(buffer: WebGLBuffer, data: scalajs.js.Array[Float]): Unit = {
     gl2.bindBuffer(ARRAY_BUFFER, buffer)
@@ -98,10 +98,10 @@ class LayerRenderer(
     channelOffsets23Data((i * 4) + 2) = d.channelOffset3X
     channelOffsets23Data((i * 4) + 3) = d.channelOffset3Y
 
-    textureSizeData((i * 4) + 0) = d.textureWidth
-    textureSizeData((i * 4) + 1) = d.textureHeight
-    textureSizeData((i * 4) + 2) = 0
-    textureSizeData((i * 4) + 3) = 0
+    textureSizeAtlasSizeData((i * 4) + 0) = d.textureWidth
+    textureSizeAtlasSizeData((i * 4) + 1) = d.textureHeight
+    textureSizeAtlasSizeData((i * 4) + 2) = d.atlasWidth
+    textureSizeAtlasSizeData((i * 4) + 3) = d.atlasHeight
   }
 
   private def updateTextData(d: DisplayText, i: Int, matrixData1: List[Double], matrixData2: List[Double]): Unit = {
@@ -130,10 +130,10 @@ class LayerRenderer(
     channelOffsets23Data((i * 4) + 2) = 0
     channelOffsets23Data((i * 4) + 3) = 0
 
-    textureSizeData((i * 4) + 0) = 0
-    textureSizeData((i * 4) + 1) = 0
-    textureSizeData((i * 4) + 2) = 0
-    textureSizeData((i * 4) + 3) = 0
+    textureSizeAtlasSizeData((i * 4) + 0) = 0
+    textureSizeAtlasSizeData((i * 4) + 1) = 0
+    textureSizeAtlasSizeData((i * 4) + 2) = 0
+    textureSizeAtlasSizeData((i * 4) + 3) = 0
   }
 
   def requiresContextChange(
@@ -247,7 +247,7 @@ class LayerRenderer(
     // vec4 a_channelOffsets23
     setupInstanceArray(channelOffsets23InstanceArray, 5, 4) //
     // vec4 a_textureSize + ???
-    setupInstanceArray(textureSizeInstanceArray, 6, 4) //
+    setupInstanceArray(textureSizeAtlasSizeInstanceArray, 6, 4) //
   }
 
   @inline def drawBuffer(instanceCount: Int): Unit =
@@ -257,7 +257,7 @@ class LayerRenderer(
       bindData(sizeAndFrameScaleInstanceArray, sizeAndFrameScaleData)
       bindData(channelOffsets01InstanceArray, channelOffsets01Data)
       bindData(channelOffsets23InstanceArray, channelOffsets23Data)
-      bindData(textureSizeInstanceArray, textureSizeData)
+      bindData(textureSizeAtlasSizeInstanceArray, textureSizeAtlasSizeData)
 
       gl2.drawArraysInstanced(TRIANGLE_STRIP, 0, 4, instanceCount)
     }

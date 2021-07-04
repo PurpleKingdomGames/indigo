@@ -56,6 +56,8 @@ final case class DisplayObject(
     channelOffset3Y: Float,
     textureWidth: Float,
     textureHeight: Float,
+    atlasWidth: Float,
+    atlasHeight: Float,
     shaderId: ShaderId,
     shaderUniformData: List[DisplayObjectUniformData]
 ) extends DisplayEntity derives CanEqual {
@@ -80,6 +82,7 @@ object DisplayObject {
       channelOffset2: Vector2,
       channelOffset3: Vector2,
       textureSize: Vector2,
+      atlasSize: Vector2,
       shaderId: ShaderId,
       shaderUniformData: List[DisplayObjectUniformData]
   ): DisplayObject =
@@ -102,6 +105,8 @@ object DisplayObject {
       channelOffset3.y.toFloat,
       textureSize.x.toFloat,
       textureSize.y.toFloat,
+      atlasSize.x.toFloat,
+      atlasSize.y.toFloat,
       shaderId,
       shaderUniformData
     )
