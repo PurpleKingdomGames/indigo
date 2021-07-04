@@ -80,8 +80,8 @@ class TiledMapTests extends munit.FunSuite {
     actual.children.head match {
       case g: Group =>
         // Only 3 tiles have contents.
-        val graphics: List[Graphic] =
-          g.children.collect { case graphic: Graphic => graphic }
+        val graphics: List[Graphic[_]] =
+          g.children.collect { case graphic: Graphic[_] => graphic }
 
         assertEquals(graphics.length, 3)
         assertEquals(graphics(0).position, Point(32, 64))

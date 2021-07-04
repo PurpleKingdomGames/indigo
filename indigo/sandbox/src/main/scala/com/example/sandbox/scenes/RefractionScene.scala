@@ -7,6 +7,7 @@ import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxViewModel
 import com.example.sandbox.SandboxAssets
 import indigoextras.effectmaterials.Refraction
+import indigoextras.effectmaterials.RefractionEntity
 
 object RefractionScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel] {
 
@@ -34,23 +35,23 @@ object RefractionScene extends Scene[SandboxStartupData, SandboxGameModel, Sandb
   def updateViewModel(context: FrameContext[SandboxStartupData], model: SandboxGameModel, viewModel: SandboxViewModel): GlobalEvent => Outcome[SandboxViewModel] =
     _ => Outcome(viewModel)
 
-  val graphic: Graphic =
+  val graphic: Graphic[Material.Bitmap] =
     Graphic(Rectangle(0, 0, 64, 64), 1, SandboxAssets.junctionBoxMaterial)
       .withRef(20, 20)
 
-  val imageLight: Graphic =
+  val imageLight: Graphic[Material.Bitmap] =
     Graphic(Rectangle(0, 0, 320, 240), 1, SandboxAssets.imageLightMaterial)
       .moveBy(-14, -60)
 
-  val distortion: Graphic =
+  val distortion: Graphic[RefractionEntity] =
     Graphic(Rectangle(0, 0, 240, 240), 1, SandboxAssets.normalMapMaterial)
       .scaleBy(0.5, 0.5)
       .withRef(120, 120)
 
-  val background: Graphic =
+  val background: Graphic[Material.Bitmap] =
     Graphic(Rectangle(0, 0, 790, 380), 1, SandboxAssets.foliageMaterial)
 
-  def sliding: Signal[Graphic] =
+  def sliding: Signal[Graphic[RefractionEntity]] =
     Signal.SmoothPulse.map { d =>
       distortion.moveTo(Point(70, 70 + (50 * d).toInt))
     }

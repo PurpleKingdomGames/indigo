@@ -54,7 +54,7 @@ class SubSystemsRegisterTests extends munit.FunSuite {
         .present(context(6))
         .unsafeGet
         .layers.flatMap(_.nodes)
-        .map(_.asInstanceOf[Text].text)
+        .map(_.asInstanceOf[Text[_]].text)
 
     assert(rendered.contains("20"))
     assert(rendered.contains("60"))

@@ -324,10 +324,10 @@ object InputField {
 
 }
 
-final case class InputFieldAssets(text: Text, cursor: Graphic) derives CanEqual {
-  def withText(newText: Text): InputFieldAssets =
+final case class InputFieldAssets(text: Text[_], cursor: Graphic[_]) derives CanEqual {
+  def withText(newText: Text[_]): InputFieldAssets =
     this.copy(text = newText)
-  def withCursor(newCursor: Graphic): InputFieldAssets =
+  def withCursor(newCursor: Graphic[_]): InputFieldAssets =
     this.copy(cursor = newCursor)
 }
 

@@ -49,12 +49,12 @@ object BoundsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
 
     val speed = 0.25
 
-    val graphic: Graphic =
+    val graphic: Graphic[Material.Bitmap] =
       Graphic(Rectangle(0, 0, 40, 40), 1, BoundsAssets.junctionBoxMaterialOff)
         .moveTo(context.startUpData.viewportCenter)
         .rotateTo(Radians.fromSeconds(context.running * speed))
 
-    val text: Text =
+    val text: Text[Material.ImageEffects] =
       Text("boom!\nfish", Fonts.fontKey, SandboxAssets.fontMaterial).alignRight
         .moveTo(150, 100)
         .rotateTo(Radians.fromSeconds(context.running * speed).negative)
@@ -89,7 +89,7 @@ object BoundsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
         .moveTo(180, 150)
         .rotateTo(Radians.fromSeconds(context.running * speed).invert)
 
-    val sprite: Sprite =
+    val sprite: Sprite[Material.ImageEffects] =
       context.startUpData.dude.sprite
         .scaleBy(2, 2)
         .moveTo(50, 120)

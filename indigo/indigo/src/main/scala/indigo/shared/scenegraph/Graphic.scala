@@ -23,8 +23,8 @@ import indigo.shared.BoundaryLocator
   * @param crop
   *   @param material
   */
-final case class Graphic(
-    material: Material,
+final case class Graphic[M <: Material](
+    material: M,
     crop: Rectangle,
     position: Point,
     rotation: Radians,
@@ -34,7 +34,7 @@ final case class Graphic(
     flip: Flip
 ) extends RenderNode
     with Cloneable
-    with SpatialModifiers[Graphic] derives CanEqual {
+    with SpatialModifiers[Graphic[M]] derives CanEqual {
 
   def bounds: Rectangle =
     BoundaryLocator.findBounds(this, position, crop.size, ref)
@@ -45,62 +45,62 @@ final case class Graphic(
   lazy val x: Int = position.x
   lazy val y: Int = position.y
 
-  def withMaterial(newMaterial: Material): Graphic =
+  def withMaterial[MB <: Material](newMaterial: MB): Graphic[MB] =
     this.copy(material = newMaterial)
 
-  def modifyMaterial(alter: Material => Material): Graphic =
+  def modifyMaterial[MB <: Material](alter: M => MB): Graphic[MB] =
     this.copy(material = alter(material))
 
-  def moveTo(pt: Point): Graphic =
+  def moveTo(pt: Point): Graphic[M] =
     this.copy(position = pt)
-  def moveTo(x: Int, y: Int): Graphic =
+  def moveTo(x: Int, y: Int): Graphic[M] =
     moveTo(Point(x, y))
-  def withPosition(newPosition: Point): Graphic =
+  def withPosition(newPosition: Point): Graphic[M] =
     moveTo(newPosition)
 
-  def moveBy(pt: Point): Graphic =
+  def moveBy(pt: Point): Graphic[M] =
     this.copy(position = position + pt)
-  def moveBy(x: Int, y: Int): Graphic =
+  def moveBy(x: Int, y: Int): Graphic[M] =
     moveBy(Point(x, y))
 
-  def rotateTo(angle: Radians): Graphic =
+  def rotateTo(angle: Radians): Graphic[M] =
     this.copy(rotation = angle)
-  def rotateBy(angle: Radians): Graphic =
+  def rotateBy(angle: Radians): Graphic[M] =
     rotateTo(rotation + angle)
-  def withRotation(newRotation: Radians): Graphic =
+  def withRotation(newRotation: Radians): Graphic[M] =
     rotateTo(newRotation)
 
-  def scaleBy(amount: Vector2): Graphic =
+  def scaleBy(amount: Vector2): Graphic[M] =
     this.copy(scale = scale * amount)
-  def scaleBy(x: Double, y: Double): Graphic =
+  def scaleBy(x: Double, y: Double): Graphic[M] =
     scaleBy(Vector2(x, y))
-  def withScale(newScale: Vector2): Graphic =
+  def withScale(newScale: Vector2): Graphic[M] =
     this.copy(scale = newScale)
 
-  def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): Graphic =
+  def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): Graphic[M] =
     this.copy(position = newPosition, rotation = newRotation, scale = newScale)
 
-  def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): Graphic =
+  def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): Graphic[M] =
     transformTo(position + positionDiff, rotation + rotationDiff, scale * scaleDiff)
 
-  def withDepth(newDepth: Depth): Graphic =
+  def withDepth(newDepth: Depth): Graphic[M] =
     this.copy(depth = newDepth)
 
-  def flipHorizontal(isFlipped: Boolean): Graphic =
+  def flipHorizontal(isFlipped: Boolean): Graphic[M] =
     this.copy(flip = flip.withHorizontalFlip(isFlipped))
-  def flipVertical(isFlipped: Boolean): Graphic =
+  def flipVertical(isFlipped: Boolean): Graphic[M] =
     this.copy(flip = flip.withVerticalFlip(isFlipped))
-  def withFlip(newFlip: Flip): Graphic =
+  def withFlip(newFlip: Flip): Graphic[M] =
     this.copy(flip = newFlip)
 
-  def withRef(newRef: Point): Graphic =
+  def withRef(newRef: Point): Graphic[M] =
     this.copy(ref = newRef)
-  def withRef(x: Int, y: Int): Graphic =
+  def withRef(x: Int, y: Int): Graphic[M] =
     withRef(Point(x, y))
 
-  def withCrop(newCrop: Rectangle): Graphic =
+  def withCrop(newCrop: Rectangle): Graphic[M] =
     this.copy(crop = newCrop)
-  def withCrop(x: Int, y: Int, width: Int, height: Int): Graphic =
+  def withCrop(x: Int, y: Int, width: Int, height: Int): Graphic[M] =
     withCrop(Rectangle(x, y, width, height))
 
   def toShaderData: ShaderData =
@@ -110,7 +110,7 @@ final case class Graphic(
 
 object Graphic {
 
-  def apply(x: Int, y: Int, width: Int, height: Int, depth: Int, material: Material): Graphic =
+  def apply[M <: Material](x: Int, y: Int, width: Int, height: Int, depth: Int, material: M): Graphic[M] =
     Graphic(
       position = Point(x, y),
       rotation = Radians.zero,
@@ -122,7 +122,7 @@ object Graphic {
       material = material
     )
 
-  def apply(bounds: Rectangle, depth: Int, material: Material): Graphic =
+  def apply[M <: Material](bounds: Rectangle, depth: Int, material: M): Graphic[M] =
     Graphic(
       position = bounds.position,
       rotation = Radians.zero,
@@ -134,7 +134,7 @@ object Graphic {
       material = material
     )
 
-  def apply(width: Int, height: Int, material: Material): Graphic =
+  def apply[M <: Material](width: Int, height: Int, material: M): Graphic[M] =
     Graphic(
       position = Point.zero,
       rotation = Radians.zero,

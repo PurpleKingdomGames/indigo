@@ -37,7 +37,7 @@ final case class AsepriteSize(w: Int, h: Int) derives CanEqual
 
 final case class AsepriteFrameTag(name: String, from: Int, to: Int, direction: String) derives CanEqual
 
-final case class SpriteAndAnimations(sprite: Sprite, animations: Animation) derives CanEqual
+final case class SpriteAndAnimations(sprite: Sprite[Material.Bitmap], animations: Animation) derives CanEqual
 object Aseprite {
 
   def toSpriteAndAnimations(aseprite: Aseprite, dice: Dice, assetName: AssetName): Option[SpriteAndAnimations] =

@@ -181,7 +181,7 @@ final class DisplayObjectConversions(
   ): List[DisplayEntity] =
     sceneNode match {
 
-      case x: Graphic =>
+      case x: Graphic[_] =>
         List(graphicToDisplayObject(x, assetMapping))
 
       case s: Shape =>
@@ -225,7 +225,7 @@ final class DisplayObjectConversions(
         sceneNodeToDisplayObject(t.node, gameTime, assetMapping, cloneBlankDisplayObjects)
           .map(_.applyTransform(t.transform))
 
-      case x: Sprite =>
+      case x: Sprite[_] =>
         animationsRegister.fetchAnimationForSprite(gameTime, x.bindingKey, x.animationKey, x.animationActions) match {
           case None =>
             IndigoLogger.errorOnce(s"Cannot render Sprite, missing Animations with key: ${x.animationKey.toString()}")
@@ -235,7 +235,7 @@ final class DisplayObjectConversions(
             List(spriteToDisplayObject(boundaryLocator, x, assetMapping, anim))
         }
 
-      case x: Text =>
+      case x: Text[_] =>
         val alignmentOffsetX: Rectangle => Int = lineBounds =>
           x.alignment match {
             case TextAlignment.Left => 0
@@ -413,7 +413,7 @@ final class DisplayObjectConversions(
       height = leaf.size.height
     )
 
-  def graphicToDisplayObject(leaf: Graphic, assetMapping: AssetMapping): DisplayObject = {
+  def graphicToDisplayObject(leaf: Graphic[_], assetMapping: AssetMapping): DisplayObject = {
     val shaderData     = leaf.material.toShaderData
     val shaderDataHash = shaderData.hashCode().toString
     val materialName   = shaderData.channel0.get
@@ -469,7 +469,7 @@ final class DisplayObjectConversions(
 
   def spriteToDisplayObject(
       boundaryLocator: BoundaryLocator,
-      leaf: Sprite,
+      leaf: Sprite[_],
       assetMapping: AssetMapping,
       anim: AnimationRef
   ): DisplayObject = {
@@ -529,7 +529,7 @@ final class DisplayObjectConversions(
   }
 
   def textLineToDisplayObjects(
-      leaf: Text,
+      leaf: Text[_],
       assetMapping: AssetMapping,
       fontInfo: FontInfo
   ): (TextLine, Int, Int) => List[DisplayObject] =

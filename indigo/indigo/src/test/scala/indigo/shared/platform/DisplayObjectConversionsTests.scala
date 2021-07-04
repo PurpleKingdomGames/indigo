@@ -32,7 +32,7 @@ import indigo.shared.QuickCache
 @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
 class DisplayObjectConversionsTests extends munit.FunSuite {
 
-  val graphic: Graphic =
+  val graphic: Graphic[_] =
     Graphic(Rectangle(10, 20, 200, 100), 2, Material.Bitmap(AssetName("texture")))
 
   val animationRegister          = new AnimationsRegister

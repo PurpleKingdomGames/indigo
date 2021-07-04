@@ -58,7 +58,7 @@ final class BoundaryLocator(
       case s: Shape =>
         Option(shapeBounds(s)).map(rect => BoundaryLocator.findBounds(s, rect.position, rect.size, s.ref))
 
-      case g: Graphic =>
+      case g: Graphic[_] =>
         Option(g.bounds)
 
       case t: TextBox =>
@@ -76,10 +76,10 @@ final class BoundaryLocator(
       case _: CloneBatch =>
         None
 
-      case s: Sprite =>
+      case s: Sprite[_] =>
         spriteBounds(s).map(rect => BoundaryLocator.findBounds(s, rect.position, rect.size, s.ref))
 
-      case t: Text =>
+      case t: Text[_] =>
         Option(textBounds(t)).map { rect =>
 
           val offset: Int =
@@ -112,7 +112,7 @@ final class BoundaryLocator(
           .getOrElse(Rectangle.zero)
     }
 
-  def spriteBounds(sprite: Sprite): Option[Rectangle] =
+  def spriteBounds(sprite: Sprite[_]): Option[Rectangle] =
     QuickCache(s"""sprite-${sprite.bindingKey.toString}-${sprite.animationKey.toString}""") {
       animationsRegister.fetchAnimationInLastState(sprite.bindingKey, sprite.animationKey) match {
         case Some(animation) =>
@@ -152,7 +152,7 @@ final class BoundaryLocator(
         }
     }
 
-  def textBounds(text: Text): Rectangle =
+  def textBounds(text: Text[_]): Rectangle =
     val unaligned =
       textAsLinesWithBounds(text.text, text.fontKey)
         .map(_.lineBounds)

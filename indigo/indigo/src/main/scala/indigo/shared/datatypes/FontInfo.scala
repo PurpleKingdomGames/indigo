@@ -61,8 +61,6 @@ object FontKey:
 
   extension (f: FontKey) def toString: String = f
 
-final case class FontSpriteSheet(material: Material, size: Size) derives CanEqual
-
 final case class FontChar(character: String, bounds: Rectangle) derives CanEqual
 object FontChar:
   def apply(character: String, x: Int, y: Int, width: Int, height: Int): FontChar =

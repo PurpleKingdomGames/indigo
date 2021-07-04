@@ -57,10 +57,10 @@ final class SceneProcessor(
           case s: Shape =>
             acc + (blank.id -> displayObjectConverterClone.shapeToDisplayObject(s))
 
-          case g: Graphic =>
+          case g: Graphic[_] =>
             acc + (blank.id -> displayObjectConverterClone.graphicToDisplayObject(g, assetMapping))
 
-          case s: Sprite =>
+          case s: Sprite[_] =>
             animationsRegister.fetchAnimationForSprite(
               gameTime,
               s.bindingKey,

@@ -33,11 +33,11 @@ object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
   def updateViewModel(context: FrameContext[SandboxStartupData], model: SandboxGameModel, viewModel: SandboxViewModel): GlobalEvent => Outcome[SandboxViewModel] =
     _ => Outcome(viewModel)
 
-  val graphic: Graphic =
+  val graphic: Graphic[Material.Bitmap] =
     Graphic(Rectangle(0, 0, 40, 40), 1, LightingAssets.junctionBoxMaterialOn)
       .withRef(20, 20)
 
-  val grid: List[Graphic] = {
+  val grid: List[Graphic[Material.Bitmap]] = {
     val rows    = 4
     val columns = 6
     val offset  = Point(0)

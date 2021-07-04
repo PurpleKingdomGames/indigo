@@ -208,7 +208,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
     Outcome(SceneUpdateFragment(Layer(BindingKey("fps counter")).withDepth(Depth(200))))
 }
 
-final case class Dude(aseprite: Aseprite, sprite: Sprite)
+final case class Dude(aseprite: Aseprite, sprite: Sprite[Material.ImageEffects])
 final case class SandboxBootData(message: String, gameViewport: GameViewport)
 final case class SandboxStartupData(dude: Dude, viewportCenter: Point)
 final case class SandboxViewModel(offset: Point, single: InputField, multi: InputField, useLightingLayer: Boolean)
