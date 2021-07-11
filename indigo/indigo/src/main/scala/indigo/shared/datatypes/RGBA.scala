@@ -82,7 +82,8 @@ object RGBA:
     }
 
   def fromHexString(hex: String): RGBA =
-    hex.trim match {
+    val hex = if hex.startsWith("#") then hex.substring(1).trim else hex.trim
+    hex match {
       case h if h.startsWith("0x") && h.length == 10 =>
         fromColorInts(
           Integer.parseInt(hex.substring(2, 4), 16),
