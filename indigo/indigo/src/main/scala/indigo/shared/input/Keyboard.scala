@@ -41,9 +41,6 @@ object Keyboard {
 
         case KeyboardEvent.KeyUp(k) :: tl =>
           rec(tl, keysDownAcc.filterNot(p => p === k))
-
-        case _ :: tl =>
-          rec(tl, keysDownAcc)
       }
 
     rec(keyboardEvents, previousKeysDown.reverse)
