@@ -71,6 +71,27 @@ val UniformBlock: shared.shader.UniformBlock.type = shared.shader.UniformBlock
 type ShaderPrimitive = shared.shader.ShaderPrimitive
 val ShaderPrimitive: shared.shader.ShaderPrimitive.type = shared.shader.ShaderPrimitive
 
+type float = shared.shader.ShaderPrimitive.float
+val float: shared.shader.ShaderPrimitive.float.type = shared.shader.ShaderPrimitive.float
+
+type vec2 = shared.shader.ShaderPrimitive.vec2
+val vec2: shared.shader.ShaderPrimitive.vec2.type = shared.shader.ShaderPrimitive.vec2
+
+type vec3 = shared.shader.ShaderPrimitive.vec3
+val vec3: shared.shader.ShaderPrimitive.vec3.type = shared.shader.ShaderPrimitive.vec3
+
+type vec4 = shared.shader.ShaderPrimitive.vec4
+val vec4: shared.shader.ShaderPrimitive.vec4.type = shared.shader.ShaderPrimitive.vec4
+
+type mat4 = shared.shader.ShaderPrimitive.mat4
+val mat4: shared.shader.ShaderPrimitive.mat4.type = shared.shader.ShaderPrimitive.mat4
+
+type array[T] = shared.shader.ShaderPrimitive.array[T]
+val array: shared.shader.ShaderPrimitive.array.type = shared.shader.ShaderPrimitive.array
+
+type rawArray = shared.shader.ShaderPrimitive.rawArray
+val rawArray: shared.shader.ShaderPrimitive.rawArray.type = shared.shader.ShaderPrimitive.rawArray
+
 val StandardShaders: shared.shader.StandardShaders.type = shared.shader.StandardShaders
 
 type Outcome[T] = shared.Outcome[T]
