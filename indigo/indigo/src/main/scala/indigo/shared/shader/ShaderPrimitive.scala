@@ -6,6 +6,12 @@ import indigo.shared.datatypes.RGB
 import indigo.shared.datatypes.RGBA
 import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.shared.datatypes.Matrix4
+import indigo.shared.datatypes.Point
+import indigo.shared.datatypes.Rectangle
+import indigo.shared.datatypes.Size
+import indigo.shared.datatypes.Vector2
+import indigo.shared.datatypes.Vector3
+import indigo.shared.datatypes.Vector4
 
 sealed trait ShaderPrimitive derives CanEqual:
   def length: Int
@@ -64,6 +70,10 @@ object ShaderPrimitive:
     def apply(x: Double, y: Double): vec2 =
       vec2(x.toFloat, y.toFloat)
 
+    def fromPoint(pt: Point): vec2 = vec2(pt.x.toFloat, pt.y.toFloat)
+    def fromSize(s: Size): vec2 = vec2(s.width.toFloat, s.height.toFloat)
+    def fromVector2(v: Vector2): vec2 = vec2(v.x, v.y)
+
     given IsShaderValue[vec2] =
       IsShaderValue.create[vec2](length, _.toArray)
 
@@ -83,8 +93,8 @@ object ShaderPrimitive:
     def apply(x: Double, y: Double, z: Double): vec3 =
       vec3(x.toFloat, y.toFloat, z.toFloat)
 
-    def fromRGB(rgb: RGB): vec3 =
-      vec3(rgb.r, rgb.g, rgb.b)
+    def fromRGB(rgb: RGB): vec3 = vec3(rgb.r, rgb.g, rgb.b)
+    def fromVector3(v: Vector3): vec3 = vec3(v.x, v.y, v.z)
 
     given IsShaderValue[vec3] =
       IsShaderValue.create[vec3](length, _.toArray)
@@ -105,11 +115,10 @@ object ShaderPrimitive:
     def apply(x: Double, y: Double, z: Double, w: Double): vec4 =
       vec4(x.toFloat, y.toFloat, z.toFloat, w.toFloat)
 
-    def fromRGB(rgb: RGB): vec4 =
-      vec4(rgb.r, rgb.g, rgb.b, 1.0)
-
-    def fromRGBA(rgba: RGBA): vec4 =
-      vec4(rgba.r, rgba.g, rgba.b, rgba.a)
+    def fromRGB(rgb: RGB): vec4 = vec4(rgb.r, rgb.g, rgb.b, 1.0)
+    def fromRGBA(rgba: RGBA): vec4 = vec4(rgba.r, rgba.g, rgba.b, rgba.a)
+    def fromVector4(v: Vector4): vec4 = vec4(v.x, v.y, v.z, v.w)
+    def fromRectangle(r: Rectangle): vec4 = vec4(r.x.toFloat, r.y.toFloat, r.width.toFloat, r.height.toFloat)
 
     given IsShaderValue[vec4] =
       IsShaderValue.create[vec4](length, _.toArray)
