@@ -2,6 +2,10 @@ package indigo.shared.shader
 
 import scala.reflect.ClassTag
 import scala.collection.immutable.ArraySeq
+import indigo.shared.datatypes.RGB
+import indigo.shared.datatypes.RGBA
+import indigo.shared.datatypes.mutable.CheapMatrix4
+import indigo.shared.datatypes.Matrix4
 
 sealed trait ShaderPrimitive derives CanEqual:
   def length: Int
@@ -10,12 +14,24 @@ sealed trait ShaderPrimitive derives CanEqual:
 
 sealed trait IsShaderValue[T]:
   def giveLength: Int
-  def toArray(p: ShaderPrimitive): Array[Float] = p.toArray
+  def toArray: T => Array[Float]
 
 object IsShaderValue:
-  def create[T](length: Int): IsShaderValue[T] =
+  def create[T](length: Int, valueToArray: T => Array[Float]): IsShaderValue[T] =
     new IsShaderValue[T]:
-      val giveLength: Int = length
+      def giveLength: Int            = length
+      def toArray: T => Array[Float] = t => valueToArray(t)
+
+  given IsShaderValue[Float] =
+    create(ShaderPrimitive.float.length, f => Array(f))
+  given IsShaderValue[RGB] =
+    create(ShaderPrimitive.vec3.length, rgb => ShaderPrimitive.vec3.fromRGB(rgb).toArray)
+  given IsShaderValue[RGBA] =
+    create(ShaderPrimitive.vec4.length, rgba => ShaderPrimitive.vec4.fromRGBA(rgba).toArray)
+  given IsShaderValue[Matrix4] =
+    create(ShaderPrimitive.vec4.length, mat => ShaderPrimitive.mat4.fromMatrix4(mat).toArray)
+  given IsShaderValue[CheapMatrix4] =
+    create(ShaderPrimitive.vec4.length, mat => ShaderPrimitive.mat4.fromCheapMatrix4(mat).toArray)
 
 object ShaderPrimitive:
 
@@ -29,8 +45,8 @@ object ShaderPrimitive:
     def apply(fill: Double): float =
       float(fill.toFloat)
 
-    implicit val isShaderValue: IsShaderValue[float] =
-      IsShaderValue.create[float](length)
+    given IsShaderValue[float] =
+      IsShaderValue.create[float](length, _.toArray)
 
   final case class vec2(x: Float, y: Float) extends ShaderPrimitive:
     val length: Int           = vec2.length
@@ -48,8 +64,8 @@ object ShaderPrimitive:
     def apply(x: Double, y: Double): vec2 =
       vec2(x.toFloat, y.toFloat)
 
-    implicit val isShaderValue: IsShaderValue[vec2] =
-      IsShaderValue.create[vec2](length)
+    given IsShaderValue[vec2] =
+      IsShaderValue.create[vec2](length, _.toArray)
 
   final case class vec3(x: Float, y: Float, z: Float) extends ShaderPrimitive:
     val length: Int           = vec3.length
@@ -67,8 +83,11 @@ object ShaderPrimitive:
     def apply(x: Double, y: Double, z: Double): vec3 =
       vec3(x.toFloat, y.toFloat, z.toFloat)
 
-    implicit val isShaderValue: IsShaderValue[vec3] =
-      IsShaderValue.create[vec3](length)
+    def fromRGB(rgb: RGB): vec3 =
+      vec3(rgb.r, rgb.g, rgb.b)
+
+    given IsShaderValue[vec3] =
+      IsShaderValue.create[vec3](length, _.toArray)
 
   final case class vec4(x: Float, y: Float, z: Float, w: Float) extends ShaderPrimitive:
     val length: Int           = vec4.length
@@ -86,8 +105,32 @@ object ShaderPrimitive:
     def apply(x: Double, y: Double, z: Double, w: Double): vec4 =
       vec4(x.toFloat, y.toFloat, z.toFloat, w.toFloat)
 
-    implicit val isShaderValue: IsShaderValue[vec4] =
-      IsShaderValue.create[vec4](length)
+    def fromRGB(rgb: RGB): vec4 =
+      vec4(rgb.r, rgb.g, rgb.b, 1.0)
+
+    def fromRGBA(rgba: RGBA): vec4 =
+      vec4(rgba.r, rgba.g, rgba.b, rgba.a)
+
+    given IsShaderValue[vec4] =
+      IsShaderValue.create[vec4](length, _.toArray)
+
+  final case class mat4(mat: Array[Float]) extends ShaderPrimitive:
+    val length: Int      = mat4.length
+    val isArray: Boolean = false
+    def toArray: Array[Float] =
+      if mat.length == mat4.length then mat
+      else throw new Exception("mat4 was not of length 16!")
+  object mat4:
+    val length: Int = 16
+
+    def fromCheapMatrix4(matrix: CheapMatrix4): mat4 =
+      mat4(matrix.mat.map(_.toFloat))
+
+    def fromMatrix4(matrix: Matrix4): mat4 =
+      mat4(matrix.toList.map(_.toFloat).toArray)
+
+    given IsShaderValue[mat4] =
+      IsShaderValue.create[mat4](length, _.toArray)
 
   /** array data to send to the fragment shader
     *
@@ -100,14 +143,15 @@ object ShaderPrimitive:
     *   Implicit proof that T is a Shader value (float, vec2, vec3, vec4)
     */
   @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
-  final case class array[T](size: Int, values: ArraySeq[T])(implicit ev: IsShaderValue[T]) extends ShaderPrimitive:
+  final case class array[T](size: Int, values: ArraySeq[T])(using ev: IsShaderValue[T]) extends ShaderPrimitive:
     val length: Int      = values.length * 4
     val isArray: Boolean = true
 
     def toArray: Array[Float] =
       val data =
         values.unsafeArray
-          .map(p => expandTo4(ev.toArray(p.asInstanceOf[ShaderPrimitive])))
+          .asInstanceOf[Array[T]]
+          .map(p => expandTo4(ev.toArray(p)))
           .flatten
           .toArray
 
@@ -135,9 +179,27 @@ object ShaderPrimitive:
         case _ => arr
 
   object array:
-    def apply[T: ClassTag](size: Int)(values: T*)(implicit ev: IsShaderValue[T]): array[T] =
+    def apply[T: ClassTag](size: Int)(values: T*)(using ev: IsShaderValue[T]): array[T] =
       array(size, ArraySeq.from[T](values.toArray[T]))
-    def apply[T: ClassTag](size: Int, values: Array[T])(implicit ev: IsShaderValue[T]): array[T] =
+    def apply[T: ClassTag](size: Int, values: Array[T])(using ev: IsShaderValue[T]): array[T] =
       array(size, ArraySeq.from[T](values))
-    def apply[T: ClassTag](size: Int, values: List[T])(implicit ev: IsShaderValue[T]): array[T] =
+    def apply[T: ClassTag](size: Int, values: List[T])(using ev: IsShaderValue[T]): array[T] =
       array(size, ArraySeq.from[T](values))
+
+  /** Advanced usage only, a raw array of Float's to send to the fragment shader. Warning: The assumption here is that you know
+    * what you're doing i.e. how the packing/unpacking rules work. If you don't, use a normal shader `array`!
+    *
+    * @param arr
+    *   The array of Floats to send
+    */
+  @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
+  final case class rawArray(arr: Array[Float]) extends ShaderPrimitive:
+    val length: Int           = arr.length
+    val isArray: Boolean      = true
+    def toArray: Array[Float] = arr
+
+  object rawArray:
+    def apply(values: Float*): rawArray =
+      rawArray(values.toArray[Float])
+    def apply(values: List[Float]): rawArray =
+      rawArray(values.toArray)
