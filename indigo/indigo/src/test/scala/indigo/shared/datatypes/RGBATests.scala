@@ -24,13 +24,17 @@ class RGBATests extends munit.FunSuite {
   test("Creating RGBA instances.should convert from Hexadecimal") {
     assertEquals(RGBA.fromHexString("0xFF0000FF"), RGBA.Red)
     assertEquals(RGBA.fromHexString("FF0000FF"), RGBA.Red)
+    assertEquals(RGBA.fromHexString("#FF0000FF"), RGBA.Red)
     assertEquals(RGBA.fromHexString("00FF00FF"), RGBA.Green)
     assertEquals(RGBA.fromHexString("0000FFFF"), RGBA.Blue)
 
     assertEquals(RGBA.fromHexString("0xFF0000"), RGBA.Red)
     assertEquals(RGBA.fromHexString("FF0000"), RGBA.Red)
+    assertEquals(RGBA.fromHexString("#FF0000"), RGBA.Red)
     assertEquals(RGBA.fromHexString("00FF00"), RGBA.Green)
+    assertEquals(RGBA.fromHexString("#00FF00"), RGBA.Green)
     assertEquals(RGBA.fromHexString("0000FF"), RGBA.Blue)
+    assertEquals(RGBA.fromHexString("#0000FF"), RGBA.Blue)
 
     val transparent = RGBA.fromHexString("0xFF000080")
     assertEquals((transparent.a > 0.48 && transparent.a < 0.52), true)

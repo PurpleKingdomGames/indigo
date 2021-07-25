@@ -82,7 +82,7 @@ object RGBA:
     }
 
   def fromHexString(hex: String): RGBA =
-    hex.trim match {
+    hex match {
       case h if h.startsWith("0x") && h.length == 10 =>
         fromColorInts(
           Integer.parseInt(hex.substring(2, 4), 16),
@@ -96,6 +96,21 @@ object RGBA:
           Integer.parseInt(hex.substring(2, 4), 16),
           Integer.parseInt(hex.substring(4, 6), 16),
           Integer.parseInt(hex.substring(6, 8), 16)
+        )
+
+      case h if h.startsWith("#") &&  h.length == 9 =>
+        fromColorInts(
+          Integer.parseInt(hex.substring(1, 3), 16),
+          Integer.parseInt(hex.substring(3, 5), 16),
+          Integer.parseInt(hex.substring(5, 7), 16)
+          Integer.parseInt(hex.substring(7, 9), 16)
+        )
+
+      case h if h.startsWith("#") && h.length == 7 =>
+        fromColorInts(
+          Integer.parseInt(hex.substring(1, 3), 16),
+          Integer.parseInt(hex.substring(3, 5), 16),
+          Integer.parseInt(hex.substring(5, 7), 16)
         )
 
       case h if h.length == 8 =>

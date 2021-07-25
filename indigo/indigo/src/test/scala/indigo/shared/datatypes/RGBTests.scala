@@ -12,9 +12,12 @@ class RGBTests extends munit.FunSuite {
 
   test("Creating RGB instances.should convert from Hexadecimal") {
     assertEquals(RGB.fromHexString("0xFF0000"), RGB.Red)
+    assertEquals(RGB.fromHexString("#FF0000"), RGB.Red)
     assertEquals(RGB.fromHexString("FF0000"), RGB.Red)
     assertEquals(RGB.fromHexString("00FF00"), RGB.Green)
+    assertEquals(RGB.fromHexString("#00FF00"), RGB.Green)
     assertEquals(RGB.fromHexString("0000FF"), RGB.Blue)
+    assertEquals(RGB.fromHexString("#0000FF"), RGB.Blue)
 
     assertEquals(RGB.fromHexString("0xFF0000FF"), RGB.Red)
   }
