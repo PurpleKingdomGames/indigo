@@ -103,14 +103,14 @@ object RGBA:
           Integer.parseInt(hex.substring(1, 3), 16),
           Integer.parseInt(hex.substring(3, 5), 16),
           Integer.parseInt(hex.substring(5, 7), 16)
+          Integer.parseInt(hex.substring(7, 9), 16)
         )
 
       case h if h.startsWith("#") && h.length == 7 =>
         fromColorInts(
           Integer.parseInt(hex.substring(1, 3), 16),
           Integer.parseInt(hex.substring(3, 5), 16),
-          Integer.parseInt(hex.substring(5, 7), 16),
-          Integer.parseInt(hex.substring(7, 9), 16),
+          Integer.parseInt(hex.substring(5, 7), 16)
         )
 
       case h if h.length == 8 =>
