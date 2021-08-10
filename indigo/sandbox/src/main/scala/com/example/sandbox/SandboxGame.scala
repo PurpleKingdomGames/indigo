@@ -23,6 +23,7 @@ import com.example.sandbox.scenes.TilingTexture
 import com.example.sandbox.scenes.BoundsScene
 import indigoextras.effectmaterials.Refraction
 import indigoextras.effectmaterials.LegacyEffects
+import com.example.sandbox.scenes.StretchToFit
 
 @JSExportTopLevel("IndigoGame")
 object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, SandboxGameModel, SandboxViewModel] {
@@ -69,7 +70,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
           magnification = magnificationLevel
         ),
         SandboxBootData(flags.getOrElse("key", "No entry for 'key'."), gameViewport)
-      ).withAssets(SandboxAssets.assets ++ Shaders.assets ++ TilingTexture.assets)
+      ).withAssets(SandboxAssets.assets ++ Shaders.assets ++ TilingTexture.assets ++ StretchToFit.assets)
         .withFonts(Fonts.fontInfo)
         .withSubSystems(
           FPSCounter(
@@ -83,7 +84,8 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
           Shaders.external,
           Shaders.sea,
           LegacyEffects.entityShader,
-          TilingTexture.tilingShader
+          TilingTexture.tilingShader,
+          StretchToFit.stretchShader,
         )
         .addShaders(Refraction.shaders)
     )

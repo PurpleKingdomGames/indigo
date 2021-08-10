@@ -52,7 +52,8 @@ object TextureTileScene extends Scene[SandboxStartupData, SandboxGameModel, Sand
       SceneUpdateFragment.empty
         .addLayers(
           Layer(
-            TilingTexture(10, 10, 200, 100)
+            TilingTexture(10, 10, 200, 75),
+            StretchToFit(100, 75, 50, 75),
           )
         )
     )
@@ -92,6 +93,42 @@ object TilingTexture {
   def assets: Set[AssetType] =
     Set(
       AssetType.Text(fragAsset, AssetPath("assets/tiling.frag"))
+    )
+
+}
+
+final case class StretchToFit(x: Int, y: Int, width: Int, height: Int) extends EntityNode {
+  val flip: Flip        = Flip.default
+  val bounds: Rectangle = Rectangle(x, y, width, height)
+  val position: Point   = bounds.position
+  val size: Size        = bounds.size
+  val ref: Point        = Point.zero
+  val rotation: Radians = Radians.zero
+  val scale: Vector2    = Vector2.one
+  val depth: Depth      = Depth(1)
+
+  def withDepth(newDepth: Depth): StretchToFit = this
+
+  val toShaderData: ShaderData =
+    ShaderData(StretchToFit.shaderId)
+      .withChannel0(SandboxAssets.dots)
+}
+
+object StretchToFit {
+
+  val shaderId: ShaderId =
+    ShaderId("stretch to fit")
+
+  val fragAsset: AssetName = AssetName("stretch to fit fragment")
+
+  val stretchShader: EntityShader.External =
+    EntityShader
+      .External(shaderId)
+      .withFragmentProgram(fragAsset)
+
+  def assets: Set[AssetType] =
+    Set(
+      AssetType.Text(fragAsset, AssetPath("assets/stretch.frag"))
     )
 
 }
