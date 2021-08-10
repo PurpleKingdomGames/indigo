@@ -102,7 +102,7 @@ object RGBA:
         fromColorInts(
           Integer.parseInt(hex.substring(1, 3), 16),
           Integer.parseInt(hex.substring(3, 5), 16),
-          Integer.parseInt(hex.substring(5, 7), 16)
+          Integer.parseInt(hex.substring(5, 7), 16),
           Integer.parseInt(hex.substring(7, 9), 16)
         )
 
