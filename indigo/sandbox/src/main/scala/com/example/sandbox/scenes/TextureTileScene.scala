@@ -41,6 +41,9 @@ object TextureTileScene extends Scene[SandboxStartupData, SandboxGameModel, Sand
   ): GlobalEvent => Outcome[SandboxViewModel] =
     _ => Outcome(viewModel)
 
+  def fit(originalSize: Vector2, screenSize: Vector2): Vector2 =
+    Vector2(Math.max(screenSize.x / originalSize.x, screenSize.y / originalSize.y))
+
   def present(
       context: FrameContext[SandboxStartupData],
       model: SandboxGameModel,
@@ -52,8 +55,12 @@ object TextureTileScene extends Scene[SandboxStartupData, SandboxGameModel, Sand
       SceneUpdateFragment.empty
         .addLayers(
           Layer(
-            TilingTexture(10, 10, 200, 75),
-            StretchToFit(100, 75, 50, 75),
+            Graphic(32, 32, Material.Bitmap(SandboxAssets.dots))
+              .withRef(16, 16)
+              .moveTo(context.startUpData.viewportCenter)
+              .scaleBy(fit(Vector2(32, 32), (context.startUpData.viewportCenter * 2).toVector)),
+            TilingTexture (10, 10, 200, 75),
+            StretchToFit(100, 75, 50, 75)
           )
         )
     )
