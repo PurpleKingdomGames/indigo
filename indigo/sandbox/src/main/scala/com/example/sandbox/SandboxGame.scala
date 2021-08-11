@@ -6,6 +6,7 @@ import indigo.json.Json
 import indigoextras.subsystems.FPSCounter
 import indigoextras.ui.InputField
 import indigoextras.ui.InputFieldAssets
+import indigoextras.ui.HitArea
 import indigo.scenes._
 
 import scala.scalajs.js.annotation._
@@ -24,6 +25,9 @@ import com.example.sandbox.scenes.BoundsScene
 import indigoextras.effectmaterials.Refraction
 import indigoextras.effectmaterials.LegacyEffects
 import com.example.sandbox.scenes.StretchToFit
+import com.example.sandbox.scenes.UiScene
+import indigoextras.geometry.Polygon
+import indigoextras.geometry.Vertex
 
 @JSExportTopLevel("IndigoGame")
 object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, SandboxGameModel, SandboxViewModel] {
@@ -34,7 +38,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
   private val viewportHeight: Int     = 128 * magnificationLevel
 
   def initialScene(bootData: SandboxBootData): Option[SceneName] =
-    Some(TextureTileScene.name)
+    Some(UiScene.name)
 
   def scenes(bootData: SandboxBootData): NonEmptyList[Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]] =
     NonEmptyList(
@@ -46,7 +50,8 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
       TextBoxScene,
       BoundsScene,
       CameraScene,
-      TextureTileScene
+      TextureTileScene,
+      UiScene
     )
 
   val eventFilters: EventFilters = EventFilters.Permissive
@@ -85,7 +90,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
           Shaders.sea,
           LegacyEffects.entityShader,
           TilingTexture.tilingShader,
-          StretchToFit.stretchShader,
+          StretchToFit.stretchShader
         )
         .addShaders(Refraction.shaders)
     )
@@ -146,7 +151,13 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
         Point.zero,
         InputField("single", assets).withKey(BindingKey("single")).makeSingleLine,
         InputField("multi\nline", assets).withKey(BindingKey("multi")).makeMultiLine.moveTo(5, 5),
-        true
+        true,
+        HitArea(Polygon.Closed(UiScene.points.map(Vertex.fromPoint)))
+          .moveTo(175, 10)
+          .withUpActions(Log("Up!"))
+          .withDownActions(Log("Down!"))
+          .withHoverOverActions(Log("Over!"))
+          .withHoverOutActions(Log("Out!"))
       )
     )
   }
@@ -213,4 +224,16 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
 final case class Dude(aseprite: Aseprite, sprite: Sprite[Material.ImageEffects])
 final case class SandboxBootData(message: String, gameViewport: GameViewport)
 final case class SandboxStartupData(dude: Dude, viewportCenter: Point)
-final case class SandboxViewModel(offset: Point, single: InputField, multi: InputField, useLightingLayer: Boolean)
+final case class SandboxViewModel(
+    offset: Point,
+    single: InputField,
+    multi: InputField,
+    useLightingLayer: Boolean,
+    hitArea: HitArea
+):
+  def update(mouse: Mouse): Outcome[SandboxViewModel] =
+    hitArea.update(mouse).map { ha =>
+      this.copy(hitArea = ha)
+    }
+
+final case class Log(message: String) extends GlobalEvent
