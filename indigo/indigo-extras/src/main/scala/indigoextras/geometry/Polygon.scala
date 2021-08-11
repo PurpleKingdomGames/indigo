@@ -7,6 +7,18 @@ import scala.annotation.tailrec
 sealed trait Polygon derives CanEqual {
   val vertices: List[Vertex]
 
+  def moveTo(newPosition: Vertex): Polygon
+  def moveTo(x: Double, y: Double): Polygon =
+    moveTo(Vertex(x, y))
+
+  def moveBy(amount: Vertex): Polygon
+  def moveBy(x: Double, y: Double): Polygon =
+    moveBy(Vertex(x, y))
+
+  def scaleBy(vec: Vertex): Polygon
+  def scaleBy(amount: Double): Polygon =
+    scaleBy(Vertex(amount))
+
   def bounds: BoundingBox =
     BoundingBox.fromVertices(vertices)
 
@@ -104,7 +116,16 @@ object Polygon {
     }
   }
 
-  final case class Open(vertices: List[Vertex]) extends Polygon
+  final case class Open(vertices: List[Vertex]) extends Polygon:
+    def moveTo(newPosition: Vertex): Open =
+      moveBy(vertices.headOption.map(v => newPosition - v).getOrElse(Vertex.zero))
+
+    def moveBy(amount: Vertex): Open =
+      this.copy(vertices = vertices.map(_.moveBy(amount)))
+
+    def scaleBy(vec: Vertex): Open =
+      this.copy(vertices = vertices.map(_.scaleBy(vec)))
+
   object Open {
 
     val empty: Open =
@@ -114,7 +135,16 @@ object Polygon {
       new Open(vertices.toList)
   }
 
-  final case class Closed(vertices: List[Vertex]) extends Polygon
+  final case class Closed(vertices: List[Vertex]) extends Polygon:
+    def moveTo(newPosition: Vertex): Closed =
+      moveBy(vertices.headOption.map(v => newPosition - v).getOrElse(Vertex.zero))
+
+    def moveBy(amount: Vertex): Closed =
+      this.copy(vertices = vertices.map(_.moveBy(amount)))
+
+    def scaleBy(vec: Vertex): Closed =
+      this.copy(vertices = vertices.map(_.scaleBy(vec)))
+
   object Closed {
 
     val empty: Closed =

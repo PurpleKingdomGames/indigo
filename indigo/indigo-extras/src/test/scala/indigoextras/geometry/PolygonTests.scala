@@ -153,4 +153,51 @@ class PolygonTests extends munit.FunSuite {
     assertEquals(closed.polygonIntersectCheck(Polygon.fromRectangle(intersectingRectangleWithClosed)), true)
   }
 
+  test("moveTo") {
+    val actual =
+      closed.moveTo(10, 20)
+
+    val expected =
+      Polygon.Closed(
+        Vertex(10, 20),
+        Vertex(15, 25),
+        Vertex(20, 20),
+        Vertex(15, 15)
+      )
+
+    assertEquals(actual, expected)
+  }
+
+  test("moveBy") {
+    val actual =
+      closed.moveBy(100, 50)
+
+    val expected =
+      Polygon.Closed(
+        Vertex(100, 50),
+        Vertex(105, 55),
+        Vertex(110, 50),
+        Vertex(105, 45)
+      )
+
+    assertEquals(actual, expected)
+  }
+
+  test("scaleBy") {
+    val amount = 10.0d
+
+    val actual =
+      closed.scaleBy(amount)
+
+    val expected =
+      Polygon.Closed(
+        Vertex(0 * amount, 0 * amount),
+        Vertex(5 * amount, 5 * amount),
+        Vertex(10 * amount, 0 * amount),
+        Vertex(5 * amount, -5 * amount)
+      )
+
+    assertEquals(actual, expected)
+  }
+
 }
