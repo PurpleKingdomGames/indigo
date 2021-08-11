@@ -541,15 +541,7 @@ final class DisplayObjectConversions(
       val materialName   = shaderData.channel0.get
 
       val lineHash: String =
-        leaf.fontKey.toString +
-          ":" + line.hashCode().toString +
-          ":" + alignmentOffsetX.toString() +
-          ":" + yOffset.toString() +
-          ":" + leaf.position.hashCode().toString +
-          ":" + leaf.ref.hashCode().toString +
-          ":" + leaf.rotation.hashCode().toString +
-          ":" + leaf.scale.hashCode().toString +
-          ":" + shaderData.hashCode().toString
+        leaf.hashCode.toString + line.hashCode.toString
 
       val emissiveOffset = findAssetOffsetValues(assetMapping, shaderData.channel1, shaderDataHash, "_e")
       val normalOffset   = findAssetOffsetValues(assetMapping, shaderData.channel2, shaderDataHash, "_n")
