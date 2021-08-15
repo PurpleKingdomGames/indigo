@@ -2,6 +2,7 @@ package indigoextras.effectmaterials
 
 import indigo.shared.assets.AssetName
 import indigo.shared.materials.Material
+import indigo.shared.materials.FillType
 import indigo.shared.materials.ShaderData
 import indigoextras.shaders.ExtrasShaderLibrary
 import indigo.shared.shader.ShaderPrimitive.float
@@ -40,33 +41,63 @@ object Refraction {
   val shaders: Set[Shader] =
     Set(entityShader, blendShader)
 
-  /**
-    * Replicates Indigo's original refraction/distortion layer behaviour
+  /** Replicates Indigo's original refraction/distortion layer behaviour
     *
-    * The problem with this method is that we have no "entity blend shader"
-    * capability to allow use to control how individual entities blend onto
-    * the layer below. As a result we have to use the same sort of mechanism
-    * we use for lighting to combine the entities - but this results in a
-    * weaker effect than we would like.
+    * The problem with this method is that we have no "entity blend shader" capability to allow use to control how
+    * individual entities blend onto the layer below. As a result we have to use the same sort of mechanism we use for
+    * lighting to combine the entities - but this results in a weaker effect than we would like.
     *
-    * @param distance Max distance in pixels
+    * @param distance
+    *   Max distance in pixels
     */
   def blending(distance: Double): Blending =
     Blending(Blend.Normal, Blend.Normal, RefractionBlend(distance), Option(RGBA.Zero))
 
 }
 
-final case class RefractionEntity(diffuse: AssetName) extends Material derives CanEqual {
-  def toShaderData: ShaderData =
+final case class RefractionEntity(diffuse: AssetName, fillType: FillType) extends Material derives CanEqual {
+
+  def withDiffuse(newDiffuse: AssetName): RefractionEntity =
+    this.copy(diffuse = newDiffuse)
+
+  def withFillType(newFillType: FillType): RefractionEntity =
+    this.copy(fillType = newFillType)
+  def normal: RefractionEntity =
+    withFillType(FillType.Normal)
+  def stretch: RefractionEntity =
+    withFillType(FillType.Stretch)
+  def tile: RefractionEntity =
+    withFillType(FillType.Tile)
+
+  def toShaderData: ShaderData = {
+    val imageFillType: Double =
+      fillType match {
+        case FillType.Normal  => 0.0
+        case FillType.Stretch => 1.0
+        case FillType.Tile    => 2.0
+      }
+
+    val uniformBlock: UniformBlock =
+      UniformBlock(
+        "IndigoBitmapData",
+        List(
+          Uniform("FILLTYPE") -> float(imageFillType)
+        )
+      )
+
     ShaderData(
       Refraction.entityShader.id,
-      Nil,
+      List(uniformBlock),
       Some(diffuse),
       None,
       None,
       None
     )
+  }
 }
+object RefractionEntity:
+  def apply(diffuse: AssetName): RefractionEntity =
+    RefractionEntity(diffuse, FillType.Normal)
 
 final case class RefractionBlend(multiplier: Double) extends BlendMaterial derives CanEqual {
   def toShaderData: BlendShaderData =

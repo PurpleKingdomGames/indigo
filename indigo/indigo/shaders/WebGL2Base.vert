@@ -24,8 +24,10 @@ out vec4 v_channel_coords_01; // Scaled to position on texture atlas
 out vec4 v_channel_coords_23; // Scaled to position on texture atlas
 out vec4 v_uv_size; // Unscaled texture coordinates + Width / height of the objects
 out vec3 v_screenCoordsRotation; // Where is this pixel on the screen? How much is it rotated by
-out vec4 v_textureSizeTopLeft; // Actual size of the texture in pixels, it's position on the atlas.
+out vec2 v_textureSize; // Actual size of the texture in pixels.
 out vec4 v_atlasSizeAsUV; // Actual size of the atlas in pixels, and it's relative size in UV coords.
+out vec4 v_channel_pos_01; // Position on the atlas of channels 0 and 1.
+out vec4 v_channel_pos_23; // Position on the atlas of channels 2 and 3.
 
 // Constants
 const float PI = 3.141592653589793;
@@ -52,6 +54,9 @@ vec2 CHANNEL_1_TEXTURE_COORDS;
 vec2 CHANNEL_2_TEXTURE_COORDS;
 vec2 CHANNEL_3_TEXTURE_COORDS;
 vec2 CHANNEL_0_POSITION;
+vec2 CHANNEL_1_POSITION;
+vec2 CHANNEL_2_POSITION;
+vec2 CHANNEL_3_POSITION;
 vec2 CHANNEL_0_SIZE;
 float ROTATION;
 vec2 TEXTURE_COORDS; // Redundant, equal to UV
@@ -101,6 +106,9 @@ void main(void) {
   CHANNEL_2_TEXTURE_COORDS = scaleCoordsWithOffset(UV, CHANNEL_2_ATLAS_OFFSET);
   CHANNEL_3_TEXTURE_COORDS = scaleCoordsWithOffset(UV, CHANNEL_3_ATLAS_OFFSET);
   CHANNEL_0_POSITION = scaleCoordsWithOffset(vec2(0.0), CHANNEL_0_ATLAS_OFFSET);
+  CHANNEL_1_POSITION = scaleCoordsWithOffset(vec2(0.0), CHANNEL_1_ATLAS_OFFSET);
+  CHANNEL_2_POSITION = scaleCoordsWithOffset(vec2(0.0), CHANNEL_2_ATLAS_OFFSET);
+  CHANNEL_3_POSITION = scaleCoordsWithOffset(vec2(0.0), CHANNEL_3_ATLAS_OFFSET);
   CHANNEL_0_SIZE = TEXTURE_SIZE / ATLAS_SIZE;
 
   vertex();
@@ -120,6 +128,8 @@ void main(void) {
   v_uv_size = vec4(UV, SIZE);
   v_channel_coords_01 = vec4(CHANNEL_0_TEXTURE_COORDS, CHANNEL_1_TEXTURE_COORDS);
   v_channel_coords_23 = vec4(CHANNEL_2_TEXTURE_COORDS, CHANNEL_3_TEXTURE_COORDS);
-  v_textureSizeTopLeft = vec4(TEXTURE_SIZE, CHANNEL_0_POSITION);
+  v_textureSize = TEXTURE_SIZE, CHANNEL_0_POSITION;
   v_atlasSizeAsUV = vec4(ATLAS_SIZE, CHANNEL_0_SIZE);
+  v_channel_pos_01 = vec4(CHANNEL_0_POSITION, CHANNEL_1_POSITION);
+  v_channel_pos_23 = vec4(CHANNEL_2_POSITION, CHANNEL_3_POSITION);
 }

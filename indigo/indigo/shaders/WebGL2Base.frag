@@ -32,8 +32,10 @@ in vec4 v_channel_coords_01;
 in vec4 v_channel_coords_23;
 in vec4 v_uv_size; // Unscaled texture coordinates + Width / height of the objects
 in vec3 v_screenCoordsRotation; // Where is this pixel on the screen?
-in vec4 v_textureSizeTopLeft; // Actual size of the texture in pixels, it's position on the atlas.
+in vec2 v_textureSize; // Actual size of the texture in pixels.
 in vec4 v_atlasSizeAsUV; // Actual size of the atlas in pixels, and it's relative size in UV coords.
+in vec4 v_channel_pos_01; // Position on the atlas of channels 0 and 1.
+in vec4 v_channel_pos_23; // Position on the atlas of channels 2 and 3.
 
 // Variables
 vec2 UV; // Unscaled texture coordinates
@@ -47,6 +49,9 @@ vec2 CHANNEL_1_TEXTURE_COORDS; // Scaled texture coordinates
 vec2 CHANNEL_2_TEXTURE_COORDS; // Scaled texture coordinates
 vec2 CHANNEL_3_TEXTURE_COORDS; // Scaled texture coordinates
 vec2 CHANNEL_0_POSITION; // top left position of this texture on the atlas in UV coords
+vec2 CHANNEL_1_POSITION; // top left position of this texture on the atlas in UV coords
+vec2 CHANNEL_2_POSITION; // top left position of this texture on the atlas in UV coords
+vec2 CHANNEL_3_POSITION; // top left position of this texture on the atlas in UV coords
 vec2 CHANNEL_0_SIZE; // size of this texture on the atlas in UV coords
 vec2 SCREEN_COORDS;
 float ROTATION;
@@ -101,20 +106,25 @@ void main(void) {
   UV = v_uv_size.xy;
   SIZE = v_uv_size.zw;
   COLOR = vec4(0.0);
-  CHANNEL_0_TEXTURE_COORDS = v_channel_coords_01.xy;
-  CHANNEL_1_TEXTURE_COORDS = v_channel_coords_01.zw;
-  CHANNEL_2_TEXTURE_COORDS = v_channel_coords_23.xy;
-  CHANNEL_3_TEXTURE_COORDS = v_channel_coords_23.zw;
+
+  SCREEN_COORDS = v_screenCoordsRotation.xy;
+  ROTATION = v_screenCoordsRotation.z;
+  TEXTURE_SIZE = v_textureSize;
+  ATLAS_SIZE = v_atlasSizeAsUV.xy;
+  CHANNEL_0_POSITION = v_channel_pos_01.xy;
+  CHANNEL_1_POSITION = v_channel_pos_01.zw;
+  CHANNEL_2_POSITION = v_channel_pos_23.xy;
+  CHANNEL_3_POSITION = v_channel_pos_23.zw;
+  CHANNEL_0_SIZE = v_atlasSizeAsUV.zw;
+
+  CHANNEL_0_TEXTURE_COORDS = min(v_channel_coords_01.xy, CHANNEL_0_POSITION + CHANNEL_0_SIZE);
+  CHANNEL_1_TEXTURE_COORDS = min(v_channel_coords_01.zw, CHANNEL_1_POSITION + CHANNEL_0_SIZE);
+  CHANNEL_2_TEXTURE_COORDS = min(v_channel_coords_23.xy, CHANNEL_2_POSITION + CHANNEL_0_SIZE);
+  CHANNEL_3_TEXTURE_COORDS = min(v_channel_coords_23.zw, CHANNEL_3_POSITION + CHANNEL_0_SIZE);
   CHANNEL_0 = texture(SRC_CHANNEL, CHANNEL_0_TEXTURE_COORDS);
   CHANNEL_1 = texture(SRC_CHANNEL, CHANNEL_1_TEXTURE_COORDS);
   CHANNEL_2 = texture(SRC_CHANNEL, CHANNEL_2_TEXTURE_COORDS);
   CHANNEL_3 = texture(SRC_CHANNEL, CHANNEL_3_TEXTURE_COORDS);
-  SCREEN_COORDS = v_screenCoordsRotation.xy;
-  ROTATION = v_screenCoordsRotation.z;
-  TEXTURE_SIZE = v_textureSizeTopLeft.xy;
-  ATLAS_SIZE = v_atlasSizeAsUV.xy;
-  CHANNEL_0_POSITION = v_textureSizeTopLeft.zw;
-  CHANNEL_0_SIZE = v_atlasSizeAsUV.zw;
 
   // Colour - build up the COLOR
   fragment();

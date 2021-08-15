@@ -31,6 +31,9 @@ val AssetTag: shared.assets.AssetTag.type = shared.assets.AssetTag
 type Material = shared.materials.Material
 val Material: shared.materials.Material.type = shared.materials.Material
 
+type FillType = shared.materials.FillType
+val FillType: shared.materials.FillType.type = shared.materials.FillType
+
 type LightingModel = shared.materials.LightingModel
 val LightingModel: shared.materials.LightingModel.type = shared.materials.LightingModel
 

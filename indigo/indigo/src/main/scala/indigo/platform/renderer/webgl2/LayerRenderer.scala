@@ -50,7 +50,7 @@ class LayerRenderer(
   private val sizeAndFrameScaleInstanceArray: WebGLBuffer    = gl2.createBuffer()
   private val channelOffsets01InstanceArray: WebGLBuffer     = gl2.createBuffer()
   private val channelOffsets23InstanceArray: WebGLBuffer     = gl2.createBuffer()
-  private val textureSizeAtlasSizeInstanceArray: WebGLBuffer          = gl2.createBuffer()
+  private val textureSizeAtlasSizeInstanceArray: WebGLBuffer = gl2.createBuffer()
 
   def setupInstanceArray(buffer: WebGLBuffer, location: Int, size: Int): Unit = {
     gl2.bindBuffer(ARRAY_BUFFER, buffer)
@@ -65,7 +65,7 @@ class LayerRenderer(
   private val sizeAndFrameScaleData: scalajs.js.Array[Float]    = scalajs.js.Array[Float](4f * maxBatchSize)
   private val channelOffsets01Data: scalajs.js.Array[Float]     = scalajs.js.Array[Float](4f * maxBatchSize)
   private val channelOffsets23Data: scalajs.js.Array[Float]     = scalajs.js.Array[Float](4f * maxBatchSize)
-  private val textureSizeAtlasSizeData: scalajs.js.Array[Float]          = scalajs.js.Array[Float](4f * maxBatchSize)
+  private val textureSizeAtlasSizeData: scalajs.js.Array[Float] = scalajs.js.Array[Float](4f * maxBatchSize)
 
   @inline private def bindData(buffer: WebGLBuffer, data: scalajs.js.Array[Float]): Unit = {
     gl2.bindBuffer(ARRAY_BUFFER, buffer)
@@ -370,18 +370,33 @@ class LayerRenderer(
 
           // Change context
           val shaderId = indigo.shared.shader.StandardShaders.Bitmap.id
-          if (currentShader != shaderId) {
-            customShaders.get(shaderId) match {
-              case Some(s) =>
-                currentProgram = s
-                setupShader(s)
+          val activeShader: WebGLProgram =
+            if (currentShader != shaderId) {
+              customShaders.get(shaderId) match {
+                case Some(s) =>
+                  currentProgram = s
+                  setupShader(s)
+                  s
 
-              case None =>
-                throw new Exception(
-                  s"(TextBox) Missing entity shader '$shaderId'. Have you remembered to add the shader to the boot sequence or disabled auto-loading of default shaders?"
-                )
-            }
-          }
+                case None =>
+                  throw new Exception(
+                    s"(TextBox) Missing entity shader '$shaderId'. Have you remembered to add the shader to the boot sequence or disabled auto-loading of default shaders?"
+                  )
+              }
+            } else currentProgram
+          //
+
+          // UBO data
+          val buff = customDataUBOBuffers.getOrElseUpdate("FILLTYPE0", gl2.createBuffer())
+          WebGLHelper.attachUBOData(gl2, Array[Float](0), buff)
+          WebGLHelper.bindUBO(
+            gl2,
+            activeShader,
+            "IndigoBitmapData",
+            RendererWebGL2Constants.customDataBlockOffsetPointer,
+            buff
+          )
+          //
 
           gl2.bindTexture(TEXTURE_2D, textTexture)
           gl2.texImage2D(

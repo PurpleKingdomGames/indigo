@@ -20,11 +20,9 @@ import com.example.sandbox.scenes.RefractionScene
 import com.example.sandbox.scenes.LegacyEffectsScene
 import com.example.sandbox.scenes.TextBoxScene
 import com.example.sandbox.scenes.TextureTileScene
-import com.example.sandbox.scenes.TilingTexture
 import com.example.sandbox.scenes.BoundsScene
 import indigoextras.effectmaterials.Refraction
 import indigoextras.effectmaterials.LegacyEffects
-import com.example.sandbox.scenes.StretchToFit
 import com.example.sandbox.scenes.UiScene
 import indigoextras.geometry.Polygon
 import indigoextras.geometry.Vertex
@@ -38,7 +36,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
   private val viewportHeight: Int     = 128 * magnificationLevel
 
   def initialScene(bootData: SandboxBootData): Option[SceneName] =
-    Some(CameraScene.name)
+    Some(TextureTileScene.name)
 
   def scenes(bootData: SandboxBootData): NonEmptyList[Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]] =
     NonEmptyList(
@@ -75,7 +73,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
           magnification = magnificationLevel
         ),
         SandboxBootData(flags.getOrElse("key", "No entry for 'key'."), gameViewport)
-      ).withAssets(SandboxAssets.assets ++ Shaders.assets ++ TilingTexture.assets ++ StretchToFit.assets)
+      ).withAssets(SandboxAssets.assets ++ Shaders.assets)
         .withFonts(Fonts.fontInfo)
         .withSubSystems(
           FPSCounter(
@@ -88,9 +86,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
           Shaders.circle,
           Shaders.external,
           Shaders.sea,
-          LegacyEffects.entityShader,
-          TilingTexture.tilingShader,
-          StretchToFit.stretchShader
+          LegacyEffects.entityShader
         )
         .addShaders(Refraction.shaders)
     )
