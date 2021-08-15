@@ -29,6 +29,8 @@ import indigo.shared.materials.BlendMaterial
   *   Optionally set the visiblity, defaults to visible
   * @param blending
   *   Optionally describes how to blend this layer onto the one below, by default, simply overlays on onto the other.
+  * @param camera
+  *   Optional camera specifically for this layer. If None, fallback to scene camera, or default camera.
   */
 final case class Layer(
     nodes: List[SceneNode],
@@ -37,7 +39,8 @@ final case class Layer(
     magnification: Option[Int],
     depth: Option[Depth],
     visible: Option[Boolean],
-    blending: Option[Blending]
+    blending: Option[Blending],
+    camera: Option[Camera]
 ) derives CanEqual {
 
   def |+|(other: Layer): Layer =
@@ -104,32 +107,39 @@ final case class Layer(
     this.copy(blending = blending.map(_.withBlendMaterial(newBlendMaterial)))
   def modifyBlending(modifier: Blending => Blending): Layer =
     this.copy(blending = blending.map(modifier))
+
+  def withCamera(newCamera: Camera): Layer =
+    this.copy(camera = Option(newCamera))
+  def modifyCamera(modifier: Camera => Camera): Layer =
+    this.copy(camera = Option(modifier(camera.getOrElse(Camera.default))))
+  def noCamera: Layer =
+    this.copy(camera = None)
 }
 
 object Layer {
 
   def empty: Layer =
-    Layer(Nil, Nil, None, None, None, None, None)
+    Layer(Nil, Nil, None, None, None, None, None, None)
 
   def apply(key: BindingKey): Layer =
-    Layer(Nil, Nil, Option(key), None, None, None, None)
+    Layer(Nil, Nil, Option(key), None, None, None, None, None)
 
   def apply(nodes: SceneNode*): Layer =
-    Layer(nodes.toList, Nil, None, None, None, None, None)
+    Layer(nodes.toList, Nil, None, None, None, None, None, None)
 
   def apply(nodes: List[SceneNode]): Layer =
-    Layer(nodes, Nil, None, None, None, None, None)
+    Layer(nodes, Nil, None, None, None, None, None, None)
 
   def apply(key: BindingKey, nodes: List[SceneNode]): Layer =
-    Layer(nodes, Nil, Option(key), None, None, None, None)
+    Layer(nodes, Nil, Option(key), None, None, None, None, None)
 
   def apply(key: BindingKey, nodes: SceneNode*): Layer =
-    Layer(nodes.toList, Nil, Option(key), None, None, None, None)
+    Layer(nodes.toList, Nil, Option(key), None, None, None, None, None)
 
   def apply(key: BindingKey, magnification: Int, depth: Depth): Layer =
-    Layer(Nil, Nil, Option(key), Option(magnification), Option(depth), None, None)
+    Layer(Nil, Nil, Option(key), Option(magnification), Option(depth), None, None, None)
 
   def apply(key: BindingKey, magnification: Int, depth: Depth, nodes: List[SceneNode]): Layer =
-    Layer(nodes.toList, Nil, Option(key), Option(magnification), Option(depth), None, None)
+    Layer(nodes.toList, Nil, Option(key), Option(magnification), Option(depth), None, None, None)
 
 }
