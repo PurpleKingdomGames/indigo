@@ -16,11 +16,19 @@ import indigo.shared.materials.BlendMaterial
   * empty placeholder layers early in your scene and then add things to them, confident of the outcome.
   *
   * @param nodes
-  *   @param key
+  *   Nodes to render in this layer.
+  * @param lights
+  *   Layer level dynamic lights
+  * @param key
+  *   Optionally set a binding key, allows you to target specific layers when merging `SceneUpdateFragment`s.
   * @param magnification
-  *   @param depth
+  *   Optionally set the magnification, defaults to scene magnification.
+  * @param depth
+  *   Specifically set the depth, defaults to scene order.
   * @param visible
-  *   @param blending
+  *   Optionally set the visiblity, defaults to visible
+  * @param blending
+  *   Optionally describes how to blend this layer onto the one below, by default, simply overlays on onto the other.
   */
 final case class Layer(
     nodes: List[SceneNode],
