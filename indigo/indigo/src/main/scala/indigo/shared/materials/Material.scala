@@ -4,7 +4,7 @@ import indigo.shared.assets.AssetName
 import indigo.shared.shader.StandardShaders
 import indigo.shared.shader.Uniform
 import indigo.shared.shader.UniformBlock
-import indigo.shared.shader.ShaderPrimitive.{vec3, vec4}
+import indigo.shared.shader.ShaderPrimitive.{float, vec3, vec4}
 import indigo.shared.datatypes.RGBA
 import indigo.shared.datatypes.Fill
 import indigo.shared.shader.ShaderPrimitive
@@ -18,7 +18,8 @@ trait Material {
 }
 object Material {
 
-  final case class Bitmap(diffuse: AssetName, lighting: LightingModel, shaderId: Option[ShaderId]) extends Material derives CanEqual {
+  final case class Bitmap(diffuse: AssetName, lighting: LightingModel, shaderId: Option[ShaderId], fillType: FillType)
+      extends Material derives CanEqual {
 
     def withDiffuse(newDiffuse: AssetName): Bitmap =
       this.copy(diffuse = newDiffuse)
@@ -31,15 +32,40 @@ object Material {
     def withShaderId(newShaderId: ShaderId): Bitmap =
       this.copy(shaderId = Option(newShaderId))
 
+    def withFillType(newFillType: FillType): Bitmap =
+      this.copy(fillType = newFillType)
+    def normal: Bitmap =
+      withFillType(FillType.Normal)
+    def stretch: Bitmap =
+      withFillType(FillType.Stretch)
+    def tile: Bitmap =
+      withFillType(FillType.Tile)
+
     def toImageEffects: Material.ImageEffects =
       Material.ImageEffects(diffuse, lighting, shaderId)
 
-    def toShaderData: ShaderData =
+    def toShaderData: ShaderData = {
+
+      val imageFillType: Double =
+        fillType match {
+          case FillType.Normal  => 0.0
+          case FillType.Stretch => 1.0
+          case FillType.Tile    => 2.0
+        }
+
+      val uniformBlock: UniformBlock =
+        UniformBlock(
+          "IndigoBitmapData",
+          List(
+            Uniform("FILLTYPE") -> float(imageFillType)
+          )
+        )
+
       lighting match {
         case Unlit =>
           ShaderData(
             shaderId.getOrElse(StandardShaders.Bitmap.id),
-            Nil,
+            List(uniformBlock),
             Some(diffuse),
             None,
             None,
@@ -50,16 +76,27 @@ object Material {
           l.toShaderData(shaderId.getOrElse(StandardShaders.LitBitmap.id))
             .withChannel0(diffuse)
       }
+    }
   }
   object Bitmap {
     def apply(diffuse: AssetName): Bitmap =
-      Bitmap(diffuse, LightingModel.Unlit, None)
+      Bitmap(diffuse, LightingModel.Unlit, None, FillType.Normal)
 
     def apply(diffuse: AssetName, lighting: LightingModel): Bitmap =
-      Bitmap(diffuse, lighting, None)
+      Bitmap(diffuse, lighting, None, FillType.Normal)
   }
 
-  final case class ImageEffects(diffuse: AssetName, alpha: Double, tint: RGBA, overlay: Fill, saturation: Double, lighting: LightingModel, shaderId: Option[ShaderId]) extends Material derives CanEqual {
+  final case class ImageEffects(
+      diffuse: AssetName,
+      alpha: Double,
+      tint: RGBA,
+      overlay: Fill,
+      saturation: Double,
+      lighting: LightingModel,
+      shaderId: Option[ShaderId],
+      fillType: FillType
+  ) extends Material
+      derives CanEqual {
 
     def withDiffuse(newDiffuse: AssetName): ImageEffects =
       this.copy(diffuse = newDiffuse)
@@ -86,8 +123,17 @@ object Material {
     def withShaderId(newShaderId: ShaderId): ImageEffects =
       this.copy(shaderId = Option(newShaderId))
 
+    def withFillType(newFillType: FillType): ImageEffects =
+      this.copy(fillType = newFillType)
+    def normal: ImageEffects =
+      withFillType(FillType.Normal)
+    def stretch: ImageEffects =
+      withFillType(FillType.Stretch)
+    def tile: ImageEffects =
+      withFillType(FillType.Tile)
+
     def toBitmap: Material.Bitmap =
-      Material.Bitmap(diffuse, lighting, shaderId)
+      Material.Bitmap(diffuse, lighting, shaderId, fillType)
 
     def toShaderData: ShaderData = {
       val gradientUniforms: List[(Uniform, ShaderPrimitive)] =
@@ -102,14 +148,24 @@ object Material {
 
           case Fill.LinearGradient(fromPoint, fromColor, toPoint, toColor) =>
             List(
-              Uniform("GRADIENT_FROM_TO")    -> vec4(fromPoint.x.toDouble, fromPoint.y.toDouble, toPoint.x.toDouble, toPoint.y.toDouble),
+              Uniform("GRADIENT_FROM_TO") -> vec4(
+                fromPoint.x.toDouble,
+                fromPoint.y.toDouble,
+                toPoint.x.toDouble,
+                toPoint.y.toDouble
+              ),
               Uniform("GRADIENT_FROM_COLOR") -> vec4(fromColor.r, fromColor.g, fromColor.b, fromColor.a),
               Uniform("GRADIENT_TO_COLOR")   -> vec4(toColor.r, toColor.g, toColor.b, toColor.a)
             )
 
           case Fill.RadialGradient(fromPoint, fromColor, toPoint, toColor) =>
             List(
-              Uniform("GRADIENT_FROM_TO")    -> vec4(fromPoint.x.toDouble, fromPoint.y.toDouble, toPoint.x.toDouble, toPoint.y.toDouble),
+              Uniform("GRADIENT_FROM_TO") -> vec4(
+                fromPoint.x.toDouble,
+                fromPoint.y.toDouble,
+                toPoint.x.toDouble,
+                toPoint.y.toDouble
+              ),
               Uniform("GRADIENT_FROM_COLOR") -> vec4(fromColor.r, fromColor.g, fromColor.b, fromColor.a),
               Uniform("GRADIENT_TO_COLOR")   -> vec4(toColor.r, toColor.g, toColor.b, toColor.a)
             )
@@ -122,12 +178,19 @@ object Material {
           case _: Fill.RadialGradient => 2.0
         }
 
+      val imageFillType: Double =
+        fillType match {
+          case FillType.Normal  => 0.0
+          case FillType.Stretch => 1.0
+          case FillType.Tile    => 2.0
+        }
+
       val effectsUniformBlock: UniformBlock =
         UniformBlock(
           "IndigoImageEffectsData",
           List(
-            Uniform("ALPHA_SATURATION_OVERLAYTYPE") -> vec3(alpha, saturation, overlayType),
-            Uniform("TINT")                         -> vec4(tint.r, tint.g, tint.b, tint.a)
+            Uniform("ALPHA_SATURATION_OVERLAYTYPE_FILLTYPE") -> vec4(alpha, saturation, overlayType, imageFillType),
+            Uniform("TINT")                                  -> vec4(tint.r, tint.g, tint.b, tint.a)
           ) ++ gradientUniforms
         )
 
@@ -151,16 +214,19 @@ object Material {
   }
   object ImageEffects {
     def apply(diffuse: AssetName): ImageEffects =
-      ImageEffects(diffuse, 1.0, RGBA.None, Fill.Color.default, 1.0, LightingModel.Unlit, None)
+      ImageEffects(diffuse, 1.0, RGBA.None, Fill.Color.default, 1.0, LightingModel.Unlit, None, FillType.Normal)
 
     def apply(diffuse: AssetName, alpha: Double): ImageEffects =
-      ImageEffects(diffuse, alpha, RGBA.None, Fill.Color.default, 1.0, LightingModel.Unlit, None)
+      ImageEffects(diffuse, alpha, RGBA.None, Fill.Color.default, 1.0, LightingModel.Unlit, None, FillType.Normal)
 
     def apply(diffuse: AssetName, lighting: LightingModel): ImageEffects =
-      ImageEffects(diffuse, 1.0, RGBA.None, Fill.Color.default, 1.0, lighting, None)
+      ImageEffects(diffuse, 1.0, RGBA.None, Fill.Color.default, 1.0, lighting, None, FillType.Normal)
 
     def apply(diffuse: AssetName, lighting: LightingModel, shaderId: Option[ShaderId]): ImageEffects =
-      ImageEffects(diffuse, 1.0, RGBA.None, Fill.Color.default, 1.0, lighting, shaderId)
+      ImageEffects(diffuse, 1.0, RGBA.None, Fill.Color.default, 1.0, lighting, shaderId, FillType.Normal)
   }
 
 }
+
+enum FillType derives CanEqual:
+  case Normal, Stretch, Tile
