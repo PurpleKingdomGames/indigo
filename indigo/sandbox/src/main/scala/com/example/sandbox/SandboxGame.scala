@@ -28,6 +28,8 @@ import com.example.sandbox.scenes.StretchToFit
 import com.example.sandbox.scenes.UiScene
 import indigoextras.geometry.Polygon
 import indigoextras.geometry.Vertex
+import com.example.sandbox.scenes.AnimatedGraphicScene
+import com.example.sandbox.scenes.AnimatedGraphic
 
 @JSExportTopLevel("IndigoGame")
 object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, SandboxGameModel, SandboxViewModel] {
@@ -38,7 +40,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
   private val viewportHeight: Int     = 128 * magnificationLevel
 
   def initialScene(bootData: SandboxBootData): Option[SceneName] =
-    Some(UiScene.name)
+    Some(AnimatedGraphicScene.name)
 
   def scenes(bootData: SandboxBootData): NonEmptyList[Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]] =
     NonEmptyList(
@@ -51,7 +53,8 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
       BoundsScene,
       CameraScene,
       TextureTileScene,
-      UiScene
+      UiScene,
+      AnimatedGraphicScene
     )
 
   val eventFilters: EventFilters = EventFilters.Permissive
@@ -75,8 +78,9 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
           magnification = magnificationLevel
         ),
         SandboxBootData(flags.getOrElse("key", "No entry for 'key'."), gameViewport)
-      ).withAssets(SandboxAssets.assets ++ Shaders.assets ++ TilingTexture.assets ++ StretchToFit.assets)
-        .withFonts(Fonts.fontInfo)
+      ).withAssets(
+        SandboxAssets.assets ++ Shaders.assets ++ TilingTexture.assets ++ StretchToFit.assets ++ AnimatedGraphic.assets
+      ).withFonts(Fonts.fontInfo)
         .withSubSystems(
           FPSCounter(
             Point(5, 165),
@@ -90,7 +94,8 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
           Shaders.sea,
           LegacyEffects.entityShader,
           TilingTexture.tilingShader,
-          StretchToFit.stretchShader
+          StretchToFit.stretchShader,
+          AnimatedGraphic.shader
         )
         .addShaders(Refraction.shaders)
     )
@@ -119,7 +124,8 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
                 .withDepth(Depth(3))
                 .withRef(16, 16)      // Initial offset, so when talk about his position it's the center of the sprite
                 .moveTo(screenCenter) // Also place him in the middle of the screen initially
-                .withMaterial(SandboxAssets.dudeMaterial)
+                .withMaterial(SandboxAssets.dudeMaterial),
+              spriteAndAnimations.animations
             ),
             screenCenter
           )
@@ -221,7 +227,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
     Outcome(SceneUpdateFragment(Layer(BindingKey("fps counter")).withDepth(Depth(200))))
 }
 
-final case class Dude(aseprite: Aseprite, sprite: Sprite[Material.ImageEffects])
+final case class Dude(aseprite: Aseprite, sprite: Sprite[Material.ImageEffects], animations: Animation)
 final case class SandboxBootData(message: String, gameViewport: GameViewport)
 final case class SandboxStartupData(dude: Dude, viewportCenter: Point)
 final case class SandboxViewModel(
