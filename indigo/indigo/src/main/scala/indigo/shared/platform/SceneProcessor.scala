@@ -102,7 +102,8 @@ final class SceneProcessor(
             blending.entity,
             blending.layer,
             shaderData.shaderId,
-            SceneProcessor.mergeShaderToUniformData(shaderData)
+            SceneProcessor.mergeShaderToUniformData(shaderData),
+            l.camera
           )
         }
         .sortBy(_.depth.toInt)

@@ -17,6 +17,7 @@ import indigo.shared.events.ViewportResize
 import indigo.shared.config.GameViewport
 import indigo.shared.shader.RawShaderCode
 import indigo.shared.time.Seconds
+import indigo.shared.scenegraph.Camera
 
 import scala.scalajs.js.typedarray.Float32Array
 import org.scalajs.dom.html
@@ -97,8 +98,11 @@ final class RendererWebGL1(
     val gameProjection = orthographicProjectionMatrix.mat.toJSArray
 
     sceneData.layers.foreach { layer =>
+      val maybeCamera: Option[Camera] =
+        layer.camera.orElse(sceneData.camera)
+
       val projection =
-        (layer.magnification, sceneData.camera) match {
+        (layer.magnification, maybeCamera) match {
           case (None, None) =>
             gameProjection
 

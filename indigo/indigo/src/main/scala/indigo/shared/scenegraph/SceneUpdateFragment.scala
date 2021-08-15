@@ -85,9 +85,10 @@ final case class SceneUpdateFragment(
 
   def withCamera(newCamera: Camera): SceneUpdateFragment =
     this.copy(camera = Option(newCamera))
-
   def modifyCamera(modifier: Camera => Camera): SceneUpdateFragment =
     this.copy(camera = Option(modifier(camera.getOrElse(Camera.default))))
+  def noCamera: SceneUpdateFragment =
+    this.copy(camera = None)
 }
 object SceneUpdateFragment {
 
