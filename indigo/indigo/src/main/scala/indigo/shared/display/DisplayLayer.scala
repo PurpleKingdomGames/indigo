@@ -5,6 +5,7 @@ import indigo.shared.scenegraph.Blend
 import indigo.shared.shader.ShaderId
 import indigo.shared.datatypes.RGBA
 import indigo.shared.datatypes.Depth
+import indigo.shared.scenegraph.Camera
 
 final case class DisplayLayer(
     entities: ListBuffer[DisplayEntity],
@@ -15,5 +16,6 @@ final case class DisplayLayer(
     entityBlend: Blend,
     layerBlend: Blend,
     shaderId: ShaderId,
-    shaderUniformData: List[DisplayObjectUniformData]
+    shaderUniformData: List[DisplayObjectUniformData],
+    camera: Option[Camera]
 ) derives CanEqual

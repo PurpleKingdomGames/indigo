@@ -36,6 +36,7 @@ import indigo.shared.scenegraph.Blend
 import indigo.shared.scenegraph.BlendFactor
 import indigo.shared.shader.StandardShaders
 import indigo.shared.QuickCache
+import indigo.shared.scenegraph.Camera
 
 import indigo.platform.assets.DynamicText
 
@@ -251,8 +252,11 @@ final class RendererWebGL2(
       def makeCacheName(m: Int, w: Int, h: Int, cx: Int, cy: Int, cz: Double): String =
         s"${m.toString}_${w.toString()}x${h.toString()}-${cx.toString},${cy.toString}_${cz.toString}"
 
+      val maybeCamera: Option[Camera] =
+        layer.camera.orElse(sceneData.camera)
+
       val projection =
-        (layer.magnification, sceneData.camera) match {
+        (layer.magnification, maybeCamera) match {
           case (None, None) =>
             defaultLayerProjectionMatrix
 

@@ -14,16 +14,16 @@ import indigo.shared.materials.BlendMaterial
   *
   * @param layers
   *   The layers game elements are placed on.
-  * @param ambientLight
-  *   The scene's ambient light levels.
   * @param lights
   *   Dynamic lights.
   * @param audio
   *   Background audio.
-  * @param screenEffects
-  *   Effects to be applied at screen level.
+  * @param blendMaterial
+  *   Optional blend material that describes how to render the scene to the screen.
   * @param cloneBlanks
   *   A list of elements that will be referenced by clones in the main layers.
+  * @param camera
+  *   Scene level camera enabling pan and zoom.
   */
 final case class SceneUpdateFragment(
     layers: List[Layer],
@@ -85,9 +85,10 @@ final case class SceneUpdateFragment(
 
   def withCamera(newCamera: Camera): SceneUpdateFragment =
     this.copy(camera = Option(newCamera))
-
   def modifyCamera(modifier: Camera => Camera): SceneUpdateFragment =
     this.copy(camera = Option(modifier(camera.getOrElse(Camera.default))))
+  def noCamera: SceneUpdateFragment =
+    this.copy(camera = None)
 }
 object SceneUpdateFragment {
 
