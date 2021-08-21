@@ -4,9 +4,7 @@ import indigo._
 import indigo.json.Json
 
 import indigoextras.subsystems.FPSCounter
-import indigoextras.ui.InputField
-import indigoextras.ui.InputFieldAssets
-import indigoextras.ui.HitArea
+import indigoextras.ui._
 import indigo.scenes._
 
 import scala.scalajs.js.annotation._
@@ -36,7 +34,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
   private val viewportHeight: Int     = 128 * magnificationLevel
 
   def initialScene(bootData: SandboxBootData): Option[SceneName] =
-    Some(TextureTileScene.name)
+    Some(UiScene.name)
 
   def scenes(bootData: SandboxBootData): NonEmptyList[Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]] =
     NonEmptyList(
@@ -142,6 +140,13 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
           .withCrop(188, 78, 14, 23)
       )
 
+    val buttonAssets: ButtonAssets =
+      ButtonAssets(
+        up = Graphic(0, 0, 16, 16, 2, Material.Bitmap(AssetName("dots"))).withCrop(0, 0, 16, 16),
+        over = Graphic(0, 0, 16, 16, 2, Material.Bitmap(AssetName("dots"))).withCrop(16, 0, 16, 16),
+        down = Graphic(0, 0, 16, 16, 2, Material.Bitmap(AssetName("dots"))).withCrop(16, 16, 16, 16)
+      )
+
     Outcome(
       SandboxViewModel(
         Point.zero,
@@ -151,6 +156,17 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
         HitArea(Polygon.Closed(UiScene.points.map(Vertex.fromPoint)))
           .moveTo(175, 10)
           .withUpActions(Log("Up!"))
+          .withClickActions(Log("Click!"))
+          .withDownActions(Log("Down!"))
+          .withHoverOverActions(Log("Over!"))
+          .withHoverOutActions(Log("Out!")),
+        Button(
+          buttonAssets = buttonAssets,
+          bounds = Rectangle(10, 10, 16, 16),
+          depth = Depth(2)
+        )
+          .withUpActions(Log("Up!"))
+          .withClickActions(Log("Click!"))
           .withDownActions(Log("Down!"))
           .withHoverOverActions(Log("Over!"))
           .withHoverOutActions(Log("Out!"))
@@ -225,11 +241,13 @@ final case class SandboxViewModel(
     single: InputField,
     multi: InputField,
     useLightingLayer: Boolean,
-    hitArea: HitArea
+    hitArea: HitArea,
+    button: Button
 ):
   def update(mouse: Mouse): Outcome[SandboxViewModel] =
-    hitArea.update(mouse).map { ha =>
-      this.copy(hitArea = ha)
-    }
+    for {
+      bn <- button.update(mouse)
+      ha <- hitArea.update(mouse)
+    } yield this.copy(hitArea = ha, button = bn)
 
 final case class Log(message: String) extends GlobalEvent

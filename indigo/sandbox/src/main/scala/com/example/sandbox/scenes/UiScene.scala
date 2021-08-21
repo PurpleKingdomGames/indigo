@@ -73,7 +73,8 @@ object UiScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewMo
             Fill.LinearGradient(Point(0), RGBA.Magenta, Point(45), RGBA.Cyan),
             Stroke(4, RGBA.Black.withAlpha(0.75))
           )
-          .moveTo(175, 10)
+          .moveTo(175, 10),
+        viewModel.button.draw
       )
     )
 
