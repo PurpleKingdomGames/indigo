@@ -23,7 +23,7 @@ object UiScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewMo
     Lens.keepOriginal
 
   def viewModelLens: Lens[SandboxViewModel, SandboxViewModel] =
-    Lens.keepOriginal
+    Lens.keepLatest
 
   def name: SceneName =
     SceneName("ui")
