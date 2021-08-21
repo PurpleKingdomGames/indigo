@@ -22,34 +22,56 @@ final case class Button(
     onUp: () => List[GlobalEvent],
     onDown: () => List[GlobalEvent],
     onHoverOver: () => List[GlobalEvent],
-    onHoverOut: () => List[GlobalEvent]
+    onHoverOut: () => List[GlobalEvent],
+    onClick: () => List[GlobalEvent]
 ) derives CanEqual {
 
   def update(mouse: Mouse): Outcome[Button] = {
     val mouseInBounds = bounds.isPointWithin(mouse.position)
 
-    state match {
-      case ButtonState.Up if mouseInBounds && !mouse.mousePressed =>
-        Outcome(toOverState).addGlobalEvents(onHoverOver())
+    val upEvents: List[GlobalEvent] =
+      if mouseInBounds && mouse.mouseReleased then onUp()
+      else Nil
 
+    val clickEvents: List[GlobalEvent] =
+      if mouseInBounds && mouse.mouseClicked then onClick()
+      else Nil
+
+    val downEvents: List[GlobalEvent] =
+      if mouseInBounds && mouse.mousePressed then onDown()
+      else Nil
+
+    val mouseButtonEvents: List[GlobalEvent] =
+      downEvents ++ upEvents ++ clickEvents
+
+    state match
+      // Stay in Down state
+      case ButtonState.Down if mouseInBounds && mouse.leftMouseIsDown =>
+        Outcome(this).addGlobalEvents(mouseButtonEvents)
+
+      // Move to Down state
       case ButtonState.Up if mouseInBounds && mouse.mousePressed =>
-        Outcome(toDownState).addGlobalEvents(onHoverOver() ++ onDown())
-
-      case ButtonState.Over if !mouseInBounds =>
-        Outcome(toUpState).addGlobalEvents(onHoverOut())
+        Outcome(toDownState).addGlobalEvents(onHoverOver() ++ mouseButtonEvents)
 
       case ButtonState.Over if mouseInBounds && mouse.mousePressed =>
-        Outcome(toDownState).addGlobalEvents(onDown())
+        Outcome(toDownState).addGlobalEvents(mouseButtonEvents)
 
-      case ButtonState.Down if mouseInBounds && mouse.mouseReleased =>
-        Outcome(toOverState).addGlobalEvents(onUp())
+      // Out of Down state
+      case ButtonState.Down if mouseInBounds && !mouse.leftMouseIsDown =>
+        Outcome(toOverState).addGlobalEvents(onHoverOver() ++ mouseButtonEvents)
 
-      case ButtonState.Down if !mouseInBounds && mouse.mouseReleased =>
-        Outcome(toUpState)
+      case ButtonState.Down if !mouseInBounds && !mouse.leftMouseIsDown =>
+        Outcome(toUpState).addGlobalEvents(onHoverOut() ++ mouseButtonEvents)
+
+      //
+      case ButtonState.Up if mouseInBounds =>
+        Outcome(toOverState).addGlobalEvents(onHoverOver() ++ mouseButtonEvents)
+
+      case ButtonState.Over if !mouseInBounds =>
+        Outcome(toUpState).addGlobalEvents(onHoverOut() ++ mouseButtonEvents)
 
       case _ =>
-        Outcome(this)
-    }
+        Outcome(this).addGlobalEvents(mouseButtonEvents)
   }
 
   private def applyPositionAndDepth(sceneNode: SceneNode, pt: Point, d: Depth): SceneNode =
@@ -95,6 +117,11 @@ final case class Button(
   def withHoverOutActions(actions: => List[GlobalEvent]): Button =
     this.copy(onHoverOut = () => actions)
 
+  def withClickActions(actions: GlobalEvent*): Button =
+    withClickActions(actions.toList)
+  def withClickActions(actions: => List[GlobalEvent]): Button =
+    this.copy(onClick = () => actions)
+
   def toUpState: Button =
     this.copy(state = ButtonState.Up)
 
@@ -116,7 +143,8 @@ object Button {
       onUp = () => Nil,
       onDown = () => Nil,
       onHoverOver = () => Nil,
-      onHoverOut = () => Nil
+      onHoverOut = () => Nil,
+      onClick = () => Nil
     )
 
 }
