@@ -14,34 +14,37 @@ final case class HitArea(
     onUp: () => List[GlobalEvent],
     onDown: () => List[GlobalEvent],
     onHoverOver: () => List[GlobalEvent],
-    onHoverOut: () => List[GlobalEvent]
+    onHoverOut: () => List[GlobalEvent],
+    onClick: () => List[GlobalEvent]
 ) derives CanEqual {
 
   def update(mouse: Mouse): Outcome[HitArea] = {
     val mouseInBounds = area.contains(Vertex.fromPoint(mouse.position))
 
-    state match {
-      case ButtonState.Up if mouseInBounds && !mouse.mousePressed =>
-        Outcome(toOverState).addGlobalEvents(onHoverOver())
+    val upEvents: List[GlobalEvent] =
+      if mouseInBounds && mouse.mouseReleased then onUp()
+      else Nil
 
-      case ButtonState.Up if mouseInBounds && mouse.mousePressed =>
-        Outcome(toDownState).addGlobalEvents(onHoverOver() ++ onDown())
+    val clickEvents: List[GlobalEvent] =
+      if mouseInBounds && mouse.mouseClicked then onClick()
+      else Nil
+
+    val downEvents: List[GlobalEvent] =
+      if mouseInBounds && mouse.mousePressed then onDown()
+      else Nil
+
+    val mouseButtonEvents: List[GlobalEvent] =
+      downEvents ++ upEvents ++ clickEvents
+
+    state match
+      case ButtonState.Up if mouseInBounds =>
+        Outcome(toOverState).addGlobalEvents(onHoverOver() ++ mouseButtonEvents)
 
       case ButtonState.Over if !mouseInBounds =>
-        Outcome(toUpState).addGlobalEvents(onHoverOut())
-
-      case ButtonState.Over if mouseInBounds && mouse.mousePressed =>
-        Outcome(toDownState).addGlobalEvents(onDown())
-
-      case ButtonState.Down if mouseInBounds && mouse.mouseReleased =>
-        Outcome(toOverState).addGlobalEvents(onUp())
-
-      case ButtonState.Down if !mouseInBounds && mouse.mouseReleased =>
-        Outcome(toUpState)
+        Outcome(toUpState).addGlobalEvents(onHoverOut() ++ mouseButtonEvents)
 
       case _ =>
-        Outcome(this)
-    }
+        Outcome(this).addGlobalEvents(mouseButtonEvents)
   }
 
   def withUpActions(actions: GlobalEvent*): HitArea =
@@ -64,14 +67,16 @@ final case class HitArea(
   def withHoverOutActions(actions: => List[GlobalEvent]): HitArea =
     this.copy(onHoverOut = () => actions)
 
+  def withClickActions(actions: GlobalEvent*): HitArea =
+    withClickActions(actions.toList)
+  def withClickActions(actions: => List[GlobalEvent]): HitArea =
+    this.copy(onClick = () => actions)
+
   def toUpState: HitArea =
     this.copy(state = ButtonState.Up)
 
   def toOverState: HitArea =
     this.copy(state = ButtonState.Over)
-
-  def toDownState: HitArea =
-    this.copy(state = ButtonState.Down)
 
   def moveTo(x: Int, y: Int): HitArea =
     moveTo(Point(x, y))
@@ -94,7 +99,8 @@ object HitArea:
       onUp = () => Nil,
       onDown = () => Nil,
       onHoverOver = () => Nil,
-      onHoverOut = () => Nil
+      onHoverOut = () => Nil,
+      onClick = () => Nil
     )
 
   def apply(area: Polygon.Closed): HitArea =
@@ -104,5 +110,6 @@ object HitArea:
       onUp = () => Nil,
       onDown = () => Nil,
       onHoverOver = () => Nil,
-      onHoverOut = () => Nil
+      onHoverOut = () => Nil,
+      onClick = () => Nil
     )
