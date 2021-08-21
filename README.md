@@ -36,3 +36,13 @@ There is also another script which is a bit faster since it doesn't build the ex
 ```bash
 bash localpublish.sh
 ```
+
+## Software requirements for running games
+
+The list above covers the software needed to build Indigo itself, but to run a game you may also need:
+
+- NPM and/or Yarn
+- NodeJS
+- Electron
+- An http server that will serve static from a directory (suggestions: `http-server` via npm, or Python's `SimpleHTTPServer`)
+- A frontend packaging tool such as Parcel.js
