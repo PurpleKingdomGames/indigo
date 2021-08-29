@@ -50,7 +50,8 @@ final case class Layer(
       magnification = magnification.orElse(other.magnification),
       depth = depth.orElse(other.depth),
       visible = visible.orElse(other.visible),
-      blending = blending.orElse(other.blending)
+      blending = blending.orElse(other.blending),
+      camera = camera.orElse(other.camera)
     )
   def combine(other: Layer): Layer =
     this |+| other
