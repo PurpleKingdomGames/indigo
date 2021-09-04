@@ -129,20 +129,21 @@ class ButtonTests extends munit.FunSuite {
 
     val actual = button.toDownState.update(mouse)
 
-    assert(actual.unsafeGlobalEvents.length == 1)
-    assert(actual.unsafeGlobalEvents.contains(FakeEvent("mouse up")))
+    assert(clue(actual.unsafeGlobalEvents.length) == clue(2))
+    assert(clue(actual.unsafeGlobalEvents.contains(FakeEvent("mouse over"))))
+    assert(clue(actual.unsafeGlobalEvents.contains(FakeEvent("mouse up"))))
   }
 
   test("If the button is down, and the mouse moves out, the button stays down until release.") {
     val actual = for {
       buttonPressed <- button.update(new Mouse(List(MouseEvent.MouseDown(20, 20)), Point(20, 20), false))
-      mouseOut      <- buttonPressed.update(new Mouse(Nil, Point(200, 200), false))
+      mouseOut      <- buttonPressed.update(new Mouse(Nil, Point(200, 200), true))
       mouseReleased <- mouseOut.update(new Mouse(List(MouseEvent.MouseUp(200, 200)), Point(200, 200), false))
     } yield (buttonPressed.state, mouseOut.state, mouseReleased.state)
 
-    assert(actual.unsafeGet._1.isDown)
-    assert(actual.unsafeGet._2.isDown)
-    assert(actual.unsafeGet._3.isUp)
+    assert(clue(actual.unsafeGet._1.isDown))
+    assert(clue(actual.unsafeGet._2.isDown))
+    assert(clue(actual.unsafeGet._3.isUp))
   }
 
   test(
@@ -155,10 +156,10 @@ class ButtonTests extends munit.FunSuite {
       mouseReleased <- mouseOut.update(new Mouse(List(MouseEvent.MouseUp(200, 200)), Point(200, 200), false))
     } yield (buttonPressed.state, mouseOut.state, mouseReleased.state)
 
-    assert(actual.unsafeGlobalEvents.length == 2)
-    assert(actual.unsafeGlobalEvents.contains(FakeEvent("mouse over")))
-    assert(actual.unsafeGlobalEvents.contains(FakeEvent("mouse down")))
-    assert(actual.unsafeGlobalEvents == List(FakeEvent("mouse over"), FakeEvent("mouse down")))
+    assert(clue(actual.unsafeGlobalEvents.length) == clue(3))
+    assert(clue(actual.unsafeGlobalEvents.contains(FakeEvent("mouse over"))))
+    assert(clue(actual.unsafeGlobalEvents.contains(FakeEvent("mouse down"))))
+    assert(clue(actual.unsafeGlobalEvents.contains(FakeEvent("mouse out"))))
   }
 
 }
