@@ -224,8 +224,6 @@ final class RendererWebGL2(
     resize(cNc.canvas, cNc.magnification)
 
     val frameData = Array[Float](runningTime.toFloat, 0.0f, lastWidth.toFloat, lastHeight.toFloat)
-
-    WebGLHelper.attachUBOData(gl2, orthographicProjectionMatrixNoMag, projectionUBOBuffer)
     WebGLHelper.attachUBOData(gl2, frameData, frameDataUBOBuffer)
 
     @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
@@ -233,6 +231,27 @@ final class RendererWebGL2(
 
     sceneData.layers.foreach { layer =>
       WebGLHelper.attachUBOData(gl2, layer.lightsData, lightDataUBOBuffer)
+
+      val layerProjection =
+        layer.camera.orElse(sceneData.camera) match
+          case None =>
+            orthographicProjectionMatrixNoMag
+
+          case Some(c) =>
+            CameraHelper
+              .calculateCameraMatrix(
+                lastWidth.toDouble,
+                lastHeight.toDouble,
+                1.0d, // Layers aren't magnified
+                c.position.x.toDouble,
+                c.position.y.toDouble,
+                c.zoom.toDouble,
+                false // layers aren't flipped
+              )
+              .mat
+              .map(_.toFloat)
+
+      WebGLHelper.attachUBOData(gl2, layerProjection, projectionUBOBuffer)
 
       // Set the entity blend mode
       if (currentBlend != layer.entityBlend) {
@@ -252,15 +271,12 @@ final class RendererWebGL2(
       def makeCacheName(m: Int, w: Int, h: Int, cx: Int, cy: Int, cz: Double): String =
         s"${m.toString}_${w.toString()}x${h.toString()}-${cx.toString},${cy.toString}_${cz.toString}"
 
-      val maybeCamera: Option[Camera] =
-        layer.camera.orElse(sceneData.camera)
-
       val projection =
-        (layer.magnification, maybeCamera) match {
-          case (None, None) =>
+        layer.magnification match
+          case None =>
             defaultLayerProjectionMatrix
 
-          case (Some(m), None) =>
+          case Some(m) =>
             QuickCache(makeCacheName(m, lastWidth, lastHeight, 0, 0, 1.0d)) {
               CameraHelper
                 .calculateCameraMatrix(
@@ -275,35 +291,6 @@ final class RendererWebGL2(
                 .mat
                 .map(_.toFloat)
             }
-
-          case (None, Some(c)) =>
-            CameraHelper
-              .calculateCameraMatrix(
-                lastWidth.toDouble,
-                lastHeight.toDouble,
-                cNc.magnification.toDouble,
-                c.position.x.toDouble,
-                c.position.y.toDouble,
-                c.zoom.toDouble,
-                true
-              )
-              .mat
-              .map(_.toFloat)
-
-          case (Some(m), Some(c)) =>
-            CameraHelper
-              .calculateCameraMatrix(
-                lastWidth.toDouble,
-                lastHeight.toDouble,
-                m.toDouble,
-                c.position.x.toDouble,
-                c.position.y.toDouble,
-                c.zoom.toDouble,
-                true
-              )
-              .mat
-              .map(_.toFloat)
-        }
 
       // Clear the blend mode
       if (currentBlend != Blend.Normal) {
