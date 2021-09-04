@@ -34,7 +34,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
   private val viewportHeight: Int     = 128 * magnificationLevel
 
   def initialScene(bootData: SandboxBootData): Option[SceneName] =
-    Some(UiScene.name)
+    Some(CameraScene.name)
 
   def scenes(bootData: SandboxBootData): NonEmptyList[Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]] =
     NonEmptyList(
@@ -230,7 +230,13 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
       model: SandboxGameModel,
       viewModel: SandboxViewModel
   ): Outcome[SceneUpdateFragment] =
-    Outcome(SceneUpdateFragment(Layer(BindingKey("fps counter")).withDepth(Depth(200))))
+    Outcome(
+      SceneUpdateFragment(
+        Layer(BindingKey("fps counter"))
+          .withDepth(Depth(200))
+          .withCamera(Camera.default)
+      )
+    )
 }
 
 final case class Dude(aseprite: Aseprite, sprite: Sprite[Material.ImageEffects])

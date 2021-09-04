@@ -42,7 +42,7 @@ object CameraScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
 
   def zoom: Signal[Zoom] =
     Signal.SmoothPulse.map { d =>
-      Zoom(d * 2.0d)
+      Zoom(0.8 + (d * 0.2))
     }
 
   def orbit: Signal[Point] =
@@ -62,7 +62,8 @@ object CameraScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
             Rectangle(Point.zero, (context.startUpData.viewportCenter * 4).toSize),
             1,
             SandboxAssets.foliageMaterial
-          )
+          ),
+          Graphic(32, 32, Material.Bitmap(SandboxAssets.dots)).moveTo(-8, -8)
         ).withMagnification(1),
         Layer(
           Graphic(32, 32, Material.Bitmap(SandboxAssets.dots)).moveTo(context.startUpData.viewportCenter - Point(16))
