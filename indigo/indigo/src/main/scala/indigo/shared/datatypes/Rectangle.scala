@@ -50,6 +50,9 @@ final case class Rectangle(position: Point, size: Size) derives CanEqual:
   def expandToInclude(other: Rectangle): Rectangle =
     Rectangle.expandToInclude(this, other)
 
+  def contract(amount: Int): Rectangle =
+    Rectangle.contract(this, amount)
+
   def encompasses(other: Rectangle): Boolean =
     Rectangle.encompassing(this, other)
 
@@ -114,7 +117,7 @@ object Rectangle:
       height = if rectangle.height >= 0 then rectangle.height + (amount * 2) else rectangle.height - (amount * 2)
     )
 
-  def expandToInclude(a: Rectangle, b: Rectangle): Rectangle = {
+  def expandToInclude(a: Rectangle, b: Rectangle): Rectangle =
     val newX: Int = if (a.left < b.left) a.left else b.left
     val newY: Int = if (a.top < b.top) a.top else b.top
 
@@ -124,7 +127,14 @@ object Rectangle:
       width = (if (a.right > b.right) a.right else b.right) - newX,
       height = (if (a.bottom > b.bottom) a.bottom else b.bottom) - newY
     )
-  }
+
+  def contract(rectangle: Rectangle, amount: Int): Rectangle =
+    Rectangle(
+      x = if rectangle.width >= 0 then rectangle.x + amount else rectangle.x - amount,
+      y = if rectangle.height >= 0 then rectangle.y + amount else rectangle.y - amount,
+      width = if rectangle.width >= 0 then rectangle.width - (amount * 2) else rectangle.width + (amount * 2),
+      height = if rectangle.height >= 0 then rectangle.height - (amount * 2) else rectangle.height + (amount * 2)
+    )
 
   def encompassing(a: Rectangle, b: Rectangle): Boolean =
     b.x >= a.x && b.y >= a.y && (b.width + (b.x - a.x)) <= a.width && (b.height + (b.y - a.y)) <= a.height

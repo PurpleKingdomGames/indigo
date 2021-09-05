@@ -58,6 +58,9 @@ final case class BoundingBox(position: Vertex, size: Vertex) derives CanEqual:
   def expandToInclude(other: BoundingBox): BoundingBox =
     BoundingBox.expandToInclude(this, other)
 
+  def contract(amount: Double): BoundingBox =
+    BoundingBox.contract(this, amount)
+
   def encompasses(other: BoundingBox): Boolean =
     BoundingBox.encompassing(this, other)
 
@@ -165,7 +168,7 @@ object BoundingBox:
       height = if boundingBox.height >= 0 then boundingBox.height + (amount * 2) else boundingBox.height - (amount * 2)
     )
 
-  def expandToInclude(a: BoundingBox, b: BoundingBox): BoundingBox = {
+  def expandToInclude(a: BoundingBox, b: BoundingBox): BoundingBox =
     val newX: Double = if (a.left < b.left) a.left else b.left
     val newY: Double = if (a.top < b.top) a.top else b.top
 
@@ -175,7 +178,14 @@ object BoundingBox:
       width = (if (a.right > b.right) a.right else b.right) - newX,
       height = (if (a.bottom > b.bottom) a.bottom else b.bottom) - newY
     )
-  }
+
+  def contract(boundingBox: BoundingBox, amount: Double): BoundingBox =
+    BoundingBox(
+      x = if boundingBox.width >= 0 then boundingBox.x + amount else boundingBox.x - amount,
+      y = if boundingBox.height >= 0 then boundingBox.y + amount else boundingBox.y - amount,
+      width = if boundingBox.width >= 0 then boundingBox.width - (amount * 2) else boundingBox.width + (amount * 2),
+      height = if boundingBox.height >= 0 then boundingBox.height - (amount * 2) else boundingBox.height + (amount * 2)
+    )
 
   def encompassing(a: BoundingBox, b: BoundingBox): Boolean =
     b.x >= a.x && b.y >= a.y && (b.width + (b.x - a.x)) <= a.width && (b.height + (b.y - a.y)) <= a.height

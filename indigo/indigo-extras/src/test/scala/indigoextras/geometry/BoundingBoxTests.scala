@@ -57,7 +57,9 @@ class BoundingBoxTests extends munit.FunSuite {
 
   }
 
-  test("Expand to include two bounding boxes.should return the original bounding box when it already encompasses the second one") {
+  test(
+    "Expand to include two bounding boxes.should return the original bounding box when it already encompasses the second one"
+  ) {
     val a = BoundingBox(10, 20, 100, 200)
     val b = BoundingBox(20, 20, 50, 50)
 
@@ -82,6 +84,32 @@ class BoundingBoxTests extends munit.FunSuite {
     val b = BoundingBox(100, 100, 100, 100)
 
     assertEquals(BoundingBox.expandToInclude(a, b) == BoundingBox(30, 30, 170, 170), true)
+  }
+
+  test("expand a rectangle with negative start position") {
+    val a = BoundingBox(-10, -10, 20, -20)
+
+    assertEquals(a.expand(10), BoundingBox(-20, 0, 40, -40))
+  }
+
+  test("contract by a fixed amount") {
+    val actual =
+      BoundingBox(10, 20, 90, 80).contract(10)
+
+    val expected =
+      BoundingBox(20, 30, 70, 60)
+
+    assertEquals(actual, expected)
+  }
+
+  test("contract by a fixed amount (negative)") {
+    val actual =
+      BoundingBox(-10, -20, 90, -80).contract(10)
+
+    val expected =
+      BoundingBox(0, -30, 70, -60)
+
+    assertEquals(actual, expected)
   }
 
   test("intersecting vertices.should be able to detect if the point is inside the BoundingBox") {
@@ -242,21 +270,21 @@ class BoundingBoxTests extends munit.FunSuite {
   }
 
   test("should be able to find edges (positive)") {
-     val a = BoundingBox(10, 20, 30, 40)
+    val a = BoundingBox(10, 20, 30, 40)
 
-     assert(a.left == 10)
-     assert(a.right == 40)
-     assert(a.top == 20)
-     assert(a.bottom == 60)
+    assert(a.left == 10)
+    assert(a.right == 40)
+    assert(a.top == 20)
+    assert(a.bottom == 60)
   }
 
   test("should be able to find edges (negative)") {
-     val a = BoundingBox(10, 20, -30, -40)
+    val a = BoundingBox(10, 20, -30, -40)
 
-     assert(a.left == -20)
-     assert(a.right == 10)
-     assert(a.top == -20)
-     assert(a.bottom == 20)
+    assert(a.left == -20)
+    assert(a.right == 10)
+    assert(a.top == -20)
+    assert(a.bottom == 20)
   }
 
 }
