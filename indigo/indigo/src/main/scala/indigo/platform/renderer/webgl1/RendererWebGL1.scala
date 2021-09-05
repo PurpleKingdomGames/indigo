@@ -10,6 +10,7 @@ import indigo.platform.events.GlobalEventStream
 
 import indigo.shared.platform.RendererConfig
 import indigo.shared.datatypes.mutable.CheapMatrix4
+import indigo.shared.datatypes.Radians
 import indigo.shared.platform.ProcessedSceneData
 import indigo.shared.display.DisplayEntity
 import indigo.shared.display.DisplayObject
@@ -115,6 +116,8 @@ final class RendererWebGL1(
                 0,
                 0,
                 1,
+                false,
+                Radians.zero,
                 false
               )
               .mat
@@ -129,7 +132,9 @@ final class RendererWebGL1(
                 c.position.x.toDouble,
                 c.position.y.toDouble,
                 c.zoom.toDouble,
-                false
+                false,
+                c.rotation,
+                c.isLookAt
               )
               .mat
               .toJSArray
@@ -143,7 +148,9 @@ final class RendererWebGL1(
                 c.position.x.toDouble,
                 c.position.y.toDouble,
                 c.zoom.toDouble,
-                false
+                false,
+                c.rotation,
+                c.isLookAt
               )
               .mat
               .toJSArray

@@ -1,6 +1,7 @@
 package indigo.platform.renderer.webgl2
 
 import indigo.shared.datatypes.RGBA
+import indigo.shared.datatypes.Radians
 import org.scalajs.dom.raw.WebGLBuffer
 import org.scalajs.dom.raw.WebGLFramebuffer
 import org.scalajs.dom.raw.WebGLRenderingContext._
@@ -246,7 +247,9 @@ final class RendererWebGL2(
                 c.position.x.toDouble,
                 c.position.y.toDouble,
                 c.zoom.toDouble,
-                false // layers aren't flipped
+                false, // layers aren't flipped
+                c.rotation,
+                c.isLookAt
               )
               .mat
               .map(_.toFloat)
@@ -286,7 +289,9 @@ final class RendererWebGL2(
                   0,
                   0,
                   1,
-                  true
+                  true,
+                  Radians.zero,
+                  false
                 )
                 .mat
                 .map(_.toFloat)
