@@ -68,7 +68,7 @@ object Camera:
     def toFixed: Fixed =
       Fixed(position, zoom, rotation)
 
-  def default: Camera =
+  def default: Fixed =
     Fixed(Point.zero, Zoom.x1, Radians.zero)
 
   given CanEqual[Fixed, Fixed]                   = CanEqual.derived
