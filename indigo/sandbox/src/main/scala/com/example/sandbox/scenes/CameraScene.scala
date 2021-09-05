@@ -63,15 +63,24 @@ object CameraScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
             1,
             SandboxAssets.foliageMaterial
           ),
-          Graphic(32, 32, Material.Bitmap(SandboxAssets.dots)).moveTo(-8, -8)
+          Graphic(32, 32, Material.Bitmap(SandboxAssets.dots)).moveTo(-16, -16)
         ).withMagnification(1),
         Layer(
-          Graphic(32, 32, Material.Bitmap(SandboxAssets.dots)).moveTo(context.startUpData.viewportCenter - Point(16))
+          Graphic(32, 32, Material.ImageEffects(SandboxAssets.dots).withAlpha(0.4))
+            .moveTo(context.startUpData.viewportCenter - Point(16))
         ).withCamera(Camera.default) // Override scene camera, so this layer doesn't move.
-      ).modifyCamera(
-        _.moveTo(orbit.at(context.running * 0.3))
-          .withZoom(zoom.at(context.running * 0.35))
-      )
+      ).modifyCamera {
+        case c: Camera.Fixed =>
+          c.toLookAt
+            .lookAt(context.mouse.position)
+            .rotateBy(Radians.fromSeconds(context.running * 0.2))
+            .withZoom(Zoom(0.75))
+
+        case c =>
+          c
+        // _.moveTo(orbit.at(context.running * 0.3))
+        // .withZoom(zoom.at(context.running * 0.35))
+      }
     )
   }
 
