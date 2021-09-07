@@ -4,17 +4,15 @@ import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.Vector2
 
-
-/**
-  * Represents the standard allowable transformations of a clone.
-  *
-  * @param position
-  * @param rotation
-  * @param scale
-  * @param flipHorizontal
-  * @param flipVertical
+/** Represents the standard allowable transformations of a clone.
   */
-final case class CloneTransformData(position: Point, rotation: Radians, scale: Vector2, flipHorizontal: Boolean, flipVertical: Boolean) derives CanEqual {
+final case class CloneTransformData(
+    position: Point,
+    rotation: Radians,
+    scale: Vector2,
+    flipHorizontal: Boolean,
+    flipVertical: Boolean
+) derives CanEqual {
 
   def |+|(other: CloneTransformData): CloneTransformData =
     CloneTransformData(

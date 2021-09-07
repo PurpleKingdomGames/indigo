@@ -1,6 +1,9 @@
 package indigo.shared.temporal
 
-/** A Signal Function maps Signal[A] -> Signal[B]
+/** A Signal Function is a combinator that maps `Signal[A] -> Signal[B]`. One way to thing of signal functions is to
+  * think of each instance as one section of a transformation pipeline. When you attach the pipeline to a `Signal` you
+  * can ask the pipeline for a transformed value over time. For example, you could have a signal that produces an
+  * endlessly looping angle, and a signal function that turns that angle into perhaps and orbit or a color.
   */
 opaque type SignalFunction[A, B] = Signal[A] => Signal[B]
 

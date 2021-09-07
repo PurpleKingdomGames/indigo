@@ -5,8 +5,12 @@ import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.Vector2
 import indigo.shared.datatypes.RGBA
 
+/** Parent type for all lights
+  */
 sealed trait Light derives CanEqual
 
+/** Point lights emit light evenly in all directions from a point in space.
+  */
 final case class PointLight(
     position: Point,
     color: RGBA,
@@ -45,6 +49,9 @@ object PointLight {
 
 }
 
+/** Spot lights emit light like a lamp, they are essentially a point light, where the light is only allow to escape in a
+  * particular anglular range.
+  */
 final case class SpotLight(
     position: Point,
     color: RGBA,
@@ -103,6 +110,9 @@ object SpotLight {
 
 }
 
+/** Direction lights apply light to a scene evenly from a particular direction, as if from a point a very long way away,
+  * e.g. the sun.
+  */
 final case class DirectionLight(
     color: RGBA,
     specular: RGBA,
@@ -131,6 +141,9 @@ object DirectionLight {
     DirectionLight(color, RGBA.White, rotation)
 }
 
+/** Ambient light isn't emitted from anywhere in particular, it is the base amount of illumination. It's important for a
+  * dark cave to light enough for your player to appreciate just how dark it really is.
+  */
 final case class AmbientLight(color: RGBA) extends Light {
 
   def withColor(newColor: RGBA): AmbientLight =
@@ -144,18 +157,14 @@ object AmbientLight {
 
 }
 
-/**
-  * Represents different lighting falloff models, also known
-  * as attenuation, i.e. how much a light power decays over
+/** Represents different lighting falloff models, also known as attenuation, i.e. how much a light power decays over
   * distance.
   *
-  * Quadratic is the most physically accurate, but possibly least
-  * useful for 2D games! All other models are unrealistic, but
-  * possibly easier to work with.
+  * Quadratic is the most physically accurate, but possibly least useful for 2D games! All other models are unrealistic,
+  * but possibly easier to work with.
   *
-  * Note that "intensity" will feel different in different lighting
-  * models. Try smooth with intensity 1 or 2, Linear 5, or Quadratic
-  * 500 and compare.
+  * Note that "intensity" will feel different in different lighting models. Try smooth with intensity 1 or 2, Linear 5,
+  * or Quadratic 500 and compare.
   */
 sealed trait Falloff {
   def withRange(newNear: Int, newFar: Int): Falloff
@@ -173,8 +182,7 @@ object Falloff {
   val linear: Linear                   = Linear.default
   val quadratic: Quadratic             = Quadratic.default
 
-  /**
-    * Light does not decay.
+  /** Light does not decay.
     */
   final case class None(near: Int, far: Option[Int]) extends Falloff {
     def withRange(newNear: Int, newFar: Int): None =
@@ -200,11 +208,10 @@ object Falloff {
       None(near, Option(far))
   }
 
-  /**
-    * A big smooth circle of light that falls to zero at the "far" distance.
+  /** A big smooth circle of light that falls to zero at the "far" distance.
     *
     * @param near
-    * @param far
+    *   @param far
     */
   final case class SmoothLinear(near: Int, far: Int) extends Falloff {
     def withRange(newNear: Int, newFar: Int): SmoothLinear =
@@ -224,11 +231,10 @@ object Falloff {
       SmoothLinear(0, far)
   }
 
-  /**
-    * A smooth circle of light that decays pleasingly to zero at the "far" distance.
+  /** A smooth circle of light that decays pleasingly to zero at the "far" distance.
     *
     * @param near
-    * @param far
+    *   @param far
     */
   final case class SmoothQuadratic(near: Int, far: Int) extends Falloff {
     def withRange(newNear: Int, newFar: Int): SmoothQuadratic =
@@ -248,12 +254,11 @@ object Falloff {
       SmoothQuadratic(0, far)
   }
 
-  /**
-    * Light decays linearly forever. If a "far" distance is specified then the light will be
-    * artificially attenuated to zero by the time it reaches the limit.
+  /** Light decays linearly forever. If a "far" distance is specified then the light will be artificially attenuated to
+    * zero by the time it reaches the limit.
     *
     * @param near
-    * @param far
+    *   @param far
     */
   final case class Linear(near: Int, far: Option[Int]) extends Falloff {
     def withRange(newNear: Int, newFar: Int): Linear =
@@ -279,12 +284,11 @@ object Falloff {
       Linear(near, Option(far))
   }
 
-  /**
-    * Light decays quadratically (inverse-square) forever. If a "far" distance is specified
-    * then the light will be artificially attenuated to zero by the time it reaches the limit.
+  /** Light decays quadratically (inverse-square) forever. If a "far" distance is specified then the light will be
+    * artificially attenuated to zero by the time it reaches the limit.
     *
     * @param near
-    * @param far
+    *   @param far
     */
   final case class Quadratic(near: Int, far: Option[Int]) extends Falloff {
     def withRange(newNear: Int, newFar: Int): Quadratic =

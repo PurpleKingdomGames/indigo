@@ -7,8 +7,7 @@ import scala.util.Random
 import indigo.shared.time.Millis
 import indigo.shared.time.Seconds
 
-/** All dice rolls are from value 1 to N inclusive.
-  * Like a dice.
+/** All dice rolls are from value 1 to N inclusive. Like a dice.
   */
 trait Dice {
   val seed: Long

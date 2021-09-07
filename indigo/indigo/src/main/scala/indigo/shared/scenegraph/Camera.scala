@@ -3,6 +3,8 @@ package indigo.shared.scenegraph
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Radians
 
+/** Parent type of camera instances. Cameras are used to look around your games graphics / levels / scenes.
+  */
 sealed trait Camera:
   def position: Point
   def zoom: Zoom
@@ -15,6 +17,10 @@ sealed trait Camera:
 
 object Camera:
 
+  /** Indigo's default camera is fixed. It starts at position 0,0 and shows you everything down and right from there
+    * until it runs out of screen. Fixed cameras are useful for replicating the behaviour of Indigos normal windowing
+    * while controlling the position, zoom and rotation.
+    */
   final case class Fixed(position: Point, zoom: Zoom, rotation: Radians) extends Camera:
     val isLookAt: Boolean = false
 
@@ -53,6 +59,9 @@ object Camera:
     def apply(position: Point, zoom: Zoom): Fixed =
       Fixed(position, zoom, Radians.zero)
 
+  /** LookAt cameras center the screen on whatever position they are looking at. Useful for following a players
+    * character, for example.
+    */
   final case class LookAt(target: Point, zoom: Zoom, rotation: Radians) extends Camera:
     val isLookAt: Boolean = true
     val position: Point   = target
@@ -89,6 +98,9 @@ object Camera:
   given CanEqual[LookAt, LookAt]                 = CanEqual.derived
   given CanEqual[Option[Camera], Option[Camera]] = CanEqual.derived
 
+/** Zoom your camera in and out! Behaves like physical camera's zoom, so x2 means "make everything twice as big". Unlike
+  * a real camera, you can zoom in or our infinitely!
+  */
 opaque type Zoom = Double
 object Zoom:
   def apply(amount: Double): Zoom = amount

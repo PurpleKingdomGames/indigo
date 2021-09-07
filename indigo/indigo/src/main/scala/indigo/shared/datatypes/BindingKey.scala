@@ -12,5 +12,5 @@ object BindingKey:
   def generate(dice: Dice): BindingKey =
     fromDice(dice)
 
-  given CanEqual[BindingKey, BindingKey] = CanEqual.derived
+  given CanEqual[BindingKey, BindingKey]                 = CanEqual.derived
   given CanEqual[Option[BindingKey], Option[BindingKey]] = CanEqual.derived

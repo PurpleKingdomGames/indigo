@@ -13,6 +13,10 @@ import indigo.shared.datatypes.FontFamily
 import indigo.shared.datatypes.Pixels
 import indigo.shared.datatypes.RGBA
 
+/** Used to draw text on the screen quickly based on a font. Much quicker and eaiser to use that `Text`, however suffers
+  * from all the problems of browser rendered fonts, most notably, you cannot have pixel perfect fonts (fine for
+  * mock-ups of HD UI layers perhaps).
+  */
 final case class TextBox(
     text: String,
     style: TextStyle,
@@ -24,7 +28,8 @@ final case class TextBox(
     ref: Point,
     flip: Flip
 ) extends RenderNode
-    with SpatialModifiers[TextBox] derives CanEqual:
+    with SpatialModifiers[TextBox]
+    derives CanEqual:
 
   def bounds: Rectangle =
     BoundaryLocator.findBounds(this, position, size, ref)

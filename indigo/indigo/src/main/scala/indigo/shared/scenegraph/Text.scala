@@ -6,7 +6,8 @@ import indigo.shared.materials.ShaderData
 import indigo.shared.events.GlobalEvent
 import indigo.shared.BoundaryLocator
 
-/** Used to draw text onto the screen.
+/** Used to draw text onto the screen based on font sprite sheets (images / textures) and a character mapping instance
+  * called `FontInfo`. `Text` instances are a bit of work to set up, but give super crisp pixel perfect results.
   */
 final case class Text[M <: Material](
     text: String,
@@ -22,7 +23,8 @@ final case class Text[M <: Material](
     flip: Flip
 ) extends DependentNode
     with EventHandler
-    with SpatialModifiers[Text[M]] derives CanEqual {
+    with SpatialModifiers[Text[M]]
+    derives CanEqual {
 
   def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] =
     Option(locator.textBounds(this)).map { rect =>

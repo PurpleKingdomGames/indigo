@@ -2,8 +2,7 @@ package indigo.shared
 
 import scala.collection.mutable.ArrayBuffer
 
-/**
-  * A very, very simple logger that logs to the Browsers console with a few standard headers and the log message.
+/** A very, very simple logger that logs to the Browsers console with a few standard headers and the log message.
   */
 object IndigoLogger {
 

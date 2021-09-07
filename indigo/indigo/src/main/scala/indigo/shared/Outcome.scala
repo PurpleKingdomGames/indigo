@@ -6,6 +6,9 @@ import scala.util.control.NonFatal
 
 import scala.annotation.tailrec
 
+/** An `Outcome` represents the result of some part of a frame update. It contains a value or an error (exception), and
+  * optionally a list of events to be processed on the next frame.
+  */
 sealed trait Outcome[+A] derives CanEqual {
 
   def isResult: Boolean
@@ -131,7 +134,7 @@ object Outcome {
       }
 
   }
-  
+
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   final case class Error(e: Throwable, crashReporter: PartialFunction[Throwable, String]) extends Outcome[Nothing] {
 
@@ -157,7 +160,9 @@ object Outcome {
       this.copy(crashReporter = reporter)
 
     def reportCrash: String =
-      crashReporter.orElse[Throwable, String]({ case (e: Throwable) => e.getMessage + "\n" + e.getStackTrace.mkString("\n") })(e)
+      crashReporter.orElse[Throwable, String] { case (e: Throwable) =>
+        e.getMessage + "\n" + e.getStackTrace.mkString("\n")
+      }(e)
 
     def addGlobalEvents(newEvents: GlobalEvent*): Error                              = this
     def addGlobalEvents(newEvents: => List[GlobalEvent]): Error                      = this

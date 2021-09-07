@@ -4,6 +4,11 @@ import indigo.shared.datatypes.Matrix4
 import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.Vector3
 
+/** `CheapMatrix4` is intended for use internally within Indigo, but remains available for general use. You are advised
+  * to use `Matrix4` generally. `CheapMatrix4` carries over much of the functionality of `Matrix4` but is based on
+  * mutable data for performance reasons, and takes some shortcuts during multiplication to reduce work based on how the
+  * engine itself behaves.
+  */
 final case class CheapMatrix4(mat: Array[Double]) derives CanEqual {
 
   lazy val x: Double = mat(12)
@@ -210,8 +215,7 @@ object CheapMatrix4 {
       1
     )
 
-  /**
-    * SHOULD ONLY BE USED BY TESTS
+  /** SHOULD ONLY BE USED BY TESTS
     */
   def apply(
       row0: (Double, Double, Double, Double),

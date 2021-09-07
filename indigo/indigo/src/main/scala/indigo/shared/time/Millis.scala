@@ -2,6 +2,8 @@ package indigo.shared.time
 
 import annotation.targetName
 
+/** Represents a unit of time in milliseconds
+ */
 opaque type Millis = Long
 object Millis:
   def apply(millis: Long): Millis = millis

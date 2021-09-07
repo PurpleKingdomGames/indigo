@@ -1,5 +1,10 @@
 package indigo.shared.time
 
+/** An instance of `GameTime` is present on every frame, and the values it holds do not change during that frame. This
+  * allows for "synchronous" programming, where it is assumed that everything happens at the exact same time during the
+  * current frame. The most commonly used fields (e.g. for animation) are the running time of the game and the time delta since the
+  * last frame.
+  */
 final case class GameTime(running: Seconds, delta: Seconds, targetFPS: GameTime.FPS) derives CanEqual:
   lazy val frameDuration: Millis = Millis((1000d / targetFPS.asDouble).toLong)
   lazy val multiplier: Double    = delta.toDouble / frameDuration.toDouble

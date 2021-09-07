@@ -8,6 +8,8 @@ import indigo.shared.subsystems.SubSystem
 import indigo.shared.FrameContext
 import indigo.shared.events.EventFilters
 
+/** Describes the functions that a valid scene must implement.
+ */
 trait Scene[StartUpData, GameModel, ViewModel] derives CanEqual {
   type SceneModel
   type SceneViewModel
@@ -65,6 +67,6 @@ object Scene {
 
 opaque type SceneName = String
 object SceneName:
-  def apply(sceneName: String): SceneName = sceneName
-  given CanEqual[SceneName, SceneName] = CanEqual.derived
+  def apply(sceneName: String): SceneName              = sceneName
+  given CanEqual[SceneName, SceneName]                 = CanEqual.derived
   given CanEqual[Option[SceneName], Option[SceneName]] = CanEqual.derived

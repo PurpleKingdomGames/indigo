@@ -2,6 +2,8 @@ package indigo.shared.time
 
 import annotation.targetName
 
+/** Represents a unit of time in seconds
+ */
 opaque type Seconds = Double
 object Seconds:
 

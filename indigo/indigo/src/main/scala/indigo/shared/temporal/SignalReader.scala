@@ -2,14 +2,11 @@ package indigo.shared.temporal
 
 import indigo.shared.time.Seconds
 
-/** SignalReader is basically a wrapper around signal that
-  * provides an execution environment. As such it generally
-  * delegates to Signal.
-  *
-  * Unlike a normal Reader, SignalReader is not a Kliesli,
-  * since Signals do not compose.
+/** SignalReader is a wrapper around signal that provides an execution environment. As such it generally delegates to
+  * Signal.
   */
 opaque type SignalReader[R, A] = R => Signal[A]
+
 object SignalReader {
 
   def fromSignal[R, A](signal: Signal[A]): SignalReader[R, A] =

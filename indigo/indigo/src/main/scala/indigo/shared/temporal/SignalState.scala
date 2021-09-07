@@ -2,6 +2,8 @@ package indigo.shared.temporal
 
 import indigo.shared.time.Seconds
 
+/** `SignalState` is a type of `Signal` that carries transformable state values throughout it's life.
+  */
 opaque type SignalState[S, A] = S => Signal[(S, A)]
 
 object SignalState {

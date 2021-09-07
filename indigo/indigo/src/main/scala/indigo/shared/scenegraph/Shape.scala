@@ -21,6 +21,10 @@ import indigo.shared.materials.LightingModel.Lit
 import indigo.shared.shader.ShaderId
 import indigo.shared.BoundaryLocator
 
+/** Parent type for all Shapes, which are visible elements draw mathematically that require no textures. Shapes are
+  * quite versitile and support different fills and stroke effects, even lighting. Due to the way strokes around shapes
+  * are drawn, the corners are always rounded.
+  */
 sealed trait Shape extends RenderNode with Cloneable with SpatialModifiers[Shape] derives CanEqual {
   def moveTo(pt: Point): Shape
   def moveTo(x: Int, y: Int): Shape
@@ -53,6 +57,8 @@ sealed trait Shape extends RenderNode with Cloneable with SpatialModifiers[Shape
 
 object Shape {
 
+  /** Draws a coloured box that occupies a rectangle on the screen.
+    */
   final case class Box(
       dimensions: Rectangle,
       fill: Fill,
@@ -176,6 +182,8 @@ object Shape {
 
   }
 
+  /** Draws a coloured circle from it's center outwards.
+    */
   final case class Circle(
       center: Point,
       radius: Int,
@@ -304,6 +312,8 @@ object Shape {
 
   }
 
+  /** Draws a straight line.
+    */
   final case class Line(
       start: Point,
       end: Point,
@@ -429,6 +439,8 @@ object Shape {
 
   }
 
+  /** Draws an arbitrary polygon with up to 16 vertices.
+    */
   final case class Polygon(
       vertices: List[Point],
       fill: Fill,

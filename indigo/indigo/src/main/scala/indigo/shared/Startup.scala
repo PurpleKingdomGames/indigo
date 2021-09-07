@@ -4,6 +4,10 @@ import indigo.shared.animation.Animation
 import indigo.shared.datatypes.FontInfo
 import indigo.shared.shader.Shader
 
+/** The Startup data type describes either a successful or failed start up sequence. It can hold a value, as well as new
+  * shaders, animations and fonts to be added to Indigo's registers. A new Startup instance is created each time the
+  * setup function is called, at least once, but also on dynamic asset load.
+  */
 sealed trait Startup[+SuccessType] extends Product with Serializable derives CanEqual {
   def additionalAnimations: Set[Animation] =
     this match {
@@ -48,7 +52,8 @@ object Startup {
       animations: Set[Animation],
       fonts: Set[FontInfo],
       shaders: Set[Shader]
-  ) extends Startup[SuccessType] derives CanEqual {
+  ) extends Startup[SuccessType]
+      derives CanEqual {
     def addAnimations(value: Animation*): Success[SuccessType] =
       addAnimations(value.toList)
     def addAnimations(value: List[Animation]): Success[SuccessType] =

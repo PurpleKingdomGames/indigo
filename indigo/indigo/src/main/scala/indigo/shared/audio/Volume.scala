@@ -2,6 +2,8 @@ package indigo.shared.audio
 
 import annotation.targetName
 
+/** Audio volume amount.
+ */
 opaque type Volume = Double
 object Volume:
   def apply(volume: Double): Volume =

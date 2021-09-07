@@ -4,20 +4,21 @@ import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Size
 
-/**
-  * Respresents the initial size of the game's viewport.
+/** Respresents the initial size of the game's viewport.
   *
-  * @param width Width in pixels
-  * @param height Height in pixels
+  * @param width
+  *   Width in pixels
+  * @param height
+  *   Height in pixels
   */
 final case class GameViewport(width: Int, height: Int) derives CanEqual {
   val horizontalMiddle: Int = width / 2
   val verticalMiddle: Int   = height / 2
   val center: Point         = Point(horizontalMiddle, verticalMiddle)
-  val size: Size = Size(width, height)
+  val size: Size            = Size(width, height)
 
   def asRectangle: Rectangle = Rectangle(Point.zero, size)
-  def bounds: Rectangle = asRectangle
+  def bounds: Rectangle      = asRectangle
 
   def giveDimensions(magnification: Int): Rectangle =
     Rectangle(0, 0, width / magnification, height / magnification)

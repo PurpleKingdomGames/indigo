@@ -13,15 +13,6 @@ import indigo.shared.BoundaryLocator
 
 /** Graphics are used to draw images on the screen, in a cheap efficient but expressive way. Graphics party trick is
   * it's ability to crop images.
-  *
-  * @param position
-  *   @param rotation
-  * @param scale
-  *   @param depth
-  * @param ref
-  *   @param flip
-  * @param crop
-  *   @param material
   */
 final case class Graphic[M <: Material](
     material: M,
@@ -34,7 +25,8 @@ final case class Graphic[M <: Material](
     flip: Flip
 ) extends RenderNode
     with Cloneable
-    with SpatialModifiers[Graphic[M]] derives CanEqual {
+    with SpatialModifiers[Graphic[M]]
+    derives CanEqual {
 
   def bounds: Rectangle =
     BoundaryLocator.findBounds(this, position, crop.size, ref)

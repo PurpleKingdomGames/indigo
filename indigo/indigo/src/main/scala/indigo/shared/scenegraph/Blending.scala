@@ -4,6 +4,9 @@ import indigo.shared.materials.BlendMaterial
 import indigo.shared.datatypes.RGBA
 import scala.annotation.nowarn
 
+/** Blending instances tell Indigo how to blend the entities onto a layer, and then how to blend the layer onto the
+  * layers below it.
+  */
 final case class Blending(entity: Blend, layer: Blend, blendMaterial: BlendMaterial, clearColor: Option[RGBA])
     derives CanEqual {
 
@@ -36,7 +39,6 @@ object Blending {
     Blending(Blend.LightingEntity, Blend.Normal, BlendMaterial.Lighting(ambientLightColor), Option(RGBA.Black))
 
 }
-
 
 sealed trait Blend {
   def op: String

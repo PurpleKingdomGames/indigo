@@ -7,6 +7,9 @@ import indigo.shared.constants.Key
 
 import indigo.shared.datatypes.Point
 
+/** Input mapping instances describe combinations of "live" inputs like key combinations or gamepad buttons, and map
+  * them to some user defined value.
+  */
 final case class InputMapping[A](oneOf: List[(Combo, A)]) {
 
   def add(combos: (Combo, A)*): InputMapping[A] =
@@ -122,22 +125,22 @@ object Combo {
 }
 
 enum GamepadInput derives CanEqual:
-  case DPAD_UP    extends GamepadInput
-  case DPAD_LEFT  extends GamepadInput
+  case DPAD_UP extends GamepadInput
+  case DPAD_LEFT extends GamepadInput
   case DPAD_RIGHT extends GamepadInput
-  case DPAD_DOWN  extends GamepadInput
-  case Cross      extends GamepadInput
-  case Circle     extends GamepadInput
-  case Square     extends GamepadInput
-  case Triangle   extends GamepadInput
-  case L1         extends GamepadInput
-  case L2         extends GamepadInput
-  case R1         extends GamepadInput
-  case R2         extends GamepadInput
-  case Options    extends GamepadInput
-  case Share      extends GamepadInput
-  case PS         extends GamepadInput
-  case TouchPad   extends GamepadInput
+  case DPAD_DOWN extends GamepadInput
+  case Cross extends GamepadInput
+  case Circle extends GamepadInput
+  case Square extends GamepadInput
+  case Triangle extends GamepadInput
+  case L1 extends GamepadInput
+  case L2 extends GamepadInput
+  case R1 extends GamepadInput
+  case R2 extends GamepadInput
+  case Options extends GamepadInput
+  case Share extends GamepadInput
+  case PS extends GamepadInput
+  case TouchPad extends GamepadInput
   case LEFT_ANALOG(
       x: Double => Boolean,
       y: Double => Boolean,
@@ -149,11 +152,10 @@ enum GamepadInput derives CanEqual:
       pressed: Boolean
   ) extends GamepadInput
 
-
 enum MouseInput derives CanEqual:
-  case MouseDown                extends MouseInput
-  case MouseUp                  extends MouseInput
-  case MouseClick               extends MouseInput
+  case MouseDown extends MouseInput
+  case MouseUp extends MouseInput
+  case MouseClick extends MouseInput
   case MouseAt(position: Point) extends MouseInput
 
 object MouseInput:

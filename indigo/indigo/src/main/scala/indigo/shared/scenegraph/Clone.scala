@@ -3,10 +3,6 @@ package indigo.shared.scenegraph
 import indigo.shared.datatypes._
 
 /** A single cloned instance of a cloneblank
-  *
-  * @param id
-  *   @param depth
-  * @param transform
   */
 final case class Clone(id: CloneId, depth: Depth, transform: CloneTransformData)
     extends DependentNode
@@ -79,7 +75,8 @@ final case class CloneBatch(
     clones: List[CloneTransformData],
     staticBatchKey: Option[BindingKey]
 ) extends DependentNode
-    with BasicSpatialModifiers[CloneBatch] derives CanEqual {
+    with BasicSpatialModifiers[CloneBatch]
+    derives CanEqual {
   lazy val x: Int                  = transform.position.x
   lazy val y: Int                  = transform.position.y
   lazy val rotation: Radians       = transform.rotation

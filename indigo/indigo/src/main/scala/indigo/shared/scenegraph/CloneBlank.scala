@@ -1,9 +1,6 @@
 package indigo.shared.scenegraph
 
 /** Used as the blueprint for any clones that want to copy it.
-  *
-  * @param id
-  * @param cloneable
   */
 final case class CloneBlank(id: CloneId, cloneable: Cloneable) derives CanEqual {
   def withCloneId(newCloneId: CloneId): CloneBlank =

@@ -3,7 +3,11 @@ package indigo.shared.scenegraph
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.audio.Volume
 
-final case class SceneAudioSource(bindingKey: BindingKey, playbackPattern: PlaybackPattern, masterVolume: Volume) derives CanEqual {
+/** Represents a single audio source, how it is being played, and at what volume. You could implement a cross fade
+  * between two audio sources.
+  */
+final case class SceneAudioSource(bindingKey: BindingKey, playbackPattern: PlaybackPattern, masterVolume: Volume)
+    derives CanEqual {
   def |+|(other: SceneAudioSource): SceneAudioSource =
     SceneAudioSource.combine(this, other)
 }
