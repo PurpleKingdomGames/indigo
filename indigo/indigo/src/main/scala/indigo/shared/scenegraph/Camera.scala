@@ -46,6 +46,13 @@ object Camera:
     def toLookAt: LookAt =
       LookAt(position, zoom, rotation)
 
+  object Fixed:
+    def apply(position: Point): Fixed =
+      Fixed(position, Zoom.x1, Radians.zero)
+
+    def apply(position: Point, zoom: Zoom): Fixed =
+      Fixed(position, zoom, Radians.zero)
+
   final case class LookAt(target: Point, zoom: Zoom, rotation: Radians) extends Camera:
     val isLookAt: Boolean = true
     val position: Point   = target
@@ -67,6 +74,13 @@ object Camera:
 
     def toFixed: Fixed =
       Fixed(position, zoom, rotation)
+
+  object LookAt:
+    def apply(target: Point): LookAt =
+      LookAt(target, Zoom.x1, Radians.zero)
+
+    def apply(target: Point, zoom: Zoom): LookAt =
+      LookAt(target, zoom, Radians.zero)
 
   def default: Fixed =
     Fixed(Point.zero, Zoom.x1, Radians.zero)
