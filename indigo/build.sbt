@@ -5,7 +5,7 @@ ThisBuild / versionScheme := Some("early-semver")
 
 lazy val indigoVersion = IndigoVersion.getVersion
 
-val scala3Version = "3.0.1"
+val scala3Version = "3.0.2"
 
 lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
   version := indigoVersion,
