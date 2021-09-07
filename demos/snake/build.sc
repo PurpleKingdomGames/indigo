@@ -7,7 +7,7 @@ import mill.scalajslib._
 import mill.scalajslib.api._
 import coursier.maven.MavenRepository
 
-import $ivy.`io.indigoengine::mill-indigo:0.9.1`, millindigo._
+import $ivy.`io.indigoengine::mill-indigo:0.9.2-SNAPSHOT`, millindigo._
 
 object snake extends ScalaJSModule with MillIndigo {
   def scalaVersion   = "3.0.2"
@@ -35,7 +35,7 @@ object snake extends ScalaJSModule with MillIndigo {
     }
   }
 
-  val indigoVersion = "0.9.1"
+  val indigoVersion = "0.9.2-SNAPSHOT"
 
   def ivyDeps = Agg(
     ivy"io.indigoengine::indigo-json-circe::$indigoVersion",
