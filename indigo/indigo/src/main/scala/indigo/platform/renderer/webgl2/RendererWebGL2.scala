@@ -60,6 +60,7 @@ final class RendererWebGL2(
     gl.asInstanceOf[WebGL2RenderingContext]
 
   private val textureLocations: List[TextureLookupResult] =
+    gl.pixelStorei(UNPACK_PREMULTIPLY_ALPHA_WEBGL, 1);
     loadedTextureAssets.map { li =>
       new TextureLookupResult(li.name, WebGLHelper.organiseImage(gl, li.data))
     }
@@ -139,8 +140,6 @@ final class RendererWebGL2(
   private given CanEqual[(BlendFactor, BlendFactor), (BlendFactor, BlendFactor)] = CanEqual.derived
 
   def init(shaders: Set[RawShaderCode]): Unit = {
-
-    gl.pixelStorei(UNPACK_PREMULTIPLY_ALPHA_WEBGL, 1);
 
     shaders.foreach { shader =>
       if (!customShaders.contains(shader.id))

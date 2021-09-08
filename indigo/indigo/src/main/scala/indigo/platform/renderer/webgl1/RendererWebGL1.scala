@@ -57,6 +57,7 @@ final class RendererWebGL1(
   private val standardShaderProgram     = WebGLHelper.shaderProgramSetup(gl, "Pixel", indigo.shaders.WebGL1)
 
   private val textureLocations: List[TextureLookupResult] =
+    gl.pixelStorei(UNPACK_PREMULTIPLY_ALPHA_WEBGL, 1);
     loadedTextureAssets.map(li => TextureLookupResult(li.name, WebGLHelper.organiseImage(gl, li.data)))
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
