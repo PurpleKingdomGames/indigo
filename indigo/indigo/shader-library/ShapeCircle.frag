@@ -24,7 +24,7 @@ float sdfCalc(vec2 p, float r) {
 }
 
 vec4 calculateColor() {
-  return vec4(GRADIENT_FROM_COLOR.rgb * GRADIENT_FROM_COLOR.a, GRADIENT_FROM_COLOR.a);
+  return GRADIENT_FROM_COLOR;
 }
 
 vec4 calculateLinearGradient() {
@@ -37,7 +37,7 @@ vec4 calculateLinearGradient() {
 
   vec4 gradient = mix(GRADIENT_FROM_COLOR, GRADIENT_TO_COLOR, h);
 
-  return vec4(gradient.rgb * gradient.a, gradient.a);
+  return gradient;
 }
 
 vec4 calculateRadialGradient() {
@@ -52,7 +52,7 @@ vec4 calculateRadialGradient() {
 
   vec4 gradient = mix(GRADIENT_TO_COLOR, GRADIENT_FROM_COLOR, sdf);
 
-  return vec4(gradient.rgb * gradient.a, gradient.a);
+  return gradient;
 }
 
 void fragment() {
