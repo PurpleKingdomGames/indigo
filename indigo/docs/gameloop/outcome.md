@@ -18,15 +18,21 @@ This could be described in an Outcome as follows:
 
 ```scala mdoc
 import indigo._
+import indigo.scenes._
 
-Outcome(model.copy(totalScore = calculateFinalScore()))
-  .addGlobalEvents(JumpTo(GameOverScene.name))
+final case class Model(totalScore: Int)
+val model = Model(0)
+def calculateFinalScore(score: Int): Int = score + 10
+
+val outcome = 
+  Outcome(model.copy(totalScore = calculateFinalScore(model.totalScore)))
+    .addGlobalEvents(SceneEvent.JumpTo(SceneName("game over")))
 ```
 
 You can access the state or global events with:
 
 ```scala mdoc
-outcome.getOrElse(alternative)
+outcome.getOrElse(Model(0))
 outcome.globalEventsOrNil
 ```
 
@@ -48,7 +54,7 @@ Outcome(10).map(_ * 20)                    // Outcome(200)
 Outcome(10).ap(Outcome((i: Int) => i * 5)) // Outcome(50)
 Outcome(10).flatMap(i => Outcome(i * 20))  // Outcome(200)
 Outcome(10).merge(Outcome(20))(_ + _)      // Outcome(30)
-Outcome("a") |+| Outcome("b")              // Outcome(("a", "b"))
+Outcome("a") combine Outcome("b")          // Outcome(("a", "b"))
 ```
 
 As mentioned, `Outcome`'s map function is bias towards the state, but you can also modify the events with `mapGlobalEvents`.
@@ -66,9 +72,10 @@ List(Outcome(1), Outcome(2), Outcome(3)).sequence // Outcome(List(1, 2, 3))
 Sometimes, you need to reference the new state to decide if we should emit an event:
 
 ```scala mdoc
+final case class Counter(count: Int)
 
-val newState = Foo(count = 10)
-val events = if(newState.count > 5) List(PlaySound("tada", Volume.Max)) else Nil
+val newState = Counter(count = 10)
+val events = if(newState.count > 5) List(PlaySound(AssetName("tada"), Volume.Max)) else Nil
 
 Outcome(newState)
   .addGlobalEvents(events)
@@ -77,8 +84,8 @@ Outcome(newState)
 But this is boring and requires the creation of a couple of variables. The thing to observe is that this scenario is about creating events based on the _updated_ state rather than the original state. Instead, you can do this:
 
 ```scala mdoc
-Outcome(Foo(count = 10))
-  .createGlobalEvents(foo => if(foo.count > 5) List(PlaySound("tada", Volume.Max)) else Nil)
+Outcome(Counter(count = 10))
+  .createGlobalEvents(foo => if(foo.count > 5) List(PlaySound(AssetName("tada"), Volume.Max)) else Nil)
 ```
 
 Here, `foo` is the state held in the `Outcome`.
