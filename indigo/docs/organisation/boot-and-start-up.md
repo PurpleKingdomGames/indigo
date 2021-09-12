@@ -27,6 +27,8 @@ Sandbox games (that implement `IndigoSandbox`) have a different boot sequence th
 `IndigoGame`'s and `IndigoDemo`s have a boot method such as this one, where "`BootData`" is some user defined type:
 
 ```scala mdoc
+import indigo._
+
 def boot(flags: Map[String, String]): Outcome[BootResult[BootData]]
 ```
 
@@ -47,7 +49,7 @@ Well we use a flag, like this:
     val assetPath: String =
       flags.getOrElse("baseUrl", "")
 
-      //???
+    ???
   }
 ```
 
@@ -69,23 +71,15 @@ The main limitation on flags is that they are typed to `Map[String, String]`, wh
 
 #### BootResult[_]
 
-Here is the definition of the `BootResult` type, which is the return type of the boot function:
-
-```scala mdoc
-final class BootResult[A](
-    val gameConfig: GameConfig,     // Minimum requirement, however BootResult.default initialises with GameConfig.default
-    val bootData: A,                // A boot up payload. Defaults to `Unit`
-    val animations: Set[Animation], // A set of initial animations. Defaults to an empty `Set()`
-    val assets: Set[AssetType],     // A set of initial assets. Defaults to an empty `Set()`
-    val fonts: Set[FontInfo],       // A set of initial fonts. Defaults to an empty `Set()`
-    val subSystems: Set[SubSystem], // A set of initial subsystems. Defaults to an empty `Set()`
-    val shaders: Set[Shader]        // A complete set of user specified shaders your game can use. Defaults to an empty `Set()`
-)
-```
+In a simple game, all of your animations, fonts, subsystems, shaders, and assets can be declared during the boot stage. For more complex games, such as ones that have a pre-loader, you should only include the elements you need for the preloader scene here.
 
 > Note: You can add more animations, fonts, and assets at a later stage, but subsystems must be declared upfront or inside a `Scene` definition.
 
-In a simple game, all of your animations, fonts, subsystems, shaders, and assets can be declared during the boot stage. For more complex games, such as ones that have a pre-loader, you should only include the elements you need for the preloader scene here.
+Optionally the boot sequence can result in a value, particularly since the boot sequence has access to the initial flags. For example you might return:
+
+```scala mdoc
+final case class BootData(runFullScreen: Boolean)
+```
 
 ## Start up / Setup
 
@@ -100,7 +94,9 @@ If "boot" is for marshaling your foundation game settings (bootstrapping), then 
 The setup function signature looks like this:
 
 ```scala mdoc
-def setup(bootData: BootData, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[StartUpData]]
+final case class StartUpData(debugMode: Boolean) // an example custom start up data type
+
+def setup(bootData: BootData, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[StartUpData]] = ???
 ```
 
 > Important! The `StartUpData` type corresponds to one of the type parameters in `IndigoSandbox`, `IndigoDemo`, and `IndigoGame`.
@@ -116,11 +112,16 @@ If your setup function has succeeded:
 ```scala mdoc
 // This is a made up user defined type that represents some result of the Startup process
 final case class MyStartUpData(maxParticles: Int)
+case object MyGameEvent extends GlobalEvent
 
-Startup.Success(MyStartUpData(maxParticles = 256))
-  .addAnimations(lazyLoadedAnimations) // Optional: New animations you created during startup
-  .additionalFonts(lazyLoadedFonts) // Optional: Font data you created during start up
-  .startUpEvents(List(MyGameEvent)) // Optional: Any `GlobalEvent`s you would like to emit
+def animation: Animation = ???
+def fontInfo: FontInfo = ???
+
+val startup = 
+  Startup.Success(MyStartUpData(256))
+    .addAnimations(animation) // Optional: New animations you created during startup
+    .additionalFonts(fontInfo) // Optional: Font data you created during start up
+    .startUpEvents(MyGameEvent) // Optional: Any `GlobalEvent`s you would like to emit
 ```
 
 If you don't need say anything other than "success", you can just say `Startup.Success(())`.
