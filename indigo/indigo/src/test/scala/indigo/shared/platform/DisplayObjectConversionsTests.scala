@@ -380,4 +380,23 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
 
   }
 
+  test("ubo packing - raw array of floats") {
+
+    import indigo.shared.shader.ShaderPrimitive._
+
+    val uniforms =
+      List(
+        Uniform("TEST") -> rawArray(Array(0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f))
+      )
+
+    val expected: Array[Float] =
+      Array(0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f)
+
+    assertEquals(
+      DisplayObjectConversions.packUBO(uniforms).toList,
+      expected.toList
+    )
+
+  }
+
 }
