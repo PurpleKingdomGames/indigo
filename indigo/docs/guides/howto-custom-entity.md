@@ -41,6 +41,8 @@ These are handled by providing some spatial parameters that Indigo will interpre
 Here is the interface we have to satisfy for a hypothetical custom entity called `MyCustomEntity`:
 
 ```scala mdoc
+import indigo._
+
 final case class MyCustomEntity() extends EntityNode:
   def position: Point = ???
   def size: Size = ???

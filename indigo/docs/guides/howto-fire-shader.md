@@ -143,6 +143,11 @@ The advantage of using an external file is that you can use a nice editor with G
 You _MUST_ remember to register your shader, like this (or under `val shader: Set[Shader]` in an Indigo sandbox game):
 
 ```scala mdoc
+object Assets:
+  val fireProgram = AssetName("fire")
+  val assets: Set[AssetType] =
+    Set(AssetType.Text(fireProgram, AssetPath("assets/shader.frag")))
+
 BootResult
   .noData(GameConfig.default.withViewport(384, 384).withMagnification(2))
   .withShaders(Fire.shader(Assets.fireProgram))
@@ -154,6 +159,11 @@ BootResult
 Eventually we're going to need to tell our custom entity which shader to use (`Fire.shaderId`) and also supply values to the shader to change how it behaves. This is the final version, we're skipping to the end, but hopefully it should be fairly self explanatory:
 
 ```scala mdoc
+val offset = 0.0d // Used to make different instances flicker out of sync
+val center = RGB.White
+val inner = RGB.Yellow
+val outer = RGB.Red.mix(RGB.Yellow, 0.5)
+
 def toShaderData: ShaderData =
   ShaderData(
     Fire.shaderId,

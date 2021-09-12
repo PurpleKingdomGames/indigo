@@ -13,7 +13,9 @@ If you want to be able to test a single frame of a game, a whole frame, then you
 
 Referential transparency allows you to ask for the next frame of a game, and compare it to the expected frame definition, confident that they will always always be equivalent, provided your expected value is correct. Which means that if you have referentially transparent frames, then you can test them! Example in made up pseudo code:
 
-```scala mdoc
+```scala
+// pseudo code!
+
 val gameTime = GameTime.is(Seconds(123))
 
 val actual: (Model, View) =
@@ -42,6 +44,11 @@ The default interfaces you are presented with as part of Indigo's framework offe
 Beneath the APIs of the entry points is a _single function_ that looks a bit like this:
 
 ```scala mdoc
+import indigo._
+
+final case class Model(count: Int)
+final case class ViewModel(position: Point)
+
 def run(
       model: Model,
       viewModel: ViewModel,
@@ -50,7 +57,7 @@ def run(
       inputState: InputState,
       dice: Dice,
       boundaryLocator: BoundaryLocator
-  ): Outcome[(Model, ViewModel, SceneUpdateFragment)]
+  ): Outcome[(Model, ViewModel, SceneUpdateFragment)] = ???
 ```
 
 The point of this function is purity: What you get out, should be a result of what you put in and nothing else.
@@ -78,13 +85,13 @@ Walking through them one at a time:
 Some clarification, the return type of the function above is:
 
 ```scala mdoc
-Outcome[(Model, ViewModel, SceneUpdateFragment)]
+def outcome: Outcome[(Model, ViewModel, SceneUpdateFragment)] = ???
 ```
 
 But it's easier to think of this as:
 
-```scala mdoc
-(Model, ViewModel, SceneUpdateFragment, List[GlobalEvent])
+```scala mdoc:nest
+def outcome: (Model, ViewModel, SceneUpdateFragment, List[GlobalEvent]) = ???
 ```
 
 1. An updated model
