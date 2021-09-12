@@ -9,10 +9,10 @@ lazy val indigoVersion = IndigoVersion.getVersion
 val scala3Version = "3.0.2"
 
 lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
-  version := indigoVersion,
-  scalaVersion := scala3Version,
+  version            := indigoVersion,
+  scalaVersion       := scala3Version,
   crossScalaVersions := Seq(scala3Version),
-  organization := "io.indigoengine",
+  organization       := "io.indigoengine",
   libraryDependencies ++= Seq(
     "org.scalameta" %%% "munit" % "0.7.29" % Test
   ),
@@ -28,10 +28,10 @@ lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
 lazy val publishSettings = {
   import xerial.sbt.Sonatype._
   Seq(
-    publishTo := sonatypePublishToBundle.value,
-    publishMavenStyle := true,
-    sonatypeProfileName := "io.indigoengine",
-    licenses := Seq("MIT" -> url("https://opensource.org/licenses/MIT")),
+    publishTo              := sonatypePublishToBundle.value,
+    publishMavenStyle      := true,
+    sonatypeProfileName    := "io.indigoengine",
+    licenses               := Seq("MIT" -> url("https://opensource.org/licenses/MIT")),
     sonatypeProjectHosting := Some(GitHubHosting("PurpleKingdomGames", "indigo", "indigo@purplekingdomgames.com")),
     developers := List(
       Developer(
@@ -52,13 +52,13 @@ lazy val sandbox =
     .enablePlugins(SbtIndigo)
     .settings(commonSettings: _*)
     .settings(
-      name := "sandbox",
-      showCursor := true,
-      title := "Sandbox",
+      name                := "sandbox",
+      showCursor          := true,
+      title               := "Sandbox",
       gameAssetsDirectory := "assets"
     )
     .settings(
-      publish := {},
+      publish      := {},
       publishLocal := {}
     )
     .dependsOn(indigo)
@@ -71,15 +71,15 @@ lazy val perf =
     .enablePlugins(SbtIndigo)
     .settings(commonSettings: _*)
     .settings(
-      name := "indigo-perf",
-      showCursor := true,
-      title := "Perf",
+      name                := "indigo-perf",
+      showCursor          := true,
+      title               := "Perf",
       gameAssetsDirectory := "assets",
-      windowStartWidth := 800,
-      windowStartHeight := 600
+      windowStartWidth    := 800,
+      windowStartHeight   := 600
     )
     .settings(
-      publish := {},
+      publish      := {},
       publishLocal := {}
     )
     .dependsOn(indigo)
@@ -95,7 +95,7 @@ lazy val indigoExtras =
     .settings(publishSettings: _*)
     .dependsOn(indigo)
     .settings(
-      name := "indigo-extras",
+      name                                     := "indigo-extras",
       libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.15.3" % "test"
     )
     .settings(
@@ -171,8 +171,8 @@ lazy val indigoShaders =
   project
     .in(file("indigo-shaders"))
     .settings(
-      name := "indigo-shaders",
-      version := indigoVersion,
+      name         := "indigo-shaders",
+      version      := indigoVersion,
       scalaVersion := scala3Version,
       organization := "io.indigoengine",
       libraryDependencies ++= Seq(
@@ -182,9 +182,47 @@ lazy val indigoShaders =
       Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
     )
     .settings(
-      publish := {},
+      publish      := {},
       publishLocal := {}
     )
+
+lazy val jsdocs = project
+  .settings(
+    scalaVersion := scala3Version,
+    organization := "io.indigoengine"
+  )
+  .settings(
+    libraryDependencies += ("org.scala-js" %%% "scalajs-dom" % "1.1.0").cross(CrossVersion.for3Use2_13)
+  )
+  .settings(
+    publish      := {},
+    publishLocal := {}
+  )
+  .enablePlugins(ScalaJSPlugin)
+
+lazy val docs = project
+  .in(file("indigo-docs"))
+  .dependsOn(indigo)
+  .dependsOn(indigoExtras)
+  .dependsOn(indigoJsonCirce)
+  .enablePlugins(MdocPlugin)
+  .settings(
+    scalaVersion := scala3Version,
+    organization := "io.indigoengine"
+  )
+  .settings(
+    mdocVariables := Map(
+      "VERSION" -> "0.9.2"
+    ),
+    mdocExtraArguments := List("--no-link-hygiene")
+  )
+  .settings(
+    mdocJS := Some(jsdocs)
+  )
+  .settings(
+    publish      := {},
+    publishLocal := {}
+  )
 
 // Root
 lazy val indigoProject =
@@ -192,9 +230,9 @@ lazy val indigoProject =
     .enablePlugins(ScalaJSPlugin)
     .settings(commonSettings: _*)
     .settings(
-      code := { "code ." ! },
-      openshareddocs := { "open -a Firefox indigo-shared/.jvm/target/scala-3.0.0/api/indigo/index.html" ! },
-      openindigodocs := { "open -a Firefox indigo/.jvm/target/scala-3.0.0/api/indigo/index.html" ! },
+      code               := { "code ." ! },
+      openshareddocs     := { "open -a Firefox indigo-shared/.jvm/target/scala-3.0.0/api/indigo/index.html" ! },
+      openindigodocs     := { "open -a Firefox indigo/.jvm/target/scala-3.0.0/api/indigo/index.html" ! },
       openindigoextsdocs := { "open -a Firefox indigo-exts/.jvm/target/scala-3.0.0/api/indigoexts/index.html" ! }
     )
     .aggregate(
@@ -203,7 +241,8 @@ lazy val indigoProject =
       indigoJsonCirce,
       indigoShaders,
       sandbox,
-      perf
+      perf,
+      docs
     )
 
 lazy val code =
