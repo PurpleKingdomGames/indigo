@@ -29,7 +29,9 @@ Sandbox games (that implement `IndigoSandbox`) have a different boot sequence th
 ```scala mdoc
 import indigo._
 
-def boot(flags: Map[String, String]): Outcome[BootResult[BootData]]
+final case class BootData(myData: String)
+
+def boot(flags: Map[String, String]): Outcome[BootResult[BootData]] = ???
 ```
 
 #### Flags
@@ -44,13 +46,15 @@ Let's look at the [Snake game on our website as a simple example](https://indigo
 
 Well we use a flag, like this:
 
-```scala mdoc
-  def boot(flags: Map[String, String]): Outcome[BootResult[GameViewport]] = {
-    val assetPath: String =
-      flags.getOrElse("baseUrl", "")
+```scala mdoc:reset
+import indigo._
 
-    ???
-  }
+def boot(flags: Map[String, String]): Outcome[BootResult[GameViewport]] = {
+  val assetPath: String =
+    flags.getOrElse("baseUrl", "")
+
+  ???
+}
 ```
 
 As long as the games assets are always in the same folder name, we can now just pre-pend the provided `assetPath` to change the location of that folder.
@@ -117,11 +121,12 @@ case object MyGameEvent extends GlobalEvent
 def animation: Animation = ???
 def fontInfo: FontInfo = ???
 
-val startup = 
+def startup = 
   Startup.Success(MyStartUpData(256))
     .addAnimations(animation) // Optional: New animations you created during startup
     .additionalFonts(fontInfo) // Optional: Font data you created during start up
-    .startUpEvents(MyGameEvent) // Optional: Any `GlobalEvent`s you would like to emit
+
+Outcome(startup).addGlobalEvents(MyGameEvent) // Optional: Any `GlobalEvent`s you would like to emit
 ```
 
 If you don't need say anything other than "success", you can just say `Startup.Success(())`.
