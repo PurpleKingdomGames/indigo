@@ -7,19 +7,6 @@ title: SubSystems
 
 `SubSystem`s are a way of breaking parts of your game off into mini-games. They offer you a means of encapsulation for certain kinds of game system.
 
-Here is their interface:
-
-```scala mdoc
-trait SubSystem {
-  type EventType
-  type SubSystemModel
-  def eventFilter: GlobalEvent => Option[EventType]
-  def initialModel: Outcome[SubSystemModel]
-  def update(context: SubSystemFrameContext, model: SubSystemModel): EventType => Outcome[SubSystemModel]
-  def present(context: SubSystemFrameContext, model: SubSystemModel): Outcome[SceneUpdateFragment]
-}
-```
-
 Typically a subsystem is made from an object or class that extends this trait, or by using the `SubSystem.apply` constructor. SubSystem's can produce renderable output or just sit and process things in the background. Either way their only mechanism for interacting with the main game is through the event loop.
 
 As an example, consider this simple (and arguably unhelpful) subsystem that tracks a score. This one happens to be using a `case class` as a convenient way to supply the initial score, but this could have been done in other ways. The important part is that the constructor arguments are effectively immutable, because the `update` function returns an `Int`, not a `PointsTrackerExample`.
@@ -27,6 +14,8 @@ As an example, consider this simple (and arguably unhelpful) subsystem that trac
 > ["The Cursed Pirate"](https://github.com/PurpleKingdomGames/indigo-examples/blob/master/demos/pirate/src/main/scala/pirate/scenes/level/subsystems/CloudsSubSystem.scala) uses an alternative and arguable cleaner SubSystem construction method than the one below.
 
 ```scala mdoc
+import indigo._
+
 final case class PointsTrackerExample(startingPoints: Int) extends SubSystem {
   type EventType      = PointsTrackerEvent
   type SubSystemModel = Int
@@ -50,8 +39,7 @@ final case class PointsTrackerExample(startingPoints: Int) extends SubSystem {
 
   def present(context: SubSystemFrameContext, points: Int): Outcome[SceneUpdateFragment] =
     Outcome(
-      SceneUpdateFragment.empty
-        .addGameLayerNodes(Text(points.toString, 0, 0, 1, FontKey("")))
+      SceneUpdateFragment(Text(points.toString, FontKey(""), Material.Bitmap(AssetName("font"))))
     )
 }
 
@@ -74,9 +62,9 @@ The Indigo Extras module gives you two really helpful SubSystems: Automata for p
 
 Indigo's APIs are an exercise in composition, and if we ignore the state for a moment, the functions of a frame are approximately:
 
-```scala mdoc
-def update: context => Outcome // next version of the model
-def present: context => SceneUpdateFragment // What graphics to draw, what audio to play
+```scala
+def update: context => Outcome[_] = ??? // next version of the model
+def present: context => SceneUpdateFragment = ??? // What graphics to draw, what audio to play
 ```
 
 Which is exactly what you can see in the trait definition above. Yes, the standard entry points for indigo look more complicated, but really they all boil down to this.
@@ -85,7 +73,7 @@ Importantly, the context is immutable and the result types are monoidal.
 
 This means we can imagine doing something like this when our frame is executed:
 
-```scala mdoc
+```scala
 // All the outcomes combined
 (context) =>
   game.update(context) |+| subsystem1.update(context) |+| subsystem2.update(context)
