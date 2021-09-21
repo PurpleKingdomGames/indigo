@@ -23,52 +23,53 @@ If you'd like to dive right in, the Snake implementation uses scenes to manage i
 
 Scenes give the appearance of building a separate game per scene, with only a nod to the underlying mechanics.
 
-> In fact, you could build you're own scene system right on top of one of Indigo's other entry points if you were so inclined.
+The way it works, is that all scene data for every scene is held in the game's model and you provide a way to take it out and put it back again (known as a lens). Then the normal game update and presentation functions are delegated to the currently running scene, and scene navigation is controlled by events. That's it.
 
-The way it works, is that all scene data for every scene is held in the game's model and you provide a way to take it out and put it back again. Then the update and presentation functions are delegated to the currently running scene, and scene navigation is controlled by events. That's it.
+> In fact, you could build you're own scene system right on top of one of Indigo's other entry points if you were so inclined.
 
 ## Building a game with Scenes
 
 To use scenes, you need to use the `IndigoGame` entry point (extend an object in the usual way and fill in the blanks), which builds on `IndigoDemo` (which builds on `IndigoSandbox`) and adds the additional mechanics for using scenes.
 
-A slightly abridged version of `IndigoGame` looks like:
+The `IndigoGame` entry point looks almost the same as `IndigoDemo`, but adds these functions:
 
 ```scala mdoc
-trait IndigoGame[BootData, StartupData, Model, ViewModel] {
-  def boot(flags: Map[String, String]): BootResult[BootData]
-  def scenes(bootData: BootData): NonEmptyList[Scene[Model, ViewModel]]
-  def initialScene(bootData: BootData): Option[SceneName]
-  def setup(bootData: BootData, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, StartupData]
-  def initialModel(startupData: StartupData): Model
-  def initialViewModel(startupData: StartupData, model: Model): ViewModel
-}
+import indigo._
+import indigo.scenes._
+
+// Just examples
+final case class BootData(debugModeOn: Boolean)
+final case class StartUpData(viewport: Size)
+final case class Model(inventory: List[String])
+final case class ViewModel(items: List[String])
+
+def scenes(bootData: BootData): NonEmptyList[Scene[StartUpData, Model, ViewModel]] = ???
+def initialScene(bootData: BootData): Option[SceneName] = ???
 ```
 
-The notable points in this interface compared with the others are:
+These mean that you...
 
-1. Game initialization still happens here as normal.
 1. That you _must_ provide an _ordered_ `NonEmptyList` (see below) of `Scenes`.
 1. That you _can_ provide the name of the first scene Indigo should use, otherwise the scene at the head of the list will be used.
-1. The usual update and present functions now live inside your scene definitions.
 
 ## Building a Scene
 
 A scene is built by creating an object (or class) that extends `Scene[StartupData, GameModel, ViewModel]`. Here's the trait:
 
 ```scala mdoc
-trait Scene[StartupData, GameModel, ViewModel] {
+trait Scene[StartUpData, GameModel, ViewModel] derives CanEqual {
   type SceneModel
   type SceneViewModel
 
-  val name: SceneName
-  val modelLens: Lens[GameModel, SceneModel]
-  val viewModelLens: Lens[ViewModel, SceneViewModel]
-  val eventFilters: EventFilters
-  val subSystems: Set[SubSystem]
+  def name: SceneName
+  def modelLens: Lens[GameModel, SceneModel]
+  def viewModelLens: Lens[ViewModel, SceneViewModel]
+  def eventFilters: EventFilters
+  def subSystems: Set[SubSystem]
 
-  def updateModel(context: FrameContext[StartupData], model: SceneModel): GlobalEvent => Outcome[SceneModel]
-  def updateViewModel(context: FrameContext[StartupData], model: SceneModel, viewModel: SceneViewModel): GlobalEvent => Outcome[SceneViewModel]
-  def present(context: FrameContext[StartupData], model: SceneModel, viewModel: SceneViewModel): Outcome[SceneUpdateFragment]
+  def updateModel(context: FrameContext[StartUpData], model: SceneModel): GlobalEvent => Outcome[SceneModel]
+  def updateViewModel(context: FrameContext[StartUpData], model: SceneModel, viewModel: SceneViewModel): GlobalEvent => Outcome[SceneViewModel]
+  def present(context: FrameContext[StartUpData], model: SceneModel, viewModel: SceneViewModel): Outcome[SceneUpdateFragment]
 }
 ```
 
@@ -101,16 +102,15 @@ The non-empty list of scenes in the original declaration is static, and cannot b
 
 Here's the one from Snake:
 
-```scala mdoc
+```scala
 def scenes(bootData: GameViewport): NonEmptyList[Scene[SnakeStartupData, SnakeGameModel, SnakeViewModel]] =
     NonEmptyList(StartScene, ControlsScene, GameScene, GameOverScene)
 ```
 
 Snake also declares it's initial scene like this:
 
-```scala mdoc
-def initialScene(bootData: GameViewport): Option[SceneName] =
-    Option(StartScene.name)
+```scala
+def initialScene(bootData: GameViewport): Option[SceneName] = Option(StartScene.name)
 ```
 
 But this isn't actually necessary since `StartScene` is at the head of the list.
@@ -118,12 +118,11 @@ But this isn't actually necessary since `StartScene` is at the head of the list.
 To move between scenes you use events, defined simply as:
 
 ```scala mdoc
-sealed trait SceneEvent extends GlobalEvent
-object SceneEvent {
-  case object Next                         extends SceneEvent
-  case object Previous                     extends SceneEvent
-  final case class JumpTo(name: SceneName) extends SceneEvent
-}
+enum SceneEvent extends GlobalEvent:
+  case Next extends SceneEvent
+  case Previous extends SceneEvent
+  case JumpTo(name: SceneName) extends SceneEvent
+  case SceneChange(from: SceneName, to: SceneName, at: Seconds) extends SceneEvent
 ```
 
 `Next` and `Previous` proceed forwards and backwards respectively through the list of scenes until they run out. They do not loop back on themselves.
@@ -137,25 +136,30 @@ The final thing to know about with `Scene`s, is how they manage state.
 Essentially the model of the game contains the state for all scenes. This applies to both model and view model, but we'll just talk about the model from now on. Consider a game with the following model:
 
 ```scala mdoc
-final case class MyGameModel(sceneA: SceneModelA, sceneB: SceneModelB)
+final case class SceneModelA()
+final case class SceneModelB()
+
+final case class ExampleGameModel(sceneA: SceneModelA, sceneB: SceneModelB)
 ```
 
 So if we want to run the game and show scene B, then what we need to do is pull `sceneB` out of the model, update our game based on its values, and then put it back, like this:
 
 ```scala mdoc
-val scene: SceneB = ???
-val model: MyGameModel = ???
+// Placeholders
+def scene: Scene[Unit, ExampleGameModel, Unit] = new Scene { ??? }
+def model: ExampleGameModel = ExampleGameModel(SceneModelA(), SceneModelB())
+def context: FrameContext[Unit] = ???
 
 model.copy(
-  sceneB = scene.updateSceneModel(context, model.sceneB)(e)
+  sceneB = scene.updateModel(context, model.sceneB)(FrameTick)
 )
 ```
 
 Easy. But this is a trivial example where scene B's model is literally a field inside the game model, but how about a deeply nested update? Or something like this:
 
 ```scala mdoc
-final case class MyGameModel(name: String, health: Int, isHuman: Boolean, inventory: Map[String, Item])
-final case class SceneModelB(health: Int, inventory: Map[String, Item])
+// final case class MyGameModel(name: String, health: Int, isHuman: Boolean, inventory: Map[String, Item])
+// final case class SceneModelB(health: Int, inventory: Map[String, Item])
 ```
 
 We can clearly construct `SceneModelB` from `MyGameModel`, and we may still use `copy` but it's going to be a bit more involved. What if we also then wanted to update something in the inventory? Is there an elegant way to do that?
@@ -255,12 +259,12 @@ When one scene is running none of the others are, but sometimes it's useful to b
 This turns out to be very easy in Indigo. Since events are ordered and strictly evaluated, all you need to do is:
 
 ```scala mdoc
-final case class MessageForNextScene[A](data: A) extends GlobalEvent
+final case class MessageForNextScene(message: String) extends GlobalEvent
 
 Outcome(sceneModel) // here, the result of a model update, but could be any Outcome
   .addGlobalEvents(
-    SceneEvent.JumpToScene(nextScene),
-    MessageForNextScene(someData)
+    SceneEvent.JumpTo(SceneName("next!")),
+    MessageForNextScene("Hello next scene!")
   )
 ```
 
