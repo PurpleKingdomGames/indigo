@@ -136,91 +136,106 @@ The final thing to know about with `Scene`s, is how they manage state.
 Essentially the model of the game contains the state for all scenes. This applies to both model and view model, but we'll just talk about the model from now on. Consider a game with the following model:
 
 ```scala mdoc
-final case class SceneModelA()
-final case class SceneModelB()
+final case class MenuModel(menuItems: List[String])
+final case class LevelModel(health: Int, inventory: Map[String, Int])
+final case class DungeonGameModel(menuScene: MenuModel, level: LevelModel)
 
-final case class ExampleGameModel(sceneA: SceneModelA, sceneB: SceneModelB)
+val level: LevelModel = LevelModel(10, Map("health potions" -> 3))
+val model: DungeonGameModel = DungeonGameModel(MenuModel(List("Press space to start!")), level)
 ```
 
-So if we want to run the game and show scene B, then what we need to do is pull `sceneB` out of the model, update our game based on its values, and then put it back, like this:
+Here is a simple lens that will extract the `LevelModel` from the `DungeonGameModel` and put it back again:
 
 ```scala mdoc
-// Placeholders
-def scene: Scene[Unit, ExampleGameModel, Unit] = new Scene { ??? }
-def model: ExampleGameModel = ExampleGameModel(SceneModelA(), SceneModelB())
-def context: FrameContext[Unit] = ???
-
-model.copy(
-  sceneB = scene.updateModel(context, model.sceneB)(FrameTick)
+Lens[DungeonGameModel, LevelModel](
+  getter = (model: DungeonGameModel) => model.level,
+  setter = (model: DungeonGameModel, nextLevel: LevelModel) => model.copy(level = nextLevel)
 )
 ```
 
-Easy. But this is a trivial example where scene B's model is literally a field inside the game model, but how about a deeply nested update? Or something like this:
+Let's declare a scene that is using this fictional model:
 
 ```scala mdoc
-// final case class MyGameModel(name: String, health: Int, isHuman: Boolean, inventory: Map[String, Item])
-// final case class SceneModelB(health: Int, inventory: Map[String, Item])
+object LevelScene extends Scene[Unit, DungeonGameModel, Unit]:
+  type SceneModel = LevelModel
+  type SceneViewModel = Unit
+
+  def eventFilters: EventFilters = EventFilters.Permissive
+  def modelLens: Lens[DungeonGameModel, LevelModel] = Lens(_.level, (m, lvl) => m.copy(level = lvl))
+  def viewModelLens: Lens[Unit, Unit] = Lens.unit
+  def name: SceneName = SceneName("level")
+  def subSystems: Set[SubSystem] = Set()
+
+  def updateModel(context: FrameContext[Unit], model: LevelModel): GlobalEvent => Outcome[LevelModel] =
+    _ => Outcome(model.copy(health = model.health + 1)) // On any event, increase health!
+
+  def updateViewModel(context: FrameContext[Unit], model: LevelModel, viewModel: Unit): GlobalEvent => Outcome[Unit] =
+    _ => Outcome(viewModel)
+
+  def present(context: FrameContext[Unit], model: LevelModel, viewModel: Unit): Outcome[SceneUpdateFragment] =
+    Outcome(SceneUpdateFragment.empty)
 ```
 
-We can clearly construct `SceneModelB` from `MyGameModel`, and we may still use `copy` but it's going to be a bit more involved. What if we also then wanted to update something in the inventory? Is there an elegant way to do that?
+Notice that the `modelLens` uses a shorter version of the same lens we wrote earlier, but it's the same thing.
+
+Now when we run the game, the scene manager uses the lens to extract `LevelModel` from the `DungeonGameModel`, `updateModel` function updates the `LevelModel`, and then the scene manager uses the lens again to replace the old version with the new one.
 
 ### Lenses
 
-To formalize this sort of relationship, Indigo has a just-about-good-enough `Lens` implementation. Lenses are a really interesting subject and if you'd like to know more you could take a look at something like [Monocle](https://github.com/optics-dev/Monocle).
+To formalize this sort of relationship, Indigo has a just-about-good-enough `Lens` implementation (there are no prisms or anything fancy). Lenses are a really interesting subject and if you'd like to know more you could take a look at something like [Monocle](https://github.com/optics-dev/Monocle).
 
-Minimally, a lens implements a `get` and a `set` function, like so:
+An Indigo lens implements a `get` and a `set` function, like so:
 
 ```scala mdoc
-def get(from: A): B
-def set(into: A, value: B): A
+def get[A, B](from: A): B = ???
+def set[A, B](into: A, value: B): A = ???
 ```
 
-- `get` looks at, in our case, `MyGameModel` and extracts / returns `SceneModelB`.
-- `set` puts a `SceneModelB` into a `MyGameModel` and returns the new `MyGameModel` instance.
+- `get` looks at, in our case, `DungeonGameModel` and extracts / returns `LevelModel`.
+- `set` puts a `LevelModel` into a `DungeonGameModel` and returns the new `DungeonGameModel` instance.
 
 Lets try it out! Lets start with the simple `copy` example from earlier:
 
 ```scala mdoc
-val sceneBLens =
-  Lens(
-    (model: MyGameModel) => model.sceneB,
-    (model: MyGameModel, newSceneB: SceneModelB) => model.copy(sceneB = newSceneB)
+val modelLens =
+  Lens[DungeonGameModel, LevelModel](
+    getter = (model: DungeonGameModel) => model.level,
+    setter = (model: DungeonGameModel, nextLevel: LevelModel) => model.copy(level = nextLevel)
   )
 
-sceneBLens.get(model) // SceneModelB
-sceneBLens.set(model, newSceneModelB) // MyGameModel
+modelLens.get(model) // LevelModel
+modelLens.set(model, level) // DungeonGameModel
 ```
 
-Or the more complicated example might look like:
-
-```scala mdoc
-  Lens(
-    (model: MyGameModel) => SceneModelB(model.health, model.inventory),
-    (model: MyGameModel, newSceneB: SceneModelB) =>
-      model.copy(
-        health = newSceneB.health,
-        inventory = newSceneB.inventory,
-      )
-  )
-```
+You can also do things like construct temporary models by aggregating several parts of the main model into a one-shot case class, that you than de-construct and discard at the end of the frame when putting the values back.
 
 ### Lens composition
 
-We also posed the question of how you update things inside other things, for this we have to compose lenses together, for example:
+We can also posed the question of how you update things inside other things, for this we have to compose lenses together using the `andThen` operator, for example:
 
 ```scala mdoc
 final case class Sword(shininess: Int)
 final case class Weapons(sword: Sword)
 final case class Inventory(weapons: Weapons)
 
+val inventoryLens: Lens[Inventory, Weapons] =
+  Lens(_.weapons, (i, w) => i.copy(weapons = w))
+
+val weaponsLens: Lens[Weapons, Sword] =
+  Lens(_.sword, (w, s) => w.copy(sword = s))
+
+val inventory     = Inventory(Weapons(Sword(1)))
+val betterSword   = Sword(2)
+
 val mySwordLens = 
-  inventoryLens andThen weaponsLens andThen swordLens
+  inventoryLens andThen weaponsLens // Composing lenses!
 
-mySword.get(inventory) // a sword
-mySword.set(inventory, betterSword) // an inventory with a better sword in it
+mySwordLens.get(inventory) // a sword
+mySwordLens.set(inventory, betterSword) // an inventory with a better sword in it
 
-val polishSword(s: Sword): Sword = ???
-mySword.modify(inventory, polishSword)
+val polishTheSword: Sword => Sword = s => s.copy(shininess = s.shininess + 1)
+
+mySwordLens.modify(inventory, polishTheSword)
 // modify is the just the composition of get, set, and a function f.
 ```
 
@@ -261,7 +276,7 @@ This turns out to be very easy in Indigo. Since events are ordered and strictly 
 ```scala mdoc
 final case class MessageForNextScene(message: String) extends GlobalEvent
 
-Outcome(sceneModel) // here, the result of a model update, but could be any Outcome
+Outcome(model) // here, the result of a model update, but could be any Outcome
   .addGlobalEvents(
     SceneEvent.JumpTo(SceneName("next!")),
     MessageForNextScene("Hello next scene!")
