@@ -20,7 +20,9 @@ Text is different. Plain text isn't useful in of itself in the scene constructio
 The `IndigoSandbox` entry point defines a setup function with the following signature:
 
 ```scala mdoc
-def setup(assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, StartupData]
+import indigo._
+
+def setup(assetCollection: AssetCollection, dice: Dice): Startup[Unit] = ???
 ```
 
 The idea of this function is to give you an opportunity to do some light processing or preparation before your game starts (or re-starts), and this process can succeed or fail. The `Dice` provides a random element, and the `AssetCollection` gives you your _one and only_ opportunity to directly access asset data directly.
@@ -30,10 +32,14 @@ As previously mentioned, this is particularly useful for reading plain text file
 The interesting methods on an `AssetCollection` are:
 
 ```scala mdoc
-  def exists(name: AssetName): Boolean
-  def findImageDataByName(name: AssetName): Option[AssetDataFormats.ImageDataFormat]
-  def findTextDataByName(name: AssetName): Option[AssetDataFormats.TextDataFormat]
-  def findAudioDataByName(name: AssetName): Option[AssetDataFormats.AudioDataFormat]
+import org.scalajs.dom
+import org.scalajs.dom.html
+
+def exists(name: AssetName): Boolean = ???
+def findImageDataByName(name: AssetName): Option[html.Image] = ???
+def findTextDataByName(name: AssetName): Option[String] = ???
+def findAudioDataByName(name: AssetName): Option[dom.AudioBuffer] = ???
+def findFontDataByName(name: AssetName): Option[AssetName] = ???
 ```
 
 > `AssetDataFormats.TextDataFormat` in this case is just a `String`. Although Indigo only works in the browser currently, architecturally it is somewhat organized for other platforms too.
@@ -47,6 +53,8 @@ Asset loading happens in either one or two phases, depending on whether you only
 The simplest from of asset loading happens based on your initial game definition, for example:
 
 ```scala mdoc
+val baseUrl = "./"
+
 // If you're using the `IndigoSandbox` entry point
 val assets: Set[AssetType] =
   Set(
@@ -59,8 +67,8 @@ val assets: Set[AssetType] =
   )
 
 // Or if you're using the IndigoDemo` or `IndigoGame` entry points
-def boot(flags: Map[String, String]): BootResult[Data] =
-  BootResult(config, data)
+def boot(flags: Map[String, String]): BootResult[Unit] =
+  BootResult.noData(GameConfig.default)
     .withAssets(
       Set(
         AssetType.Text(AssetName("map"), AssetPath(baseUrl + "assets/map.txt")),
@@ -103,7 +111,10 @@ You can either use the basic inbuilt events to load your assets, and manage the 
 To kick off an asset bundle load, you need to fire off an `AssetBundleLoaderEvent.Load` event by attaching it to an `Outcome` or `SceneUpdateFragment`. In the example linked to above, we use a button (I've simplified here slightly):
 
 ```scala mdoc
-val otherAssetsToLoad =
+import indigoextras.ui._
+import indigoextras.subsystems._
+
+val otherAssetsToLoad: Set[AssetType] =
   Set(
     AssetType.Text(AssetName("map"), AssetPath(baseUrl + "assets/map.txt")),
     AssetType.Image(AssetName("font"), AssetPath(baseUrl + "assets/font.png")),
@@ -113,11 +124,18 @@ val otherAssetsToLoad =
     AssetType.Audio(AssetName("lose"), AssetPath(baseUrl + "assets/lose.mp3"))
   )
 
+def buttonAssets: ButtonAssets = 
+  ButtonAssets(
+    up = Graphic(50, 50, Material.Bitmap(AssetName("button up"))),
+    over = Graphic(50, 50, Material.Bitmap(AssetName("button over"))),
+    down = Graphic(50, 50, Material.Bitmap(AssetName("button down")))
+  )
+
 Button(
-  buttonAssets = Assets.buttonAssets,
+  buttonAssets = buttonAssets,
   bounds = Rectangle(10, 10, 16, 16),
   depth = Depth(2)
-).withUpAction {
+).withUpActions {
   println("Start loading assets...")
   List(AssetBundleLoaderEvent.Load(BindingKey("bundle 1"), otherAssetsToLoad))
 }
@@ -128,7 +146,7 @@ As you can see, the asset bundle is just another `Set[AssetType]` like we'd use 
 We can then track the progress of our bundle load by pattern matching the relevant events:
 
 ```scala mdoc
-def updateModel(context: FrameContext, model: MyGameModel): GlobalEvent => Outcome[MyGameModel] = {
+def updateModel(context: FrameContext[Unit], model: MyGameModel): GlobalEvent => Outcome[MyGameModel] = {
   case AssetBundleLoaderEvent.Started(key) =>
     println("Load started! " + key.toString())
     Outcome(model)
@@ -142,8 +160,8 @@ def updateModel(context: FrameContext, model: MyGameModel): GlobalEvent => Outco
     Outcome(model.copy(loaded = true))
       .addGlobalEvents(PlaySound(AssetName("sfx"), Volume.Max)) // Make use of a freshly loaded asset.
 
-  case AssetBundleLoaderEvent.Failure(key) =>
-    println("Lost it... " + key.toString())
+  case AssetBundleLoaderEvent.Failure(key, message) =>
+    println("Lost it... " + key.toString() + ", message: " + message)
     Outcome(model)
 
   case _ =>
@@ -161,6 +179,8 @@ The eagle eyed among you may have noticed that the super simple model above has 
 
 ```scala mdoc
 final case class MyGameModel(loaded: Boolean)
+
+val model = MyGameModel(true)
 ```
 
 The loaded flag above is a crude way of us saying "Ok, the assets are ready for use now!", so that once set to true, we can start drawing with them, again a minimal example could be:
@@ -169,7 +189,7 @@ The loaded flag above is a crude way of us saying "Ok, the assets are ready for 
 SceneUpdateFragment(
   if (model.loaded) {
     List(
-      Graphic(Rectangle(0, 0, 64, 64), 1, Assets.junctionBoxMaterial)
+      Graphic(Rectangle(0, 0, 64, 64), 1, Material.Bitmap(AssetName("junction box")))
         .moveTo(30, 30)
     )
   } else Nil
