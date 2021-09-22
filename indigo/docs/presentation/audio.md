@@ -25,13 +25,17 @@ Sound effects are tiny clips of sound that you will play many times, and are oft
 To play a sound effect you simply need to emit an event at the end of an update or scene draw and Indigo will do the rest, e.g.:
 
 ```scala mdoc
-Outcome(updateModel).addGlobalEvents(PlaySound(AssetName("twang!"), Volume(0.5)))
+import indigo._
+
+final case class Model(playerName: String)
+
+Outcome(Model("Bob")).addGlobalEvents(PlaySound(AssetName("twang!"), Volume(0.5)))
 ```
 
 or
 
 ```scala mdoc
-SceneUpdateFragment.empty.addGlobalEvents(PlaySound(AssetName("bounce"), Volume.Max))
+Outcome(SceneUpdateFragment.empty).addGlobalEvents(PlaySound(AssetName("bounce"), Volume.Max))
 ```
 
 ## Background Music
@@ -39,7 +43,7 @@ SceneUpdateFragment.empty.addGlobalEvents(PlaySound(AssetName("bounce"), Volume.
 Background music must be added as part of your scene description, as follows:
 
 ```scala mdoc
-SceneUpdateFragment(mySceneNodes)
+SceneUpdateFragment.empty
   .withAudio(
     SceneAudio(
       SceneAudioSource(
