@@ -57,8 +57,11 @@ As a brief introduction to `Signal`s, a signal is a value of type: `t: Seconds -
 For example:
 
 ```scala mdoc
+import indigo._
+
 // a signal that outputs 10 'units' per second
-val signal: Signal[Double] = Signal(t => t.value * 10)
+val signal: Signal[Double] = Signal(t => t.toDouble * 10)
+
 signal.at(Seconds(0.0)) // 0
 signal.at(Seconds(1.0)) // 10
 signal.at(Seconds(1.5)) // 15
@@ -68,7 +71,6 @@ signal.at(Seconds(2.0)) // 20
 You can also use them to bend time:
 
 ```scala mdoc
-val signal: Signal[Double] = Signal(t => t.value * 10)
 signal.affectTime(0.5).at(Seconds(2.0)) // 10
 signal.affectTime(1.0).at(Seconds(2.0)) // 20
 signal.affectTime(1.5).at(Seconds(2.0)) // 30
@@ -86,24 +88,24 @@ That's getting complicated but luckily Signal functions, being functors, can be 
 
 Signal functions in indigo have only two operations:
 
-```scala mdoc
+```scala
 // Operation 1: "and then" function composition. `andThen` and it's alias `>>>`
-def >>>[C](other: SignalFunction[B, C]): SignalFunction[A, C]
-def andThen[C](other: SignalFunction[B, C]): SignalFunction[A, C]
+def >>>[C](other: SignalFunction[B, C]): SignalFunction[A, C] = ???
+def andThen[C](other: SignalFunction[B, C]): SignalFunction[A, C] = ???
 
 //Operation 2: Parallel input. Run A => B & A => C and return (B, C)
-def &&&[C](other: SignalFunction[A, C]): SignalFunction[A, (B, C)]
-def and[C](other: SignalFunction[A, C]): SignalFunction[A, (B, C)]
+def &&&[C](other: SignalFunction[A, C]): SignalFunction[A, (B, C)] = ???
+def and[C](other: SignalFunction[A, C]): SignalFunction[A, (B, C)] = ???
 ```
 
 Example, one could calculate an orbit like this:
 
 ```scala mdoc
 val xPos: SignalFunction[Radians, Double] =
-  SignalFunction(r => Math.sin(r.value))
+  SignalFunction(r => Math.sin(r.toDouble))
 
 val yPos: SignalFunction[Radians, Double] =
-  SignalFunction(r => Math.cos(r.value))
+  SignalFunction(r => Math.cos(r.toDouble))
 
 def distance(d: Double): SignalFunction[(Double, Double), (Int, Int)] =
   SignalFunction {
