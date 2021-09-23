@@ -11,7 +11,9 @@ Indigo is intended to be a pixel art based game engine, and that means drawing p
 
 Currently, Indigo takes a very simple approach to building up a rendered frame: It uses a painters algorithm to draw all the images one at a time, ordered from most distant from the camera, to nearest. In some ways, it isn't even as complicated as [blitting](https://en.wikipedia.org/wiki/Bit_blit).
 
-To tell Indigo what to draw we need to point it at an image asset using a `Material`. There are two material types, the simplest is `Bitmap`.
+To tell Indigo what to draw we need to point it at an image asset using a `Material`. There are two standard material types, `Bitmap` and `ImageEffects`.
+
+> You can create your own materials, and Indigo comes with two other materials in the "extras" library: `LegacyEffects` and materials relating to refraction.
 
 ```scala mdoc
 Material.Bitmap(AssetName("funny cat"))
@@ -27,7 +29,99 @@ SceneUpdateFragment(
 
 Graphics are nice and simple to follow because they use materials directly, but materials also turn up in `Text` and `Sprite` primitives indirectly inside their `FontInfo` and `Animation` classes respectively.
 
-## Light it up!
+## Effects
+
+The `Bitmap` material is quick and simple for quickly throwing images onto the screen, but has limited display options (keeping it light weight!). By switching to the `ImageEffects` material you get a lot more control over how your texture is displayed at the minor cost of some additional processing overhead.
+
+> In previous Indigo versions materials and primitives were blended together, and came with additional (cheap) effects like limited glows and borders. These are considered low quality, but you can still access them via the `LegacyEffects` material.
+
+```scala mdoc
+val graphic = Graphic(32, 32, Material.ImageEffects(AssetName("funny cat")))
+```
+
+In the examples that follow, we take this graphic instance and use the `modifyMaterial` method to alter it's properties.
+
+### Alpha
+
+Sets the transparency of the texture.
+
+```scala mdoc
+graphic.modifyMaterial(_.withAlpha(0.5))
+```
+
+### Saturation
+
+Sets the colour saturation level of the texture where `1.0` is full normal colour and `0.0` is gray scale.
+
+```scala mdoc
+graphic.modifyMaterial(_.withSaturation(0.5))
+```
+
+### Tint
+
+Tint essentially sets the saturation level of each color channel, like looking through a piece of transparent colored plastic. Examples:
+
+- `RGBA.White` tint doesn't color the graphic white, it leaves it looking normal
+- `RGBA.Black` absorbs all the light and the nodes pixels end up black (alpha is respected).
+- `RGBA.Red` which is (r=1.0, g=0.0, b=0.0, a=1.0) sucks the blue and green out of the image (like standing in a chemical photography dark room).
+
+```scala mdoc
+graphic.modifyMaterial(_.withTint(RGBA.Red))
+```
+
+### Color Overlay
+
+Where tint removes color, color overlay adds it. So to take the same examples:
+
+- `RGBA.White` Makes the image white (alpha is respected).
+- `RGBA.Black` Makes the image black (alpha is respected).
+- `RGBA.Red` Makes the image red (alpha is respected).
+- `RGBA.Red.withRed(0.5)` which is (r=0.5, g=0.0, b=0.0, a=1.0) adds 50% red to each pixel up to a maximum value of 1.0.
+
+```scala mdoc
+graphic.modifyMaterial(_.withOverlay(Overlay.Color(RGBA.Red)))
+```
+
+### Gradient Overlay
+
+Gradients can be linear or radial and work in the same way as color overlay but allows a gradient to be applied instead of one solid color. The `Point` positions are relative to the node being drawn and move around with the node.
+
+```scala mdoc
+// For a 16x16 graphic where we want to go top left to bottom right
+graphic.modifyMaterial(
+  _.withOverlay(
+    Overlay.LinearGradiant(
+      fromPoint = Point.zero,
+      fromColor = RGBA.Magenta,
+      toPoint = Point(16, 16),
+      toColor = RGBA.Cyan
+    )
+  )
+)
+```
+
+## Filling in the space
+
+The standard materials support options for telling Indigo how to fill the space with the material.
+
+```scala mdoc
+val material = Material.Bitmap(AssetName("funny cat"))
+
+material.normal
+material.stretch
+material.tile
+
+// The above methods are aliases for:
+material.withFillType(FillType.Tile)
+```
+
+When you describe a primitive like a graphic, you have to give it a size. However that size does not have any direct relationship with the dimensions of the texture being used in the material. For example, you could have a graphic with a width and height of 100 x 100, and add a material with a texture that is only 50 x 50. What happens to all the extra space?
+
+- In "normal" mode, the space is left empty.
+- In "stretch" mode, the texture is stretched (deformed) to fill the available space.
+- In "tile" mode, the texture is repeated to fill the space available.
+
+## Light it up
 
 `Bitmap` has an intriguing method on it called `.lit`. Textures are supposed to be completely flat and colored in their full original glory, perhaps with a bit of ambient light provided by the lighting layer. What then does `.lit` do?
 
