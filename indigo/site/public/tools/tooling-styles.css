@@ -1,0 +1,8 @@
+@font-face {
+  font-family: pixelFont;
+  src: url('./assets/PressStart2P.ttf');
+}
+
+img {
+  image-rendering: crisp-edges;
+}
