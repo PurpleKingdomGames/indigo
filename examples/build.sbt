@@ -322,6 +322,21 @@ lazy val jobs =
       windowStartHeight := 400
     )
 
+lazy val confetti =
+  project
+    .in(file("confetti"))
+    .settings(commonSettings: _*)
+    .enablePlugins(SbtIndigo)
+    .enablePlugins(ScalaJSPlugin)
+    .settings(
+      name := "confetti",
+      showCursor := true,
+      title := "Confetti",
+      gameAssetsDirectory := "assets",
+      windowStartWidth := 640,
+      windowStartHeight := 480
+    )
+
 lazy val inputmapper =
   project
     .in(file("inputmapper"))
