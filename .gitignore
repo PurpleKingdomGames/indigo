@@ -36,3 +36,5 @@ metals.sbt
 .bsp/
 .ammonite
 .coursier
+
+indigo/site/public/
