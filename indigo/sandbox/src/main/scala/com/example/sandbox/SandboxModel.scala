@@ -3,6 +3,8 @@ package com.example.sandbox
 import indigo._
 import indigoextras.ui.InputFieldChange
 
+import com.example.sandbox.scenes.ConfettiModel
+
 object SandboxModel {
 
   private given CanEqual[Option[String], Option[String]] = CanEqual.derived
@@ -11,7 +13,8 @@ object SandboxModel {
     SandboxGameModel(
       DudeModel(startupData.dude, DudeIdle),
       SaveLoadPhases.NotStarted,
-      None
+      None,
+      ConfettiModel.empty
     )
 
   def updateModel(state: SandboxGameModel): GlobalEvent => Outcome[SandboxGameModel] = {
@@ -113,7 +116,7 @@ object SandboxModel {
 
 }
 
-final case class SandboxGameModel(dude: DudeModel, saveLoadPhase: SaveLoadPhases, data: Option[String])
+final case class SandboxGameModel(dude: DudeModel, saveLoadPhase: SaveLoadPhases, data: Option[String], confetti: ConfettiModel)
 
 final case class DudeModel(dude: Dude, walkDirection: DudeDirection) {
   def idle: DudeModel      = this.copy(walkDirection = DudeIdle)
