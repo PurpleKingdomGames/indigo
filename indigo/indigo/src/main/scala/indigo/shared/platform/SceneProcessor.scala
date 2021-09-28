@@ -26,6 +26,7 @@ import indigo.shared.scenegraph.Falloff
 import indigo.shared.scenegraph.CloneId
 import indigo.shared.datatypes.Depth
 import indigo.shared.QuickCache
+import indigo.shared.scenegraph.CloneBlank
 
 final class SceneProcessor(
     boundaryLocator: BoundaryLocator,
@@ -37,7 +38,8 @@ final class SceneProcessor(
   private val displayObjectConverterClone: DisplayObjectConversions =
     new DisplayObjectConversions(boundaryLocator, animationsRegister, fontRegister)
 
-  implicit private val uniformsCache: QuickCache[Array[Float]] = QuickCache.empty
+  implicit private val uniformsCache: QuickCache[Array[Float]]             = QuickCache.empty
+  implicit private val staticCloneCache: QuickCache[Option[DisplayObject]] = QuickCache.empty
 
   def purgeCaches(): Unit = {
     displayObjectConverter.purgeCaches()
@@ -51,37 +53,46 @@ final class SceneProcessor(
       assetMapping: AssetMapping
   ): ProcessedSceneData = {
 
-    val cloneBlankDisplayObjects =
-      scene.cloneBlanks.foldLeft(Map.empty[CloneId, DisplayObject]) { (acc, blank) =>
-        blank.cloneable match {
-          case s: Shape =>
-            acc + (blank.id -> displayObjectConverterClone.shapeToDisplayObject(s))
+    def cloneBlankToDisplayObject(blank: CloneBlank): Option[DisplayObject] =
+      blank.cloneable() match
+        case s: Shape =>
+          Some(displayObjectConverterClone.shapeToDisplayObject(s))
 
-          case g: Graphic[_] =>
-            acc + (blank.id -> displayObjectConverterClone.graphicToDisplayObject(g, assetMapping))
+        case g: Graphic[_] =>
+          Some(displayObjectConverterClone.graphicToDisplayObject(g, assetMapping))
 
-          case s: Sprite[_] =>
-            animationsRegister.fetchAnimationForSprite(
+        case s: Sprite[_] =>
+          animationsRegister
+            .fetchAnimationForSprite(
               gameTime,
               s.bindingKey,
               s.animationKey,
               s.animationActions
-            ) match {
-              case None =>
-                acc
-
-              case Some(anim) =>
-                acc + (blank.id -> displayObjectConverterClone.spriteToDisplayObject(
-                  boundaryLocator,
-                  s,
-                  assetMapping,
-                  anim
-                ))
+            )
+            .map { anim =>
+              displayObjectConverterClone.spriteToDisplayObject(
+                boundaryLocator,
+                s,
+                assetMapping,
+                anim
+              )
             }
 
-          case _ =>
-            acc
-        }
+        case _ =>
+          None
+
+    val cloneBlankDisplayObjects =
+      scene.cloneBlanks.foldLeft(Map.empty[CloneId, DisplayObject]) { (acc, blank) =>
+        val maybeDO =
+          if blank.isStatic then
+            QuickCache(blank.id.toString) {
+              cloneBlankToDisplayObject(blank)
+            }
+          else cloneBlankToDisplayObject(blank)
+
+        maybeDO match
+          case None                => acc
+          case Some(displayObject) => acc + (blank.id -> displayObject)
       }
 
     val displayLayers: List[DisplayLayer] =
