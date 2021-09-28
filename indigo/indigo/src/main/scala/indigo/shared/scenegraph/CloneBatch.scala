@@ -3,32 +3,27 @@ package indigo.shared.scenegraph
 import indigo.shared.datatypes._
 
 /** Represents many clones of the same cloneblank, differentiated only by their transform data.
-  *
-  * @param id
-  *   @param depth
-  * @param transform
-  *   @param clones
-  * @param staticBatchKey
   */
-  final case class CloneBatch(
+final case class CloneBatch(
     id: CloneId,
     depth: Depth,
-    transform: CloneTransformData,
+    x: Int,
+    y: Int,
+    rotation: Radians,
+    scaleX: Double,
+    scaleY: Double,
+    flipHorizontal: Boolean,
+    flipVertical: Boolean,
     clones: List[CloneTransformData],
     staticBatchKey: Option[BindingKey]
 ) extends DependentNode
     with BasicSpatialModifiers[CloneBatch]
     derives CanEqual:
-  lazy val x: Int                  = transform.position.x
-  lazy val y: Int                  = transform.position.y
-  lazy val rotation: Radians       = transform.rotation
-  lazy val scale: Vector2          = transform.scale
-  lazy val flipHorizontal: Boolean = transform.flipHorizontal
-  lazy val flipVertical: Boolean   = transform.flipVertical
-  lazy val ref: Point              = Point.zero
 
-  def position: Point = Point(transform.position.x, transform.position.y)
-  def flip: Flip      = Flip(transform.flipHorizontal, transform.flipVertical)
+  lazy val scale: Vector2  = Vector2(scaleX, scaleY)
+  lazy val ref: Point      = Point.zero
+  lazy val position: Point = Point(x, y)
+  lazy val flip: Flip      = Flip(flipHorizontal, flipVertical)
 
   def withCloneId(newCloneId: CloneId): CloneBatch =
     this.copy(id = newCloneId)
@@ -37,36 +32,103 @@ import indigo.shared.datatypes._
     this.copy(depth = newDepth)
 
   def withTransforms(
-      newPosition: Point,
-      newRotation: Radians,
-      newScale: Vector2,
-      flipHorizontal: Boolean,
-      flipVertical: Boolean
+      newX: Int,
+      newY: Int
   ): CloneBatch =
-    this.copy(transform = CloneTransformData(newPosition, newRotation, newScale, flipHorizontal, flipVertical))
-
-  def withPosition(newPosition: Point): CloneBatch =
-    this.copy(transform = transform.withPosition(newPosition))
-
-  def withRotation(newRotation: Radians): CloneBatch =
-    this.copy(transform = transform.withRotation(newRotation))
-
-  def withScale(newScale: Vector2): CloneBatch =
-    this.copy(transform = transform.withScale(newScale))
-
-  def withHorizontalFlip(isFlipped: Boolean): CloneBatch =
-    this.copy(transform = transform.withHorizontalFlip(isFlipped))
-
-  def withVerticalFlip(isFlipped: Boolean): CloneBatch =
-    this.copy(transform = transform.withVerticalFlip(isFlipped))
-
-  def withFlip(newFlip: Flip): CloneBatch =
     this.copy(
-      transform = transform
-        .withVerticalFlip(newFlip.vertical)
-        .withHorizontalFlip(newFlip.horizontal)
+      x = newX,
+      y = newY
     )
 
+  def withTransforms(
+      newX: Int,
+      newY: Int,
+      newRotation: Radians
+  ): CloneBatch =
+    this.copy(
+      x = newX,
+      y = newY,
+      rotation = newRotation
+    )
+
+  def withTransforms(
+      newX: Int,
+      newY: Int,
+      newRotation: Radians,
+      newScaleX: Double,
+      newScaleY: Double
+  ): CloneBatch =
+    this.copy(
+      x = newX,
+      y = newY,
+      rotation = newRotation,
+      scaleX = newScaleX,
+      scaleY = newScaleY
+    )
+
+  def withTransforms(
+      newX: Int,
+      newY: Int,
+      newRotation: Radians,
+      newScaleX: Double,
+      newScaleY: Double,
+      newFlipHorizontal: Boolean,
+      newFlipVertical: Boolean
+  ): CloneBatch =
+    this.copy(
+      x = newX,
+      y = newY,
+      rotation = newRotation,
+      scaleX = newScaleX,
+      scaleY = newScaleY,
+      flipHorizontal = newFlipHorizontal,
+      flipVertical = newFlipVertical
+    )
+
+  def applyCloneTransformData(transform: CloneTransformData): CloneBatch =
+    withTransforms(
+      transform.position.x,
+      transform.position.y,
+      transform.rotation,
+      transform.scale.x,
+      transform.scale.y,
+      transform.flipHorizontal,
+      transform.flipVertical
+    )
+
+  def withX(newX: Int): CloneBatch =
+    this.copy(x = newX)
+  def withY(newY: Int): CloneBatch =
+    this.copy(y = newY)
+
+  def withPosition(newX: Int, newY: Int): CloneBatch =
+    this.copy(x = newX, y = newY)
+  def withPosition(newPosition: Point): CloneBatch =
+    withPosition(newPosition.x, newPosition.y)
+
+  def withRotation(newRotation: Radians): CloneBatch =
+    this.copy(rotation = newRotation)
+
+  def withScaleX(newScaleX: Int): CloneBatch =
+    this.copy(scaleX = newScaleX)
+  def withScaleY(newScaleY: Int): CloneBatch =
+    this.copy(scaleY = newScaleY)
+
+  def withScale(newScaleX: Double, newScaleY: Double): CloneBatch =
+    this.copy(scaleX = newScaleX, scaleY = newScaleY)
+  def withScale(newScale: Vector2): CloneBatch =
+    withScale(newScale.x, newScale.y)
+
+  def withHorizontalFlip(isFlipped: Boolean): CloneBatch =
+    this.copy(flipHorizontal = isFlipped)
+  def withVerticalFlip(isFlipped: Boolean): CloneBatch =
+    this.copy(flipVertical = isFlipped)
+
+  def withFlip(flipH: Boolean, flipV: Boolean): CloneBatch =
+    this.copy(flipHorizontal = flipH, flipVertical = flipV)
+  def withFlip(newFlip: Flip): CloneBatch =
+    withFlip(newFlip.horizontal, newFlip.vertical)
+    
   def withClones(newClones: List[CloneTransformData]): CloneBatch =
     this.copy(clones = newClones)
 
@@ -81,3 +143,65 @@ import indigo.shared.datatypes._
 
   def clearStaticBatchKey: CloneBatch =
     withMaybeStaticBatchKey(None)
+
+object CloneBatch:
+
+  def apply(id: CloneId, clones: List[CloneTransformData]): CloneBatch =
+    CloneBatch(
+      id,
+      Depth.one,
+      0,
+      0,
+      Radians.zero,
+      1.0,
+      1.0,
+      false,
+      false,
+      clones,
+      None
+    )
+
+  def apply(id: CloneId, x: Int, y: Int, clones: List[CloneTransformData]): CloneBatch =
+    CloneBatch(
+      id,
+      Depth.one,
+      x,
+      y,
+      Radians.zero,
+      1.0,
+      1.0,
+      false,
+      false,
+      clones,
+      None
+    )
+
+  def apply(id: CloneId, x: Int, y: Int, rotation: Radians, clones: List[CloneTransformData]): CloneBatch =
+    CloneBatch(
+      id,
+      Depth.one,
+      x,
+      y,
+      rotation,
+      1.0,
+      1.0,
+      false,
+      false,
+      clones,
+      None
+    )
+
+  def apply(id: CloneId, x: Int, y: Int, rotation: Radians, scaleX: Double, scaleY: Double, clones: List[CloneTransformData]): CloneBatch =
+    CloneBatch(
+      id,
+      Depth.one,
+      x,
+      y,
+      rotation,
+      scaleX,
+      scaleY,
+      false,
+      false,
+      clones,
+      None
+    )
