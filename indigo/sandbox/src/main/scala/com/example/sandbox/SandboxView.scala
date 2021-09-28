@@ -73,7 +73,7 @@ object SandboxView {
       currentState.dude.dude.sprite
         .moveBy(8, -10)
         .modifyMaterial(_.withAlpha(0.5).withTint(RGBA.Red.withAmount(0.75))),
-      Clone(dudeCloneId, Depth(1), CloneTransformData.startAt(Point(16, 64)))
+      Clone(dudeCloneId, 16, 64)
         .withHorizontalFlip(true)
     )
 

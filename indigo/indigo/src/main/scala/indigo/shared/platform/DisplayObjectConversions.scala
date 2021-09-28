@@ -39,6 +39,7 @@ import indigo.shared.shader.Uniform
 import indigo.shared.shader.ShaderPrimitive
 import indigo.shared.scenegraph.Shape
 import indigo.platform.assets.AtlasId
+import indigo.shared.datatypes.Radians
 
 final class DisplayObjectConversions(
     boundaryLocator: BoundaryLocator,
@@ -83,6 +84,25 @@ final class DisplayObjectConversions(
       id = id,
       transform = DisplayObjectConversions.cloneTransformDataToMatrix4(data, blankTransform),
       z = cloneDepth
+    )
+
+  private def cloneToDisplayEntity(
+      clone: Clone,
+      blankTransform: CheapMatrix4
+  ): DisplayClone =
+    new DisplayClone(
+      id = clone.id,
+      transform = DisplayObjectConversions.cloneTransformToMatrix4(
+        blankTransform,
+        clone.x,
+        clone.y,
+        clone.rotation,
+        clone.scaleX,
+        clone.scaleY,
+        clone.flipHorizontal,
+        clone.flipVertical
+      ),
+      z = clone.depth.toDouble
     )
 
   private def cloneBatchDataToDisplayEntities(batch: CloneBatch, blankTransform: CheapMatrix4): DisplayCloneBatch = {
@@ -199,14 +219,7 @@ final class DisplayObjectConversions(
             Nil
 
           case Some(refDisplayObject) =>
-            List(
-              cloneDataToDisplayEntity(
-                c.id,
-                c.depth.toDouble,
-                c.transform,
-                refDisplayObject.transform
-              )
-            )
+            List(cloneToDisplayEntity(c, refDisplayObject.transform))
         }
 
       case c: CloneBatch =>
@@ -656,19 +669,40 @@ object DisplayObjectConversions {
         0.0d
       )
 
-  def cloneTransformDataToMatrix4(data: CloneTransformData, blankTransform: CheapMatrix4): CheapMatrix4 =
+  def cloneTransformDataToMatrix4(transform: CloneTransformData, blankTransform: CheapMatrix4): CheapMatrix4 =
+    cloneTransformToMatrix4(
+      blankTransform,
+      transform.position.x,
+      transform.position.y,
+      transform.rotation,
+      transform.scale.x,
+      transform.scale.y,
+      transform.flipHorizontal,
+      transform.flipVertical
+    )
+
+  def cloneTransformToMatrix4(
+      blankTransform: CheapMatrix4,
+      x: Int,
+      y: Int,
+      rotation: Radians,
+      scaleX: Double,
+      scaleY: Double,
+      flipHorizontal: Boolean,
+      flipVertical: Boolean
+  ): CheapMatrix4 =
     blankTransform.deepClone * CheapMatrix4.identity
       .translate(-blankTransform.x, -blankTransform.y, 0.0d)
       .scale(
-        if (data.flipHorizontal) -1.0 else 1.0,
-        if (!data.flipVertical) 1.0 else -1.0,
+        if (flipHorizontal) -1.0 else 1.0,
+        if (!flipVertical) 1.0 else -1.0,
         1.0d
       )
-      .scale(data.scale.x, data.scale.y, 1.0d)
-      .rotate(data.rotation)
+      .scale(scaleX, scaleY, 1.0d)
+      .rotate(rotation)
       .translate(
-        data.position.x.toDouble,
-        data.position.y.toDouble,
+        x.toDouble,
+        y.toDouble,
         0.0d
       )
 
