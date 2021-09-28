@@ -22,6 +22,7 @@ import com.example.sandbox.scenes.BoundsScene
 import indigoextras.effectmaterials.Refraction
 import indigoextras.effectmaterials.LegacyEffects
 import com.example.sandbox.scenes.UiScene
+import com.example.sandbox.scenes.ConfettiScene
 import indigoextras.geometry.Polygon
 import indigoextras.geometry.Vertex
 
@@ -34,7 +35,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
   private val viewportHeight: Int     = 128 * magnificationLevel
 
   def initialScene(bootData: SandboxBootData): Option[SceneName] =
-    Some(CameraScene.name)
+    Some(ConfettiScene.name)
 
   def scenes(bootData: SandboxBootData): NonEmptyList[Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]] =
     NonEmptyList(
@@ -47,7 +48,8 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
       BoundsScene,
       CameraScene,
       TextureTileScene,
-      UiScene
+      UiScene,
+      ConfettiScene
     )
 
   val eventFilters: EventFilters = EventFilters.Permissive
