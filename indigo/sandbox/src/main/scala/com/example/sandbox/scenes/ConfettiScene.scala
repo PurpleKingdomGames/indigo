@@ -32,6 +32,8 @@ object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
   def subSystems: Set[SubSystem] =
     Set()
 
+  val spawnCount: Int = 40
+
   def updateModel(
       context: FrameContext[SandboxStartupData],
       model: ConfettiModel
@@ -43,7 +45,7 @@ object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
           .spawn(
             context.dice,
             Signal.Orbit(context.startUpData.viewportCenter * 2, 100).at(context.running * 0.5).toPoint,
-            20
+            spawnCount
           )
           .update
       )
@@ -60,10 +62,10 @@ object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
 
   val cloneBlanks: List[CloneBlank] =
     List(
-      CloneBlank(CloneId("r"), SandboxAssets.redDot),
-      CloneBlank(CloneId("g"), SandboxAssets.greenDot),
-      CloneBlank(CloneId("b"), SandboxAssets.blueDot),
-      CloneBlank(CloneId("y"), SandboxAssets.yellowDot)
+      CloneBlank(CloneId("r"), SandboxAssets.redDot).static,
+      CloneBlank(CloneId("g"), SandboxAssets.greenDot).static,
+      CloneBlank(CloneId("b"), SandboxAssets.blueDot).static,
+      CloneBlank(CloneId("y"), SandboxAssets.yellowDot).static
     )
 
   val dots: List[Clone] =
@@ -88,9 +90,7 @@ object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
       SceneUpdateFragment(
         Layer(
           model.particles.map { p =>
-            dots(p.color)
-              .withPosition(Point(p.x, p.y))
-              .withScale(Vector2(p.scale, p.scale))
+            dots(p.color).withTransforms(p.x, p.y, Radians.zero, p.scale, p.scale)
           } ++ List(
             count.withText(s"count: ${model.particles.length}")
           )
