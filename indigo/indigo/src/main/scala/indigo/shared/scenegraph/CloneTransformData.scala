@@ -12,7 +12,7 @@ final case class CloneTransformData(
     scale: Vector2,
     flipHorizontal: Boolean,
     flipVertical: Boolean
-) derives CanEqual {
+) derives CanEqual:
 
   def |+|(other: CloneTransformData): CloneTransformData =
     CloneTransformData(
@@ -37,12 +37,10 @@ final case class CloneTransformData(
 
   def withVerticalFlip(isFlipped: Boolean): CloneTransformData =
     this.copy(flipVertical = isFlipped)
-}
 
-object CloneTransformData {
+object CloneTransformData:
   def startAt(position: Point): CloneTransformData =
     CloneTransformData(position, Radians.zero, Vector2.one, false, false)
 
   val identity: CloneTransformData =
     CloneTransformData(Point.zero, Radians.zero, Vector2.one, false, false)
-}
