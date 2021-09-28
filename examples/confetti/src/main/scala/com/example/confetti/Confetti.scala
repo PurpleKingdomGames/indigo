@@ -37,7 +37,7 @@ object Confetti extends IndigoDemo[Unit, Unit, Model, Unit]:
     case FrameTick if context.mouse.leftMouseIsDown =>
       Outcome(
         model
-          .spawn(context, 15)
+          .spawn(context, 20)
           .update
       )
 
@@ -50,12 +50,20 @@ object Confetti extends IndigoDemo[Unit, Unit, Model, Unit]:
   def updateViewModel(context: FrameContext[Unit], model: Model, viewModel: Unit): GlobalEvent => Outcome[Unit] =
     _ => Outcome(viewModel)
 
-  val dots: List[Graphic[Material.Bitmap]] =
+  val cloneBlanks: List[CloneBlank] =
     List(
-      Assets.redDot,
-      Assets.greenDot,
-      Assets.blueDot,
-      Assets.yellowDot
+      CloneBlank(CloneId("r"), Assets.redDot),
+      CloneBlank(CloneId("g"), Assets.greenDot),
+      CloneBlank(CloneId("b"), Assets.blueDot),
+      CloneBlank(CloneId("y"), Assets.yellowDot)
+    )
+
+  val dots: List[Clone] =
+    List(
+      Clone(CloneId("r")),
+      Clone(CloneId("g")),
+      Clone(CloneId("b")),
+      Clone(CloneId("y"))
     )
 
   val count: TextBox =
@@ -67,11 +75,13 @@ object Confetti extends IndigoDemo[Unit, Unit, Model, Unit]:
     Outcome(
       SceneUpdateFragment(
         model.particles.map { p =>
-          dots(p.color).moveTo(p.x, p.y).scaleBy(p.scale, p.scale)
+          dots(p.color)
+            .withPosition(Point(p.x, p.y))
+            .withScale(Vector2(p.scale, p.scale))
         } ++ List(
           count.withText(s"count: ${model.particles.length}")
         )
-      )
+      ).addCloneBlanks(cloneBlanks)
     )
 
 opaque type Model = (Int, List[Particle])
