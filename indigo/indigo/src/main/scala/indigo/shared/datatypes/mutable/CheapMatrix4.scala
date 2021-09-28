@@ -9,27 +9,27 @@ import indigo.shared.datatypes.Vector3
   * mutable data for performance reasons, and takes some shortcuts during multiplication to reduce work based on how the
   * engine itself behaves.
   */
-final case class CheapMatrix4(mat: Array[Double]) derives CanEqual {
+final case class CheapMatrix4(mat: Array[Float]) derives CanEqual {
 
-  lazy val x: Double = mat(12)
-  lazy val y: Double = mat(13)
+  lazy val x: Float = mat(12)
+  lazy val y: Float = mat(13)
 
-  lazy val data: (List[Double], List[Double]) =
+  lazy val data: (List[Float], List[Float]) =
     (List(mat(0), mat(1), mat(4), mat(5)), List(mat(12), mat(13), mat(14)))
 
-  def translate(byX: Double, byY: Double, byZ: Double): CheapMatrix4 =
+  def translate(byX: Float, byY: Float, byZ: Float): CheapMatrix4 =
     this * CheapMatrix4.translate(byX, byY, byZ)
 
-  def rotate(angle: Radians): CheapMatrix4 =
+  def rotate(angle: Float): CheapMatrix4 =
     this * CheapMatrix4.rotation(angle)
 
-  def scale(byX: Double, byY: Double, byZ: Double): CheapMatrix4 =
+  def scale(byX: Float, byY: Float, byZ: Float): CheapMatrix4 =
     this * CheapMatrix4.scale(byX, byY, byZ)
 
   def *(other: CheapMatrix4): CheapMatrix4 =
     *(other.mat)
 
-  def *(other: Array[Double]): CheapMatrix4 = {
+  def *(other: Array[Float]): CheapMatrix4 = {
 
     // If they are commented out below, it's because we know...
     // ... that those fields aren't used by the engine...
@@ -95,19 +95,19 @@ final case class CheapMatrix4(mat: Array[Double]) derives CanEqual {
     this
   }
 
-  def toArray: Array[Double] =
+  def toArray: Array[Float] =
     mat
 
   def toMatrix4: Matrix4 =
-    Matrix4(mat.toList)
+    Matrix4(mat.toList.map(_.toDouble))
 
   def deepClone: CheapMatrix4 =
-    CheapMatrix4(Array[Double]().concat(mat))
+    CheapMatrix4(Array[Float]().concat(mat))
 
   def transform(vector: Vector3): Vector3 =
-    val col1: List[Double] = List(mat(0), mat(4), mat(8), mat(12))
-    val col2: List[Double] = List(mat(1), mat(5), mat(9), mat(13))
-    val col3: List[Double] = List(mat(2), mat(6), mat(10), mat(14))
+    val col1: List[Float] = List(mat(0), mat(4), mat(8), mat(12))
+    val col2: List[Float] = List(mat(1), mat(5), mat(9), mat(13))
+    val col3: List[Float] = List(mat(2), mat(6), mat(10), mat(14))
 
     Vector3(
       x = col1(0) * vector.x + col1(1) * vector.y + col1(2) * vector.z + col1(3),
@@ -123,7 +123,7 @@ object CheapMatrix4 {
       Array(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
     )
 
-  def orthographic(left: Double, right: Double, bottom: Double, top: Double, near: Double, far: Double): CheapMatrix4 =
+  def orthographic(left: Float, right: Float, bottom: Float, top: Float, near: Float, far: Float): CheapMatrix4 =
     CheapMatrix4(
       Array(
         2 / (right - left),
@@ -145,13 +145,13 @@ object CheapMatrix4 {
       )
     )
 
-  def orthographic(width: Double, height: Double): CheapMatrix4 =
+  def orthographic(width: Float, height: Float): CheapMatrix4 =
     orthographic(0, width, height, 0, -10000, 10000)
 
-  def orthographic(x: Double, y: Double, width: Double, height: Double): CheapMatrix4 =
+  def orthographic(x: Float, y: Float, width: Float, height: Float): CheapMatrix4 =
     orthographic(x, x + width, y + height, y, -10000, 10000)
 
-  def translate(tx: Double, ty: Double, tz: Double): Array[Double] =
+  def translate(tx: Float, ty: Float, tz: Float): Array[Float] =
     Array(
       1,
       0,
@@ -171,9 +171,9 @@ object CheapMatrix4 {
       1
     )
 
-  def rotation(angleInRadians: Radians): Array[Double] = {
-    val c = Math.cos(angleInRadians.toDouble)
-    val s = Math.sin(angleInRadians.toDouble)
+  def rotation(angleInRadians: Float): Array[Float] = {
+    val c = Math.cos(angleInRadians).toFloat
+    val s = Math.sin(angleInRadians).toFloat
 
     Array(
       c,
@@ -195,7 +195,7 @@ object CheapMatrix4 {
     )
   }
 
-  def scale(sx: Double, sy: Double, sz: Double): Array[Double] =
+  def scale(sx: Float, sy: Float, sz: Float): Array[Float] =
     Array(
       sx,
       0,
@@ -218,10 +218,10 @@ object CheapMatrix4 {
   /** SHOULD ONLY BE USED BY TESTS
     */
   def apply(
-      row0: (Double, Double, Double, Double),
-      row1: (Double, Double, Double, Double),
-      row2: (Double, Double, Double, Double),
-      row3: (Double, Double, Double, Double)
+      row0: (Float, Float, Float, Float),
+      row1: (Float, Float, Float, Float),
+      row2: (Float, Float, Float, Float),
+      row3: (Float, Float, Float, Float)
   ): CheapMatrix4 =
     CheapMatrix4(
       Array(row0._1, row0._2, row0._3, row0._4) ++

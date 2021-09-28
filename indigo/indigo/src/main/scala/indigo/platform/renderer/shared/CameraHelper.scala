@@ -19,16 +19,16 @@ object CameraHelper:
     val newWidth  = screenWidth / magnification
     val newHeight = screenHeight / magnification
 
-    val bounds: (Double, Double, Double, Double) =
-      if isLookAt then zoom(0, 0, newWidth, newHeight, cameraZoom)
-      else zoom(cameraX, cameraY, newWidth, newHeight, cameraZoom)
+    val bounds: (Float, Float, Float, Float) =
+      if isLookAt then zoom(0, 0, newWidth.toFloat, newHeight.toFloat, cameraZoom.toFloat)
+      else zoom(cameraX.toFloat, cameraY.toFloat, newWidth.toFloat, newHeight.toFloat, cameraZoom.toFloat)
 
     val mat =
       if isLookAt then
         CheapMatrix4.identity
-          .translate(-cameraX, -cameraY, 1.0)
-          .rotate(cameraRotation)
-          .translate(newWidth / 2.0, newHeight / 2.0, 1.0) *
+          .translate(-cameraX.toFloat, -cameraY.toFloat, 1.0f)
+          .rotate(cameraRotation.toFloat)
+          .translate(newWidth.toFloat / 2.0f, newHeight.toFloat / 2.0f, 1.0f) *
           CheapMatrix4
             .orthographic(
               bounds._1,
@@ -38,7 +38,7 @@ object CameraHelper:
             )
       else
         CheapMatrix4.identity
-          .rotate(cameraRotation) *
+          .rotate(cameraRotation.toFloat) *
           CheapMatrix4
             .orthographic(
               bounds._1,
@@ -49,11 +49,11 @@ object CameraHelper:
 
     if flipY then mat.scale(1.0, -1.0, 1.0) else mat
 
-  def zoom(x: Double, y: Double, width: Double, height: Double, zoom: Double): (Double, Double, Double, Double) =
-    val newWidth: Double  = width / zoom
-    val newHeight: Double = height / zoom
-    val amountH: Double   = (width - (width / zoom)) / 2
-    val amountV: Double   = (height - (height / zoom)) / 2
+  def zoom(x: Float, y: Float, width: Float, height: Float, zoom: Float): (Float, Float, Float, Float) =
+    val newWidth: Float  = width / zoom
+    val newHeight: Float = height / zoom
+    val amountH: Float   = (width - (width / zoom)) / 2
+    val amountV: Float   = (height - (height / zoom)) / 2
 
     (
       x + amountH,

@@ -27,7 +27,6 @@ import indigo.shared.scenegraph.Clone
 import indigo.shared.scenegraph.CloneId
 import indigo.shared.scenegraph.CloneBatch
 import indigo.shared.display.DisplayClone
-import indigo.shared.scenegraph.CloneTransformData
 import indigo.shared.materials.ShaderData
 import indigo.shared.BoundaryLocator
 import indigo.shared.animation.AnimationRef
@@ -82,11 +81,11 @@ final class DisplayObjectConversions(
       id = clone.id,
       transform = DisplayObjectConversions.cloneTransformToMatrix4(
         blankTransform,
-        clone.x,
-        clone.y,
-        clone.rotation,
-        clone.scaleX,
-        clone.scaleY
+        clone.x.toFloat,
+        clone.y.toFloat,
+        clone.rotation.toFloat,
+        clone.scaleX.toFloat,
+        clone.scaleY.toFloat
       ),
       z = clone.depth.toDouble
     )
@@ -99,11 +98,11 @@ final class DisplayObjectConversions(
         clones = batch.clones.map { td =>
           DisplayObjectConversions.cloneTransformToMatrix4(
             blankTransform,
-            batch.x + td.position.x,
-            batch.y + td.position.y,
-            batch.rotation + td.rotation,
-            batch.scaleX * td.scale.x,
-            batch.scaleY * td.scale.y
+            (batch.x + td.position.x).toFloat,
+            (batch.y + td.position.y).toFloat,
+            (batch.rotation + td.rotation).toFloat,
+            (batch.scaleX * td.scale.x).toFloat,
+            (batch.scaleY * td.scale.y).toFloat
           )
         }
       )
@@ -136,19 +135,19 @@ final class DisplayObjectConversions(
       .scale(
         if (group.flip.horizontal) -1.0 else 1.0,
         if (group.flip.vertical) -1.0 else 1.0,
-        1.0d
+        1.0f
       )
       .translate(
-        -group.ref.x.toDouble,
-        -group.ref.y.toDouble,
-        0.0d
+        -group.ref.x.toFloat,
+        -group.ref.y.toFloat,
+        0.0f
       )
-      .scale(group.scale.x, group.scale.y, 1.0d)
-      .rotate(group.rotation)
+      .scale(group.scale.x.toFloat, group.scale.y.toFloat, 1.0f)
+      .rotate(group.rotation.toFloat)
       .translate(
-        group.position.x.toDouble,
-        group.position.y.toDouble,
-        0.0d
+        group.position.x.toFloat,
+        group.position.y.toFloat,
+        0.0f
       )
 
   private def toTransformers(group: Group, parentTransform: CheapMatrix4): List[Transformer] = {
@@ -643,43 +642,41 @@ object DisplayObjectConversions {
       .scale(
         if (node.flip.horizontal) -1.0 else 1.0,
         if (node.flip.vertical) 1.0 else -1.0,
-        1.0d
+        1.0f
       )
       .translate(
-        -(node.ref.x.toDouble / size.x) + 0.5d,
-        -(node.ref.y.toDouble / size.y) + 0.5d,
-        0.0d
+        -(node.ref.x.toFloat / size.x.toFloat) + 0.5f,
+        -(node.ref.y.toFloat / size.y.toFloat) + 0.5f,
+        0.0f
       )
       .scale(
-        size.x * node.scale.x,
-        size.y * node.scale.y,
-        size.z
+        size.x.toFloat * node.scale.x.toFloat,
+        size.y.toFloat * node.scale.y.toFloat,
+        size.z.toFloat
       )
-      .rotate(node.rotation)
+      .rotate(node.rotation.toFloat)
       .translate(
-        position.x,
-        position.y,
-        0.0d
+        position.x.toFloat,
+        position.y.toFloat,
+        0.0f
       )
 
   def cloneTransformToMatrix4(
       blankTransform: CheapMatrix4,
-      x: Int,
-      y: Int,
-      rotation: Radians,
-      scaleX: Double,
-      scaleY: Double,
-      flipHorizontal: Boolean,
-      flipVertical: Boolean
+      x: Float,
+      y: Float,
+      rotation: Float,
+      scaleX: Float,
+      scaleY: Float
   ): CheapMatrix4 =
     blankTransform.deepClone * CheapMatrix4.identity
-      .translate(-blankTransform.x, -blankTransform.y, 0.0d)
-      .scale(scaleX, scaleY, 1.0d)
+      .translate(-blankTransform.x, -blankTransform.y, 0.0f)
+      .scale(scaleX, scaleY, 1.0f)
       .rotate(rotation)
       .translate(
-        x.toDouble,
-        y.toDouble,
-        0.0d
+        x,
+        y,
+        0.0f
       )
 
   private val empty0: Array[Float] = Array[Float]()
