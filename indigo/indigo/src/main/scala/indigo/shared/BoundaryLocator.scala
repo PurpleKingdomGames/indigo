@@ -188,10 +188,10 @@ object BoundaryLocator:
   def findBounds(entity: SceneNode, position: Point, size: Size, ref: Point): Rectangle =
     val m =
       CheapMatrix4.identity
-        .translate(-ref.x, -ref.y, 0.0d)
-        .rotate(entity.rotation)
-        .scale(entity.scale.x, entity.scale.y, 1)
-        .translate(position.x, position.y, 0.0d)
+        .translate(-ref.x.toFloat, -ref.y.toFloat, 0.0f)
+        .rotate(entity.rotation.toFloat)
+        .scale(entity.scale.x.toFloat, entity.scale.y.toFloat, 1.0f)
+        .translate(position.x.toFloat, position.y.toFloat, 0.0f)
 
     Rectangle.fromPointCloud(
       List(

@@ -97,13 +97,13 @@ final class RendererWebGL1(
     gl.clearColor(config.clearColor.r, config.clearColor.g, config.clearColor.b, config.clearColor.a)
     gl.clear(COLOR_BUFFER_BIT)
 
-    val gameProjection = orthographicProjectionMatrix.mat.toJSArray
+    val gameProjection: scala.scalajs.js.Array[Double] = orthographicProjectionMatrix.mat.map(_.toDouble).toJSArray
 
     sceneData.layers.foreach { layer =>
       val maybeCamera: Option[Camera] =
         layer.camera.orElse(sceneData.camera)
 
-      val projection =
+      val projection: scala.scalajs.js.Array[Double] =
         (layer.magnification, maybeCamera) match {
           case (None, None) =>
             gameProjection
@@ -122,6 +122,7 @@ final class RendererWebGL1(
                 false
               )
               .mat
+              .map(_.toDouble)
               .toJSArray
 
           case (None, Some(c)) =>
@@ -138,6 +139,7 @@ final class RendererWebGL1(
                 c.isLookAt
               )
               .mat
+              .map(_.toDouble)
               .toJSArray
 
           case (Some(m), Some(c)) =>
@@ -154,6 +156,7 @@ final class RendererWebGL1(
                 c.isLookAt
               )
               .mat
+              .map(_.toDouble)
               .toJSArray
         }
 
@@ -217,7 +220,7 @@ final class RendererWebGL1(
       lastWidth = actualWidth
       lastHeight = actualHeight
       orthographicProjectionMatrix =
-        CheapMatrix4.orthographic(actualWidth.toDouble / magnification, actualHeight.toDouble / magnification)
+        CheapMatrix4.orthographic(actualWidth.toFloat / magnification, actualHeight.toFloat / magnification)
 
       gl.viewport(0, 0, actualWidth.toDouble, actualHeight.toDouble)
 
@@ -249,7 +252,7 @@ final class RendererWebGL1(
     gl.uniformMatrix4fv(
       location = transformMatrixLocation,
       transpose = false,
-      value = displayObject.transform.mat.toJSArray
+      value = displayObject.transform.mat.map(_.toDouble).toJSArray
     )
 
     gl.uniform4f(

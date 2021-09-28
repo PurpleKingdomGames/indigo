@@ -72,15 +72,15 @@ class LayerRenderer(
     gl2.bufferData(ARRAY_BUFFER, new Float32Array(data), STATIC_DRAW)
   }
 
-  private def updateData(d: DisplayObject, i: Int, matrixData1: List[Double], matrixData2: List[Double]): Unit = {
-    matRotateScaleData((i * 4) + 0) = matrixData1(0).toFloat
-    matRotateScaleData((i * 4) + 1) = matrixData1(1).toFloat
-    matRotateScaleData((i * 4) + 2) = matrixData1(2).toFloat
-    matRotateScaleData((i * 4) + 3) = matrixData1(3).toFloat
+  private def updateData(d: DisplayObject, i: Int, matrixData1: List[Float], matrixData2: List[Float]): Unit = {
+    matRotateScaleData((i * 4) + 0) = matrixData1(0)
+    matRotateScaleData((i * 4) + 1) = matrixData1(1)
+    matRotateScaleData((i * 4) + 2) = matrixData1(2)
+    matRotateScaleData((i * 4) + 3) = matrixData1(3)
 
-    matTranslateRotationData((i * 4) + 0) = matrixData2(0).toFloat
-    matTranslateRotationData((i * 4) + 1) = matrixData2(1).toFloat
-    matTranslateRotationData((i * 4) + 2) = matrixData2(2).toFloat
+    matTranslateRotationData((i * 4) + 0) = matrixData2(0)
+    matTranslateRotationData((i * 4) + 1) = matrixData2(1)
+    matTranslateRotationData((i * 4) + 2) = matrixData2(2)
     matTranslateRotationData((i * 4) + 3) = d.rotation.toFloat
 
     sizeAndFrameScaleData((i * 4) + 0) = d.width
@@ -104,7 +104,7 @@ class LayerRenderer(
     textureSizeAtlasSizeData((i * 4) + 3) = d.atlasHeight
   }
 
-  private def updateTextData(d: DisplayText, i: Int, matrixData1: List[Double], matrixData2: List[Double]): Unit = {
+  private def updateTextData(d: DisplayText, i: Int, matrixData1: List[Float], matrixData2: List[Float]): Unit = {
     matRotateScaleData((i * 4) + 0) = matrixData1(0).toFloat
     matRotateScaleData((i * 4) + 1) = matrixData1(1).toFloat
     matRotateScaleData((i * 4) + 2) = matrixData1(2).toFloat
@@ -418,10 +418,10 @@ class LayerRenderer(
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private def processCloneBatch(c: DisplayCloneBatch, refDisplayObject: DisplayObject, batchCount: Int): Int = {
-    val count: Int                         = c.clones.length
-    var i: Int                             = 0
-    var data: (List[Double], List[Double]) = (Nil, Nil)
-    var cl: CheapMatrix4                   = CheapMatrix4.identity
+    val count: Int                       = c.clones.length
+    var i: Int                           = 0
+    var data: (List[Float], List[Float]) = (Nil, Nil)
+    var cl: CheapMatrix4                 = CheapMatrix4.identity
 
     while (i < count) {
       cl = c.clones(i)
