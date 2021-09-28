@@ -42,11 +42,8 @@ object PerfView {
             batchNumber + 1,
             CloneBatch(
               cloneId,
-              Depth(1),
-              CloneTransformData.identity,
-              l.map(CloneTransformData.startAt),
-              Some(BindingKey("herd" + batchNumber.toString))
-            ) :: acc
+              l.map(CloneTransformData.startAt)
+            ).withStaticBatchKey(BindingKey("herd" + batchNumber.toString)) :: acc
           )
       }
 

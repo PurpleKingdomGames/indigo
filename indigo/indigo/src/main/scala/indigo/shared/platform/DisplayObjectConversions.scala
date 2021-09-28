@@ -74,18 +74,6 @@ final class DisplayObjectConversions(
         }
     }
 
-  private def cloneDataToDisplayEntity(
-      id: CloneId,
-      cloneDepth: Double,
-      data: CloneTransformData,
-      blankTransform: CheapMatrix4
-  ): DisplayClone =
-    new DisplayClone(
-      id = id,
-      transform = DisplayObjectConversions.cloneTransformDataToMatrix4(data, blankTransform),
-      z = cloneDepth
-    )
-
   private def cloneToDisplayEntity(
       clone: Clone,
       blankTransform: CheapMatrix4
@@ -111,7 +99,16 @@ final class DisplayObjectConversions(
         id = batch.id,
         z = batch.depth.toDouble,
         clones = batch.clones.map { td =>
-          DisplayObjectConversions.cloneTransformDataToMatrix4(batch.transform |+| td, blankTransform)
+          DisplayObjectConversions.cloneTransformToMatrix4(
+            blankTransform,
+            batch.x + td.position.x,
+            batch.y + td.position.y,
+            batch.rotation + td.rotation,
+            batch.scaleX * td.scale.x,
+            batch.scaleY * td.scale.y,
+            if batch.flipHorizontal then !td.flipHorizontal else td.flipHorizontal,
+            if batch.flipVertical then !td.flipVertical else td.flipVertical
+          )
         }
       )
 
@@ -668,18 +665,6 @@ object DisplayObjectConversions {
         position.y,
         0.0d
       )
-
-  def cloneTransformDataToMatrix4(transform: CloneTransformData, blankTransform: CheapMatrix4): CheapMatrix4 =
-    cloneTransformToMatrix4(
-      blankTransform,
-      transform.position.x,
-      transform.position.y,
-      transform.rotation,
-      transform.scale.x,
-      transform.scale.y,
-      transform.flipHorizontal,
-      transform.flipVertical
-    )
 
   def cloneTransformToMatrix4(
       blankTransform: CheapMatrix4,
