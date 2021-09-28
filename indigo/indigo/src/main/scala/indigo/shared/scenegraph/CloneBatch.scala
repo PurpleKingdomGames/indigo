@@ -12,18 +12,15 @@ final case class CloneBatch(
     rotation: Radians,
     scaleX: Double,
     scaleY: Double,
-    flipHorizontal: Boolean,
-    flipVertical: Boolean,
     clones: List[CloneTransformData],
     staticBatchKey: Option[BindingKey]
 ) extends DependentNode
-    with BasicSpatialModifiers[CloneBatch]
     derives CanEqual:
 
   lazy val scale: Vector2  = Vector2(scaleX, scaleY)
   lazy val ref: Point      = Point.zero
   lazy val position: Point = Point(x, y)
-  lazy val flip: Flip      = Flip(flipHorizontal, flipVertical)
+  lazy val flip: Flip      = Flip.default
 
   def withCloneId(newCloneId: CloneId): CloneBatch =
     this.copy(id = newCloneId)
@@ -66,34 +63,13 @@ final case class CloneBatch(
       scaleY = newScaleY
     )
 
-  def withTransforms(
-      newX: Int,
-      newY: Int,
-      newRotation: Radians,
-      newScaleX: Double,
-      newScaleY: Double,
-      newFlipHorizontal: Boolean,
-      newFlipVertical: Boolean
-  ): CloneBatch =
-    this.copy(
-      x = newX,
-      y = newY,
-      rotation = newRotation,
-      scaleX = newScaleX,
-      scaleY = newScaleY,
-      flipHorizontal = newFlipHorizontal,
-      flipVertical = newFlipVertical
-    )
-
   def applyCloneTransformData(transform: CloneTransformData): CloneBatch =
     withTransforms(
       transform.position.x,
       transform.position.y,
       transform.rotation,
       transform.scale.x,
-      transform.scale.y,
-      transform.flipHorizontal,
-      transform.flipVertical
+      transform.scale.y
     )
 
   def withX(newX: Int): CloneBatch =
@@ -119,16 +95,6 @@ final case class CloneBatch(
   def withScale(newScale: Vector2): CloneBatch =
     withScale(newScale.x, newScale.y)
 
-  def withHorizontalFlip(isFlipped: Boolean): CloneBatch =
-    this.copy(flipHorizontal = isFlipped)
-  def withVerticalFlip(isFlipped: Boolean): CloneBatch =
-    this.copy(flipVertical = isFlipped)
-
-  def withFlip(flipH: Boolean, flipV: Boolean): CloneBatch =
-    this.copy(flipHorizontal = flipH, flipVertical = flipV)
-  def withFlip(newFlip: Flip): CloneBatch =
-    withFlip(newFlip.horizontal, newFlip.vertical)
-    
   def withClones(newClones: List[CloneTransformData]): CloneBatch =
     this.copy(clones = newClones)
 
@@ -155,8 +121,6 @@ object CloneBatch:
       Radians.zero,
       1.0,
       1.0,
-      false,
-      false,
       clones,
       None
     )
@@ -170,8 +134,6 @@ object CloneBatch:
       Radians.zero,
       1.0,
       1.0,
-      false,
-      false,
       clones,
       None
     )
@@ -185,8 +147,6 @@ object CloneBatch:
       rotation,
       1.0,
       1.0,
-      false,
-      false,
       clones,
       None
     )
@@ -200,8 +160,6 @@ object CloneBatch:
       rotation,
       scaleX,
       scaleY,
-      false,
-      false,
       clones,
       None
     )

@@ -86,9 +86,7 @@ final class DisplayObjectConversions(
         clone.y,
         clone.rotation,
         clone.scaleX,
-        clone.scaleY,
-        clone.flipHorizontal,
-        clone.flipVertical
+        clone.scaleY
       ),
       z = clone.depth.toDouble
     )
@@ -105,9 +103,7 @@ final class DisplayObjectConversions(
             batch.y + td.position.y,
             batch.rotation + td.rotation,
             batch.scaleX * td.scale.x,
-            batch.scaleY * td.scale.y,
-            if batch.flipHorizontal then !td.flipHorizontal else td.flipHorizontal,
-            if batch.flipVertical then !td.flipVertical else td.flipVertical
+            batch.scaleY * td.scale.y
           )
         }
       )
@@ -678,11 +674,6 @@ object DisplayObjectConversions {
   ): CheapMatrix4 =
     blankTransform.deepClone * CheapMatrix4.identity
       .translate(-blankTransform.x, -blankTransform.y, 0.0d)
-      .scale(
-        if (flipHorizontal) -1.0 else 1.0,
-        if (!flipVertical) 1.0 else -1.0,
-        1.0d
-      )
       .scale(scaleX, scaleY, 1.0d)
       .rotate(rotation)
       .translate(

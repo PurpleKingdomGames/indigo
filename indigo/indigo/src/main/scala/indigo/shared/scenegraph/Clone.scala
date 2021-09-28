@@ -11,16 +11,13 @@ final case class Clone(
     y: Int,
     rotation: Radians,
     scaleX: Double,
-    scaleY: Double,
-    flipHorizontal: Boolean,
-    flipVertical: Boolean
+    scaleY: Double
 ) extends DependentNode
-    with BasicSpatialModifiers[Clone]
     derives CanEqual:
   lazy val scale: Vector2  = Vector2(scaleX, scaleY)
   lazy val ref: Point      = Point.zero
   lazy val position: Point = Point(x, y)
-  lazy val flip: Flip      = Flip(flipHorizontal, flipVertical)
+  lazy val flip: Flip      = Flip.default
 
   def withCloneId(newCloneId: CloneId): Clone =
     this.copy(id = newCloneId)
@@ -63,34 +60,13 @@ final case class Clone(
       scaleY = newScaleY
     )
 
-  def withTransforms(
-      newX: Int,
-      newY: Int,
-      newRotation: Radians,
-      newScaleX: Double,
-      newScaleY: Double,
-      newFlipHorizontal: Boolean,
-      newFlipVertical: Boolean
-  ): Clone =
-    this.copy(
-      x = newX,
-      y = newY,
-      rotation = newRotation,
-      scaleX = newScaleX,
-      scaleY = newScaleY,
-      flipHorizontal = newFlipHorizontal,
-      flipVertical = newFlipVertical
-    )
-
   def applyCloneTransformData(transform: CloneTransformData): Clone =
     withTransforms(
       transform.position.x,
       transform.position.y,
       transform.rotation,
       transform.scale.x,
-      transform.scale.y,
-      transform.flipHorizontal,
-      transform.flipVertical
+      transform.scale.y
     )
 
   def withX(newX: Int): Clone =
@@ -116,16 +92,6 @@ final case class Clone(
   def withScale(newScale: Vector2): Clone =
     withScale(newScale.x, newScale.y)
 
-  def withHorizontalFlip(isFlipped: Boolean): Clone =
-    this.copy(flipHorizontal = isFlipped)
-  def withVerticalFlip(isFlipped: Boolean): Clone =
-    this.copy(flipVertical = isFlipped)
-
-  def withFlip(flipH: Boolean, flipV: Boolean): Clone =
-    this.copy(flipHorizontal = flipH, flipVertical = flipV)
-  def withFlip(newFlip: Flip): Clone =
-    withFlip(newFlip.horizontal, newFlip.vertical)
-
 object Clone:
   def apply(id: CloneId): Clone =
     Clone(
@@ -135,9 +101,7 @@ object Clone:
       0,
       Radians.zero,
       1.0,
-      1.0,
-      false,
-      false
+      1.0
     )
 
   def apply(id: CloneId, x: Int, y: Int): Clone =
@@ -148,9 +112,7 @@ object Clone:
       y,
       Radians.zero,
       1.0,
-      1.0,
-      false,
-      false
+      1.0
     )
 
   def apply(id: CloneId, x: Int, y: Int, rotation: Radians): Clone =
@@ -161,9 +123,7 @@ object Clone:
       y,
       rotation,
       1.0,
-      1.0,
-      false,
-      false
+      1.0
     )
 
   def apply(id: CloneId, x: Int, y: Int, rotation: Radians, scaleX: Double, scaleY: Double): Clone =
@@ -174,7 +134,5 @@ object Clone:
       y,
       rotation,
       scaleX,
-      scaleY,
-      false,
-      false
+      scaleY
     )
