@@ -133,6 +133,30 @@ class Vector2Tests extends munit.FunSuite {
     assert(!(Vector2(5.0, 5.0) ~== Vector2(-4.999999, 5.00001)))
   }
 
+  test("rotate around origin") {
+    // 0
+    assert(Vector2(1, 0).rotateBy(0) ~== Vector2(1, 0))
+    // 90
+    assert(Vector2(1, 0).rotateBy(Radians.PIby2.toDouble) ~== Vector2(0, 1))
+    // 180
+    assert(Vector2(1, 1).rotateBy(Radians.PI.toDouble) ~== Vector2(-1, -1))
+    // 270
+    assert(Vector2(1, 0).rotateBy(Radians.PI.toDouble + Radians.PIby2.toDouble) ~== Vector2(0, -1))
+    // 360
+    assert(Vector2(1, 0).rotateBy(Radians.`2PI`.toDouble) ~== Vector2(1, 0))
+
+    // 45
+    val v = Vector2(1, 2)
+    val expected = Vector2(-0.70710,2.12132)
+    assert(v.rotateBy(Radians.PIby2.toDouble / 2f) ~== expected)
+    // magnitude should remain the same
+    assert(Math.abs(v.length - expected.length) <= 0.0001)
+  }
+
+  test("rotate around given point") {
+    assert(Vector2(3, 3).rotateBy(Radians.PIby2.toDouble, Vector2(2,2)) ~== Vector2(1, 3))
+  }
+
   def to2dp(d: Double): Double =
     Math.round(d * 100).toDouble / 100
 
