@@ -10,7 +10,7 @@ we're saying that the cheap version needs to say what the real one
 says, where applicable. Full multiplication for example, isn't
 identical (but that's not a problem for our use case).
  */
-class CheapCheapMatrix4Tests extends munit.FunSuite {
+class CheapMatrix4Tests extends munit.FunSuite {
 
   test("identity") {
 
@@ -53,7 +53,7 @@ class CheapCheapMatrix4Tests extends munit.FunSuite {
     val expected =
       Matrix4.identity.rotate(Radians.PI)
 
-    assertEquals(CheapMatrix4.identity.rotate(Radians.PI).toMatrix4, expected)
+    assert(clue(CheapMatrix4.identity.rotate(Radians.PI.toFloat).toMatrix4) ~== clue(expected))
   }
 
   test("scale") {
@@ -77,11 +77,11 @@ class CheapCheapMatrix4Tests extends munit.FunSuite {
     val actual =
       CheapMatrix4.identity
         .scale(2.0, 3.0, 1.0)
-        .rotate(Radians.TAUby4)
+        .rotate(Radians.TAUby4.toFloat)
         .translate(100, 0.0, 0.0)
-        .rotate(Radians.TAUby2)
+        .rotate(Radians.TAUby2.toFloat)
 
-    assertEquals(actual.toMatrix4, expected)
+    assert(clue(actual.toMatrix4) ~== clue(expected))
 
   }
 
@@ -93,7 +93,7 @@ class CheapCheapMatrix4Tests extends munit.FunSuite {
     val actual =
       CheapMatrix4.orthographic(320, 240)
 
-    assertEquals(actual.toMatrix4, expected)
+    assert(clue(actual.toMatrix4) ~== clue(expected))
 
   }
 
