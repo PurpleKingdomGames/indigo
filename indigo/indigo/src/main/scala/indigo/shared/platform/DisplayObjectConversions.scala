@@ -25,7 +25,6 @@ import indigo.shared.display.DisplayObjectUniformData
 import indigo.shared.display.DisplayText
 import indigo.shared.scenegraph.CloneId
 import indigo.shared.scenegraph.CloneBatch
-import indigo.shared.display.DisplayClone
 import indigo.shared.materials.ShaderData
 import indigo.shared.BoundaryLocator
 import indigo.shared.animation.AnimationRef
