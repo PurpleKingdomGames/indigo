@@ -15,7 +15,6 @@ import indigo.shared.datatypes.Point
 import indigo.shared.scenegraph.CloneId
 import indigo.shared.display.DisplayObject
 import indigo.shared.display.DisplayText
-import indigo.shared.display.DisplayClone
 import indigo.shared.display.DisplayCloneBatch
 import indigo.shared.scenegraph.SceneGraphNode
 import indigo.shared.scenegraph.Group
@@ -62,9 +61,6 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
         cloneBlankMapping
       )
       .head match {
-      case _: DisplayClone =>
-        throw new Exception("failed (DisplayClone)")
-
       case _: DisplayCloneBatch =>
         throw new Exception("failed (DisplayCloneBatch)")
 
