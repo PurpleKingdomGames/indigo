@@ -275,50 +275,61 @@ class LayerRenderer(
     FrameBufferFunctions.switchToFramebuffer(gl2, frameBufferComponents.frameBuffer, clearColor, true)
     gl2.drawBuffers(frameBufferComponents.colorAttachments)
 
-    val sorted: ListBuffer[DisplayEntity] =
-      displayEntities.sortWith((d1, d2) => d1.z > d2.z)
+    val sorted: Vector[DisplayEntity] =
+      displayEntities.sortWith((d1, d2) => d1.z > d2.z).toVector
 
     gl2.activeTexture(TEXTURE0);
 
-    @tailrec
-    def rec(
-        remaining: List[DisplayEntity],
-        batchCount: Int,
-        atlasName: Option[AtlasId],
-        currentShader: ShaderId,
-        currentShaderHash: String
-    ): Unit =
-      remaining match {
-        case Nil =>
-          drawBuffer(batchCount)
+    renderEntities(cloneBlankDisplayObjects, sorted, customShaders)
+  }
 
-        case _ if batchCount == maxBatchSize =>
-          drawBuffer(batchCount)
-          rec(remaining, 0, atlasName, currentShader, currentShaderHash)
+  private def renderEntities(
+      cloneBlankDisplayObjects: Map[CloneId, DisplayObject],
+      entities: Vector[DisplayEntity],
+      customShaders: HashMap[ShaderId, WebGLProgram]
+  ): Unit = {
+    val count: Int                 = entities.length
+    var i: Int                     = 0
+    var batchCount: Int            = 0
+    var atlasName: Option[AtlasId] = None
+    var currentShader: ShaderId    = ShaderId("")
+    var currentShaderHash: String  = ""
 
-        case (d: DisplayObject) :: _ if requiresContextChange(d, atlasName, currentShader, currentShaderHash) =>
-          drawBuffer(batchCount)
-          doContextChange(
-            d,
-            atlasName,
-            currentShader,
-            currentShaderHash,
-            customShaders
-          )
-          rec(remaining, 0, d.atlasName, d.shaderId, d.shaderUniformData.map(_.uniformHash).mkString)
+    while (i <= count)
+      if i == count then
+        drawBuffer(batchCount)
+        i += 1
+      else if batchCount == maxBatchSize then
+        drawBuffer(batchCount)
+        batchCount = 0
+      else
+        entities(i) match {
+          case d: DisplayObject if requiresContextChange(d, atlasName, currentShader, currentShaderHash) =>
+            drawBuffer(batchCount)
+            doContextChange(
+              d,
+              atlasName,
+              currentShader,
+              currentShaderHash,
+              customShaders
+            )
+            batchCount = 0
+            atlasName = d.atlasName
+            currentShader = d.shaderId
+            currentShaderHash = d.shaderUniformData.map(_.uniformHash).mkString
 
-        case (d: DisplayObject) :: ds =>
-          val data = d.transform.data
-          updateData(d, batchCount, data._1, data._2)
-          rec(ds, batchCount + 1, atlasName, currentShader, currentShaderHash)
+          case d: DisplayObject =>
+            val data = d.transform.data
+            updateData(d, batchCount, data._1, data._2)
+            batchCount = batchCount + 1
+            i += 1
 
-        case (c: DisplayClone) :: ds =>
-          cloneBlankDisplayObjects.get(c.id) match {
-            case None =>
-              rec(ds, batchCount, atlasName, currentShader, currentShaderHash)
+          case c: DisplayClone =>
+            cloneBlankDisplayObjects.get(c.id) match {
+              case None =>
+                i += 1
 
-            case Some(d) =>
-              if (requiresContextChange(d, atlasName, currentShader, currentShaderHash)) {
+              case Some(d) if requiresContextChange(d, atlasName, currentShader, currentShaderHash) =>
                 drawBuffer(batchCount)
                 doContextChange(
                   d,
@@ -327,21 +338,27 @@ class LayerRenderer(
                   currentShaderHash,
                   customShaders
                 )
-                rec(remaining, 0, d.atlasName, d.shaderId, d.shaderUniformData.map(_.uniformHash).mkString)
-              } else {
+                batchCount = 0
+                atlasName = d.atlasName
+                currentShader = d.shaderId
+                currentShaderHash = d.shaderUniformData.map(_.uniformHash).mkString
+
+              case Some(d) =>
                 val data = c.transform.data
                 updateData(d, batchCount, data._1, data._2)
-                rec(ds, batchCount + 1, d.atlasName, d.shaderId, d.shaderUniformData.map(_.uniformHash).mkString)
-              }
-          }
+                batchCount = batchCount + 1
+                atlasName = d.atlasName
+                currentShader = d.shaderId
+                currentShaderHash = d.shaderUniformData.map(_.uniformHash).mkString
+                i += 1
+            }
 
-        case (c: DisplayCloneBatch) :: ds =>
-          cloneBlankDisplayObjects.get(c.id) match {
-            case None =>
-              rec(ds, batchCount, atlasName, currentShader, currentShaderHash)
+          case c: DisplayCloneBatch =>
+            cloneBlankDisplayObjects.get(c.id) match
+              case None =>
+                i += 1
 
-            case Some(d) =>
-              if (requiresContextChange(d, atlasName, currentShader, currentShaderHash)) {
+              case Some(d) if requiresContextChange(d, atlasName, currentShader, currentShaderHash) =>
                 drawBuffer(batchCount)
                 doContextChange(
                   d,
@@ -350,70 +367,71 @@ class LayerRenderer(
                   currentShaderHash,
                   customShaders
                 )
-                rec(remaining, 0, d.atlasName, d.shaderId, d.shaderUniformData.map(_.uniformHash).mkString)
-              } else {
+                batchCount = 0
+                atlasName = d.atlasName
+                currentShader = d.shaderId
+                currentShaderHash = d.shaderUniformData.map(_.uniformHash).mkString
+
+              case Some(d) =>
                 val numberProcessed: Int =
                   processCloneBatch(c, d, batchCount)
 
-                rec(
-                  ds,
-                  batchCount + numberProcessed,
-                  d.atlasName,
-                  d.shaderId,
-                  d.shaderUniformData.map(_.uniformHash).mkString
-                )
-              }
-          }
+                batchCount = batchCount + numberProcessed
+                atlasName = d.atlasName
+                currentShader = d.shaderId
+                currentShaderHash = d.shaderUniformData.map(_.uniformHash).mkString
+                i += 1
 
-        case (t: DisplayText) :: ds =>
-          drawBuffer(batchCount)
+          case t: DisplayText =>
+            drawBuffer(batchCount)
 
-          // Change context
-          val shaderId = indigo.shared.shader.StandardShaders.Bitmap.id
-          val activeShader: WebGLProgram =
-            if (currentShader != shaderId) {
-              customShaders.get(shaderId) match {
-                case Some(s) =>
-                  currentProgram = s
-                  setupShader(s)
-                  s
+            // Change context
+            val shaderId = indigo.shared.shader.StandardShaders.Bitmap.id
+            val activeShader: WebGLProgram =
+              if (currentShader != shaderId) {
+                customShaders.get(shaderId) match {
+                  case Some(s) =>
+                    currentProgram = s
+                    setupShader(s)
+                    s
 
-                case None =>
-                  throw new Exception(
-                    s"(TextBox) Missing entity shader '$shaderId'. Have you remembered to add the shader to the boot sequence or disabled auto-loading of default shaders?"
-                  )
-              }
-            } else currentProgram
-          //
+                  case None =>
+                    throw new Exception(
+                      s"(TextBox) Missing entity shader '$shaderId'. Have you remembered to add the shader to the boot sequence or disabled auto-loading of default shaders?"
+                    )
+                }
+              } else currentProgram
+            //
 
-          // UBO data
-          val buff = customDataUBOBuffers.getOrElseUpdate("FILLTYPE0", gl2.createBuffer())
-          WebGLHelper.attachUBOData(gl2, Array[Float](0), buff)
-          WebGLHelper.bindUBO(
-            gl2,
-            activeShader,
-            "IndigoBitmapData",
-            RendererWebGL2Constants.customDataBlockOffsetPointer,
-            buff
-          )
-          //
+            // UBO data
+            val buff = customDataUBOBuffers.getOrElseUpdate("FILLTYPE0", gl2.createBuffer())
+            WebGLHelper.attachUBOData(gl2, Array[Float](0), buff)
+            WebGLHelper.bindUBO(
+              gl2,
+              activeShader,
+              "IndigoBitmapData",
+              RendererWebGL2Constants.customDataBlockOffsetPointer,
+              buff
+            )
+            //
 
-          gl2.bindTexture(TEXTURE_2D, textTexture)
-          gl2.texImage2D(
-            TEXTURE_2D,
-            0,
-            WebGLRenderingContext.RGBA,
-            WebGLRenderingContext.RGBA,
-            UNSIGNED_BYTE,
-            dynamicText.makeTextImageData(t.text, t.style, t.width, t.height)
-          )
+            gl2.bindTexture(TEXTURE_2D, textTexture)
+            gl2.texImage2D(
+              TEXTURE_2D,
+              0,
+              WebGLRenderingContext.RGBA,
+              WebGLRenderingContext.RGBA,
+              UNSIGNED_BYTE,
+              dynamicText.makeTextImageData(t.text, t.style, t.width, t.height)
+            )
 
-          val data = t.transform.data
-          updateTextData(t, 0, data._1, data._2)
-          rec(ds, 0 + 1, None, shaderId, "")
-      }
-
-    rec(sorted.toList, 0, None, ShaderId(""), "")
+            val data = t.transform.data
+            updateTextData(t, 0, data._1, data._2)
+            batchCount = 1
+            atlasName = None
+            currentShaderHash = ""
+            i += 1
+        }
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
