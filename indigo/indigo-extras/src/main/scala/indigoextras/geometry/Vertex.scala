@@ -58,6 +58,20 @@ final case class Vertex(x: Double, y: Double) derives CanEqual {
   def scaleBy(amount: Double): Vertex =
     scaleBy(Vertex(amount))
 
+  def rotateBy(angle: Double): Vertex = {
+    val a = if (angle >= 0) then angle else angle + Math.PI * 2.0
+    val s = Math.sin(a)
+    val c = Math.cos(a)
+
+    Vertex(
+      this.x * c - this.y * s,
+      this.x * s + this.y * c
+    )
+  }
+  def rotateBy(angle: Double, origin: Vertex): Vertex = {
+    (this - origin).rotateBy(angle) + origin
+  }
+
   def round: Vertex =
     Vertex(Math.round(x).toDouble, Math.round(y).toDouble)
 

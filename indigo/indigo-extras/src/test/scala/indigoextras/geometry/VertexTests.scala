@@ -1,6 +1,6 @@
 package indigoextras.geometry
 
-import indigo.shared.datatypes.Vector2
+import indigo.shared.datatypes.{Radians,Vector2}
 
 class VertexTests extends munit.FunSuite {
 
@@ -94,6 +94,26 @@ class VertexTests extends munit.FunSuite {
 
   test("scaleBy") {
     assertEquals(Vertex(2, 2).scaleBy(Vertex(10, 2)), Vertex(20, 4))
+  }
+
+  test("rotate around origin") {
+    // 90
+    assert(Vertex(1, 0).rotateBy(Radians.PIby2.toDouble) ~== Vertex(0, 1))
+
+    // -90
+    assert(Vertex(1, 1).rotateBy((-1.0 * Radians.PIby2.toDouble).toDouble) ~== Vertex(1, -1))
+
+    // 45
+    val v = Vertex(1, 2)
+    val expected = Vertex(-0.70710,2.12132)
+    assert(v.rotateBy(Radians.PIby2.toDouble / 2f) ~== expected)
+    // magnitude should remain the same
+    assert(Math.abs(v.length - expected.length) <= 0.0001)
+  }
+
+  test("rotate around given point") {
+    assert(Vertex(3, 1).rotateBy(Radians.PIby2.toDouble, Vertex(-2,-2)) ~== Vertex(-5, 3))
+    assert(Vertex(-3, 4).rotateBy(-1.0 * Radians.PIby2.toDouble, Vertex(-1,2)) ~== Vertex(1, 4))
   }
 
   test("round") {
