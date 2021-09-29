@@ -13,20 +13,6 @@ sealed trait DisplayEntity {
   def applyTransform(matrix: CheapMatrix4): DisplayEntity
 }
 
-final case class DisplayClone(
-    val id: CloneId,
-    val transform: CheapMatrix4,
-    val z: Double
-) extends DisplayEntity derives CanEqual {
-
-  def applyTransform(matrix: CheapMatrix4): DisplayClone =
-    this.copy(transform = transform * matrix)
-}
-object DisplayClone {
-  def asBatchData(dc: DisplayClone): CheapMatrix4 =
-    dc.transform
-}
-
 final case class DisplayCloneBatch(
     val id: CloneId,
     val z: Double,

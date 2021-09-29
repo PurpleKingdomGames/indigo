@@ -13,7 +13,6 @@ import scala.annotation.tailrec
 import scala.scalajs.js.typedarray.Float32Array
 import scala.collection.mutable.ListBuffer
 import indigo.shared.display.DisplayEntity
-import indigo.shared.display.DisplayClone
 import indigo.shared.display.DisplayCloneBatch
 import indigo.shared.display.DisplayText
 import indigo.platform.renderer.shared.TextureLookupResult
@@ -323,35 +322,6 @@ class LayerRenderer(
             updateData(d, batchCount, data._1, data._2)
             batchCount = batchCount + 1
             i += 1
-
-          case c: DisplayClone =>
-            cloneBlankDisplayObjects.get(c.id) match {
-              case None =>
-                i += 1
-
-              case Some(d) if requiresContextChange(d, atlasName, currentShader, currentShaderHash) =>
-                drawBuffer(batchCount)
-                doContextChange(
-                  d,
-                  atlasName,
-                  currentShader,
-                  currentShaderHash,
-                  customShaders
-                )
-                batchCount = 0
-                atlasName = d.atlasName
-                currentShader = d.shaderId
-                currentShaderHash = d.shaderUniformData.map(_.uniformHash).mkString
-
-              case Some(d) =>
-                val data = c.transform.data
-                updateData(d, batchCount, data._1, data._2)
-                batchCount = batchCount + 1
-                atlasName = d.atlasName
-                currentShader = d.shaderId
-                currentShaderHash = d.shaderUniformData.map(_.uniformHash).mkString
-                i += 1
-            }
 
           case c: DisplayCloneBatch =>
             cloneBlankDisplayObjects.get(c.id) match
