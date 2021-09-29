@@ -32,7 +32,7 @@ object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
   def subSystems: Set[SubSystem] =
     Set()
 
-  val spawnCount: Int = 40
+  val spawnCount: Int = 50
 
   def updateModel(
       context: FrameContext[SandboxStartupData],
@@ -68,12 +68,12 @@ object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
       CloneBlank(CloneId("y"), SandboxAssets.yellowDot).static
     )
 
-  val dots: List[Clone] =
+  val dots: List[CloneBatch] =
     List(
-      Clone(CloneId("r")),
-      Clone(CloneId("g")),
-      Clone(CloneId("b")),
-      Clone(CloneId("y"))
+      CloneBatch(CloneId("r"), Nil),
+      CloneBatch(CloneId("g"), Nil),
+      CloneBatch(CloneId("b"), Nil),
+      CloneBatch(CloneId("y"), Nil)
     )
 
   val count: TextBox =
@@ -89,22 +89,33 @@ object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
     Outcome(
       SceneUpdateFragment(
         Layer(
-          model.particles.map { p =>
-            dots(p.color).withTransforms(p.x, p.y, Radians.zero, p.scale, p.scale)
+          model.particles.flatMap { ps =>
+            val res =
+              ps.headOption match
+                case None =>
+                  Nil
+
+                case Some(p) =>
+                  List(
+                    dots(p.color).addClones(
+                      ps.map(pp => CloneTransformData(pp.x, pp.y, Radians.zero, pp.scale, pp.scale))
+                    )
+                  )
+            res
           } ++ List(
-            count.withText(s"count: ${model.particles.length}")
+            count.withText(s"count: ${model.particles.flatten.length}")
           )
         ).withMagnification(1)
       ).addCloneBlanks(cloneBlanks)
     )
 
-opaque type ConfettiModel = (Int, List[Particle])
+opaque type ConfettiModel = (Int, List[List[Particle]])
 object ConfettiModel:
   def empty: ConfettiModel = (0, Nil)
 
   extension (m: ConfettiModel)
-    def color: Int                = m._1
-    def particles: List[Particle] = m._2
+    def color: Int                      = m._1
+    def particles: List[List[Particle]] = m._2
 
     def spawn(dice: Dice, position: Point, count: Int): ConfettiModel =
       (
@@ -118,24 +129,27 @@ object ConfettiModel:
             m._1,
             (dice.rollDouble * 0.5 + 0.5) * 0.5
           )
-        } ++ m._2
+        } :: m._2
       )
 
     def update: ConfettiModel =
       (
         (m._1 + 1) % 4,
-        m._2
-          .filter(p => p.y < 500)
-          .map { p =>
-            val newFy = p.fy - 0.1
-            val newFx = p.fx * 0.95
-            p.copy(
-              x = (p.x + (15 * newFx)).toInt,
-              y = (p.y - (5 * newFy)).toInt,
-              fx = newFx,
-              fy = newFy
-            )
-          }
+        m._2.map {
+          _.filter(p => p.y < 500)
+            .map { p =>
+              val newFy = p.fy - 0.1
+              val newFx = p.fx * 0.95
+              p.copy(
+                x = (p.x + (15 * newFx)).toInt,
+                y = (p.y - (5 * newFy)).toInt,
+                fx = newFx,
+                fy = newFy
+              )
+            }
+        }
       )
 
 final case class Particle(x: Int, y: Int, fx: Double, fy: Double, color: Int, scale: Double)
+object Particle:
+  given CanEqual[Option[Particle], Option[Particle]] = CanEqual.derived

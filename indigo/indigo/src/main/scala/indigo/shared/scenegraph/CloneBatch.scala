@@ -65,11 +65,11 @@ final case class CloneBatch(
 
   def applyCloneTransformData(transform: CloneTransformData): CloneBatch =
     withTransforms(
-      transform.position.x,
-      transform.position.y,
+      transform.x,
+      transform.y,
       transform.rotation,
-      transform.scale.x,
-      transform.scale.y
+      transform.scaleX,
+      transform.scaleY
     )
 
   def withX(newX: Int): CloneBatch =
@@ -100,6 +100,17 @@ final case class CloneBatch(
 
   def addClones(additionalClones: List[CloneTransformData]): CloneBatch =
     this.copy(clones = clones ++ additionalClones)
+  def addClones(additionalClones: CloneTransformData*): CloneBatch =
+    addClones(additionalClones.toList)
+
+  def addClone(additionalClone: CloneTransformData): CloneBatch =
+    this.copy(clones = clones ++ List(additionalClone))
+  def addClone(x: Int, y: Int): CloneBatch =
+    addClone(CloneTransformData(x, y))
+  def addClone(x: Int, y: Int, rotation: Radians): CloneBatch =
+    addClone(CloneTransformData(x, y, rotation))
+  def addClone(x: Int, y: Int, rotation: Radians, scaleX: Double, scaleY: Double): CloneBatch =
+    addClone(CloneTransformData(x, y, rotation, scaleX, scaleY))
 
   def withMaybeStaticBatchKey(maybeKey: Option[BindingKey]): CloneBatch =
     this.copy(staticBatchKey = maybeKey)
@@ -122,6 +133,19 @@ object CloneBatch:
       1.0,
       1.0,
       clones,
+      None
+    )
+
+  def apply(id: CloneId, clones: CloneTransformData*): CloneBatch =
+    CloneBatch(
+      id,
+      Depth.one,
+      0,
+      0,
+      Radians.zero,
+      1.0,
+      1.0,
+      clones.toList,
       None
     )
 
@@ -151,7 +175,15 @@ object CloneBatch:
       None
     )
 
-  def apply(id: CloneId, x: Int, y: Int, rotation: Radians, scaleX: Double, scaleY: Double, clones: List[CloneTransformData]): CloneBatch =
+  def apply(
+      id: CloneId,
+      x: Int,
+      y: Int,
+      rotation: Radians,
+      scaleX: Double,
+      scaleY: Double,
+      clones: List[CloneTransformData]
+  ): CloneBatch =
     CloneBatch(
       id,
       Depth.one,
