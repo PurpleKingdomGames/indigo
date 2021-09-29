@@ -510,9 +510,6 @@ val CloneBlank: shared.scenegraph.CloneBlank.type = shared.scenegraph.CloneBlank
 type CloneId = shared.scenegraph.CloneId
 val CloneId: shared.scenegraph.CloneId.type = shared.scenegraph.CloneId
 
-type Clone = shared.scenegraph.Clone
-val Clone: shared.scenegraph.Clone.type = shared.scenegraph.Clone
-
 type CloneBatch = shared.scenegraph.CloneBatch
 val CloneBatch: shared.scenegraph.CloneBatch.type = shared.scenegraph.CloneBatch
 

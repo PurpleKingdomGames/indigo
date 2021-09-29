@@ -23,7 +23,6 @@ import scala.collection.mutable.ListBuffer
 import indigo.shared.display.DisplayEntity
 import indigo.shared.display.DisplayObjectUniformData
 import indigo.shared.display.DisplayText
-import indigo.shared.scenegraph.Clone
 import indigo.shared.scenegraph.CloneId
 import indigo.shared.scenegraph.CloneBatch
 import indigo.shared.display.DisplayClone
@@ -73,23 +72,6 @@ final class DisplayObjectConversions(
         }
     }
 
-  private def cloneToDisplayEntity(
-      clone: Clone,
-      blankTransform: CheapMatrix4
-  ): DisplayClone =
-    new DisplayClone(
-      id = clone.id,
-      transform = DisplayObjectConversions.cloneTransformToMatrix4(
-        blankTransform,
-        clone.x.toFloat,
-        clone.y.toFloat,
-        clone.rotation.toFloat,
-        clone.scaleX.toFloat,
-        clone.scaleY.toFloat
-      ),
-      z = clone.depth.toDouble
-    )
-
   private def cloneBatchDataToDisplayEntities(batch: CloneBatch, blankTransform: CheapMatrix4): DisplayCloneBatch = {
     def convert(): DisplayCloneBatch =
       new DisplayCloneBatch(
@@ -98,11 +80,11 @@ final class DisplayObjectConversions(
         clones = batch.clones.map { td =>
           DisplayObjectConversions.cloneTransformToMatrix4(
             blankTransform,
-            (batch.x + td.position.x).toFloat,
-            (batch.y + td.position.y).toFloat,
+            (batch.x + td.x).toFloat,
+            (batch.y + td.y).toFloat,
             (batch.rotation + td.rotation).toFloat,
-            (batch.scaleX * td.scale.x).toFloat,
-            (batch.scaleY * td.scale.y).toFloat
+            (batch.scaleX * td.scaleX).toFloat,
+            (batch.scaleY * td.scaleY).toFloat
           )
         }
       )
@@ -204,15 +186,6 @@ final class DisplayObjectConversions(
 
       case s: EntityNode =>
         List(sceneEntityToDisplayObject(s, assetMapping))
-
-      case c: Clone =>
-        cloneBlankDisplayObjects.get(c.id) match {
-          case None =>
-            Nil
-
-          case Some(refDisplayObject) =>
-            List(cloneToDisplayEntity(c, refDisplayObject.transform))
-        }
 
       case c: CloneBatch =>
         cloneBlankDisplayObjects.get(c.id) match {
