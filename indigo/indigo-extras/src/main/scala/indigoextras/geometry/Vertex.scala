@@ -1,7 +1,7 @@
 package indigoextras.geometry
 
 import indigo.shared.datatypes.Point
-import indigo.shared.datatypes.Vector2
+import indigo.shared.datatypes.{Vector2,Radians}
 
 final case class Vertex(x: Double, y: Double) derives CanEqual {
 
@@ -58,8 +58,8 @@ final case class Vertex(x: Double, y: Double) derives CanEqual {
   def scaleBy(amount: Double): Vertex =
     scaleBy(Vertex(amount))
 
-  def rotateBy(angle: Double): Vertex = {
-    val a = if (angle >= 0) then angle else angle + Math.PI * 2.0
+  def rotateBy(angle: Radians): Vertex = {
+    val a = angle.wrap.toDouble
     val s = Math.sin(a)
     val c = Math.cos(a)
 
@@ -68,7 +68,7 @@ final case class Vertex(x: Double, y: Double) derives CanEqual {
       this.x * s + this.y * c
     )
   }
-  def rotateBy(angle: Double, origin: Vertex): Vertex = {
+  def rotateBy(angle: Radians, origin: Vertex): Vertex = {
     (this - origin).rotateBy(angle) + origin
   }
 
