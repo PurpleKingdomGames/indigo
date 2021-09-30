@@ -135,34 +135,34 @@ class Vector2Tests extends munit.FunSuite {
 
   test("rotate around origin") {
     // 0
-    assert(Vector2(1, 0).rotateBy(0) ~== Vector2(1, 0))
+    assert(Vector2(1, 0).rotateBy(Radians(0)) ~== Vector2(1, 0))
     // 90
-    assert(Vector2(1, 0).rotateBy(Radians.PIby2.toDouble) ~== Vector2(0, 1))
+    assert(Vector2(1, 0).rotateBy(Radians.PIby2) ~== Vector2(0, 1))
     // 180
-    assert(Vector2(1, 1).rotateBy(Radians.PI.toDouble) ~== Vector2(-1, -1))
+    assert(Vector2(1, 1).rotateBy(Radians.PI) ~== Vector2(-1, -1))
     // 270
-    assert(Vector2(1, 0).rotateBy(Radians.PI.toDouble + Radians.PIby2.toDouble) ~== Vector2(0, -1))
+    assert(Vector2(1, 0).rotateBy(Radians.PI + Radians.PIby2) ~== Vector2(0, -1))
     // 360
-    assert(Vector2(1, 0).rotateBy(Radians.TAU.toDouble) ~== Vector2(1, 0))
+    assert(Vector2(1, 0).rotateBy(Radians.TAU) ~== Vector2(1, 0))
 
     // 45
     val v = Vector2(1, 2)
     val expected = Vector2(-0.70710,2.12132)
-    assert(v.rotateBy(Radians.PIby2.toDouble / 2f) ~== expected)
+    assert(v.rotateBy(Radians.PIby2 / 2f) ~== expected)
     // magnitude should remain the same
     assert(Math.abs(v.length - expected.length) <= 0.0001)
 
     // -90
-    assert(Vector2(1, 1).rotateBy((-1.0 * Radians.PIby2.toDouble).toDouble) ~== Vector2(1, -1))
+    assert(Vector2(1, 1).rotateBy(Radians.PIby2 * -1f) ~== Vector2(1, -1))
   }
 
   test("rotate around given point") {
     // Same quadrant
-    assert(Vector2(3, 3).rotateBy(Radians.PIby2.toDouble, Vector2(2,2)) ~== Vector2(1, 3))
+    assert(Vector2(3, 3).rotateBy(Radians.PIby2, Vector2(2,2)) ~== Vector2(1, 3))
     // Adjacent quadrant
-    assert(Vector2(3, 1).rotateBy(Radians.PIby2.toDouble, Vector2(-2,-2)) ~== Vector2(-5, 3))
+    assert(Vector2(3, 1).rotateBy(Radians.PIby2, Vector2(-2,-2)) ~== Vector2(-5, 3))
     // Negative
-    assert(Vector2(-3, 4).rotateBy(-1.0 * Radians.PIby2.toDouble, Vector2(-1,2)) ~== Vector2(1, 4))
+    assert(Vector2(-3, 4).rotateBy(Radians.PIby2 * -1f, Vector2(-1,2)) ~== Vector2(1, 4))
   }
 
   def to2dp(d: Double): Double =

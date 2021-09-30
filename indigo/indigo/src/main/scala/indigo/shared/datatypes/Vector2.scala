@@ -48,8 +48,8 @@ final case class Vector2(x: Double, y: Double) derives CanEqual:
   def scaleBy(amount: Double): Vector2 =
     scaleBy(Vector2(amount))
 
-  def rotateBy(angle: Double): Vector2 = {
-    val a = if (angle >= 0) then angle else angle + Math.PI * 2.0
+  def rotateBy(angle: Radians): Vector2 = {
+    val a = angle.wrap.toDouble
     val s = Math.sin(a)
     val c = Math.cos(a)
 
@@ -58,7 +58,7 @@ final case class Vector2(x: Double, y: Double) derives CanEqual:
       this.x * s + this.y * c
     )
   }
-  def rotateBy(angle: Double, origin: Vector2): Vector2 = {
+  def rotateBy(angle: Radians, origin: Vector2): Vector2 = {
     Vector2.add(
       Vector2.subtract(this, origin).rotateBy(angle),
       origin
