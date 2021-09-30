@@ -42,6 +42,20 @@ final case class Point(x: Int, y: Int) derives CanEqual {
   def moveBy(x: Int, y: Int): Point =
     moveBy(Point(x, y))
 
+  def rotateBy(angle: Radians): Point = {
+    val a = angle.wrap.toDouble
+    val s = Math.sin(a)
+    val c = Math.cos(a)
+
+    Point(
+      Math.round(this.x * c - this.y * s).toInt,
+      Math.round(this.x * s + this.y * c).toInt
+    )
+  }
+  def rotateBy(angle: Radians, origin: Point): Point = {
+    (this - origin).rotateBy(angle) + origin
+  }
+
   def distanceTo(other: Point): Double =
     Point.distanceBetween(this, other)
 
