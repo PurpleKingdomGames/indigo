@@ -116,6 +116,20 @@ class VertexTests extends munit.FunSuite {
     assert(Vertex(-3, 4).rotateBy(Radians.PIby2 * -1.0, Vertex(-1,2)) ~== Vertex(1, 4))
   }
 
+  test("rotate to") {
+    // 0 to 270
+    assert(Vertex(1, 0).rotateTo(Radians.PI + Radians.PIby2) ~== Vertex(0, -1))
+    // 45 to 270
+    assert(Vertex(1, 1).rotateTo(Radians.PI + Radians.PIby2) ~== Vertex(0, -1.41421))
+  }
+
+  test("angle") {
+    // -90
+    assertEquals(Vertex(0, -1).angle, Radians.PIby2 * -1.0)
+    // -90 at different magnitude
+    assertEquals(Vertex(0, -8.5).angle, Radians.PIby2 * -1.0)
+  }
+
   test("round") {
     assertEquals(Vertex(2.2, 2.6).round, Vertex(2, 3))
   }

@@ -165,6 +165,20 @@ class Vector2Tests extends munit.FunSuite {
     assert(Vector2(-3, 4).rotateBy(Radians.PIby2 * -1f, Vector2(-1,2)) ~== Vector2(1, 4))
   }
 
+  test("rotate to") {
+    // 0 to 270
+    assert(Vector2(1, 0).rotateTo(Radians.PI + Radians.PIby2) ~== Vector2(0, -1))
+    // 45 to 270
+    assert(Vector2(1, 1).rotateTo(Radians.PI + Radians.PIby2) ~== Vector2(0, -1.41421))
+  }
+
+  test("angle") {
+    // -90
+    assertEquals(Vector2(0, -1).angle, Radians.PIby2 * -1.0)
+    // -90 at different magnitude
+    assertEquals(Vector2(0, -8.5).angle, Radians.PIby2 * -1.0)
+  }
+
   def to2dp(d: Double): Double =
     Math.round(d * 100).toDouble / 100
 

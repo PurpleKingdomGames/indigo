@@ -50,4 +50,18 @@ class PointTests extends munit.FunSuite {
     assertEquals(Point(3, 1).rotateBy(Radians.PIby2, Point(-2,-2)), Point(-5, 3))
     assertEquals(Point(-3, 4).rotateBy(Radians.PIby2 * -1.0, Point(-1,2)), Point(1, 4))
   }
+
+  test("rotate to") {
+    // 0 to 270
+    assertEquals(Point(1, 0).rotateTo(Radians.PI + Radians.PIby2), Point(0, -1))
+    // 45 to 270
+    assertEquals(Point(1, 1).rotateTo(Radians.PI + Radians.PIby2), Point(0, -1))
+  }
+
+  test("angle") {
+    // -90
+    assertEquals(Point(0, -1).angle, Radians.PIby2 * -1.0)
+    // -90 at different magnitude
+    assertEquals(Point(0, -8).angle, Radians.PIby2 * -1.0)
+  }
 }

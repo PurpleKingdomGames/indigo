@@ -56,6 +56,17 @@ final case class Point(x: Int, y: Int) derives CanEqual {
     (this - origin).rotateBy(angle) + origin
   }
 
+  def rotateTo(angle: Radians): Point = {
+    val a = angle.wrap.toDouble
+    val r = this.distanceTo(Point.zero)
+    Point(
+      Math.round(r * Math.cos(a)).toInt,
+      Math.round(r * Math.sin(a)).toInt
+    )
+  }
+
+  def angle: Radians = Radians(Math.atan2(this.y, this.x))
+
   def distanceTo(other: Point): Double =
     Point.distanceBetween(this, other)
 
