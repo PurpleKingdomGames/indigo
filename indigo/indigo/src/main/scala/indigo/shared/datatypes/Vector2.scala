@@ -65,6 +65,13 @@ final case class Vector2(x: Double, y: Double) derives CanEqual:
     )
   }
 
+  def rotateTo(angle: Radians): Vector2 = {
+    val a = angle.wrap.toDouble
+    Vector2(this.length * Math.cos(a), this.length * Math.sin(a))
+  }
+
+  def angle: Radians = Radians(Math.atan2(this.y, this.x))
+
   def round: Vector2 =
     Vector2(Math.round(x).toDouble, Math.round(y).toDouble)
 

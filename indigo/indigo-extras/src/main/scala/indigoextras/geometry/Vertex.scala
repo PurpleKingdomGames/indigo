@@ -72,6 +72,13 @@ final case class Vertex(x: Double, y: Double) derives CanEqual {
     (this - origin).rotateBy(angle) + origin
   }
 
+  def rotateTo(angle: Radians): Vertex = {
+    val a = angle.wrap.toDouble
+    Vertex(this.length * Math.cos(a), this.length * Math.sin(a))
+  }
+
+  def angle: Radians = Radians(Math.atan2(this.y, this.x))
+
   def round: Vertex =
     Vertex(Math.round(x).toDouble, Math.round(y).toDouble)
 
