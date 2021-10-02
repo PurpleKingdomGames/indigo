@@ -20,6 +20,8 @@ layout (std140) uniform IndigoFrameData {
   vec2 VIEWPORT_SIZE; // Size of the viewport in pixels
 };
 
+uniform mat4 u_baseTransform;
+
 out vec4 v_channel_coords_01; // Scaled to position on texture atlas
 out vec4 v_channel_coords_23; // Scaled to position on texture atlas
 out vec4 v_uv_size; // Unscaled texture coordinates + Width / height of the objects
@@ -120,7 +122,7 @@ void main(void) {
          a_matTranslateRotation.x, a_matTranslateRotation.y, a_matTranslateRotation.z, 1
         );
 
-  gl_Position = u_projection * transform * VERTEX;
+  gl_Position = u_projection * u_baseTransform * transform * VERTEX;
 
   vec2 screenCoords = gl_Position.xy * 0.5 + 0.5;
   v_screenCoordsRotation = vec3(vec2(screenCoords.x, 1.0 - screenCoords.y) * VIEWPORT_SIZE, ROTATION);

@@ -30,6 +30,8 @@ import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.platform.renderer.shared.WebGLHelper
 import indigo.shared.display.DisplayGroup
 
+import scalajs.js.JSConverters._
+
 class LayerRenderer(
     gl2: WebGL2RenderingContext,
     textureLocations: List[TextureLookupResult],
@@ -153,13 +155,23 @@ class LayerRenderer(
   private var currentProgram: WebGLProgram                           = null
   private given CanEqual[Option[WebGLProgram], Option[WebGLProgram]] = CanEqual.derived
 
+  private def setBaseTransform(baseTransform: CheapMatrix4): Unit =
+    if currentProgram == null then ()
+    else
+      gl2.uniformMatrix4fv(
+        location = gl2.getUniformLocation(currentProgram, "u_baseTransform"),
+        transpose = false,
+        value = Float32Array(baseTransform.toArray.toJSArray)
+      )
+
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def doContextChange(
       d: DisplayObject,
       atlasName: Option[AtlasId],
       currentShader: ShaderId,
       currentUniformHash: String,
-      customShaders: HashMap[ShaderId, WebGLProgram]
+      customShaders: HashMap[ShaderId, WebGLProgram],
+      baseTransform: CheapMatrix4
   ): Unit = {
 
     // Switch and reference shader
@@ -177,6 +189,9 @@ class LayerRenderer(
             )
         }
       else currentProgram
+
+    // Base transform
+    setBaseTransform(baseTransform)
 
     // UBO data
     val uniformHash: String = d.shaderUniformData.map(_.uniformHash).mkString
@@ -286,12 +301,15 @@ class LayerRenderer(
       customShaders: HashMap[ShaderId, WebGLProgram],
       baseTransform: CheapMatrix4
   ): Unit = {
-    val count: Int                 = displayEntities.length
-    var i: Int                     = 0
-    var batchCount: Int            = 0
-    var atlasName: Option[AtlasId] = None
-    var currentShader: ShaderId    = ShaderId("")
-    var currentShaderHash: String  = ""
+    setBaseTransform(baseTransform)
+
+    val count: Int                    = displayEntities.length
+    var i: Int                        = 0
+    var batchCount: Int               = 0
+    var atlasName: Option[AtlasId]    = None
+    var currentShader: ShaderId       = ShaderId("")
+    var currentShaderHash: String     = ""
+    var currentBaseTransformHash: Int = 0
 
     val sortedEntities: Vector[DisplayEntity] =
       displayEntities.sortWith((d1, d2) => d1.z > d2.z).toVector
@@ -315,6 +333,7 @@ class LayerRenderer(
             currentShader = ShaderId("")
             currentShaderHash = ""
             renderEntities(cloneBlankDisplayObjects, d.entities, customShaders, baseTransform)
+            setBaseTransform(baseTransform)
             i += 1
 
           case d: DisplayObject if requiresContextChange(d, atlasName, currentShader, currentShaderHash) =>
@@ -324,7 +343,8 @@ class LayerRenderer(
               atlasName,
               currentShader,
               currentShaderHash,
-              customShaders
+              customShaders,
+              baseTransform
             )
             batchCount = 0
             atlasName = d.atlasName
@@ -332,7 +352,7 @@ class LayerRenderer(
             currentShaderHash = d.shaderUniformData.map(_.uniformHash).mkString
 
           case d: DisplayObject =>
-            val data = (d.transform * baseTransform).data
+            val data = d.transform.data
             updateData(d, batchCount, data._1, data._2)
             batchCount = batchCount + 1
             i += 1
@@ -349,7 +369,8 @@ class LayerRenderer(
                   atlasName,
                   currentShader,
                   currentShaderHash,
-                  customShaders
+                  customShaders,
+                  baseTransform
                 )
                 batchCount = 0
                 atlasName = d.atlasName
@@ -358,7 +379,7 @@ class LayerRenderer(
 
               case Some(d) =>
                 val numberProcessed: Int =
-                  processCloneBatch(c, d, batchCount, baseTransform)
+                  processCloneBatch(c, d, batchCount)
 
                 batchCount = batchCount + numberProcessed
                 atlasName = d.atlasName
@@ -409,7 +430,7 @@ class LayerRenderer(
               dynamicText.makeTextImageData(t.text, t.style, t.width, t.height)
             )
 
-            val data = (t.transform * baseTransform).data
+            val data = t.transform.data
             updateTextData(t, 0, data._1, data._2)
             batchCount = 1
             atlasName = None
@@ -422,17 +443,14 @@ class LayerRenderer(
   private def processCloneBatch(
       c: DisplayCloneBatch,
       refDisplayObject: DisplayObject,
-      batchCount: Int,
-      baseTransform: CheapMatrix4
+      batchCount: Int
   ): Int = {
     val count: Int                       = c.clones.length
     var i: Int                           = 0
     var data: (List[Float], List[Float]) = (Nil, Nil)
-    var cl: CheapMatrix4                 = CheapMatrix4.identity
 
     while (i < count) {
-      cl = c.clones(i) * baseTransform
-      data = cl.data
+      data = c.clones(i).data
       updateData(refDisplayObject, batchCount + i, data._1, data._2)
       i += 1
     }
