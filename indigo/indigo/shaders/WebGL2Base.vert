@@ -3,13 +3,13 @@
 precision mediump float;
 
 layout (location = 0) in vec4 a_verticesAndCoords;
-layout (location = 1) in vec4 a_matRotateScale; // mat(0,1,4,5)
-layout (location = 2) in vec4 a_matTranslateRotation; // mat(12,13,14), rotation angle
+layout (location = 1) in vec4 a_translateScale;
+layout (location = 2) in vec4 a_refFlip;
 layout (location = 3) in vec4 a_sizeAndFrameScale;
 layout (location = 4) in vec4 a_channelOffsets01;
 layout (location = 5) in vec4 a_channelOffsets23;
-layout (location = 6) in vec4 a_textureSizeAtlasSize; // vec2 textureSize + vec2 ???
-
+layout (location = 6) in vec4 a_textureSizeAtlasSize;
+layout (location = 7) in float a_rotation;
 // public
 layout (std140) uniform IndigoProjectionData {
   mat4 u_projection;
@@ -60,6 +60,10 @@ vec2 CHANNEL_1_POSITION;
 vec2 CHANNEL_2_POSITION;
 vec2 CHANNEL_3_POSITION;
 vec2 CHANNEL_0_SIZE;
+vec2 POSITION;
+vec2 SCALE;
+vec2 REF;
+vec2 FLIP;
 float ROTATION;
 vec2 TEXTURE_COORDS; // Redundant, equal to UV
 
@@ -74,6 +78,14 @@ mat4 translate2d(vec2 t){
 mat4 scale2d(vec2 s){
     return mat4(s.x, 0, 0, 0,
                 0, s.y, 0, 0,
+                0, 0, 1, 0,
+                0, 0, 0, 1
+                );
+}
+
+mat4 rotate2d(float angle){
+    return mat4(cos(angle), -sin(angle), 0, 0,
+                sin(angle), cos(angle), 0, 0,
                 0, 0, 1, 0,
                 0, 0, 0, 1
                 );
@@ -96,7 +108,11 @@ void main(void) {
   UV = a_verticesAndCoords.zw;
   SIZE = a_sizeAndFrameScale.xy;
   FRAME_SIZE = a_sizeAndFrameScale.zw;
-  ROTATION = a_matTranslateRotation.w;
+  ROTATION = a_rotation;
+  POSITION = a_translateScale.xy;
+  SCALE = a_translateScale.zw;
+  REF = a_refFlip.xy;
+  FLIP = a_refFlip.zw;
   TEXTURE_COORDS = UV; // Redundant.
  
   CHANNEL_0_ATLAS_OFFSET = a_channelOffsets01.xy;
@@ -115,12 +131,12 @@ void main(void) {
 
   vertex();
 
-  mat4 transform =
-    mat4(a_matRotateScale.x,       a_matRotateScale.y,       0,                        0,
-         a_matRotateScale.z,       a_matRotateScale.w,       0,                        0,
-         0,                        0,                        1,                        0,
-         a_matTranslateRotation.x, a_matTranslateRotation.y, a_matTranslateRotation.z, 1
-        );
+  mat4 transform = 
+    translate2d(POSITION) *
+    rotate2d(-1.0 * ROTATION) *
+    scale2d(SIZE * SCALE) *
+    translate2d(-(REF / SIZE) + 0.5) *
+    scale2d(vec2(1.0, -1.0) * FLIP);
 
   gl_Position = u_projection * u_baseTransform * transform * VERTEX;
 

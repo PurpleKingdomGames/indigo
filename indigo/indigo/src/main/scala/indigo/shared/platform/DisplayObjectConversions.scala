@@ -72,21 +72,12 @@ final class DisplayObjectConversions(
         }
     }
 
-  private def cloneBatchDataToDisplayEntities(batch: CloneBatch, blankTransform: CheapMatrix4): DisplayCloneBatch = {
+  private def cloneBatchDataToDisplayEntities(batch: CloneBatch): DisplayCloneBatch = {
     def convert(): DisplayCloneBatch =
       new DisplayCloneBatch(
         id = batch.id,
         z = batch.depth.toDouble,
-        clones = batch.clones.map { td =>
-          DisplayObjectConversions.cloneTransformToMatrix4(
-            blankTransform,
-            (batch.x + td.x).toFloat,
-            (batch.y + td.y).toFloat,
-            (batch.rotation + td.rotation).toFloat,
-            (batch.scaleX * td.scaleX).toFloat,
-            (batch.scaleY * td.scaleY).toFloat
-          )
-        }
+        clones = batch.clones
       )
 
     batch.staticBatchKey match {
@@ -153,7 +144,7 @@ final class DisplayObjectConversions(
             DisplayGroup.empty
 
           case Some(refDisplayObject) =>
-            cloneBatchDataToDisplayEntities(c, refDisplayObject.transform)
+            cloneBatchDataToDisplayEntities(c)
         }
 
       case g: Group =>
@@ -252,13 +243,17 @@ final class DisplayObjectConversions(
         )
       }
 
+    val offsetRef = leaf.ref - offset
+
     DisplayObject(
-      transform = DisplayObjectConversions
-        .nodeToMatrix4(
-          leaf.withRef(leaf.ref - offset),
-          bounds.position.toVector,
-          Vector3(bounds.size.width.toDouble, bounds.size.height.toDouble, 1.0d)
-        ),
+      x = leaf.position.x.toFloat,
+      y = leaf.position.y.toFloat,
+      scaleX = leaf.scale.x.toFloat,
+      scaleY = leaf.scale.y.toFloat,
+      refX = offsetRef.x.toFloat,
+      refY = offsetRef.y.toFloat,
+      flipX = if leaf.flip.horizontal then -1.0 else 1.0,
+      flipY = if leaf.flip.vertical then -1.0 else 1.0,
       rotation = leaf.rotation,
       z = leaf.depth.toDouble,
       width = bounds.size.width,
@@ -316,12 +311,14 @@ final class DisplayObjectConversions(
       }
 
     DisplayObject(
-      transform = DisplayObjectConversions
-        .nodeToMatrix4(
-          leaf,
-          leaf.position.toVector,
-          Vector3(bounds.size.width.toDouble, bounds.size.height.toDouble, 1.0d)
-        ),
+      x = leaf.position.x.toFloat,
+      y = leaf.position.y.toFloat,
+      scaleX = leaf.scale.x.toFloat,
+      scaleY = leaf.scale.y.toFloat,
+      refX = leaf.ref.x.toFloat,
+      refY = leaf.ref.y.toFloat,
+      flipX = if leaf.flip.horizontal then -1.0 else 1.0,
+      flipY = if leaf.flip.vertical then -1.0 else 1.0,
       rotation = leaf.rotation,
       z = leaf.depth.toDouble,
       width = bounds.size.width,
@@ -342,12 +339,14 @@ final class DisplayObjectConversions(
     DisplayText(
       text = leaf.text,
       style = leaf.style,
-      transform = DisplayObjectConversions
-        .nodeToMatrix4(
-          leaf,
-          leaf.position.toVector,
-          Vector3(leaf.size.width.toDouble, leaf.size.height.toDouble, 1.0d)
-        ),
+      x = leaf.position.x.toFloat,
+      y = leaf.position.y.toFloat,
+      scaleX = leaf.scale.x.toFloat,
+      scaleY = leaf.scale.y.toFloat,
+      refX = leaf.ref.x.toFloat,
+      refY = leaf.ref.y.toFloat,
+      flipX = if leaf.flip.horizontal then -1.0 else 1.0,
+      flipY = if leaf.flip.vertical then -1.0 else 1.0,
       rotation = leaf.rotation,
       z = leaf.depth.toDouble,
       width = leaf.size.width,
@@ -386,12 +385,14 @@ final class DisplayObjectConversions(
       }
 
     DisplayObject(
-      transform = DisplayObjectConversions
-        .nodeToMatrix4(
-          leaf,
-          leaf.position.toVector,
-          Vector3(leaf.crop.size.width.toDouble, leaf.crop.size.height.toDouble, 1.0d)
-        ),
+      x = leaf.position.x.toFloat,
+      y = leaf.position.y.toFloat,
+      scaleX = leaf.scale.x.toFloat,
+      scaleY = leaf.scale.y.toFloat,
+      refX = leaf.ref.x.toFloat,
+      refY = leaf.ref.y.toFloat,
+      flipX = if leaf.flip.horizontal then -1.0 else 1.0,
+      flipY = if leaf.flip.vertical then -1.0 else 1.0,
       rotation = leaf.rotation,
       z = leaf.depth.toDouble,
       width = leaf.crop.size.width,
@@ -448,11 +449,14 @@ final class DisplayObjectConversions(
       }
 
     DisplayObject(
-      transform = DisplayObjectConversions.nodeToMatrix4(
-        leaf,
-        leaf.position.toVector,
-        Vector3(bounds.width.toDouble, bounds.height.toDouble, 1.0d)
-      ),
+      x = leaf.position.x.toFloat,
+      y = leaf.position.y.toFloat,
+      scaleX = leaf.scale.x.toFloat,
+      scaleY = leaf.scale.y.toFloat,
+      refX = leaf.ref.x.toFloat,
+      refY = leaf.ref.y.toFloat,
+      flipX = if leaf.flip.horizontal then -1.0 else 1.0,
+      flipY = if leaf.flip.vertical then -1.0 else 1.0,
       rotation = leaf.rotation,
       z = leaf.depth.toDouble,
       width = bounds.width,
@@ -513,11 +517,14 @@ final class DisplayObjectConversions(
             }
 
           DisplayObject(
-            transform = DisplayObjectConversions.nodeToMatrix4(
-              leaf.withRef(leaf.ref.x + -(xPosition + alignmentOffsetX), leaf.ref.y - yOffset),
-              leaf.position.toVector,
-              Vector3(fontChar.bounds.width.toDouble, fontChar.bounds.height.toDouble, 1.0d)
-            ),
+            x = leaf.position.x.toFloat,
+            y = leaf.position.y.toFloat,
+            scaleX = leaf.scale.x.toFloat,
+            scaleY = leaf.scale.y.toFloat,
+            refX = (leaf.ref.x + -(xPosition + alignmentOffsetX)).toFloat, //leaf.ref.x.toFloat,
+            refY = (leaf.ref.y - yOffset).toFloat,
+            flipX = if leaf.flip.horizontal then -1.0 else 1.0,
+            flipY = if leaf.flip.vertical then -1.0 else 1.0,
             rotation = leaf.rotation,
             z = leaf.depth.toDouble,
             width = fontChar.bounds.width,
@@ -572,48 +579,6 @@ final class DisplayObjectConversions(
 }
 
 object DisplayObjectConversions {
-
-  def nodeToMatrix4(node: SceneNode, position: Vector2, size: Vector3): CheapMatrix4 =
-    CheapMatrix4.identity
-      .scale(
-        if (node.flip.horizontal) -1.0 else 1.0,
-        if (node.flip.vertical) 1.0 else -1.0,
-        1.0f
-      )
-      .translate(
-        -(node.ref.x.toFloat / size.x.toFloat) + 0.5f,
-        -(node.ref.y.toFloat / size.y.toFloat) + 0.5f,
-        0.0f
-      )
-      .scale(
-        size.x.toFloat * node.scale.x.toFloat,
-        size.y.toFloat * node.scale.y.toFloat,
-        size.z.toFloat
-      )
-      .rotate(node.rotation.toFloat)
-      .translate(
-        position.x.toFloat,
-        position.y.toFloat,
-        0.0f
-      )
-
-  def cloneTransformToMatrix4(
-      blankTransform: CheapMatrix4,
-      x: Float,
-      y: Float,
-      rotation: Float,
-      scaleX: Float,
-      scaleY: Float
-  ): CheapMatrix4 =
-    blankTransform.deepClone * CheapMatrix4.identity
-      .translate(-blankTransform.x, -blankTransform.y, 0.0f)
-      .scale(scaleX, scaleY, 1.0f)
-      .rotate(rotation)
-      .translate(
-        x,
-        y,
-        0.0f
-      )
 
   private val empty0: Array[Float] = Array[Float]()
   private val empty1: Array[Float] = Array[Float](0.0f)

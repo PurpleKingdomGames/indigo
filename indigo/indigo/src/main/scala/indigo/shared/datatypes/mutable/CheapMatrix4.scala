@@ -21,9 +21,6 @@ object CheapMatrix4:
     def x: Float = m(12)
     def y: Float = m(13)
 
-    def data: (List[Float], List[Float]) =
-      (List(m(0), m(1), m(4), m(5)), List(m(12), m(13), m(14)))
-
     def translate(byX: Float, byY: Float, byZ: Float): CheapMatrix4 =
       m * Array(
         1,

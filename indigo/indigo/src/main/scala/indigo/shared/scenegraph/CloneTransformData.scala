@@ -44,3 +44,5 @@ object CloneTransformData:
 
   val identity: CloneTransformData =
     CloneTransformData(0, 0, Radians.zero, 1.0d, 1.0d)
+
+  given CanEqual[Option[CloneTransformData], Option[CloneTransformData]] = CanEqual.derived
