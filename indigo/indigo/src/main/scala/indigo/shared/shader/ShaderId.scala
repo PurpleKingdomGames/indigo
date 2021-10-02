@@ -8,11 +8,11 @@ import indigo.shared.dice.Dice
 opaque type ShaderId = String
 
 object ShaderId:
-  def apply(value: String): ShaderId =
+  inline def apply(value: String): ShaderId =
     value
-  def fromDice(dice: Dice): ShaderId =
-    ShaderId(dice.rollAlphaNumeric)
-  def generate(dice: Dice): ShaderId =
+  inline def fromDice(dice: Dice): ShaderId =
+    dice.rollAlphaNumeric
+  inline def generate(dice: Dice): ShaderId =
     fromDice(dice)
 
   given CanEqual[ShaderId, ShaderId]                 = CanEqual.derived

@@ -133,7 +133,7 @@ object Font:
 
 opaque type FontFamily = String
 object FontFamily:
-  def apply(family: String): FontFamily = family
+  inline def apply(family: String): FontFamily = family
 
   val serif: FontFamily       = FontFamily("serif")
   val sansSerif: FontFamily   = FontFamily("sans-serif")
@@ -149,7 +149,7 @@ object FontFamily:
   val math: FontFamily        = FontFamily("math")
   val fangsong: FontFamily    = FontFamily("fangsong")
 
-  extension (f: FontFamily) def name: String = f
+  extension (f: FontFamily) inline def name: String = f
 
 enum FontVariant derives CanEqual:
   case Normal, SmallCaps
@@ -169,11 +169,11 @@ final case class TextStroke(color: RGBA, width: Pixels):
 
 opaque type Pixels = Int
 object Pixels:
-  def apply(px: Int): Pixels = px
+  inline def apply(px: Int): Pixels = px
 
   val zero: Pixels = Pixels(0)
 
-  extension (px: Pixels) def toInt: Int = px
+  extension (px: Pixels) inline def toInt: Int = px
 
 enum TextAlign derives CanEqual:
   case Left, Right, Center, Start, End

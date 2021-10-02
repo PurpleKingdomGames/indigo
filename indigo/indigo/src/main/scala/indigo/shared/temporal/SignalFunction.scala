@@ -9,7 +9,7 @@ opaque type SignalFunction[A, B] = Signal[A] => Signal[B]
 
 object SignalFunction {
 
-  def apply[A, B](f: A => B): SignalFunction[A, B] =
+  inline def apply[A, B](f: A => B): SignalFunction[A, B] =
     lift(f)
 
   extension [A, B](sf: SignalFunction[A, B])

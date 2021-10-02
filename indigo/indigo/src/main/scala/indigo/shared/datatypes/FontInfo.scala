@@ -57,9 +57,9 @@ object FontInfo:
 
 opaque type FontKey = String
 object FontKey:
-  def apply(key: String): FontKey = key
+  inline def apply(key: String): FontKey = key
 
-  extension (f: FontKey) def toString: String = f
+  extension (f: FontKey) inline def toString: String = f
 
 final case class FontChar(character: String, bounds: Rectangle) derives CanEqual
 object FontChar:

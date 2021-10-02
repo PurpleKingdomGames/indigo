@@ -278,7 +278,7 @@ Where a thing moves in a circle for 2 seconds and then stops.
     val half   = Signal.Time.affectTime(0.5d)
 
     val times: List[Seconds] =
-      (1 to 10).map(_ * 10).map(_.toDouble).toList.map(Seconds.apply)
+      (1 to 10).map(_ * 10).map(_.toDouble).toList.map(s => Seconds(s))
 
     times.foreach { t =>
       assertEquals(double.at(t), t * Seconds(2L))

@@ -5,7 +5,7 @@ import indigo.shared.datatypes.BindingKey
 
 opaque type AnimationStates = List[AnimationMemento]
 object AnimationStates:
-  def apply(states: List[AnimationMemento]): AnimationStates = states
+  inline def apply(states: List[AnimationMemento]): AnimationStates = states
 
   extension (as: AnimationStates)
     def findStateWithBindingKey(bindingKey: BindingKey): Option[AnimationMemento] =

@@ -14,7 +14,7 @@ opaque type Signal[A] = Seconds => A
 
 object Signal {
 
-  def apply[A](run: Seconds => A): Signal[A] = run
+  inline def apply[A](run: Seconds => A): Signal[A] = run
 
   extension [A](s: Signal[A])
     def run: Seconds => A = s

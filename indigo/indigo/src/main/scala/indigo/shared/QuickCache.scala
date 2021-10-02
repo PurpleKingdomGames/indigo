@@ -71,7 +71,7 @@ object QuickCache {
 
 opaque type CacheKey = String
 object CacheKey:
-  def apply(value: String): CacheKey = value
+  inline def apply(value: String): CacheKey = value
 
   given CanEqual[CacheKey, CacheKey] = CanEqual.derived
 
@@ -85,7 +85,7 @@ object ToCacheKey {
     }
 
   implicit val s: ToCacheKey[String] =
-    ToCacheKey(CacheKey.apply)
+    ToCacheKey(str => CacheKey(str))
 
   implicit val i: ToCacheKey[Int] =
     ToCacheKey(p => CacheKey(p.toString))
