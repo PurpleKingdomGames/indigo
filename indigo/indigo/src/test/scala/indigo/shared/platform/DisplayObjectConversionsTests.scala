@@ -27,6 +27,7 @@ import indigo.shared.assets.AssetName
 import indigo.platform.assets.AtlasId
 import indigo.platform.assets.DynamicText
 import indigo.shared.QuickCache
+import indigo.shared.display.DisplayGroup
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
 class DisplayObjectConversionsTests extends munit.FunSuite {
@@ -34,10 +35,10 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
   val graphic: Graphic[_] =
     Graphic(Rectangle(10, 20, 200, 100), 2, Material.Bitmap(AssetName("texture")))
 
-  val animationRegister          = new AnimationsRegister
-  val fontRegister               = new FontRegister
-  val boundaryLocator            = new BoundaryLocator(animationRegister, fontRegister, new DynamicText)
-  val texture                    = new TextureRefAndOffset(AtlasId("texture"), Vector2(100, 100), Vector2.zero, Vector2(200, 100))
+  val animationRegister = new AnimationsRegister
+  val fontRegister      = new FontRegister
+  val boundaryLocator   = new BoundaryLocator(animationRegister, fontRegister, new DynamicText)
+  val texture = new TextureRefAndOffset(AtlasId("texture"), Vector2(100, 100), Vector2.zero, Vector2(200, 100))
   val assetMapping: AssetMapping = new AssetMapping(Map(AssetName("texture") -> texture))
 
   val cloneBlankMapping: Map[CloneId, DisplayObject] = Map.empty[CloneId, DisplayObject]
@@ -66,6 +67,9 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
 
       case _: DisplayText =>
         throw new Exception("failed (DisplayText)")
+
+      case _: DisplayGroup =>
+        throw new Exception("failed (DisplayGroup)")
 
       case d: DisplayObject =>
         d

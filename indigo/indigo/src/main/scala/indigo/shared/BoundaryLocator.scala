@@ -13,7 +13,6 @@ import indigo.shared.scenegraph.Sprite
 import indigo.shared.scenegraph.Group
 import indigo.shared.scenegraph.CloneBatch
 import indigo.shared.scenegraph.Graphic
-import indigo.shared.scenegraph.Transformer
 import indigo.shared.datatypes.FontKey
 import indigo.shared.scenegraph.Shape
 import indigo.shared.scenegraph.EntityNode

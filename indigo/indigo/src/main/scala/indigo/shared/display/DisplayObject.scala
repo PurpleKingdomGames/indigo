@@ -7,17 +7,31 @@ import indigo.shared.shader.ShaderId
 import indigo.platform.assets.AtlasId
 import indigo.shared.datatypes.Radians
 import indigo.shared.scenegraph.CloneId
+import scala.collection.mutable.ListBuffer
 
 sealed trait DisplayEntity {
   def z: Double
   def applyTransform(matrix: CheapMatrix4): DisplayEntity
 }
 
+final case class DisplayGroup(
+    transform: CheapMatrix4,
+    z: Double,
+    entities: ListBuffer[DisplayEntity]
+) extends DisplayEntity
+    derives CanEqual:
+  def applyTransform(matrix: CheapMatrix4): DisplayGroup =
+    this.copy(transform = transform * matrix)
+object DisplayGroup:
+  val empty: DisplayGroup =
+    DisplayGroup(CheapMatrix4.identity, 0.0d, ListBuffer())
+
 final case class DisplayCloneBatch(
     val id: CloneId,
     val z: Double,
     val clones: List[CheapMatrix4]
-) extends DisplayEntity derives CanEqual {
+) extends DisplayEntity
+    derives CanEqual {
 
   def applyTransform(matrix: CheapMatrix4): DisplayCloneBatch =
     this.copy(clones = clones.map(_ * matrix))
@@ -46,7 +60,8 @@ final case class DisplayObject(
     atlasHeight: Float,
     shaderId: ShaderId,
     shaderUniformData: List[DisplayObjectUniformData]
-) extends DisplayEntity derives CanEqual {
+) extends DisplayEntity
+    derives CanEqual {
 
   def applyTransform(matrix: CheapMatrix4): DisplayObject =
     this.copy(transform = transform * matrix)
@@ -108,7 +123,8 @@ final case class DisplayText(
     z: Double,
     width: Int,
     height: Int
-) extends DisplayEntity derives CanEqual {
+) extends DisplayEntity
+    derives CanEqual {
 
   def applyTransform(matrix: CheapMatrix4): DisplayText =
     this.copy(transform = transform * matrix)
