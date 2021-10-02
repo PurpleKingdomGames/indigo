@@ -85,12 +85,7 @@ class LayerRenderer(
         translateScaleData((i * 4) + 2) = ctd.scaleX.toFloat
         translateScaleData((i * 4) + 3) = ctd.scaleY.toFloat
 
-        refFlipData((i * 4) + 0) = d.refX
-        refFlipData((i * 4) + 1) = d.refY
-        refFlipData((i * 4) + 2) = d.flipX
-        refFlipData((i * 4) + 3) = d.flipY
-
-        rotationData(i) = d.rotation.toFloat
+        rotationData(i) = ctd.rotation.toFloat
 
       case None =>
         translateScaleData((i * 4) + 0) = d.x
@@ -98,12 +93,12 @@ class LayerRenderer(
         translateScaleData((i * 4) + 2) = d.scaleX
         translateScaleData((i * 4) + 3) = d.scaleY
 
-        refFlipData((i * 4) + 0) = d.refX
-        refFlipData((i * 4) + 1) = d.refY
-        refFlipData((i * 4) + 2) = d.flipX
-        refFlipData((i * 4) + 3) = d.flipY
-
         rotationData(i) = d.rotation.toFloat
+
+    refFlipData((i * 4) + 0) = d.refX
+    refFlipData((i * 4) + 1) = d.refY
+    refFlipData((i * 4) + 2) = d.flipX
+    refFlipData((i * 4) + 3) = d.flipY
 
     sizeAndFrameScaleData((i * 4) + 0) = d.width
     sizeAndFrameScaleData((i * 4) + 1) = d.height
