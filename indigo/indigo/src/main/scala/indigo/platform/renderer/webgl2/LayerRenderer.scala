@@ -408,6 +408,9 @@ class LayerRenderer(
               } else currentProgram
             //
 
+            // Base transform
+            setBaseTransform(baseTransform)
+
             // UBO data
             val buff = customDataUBOBuffers.getOrElseUpdate("FILLTYPE0", gl2.createBuffer())
             WebGLHelper.attachUBOData(gl2, Array[Float](0), buff)
