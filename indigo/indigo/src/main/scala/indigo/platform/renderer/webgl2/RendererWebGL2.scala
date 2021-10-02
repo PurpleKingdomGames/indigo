@@ -88,7 +88,7 @@ final class RendererWebGL2(
 
   // This is the default project, using global magnification
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  var orthographicProjectionMatrix: CheapMatrix4 = null
+  var orthographicProjectionMatrix: CheapMatrix4 = CheapMatrix4.identity
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   var defaultLayerProjectionMatrix: Array[Float] = null
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
@@ -250,8 +250,7 @@ final class RendererWebGL2(
                 c.rotation,
                 c.isLookAt
               )
-              .mat
-              .map(_.toFloat)
+              .toArray
 
       WebGLHelper.attachUBOData(gl2, layerProjection, projectionUBOBuffer)
 
@@ -292,8 +291,7 @@ final class RendererWebGL2(
                   Radians.zero,
                   false
                 )
-                .mat
-                .map(_.toFloat)
+                .toArray
             }
 
       // Clear the blend mode
@@ -406,11 +404,11 @@ final class RendererWebGL2(
 
       orthographicProjectionMatrix =
         CheapMatrix4.orthographic(actualWidth.toFloat / magnification, actualHeight.toFloat / magnification)
-      defaultLayerProjectionMatrix = orthographicProjectionMatrix.scale(1.0, -1.0, 1.0).mat.map(_.toFloat)
+      defaultLayerProjectionMatrix = orthographicProjectionMatrix.scale(1.0, -1.0, 1.0).toArray
       orthographicProjectionMatrixNoMag =
-        CheapMatrix4.orthographic(actualWidth.toFloat, actualHeight.toFloat).mat.map(_.toFloat)
+        CheapMatrix4.orthographic(actualWidth.toFloat, actualHeight.toFloat).toArray
       orthographicProjectionMatrixNoMagFlipped =
-        CheapMatrix4.orthographic(actualWidth.toFloat, actualHeight.toFloat).scale(1.0, -1.0, 1.0).mat.map(_.toFloat)
+        CheapMatrix4.orthographic(actualWidth.toFloat, actualHeight.toFloat).scale(1.0, -1.0, 1.0).toArray
 
       layerEntityFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
       scalingFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)

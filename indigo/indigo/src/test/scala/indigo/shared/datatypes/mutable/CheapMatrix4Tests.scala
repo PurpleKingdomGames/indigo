@@ -17,7 +17,7 @@ class CheapMatrix4Tests extends munit.FunSuite {
     val expected =
       Matrix4.identity
 
-    assertEquals(CheapMatrix4.identity.toMatrix4, expected)
+    assert(clue(CheapMatrix4.identity.toMatrix4) ~== clue(expected))
 
   }
 
@@ -26,7 +26,7 @@ class CheapMatrix4Tests extends munit.FunSuite {
     val expected =
       Matrix4.identity.translate(2.0, 0, 0)
 
-    assertEquals(CheapMatrix4.identity.translate(2.0, 0, 0).toMatrix4, expected)
+    assert(clue(CheapMatrix4.identity.translate(2.0, 0, 0).toMatrix4) ~== clue(expected))
 
   }
 
@@ -35,7 +35,7 @@ class CheapMatrix4Tests extends munit.FunSuite {
     val expected =
       Matrix4.identity.translate(0, 2.0, 0)
 
-    assertEquals(CheapMatrix4.identity.translate(0, 2.0, 0).toMatrix4, expected)
+    assert(clue(CheapMatrix4.identity.translate(0, 2.0, 0).toMatrix4) ~== clue(expected))
 
   }
 
@@ -44,7 +44,7 @@ class CheapMatrix4Tests extends munit.FunSuite {
     val expected =
       Matrix4.identity.translate(0, 0, 2.0)
 
-    assertEquals(CheapMatrix4.identity.translate(0, 0, 2.0).toMatrix4, expected)
+    assert(clue(CheapMatrix4.identity.translate(0, 0, 2.0).toMatrix4) ~== clue(expected))
 
   }
 
@@ -61,7 +61,7 @@ class CheapMatrix4Tests extends munit.FunSuite {
     val expected =
       Matrix4.identity.scale(2.0, 3.0, 1.0)
 
-    assertEquals(CheapMatrix4.identity.scale(2.0, 3.0, 1.0).toMatrix4, expected)
+    assert(clue(CheapMatrix4.identity.scale(2.0, 3.0, 1.0).toMatrix4) ~== clue(expected))
 
   }
 

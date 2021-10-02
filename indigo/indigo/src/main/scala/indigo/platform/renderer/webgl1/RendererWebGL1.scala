@@ -97,7 +97,7 @@ final class RendererWebGL1(
     gl.clearColor(config.clearColor.r, config.clearColor.g, config.clearColor.b, config.clearColor.a)
     gl.clear(COLOR_BUFFER_BIT)
 
-    val gameProjection: scala.scalajs.js.Array[Double] = orthographicProjectionMatrix.mat.map(_.toDouble).toJSArray
+    val gameProjection: scala.scalajs.js.Array[Double] = orthographicProjectionMatrix.toArray.map(_.toDouble).toJSArray
 
     sceneData.layers.foreach { layer =>
       val maybeCamera: Option[Camera] =
@@ -121,7 +121,7 @@ final class RendererWebGL1(
                 Radians.zero,
                 false
               )
-              .mat
+              .toArray
               .map(_.toDouble)
               .toJSArray
 
@@ -138,7 +138,7 @@ final class RendererWebGL1(
                 c.rotation,
                 c.isLookAt
               )
-              .mat
+              .toArray
               .map(_.toDouble)
               .toJSArray
 
@@ -155,7 +155,7 @@ final class RendererWebGL1(
                 c.rotation,
                 c.isLookAt
               )
-              .mat
+              .toArray
               .map(_.toDouble)
               .toJSArray
         }
@@ -252,7 +252,7 @@ final class RendererWebGL1(
     gl.uniformMatrix4fv(
       location = transformMatrixLocation,
       transpose = false,
-      value = displayObject.transform.mat.map(_.toDouble).toJSArray
+      value = displayObject.transform.toArray.map(_.toDouble).toJSArray
     )
 
     gl.uniform4f(

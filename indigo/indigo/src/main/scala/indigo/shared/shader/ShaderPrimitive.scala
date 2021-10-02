@@ -133,7 +133,7 @@ object ShaderPrimitive:
     val length: Int = 16
 
     def fromCheapMatrix4(matrix: CheapMatrix4): mat4 =
-      mat4(matrix.mat.map(_.toFloat))
+      mat4(matrix.toArray)
 
     def fromMatrix4(matrix: Matrix4): mat4 =
       mat4(matrix.toList.map(_.toFloat).toArray)
