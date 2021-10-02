@@ -111,11 +111,11 @@ object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
 
 opaque type ConfettiModel = (Int, List[List[Particle]])
 object ConfettiModel:
-  def empty: ConfettiModel = (0, Nil)
+  val empty: ConfettiModel = (0, Nil)
 
   extension (m: ConfettiModel)
-    def color: Int                      = m._1
-    def particles: List[List[Particle]] = m._2
+    inline def color: Int                      = m._1
+    inline def particles: List[List[Particle]] = m._2
 
     def spawn(dice: Dice, position: Point, count: Int): ConfettiModel =
       (

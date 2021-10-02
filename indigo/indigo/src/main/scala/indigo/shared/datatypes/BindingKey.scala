@@ -5,11 +5,11 @@ import indigo.shared.dice.Dice
 opaque type BindingKey = String
 
 object BindingKey:
-  def apply(value: String): BindingKey =
+  inline def apply(value: String): BindingKey =
     value
-  def fromDice(dice: Dice): BindingKey =
-    BindingKey(dice.rollAlphaNumeric)
-  def generate(dice: Dice): BindingKey =
+  inline def fromDice(dice: Dice): BindingKey =
+    dice.rollAlphaNumeric
+  inline def generate(dice: Dice): BindingKey =
     fromDice(dice)
 
   given CanEqual[BindingKey, BindingKey]                 = CanEqual.derived

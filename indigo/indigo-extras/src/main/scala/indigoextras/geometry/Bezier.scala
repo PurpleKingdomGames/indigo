@@ -9,10 +9,10 @@ import indigo.shared.time.Seconds
 opaque type Bezier = List[Vertex]
 object Bezier {
 
-  def apply(vertices: List[Vertex]): Bezier = vertices
+  inline def apply(vertices: List[Vertex]): Bezier = vertices
 
-  def apply(start: Vertex, vertices: Vertex*): Bezier =
-    Bezier(start :: vertices.toList)
+  inline def apply(start: Vertex, vertices: Vertex*): Bezier =
+    start :: vertices.toList
 
   extension (b: Bezier) {
 

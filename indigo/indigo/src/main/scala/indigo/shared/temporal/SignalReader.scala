@@ -9,13 +9,13 @@ opaque type SignalReader[R, A] = R => Signal[A]
 
 object SignalReader {
 
-  def fromSignal[R, A](signal: Signal[A]): SignalReader[R, A] =
+  inline def fromSignal[R, A](signal: Signal[A]): SignalReader[R, A] =
     apply((_: R) => signal)
 
-  def fixed[R, A](a: A): SignalReader[R, A] =
+  inline def fixed[R, A](a: A): SignalReader[R, A] =
     apply((_: R) => Signal.fixed(a))
 
-  def apply[R, A](run: R => Signal[A]): SignalReader[R, A] = run
+  inline def apply[R, A](run: R => Signal[A]): SignalReader[R, A] = run
 
   extension [R, A](sr: SignalReader[R, A])
     def run: R => Signal[A] = sr

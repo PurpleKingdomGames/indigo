@@ -6,7 +6,7 @@ import annotation.targetName
  */
 opaque type Volume = Double
 object Volume:
-  def apply(volume: Double): Volume =
+  inline def apply(volume: Double): Volume =
     if (volume < 0) 0 else if (volume > 1) 1 else volume
 
   val Min: Volume = Volume(0)
@@ -29,4 +29,4 @@ object Volume:
     @targetName("/_Double")
     def /(other: Double): Volume = Volume(v / other)
 
-    def toDouble: Double = v
+    inline def toDouble: Double = v

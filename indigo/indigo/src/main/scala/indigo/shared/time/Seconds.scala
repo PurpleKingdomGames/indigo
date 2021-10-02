@@ -10,7 +10,7 @@ object Seconds:
   given CanEqual[Seconds, Seconds] = CanEqual.derived
   given CanEqual[Option[Seconds], Option[Seconds]] = CanEqual.derived
 
-  def apply(seconds: Double): Seconds = seconds
+  inline def apply(seconds: Double): Seconds = seconds
 
   val zero: Seconds =
     Seconds(0)
@@ -58,18 +58,18 @@ object Seconds:
     def >=(other: Seconds): Boolean =
       s >= other
 
-    def toInt: Int =
+    inline def toInt: Int =
       s.toInt
 
-    def toLong: Long =
+    inline def toLong: Long =
       s.toLong
 
-    def toFloat: Float =
+    inline def toFloat: Float =
       s.toFloat
 
-    def toDouble: Double =
+    inline def toDouble: Double =
       s
 
-    def toMillis: Millis =
+    inline def toMillis: Millis =
       Millis(Math.floor(s * 1000).toLong)
 

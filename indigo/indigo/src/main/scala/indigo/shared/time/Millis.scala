@@ -6,7 +6,7 @@ import annotation.targetName
  */
 opaque type Millis = Long
 object Millis:
-  def apply(millis: Long): Millis = millis
+  inline def apply(millis: Long): Millis = millis
 
   given CanEqual[Millis, Millis] = CanEqual.derived
   given CanEqual[Option[Millis], Option[Millis]] = CanEqual.derived
@@ -58,17 +58,17 @@ object Millis:
     def >=(other: Millis): Boolean =
       ms >= other
 
-    def toInt: Int =
+    inline def toInt: Int =
       ms.toInt
 
-    def toLong: Long =
+    inline def toLong: Long =
       ms
 
-    def toFloat: Float =
+    inline def toFloat: Float =
       ms.toFloat
 
-    def toDouble: Double =
+    inline def toDouble: Double =
       ms.toDouble
 
-    def toSeconds: Seconds =
+    inline def toSeconds: Seconds =
       Seconds(ms.toDouble / 1000)

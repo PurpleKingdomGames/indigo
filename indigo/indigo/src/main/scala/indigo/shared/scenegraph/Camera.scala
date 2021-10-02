@@ -103,7 +103,7 @@ object Camera:
   */
 opaque type Zoom = Double
 object Zoom:
-  def apply(amount: Double): Zoom = amount
+  inline def apply(amount: Double): Zoom = amount
 
   val x025: Zoom = Zoom(0.25)
   val x05: Zoom  = Zoom(0.5)
@@ -112,4 +112,4 @@ object Zoom:
   val x3: Zoom   = Zoom(3.0)
   val x4: Zoom   = Zoom(4.0)
 
-  extension (z: Zoom) def toDouble: Double = z
+  extension (z: Zoom) inline def toDouble: Double = z

@@ -20,4 +20,4 @@ final case class UniformBlock(blockName: String, uniforms: List[(Uniform, Shader
 
 opaque type Uniform = String
 object Uniform:
-  def apply(name: String): Uniform = name
+  inline def apply(name: String): Uniform = name

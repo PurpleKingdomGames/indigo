@@ -15,4 +15,4 @@ trait Job extends Product with Serializable derives CanEqual {
   */
 opaque type JobName = String
 object JobName:
-  def apply(value: String): JobName = value
+  inline def apply(value: String): JobName = value

@@ -4,7 +4,7 @@ import annotation.targetName
 
 opaque type Depth = Int
 object Depth:
-  def apply(depth: Int): Depth = depth
+  inline def apply(depth: Int): Depth = depth
 
   val Zero: Depth = Depth(0)
   val Base: Depth = Depth(1)
@@ -19,5 +19,5 @@ object Depth:
     @targetName("-_Int")
     def -(other: Int): Depth = Depth(d - other)
 
-    def toDouble: Double       = d
-    def toInt: Int             = d.toInt
+    inline def toDouble: Double = d
+    inline def toInt: Int       = d.toInt

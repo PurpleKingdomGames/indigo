@@ -18,7 +18,7 @@ final case class GameTime(running: Seconds, delta: Seconds, targetFPS: GameTime.
 
 object GameTime:
 
-  def zero: GameTime =
+  val zero: GameTime =
     GameTime(Seconds.zero, Seconds.zero, FPS.Default)
 
   def is(running: Seconds): GameTime =
@@ -34,9 +34,9 @@ object GameTime:
     val `60`: FPS    = FPS(60)
     val Default: FPS = `30`
 
-    def apply(fps: Int): FPS = fps
+    inline def apply(fps: Int): FPS = fps
 
     extension (fps: FPS)
-      def asLong: Long     = fps.toLong
-      def asDouble: Double = fps.toDouble
+      inline def asLong: Long     = fps.toLong
+      inline def asDouble: Double = fps.toDouble
   end FPS

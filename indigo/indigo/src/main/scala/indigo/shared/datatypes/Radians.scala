@@ -7,23 +7,25 @@ import indigo.shared.time.Seconds
 opaque type Radians = Double
 object Radians:
 
-  def apply(radians: Double): Radians = radians
+  inline private val pi       = Math.PI
+  inline private val pi2      = Math.PI * 2
+  inline private val pi2By360 = (Math.PI * 2) / 360d
 
-  val `2PI`: Radians  = Radians(Math.PI * 2)
-  val PI: Radians     = Radians(Math.PI)
-  val PIby2: Radians  = Radians(Math.PI / 2)
+  inline def apply(radians: Double): Radians = radians
+
+  val `2PI`: Radians  = Radians(pi2)
+  val PI: Radians     = Radians(pi)
+  val PIby2: Radians  = Radians(pi / 2)
   val TAU: Radians    = `2PI`
   val TAUby2: Radians = PI
   val TAUby4: Radians = PIby2
+  val zero: Radians   = Radians(0)
 
-  def zero: Radians =
-    Radians(0)
+  inline def fromDegrees(degrees: Double): Radians =
+    pi2By360 * (degrees % 360d)
 
-  def fromDegrees(degrees: Double): Radians =
-    Radians((TAU / 360d) * (degrees % 360d))
-
-  def fromSeconds(seconds: Seconds): Radians =
-    Radians(TAU * (seconds.toDouble % 1.0d))
+  inline def fromSeconds(seconds: Seconds): Radians =
+    pi2 * (seconds.toDouble % 1.0d)
 
   extension (r: Radians)
     def +(other: Radians): Radians =
@@ -50,17 +52,17 @@ object Radians:
     def /(other: Double): Radians =
       Radians(r / other)
 
-    def wrap: Radians =
-      Radians(((r % Radians.TAU) + Radians.TAU) % Radians.TAU)
+    inline def wrap: Radians =
+      ((r % pi2) + pi2) % pi2
 
-    def negative: Radians =
-      Radians(-r)
+    inline def negative: Radians =
+      -r
 
-    def invert: Radians =
+    inline def invert: Radians =
       negative
 
-    def toDouble: Double =
+    inline def toDouble: Double =
       r
 
-    def toFloat: Float =
+    inline def toFloat: Float =
       r.toFloat
