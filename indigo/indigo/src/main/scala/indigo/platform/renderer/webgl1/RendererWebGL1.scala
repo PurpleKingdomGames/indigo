@@ -189,8 +189,7 @@ final class RendererWebGL1(
           setupVertexShaderState(
             gl,
             displayObject,
-            gl.getUniformLocation(shaderProgram, "u_transform"),
-            gl.getUniformLocation(shaderProgram, "u_frameTransform")
+            shaderProgram
           )
 
           textureLocations.find(t => t.name == objectAtlas) match {
@@ -245,22 +244,39 @@ final class RendererWebGL1(
   def setupVertexShaderState(
       gl: raw.WebGLRenderingContext,
       displayObject: DisplayObject,
-      transformMatrixLocation: WebGLUniformLocation,
-      frameTransform: WebGLUniformLocation
+      shaderProgram: WebGLProgram
   ): Unit = {
 
-    gl.uniformMatrix4fv(
-      location = transformMatrixLocation,
-      transpose = false,
-      value = displayObject.transform.toArray.map(_.toDouble).toJSArray
+    gl.uniform4f(
+      location = gl.getUniformLocation(shaderProgram, "u_translateScale"),
+      displayObject.x,
+      displayObject.y,
+      displayObject.scaleX,
+      displayObject.scaleY
     )
 
     gl.uniform4f(
-      frameTransform,
+      location = gl.getUniformLocation(shaderProgram, "u_refRotation"),
+      displayObject.refX,
+      displayObject.refY,
+      0,
+      displayObject.rotation.toDouble
+    )
+
+    gl.uniform4f(
+      gl.getUniformLocation(shaderProgram, "u_frameTransform"),
       displayObject.channelOffset0X.toDouble,
       displayObject.channelOffset0Y.toDouble,
       displayObject.frameScaleX.toDouble,
       displayObject.frameScaleY.toDouble
+    )
+
+    gl.uniform4f(
+      location = gl.getUniformLocation(shaderProgram, "u_sizeFlip"),
+      displayObject.width,
+      displayObject.height,
+      displayObject.flipX,
+      displayObject.flipY
     )
   }
 

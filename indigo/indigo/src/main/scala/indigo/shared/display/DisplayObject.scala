@@ -8,37 +8,37 @@ import indigo.platform.assets.AtlasId
 import indigo.shared.datatypes.Radians
 import indigo.shared.scenegraph.CloneId
 import scala.collection.mutable.ListBuffer
+import indigo.shared.scenegraph.CloneTransformData
 
-sealed trait DisplayEntity {
+sealed trait DisplayEntity:
   def z: Double
-  def applyTransform(matrix: CheapMatrix4): DisplayEntity
-}
 
 final case class DisplayGroup(
     transform: CheapMatrix4,
     z: Double,
     entities: ListBuffer[DisplayEntity]
 ) extends DisplayEntity
-    derives CanEqual:
-  def applyTransform(matrix: CheapMatrix4): DisplayGroup =
-    this.copy(transform = transform * matrix)
+    derives CanEqual
 object DisplayGroup:
   val empty: DisplayGroup =
     DisplayGroup(CheapMatrix4.identity, 0.0d, ListBuffer())
 
 final case class DisplayCloneBatch(
-    val id: CloneId,
-    val z: Double,
-    val clones: List[CheapMatrix4]
+    id: CloneId,
+    z: Double,
+    clones: List[CloneTransformData]
 ) extends DisplayEntity
-    derives CanEqual {
-
-  def applyTransform(matrix: CheapMatrix4): DisplayCloneBatch =
-    this.copy(clones = clones.map(_ * matrix))
-}
+    derives CanEqual
 
 final case class DisplayObject(
-    transform: CheapMatrix4,
+    x: Float,
+    y: Float,
+    scaleX: Float,
+    scaleY: Float,
+    refX: Float,
+    refY: Float,
+    flipX: Float,
+    flipY: Float,
     rotation: Radians,
     z: Double,
     width: Float,
@@ -61,18 +61,20 @@ final case class DisplayObject(
     shaderId: ShaderId,
     shaderUniformData: List[DisplayObjectUniformData]
 ) extends DisplayEntity
-    derives CanEqual {
-
-  def applyTransform(matrix: CheapMatrix4): DisplayObject =
-    this.copy(transform = transform * matrix)
-
-}
-object DisplayObject {
+    derives CanEqual
+object DisplayObject:
 
   given CanEqual[Option[DisplayObject], Option[DisplayObject]] = CanEqual.derived
 
   def apply(
-      transform: CheapMatrix4,
+      x: Float,
+      y: Float,
+      scaleX: Float,
+      scaleY: Float,
+      refX: Float,
+      refY: Float,
+      flipX: Float,
+      flipY: Float,
       rotation: Radians,
       z: Double,
       width: Int,
@@ -88,7 +90,14 @@ object DisplayObject {
       shaderUniformData: List[DisplayObjectUniformData]
   ): DisplayObject =
     DisplayObject(
-      transform,
+      x,
+      y,
+      scaleX,
+      scaleY,
+      refX,
+      refY,
+      flipX,
+      flipY,
       rotation,
       z,
       width.toFloat,
@@ -111,22 +120,23 @@ object DisplayObject {
       shaderId,
       shaderUniformData
     )
-}
 
 final case class DisplayObjectUniformData(uniformHash: String, blockName: String, data: Array[Float]) derives CanEqual
 
 final case class DisplayText(
     text: String,
     style: TextStyle,
-    transform: CheapMatrix4,
+    x: Float,
+    y: Float,
+    scaleX: Float,
+    scaleY: Float,
+    refX: Float,
+    refY: Float,
+    flipX: Float,
+    flipY: Float,
     rotation: Radians,
     z: Double,
     width: Int,
     height: Int
 ) extends DisplayEntity
-    derives CanEqual {
-
-  def applyTransform(matrix: CheapMatrix4): DisplayText =
-    this.copy(transform = transform * matrix)
-
-}
+    derives CanEqual

@@ -29,6 +29,7 @@ import indigo.platform.assets.DynamicText
 import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.platform.renderer.shared.WebGLHelper
 import indigo.shared.display.DisplayGroup
+import indigo.shared.scenegraph.CloneTransformData
 
 import scalajs.js.JSConverters._
 
@@ -47,12 +48,13 @@ class LayerRenderer(
     HashMap.empty[String, WebGLBuffer]
 
   // Instance Array Buffers
-  private val matRotateScaleInstanceArray: WebGLBuffer       = gl2.createBuffer()
-  private val matTranslateRotationInstanceArray: WebGLBuffer = gl2.createBuffer()
+  private val translateScaleInstanceArray: WebGLBuffer       = gl2.createBuffer()
+  private val refFlipInstanceArray: WebGLBuffer              = gl2.createBuffer()
   private val sizeAndFrameScaleInstanceArray: WebGLBuffer    = gl2.createBuffer()
   private val channelOffsets01InstanceArray: WebGLBuffer     = gl2.createBuffer()
   private val channelOffsets23InstanceArray: WebGLBuffer     = gl2.createBuffer()
   private val textureSizeAtlasSizeInstanceArray: WebGLBuffer = gl2.createBuffer()
+  private val rotationInstanceArray: WebGLBuffer             = gl2.createBuffer()
 
   def setupInstanceArray(buffer: WebGLBuffer, location: Int, size: Int): Unit = {
     gl2.bindBuffer(ARRAY_BUFFER, buffer)
@@ -62,28 +64,46 @@ class LayerRenderer(
   }
 
   // Instance Data Arrays
-  private val matRotateScaleData: scalajs.js.Array[Float]       = scalajs.js.Array[Float](4f * maxBatchSize)
-  private val matTranslateRotationData: scalajs.js.Array[Float] = scalajs.js.Array[Float](4f * maxBatchSize)
+  private val translateScaleData: scalajs.js.Array[Float]       = scalajs.js.Array[Float](4f * maxBatchSize)
+  private val refFlipData: scalajs.js.Array[Float]              = scalajs.js.Array[Float](4f * maxBatchSize)
   private val sizeAndFrameScaleData: scalajs.js.Array[Float]    = scalajs.js.Array[Float](4f * maxBatchSize)
   private val channelOffsets01Data: scalajs.js.Array[Float]     = scalajs.js.Array[Float](4f * maxBatchSize)
   private val channelOffsets23Data: scalajs.js.Array[Float]     = scalajs.js.Array[Float](4f * maxBatchSize)
   private val textureSizeAtlasSizeData: scalajs.js.Array[Float] = scalajs.js.Array[Float](4f * maxBatchSize)
+  private val rotationData: scalajs.js.Array[Float]             = scalajs.js.Array[Float](1f * maxBatchSize)
 
   @inline private def bindData(buffer: WebGLBuffer, data: scalajs.js.Array[Float]): Unit = {
     gl2.bindBuffer(ARRAY_BUFFER, buffer)
     gl2.bufferData(ARRAY_BUFFER, new Float32Array(data), STATIC_DRAW)
   }
 
-  private def updateData(d: DisplayObject, i: Int, matrixData1: List[Float], matrixData2: List[Float]): Unit = {
-    matRotateScaleData((i * 4) + 0) = matrixData1(0)
-    matRotateScaleData((i * 4) + 1) = matrixData1(1)
-    matRotateScaleData((i * 4) + 2) = matrixData1(2)
-    matRotateScaleData((i * 4) + 3) = matrixData1(3)
+  private def updateData(d: DisplayObject, i: Int, cloneTransformData: Option[CloneTransformData]): Unit = {
+    cloneTransformData match
+      case Some(ctd) =>
+        translateScaleData((i * 4) + 0) = ctd.x.toFloat
+        translateScaleData((i * 4) + 1) = ctd.y.toFloat
+        translateScaleData((i * 4) + 2) = ctd.scaleX.toFloat
+        translateScaleData((i * 4) + 3) = ctd.scaleY.toFloat
 
-    matTranslateRotationData((i * 4) + 0) = matrixData2(0)
-    matTranslateRotationData((i * 4) + 1) = matrixData2(1)
-    matTranslateRotationData((i * 4) + 2) = matrixData2(2)
-    matTranslateRotationData((i * 4) + 3) = d.rotation.toFloat
+        refFlipData((i * 4) + 0) = d.refX
+        refFlipData((i * 4) + 1) = d.refY
+        refFlipData((i * 4) + 2) = d.flipX
+        refFlipData((i * 4) + 3) = d.flipY
+
+        rotationData(i) = d.rotation.toFloat
+
+      case None =>
+        translateScaleData((i * 4) + 0) = d.x
+        translateScaleData((i * 4) + 1) = d.y
+        translateScaleData((i * 4) + 2) = d.scaleX
+        translateScaleData((i * 4) + 3) = d.scaleY
+
+        refFlipData((i * 4) + 0) = d.refX
+        refFlipData((i * 4) + 1) = d.refY
+        refFlipData((i * 4) + 2) = d.flipX
+        refFlipData((i * 4) + 3) = d.flipY
+
+        rotationData(i) = d.rotation.toFloat
 
     sizeAndFrameScaleData((i * 4) + 0) = d.width
     sizeAndFrameScaleData((i * 4) + 1) = d.height
@@ -106,16 +126,18 @@ class LayerRenderer(
     textureSizeAtlasSizeData((i * 4) + 3) = d.atlasHeight
   }
 
-  private def updateTextData(d: DisplayText, i: Int, matrixData1: List[Float], matrixData2: List[Float]): Unit = {
-    matRotateScaleData((i * 4) + 0) = matrixData1(0).toFloat
-    matRotateScaleData((i * 4) + 1) = matrixData1(1).toFloat
-    matRotateScaleData((i * 4) + 2) = matrixData1(2).toFloat
-    matRotateScaleData((i * 4) + 3) = matrixData1(3).toFloat
+  private def updateTextData(d: DisplayText, i: Int): Unit = {
+    translateScaleData((i * 4) + 0) = d.x
+    translateScaleData((i * 4) + 1) = d.y
+    translateScaleData((i * 4) + 2) = d.scaleX
+    translateScaleData((i * 4) + 3) = d.scaleY
 
-    matTranslateRotationData((i * 4) + 0) = matrixData2(0).toFloat
-    matTranslateRotationData((i * 4) + 1) = matrixData2(1).toFloat
-    matTranslateRotationData((i * 4) + 2) = matrixData2(2).toFloat
-    matTranslateRotationData((i * 4) + 3) = d.rotation.toFloat
+    refFlipData((i * 4) + 0) = d.refX
+    refFlipData((i * 4) + 1) = d.refY
+    refFlipData((i * 4) + 2) = d.flipX
+    refFlipData((i * 4) + 3) = d.flipY
+
+    rotationData(i) = d.rotation.toFloat
 
     sizeAndFrameScaleData((i * 4) + 0) = d.width.toFloat
     sizeAndFrameScaleData((i * 4) + 1) = d.height.toFloat
@@ -252,27 +274,30 @@ class LayerRenderer(
 
     // Instance attributes
     // vec4 a_matRotateScale
-    setupInstanceArray(matRotateScaleInstanceArray, 1, 4) //
+    setupInstanceArray(translateScaleInstanceArray, 1, 4) //
     // vec4 a_matTranslateAlpha
-    setupInstanceArray(matTranslateRotationInstanceArray, 2, 4) //
+    setupInstanceArray(refFlipInstanceArray, 2, 4) //
     // vec4 a_sizeAndFrameScale
     setupInstanceArray(sizeAndFrameScaleInstanceArray, 3, 4) //
     // vec4 a_channelOffsets01
     setupInstanceArray(channelOffsets01InstanceArray, 4, 4) //
     // vec4 a_channelOffsets23
     setupInstanceArray(channelOffsets23InstanceArray, 5, 4) //
-    // vec4 a_textureSize + ???
+    // vec4 a_textureSize + atlasSize
     setupInstanceArray(textureSizeAtlasSizeInstanceArray, 6, 4) //
+    // float a_rotation
+    setupInstanceArray(rotationInstanceArray, 7, 1) //
   }
 
   @inline def drawBuffer(instanceCount: Int): Unit =
     if (instanceCount > 0) {
-      bindData(matRotateScaleInstanceArray, matRotateScaleData)
-      bindData(matTranslateRotationInstanceArray, matTranslateRotationData)
+      bindData(translateScaleInstanceArray, translateScaleData)
+      bindData(refFlipInstanceArray, refFlipData)
       bindData(sizeAndFrameScaleInstanceArray, sizeAndFrameScaleData)
       bindData(channelOffsets01InstanceArray, channelOffsets01Data)
       bindData(channelOffsets23InstanceArray, channelOffsets23Data)
       bindData(textureSizeAtlasSizeInstanceArray, textureSizeAtlasSizeData)
+      bindData(rotationInstanceArray, rotationData)
 
       gl2.drawArraysInstanced(TRIANGLE_STRIP, 0, 4, instanceCount)
     }
@@ -352,8 +377,7 @@ class LayerRenderer(
             currentShaderHash = d.shaderUniformData.map(_.uniformHash).mkString
 
           case d: DisplayObject =>
-            val data = d.transform.data
-            updateData(d, batchCount, data._1, data._2)
+            updateData(d, batchCount, None)
             batchCount = batchCount + 1
             i += 1
 
@@ -433,8 +457,7 @@ class LayerRenderer(
               dynamicText.makeTextImageData(t.text, t.style, t.width, t.height)
             )
 
-            val data = t.transform.data
-            updateTextData(t, 0, data._1, data._2)
+            updateTextData(t, 0)
             batchCount = 1
             atlasName = None
             currentShaderHash = ""
@@ -448,13 +471,11 @@ class LayerRenderer(
       refDisplayObject: DisplayObject,
       batchCount: Int
   ): Int = {
-    val count: Int                       = c.clones.length
-    var i: Int                           = 0
-    var data: (List[Float], List[Float]) = (Nil, Nil)
+    val count: Int = c.clones.length
+    var i: Int     = 0
 
     while (i < count) {
-      data = c.clones(i).data
-      updateData(refDisplayObject, batchCount + i, data._1, data._2)
+      updateData(refDisplayObject, batchCount + i, Some(c.clones(i)))
       i += 1
     }
 
