@@ -28,6 +28,7 @@ import indigo.platform.assets.DynamicText
 
 import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.platform.renderer.shared.WebGLHelper
+import indigo.shared.display.DisplayGroup
 
 class LayerRenderer(
     gl2: WebGL2RenderingContext,
@@ -274,25 +275,26 @@ class LayerRenderer(
     FrameBufferFunctions.switchToFramebuffer(gl2, frameBufferComponents.frameBuffer, clearColor, true)
     gl2.drawBuffers(frameBufferComponents.colorAttachments)
 
-    val sorted: Vector[DisplayEntity] =
-      displayEntities.sortWith((d1, d2) => d1.z > d2.z).toVector
-
     gl2.activeTexture(TEXTURE0);
 
-    renderEntities(cloneBlankDisplayObjects, sorted, customShaders)
+    renderEntities(cloneBlankDisplayObjects, displayEntities, customShaders, CheapMatrix4.identity)
   }
 
   private def renderEntities(
       cloneBlankDisplayObjects: Map[CloneId, DisplayObject],
-      entities: Vector[DisplayEntity],
-      customShaders: HashMap[ShaderId, WebGLProgram]
+      displayEntities: ListBuffer[DisplayEntity],
+      customShaders: HashMap[ShaderId, WebGLProgram],
+      baseTransform: CheapMatrix4
   ): Unit = {
-    val count: Int                 = entities.length
+    val count: Int                 = displayEntities.length
     var i: Int                     = 0
     var batchCount: Int            = 0
     var atlasName: Option[AtlasId] = None
     var currentShader: ShaderId    = ShaderId("")
     var currentShaderHash: String  = ""
+
+    val sortedEntities: Vector[DisplayEntity] =
+      displayEntities.sortWith((d1, d2) => d1.z > d2.z).toVector
 
     while (i <= count)
       if i == count then
@@ -302,7 +304,19 @@ class LayerRenderer(
         drawBuffer(batchCount)
         batchCount = 0
       else
-        entities(i) match {
+        sortedEntities(i) match {
+          case d: DisplayGroup if d.entities.isEmpty =>
+            i += 1
+
+          case d: DisplayGroup =>
+            drawBuffer(batchCount)
+            batchCount = 0
+            atlasName = None
+            currentShader = ShaderId("")
+            currentShaderHash = ""
+            renderEntities(cloneBlankDisplayObjects, d.entities, customShaders, baseTransform)
+            i += 1
+
           case d: DisplayObject if requiresContextChange(d, atlasName, currentShader, currentShaderHash) =>
             drawBuffer(batchCount)
             doContextChange(
@@ -318,7 +332,7 @@ class LayerRenderer(
             currentShaderHash = d.shaderUniformData.map(_.uniformHash).mkString
 
           case d: DisplayObject =>
-            val data = d.transform.data
+            val data = (d.transform * baseTransform).data
             updateData(d, batchCount, data._1, data._2)
             batchCount = batchCount + 1
             i += 1
@@ -344,7 +358,7 @@ class LayerRenderer(
 
               case Some(d) =>
                 val numberProcessed: Int =
-                  processCloneBatch(c, d, batchCount)
+                  processCloneBatch(c, d, batchCount, baseTransform)
 
                 batchCount = batchCount + numberProcessed
                 atlasName = d.atlasName
@@ -395,7 +409,7 @@ class LayerRenderer(
               dynamicText.makeTextImageData(t.text, t.style, t.width, t.height)
             )
 
-            val data = t.transform.data
+            val data = (t.transform * baseTransform).data
             updateTextData(t, 0, data._1, data._2)
             batchCount = 1
             atlasName = None
@@ -405,14 +419,19 @@ class LayerRenderer(
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  private def processCloneBatch(c: DisplayCloneBatch, refDisplayObject: DisplayObject, batchCount: Int): Int = {
+  private def processCloneBatch(
+      c: DisplayCloneBatch,
+      refDisplayObject: DisplayObject,
+      batchCount: Int,
+      baseTransform: CheapMatrix4
+  ): Int = {
     val count: Int                       = c.clones.length
     var i: Int                           = 0
     var data: (List[Float], List[Float]) = (Nil, Nil)
     var cl: CheapMatrix4                 = CheapMatrix4.identity
 
     while (i < count) {
-      cl = c.clones(i)
+      cl = c.clones(i) * baseTransform
       data = cl.data
       updateData(refDisplayObject, batchCount + i, data._1, data._2)
       i += 1

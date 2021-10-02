@@ -63,8 +63,3 @@ object EntityNode:
   given CanEqual[Option[EntityNode], Option[EntityNode]] = CanEqual.derived
   given CanEqual[List[EntityNode], List[EntityNode]]     = CanEqual.derived
 
-/** Used internally during scene processing
-  */
-final case class Transformer(node: SceneGraphNode, transform: CheapMatrix4) extends SceneGraphNode derives CanEqual:
-  def addTransform(matrix: CheapMatrix4): Transformer =
-    this.copy(transform = transform * matrix)

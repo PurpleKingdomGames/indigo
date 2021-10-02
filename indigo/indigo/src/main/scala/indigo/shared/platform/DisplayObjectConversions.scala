@@ -15,7 +15,6 @@ import indigo.shared.scenegraph.{Graphic, Sprite, Text, TextLine, TextBox}
 import indigo.shared.scenegraph.SceneGraphNode
 import indigo.shared.scenegraph.RenderNode
 import indigo.shared.scenegraph.Group
-import indigo.shared.scenegraph.Transformer
 import indigo.shared.QuickCache
 
 import scala.annotation.tailrec
@@ -37,6 +36,8 @@ import indigo.shared.shader.ShaderPrimitive
 import indigo.shared.scenegraph.Shape
 import indigo.platform.assets.AtlasId
 import indigo.shared.datatypes.Radians
+import indigo.shared.display.DisplayGroup
+import indigo.shared.scenegraph.DependentNode
 
 final class DisplayObjectConversions(
     boundaryLocator: BoundaryLocator,
@@ -105,11 +106,8 @@ final class DisplayObjectConversions(
       assetMapping: AssetMapping,
       cloneBlankDisplayObjects: Map[CloneId, DisplayObject]
   ): ListBuffer[DisplayEntity] =
-    deGroup(sceneNodes).flatMap { node =>
-      sceneNodeToDisplayObject(node, gameTime, assetMapping, cloneBlankDisplayObjects)
-    }
-
-  private val accSceneNodes: ListBuffer[SceneGraphNode] = new ListBuffer()
+    val f = sceneNodeToDisplayObject(gameTime, assetMapping, cloneBlankDisplayObjects)
+    (ListBuffer() ++ sceneNodes).map(f)
 
   private def groupToMatrix(group: Group): CheapMatrix4 =
     CheapMatrix4.identity
@@ -131,85 +129,48 @@ final class DisplayObjectConversions(
         0.0f
       )
 
-  private def toTransformers(group: Group, parentTransform: CheapMatrix4): List[Transformer] = {
-    val mat = groupToMatrix(group) * parentTransform // to avoid re-evaluation
-    group.children.map { n =>
-      Transformer(n.withDepth(n.depth + group.depth), mat)
-    }
-  }
-
-  def deGroup(
-      sceneNodes: List[SceneGraphNode]
-  ): ListBuffer[SceneGraphNode] = {
-    @tailrec
-    def rec(remaining: List[SceneGraphNode]): ListBuffer[SceneGraphNode] =
-      remaining match {
-        case Nil =>
-          accSceneNodes
-
-        case Transformer(g: Group, mat) :: xs =>
-          rec(toTransformers(g, mat) ++ xs)
-
-        case Transformer(t: Transformer, mat) :: xs =>
-          rec(t.addTransform(mat) :: xs)
-
-        case (g: Group) :: xs =>
-          rec(toTransformers(g, CheapMatrix4.identity) ++ xs)
-
-        case node :: xs =>
-          accSceneNodes += node
-          rec(xs)
-      }
-
-    accSceneNodes.clear()
-
-    rec(sceneNodes)
-  }
-
   def sceneNodeToDisplayObject(
-      sceneNode: SceneGraphNode,
       gameTime: GameTime,
       assetMapping: AssetMapping,
       cloneBlankDisplayObjects: Map[CloneId, DisplayObject]
-  ): List[DisplayEntity] =
+  )(sceneNode: SceneGraphNode): DisplayEntity =
     sceneNode match {
-
       case x: Graphic[_] =>
-        List(graphicToDisplayObject(x, assetMapping))
+        graphicToDisplayObject(x, assetMapping)
 
       case s: Shape =>
-        List(shapeToDisplayObject(s))
+        shapeToDisplayObject(s)
 
       case t: TextBox =>
-        List(textBoxToDisplayText(t))
+        textBoxToDisplayText(t)
 
       case s: EntityNode =>
-        List(sceneEntityToDisplayObject(s, assetMapping))
+        sceneEntityToDisplayObject(s, assetMapping)
 
       case c: CloneBatch =>
         cloneBlankDisplayObjects.get(c.id) match {
           case None =>
-            Nil
+            DisplayGroup.empty
 
           case Some(refDisplayObject) =>
-            List(cloneBatchDataToDisplayEntities(c, refDisplayObject.transform))
+            cloneBatchDataToDisplayEntities(c, refDisplayObject.transform)
         }
 
-      case _: Group =>
-        Nil
-
-      case t: Transformer =>
-        sceneNodeToDisplayObject(t.node, gameTime, assetMapping, cloneBlankDisplayObjects)
-          .map(_.applyTransform(t.transform))
+      case g: Group =>
+        DisplayGroup(
+          groupToMatrix(g),
+          g.depth.toDouble,
+          sceneNodesToDisplayObjects(g.children, gameTime, assetMapping, cloneBlankDisplayObjects)
+        )
 
       case x: Sprite[_] =>
         animationsRegister.fetchAnimationForSprite(gameTime, x.bindingKey, x.animationKey, x.animationActions) match {
           case None =>
             IndigoLogger.errorOnce(s"Cannot render Sprite, missing Animations with key: ${x.animationKey.toString()}")
-            Nil
+            DisplayGroup.empty
 
           case Some(anim) =>
-            List(spriteToDisplayObject(boundaryLocator, x, assetMapping, anim))
+            spriteToDisplayObject(boundaryLocator, x, assetMapping, anim)
         }
 
       case x: Text[_] =>
@@ -244,10 +205,13 @@ final class DisplayObjectConversions(
             }
             ._2
 
-        letters
+        DisplayGroup(CheapMatrix4.identity, x.depth.toDouble, ListBuffer() ++ letters)
 
-      case _ =>
-        Nil
+      case _: RenderNode =>
+        DisplayGroup.empty
+
+      case _: DependentNode =>
+        DisplayGroup.empty
     }
 
   def optionalAssetToOffset(assetMapping: AssetMapping, maybeAssetName: Option[AssetName]): Vector2 =
