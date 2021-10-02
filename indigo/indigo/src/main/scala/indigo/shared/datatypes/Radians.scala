@@ -7,9 +7,9 @@ import indigo.shared.time.Seconds
 opaque type Radians = Double
 object Radians:
 
-  inline private val pi       = Math.PI
-  inline private val pi2      = Math.PI * 2
-  inline private val pi2By360 = (Math.PI * 2) / 360d
+  inline private val pi      = Math.PI
+  inline private val pi2     = Math.PI * 2
+  inline private val piBy180 = Math.PI / 180d
 
   inline def apply(radians: Double): Radians = radians
 
@@ -22,7 +22,7 @@ object Radians:
   val zero: Radians   = Radians(0)
 
   inline def fromDegrees(degrees: Double): Radians =
-    pi2By360 * (degrees % 360d)
+    degrees % 360d * piBy180
 
   inline def fromSeconds(seconds: Seconds): Radians =
     pi2 * (seconds.toDouble % 1.0d)
