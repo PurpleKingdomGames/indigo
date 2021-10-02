@@ -76,6 +76,31 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
     }
   }
 
+  def convertWithGroup(node: SceneGraphNode): DisplayGroup = {
+    doc.purgeCaches()
+
+    doc
+      .sceneNodesToDisplayObjects(
+        List(node),
+        GameTime.is(Seconds(1)),
+        assetMapping,
+        cloneBlankMapping
+      )
+      .head match {
+      case _: DisplayCloneBatch =>
+        throw new Exception("failed (DisplayCloneBatch)")
+
+      case _: DisplayText =>
+        throw new Exception("failed (DisplayText)")
+
+      case _: DisplayObject =>
+        throw new Exception("failed (DisplayObject)")
+
+      case d: DisplayGroup =>
+        d
+    }
+  }
+
   override def beforeEach(context: BeforeEach): Unit =
     cache.purgeAllNow()
 
@@ -92,28 +117,43 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
 
   test("convert a group with a graphic in it") {
     val actual: DisplayObject =
-      convert(
+      convertWithGroup(
         Group(graphic)
           .moveBy(5, 15)
           .withDepth(Depth(100))
-      )
+      ).entities.head match
+        case d: DisplayObject =>
+          d
 
-    assertEquals(actual.transform.x, 115.0f)
-    assertEquals(actual.transform.y, 85.0f)
-    assertEquals(actual.z.toFloat, 102.0f)
+        case d =>
+          throw new Exception("Got: " + d.toString)
+
+    assertEquals(actual.transform.x, 110.0f)
+    assertEquals(actual.transform.y, 70.0f)
+    assertEquals(actual.z.toFloat, 2.0f)
     assertEquals(actual.width, 200.0f)
     assertEquals(actual.height, 100.0f)
   }
 
   test("convert a group of a group with a graphic in it") {
     val actual: DisplayObject =
-      convert(
+      convertWithGroup(
         Group(
           Group(
             graphic
           )
         )
-      )
+      ).entities.head match
+        case d: DisplayGroup =>
+          d.entities.head match
+            case dd: DisplayObject =>
+              dd
+
+            case dd =>
+              throw new Exception("Got: " + d.toString)
+
+        case d =>
+          throw new Exception("Got: " + d.toString)
 
     assertEquals(actual.transform.x, 110.0f)
     assertEquals(actual.transform.y, 70.0f)
