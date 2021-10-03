@@ -39,6 +39,7 @@ class LayerRenderer(
     maxBatchSize: Int,
     projectionUBOBuffer: => WebGLBuffer,
     frameDataUBOBuffer: => WebGLBuffer,
+    cloneReferenceUBOBuffer: => WebGLBuffer,
     lightDataUBOBuffer: => WebGLBuffer,
     dynamicText: DynamicText,
     textTexture: WebGLTexture
@@ -77,23 +78,13 @@ class LayerRenderer(
     gl2.bufferData(ARRAY_BUFFER, new Float32Array(data), STATIC_DRAW)
   }
 
-  private def updateData(d: DisplayObject, i: Int, cloneTransformData: Option[CloneTransformData]): Unit = {
-    cloneTransformData match
-      case Some(ctd) =>
-        translateScaleData((i * 4) + 0) = ctd.x.toFloat
-        translateScaleData((i * 4) + 1) = ctd.y.toFloat
-        translateScaleData((i * 4) + 2) = ctd.scaleX.toFloat
-        translateScaleData((i * 4) + 3) = ctd.scaleY.toFloat
+  private def updateData(d: DisplayObject, i: Int): Unit = {
+    translateScaleData((i * 4) + 0) = d.x
+    translateScaleData((i * 4) + 1) = d.y
+    translateScaleData((i * 4) + 2) = d.scaleX
+    translateScaleData((i * 4) + 3) = d.scaleY
 
-        rotationData(i) = ctd.rotation.toFloat
-
-      case None =>
-        translateScaleData((i * 4) + 0) = d.x
-        translateScaleData((i * 4) + 1) = d.y
-        translateScaleData((i * 4) + 2) = d.scaleX
-        translateScaleData((i * 4) + 3) = d.scaleY
-
-        rotationData(i) = d.rotation.toFloat
+    rotationData(i) = d.rotation.toFloat
 
     refFlipData((i * 4) + 0) = d.refX
     refFlipData((i * 4) + 1) = d.refY
@@ -119,6 +110,15 @@ class LayerRenderer(
     textureSizeAtlasSizeData((i * 4) + 1) = d.textureHeight
     textureSizeAtlasSizeData((i * 4) + 2) = d.atlasWidth
     textureSizeAtlasSizeData((i * 4) + 3) = d.atlasHeight
+  }
+
+  private def updateCloneData(i: Int, ctd: CloneTransformData): Unit = {
+    translateScaleData((i * 4) + 0) = ctd.x.toFloat
+    translateScaleData((i * 4) + 1) = ctd.y.toFloat
+    translateScaleData((i * 4) + 2) = ctd.scaleX.toFloat
+    translateScaleData((i * 4) + 3) = ctd.scaleY.toFloat
+
+    rotationData(i) = ctd.rotation.toFloat
   }
 
   private def updateTextData(d: DisplayText, i: Int): Unit = {
@@ -179,6 +179,14 @@ class LayerRenderer(
         location = gl2.getUniformLocation(currentProgram, "u_baseTransform"),
         transpose = false,
         value = Float32Array(baseTransform.toArray.toJSArray)
+      )
+
+  private def setMode(mode: Int): Unit =
+    if currentProgram == null then ()
+    else
+      gl2.uniform1i(
+        gl2.getUniformLocation(currentProgram, "u_mode"),
+        mode
       )
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
@@ -262,6 +270,13 @@ class LayerRenderer(
     WebGLHelper.bindUBO(
       gl2,
       program,
+      "IndigoCloneReferenceData",
+      RendererWebGL2Constants.cloneReferenceDataBlockPointer,
+      cloneReferenceUBOBuffer
+    )
+    WebGLHelper.bindUBO(
+      gl2,
+      program,
       "IndigoDynamicLightingData",
       RendererWebGL2Constants.lightDataBlockPointer,
       lightDataUBOBuffer
@@ -284,14 +299,42 @@ class LayerRenderer(
     setupInstanceArray(rotationInstanceArray, 7, 1) //
   }
 
-  @inline def drawBuffer(instanceCount: Int): Unit =
+  def enableCloneBatchMode(): Unit =
+    setMode(1)
+    gl2.disableVertexAttribArray(2)
+    gl2.disableVertexAttribArray(3)
+    gl2.disableVertexAttribArray(4)
+    gl2.disableVertexAttribArray(5)
+    gl2.disableVertexAttribArray(6)
+
+  def disableCloneBatchMode(): Unit =
+    setMode(0)
+    gl2.enableVertexAttribArray(2)
+    gl2.enableVertexAttribArray(3)
+    gl2.enableVertexAttribArray(4)
+    gl2.enableVertexAttribArray(5)
+    gl2.enableVertexAttribArray(6)
+
+  def drawBuffer(instanceCount: Int): Unit =
     if (instanceCount > 0) {
+      disableCloneBatchMode()
+
       bindData(translateScaleInstanceArray, translateScaleData)
       bindData(refFlipInstanceArray, refFlipData)
       bindData(sizeAndFrameScaleInstanceArray, sizeAndFrameScaleData)
       bindData(channelOffsets01InstanceArray, channelOffsets01Data)
       bindData(channelOffsets23InstanceArray, channelOffsets23Data)
       bindData(textureSizeAtlasSizeInstanceArray, textureSizeAtlasSizeData)
+      bindData(rotationInstanceArray, rotationData)
+
+      gl2.drawArraysInstanced(TRIANGLE_STRIP, 0, 4, instanceCount)
+    }
+
+  def drawCloneBuffer(instanceCount: Int): Unit =
+    if (instanceCount > 0) {
+      enableCloneBatchMode()
+
+      bindData(translateScaleInstanceArray, translateScaleData)
       bindData(rotationInstanceArray, rotationData)
 
       gl2.drawArraysInstanced(TRIANGLE_STRIP, 0, 4, instanceCount)
@@ -321,7 +364,6 @@ class LayerRenderer(
       customShaders: HashMap[ShaderId, WebGLProgram],
       baseTransform: CheapMatrix4
   ): Unit = {
-    setBaseTransform(baseTransform)
 
     val count: Int                    = displayEntities.length
     var i: Int                        = 0
@@ -372,7 +414,7 @@ class LayerRenderer(
             currentShaderHash = d.shaderUniformData.map(_.uniformHash).mkString
 
           case d: DisplayObject =>
-            updateData(d, batchCount, None)
+            updateData(d, batchCount)
             batchCount = batchCount + 1
             i += 1
 
@@ -381,7 +423,8 @@ class LayerRenderer(
               case None =>
                 i += 1
 
-              case Some(d) if requiresContextChange(d, atlasName, currentShader, currentShaderHash) =>
+              case Some(d) =>
+                // Always clear down.
                 drawBuffer(batchCount)
                 doContextChange(
                   d,
@@ -396,14 +439,12 @@ class LayerRenderer(
                 currentShader = d.shaderId
                 currentShaderHash = d.shaderUniformData.map(_.uniformHash).mkString
 
-              case Some(d) =>
                 val numberProcessed: Int =
-                  processCloneBatch(c, d, batchCount)
+                  processCloneBatch(c, d)
 
-                batchCount = batchCount + numberProcessed
-                atlasName = d.atlasName
-                currentShader = d.shaderId
-                currentShaderHash = d.shaderUniformData.map(_.uniformHash).mkString
+                drawCloneBuffer(numberProcessed)
+
+                batchCount = 0
                 i += 1
 
           case t: DisplayText =>
@@ -463,14 +504,38 @@ class LayerRenderer(
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private def processCloneBatch(
       c: DisplayCloneBatch,
-      refDisplayObject: DisplayObject,
-      batchCount: Int
+      refDisplayObject: DisplayObject
   ): Int = {
+    val refData: Array[Float] =
+      Array(
+        refDisplayObject.refX,
+        refDisplayObject.refY,
+        refDisplayObject.flipX,
+        refDisplayObject.flipY,
+        refDisplayObject.width,
+        refDisplayObject.height,
+        refDisplayObject.frameScaleX,
+        refDisplayObject.frameScaleY,
+        refDisplayObject.channelOffset0X,
+        refDisplayObject.channelOffset0Y,
+        refDisplayObject.channelOffset1X,
+        refDisplayObject.channelOffset1Y,
+        refDisplayObject.channelOffset2X,
+        refDisplayObject.channelOffset2Y,
+        refDisplayObject.channelOffset3X,
+        refDisplayObject.channelOffset3Y,
+        refDisplayObject.textureWidth,
+        refDisplayObject.textureHeight,
+        refDisplayObject.atlasWidth,
+        refDisplayObject.atlasHeight
+      )
+    WebGLHelper.attachUBOData(gl2, refData, cloneReferenceUBOBuffer)
+
     val count: Int = c.clones.length
     var i: Int     = 0
 
     while (i < count) {
-      updateData(refDisplayObject, batchCount + i, Some(c.clones(i)))
+      updateCloneData(i, c.clones(i))
       i += 1
     }
 

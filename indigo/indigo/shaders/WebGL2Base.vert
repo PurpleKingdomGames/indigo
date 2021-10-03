@@ -20,7 +20,17 @@ layout (std140) uniform IndigoFrameData {
   vec2 VIEWPORT_SIZE; // Size of the viewport in pixels
 };
 
+// Used during cloning.
+layout (std140) uniform IndigoCloneReferenceData {
+  vec4 u_ref_refFlip;
+  vec4 u_ref_sizeAndFrameScale;
+  vec4 u_ref_channelOffsets01;
+  vec4 u_ref_channelOffsets23;
+  vec4 u_ref_textureSizeAtlasSize;
+};
+
 uniform mat4 u_baseTransform;
+uniform int u_mode;
 
 out vec4 v_channel_coords_01; // Scaled to position on texture atlas
 out vec4 v_channel_coords_23; // Scaled to position on texture atlas
@@ -102,23 +112,46 @@ void vertex(){}
 
 void main(void) {
 
-  ATLAS_SIZE = a_textureSizeAtlasSize.zw;
-  VERTEX = vec4(a_verticesAndCoords.xy, 1.0, 1.0);
-  TEXTURE_SIZE = a_textureSizeAtlasSize.xy;
-  UV = a_verticesAndCoords.zw;
-  SIZE = a_sizeAndFrameScale.xy;
-  FRAME_SIZE = a_sizeAndFrameScale.zw;
-  ROTATION = a_rotation;
-  POSITION = a_translateScale.xy;
-  SCALE = a_translateScale.zw;
-  REF = a_refFlip.xy;
-  FLIP = a_refFlip.zw;
-  TEXTURE_COORDS = UV; // Redundant.
- 
-  CHANNEL_0_ATLAS_OFFSET = a_channelOffsets01.xy;
-  CHANNEL_1_ATLAS_OFFSET = a_channelOffsets01.zw;
-  CHANNEL_2_ATLAS_OFFSET = a_channelOffsets23.xy;
-  CHANNEL_3_ATLAS_OFFSET = a_channelOffsets23.zw;
+    VERTEX = vec4(a_verticesAndCoords.xy, 1.0, 1.0);
+    UV = a_verticesAndCoords.zw;
+    ROTATION = a_rotation;
+    POSITION = a_translateScale.xy;
+    SCALE = a_translateScale.zw;
+    TEXTURE_COORDS = UV; // Deprecated
+
+    // 0 = normal, 1 = clone batch
+    switch(u_mode) {
+      case 0:
+        ATLAS_SIZE = a_textureSizeAtlasSize.zw;
+        TEXTURE_SIZE = a_textureSizeAtlasSize.xy;
+        SIZE = a_sizeAndFrameScale.xy;
+        FRAME_SIZE = a_sizeAndFrameScale.zw;
+        REF = a_refFlip.xy;
+        FLIP = a_refFlip.zw;
+        CHANNEL_0_ATLAS_OFFSET = a_channelOffsets01.xy;
+        CHANNEL_1_ATLAS_OFFSET = a_channelOffsets01.zw;
+        CHANNEL_2_ATLAS_OFFSET = a_channelOffsets23.xy;
+        CHANNEL_3_ATLAS_OFFSET = a_channelOffsets23.zw;
+        break;
+
+      case 1:
+        ATLAS_SIZE = u_ref_textureSizeAtlasSize.zw;
+        TEXTURE_SIZE = u_ref_textureSizeAtlasSize.xy;
+        SIZE = u_ref_sizeAndFrameScale.xy;
+        FRAME_SIZE = u_ref_sizeAndFrameScale.zw;
+        REF = u_ref_refFlip.xy;
+        FLIP = u_ref_refFlip.zw;
+        CHANNEL_0_ATLAS_OFFSET = u_ref_channelOffsets01.xy;
+        CHANNEL_1_ATLAS_OFFSET = u_ref_channelOffsets01.zw;
+        CHANNEL_2_ATLAS_OFFSET = u_ref_channelOffsets23.xy;
+        CHANNEL_3_ATLAS_OFFSET = u_ref_channelOffsets23.zw;
+        break;
+
+      default:
+        //
+        break;
+    }
+
   CHANNEL_0_TEXTURE_COORDS = scaleCoordsWithOffset(UV, CHANNEL_0_ATLAS_OFFSET);
   CHANNEL_1_TEXTURE_COORDS = scaleCoordsWithOffset(UV, CHANNEL_1_ATLAS_OFFSET);
   CHANNEL_2_TEXTURE_COORDS = scaleCoordsWithOffset(UV, CHANNEL_2_ATLAS_OFFSET);
