@@ -1,6 +1,6 @@
 package indigo.shared.platform
 
-import indigo.shared.display.{DisplayObject, SpriteSheetFrame, DisplayCloneBatch}
+import indigo.shared.display.{DisplayObject, SpriteSheetFrame, DisplayCloneBatch, DisplayCloneTiles}
 import indigo.shared.datatypes.{FontInfo, Rectangle, TextAlignment, FontChar, Point}
 import indigo.shared.display.SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets
 import indigo.shared.IndigoLogger
@@ -24,6 +24,7 @@ import indigo.shared.display.DisplayObjectUniformData
 import indigo.shared.display.DisplayText
 import indigo.shared.scenegraph.CloneId
 import indigo.shared.scenegraph.CloneBatch
+import indigo.shared.scenegraph.CloneTiles
 import indigo.shared.materials.ShaderData
 import indigo.shared.BoundaryLocator
 import indigo.shared.animation.AnimationRef
@@ -50,6 +51,7 @@ final class DisplayObjectConversions(
   implicit private val frameCache: QuickCache[SpriteSheetFrameCoordinateOffsets] = QuickCache.empty
   implicit private val listDoCache: QuickCache[List[DisplayObject]]              = QuickCache.empty
   implicit private val cloneBatchCache: QuickCache[DisplayCloneBatch]            = QuickCache.empty
+  implicit private val cloneTilesCache: QuickCache[DisplayCloneTiles]            = QuickCache.empty
   implicit private val uniformsCache: QuickCache[Array[Float]]                   = QuickCache.empty
 
   def purgeCaches(): Unit = {
@@ -58,6 +60,7 @@ final class DisplayObjectConversions(
     frameCache.purgeAllNow()
     listDoCache.purgeAllNow()
     cloneBatchCache.purgeAllNow()
+    cloneTilesCache.purgeAllNow()
     uniformsCache.purgeAllNow()
   }
 
@@ -75,6 +78,25 @@ final class DisplayObjectConversions(
   private def cloneBatchDataToDisplayEntities(batch: CloneBatch): DisplayCloneBatch = {
     def convert(): DisplayCloneBatch =
       new DisplayCloneBatch(
+        id = batch.id,
+        z = batch.depth.toDouble,
+        cloneData = batch.cloneData
+      )
+
+    batch.staticBatchKey match {
+      case None =>
+        convert()
+
+      case Some(bindingKey) =>
+        QuickCache(bindingKey.toString) {
+          convert()
+        }
+    }
+  }
+
+  private def cloneTilesDataToDisplayEntities(batch: CloneTiles): DisplayCloneTiles = {
+    def convert(): DisplayCloneTiles =
+      new DisplayCloneTiles(
         id = batch.id,
         z = batch.depth.toDouble,
         cloneData = batch.cloneData
@@ -145,6 +167,15 @@ final class DisplayObjectConversions(
 
           case Some(refDisplayObject) =>
             cloneBatchDataToDisplayEntities(c)
+        }
+
+      case c: CloneTiles =>
+        cloneBlankDisplayObjects.get(c.id) match {
+          case None =>
+            DisplayGroup.empty
+
+          case Some(refDisplayObject) =>
+            cloneTilesDataToDisplayEntities(c)
         }
 
       case g: Group =>

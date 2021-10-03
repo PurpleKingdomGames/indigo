@@ -12,6 +12,7 @@ import indigo.shared.scenegraph.TextBox
 import indigo.shared.scenegraph.Sprite
 import indigo.shared.scenegraph.Group
 import indigo.shared.scenegraph.CloneBatch
+import indigo.shared.scenegraph.CloneTiles
 import indigo.shared.scenegraph.Graphic
 import indigo.shared.datatypes.FontKey
 import indigo.shared.scenegraph.Shape
@@ -69,6 +70,9 @@ final class BoundaryLocator(
         Option(groupBounds(g)).map(rect => BoundaryLocator.findBounds(g, rect.position, rect.size, g.ref))
 
       case _: CloneBatch =>
+        None
+
+      case _: CloneTiles =>
         None
 
       case s: Sprite[_] =>
