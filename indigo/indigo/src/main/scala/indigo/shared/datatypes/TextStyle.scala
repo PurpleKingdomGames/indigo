@@ -151,14 +151,22 @@ object FontFamily:
 
   extension (f: FontFamily) inline def name: String = f
 
-enum FontVariant derives CanEqual:
-  case Normal, SmallCaps
+enum FontVariant(css: String) derives CanEqual:
+  inline def toCSS: String = css
+  case Normal extends FontVariant("normal")
+  case SmallCaps extends FontVariant("small-caps")
 
-enum FontStyle derives CanEqual:
-  case Normal, Italic
+enum FontStyle(css: String) derives CanEqual:
+  inline def toCSS: String = css
+  case Normal extends FontStyle("normal")
+  case Italic extends FontStyle("italic")
 
-enum FontWeight derives CanEqual:
-  case Normal, Bold, Lighter, Bolder
+enum FontWeight(css: String) derives CanEqual:
+  inline def toCSS: String = css
+  case Normal extends FontWeight("normal")
+  case Bold extends FontWeight("bold")
+  case Lighter extends FontWeight("lighter")
+  case Bolder extends FontWeight("bolder")
 
 final case class TextStroke(color: RGBA, width: Pixels):
   def withColor(newColor: RGBA): TextStroke =
@@ -175,11 +183,25 @@ object Pixels:
 
   extension (px: Pixels) inline def toInt: Int = px
 
-enum TextAlign derives CanEqual:
-  case Left, Right, Center, Start, End
+enum TextAlign(css: String) derives CanEqual:
+  inline def toCSS: String = css
+  case Left extends TextAlign("left")
+  case Right extends TextAlign("right")
+  case Center extends TextAlign("center")
+  case Start extends TextAlign("start")
+  case End extends TextAlign("end")
 
-enum TextBaseLine derives CanEqual:
-  case Top, Hanging, Middle, Alphabetic, Ideographic, Bottom
+enum TextBaseLine(css: String) derives CanEqual:
+  inline def toCSS: String = css
+  case Top extends TextBaseLine("top")
+  case Hanging extends TextBaseLine("hanging")
+  case Middle extends TextBaseLine("middle")
+  case Alphabetic extends TextBaseLine("alphabetic")
+  case Ideographic extends TextBaseLine("ideographic")
+  case Bottom extends TextBaseLine("bottom")
 
-enum TextDirection derives CanEqual:
-  case LeftToRight, RightToLeft, Inherit
+enum TextDirection(css: String) derives CanEqual:
+  inline def toCSS: String = css
+  case LeftToRight extends TextDirection("ltr")
+  case RightToLeft extends TextDirection("rtl")
+  case Inherit extends TextDirection("inherit")
