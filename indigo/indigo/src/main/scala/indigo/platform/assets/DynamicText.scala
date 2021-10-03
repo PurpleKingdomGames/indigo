@@ -26,47 +26,18 @@ class DynamicText:
   private lazy val textContext: IndigoCanvasRenderingContext2D = createTextContext()
 
   private val toFontStatement: Font => String = f =>
-    val style = f.style match
-      case FontStyle.Normal => "normal"
-      case FontStyle.Italic => "italic"
-
-    val variant = f.variant match
-      case FontVariant.Normal    => "normal"
-      case FontVariant.SmallCaps => "small-caps"
-
-    val weight = f.weight match
-      case FontWeight.Normal  => "normal"
-      case FontWeight.Bold    => "bold"
-      case FontWeight.Lighter => "lighter"
-      case FontWeight.Bolder  => "bolder"
-
+    val style   = f.style.toCSS
+    val variant = f.variant.toCSS
+    val weight  = f.weight.toCSS
     s"$style $variant $weight ${f.size.toInt}px ${f.family.name}"
 
   private def setupText(text: String, style: TextStyle, width: Int, height: Int): Unit =
     textContext.canvas.width = width
     textContext.canvas.height = height
-
     textContext.font = toFontStatement(style.font)
-
-    textContext.textAlign = style.alignment match
-      case TextAlign.Left   => "left"
-      case TextAlign.Right  => "right"
-      case TextAlign.Center => "center"
-      case TextAlign.Start  => "start"
-      case TextAlign.End    => "end"
-
-    textContext.textBaseline = style.baseLine match
-      case TextBaseLine.Top         => "top"
-      case TextBaseLine.Hanging     => "hanging"
-      case TextBaseLine.Middle      => "middle"
-      case TextBaseLine.Alphabetic  => "alphabetic"
-      case TextBaseLine.Ideographic => "ideographic"
-      case TextBaseLine.Bottom      => "bottom"
-
-    textContext.direction = style.direction match
-      case TextDirection.LeftToRight => "ltr"
-      case TextDirection.RightToLeft => "rtl"
-      case TextDirection.Inherit     => "inherit"
+    textContext.textAlign = style.alignment.toCSS
+    textContext.textBaseline = style.baseLine.toCSS
+    textContext.direction = style.direction.toCSS
 
     textContext.miterLimit = 2
     textContext.lineJoin = "round"
