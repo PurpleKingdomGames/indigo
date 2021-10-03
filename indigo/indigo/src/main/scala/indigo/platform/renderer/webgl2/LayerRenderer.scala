@@ -410,7 +410,7 @@ class LayerRenderer(
             atlasName = None
             currentShader = ShaderId("")
             currentShaderHash = ""
-            renderEntities(cloneBlankDisplayObjects, d.entities, customShaders, baseTransform)
+            renderEntities(cloneBlankDisplayObjects, d.entities, customShaders, d.transform * baseTransform)
             setBaseTransform(baseTransform)
             i += 1
 
