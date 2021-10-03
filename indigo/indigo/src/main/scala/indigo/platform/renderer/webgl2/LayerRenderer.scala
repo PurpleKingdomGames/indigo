@@ -29,7 +29,7 @@ import indigo.platform.assets.DynamicText
 import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.platform.renderer.shared.WebGLHelper
 import indigo.shared.display.DisplayGroup
-import indigo.shared.scenegraph.CloneTransformData
+import indigo.shared.scenegraph.CloneBatchData
 
 import scalajs.js.JSConverters._
 
@@ -547,7 +547,7 @@ class LayerRenderer(
       )
     WebGLHelper.attachUBOData(gl2, refData, cloneReferenceUBOBuffer)
 
-    val dataLength: Int = CloneTransformData.dataLength
+    val dataLength: Int = CloneBatchData.dataLength
     val count: Int      = c.cloneData.size
     var i: Int          = 0
 

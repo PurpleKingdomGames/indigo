@@ -8,7 +8,7 @@ import indigo.platform.assets.AtlasId
 import indigo.shared.datatypes.Radians
 import indigo.shared.scenegraph.CloneId
 import scala.collection.mutable.ListBuffer
-import indigo.shared.scenegraph.CloneTransformData
+import indigo.shared.scenegraph.CloneBatchData
 
 sealed trait DisplayEntity:
   def z: Double
@@ -26,7 +26,7 @@ object DisplayGroup:
 final case class DisplayCloneBatch(
     id: CloneId,
     z: Double,
-    cloneData: CloneTransformData
+    cloneData: CloneBatchData
 ) extends DisplayEntity
     derives CanEqual
 

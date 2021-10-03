@@ -99,8 +99,8 @@ object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
                   List(
                     CloneBatch(
                       dots(p.color),
-                      ps.foldLeft(CloneTransformData(p.x, p.y, Radians.zero, p.scale, p.scale)) { (pa, pb) =>
-                        pa ++ CloneTransformData(pb.x, pb.y, Radians.zero, pb.scale, pb.scale)
+                      ps.foldLeft(CloneBatchData(p.x, p.y, Radians.zero, p.scale, p.scale)) { (pa, pb) =>
+                        pa ++ CloneBatchData(pb.x, pb.y, Radians.zero, pb.scale, pb.scale)
                       }
                     )
                   )
