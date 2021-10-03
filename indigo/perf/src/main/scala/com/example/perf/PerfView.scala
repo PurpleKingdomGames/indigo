@@ -48,8 +48,8 @@ object PerfView {
                 batchNumber + 1,
                 CloneBatch(
                   cloneId,
-                  ps.foldLeft(CloneTransformData(p.x, p.y)) { (pa, pb) =>
-                    pa ++ CloneTransformData(pb.x, pb.y)
+                  ps.foldLeft(CloneBatchData(p.x, p.y)) { (pa, pb) =>
+                    pa ++ CloneBatchData(pb.x, pb.y)
                   }
                 ).withStaticBatchKey(BindingKey("herd" + batchNumber.toString)) :: acc
               )

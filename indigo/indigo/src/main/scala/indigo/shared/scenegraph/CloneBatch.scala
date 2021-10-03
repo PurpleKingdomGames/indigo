@@ -7,7 +7,7 @@ import indigo.shared.datatypes._
 final case class CloneBatch(
     id: CloneId,
     depth: Depth,
-    cloneData: CloneTransformData,
+    cloneData: CloneBatchData,
     staticBatchKey: Option[BindingKey]
 ) extends DependentNode
     derives CanEqual:
@@ -24,14 +24,14 @@ final case class CloneBatch(
   def withDepth(newDepth: Depth): CloneBatch =
     this.copy(depth = newDepth)
 
-  def addCloneData(additionalCloneData: CloneTransformData): CloneBatch =
+  def addCloneData(additionalCloneData: CloneBatchData): CloneBatch =
     this.copy(cloneData = cloneData ++ additionalCloneData)
   def addCloneData(x: Int, y: Int): CloneBatch =
-    addCloneData(CloneTransformData(x, y))
+    addCloneData(CloneBatchData(x, y))
   def addCloneData(x: Int, y: Int, rotation: Radians): CloneBatch =
-    addCloneData(CloneTransformData(x, y, rotation))
+    addCloneData(CloneBatchData(x, y, rotation))
   def addCloneData(x: Int, y: Int, rotation: Radians, scaleX: Double, scaleY: Double): CloneBatch =
-    addCloneData(CloneTransformData(x, y, rotation, scaleX, scaleY))
+    addCloneData(CloneBatchData(x, y, rotation, scaleX, scaleY))
 
   def withMaybeStaticBatchKey(maybeKey: Option[BindingKey]): CloneBatch =
     this.copy(staticBatchKey = maybeKey)
@@ -44,7 +44,7 @@ final case class CloneBatch(
 
 object CloneBatch:
 
-  def apply(id: CloneId, cloneData: CloneTransformData): CloneBatch =
+  def apply(id: CloneId, cloneData: CloneBatchData): CloneBatch =
     CloneBatch(
       id,
       Depth.one,
