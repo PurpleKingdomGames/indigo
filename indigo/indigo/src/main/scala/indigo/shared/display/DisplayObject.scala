@@ -9,6 +9,7 @@ import indigo.shared.datatypes.Radians
 import indigo.shared.scenegraph.CloneId
 import scala.collection.mutable.ListBuffer
 import indigo.shared.scenegraph.CloneBatchData
+import indigo.shared.scenegraph.CloneTileData
 
 sealed trait DisplayEntity:
   def z: Double
@@ -27,6 +28,13 @@ final case class DisplayCloneBatch(
     id: CloneId,
     z: Double,
     cloneData: CloneBatchData
+) extends DisplayEntity
+    derives CanEqual
+
+final case class DisplayCloneTiles(
+    id: CloneId,
+    z: Double,
+    cloneData: CloneTileData
 ) extends DisplayEntity
     derives CanEqual
 

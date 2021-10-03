@@ -16,6 +16,7 @@ import indigo.shared.scenegraph.CloneId
 import indigo.shared.display.DisplayObject
 import indigo.shared.display.DisplayText
 import indigo.shared.display.DisplayCloneBatch
+import indigo.shared.display.DisplayCloneTiles
 import indigo.shared.scenegraph.SceneGraphNode
 import indigo.shared.scenegraph.Group
 import indigo.shared.datatypes.Depth
@@ -65,6 +66,9 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
       case _: DisplayCloneBatch =>
         throw new Exception("failed (DisplayCloneBatch)")
 
+      case _: DisplayCloneTiles =>
+        throw new Exception("failed (DisplayCloneTiles)")
+
       case _: DisplayText =>
         throw new Exception("failed (DisplayText)")
 
@@ -89,6 +93,9 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
       .head match {
       case _: DisplayCloneBatch =>
         throw new Exception("failed (DisplayCloneBatch)")
+
+      case _: DisplayCloneTiles =>
+        throw new Exception("failed (DisplayCloneTiles)")
 
       case _: DisplayText =>
         throw new Exception("failed (DisplayText)")

@@ -14,6 +14,7 @@ import scala.scalajs.js.typedarray.Float32Array
 import scala.collection.mutable.ListBuffer
 import indigo.shared.display.DisplayEntity
 import indigo.shared.display.DisplayCloneBatch
+import indigo.shared.display.DisplayCloneTiles
 import indigo.shared.display.DisplayText
 import indigo.platform.renderer.shared.TextureLookupResult
 import indigo.platform.renderer.shared.FrameBufferFunctions
@@ -30,6 +31,7 @@ import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.platform.renderer.shared.WebGLHelper
 import indigo.shared.display.DisplayGroup
 import indigo.shared.scenegraph.CloneBatchData
+import indigo.shared.scenegraph.CloneTileData
 
 import scalajs.js.JSConverters._
 
@@ -124,6 +126,28 @@ class LayerRenderer(
     translateScaleData((i * 4) + 1) = y
     translateScaleData((i * 4) + 2) = scaleX
     translateScaleData((i * 4) + 3) = scaleY
+
+    rotationData(i) = rotation
+  }
+
+  inline private def updateCloneTileData(
+      i: Int,
+      x: Float,
+      y: Float,
+      rotation: Float,
+      scaleX: Float,
+      scaleY: Float,
+      cropX: Float,
+      cropY: Float,
+      cropWidth: Float,
+      cropHeight: Float
+  ): Unit = {
+    translateScaleData((i * 4) + 0) = x
+    translateScaleData((i * 4) + 1) = y
+    translateScaleData((i * 4) + 2) = scaleX
+    translateScaleData((i * 4) + 3) = scaleY
+
+    //TODO: What?
 
     rotationData(i) = rotation
   }
@@ -356,6 +380,16 @@ class LayerRenderer(
       gl2.drawArraysInstanced(TRIANGLE_STRIP, 0, 4, instanceCount)
     }
 
+  def drawCloneTileBuffer(instanceCount: Int): Unit =
+    if (instanceCount > 0) {
+      enableCloneBatchMode()
+
+      bindData(translateScaleInstanceArray, translateScaleData)
+      bindData(rotationInstanceArray, rotationData)
+
+      gl2.drawArraysInstanced(TRIANGLE_STRIP, 0, 4, instanceCount)
+    }
+
   private given CanEqual[List[DisplayEntity], List[DisplayEntity]] = CanEqual.derived
 
   def drawLayer(
@@ -463,6 +497,35 @@ class LayerRenderer(
                 batchCount = 0
                 i += 1
 
+          case c: DisplayCloneTiles =>
+            cloneBlankDisplayObjects.get(c.id) match
+              case None =>
+                i += 1
+
+              case Some(d) =>
+                // Always clear down.
+                drawBuffer(batchCount)
+                doContextChange(
+                  d,
+                  atlasName,
+                  currentShader,
+                  currentShaderHash,
+                  customShaders,
+                  baseTransform
+                )
+                batchCount = 0
+                atlasName = d.atlasName
+                currentShader = d.shaderId
+                currentShaderHash = d.shaderUniformData.map(_.uniformHash).mkString
+
+                val numberProcessed: Int =
+                  processCloneTiles(c, d)
+
+                drawCloneTileBuffer(numberProcessed)
+
+                batchCount = 0
+                i += 1
+
           case t: DisplayText =>
             drawBuffer(batchCount)
 
@@ -517,11 +580,7 @@ class LayerRenderer(
         }
   }
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  private def processCloneBatch(
-      c: DisplayCloneBatch,
-      refDisplayObject: DisplayObject
-  ): Int = {
+  private def uploadRefUBO(refDisplayObject: DisplayObject): Unit =
     val refData: Array[Float] =
       Array(
         refDisplayObject.refX,
@@ -547,6 +606,13 @@ class LayerRenderer(
       )
     WebGLHelper.attachUBOData(gl2, refData, cloneReferenceUBOBuffer)
 
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  private def processCloneBatch(
+      c: DisplayCloneBatch,
+      refDisplayObject: DisplayObject
+  ): Int = {
+    uploadRefUBO(refDisplayObject)
+
     val dataLength: Int = CloneBatchData.dataLength
     val count: Int      = c.cloneData.size
     var i: Int          = 0
@@ -559,6 +625,37 @@ class LayerRenderer(
         c.cloneData.toArray((i * dataLength) + 2),
         c.cloneData.toArray((i * dataLength) + 3),
         c.cloneData.toArray((i * dataLength) + 4)
+      )
+
+      i += 1
+    }
+
+    count
+  }
+
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  private def processCloneTiles(
+      c: DisplayCloneTiles,
+      refDisplayObject: DisplayObject
+  ): Int = {
+    uploadRefUBO(refDisplayObject)
+
+    val dataLength: Int = CloneTileData.dataLength
+    val count: Int      = c.cloneData.size
+    var i: Int          = 0
+
+    while (i < count) {
+      updateCloneTileData(
+        i,
+        c.cloneData.toArray((i * dataLength) + 0),
+        c.cloneData.toArray((i * dataLength) + 1),
+        c.cloneData.toArray((i * dataLength) + 2),
+        c.cloneData.toArray((i * dataLength) + 3),
+        c.cloneData.toArray((i * dataLength) + 4),
+        c.cloneData.toArray((i * dataLength) + 5),
+        c.cloneData.toArray((i * dataLength) + 6),
+        c.cloneData.toArray((i * dataLength) + 7),
+        c.cloneData.toArray((i * dataLength) + 8)
       )
 
       i += 1

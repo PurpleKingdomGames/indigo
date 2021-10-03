@@ -516,6 +516,12 @@ val CloneBatch: shared.scenegraph.CloneBatch.type = shared.scenegraph.CloneBatch
 type CloneBatchData = shared.scenegraph.CloneBatchData
 val CloneBatchData: shared.scenegraph.CloneBatchData.type = shared.scenegraph.CloneBatchData
 
+type CloneTiles = shared.scenegraph.CloneTiles
+val CloneTiles: shared.scenegraph.CloneTiles.type = shared.scenegraph.CloneTiles
+
+type CloneTileData = shared.scenegraph.CloneTileData
+val CloneTileData: shared.scenegraph.CloneTileData.type = shared.scenegraph.CloneTileData
+
 // Lights
 type PointLight = shared.scenegraph.PointLight
 val PointLight: shared.scenegraph.PointLight.type = shared.scenegraph.PointLight

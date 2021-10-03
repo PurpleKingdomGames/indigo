@@ -2,7 +2,7 @@ package indigo.shared.scenegraph
 
 import indigo.shared.datatypes._
 
-/** Represents many clones of the same cloneblank, differentiated only by their transform data.
+/** Represents many clones of the same clone blank, differentiated only by their transform data.
   */
 final case class CloneBatch(
     id: CloneId,
