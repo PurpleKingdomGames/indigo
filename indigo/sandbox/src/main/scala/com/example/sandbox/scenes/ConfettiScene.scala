@@ -32,7 +32,7 @@ object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
   def subSystems: Set[SubSystem] =
     Set()
 
-  val spawnCount: Int = 150
+  val spawnCount: Int = 200
 
   def updateModel(
       context: FrameContext[SandboxStartupData],

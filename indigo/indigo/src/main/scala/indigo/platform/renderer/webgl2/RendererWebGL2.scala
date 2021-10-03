@@ -71,6 +71,8 @@ final class RendererWebGL2(
     gl2.createBuffer()
   private val frameDataUBOBuffer: WebGLBuffer =
     gl2.createBuffer()
+  private val cloneReferenceUBOBuffer: WebGLBuffer =
+    gl2.createBuffer()
   private val lightDataUBOBuffer: WebGLBuffer =
     gl2.createBuffer()
 
@@ -106,6 +108,7 @@ final class RendererWebGL2(
       config.maxBatchSize,
       projectionUBOBuffer,
       frameDataUBOBuffer,
+      cloneReferenceUBOBuffer,
       lightDataUBOBuffer,
       dynamicText,
       WebGLHelper.createAndBindTexture(gl2)
@@ -405,8 +408,7 @@ final class RendererWebGL2(
       orthographicProjectionMatrix =
         CheapMatrix4.orthographic(actualWidth.toFloat / magnification, actualHeight.toFloat / magnification)
       defaultLayerProjectionMatrix = orthographicProjectionMatrix.scale(1.0, -1.0, 1.0).toArray
-      orthographicProjectionMatrixNoMag =
-        CheapMatrix4.orthographic(actualWidth.toFloat, actualHeight.toFloat).toArray
+      orthographicProjectionMatrixNoMag = CheapMatrix4.orthographic(actualWidth.toFloat, actualHeight.toFloat).toArray
       orthographicProjectionMatrixNoMagFlipped =
         CheapMatrix4.orthographic(actualWidth.toFloat, actualHeight.toFloat).scale(1.0, -1.0, 1.0).toArray
 

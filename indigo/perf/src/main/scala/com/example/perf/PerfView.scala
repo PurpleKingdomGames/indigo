@@ -20,7 +20,7 @@ object PerfView {
       )
 
   private val herdCount: Int      = 19999
-  private val cloneBatchSize: Int = 32
+  private val cloneBatchSize: Int = 100
 
   private val positions: List[Point] =
     (1 to herdCount).toList.map { _ =>
