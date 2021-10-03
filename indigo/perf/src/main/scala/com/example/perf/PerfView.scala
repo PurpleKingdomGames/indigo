@@ -19,8 +19,8 @@ object PerfView {
         CloneBlank(cloneId, model.dude.sprite)
       )
 
-  private val herdCount: Int      = 19999
-  private val cloneBatchSize: Int = 100
+  private val herdCount: Int      = 19999 + 130000
+  private val cloneBatchSize: Int = 2048
 
   private val positions: List[Point] =
     (1 to herdCount).toList.map { _ =>
@@ -36,15 +36,23 @@ object PerfView {
 
         case rs =>
           val (l, r) = rs.splitAt(batchSize)
-          rec(
-            r,
-            batchSize,
-            batchNumber + 1,
-            CloneBatch(
-              cloneId,
-              l.map(CloneTransformData.startAt)
-            ).withStaticBatchKey(BindingKey("herd" + batchNumber.toString)) :: acc
-          )
+
+          l match
+            case Nil =>
+              rec(r, batchSize, batchNumber + 1, acc)
+
+            case p :: ps =>
+              rec(
+                r,
+                batchSize,
+                batchNumber + 1,
+                CloneBatch(
+                  cloneId,
+                  ps.foldLeft(CloneTransformData(p.x, p.y)) { (pa, pb) =>
+                    pa ++ CloneTransformData(pb.x, pb.y)
+                  }
+                ).withStaticBatchKey(BindingKey("herd" + batchNumber.toString)) :: acc
+              )
       }
 
     rec(positions, cloneBatchSize, 0, Nil)

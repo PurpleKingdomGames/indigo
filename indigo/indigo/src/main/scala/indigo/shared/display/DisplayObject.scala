@@ -26,7 +26,7 @@ object DisplayGroup:
 final case class DisplayCloneBatch(
     id: CloneId,
     z: Double,
-    clones: List[CloneTransformData]
+    cloneData: CloneTransformData
 ) extends DisplayEntity
     derives CanEqual
 

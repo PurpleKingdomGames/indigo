@@ -112,13 +112,20 @@ class LayerRenderer(
     textureSizeAtlasSizeData((i * 4) + 3) = d.atlasHeight
   }
 
-  private def updateCloneData(i: Int, ctd: CloneTransformData): Unit = {
-    translateScaleData((i * 4) + 0) = ctd.x.toFloat
-    translateScaleData((i * 4) + 1) = ctd.y.toFloat
-    translateScaleData((i * 4) + 2) = ctd.scaleX.toFloat
-    translateScaleData((i * 4) + 3) = ctd.scaleY.toFloat
+  inline private def updateCloneData(
+      i: Int,
+      x: Float,
+      y: Float,
+      rotation: Float,
+      scaleX: Float,
+      scaleY: Float
+  ): Unit = {
+    translateScaleData((i * 4) + 0) = x
+    translateScaleData((i * 4) + 1) = y
+    translateScaleData((i * 4) + 2) = scaleX
+    translateScaleData((i * 4) + 3) = scaleY
 
-    rotationData(i) = ctd.rotation.toFloat
+    rotationData(i) = rotation
   }
 
   private def updateTextData(d: DisplayText, i: Int): Unit = {
@@ -531,11 +538,20 @@ class LayerRenderer(
       )
     WebGLHelper.attachUBOData(gl2, refData, cloneReferenceUBOBuffer)
 
-    val count: Int = c.clones.length
-    var i: Int     = 0
+    val dataLength: Int = CloneTransformData.dataLength
+    val count: Int      = c.cloneData.size
+    var i: Int          = 0
 
     while (i < count) {
-      updateCloneData(i, c.clones(i))
+      updateCloneData(
+        i,
+        c.cloneData.toArray((i * dataLength) + 0),
+        c.cloneData.toArray((i * dataLength) + 1),
+        c.cloneData.toArray((i * dataLength) + 2),
+        c.cloneData.toArray((i * dataLength) + 3),
+        c.cloneData.toArray((i * dataLength) + 4)
+      )
+
       i += 1
     }
 

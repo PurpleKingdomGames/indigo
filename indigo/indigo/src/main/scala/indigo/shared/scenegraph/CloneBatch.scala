@@ -12,7 +12,7 @@ final case class CloneBatch(
     rotation: Radians,
     scaleX: Double,
     scaleY: Double,
-    clones: List[CloneTransformData],
+    cloneData: CloneTransformData,
     staticBatchKey: Option[BindingKey]
 ) extends DependentNode
     derives CanEqual:
@@ -63,15 +63,6 @@ final case class CloneBatch(
       scaleY = newScaleY
     )
 
-  def applyCloneTransformData(transform: CloneTransformData): CloneBatch =
-    withTransforms(
-      transform.x,
-      transform.y,
-      transform.rotation,
-      transform.scaleX,
-      transform.scaleY
-    )
-
   def withX(newX: Int): CloneBatch =
     this.copy(x = newX)
   def withY(newY: Int): CloneBatch =
@@ -95,22 +86,14 @@ final case class CloneBatch(
   def withScale(newScale: Vector2): CloneBatch =
     withScale(newScale.x, newScale.y)
 
-  def withClones(newClones: List[CloneTransformData]): CloneBatch =
-    this.copy(clones = newClones)
-
-  def addClones(additionalClones: List[CloneTransformData]): CloneBatch =
-    this.copy(clones = clones ++ additionalClones)
-  def addClones(additionalClones: CloneTransformData*): CloneBatch =
-    addClones(additionalClones.toList)
-
-  def addClone(additionalClone: CloneTransformData): CloneBatch =
-    this.copy(clones = clones ++ List(additionalClone))
-  def addClone(x: Int, y: Int): CloneBatch =
-    addClone(CloneTransformData(x, y))
-  def addClone(x: Int, y: Int, rotation: Radians): CloneBatch =
-    addClone(CloneTransformData(x, y, rotation))
-  def addClone(x: Int, y: Int, rotation: Radians, scaleX: Double, scaleY: Double): CloneBatch =
-    addClone(CloneTransformData(x, y, rotation, scaleX, scaleY))
+  def addCloneData(additionalCloneData: CloneTransformData): CloneBatch =
+    this.copy(cloneData = cloneData ++ additionalCloneData)
+  def addCloneData(x: Int, y: Int): CloneBatch =
+    addCloneData(CloneTransformData(x, y))
+  def addCloneData(x: Int, y: Int, rotation: Radians): CloneBatch =
+    addCloneData(CloneTransformData(x, y, rotation))
+  def addCloneData(x: Int, y: Int, rotation: Radians, scaleX: Double, scaleY: Double): CloneBatch =
+    addCloneData(CloneTransformData(x, y, rotation, scaleX, scaleY))
 
   def withMaybeStaticBatchKey(maybeKey: Option[BindingKey]): CloneBatch =
     this.copy(staticBatchKey = maybeKey)
@@ -123,7 +106,7 @@ final case class CloneBatch(
 
 object CloneBatch:
 
-  def apply(id: CloneId, clones: List[CloneTransformData]): CloneBatch =
+  def apply(id: CloneId, cloneData: CloneTransformData): CloneBatch =
     CloneBatch(
       id,
       Depth.one,
@@ -132,24 +115,11 @@ object CloneBatch:
       Radians.zero,
       1.0,
       1.0,
-      clones,
+      cloneData,
       None
     )
 
-  def apply(id: CloneId, clones: CloneTransformData*): CloneBatch =
-    CloneBatch(
-      id,
-      Depth.one,
-      0,
-      0,
-      Radians.zero,
-      1.0,
-      1.0,
-      clones.toList,
-      None
-    )
-
-  def apply(id: CloneId, x: Int, y: Int, clones: List[CloneTransformData]): CloneBatch =
+  def apply(id: CloneId, x: Int, y: Int, cloneData: CloneTransformData): CloneBatch =
     CloneBatch(
       id,
       Depth.one,
@@ -158,11 +128,11 @@ object CloneBatch:
       Radians.zero,
       1.0,
       1.0,
-      clones,
+      cloneData,
       None
     )
 
-  def apply(id: CloneId, x: Int, y: Int, rotation: Radians, clones: List[CloneTransformData]): CloneBatch =
+  def apply(id: CloneId, x: Int, y: Int, rotation: Radians, cloneData: CloneTransformData): CloneBatch =
     CloneBatch(
       id,
       Depth.one,
@@ -171,7 +141,7 @@ object CloneBatch:
       rotation,
       1.0,
       1.0,
-      clones,
+      cloneData,
       None
     )
 
@@ -182,7 +152,7 @@ object CloneBatch:
       rotation: Radians,
       scaleX: Double,
       scaleY: Double,
-      clones: List[CloneTransformData]
+      cloneData: CloneTransformData
   ): CloneBatch =
     CloneBatch(
       id,
@@ -192,6 +162,6 @@ object CloneBatch:
       rotation,
       scaleX,
       scaleY,
-      clones,
+      cloneData,
       None
     )

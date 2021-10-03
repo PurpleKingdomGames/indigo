@@ -77,7 +77,7 @@ final class DisplayObjectConversions(
       new DisplayCloneBatch(
         id = batch.id,
         z = batch.depth.toDouble,
-        clones = batch.clones
+        cloneData = batch.cloneData
       )
 
     batch.staticBatchKey match {
