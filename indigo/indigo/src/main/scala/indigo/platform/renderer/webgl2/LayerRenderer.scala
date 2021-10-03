@@ -162,6 +162,15 @@ class LayerRenderer(
     textureSizeAtlasSizeData((i * 4) + 3) = 0
   }
 
+  def init(): LayerRenderer =
+
+    // pre-populate array
+    val refData: Array[Float] =
+      List.fill(20)(0.0f).toArray
+    WebGLHelper.attachUBOData(gl2, refData, cloneReferenceUBOBuffer)
+
+    this
+
   def requiresContextChange(
       d: DisplayObject,
       atlasName: Option[AtlasId],
