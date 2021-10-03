@@ -112,7 +112,7 @@ final class RendererWebGL2(
       lightDataUBOBuffer,
       dynamicText,
       WebGLHelper.createAndBindTexture(gl2)
-    )
+    ).init()
   private val layerMergeRenderInstance: LayerMergeRenderer =
     new LayerMergeRenderer(gl2, frameDataUBOBuffer)
 
