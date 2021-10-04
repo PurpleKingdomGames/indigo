@@ -613,31 +613,36 @@ class LayerRenderer(
         }
   }
 
+  private var currentRefUBOHash: Int = -1
   private def uploadRefUBO(refDisplayObject: DisplayObject): Unit =
-    val refData: Array[Float] =
-      Array(
-        refDisplayObject.refX,
-        refDisplayObject.refY,
-        refDisplayObject.flipX,
-        refDisplayObject.flipY,
-        refDisplayObject.width,
-        refDisplayObject.height,
-        refDisplayObject.frameScaleX,
-        refDisplayObject.frameScaleY,
-        refDisplayObject.channelOffset0X,
-        refDisplayObject.channelOffset0Y,
-        refDisplayObject.channelOffset1X,
-        refDisplayObject.channelOffset1Y,
-        refDisplayObject.channelOffset2X,
-        refDisplayObject.channelOffset2Y,
-        refDisplayObject.channelOffset3X,
-        refDisplayObject.channelOffset3Y,
-        refDisplayObject.textureWidth,
-        refDisplayObject.textureHeight,
-        refDisplayObject.atlasWidth,
-        refDisplayObject.atlasHeight
-      )
-    WebGLHelper.attachUBOData(gl2, refData, cloneReferenceUBOBuffer)
+    val code = refDisplayObject.hashCode
+    if currentRefUBOHash == code then ()
+    else
+      val refData: Array[Float] =
+        Array(
+          refDisplayObject.refX,
+          refDisplayObject.refY,
+          refDisplayObject.flipX,
+          refDisplayObject.flipY,
+          refDisplayObject.width,
+          refDisplayObject.height,
+          refDisplayObject.frameScaleX,
+          refDisplayObject.frameScaleY,
+          refDisplayObject.channelOffset0X,
+          refDisplayObject.channelOffset0Y,
+          refDisplayObject.channelOffset1X,
+          refDisplayObject.channelOffset1Y,
+          refDisplayObject.channelOffset2X,
+          refDisplayObject.channelOffset2Y,
+          refDisplayObject.channelOffset3X,
+          refDisplayObject.channelOffset3Y,
+          refDisplayObject.textureWidth,
+          refDisplayObject.textureHeight,
+          refDisplayObject.atlasWidth,
+          refDisplayObject.atlasHeight
+        )
+      WebGLHelper.attachUBOData(gl2, refData, cloneReferenceUBOBuffer)
+      currentRefUBOHash = code
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private def processCloneBatch(
