@@ -11,8 +11,12 @@ import indigoextras.geometry.Polygon
 import indigoextras.geometry.Vertex
 import com.example.sandbox.Log
 import com.example.sandbox.SandboxAssets
+import scala.annotation.tailrec
 
 object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
+
+  val spawnCount: Int   = 100
+  val maxBatchSize: Int = 100
 
   type SceneModel     = ConfettiModel
   type SceneViewModel = Unit
@@ -31,8 +35,6 @@ object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
 
   def subSystems: Set[SubSystem] =
     Set()
-
-  val spawnCount: Int = 50
 
   def updateModel(
       context: FrameContext[SandboxStartupData],
@@ -80,32 +82,57 @@ object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
       .withFontSize(Pixels(12))
       .withColor(RGBA.White)
 
+  def makeCloneTiles(particles: List[Particle]): List[CloneTiles] = {
+    @tailrec
+    def rec(
+        remaining: List[Particle],
+        currentSize: Int,
+        maybeCurrent: Option[CloneTileData],
+        acc: List[CloneTiles]
+    ): List[CloneTiles] =
+      (remaining, maybeCurrent) match
+        case (Nil, None) =>
+          acc
+
+        case (Nil, Some(current)) =>
+          (CloneTiles(cloneId, current) :: acc).reverse
+
+        case (_, None) if currentSize == maxBatchSize =>
+          rec(remaining, 0, None, acc)
+
+        case (_, Some(current)) if currentSize == maxBatchSize =>
+          rec(remaining, 0, None, CloneTiles(cloneId, current) :: acc)
+
+        case (p :: ps, None) =>
+          val x = CloneTileData.unsafe(Array(p.x, p.y, 0.0f, p.scale, p.scale) ++ crops(p.color))
+          rec(
+            ps,
+            currentSize + 1,
+            Some(x),
+            acc
+          )
+
+        case (p :: ps, Some(current)) =>
+          val x = CloneTileData.unsafe(Array(p.x, p.y, 0.0f, p.scale, p.scale) ++ crops(p.color))
+          rec(
+            ps,
+            currentSize + 1,
+            Some(x ++ current),
+            acc
+          )
+
+    rec(particles, 0, None, Nil)
+  }
+
   def present(
       context: FrameContext[SandboxStartupData],
       model: ConfettiModel,
       viewModel: Unit
   ): Outcome[SceneUpdateFragment] =
-    val tiles: List[CloneTiles] =
-      model.particles match
-        case Nil =>
-          Nil
-
-        case p :: ps =>
-          List(
-            CloneTiles(
-              cloneId,
-              ps.foldLeft(
-                CloneTileData.unsafe(Array[Float](p.x, p.y, 0.0f, p.scale, p.scale) ++ crops(p.color))
-              ) { (pa, pb) =>
-                pa ++ CloneTileData.unsafe(Array(pb.x, pb.y, 0.0f, pb.scale, pb.scale) ++ crops(pb.color))
-              }
-            )
-          )
-
     Outcome(
       SceneUpdateFragment(
         Layer(
-          tiles ++ List(count.withText(s"count: ${model.particles.length}"))
+          makeCloneTiles(model.particles) ++ List(count.withText(s"count: ${model.particles.length}"))
         ).withMagnification(1)
       ).addCloneBlanks(cloneBlanks)
     )
