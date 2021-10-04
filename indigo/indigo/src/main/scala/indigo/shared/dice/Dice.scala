@@ -14,6 +14,7 @@ trait Dice {
   def roll: Int
   def roll(sides: Int): Int
   def rollFromZero(sides: Int): Int
+  def rollFloat: Float
   def rollDouble: Double
   def rollAlphaNumeric(length: Int): String
   def rollAlphaNumeric: String
@@ -69,6 +70,9 @@ object Dice {
       def rollFromZero(sides: Int): Int =
         fixedTo
 
+      def rollFloat: Float =
+        if (fixedTo == 0) 0 else 1
+
       def rollDouble: Double =
         if (fixedTo == 0) 0 else 1
 
@@ -94,6 +98,9 @@ object Dice {
       def rollFromZero(sides: Int): Int =
         roll(sides + 1) - 1
 
+      def rollFloat: Float =
+        r.nextFloat()
+
       def rollDouble: Double =
         r.nextDouble()
 
@@ -118,6 +125,9 @@ object Dice {
 
       def rollFromZero(sides: Int): Int =
         roll(sides + 1) - 1
+
+      def rollFloat: Float =
+        r.nextFloat()
 
       def rollDouble: Double =
         r.nextDouble()
