@@ -98,3 +98,4 @@ object CloneTileData:
     Array(x, y, rotation, scaleX, scaleY, cropX, cropY, cropWidth, cropHeight)
 
   given CanEqual[Option[CloneTileData], Option[CloneTileData]] = CanEqual.derived
+  given CanEqual[List[CloneTileData], List[CloneTileData]]     = CanEqual.derived

@@ -33,3 +33,4 @@ object CloneBatchData:
     Array(x, y, rotation, scaleX, scaleY)
 
   given CanEqual[Option[CloneBatchData], Option[CloneBatchData]] = CanEqual.derived
+  given CanEqual[List[CloneBatchData], List[CloneBatchData]]     = CanEqual.derived
