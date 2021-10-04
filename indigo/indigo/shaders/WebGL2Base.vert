@@ -119,7 +119,7 @@ void main(void) {
     SCALE = a_translateScale.zw;
     TEXTURE_COORDS = UV; // Deprecated
 
-    // 0 = normal, 1 = clone batch
+    // 0 = normal, 1 = clone batch, 2 = clone tiles
     switch(u_mode) {
       case 0:
         ATLAS_SIZE = a_textureSizeAtlasSize.zw;
@@ -145,6 +145,19 @@ void main(void) {
         CHANNEL_1_ATLAS_OFFSET = u_ref_channelOffsets01.zw;
         CHANNEL_2_ATLAS_OFFSET = u_ref_channelOffsets23.xy;
         CHANNEL_3_ATLAS_OFFSET = u_ref_channelOffsets23.zw;
+        break;
+
+      case 2:
+        ATLAS_SIZE = u_ref_textureSizeAtlasSize.zw;
+        TEXTURE_SIZE = u_ref_textureSizeAtlasSize.xy;
+        SIZE = u_ref_sizeAndFrameScale.xy;
+        FRAME_SIZE = a_sizeAndFrameScale.zw;
+        REF = u_ref_refFlip.xy;
+        FLIP = u_ref_refFlip.zw;
+        CHANNEL_0_ATLAS_OFFSET = a_channelOffsets01.xy;
+        CHANNEL_1_ATLAS_OFFSET = a_channelOffsets01.zw;
+        CHANNEL_2_ATLAS_OFFSET = a_channelOffsets23.xy;
+        CHANNEL_3_ATLAS_OFFSET = a_channelOffsets23.zw;
         break;
 
       default:

@@ -22,6 +22,8 @@ object SandboxAssets {
       // .withOverlay(Overlay.LinearGradient(Point.zero, RGBA.Cyan, Point(32, 32), RGBA.Magenta))
       .withOverlay(Fill.RadialGradient(Point(4, 4), RGBA.Cyan, Point(32, 32), RGBA.Magenta))
 
+  val colouredDots: Graphic[Material.Bitmap] = Graphic(32, 32, Material.Bitmap(dots))
+
   val redDot: Graphic[Material.Bitmap]    = Graphic(Rectangle(0, 0, 16, 16), 1, Material.Bitmap(dots)).withRef(8, 8)
   val greenDot: Graphic[Material.Bitmap]  = Graphic(Rectangle(16, 0, 16, 16), 1, Material.Bitmap(dots)).withRef(8, 8)
   val blueDot: Graphic[Material.Bitmap]   = Graphic(Rectangle(0, 16, 16, 16), 1, Material.Bitmap(dots)).withRef(8, 8)

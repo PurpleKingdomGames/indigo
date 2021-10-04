@@ -137,17 +137,34 @@ class LayerRenderer(
       rotation: Float,
       scaleX: Float,
       scaleY: Float,
-      cropX: Float,
-      cropY: Float,
-      cropWidth: Float,
-      cropHeight: Float
+      frameScaleX: Float,
+      frameScaleY: Float,
+      channelOffset0X: Float,
+      channelOffset0Y: Float,
+      channelOffset1X: Float,
+      channelOffset1Y: Float,
+      channelOffset2X: Float,
+      channelOffset2Y: Float,
+      channelOffset3X: Float,
+      channelOffset3Y: Float
   ): Unit = {
     translateScaleData((i * 4) + 0) = x
     translateScaleData((i * 4) + 1) = y
     translateScaleData((i * 4) + 2) = scaleX
     translateScaleData((i * 4) + 3) = scaleY
 
-    //TODO: What?
+    sizeAndFrameScaleData((i * 4) + 2) = frameScaleX
+    sizeAndFrameScaleData((i * 4) + 3) = frameScaleY
+
+    channelOffsets01Data((i * 4) + 0) = channelOffset0X
+    channelOffsets01Data((i * 4) + 1) = channelOffset0Y
+    channelOffsets01Data((i * 4) + 2) = channelOffset1X
+    channelOffsets01Data((i * 4) + 3) = channelOffset1Y
+
+    channelOffsets23Data((i * 4) + 0) = channelOffset2X
+    channelOffsets23Data((i * 4) + 1) = channelOffset2Y
+    channelOffsets23Data((i * 4) + 2) = channelOffset3X
+    channelOffsets23Data((i * 4) + 3) = channelOffset3Y
 
     rotationData(i) = rotation
   }
@@ -347,7 +364,15 @@ class LayerRenderer(
     gl2.disableVertexAttribArray(5)
     gl2.disableVertexAttribArray(6)
 
-  def disableCloneBatchMode(): Unit =
+  def enableCloneTileMode(): Unit =
+    setMode(2)
+    gl2.disableVertexAttribArray(2)
+    gl2.enableVertexAttribArray(3)
+    gl2.enableVertexAttribArray(4)
+    gl2.enableVertexAttribArray(5)
+    gl2.disableVertexAttribArray(6)
+
+  def disableCloneMode(): Unit =
     setMode(0)
     gl2.enableVertexAttribArray(2)
     gl2.enableVertexAttribArray(3)
@@ -357,7 +382,7 @@ class LayerRenderer(
 
   def drawBuffer(instanceCount: Int): Unit =
     if (instanceCount > 0) {
-      disableCloneBatchMode()
+      disableCloneMode()
 
       bindData(translateScaleInstanceArray, translateScaleData)
       bindData(refFlipInstanceArray, refFlipData)
@@ -382,9 +407,12 @@ class LayerRenderer(
 
   def drawCloneTileBuffer(instanceCount: Int): Unit =
     if (instanceCount > 0) {
-      enableCloneBatchMode()
+      enableCloneTileMode()
 
       bindData(translateScaleInstanceArray, translateScaleData)
+      bindData(sizeAndFrameScaleInstanceArray, sizeAndFrameScaleData)
+      bindData(channelOffsets01InstanceArray, channelOffsets01Data)
+      bindData(channelOffsets23InstanceArray, channelOffsets23Data)
       bindData(rotationInstanceArray, rotationData)
 
       gl2.drawArraysInstanced(TRIANGLE_STRIP, 0, 4, instanceCount)
@@ -645,17 +673,32 @@ class LayerRenderer(
     var i: Int          = 0
 
     while (i < count) {
+      val cropX           = c.cloneData.toArray((i * dataLength) + 5)
+      val cropY           = c.cloneData.toArray((i * dataLength) + 6)
+      val cropWidth       = c.cloneData.toArray((i * dataLength) + 7)
+      val cropHeight      = c.cloneData.toArray((i * dataLength) + 8)
+      val frameScaleX     = cropWidth / refDisplayObject.atlasWidth
+      val frameScaleY     = cropHeight / refDisplayObject.atlasHeight
+      val channelOffset0X = frameScaleX * ((cropX + refDisplayObject.textureX) / cropWidth)
+      val channelOffset0Y = frameScaleY * ((cropY + refDisplayObject.textureY) / cropHeight)
+
       updateCloneTileData(
-        i,
-        c.cloneData.toArray((i * dataLength) + 0),
-        c.cloneData.toArray((i * dataLength) + 1),
-        c.cloneData.toArray((i * dataLength) + 2),
-        c.cloneData.toArray((i * dataLength) + 3),
-        c.cloneData.toArray((i * dataLength) + 4),
-        c.cloneData.toArray((i * dataLength) + 5),
-        c.cloneData.toArray((i * dataLength) + 6),
-        c.cloneData.toArray((i * dataLength) + 7),
-        c.cloneData.toArray((i * dataLength) + 8)
+        i = i,
+        x = c.cloneData.toArray((i * dataLength) + 0),
+        y = c.cloneData.toArray((i * dataLength) + 1),
+        rotation = c.cloneData.toArray((i * dataLength) + 2),
+        scaleX = c.cloneData.toArray((i * dataLength) + 3),
+        scaleY = c.cloneData.toArray((i * dataLength) + 4),
+        frameScaleX = frameScaleX,
+        frameScaleY = frameScaleY,
+        channelOffset0X = channelOffset0X,
+        channelOffset0Y = channelOffset0Y,
+        channelOffset1X = channelOffset0X + (refDisplayObject.channelOffset1X - refDisplayObject.channelOffset0X),
+        channelOffset1Y = channelOffset0Y + (refDisplayObject.channelOffset1Y - refDisplayObject.channelOffset0Y),
+        channelOffset2X = channelOffset0X + (refDisplayObject.channelOffset2X - refDisplayObject.channelOffset0X),
+        channelOffset2Y = channelOffset0Y + (refDisplayObject.channelOffset2Y - refDisplayObject.channelOffset0Y),
+        channelOffset3X = channelOffset0X + (refDisplayObject.channelOffset3X - refDisplayObject.channelOffset0X),
+        channelOffset3Y = channelOffset0Y + (refDisplayObject.channelOffset3Y - refDisplayObject.channelOffset0Y)
       )
 
       i += 1

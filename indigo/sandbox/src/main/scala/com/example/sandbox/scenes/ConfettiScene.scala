@@ -32,7 +32,7 @@ object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
   def subSystems: Set[SubSystem] =
     Set()
 
-  val spawnCount: Int = 100
+  val spawnCount: Int = 50
 
   def updateModel(
       context: FrameContext[SandboxStartupData],
@@ -60,20 +60,17 @@ object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
   ): GlobalEvent => Outcome[Unit] =
     _ => Outcome(viewModel)
 
-  val cloneBlanks: List[CloneBlank] =
-    List(
-      CloneBlank(CloneId("r"), SandboxAssets.redDot).static,
-      CloneBlank(CloneId("g"), SandboxAssets.greenDot).static,
-      CloneBlank(CloneId("b"), SandboxAssets.blueDot).static,
-      CloneBlank(CloneId("y"), SandboxAssets.yellowDot).static
-    )
+  val cloneId: CloneId = CloneId("dots")
 
-  val dots: List[CloneId] =
-    List(
-      CloneId("r"),
-      CloneId("g"),
-      CloneId("b"),
-      CloneId("y")
+  val cloneBlanks: List[CloneBlank] =
+    List(CloneBlank(cloneId, SandboxAssets.colouredDots).static)
+
+  val crops =
+    Array(
+      Array[Int](0, 0, 16, 16),
+      Array[Int](16, 0, 16, 16),
+      Array[Int](0, 16, 16, 16),
+      Array[Int](16, 16, 16, 16)
     )
 
   val count: TextBox =
@@ -86,39 +83,50 @@ object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
       model: ConfettiModel,
       viewModel: Unit
   ): Outcome[SceneUpdateFragment] =
+    val tiles: List[CloneTiles] =
+      model.particles match
+        case Nil =>
+          Nil
+
+        case p :: ps =>
+          val crop1 = crops(p.color)
+          List(
+            CloneTiles(
+              cloneId,
+              ps.foldLeft(
+                CloneTileData(p.x, p.y, Radians.zero, p.scale, p.scale, crop1(0), crop1(1), crop1(2), crop1(3))
+              ) { (pa, pb) =>
+                val crop2 = crops(pb.color)
+                pa ++ CloneTileData(
+                  pb.x,
+                  pb.y,
+                  Radians.zero,
+                  pb.scale,
+                  pb.scale,
+                  crop2(0),
+                  crop2(1),
+                  crop2(2),
+                  crop2(3)
+                )
+              }
+            )
+          )
+
     Outcome(
       SceneUpdateFragment(
         Layer(
-          model.particles.flatMap { particles =>
-            val res =
-              particles match
-                case Nil =>
-                  Nil
-
-                case p :: ps =>
-                  List(
-                    CloneBatch(
-                      dots(p.color),
-                      ps.foldLeft(CloneBatchData(p.x, p.y, Radians.zero, p.scale, p.scale)) { (pa, pb) =>
-                        pa ++ CloneBatchData(pb.x, pb.y, Radians.zero, pb.scale, pb.scale)
-                      }
-                    )
-                  )
-            res
-          } ++ List(
-            count.withText(s"count: ${model.particles.flatten.length}")
-          )
+          tiles ++ List(count.withText(s"count: ${model.particles.length}"))
         ).withMagnification(1)
       ).addCloneBlanks(cloneBlanks)
     )
 
-opaque type ConfettiModel = (Int, List[List[Particle]])
+opaque type ConfettiModel = (Int, List[Particle])
 object ConfettiModel:
   val empty: ConfettiModel = (0, Nil)
 
   extension (m: ConfettiModel)
-    inline def color: Int                      = m._1
-    inline def particles: List[List[Particle]] = m._2
+    inline def color: Int                = m._1
+    inline def particles: List[Particle] = m._2
 
     def spawn(dice: Dice, position: Point, count: Int): ConfettiModel =
       (
@@ -132,24 +140,21 @@ object ConfettiModel:
             m.color,
             (dice.rollDouble * 0.5 + 0.5) * 0.5
           )
-        } :: m.particles
+        } ++ m.particles
       )
 
     def update: ConfettiModel =
       (
         (m.color + 1) % 4,
-        m.particles.map {
-          _.filter(p => p.y < 500)
-            .map { p =>
-              val newFy = p.fy - 0.1
-              val newFx = p.fx * 0.95
-              p.copy(
-                x = (p.x + (15 * newFx)).toInt,
-                y = (p.y - (5 * newFy)).toInt,
-                fx = newFx,
-                fy = newFy
-              )
-            }
+        m.particles.filter(p => p.y < 500).map { p =>
+          val newFy = p.fy - 0.1
+          val newFx = p.fx * 0.95
+          p.copy(
+            x = (p.x + (15 * newFx)).toInt,
+            y = (p.y - (5 * newFy)).toInt,
+            fx = newFx,
+            fy = newFy
+          )
         }
       )
 
