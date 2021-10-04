@@ -32,7 +32,4 @@ object CloneBatchData:
   inline def apply(x: Float, y: Float, rotation: Float, scaleX: Float, scaleY: Float): CloneBatchData =
     Array(x, y, rotation, scaleX, scaleY)
 
-  val identity: CloneBatchData =
-    Array(0.0f, 0.0f, 0.0f, 1.0f, 1.0f)
-
   given CanEqual[Option[CloneBatchData], Option[CloneBatchData]] = CanEqual.derived

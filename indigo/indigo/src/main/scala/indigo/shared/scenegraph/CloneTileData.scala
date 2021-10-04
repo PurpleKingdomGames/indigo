@@ -12,10 +12,10 @@ object CloneTileData:
 
   val dataLength: Int = 9
 
-  extension (cbd: CloneTileData)
-    inline def ++(other: CloneTileData): CloneTileData = cbd.concat(other)
-    def size: Int                                      = cbd.length / dataLength
-    inline def toArray: Array[Float]                   = cbd
+  extension (ctd: CloneTileData)
+    inline def ++(other: CloneTileData): CloneTileData = ctd.concat(other)
+    def size: Int                                      = ctd.length / dataLength
+    inline def toArray: Array[Float]                   = ctd
 
   inline def unsafe(data: Array[Float]): CloneTileData =
     data
@@ -28,7 +28,17 @@ object CloneTileData:
       cropWidth: Int,
       cropHeight: Int
   ): CloneTileData =
-    Array(x.toFloat, y.toFloat, Radians.zero.toFloat, 1.0f, 1.0f, cropX.toFloat, cropY.toFloat, cropWidth.toFloat, cropHeight.toFloat)
+    Array(
+      x.toFloat,
+      y.toFloat,
+      Radians.zero.toFloat,
+      1.0f,
+      1.0f,
+      cropX.toFloat,
+      cropY.toFloat,
+      cropWidth.toFloat,
+      cropHeight.toFloat
+    )
 
   inline def apply(
       x: Int,
@@ -39,7 +49,17 @@ object CloneTileData:
       cropWidth: Int,
       cropHeight: Int
   ): CloneTileData =
-    Array(x.toFloat, y.toFloat, rotation.toFloat, 1.0f, 1.0f, cropX.toFloat, cropY.toFloat, cropWidth.toFloat, cropHeight.toFloat)
+    Array(
+      x.toFloat,
+      y.toFloat,
+      rotation.toFloat,
+      1.0f,
+      1.0f,
+      cropX.toFloat,
+      cropY.toFloat,
+      cropWidth.toFloat,
+      cropHeight.toFloat
+    )
 
   inline def apply(
       x: Int,
@@ -52,7 +72,17 @@ object CloneTileData:
       cropWidth: Int,
       cropHeight: Int
   ): CloneTileData =
-    Array(x.toFloat, y.toFloat, rotation.toFloat, scaleX.toFloat, scaleY.toFloat, cropX.toFloat, cropY.toFloat, cropWidth.toFloat, cropHeight.toFloat)
+    Array(
+      x.toFloat,
+      y.toFloat,
+      rotation.toFloat,
+      scaleX.toFloat,
+      scaleY.toFloat,
+      cropX.toFloat,
+      cropY.toFloat,
+      cropWidth.toFloat,
+      cropHeight.toFloat
+    )
 
   inline def apply(
       x: Float,
@@ -66,8 +96,5 @@ object CloneTileData:
       cropHeight: Float
   ): CloneTileData =
     Array(x, y, rotation, scaleX, scaleY, cropX, cropY, cropWidth, cropHeight)
-
-  val identity: CloneTileData =
-    Array(0.0f, 0.0f, 0.0f, 1.0f, 1.0f)
 
   given CanEqual[Option[CloneTileData], Option[CloneTileData]] = CanEqual.derived
