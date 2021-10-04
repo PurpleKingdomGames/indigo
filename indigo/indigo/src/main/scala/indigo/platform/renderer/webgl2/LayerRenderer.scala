@@ -229,22 +229,27 @@ class LayerRenderer(
   private var currentProgram: WebGLProgram                           = null
   private given CanEqual[Option[WebGLProgram], Option[WebGLProgram]] = CanEqual.derived
 
+  private var currentBaseTransformHash: Int = -1
   private def setBaseTransform(baseTransform: CheapMatrix4): Unit =
-    if currentProgram == null then ()
+    val code = baseTransform.hashCode
+    if currentProgram == null || currentBaseTransformHash == code then ()
     else
       gl2.uniformMatrix4fv(
         location = gl2.getUniformLocation(currentProgram, "u_baseTransform"),
         transpose = false,
         value = Float32Array(baseTransform.toArray.toJSArray)
       )
+      currentBaseTransformHash = code
 
+  private var currentMode = -1
   private def setMode(mode: Int): Unit =
-    if currentProgram == null then ()
+    if currentProgram == null || currentMode == mode then ()
     else
       gl2.uniform1i(
         gl2.getUniformLocation(currentProgram, "u_mode"),
         mode
       )
+      currentMode = mode
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def doContextChange(
