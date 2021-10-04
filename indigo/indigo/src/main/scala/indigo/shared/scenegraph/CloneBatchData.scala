@@ -17,6 +17,9 @@ object CloneBatchData:
     def size: Int                                        = cbd.length / dataLength
     inline def toArray: Array[Float]                     = cbd
 
+  inline def unsafe(data: Array[Float]): CloneBatchData =
+    data
+
   inline def apply(x: Int, y: Int): CloneBatchData =
     Array(x.toFloat, y.toFloat, Radians.zero.toFloat, 1.0f, 1.0f)
 

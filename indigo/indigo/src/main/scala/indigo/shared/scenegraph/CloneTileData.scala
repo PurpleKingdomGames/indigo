@@ -17,6 +17,9 @@ object CloneTileData:
     def size: Int                                      = cbd.length / dataLength
     inline def toArray: Array[Float]                   = cbd
 
+  inline def unsafe(data: Array[Float]): CloneTileData =
+    data
+
   inline def apply(
       x: Int,
       y: Int,
