@@ -80,7 +80,7 @@ final class DisplayObjectConversions(
       new DisplayCloneBatch(
         id = batch.id,
         z = batch.depth.toDouble,
-        cloneData = batch.cloneData
+        cloneData = batch.cloneData.toVector
       )
 
     batch.staticBatchKey match {
@@ -99,7 +99,7 @@ final class DisplayObjectConversions(
       new DisplayCloneTiles(
         id = batch.id,
         z = batch.depth.toDouble,
-        cloneData = batch.cloneData
+        cloneData = batch.cloneData.toVector
       )
 
     batch.staticBatchKey match {

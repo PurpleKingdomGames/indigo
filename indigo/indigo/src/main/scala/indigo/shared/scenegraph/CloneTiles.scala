@@ -8,7 +8,7 @@ import indigo.shared.datatypes._
 final case class CloneTiles(
     id: CloneId,
     depth: Depth,
-    cloneData: CloneTileData,
+    cloneData: List[CloneTileData],
     staticBatchKey: Option[BindingKey]
 ) extends DependentNode
     derives CanEqual:
@@ -24,22 +24,13 @@ final case class CloneTiles(
 
   def withDepth(newDepth: Depth): CloneTiles =
     this.copy(depth = newDepth)
-
-  def addCloneData(additionalCloneData: CloneTileData): CloneTiles =
-    this.copy(cloneData = cloneData ++ additionalCloneData)
-  def addCloneData(x: Int, y: Int, cropX: Int, cropY: Int, cropWidth: Int, cropHeight: Int): CloneTiles =
-    addCloneData(CloneTileData(x, y, cropX, cropY, cropWidth, cropHeight))
-  def addCloneData(
-      x: Int,
-      y: Int,
-      rotation: Radians,
-      cropX: Int,
-      cropY: Int,
-      cropWidth: Int,
-      cropHeight: Int
-  ): CloneTiles =
-    addCloneData(CloneTileData(x, y, rotation, cropX, cropY, cropWidth, cropHeight))
-  def addCloneData(
+  def addClones(additionalClones: List[CloneTileData]): CloneTiles =
+    this.copy(cloneData = cloneData ++ additionalClones)
+  def addClone(x: Int, y: Int, cropX: Int, cropY: Int, cropWidth: Int, cropHeight: Int): CloneTiles =
+    addClones(List(CloneTileData(x, y, cropX, cropY, cropWidth, cropHeight)))
+  def addClone(x: Int, y: Int, rotation: Radians, cropX: Int, cropY: Int, cropWidth: Int, cropHeight: Int): CloneTiles =
+    addClones(List(CloneTileData(x, y, rotation, cropX, cropY, cropWidth, cropHeight)))
+  def addClones(
       x: Int,
       y: Int,
       rotation: Radians,
@@ -50,7 +41,7 @@ final case class CloneTiles(
       cropWidth: Int,
       cropHeight: Int
   ): CloneTiles =
-    addCloneData(CloneTileData(x, y, rotation, scaleX, scaleY, cropX, cropY, cropWidth, cropHeight))
+    addClones(List(CloneTileData(x, y, rotation, scaleX, scaleY, cropX, cropY, cropWidth, cropHeight)))
 
   def withMaybeStaticBatchKey(maybeKey: Option[BindingKey]): CloneTiles =
     this.copy(staticBatchKey = maybeKey)
@@ -63,10 +54,18 @@ final case class CloneTiles(
 
 object CloneTiles:
 
-  def apply(id: CloneId, cloneData: CloneTileData): CloneTiles =
+  def apply(id: CloneId, cloneData: List[CloneTileData]): CloneTiles =
     CloneTiles(
       id,
       Depth.one,
       cloneData,
+      None
+    )
+
+  def apply(id: CloneId, cloneData: CloneTileData): CloneTiles =
+    CloneTiles(
+      id,
+      Depth.one,
+      List(cloneData),
       None
     )

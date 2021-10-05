@@ -16,8 +16,7 @@ import scala.collection.mutable.ArrayBuffer
 
 object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
 
-  val spawnCount: Int   = 90
-  val maxBatchSize: Int = 200
+  val spawnCount: Int = 400
 
   type SceneModel     = ConfettiModel
   type SceneViewModel = Unit
@@ -43,13 +42,13 @@ object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
   ): GlobalEvent => Outcome[ConfettiModel] =
 
     case FrameTick =>
-      val pos = Signal.Orbit(context.startUpData.viewportCenter * 2, 100).at(context.running * 0.5)
+      val pos = Signal.Orbit(context.startUpData.viewportCenter * 2, 100).at(context.running * 0.5).toPoint
       Outcome(
         model
           .spawn(
             context.dice,
-            pos.x.toFloat,
-            pos.y.toFloat,
+            pos.x,
+            pos.y,
             spawnCount
           )
           .update
@@ -72,10 +71,10 @@ object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
 
   val crops =
     Array(
-      Array[Float](0, 0, 16, 16),
-      Array[Float](16, 0, 16, 16),
-      Array[Float](0, 16, 16, 16),
-      Array[Float](16, 16, 16, 16)
+      Array[Int](0, 0, 16, 16),
+      Array[Int](16, 0, 16, 16),
+      Array[Int](0, 16, 16, 16),
+      Array[Int](16, 16, 16, 16)
     )
 
   val count: TextBox =
@@ -83,30 +82,14 @@ object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
       .withFontSize(Pixels(12))
       .withColor(RGBA.White)
 
-  def f(particles: List[Particle]): CloneTiles =
-    val data = new ArrayBuffer[Float]()
-
-    var i: Int     = 0
-    val count: Int = particles.length
-
-    while (i < count) {
-      val p = particles(i)
-      data.addAll(Array(p.x, p.y, 0.0f, p.scale, p.scale)).addAll(crops(p.color))
-      i += 1
-    }
-
-    CloneTiles(cloneId, CloneTileData.unsafe(data.toArray))
-
-  def particlesToCloneTiles(particles: List[Particle]): List[CloneTiles] =
-    @tailrec
-    def rec(remaining: List[Particle], acc: List[CloneTiles]): List[CloneTiles] =
-      if remaining.isEmpty then acc
-      else if remaining.length < maxBatchSize then rec(Nil, f(remaining) :: acc)
-      else
-        val (a, b) = remaining.splitAt(maxBatchSize)
-        rec(b, f(a) :: acc)
-
-    rec(particles, Nil)
+  def particlesToCloneTiles(particles: List[Particle]): CloneTiles =
+    CloneTiles(
+      cloneId,
+      particles.map { p =>
+        val crop = crops(p.color)
+        CloneTileData(p.x, p.y, Radians.zero, p.scale, p.scale, crop(0), crop(1), crop(2), crop(3))
+      }
+    )
 
   def present(
       context: FrameContext[SandboxStartupData],
@@ -116,8 +99,7 @@ object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
     Outcome(
       SceneUpdateFragment(
         Layer(
-          // model.particles.flatMap(particlesToCloneTiles)
-          model.particles.map(f)
+          model.particles.map(particlesToCloneTiles)
         ).withMagnification(1),
         Layer(
           count.withText(s"count: ${model.particles.length * spawnCount}")
@@ -126,7 +108,7 @@ object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
     )
 
 final case class ConfettiModel(color: Int, particles: List[List[Particle]]):
-  def spawn(dice: Dice, x: Float, y: Float, count: Int): ConfettiModel =
+  def spawn(dice: Dice, x: Int, y: Int, count: Int): ConfettiModel =
     this.copy(
       particles = (0 until count).toList.map { _ =>
         Particle(
@@ -149,8 +131,8 @@ final case class ConfettiModel(color: Int, particles: List[List[Particle]]):
             val newFy = p.fy - 0.1f
             val newFx = p.fx * 0.95f
             p.copy(
-              x = p.x + (15.0f * newFx),
-              y = p.y - (5.0f * newFy),
+              x = p.x + (15 * newFx).toInt,
+              y = p.y - (5 * newFy).toInt,
               fx = newFx,
               fy = newFy
             )
@@ -163,7 +145,7 @@ object ConfettiModel:
   val empty: ConfettiModel =
     ConfettiModel(0, Nil)
 
-final case class Particle(x: Float, y: Float, fx: Float, fy: Float, color: Int, scale: Float)
+final case class Particle(x: Int, y: Int, fx: Float, fy: Float, color: Int, scale: Float)
 object Particle:
   given CanEqual[Option[Particle], Option[Particle]] = CanEqual.derived
   given CanEqual[List[Particle], List[Particle]]     = CanEqual.derived

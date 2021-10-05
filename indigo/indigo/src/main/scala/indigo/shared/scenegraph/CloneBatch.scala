@@ -7,7 +7,7 @@ import indigo.shared.datatypes._
 final case class CloneBatch(
     id: CloneId,
     depth: Depth,
-    cloneData: CloneBatchData,
+    cloneData: List[CloneBatchData],
     staticBatchKey: Option[BindingKey]
 ) extends DependentNode
     derives CanEqual:
@@ -24,14 +24,14 @@ final case class CloneBatch(
   def withDepth(newDepth: Depth): CloneBatch =
     this.copy(depth = newDepth)
 
-  def addCloneData(additionalCloneData: CloneBatchData): CloneBatch =
-    this.copy(cloneData = cloneData ++ additionalCloneData)
-  def addCloneData(x: Int, y: Int): CloneBatch =
-    addCloneData(CloneBatchData(x, y))
-  def addCloneData(x: Int, y: Int, rotation: Radians): CloneBatch =
-    addCloneData(CloneBatchData(x, y, rotation))
-  def addCloneData(x: Int, y: Int, rotation: Radians, scaleX: Double, scaleY: Double): CloneBatch =
-    addCloneData(CloneBatchData(x, y, rotation, scaleX, scaleY))
+  def addClones(additionalClones: List[CloneBatchData]): CloneBatch =
+    this.copy(cloneData = cloneData ++ additionalClones)
+  def addClone(x: Int, y: Int): CloneBatch =
+    addClones(List(CloneBatchData(x, y)))
+  def addClone(x: Int, y: Int, rotation: Radians): CloneBatch =
+    addClones(List(CloneBatchData(x, y, rotation)))
+  def addClones(x: Int, y: Int, rotation: Radians, scaleX: Double, scaleY: Double): CloneBatch =
+    addClones(List(CloneBatchData(x, y, rotation, scaleX, scaleY)))
 
   def withMaybeStaticBatchKey(maybeKey: Option[BindingKey]): CloneBatch =
     this.copy(staticBatchKey = maybeKey)
@@ -44,10 +44,18 @@ final case class CloneBatch(
 
 object CloneBatch:
 
-  def apply(id: CloneId, cloneData: CloneBatchData): CloneBatch =
+  def apply(id: CloneId, cloneData: List[CloneBatchData]): CloneBatch =
     CloneBatch(
       id,
       Depth.one,
       cloneData,
+      None
+    )
+
+  def apply(id: CloneId, cloneData: CloneBatchData): CloneBatch =
+    CloneBatch(
+      id,
+      Depth.one,
+      List(cloneData),
       None
     )
