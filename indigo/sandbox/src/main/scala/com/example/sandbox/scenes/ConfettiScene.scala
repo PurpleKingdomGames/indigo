@@ -12,11 +12,12 @@ import indigoextras.geometry.Vertex
 import com.example.sandbox.Log
 import com.example.sandbox.SandboxAssets
 import scala.annotation.tailrec
+import scala.collection.mutable.ArrayBuffer
 
 object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
 
-  val spawnCount: Int   = 100
-  val maxBatchSize: Int = 100
+  val spawnCount: Int   = 90
+  val maxBatchSize: Int = 200
 
   type SceneModel     = ConfettiModel
   type SceneViewModel = Unit
@@ -78,51 +79,34 @@ object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
     )
 
   val count: TextBox =
-    TextBox("", 456, 20).alignCenter
+    TextBox("", 228, 20).alignCenter
       .withFontSize(Pixels(12))
       .withColor(RGBA.White)
 
-  def makeCloneTiles(particles: List[Particle]): List[CloneTiles] = {
+  def f(particles: List[Particle]): CloneTiles =
+    val data = new ArrayBuffer[Float]()
+
+    var i: Int     = 0
+    val count: Int = particles.length
+
+    while (i < count) {
+      val p = particles(i)
+      data.addAll(Array(p.x, p.y, 0.0f, p.scale, p.scale)).addAll(crops(p.color))
+      i += 1
+    }
+
+    CloneTiles(cloneId, CloneTileData.unsafe(data.toArray))
+
+  def particlesToCloneTiles(particles: List[Particle]): List[CloneTiles] =
     @tailrec
-    def rec(
-        remaining: List[Particle],
-        currentSize: Int,
-        maybeCurrent: Option[CloneTileData],
-        acc: List[CloneTiles]
-    ): List[CloneTiles] =
-      (remaining, maybeCurrent) match
-        case (Nil, None) =>
-          acc
+    def rec(remaining: List[Particle], acc: List[CloneTiles]): List[CloneTiles] =
+      if remaining.isEmpty then acc
+      else if remaining.length < maxBatchSize then rec(Nil, f(remaining) :: acc)
+      else
+        val (a, b) = remaining.splitAt(maxBatchSize)
+        rec(b, f(a) :: acc)
 
-        case (Nil, Some(current)) =>
-          (CloneTiles(cloneId, current) :: acc).reverse
-
-        case (_, None) if currentSize == maxBatchSize =>
-          rec(remaining, 0, None, acc)
-
-        case (_, Some(current)) if currentSize == maxBatchSize =>
-          rec(remaining, 0, None, CloneTiles(cloneId, current) :: acc)
-
-        case (p :: ps, None) =>
-          val x = CloneTileData.unsafe(Array(p.x, p.y, 0.0f, p.scale, p.scale) ++ crops(p.color))
-          rec(
-            ps,
-            currentSize + 1,
-            Some(x),
-            acc
-          )
-
-        case (p :: ps, Some(current)) =>
-          val x = CloneTileData.unsafe(Array(p.x, p.y, 0.0f, p.scale, p.scale) ++ crops(p.color))
-          rec(
-            ps,
-            currentSize + 1,
-            Some(x ++ current),
-            acc
-          )
-
-    rec(particles, 0, None, Nil)
-  }
+    rec(particles, Nil)
 
   def present(
       context: FrameContext[SandboxStartupData],
@@ -132,12 +116,16 @@ object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
     Outcome(
       SceneUpdateFragment(
         Layer(
-          makeCloneTiles(model.particles) ++ List(count.withText(s"count: ${model.particles.length}"))
-        ).withMagnification(1)
+          // model.particles.flatMap(particlesToCloneTiles)
+          model.particles.map(f)
+        ).withMagnification(1),
+        Layer(
+          count.withText(s"count: ${model.particles.length * spawnCount}")
+        )
       ).addCloneBlanks(cloneBlanks)
     )
 
-final case class ConfettiModel(color: Int, particles: List[Particle]):
+final case class ConfettiModel(color: Int, particles: List[List[Particle]]):
   def spawn(dice: Dice, x: Float, y: Float, count: Int): ConfettiModel =
     this.copy(
       particles = (0 until count).toList.map { _ =>
@@ -147,24 +135,28 @@ final case class ConfettiModel(color: Int, particles: List[Particle]):
           dice.rollFloat * 2.0f - 1.0f,
           dice.rollFloat * 2.0f,
           color,
-          (dice.rollFloat * 0.5f + 0.5f) * 0.5f
+          (dice.rollFloat * 0.5f + 0.5f) * 0.25f
         )
-      } ++ particles
+      } :: particles
     )
 
   def update: ConfettiModel =
     this.copy(
       color = (color + 1) % 4,
-      particles = particles.filter(p => p.y < 500).map { p =>
-        val newFy = p.fy - 0.1f
-        val newFx = p.fx * 0.95f
-        p.copy(
-          x = p.x + (15.0f * newFx),
-          y = p.y - (5.0f * newFy),
-          fx = newFx,
-          fy = newFy
-        )
-      }
+      particles = particles
+        .map {
+          _.filter(p => p.y < 400).map { p =>
+            val newFy = p.fy - 0.1f
+            val newFx = p.fx * 0.95f
+            p.copy(
+              x = p.x + (15.0f * newFx),
+              y = p.y - (5.0f * newFy),
+              fx = newFx,
+              fy = newFy
+            )
+          }
+        }
+        .filter(_.nonEmpty)
     )
 
 object ConfettiModel:
