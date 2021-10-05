@@ -116,18 +116,14 @@ class LayerRenderer(
 
   inline private def updateCloneData(
       i: Int,
-      x: Float,
-      y: Float,
-      rotation: Float,
-      scaleX: Float,
-      scaleY: Float
+      clone: CloneBatchData
   ): Unit = {
-    translateScaleData((i * 4) + 0) = x
-    translateScaleData((i * 4) + 1) = y
-    translateScaleData((i * 4) + 2) = scaleX
-    translateScaleData((i * 4) + 3) = scaleY
+    translateScaleData((i * 4) + 0) = clone.x.toFloat
+    translateScaleData((i * 4) + 1) = clone.y.toFloat
+    translateScaleData((i * 4) + 2) = clone.scaleX.toFloat
+    translateScaleData((i * 4) + 3) = clone.scaleY.toFloat
 
-    rotationData(i) = rotation
+    rotationData(i) = clone.rotation.toFloat
   }
 
   inline private def updateCloneTileData(
@@ -651,18 +647,13 @@ class LayerRenderer(
   ): Int = {
     uploadRefUBO(refDisplayObject)
 
-    val dataLength: Int = CloneBatchData.dataLength
-    val count: Int      = c.cloneData.size
-    var i: Int          = 0
+    val count: Int = c.cloneData.length
+    var i: Int     = 0
 
     while (i < count) {
       updateCloneData(
         i,
-        c.cloneData.toArray((i * dataLength) + 0),
-        c.cloneData.toArray((i * dataLength) + 1),
-        c.cloneData.toArray((i * dataLength) + 2),
-        c.cloneData.toArray((i * dataLength) + 3),
-        c.cloneData.toArray((i * dataLength) + 4)
+        c.cloneData(i)
       )
 
       i += 1
@@ -678,27 +669,26 @@ class LayerRenderer(
   ): Int = {
     uploadRefUBO(refDisplayObject)
 
-    val dataLength: Int = CloneTileData.dataLength
-    val count: Int      = c.cloneData.size
-    var i: Int          = 0
+    val count: Int = c.cloneData.length
+    var i: Int     = 0
 
     while (i < count) {
-      val cropX           = c.cloneData.toArray((i * dataLength) + 5)
-      val cropY           = c.cloneData.toArray((i * dataLength) + 6)
-      val cropWidth       = c.cloneData.toArray((i * dataLength) + 7)
-      val cropHeight      = c.cloneData.toArray((i * dataLength) + 8)
+      val clone = c.cloneData(i)
+
+      val cropWidth       = clone.cropWidth
+      val cropHeight      = clone.cropHeight
       val frameScaleX     = cropWidth / refDisplayObject.atlasWidth
       val frameScaleY     = cropHeight / refDisplayObject.atlasHeight
-      val channelOffset0X = frameScaleX * ((cropX + refDisplayObject.textureX) / cropWidth)
-      val channelOffset0Y = frameScaleY * ((cropY + refDisplayObject.textureY) / cropHeight)
+      val channelOffset0X = frameScaleX * ((clone.cropX + refDisplayObject.textureX) / cropWidth)
+      val channelOffset0Y = frameScaleY * ((clone.cropY + refDisplayObject.textureY) / cropHeight)
 
       updateCloneTileData(
         i = i,
-        x = c.cloneData.toArray((i * dataLength) + 0),
-        y = c.cloneData.toArray((i * dataLength) + 1),
-        rotation = c.cloneData.toArray((i * dataLength) + 2),
-        scaleX = c.cloneData.toArray((i * dataLength) + 3),
-        scaleY = c.cloneData.toArray((i * dataLength) + 4),
+        x = clone.x.toFloat,
+        y = clone.y.toFloat,
+        rotation = clone.rotation.toFloat,
+        scaleX = clone.scaleX.toFloat,
+        scaleY = clone.scaleY.toFloat,
         frameScaleX = frameScaleX,
         frameScaleY = frameScaleY,
         channelOffset0X = channelOffset0X,
