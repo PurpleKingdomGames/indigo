@@ -157,9 +157,8 @@ trait AutomatonPayload
 
 opaque type AutomataPoolKey = String
 object AutomataPoolKey:
-  inline def apply(key: String): AutomataPoolKey = key
-  inline def fromDice(dice: Dice): AutomataPoolKey =
-    dice.rollAlphaNumeric
+  inline def apply(key: String): AutomataPoolKey   = key
+  inline def fromDice(dice: Dice): AutomataPoolKey = dice.rollAlphaNumeric
 
   given CanEqual[AutomataPoolKey, AutomataPoolKey]                 = CanEqual.derived
   given CanEqual[Option[AutomataPoolKey], Option[AutomataPoolKey]] = CanEqual.derived

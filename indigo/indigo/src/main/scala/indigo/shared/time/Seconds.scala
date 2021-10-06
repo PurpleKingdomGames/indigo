@@ -58,18 +58,18 @@ object Seconds:
     def >=(other: Seconds): Boolean =
       s >= other
 
-    inline def toInt: Int =
+    def toInt: Int =
       s.toInt
 
-    inline def toLong: Long =
+    def toLong: Long =
       s.toLong
 
-    inline def toFloat: Float =
+    def toFloat: Float =
       s.toFloat
 
-    inline def toDouble: Double =
+    def toDouble: Double =
       s
 
-    inline def toMillis: Millis =
+    def toMillis: Millis =
       Millis(Math.floor(s * 1000).toLong)
 

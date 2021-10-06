@@ -52,17 +52,17 @@ object Radians:
     def /(other: Double): Radians =
       Radians(r / other)
 
-    inline def wrap: Radians =
+    def wrap: Radians =
       ((r % pi2) + pi2) % pi2
 
-    inline def negative: Radians =
+    def negative: Radians =
       -r
 
-    inline def invert: Radians =
+    def invert: Radians =
       negative
 
-    inline def toDouble: Double =
+    def toDouble: Double =
       r
 
-    inline def toFloat: Float =
+    def toFloat: Float =
       r.toFloat

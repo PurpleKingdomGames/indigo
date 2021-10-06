@@ -201,7 +201,7 @@ object CheapMatrix4:
   def orthographic(x: Float, y: Float, width: Float, height: Float): CheapMatrix4 =
     orthographic(x, x + width, y + height, y, -10000, 10000)
 
-  def apply(matrix: Array[Float]): CheapMatrix4 =
+  inline def apply(matrix: Array[Float]): CheapMatrix4 =
     matrix
 
   /** SHOULD ONLY BE USED BY TESTS

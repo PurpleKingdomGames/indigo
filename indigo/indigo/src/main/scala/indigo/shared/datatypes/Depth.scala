@@ -19,5 +19,5 @@ object Depth:
     @targetName("-_Int")
     def -(other: Int): Depth = Depth(d - other)
 
-    inline def toDouble: Double = d
-    inline def toInt: Int       = d.toInt
+    def toDouble: Double = d
+    def toInt: Int       = d.toInt

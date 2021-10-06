@@ -112,4 +112,4 @@ object Zoom:
   val x3: Zoom   = Zoom(3.0)
   val x4: Zoom   = Zoom(4.0)
 
-  extension (z: Zoom) inline def toDouble: Double = z
+  extension (z: Zoom) def toDouble: Double = z

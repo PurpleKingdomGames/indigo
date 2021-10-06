@@ -13,7 +13,7 @@ object ShaderId:
   inline def fromDice(dice: Dice): ShaderId =
     dice.rollAlphaNumeric
   inline def generate(dice: Dice): ShaderId =
-    fromDice(dice)
+    dice.rollAlphaNumeric
 
   given CanEqual[ShaderId, ShaderId]                 = CanEqual.derived
   given CanEqual[Option[ShaderId], Option[ShaderId]] = CanEqual.derived

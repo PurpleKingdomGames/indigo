@@ -149,20 +149,20 @@ object FontFamily:
   val math: FontFamily        = FontFamily("math")
   val fangsong: FontFamily    = FontFamily("fangsong")
 
-  extension (f: FontFamily) inline def name: String = f
+  extension (f: FontFamily) def name: String = f
 
 enum FontVariant(css: String) derives CanEqual:
-  inline def toCSS: String = css
+  def toCSS: String = css
   case Normal extends FontVariant("normal")
   case SmallCaps extends FontVariant("small-caps")
 
 enum FontStyle(css: String) derives CanEqual:
-  inline def toCSS: String = css
+  def toCSS: String = css
   case Normal extends FontStyle("normal")
   case Italic extends FontStyle("italic")
 
 enum FontWeight(css: String) derives CanEqual:
-  inline def toCSS: String = css
+  def toCSS: String = css
   case Normal extends FontWeight("normal")
   case Bold extends FontWeight("bold")
   case Lighter extends FontWeight("lighter")
@@ -181,10 +181,10 @@ object Pixels:
 
   val zero: Pixels = Pixels(0)
 
-  extension (px: Pixels) inline def toInt: Int = px
+  extension (px: Pixels) def toInt: Int = px
 
 enum TextAlign(css: String) derives CanEqual:
-  inline def toCSS: String = css
+  def toCSS: String = css
   case Left extends TextAlign("left")
   case Right extends TextAlign("right")
   case Center extends TextAlign("center")
@@ -192,7 +192,7 @@ enum TextAlign(css: String) derives CanEqual:
   case End extends TextAlign("end")
 
 enum TextBaseLine(css: String) derives CanEqual:
-  inline def toCSS: String = css
+  def toCSS: String = css
   case Top extends TextBaseLine("top")
   case Hanging extends TextBaseLine("hanging")
   case Middle extends TextBaseLine("middle")
@@ -201,7 +201,7 @@ enum TextBaseLine(css: String) derives CanEqual:
   case Bottom extends TextBaseLine("bottom")
 
 enum TextDirection(css: String) derives CanEqual:
-  inline def toCSS: String = css
+  def toCSS: String = css
   case LeftToRight extends TextDirection("ltr")
   case RightToLeft extends TextDirection("rtl")
   case Inherit extends TextDirection("inherit")
