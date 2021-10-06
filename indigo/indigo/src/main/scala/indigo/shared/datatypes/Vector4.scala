@@ -28,7 +28,12 @@ final case class Vector4(x: Double, y: Double, z: Double, w: Double) derives Can
     Vector4(Math.max(value, x), Math.max(value, y), Math.max(value, z), Math.max(value, w))
 
   def clamp(min: Double, max: Double): Vector4 =
-    Vector4(Math.min(max, Math.max(min, x)), Math.min(max, Math.max(min, y)), Math.min(max, Math.max(min, z)), Math.min(max, Math.max(min, w)))
+    Vector4(
+      Math.min(max, Math.max(min, x)),
+      Math.min(max, Math.max(min, y)),
+      Math.min(max, Math.max(min, z)),
+      Math.min(max, Math.max(min, w))
+    )
 
   def length: Double =
     distanceTo(Vector4.zero)
@@ -75,7 +80,7 @@ final case class Vector4(x: Double, y: Double, z: Double, w: Double) derives Can
 
   def normalise: Vector4 = {
     val magnitude = length
-    
+
     if (magnitude == 0) Vector4.zero
     else
       Vector4(
@@ -106,9 +111,9 @@ final case class Vector4(x: Double, y: Double, z: Double, w: Double) derives Can
 
   def ~==(other: Vector4): Boolean =
     Math.abs(x - other.x) < 0.0001 &&
-    Math.abs(y - other.y) < 0.0001 &&
-    Math.abs(z - other.z) < 0.0001 &&
-    Math.abs(w - other.w) < 0.0001
+      Math.abs(y - other.y) < 0.0001 &&
+      Math.abs(z - other.z) < 0.0001 &&
+      Math.abs(w - other.w) < 0.0001
 }
 
 object Vector4 {
@@ -119,16 +124,16 @@ object Vector4 {
   val zero: Vector4 = Vector4(0d, 0d, 0d, 0d)
   val one: Vector4  = Vector4(1d, 1d, 1d, 1d)
 
-  @inline def add(vec1: Vector4, vec2: Vector4): Vector4 =
+  inline def add(vec1: Vector4, vec2: Vector4): Vector4 =
     Vector4(vec1.x + vec2.x, vec1.y + vec2.y, vec1.z + vec2.z, vec1.w + vec2.w)
 
-  @inline def subtract(vec1: Vector4, vec2: Vector4): Vector4 =
+  inline def subtract(vec1: Vector4, vec2: Vector4): Vector4 =
     Vector4(vec1.x - vec2.x, vec1.y - vec2.y, vec1.z - vec2.z, vec1.w - vec2.w)
 
-  @inline def multiply(vec1: Vector4, vec2: Vector4): Vector4 =
+  inline def multiply(vec1: Vector4, vec2: Vector4): Vector4 =
     Vector4(vec1.x * vec2.x, vec1.y * vec2.y, vec1.z * vec2.z, vec1.w * vec2.w)
 
-  @inline def divide(vec1: Vector4, vec2: Vector4): Vector4 =
+  inline def divide(vec1: Vector4, vec2: Vector4): Vector4 =
     Vector4(vec1.x / vec2.x, vec1.y / vec2.y, vec1.z / vec2.z, vec1.w / vec2.w)
 
   def position(x: Double, y: Double, z: Double): Vector4 =
@@ -141,6 +146,10 @@ object Vector4 {
     (vec1.x * vec2.x) + (vec1.y * vec2.y) + (vec1.z * vec2.z) + (vec1.w * vec2.w)
 
   def distance(v1: Vector4, v2: Vector4): Double =
-    Math.sqrt(Math.abs(Math.pow(v2.x - v1.x, 2) + Math.pow(v2.y - v1.y, 2) + Math.pow(v2.z - v1.z, 2) + Math.pow(v2.w - v1.w, 2)))
+    Math.sqrt(
+      Math.abs(
+        Math.pow(v2.x - v1.x, 2) + Math.pow(v2.y - v1.y, 2) + Math.pow(v2.z - v1.z, 2) + Math.pow(v2.w - v1.w, 2)
+      )
+    )
 
 }

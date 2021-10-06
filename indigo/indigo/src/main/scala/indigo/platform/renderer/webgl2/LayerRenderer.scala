@@ -75,7 +75,7 @@ class LayerRenderer(
   private val textureSizeAtlasSizeData: scalajs.js.Array[Float] = scalajs.js.Array[Float](4f * maxBatchSize)
   private val rotationData: scalajs.js.Array[Float]             = scalajs.js.Array[Float](1f * maxBatchSize)
 
-  @inline private def bindData(buffer: WebGLBuffer, data: scalajs.js.Array[Float]): Unit = {
+  inline private def bindData(buffer: WebGLBuffer, data: scalajs.js.Array[Float]): Unit = {
     gl2.bindBuffer(ARRAY_BUFFER, buffer)
     gl2.bufferData(ARRAY_BUFFER, new Float32Array(data), STATIC_DRAW)
   }

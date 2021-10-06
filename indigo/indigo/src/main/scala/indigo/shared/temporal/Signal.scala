@@ -135,7 +135,7 @@ object Signal {
       (time - t.toDouble) * 0.0 + time * 1.0d
     }
 
-  @inline private def easeInOut(t: Double): Double =
+  inline private def easeInOut(t: Double): Double =
     (1 + Math.sin((Radians.TAUby2.toDouble * Math.min(1.0d, Math.max(0.0, t))) - Radians.TAUby4.toDouble)) / 2
 
   def EaseInOut(duration: Seconds): Signal[Double] =
