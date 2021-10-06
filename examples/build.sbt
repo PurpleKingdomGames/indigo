@@ -368,3 +368,13 @@ lazy val errors =
       windowStartWidth := 800,
       windowStartHeight := 800
     )
+
+// Root
+lazy val examplesProject =
+  (project in file("."))
+    .settings(
+      code := { "code ." ! }
+    )
+
+lazy val code =
+  taskKey[Unit]("Launch VSCode in the current directory")
