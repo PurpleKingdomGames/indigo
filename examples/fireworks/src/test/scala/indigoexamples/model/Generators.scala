@@ -50,7 +50,7 @@ object Generators {
     Arbitrary(millisGen)
 
   def clampedSecondsGen(start: Double, end: Double): Gen[Seconds] =
-    Gen.choose(start, end).map(Seconds.apply)
+    Gen.choose(start, end).map(s => Seconds(s))
 
   def nowNextSeconds(min: Double, max: Double): Gen[(Seconds, Seconds)] =
     for {
@@ -67,7 +67,7 @@ object Generators {
 
   // Radians
   val radiansGen: Gen[Radians] =
-    Gen.choose(0d, (2 * Math.PI)).map(Radians.apply)
+    Gen.choose(0d, (2 * Math.PI)).map(r => Radians(r))
 
   // Radius
   final case class Radius(value: Double)
