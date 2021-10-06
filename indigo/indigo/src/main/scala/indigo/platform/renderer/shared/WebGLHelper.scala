@@ -52,8 +52,7 @@ object WebGLHelper {
     gl.attachShader(shaderProgram, fragShader)
     gl.linkProgram(shaderProgram)
 
-    if (gl.getProgramParameter(shaderProgram, LINK_STATUS).asInstanceOf[Boolean])
-      shaderProgram
+    if (gl.getProgramParameter(shaderProgram, LINK_STATUS).asInstanceOf[Boolean]) shaderProgram
     else {
       IndigoLogger.error(gl.getProgramInfoLog(shaderProgram));
       gl.deleteProgram(shaderProgram);
@@ -64,54 +63,72 @@ object WebGLHelper {
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def attachUBOData(gl2: WebGL2RenderingContext, data: Array[Float], buffer: WebGLBuffer): Unit = {
     gl2.bindBuffer(gl2.UNIFORM_BUFFER, buffer)
-    gl2.bufferData(gl2.UNIFORM_BUFFER, (Math.ceil(data.length.toDouble / 16).toInt * 16) * Float32Array.BYTES_PER_ELEMENT, DYNAMIC_DRAW)
+    gl2.bufferData(
+      gl2.UNIFORM_BUFFER,
+      (Math.ceil(data.length.toDouble / 16).toInt * 16) * Float32Array.BYTES_PER_ELEMENT,
+      DYNAMIC_DRAW
+    )
     gl2.bufferSubData(gl2.UNIFORM_BUFFER, 0, new Float32Array(data.toJSArray))
     gl2.bindBuffer(gl2.UNIFORM_BUFFER, null);
   }
 
-  def bindUBO(gl2: WebGL2RenderingContext, activeShader: WebGLProgram, uboStructName: String, blockPointer: Int, buffer: WebGLBuffer): Unit = {
+  def bindUBO(
+      gl2: WebGL2RenderingContext,
+      activeShader: WebGLProgram,
+      uboStructName: String,
+      blockPointer: Int,
+      buffer: WebGLBuffer
+  ): Unit = {
     gl2.bindBufferBase(gl2.UNIFORM_BUFFER, blockPointer, buffer)
     gl2.uniformBlockBinding(activeShader, gl2.getUniformBlockIndex(activeShader, uboStructName), blockPointer)
   }
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  def intToTextureLocation: Int => Int = {
-    case 0  => TEXTURE0
-    case 1  => TEXTURE1
-    case 2  => TEXTURE2
-    case 3  => TEXTURE3
-    case 4  => TEXTURE4
-    case 5  => TEXTURE5
-    case 6  => TEXTURE6
-    case 7  => TEXTURE7
-    case 8  => TEXTURE8
-    case 9  => TEXTURE9
-    case 10 => TEXTURE10
-    case 11 => TEXTURE11
-    case 12 => TEXTURE12
-    case 13 => TEXTURE13
-    case 14 => TEXTURE14
-    case 15 => TEXTURE15
-    case 16 => TEXTURE16
-    case 17 => TEXTURE17
-    case 18 => TEXTURE18
-    case 19 => TEXTURE19
-    case 20 => TEXTURE20
-    case 21 => TEXTURE21
-    case 22 => TEXTURE22
-    case 23 => TEXTURE23
-    case 24 => TEXTURE24
-    case 25 => TEXTURE25
-    case 26 => TEXTURE26
-    case 27 => TEXTURE27
-    case 28 => TEXTURE28
-    case 29 => TEXTURE29
-    case 30 => TEXTURE30
-    case 31 => TEXTURE31
-    case _  => throw new Exception("Cannot assign > 32 texture locations.")
-  }
+  private val textureLocationsLookUp: Array[Int] =
+    Array(
+      TEXTURE0,
+      TEXTURE1,
+      TEXTURE2,
+      TEXTURE3,
+      TEXTURE4,
+      TEXTURE5,
+      TEXTURE6,
+      TEXTURE7,
+      TEXTURE8,
+      TEXTURE9,
+      TEXTURE10,
+      TEXTURE11,
+      TEXTURE12,
+      TEXTURE13,
+      TEXTURE14,
+      TEXTURE15,
+      TEXTURE16,
+      TEXTURE17,
+      TEXTURE18,
+      TEXTURE19,
+      TEXTURE20,
+      TEXTURE21,
+      TEXTURE22,
+      TEXTURE23,
+      TEXTURE24,
+      TEXTURE25,
+      TEXTURE26,
+      TEXTURE27,
+      TEXTURE28,
+      TEXTURE29,
+      TEXTURE30,
+      TEXTURE31
+    )
 
-  def attach(gl: WebGLRenderingContext, shaderProgram: WebGLProgram, location: Int, uniformName: String, texture: WebGLTexture): Unit = {
+  val intToTextureLocation: Int => Int = index =>
+    textureLocationsLookUp(index)
+
+  def attach(
+      gl: WebGLRenderingContext,
+      shaderProgram: WebGLProgram,
+      location: Int,
+      uniformName: String,
+      texture: WebGLTexture
+  ): Unit = {
     gl.uniform1i(gl.getUniformLocation(shaderProgram, uniformName), location)
     gl.activeTexture(intToTextureLocation(location))
     gl.bindTexture(TEXTURE_2D, texture)
