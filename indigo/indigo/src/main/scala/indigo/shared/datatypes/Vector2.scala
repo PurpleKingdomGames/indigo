@@ -139,16 +139,16 @@ object Vector2:
   def fromPoint(point: Point): Vector2 =
     Vector2(point.x.toDouble, point.y.toDouble)
 
-  @inline def add(vec1: Vector2, vec2: Vector2): Vector2 =
+  inline def add(vec1: Vector2, vec2: Vector2): Vector2 =
     Vector2(vec1.x + vec2.x, vec1.y + vec2.y)
 
-  @inline def subtract(vec1: Vector2, vec2: Vector2): Vector2 =
+  inline def subtract(vec1: Vector2, vec2: Vector2): Vector2 =
     Vector2(vec1.x - vec2.x, vec1.y - vec2.y)
 
-  @inline def multiply(vec1: Vector2, vec2: Vector2): Vector2 =
+  inline def multiply(vec1: Vector2, vec2: Vector2): Vector2 =
     Vector2(vec1.x * vec2.x, vec1.y * vec2.y)
 
-  @inline def divide(vec1: Vector2, vec2: Vector2): Vector2 =
+  inline def divide(vec1: Vector2, vec2: Vector2): Vector2 =
     Vector2(vec1.x / vec2.x, vec1.y / vec2.y)
 
   def dotProduct(vec1: Vector2, vec2: Vector2): Double =
