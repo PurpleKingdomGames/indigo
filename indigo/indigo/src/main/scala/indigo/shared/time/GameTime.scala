@@ -37,6 +37,6 @@ object GameTime:
     inline def apply(fps: Int): FPS = fps
 
     extension (fps: FPS)
-      inline def asLong: Long     = fps.toLong
-      inline def asDouble: Double = fps.toDouble
+      def asLong: Long     = fps.toLong
+      def asDouble: Double = fps.toDouble
   end FPS

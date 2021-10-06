@@ -58,17 +58,17 @@ object Millis:
     def >=(other: Millis): Boolean =
       ms >= other
 
-    inline def toInt: Int =
+    def toInt: Int =
       ms.toInt
 
-    inline def toLong: Long =
+    def toLong: Long =
       ms
 
-    inline def toFloat: Float =
+    def toFloat: Float =
       ms.toFloat
 
-    inline def toDouble: Double =
+    def toDouble: Double =
       ms.toDouble
 
-    inline def toSeconds: Seconds =
+    def toSeconds: Seconds =
       Seconds(ms.toDouble / 1000)

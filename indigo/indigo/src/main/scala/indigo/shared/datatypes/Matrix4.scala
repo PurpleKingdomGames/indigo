@@ -7,7 +7,7 @@ opaque type Matrix4 = List[Double]
 object Matrix4:
 
   extension (m: Matrix4)
-    inline def toList: List[Double] =
+    def toList: List[Double] =
       m
 
     inline def row1: List[Double] = List(m(0), m(1), m(2), m(3))
@@ -217,7 +217,7 @@ object Matrix4:
   /** Usage Matrix.projection(2 * aspectRatio, 2, 2) (assuming width > height) because the screen by default is 2 x 2
     * units: -1 to 1
     */
-  inline def projection(width: Double, height: Double, depth: Double): Matrix4 =
+  def projection(width: Double, height: Double, depth: Double): Matrix4 =
     Matrix4(
       2 / width,
       0,
@@ -237,7 +237,7 @@ object Matrix4:
       1
     )
 
-  inline def orthographic(left: Double, right: Double, bottom: Double, top: Double, near: Double, far: Double): Matrix4 =
+  def orthographic(left: Double, right: Double, bottom: Double, top: Double, near: Double, far: Double): Matrix4 =
     Matrix4(
       2 / (right - left),
       0,
@@ -257,7 +257,7 @@ object Matrix4:
       1
     )
 
-  inline def orthographic(width: Double, height: Double): Matrix4 =
+  def orthographic(width: Double, height: Double): Matrix4 =
     orthographic(0, width, height, 0, -10000, 10000)
 
   inline def apply(): Matrix4 = identity

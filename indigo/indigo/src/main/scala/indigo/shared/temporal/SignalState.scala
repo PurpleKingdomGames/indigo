@@ -8,10 +8,10 @@ opaque type SignalState[S, A] = S => Signal[(S, A)]
 
 object SignalState {
 
-  inline def fromSignal[S, A](signal: Signal[A]): SignalState[S, A] =
+  def fromSignal[S, A](signal: Signal[A]): SignalState[S, A] =
     apply((s: S) => signal.map(a => (s, a)))
 
-  inline def fixed[S, A](a: A): SignalState[S, A] =
+  def fixed[S, A](a: A): SignalState[S, A] =
     apply((s: S) => Signal.fixed((s, a)))
 
   inline def apply[S, A](f: S => Signal[(S, A)]): SignalState[S, A] = f

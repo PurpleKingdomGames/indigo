@@ -3,7 +3,7 @@ package indigo.shared.audio
 import annotation.targetName
 
 /** Audio volume amount.
- */
+  */
 opaque type Volume = Double
 object Volume:
   inline def apply(volume: Double): Volume =
@@ -29,4 +29,4 @@ object Volume:
     @targetName("/_Double")
     def /(other: Double): Volume = Volume(v / other)
 
-    inline def toDouble: Double = v
+    def toDouble: Double = v
