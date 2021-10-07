@@ -75,43 +75,37 @@ final class DisplayObjectConversions(
         }
     }
 
-  private def cloneBatchDataToDisplayEntities(batch: CloneBatch): DisplayCloneBatch = {
-    def convert(): DisplayCloneBatch =
+  private def cloneBatchDataToDisplayEntities(batch: CloneBatch): DisplayCloneBatch =
+    if batch.staticBatchKey.isDefined then
+      QuickCache(batch.staticBatchKey.get.toString) {
+        new DisplayCloneBatch(
+          id = batch.id,
+          z = batch.depth.toDouble,
+          cloneData = batch.cloneData.toVector
+        )
+      }
+    else
       new DisplayCloneBatch(
         id = batch.id,
         z = batch.depth.toDouble,
         cloneData = batch.cloneData.toVector
       )
 
-    batch.staticBatchKey match {
-      case None =>
-        convert()
-
-      case Some(bindingKey) =>
-        QuickCache(bindingKey.toString) {
-          convert()
-        }
-    }
-  }
-
-  private def cloneTilesDataToDisplayEntities(batch: CloneTiles): DisplayCloneTiles = {
-    def convert(): DisplayCloneTiles =
+  private def cloneTilesDataToDisplayEntities(batch: CloneTiles): DisplayCloneTiles =
+    if batch.staticBatchKey.isDefined then
+      QuickCache(batch.staticBatchKey.get.toString) {
+        new DisplayCloneTiles(
+          id = batch.id,
+          z = batch.depth.toDouble,
+          cloneData = batch.cloneData.toVector
+        )
+      }
+    else
       new DisplayCloneTiles(
         id = batch.id,
         z = batch.depth.toDouble,
         cloneData = batch.cloneData.toVector
       )
-
-    batch.staticBatchKey match {
-      case None =>
-        convert()
-
-      case Some(bindingKey) =>
-        QuickCache(bindingKey.toString) {
-          convert()
-        }
-    }
-  }
 
   def sceneNodesToDisplayObjects(
       sceneNodes: List[SceneGraphNode],
