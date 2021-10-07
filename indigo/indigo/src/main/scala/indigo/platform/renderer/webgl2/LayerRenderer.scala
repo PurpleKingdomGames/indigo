@@ -75,6 +75,8 @@ class LayerRenderer(
   private val textureSizeAtlasSizeData: scalajs.js.Array[Float] = scalajs.js.Array[Float](4f * maxBatchSize)
   private val rotationData: scalajs.js.Array[Float]             = scalajs.js.Array[Float](1f * maxBatchSize)
 
+  private var lastRenderMode: Int = 0
+
   inline private def bindData(buffer: WebGLBuffer, data: scalajs.js.Array[Float]): Unit = {
     gl2.bindBuffer(ARRAY_BUFFER, buffer)
     gl2.bufferData(ARRAY_BUFFER, new Float32Array(data), STATIC_DRAW)
@@ -271,7 +273,9 @@ class LayerRenderer(
 
     // Base transform
     if d.shaderId != currentShader then setBaseTransform(baseTransform)
-    if d.shaderId != currentShader || lastRenderMode != renderMode then setMode(renderMode)
+    if d.shaderId != currentShader || lastRenderMode != renderMode then
+      lastRenderMode = renderMode
+      setMode(renderMode)
 
     // UBO data
     val uniformHash: String = d.shaderUniformData.map(_.uniformHash).mkString
@@ -353,14 +357,12 @@ class LayerRenderer(
     setupInstanceArray(rotationInstanceArray, 7, 1) //
   }
 
-  private var lastRenderMode: Int = 0
   def enableCloneBatchMode(): Unit =
     gl2.disableVertexAttribArray(2)
     gl2.disableVertexAttribArray(3)
     gl2.disableVertexAttribArray(4)
     gl2.disableVertexAttribArray(5)
     gl2.disableVertexAttribArray(6)
-    lastRenderMode = 1
 
   def enableCloneTileMode(): Unit =
     gl2.disableVertexAttribArray(2)
@@ -368,7 +370,6 @@ class LayerRenderer(
     gl2.enableVertexAttribArray(4)
     gl2.enableVertexAttribArray(5)
     gl2.disableVertexAttribArray(6)
-    lastRenderMode = 2
 
   def disableCloneMode(): Unit =
     gl2.enableVertexAttribArray(2)
@@ -376,10 +377,9 @@ class LayerRenderer(
     gl2.enableVertexAttribArray(4)
     gl2.enableVertexAttribArray(5)
     gl2.enableVertexAttribArray(6)
-    lastRenderMode = 0
 
   def drawBuffer(instanceCount: Int): Unit =
-    if (instanceCount > 0) {
+    if instanceCount > 0 then
       disableCloneMode()
 
       bindData(translateScaleInstanceArray, translateScaleData)
@@ -391,20 +391,18 @@ class LayerRenderer(
       bindData(rotationInstanceArray, rotationData)
 
       gl2.drawArraysInstanced(TRIANGLE_STRIP, 0, 4, instanceCount)
-    }
 
   def drawCloneBuffer(instanceCount: Int): Unit =
-    if (instanceCount > 0) {
+    if instanceCount > 0 then
       enableCloneBatchMode()
 
       bindData(translateScaleInstanceArray, translateScaleData)
       bindData(rotationInstanceArray, rotationData)
 
       gl2.drawArraysInstanced(TRIANGLE_STRIP, 0, 4, instanceCount)
-    }
 
   def drawCloneTileBuffer(instanceCount: Int): Unit =
-    if (instanceCount > 0) {
+    if instanceCount > 0 then
       enableCloneTileMode()
 
       bindData(translateScaleInstanceArray, translateScaleData)
@@ -414,7 +412,6 @@ class LayerRenderer(
       bindData(rotationInstanceArray, rotationData)
 
       gl2.drawArraysInstanced(TRIANGLE_STRIP, 0, 4, instanceCount)
-    }
 
   private given CanEqual[List[DisplayEntity], List[DisplayEntity]] = CanEqual.derived
 
@@ -501,7 +498,6 @@ class LayerRenderer(
             i += 1
 
           case c: DisplayCloneBatch =>
-            // Always clear down.
             drawBuffer(batchCount)
 
             var cloneBlankExists = false
@@ -543,7 +539,6 @@ class LayerRenderer(
             i += 1
 
           case c: DisplayCloneTiles =>
-            // Always clear down.
             drawBuffer(batchCount)
 
             var cloneBlankExists = false
@@ -607,7 +602,9 @@ class LayerRenderer(
 
             // Base transform
             if shaderId != currentShader then setBaseTransform(baseTransform)
-            if shaderId != currentShader || lastRenderMode != 0 then setMode(0)
+            if shaderId != currentShader || lastRenderMode != 0 then
+              lastRenderMode = 0
+              setMode(0)
 
             // UBO data
             val buff = customDataUBOBuffers.getOrElseUpdate("FILLTYPE0", gl2.createBuffer())
