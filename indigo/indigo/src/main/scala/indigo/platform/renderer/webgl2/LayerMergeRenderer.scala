@@ -64,7 +64,7 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
       isCanvasMerge: Boolean,
       customShaders: HashMap[ShaderId, WebGLProgram],
       shaderId: ShaderId,
-      shaderUniformData: List[DisplayObjectUniformData]
+      shaderUniformData: Array[DisplayObjectUniformData]
   ): Unit = {
 
     if (isCanvasMerge)

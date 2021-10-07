@@ -7,7 +7,6 @@ import indigo.shared.shader.ShaderId
 import indigo.platform.assets.AtlasId
 import indigo.shared.datatypes.Radians
 import indigo.shared.scenegraph.CloneId
-import scala.collection.mutable.ListBuffer
 import indigo.shared.scenegraph.CloneBatchData
 import indigo.shared.scenegraph.CloneTileData
 
@@ -17,12 +16,12 @@ sealed trait DisplayEntity:
 final case class DisplayGroup(
     transform: CheapMatrix4,
     z: Double,
-    entities: ListBuffer[DisplayEntity]
+    entities: Array[DisplayEntity]
 ) extends DisplayEntity
     derives CanEqual
 object DisplayGroup:
   val empty: DisplayGroup =
-    DisplayGroup(CheapMatrix4.identity, 0.0d, ListBuffer())
+    DisplayGroup(CheapMatrix4.identity, 0.0d, Array())
 
 final case class DisplayCloneBatch(
     id: CloneId,
@@ -69,7 +68,7 @@ final case class DisplayObject(
     atlasWidth: Float,
     atlasHeight: Float,
     shaderId: ShaderId,
-    shaderUniformData: List[DisplayObjectUniformData]
+    shaderUniformData: Array[DisplayObjectUniformData]
 ) extends DisplayEntity
     derives CanEqual
 object DisplayObject:
@@ -98,7 +97,7 @@ object DisplayObject:
       textureSize: Vector2,
       atlasSize: Vector2,
       shaderId: ShaderId,
-      shaderUniformData: List[DisplayObjectUniformData]
+      shaderUniformData: Array[DisplayObjectUniformData]
   ): DisplayObject =
     DisplayObject(
       x,

@@ -31,8 +31,6 @@ import org.scalajs.dom.raw.WebGLUniformLocation
 
 import scalajs.js.JSConverters._
 
-import scala.collection.mutable
-
 final class RendererWebGL1(
     config: RendererConfig,
     loadedTextureAssets: List[LoadedTextureAsset],
@@ -166,7 +164,7 @@ final class RendererWebGL1(
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def drawLayer(
-      displayEntities: mutable.ListBuffer[DisplayEntity],
+      displayEntities: Array[DisplayEntity],
       shaderProgram: WebGLProgram,
       projectionMatrix: scalajs.js.Array[Double]
   ): Unit = {

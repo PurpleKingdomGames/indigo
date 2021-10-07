@@ -112,9 +112,9 @@ final class DisplayObjectConversions(
       gameTime: GameTime,
       assetMapping: AssetMapping,
       cloneBlankDisplayObjects: Map[CloneId, DisplayObject]
-  ): ListBuffer[DisplayEntity] =
+  ): Array[DisplayEntity] =
     val f = sceneNodeToDisplayObject(gameTime, assetMapping, cloneBlankDisplayObjects)
-    (ListBuffer() ++ sceneNodes).map(f)
+    sceneNodes.toArray.map(f)
 
   private def groupToMatrix(group: Group): CheapMatrix4 =
     CheapMatrix4.identity
@@ -221,7 +221,7 @@ final class DisplayObjectConversions(
             }
             ._2
 
-        DisplayGroup(CheapMatrix4.identity, x.depth.toDouble, ListBuffer() ++ letters)
+        DisplayGroup(CheapMatrix4.identity, x.depth.toDouble, letters.toArray)
 
       case _: RenderNode =>
         DisplayGroup.empty
@@ -292,7 +292,7 @@ final class DisplayObjectConversions(
       textureSize = vec2Zero,
       atlasSize = vec2Zero,
       shaderId = shader.shaderId,
-      shaderUniformData = uniformData
+      shaderUniformData = uniformData.toArray
     )
   }
 
@@ -358,7 +358,7 @@ final class DisplayObjectConversions(
       textureSize = texture.map(_.size).getOrElse(Vector2.zero),
       atlasSize = texture.map(_.atlasSize).getOrElse(Vector2.zero),
       shaderId = shaderId,
-      shaderUniformData = uniformData
+      shaderUniformData = uniformData.toArray
     )
   }
 
@@ -433,7 +433,7 @@ final class DisplayObjectConversions(
       textureSize = texture.size,
       atlasSize = texture.atlasSize,
       shaderId = shaderId,
-      shaderUniformData = uniformData
+      shaderUniformData = uniformData.toArray
     )
   }
 
@@ -498,7 +498,7 @@ final class DisplayObjectConversions(
       textureSize = texture.size,
       atlasSize = texture.atlasSize,
       shaderId = shaderId,
-      shaderUniformData = uniformData
+      shaderUniformData = uniformData.toArray
     )
   }
 
@@ -567,7 +567,7 @@ final class DisplayObjectConversions(
             textureSize = texture.size,
             atlasSize = texture.atlasSize,
             shaderId = shaderId,
-            shaderUniformData = uniformData
+            shaderUniformData = uniformData.toArray
           )
         }
       }

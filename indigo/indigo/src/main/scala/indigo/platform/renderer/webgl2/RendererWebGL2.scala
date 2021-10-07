@@ -315,7 +315,7 @@ final class RendererWebGL2(
         false,
         customShaders,
         StandardShaders.NormalBlend.id,
-        Nil
+        Array()
       )
 
       // Set the layer blend mode
