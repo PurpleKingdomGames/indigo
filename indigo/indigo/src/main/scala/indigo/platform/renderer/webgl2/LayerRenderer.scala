@@ -218,7 +218,8 @@ class LayerRenderer(
 
     d.shaderId != currentShader ||
     (uniformHash.nonEmpty && uniformHash != currentUniformHash) ||
-    d.atlasName != atlasName
+    d.atlasName != atlasName ||
+    lastRenderMode != 0
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
@@ -249,13 +250,14 @@ class LayerRenderer(
       currentShader: ShaderId,
       currentUniformHash: String,
       customShaders: HashMap[ShaderId, WebGLProgram],
-      baseTransform: CheapMatrix4
+      baseTransform: CheapMatrix4,
+      renderMode: Int
   ): Unit = {
 
     // Switch and reference shader
     val activeShader: WebGLProgram =
-      if (d.shaderId != currentShader)
-        customShaders.get(d.shaderId) match {
+      if d.shaderId != currentShader then
+        customShaders.get(d.shaderId) match
           case Some(s) =>
             currentProgram = s
             setupShader(s)
@@ -265,15 +267,15 @@ class LayerRenderer(
             throw new Exception(
               s"Missing entity shader '${d.shaderId}'. Have you remembered to add the shader to the boot sequence or disabled auto-loading of default shaders?"
             )
-        }
       else currentProgram
 
     // Base transform
-    setBaseTransform(baseTransform)
+    if d.shaderId != currentShader then setBaseTransform(baseTransform)
+    if d.shaderId != currentShader || lastRenderMode != renderMode then setMode(renderMode)
 
     // UBO data
     val uniformHash: String = d.shaderUniformData.map(_.uniformHash).mkString
-    if (uniformHash.nonEmpty && uniformHash != currentUniformHash)
+    if uniformHash.nonEmpty && uniformHash != currentUniformHash then
       d.shaderUniformData.zipWithIndex.foreach { case (ud, i) =>
         val buff = customDataUBOBuffers.getOrElseUpdate(ud.uniformHash, gl2.createBuffer())
 
@@ -288,16 +290,15 @@ class LayerRenderer(
       }
 
     // Atlas
-    if (d.atlasName != atlasName)
+    if (d.atlasName != atlasName) then
       d.atlasName.flatMap { nextAtlas =>
         textureLocations.find(t => t.name == nextAtlas)
-      } match {
+      } match
         case None =>
           ()
 
         case Some(textureLookup) =>
           gl2.bindTexture(TEXTURE_2D, textureLookup.texture)
-      }
 
     ()
   }
@@ -352,29 +353,30 @@ class LayerRenderer(
     setupInstanceArray(rotationInstanceArray, 7, 1) //
   }
 
+  private var lastRenderMode: Int = 0
   def enableCloneBatchMode(): Unit =
-    setMode(1)
     gl2.disableVertexAttribArray(2)
     gl2.disableVertexAttribArray(3)
     gl2.disableVertexAttribArray(4)
     gl2.disableVertexAttribArray(5)
     gl2.disableVertexAttribArray(6)
+    lastRenderMode = 1
 
   def enableCloneTileMode(): Unit =
-    setMode(2)
     gl2.disableVertexAttribArray(2)
     gl2.enableVertexAttribArray(3)
     gl2.enableVertexAttribArray(4)
     gl2.enableVertexAttribArray(5)
     gl2.disableVertexAttribArray(6)
+    lastRenderMode = 2
 
   def disableCloneMode(): Unit =
-    setMode(0)
     gl2.enableVertexAttribArray(2)
     gl2.enableVertexAttribArray(3)
     gl2.enableVertexAttribArray(4)
     gl2.enableVertexAttribArray(5)
     gl2.enableVertexAttribArray(6)
+    lastRenderMode = 0
 
   def drawBuffer(instanceCount: Int): Unit =
     if (instanceCount > 0) {
@@ -447,6 +449,11 @@ class LayerRenderer(
     var currentShaderHash: String     = ""
     var currentBaseTransformHash: Int = 0
 
+    // Clones
+    var currentCloneId: CloneId        = CloneId("")
+    var currentCloneRef: DisplayObject = null
+
+    //
     val sortedEntities: Vector[DisplayEntity] =
       displayEntities.sortWith((d1, d2) => d1.z > d2.z).toVector
 
@@ -480,7 +487,8 @@ class LayerRenderer(
               currentShader,
               currentShaderHash,
               customShaders,
-              baseTransform
+              baseTransform,
+              0
             )
             batchCount = 0
             atlasName = d.atlasName
@@ -493,62 +501,88 @@ class LayerRenderer(
             i += 1
 
           case c: DisplayCloneBatch =>
-            cloneBlankDisplayObjects.get(c.id) match
-              case None =>
-                i += 1
+            // Always clear down.
+            drawBuffer(batchCount)
 
-              case Some(d) =>
-                // Always clear down.
-                drawBuffer(batchCount)
-                doContextChange(
-                  d,
-                  atlasName,
-                  currentShader,
-                  currentShaderHash,
-                  customShaders,
-                  baseTransform
-                )
-                batchCount = 0
-                atlasName = d.atlasName
-                currentShader = d.shaderId
-                currentShaderHash = d.shaderUniformData.map(_.uniformHash).mkString
+            var cloneBlankExists = false
+            var refreshCloneUBO  = false
 
-                val numberProcessed: Int =
-                  processCloneBatch(c, d)
+            if c.id.toString != currentCloneId.toString then
+              cloneBlankDisplayObjects.get(c.id) match
+                case None => ()
+                case Some(d) =>
+                  currentCloneId = c.id
+                  currentCloneRef = d
+                  cloneBlankExists = true
+                  refreshCloneUBO = true
+            else cloneBlankExists = true
 
-                drawCloneBuffer(numberProcessed)
+            if cloneBlankExists then
+              doContextChange(
+                currentCloneRef,
+                atlasName,
+                currentShader,
+                currentShaderHash,
+                customShaders,
+                baseTransform,
+                1
+              )
 
-                batchCount = 0
-                i += 1
+              if refreshCloneUBO || currentShader != currentCloneRef.shaderId then uploadRefUBO(currentCloneRef)
+
+              val numberProcessed: Int =
+                processCloneBatch(c)
+
+              drawCloneBuffer(numberProcessed)
+
+              batchCount = 0
+              atlasName = currentCloneRef.atlasName
+              currentShader = currentCloneRef.shaderId
+              currentShaderHash = currentCloneRef.shaderUniformData.map(_.uniformHash).mkString
+
+            i += 1
 
           case c: DisplayCloneTiles =>
-            cloneBlankDisplayObjects.get(c.id) match
-              case None =>
-                i += 1
+            // Always clear down.
+            drawBuffer(batchCount)
 
-              case Some(d) =>
-                // Always clear down.
-                drawBuffer(batchCount)
-                doContextChange(
-                  d,
-                  atlasName,
-                  currentShader,
-                  currentShaderHash,
-                  customShaders,
-                  baseTransform
-                )
-                batchCount = 0
-                atlasName = d.atlasName
-                currentShader = d.shaderId
-                currentShaderHash = d.shaderUniformData.map(_.uniformHash).mkString
+            var cloneBlankExists = false
+            var refreshCloneUBO  = false
 
-                val numberProcessed: Int =
-                  processCloneTiles(c, d)
+            if c.id.toString != currentCloneId.toString then
+              cloneBlankDisplayObjects.get(c.id) match
+                case None => ()
+                case Some(d) =>
+                  currentCloneId = c.id
+                  currentCloneRef = d
+                  cloneBlankExists = true
+                  refreshCloneUBO = true
+            else cloneBlankExists = true
 
-                drawCloneTileBuffer(numberProcessed)
+            if cloneBlankExists then
+              doContextChange(
+                currentCloneRef,
+                atlasName,
+                currentShader,
+                currentShaderHash,
+                customShaders,
+                baseTransform,
+                2
+              )
 
-                batchCount = 0
-                i += 1
+              if refreshCloneUBO || currentShader != currentCloneRef.shaderId then uploadRefUBO(currentCloneRef)
+
+              val numberProcessed: Int =
+                processCloneTiles(c, currentCloneRef)
+
+              drawCloneTileBuffer(numberProcessed)
+
+              batchCount = 0
+              atlasName = currentCloneRef.atlasName
+              currentShader = currentCloneRef.shaderId
+              currentShaderHash = currentCloneRef.shaderUniformData.map(_.uniformHash).mkString
+
+            i += 1
 
           case t: DisplayText =>
             drawBuffer(batchCount)
@@ -572,7 +606,8 @@ class LayerRenderer(
             //
 
             // Base transform
-            setBaseTransform(baseTransform)
+            if shaderId != currentShader then setBaseTransform(baseTransform)
+            if shaderId != currentShader || lastRenderMode != 0 then setMode(0)
 
             // UBO data
             val buff = customDataUBOBuffers.getOrElseUpdate("FILLTYPE0", gl2.createBuffer())
@@ -636,12 +671,7 @@ class LayerRenderer(
       currentRefUBOHash = code
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  private def processCloneBatch(
-      c: DisplayCloneBatch,
-      refDisplayObject: DisplayObject
-  ): Int = {
-    uploadRefUBO(refDisplayObject)
-
+  private def processCloneBatch(c: DisplayCloneBatch): Int = {
     val count: Int = c.cloneData.length
     var i: Int     = 0
 
@@ -662,20 +692,28 @@ class LayerRenderer(
       c: DisplayCloneTiles,
       refDisplayObject: DisplayObject
   ): Int = {
-    uploadRefUBO(refDisplayObject)
-
     val count: Int = c.cloneData.length
     var i: Int     = 0
 
-    while (i < count) {
-      val clone = c.cloneData(i)
+    val atlasWidth  = refDisplayObject.atlasWidth
+    val atlasHeight = refDisplayObject.atlasHeight
+    val textureX    = refDisplayObject.textureX
+    val textureY    = refDisplayObject.textureY
+    val c1X         = refDisplayObject.channelOffset1X - refDisplayObject.channelOffset0X
+    val c1Y         = refDisplayObject.channelOffset1Y - refDisplayObject.channelOffset0Y
+    val c2X         = refDisplayObject.channelOffset2X - refDisplayObject.channelOffset0X
+    val c2Y         = refDisplayObject.channelOffset2Y - refDisplayObject.channelOffset0Y
+    val c3X         = refDisplayObject.channelOffset3X - refDisplayObject.channelOffset0X
+    val c3Y         = refDisplayObject.channelOffset3Y - refDisplayObject.channelOffset0Y
 
+    while (i < count) {
+      val clone           = c.cloneData(i)
       val cropWidth       = clone.cropWidth
       val cropHeight      = clone.cropHeight
-      val frameScaleX     = cropWidth / refDisplayObject.atlasWidth
-      val frameScaleY     = cropHeight / refDisplayObject.atlasHeight
-      val channelOffset0X = frameScaleX * ((clone.cropX + refDisplayObject.textureX) / cropWidth)
-      val channelOffset0Y = frameScaleY * ((clone.cropY + refDisplayObject.textureY) / cropHeight)
+      val frameScaleX     = cropWidth / atlasWidth
+      val frameScaleY     = cropHeight / atlasHeight
+      val channelOffset0X = frameScaleX * ((clone.cropX + textureX) / cropWidth)
+      val channelOffset0Y = frameScaleY * ((clone.cropY + textureY) / cropHeight)
 
       updateCloneTileData(
         i = i,
@@ -688,12 +726,12 @@ class LayerRenderer(
         frameScaleY = frameScaleY,
         channelOffset0X = channelOffset0X,
         channelOffset0Y = channelOffset0Y,
-        channelOffset1X = channelOffset0X + (refDisplayObject.channelOffset1X - refDisplayObject.channelOffset0X),
-        channelOffset1Y = channelOffset0Y + (refDisplayObject.channelOffset1Y - refDisplayObject.channelOffset0Y),
-        channelOffset2X = channelOffset0X + (refDisplayObject.channelOffset2X - refDisplayObject.channelOffset0X),
-        channelOffset2Y = channelOffset0Y + (refDisplayObject.channelOffset2Y - refDisplayObject.channelOffset0Y),
-        channelOffset3X = channelOffset0X + (refDisplayObject.channelOffset3X - refDisplayObject.channelOffset0X),
-        channelOffset3Y = channelOffset0Y + (refDisplayObject.channelOffset3Y - refDisplayObject.channelOffset0Y)
+        channelOffset1X = channelOffset0X + c1X,
+        channelOffset1Y = channelOffset0Y + c1Y,
+        channelOffset2X = channelOffset0X + c2X,
+        channelOffset2Y = channelOffset0Y + c2Y,
+        channelOffset3X = channelOffset0X + c3X,
+        channelOffset3Y = channelOffset0Y + c3Y
       )
 
       i += 1
