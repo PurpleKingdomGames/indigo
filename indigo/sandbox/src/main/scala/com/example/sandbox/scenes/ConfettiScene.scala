@@ -16,7 +16,7 @@ import scala.collection.mutable.ArrayBuffer
 
 object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
 
-  val spawnCount: Int = 400
+  val spawnCount: Int = 600
 
   type SceneModel     = ConfettiModel
   type SceneViewModel = Unit
@@ -82,7 +82,7 @@ object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
       .withFontSize(Pixels(12))
       .withColor(RGBA.White)
 
-  def particlesToCloneTiles(particles: List[Particle]): CloneTiles =
+  def particlesToCloneTiles(particles: Array[Particle]): CloneTiles =
     CloneTiles(
       cloneId,
       particles.map { p =>
@@ -99,7 +99,7 @@ object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
     Outcome(
       SceneUpdateFragment(
         Layer(
-          model.particles.map(particlesToCloneTiles)
+          model.particles.map(particlesToCloneTiles).toList
         ).withMagnification(1),
         Layer(
           count.withText(s"count: ${model.particles.length * spawnCount}")
@@ -107,10 +107,10 @@ object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
       ).addCloneBlanks(cloneBlanks)
     )
 
-final case class ConfettiModel(color: Int, particles: List[List[Particle]]):
+final case class ConfettiModel(color: Int, particles: Array[Array[Particle]]):
   def spawn(dice: Dice, x: Int, y: Int, count: Int): ConfettiModel =
     this.copy(
-      particles = (0 until count).toList.map { _ =>
+      particles = Array((0 until count).toArray.map { _ =>
         Particle(
           x,
           y,
@@ -119,7 +119,7 @@ final case class ConfettiModel(color: Int, particles: List[List[Particle]]):
           color,
           (dice.rollFloat * 0.5f + 0.5f) * 0.25f
         )
-      } :: particles
+      }) ++ particles
     )
 
   def update: ConfettiModel =
@@ -143,7 +143,7 @@ final case class ConfettiModel(color: Int, particles: List[List[Particle]]):
 
 object ConfettiModel:
   val empty: ConfettiModel =
-    ConfettiModel(0, Nil)
+    ConfettiModel(0, Array())
 
 final case class Particle(x: Int, y: Int, fx: Float, fy: Float, color: Int, scale: Float)
 object Particle:

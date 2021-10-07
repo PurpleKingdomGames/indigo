@@ -27,14 +27,14 @@ object DisplayGroup:
 final case class DisplayCloneBatch(
     id: CloneId,
     z: Double,
-    cloneData: Vector[CloneBatchData]
+    cloneData: Array[CloneBatchData]
 ) extends DisplayEntity
     derives CanEqual
 
 final case class DisplayCloneTiles(
     id: CloneId,
     z: Double,
-    cloneData: Vector[CloneTileData]
+    cloneData: Array[CloneTileData]
 ) extends DisplayEntity
     derives CanEqual
 
