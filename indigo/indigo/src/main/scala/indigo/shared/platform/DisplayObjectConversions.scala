@@ -81,14 +81,14 @@ final class DisplayObjectConversions(
         new DisplayCloneBatch(
           id = batch.id,
           z = batch.depth.toDouble,
-          cloneData = batch.cloneData.toVector
+          cloneData = batch.cloneData
         )
       }
     else
       new DisplayCloneBatch(
         id = batch.id,
         z = batch.depth.toDouble,
-        cloneData = batch.cloneData.toVector
+        cloneData = batch.cloneData
       )
 
   private def cloneTilesDataToDisplayEntities(batch: CloneTiles): DisplayCloneTiles =
@@ -97,14 +97,14 @@ final class DisplayObjectConversions(
         new DisplayCloneTiles(
           id = batch.id,
           z = batch.depth.toDouble,
-          cloneData = batch.cloneData.toVector
+          cloneData = batch.cloneData
         )
       }
     else
       new DisplayCloneTiles(
         id = batch.id,
         z = batch.depth.toDouble,
-        cloneData = batch.cloneData.toVector
+        cloneData = batch.cloneData
       )
 
   def sceneNodesToDisplayObjects(

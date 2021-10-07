@@ -48,7 +48,7 @@ object PerfView {
                 batchNumber + 1,
                 CloneBatch(
                   cloneId,
-                  ps.map(p => CloneBatchData(p.x, p.y))
+                  ps.map(p => CloneBatchData(p.x, p.y)).toArray
                 ).withStaticBatchKey(BindingKey("herd" + batchNumber.toString)) :: acc
               )
       }
