@@ -1,6 +1,5 @@
 package indigo.shared.display
 
-import scala.collection.mutable.ListBuffer
 import indigo.shared.scenegraph.Blend
 import indigo.shared.shader.ShaderId
 import indigo.shared.datatypes.RGBA
@@ -8,7 +7,7 @@ import indigo.shared.datatypes.Depth
 import indigo.shared.scenegraph.Camera
 
 final case class DisplayLayer(
-    entities: ListBuffer[DisplayEntity],
+    entities: Array[DisplayEntity],
     lightsData: Array[Float],
     bgColor: RGBA,
     magnification: Option[Int],
@@ -16,6 +15,6 @@ final case class DisplayLayer(
     entityBlend: Blend,
     layerBlend: Blend,
     shaderId: ShaderId,
-    shaderUniformData: List[DisplayObjectUniformData],
+    shaderUniformData: Array[DisplayObjectUniformData],
     camera: Option[Camera]
 ) derives CanEqual

@@ -95,8 +95,8 @@ final class SceneProcessor(
           case Some(displayObject) => acc + (blank.id -> displayObject)
       }
 
-    val displayLayers: List[DisplayLayer] =
-      scene.layers
+    val displayLayers: Array[DisplayLayer] =
+      scene.layers.toArray
         .filter(l => l.visible.getOrElse(true))
         .zipWithIndex
         .map { case (l, i) =>
@@ -272,8 +272,8 @@ object SceneProcessor {
 
   def mergeShaderToUniformData(
       shaderData: BlendShaderData
-  )(using QuickCache[Array[Float]]): List[DisplayObjectUniformData] =
-    shaderData.uniformBlocks.map { ub =>
+  )(using QuickCache[Array[Float]]): Array[DisplayObjectUniformData] =
+    shaderData.uniformBlocks.toArray.map { ub =>
       DisplayObjectUniformData(
         uniformHash = ub.uniformHash,
         blockName = ub.blockName,

@@ -11,7 +11,6 @@ import org.scalajs.dom.raw
 
 import scala.annotation.tailrec
 import scala.scalajs.js.typedarray.Float32Array
-import scala.collection.mutable.ListBuffer
 import indigo.shared.display.DisplayEntity
 import indigo.shared.display.DisplayCloneBatch
 import indigo.shared.display.DisplayCloneTiles
@@ -417,7 +416,7 @@ class LayerRenderer(
 
   def drawLayer(
       cloneBlankDisplayObjects: Map[CloneId, DisplayObject],
-      displayEntities: ListBuffer[DisplayEntity],
+      displayEntities: Array[DisplayEntity],
       frameBufferComponents: FrameBufferComponents,
       clearColor: RGBA,
       customShaders: HashMap[ShaderId, WebGLProgram]
@@ -433,7 +432,7 @@ class LayerRenderer(
 
   private def renderEntities(
       cloneBlankDisplayObjects: Map[CloneId, DisplayObject],
-      displayEntities: ListBuffer[DisplayEntity],
+      displayEntities: Array[DisplayEntity],
       customShaders: HashMap[ShaderId, WebGLProgram],
       baseTransform: CheapMatrix4
   ): Unit = {
