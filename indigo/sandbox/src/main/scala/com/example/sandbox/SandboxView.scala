@@ -94,7 +94,7 @@ object SandboxView {
       Text("AB!\n!C", 2, 2, 5, Fonts.fontKey, SandboxAssets.fontMaterial).alignLeft,
       Text("AB!\n!C", 100, 2, 5, Fonts.fontKey, SandboxAssets.fontMaterial).alignCenter,
       Text("AB!\n!C", 200, 2, 5, Fonts.fontKey, SandboxAssets.fontMaterial).alignRight.onEvent {
-        case (bounds, MouseEvent.Click(_, _)) =>
+        case (bounds, MouseEvent.Click(_)) =>
           if (inputState.mouse.wasMouseClickedWithin(bounds))
             println("Hit me!")
           Nil

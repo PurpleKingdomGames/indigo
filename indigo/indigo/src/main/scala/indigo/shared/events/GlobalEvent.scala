@@ -90,9 +90,9 @@ case object FullScreenExitError extends ViewEvent
 /** Represents all mouse events
   */
 sealed trait MouseEvent extends InputEvent {
+  val position: Point
   val x: Int
   val y: Int
-  def position: Point = Point(x, y)
 }
 object MouseEvent {
 
@@ -103,7 +103,12 @@ object MouseEvent {
     * @param y
     *   Y coord relative to magnification level
     */
-  final case class Click(x: Int, y: Int) extends MouseEvent
+  final case class Click(position: Point) extends MouseEvent:
+    val x: Int = position.x
+    val y: Int = position.y
+  object Click:
+    def apply(x: Int, y: Int): Click =
+      Click(Point(x, y))
 
   /** The left mouse button was released.
     *
@@ -112,7 +117,12 @@ object MouseEvent {
     * @param y
     *   Y coord relative to magnification level
     */
-  final case class MouseUp(x: Int, y: Int) extends MouseEvent
+  final case class MouseUp(position: Point) extends MouseEvent:
+    val x: Int = position.x
+    val y: Int = position.y
+  object MouseUp:
+    def apply(x: Int, y: Int): MouseUp =
+      MouseUp(Point(x, y))
 
   /** The left mouse button was pressed down.
     *
@@ -121,7 +131,12 @@ object MouseEvent {
     * @param y
     *   Y coord relative to magnification level
     */
-  final case class MouseDown(x: Int, y: Int) extends MouseEvent
+  final case class MouseDown(position: Point) extends MouseEvent:
+    val x: Int = position.x
+    val y: Int = position.y
+  object MouseDown:
+    def apply(x: Int, y: Int): MouseDown =
+      MouseDown(Point(x, y))
 
   /** The mouse was moved to a new position.
     *
@@ -130,7 +145,12 @@ object MouseEvent {
     * @param y
     *   Y coord relative to magnification level
     */
-  final case class Move(x: Int, y: Int) extends MouseEvent
+  final case class Move(position: Point) extends MouseEvent:
+    val x: Int = position.x
+    val y: Int = position.y
+  object Move:
+    def apply(x: Int, y: Int): Move =
+      Move(Point(x, y))
 }
 
 /** Represents all keyboard events

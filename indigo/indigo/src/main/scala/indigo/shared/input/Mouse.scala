@@ -94,10 +94,10 @@ object Mouse {
       case Nil =>
         isDown
 
-      case MouseEvent.MouseDown(_, _) :: xs =>
+      case MouseEvent.MouseDown(_) :: xs =>
         isLeftMouseDown(true, xs)
 
-      case MouseEvent.MouseUp(_, _) :: xs =>
+      case MouseEvent.MouseUp(_) :: xs =>
         isLeftMouseDown(false, xs)
 
       case _ :: xs =>

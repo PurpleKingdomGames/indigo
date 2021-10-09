@@ -11,11 +11,12 @@ import indigo.shared.datatypes.Size
   * @param height
   *   Height in pixels
   */
-final case class GameViewport(width: Int, height: Int) derives CanEqual {
+final case class GameViewport(size: Size) derives CanEqual {
+  val width: Int            = size.width
+  val height: Int           = size.height
   val horizontalMiddle: Int = width / 2
   val verticalMiddle: Int   = height / 2
   val center: Point         = Point(horizontalMiddle, verticalMiddle)
-  val size: Size            = Size(width, height)
 
   def asRectangle: Rectangle = Rectangle(Point.zero, size)
   def bounds: Rectangle      = asRectangle
@@ -25,6 +26,10 @@ final case class GameViewport(width: Int, height: Int) derives CanEqual {
 }
 
 object GameViewport {
+
+  def apply(width: Int, height: Int): GameViewport =
+    GameViewport(Size(width, height))
+
   val atWUXGA: GameViewport =
     GameViewport(1920, 1200)
   val atWUXGABy2: GameViewport =

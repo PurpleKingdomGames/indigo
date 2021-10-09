@@ -222,3 +222,20 @@ addCommandAlias(
     "confetti/indigoRun"
   ).mkString(";", ";", "")
 )
+
+addCommandAlias(
+  "textRun",
+  List(
+    "text/fastOptJS",
+    "text/indigoRun"
+  ).mkString(";", ";", "")
+)
+
+addCommandAlias(
+  "subSystemsRun",
+  List(
+    "subSystems/fastOptJS",
+    "subSystems/indigoRun"
+  ).mkString(";", ";", "")
+)
+
