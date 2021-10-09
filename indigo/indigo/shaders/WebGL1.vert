@@ -7,6 +7,7 @@ uniform vec4 u_translateScale;
 uniform vec4 u_refRotation;
 uniform vec4 u_frameTransform;
 uniform vec4 u_sizeFlip;
+uniform mat4 u_baseTransform;
 
 // Varying
 varying vec2 v_texcoord;
@@ -63,7 +64,7 @@ void main(void) {
     translate2d(moveToReferencePoint) *
     scale2d(vec2(1.0, -1.0) * flip);
 
-  gl_Position = u_projection * transform * vertices;
+  gl_Position = u_projection * u_baseTransform * transform * vertices;
 
   v_texcoord = scaleTexCoords(texcoords);
 }
