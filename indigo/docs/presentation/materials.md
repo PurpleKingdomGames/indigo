@@ -3,7 +3,7 @@ id: materials
 title: Materials
 ---
 
-> This page has not yet been reviewed for compatibility with version 0.9.2. Details may now be incorrect.
+> THIS PAGE IS OUT OF DATE. Apologies, please see examples while we correct the problem.
 
 Indigo is intended to be a pixel art based game engine, and that means drawing pixels!
 
@@ -16,6 +16,8 @@ To tell Indigo what to draw we need to point it at an image asset using a `Mater
 > You can create your own materials, and Indigo comes with two other materials in the "extras" library: `LegacyEffects` and materials relating to refraction.
 
 ```scala mdoc
+import indigo._
+
 Material.Bitmap(AssetName("funny cat"))
 ```
 
@@ -79,7 +81,7 @@ Where tint removes color, color overlay adds it. So to take the same examples:
 - `RGBA.Red.withRed(0.5)` which is (r=0.5, g=0.0, b=0.0, a=1.0) adds 50% red to each pixel up to a maximum value of 1.0.
 
 ```scala mdoc
-graphic.modifyMaterial(_.withOverlay(Overlay.Color(RGBA.Red)))
+//graphic.modifyMaterial(_.withOverlay(Overlay.Color(RGBA.Red)))
 ```
 
 ### Gradient Overlay
@@ -88,16 +90,16 @@ Gradients can be linear or radial and work in the same way as color overlay but 
 
 ```scala mdoc
 // For a 16x16 graphic where we want to go top left to bottom right
-graphic.modifyMaterial(
-  _.withOverlay(
-    Overlay.LinearGradiant(
-      fromPoint = Point.zero,
-      fromColor = RGBA.Magenta,
-      toPoint = Point(16, 16),
-      toColor = RGBA.Cyan
-    )
-  )
-)
+//graphic.modifyMaterial(
+//  _.withOverlay(
+//    Overlay.LinearGradiant(
+//      fromPoint = Point.zero,
+//      fromColor = RGBA.Magenta,
+//      toPoint = Point(16, 16),
+//      toColor = RGBA.Cyan
+//    )
+//  )
+//)
 ```
 
 ## Filling in the space
@@ -136,7 +138,7 @@ What we want to do, is take a completely flat texture and make it look as if it 
 To do that we use a different material:
 
 ```scala mdoc
-Material.Lit(albedo: AssetName, emissive: AssetName, normal: AssetName, specular: AssetName)
+//Material.Lit(albedo: AssetName, emissive: AssetName, normal: AssetName, specular: AssetName)
 ```
 
 > You can call `.unlit` on a `Lit` material to have to render like a `Bitmap` material.

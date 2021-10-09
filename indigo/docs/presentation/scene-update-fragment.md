@@ -3,7 +3,7 @@ id: scene-update-fragment
 title: SceneUpdateFragment
 ---
 
-> This page has not yet been reviewed for compatibility with version 0.9.2. Details may now be incorrect.
+> THIS PAGE IS OUT OF DATE. Apologies, please see examples while we correct the problem.
 
 The `SceneUpdateFragment` is one of the most important types in Indigo, as it is the type that describes everything you want your player to experience, visually and audibly*.
 
@@ -12,31 +12,31 @@ The `SceneUpdateFragment` is one of the most important types in Indigo, as it is
 Chunky usage sample taken from the lighting example code:
 
 ```scala mdoc
-SceneUpdateFragment.empty
-  .addGameLayerNodes(
-    graphic,
-    graphic.moveBy(-60, 0).withMaterial(LightingAssets.junctionBoxMaterialOff),
-    graphic.moveBy(-30, 0).withMaterial(LightingAssets.junctionBoxMaterialGlass),
-    graphic.moveBy(30, 0).withMaterial(LightingAssets.junctionBoxMaterialFlat),
-    graphic.moveBy(60, 0).withMaterial(LightingAssets.junctionBoxMaterialFlat.unlit)
-  )
-  .withAmbientLight(RGBA.White.withAmount(0.1))
+import indigo._
+
+val config = GameConfig.default
+val graphic =
+  Graphic(50, 50, Material.Bitmap(AssetName("placeholder"))
+    .withLighting(LightingModel.Lit.flat))
+
+SceneUpdateFragment(graphic)
   .withLights(
+    AmbientLight(RGBA.White.withAmount(0.1)),
     PointLight.default
       .moveTo(config.viewport.center + Point(50, 0))
-      .withAttenuation(50)
-      .withColor(RGB.Green),
+      //.withAttenuation(50)
+      .withColor(RGBA.Green),
     PointLight.default
       .moveTo(config.viewport.center + Point(-50, 0))
-      .withAttenuation(50)
-      .withColor(RGB.Red),
-    DirectionLight(30, RGB.Green, 1.2, Radians.fromDegrees(30)),
+      //.withAttenuation(50)
+      .withColor(RGBA.Red),
+    DirectionLight(Radians.fromDegrees(30), RGBA.Green),
     SpotLight.default
-      .withColor(RGB.Yellow)
+      .withColor(RGBA.Magenta)
       .moveTo(config.viewport.center + Point(-150, -60))
       .rotateBy(Radians.fromDegrees(45))
-      .withHeight(25)
-      .withPower(1.5)
+      //.withHeight(25)
+      //.withPower(1.5)
   )
 ```
 
@@ -47,7 +47,7 @@ Unlike `Outcome`, `SceneUpdateFragment`s are _not_ Functors, but they are Monoid
 
 This is really important as it allows you to build parts of your scene up in lots of different ways, and then easily and reliably combine all the results together at the end. For example:
 
-```scala mdoc
+```scala
 val sceneAudio: SceneUpdateFragment = ???
 val background: SceneUpdateFragment = ???
 val clouds: SceneUpdateFragment = ???
@@ -60,6 +60,8 @@ sceneAudio |+| background |+| clouds |+| player |+| foreground
 Consider also the following:
 
 ```scala mdoc
+val visible = true
+val scene: SceneUpdateFragment = SceneUpdateFragment(graphic)
 val vanishingThing =
   if(visible) SceneUpdateFragment(graphic)
   else SceneUpdateFragment.empty
@@ -70,7 +72,7 @@ scene |+| vanishingThing
 Or this:
 
 ```scala mdoc
-val l: List[SceneUpdateFragment] = ???
+val l: List[SceneUpdateFragment] = List(scene, scene, scene)
 
 l.foldLeft(SceneUpdateFragment.empty)(_ |+| _)
 ```

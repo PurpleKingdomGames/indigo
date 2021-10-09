@@ -30,11 +30,24 @@ The main thing to be aware of is that UI Components are not magic. In an OO game
 The out-of-the-box button is created out of three graphics that represent the up, over, and down states. Aside from handling the button's state, the main advantage of using the button component is that it's easier to to define interactions. Rather than pattern matching on a click event at the top of your update function, and then deciding whether the click happened inside the button or not, you can just define you button as follows and it will do the rest for you, once it has been wired in:
 
 ```scala mdoc
-Button(
-  buttonAssets = buttonAssets,
-  bounds = Rectangle(10, 10, 16, 16),
-  depth = Depth(2)
-).withUpActions(LaunchTheRocket)
+import indigo._
+import indigoextras.ui._
+
+case object LaunchTheRocket extends GlobalEvent
+
+val buttonAssets =
+  ButtonAssets(
+    up = Graphic(50, 50, Material.Bitmap(AssetName("up"))),
+    over = Graphic(50, 50, Material.Bitmap(AssetName("over"))),
+    down = Graphic(50, 50, Material.Bitmap(AssetName("down")))
+  )
+
+val button = 
+  Button(
+    buttonAssets = buttonAssets,
+    bounds = Rectangle(10, 10, 16, 16),
+    depth = Depth(2)
+  ).withUpActions(LaunchTheRocket)
 ```
 
 [The full button example is in the indigo-examples repo.](https://github.com/PurpleKingdomGames/indigo-examples/tree/master/examples/button)
@@ -42,7 +55,9 @@ Button(
 A quick explanation of the `updateViewModel` function in the example above, it looks like this:
 
 ```scala mdoc
-def updateViewModel(context: FrameContext[Unit], model: MyGameModel, viewModel: MyViewModel): GlobalEvent => Outcome[MyViewModel] = {
+final case class MyViewModel(button: Button)
+
+def updateViewModel(context: FrameContext[Unit], model: Unit, viewModel: MyViewModel): GlobalEvent => Outcome[MyViewModel] = {
   case FrameTick =>
     viewModel.button.update(context.inputState.mouse).map { btn =>
       viewModel.copy(button = btn)
@@ -56,6 +71,15 @@ def updateViewModel(context: FrameContext[Unit], model: MyGameModel, viewModel: 
 To help see what's happening here, we could rewrite this:
 
 ```scala mdoc
+// Placeholder:
+import indigo.platform.assets.DynamicText
+import indigo.shared.AnimationsRegister
+import indigo.shared.FontRegister
+val boundaryLocator = new BoundaryLocator(new AnimationsRegister, new FontRegister, new DynamicText)
+val context = new FrameContext(GameTime.zero, Dice.fromSeed(1l), InputState.default, boundaryLocator, ())
+
+val viewModel = MyViewModel(button)
+
 viewModel.button.update(context.inputState.mouse).map { btn =>
   viewModel.copy(button = btn)
 }
@@ -75,7 +99,7 @@ First we have to update the button, which is done by calling the buttons's built
 ***A word of caution***, you might be tempted to do this instead, which appears to work and compiles just fine:
 
 ```scala mdoc
-val updatedButton = viewModel.button.update(context.inputState.mouse).state
+val updatedButton = viewModel.button.update(context.inputState.mouse).unsafeGet
 val updatedViewModel = viewModel.copy(button = updatedButton)
 
 Outcome(updatedViewModel)
@@ -90,21 +114,31 @@ Input fields are text boxes that all users to type values into them. As with but
 Setting up an input field is as simple as adding something like this to your view model:
 
 ```scala mdoc
-InputField("<Default text>", assets)
-  .makeSingleLine
-  .moveTo(Point(10, 10))
+// Placeholder
+val assets = InputFieldAssets(
+  text = Text("", FontKey("my font"), Material.Bitmap(AssetName("my font sheet"))),
+  cursor = Graphic(10, 5, Material.Bitmap(AssetName("cursor")))
+)
+
+val inputField =
+  InputField("<Default text>", assets)
+    .makeSingleLine
+    .moveTo(Point(10, 10))
 ```
 
 Then updating it in the view model:
 
 ```scala mdoc
-viewModel.myInputField.update(context)
+final case class AnotherViewModel(myInputField: InputField)
+val anotherViewModel = AnotherViewModel(inputField)
+
+anotherViewModel.myInputField.update(context)
 ```
 
 ...and drawing it:
 
 ```scala mdoc
-viewModel.myInputField.draw(context.gameTime, context.boundaryLocator)
+anotherViewModel.myInputField.draw(context.gameTime, context.boundaryLocator)
 ```
 
 Input fields will also emit an `InputFieldChange` event when the text they hold is altered by a user. They can also send custom events on focus / focus loss.
@@ -118,6 +152,8 @@ Radio buttons are a collection of buttons where only one of them can be in a sel
 To set up Radio buttons, you would initialize them in your view model as follows:
 
 ```scala mdoc
+final case class MyRadioButtonEvent(color: RGBA) extends GlobalEvent
+
 RadioButtonGroup(buttonAssets, 16, 16)
   .withRadioButtons(
     RadioButton(Point(5, 5))

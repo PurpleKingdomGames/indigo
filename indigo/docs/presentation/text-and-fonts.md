@@ -26,6 +26,8 @@ The `TextBox` primitive works by utilising the browsers ability to render fonts.
 You can use system fonts, but if you're keen on using something specific then there is a new `Font` `AssetType`, which works the same as loading any other kind of asset:
 
 ```scala mdoc
+import indigo._
+
 AssetType.Font(AssetName("My Font"), AssetPath("assets/my-favourite-font.woff2"))
 ```
 
@@ -59,7 +61,7 @@ The alternative to `TextBox` is the `Text` primitive, which renders text using w
 You can create a Text node using one of it's constructors and manipulate its properties with fluent API methods like this:
 
 ```scala mdoc
-Text("Hello, world!\nThis is some text!", x, y, depth, fontKey).alignRight
+Text("Hello, world!\nThis is some text!", FontKey("my font"), Material.Bitmap(AssetName("my font sheet"))).alignRight
 ```
 
 Easy enough, and note that you can use newlines ...but if indigo doesn't support fonts for `Text`, what is the `fontKey` in reference to?
@@ -74,7 +76,7 @@ It's inconvenient and a bit simplistic, but it works, and the results look good 
 
 ### Setting up fonts manually
 
-At the beginning of your game definition, you were given a couple of blanks to fill in that looked like this:
+At the beginning of your (`IndigoSandbox`) game definition, you were given a couple of blanks to fill in that looked like this:
 
 ```scala mdoc
 val fonts: Set[FontInfo] =
@@ -92,7 +94,9 @@ The image might look like this:
 
 Which you would load in the usual way:
 
-```scala mdoc
+```scala mdoc:reset
+import indigo._
+
 val imageAsset = AssetName("my font image")
 
 val assets: Set[AssetType] =
@@ -102,16 +106,16 @@ val assets: Set[AssetType] =
 And the associated `FontInfo` definition would be as follows, where the `FontChar` contains the character to match, and an image crop rectangle:
 
 ```scala mdoc
-  val fontKey: FontKey = FontKey("my font")
+val fontKey: FontKey = FontKey("my font")
 
-  val fontInfo: FontInfo =
-    FontInfo(fontKey, Material.Bitmap(imageAsset), 320, 230, FontChar("?", 47, 26, 11, 12))
-      .addChar(FontChar("A", 2, 39, 10, 12))
-      .addChar(FontChar("B", 14, 39, 9, 12))
-      .addChar(FontChar("C", 25, 39, 10, 12))
-      .addChar(FontChar("D", 37, 39, 9, 12))
-      .addChar(FontChar("E", 49, 39, 9, 12))
-      // etc.
+val fontInfo: FontInfo =
+  FontInfo(fontKey, 320, 230, FontChar("?", 47, 26, 11, 12))
+    .addChar(FontChar("A", 2, 39, 10, 12))
+    .addChar(FontChar("B", 14, 39, 9, 12))
+    .addChar(FontChar("C", 25, 39, 10, 12))
+    .addChar(FontChar("D", 37, 39, 9, 12))
+    .addChar(FontChar("E", 49, 39, 9, 12))
+    // etc.
 ```
 
 The eagle eyed among you may have noticed two things:
@@ -132,9 +136,11 @@ Well you still need the asset and the `FontInfo`, but we have a process to make 
 
 Then load both assets:
 
-```scala mdoc
-val imageAsset = AssetName("my font image")
-val jsonAsset = AssetName("my font json")
+```scala mdoc:reset
+import indigo._
+
+val imageAsset = "my font image"
+val jsonAsset = "my font json"
 
 val assets: Set[AssetType] =
   Set(
@@ -146,27 +152,31 @@ val assets: Set[AssetType] =
 ..and then during the `setup` function where you create the `Startup` data, you can do something like the following:
 
 ```scala mdoc
+import indigo.json.Json
+//Placeholder: AssetCollection is one of the setup function arguments.
+import indigo.platform.assets.AssetCollection
+val assetCollection = AssetCollection.empty
+
 def makeFontInfo(unknownChar: FontChar, fontChars: List[FontChar]): FontInfo =
   FontInfo(
-    fontKey = fontKey,
-    fontSpriteSheet = FontSpriteSheet(Material.Bitmap(imageAsset), Point(320, 230)),
+    fontKey = FontKey("my font key"),
+    fontSheetBounds = Size(320, 230),
     unknownChar = unknownChar,
     fontChars = fontChars,
     caseSensitive = true
   )
 
-val maybeFontInfo =
+val maybeFontInfo: Option[FontInfo] =
   for {
-    json        <- assetCollection.findTextDataByName(AssetName(""))
+    json        <- assetCollection.findTextDataByName(AssetName(jsonAsset))
     chars       <- Json.readFontToolJson(json)
     unknownChar <- chars.find(_.character == "☐")
   } yield makeFontInfo(unknownChar, chars)
 
-maybeFontInfo match {
+maybeFontInfo match
   case Some(fontInfo) =>
-    Startup.Success(/*insert start up data here*/).addFonts(fontInfo)
+    Startup.Success(()).addFonts(fontInfo)
 
   case None =>
-    Startup.Failure(StartupErrors("Failed to load font information"))
-}
+    // handle error case here.
 ```

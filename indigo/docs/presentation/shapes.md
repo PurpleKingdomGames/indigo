@@ -26,6 +26,8 @@ Below are examples of each to help get you started.
 ## Box
 
 ```scala mdoc
+import indigo._
+
 Shape.Box(
   Rectangle(Point(100, 100), Size(50, 50)),
   Fill.Color(RGBA.White),

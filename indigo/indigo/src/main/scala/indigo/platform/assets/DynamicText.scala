@@ -20,7 +20,7 @@ import org.scalajs.dom.raw
 import scala.scalajs.js.Dynamic
 import scala.scalajs.js.undefined
 
-class DynamicText:
+final class DynamicText:
 
   private lazy val textContext: IndigoCanvasRenderingContext2D = createTextContext()
 

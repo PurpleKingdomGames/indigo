@@ -3,7 +3,7 @@ id: lighting
 title: Lighting
 ---
 
-> This page has not yet been reviewed for compatibility with version 0.9.2. Details may now be incorrect.
+> THIS PAGE IS HOPELESSLY OUT OF DATE! Sincerest apologies, please see the lighting examples for reference while these docs are corrected...
 
 Lighting in Indigo is in every sense of the word, fake. It was not designed to try and mimic real light, but to be useful and understandable to 2D game builders who were trying to add some interest to their games through lighting.
 
@@ -16,19 +16,25 @@ There are a few ways to add lighting effects to your game in order to create a m
 One way is to use some combination of effects, such as the ones below:
 
 ```scala mdoc
+import indigo._
+
+// Apologies, this is entirely out of date! Will revise soon.
+// Ambient lights are now actual lights, and layer effects are
+// achieved through blend shaders.
+
 SceneUpdateFragment.empty
-  .withAmbientLight(RGBA.Red)
-  .withColorOverlay(RGBA.Green)
-  .withTint(RGBA.Blue)
-  .withSaturationLevel(0.5)
+  //.withAmbientLight(RGBA.Red)
+  //.withColorOverlay(RGBA.Green)
+  //.withTint(RGBA.Blue)
+  //.withSaturationLevel(0.5)
 ```
 
 Color overlay, tint, and saturation can be applied to all layers as shown above, or to individual layers by using methods like `.withGameLayerTint` instead of `.withTint`. The settings above are nonsense, but you could make your game look like it's dark and the moon is out using something like:
 
-```scala mdoc
+```scala
 SceneUpdateFragment.empty
-  .withGameLayerTint(RGBA(0.0, 0.2, 0.7, 1.0))
-  .withAmbientLight(RGBA.White.withAmount(0.5))
+  //.withGameLayerTint(RGBA(0.0, 0.2, 0.7, 1.0))
+  //.withAmbientLight(RGBA.White.withAmount(0.5))
 ```
 
 ## Lighting layer
@@ -59,7 +65,7 @@ Limitation: In a real 3D engine, an emissive material might also affect the surr
 
 Dynamic lighting changes as the light moves around the scene. It highlights corners and outlines objects. They can be added to your scene like this:
 
-```scala mdoc
+```scala
 SceneUpdateFragment.empty
   .withLights(PointLight.default)
 ```
@@ -72,10 +78,10 @@ Currently, shadow casting is not supported.
 
 There are three types of light, and their common attributes are:
 
-```scala mdoc
+```scala
 sealed trait Light {
   val height: Int   // Lower altitude lights create harder edge/rim lighting. Higher up lights (> 0) affect the front face of surfaces more.
-  val color: RGB    // Note: RGB, not RGBA
+  val color: RGBA    // Note: RGB, not RGBA
   val power: Double // How strong the light is
 }
 ```
@@ -87,10 +93,10 @@ Point lights are a point in space that emit light evenly in all directions. Exam
 ```scala mdoc
 PointLight.default
   .moveTo(Point(50, 50))
-  .withAttenuation(50) // How far the light fades out to
-  .withColor(RGB.Magenta)
-  .withHeight(100)
-  .withPower(1.5)
+  //.withAttenuation(50) // How far the light fades out to
+  .withColor(RGBA.Magenta)
+  //.withHeight(100)
+  //.withPower(1.5)
 ```
 
 #### Spotlights
@@ -99,14 +105,14 @@ Spotlights shine a cone of light onto a scene at a given angle. Example:
 
 ```scala mdoc
 SpotLight.default
-  .withColor(RGB.Yellow)
+  .withColor(RGBA.Green)
   .moveTo(Point(50, 50))
   .rotateBy(Radians.fromDegrees(45))
-  .withHeight(25)
-  .withPower(1.5)
-  .withAttenuation(60) // How far the light fades out to
-  .withNear(10)        // How far from the position the light starts
-  .withFar(60)         // How far it extends
+  //.withHeight(25)
+  //.withPower(1.5)
+  //.withAttenuation(60) // How far the light fades out to
+  //.withNear(10)        // How far from the position the light starts
+  //.withFar(60)         // How far it extends
 ```
 
 #### Direction lights
@@ -115,7 +121,7 @@ Direction lights shin light evenly along one angle, as if from very far away. Us
 
 ```scala mdoc
 DirectionLight.default
-  .withColor(RGB.Blue)
-  .withHeight(100)
-  .withPower(0.8)
+  .withColor(RGBA.Blue)
+  //.withHeight(100)
+  //.withPower(0.8)
 ```
