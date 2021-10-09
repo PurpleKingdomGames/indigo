@@ -1,10 +1,10 @@
 package indigoextras.ui
 
-import indigo.shared.datatypes.Rectangle
+import indigo.shared.Outcome
 import indigo.shared.datatypes.Point
+import indigo.shared.datatypes.Rectangle
 import indigo.shared.events.GlobalEvent
 import indigo.shared.input.Mouse
-import indigo.shared.Outcome
 import indigoextras.geometry.Polygon
 import indigoextras.geometry.Vertex
 

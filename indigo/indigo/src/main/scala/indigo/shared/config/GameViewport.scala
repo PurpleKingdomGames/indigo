@@ -1,7 +1,7 @@
 package indigo.shared.config
 
-import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Point
+import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Size
 
 /** Respresents the initial size of the game's viewport.

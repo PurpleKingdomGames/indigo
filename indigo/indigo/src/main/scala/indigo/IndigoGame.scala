@@ -1,11 +1,12 @@
 package indigo
 
-import indigo.scenes.{SceneManager, SceneName, Scene}
-import indigo.gameengine.GameEngine
-import indigo.shared.subsystems.SubSystemsRegister
 import indigo.entry.ScenesFrameProcessor
+import indigo.gameengine.GameEngine
+import indigo.scenes.Scene
+import indigo.scenes.SceneManager
+import indigo.scenes.SceneName
+import indigo.shared.subsystems.SubSystemsRegister
 
-// Indigo is Scala.js only at the moment, revisit if/when we go to the JVM
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 

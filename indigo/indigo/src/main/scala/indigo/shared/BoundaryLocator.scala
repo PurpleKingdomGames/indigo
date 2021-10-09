@@ -1,27 +1,26 @@
 package indigo.shared
 
-import indigo.shared.scenegraph.SceneNode
-import indigo.shared.datatypes.Rectangle
-import indigo.shared.scenegraph.TextLine
+import indigo.platform.assets.DynamicText
 import indigo.shared.datatypes.FontInfo
+import indigo.shared.datatypes.FontKey
 import indigo.shared.datatypes.Point
+import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Size
 import indigo.shared.datatypes.TextAlignment
-import indigo.shared.scenegraph.Text
-import indigo.shared.scenegraph.TextBox
-import indigo.shared.scenegraph.Sprite
-import indigo.shared.scenegraph.Group
+import indigo.shared.datatypes.Vector3
+import indigo.shared.datatypes.mutable.CheapMatrix4
+import indigo.shared.platform.DisplayObjectConversions
 import indigo.shared.scenegraph.CloneBatch
 import indigo.shared.scenegraph.CloneTiles
-import indigo.shared.scenegraph.Graphic
-import indigo.shared.datatypes.FontKey
-import indigo.shared.scenegraph.Shape
 import indigo.shared.scenegraph.EntityNode
+import indigo.shared.scenegraph.Graphic
+import indigo.shared.scenegraph.Group
 import indigo.shared.scenegraph.SceneNode
-import indigo.platform.assets.DynamicText
-import indigo.shared.datatypes.Vector3
-import indigo.shared.platform.DisplayObjectConversions
-import indigo.shared.datatypes.mutable.CheapMatrix4
+import indigo.shared.scenegraph.Shape
+import indigo.shared.scenegraph.Sprite
+import indigo.shared.scenegraph.Text
+import indigo.shared.scenegraph.TextBox
+import indigo.shared.scenegraph.TextLine
 
 final class BoundaryLocator(
     animationsRegister: AnimationsRegister,

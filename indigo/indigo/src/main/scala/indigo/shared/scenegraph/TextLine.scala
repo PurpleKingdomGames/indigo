@@ -1,7 +1,7 @@
 package indigo.shared.scenegraph
 
-import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Point
+import indigo.shared.datatypes.Rectangle
 
 /** Represents a single line of text.
   */

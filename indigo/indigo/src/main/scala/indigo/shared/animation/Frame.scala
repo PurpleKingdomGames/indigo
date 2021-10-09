@@ -1,9 +1,8 @@
 package indigo.shared.animation
 
-import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Point
+import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Size
-
 import indigo.shared.time.Millis
 
 final case class Frame(crop: Rectangle, duration: Millis) derives CanEqual

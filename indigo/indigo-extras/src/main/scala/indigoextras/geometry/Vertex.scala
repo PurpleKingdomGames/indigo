@@ -1,7 +1,8 @@
 package indigoextras.geometry
 
 import indigo.shared.datatypes.Point
-import indigo.shared.datatypes.{Vector2,Radians}
+import indigo.shared.datatypes.Radians
+import indigo.shared.datatypes.Vector2
 
 final case class Vertex(x: Double, y: Double) derives CanEqual {
 

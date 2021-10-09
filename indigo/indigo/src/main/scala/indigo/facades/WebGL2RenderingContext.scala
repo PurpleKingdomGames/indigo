@@ -4,10 +4,9 @@ import org.scalajs.dom.raw.WebGLBuffer
 import org.scalajs.dom.raw.WebGLProgram
 import org.scalajs.dom.raw.WebGLRenderingContext
 
+import scala.annotation.nowarn
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
-
-import scala.annotation.nowarn
 
 @nowarn
 @js.native

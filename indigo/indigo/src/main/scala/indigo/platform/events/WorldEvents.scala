@@ -1,12 +1,12 @@
 package indigo.platform.events
 
-import indigo.shared.events.{MouseEvent, KeyboardEvent}
-
+import indigo.shared.constants.Key
+import indigo.shared.events.KeyboardEvent
+import indigo.shared.events.MouseEvent
 import org.scalajs.dom
 import org.scalajs.dom.document
 import org.scalajs.dom.html
 import org.scalajs.dom.window
-import indigo.shared.constants.Key
 
 object WorldEvents {
 

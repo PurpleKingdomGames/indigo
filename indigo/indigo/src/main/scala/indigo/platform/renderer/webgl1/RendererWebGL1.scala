@@ -1,35 +1,34 @@
 package indigo.platform.renderer.webgl1
 
+import indigo.platform.assets.AtlasId
+import indigo.platform.events.GlobalEventStream
 import indigo.platform.renderer.Renderer
-import indigo.platform.renderer.shared.WebGLHelper
+import indigo.platform.renderer.shared.CameraHelper
+import indigo.platform.renderer.shared.ContextAndCanvas
 import indigo.platform.renderer.shared.LoadedTextureAsset
 import indigo.platform.renderer.shared.TextureLookupResult
-import indigo.platform.renderer.shared.ContextAndCanvas
-import indigo.platform.renderer.shared.CameraHelper
-import indigo.platform.events.GlobalEventStream
-
-import indigo.shared.platform.RendererConfig
-import indigo.shared.datatypes.mutable.CheapMatrix4
-import indigo.shared.datatypes.Radians
-import indigo.shared.platform.ProcessedSceneData
-import indigo.shared.display.DisplayEntity
-import indigo.shared.display.DisplayObject
-import indigo.shared.display.DisplayGroup
-import indigo.shared.events.ViewportResize
+import indigo.platform.renderer.shared.WebGLHelper
 import indigo.shared.config.GameViewport
+import indigo.shared.datatypes.Radians
+import indigo.shared.datatypes.mutable.CheapMatrix4
+import indigo.shared.display.DisplayEntity
+import indigo.shared.display.DisplayGroup
+import indigo.shared.display.DisplayObject
+import indigo.shared.events.ViewportResize
+import indigo.shared.platform.ProcessedSceneData
+import indigo.shared.platform.RendererConfig
+import indigo.shared.scenegraph.Camera
 import indigo.shared.shader.RawShaderCode
 import indigo.shared.time.Seconds
-import indigo.shared.scenegraph.Camera
-import indigo.platform.assets.AtlasId
+import org.scalajs.dom.html
+import org.scalajs.dom.raw
+import org.scalajs.dom.raw.WebGLBuffer
+import org.scalajs.dom.raw.WebGLProgram
+import org.scalajs.dom.raw.WebGLRenderingContext
+import org.scalajs.dom.raw.WebGLRenderingContext._
+import org.scalajs.dom.raw.WebGLUniformLocation
 
 import scala.scalajs.js.typedarray.Float32Array
-import org.scalajs.dom.html
-import org.scalajs.dom.raw.WebGLRenderingContext
-import org.scalajs.dom.raw.WebGLProgram
-import org.scalajs.dom.raw.WebGLBuffer
-import org.scalajs.dom.raw.WebGLRenderingContext._
-import org.scalajs.dom.raw
-import org.scalajs.dom.raw.WebGLUniformLocation
 
 import scalajs.js.JSConverters._
 
@@ -164,7 +163,6 @@ final class RendererWebGL1(
     }
   }
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def drawLayer(
       displayEntities: Array[DisplayEntity],
       shaderProgram: WebGLProgram,
@@ -189,6 +187,7 @@ final class RendererWebGL1(
       value = Float32Array(baseTransform.toArray.toJSArray)
     )
 
+  @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def renderEntities(
       displayEntities: Array[DisplayEntity],
       shaderProgram: WebGLProgram,

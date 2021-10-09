@@ -1,16 +1,15 @@
 package indigo.scenes
 
+import indigo.shared.FrameContext
+import indigo.shared.IndigoLogger
 import indigo.shared.Outcome
+import indigo.shared.collections.NonEmptyList
+import indigo.shared.events.EventFilters
 import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.SceneUpdateFragment
-import indigo.shared.IndigoLogger
-import indigo.shared.collections.NonEmptyList
-
-import indigo.shared.subsystems.SubSystemsRegister
-import indigo.shared.FrameContext
-import indigo.shared.subsystems.SubSystemFrameContext._
-import indigo.shared.events.EventFilters
 import indigo.shared.subsystems.SubSystemFrameContext
+import indigo.shared.subsystems.SubSystemFrameContext._
+import indigo.shared.subsystems.SubSystemsRegister
 
 class SceneManager[StartUpData, GameModel, ViewModel](
     scenes: NonEmptyList[Scene[StartUpData, GameModel, ViewModel]],

@@ -1,15 +1,15 @@
 package com.example.sandbox.scenes
 
+import com.example.sandbox.SandboxAssets
+import com.example.sandbox.SandboxGameModel
+import com.example.sandbox.SandboxStartupData
+import com.example.sandbox.SandboxViewModel
 import indigo._
 import indigo.scenes._
-import com.example.sandbox.SandboxStartupData
-import com.example.sandbox.SandboxGameModel
-import com.example.sandbox.SandboxViewModel
-import com.example.sandbox.SandboxAssets
-import indigoextras.effectmaterials.LegacyEffects
 import indigoextras.effectmaterials.Border
-import indigoextras.effectmaterials.Thickness
 import indigoextras.effectmaterials.Glow
+import indigoextras.effectmaterials.LegacyEffects
+import indigoextras.effectmaterials.Thickness
 
 object LegacyEffectsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel] {
 

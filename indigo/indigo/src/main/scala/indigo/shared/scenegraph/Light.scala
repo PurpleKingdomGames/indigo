@@ -1,9 +1,9 @@
 package indigo.shared.scenegraph
 
 import indigo.shared.datatypes.Point
+import indigo.shared.datatypes.RGBA
 import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.Vector2
-import indigo.shared.datatypes.RGBA
 
 /** Parent type for all lights
   */

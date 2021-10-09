@@ -1,12 +1,14 @@
 package indigo.platform.networking
 
-import indigo.shared.events._
-import indigo.shared.networking.WebSocketReadyState
-import indigo.shared.networking.WebSocketReadyState.{CLOSED, CLOSING}
-import indigo.shared.networking.{WebSocketId, WebSocketConfig, WebSocketEvent}
-import indigo.shared.IndigoLogger
 import indigo.platform.events.GlobalEventStream
-
+import indigo.shared.IndigoLogger
+import indigo.shared.events._
+import indigo.shared.networking.WebSocketConfig
+import indigo.shared.networking.WebSocketEvent
+import indigo.shared.networking.WebSocketId
+import indigo.shared.networking.WebSocketReadyState
+import indigo.shared.networking.WebSocketReadyState.CLOSED
+import indigo.shared.networking.WebSocketReadyState.CLOSING
 import org.scalajs.dom
 
 import scala.collection.mutable

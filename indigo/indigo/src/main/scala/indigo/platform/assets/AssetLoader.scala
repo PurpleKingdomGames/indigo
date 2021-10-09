@@ -1,25 +1,26 @@
 package indigo.platform.assets
 
-import indigo.shared.IndigoLogger
-import indigo.shared.assets.AssetType
-import indigo.shared.assets.AssetName
-import org.scalajs.dom
-import org.scalajs.dom.ext.Ajax
-import org.scalajs.dom.raw.HTMLImageElement
-import org.scalajs.dom.{html, _}
-import scala.scalajs.js
-
-import scala.concurrent.{Future, Promise}
-import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
-import scala.scalajs.js.typedarray.ArrayBuffer
-import indigo.platform.events.GlobalEventStream
-import indigo.shared.events.AssetEvent
-import indigo.shared.datatypes.BindingKey
-import scala.util.Success
-import scala.util.Failure
-import indigo.platform.audio.AudioPlayer
-
 import indigo.facades.FontFace
+import indigo.platform.audio.AudioPlayer
+import indigo.platform.events.GlobalEventStream
+import indigo.shared.IndigoLogger
+import indigo.shared.assets.AssetName
+import indigo.shared.assets.AssetType
+import indigo.shared.datatypes.BindingKey
+import indigo.shared.events.AssetEvent
+import org.scalajs.dom
+import org.scalajs.dom._
+import org.scalajs.dom.ext.Ajax
+import org.scalajs.dom.html
+import org.scalajs.dom.raw.HTMLImageElement
+
+import scala.concurrent.Future
+import scala.concurrent.Promise
+import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
+import scala.scalajs.js
+import scala.scalajs.js.typedarray.ArrayBuffer
+import scala.util.Failure
+import scala.util.Success
 
 object AssetLoader {
 
@@ -117,7 +118,6 @@ object AssetLoader {
 
   // Images
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
   def loadImageAsset(imageAsset: AssetType.Image): Future[LoadedImageAsset] = {
     IndigoLogger.info(s"[Image] Loading ${imageAsset.path}")
 
@@ -149,7 +149,7 @@ object AssetLoader {
   val loadAudioAssets: List[AssetType.Audio] => Future[List[LoadedAudioAsset]] =
     audioAssets => Future.sequence(audioAssets.map(loadAudioAsset))
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
+  // @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
   def loadAudioAsset(audioAsset: AssetType.Audio): Future[LoadedAudioAsset] = {
     IndigoLogger.info(s"[Audio] Loading ${audioAsset.path}")
 
@@ -172,7 +172,7 @@ object AssetLoader {
   val loadFontAssets: List[AssetType.Font] => Future[List[LoadedFontAsset]] =
     fontAssets => Future.sequence(fontAssets.map(loadFontAsset))
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
+  // @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
   def loadFontAsset(fontAsset: AssetType.Font): Future[LoadedFontAsset] =
     IndigoLogger.info(s"[Font] Loading ${fontAsset.path}")
 

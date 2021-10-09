@@ -1,22 +1,24 @@
 package indigo.platform.renderer
 
-import indigo.shared.platform.RendererConfig
-import indigo.platform.renderer.shared.LoadedTextureAsset
-import indigo.platform.renderer.shared.ContextAndCanvas
+import indigo.facades.WebGL2RenderingContext
 import indigo.platform.assets.DynamicText
-
-import org.scalajs.dom
-import org.scalajs.dom.raw.WebGLRenderingContext
-import org.scalajs.dom.{Element, html, raw}
-import scala.scalajs.js.Dynamic
+import indigo.platform.events.GlobalEventStream
+import indigo.platform.renderer.shared.ContextAndCanvas
+import indigo.platform.renderer.shared.LoadedTextureAsset
 import indigo.platform.renderer.webgl1.RendererWebGL1
 import indigo.platform.renderer.webgl2.RendererWebGL2
-import indigo.shared.config.RenderingTechnology
 import indigo.shared.IndigoLogger
-import indigo.facades.WebGL2RenderingContext
-import indigo.platform.events.GlobalEventStream
+import indigo.shared.config.RenderingTechnology
 import indigo.shared.events.RendererDetails
+import indigo.shared.platform.RendererConfig
 import indigo.shared.shader.RawShaderCode
+import org.scalajs.dom
+import org.scalajs.dom.Element
+import org.scalajs.dom.html
+import org.scalajs.dom.raw
+import org.scalajs.dom.raw.WebGLRenderingContext
+
+import scala.scalajs.js.Dynamic
 
 final class RendererInitialiser(
     renderingTechnology: RenderingTechnology,
@@ -58,7 +60,6 @@ final class RendererInitialiser(
   @SuppressWarnings(
     Array(
       "scalafix:DisableSyntax.null",
-      "scalafix:DisableSyntax.asInstanceOf",
       "scalafix:DisableSyntax.var"
     )
   )
@@ -103,7 +104,6 @@ final class RendererInitialiser(
   @SuppressWarnings(
     Array(
       "scalafix:DisableSyntax.null",
-      "scalafix:DisableSyntax.asInstanceOf",
       "scalafix:DisableSyntax.throw"
     )
   )
@@ -139,7 +139,6 @@ final class RendererInitialiser(
     Array(
       "scalafix:DisableSyntax.var",
       "scalafix:DisableSyntax.null",
-      "scalafix:DisableSyntax.asInstanceOf",
       "scalafix:DisableSyntax.throw"
     )
   )
@@ -196,7 +195,6 @@ final class RendererInitialiser(
   @SuppressWarnings(
     Array(
       "scalafix:DisableSyntax.null",
-      "scalafix:DisableSyntax.asInstanceOf"
     )
   )
   private def isWebGL2ReallySupported(gl2: raw.WebGLRenderingContext): Boolean = {

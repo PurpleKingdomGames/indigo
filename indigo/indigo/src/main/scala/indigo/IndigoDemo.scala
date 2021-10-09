@@ -1,10 +1,9 @@
 package indigo
 
+import indigo.entry.StandardFrameProcessor
 import indigo.gameengine.GameEngine
 import indigo.shared.subsystems.SubSystemsRegister
-import indigo.entry.StandardFrameProcessor
 
-// Indigo is Scala.js only at the moment, revisit if/when we go to the JVM
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 

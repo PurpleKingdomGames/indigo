@@ -1,8 +1,8 @@
 package indigo.shared.events
 
 import indigo.shared.input.Gamepad
-import indigo.shared.input.Mouse
 import indigo.shared.input.Keyboard
+import indigo.shared.input.Mouse
 
 /** Holds a snapshot of the states of the various input types as they were entering this frame.
   *

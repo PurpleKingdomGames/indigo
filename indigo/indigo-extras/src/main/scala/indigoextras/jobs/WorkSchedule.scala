@@ -1,10 +1,11 @@
 package indigoextras.jobs
 
-import indigo.shared.time.GameTime
-import indigo.shared.events.{FrameTick, GlobalEvent}
-import indigo.shared.datatypes.BindingKey
 import indigo.shared.Outcome
+import indigo.shared.datatypes.BindingKey
 import indigo.shared.dice.Dice
+import indigo.shared.events.FrameTick
+import indigo.shared.events.GlobalEvent
+import indigo.shared.time.GameTime
 
 /**
   * Represents an Actor's work schedule

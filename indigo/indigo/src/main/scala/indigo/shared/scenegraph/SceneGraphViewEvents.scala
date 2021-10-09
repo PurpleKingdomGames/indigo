@@ -1,12 +1,12 @@
 package indigo.shared.scenegraph
 
-import indigo.shared.events.GlobalEvent
-import indigo.shared.datatypes.Rectangle
 import indigo.shared.BoundaryLocator
+import indigo.shared.datatypes.Rectangle
+import indigo.shared.events.GlobalEvent
 
 object SceneGraphViewEvents {
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while"))
   def pushEvents(outputEvents: List[GlobalEvent], sendEvent: GlobalEvent => Unit): Unit = {
     val count = outputEvents.length
     var index = 0
@@ -17,7 +17,7 @@ object SceneGraphViewEvents {
     }
   }
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while"))
   def applyInputEvents(
       node: EventHandler,
       boundary: Option[Rectangle],
@@ -37,7 +37,7 @@ object SceneGraphViewEvents {
       case _ =>
         ()
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while"))
   def collectViewEvents(
       boundaryLocator: BoundaryLocator,
       nodes: List[SceneNode],

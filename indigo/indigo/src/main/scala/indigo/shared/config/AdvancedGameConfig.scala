@@ -1,8 +1,8 @@
 package indigo.shared.config
 
-import indigo.shared.config.RenderingTechnology.WebGL2WithFallback
 import indigo.shared.config.RenderingTechnology.WebGL1
 import indigo.shared.config.RenderingTechnology.WebGL2
+import indigo.shared.config.RenderingTechnology.WebGL2WithFallback
 
 /** Additional settings to help tune a games performance.
   *

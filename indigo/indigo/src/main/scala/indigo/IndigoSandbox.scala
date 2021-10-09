@@ -1,13 +1,12 @@
 package indigo
 
 import indigo._
-import indigo.gameengine.GameEngine
 import indigo.entry.StandardFrameProcessor
+import indigo.gameengine.GameEngine
+import indigo.shared.subsystems.SubSystemsRegister
 
-// Indigo is Scala.js only at the moment, revisit if/when we go to the JVM
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import indigo.shared.subsystems.SubSystemsRegister
 
 /**
   * A trait representing a minimal set of functions to get your game running

@@ -1,15 +1,15 @@
 package indigo.shared.scenegraph
 
-import indigo.shared.materials.Material
-import indigo.shared.datatypes.Rectangle
-import indigo.shared.datatypes.Point
-import indigo.shared.datatypes.Size
-import indigo.shared.datatypes.Radians
-import indigo.shared.datatypes.Vector2
+import indigo.shared.BoundaryLocator
 import indigo.shared.datatypes.Depth
 import indigo.shared.datatypes.Flip
+import indigo.shared.datatypes.Point
+import indigo.shared.datatypes.Radians
+import indigo.shared.datatypes.Rectangle
+import indigo.shared.datatypes.Size
+import indigo.shared.datatypes.Vector2
+import indigo.shared.materials.Material
 import indigo.shared.materials.ShaderData
-import indigo.shared.BoundaryLocator
 
 /** Graphics are used to draw images on the screen, in a cheap efficient but expressive way. Graphics party trick is
   * it's ability to crop images.

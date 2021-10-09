@@ -1,20 +1,22 @@
 package indigoextras.subsystems
 
-import indigo.shared.time.GameTime
 import indigo.shared.Outcome
-import indigo.shared.events.{FrameTick, GlobalEvent, SubSystemEvent}
-import indigo.shared.scenegraph._
-import indigo.shared.subsystems.SubSystem
-import indigoextras.subsystems.AutomataEvent._
-
-import indigo.shared.subsystems.SubSystemFrameContext
-import indigo.shared.datatypes.Point
-import indigo.shared.time.Seconds
-import indigo.shared.dice.Dice
-import indigo.shared.scenegraph.SceneNode
-import indigo.shared.temporal.{Signal, SignalReader}
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.datatypes.BindingKey
+import indigo.shared.datatypes.Point
+import indigo.shared.dice.Dice
+import indigo.shared.events.FrameTick
+import indigo.shared.events.GlobalEvent
+import indigo.shared.events.SubSystemEvent
+import indigo.shared.scenegraph.SceneNode
+import indigo.shared.scenegraph._
+import indigo.shared.subsystems.SubSystem
+import indigo.shared.subsystems.SubSystemFrameContext
+import indigo.shared.temporal.Signal
+import indigo.shared.temporal.SignalReader
+import indigo.shared.time.GameTime
+import indigo.shared.time.Seconds
+import indigoextras.subsystems.AutomataEvent._
 
 final case class Automata(
     poolKey: AutomataPoolKey,

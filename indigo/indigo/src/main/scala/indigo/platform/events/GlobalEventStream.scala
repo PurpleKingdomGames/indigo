@@ -1,21 +1,24 @@
 package indigo.platform.events
 
-import indigo.shared.events.{GlobalEvent, NetworkSendEvent, PlaySound}
-import indigo.shared.networking.{HttpRequest, WebSocketEvent}
-
-import indigo.platform.networking.{Http, WebSockets}
-
-import scala.collection.mutable
-import indigo.shared.events.StorageEvent
+import indigo.platform.PlatformFullScreen
+import indigo.platform.assets.AssetCollection
+import indigo.platform.assets.AssetLoader
+import indigo.platform.audio.AudioPlayer
+import indigo.platform.networking.Http
+import indigo.platform.networking.WebSockets
 import indigo.platform.storage.Storage
 import indigo.shared.events.AssetEvent
-import indigo.platform.assets.AssetLoader
-import indigo.platform.assets.AssetCollection
-import indigo.platform.audio.AudioPlayer
-import indigo.shared.events.ToggleFullScreen
 import indigo.shared.events.EnterFullScreen
 import indigo.shared.events.ExitFullScreen
-import indigo.platform.PlatformFullScreen
+import indigo.shared.events.GlobalEvent
+import indigo.shared.events.NetworkSendEvent
+import indigo.shared.events.PlaySound
+import indigo.shared.events.StorageEvent
+import indigo.shared.events.ToggleFullScreen
+import indigo.shared.networking.HttpRequest
+import indigo.shared.networking.WebSocketEvent
+
+import scala.collection.mutable
 
 final class GlobalEventStream(
     rebuildGameLoop: AssetCollection => Unit,

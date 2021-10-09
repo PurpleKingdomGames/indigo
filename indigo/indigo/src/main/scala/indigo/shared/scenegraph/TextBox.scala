@@ -1,17 +1,23 @@
 package indigo.shared.scenegraph
 
-import indigo.shared.datatypes.{Point, Size, Radians, Vector2, Rectangle, Depth, Flip}
-import indigo.shared.materials.ShaderData
-import indigo.shared.shader.StandardShaders
 import indigo.shared.BoundaryLocator
-import indigo.shared.datatypes.TextStyle
+import indigo.shared.datatypes.Depth
+import indigo.shared.datatypes.Flip
+import indigo.shared.datatypes.FontFamily
+import indigo.shared.datatypes.FontStyle
+import indigo.shared.datatypes.FontWeight
+import indigo.shared.datatypes.Pixels
+import indigo.shared.datatypes.Point
+import indigo.shared.datatypes.RGBA
+import indigo.shared.datatypes.Radians
+import indigo.shared.datatypes.Rectangle
+import indigo.shared.datatypes.Size
 import indigo.shared.datatypes.TextAlign
 import indigo.shared.datatypes.TextStroke
-import indigo.shared.datatypes.FontWeight
-import indigo.shared.datatypes.FontStyle
-import indigo.shared.datatypes.FontFamily
-import indigo.shared.datatypes.Pixels
-import indigo.shared.datatypes.RGBA
+import indigo.shared.datatypes.TextStyle
+import indigo.shared.datatypes.Vector2
+import indigo.shared.materials.ShaderData
+import indigo.shared.shader.StandardShaders
 
 /** Used to draw text on the screen quickly based on a font. Much quicker and eaiser to use that `Text`, however suffers
   * from all the problems of browser rendered fonts, most notably, you cannot have pixel perfect fonts (fine for

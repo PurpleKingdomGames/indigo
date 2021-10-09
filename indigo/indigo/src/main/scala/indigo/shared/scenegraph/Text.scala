@@ -1,10 +1,10 @@
 package indigo.shared.scenegraph
 
+import indigo.shared.BoundaryLocator
 import indigo.shared.datatypes._
+import indigo.shared.events.GlobalEvent
 import indigo.shared.materials.Material
 import indigo.shared.materials.ShaderData
-import indigo.shared.events.GlobalEvent
-import indigo.shared.BoundaryLocator
 
 /** Used to draw text onto the screen based on font sprite sheets (images / textures) and a character mapping instance
   * called `FontInfo`. `Text` instances are a bit of work to set up, but give super crisp pixel perfect results.

@@ -1,13 +1,13 @@
 package indigo.shared.events
 
-import indigo.shared.constants.Key
-import indigo.shared.audio.Volume
-import indigo.shared.datatypes.Point
 import indigo.shared.assets.AssetName
 import indigo.shared.assets.AssetType
-import indigo.shared.datatypes.BindingKey
+import indigo.shared.audio.Volume
 import indigo.shared.config.GameViewport
 import indigo.shared.config.RenderingTechnology
+import indigo.shared.constants.Key
+import indigo.shared.datatypes.BindingKey
+import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.RGBA
 
 /** A trait that tells Indigo to allow this instance into the event loop for the duration of one frame.

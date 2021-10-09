@@ -2,6 +2,7 @@ import scala.sys.process._
 import scala.language.postfixOps
 
 ThisBuild / versionScheme := Some("early-semver")
+ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.5.0"
 
 lazy val indigoVersion = IndigoVersion.getVersion
 
@@ -18,7 +19,10 @@ lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
   testFrameworks += new TestFramework("munit.Framework"),
   Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
   scalacOptions ++= Seq("-language:strictEquality"),
-  crossScalaVersions := Seq(scala3Version)
+  crossScalaVersions := Seq(scala3Version),
+  scalafixOnCompile := true,
+  semanticdbEnabled := true,
+  semanticdbVersion := scalafixSemanticdb.revision
 )
 
 lazy val publishSettings = {

@@ -1,36 +1,36 @@
 package indigo.platform
 
-import indigo.platform.renderer.Renderer
-import indigo.platform.events.GlobalEventStream
-import indigo.shared.config.GameConfig
-import indigo.shared.IndigoLogger
-import indigo.shared.Outcome
-import indigo.shared.datatypes.Vector2
-import indigo.platform.renderer.RendererInitialiser
-import indigo.platform.renderer.shared.LoadedTextureAsset
-import indigo.shared.platform.RendererConfig
-import indigo.shared.platform.AssetMapping
-import indigo.shared.platform.TextureRefAndOffset
-import indigo.platform.events.WorldEvents
-import indigo.platform.input.GamepadInputCaptureImpl
+import indigo.facades.FullScreenElement
 import indigo.platform.assets.AssetCollection
+import indigo.platform.assets.DynamicText
+import indigo.platform.assets.ImageRef
 import indigo.platform.assets.TextureAtlas
 import indigo.platform.assets.TextureAtlasFunctions
-import indigo.platform.assets.ImageRef
-import indigo.platform.assets.DynamicText
-
-import org.scalajs.dom
-import org.scalajs.dom.html.Canvas
-import org.scalajs.dom.Element
-import scala.util.Success
-import scala.util.Failure
-import indigo.facades.FullScreenElement
-import indigo.shared.events.FullScreenEntered
-import indigo.shared.events.FullScreenEnterError
-import indigo.shared.events.FullScreenExited
-import indigo.shared.events.FullScreenExitError
-import indigo.shared.shader.RawShaderCode
+import indigo.platform.events.GlobalEventStream
+import indigo.platform.events.WorldEvents
+import indigo.platform.input.GamepadInputCaptureImpl
+import indigo.platform.renderer.Renderer
+import indigo.platform.renderer.RendererInitialiser
+import indigo.platform.renderer.shared.LoadedTextureAsset
+import indigo.shared.IndigoLogger
+import indigo.shared.Outcome
 import indigo.shared.assets.AssetName
+import indigo.shared.config.GameConfig
+import indigo.shared.datatypes.Vector2
+import indigo.shared.events.FullScreenEnterError
+import indigo.shared.events.FullScreenEntered
+import indigo.shared.events.FullScreenExitError
+import indigo.shared.events.FullScreenExited
+import indigo.shared.platform.AssetMapping
+import indigo.shared.platform.RendererConfig
+import indigo.shared.platform.TextureRefAndOffset
+import indigo.shared.shader.RawShaderCode
+import org.scalajs.dom
+import org.scalajs.dom.Element
+import org.scalajs.dom.html.Canvas
+
+import scala.util.Failure
+import scala.util.Success
 
 class Platform(
     gameConfig: GameConfig,
@@ -152,14 +152,14 @@ class Platform(
 
   implicit private val ec: scala.concurrent.ExecutionContext = scalajs.concurrent.JSExecutionContext.queue
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
+  // @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
   def toggleFullScreen(): Unit =
     if (Option(dom.document.asInstanceOf[FullScreenElement].fullscreenElement).isEmpty)
       enterFullScreen()
     else
       exitFullScreen()
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
+  // @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
   def enterFullScreen(): Unit =
     _canvas.asInstanceOf[FullScreenElement].requestFullscreen().toFuture.onComplete {
       case Success(()) =>
@@ -169,7 +169,7 @@ class Platform(
         globalEventStream.pushGlobalEvent(FullScreenEnterError)
     }
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
+  // @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
   def exitFullScreen(): Unit =
     dom.document.asInstanceOf[FullScreenElement].exitFullscreen().toFuture.onComplete {
       case Success(()) =>

@@ -1,13 +1,13 @@
 package indigo.shared.materials
 
+import indigo.shared.datatypes.Fill
+import indigo.shared.datatypes.RGB
+import indigo.shared.datatypes.RGBA
+import indigo.shared.shader.ShaderPrimitive
+import indigo.shared.shader.ShaderPrimitive.vec4
 import indigo.shared.shader.StandardShaders
 import indigo.shared.shader.Uniform
 import indigo.shared.shader.UniformBlock
-import indigo.shared.shader.ShaderPrimitive.vec4
-import indigo.shared.datatypes.RGBA
-import indigo.shared.datatypes.Fill
-import indigo.shared.shader.ShaderPrimitive
-import indigo.shared.datatypes.RGB
 
 trait BlendMaterial {
   def toShaderData: BlendShaderData

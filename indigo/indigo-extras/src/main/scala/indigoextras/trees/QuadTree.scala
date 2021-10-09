@@ -1,8 +1,8 @@
 package indigoextras.trees
 
-import indigoextras.geometry.Vertex
 import indigoextras.geometry.BoundingBox
 import indigoextras.geometry.LineSegment
+import indigoextras.geometry.Vertex
 
 sealed trait QuadTree[T] derives CanEqual {
 

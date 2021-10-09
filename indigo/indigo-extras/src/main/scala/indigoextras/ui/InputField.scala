@@ -1,19 +1,21 @@
 package indigoextras.ui
 
-import indigo.shared.time.GameTime
-import indigo.shared.datatypes._
-import indigo.shared.scenegraph.{Graphic, SceneNode, Text}
-
-import indigo.shared.temporal.Signal
 import indigo.shared.BoundaryLocator
-import scala.collection.immutable.Nil
-import scala.annotation.tailrec
-import indigo.shared.time.Seconds
-import indigo.shared.constants.Key
-import indigo.shared.time.Millis
 import indigo.shared.FrameContext
 import indigo.shared.Outcome
+import indigo.shared.constants.Key
+import indigo.shared.datatypes._
 import indigo.shared.events.GlobalEvent
+import indigo.shared.scenegraph.Graphic
+import indigo.shared.scenegraph.SceneNode
+import indigo.shared.scenegraph.Text
+import indigo.shared.temporal.Signal
+import indigo.shared.time.GameTime
+import indigo.shared.time.Millis
+import indigo.shared.time.Seconds
+
+import scala.annotation.tailrec
+import scala.collection.immutable.Nil
 
 final case class InputField(
     text: String,

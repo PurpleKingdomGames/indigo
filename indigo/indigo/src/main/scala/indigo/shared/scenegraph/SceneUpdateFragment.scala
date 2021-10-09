@@ -1,8 +1,8 @@
 package indigo.shared.scenegraph
 
-import annotation.targetName
-
 import indigo.shared.materials.BlendMaterial
+
+import annotation.targetName
 
 /** A description of what the engine should next present to the player.
   *

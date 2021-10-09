@@ -1,7 +1,7 @@
 package indigo
 
-import indigo.shared.subsystems.SubSystem
 import indigo.shared.shader.Shader
+import indigo.shared.subsystems.SubSystem
 
 /** The game bootstrapping process results in a `BootResult`, which only occurs once on initial game load. The boot
   * result decribes all of the initial values of your game such as it's configuration, data, animations, assets, fonts,

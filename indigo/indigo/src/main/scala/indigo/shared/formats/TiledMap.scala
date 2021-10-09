@@ -1,15 +1,15 @@
 package indigo.shared.formats
 
-import indigo.shared.datatypes.Point
-import indigo.shared.datatypes.Size
-import indigo.shared.scenegraph.Group
 import indigo.shared.assets.AssetName
-import indigo.shared.scenegraph.Graphic
-import indigo.shared.materials.Material
+import indigo.shared.collections.NonEmptyList
+import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
+import indigo.shared.datatypes.Size
+import indigo.shared.materials.Material
+import indigo.shared.scenegraph.Graphic
+import indigo.shared.scenegraph.Group
 
 import scala.annotation.tailrec
-import indigo.shared.collections.NonEmptyList
 
 /*
 Full spec is here:

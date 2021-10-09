@@ -1,17 +1,18 @@
 package indigo.platform.renderer.webgl2
 
-import org.scalajs.dom.raw.WebGLProgram
 import indigo.facades.WebGL2RenderingContext
-import org.scalajs.dom.raw.WebGLRenderingContext._
-import org.scalajs.dom.raw.WebGLBuffer
-import org.scalajs.dom.raw.WebGLTexture
-import indigo.shared.datatypes.RGBA
-import indigo.platform.renderer.shared.WebGLHelper
-import indigo.platform.renderer.shared.FrameBufferFunctions
 import indigo.platform.renderer.shared.FrameBufferComponents
-import scala.collection.mutable.HashMap
-import indigo.shared.shader.ShaderId
+import indigo.platform.renderer.shared.FrameBufferFunctions
+import indigo.platform.renderer.shared.WebGLHelper
+import indigo.shared.datatypes.RGBA
 import indigo.shared.display.DisplayObjectUniformData
+import indigo.shared.shader.ShaderId
+import org.scalajs.dom.raw.WebGLBuffer
+import org.scalajs.dom.raw.WebGLProgram
+import org.scalajs.dom.raw.WebGLRenderingContext._
+import org.scalajs.dom.raw.WebGLTexture
+
+import scala.collection.mutable.HashMap
 
 class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => WebGLBuffer) {
 
@@ -111,7 +112,7 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
 
   }
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while"))
   def setupMergeFragmentShaderState(
       program: WebGLProgram,
       src: FrameBufferComponents.SingleOutput,

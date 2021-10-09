@@ -1,12 +1,12 @@
 package com.example.sandbox.scenes
 
+import com.example.sandbox.Fonts
+import com.example.sandbox.SandboxAssets
+import com.example.sandbox.SandboxGameModel
+import com.example.sandbox.SandboxStartupData
+import com.example.sandbox.SandboxViewModel
 import indigo._
 import indigo.scenes._
-import com.example.sandbox.SandboxStartupData
-import com.example.sandbox.SandboxGameModel
-import com.example.sandbox.SandboxViewModel
-import com.example.sandbox.SandboxAssets
-import com.example.sandbox.Fonts
 
 object BoundsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel] {
 

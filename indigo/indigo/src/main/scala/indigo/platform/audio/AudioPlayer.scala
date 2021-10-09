@@ -1,19 +1,21 @@
 package indigo.platform.audio
 
-import indigo.shared.datatypes.BindingKey
-import indigo.shared.scenegraph.{PlaybackPattern, SceneAudio, SceneAudioSource}
-import indigo.shared.audio.Volume
-
-import org.scalajs.dom.{AudioBufferSourceNode, GainNode}
-import org.scalajs.dom.raw.AudioContext
-import org.scalajs.dom
-import scala.scalajs.js
-
-import indigo.shared.assets.AssetName
 import indigo.platform.assets.LoadedAudioAsset
+import indigo.shared.assets.AssetName
+import indigo.shared.audio.Volume
+import indigo.shared.datatypes.BindingKey
+import indigo.shared.scenegraph.PlaybackPattern
+import indigo.shared.scenegraph.SceneAudio
+import indigo.shared.scenegraph.SceneAudioSource
+import org.scalajs.dom
+import org.scalajs.dom.AudioBufferSourceNode
+import org.scalajs.dom.GainNode
 import org.scalajs.dom.raw.AudioBuffer
-import scala.concurrent.Future
+import org.scalajs.dom.raw.AudioContext
 import org.scalajs.dom.raw.AudioDestinationNode
+
+import scala.concurrent.Future
+import scala.scalajs.js
 
 object AudioPlayer {
 
@@ -66,7 +68,7 @@ object AudioContextProxy {
   }
 
   @SuppressWarnings(
-    Array("scalafix:DisableSyntax.null", "scalafix:DisableSyntax.throw", "scalafix:DisableSyntax.asInstanceOf")
+    Array("scalafix:DisableSyntax.null", "scalafix:DisableSyntax.throw")
   )
   final case class WebKitAudioContext(context: js.Dynamic) extends AudioContextProxy {
     import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue

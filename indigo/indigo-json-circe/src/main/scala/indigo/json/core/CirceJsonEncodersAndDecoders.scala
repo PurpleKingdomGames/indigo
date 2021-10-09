@@ -1,17 +1,18 @@
 package indigo.json.core
 
-import io.circe.{Decoder, HCursor}
-import indigo.shared.formats.TiledMap
-import indigo.shared.formats.TileSet
-import indigo.shared.formats.TiledLayer
-import indigo.shared.formats.TiledTerrain
-import indigo.shared.formats.TiledTerrainCorner
 import indigo.shared.formats.Aseprite
 import indigo.shared.formats.AsepriteFrame
-import indigo.shared.formats.AsepriteMeta
 import indigo.shared.formats.AsepriteFrameTag
-import indigo.shared.formats.AsepriteSize
+import indigo.shared.formats.AsepriteMeta
 import indigo.shared.formats.AsepriteRectangle
+import indigo.shared.formats.AsepriteSize
+import indigo.shared.formats.TileSet
+import indigo.shared.formats.TiledLayer
+import indigo.shared.formats.TiledMap
+import indigo.shared.formats.TiledTerrain
+import indigo.shared.formats.TiledTerrainCorner
+import io.circe.Decoder
+import io.circe.HCursor
 
 object CirceJsonEncodersAndDecoders {
 

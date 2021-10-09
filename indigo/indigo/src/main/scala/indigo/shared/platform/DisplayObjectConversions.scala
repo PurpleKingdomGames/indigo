@@ -1,44 +1,54 @@
 package indigo.shared.platform
 
-import indigo.shared.display.{DisplayObject, SpriteSheetFrame, DisplayCloneBatch, DisplayCloneTiles}
-import indigo.shared.datatypes.{FontInfo, Rectangle, TextAlignment, FontChar, Point}
-import indigo.shared.display.SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets
+import indigo.platform.assets.AtlasId
+import indigo.shared.AnimationsRegister
+import indigo.shared.BoundaryLocator
+import indigo.shared.FontRegister
 import indigo.shared.IndigoLogger
-import indigo.shared.time.GameTime
+import indigo.shared.QuickCache
+import indigo.shared.animation.AnimationRef
+import indigo.shared.assets.AssetName
+import indigo.shared.datatypes.FontChar
+import indigo.shared.datatypes.FontInfo
+import indigo.shared.datatypes.Point
+import indigo.shared.datatypes.Radians
+import indigo.shared.datatypes.Rectangle
+import indigo.shared.datatypes.TextAlignment
 import indigo.shared.datatypes.Vector2
 import indigo.shared.datatypes.Vector3
-import indigo.shared.AnimationsRegister
-import indigo.shared.FontRegister
+import indigo.shared.datatypes.mutable.CheapMatrix4
+import indigo.shared.display.DisplayCloneBatch
+import indigo.shared.display.DisplayCloneTiles
+import indigo.shared.display.DisplayEntity
+import indigo.shared.display.DisplayGroup
+import indigo.shared.display.DisplayObject
+import indigo.shared.display.DisplayObjectUniformData
+import indigo.shared.display.DisplayText
+import indigo.shared.display.SpriteSheetFrame
+import indigo.shared.display.SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets
+import indigo.shared.materials.ShaderData
 import indigo.shared.platform.AssetMapping
-import indigo.shared.scenegraph.{Graphic, Sprite, Text, TextLine, TextBox}
-
-import indigo.shared.scenegraph.SceneGraphNode
-import indigo.shared.scenegraph.RenderNode
+import indigo.shared.scenegraph.CloneBatch
+import indigo.shared.scenegraph.CloneId
+import indigo.shared.scenegraph.CloneTiles
+import indigo.shared.scenegraph.DependentNode
+import indigo.shared.scenegraph.EntityNode
+import indigo.shared.scenegraph.Graphic
 import indigo.shared.scenegraph.Group
-import indigo.shared.QuickCache
+import indigo.shared.scenegraph.RenderNode
+import indigo.shared.scenegraph.SceneGraphNode
+import indigo.shared.scenegraph.SceneNode
+import indigo.shared.scenegraph.Shape
+import indigo.shared.scenegraph.Sprite
+import indigo.shared.scenegraph.Text
+import indigo.shared.scenegraph.TextBox
+import indigo.shared.scenegraph.TextLine
+import indigo.shared.shader.ShaderPrimitive
+import indigo.shared.shader.Uniform
+import indigo.shared.time.GameTime
 
 import scala.annotation.tailrec
 import scala.collection.mutable.ListBuffer
-import indigo.shared.display.DisplayEntity
-import indigo.shared.display.DisplayObjectUniformData
-import indigo.shared.display.DisplayText
-import indigo.shared.scenegraph.CloneId
-import indigo.shared.scenegraph.CloneBatch
-import indigo.shared.scenegraph.CloneTiles
-import indigo.shared.materials.ShaderData
-import indigo.shared.BoundaryLocator
-import indigo.shared.animation.AnimationRef
-import indigo.shared.datatypes.mutable.CheapMatrix4
-import indigo.shared.assets.AssetName
-import indigo.shared.scenegraph.EntityNode
-import indigo.shared.scenegraph.SceneNode
-import indigo.shared.shader.Uniform
-import indigo.shared.shader.ShaderPrimitive
-import indigo.shared.scenegraph.Shape
-import indigo.platform.assets.AtlasId
-import indigo.shared.datatypes.Radians
-import indigo.shared.display.DisplayGroup
-import indigo.shared.scenegraph.DependentNode
 
 final class DisplayObjectConversions(
     boundaryLocator: BoundaryLocator,

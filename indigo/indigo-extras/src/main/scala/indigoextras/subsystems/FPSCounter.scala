@@ -1,23 +1,23 @@
 package indigoextras.subsystems
 
-import indigo.shared.subsystems.SubSystem
-import indigo.shared.datatypes.Point
-import indigo.shared.datatypes.Rectangle
-import indigo.shared.time.Seconds
-import indigo.shared.events.GlobalEvent
-import indigo.shared.subsystems.SubSystemFrameContext
 import indigo.shared.Outcome
-import indigo.shared.scenegraph.SceneUpdateFragment
-import indigo.shared.datatypes.RGBA
-import indigo.shared.events.FrameTick
-import indigo.shared.scenegraph.Layer
 import indigo.shared.datatypes.BindingKey
-import indigo.shared.scenegraph.TextBox
-import indigo.shared.datatypes.FontFamily
-import indigo.shared.datatypes.Size
-import indigo.shared.scenegraph.Shape
 import indigo.shared.datatypes.Fill
+import indigo.shared.datatypes.FontFamily
 import indigo.shared.datatypes.Pixels
+import indigo.shared.datatypes.Point
+import indigo.shared.datatypes.RGBA
+import indigo.shared.datatypes.Rectangle
+import indigo.shared.datatypes.Size
+import indigo.shared.events.FrameTick
+import indigo.shared.events.GlobalEvent
+import indigo.shared.scenegraph.Layer
+import indigo.shared.scenegraph.SceneUpdateFragment
+import indigo.shared.scenegraph.Shape
+import indigo.shared.scenegraph.TextBox
+import indigo.shared.subsystems.SubSystem
+import indigo.shared.subsystems.SubSystemFrameContext
+import indigo.shared.time.Seconds
 
 object FPSCounter {
 

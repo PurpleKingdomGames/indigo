@@ -1,30 +1,28 @@
 package com.example.sandbox
 
-import indigo._
-import indigo.json.Json
-
-import indigoextras.subsystems.FPSCounter
-import indigoextras.ui._
-import indigo.scenes._
-
-import scala.scalajs.js.annotation._
-
+import com.example.sandbox.scenes.BoundsScene
+import com.example.sandbox.scenes.CameraScene
+import com.example.sandbox.scenes.ConfettiScene
+import com.example.sandbox.scenes.LegacyEffectsScene
+import com.example.sandbox.scenes.LightsScene
 import com.example.sandbox.scenes.OriginalScene
+import com.example.sandbox.scenes.RefractionScene
 import com.example.sandbox.scenes.Shaders
 import com.example.sandbox.scenes.ShapesScene
-import com.example.sandbox.scenes.CameraScene
-import com.example.sandbox.scenes.LightsScene
-import com.example.sandbox.scenes.RefractionScene
-import com.example.sandbox.scenes.LegacyEffectsScene
 import com.example.sandbox.scenes.TextBoxScene
 import com.example.sandbox.scenes.TextureTileScene
-import com.example.sandbox.scenes.BoundsScene
-import indigoextras.effectmaterials.Refraction
-import indigoextras.effectmaterials.LegacyEffects
 import com.example.sandbox.scenes.UiScene
-import com.example.sandbox.scenes.ConfettiScene
+import indigo._
+import indigo.json.Json
+import indigo.scenes._
+import indigoextras.effectmaterials.LegacyEffects
+import indigoextras.effectmaterials.Refraction
 import indigoextras.geometry.Polygon
 import indigoextras.geometry.Vertex
+import indigoextras.subsystems.FPSCounter
+import indigoextras.ui._
+
+import scala.scalajs.js.annotation._
 
 @JSExportTopLevel("IndigoGame")
 object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, SandboxGameModel, SandboxViewModel] {

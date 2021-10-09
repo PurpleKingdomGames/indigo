@@ -1,14 +1,14 @@
 package indigo.shared.animation
 
-import indigo.shared.time.Millis
+import indigo.shared.animation.AnimationAction.ChangeCycle
+import indigo.shared.animation.AnimationAction.JumpToFirstFrame
+import indigo.shared.animation.AnimationAction.JumpToFrame
+import indigo.shared.animation.AnimationAction.JumpToLastFrame
+import indigo.shared.animation.AnimationAction.Play
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.temporal.Signal
 import indigo.shared.time.GameTime
-import indigo.shared.animation.AnimationAction.Play
-import indigo.shared.animation.AnimationAction.ChangeCycle
-import indigo.shared.animation.AnimationAction.JumpToFirstFrame
-import indigo.shared.animation.AnimationAction.JumpToLastFrame
-import indigo.shared.animation.AnimationAction.JumpToFrame
+import indigo.shared.time.Millis
 
 final case class AnimationRef(
     animationKey: AnimationKey,

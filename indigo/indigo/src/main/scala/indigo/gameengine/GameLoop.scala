@@ -1,18 +1,17 @@
 package indigo.gameengine
 
-import indigo.shared.events._
-import indigo.shared.scenegraph.SceneUpdateFragment
-import indigo.shared.config.GameConfig
-import indigo.shared.Outcome
-import indigo.shared.dice.Dice
-import indigo.shared.time.GameTime
-import indigo.shared.time.Millis
-
-import indigo.shared.scenegraph.SceneGraphViewEvents
-import indigo.shared.time.Seconds
 import indigo.shared.BoundaryLocator
 import indigo.shared.IndigoLogger
+import indigo.shared.Outcome
+import indigo.shared.config.GameConfig
+import indigo.shared.dice.Dice
+import indigo.shared.events._
 import indigo.shared.platform.SceneProcessor
+import indigo.shared.scenegraph.SceneGraphViewEvents
+import indigo.shared.scenegraph.SceneUpdateFragment
+import indigo.shared.time.GameTime
+import indigo.shared.time.Millis
+import indigo.shared.time.Seconds
 
 class GameLoop[StartUpData, GameModel, ViewModel](
     boundaryLocator: BoundaryLocator,

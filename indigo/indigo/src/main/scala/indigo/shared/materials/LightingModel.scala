@@ -1,10 +1,10 @@
 package indigo.shared.materials
 
 import indigo.shared.assets.AssetName
-import indigo.shared.shader.UniformBlock
-import indigo.shared.shader.Uniform
-import indigo.shared.shader.ShaderPrimitive.vec2
 import indigo.shared.shader.ShaderId
+import indigo.shared.shader.ShaderPrimitive.vec2
+import indigo.shared.shader.Uniform
+import indigo.shared.shader.UniformBlock
 
 sealed trait LightingModel
 

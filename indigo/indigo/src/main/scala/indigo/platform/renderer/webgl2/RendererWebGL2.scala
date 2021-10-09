@@ -1,45 +1,44 @@
 package indigo.platform.renderer.webgl2
 
-import indigo.shared.datatypes.RGBA
-import indigo.shared.datatypes.Radians
-import org.scalajs.dom.raw.WebGLBuffer
-import org.scalajs.dom.raw.WebGLFramebuffer
-import org.scalajs.dom.raw.WebGLRenderingContext._
-import indigo.platform.renderer.Renderer
-import indigo.shared.platform.RendererConfig
-import org.scalajs.dom.raw.WebGLRenderingContext
-import scala.scalajs.js.typedarray.Float32Array
 import indigo.facades.WebGL2RenderingContext
-import indigo.shared.datatypes.mutable.CheapMatrix4
-import org.scalajs.dom.html
-import org.scalajs.dom
-import org.scalajs.dom.{Element, raw}
-import scala.scalajs.js.Dynamic
-
-import indigo.shared.platform.ProcessedSceneData
+import indigo.platform.assets.DynamicText
+import indigo.platform.events.GlobalEventStream
+import indigo.platform.renderer.Renderer
+import indigo.platform.renderer.shared.CameraHelper
+import indigo.platform.renderer.shared.ContextAndCanvas
+import indigo.platform.renderer.shared.FrameBufferComponents
+import indigo.platform.renderer.shared.FrameBufferFunctions
 import indigo.platform.renderer.shared.LoadedTextureAsset
 import indigo.platform.renderer.shared.TextureLookupResult
-import indigo.platform.renderer.shared.ContextAndCanvas
-import indigo.platform.renderer.shared.CameraHelper
 import indigo.platform.renderer.shared.WebGLHelper
-import indigo.platform.renderer.shared.FrameBufferFunctions
-import indigo.platform.renderer.shared.FrameBufferComponents
-import indigo.platform.events.GlobalEventStream
-import indigo.shared.events.ViewportResize
+import indigo.shared.QuickCache
 import indigo.shared.config.GameViewport
-
-import scala.collection.mutable
-import indigo.shared.shader.ShaderId
-import org.scalajs.dom.raw.WebGLProgram
-import indigo.shared.shader.RawShaderCode
-import indigo.shared.time.Seconds
+import indigo.shared.datatypes.RGBA
+import indigo.shared.datatypes.Radians
+import indigo.shared.datatypes.mutable.CheapMatrix4
+import indigo.shared.events.ViewportResize
+import indigo.shared.platform.ProcessedSceneData
+import indigo.shared.platform.RendererConfig
 import indigo.shared.scenegraph.Blend
 import indigo.shared.scenegraph.BlendFactor
-import indigo.shared.shader.StandardShaders
-import indigo.shared.QuickCache
 import indigo.shared.scenegraph.Camera
+import indigo.shared.shader.RawShaderCode
+import indigo.shared.shader.ShaderId
+import indigo.shared.shader.StandardShaders
+import indigo.shared.time.Seconds
+import org.scalajs.dom
+import org.scalajs.dom.Element
+import org.scalajs.dom.html
+import org.scalajs.dom.raw
+import org.scalajs.dom.raw.WebGLBuffer
+import org.scalajs.dom.raw.WebGLFramebuffer
+import org.scalajs.dom.raw.WebGLProgram
+import org.scalajs.dom.raw.WebGLRenderingContext
+import org.scalajs.dom.raw.WebGLRenderingContext._
 
-import indigo.platform.assets.DynamicText
+import scala.collection.mutable
+import scala.scalajs.js.Dynamic
+import scala.scalajs.js.typedarray.Float32Array
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
 final class RendererWebGL2(
@@ -55,7 +54,7 @@ final class RendererWebGL2(
   private val gl: WebGLRenderingContext =
     cNc.context
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
+  // @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
   private val gl2: WebGL2RenderingContext =
     gl.asInstanceOf[WebGL2RenderingContext]
 

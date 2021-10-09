@@ -183,6 +183,7 @@ object Matrix4:
         row3.mkString("(", ",\t", ")") + "\n" +
         row4.mkString("(", ",\t", ")")
 
+    @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while"))
     def ~==(other: Matrix4): Boolean =
       if (m.length == other.toList.length) {
         var count = m.length - 1

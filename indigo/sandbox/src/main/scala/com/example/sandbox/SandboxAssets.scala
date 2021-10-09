@@ -1,8 +1,8 @@
 package com.example.sandbox
 
 import indigo._
-import indigoextras.effectmaterials.RefractionEntity
 import indigoextras.effectmaterials.LegacyEffects
+import indigoextras.effectmaterials.RefractionEntity
 
 object SandboxAssets {
 

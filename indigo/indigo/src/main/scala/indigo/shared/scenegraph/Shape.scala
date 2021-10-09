@@ -1,25 +1,25 @@
 package indigo.shared.scenegraph
 
-import indigo.shared.datatypes.Point
-import indigo.shared.datatypes.Size
+import indigo.shared.BoundaryLocator
 import indigo.shared.datatypes.Depth
-import indigo.shared.datatypes.Radians
-import indigo.shared.datatypes.Vector2
+import indigo.shared.datatypes.Fill
 import indigo.shared.datatypes.Flip
+import indigo.shared.datatypes.Point
+import indigo.shared.datatypes.RGBA
+import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.Rectangle
-import indigo.shared.materials.ShaderData
+import indigo.shared.datatypes.Size
+import indigo.shared.datatypes.Stroke
+import indigo.shared.datatypes.Vector2
 import indigo.shared.materials.LightingModel
+import indigo.shared.materials.LightingModel.Lit
+import indigo.shared.materials.LightingModel.Unlit
+import indigo.shared.materials.ShaderData
+import indigo.shared.shader.ShaderId
+import indigo.shared.shader.ShaderPrimitive._
+import indigo.shared.shader.StandardShaders
 import indigo.shared.shader.Uniform
 import indigo.shared.shader.UniformBlock
-import indigo.shared.shader.ShaderPrimitive._
-import indigo.shared.datatypes.RGBA
-import indigo.shared.shader.StandardShaders
-import indigo.shared.datatypes.Fill
-import indigo.shared.datatypes.Stroke
-import indigo.shared.materials.LightingModel.Unlit
-import indigo.shared.materials.LightingModel.Lit
-import indigo.shared.shader.ShaderId
-import indigo.shared.BoundaryLocator
 
 /** Parent type for all Shapes, which are visible elements draw mathematically that require no textures. Shapes are
   * quite versitile and support different fills and stroke effects, even lighting. Due to the way strokes around shapes

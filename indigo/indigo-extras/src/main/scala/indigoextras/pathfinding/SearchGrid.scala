@@ -1,9 +1,12 @@
 package indigoextras.pathfinding
 
-import indigoextras.pathfinding.GridSquare.{EmptySquare, EndSquare, ImpassableSquare, StartSquare}
+import indigo.shared.dice.Dice
+import indigoextras.pathfinding.GridSquare.EmptySquare
+import indigoextras.pathfinding.GridSquare.EndSquare
+import indigoextras.pathfinding.GridSquare.ImpassableSquare
+import indigoextras.pathfinding.GridSquare.StartSquare
 
 import scala.annotation.tailrec
-import indigo.shared.dice.Dice
 
 final case class SearchGrid(validationWidth: Int, validationHeight: Int, start: Coords, end: Coords, grid: List[GridSquare]) derives CanEqual {
 

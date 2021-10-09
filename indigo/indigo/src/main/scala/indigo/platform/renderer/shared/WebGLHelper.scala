@@ -1,22 +1,22 @@
 package indigo.platform.renderer.shared
 
+import indigo.facades.WebGL2RenderingContext
 import indigo.shared.IndigoLogger
+import indigo.shared.scenegraph.BlendFactor
+import indigo.shared.shader.RawShaderCode
 import org.scalajs.dom.raw
-import org.scalajs.dom.raw.WebGLRenderingContext._
-import org.scalajs.dom.raw.WebGLTexture
+import org.scalajs.dom.raw.WebGLBuffer
 import org.scalajs.dom.raw.WebGLProgram
 import org.scalajs.dom.raw.WebGLRenderingContext
-import scala.scalajs.js.typedarray.Float32Array
-import org.scalajs.dom.raw.WebGLBuffer
+import org.scalajs.dom.raw.WebGLRenderingContext._
+import org.scalajs.dom.raw.WebGLTexture
 
-import indigo.shared.shader.RawShaderCode
-import indigo.facades.WebGL2RenderingContext
-import indigo.shared.scenegraph.BlendFactor
 import scala.scalajs.js.JSConverters._
+import scala.scalajs.js.typedarray.Float32Array
 
 object WebGLHelper {
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf", "scalafix:DisableSyntax.throw"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def shaderProgramSetup(gl: raw.WebGLRenderingContext, layerLabel: String, shader: RawShaderCode): WebGLProgram = {
     //Create a vertex shader program object and compile it
     val vertShader = gl.createShader(VERTEX_SHADER)

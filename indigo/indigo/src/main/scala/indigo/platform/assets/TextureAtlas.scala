@@ -1,15 +1,15 @@
 package indigo.platform.assets
 
-import indigo.shared.PowerOfTwo
-import indigo.shared.datatypes.Point
 import indigo.shared.IndigoLogger
-
-import org.scalajs.dom
-import org.scalajs.dom.{html, raw}
-
-import scala.annotation.tailrec
+import indigo.shared.PowerOfTwo
 import indigo.shared.assets.AssetName
 import indigo.shared.assets.AssetTag
+import indigo.shared.datatypes.Point
+import org.scalajs.dom
+import org.scalajs.dom.html
+import org.scalajs.dom.raw
+
+import scala.annotation.tailrec
 
 object TextureAtlas {
 
@@ -92,8 +92,8 @@ final case class TextureAtlas(atlases: Map[AtlasId, Atlas], legend: Map[AssetNam
 
 opaque type AtlasId = String
 object AtlasId:
-  inline def apply(id: String): AtlasId = id
-  given CanEqual[AtlasId, AtlasId] = CanEqual.derived
+  inline def apply(id: String): AtlasId            = id
+  given CanEqual[AtlasId, AtlasId]                 = CanEqual.derived
   given CanEqual[Option[AtlasId], Option[AtlasId]] = CanEqual.derived
 
 final case class AtlasIndex(id: AtlasId, offset: Point, size: Point) derives CanEqual
@@ -107,8 +107,8 @@ final case class AtlasLookupResult(name: AssetName, atlasId: AtlasId, atlas: Atl
 
 object TextureAtlasFunctions {
 
-  /** Type fails all over the place, no guarantee that this list is in the right order...
-    * so instead of just going through the set until we find a bigger value, we have to filter and fold all
+  /** Type fails all over the place, no guarantee that this list is in the right order... so instead of just going
+    * through the set until we find a bigger value, we have to filter and fold all
     */
   def pickPowerOfTwoSizeFor(supportedSizes: Set[PowerOfTwo], width: Int, height: Int): PowerOfTwo =
     supportedSizes
@@ -179,7 +179,7 @@ object TextureAtlasFunctions {
       // createBuckets(list, Nil, Nil, Nil, max)
     }
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
+  // @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
   private def createCanvas(width: Int, height: Int): html.Canvas = {
     val canvas: html.Canvas = dom.document.createElement("canvas").asInstanceOf[html.Canvas]
     // Handy if you want to draw the atlas to the page...
@@ -190,7 +190,7 @@ object TextureAtlasFunctions {
     canvas
   }
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
+  // @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
   val createAtlasData: (TextureMap, AssetName => Option[LoadedImageAsset]) => Atlas = (textureMap, lookupByName) => {
     val canvas: html.Canvas = createCanvas(textureMap.size.value, textureMap.size.value)
     val ctx                 = canvas.getContext("2d")
@@ -222,11 +222,11 @@ object TextureAtlasFunctions {
             val textureMap = n.toTextureMap
 
             val legend: Map[AssetName, AtlasIndex] =
-              textureMap.textureCoords.foldLeft(Map.empty[AssetName, AtlasIndex])((m, t) => {
+              textureMap.textureCoords.foldLeft(Map.empty[AssetName, AtlasIndex]) { (m, t) =>
                 val name = t.imageRef.name
                 val size = lookupByName(name).map(img => Point(img.data.width, img.data.height)).getOrElse(Point.zero)
                 m ++ Map(name -> new AtlasIndex(atlasId, t.coords, size))
-              })
+              }
 
             val atlas = createAtlasFunc(textureMap, lookupByName)
 

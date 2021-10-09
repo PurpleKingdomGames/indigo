@@ -5,6 +5,7 @@ import org.scalajs.dom.raw.CanvasRenderingContext2D
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
 
+@SuppressWarnings(Array("scalafix:DisableSyntax.var"))
 @js.native
 @JSGlobal
 class IndigoCanvasRenderingContext2D extends CanvasRenderingContext2D {
@@ -17,6 +18,7 @@ class IndigoCanvasRenderingContext2D extends CanvasRenderingContext2D {
 
 }
 
+@SuppressWarnings(Array("scalafix:DisableSyntax.var"))
 @js.native
 @JSGlobal
 class IndigoTextMetrics extends js.Object {

@@ -1,19 +1,20 @@
 package indigoextras.effectmaterials
 
-import indigo.shared.assets.AssetName
-import indigo.shared.materials.Material
-import indigo.shared.materials.ShaderData
-import indigoextras.shaders.ExtrasShaderLibrary
-import indigo.shared.shader.ShaderPrimitive.{vec3, vec4}
-import indigo.shared.datatypes.RGBA
-import indigo.shared.shader.UniformBlock
-import indigo.shared.shader.Uniform
-import indigo.shared.shader.EntityShader
 import indigo.shaders.ShaderLibrary
-import indigo.shared.shader.ShaderId
-import indigo.shared.shader.ShaderPrimitive
+import indigo.shared.assets.AssetName
 import indigo.shared.datatypes.Fill
 import indigo.shared.datatypes.RGB
+import indigo.shared.datatypes.RGBA
+import indigo.shared.materials.Material
+import indigo.shared.materials.ShaderData
+import indigo.shared.shader.EntityShader
+import indigo.shared.shader.ShaderId
+import indigo.shared.shader.ShaderPrimitive
+import indigo.shared.shader.ShaderPrimitive.vec3
+import indigo.shared.shader.ShaderPrimitive.vec4
+import indigo.shared.shader.Uniform
+import indigo.shared.shader.UniformBlock
+import indigoextras.shaders.ExtrasShaderLibrary
 
 final case class LegacyEffects(
     diffuse: AssetName,

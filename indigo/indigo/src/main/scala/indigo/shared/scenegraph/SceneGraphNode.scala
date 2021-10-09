@@ -1,9 +1,9 @@
 package indigo.shared.scenegraph
 
-import indigo.shared.datatypes._
-import indigo.shared.materials.ShaderData
-import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.shared.BoundaryLocator
+import indigo.shared.datatypes._
+import indigo.shared.datatypes.mutable.CheapMatrix4
+import indigo.shared.materials.ShaderData
 
 /** The internal parent type of anything that can affect the visual representation of the game.
   *

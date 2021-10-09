@@ -1,24 +1,24 @@
 package indigo.shared.formats
 
-import indigo.shared.scenegraph.Sprite
-import indigo.shared.animation.Animation
-import indigo.shared.datatypes.Depth
-import indigo.shared.assets.AssetName
-import indigo.shared.dice.Dice
 import indigo.shared.IndigoLogger
+import indigo.shared.animation.Animation
 import indigo.shared.animation.AnimationKey
-import indigo.shared.materials.Material
+import indigo.shared.animation.Cycle
+import indigo.shared.animation.Frame
+import indigo.shared.assets.AssetName
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.datatypes.BindingKey
-import indigo.shared.datatypes.Radians
+import indigo.shared.datatypes.Depth
 import indigo.shared.datatypes.Point
+import indigo.shared.datatypes.Radians
+import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Size
 import indigo.shared.datatypes.Vector2
-import indigo.shared.datatypes.Rectangle
+import indigo.shared.dice.Dice
 import indigo.shared.events.GlobalEvent
-import indigo.shared.animation.Cycle
+import indigo.shared.materials.Material
+import indigo.shared.scenegraph.Sprite
 import indigo.shared.time.Millis
-import indigo.shared.animation.Frame
 
 final case class Aseprite(frames: List[AsepriteFrame], meta: AsepriteMeta) derives CanEqual {
 

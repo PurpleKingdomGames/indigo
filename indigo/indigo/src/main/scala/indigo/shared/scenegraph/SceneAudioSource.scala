@@ -1,7 +1,7 @@
 package indigo.shared.scenegraph
 
-import indigo.shared.datatypes.BindingKey
 import indigo.shared.audio.Volume
+import indigo.shared.datatypes.BindingKey
 
 /** Represents a single audio source, how it is being played, and at what volume. You could implement a cross fade
   * between two audio sources.

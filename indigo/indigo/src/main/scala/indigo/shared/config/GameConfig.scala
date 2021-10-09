@@ -1,7 +1,7 @@
 package indigo.shared.config
 
-import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.RGBA
+import indigo.shared.datatypes.Rectangle
 
 /** All the base settings needed to get a game up and running.
   *

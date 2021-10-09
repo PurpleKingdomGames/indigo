@@ -12,7 +12,7 @@ final case class Key(code: Int, key: String) derives CanEqual {
   // This is not an accident, or it was, but now it's a feature...
   // This allows us to pattern match on specific key instances.
   // Hopefully we can replace with Scala 3 enums or something...
-  @SuppressWarnings(Array("scalafix:DisableSyntax.isInstanceOf"))
+  // @SuppressWarnings(Array("scalafix:DisableSyntax.isInstanceOf"))
   override def equals(that: Any): Boolean =
     that match {
       case that: Key =>

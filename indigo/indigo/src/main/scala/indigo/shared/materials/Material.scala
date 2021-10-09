@@ -1,17 +1,19 @@
 package indigo.shared.materials
 
 import indigo.shared.assets.AssetName
+import indigo.shared.datatypes.Fill
+import indigo.shared.datatypes.RGB
+import indigo.shared.datatypes.RGBA
+import indigo.shared.materials.LightingModel.Lit
+import indigo.shared.materials.LightingModel.Unlit
+import indigo.shared.shader.ShaderId
+import indigo.shared.shader.ShaderPrimitive
+import indigo.shared.shader.ShaderPrimitive.float
+import indigo.shared.shader.ShaderPrimitive.vec3
+import indigo.shared.shader.ShaderPrimitive.vec4
 import indigo.shared.shader.StandardShaders
 import indigo.shared.shader.Uniform
 import indigo.shared.shader.UniformBlock
-import indigo.shared.shader.ShaderPrimitive.{float, vec3, vec4}
-import indigo.shared.datatypes.RGBA
-import indigo.shared.datatypes.Fill
-import indigo.shared.shader.ShaderPrimitive
-import indigo.shared.datatypes.RGB
-import indigo.shared.materials.LightingModel.Unlit
-import indigo.shared.materials.LightingModel.Lit
-import indigo.shared.shader.ShaderId
 
 trait Material {
   def toShaderData: ShaderData

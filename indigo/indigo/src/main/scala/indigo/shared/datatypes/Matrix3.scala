@@ -47,7 +47,7 @@ final case class Matrix3(private val mat: List[Double]) derives CanEqual {
       row2.mkString("(", ",\t", ")") + "\n" +
       row3.mkString("(", ",\t", ")")
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while"))
   def ~==(other: Matrix3): Boolean =
     if (mat.length == other.mat.length) {
       var count = mat.length - 1

@@ -1,7 +1,8 @@
 package indigo.facades
 
-import scala.scalajs.js
 import org.scalajs.dom.raw.Element
+
+import scala.scalajs.js
 
 @js.native
 trait FullScreenElement extends js.Object {

@@ -1,6 +1,7 @@
 package indigo.shared.networking
 
-import indigo.shared.events.{NetworkSendEvent, NetworkReceiveEvent}
+import indigo.shared.events.NetworkReceiveEvent
+import indigo.shared.events.NetworkSendEvent
 
 object HttpMethod {
   val GET: String    = "GET"

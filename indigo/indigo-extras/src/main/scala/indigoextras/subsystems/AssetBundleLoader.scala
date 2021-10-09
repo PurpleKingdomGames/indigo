@@ -1,15 +1,15 @@
 package indigoextras.subsystems
 
-import indigo.shared.subsystems.SubSystem
+import indigo.shared.Outcome
+import indigo.shared.assets.AssetPath
+import indigo.shared.assets.AssetType
+import indigo.shared.assets.AssetTypePrimitive
+import indigo.shared.datatypes.BindingKey
+import indigo.shared.events.AssetEvent
 import indigo.shared.events.GlobalEvent
 import indigo.shared.events.SubSystemEvent
-import indigo.shared.Outcome
 import indigo.shared.scenegraph.SceneUpdateFragment
-import indigo.shared.assets.AssetType
-import indigo.shared.datatypes.BindingKey
-import indigo.shared.assets.AssetPath
-import indigo.shared.assets.AssetTypePrimitive
-import indigo.shared.events.AssetEvent
+import indigo.shared.subsystems.SubSystem
 import indigo.shared.subsystems.SubSystemFrameContext
 
 // Provides "at least once" message delivery for updates on a bundle's loading status.

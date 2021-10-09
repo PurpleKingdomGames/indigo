@@ -1,7 +1,8 @@
 package indigo.shared
 
-import indigo.shared.formats.{Aseprite, TiledMap}
 import indigo.shared.datatypes.FontChar
+import indigo.shared.formats.Aseprite
+import indigo.shared.formats.TiledMap
 
 trait JsonSupportFunctions {
 

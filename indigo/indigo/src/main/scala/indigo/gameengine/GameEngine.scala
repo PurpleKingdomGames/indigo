@@ -1,38 +1,37 @@
 package indigo.gameengine
 
-import indigo.shared.animation._
-import indigo.shared.datatypes.FontInfo
-import indigo.shared.config.GameConfig
-import indigo.shared.assets.AssetType
-import indigo.shared.IndigoLogger
-import indigo.shared.Startup
-import indigo.shared.Outcome
-import indigo.shared.AnimationsRegister
-import indigo.shared.FontRegister
+import indigo.platform.Platform
+import indigo.platform.assets.DynamicText
 import indigo.platform.assets._
 import indigo.platform.audio.AudioPlayer
-import indigo.platform.input.GamepadInputCaptureImpl
 import indigo.platform.events.GlobalEventStream
+import indigo.platform.input.GamepadInputCaptureImpl
 import indigo.platform.renderer.Renderer
-import indigo.platform.Platform
+import indigo.platform.storage.Storage
+import indigo.shared.AnimationsRegister
+import indigo.shared.BoundaryLocator
+import indigo.shared.FontRegister
+import indigo.shared.IndigoLogger
+import indigo.shared.Outcome
+import indigo.shared.Startup
+import indigo.shared.animation._
+import indigo.shared.assets.AssetName
+import indigo.shared.assets.AssetType
+import indigo.shared.config.GameConfig
+import indigo.shared.datatypes.FontInfo
+import indigo.shared.dice.Dice
+import indigo.shared.events.GlobalEvent
+import indigo.shared.input.GamepadInputCapture
 import indigo.shared.platform.AssetMapping
-import indigo.platform.assets.DynamicText
+import indigo.shared.platform.SceneProcessor
+import indigo.shared.shader.BlendShader
+import indigo.shared.shader.EntityShader
+import indigo.shared.shader.Shader
+import indigo.shared.shader.ShaderRegister
+import indigo.shared.shader.StandardShaders
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-
-import indigo.platform.storage.Storage
-import indigo.shared.input.GamepadInputCapture
-import indigo.shared.BoundaryLocator
-import indigo.shared.platform.SceneProcessor
-import indigo.shared.dice.Dice
-import indigo.shared.events.GlobalEvent
-import indigo.shared.shader.Shader
-import indigo.shared.shader.EntityShader
-import indigo.shared.shader.ShaderRegister
-import indigo.shared.shader.StandardShaders
-import indigo.shared.assets.AssetName
-import indigo.shared.shader.BlendShader
 
 final class GameEngine[StartUpData, GameModel, ViewModel](
     fonts: Set[FontInfo],

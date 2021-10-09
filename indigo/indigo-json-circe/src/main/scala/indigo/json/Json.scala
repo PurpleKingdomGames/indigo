@@ -1,12 +1,12 @@
 package indigo.json
 
-import indigo.shared.JsonSupportFunctions
-import indigo.shared.formats.{Aseprite, TiledMap}
-import indigo.shared.IndigoLogger
-
-import io.circe.parser._
-import indigo.shared.datatypes.FontChar
 import indigo.json.core.GlyphWrapper
+import indigo.shared.IndigoLogger
+import indigo.shared.JsonSupportFunctions
+import indigo.shared.datatypes.FontChar
+import indigo.shared.formats.Aseprite
+import indigo.shared.formats.TiledMap
+import io.circe.parser._
 
 object Json extends JsonSupportFunctions {
 

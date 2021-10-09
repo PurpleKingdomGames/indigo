@@ -1,7 +1,6 @@
 package indigo.shared.animation
 
 import indigo.shared.collections.NonEmptyList
-
 import indigo.shared.time.Millis
 
 final case class Animation(

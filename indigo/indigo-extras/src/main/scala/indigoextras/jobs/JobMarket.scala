@@ -1,10 +1,10 @@
 package indigoextras.jobs
 
-import indigo.shared.subsystems.SubSystem
-import indigo.shared.events.GlobalEvent
 import indigo.shared.Outcome
-import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.datatypes.BindingKey
+import indigo.shared.events.GlobalEvent
+import indigo.shared.scenegraph.SceneUpdateFragment
+import indigo.shared.subsystems.SubSystem
 import indigo.shared.subsystems.SubSystemFrameContext
 
 /**

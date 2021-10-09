@@ -1,7 +1,7 @@
 package indigo.platform.renderer.shared
 
-import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.shared.datatypes.Radians
+import indigo.shared.datatypes.mutable.CheapMatrix4
 
 object CameraHelper:
 

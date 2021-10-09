@@ -2,8 +2,8 @@ package com.example.perf
 
 import indigo._
 
-import scala.util.Random
 import scala.annotation.tailrec
+import scala.util.Random
 
 object PerfView {
 

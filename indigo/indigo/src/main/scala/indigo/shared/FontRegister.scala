@@ -1,6 +1,7 @@
 package indigo.shared
 
-import indigo.shared.datatypes.{FontInfo, FontKey}
+import indigo.shared.datatypes.FontInfo
+import indigo.shared.datatypes.FontKey
 
 final class FontRegister {
 

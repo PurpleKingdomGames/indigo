@@ -5,9 +5,9 @@ import indigo.shared.Outcome
 import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.subsystems.SubSystemFrameContext
-import scala.collection.mutable
 
 import java.util.UUID
+import scala.collection.mutable
 
 final class SubSystemsRegister() {
 
@@ -30,7 +30,7 @@ final class SubSystemsRegister() {
         events
     }
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
+  // @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
   private def initialiseSubSystem(subSystem: SubSystem): Outcome[RegisteredSubSystem] = {
     val key = UUID.randomUUID().toString
     val res = RegisteredSubSystem(key, subSystem)
@@ -42,7 +42,7 @@ final class SubSystemsRegister() {
     }
   }
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
+  // @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
   def update(frameContext: SubSystemFrameContext, globalEvents: List[GlobalEvent]): Outcome[SubSystemsRegister] = {
     def outcomeEvents: Outcome[List[GlobalEvent]] =
       registeredSubSystems
@@ -76,7 +76,7 @@ final class SubSystemsRegister() {
     outcomeEvents.flatMap(l => Outcome(this, l))
   }
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
+  // @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
   def present(frameContext: SubSystemFrameContext): Outcome[SceneUpdateFragment] =
     registeredSubSystems
       .map { rss =>

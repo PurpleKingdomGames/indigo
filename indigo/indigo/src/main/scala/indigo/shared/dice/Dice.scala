@@ -1,11 +1,11 @@
 package indigo.shared.dice
 
 import indigo.shared.collections.NonEmptyList
+import indigo.shared.time.Millis
+import indigo.shared.time.Seconds
 
 import scala.annotation.tailrec
 import scala.util.Random
-import indigo.shared.time.Millis
-import indigo.shared.time.Seconds
 
 /** All dice rolls are from value 1 to N inclusive. Like a dice.
   */

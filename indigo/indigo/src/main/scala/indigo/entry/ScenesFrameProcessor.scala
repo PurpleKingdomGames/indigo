@@ -1,18 +1,18 @@
 package indigo.entry
 
-import indigo.shared.Outcome
-import indigo.shared.scenegraph.SceneUpdateFragment
-import indigo.shared.events.InputState
-import indigo.shared.dice.Dice
-import indigo.shared.events.GlobalEvent
-import indigo.shared.time.GameTime
 import indigo.gameengine.FrameProcessor
+import indigo.scenes.SceneManager
 import indigo.shared.BoundaryLocator
 import indigo.shared.FrameContext
-import indigo.shared.subsystems.SubSystemsRegister
-import indigo.shared.subsystems.SubSystemFrameContext._
-import indigo.scenes.SceneManager
+import indigo.shared.Outcome
+import indigo.shared.dice.Dice
 import indigo.shared.events.EventFilters
+import indigo.shared.events.GlobalEvent
+import indigo.shared.events.InputState
+import indigo.shared.scenegraph.SceneUpdateFragment
+import indigo.shared.subsystems.SubSystemFrameContext._
+import indigo.shared.subsystems.SubSystemsRegister
+import indigo.shared.time.GameTime
 
 final case class ScenesFrameProcessor[StartUpData, Model, ViewModel](
     subSystemsRegister: SubSystemsRegister,

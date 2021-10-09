@@ -1,7 +1,7 @@
 package indigo.shared.shader
 
-import indigo.shared.QuickCache
 import indigo.shared.CacheKey
+import indigo.shared.QuickCache
 
 final class ShaderRegister {
 

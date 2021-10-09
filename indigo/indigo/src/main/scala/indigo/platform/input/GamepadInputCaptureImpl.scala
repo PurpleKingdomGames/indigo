@@ -1,15 +1,18 @@
 package indigo.platform.input
 
-import org.scalajs.dom.window
+import indigo.shared.input.AnalogAxis
+import indigo.shared.input.Gamepad
+import indigo.shared.input.GamepadAnalogControls
+import indigo.shared.input.GamepadButtons
+import indigo.shared.input.GamepadDPad
+import indigo.shared.input.GamepadInputCapture
 import org.scalajs.dom.experimental.gamepad.GamepadNavigator
 import org.scalajs.dom.experimental.gamepad.{Gamepad => GamepadJS}
-import indigo.shared.input.{Gamepad, GamepadButtons, GamepadDPad, AnalogAxis, GamepadInputCapture}
-import indigo.shared.input.GamepadAnalogControls
+import org.scalajs.dom.window
 
 object GamepadInputCaptureImpl {
 
-  private
-  given CanEqual[Option[GamepadJS], Option[GamepadJS]] = CanEqual.derived
+  private given CanEqual[Option[GamepadJS], Option[GamepadJS]] = CanEqual.derived
 
   def apply(): GamepadInputCapture =
     new GamepadInputCapture {
@@ -83,7 +86,7 @@ object GamepadInputCaptureImpl {
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   var gamepads: scalajs.js.Array[GamepadJS] = new scalajs.js.Array()
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
+  // @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
   def init(): Unit = {
     window.addEventListener(
       "gamepadconnected",

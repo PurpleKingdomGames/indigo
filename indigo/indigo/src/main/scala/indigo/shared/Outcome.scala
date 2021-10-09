@@ -2,9 +2,8 @@ package indigo.shared
 
 import indigo.shared.events.GlobalEvent
 
-import scala.util.control.NonFatal
-
 import scala.annotation.tailrec
+import scala.util.control.NonFatal
 
 /** An `Outcome` represents the result of some part of a frame update. It contains a value or an error (exception), and
   * optionally a list of events to be processed on the next frame.

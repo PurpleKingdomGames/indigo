@@ -1,10 +1,10 @@
 package indigoextras.geometry
 
-import scala.annotation.tailrec
-
-import indigo.shared.temporal.Signal
 import indigo.shared.collections.NonEmptyList
+import indigo.shared.temporal.Signal
 import indigo.shared.time.Seconds
+
+import scala.annotation.tailrec
 
 opaque type Bezier = List[Vertex]
 object Bezier {

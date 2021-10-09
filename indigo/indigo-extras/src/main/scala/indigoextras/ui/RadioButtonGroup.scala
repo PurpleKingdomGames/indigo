@@ -1,18 +1,21 @@
 package indigoextras.ui
 
 import indigo.shared.Outcome
-import indigo.shared.datatypes.{Depth, Point, Rectangle}
+import indigo.shared.datatypes.Depth
+import indigo.shared.datatypes.Point
+import indigo.shared.datatypes.Rectangle
 import indigo.shared.events.GlobalEvent
 import indigo.shared.input.Mouse
 import indigo.shared.scenegraph.EntityNode
-import indigo.shared.scenegraph.Shape
 import indigo.shared.scenegraph.Graphic
+import indigo.shared.scenegraph.Group
+import indigo.shared.scenegraph.SceneNode
+import indigo.shared.scenegraph.Shape
 import indigo.shared.scenegraph.Sprite
 import indigo.shared.scenegraph.Text
 import indigo.shared.scenegraph.TextBox
-import indigo.shared.scenegraph.Group
+
 import scala.annotation.tailrec
-import indigo.shared.scenegraph.SceneNode
 
 /** Represents an individual option button in a radio button group. This class just containing the distinct information
   * for this option: it's position and the events fired on interacting with it. Attributes shared between options are

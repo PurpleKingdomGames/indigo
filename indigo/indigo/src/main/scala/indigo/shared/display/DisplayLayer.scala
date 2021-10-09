@@ -1,10 +1,10 @@
 package indigo.shared.display
 
-import indigo.shared.scenegraph.Blend
-import indigo.shared.shader.ShaderId
-import indigo.shared.datatypes.RGBA
 import indigo.shared.datatypes.Depth
+import indigo.shared.datatypes.RGBA
+import indigo.shared.scenegraph.Blend
 import indigo.shared.scenegraph.Camera
+import indigo.shared.shader.ShaderId
 
 final case class DisplayLayer(
     entities: Array[DisplayEntity],

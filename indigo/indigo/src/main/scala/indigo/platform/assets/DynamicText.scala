@@ -2,22 +2,21 @@ package indigo.platform.assets
 
 import indigo.facades.IndigoCanvasRenderingContext2D
 import indigo.facades.IndigoTextMetrics
-
-import indigo.shared.datatypes.TextStyle
-import indigo.shared.datatypes.TextAlign
-import indigo.shared.datatypes.TextBaseLine
-import indigo.shared.datatypes.TextDirection
 import indigo.shared.datatypes.Font
 import indigo.shared.datatypes.FontFamily
-import indigo.shared.datatypes.Pixels
 import indigo.shared.datatypes.FontStyle
 import indigo.shared.datatypes.FontVariant
 import indigo.shared.datatypes.FontWeight
+import indigo.shared.datatypes.Pixels
 import indigo.shared.datatypes.Rectangle
-
-import org.scalajs.dom.html
+import indigo.shared.datatypes.TextAlign
+import indigo.shared.datatypes.TextBaseLine
+import indigo.shared.datatypes.TextDirection
+import indigo.shared.datatypes.TextStyle
 import org.scalajs.dom
+import org.scalajs.dom.html
 import org.scalajs.dom.raw
+
 import scala.scalajs.js.Dynamic
 import scala.scalajs.js.undefined
 
@@ -47,6 +46,7 @@ class DynamicText:
 
     textContext.clearRect(0, 0, width, height)
 
+  // @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
   def createTextContext(): IndigoCanvasRenderingContext2D =
     dom.document
       .createElement("canvas")
@@ -75,6 +75,7 @@ class DynamicText:
 
     textContext.canvas
 
+  // @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
   def measureText(text: String, style: TextStyle, width: Int, height: Int): Rectangle =
     setupText(text, style, width, height)
 

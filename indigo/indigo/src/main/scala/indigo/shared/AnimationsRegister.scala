@@ -1,12 +1,14 @@
 package indigo.shared
 
-import indigo.shared.time.GameTime
-import indigo.shared.datatypes.BindingKey
-import indigo.shared.animation.{Animation, AnimationKey}
+import indigo.shared.animation.Animation
 import indigo.shared.animation.AnimationAction
+import indigo.shared.animation.AnimationKey
 import indigo.shared.animation.AnimationMemento
-import scala.collection.mutable
 import indigo.shared.animation.AnimationRef
+import indigo.shared.datatypes.BindingKey
+import indigo.shared.time.GameTime
+
+import scala.collection.mutable
 
 final class AnimationsRegister {
 

@@ -1,7 +1,8 @@
 package indigo.shared.input
 
-import indigo.shared.events.KeyboardEvent
 import indigo.shared.constants.Key
+import indigo.shared.events.KeyboardEvent
+
 import scala.annotation.tailrec
 
 final class Keyboard(keyboardEvents: List[KeyboardEvent], val keysDown: List[Key], val lastKeyHeldDown: Option[Key]) {

@@ -1,18 +1,19 @@
 package indigoextras.ui
 
-import indigo.shared.datatypes.{Depth, Rectangle}
+import indigo.shared.Outcome
+import indigo.shared.datatypes.Depth
+import indigo.shared.datatypes.Point
+import indigo.shared.datatypes.Rectangle
 import indigo.shared.events.GlobalEvent
 import indigo.shared.input.Mouse
-import indigo.shared.Outcome
 import indigo.shared.scenegraph.EntityNode
-import indigo.shared.scenegraph.Shape
 import indigo.shared.scenegraph.Graphic
+import indigo.shared.scenegraph.Group
+import indigo.shared.scenegraph.SceneNode
+import indigo.shared.scenegraph.Shape
 import indigo.shared.scenegraph.Sprite
 import indigo.shared.scenegraph.Text
 import indigo.shared.scenegraph.TextBox
-import indigo.shared.scenegraph.Group
-import indigo.shared.datatypes.Point
-import indigo.shared.scenegraph.SceneNode
 
 final case class Button(
     buttonAssets: ButtonAssets,

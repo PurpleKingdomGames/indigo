@@ -1,13 +1,13 @@
 package com.example.sandbox.scenes
 
+import com.example.sandbox.SandboxAssets
+import com.example.sandbox.SandboxGameModel
+import com.example.sandbox.SandboxStartupData
+import com.example.sandbox.SandboxView
+import com.example.sandbox.SandboxViewModel
+import indigo.ShaderPrimitive._
 import indigo._
 import indigo.scenes._
-import com.example.sandbox.SandboxStartupData
-import com.example.sandbox.SandboxGameModel
-import com.example.sandbox.SandboxViewModel
-import com.example.sandbox.SandboxView
-import indigo.ShaderPrimitive._
-import com.example.sandbox.SandboxAssets
 
 object OriginalScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel] {
 

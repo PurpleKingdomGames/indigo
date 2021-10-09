@@ -1,8 +1,8 @@
 package indigo.shared.datatypes
 
-import annotation.targetName
-
 import indigo.shared.time.Seconds
+
+import annotation.targetName
 
 opaque type Radians = Double
 object Radians:

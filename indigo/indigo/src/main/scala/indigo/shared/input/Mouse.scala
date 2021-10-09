@@ -1,8 +1,9 @@
 package indigo.shared.input
 
-import indigo.shared.events.MouseEvent
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
+import indigo.shared.events.MouseEvent
+
 import scala.annotation.tailrec
 
 final class Mouse(mouseEvents: List[MouseEvent], val position: Point, val leftMouseIsDown: Boolean) {

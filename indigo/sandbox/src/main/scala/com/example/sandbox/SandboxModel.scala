@@ -1,9 +1,8 @@
 package com.example.sandbox
 
+import com.example.sandbox.scenes.ConfettiModel
 import indigo._
 import indigoextras.ui.InputFieldChange
-
-import com.example.sandbox.scenes.ConfettiModel
 
 object SandboxModel {
 

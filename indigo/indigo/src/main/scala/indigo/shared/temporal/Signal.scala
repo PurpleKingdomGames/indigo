@@ -1,10 +1,9 @@
 package indigo.shared.temporal
 
-import indigo.shared.time.Seconds
-
-import indigo.shared.datatypes.Vector2
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Radians
+import indigo.shared.datatypes.Vector2
+import indigo.shared.time.Seconds
 
 /** A Signal is function `t: Seconds -> A`. Signals are stateless time based value, which is to say that for a given
   * time, they will produce a value based on that time. They are useful for representing things like animations,

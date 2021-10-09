@@ -1,7 +1,7 @@
 package indigo.shared.scenegraph
 
-import indigo.shared.datatypes._
 import indigo.shared.BoundaryLocator
+import indigo.shared.datatypes._
 
 /** Used to group elements to allow them to be manipulated as a collection.
   */

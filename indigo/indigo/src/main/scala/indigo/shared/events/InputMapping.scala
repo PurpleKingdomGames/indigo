@@ -1,11 +1,10 @@
 package indigo.shared.events
 
-import indigo.shared.input.Keyboard
-import indigo.shared.input.Gamepad
-import indigo.shared.input.Mouse
 import indigo.shared.constants.Key
-
 import indigo.shared.datatypes.Point
+import indigo.shared.input.Gamepad
+import indigo.shared.input.Keyboard
+import indigo.shared.input.Mouse
 
 /** Input mapping instances describe combinations of "live" inputs like key combinations or gamepad buttons, and map
   * them to some user defined value.

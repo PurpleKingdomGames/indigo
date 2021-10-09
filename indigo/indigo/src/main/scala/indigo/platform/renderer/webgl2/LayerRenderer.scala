@@ -1,36 +1,34 @@
 package indigo.platform.renderer.webgl2
 
 import indigo.facades.WebGL2RenderingContext
+import indigo.platform.assets.AtlasId
+import indigo.platform.assets.DynamicText
+import indigo.platform.renderer.shared.FrameBufferComponents
+import indigo.platform.renderer.shared.FrameBufferFunctions
+import indigo.platform.renderer.shared.TextureLookupResult
+import indigo.platform.renderer.shared.WebGLHelper
+import indigo.shared.datatypes.RGBA
+import indigo.shared.datatypes.mutable.CheapMatrix4
+import indigo.shared.display.DisplayCloneBatch
+import indigo.shared.display.DisplayCloneTiles
+import indigo.shared.display.DisplayEntity
+import indigo.shared.display.DisplayGroup
 import indigo.shared.display.DisplayObject
+import indigo.shared.display.DisplayText
+import indigo.shared.scenegraph.CloneBatchData
+import indigo.shared.scenegraph.CloneId
+import indigo.shared.scenegraph.CloneTileData
+import indigo.shared.shader.ShaderId
+import org.scalajs.dom.raw
+import org.scalajs.dom.raw.WebGLBuffer
 import org.scalajs.dom.raw.WebGLProgram
 import org.scalajs.dom.raw.WebGLRenderingContext
 import org.scalajs.dom.raw.WebGLRenderingContext._
-import org.scalajs.dom.raw.WebGLBuffer
 import org.scalajs.dom.raw.WebGLTexture
-import org.scalajs.dom.raw
 
 import scala.annotation.tailrec
-import scala.scalajs.js.typedarray.Float32Array
-import indigo.shared.display.DisplayEntity
-import indigo.shared.display.DisplayCloneBatch
-import indigo.shared.display.DisplayCloneTiles
-import indigo.shared.display.DisplayText
-import indigo.platform.renderer.shared.TextureLookupResult
-import indigo.platform.renderer.shared.FrameBufferFunctions
-import indigo.platform.renderer.shared.FrameBufferComponents
-import indigo.shared.datatypes.RGBA
 import scala.collection.mutable.HashMap
-import indigo.shared.shader.ShaderId
-import indigo.platform.assets.AtlasId
-import indigo.shared.scenegraph.CloneId
-
-import indigo.platform.assets.DynamicText
-
-import indigo.shared.datatypes.mutable.CheapMatrix4
-import indigo.platform.renderer.shared.WebGLHelper
-import indigo.shared.display.DisplayGroup
-import indigo.shared.scenegraph.CloneBatchData
-import indigo.shared.scenegraph.CloneTileData
+import scala.scalajs.js.typedarray.Float32Array
 
 import scalajs.js.JSConverters._
 
@@ -74,6 +72,7 @@ class LayerRenderer(
   private val textureSizeAtlasSizeData: scalajs.js.Array[Float] = scalajs.js.Array[Float](4f * maxBatchSize)
   private val rotationData: scalajs.js.Array[Float]             = scalajs.js.Array[Float](1f * maxBatchSize)
 
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var lastRenderMode: Int = 0
 
   inline private def bindData(buffer: WebGLBuffer, data: scalajs.js.Array[Float]): Unit = {
@@ -227,6 +226,7 @@ class LayerRenderer(
   private var currentProgram: WebGLProgram                           = null
   private given CanEqual[Option[WebGLProgram], Option[WebGLProgram]] = CanEqual.derived
 
+  @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   private def setBaseTransform(baseTransform: CheapMatrix4): Unit =
     if currentProgram == null then ()
     else
@@ -236,6 +236,7 @@ class LayerRenderer(
         value = Float32Array(baseTransform.toArray.toJSArray)
       )
 
+  @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   private def setMode(mode: Int): Unit =
     if currentProgram == null then ()
     else
@@ -430,6 +431,14 @@ class LayerRenderer(
     renderEntities(cloneBlankDisplayObjects, displayEntities, customShaders, CheapMatrix4.identity)
   }
 
+  @SuppressWarnings(
+    Array(
+      "scalafix:DisableSyntax.null",
+      "scalafix:DisableSyntax.while",
+      "scalafix:DisableSyntax.var",
+      "scalafix:DisableSyntax.throw"
+    )
+  )
   private def renderEntities(
       cloneBlankDisplayObjects: Map[CloneId, DisplayObject],
       displayEntities: Array[DisplayEntity],
@@ -635,6 +644,7 @@ class LayerRenderer(
         }
   }
 
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var currentRefUBOHash: Int = -1
   private def uploadRefUBO(refDisplayObject: DisplayObject): Unit =
     val code = refDisplayObject.hashCode
@@ -666,7 +676,7 @@ class LayerRenderer(
       WebGLHelper.attachUBOData(gl2, refData, cloneReferenceUBOBuffer)
       currentRefUBOHash = code
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while"))
   private def processCloneBatch(c: DisplayCloneBatch): Int = {
     val count: Int = c.cloneData.length
     var i: Int     = 0
@@ -683,7 +693,7 @@ class LayerRenderer(
     count
   }
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while"))
   private def processCloneTiles(
       c: DisplayCloneTiles,
       refDisplayObject: DisplayObject

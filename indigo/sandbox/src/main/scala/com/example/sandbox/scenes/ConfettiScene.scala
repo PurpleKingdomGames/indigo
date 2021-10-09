@@ -1,16 +1,16 @@
 package com.example.sandbox.scenes
 
-import indigo._
-import indigo.scenes._
-import indigoextras.ui.HitArea
-
-import com.example.sandbox.SandboxStartupData
-import com.example.sandbox.SandboxGameModel
-import com.example.sandbox.SandboxViewModel
-import indigoextras.geometry.Polygon
-import indigoextras.geometry.Vertex
 import com.example.sandbox.Log
 import com.example.sandbox.SandboxAssets
+import com.example.sandbox.SandboxGameModel
+import com.example.sandbox.SandboxStartupData
+import com.example.sandbox.SandboxViewModel
+import indigo._
+import indigo.scenes._
+import indigoextras.geometry.Polygon
+import indigoextras.geometry.Vertex
+import indigoextras.ui.HitArea
+
 import scala.annotation.tailrec
 import scala.collection.mutable.ArrayBuffer
 

@@ -2,7 +2,7 @@ package indigo.shared.subsystems
 
 import indigo.shared.scenegraph.Text
 
-@SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
+// @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
 class SubSystemsRegisterTests extends munit.FunSuite {
 
   import FakeSubSystemFrameContext._
@@ -53,7 +53,8 @@ class SubSystemsRegisterTests extends munit.FunSuite {
         .unsafeGet
         .present(context(6))
         .unsafeGet
-        .layers.flatMap(_.nodes)
+        .layers
+        .flatMap(_.nodes)
         .map(_.asInstanceOf[Text[_]].text)
 
     assert(rendered.contains("20"))

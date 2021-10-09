@@ -1,9 +1,7 @@
 package indigo.platform.assets
 
 import indigo.shared.assets.AssetName
-
 import indigo.shared.assets.AssetTag
-
 import org.scalajs.dom
 import org.scalajs.dom.html
 
