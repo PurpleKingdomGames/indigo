@@ -14,11 +14,13 @@ import indigo.shared.datatypes.Radians
 import indigo.shared.platform.ProcessedSceneData
 import indigo.shared.display.DisplayEntity
 import indigo.shared.display.DisplayObject
+import indigo.shared.display.DisplayGroup
 import indigo.shared.events.ViewportResize
 import indigo.shared.config.GameViewport
 import indigo.shared.shader.RawShaderCode
 import indigo.shared.time.Seconds
 import indigo.shared.scenegraph.Camera
+import indigo.platform.assets.AtlasId
 
 import scala.scalajs.js.typedarray.Float32Array
 import org.scalajs.dom.html
@@ -177,12 +179,39 @@ final class RendererWebGL1(
 
     gl.uniform1i(gl.getUniformLocation(shaderProgram, "u_texture"), 0)
 
+    renderEntities(displayEntities, shaderProgram, CheapMatrix4.identity)
+  }
+
+  def setBaseTransform(shaderProgram: WebGLProgram, baseTransform: CheapMatrix4): Unit =
+    gl.uniformMatrix4fv(
+      location = gl.getUniformLocation(shaderProgram, "u_baseTransform"),
+      transpose = false,
+      value = Float32Array(baseTransform.toArray.toJSArray)
+    )
+
+  def renderEntities(
+      displayEntities: Array[DisplayEntity],
+      shaderProgram: WebGLProgram,
+      baseTransform: CheapMatrix4
+  ): Unit =
+    setBaseTransform(shaderProgram, baseTransform)
+
     // This basic renderer only renders entities with images. So we can save work by only considering
-    // 1) display objects, and that 2) have an atlas reference.
+    // 1) display objects (and groups of display objects), that 2) have an atlas reference.
     displayEntities
-      .collect { case d: DisplayObject if d.atlasName.isDefined => (d, d.atlasName.get) }
+      .collect {
+        case d: DisplayObject if d.atlasName.isDefined =>
+          (d, d.atlasName.get)
+
+        case g: DisplayGroup =>
+          (g, AtlasId(""))
+      }
       .sortWith((d1, d2) => d1._1.z > d2._1.z)
       .foreach {
+        case (group: DisplayGroup, _) =>
+          renderEntities(group.entities, shaderProgram, group.transform)
+          setBaseTransform
+
         case (displayObject: DisplayObject, objectAtlas) =>
           setupVertexShaderState(
             gl,
@@ -205,8 +234,6 @@ final class RendererWebGL1(
         case null =>
           ()
       }
-
-  }
 
   def resize(canvas: html.Canvas, magnification: Int): Unit = {
     val actualWidth  = canvas.width
