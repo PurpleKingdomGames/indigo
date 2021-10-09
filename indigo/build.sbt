@@ -13,7 +13,7 @@ lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
   crossScalaVersions := Seq(scala3Version),
   organization := "io.indigoengine",
   libraryDependencies ++= Seq(
-    "org.scalameta" %%% "munit" % "0.7.26" % Test
+    "org.scalameta" %%% "munit" % "0.7.29" % Test
   ),
   testFrameworks += new TestFramework("munit.Framework"),
   Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
@@ -172,7 +172,7 @@ lazy val indigoShaders =
       scalaVersion := scala3Version,
       organization := "io.indigoengine",
       libraryDependencies ++= Seq(
-        "org.scalameta" %%% "munit" % "0.7.26" % Test
+        "org.scalameta" %%% "munit" % "0.7.29" % Test
       ),
       testFrameworks += new TestFramework("munit.Framework"),
       Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
