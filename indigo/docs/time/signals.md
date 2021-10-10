@@ -21,20 +21,22 @@ Indigo makes use of Signals too, though not to the same extent as Yampa. The mai
 
 At it's core, a signal is a very simple thing. Consider this hypothetical abstract function signature:
 
-```scala mdoc
+```scala
 val f: A => B
 ```
 
 What this function signature says is that when provided some value of type `A`, it _will_ produce some value of type `B`. In concrete terms, if we fix the types to known primitives, the follow example says that when given a `String`, it will return an `Int`:
 
-```scala mdoc
+```scala
 val f: String => Int
 ```
 
 A `Signal[A]` is similar and looks like this:
 
 ```scala mdoc
-final class Signal[A](val f: Seconds => A)
+import indigo._
+
+final case class Signal[A](f: Seconds => A)
 ```
 
 In other words, a `Signal` of `A` is nothing more than a function that when given the current running time in `Seconds`, _will_ produce some value of type `A`.
@@ -145,7 +147,9 @@ calculatePosition(0, 15)
 
 So that's an animation described in terms of a function of time ...which means we must be able to encode that as a `Signal`, so lets try the `Signal` version:
 
-```scala mdoc
+```scala mdoc:reset
+import indigo._
+
 def calculatePosition(startPositionX: Int): Signal[Int] =
   Signal { t =>
     val clampedTime: Double = if(t.toDouble > 10d) 10d else t.toDouble
@@ -206,7 +210,9 @@ Making signals can get complicated, particularly if you try to wrap up all of th
 
 Signals are Monads, meaning that many of the usual functions like `map`, `ap`, and `flatMap` that you'd expect to see are available to use. For example, here is a signal being constructed in a for comprehension:
 
-```scala mdoc
+```scala mdoc:reset
+import indigo._
+
 val signal =
   for {
     a <- Signal.fixed(10)
@@ -225,7 +231,7 @@ This helps a lot with building signal values, but another useful construct is th
 
 Signal functions are combinators, and a combinator is a function that takes a function as an argument and returns another function, like this:
 
-```scala mdoc
+```scala
 // A function that take as an argument a function that takes an
 // Int and returns a String, and then returns a function that
 // takes and Int and returns a Boolean
@@ -234,7 +240,7 @@ val f: (Int => String) => (Int => Boolean)
 
 A Signal function takes a `Signal[A]` and returns a `Signal[B]`. Recall that a `Signal[T]` is really just a function from `time` to `T`, thus:
 
-```scala mdoc
+```scala
 SignalFunction(f: Signal[A] => Signal[B])
 ```
 
@@ -247,7 +253,9 @@ SignalFunction((time => A) => (time => B))
 
 The constructor for a Signal function is actually `SignalFunction(f: A => B)`, as a pose to `SignalFunction(f: Signal[A] => Signal[B])`. this is much more convenient and better explains what you're actually doing with signal functions. Here's a simple example:
 
-```scala mdoc
+```scala mdoc:reset
+import indigo._
+
 val signal = Signal.fixed(10) |> SignalFunction((i: Int) => "count: " + i.toString)
 
 signal.at(Seconds.zero)
@@ -256,7 +264,9 @@ signal.at(Seconds.zero)
 
 In this example we pipe a fixed value (ignores time) into a signal function which prints a string. So far, we could have achieved this by just using `map`:
 
-```scala mdoc
+```scala mdoc:reset
+import indigo._
+
 val signal = Signal.fixed(10).map(i => "count: " + i.toString)
 
 signal.at(Seconds.zero)
@@ -265,7 +275,9 @@ signal.at(Seconds.zero)
 
 You don't _need_ signal functions, but they are a nice way to describe combining and processing signals. Here is an more interesting example:
 
-```scala mdoc
+```scala mdoc:reset
+import indigo._
+
 val makeRange: SignalFunction[Boolean, List[Int]] =
   SignalFunction { p =>
     val num = if (p) 10 else 5
@@ -278,7 +290,7 @@ val chooseCatsOrDogs: SignalFunction[Boolean, String] =
 val howManyPets: SignalFunction[(List[Int], String), List[String]] =
   SignalFunction {
     case (l, str) =>
-      l.map(_ + " " + str)
+      l.map(_.toString + " " + str)
   }
 
 // Pulse is a type of signal. Based on the time, it with produce

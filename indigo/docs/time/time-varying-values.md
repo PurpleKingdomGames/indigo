@@ -12,6 +12,9 @@ For example:
 You have a little lumber jack, he walks over to a tree and is now going to cut to down. Work is effort over time, and you can track his progress by having an `IncreaseTo` time varying value in your model, like this.
 
 ```scala mdoc
+import indigo._
+import indigoextras.datatypes._
+
 // A time varying value that here represents the percent of work done
 val woodChoppingProcess: IncreaseTo =
   IncreaseTo(
@@ -24,7 +27,7 @@ val woodChoppingProcess: IncreaseTo =
 final case class LumberJack(chopWood: IncreaseTo, working: Boolean):
   def update(gameTime: GameTime): LumberJack =
     if working then
-      if chopWood.value === chopWood.limit then
+      if chopWood.value == chopWood.limit then
         this.copy(working = false)
       else
         this.copy(

@@ -58,15 +58,17 @@ Name|Sequential order|description
 To override a function you simply need to declare it. In an `Source` shader type, this could be done as follows:
 
 ```scala mdoc
-  val shader: EntityShader =
-    EntityShader
-      .Source(ShaderId("my-colored-shader"))
-      .withFragmentProgram(
-        """
-        |void fragment() {
-        |  COLOR = vec4(0.0, 1.0, 0.0, 1.0);
-        |}
-        |""".stripMargin
+import indigo._
+
+val shader: EntityShader =
+  EntityShader
+    .Source(ShaderId("my-colored-shader"))
+    .withFragmentProgram(
+      """
+      |void fragment() {
+      |  COLOR = vec4(0.0, 1.0, 0.0, 1.0);
+      |}
+      |""".stripMargin
       )
 ```
 
@@ -199,7 +201,7 @@ object MyColoredEntity:
 
 If we wanted to supply the colour, we need to modify our code as follows:
 
-```scala mdoc
+```scala mdoc:nest
 import indigo.ShaderPrimitive._
 
 final case class MyColoredEntity(position: Point, depth: Depth, color: RGBA) extends EntityNode:
