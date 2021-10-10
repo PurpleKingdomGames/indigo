@@ -70,14 +70,15 @@ def updateViewModel(context: FrameContext[Unit], model: Unit, viewModel: MyViewM
 
 To help see what's happening here, we could rewrite this:
 
-```scala mdoc
-// Placeholder:
+```scala mdoc:invisible
 import indigo.platform.assets.DynamicText
 import indigo.shared.AnimationsRegister
 import indigo.shared.FontRegister
 val boundaryLocator = new BoundaryLocator(new AnimationsRegister, new FontRegister, new DynamicText)
 val context = new FrameContext(GameTime.zero, Dice.fromSeed(1l), InputState.default, boundaryLocator, ())
+```
 
+```scala mdoc
 val viewModel = MyViewModel(button)
 
 viewModel.button.update(context.inputState.mouse).map { btn =>
@@ -114,11 +115,12 @@ Input fields are text boxes that all users to type values into them. As with but
 Setting up an input field is as simple as adding something like this to your view model:
 
 ```scala mdoc
-// Placeholder
-val assets = InputFieldAssets(
-  text = Text("", FontKey("my font"), Material.Bitmap(AssetName("my font sheet"))),
-  cursor = Graphic(10, 5, Material.Bitmap(AssetName("cursor")))
-)
+// Placeholder values
+val assets = 
+  InputFieldAssets(
+    text = Text("", FontKey("my font"), Material.Bitmap(AssetName("my font sheet"))),
+    cursor = Graphic(10, 5, Material.Bitmap(AssetName("cursor")))
+  )
 
 val inputField =
   InputField("<Default text>", assets)
