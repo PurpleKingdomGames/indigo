@@ -83,19 +83,14 @@ The `indigo._` import is optional, but conveniently brings in all of the basic s
 
 Next up are the only two lines of Scala.js you have to know:
 
-```scala mdoc
+```scala
 import scala.scalajs.js.annotation.JSExportTopLevel
 @JSExportTopLevel("IndigoGame")
-object HelloIndigo extends IndigoSandbox[Unit, Unit]
 ```
 
 Indigo games are Scala.js projects. We've worked hard to make Indigo feel as much like a normal Scala project as possible, however, we do need a hook for the page. If you're using the standard Indigo Mill or SBT plugins, you ***must name your game "IndigoGame" or it won't work***. Once you move to your own page embed you can call it whatever you like!
 
 `IndigoSandbox` takes two type parameters that define your start up data type, and the type of your model. Later on we'll introduce a real model, but for now we're just using `Unit` to say "I'm not using these".
-
-```scala mdoc
-object HelloIndigo extends IndigoSandbox[Unit, Unit]
-```
 
 The other entry points mentioned earlier require you to declare more type parameters to cover: Boot data, start up data, model, and view model.
 
@@ -126,7 +121,7 @@ val assets: Set[AssetType] =
 
 with:
 
-```scala mdoc
+```scala mdoc:nest
 val assetName = AssetName("dots")
 
 val assets: Set[indigo.AssetType] = Set(
@@ -197,6 +192,16 @@ Run it again and you should now have just the yellow circle right in the middle 
 
 We're going to make the dot move using a `Signal`. Signals are powerful but a bit complicated, so we're going to use it here just to show you them in action and get rid of it again in the next step.
 
+You can get the running time of the game from the `FrameContext` provided in all update functions:
+
+```scala mdoc:invisible
+import indigo.platform.assets.DynamicText
+import indigo.shared.AnimationsRegister
+import indigo.shared.FontRegister
+val boundaryLocator = new BoundaryLocator(new AnimationsRegister, new FontRegister, new DynamicText)
+val context = new FrameContext[Unit](GameTime.zero, Dice.fromSeed(1l), InputState.default, boundaryLocator, ())
+```
+
 Replace:
 
 ```scala mdoc
@@ -216,7 +221,7 @@ Graphic(Rectangle(0, 0, 32, 32), 1, Material.Bitmap(assetName))
     Signal
       .Orbit(config.viewport.giveDimensions(magnification).center, 30)
       .map(_.toPoint)
-      .at(context.gameTime.running)
+      .at(context.running)
   )
 ```
 
@@ -236,6 +241,10 @@ Before we move on, if you're new to game development, it's worth noting the impo
 
 Consider how we might move something along the x-axis:
 
+```scala mdoc:invisible
+val graphic = Graphic(10, 10, Material.Bitmap(AssetName("graphic")))
+```
+
 ```scala mdoc
 graphic.moveBy(10, 0)
 ```
@@ -249,7 +258,9 @@ Either way the result is that your x-axis movement is no longer smooth.
 The solution is to do this:
 
 ```scala mdoc
-graphic.moveBy(600 * time delta in seconds, 0)
+// time delta in seconds - 16.7ms is the delta for 60 frames per second
+val d = Seconds(0.01666)
+graphic.moveBy((d * 600).toInt, 0)
 ```
 
 That is, we say that we want a velocity of 600 pixels per second, but multiply that 600 by the fraction of a second since the last frame update. At 60 FPS, `600 * 0.01666 = 9.996` i.e near as makes no odds the 10 pixel movement we wanted, while at a dip to 55 FPS we get `600 * 0.01818 = 10.908`, meaning that you move a little further to make up for lost time.
@@ -283,7 +294,7 @@ To do that we're going to need a simple model, so let us define some case classe
 Add this to the bottom of your file:
 
 ```scala mdoc
-case class Model(center: Point, dots: List[Dot]) {
+final case class Model(center: Point, dots: List[Dot]) {
   def addDot(dot: Dot): Model =
     this.copy(dots = dot :: dots)
 
@@ -294,7 +305,7 @@ object Model {
   def initial(center: Point): Model = Model(center, Nil)
 }
 
-case class Dot(orbitDistance: Int, angle: Radians) {
+final case class Dot(orbitDistance: Int, angle: Radians) {
   def update(timeDelta: Seconds): Dot =
     this.copy(angle = angle + Radians.fromSeconds(timeDelta))
 }
@@ -326,14 +337,9 @@ I digress: Let's set up our model.
 
 First you need to tell Indigo what class you're using for your Model, like so:
 
-```scala mdoc
-object HelloIndigo extends IndigoSandbox[Unit, Unit]
-```
-
-becomes:
-
-```scala mdoc
-object HelloIndigo extends IndigoSandbox[Unit, Model]
+```diff
+- object HelloIndigo extends IndigoSandbox[Unit, Unit]
++ object HelloIndigo extends IndigoSandbox[Unit, Model]
 ```
 
 Then we need to give Indigo the empty or first version of our model.
@@ -347,7 +353,7 @@ def initialModel(startupData: Unit): Outcome[Unit] =
 
 with:
 
-```scala mdoc
+```scala mdoc:nest
 def initialModel(startupData: Unit): Outcome[Model] =
   Outcome(
     Model.initial(
@@ -360,7 +366,7 @@ And then we need to update it, replace:
 
 ```scala mdoc
 def updateModel(
-    context: FrameContext,
+    context: FrameContext[Unit],
     model: Unit
 ): GlobalEvent => Outcome[Unit] =
   _ => Outcome(())
@@ -368,18 +374,18 @@ def updateModel(
 
 with
 
-```scala mdoc
+```scala mdoc:nest
 def updateModel(
-    context: FrameContext,
+    context: FrameContext[Unit],
     model: Model
 ): GlobalEvent => Outcome[Model] = {
-  case MouseEvent.Click(x, y) =>
-    val adjustedPosition = Point(x, y) - model.center
+  case MouseEvent.Click(clickPoint) =>
+    val adjustedPosition = clickPoint - model.center
 
     Outcome(
       model.addDot(
         Dot(
-          Point.distanceBetween(model.center, Point(x, y)).toInt,
+          Point.distanceBetween(model.center, clickPoint).toInt,
           Radians(
             Math.atan2(
               adjustedPosition.x.toDouble,
@@ -424,11 +430,11 @@ Finally we need to draw something, replace:
 
 with:
 
-```scala mdoc
-SceneUpdateFragment(
-  Graphic(Rectangle(0, 0, 32, 32), 1, Material.Bitmap(assetName)) :: drawDots(model.center, model.dots)
-)
+```scala mdoc:invisible
+val model = Model.initial(Point.zero)
+```
 
+```scala mdoc
 def drawDots(
     center: Point,
     dots: List[Dot]
@@ -444,6 +450,11 @@ def drawDots(
       .withRef(8, 8)
       .moveTo(position)
   }
+
+SceneUpdateFragment(
+  Graphic(Rectangle(0, 0, 32, 32), 1, Material.Bitmap(assetName)) :: 
+    drawDots(model.center, model.dots)
+)
 ```
 
 Run it, and hopefully clicking on the screen will add yellow dots!

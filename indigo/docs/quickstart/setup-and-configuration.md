@@ -92,7 +92,7 @@ Note that during development the fast version is perfectly acceptable. Your brow
 
 Example minimal `build.sc` file for your game:
 
-```scala mdoc
+```scala
 import mill._
 import mill.scalalib._
 import mill.scalajslib._
@@ -142,7 +142,7 @@ To run as a web site, navigate to the folder, run `http-server -c-1`, and got to
 
 You can also define the following in your `build.sc` file inside the `mygame` object:
 
-```scala mdoc
+```scala
   def buildGame() = T.command {
     T {
       compile()
@@ -184,7 +184,7 @@ Which allows you to run `mill mygame.buildGame` and `mill mygame.runGame` from t
 
 Add the following to your `project/plugins.sbt` file:
 
-```scala mdoc
+```scala
 addSbtPlugin("org.scala-js" % "sbt-scalajs" % "1.7.0")
 addSbtPlugin("io.indigoengine" %% "sbt-indigo" % "0.9.2") // Note the double %%
 ```
@@ -193,7 +193,7 @@ addSbtPlugin("io.indigoengine" %% "sbt-indigo" % "0.9.2") // Note the double %%
 
 Example minimal `build.sbt` file for the root of your project:
 
-```scala mdoc
+```scala
 lazy val mygame =
   (project in file("."))
     .enablePlugins(ScalaJSPlugin, SbtIndigo) // Enable the Scala.js and Indigo plugins
@@ -236,7 +236,7 @@ To run as a web site, navigate to the folder, run `http-server -c-1`, and go to 
 
 You can also define the following in your `build.sbt` file:
 
-```scala mdoc
+```scala
 addCommandAlias("buildGame", ";compile;fastOptJS;indigoBuild")
 addCommandAlias("runGame", ";compile;fastOptJS;indigoRun")
 addCommandAlias("buildGameFull", ";compile;fullOptJS;indigoBuildFull")
