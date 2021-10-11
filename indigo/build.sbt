@@ -1,7 +1,7 @@
 import scala.sys.process._
 import scala.language.postfixOps
 
-ThisBuild / versionScheme := Some("early-semver")
+ThisBuild / versionScheme                                  := Some("early-semver")
 ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.5.0"
 
 lazy val indigoVersion = IndigoVersion.getVersion
@@ -20,9 +20,10 @@ lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
   Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
   scalacOptions ++= Seq("-language:strictEquality"),
   crossScalaVersions := Seq(scala3Version),
-  scalafixOnCompile := true,
-  semanticdbEnabled := true,
-  semanticdbVersion := scalafixSemanticdb.revision
+  scalafixOnCompile  := true,
+  semanticdbEnabled  := true,
+  semanticdbVersion  := scalafixSemanticdb.revision,
+  autoAPIMappings    := true
 )
 
 lazy val publishSettings = {
@@ -228,7 +229,11 @@ lazy val docs = project
 lazy val indigoProject =
   (project in file("."))
     .enablePlugins(ScalaJSPlugin)
+    .enablePlugins(ScalaUnidocPlugin)
     .settings(commonSettings: _*)
+    .settings(
+      unidocProjectFilter in (ScalaUnidoc, unidoc) := inAnyProject -- inProjects(indigoShaders, sandbox, perf, docs)
+    )
     .settings(
       code               := { "code ." ! },
       openshareddocs     := { "open -a Firefox indigo-shared/.jvm/target/scala-3.0.0/api/indigo/index.html" ! },
@@ -244,6 +249,13 @@ lazy val indigoProject =
       perf,
       docs
     )
+
+addCommandAlias(
+  "gendocs",
+  List(
+    "unidoc"
+  ).mkString(";", ";", "")
+)
 
 lazy val code =
   taskKey[Unit]("Launch VSCode in the current directory")
