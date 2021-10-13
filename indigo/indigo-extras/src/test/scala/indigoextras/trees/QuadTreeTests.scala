@@ -121,7 +121,24 @@ class QuadTreeTests extends munit.FunSuite {
       .insertElement("b", Vertex(0, 1))
       .insertElement("c", Vertex(1, 0))
 
-    assertEquals(treeA === treeB, true)
+    assert(treeA === treeB)
+  }
+
+  test("should be able to check equality.equal") {
+
+    val treeA = QuadTree
+      .empty(2, 2)
+      .insertElement("a", Vertex(0, 0))
+      .insertElement("b", Vertex(0, 1))
+      .insertElement("c", Vertex(1, 0))
+
+    val treeB = QuadTree
+      .empty(2, 2)
+      .insertElement("c", Vertex(1, 0))
+      .insertElement("a", Vertex(0, 0))
+      .insertElement("b", Vertex(0, 1))
+
+    assert(treeA === treeB)
   }
 
   test("should be able to check equality.not equal") {
@@ -138,7 +155,24 @@ class QuadTreeTests extends munit.FunSuite {
       .insertElement("b", Vertex(0, 1))
       .insertElement("d", Vertex(1, 0))
 
-    assertEquals(treeA === treeB, false)
+    assert(treeA !== treeB)
+  }
+
+  test("should be able to check equality.not equal 2") {
+
+    val treeA = QuadTree
+      .empty(2, 2)
+      .insertElement("a", Vertex(0, 0))
+      .insertElement("b", Vertex(0, 1))
+      .insertElement("c", Vertex(1, 0))
+
+    val treeB = QuadTree
+      .empty(2, 2)
+      .insertElement("a", Vertex(0, 0))
+      .insertElement("b", Vertex(1, 0))
+      .insertElement("c", Vertex(0, 1))
+
+    assert(treeA !== treeB)
   }
 
   test("should be able to prune an existing tree to simplify the structure") {
