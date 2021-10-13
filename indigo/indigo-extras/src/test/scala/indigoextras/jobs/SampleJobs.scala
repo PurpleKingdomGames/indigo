@@ -1,7 +1,7 @@
 package indigoextras.jobs
 
-import indigoextras.jobs.SampleJobs.Fishing
 import indigo.shared.Outcome
+import indigoextras.jobs.SampleJobs.Fishing
 
 sealed trait SampleJobs extends Job
 object SampleJobs {

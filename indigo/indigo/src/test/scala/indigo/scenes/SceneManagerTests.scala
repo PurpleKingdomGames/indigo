@@ -1,9 +1,10 @@
 package indigo.scenes
 
-import indigo.shared.events.{FrameTick, GlobalEvent}
-import indigo.shared.collections.NonEmptyList
-import indigo.shared.time.Seconds
 import indigo.shared.Outcome
+import indigo.shared.collections.NonEmptyList
+import indigo.shared.events.FrameTick
+import indigo.shared.events.GlobalEvent
+import indigo.shared.time.Seconds
 
 class SceneManagerTests extends munit.FunSuite {
 

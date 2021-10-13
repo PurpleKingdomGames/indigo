@@ -1,7 +1,7 @@
 package indigo.shared.display
 
-import indigo.shared.datatypes.Vector2
 import indigo.shared.datatypes.Rectangle
+import indigo.shared.datatypes.Vector2
 
 class SpriteSheetFrameTests extends munit.FunSuite {
 

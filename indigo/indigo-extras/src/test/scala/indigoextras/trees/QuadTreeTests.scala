@@ -1,7 +1,10 @@
 package indigoextras.trees
 
-import indigoextras.geometry.{Vertex, BoundingBox}
-import indigoextras.trees.QuadTree.{QuadBranch, QuadEmpty, QuadLeaf}
+import indigoextras.geometry.BoundingBox
+import indigoextras.geometry.Vertex
+import indigoextras.trees.QuadTree.QuadBranch
+import indigoextras.trees.QuadTree.QuadEmpty
+import indigoextras.trees.QuadTree.QuadLeaf
 
 class QuadTreeTests extends munit.FunSuite {
 

@@ -1,17 +1,15 @@
 package indigoextras.formats
 
-import indigo.shared.events.GlobalEvent
-import indigo.shared.scenegraph._
 import indigo.shared.animation._
-import indigo.shared.datatypes._
-
-import indigo.shared.formats._
-
-import indigo.shared.dice.Dice
 import indigo.shared.assets.AssetName
 import indigo.shared.collections.NonEmptyList
-import indigo.shared.time.Millis
+import indigo.shared.datatypes._
+import indigo.shared.dice.Dice
+import indigo.shared.events.GlobalEvent
+import indigo.shared.formats._
 import indigo.shared.materials.Material
+import indigo.shared.scenegraph._
+import indigo.shared.time.Millis
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.noValPatterns"))
 class AsepriteTests extends munit.FunSuite {

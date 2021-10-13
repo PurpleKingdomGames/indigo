@@ -1,7 +1,7 @@
 package indigo.shared.animation
 
-import indigo.shared.time._
 import indigo.shared.datatypes._
+import indigo.shared.time._
 
 class CycleRefTests extends munit.FunSuite {
 

@@ -1,17 +1,17 @@
 package indigo.shared
 
-import indigo.shared.scenegraph.Shape
-import indigo.shared.datatypes.Fill
-import indigo.shared.datatypes.Stroke
-import indigo.shared.datatypes.RGBA
-import indigo.shared.datatypes.FontChar
-import indigo.shared.datatypes.FontKey
-import indigo.shared.datatypes.FontInfo
-import indigo.shared.materials.Material
-import indigo.shared.assets.AssetName
-import indigo.shared.datatypes.Rectangle
-import indigo.shared.scenegraph.Text
 import indigo.platform.assets.DynamicText
+import indigo.shared.assets.AssetName
+import indigo.shared.datatypes.Fill
+import indigo.shared.datatypes.FontChar
+import indigo.shared.datatypes.FontInfo
+import indigo.shared.datatypes.FontKey
+import indigo.shared.datatypes.RGBA
+import indigo.shared.datatypes.Rectangle
+import indigo.shared.datatypes.Stroke
+import indigo.shared.materials.Material
+import indigo.shared.scenegraph.Shape
+import indigo.shared.scenegraph.Text
 
 class BoundaryLocatorTests extends munit.FunSuite {
 

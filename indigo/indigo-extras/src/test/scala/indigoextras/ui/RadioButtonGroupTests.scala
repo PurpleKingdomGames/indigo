@@ -1,13 +1,13 @@
 package indigoextras.ui
 
-import indigo.shared.scenegraph.Graphic
-import indigo.shared.datatypes.Rectangle
-import indigo.shared.materials.Material
 import indigo.shared.assets.AssetName
 import indigo.shared.datatypes.Point
+import indigo.shared.datatypes.Rectangle
 import indigo.shared.events.GlobalEvent
-import indigo.shared.input.Mouse
 import indigo.shared.events.MouseEvent
+import indigo.shared.input.Mouse
+import indigo.shared.materials.Material
+import indigo.shared.scenegraph.Graphic
 
 class RadioButtonGroupTests extends munit.FunSuite {
 

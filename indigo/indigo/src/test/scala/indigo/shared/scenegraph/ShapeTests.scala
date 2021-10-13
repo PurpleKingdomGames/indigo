@@ -1,10 +1,10 @@
 package indigo.shared.scenegraph
 
 import indigo._
-import indigo.shared.BoundaryLocator
-import indigo.shared.AnimationsRegister
-import indigo.shared.FontRegister
 import indigo.platform.assets.DynamicText
+import indigo.shared.AnimationsRegister
+import indigo.shared.BoundaryLocator
+import indigo.shared.FontRegister
 
 class ShapeTests extends munit.FunSuite:
 

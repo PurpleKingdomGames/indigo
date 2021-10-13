@@ -1,8 +1,10 @@
 package indigoextras.pathfinding
 
-import indigoextras.pathfinding.GridSquare.{EmptySquare, EndSquare, ImpassableSquare, StartSquare}
-
 import indigo.shared.dice.Dice
+import indigoextras.pathfinding.GridSquare.EmptySquare
+import indigoextras.pathfinding.GridSquare.EndSquare
+import indigoextras.pathfinding.GridSquare.ImpassableSquare
+import indigoextras.pathfinding.GridSquare.StartSquare
 
 class PathFindingTests extends munit.FunSuite {
 

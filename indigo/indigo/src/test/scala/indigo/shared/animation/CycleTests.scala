@@ -1,8 +1,8 @@
 package indigo.shared.animation
 
-import indigo.shared.time._
-import indigo.shared.datatypes._
 import indigo.shared.collections.NonEmptyList
+import indigo.shared.datatypes._
+import indigo.shared.time._
 
 class CycleTests extends munit.FunSuite {
 

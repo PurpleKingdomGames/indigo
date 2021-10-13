@@ -1,14 +1,14 @@
 package indigo.scenes
 
+import indigo.platform.assets.DynamicText
+import indigo.shared.AnimationsRegister
+import indigo.shared.BoundaryLocator
+import indigo.shared.FontRegister
 import indigo.shared.FrameContext
-import indigo.shared.time.GameTime
 import indigo.shared.dice.Dice
 import indigo.shared.events.InputState
-import indigo.shared.BoundaryLocator
-import indigo.shared.AnimationsRegister
-import indigo.shared.FontRegister
+import indigo.shared.time.GameTime
 import indigo.shared.time.Seconds
-import indigo.platform.assets.DynamicText
 
 object FakeFrameContext {
 

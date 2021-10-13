@@ -1,8 +1,8 @@
 package indigo.shared.shader
 
+import indigo.shared.datatypes.Matrix4
 import indigo.shared.datatypes.RGB
 import indigo.shared.datatypes.RGBA
-import indigo.shared.datatypes.Matrix4
 
 class ShaderPrimitiveTests extends munit.FunSuite {
 

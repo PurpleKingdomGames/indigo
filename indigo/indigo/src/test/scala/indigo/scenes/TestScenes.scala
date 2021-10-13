@@ -1,11 +1,11 @@
 package indigo.scenes
 
-import indigo.shared.events.GlobalEvent
-import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.Outcome
-import indigo.shared.subsystems.SubSystem
 import indigo.shared.FrameContext
 import indigo.shared.events.EventFilters
+import indigo.shared.events.GlobalEvent
+import indigo.shared.scenegraph.SceneUpdateFragment
+import indigo.shared.subsystems.SubSystem
 
 object TestScenes {
 

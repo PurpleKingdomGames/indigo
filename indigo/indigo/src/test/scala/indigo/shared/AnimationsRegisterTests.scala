@@ -1,21 +1,21 @@
 package indigo.shared
 
-import indigo.shared.animation.Frame
-import indigo.shared.datatypes.Rectangle
-import indigo.shared.datatypes.Point
-import indigo.shared.datatypes.Size
-import indigo.shared.collections.NonEmptyList
-import indigo.shared.animation.Cycle
 import indigo.shared.animation.Animation
-import indigo.shared.animation.AnimationMemento
-import indigo.shared.animation.AnimationKey
-import indigo.shared.time.Seconds
-import indigo.shared.datatypes.BindingKey
-import indigo.shared.time.GameTime
-import indigo.shared.animation.CycleLabel
 import indigo.shared.animation.AnimationAction.ChangeCycle
-import indigo.shared.time.Millis
 import indigo.shared.animation.AnimationAction.Play
+import indigo.shared.animation.AnimationKey
+import indigo.shared.animation.AnimationMemento
+import indigo.shared.animation.Cycle
+import indigo.shared.animation.CycleLabel
+import indigo.shared.animation.Frame
+import indigo.shared.collections.NonEmptyList
+import indigo.shared.datatypes.BindingKey
+import indigo.shared.datatypes.Point
+import indigo.shared.datatypes.Rectangle
+import indigo.shared.datatypes.Size
+import indigo.shared.time.GameTime
+import indigo.shared.time.Millis
+import indigo.shared.time.Seconds
 
 class AnimationsRegisterTests extends munit.FunSuite {
 

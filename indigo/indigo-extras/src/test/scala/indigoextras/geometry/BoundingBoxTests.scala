@@ -1,7 +1,7 @@
 package indigoextras.geometry
 
-import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Point
+import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Size
 
 class BoundingBoxTests extends munit.FunSuite {

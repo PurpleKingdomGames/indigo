@@ -1,29 +1,29 @@
 package indigoextras.ui
 
-import indigo.shared.scenegraph.Text
-import indigo.shared.datatypes.Rectangle
-import indigo.shared.scenegraph.Graphic
-import indigo.shared.datatypes.FontKey
-import indigo.shared.materials.Material
-import indigo.shared.assets.AssetName
-import indigo.shared.FontRegister
-import indigo.shared.BoundaryLocator
-import indigo.shared.datatypes.FontChar
-import indigo.shared.datatypes.FontInfo
+import indigo.platform.assets.DynamicText
 import indigo.shared.AnimationsRegister
-import indigo.shared.time.GameTime
-import indigo.shared.datatypes.Point
-import indigo.shared.events.InputState
-import indigo.shared.dice.Dice
+import indigo.shared.BoundaryLocator
+import indigo.shared.FontRegister
 import indigo.shared.FrameContext
-import indigo.shared.input.Mouse
-import indigo.shared.input.Keyboard
-import indigo.shared.input.Gamepad
-import indigo.shared.events.KeyboardEvent
+import indigo.shared.assets.AssetName
 import indigo.shared.constants.Key
 import indigo.shared.datatypes.BindingKey
+import indigo.shared.datatypes.FontChar
+import indigo.shared.datatypes.FontInfo
+import indigo.shared.datatypes.FontKey
+import indigo.shared.datatypes.Point
+import indigo.shared.datatypes.Rectangle
+import indigo.shared.dice.Dice
 import indigo.shared.events.GlobalEvent
-import indigo.platform.assets.DynamicText
+import indigo.shared.events.InputState
+import indigo.shared.events.KeyboardEvent
+import indigo.shared.input.Gamepad
+import indigo.shared.input.Keyboard
+import indigo.shared.input.Mouse
+import indigo.shared.materials.Material
+import indigo.shared.scenegraph.Graphic
+import indigo.shared.scenegraph.Text
+import indigo.shared.time.GameTime
 
 class InputFieldTests extends munit.FunSuite {
 

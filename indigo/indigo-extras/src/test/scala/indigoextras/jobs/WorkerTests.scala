@@ -1,11 +1,12 @@
 package indigoextras.jobs
 
-import indigo.shared.time.GameTime
-
-import indigoextras.jobs.SampleJobs.{CantHave, Fishing, WanderTo}
 import indigo.shared.Outcome
 import indigo.shared.dice.Dice
+import indigo.shared.time.GameTime
 import indigo.shared.time.Seconds
+import indigoextras.jobs.SampleJobs.CantHave
+import indigoextras.jobs.SampleJobs.Fishing
+import indigoextras.jobs.SampleJobs.WanderTo
 
 class WorkerTests extends munit.FunSuite {
 

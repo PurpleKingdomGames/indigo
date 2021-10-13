@@ -1,12 +1,12 @@
 package indigoextras.jobs
 
+import indigo.shared.datatypes.BindingKey
+import indigo.shared.dice.Dice
+import indigo.shared.events.FrameTick
+import indigo.shared.events.GlobalEvent
 import indigo.shared.time.GameTime
 import indigo.shared.time.Millis
 import indigo.shared.time.Seconds
-import indigo.shared.events.FrameTick
-import indigo.shared.datatypes.BindingKey
-import indigo.shared.events.GlobalEvent
-import indigo.shared.dice.Dice
 
 class WorkScheduleTests extends munit.FunSuite {
 

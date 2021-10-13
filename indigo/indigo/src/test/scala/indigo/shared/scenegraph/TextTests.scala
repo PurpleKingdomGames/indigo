@@ -1,13 +1,16 @@
 package indigo.shared.scenegraph
 
-import indigo.shared.FontRegister
-import indigo.shared.datatypes.{FontChar, FontInfo, FontKey, Rectangle, Radians}
-
-import indigo.shared.assets.AssetName
-import indigo.shared.materials.Material
-import indigo.shared.BoundaryLocator
-import indigo.shared.AnimationsRegister
 import indigo.platform.assets.DynamicText
+import indigo.shared.AnimationsRegister
+import indigo.shared.BoundaryLocator
+import indigo.shared.FontRegister
+import indigo.shared.assets.AssetName
+import indigo.shared.datatypes.FontChar
+import indigo.shared.datatypes.FontInfo
+import indigo.shared.datatypes.FontKey
+import indigo.shared.datatypes.Radians
+import indigo.shared.datatypes.Rectangle
+import indigo.shared.materials.Material
 
 class TextTests extends munit.FunSuite {
 

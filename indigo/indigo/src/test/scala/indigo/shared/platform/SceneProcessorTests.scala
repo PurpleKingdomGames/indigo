@@ -1,10 +1,10 @@
 package indigo.shared.platform
 
-import indigo.shared.scenegraph.Light
-import indigo.shared.scenegraph.AmbientLight
 import indigo.shared.datatypes.RGBA
-import indigo.shared.scenegraph.DirectionLight
 import indigo.shared.datatypes.Radians
+import indigo.shared.scenegraph.AmbientLight
+import indigo.shared.scenegraph.DirectionLight
+import indigo.shared.scenegraph.Light
 
 class SceneProcessorTests extends munit.FunSuite {
 

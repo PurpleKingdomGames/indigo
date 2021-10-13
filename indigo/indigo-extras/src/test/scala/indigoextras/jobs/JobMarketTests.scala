@@ -1,16 +1,16 @@
 package indigoextras.jobs
 
+import indigo.platform.assets.DynamicText
 import indigo.shared.AnimationsRegister
+import indigo.shared.BoundaryLocator
 import indigo.shared.FontRegister
+import indigo.shared.datatypes.BindingKey
+import indigo.shared.dice.Dice
+import indigo.shared.events.FrameTick
+import indigo.shared.events.InputState
+import indigo.shared.scenegraph.SceneAudio
 import indigo.shared.subsystems.SubSystemFrameContext
 import indigo.shared.time.GameTime
-import indigo.shared.dice.Dice
-import indigo.shared.events.InputState
-import indigo.shared.BoundaryLocator
-import indigo.shared.datatypes.BindingKey
-import indigo.shared.events.FrameTick
-import indigo.shared.scenegraph.SceneAudio
-import indigo.platform.assets.DynamicText
 
 class JobMarketTests extends munit.FunSuite {
 

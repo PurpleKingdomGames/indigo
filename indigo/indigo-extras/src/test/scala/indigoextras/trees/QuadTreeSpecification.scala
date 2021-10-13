@@ -1,8 +1,8 @@
 package indigoextras.trees
 
-import org.scalacheck._
-import org.scalacheck.Prop.propBoolean
 import indigoextras.geometry.BoundingBox
+import org.scalacheck.Prop.propBoolean
+import org.scalacheck._
 
 object QuadTreeSpecification extends Properties("QuadTree") {
 

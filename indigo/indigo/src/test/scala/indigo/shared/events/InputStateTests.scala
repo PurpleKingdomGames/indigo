@@ -1,13 +1,13 @@
 package indigo.shared.events
 
-import indigo.shared.datatypes.Rectangle
-import indigo.shared.datatypes.Point
 import indigo.shared.constants.Key
+import indigo.shared.datatypes.Point
+import indigo.shared.datatypes.Rectangle
+import indigo.shared.input.AnalogAxis
 import indigo.shared.input.Gamepad
 import indigo.shared.input.GamepadAnalogControls
-import indigo.shared.input.AnalogAxis
-import indigo.shared.input.GamepadDPad
 import indigo.shared.input.GamepadButtons
+import indigo.shared.input.GamepadDPad
 
 class InputStateTests extends munit.FunSuite {
 

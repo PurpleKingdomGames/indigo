@@ -1,7 +1,7 @@
 package indigo.shared.datatypes.mutable
 
-import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.Matrix4
+import indigo.shared.datatypes.Radians
 
 /*
 In these tests, Matrix4 is acting as the reference implementation.
