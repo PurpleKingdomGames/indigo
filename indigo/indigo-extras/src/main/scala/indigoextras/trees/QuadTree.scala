@@ -3,7 +3,8 @@ package indigoextras.trees
 import indigoextras.geometry.BoundingBox
 import indigoextras.geometry.LineSegment
 import indigoextras.geometry.Vertex
-import indigoextras.trees.QuadTree.QuadBranch
+
+import scala.annotation.tailrec
 
 sealed trait QuadTree[T] derives CanEqual:
   val bounds: BoundingBox
@@ -57,21 +58,33 @@ sealed trait QuadTree[T] derives CanEqual:
     rec(this, "")
 
   def ===(other: QuadTree[T])(using CanEqual[T, T]): Boolean =
-    def rec(a: QuadTree[T], b: QuadTree[T]): Boolean =
+    @tailrec
+    def rec(a: List[QuadTree[T]], b: List[QuadTree[T]]): Boolean =
       (a, b) match
-        case (QuadTree.QuadEmpty(b1), QuadTree.QuadEmpty(b2)) if b1 ~== b2 =>
+        case (Nil, Nil) =>
           true
 
-        case (QuadTree.QuadLeaf(b1, p1, v1), QuadTree.QuadLeaf(b2, p2, v2)) if b1 ~== b2 =>
-          (p1 ~== p2) && v1 == v2
+        case (Nil, _) =>
+          false
 
-        case (QuadTree.QuadBranch(bounds1, a1, b1, c1, d1), QuadTree.QuadBranch(bounds2, a2, b2, c2, d2)) =>
-          (bounds1 ~== bounds2) && rec(a1, a2) && rec(b1, b2) && rec(c1, c2) && rec(d1, d2)
+        case (_, Nil) =>
+          false
+
+        case (QuadTree.QuadEmpty(b1) :: as, QuadTree.QuadEmpty(b2) :: bs) if b1 ~== b2 =>
+          rec(as, bs)
+
+        case (QuadTree.QuadLeaf(b1, p1, v1) :: as, QuadTree.QuadLeaf(b2, p2, v2) :: bs)
+            if (b1 ~== b2) && (p1 ~== p2) && v1 == v2 =>
+          rec(as, bs)
+
+        case (QuadTree.QuadBranch(bounds1, a1, b1, c1, d1) :: as, QuadTree.QuadBranch(bounds2, a2, b2, c2, d2) :: bs)
+            if bounds1 ~== bounds2 =>
+          rec(a1 :: b1 :: c1 :: d1 :: as, a2 :: b2 :: c2 :: d2 :: bs)
 
         case _ =>
           false
 
-    rec(this, other)
+    rec(List(this), List(other))
 
 object QuadTree:
 
