@@ -3,11 +3,10 @@ package indigoextras.trees
 import indigoextras.geometry.BoundingBox
 import indigoextras.geometry.LineSegment
 import indigoextras.geometry.Vertex
+import indigoextras.trees.QuadTree.QuadBranch
 
-sealed trait QuadTree[T] derives CanEqual {
-
+sealed trait QuadTree[T] derives CanEqual:
   val bounds: BoundingBox
-
   def isEmpty: Boolean
 
   def fetchElementAt(vertex: Vertex): Option[T] =
@@ -39,10 +38,9 @@ sealed trait QuadTree[T] derives CanEqual {
   def searchByRectangle(boundingBox: BoundingBox): List[T] =
     QuadTree.searchByBoundingBox(this, boundingBox)
 
-  def prettyPrint: String = {
-
+  def prettyPrint: String =
     def rec(quadTree: QuadTree[T], indent: String): String =
-      quadTree match {
+      quadTree match
         case QuadTree.QuadEmpty(bounds) =>
           indent + s"Empty [${bounds.toString()}]"
 
@@ -55,15 +53,12 @@ sealed trait QuadTree[T] derives CanEqual {
              |${rec(b, indent + "  ")}
              |${rec(c, indent + "  ")}
              |${rec(d, indent + "  ")}""".stripMargin
-      }
 
     rec(this, "")
-  }
 
-  def ===(other: QuadTree[T])(using CanEqual[T, T]): Boolean = {
-
+  def ===(other: QuadTree[T])(using CanEqual[T, T]): Boolean =
     def rec(a: QuadTree[T], b: QuadTree[T]): Boolean =
-      (a, b) match {
+      (a, b) match
         case (QuadTree.QuadEmpty(b1), QuadTree.QuadEmpty(b2)) if b1 ~== b2 =>
           true
 
@@ -75,13 +70,10 @@ sealed trait QuadTree[T] derives CanEqual {
 
         case _ =>
           false
-      }
 
     rec(this, other)
-  }
 
-}
-object QuadTree {
+object QuadTree:
 
   def empty[T](width: Double, height: Double): QuadTree[T] =
     QuadEmpty(BoundingBox(0, 0, width, height))
@@ -95,18 +87,17 @@ object QuadTree {
     QuadEmpty(BoundingBox.fromVertexCloud(elements.map(_._2))).insertElements(elements)
 
   final case class QuadBranch[T](bounds: BoundingBox, a: QuadTree[T], b: QuadTree[T], c: QuadTree[T], d: QuadTree[T])
-      extends QuadTree[T] {
+      extends QuadTree[T]:
     def isEmpty: Boolean =
       a.isEmpty && b.isEmpty && c.isEmpty && d.isEmpty
-  }
-  final case class QuadLeaf[T](bounds: BoundingBox, exactPosition: Vertex, value: T) extends QuadTree[T] {
-    def isEmpty: Boolean = false
-  }
-  final case class QuadEmpty[T](bounds: BoundingBox) extends QuadTree[T] {
-    def isEmpty: Boolean = true
-  }
 
-  object QuadBranch {
+  final case class QuadLeaf[T](bounds: BoundingBox, exactPosition: Vertex, value: T) extends QuadTree[T]:
+    def isEmpty: Boolean = false
+
+  final case class QuadEmpty[T](bounds: BoundingBox) extends QuadTree[T]:
+    def isEmpty: Boolean = true
+
+  object QuadBranch:
 
     def fromBounds[T](bounds: BoundingBox): QuadBranch[T] =
       fromBoundsAndQuads(bounds, subdivide(bounds))
@@ -147,10 +138,11 @@ object QuadTree {
         QuadEmpty(quads._3),
         QuadEmpty(quads._4)
       )
-  }
+
+  end QuadBranch
 
   def fetchElementAt[T](quadTree: QuadTree[T], vertex: Vertex): Option[T] =
-    quadTree match {
+    quadTree match
       case QuadEmpty(bounds) if bounds.contains(vertex) =>
         None
 
@@ -167,10 +159,9 @@ object QuadTree {
 
       case _ =>
         None
-    }
 
   def insertElementAt[T](vertex: Vertex, quadTree: QuadTree[T], element: T): QuadTree[T] =
-    quadTree match {
+    quadTree match
       case QuadEmpty(bounds) if bounds.contains(vertex) =>
         // Straight insert
         QuadLeaf(bounds, vertex, element)
@@ -199,10 +190,9 @@ object QuadTree {
 
       case _ =>
         quadTree
-    }
 
   def removeElement[T](quadTree: QuadTree[T], vertex: Vertex): QuadTree[T] =
-    quadTree match {
+    quadTree match
       case QuadLeaf(bounds, p, _) if bounds.contains(vertex) && (p ~== vertex) =>
         QuadEmpty(bounds)
 
@@ -217,10 +207,9 @@ object QuadTree {
 
       case tree =>
         tree
-    }
 
   def asElementList[T](quadTree: QuadTree[T]): List[T] =
-    quadTree match {
+    quadTree match
       case l: QuadLeaf[T] =>
         List(l.value)
 
@@ -232,10 +221,9 @@ object QuadTree {
 
       case QuadBranch(_, a, b, c, d) =>
         asElementList(a) ++ asElementList(b) ++ asElementList(c) ++ asElementList(d)
-    }
 
   def prune[T](quadTree: QuadTree[T]): QuadTree[T] =
-    quadTree match {
+    quadTree match
       case l: QuadLeaf[T] =>
         l
 
@@ -247,10 +235,9 @@ object QuadTree {
 
       case QuadBranch(bounds, a, b, c, d) =>
         QuadBranch[T](bounds, a.prune, b.prune, c.prune, d.prune)
-    }
 
   def searchByPoint[T](quadTree: QuadTree[T], point: Vertex): Option[T] =
-    quadTree match {
+    quadTree match
       case QuadBranch(bounds, a, b, c, d) if bounds.contains(point) =>
         searchByPoint(a, point)
           .orElse(
@@ -266,13 +253,12 @@ object QuadTree {
 
       case _ =>
         None
-    }
 
   def searchByLine[T](quadTree: QuadTree[T], start: Vertex, end: Vertex): List[T] =
     searchByLine(quadTree, LineSegment(start, end))
 
   def searchByLine[T](quadTree: QuadTree[T], lineSegment: LineSegment): List[T] =
-    quadTree match {
+    quadTree match
       case QuadBranch(bounds, a, b, c, d) if bounds.contains(lineSegment.start) =>
         searchByLine(a, lineSegment) ++
           searchByLine(b, lineSegment) ++
@@ -302,10 +288,9 @@ object QuadTree {
 
       case _ =>
         Nil
-    }
 
   def searchByBoundingBox[T](quadTree: QuadTree[T], boundingBox: BoundingBox): List[T] =
-    quadTree match {
+    quadTree match
       case QuadBranch(bounds, a, b, c, d) if boundingBox.overlaps(bounds) =>
         searchByBoundingBox(a, boundingBox) ++
           searchByBoundingBox(b, boundingBox) ++
@@ -317,6 +302,5 @@ object QuadTree {
 
       case _ =>
         Nil
-    }
 
-}
+end QuadTree
