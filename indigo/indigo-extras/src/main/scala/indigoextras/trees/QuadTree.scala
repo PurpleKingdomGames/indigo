@@ -24,18 +24,18 @@ sealed trait QuadTree[T] derives CanEqual:
   def removeElement(vertex: Vertex): QuadTree[T] =
     QuadTree.removeElement(this, vertex)
 
-  @deprecated("QuadTree.asElementList deprecated, use QuadTree.toList instead.")
+  @deprecated("use `toList` or `toListWithPosition` instead.")
   def asElementList(using CanEqual[T, T]): List[T] =
     QuadTree.asElementList(this)
   def toList(using CanEqual[T, T]): List[T] =
     QuadTree.toList(this)
-  def toPositionedList(using CanEqual[T, T]): List[(Vertex, T)] =
-    QuadTree.toPositionedList(this)
+  def toListWithPosition(using CanEqual[T, T]): List[(Vertex, T)] =
+    QuadTree.toListWithPosition(this)
 
   def prune: QuadTree[T] =
     QuadTree.prune(this)
 
-  @deprecated("QuadTree.searchByPoint deprecated, use QuadTree.findClosestTo instead")
+  @deprecated("use `findClosestTo` or `findClosestToWithPosition` instead")
   def searchByPoint(point: Vertex)(using CanEqual[T, T]): Option[T] =
     QuadTree.findClosestTo(this, point)
   def findClosestTo(vertex: Vertex)(using CanEqual[T, T]): Option[T] =
@@ -53,7 +53,7 @@ sealed trait QuadTree[T] derives CanEqual:
   def searchByLineWithPosition(line: LineSegment)(using CanEqual[T, T]): List[(Vertex, T)] =
     QuadTree.searchByLineWithPosition(this, line)
 
-  @deprecated("QuadTree.searchByRectangle deprecated, use QuadTree.searchByBoundingBox instead")
+  @deprecated("use `searchByBoundingBox` or `searchByBoundingBoxWithPosition` instead")
   def searchByRectangle(boundingBox: BoundingBox)(using CanEqual[T, T]): List[T] =
     QuadTree.searchByBoundingBox(this, boundingBox)
   def searchByBoundingBox(boundingBox: BoundingBox)(using CanEqual[T, T]): List[T] =
@@ -249,7 +249,7 @@ object QuadTree:
       case tree =>
         tree
 
-  @deprecated("QuadTree.asElementList deprecated, use QuadTree.toList instead.")
+  @deprecated("use `toList` or `toListWithPosition` instead.")
   def asElementList[T](quadTree: QuadTree[T])(using CanEqual[T, T]): List[T] =
     toList(quadTree)
 
@@ -283,7 +283,7 @@ object QuadTree:
 
     rec(List(quadTree), Nil)
 
-  def toPositionedList[T](quadTree: QuadTree[T])(using CanEqual[T, T]): List[(Vertex, T)] =
+  def toListWithPosition[T](quadTree: QuadTree[T])(using CanEqual[T, T]): List[(Vertex, T)] =
     @tailrec
     def rec(open: List[QuadTree[T]], acc: List[(Vertex, T)]): List[(Vertex, T)] =
       open match
@@ -327,7 +327,7 @@ object QuadTree:
       case QuadBranch(bounds, a, b, c, d) =>
         QuadBranch[T](bounds, a.prune, b.prune, c.prune, d.prune)
 
-  @deprecated("QuadTree.searchByPoint deprecated, use QuadTree.findClosestTo instead")
+  @deprecated("use `findClosestTo` or `findClosestToWithPosition` instead")
   def searchByPoint[T](quadTree: QuadTree[T], vertex: Vertex)(using CanEqual[T, T]): Option[T] =
     findClosestTo(quadTree, vertex)
   def findClosestToWithPosition[T](quadTree: QuadTree[T], vertex: Vertex)(using CanEqual[T, T]): Option[(Vertex, T)] =
