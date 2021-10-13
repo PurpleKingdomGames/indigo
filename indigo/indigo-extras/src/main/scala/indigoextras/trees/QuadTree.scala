@@ -40,12 +40,26 @@ sealed trait QuadTree[T] derives CanEqual:
     QuadTree.findClosestTo(this, point)
   def findClosestTo(vertex: Vertex)(using CanEqual[T, T]): Option[T] =
     QuadTree.findClosestTo(this, vertex)
+  def findClosestToWithPosition(vertex: Vertex)(using CanEqual[T, T]): Option[(Vertex, T)] =
+    QuadTree.findClosestToWithPosition(this, vertex)
 
-  def searchByLine(start: Vertex, end: Vertex): List[T] =
+  def searchByLine(start: Vertex, end: Vertex)(using CanEqual[T, T]): List[T] =
     QuadTree.searchByLine(this, start, end)
+  def searchByLine(line: LineSegment)(using CanEqual[T, T]): List[T] =
+    QuadTree.searchByLine(this, line)
 
-  def searchByRectangle(boundingBox: BoundingBox): List[T] =
+  def searchByLineWithPosition(start: Vertex, end: Vertex)(using CanEqual[T, T]): List[(Vertex, T)] =
+    QuadTree.searchByLineWithPosition(this, start, end)
+  def searchByLineWithPosition(line: LineSegment)(using CanEqual[T, T]): List[(Vertex, T)] =
+    QuadTree.searchByLineWithPosition(this, line)
+
+  @deprecated("QuadTree.searchByRectangle deprecated, use QuadTree.searchByBoundingBox instead")
+  def searchByRectangle(boundingBox: BoundingBox)(using CanEqual[T, T]): List[T] =
     QuadTree.searchByBoundingBox(this, boundingBox)
+  def searchByBoundingBox(boundingBox: BoundingBox)(using CanEqual[T, T]): List[T] =
+    QuadTree.searchByBoundingBox(this, boundingBox)
+  def searchByBoundingBoxWithPosition(boundingBox: BoundingBox)(using CanEqual[T, T]): List[(Vertex, T)] =
+    QuadTree.searchByBoundingBoxWithPosition(this, boundingBox)
 
   def prettyPrint: String =
     // Not tail recursive
@@ -316,15 +330,15 @@ object QuadTree:
   @deprecated("QuadTree.searchByPoint deprecated, use QuadTree.findClosestTo instead")
   def searchByPoint[T](quadTree: QuadTree[T], vertex: Vertex)(using CanEqual[T, T]): Option[T] =
     findClosestTo(quadTree, vertex)
-  def findClosestTo[T](quadTree: QuadTree[T], vertex: Vertex)(using CanEqual[T, T]): Option[T] =
+  def findClosestToWithPosition[T](quadTree: QuadTree[T], vertex: Vertex)(using CanEqual[T, T]): Option[(Vertex, T)] =
     @tailrec
-    def rec(remaining: List[QuadTree[T]], closestDistance: Double, acc: Option[T]): Option[T] =
+    def rec(remaining: List[QuadTree[T]], closestDistance: Double, acc: Option[(Vertex, T)]): Option[(Vertex, T)] =
       remaining match
         case Nil =>
           acc
 
         case QuadLeaf(_, pos, value) :: rs if vertex.distanceTo(pos) < closestDistance =>
-          rec(rs, vertex.distanceTo(pos), Some(value))
+          rec(rs, vertex.distanceTo(pos), Some((pos, value)))
 
         case QuadBranch(bounds, a, b, c, d) :: rs if vertex.distanceTo(bounds.center) < closestDistance =>
           rec(a :: b :: c :: d :: rs, closestDistance, acc)
@@ -333,54 +347,72 @@ object QuadTree:
           rec(rs, closestDistance, acc)
 
     rec(List(quadTree), Double.MaxValue, None)
+  def findClosestTo[T](quadTree: QuadTree[T], vertex: Vertex)(using CanEqual[T, T]): Option[T] =
+    findClosestToWithPosition(quadTree, vertex).map(_._2)
 
-  def searchByLine[T](quadTree: QuadTree[T], start: Vertex, end: Vertex): List[T] =
+  def searchByLine[T](quadTree: QuadTree[T], start: Vertex, end: Vertex)(using CanEqual[T, T]): List[T] =
     searchByLine(quadTree, LineSegment(start, end))
+  def searchByLineWithPosition[T](quadTree: QuadTree[T], start: Vertex, end: Vertex)(using
+      CanEqual[T, T]
+  ): List[(Vertex, T)] =
+    searchByLineWithPosition(quadTree, LineSegment(start, end))
 
-  def searchByLine[T](quadTree: QuadTree[T], lineSegment: LineSegment): List[T] =
-    quadTree match
-      case QuadBranch(bounds, a, b, c, d) if bounds.contains(lineSegment.start) =>
-        searchByLine(a, lineSegment) ++
-          searchByLine(b, lineSegment) ++
-          searchByLine(c, lineSegment) ++
-          searchByLine(d, lineSegment)
+  def searchByLineWithPosition[T](quadTree: QuadTree[T], lineSegment: LineSegment)(using
+      CanEqual[T, T]
+  ): List[(Vertex, T)] =
+    @tailrec
+    def rec(remaining: List[QuadTree[T]], acc: List[(Vertex, T)]): List[(Vertex, T)] =
+      remaining match
+        case Nil =>
+          acc
 
-      case QuadBranch(bounds, a, b, c, d) if bounds.contains(lineSegment.end) =>
-        searchByLine(a, lineSegment) ++
-          searchByLine(b, lineSegment) ++
-          searchByLine(c, lineSegment) ++
-          searchByLine(d, lineSegment)
+        case QuadBranch(bounds, a, b, c, d) :: rs if bounds.contains(lineSegment.start) =>
+          rec(rs ++ List(a, b, c, d), acc)
 
-      case QuadBranch(bounds, a, b, c, d) if bounds.lineIntersects(lineSegment) =>
-        searchByLine(a, lineSegment) ++
-          searchByLine(b, lineSegment) ++
-          searchByLine(c, lineSegment) ++
-          searchByLine(d, lineSegment)
+        case QuadBranch(bounds, a, b, c, d) :: rs if bounds.contains(lineSegment.end) =>
+          rec(rs ++ List(a, b, c, d), acc)
 
-      case QuadLeaf(bounds, _, value) if bounds.contains(lineSegment.start) =>
-        List(value)
+        case QuadBranch(bounds, a, b, c, d) :: rs if bounds.lineIntersects(lineSegment) =>
+          rec(rs ++ List(a, b, c, d), acc)
 
-      case QuadLeaf(bounds, _, value) if bounds.contains(lineSegment.end) =>
-        List(value)
+        case QuadLeaf(bounds, pos, value) :: rs if bounds.contains(lineSegment.start) =>
+          rec(rs, (pos, value) :: acc)
 
-      case QuadLeaf(bounds, _, value) if bounds.lineIntersects(lineSegment) =>
-        List(value)
+        case QuadLeaf(bounds, pos, value) :: rs if bounds.contains(lineSegment.end) =>
+          rec(rs, (pos, value) :: acc)
 
-      case _ =>
-        Nil
+        case QuadLeaf(bounds, pos, value) :: rs if bounds.lineIntersects(lineSegment) =>
+          rec(rs, (pos, value) :: acc)
 
-  def searchByBoundingBox[T](quadTree: QuadTree[T], boundingBox: BoundingBox): List[T] =
-    quadTree match
-      case QuadBranch(bounds, a, b, c, d) if boundingBox.overlaps(bounds) =>
-        searchByBoundingBox(a, boundingBox) ++
-          searchByBoundingBox(b, boundingBox) ++
-          searchByBoundingBox(c, boundingBox) ++
-          searchByBoundingBox(d, boundingBox)
+        case _ :: rs =>
+          rec(rs, acc)
 
-      case QuadLeaf(_, exactPosition, value) if boundingBox.contains(exactPosition) =>
-        List(value)
+    rec(List(quadTree), Nil)
 
-      case _ =>
-        Nil
+  def searchByLine[T](quadTree: QuadTree[T], lineSegment: LineSegment)(using CanEqual[T, T]): List[T] =
+    searchByLineWithPosition(quadTree, lineSegment).map(_._2)
+
+  def searchByBoundingBoxWithPosition[T](quadTree: QuadTree[T], boundingBox: BoundingBox)(using
+      CanEqual[T, T]
+  ): List[(Vertex, T)] =
+    @tailrec
+    def rec(remaining: List[QuadTree[T]], acc: List[(Vertex, T)]): List[(Vertex, T)] =
+      remaining match
+        case Nil =>
+          acc
+
+        case QuadLeaf(_, exactPosition, value) :: rs if boundingBox.contains(exactPosition) =>
+          rec(rs, (exactPosition, value) :: acc)
+
+        case QuadBranch(bounds, a, b, c, d) :: rs if boundingBox.overlaps(bounds) =>
+          rec(rs ++ List(a, b, c, d), acc)
+
+        case _ :: rs =>
+          rec(rs, acc)
+
+    rec(List(quadTree), Nil)
+
+  def searchByBoundingBox[T](quadTree: QuadTree[T], boundingBox: BoundingBox)(using CanEqual[T, T]): List[T] =
+    searchByBoundingBoxWithPosition(quadTree, boundingBox).map(_._2)
 
 end QuadTree
