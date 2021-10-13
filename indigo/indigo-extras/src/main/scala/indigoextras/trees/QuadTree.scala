@@ -24,8 +24,13 @@ sealed trait QuadTree[T] derives CanEqual:
   def removeElement(vertex: Vertex): QuadTree[T] =
     QuadTree.removeElement(this, vertex)
 
-  def asElementList: List[T] =
+  @deprecated("QuadTree.asElementList deprecated, use QuadTree.toList instead.")
+  def asElementList(using CanEqual[T, T]): List[T] =
     QuadTree.asElementList(this)
+  def toList(using CanEqual[T, T]): List[T] =
+    QuadTree.toList(this)
+  def toPositionedList(using CanEqual[T, T]): List[(Vertex, T)] =
+    QuadTree.toPositionedList(this)
 
   def prune: QuadTree[T] =
     QuadTree.prune(this)
@@ -40,6 +45,7 @@ sealed trait QuadTree[T] derives CanEqual:
     QuadTree.searchByBoundingBox(this, boundingBox)
 
   def prettyPrint: String =
+    // Not tail recursive
     def rec(quadTree: QuadTree[T], indent: String): String =
       quadTree match
         case QuadTree.QuadEmpty(bounds) =>
@@ -90,6 +96,9 @@ sealed trait QuadTree[T] derives CanEqual:
     !(this === other)
 
 object QuadTree:
+
+  given [T](using CanEqual[T, T]): CanEqual[Option[QuadTree[T]], Option[QuadTree[T]]] = CanEqual.derived
+  given [T](using CanEqual[T, T]): CanEqual[List[QuadTree[T]], List[QuadTree[T]]]     = CanEqual.derived
 
   def empty[T](width: Double, height: Double): QuadTree[T] =
     QuadEmpty(BoundingBox(0, 0, width, height))
@@ -224,19 +233,69 @@ object QuadTree:
       case tree =>
         tree
 
-  def asElementList[T](quadTree: QuadTree[T]): List[T] =
-    quadTree match
-      case l: QuadLeaf[T] =>
-        List(l.value)
+  @deprecated("QuadTree.asElementList deprecated, use QuadTree.toList instead.")
+  def asElementList[T](quadTree: QuadTree[T])(using CanEqual[T, T]): List[T] =
+    toList(quadTree)
 
-      case _: QuadEmpty[T] =>
-        Nil
+  def toList[T](quadTree: QuadTree[T])(using CanEqual[T, T]): List[T] =
+    @tailrec
+    def rec(open: List[QuadTree[T]], acc: List[T]): List[T] =
+      open match
+        case Nil =>
+          acc
 
-      case b: QuadBranch[T] if b.isEmpty =>
-        Nil
+        case x :: xs =>
+          x match {
+            case _: QuadEmpty[T] =>
+              rec(xs, acc)
 
-      case QuadBranch(_, a, b, c, d) =>
-        asElementList(a) ++ asElementList(b) ++ asElementList(c) ++ asElementList(d)
+            case l: QuadLeaf[T] =>
+              rec(xs, l.value :: acc)
+
+            case b: QuadBranch[T] if b.isEmpty =>
+              rec(xs, acc)
+
+            case QuadBranch(_, a, b, c, d) =>
+              val next =
+                (if a.isEmpty then Nil else List(a)) ++
+                  (if b.isEmpty then Nil else List(b)) ++
+                  (if c.isEmpty then Nil else List(c)) ++
+                  (if d.isEmpty then Nil else List(d))
+
+              rec(xs ++ next, acc)
+          }
+
+    rec(List(quadTree), Nil)
+
+  def toPositionedList[T](quadTree: QuadTree[T])(using CanEqual[T, T]): List[(Vertex, T)] =
+    @tailrec
+    def rec(open: List[QuadTree[T]], acc: List[(Vertex, T)]): List[(Vertex, T)] =
+      open match
+        case Nil =>
+          acc
+
+        case x :: xs =>
+          x match {
+            case _: QuadEmpty[T] =>
+              rec(xs, acc)
+
+            case l: QuadLeaf[T] =>
+              rec(xs, (l.exactPosition, l.value) :: acc)
+
+            case b: QuadBranch[T] if b.isEmpty =>
+              rec(xs, acc)
+
+            case QuadBranch(_, a, b, c, d) =>
+              val next =
+                (if a.isEmpty then Nil else List(a)) ++
+                  (if b.isEmpty then Nil else List(b)) ++
+                  (if c.isEmpty then Nil else List(c)) ++
+                  (if d.isEmpty then Nil else List(d))
+
+              rec(xs ++ next, acc)
+          }
+
+    rec(List(quadTree), Nil)
 
   def prune[T](quadTree: QuadTree[T]): QuadTree[T] =
     quadTree match

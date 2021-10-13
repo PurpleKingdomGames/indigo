@@ -107,6 +107,42 @@ class QuadTreeTests extends munit.FunSuite {
 
   }
 
+  test("toList") {
+
+    val actual: List[String] = QuadTree
+      .empty(2, 2)
+      .insertElement("a", Vertex(0, 0))
+      .insertElement("b", Vertex(0, 1))
+      .insertElement("c", Vertex(1, 0))
+      .toList
+
+    val expected: List[String] =
+      List("a", "b", "c")
+
+    assert(actual.length == expected.length)
+    assert(actual.forall(expected.contains))
+  }
+
+  test("toPositionedList") {
+
+    val actual: List[(Vertex, String)] = QuadTree
+      .empty(2, 2)
+      .insertElement("a", Vertex(0, 0))
+      .insertElement("b", Vertex(0, 1))
+      .insertElement("c", Vertex(1, 0))
+      .toPositionedList
+
+    val expected: List[(Vertex, String)] =
+      List(
+        (Vertex(0, 0), "a"),
+        (Vertex(0, 1), "b"),
+        (Vertex(1, 0), "c")
+      )
+
+    assert(actual.length == expected.length)
+    assert(actual.forall(expected.contains))
+  }
+
   test("should be able to check equality.equal") {
 
     val treeA = QuadTree
@@ -408,7 +444,7 @@ class QuadTreeTests extends munit.FunSuite {
     val recombined: BoundingBox =
       List(q1, q2, q3, q4)
         .reduce(_.expandToInclude(_))
-        // .foldLeft(z)((acc, next) => acc.expandToInclude(next))
+    // .foldLeft(z)((acc, next) => acc.expandToInclude(next))
 
     assert(clue(recombined) ~== clue(original))
   }
