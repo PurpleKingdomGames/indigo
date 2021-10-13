@@ -130,7 +130,7 @@ class QuadTreeTests extends munit.FunSuite {
       .insertElement("a", Vertex(0, 0))
       .insertElement("b", Vertex(0, 1))
       .insertElement("c", Vertex(1, 0))
-      .toPositionedList
+      .toListWithPosition
 
     val expected: List[(Vertex, String)] =
       List(
