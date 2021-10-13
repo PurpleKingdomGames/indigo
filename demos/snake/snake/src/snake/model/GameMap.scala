@@ -26,7 +26,7 @@ final case class GameMap(quadTree: QuadTree[MapElement], gridSize: BoundingBox) 
     GameMap.findEmptySpace(quadTree, dice, gridSize, not)
 
   def asElementList: List[MapElement] =
-    quadTree.asElementList
+    quadTree.toList
 
   lazy val findWalls: List[MapElement.Wall] =
     asElementList.flatMap {
@@ -53,7 +53,9 @@ object GameMap {
   def apply(gridSize: BoundingBox): GameMap =
     GameMap(QuadTree.empty[MapElement](gridSize.size), gridSize)
 
-  def findEmptySpace[T](quadTree: QuadTree[T], dice: Dice, gridSize: BoundingBox, not: List[Vertex])(using CanEqual[T, T]): Vertex = {
+  def findEmptySpace[T](quadTree: QuadTree[T], dice: Dice, gridSize: BoundingBox, not: List[Vertex])(using
+      CanEqual[T, T]
+  ): Vertex = {
 
     given CanEqual[Option[T], Option[T]] = CanEqual.derived
 
@@ -125,10 +127,11 @@ object GameMap {
 }
 
 enum MapElement derives CanEqual:
-  case Wall(gridPoint: Vertex)  extends MapElement
+  case Wall(gridPoint: Vertex) extends MapElement
   case Apple(gridPoint: Vertex) extends MapElement
 object MapElement:
-  extension (me: MapElement) def giveGridPoint: Vertex =
-    me match
-      case Wall(gp) => gp
-      case Apple(gp) => gp
+  extension (me: MapElement)
+    def giveGridPoint: Vertex =
+      me match
+        case Wall(gp)  => gp
+        case Apple(gp) => gp
