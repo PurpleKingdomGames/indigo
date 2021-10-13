@@ -35,8 +35,11 @@ sealed trait QuadTree[T] derives CanEqual:
   def prune: QuadTree[T] =
     QuadTree.prune(this)
 
-  def searchByPoint(point: Vertex): Option[T] =
-    QuadTree.searchByPoint(this, point)
+  @deprecated("QuadTree.searchByPoint deprecated, use QuadTree.findClosestTo instead")
+  def searchByPoint(point: Vertex)(using CanEqual[T, T]): Option[T] =
+    QuadTree.findClosestTo(this, point)
+  def findClosestTo(vertex: Vertex)(using CanEqual[T, T]): Option[T] =
+    QuadTree.findClosestTo(this, vertex)
 
   def searchByLine(start: Vertex, end: Vertex): List[T] =
     QuadTree.searchByLine(this, start, end)
@@ -310,23 +313,26 @@ object QuadTree:
       case QuadBranch(bounds, a, b, c, d) =>
         QuadBranch[T](bounds, a.prune, b.prune, c.prune, d.prune)
 
-  def searchByPoint[T](quadTree: QuadTree[T], point: Vertex): Option[T] =
-    quadTree match
-      case QuadBranch(bounds, a, b, c, d) if bounds.contains(point) =>
-        searchByPoint(a, point)
-          .orElse(
-            searchByPoint(b, point)
-              .orElse(
-                searchByPoint(c, point)
-                  .orElse(searchByPoint(d, point))
-              )
-          )
+  @deprecated("QuadTree.searchByPoint deprecated, use QuadTree.findClosestTo instead")
+  def searchByPoint[T](quadTree: QuadTree[T], vertex: Vertex)(using CanEqual[T, T]): Option[T] =
+    findClosestTo(quadTree, vertex)
+  def findClosestTo[T](quadTree: QuadTree[T], vertex: Vertex)(using CanEqual[T, T]): Option[T] =
+    @tailrec
+    def rec(remaining: List[QuadTree[T]], closestDistance: Double, acc: Option[T]): Option[T] =
+      remaining match
+        case Nil =>
+          acc
 
-      case QuadLeaf(bounds, _, value) if bounds.contains(point) =>
-        Some(value)
+        case QuadLeaf(_, pos, value) :: rs if vertex.distanceTo(pos) < closestDistance =>
+          rec(rs, vertex.distanceTo(pos), Some(value))
 
-      case _ =>
-        None
+        case QuadBranch(bounds, a, b, c, d) :: rs if vertex.distanceTo(bounds.center) < closestDistance =>
+          rec(a :: b :: c :: d :: rs, closestDistance, acc)
+
+        case _ :: rs =>
+          rec(rs, closestDistance, acc)
+
+    rec(List(quadTree), Double.MaxValue, None)
 
   def searchByLine[T](quadTree: QuadTree[T], start: Vertex, end: Vertex): List[T] =
     searchByLine(quadTree, LineSegment(start, end))

@@ -248,7 +248,7 @@ class QuadTreeTests extends munit.FunSuite {
 
     val point: Vertex = Vertex(0, 1)
 
-    assertEquals(QuadTree.searchByPoint(tree, point), expected)
+    assertEquals(QuadTree.findClosest(tree, point), expected)
   }
 
   test("should allow a search of squares where the line points are in the same square") {
