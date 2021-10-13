@@ -248,7 +248,7 @@ class QuadTreeTests extends munit.FunSuite {
 
     val point: Vertex = Vertex(0, 1)
 
-    assertEquals(QuadTree.findClosest(tree, point), expected)
+    assertEquals(QuadTree.findClosestTo(tree, point), expected)
   }
 
   test("should allow a search of squares where the line points are in the same square") {
@@ -260,7 +260,7 @@ class QuadTreeTests extends munit.FunSuite {
       )
 
     assertEquals(actual.length, expected.length)
-    assertEquals(expected, actual)
+    assert(actual.forall(expected.contains))
   }
 
   test("should allow a search of squares between two horizontal points") {
@@ -273,8 +273,8 @@ class QuadTreeTests extends munit.FunSuite {
         "3,1"
       )
 
-    assertEquals(expected, actual)
     assertEquals(actual.length, expected.length)
+    assert(actual.forall(expected.contains))
   }
 
   test("should allow a search of squares between two vertical points") {
@@ -288,7 +288,7 @@ class QuadTreeTests extends munit.FunSuite {
       )
 
     assertEquals(actual.length, expected.length)
-    assertEquals(expected, actual)
+    assert(actual.forall(expected.contains))
   }
 
   test("should allow a search of squares between two 45 degree points") {
@@ -308,7 +308,8 @@ class QuadTreeTests extends munit.FunSuite {
         "3,3"
       )
 
-    assertEquals(actual, expected)
+    assertEquals(actual.length, expected.length)
+    assert(actual.forall(expected.contains))
   }
 
   /*
@@ -333,7 +334,7 @@ class QuadTreeTests extends munit.FunSuite {
       )
 
     assertEquals(actual.length, expected.length)
-    assertEquals(expected.forall(p => actual.contains(p)), true)
+    assert(actual.forall(expected.contains))
   }
 
   test("should allow a search of squares intersecting with a 1x1 rectangle") {
@@ -344,7 +345,7 @@ class QuadTreeTests extends munit.FunSuite {
     val expected: List[String] = List("1,1")
 
     assertEquals(actual.length, expected.length)
-    assertEquals(expected.forall(p => actual.contains(p)), true)
+    assert(actual.forall(expected.contains))
   }
 
   test("should allow a search of squares intersecting with a 2x2 rectangle") {
@@ -360,7 +361,7 @@ class QuadTreeTests extends munit.FunSuite {
     )
 
     assertEquals(actual.length, expected.length)
-    assertEquals(expected.forall(p => actual.contains(p)), true)
+    assert(actual.forall(expected.contains))
   }
 
   test("should allow a search of squares intersecting with a rectangle the size of the grid") {
@@ -389,7 +390,7 @@ class QuadTreeTests extends munit.FunSuite {
       )
 
     assertEquals(actual.length, expected.length)
-    assertEquals(expected.forall(p => actual.contains(p)), true)
+    assert(actual.forall(expected.contains))
   }
 
   test("should allow a search of squares intersecting with a rectangle") {
@@ -410,7 +411,7 @@ class QuadTreeTests extends munit.FunSuite {
       )
 
     assertEquals(actual.length, expected.length)
-    assertEquals(expected.forall(p => actual.contains(p)), true)
+    assert(actual.forall(expected.contains))
   }
 
   test("subdivision") {
