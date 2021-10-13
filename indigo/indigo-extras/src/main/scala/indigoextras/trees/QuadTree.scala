@@ -86,6 +86,9 @@ sealed trait QuadTree[T] derives CanEqual:
 
     rec(List(this), List(other))
 
+  def !==(other: QuadTree[T])(using CanEqual[T, T]): Boolean =
+    !(this === other)
+
 object QuadTree:
 
   def empty[T](width: Double, height: Double): QuadTree[T] =
