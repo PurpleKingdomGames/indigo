@@ -10,7 +10,7 @@ sealed trait QuadTree[T] derives CanEqual:
   val bounds: BoundingBox
   def isEmpty: Boolean
 
-  def fetchElementAt(vertex: Vertex): Option[T] =
+  def fetchElementAt(vertex: Vertex)(using CanEqual[T, T]): Option[T] =
     QuadTree.fetchElementAt(this, vertex)
 
   def insertElement(element: T, vertex: Vertex): QuadTree[T] =
@@ -166,24 +166,23 @@ object QuadTree:
 
   end QuadBranch
 
-  def fetchElementAt[T](quadTree: QuadTree[T], vertex: Vertex): Option[T] =
-    quadTree match
-      case QuadEmpty(bounds) if bounds.contains(vertex) =>
-        None
+  def fetchElementAt[T](quadTree: QuadTree[T], vertex: Vertex)(using CanEqual[T, T]): Option[T] =
+    @tailrec
+    def rec(remaining: List[QuadTree[T]]): Option[T] =
+      remaining match
+        case Nil =>
+          None
 
-      case QuadBranch(bounds, a, b, c, d) if bounds.contains(vertex) =>
-        List(
-          a.fetchElementAt(vertex),
-          b.fetchElementAt(vertex),
-          c.fetchElementAt(vertex),
-          d.fetchElementAt(vertex)
-        ).find(p => p.isDefined).flatten
+        case QuadLeaf(_, position, value) :: xs if position ~== vertex =>
+          Some(value)
 
-      case QuadLeaf(_, position, value) if position ~== vertex =>
-        Some(value)
+        case QuadBranch(bounds, a, b, c, d) :: xs if bounds.contains(vertex) =>
+          rec(xs ++ List(a, b, c, d))
 
-      case _ =>
-        None
+        case _ :: xs =>
+          rec(xs)
+
+    rec(List(quadTree))
 
   def insertElementAt[T](vertex: Vertex, quadTree: QuadTree[T], element: T): QuadTree[T] =
     quadTree match
