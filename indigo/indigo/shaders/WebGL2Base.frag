@@ -36,6 +36,7 @@ in vec2 v_textureSize; // Actual size of the texture in pixels.
 in vec4 v_atlasSizeAsUV; // Actual size of the atlas in pixels, and it's relative size in UV coords.
 in vec4 v_channel_pos_01; // Position on the atlas of channels 0 and 1.
 in vec4 v_channel_pos_23; // Position on the atlas of channels 2 and 3.
+flat in int v_instanceId; // The current instance id
 
 // Variables
 vec2 UV; // Unscaled texture coordinates
@@ -57,6 +58,7 @@ vec2 SCREEN_COORDS;
 float ROTATION;
 vec2 TEXTURE_SIZE; // Size of the texture in pixels
 vec2 ATLAS_SIZE; // Size of the atlas this texture is on, in pixels
+int INSTANCE_ID; // The current instance id
 
 int LIGHT_INDEX;
 int LIGHT_COUNT;
@@ -102,6 +104,9 @@ void composite(){}
 //#composite_end
 
 void main(void) {
+
+  INSTANCE_ID = v_instanceId;
+
   // Defaults
   UV = v_uv_size.xy;
   SIZE = v_uv_size.zw;

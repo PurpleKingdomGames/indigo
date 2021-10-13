@@ -40,6 +40,7 @@ out vec2 v_textureSize; // Actual size of the texture in pixels.
 out vec4 v_atlasSizeAsUV; // Actual size of the atlas in pixels, and it's relative size in UV coords.
 out vec4 v_channel_pos_01; // Position on the atlas of channels 0 and 1.
 out vec4 v_channel_pos_23; // Position on the atlas of channels 2 and 3.
+flat out int v_instanceId; // The current instance id
 
 // Constants
 const float PI = 3.141592653589793;
@@ -76,6 +77,7 @@ vec2 REF;
 vec2 FLIP;
 float ROTATION;
 vec2 TEXTURE_COORDS; // Redundant, equal to UV
+int INSTANCE_ID;
 
 mat4 translate2d(vec2 t){
     return mat4(1, 0, 0, 0,
@@ -111,6 +113,8 @@ void vertex(){}
 //#vertex_end
 
 void main(void) {
+
+    INSTANCE_ID = gl_InstanceID;
 
     VERTEX = vec4(a_verticesAndCoords.xy, 1.0, 1.0);
     UV = a_verticesAndCoords.zw;
@@ -196,4 +200,5 @@ void main(void) {
   v_atlasSizeAsUV = vec4(ATLAS_SIZE, CHANNEL_0_SIZE);
   v_channel_pos_01 = vec4(CHANNEL_0_POSITION, CHANNEL_1_POSITION);
   v_channel_pos_23 = vec4(CHANNEL_2_POSITION, CHANNEL_3_POSITION);
+  v_instanceId = INSTANCE_ID;
 }
