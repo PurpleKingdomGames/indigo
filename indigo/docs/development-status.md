@@ -3,22 +3,11 @@ id: development-status
 title: Indigo's Development Status
 ---
 
-> Indigo version 0.9.2 was released on the 9th of September 2021, and should be considered to be in an "alpha" state i.e. We believe it's useful, but we expect issues will emerge through use.
->
-> Please note that this documentation site is not yet fully up to date with Indigo 0.9.2 - we're working on it. Please see the example repos for reference, which are up to date.
+## Indigo's Status is Alpha
 
-## Library versions
+Indigo will be consider in an alpha release state until a game of any significant depth is shown to have been built using it. The implication being that by successfully building at releasing a game - web or desktop - enough features and structure must have been written in order to have made that happen.
 
-Currently Indigo is not cross compiled except between a single version of Scala 2 & 3. There is no intention to provide backwards compatibility at the moment, and each new release aims to bring all dependencies up to the latest versions. The intention is to support Scala 2 & 3 until Scala 3's tooling has matured to the same level as Scala 2, at which point support for Scala 2 will be dropped.
-
-Indigo version `0.9.2` is built against the following version numbers:
-
-- Scala `3.0.2`
-- Scala.js `1.7.0`
-- Mill `0.9.9`
-- SBT `1.5.5`
-
-> Please note that if you're upgrading your Mill version, we've found some issues occur unless you fully delete the `out` folder on the first rebuild.
+If you have a game you are building and plan to release, or are building for a game jam or something, get in touch on Discord or Gitter and we _will_ help you with any technical problems if we possibly can!
 
 ## Can I use Indigo to build my game?
 

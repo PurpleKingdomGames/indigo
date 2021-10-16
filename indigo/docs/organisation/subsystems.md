@@ -16,7 +16,7 @@ As an example, consider this simple (and arguably unhelpful) subsystem that trac
 ```scala mdoc:silent
 import indigo._
 
-final case class PointsTrackerExample(startingPoints: Int) extends SubSystem {
+final case class PointsTrackerExample(startingPoints: Int) extends SubSystem:
   type EventType      = PointsTrackerEvent
   type SubSystemModel = Int
 
@@ -41,13 +41,10 @@ final case class PointsTrackerExample(startingPoints: Int) extends SubSystem {
     Outcome(
       SceneUpdateFragment(Text(points.toString, FontKey(""), Material.Bitmap(AssetName("font"))))
     )
-}
 
-sealed trait PointsTrackerEvent extends GlobalEvent with Product with Serializable
-object PointsTrackerEvent {
-  case class Add(points: Int) extends PointsTrackerEvent
-  case object LoseAll         extends PointsTrackerEvent
-}
+enum PointsTrackerEvent:
+  case Add(points: Int) extends PointsTrackerEvent
+  case LoseAll          extends PointsTrackerEvent
 
 case object GameOver extends GlobalEvent
 ```

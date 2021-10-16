@@ -5,15 +5,6 @@
     "previous": "Previous",
     "tagline": "A game engine for functional programmers.",
     "docs": {
-      "animation": {
-        "title": "Animation"
-      },
-      "assets": {
-        "title": "Assets & Asset Loading"
-      },
-      "audio": {
-        "title": "Audio"
-      },
       "development-status": {
         "title": "Indigo's Development Status"
       },
@@ -62,12 +53,6 @@
       "information/rendering-technology": {
         "title": "Rendering Technology"
       },
-      "lighting": {
-        "title": "Lighting"
-      },
-      "materials": {
-        "title": "Materials"
-      },
       "organisation/boot-and-start-up": {
         "title": "Boot & Start Up"
       },
@@ -110,9 +95,6 @@
       "presentation/depth-and-layers": {
         "title": "Depth & Layers"
       },
-      "presentation/effects": {
-        "title": "Effects"
-      },
       "presentation/lighting": {
         "title": "Lighting"
       },
@@ -146,12 +128,6 @@
       "quickstart/setup-and-configuration": {
         "title": "Setup & Configuration"
       },
-      "scene-management": {
-        "title": "Scenes & Scene Management"
-      },
-      "scene-update-fragment": {
-        "title": "SceneUpdateFragment"
-      },
       "shaders/blending": {
         "title": "Blending"
       },
@@ -164,23 +140,11 @@
       "shaders/shader-overview": {
         "title": "Shaders Overview"
       },
-      "shapes": {
-        "title": "Shapes"
-      },
-      "subsystems": {
-        "title": "SubSystems"
-      },
-      "text-and-fonts": {
-        "title": "Text & Fonts"
-      },
       "time/signals": {
         "title": "Signals & Signal Functions"
       },
       "time/time-varying-values": {
         "title": "Time Varying Values"
-      },
-      "ui-components": {
-        "title": "UI Components"
       },
       "unused/computations": {
         "title": "unused/computations"

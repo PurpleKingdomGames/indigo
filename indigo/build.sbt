@@ -7,6 +7,11 @@ ThisBuild / versionScheme                                  := Some("early-semver
 ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.5.0"
 
 lazy val indigoVersion = IndigoVersion.getVersion
+// For the docs site
+lazy val indigoDocsVersion = "0.9.2"
+lazy val scalaJsDocsVersion = "1.7.1"
+lazy val scalaDocsVersion = "3.0.2"
+//
 
 val scala3Version = "3.0.2"
 
@@ -215,7 +220,9 @@ lazy val docs = project
   )
   .settings(
     mdocVariables := Map(
-      "VERSION" -> "0.9.2"
+      "VERSION" -> indigoDocsVersion,
+      "SCALAJS_VERSION" -> scalaJsDocsVersion,
+      "SCALA_VERSION" -> scalaDocsVersion
     ),
     mdocExtraArguments := List("--no-link-hygiene")
   )
