@@ -31,4 +31,6 @@ yarn run build
 rm -fr $PROJECT_DIR/docs
 mkdir $PROJECT_DIR/docs
 cp -R $WEBSITE_DIR/build/indigo-site/* $PROJECT_DIR/docs/
+#Fudge, for unknown reasons the styles are not copies over. Suspect docusaurus...
+cp -R $INDIGO_ENGINE_DIR/indigo/target/scala-3.*/api/ $PROJECT_DIR/docs/api/
 
