@@ -25,6 +25,37 @@ See the [Sprite example](https://github.com/PurpleKingdomGames/indigo/blob/maste
 
 >Caution: If two sprites have the same animation key they will play the same animation in the same place using the same cycle - or more correctly - whatever the latter sprite instructed the animation to do. This is very useful! ...but can also cause confusion.
 
+### Registering animations
+
+Animations are registered in two ways:
+
+1. During boot up, which happens exactly once.
+2. As part of the set up process on the resulting `Startup` data type, which is called whenever new assets are loaded.
+
+You can think of boot and setup as "nothing happens until I've finished" and "the game could be running by now" respectively. The idea of allowing you to load assets and add animations during boot is that you may need a minimal set of data to show such things as loading animations (AKA preloaders).
+
+During boot, how you add your animations depends on the entry point you are using.
+
+With `IndigoSandbox` you will add your animations to:
+
+```scala
+val animations: Set[Animation] = Set(myAnimation)
+```
+
+However, to add an animation to the boot sequence of `IndigoDemo` or `IndigoGame`, you will need to add them to the `BootResult`:
+
+```scala
+BootResult.noData(GameConfig.default).addAnimations(myAnimation)
+```
+
+During setup, you can add an animation like this:
+
+```scala
+Startup.Success(()).addAnimations(spriteAndAnimations.animations)
+```
+
+The advantage of adding animations during the set up stage is that they can be based on loaded data, for example an imported Aseprite animation.
+
 ### Structure
 
 An instance of an animation actually contains at least one sub-animation, called a `Cycle`. `Cycle`s are animations of the same subject matter doing different things. For example: If you export a sprite sheet for you character, your sheet will contain several animations cycles such as an idle cycle, a walk cycle, a jump cycle etc.
