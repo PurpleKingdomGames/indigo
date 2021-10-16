@@ -3,8 +3,6 @@ id: primitives
 title: Primitives & Building Blocks
 ---
 
-> This page has not yet been reviewed for compatibility with version 0.9.2. Details may now be incorrect.
-
 Indigo is made of several projects, but two of particular note are Indigo itself, and "Indigo Extras".
 
 Although it's called the "Extras" project, and is completely optional, it nonetheless contains some useful types and constructs to help you build your games, such as Buttons and some pre-made SubSystems like an FPS counter, automata, and an asset loader.

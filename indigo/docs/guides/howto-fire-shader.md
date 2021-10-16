@@ -19,7 +19,7 @@ Every game engine implements shaders in a slightly different way. This is becaus
 
 If you haven't already, you should go and read the ["How to make a custom entity"](howto-custom-entity.md) guide first, because this how-to builds on that one. You will indeed need a custom entity to run your shader in, this is the one I'm using:
 
-```scala mdoc
+```scala mdoc:silent
 import indigo._
 import indigo.ShaderPrimitive._
 
@@ -80,7 +80,7 @@ object Fire:
 
 The `Fire` case class extends `EntityNode` meaning that we must supply a few values for it to work, but once we've done that we can add it to our scene. Here I'm using one of the helper functions in the companion object to add an orange fire:
 
-```scala mdoc
+```scala mdoc:silent
   def present(context: FrameContext[Unit], model: Unit, viewModel: Unit): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
@@ -100,7 +100,7 @@ Taking them in turn:
 
 ### The `EntityShader`
 
-```scala mdoc
+```scala mdoc:silent
 def shader(fragProgram: AssetName): EntityShader =
   EntityShader
     .External(ShaderId("my fire shader"))
@@ -142,7 +142,7 @@ The advantage of using an external file is that you can use a nice editor with G
 
 You _MUST_ remember to register your shader, like this (or under `val shader: Set[Shader]` in an Indigo sandbox game):
 
-```scala mdoc
+```scala mdoc:silent
 object Assets:
   val fireProgram = AssetName("fire")
   val assets: Set[AssetType] =
@@ -158,7 +158,7 @@ BootResult
 
 Eventually we're going to need to tell our custom entity which shader to use (`Fire.shaderId`) and also supply values to the shader to change how it behaves. This is the final version, we're skipping to the end, but hopefully it should be fairly self explanatory:
 
-```scala mdoc
+```scala mdoc:silent
 val offset = 0.0d // Used to make different instances flicker out of sync
 val center = RGB.White
 val inner = RGB.Yellow

@@ -3,8 +3,6 @@ id: depth-and-layers
 title: Depth & Layers
 ---
 
-> This page has not yet been reviewed for compatibility with version 0.9.2. Details may now be incorrect.
-
 One thing you will need to consider when building your game, is the order that visual elements are drawn in.
 
 Indigo has two concepts of ordering: Depth and Layers.
@@ -19,7 +17,7 @@ Zero is right in front of the camera, and bigger numbers are further away. It ma
 
 If several things have the same depth, the elements are draw in the order given to the `SceneUpdateFragment` e.g.:
 
-```scala mdoc
+```scala mdoc:silent
 import indigo._
 
 List(

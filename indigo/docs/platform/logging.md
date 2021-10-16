@@ -3,8 +3,6 @@ id: logging
 title: Logging
 ---
 
-> This page has not yet been reviewed for compatibility with version 0.9.2. Details may now be incorrect.
-
 Sometimes you need a log message to help you debug something, and to help you do that Indigo comes with a very simple / border-line dumb logger.
 
 ## Logging
@@ -17,7 +15,7 @@ To help with that, along with the usual logger methods, we've added the `errorOn
 
 The available logging options are:
 
-```scala mdoc
+```scala mdoc:silent
 import indigo.IndigoLogger._
 
 consoleLog("message to log")

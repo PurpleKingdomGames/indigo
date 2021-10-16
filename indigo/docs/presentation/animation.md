@@ -3,8 +3,6 @@ id: animation
 title: Animation
 ---
 
-> This page has not yet been reviewed for compatibility with version 0.9.2. Details may now be incorrect.
-
 There are two type of animations found in Indigo.
 
 1. Timeline / Key frame based animations.
@@ -56,7 +54,7 @@ As a brief introduction to `Signal`s, a signal is a value of type: `t: Seconds -
 
 For example:
 
-```scala mdoc
+```scala mdoc:silent
 import indigo._
 
 // a signal that outputs 10 'units' per second
@@ -70,7 +68,7 @@ signal.at(Seconds(2.0)) // 20
 
 You can also use them to bend time:
 
-```scala mdoc
+```scala mdoc:silent
 signal.affectTime(0.5).at(Seconds(2.0)) // 10
 signal.affectTime(1.0).at(Seconds(2.0)) // 20
 signal.affectTime(1.5).at(Seconds(2.0)) // 30
@@ -100,7 +98,7 @@ def and[C](other: SignalFunction[A, C]): SignalFunction[A, (B, C)] = ???
 
 Example, one could calculate an orbit like this:
 
-```scala mdoc
+```scala mdoc:silent
 val xPos: SignalFunction[Radians, Double] =
   SignalFunction(r => Math.sin(r.toDouble))
 

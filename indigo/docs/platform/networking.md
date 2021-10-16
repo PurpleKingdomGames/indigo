@@ -3,8 +3,6 @@ id: networking
 title: Networking
 ---
 
-> This page has not yet been reviewed for compatibility with version 0.9.2. Details may now be incorrect.
-
 Indigo supports basic networking via HTTP or WebSockets.
 
 ## Network calls and the game loop

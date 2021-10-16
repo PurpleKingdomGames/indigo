@@ -57,7 +57,7 @@ Name|Sequential order|description
 
 To override a function you simply need to declare it. In an `Source` shader type, this could be done as follows:
 
-```scala mdoc
+```scala mdoc:silent
 import indigo._
 
 val shader: EntityShader =
@@ -122,7 +122,7 @@ A complete list is available on the ("Shader Constants, Variables, and Outputs")
 
 Getting an external shader into Indigo is no different from loading any other text asset:
 
-```scala mdoc
+```scala mdoc:silent
 def assets: Set[AssetType] =
   Set(
     AssetType.Text(AssetName("my vertex shader"), AssetPath("assets/shader.vert")),
@@ -136,7 +136,7 @@ Here we're loading two shader files with potentially a complete set of function 
 
 Next we need to build our shader:
 
-```scala mdoc
+```scala mdoc:silent
 object CustomShader:
   val vertAsset: AssetName = AssetName("my vertex shader")
   val fragAsset: AssetName = AssetName("my fragment shader")
@@ -151,7 +151,7 @@ object CustomShader:
 
 Finally we need to tell Indigo about these shaders, or we won't be able to use them:
 
-```scala mdoc
+```scala mdoc:silent
     Outcome(
       BootResult.noData(GameConfig.default)
         .withShaders(CustomShader.shader)
@@ -172,7 +172,7 @@ Shaders without any data can still be useful if you have a known effect, and not
 
 In the [guide](guides/howto-custom-entity.md), we create a custom entity that fills it's self with a solid color:
 
-```scala mdoc
+```scala mdoc:silent
 final case class MyColoredEntity(position: Point, depth: Depth) extends EntityNode:
   def size: Size        = Size(32, 32)
   def flip: Flip        = Flip.default
@@ -201,7 +201,7 @@ object MyColoredEntity:
 
 If we wanted to supply the colour, we need to modify our code as follows:
 
-```scala mdoc:nest
+```scala mdoc:silent:nest
 import indigo.ShaderPrimitive._
 
 final case class MyColoredEntity(position: Point, depth: Depth, color: RGBA) extends EntityNode:

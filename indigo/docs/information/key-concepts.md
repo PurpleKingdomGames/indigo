@@ -43,7 +43,7 @@ The default interfaces you are presented with as part of Indigo's framework offe
 
 Beneath the APIs of the entry points is a _single function_ that looks a bit like this:
 
-```scala mdoc
+```scala mdoc:silent
 import indigo._
 
 final case class Model(count: Int)
@@ -84,13 +84,13 @@ Walking through them one at a time:
 
 Some clarification, the return type of the function above is:
 
-```scala mdoc
+```scala mdoc:silent
 def outcome: Outcome[(Model, ViewModel, SceneUpdateFragment)] = ???
 ```
 
 But it's easier to think of this as:
 
-```scala mdoc:nest
+```scala mdoc:silent:nest
 def outcome: (Model, ViewModel, SceneUpdateFragment, List[GlobalEvent]) = ???
 ```
 

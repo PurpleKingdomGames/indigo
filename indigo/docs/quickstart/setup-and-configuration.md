@@ -3,8 +3,6 @@ id: setup-and-configuration
 title: Setup & Configuration
 ---
 
-> This page has not yet been reviewed for compatibility with version 0.9.2. Details may now be incorrect.
-
 ## Version numbers
 
 Indigo version `0.9.2` is built against the following version numbers:

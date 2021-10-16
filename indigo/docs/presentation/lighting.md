@@ -15,7 +15,7 @@ There are a few ways to add lighting effects to your game in order to create a m
 
 One way is to use some combination of effects, such as the ones below:
 
-```scala mdoc
+```scala mdoc:silent
 import indigo._
 
 // Apologies, this is entirely out of date! Will revise soon.
@@ -90,7 +90,7 @@ sealed trait Light {
 
 Point lights are a point in space that emit light evenly in all directions. Example:
 
-```scala mdoc
+```scala mdoc:silent
 PointLight.default
   .moveTo(Point(50, 50))
   //.withAttenuation(50) // How far the light fades out to
@@ -103,7 +103,7 @@ PointLight.default
 
 Spotlights shine a cone of light onto a scene at a given angle. Example:
 
-```scala mdoc
+```scala mdoc:silent
 SpotLight.default
   .withColor(RGBA.Green)
   .moveTo(Point(50, 50))
@@ -119,7 +119,7 @@ SpotLight.default
 
 Direction lights shin light evenly along one angle, as if from very far away. Useful for things like sun and moonlight. Example:
 
-```scala mdoc
+```scala mdoc:silent
 DirectionLight.default
   .withColor(RGBA.Blue)
   //.withHeight(100)

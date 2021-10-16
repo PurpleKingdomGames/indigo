@@ -40,7 +40,7 @@ These are handled by providing some spatial parameters that Indigo will interpre
 
 Here is the interface we have to satisfy for a hypothetical custom entity called `MyCustomEntity`:
 
-```scala mdoc
+```scala mdoc:silent
 import indigo._
 
 final case class MyCustomEntity() extends EntityNode:
@@ -65,7 +65,7 @@ The `toShaderData` definition is the part that tells Indigo how to draw the enti
 
 Here is a modified version of the code above that fills it's area with green.
 
-```scala mdoc
+```scala mdoc:silent
 final case class MyColoredEntity(position: Point, depth: Depth) extends EntityNode:
   def size: Size        = Size(32, 32)
   def flip: Flip        = Flip.default
@@ -116,7 +116,7 @@ First, tell indigo about the new shader:
 
 In the sandbox this would be a game field just like assets and fonts, i.e. `val shaders: Set[Shader] = Set(MyColoredEntity.shader)`, and there is an equivalent for the `BootResult` type as follows:
 
-```scala mdoc
+```scala mdoc:silent
 def boot(flags: Map[String, String]): Outcome[BootResult[Unit]] =
   Outcome(
     BootResult
@@ -127,7 +127,7 @@ def boot(flags: Map[String, String]): Outcome[BootResult[Unit]] =
 
 Next the fun bit, we need to add it to our scene, e.g.:
 
-```scala mdoc
+```scala mdoc:silent
 def present(context: FrameContext[Unit], model: Unit, viewModel: Unit): Outcome[SceneUpdateFragment] =
   Outcome(
     SceneUpdateFragment(
@@ -160,7 +160,7 @@ Here is an almost identical entity to the last one and I won't repeat myself, bu
 1. Add the entity to the scene
 1. Tell indigo to load the asset using the normal asset loading process.
 
-```scala mdoc
+```scala mdoc:silent
 final case class MyBitmapEntity(asset: AssetName, position: Point, depth: Depth) extends EntityNode:
   def size: Size        = Size(32, 32)
   def flip: Flip        = Flip.default

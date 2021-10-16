@@ -15,7 +15,7 @@ To tell Indigo what to draw we need to point it at an image asset using a `Mater
 
 > You can create your own materials, and Indigo comes with two other materials in the "extras" library: `LegacyEffects` and materials relating to refraction.
 
-```scala mdoc
+```scala mdoc:silent
 import indigo._
 
 Material.Bitmap(AssetName("funny cat"))
@@ -23,7 +23,7 @@ Material.Bitmap(AssetName("funny cat"))
 
 `Bitmap` is a completely flat texture and can be used in a graphic like this:
 
-```scala mdoc
+```scala mdoc:silent
 SceneUpdateFragment(
   Graphic(Rectangle(0, 0, 32, 32), 1, Material.Bitmap(AssetName("funny cat")))
 )
@@ -37,7 +37,7 @@ The `Bitmap` material is quick and simple for quickly throwing images onto the s
 
 > In previous Indigo versions materials and primitives were blended together, and came with additional (cheap) effects like limited glows and borders. These are considered low quality, but you can still access them via the `LegacyEffects` material.
 
-```scala mdoc
+```scala mdoc:silent
 val graphic = Graphic(32, 32, Material.ImageEffects(AssetName("funny cat")))
 ```
 
@@ -47,7 +47,7 @@ In the examples that follow, we take this graphic instance and use the `modifyMa
 
 Sets the transparency of the texture.
 
-```scala mdoc
+```scala mdoc:silent
 graphic.modifyMaterial(_.withAlpha(0.5))
 ```
 
@@ -55,7 +55,7 @@ graphic.modifyMaterial(_.withAlpha(0.5))
 
 Sets the colour saturation level of the texture where `1.0` is full normal colour and `0.0` is gray scale.
 
-```scala mdoc
+```scala mdoc:silent
 graphic.modifyMaterial(_.withSaturation(0.5))
 ```
 
@@ -67,7 +67,7 @@ Tint essentially sets the saturation level of each color channel, like looking t
 - `RGBA.Black` absorbs all the light and the nodes pixels end up black (alpha is respected).
 - `RGBA.Red` which is (r=1.0, g=0.0, b=0.0, a=1.0) sucks the blue and green out of the image (like standing in a chemical photography dark room).
 
-```scala mdoc
+```scala mdoc:silent
 graphic.modifyMaterial(_.withTint(RGBA.Red))
 ```
 
@@ -80,7 +80,7 @@ Where tint removes color, color overlay adds it. So to take the same examples:
 - `RGBA.Red` Makes the image red (alpha is respected).
 - `RGBA.Red.withRed(0.5)` which is (r=0.5, g=0.0, b=0.0, a=1.0) adds 50% red to each pixel up to a maximum value of 1.0.
 
-```scala mdoc
+```scala mdoc:silent
 //graphic.modifyMaterial(_.withOverlay(Overlay.Color(RGBA.Red)))
 ```
 
@@ -88,7 +88,7 @@ Where tint removes color, color overlay adds it. So to take the same examples:
 
 Gradients can be linear or radial and work in the same way as color overlay but allows a gradient to be applied instead of one solid color. The `Point` positions are relative to the node being drawn and move around with the node.
 
-```scala mdoc
+```scala mdoc:silent
 // For a 16x16 graphic where we want to go top left to bottom right
 //graphic.modifyMaterial(
 //  _.withOverlay(
@@ -106,7 +106,7 @@ Gradients can be linear or radial and work in the same way as color overlay but 
 
 The standard materials support options for telling Indigo how to fill the space with the material.
 
-```scala mdoc
+```scala mdoc:silent
 val material = Material.Bitmap(AssetName("funny cat"))
 
 material.normal
@@ -137,7 +137,7 @@ What we want to do, is take a completely flat texture and make it look as if it 
 
 To do that we use a different material:
 
-```scala mdoc
+```scala mdoc:silent
 //Material.Lit(albedo: AssetName, emissive: AssetName, normal: AssetName, specular: AssetName)
 ```
 

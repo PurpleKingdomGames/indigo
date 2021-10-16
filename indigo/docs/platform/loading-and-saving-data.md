@@ -3,8 +3,6 @@ id: loading-and-saving-data
 title: Loading & Saving Data
 ---
 
-> This page has not yet been reviewed for compatibility with version 0.9.2. Details may now be incorrect.
-
 Sooner or later, you're probably going to need to load data into your game or save user data.
 
 ### Dealing with save games

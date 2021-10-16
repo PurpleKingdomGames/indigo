@@ -3,8 +3,6 @@ id: audio
 title: Audio
 ---
 
-> This page has not yet been reviewed for compatibility with version 0.9.2. Details may now be incorrect.
-
 Indigo's audio support is fairly unsophisticated, but probably good enough for the kind of games Indigo was designed for. The authors are not audio experts, please feel free to raise issues if you have any suggestions for improvements.
 
 There are two kinds of audio support in Indigo:
@@ -24,7 +22,7 @@ Sound effects are tiny clips of sound that you will play many times, and are oft
 
 To play a sound effect you simply need to emit an event at the end of an update or scene draw and Indigo will do the rest, e.g.:
 
-```scala mdoc
+```scala mdoc:silent
 import indigo._
 
 final case class Model(playerName: String)
@@ -34,7 +32,7 @@ Outcome(Model("Bob")).addGlobalEvents(PlaySound(AssetName("twang!"), Volume(0.5)
 
 or
 
-```scala mdoc
+```scala mdoc:silent
 Outcome(SceneUpdateFragment.empty).addGlobalEvents(PlaySound(AssetName("bounce"), Volume.Max))
 ```
 
@@ -42,7 +40,7 @@ Outcome(SceneUpdateFragment.empty).addGlobalEvents(PlaySound(AssetName("bounce")
 
 Background music must be added as part of your scene description, as follows:
 
-```scala mdoc
+```scala mdoc:silent
 SceneUpdateFragment.empty
   .withAudio(
     SceneAudio(

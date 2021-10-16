@@ -11,7 +11,7 @@ The `SceneUpdateFragment` is one of the most important types in Indigo, as it is
 
 Chunky usage sample taken from the lighting example code:
 
-```scala mdoc
+```scala mdoc:silent
 import indigo._
 
 val config = GameConfig.default
@@ -59,7 +59,7 @@ sceneAudio |+| background |+| clouds |+| player |+| foreground
 
 Consider also the following:
 
-```scala mdoc
+```scala mdoc:silent
 val visible = true
 val scene: SceneUpdateFragment = SceneUpdateFragment(graphic)
 val vanishingThing =
@@ -71,7 +71,7 @@ scene |+| vanishingThing
 
 Or this:
 
-```scala mdoc
+```scala mdoc:silent
 val l: List[SceneUpdateFragment] = List(scene, scene, scene)
 
 l.foldLeft(SceneUpdateFragment.empty)(_ |+| _)

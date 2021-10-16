@@ -3,8 +3,6 @@ id: input-handling
 title: User Input Handling
 ---
 
-> This page has not yet been reviewed for compatibility with version 0.9.2. Details may now be incorrect.
-
 At the time of writing, Indigo understands three input device types: Mouse, Keyboard, and Gamepad.
 
 > A note on gamepad support: So far only PS4 gamepads have been tested. Sony made the excellent decision to make them plug and play! XBox and other controllers may work but no time was invested in testing them once it became apparent then they didn't work out of the box on non-windows machines. Pull requests, issue reporting, and funding are all welcome!
@@ -48,7 +46,7 @@ For this we have created the input mapper, which can be found inside the input s
 
 Here is an example of a "dot" that can be moved up, down, left, right, _and_ diagonally using combinations of the W, A, S, and D keys.
 
-```scala mdoc
+```scala mdoc:silent
 import indigo._
 
 final case class Dot(center: Point) {

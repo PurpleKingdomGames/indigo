@@ -3,8 +3,6 @@ id: hello-indigo
 title: Hello, Indigo!
 ---
 
-> This page has not yet been reviewed for compatibility with version 0.9.2. Details may now be incorrect.
-
 This is a quick start tutorial to help you build something with Indigo.
 
 There are [Mill](https://github.com/PurpleKingdomGames/hello-indigo) and [SBT](https://github.com/PurpleKingdomGames/hello-indigo-sbt) repositories that go with this guide, please note that you can follow the games original development progression by looking through the commits on the _Mill_ version.
@@ -29,7 +27,7 @@ We'll skip over the initial project set up and assume that you followed the [set
 
 Here is our starting point:
 
-```scala mdoc
+```scala mdoc:silent
 import indigo._
 import scala.scalajs.js.annotation.JSExportTopLevel
 
@@ -114,14 +112,14 @@ On the assumption that you have the same assets as the demo repo (note that you 
 
 Replace:
 
-```scala mdoc
+```scala mdoc:silent
 val assets: Set[AssetType] =
   Set()
 ```
 
 with:
 
-```scala mdoc:nest
+```scala mdoc:silent:nest
 val assetName = AssetName("dots")
 
 val assets: Set[indigo.AssetType] = Set(
@@ -133,13 +131,13 @@ This tells indigo to load your image asset and file it away for future reference
 
 Next replace:
 
-```scala mdoc
+```scala mdoc:silent
 SceneUpdateFragment.empty
 ```
 
 with:
 
-```scala mdoc
+```scala mdoc:silent
 SceneUpdateFragment(
   Graphic(Rectangle(0, 0, 32, 32), 1, Material.Bitmap(assetName))
 )
@@ -153,7 +151,7 @@ Run the demo again and you should see a graphic in the top left corner at positi
 
 It's quite small though... so come back to your code and replace `GameConfig.default` with:
 
-```scala mdoc
+```scala mdoc:silent
 val magnification = 3
 
 val config: indigo.GameConfig =
@@ -166,7 +164,7 @@ Indigo is built for pixel art, and will automatically scale up not just your gra
 
 `Graphic`s are relatively cheap on-screen objects, in terms of performance, but their unique party trick is being able to crop their contents. Update this:
 
-```scala mdoc
+```scala mdoc:silent
 SceneUpdateFragment(
   Graphic(Rectangle(0, 0, 32, 32), 1, Material.Bitmap(assetName))
 )
@@ -174,7 +172,7 @@ SceneUpdateFragment(
 
 to:
 
-```scala mdoc
+```scala mdoc:silent
 SceneUpdateFragment(
   Graphic(Rectangle(0, 0, 32, 32), 1, Material.Bitmap(assetName)),
   Graphic(Rectangle(0, 0, 32, 32), 1, Material.Bitmap(assetName))
@@ -204,7 +202,7 @@ val context = new FrameContext[Unit](GameTime.zero, Dice.fromSeed(1l), InputStat
 
 Replace:
 
-```scala mdoc
+```scala mdoc:silent
 Graphic(Rectangle(0, 0, 32, 32), 1, Material.Bitmap(assetName))
   .withCrop(Rectangle(16, 16, 16, 16))
   .withRef(8, 8)
@@ -213,7 +211,7 @@ Graphic(Rectangle(0, 0, 32, 32), 1, Material.Bitmap(assetName))
 
 with:
 
-```scala mdoc
+```scala mdoc:silent
 Graphic(Rectangle(0, 0, 32, 32), 1, Material.Bitmap(assetName))
   .withCrop(Rectangle(16, 16, 16, 16))
   .withRef(8, 8)
@@ -245,7 +243,7 @@ Consider how we might move something along the x-axis:
 val graphic = Graphic(10, 10, Material.Bitmap(AssetName("graphic")))
 ```
 
-```scala mdoc
+```scala mdoc:silent
 graphic.moveBy(10, 0)
 ```
 
@@ -257,7 +255,7 @@ Either way the result is that your x-axis movement is no longer smooth.
 
 The solution is to do this:
 
-```scala mdoc
+```scala mdoc:silent
 // time delta in seconds - 16.7ms is the delta for 60 frames per second
 val d = Seconds(0.01666)
 graphic.moveBy((d * 600).toInt, 0)
@@ -293,7 +291,7 @@ To do that we're going to need a simple model, so let us define some case classe
 
 Add this to the bottom of your file:
 
-```scala mdoc
+```scala mdoc:silent
 final case class Model(center: Point, dots: List[Dot]) {
   def addDot(dot: Dot): Model =
     this.copy(dots = dot :: dots)
@@ -346,14 +344,14 @@ Then we need to give Indigo the empty or first version of our model.
 
 Replace:
 
-```scala mdoc
+```scala mdoc:silent
 def initialModel(startupData: Unit): Outcome[Unit] =
   Outcome(())
 ```
 
 with:
 
-```scala mdoc:nest
+```scala mdoc:silent:nest
 def initialModel(startupData: Unit): Outcome[Model] =
   Outcome(
     Model.initial(
@@ -364,7 +362,7 @@ def initialModel(startupData: Unit): Outcome[Model] =
 
 And then we need to update it, replace:
 
-```scala mdoc
+```scala mdoc:silent
 def updateModel(
     context: FrameContext[Unit],
     model: Unit
@@ -374,7 +372,7 @@ def updateModel(
 
 with
 
-```scala mdoc:nest
+```scala mdoc:silent:nest
 def updateModel(
     context: FrameContext[Unit],
     model: Model
@@ -418,7 +416,7 @@ Notice that everything is wrapped in an `Outcome`. An `Outcome[A]` is a Monad th
 
 Finally we need to draw something, replace:
 
-```scala mdoc
+```scala mdoc:silent
     SceneUpdateFragment(
       Graphic(Rectangle(0, 0, 32, 32), 1, Material.Bitmap(assetName)),
       Graphic(Rectangle(0, 0, 32, 32), 1, Material.Bitmap(assetName))
@@ -434,7 +432,7 @@ with:
 val model = Model.initial(Point.zero)
 ```
 
-```scala mdoc
+```scala mdoc:silent
 def drawDots(
     center: Point,
     dots: List[Dot]
