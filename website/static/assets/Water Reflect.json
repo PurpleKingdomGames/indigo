@@ -1,0 +1,130 @@
+{ "frames": [
+  {
+   "filename": "Water Reflect 0.aseprite",
+   "frame": { "x": 0, "y": 0, "w": 170, "h": 16 },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": { "x": 0, "y": 0, "w": 170, "h": 16 },
+   "sourceSize": { "w": 170, "h": 16 },
+   "duration": 200
+  },
+  {
+   "filename": "Water Reflect 1.aseprite",
+   "frame": { "x": 0, "y": 16, "w": 170, "h": 16 },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": { "x": 0, "y": 0, "w": 170, "h": 16 },
+   "sourceSize": { "w": 170, "h": 16 },
+   "duration": 200
+  },
+  {
+   "filename": "Water Reflect 2.aseprite",
+   "frame": { "x": 0, "y": 32, "w": 170, "h": 16 },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": { "x": 0, "y": 0, "w": 170, "h": 16 },
+   "sourceSize": { "w": 170, "h": 16 },
+   "duration": 200
+  },
+  {
+   "filename": "Water Reflect 3.aseprite",
+   "frame": { "x": 0, "y": 48, "w": 170, "h": 16 },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": { "x": 0, "y": 0, "w": 170, "h": 16 },
+   "sourceSize": { "w": 170, "h": 16 },
+   "duration": 200
+  },
+  {
+   "filename": "Water Reflect 4.aseprite",
+   "frame": { "x": 0, "y": 64, "w": 170, "h": 16 },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": { "x": 0, "y": 0, "w": 170, "h": 16 },
+   "sourceSize": { "w": 170, "h": 16 },
+   "duration": 200
+  },
+  {
+   "filename": "Water Reflect 5.aseprite",
+   "frame": { "x": 0, "y": 80, "w": 170, "h": 16 },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": { "x": 0, "y": 0, "w": 170, "h": 16 },
+   "sourceSize": { "w": 170, "h": 16 },
+   "duration": 200
+  },
+  {
+   "filename": "Water Reflect 6.aseprite",
+   "frame": { "x": 0, "y": 96, "w": 170, "h": 16 },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": { "x": 0, "y": 0, "w": 170, "h": 16 },
+   "sourceSize": { "w": 170, "h": 16 },
+   "duration": 200
+  },
+  {
+   "filename": "Water Reflect 7.aseprite",
+   "frame": { "x": 0, "y": 112, "w": 170, "h": 16 },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": { "x": 0, "y": 0, "w": 170, "h": 16 },
+   "sourceSize": { "w": 170, "h": 16 },
+   "duration": 200
+  },
+  {
+   "filename": "Water Reflect 8.aseprite",
+   "frame": { "x": 0, "y": 128, "w": 170, "h": 16 },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": { "x": 0, "y": 0, "w": 170, "h": 16 },
+   "sourceSize": { "w": 170, "h": 16 },
+   "duration": 200
+  },
+  {
+   "filename": "Water Reflect 9.aseprite",
+   "frame": { "x": 0, "y": 144, "w": 170, "h": 16 },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": { "x": 0, "y": 0, "w": 170, "h": 16 },
+   "sourceSize": { "w": 170, "h": 16 },
+   "duration": 200
+  },
+  {
+   "filename": "Water Reflect 10.aseprite",
+   "frame": { "x": 0, "y": 160, "w": 170, "h": 16 },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": { "x": 0, "y": 0, "w": 170, "h": 16 },
+   "sourceSize": { "w": 170, "h": 16 },
+   "duration": 200
+  },
+  {
+   "filename": "Water Reflect 11.aseprite",
+   "frame": { "x": 0, "y": 176, "w": 170, "h": 16 },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": { "x": 0, "y": 0, "w": 170, "h": 16 },
+   "sourceSize": { "w": 170, "h": 16 },
+   "duration": 200
+  }
+],
+"meta": {
+ "app": "http://www.aseprite.org/",
+ "version": "1.2.8",
+ "image": "/Users/davismi5/Desktop/pirate assets/Graphics/Palm Tree Island/Aseprite/Water Reflect.png",
+ "format": "RGBA8888",
+ "size": { "w": 170, "h": 192 },
+ "scale": "1",
+ "frameTags": [
+  { "name": "Big", "from": 0, "to": 3, "direction": "forward" },
+  { "name": "Medium", "from": 4, "to": 7, "direction": "forward" },
+  { "name": "Small", "from": 8, "to": 11, "direction": "forward" }
+ ],
+ "layers": [
+  { "name": "Grid", "opacity": 255, "blendMode": "normal" },
+  { "name": "Water Reflect", "opacity": 255, "blendMode": "normal" }
+ ],
+ "slices": [
+ ]
+}
+}

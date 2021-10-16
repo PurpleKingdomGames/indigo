@@ -1,0 +1,75 @@
+{
+  "guides": {
+    "How To's": [
+      "guides"
+    ],
+    "Gamedev": [
+      "guides/howto-custom-entity",
+      "guides/howto-fire-shader"
+    ]
+  },
+  "docs": {
+    "Indigo": [
+      "development-status"
+    ],
+    "Getting started": [
+      "quickstart/setup-and-configuration",
+      "quickstart/hello-indigo",
+      "quickstart/examples",
+      "quickstart/project-templates"
+    ],
+    "Organising your game": [
+      "organisation/boot-and-start-up",
+      "organisation/game-entry-points",
+      "organisation/scene-management",
+      "organisation/subsystems"
+    ],
+    "The game loop": [
+      "gameloop/events",
+      "gameloop/frame-context",
+      "gameloop/outcome"
+    ],
+    "Presentation": [
+      "presentation/animation",
+      "presentation/audio",
+      "presentation/depth-and-layers",
+      "presentation/effects",
+      "presentation/lighting",
+      "presentation/materials",
+      "presentation/primitives",
+      "presentation/scene-update-fragment",
+      "presentation/shapes",
+      "presentation/text-and-fonts",
+      "presentation/ui-components"
+    ],
+    "Shaders": [
+      "shaders/shader-overview",
+      "shaders/constants",
+      "shaders/entity-shaders",
+      "shaders/blending"
+    ],
+    "Working with Time": [
+      "time/signals",
+      "time/time-varying-values"
+    ],
+    "Platform & Publishing": [
+      "platform/assets",
+      "platform/cross-platform-publishing",
+      "platform/importers",
+      "platform/input-handling",
+      "platform/loading-and-saving-data",
+      "platform/logging",
+      "platform/networking"
+    ],
+    "Other information": [
+      "information/alternatives",
+      "information/glossary",
+      "information/key-concepts",
+      "information/model-viewmodel-view",
+      "information/motivation-and-constraints",
+      "information/performance",
+      "information/prior-art",
+      "information/rendering-technology"
+    ]
+  }
+}

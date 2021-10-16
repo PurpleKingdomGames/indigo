@@ -1,6 +1,8 @@
 import scala.sys.process._
 import scala.language.postfixOps
 
+Global / onChangedBuildSource := ReloadOnSourceChanges
+
 ThisBuild / versionScheme                                  := Some("early-semver")
 ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.5.0"
 
@@ -253,7 +255,9 @@ lazy val indigoProject =
 addCommandAlias(
   "gendocs",
   List(
-    "unidoc"
+    "cleanAll",
+    "indigo/doc", // Docs in ./indigo/target/scala-3.0.2/api/
+    "docs/mdoc" // Docs in ./indigo/indigo-docs/target/mdoc
   ).mkString(";", ";", "")
 )
 
