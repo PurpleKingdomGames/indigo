@@ -76,12 +76,31 @@ article a {
 }
 
 .container.paddingTop {
-  padding-top: 20px;
+  /* padding-top: 20px; */
 }
 .container.paddingBottom {
-  padding-bottom: 40px;
+  /* padding-bottom: 40px; */
 }
 
 .lightLink a {
   color: #AE2BE2;
+}
+
+.nav-footer {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 0;
+}
+
+.sitemap {
+  margin-left: 0;
+}
+
+.mainContainer{
+  padding-bottom: 0;
+}
+
+code {
+  font-size: 2em;
 }

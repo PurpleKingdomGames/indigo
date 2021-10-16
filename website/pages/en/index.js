@@ -117,85 +117,85 @@ class Index extends React.Component {
       </Block>
     );
 
-    const Description = () => (
-      <div className="container paddingBottom paddingTop descriptionContainer" style={{ backgroundColor: '#8749C4' }}>
-        <div className="wrapper" style={{ textAlign: 'left' }}>
-          <div className="gridBlock">
-            <div className="blockElement alignLeft imageAlignTop twoByGridBlock">
-              <h2>Let's have some fun!</h2>
-              <MarkdownBlock>
-              Indigo is a game engine for functional programmers. People who know how to code and want to make games _by writing code_. Just for the fun of it!
-              </MarkdownBlock>
-              <MarkdownBlock>
-              The engine has been designed specifically with programmers in mind. It focuses on developer productivity and ease of testing.
-              </MarkdownBlock>
-              <MarkdownBlock>
-              Indigo is written in [**Scala**](https://www.scala-lang.org/) (powered by [**Scala.js**](https://www.scala-js.org/)), as are the amazing games you'll make. It's intended for the people who _really_ like pure functions, but being Scala, allows you too flip back to a more procedural or object oriented styles if that suits you or your game better.
-              </MarkdownBlock>
-            </div>
-            <div className="blockElement alignLeft imageAlignTop twoByGridBlock">
-            <h2>&nbsp;</h2>
-              <MarkdownBlock>
-              Building games in Indigo is just like working any other Scala project, we've worked hard to keep the surprises to a minimum. You can even use all your favourite Scala.js compatible libraries and build tools, with extra support for SBT and Mill built in.
-              </MarkdownBlock>
-              <MarkdownBlock>
-              Indigo is free to use and the engine is open source. There are no limits on its use, or fees or royalties to pay, ever.
-              </MarkdownBlock>
-              <MarkdownBlock>
-              We can't wait to see what you're going to build!
-              </MarkdownBlock>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    // const Description = () => (
+    //   <div className="container paddingBottom paddingTop descriptionContainer" style={{ backgroundColor: '#8749C4' }}>
+    //     <div className="wrapper" style={{ textAlign: 'left' }}>
+    //       <div className="gridBlock">
+    //         <div className="blockElement alignLeft imageAlignTop twoByGridBlock">
+    //           <h2>Let's have some fun!</h2>
+    //           <MarkdownBlock>
+    //           Indigo is a game engine for functional programmers. People who know how to code and want to make games _by writing code_. Just for the fun of it!
+    //           </MarkdownBlock>
+    //           <MarkdownBlock>
+    //           The engine has been designed specifically with programmers in mind. It focuses on developer productivity and ease of testing.
+    //           </MarkdownBlock>
+    //           <MarkdownBlock>
+    //           Indigo is written in [**Scala**](https://www.scala-lang.org/) (powered by [**Scala.js**](https://www.scala-js.org/)), as are the amazing games you'll make. It's intended for the people who _really_ like pure functions, but being Scala, allows you too flip back to a more procedural or object oriented styles if that suits you or your game better.
+    //           </MarkdownBlock>
+    //         </div>
+    //         <div className="blockElement alignLeft imageAlignTop twoByGridBlock">
+    //         <h2>&nbsp;</h2>
+    //           <MarkdownBlock>
+    //           Building games in Indigo is just like working any other Scala project, we've worked hard to keep the surprises to a minimum. You can even use all your favourite Scala.js compatible libraries and build tools, with extra support for SBT and Mill built in.
+    //           </MarkdownBlock>
+    //           <MarkdownBlock>
+    //           Indigo is free to use and the engine is open source. There are no limits on its use, or fees or royalties to pay, ever.
+    //           </MarkdownBlock>
+    //           <MarkdownBlock>
+    //           We can't wait to see what you're going to build!
+    //           </MarkdownBlock>
+    //         </div>
+    //       </div>
+    //     </div>
+    //   </div>
+    // );
 
-    const GetInvolved = () => (
-      <div className="container paddingBottom paddingTop descriptionContainer" style={{ backgroundColor: '#29016A' }}>
-        <div className="wrapper" style={{ textAlign: 'left' }}>
-          <div className="gridBlock">
-            <div className="blockElement alignLeft imageAlignTop threeByGridBlock lightLink" style={{ backgroundColor: '#0F033A', borderRadius: '20px', paddingLeft: '30px', paddingRight: '30px' , paddingBottom: '10px' }}>
-              <h3>Who makes this?</h3>
-              <MarkdownBlock>
-                Purple Kingdom Games is made up of two long time collaborators that like building software together. They are both called Dave.
-              </MarkdownBlock>
-              <MarkdownBlock>
-                Although the bulk of the early work on Indigo came from the Dave's, since launch we've also gratefully recieved a number of wonderful community contributions too!
-              </MarkdownBlock>
-            </div>
-            <div className="blockElement alignLeft imageAlignTop threeByGridBlock lightLink" style={{ backgroundColor: '#0F033A', borderRadius: '20px', paddingLeft: '30px', paddingRight: '30px' , paddingBottom: '10px' }}>
-              <h3>You can contribute!</h3>
-              <MarkdownBlock>
-                We'd love you to get involved! You could...
-              </MarkdownBlock>
-              <ul>
-                <li><MarkdownBlock>Build a new [feature](https://github.com/PurpleKingdomGames/indigo/blob/master/CONTRIBUTING.md)</MarkdownBlock></li>
-                <li><MarkdownBlock>Report an [issue](https://github.com/PurpleKingdomGames/indigo/issues)</MarkdownBlock></li>
-                <li><MarkdownBlock>Help with the [documentation](https://github.com/PurpleKingdomGames/indigo-website)</MarkdownBlock></li>
-              </ul>
-              <MarkdownBlock>If you're not sure where to start or would like to discuss your ideas, come and say hello on [Discord](https://discord.gg/b5CD47g), or post a question on [GitHub Discussions](https://github.com/PurpleKingdomGames/indigo/discussions).</MarkdownBlock>
-            </div>
-            <div className="blockElement alignLeft imageAlignTop threeByGridBlock lightLink" style={{ backgroundColor: '#0F033A', borderRadius: '20px', paddingLeft: '30px', paddingRight: '30px' , paddingBottom: '10px' }}>
-              <h3>Please sponsor our work!</h3>
-              <MarkdownBlock>
-                Indigo is a passion project, and in software, passion projects come from coffee and biscuits and ...from the ability to cover some less exciting running costs.
-              </MarkdownBlock>
-              <MarkdownBlock>
-                If you like what we're doing and would like to help fuel Indigo's development, please consider sponsoring us on either [GitHub](https://github.com/sponsors/PurpleKingdomGames) or [Patreon](https://www.patreon.com/indigoengine).
-              </MarkdownBlock>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    // const GetInvolved = () => (
+    //   <div className="container paddingBottom paddingTop descriptionContainer" style={{ backgroundColor: '#29016A' }}>
+    //     <div className="wrapper" style={{ textAlign: 'left' }}>
+    //       <div className="gridBlock">
+    //         <div className="blockElement alignLeft imageAlignTop threeByGridBlock lightLink" style={{ backgroundColor: '#0F033A', borderRadius: '20px', paddingLeft: '30px', paddingRight: '30px' , paddingBottom: '10px' }}>
+    //           <h3>Who makes this?</h3>
+    //           <MarkdownBlock>
+    //             Purple Kingdom Games is made up of two long time collaborators that like building software together. They are both called Dave.
+    //           </MarkdownBlock>
+    //           <MarkdownBlock>
+    //             Although the bulk of the early work on Indigo came from the Dave's, since launch we've also gratefully recieved a number of wonderful community contributions too!
+    //           </MarkdownBlock>
+    //         </div>
+    //         <div className="blockElement alignLeft imageAlignTop threeByGridBlock lightLink" style={{ backgroundColor: '#0F033A', borderRadius: '20px', paddingLeft: '30px', paddingRight: '30px' , paddingBottom: '10px' }}>
+    //           <h3>You can contribute!</h3>
+    //           <MarkdownBlock>
+    //             We'd love you to get involved! You could...
+    //           </MarkdownBlock>
+    //           <ul>
+    //             <li><MarkdownBlock>Build a new [feature](https://github.com/PurpleKingdomGames/indigo/blob/master/CONTRIBUTING.md)</MarkdownBlock></li>
+    //             <li><MarkdownBlock>Report an [issue](https://github.com/PurpleKingdomGames/indigo/issues)</MarkdownBlock></li>
+    //             <li><MarkdownBlock>Help with the [documentation](https://github.com/PurpleKingdomGames/indigo-website)</MarkdownBlock></li>
+    //           </ul>
+    //           <MarkdownBlock>If you're not sure where to start or would like to discuss your ideas, come and say hello on [Discord](https://discord.gg/b5CD47g), or post a question on [GitHub Discussions](https://github.com/PurpleKingdomGames/indigo/discussions).</MarkdownBlock>
+    //         </div>
+    //         <div className="blockElement alignLeft imageAlignTop threeByGridBlock lightLink" style={{ backgroundColor: '#0F033A', borderRadius: '20px', paddingLeft: '30px', paddingRight: '30px' , paddingBottom: '10px' }}>
+    //           <h3>Please sponsor our work!</h3>
+    //           <MarkdownBlock>
+    //             Indigo is a passion project, and in software, passion projects come from coffee and biscuits and ...from the ability to cover some less exciting running costs.
+    //           </MarkdownBlock>
+    //           <MarkdownBlock>
+    //             If you like what we're doing and would like to help fuel Indigo's development, please consider sponsoring us on either [GitHub](https://github.com/sponsors/PurpleKingdomGames) or [Patreon](https://www.patreon.com/indigoengine).
+    //           </MarkdownBlock>
+    //         </div>
+    //       </div>
+    //     </div>
+    //   </div>
+    // );
 
     return (
       <div>
         <HomeSplash siteConfig={siteConfig} language={language} />
         <div className="mainContainer">
           <Features />
-          <Description />
-          <GetInvolved />
+          {/* <Description />
+          <GetInvolved /> */}
         </div>
       </div>
     );
