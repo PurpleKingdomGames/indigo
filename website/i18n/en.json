@@ -92,6 +92,9 @@
       "presentation/audio": {
         "title": "Audio"
       },
+      "presentation/cameras": {
+        "title": "Cameras"
+      },
       "presentation/depth-and-layers": {
         "title": "Depth & Layers"
       },
