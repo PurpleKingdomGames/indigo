@@ -5,6 +5,12 @@ title: Setup & Configuration
 
 ## Quick setup
 
+### Using giter8 / sbt new
+
+The quickest way to set up an Indigo game is to use our giter8 template, which provides a (rather opinionated) sbt based game shell to get you started.
+
+[https://github.com/PurpleKingdomGames/indigo.g8](https://github.com/PurpleKingdomGames/indigo.g8)
+
 ### For sbt
 
 Add the following to your `project/plugins.sbt` file:
