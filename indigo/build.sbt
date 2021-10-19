@@ -10,10 +10,10 @@ lazy val indigoVersion = IndigoVersion.getVersion
 // For the docs site
 lazy val indigoDocsVersion = "0.9.2"
 lazy val scalaJsDocsVersion = "1.7.1"
-lazy val scalaDocsVersion = "3.0.2"
+lazy val scalaDocsVersion = "3.1.0"
 //
 
-val scala3Version = "3.0.2"
+val scala3Version = "3.1.0"
 
 lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
   version            := indigoVersion,
@@ -263,7 +263,7 @@ addCommandAlias(
   "gendocs",
   List(
     "cleanAll",
-    "indigo/doc", // Docs in ./indigo/target/scala-3.0.2/api/
+    "indigo/doc", // Docs in ./indigo/target/scala-3.1.0/api/
     "docs/mdoc" // Docs in ./indigo/indigo-docs/target/mdoc
   ).mkString(";", ";", "")
 )

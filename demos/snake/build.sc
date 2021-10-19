@@ -10,7 +10,7 @@ import coursier.maven.MavenRepository
 import $ivy.`io.indigoengine::mill-indigo:0.9.3-SNAPSHOT`, millindigo._
 
 object snake extends ScalaJSModule with MillIndigo {
-  def scalaVersion   = "3.0.2"
+  def scalaVersion   = "3.1.0"
   def scalaJSVersion = "1.7.1"
 
   val gameAssetsDirectory: os.Path = os.pwd / "assets"
