@@ -14,9 +14,9 @@ import indigo.shared.platform.RendererConfig
 import indigo.shared.shader.RawShaderCode
 import org.scalajs.dom
 import org.scalajs.dom.Element
+import org.scalajs.dom.WebGLRenderingContext
 import org.scalajs.dom.html
 import org.scalajs.dom.raw
-import org.scalajs.dom.raw.WebGLRenderingContext
 
 import scala.scalajs.js.Dynamic
 

@@ -3,9 +3,9 @@ package indigo.platform.renderer.shared
 import indigo.facades.ColorAttachments
 import indigo.platform.renderer.shared.WebGLHelper
 import indigo.shared.datatypes.RGBA
+import org.scalajs.dom.WebGLRenderingContext
+import org.scalajs.dom.WebGLRenderingContext._
 import org.scalajs.dom.raw.WebGLFramebuffer
-import org.scalajs.dom.raw.WebGLRenderingContext
-import org.scalajs.dom.raw.WebGLRenderingContext._
 import org.scalajs.dom.raw.WebGLTexture
 
 object FrameBufferFunctions {

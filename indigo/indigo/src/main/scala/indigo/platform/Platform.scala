@@ -1,6 +1,5 @@
 package indigo.platform
 
-import indigo.facades.FullScreenElement
 import indigo.platform.assets.AssetCollection
 import indigo.platform.assets.DynamicText
 import indigo.platform.assets.ImageRef
@@ -154,14 +153,14 @@ class Platform(
 
   // @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
   def toggleFullScreen(): Unit =
-    if (Option(dom.document.asInstanceOf[FullScreenElement].fullscreenElement).isEmpty)
+    if (Option(dom.document.fullscreenElement).isEmpty)
       enterFullScreen()
     else
       exitFullScreen()
 
   // @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
   def enterFullScreen(): Unit =
-    _canvas.asInstanceOf[FullScreenElement].requestFullscreen().toFuture.onComplete {
+    _canvas.requestFullscreen().toFuture.onComplete {
       case Success(()) =>
         globalEventStream.pushGlobalEvent(FullScreenEntered)
 
@@ -171,7 +170,7 @@ class Platform(
 
   // @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
   def exitFullScreen(): Unit =
-    dom.document.asInstanceOf[FullScreenElement].exitFullscreen().toFuture.onComplete {
+    dom.document.exitFullscreen().toFuture.onComplete {
       case Success(()) =>
         globalEventStream.pushGlobalEvent(FullScreenExited)
 

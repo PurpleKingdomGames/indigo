@@ -8,11 +8,11 @@ import indigo.shared.scenegraph.PlaybackPattern
 import indigo.shared.scenegraph.SceneAudio
 import indigo.shared.scenegraph.SceneAudioSource
 import org.scalajs.dom
+import org.scalajs.dom.AudioBuffer
 import org.scalajs.dom.AudioBufferSourceNode
+import org.scalajs.dom.AudioContext
+import org.scalajs.dom.AudioDestinationNode
 import org.scalajs.dom.GainNode
-import org.scalajs.dom.raw.AudioBuffer
-import org.scalajs.dom.raw.AudioContext
-import org.scalajs.dom.raw.AudioDestinationNode
 
 import scala.concurrent.Future
 import scala.scalajs.js

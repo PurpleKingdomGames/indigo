@@ -7,9 +7,9 @@ import indigo.platform.renderer.shared.WebGLHelper
 import indigo.shared.datatypes.RGBA
 import indigo.shared.display.DisplayObjectUniformData
 import indigo.shared.shader.ShaderId
+import org.scalajs.dom.WebGLRenderingContext._
 import org.scalajs.dom.raw.WebGLBuffer
 import org.scalajs.dom.raw.WebGLProgram
-import org.scalajs.dom.raw.WebGLRenderingContext._
 import org.scalajs.dom.raw.WebGLTexture
 
 import scala.collection.mutable.HashMap

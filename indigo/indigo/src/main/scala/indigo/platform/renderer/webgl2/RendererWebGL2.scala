@@ -28,13 +28,13 @@ import indigo.shared.shader.StandardShaders
 import indigo.shared.time.Seconds
 import org.scalajs.dom
 import org.scalajs.dom.Element
+import org.scalajs.dom.WebGLRenderingContext
+import org.scalajs.dom.WebGLRenderingContext._
 import org.scalajs.dom.html
 import org.scalajs.dom.raw
 import org.scalajs.dom.raw.WebGLBuffer
 import org.scalajs.dom.raw.WebGLFramebuffer
 import org.scalajs.dom.raw.WebGLProgram
-import org.scalajs.dom.raw.WebGLRenderingContext
-import org.scalajs.dom.raw.WebGLRenderingContext._
 
 import scala.collection.mutable
 import scala.scalajs.js.Dynamic
@@ -371,8 +371,6 @@ final class RendererWebGL2(
   }
 
   def blitBuffers(from: WebGLFramebuffer, to: WebGLFramebuffer): Unit = {
-
-    import org.scalajs.dom.raw.WebGLRenderingContext._
 
     gl2.clearColor(0, 0, 0, 0)
 

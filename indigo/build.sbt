@@ -8,9 +8,9 @@ ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports"
 
 lazy val indigoVersion = IndigoVersion.getVersion
 // For the docs site
-lazy val indigoDocsVersion = "0.9.2"
+lazy val indigoDocsVersion  = "0.9.2"
 lazy val scalaJsDocsVersion = "1.7.1"
-lazy val scalaDocsVersion = "3.0.2"
+lazy val scalaDocsVersion   = "3.0.2"
 //
 
 val scala3Version = "3.0.2"
@@ -131,7 +131,7 @@ lazy val indigo =
       name := "indigo",
       libraryDependencies ++= Seq(
         "org.scalacheck" %%% "scalacheck"  % "1.15.3" % "test",
-        ("org.scala-js"  %%% "scalajs-dom" % "1.1.0").cross(CrossVersion.for3Use2_13)
+        "org.scala-js"   %%% "scalajs-dom" % "2.0.0"
       )
     )
     .settings(
@@ -200,7 +200,7 @@ lazy val jsdocs = project
     organization := "io.indigoengine"
   )
   .settings(
-    libraryDependencies += ("org.scala-js" %%% "scalajs-dom" % "1.1.0").cross(CrossVersion.for3Use2_13)
+    libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "2.0.0"
   )
   .settings(
     publish      := {},
@@ -220,9 +220,9 @@ lazy val docs = project
   )
   .settings(
     mdocVariables := Map(
-      "VERSION" -> indigoDocsVersion,
+      "VERSION"         -> indigoDocsVersion,
       "SCALAJS_VERSION" -> scalaJsDocsVersion,
-      "SCALA_VERSION" -> scalaDocsVersion
+      "SCALA_VERSION"   -> scalaDocsVersion
     ),
     mdocExtraArguments := List("--no-link-hygiene")
   )
@@ -264,7 +264,7 @@ addCommandAlias(
   List(
     "cleanAll",
     "indigo/doc", // Docs in ./indigo/target/scala-3.0.2/api/
-    "docs/mdoc" // Docs in ./indigo/indigo-docs/target/mdoc
+    "docs/mdoc"   // Docs in ./indigo/indigo-docs/target/mdoc
   ).mkString(";", ";", "")
 )
 

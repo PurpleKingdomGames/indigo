@@ -130,7 +130,7 @@ object AssetLoader {
     }
   }
 
-  // Audio
+  // Text
 
   val loadTextAssets: List[AssetType.Text] => Future[List[LoadedTextAsset]] =
     textAssets => Future.sequence(textAssets.map(loadTextAsset))
@@ -138,9 +138,9 @@ object AssetLoader {
   def loadTextAsset(textAsset: AssetType.Text): Future[LoadedTextAsset] = {
     IndigoLogger.info(s"[Text] Loading ${textAsset.path}")
 
-    Ajax.get(textAsset.path.toString, responseType = "text").map { xhr =>
+    fetch(textAsset.path.toString).toFuture.flatMap { response =>
       IndigoLogger.info(s"[Text] Success ${textAsset.path}")
-      new LoadedTextAsset(textAsset.name, xhr.responseText)
+      response.text().toFuture.map(txt => new LoadedTextAsset(textAsset.name, txt))
     }
   }
 
@@ -153,17 +153,18 @@ object AssetLoader {
   def loadAudioAsset(audioAsset: AssetType.Audio): Future[LoadedAudioAsset] = {
     IndigoLogger.info(s"[Audio] Loading ${audioAsset.path}")
 
-    Ajax.get(audioAsset.path.toString, responseType = "arraybuffer").flatMap { xhr =>
+    fetch(audioAsset.path.toString).toFuture.flatMap { response =>
       IndigoLogger.info(s"[Audio] Success ${audioAsset.path}")
       val context = AudioPlayer.giveAudioContext()
 
-      val p = context.decodeAudioData(
-        xhr.response.asInstanceOf[ArrayBuffer],
-        (audioBuffer: AudioBuffer) => audioBuffer,
-        () => IndigoLogger.info("Error decoding audio from: " + audioAsset.path)
-      )
-
-      p.toFuture.map(audioBuffer => new LoadedAudioAsset(audioAsset.name, audioBuffer))
+      response.arrayBuffer().toFuture.flatMap { ab =>
+        context.decodeAudioData(
+          ab,
+          (audioBuffer: AudioBuffer) => audioBuffer,
+          () => IndigoLogger.info("Error decoding audio from: " + audioAsset.path)
+        ).toFuture
+        .map(audioBuffer => new LoadedAudioAsset(audioAsset.name, audioBuffer))
+      }
     }
   }
 

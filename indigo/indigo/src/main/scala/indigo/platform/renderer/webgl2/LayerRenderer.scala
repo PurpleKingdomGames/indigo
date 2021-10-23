@@ -19,11 +19,11 @@ import indigo.shared.scenegraph.CloneBatchData
 import indigo.shared.scenegraph.CloneId
 import indigo.shared.scenegraph.CloneTileData
 import indigo.shared.shader.ShaderId
+import org.scalajs.dom.WebGLRenderingContext
+import org.scalajs.dom.WebGLRenderingContext._
 import org.scalajs.dom.raw
 import org.scalajs.dom.raw.WebGLBuffer
 import org.scalajs.dom.raw.WebGLProgram
-import org.scalajs.dom.raw.WebGLRenderingContext
-import org.scalajs.dom.raw.WebGLRenderingContext._
 import org.scalajs.dom.raw.WebGLTexture
 
 import scala.annotation.tailrec

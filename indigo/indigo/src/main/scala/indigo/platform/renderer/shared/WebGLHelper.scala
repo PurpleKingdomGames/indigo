@@ -4,11 +4,11 @@ import indigo.facades.WebGL2RenderingContext
 import indigo.shared.IndigoLogger
 import indigo.shared.scenegraph.BlendFactor
 import indigo.shared.shader.RawShaderCode
+import org.scalajs.dom.WebGLRenderingContext
+import org.scalajs.dom.WebGLRenderingContext._
 import org.scalajs.dom.raw
 import org.scalajs.dom.raw.WebGLBuffer
 import org.scalajs.dom.raw.WebGLProgram
-import org.scalajs.dom.raw.WebGLRenderingContext
-import org.scalajs.dom.raw.WebGLRenderingContext._
 import org.scalajs.dom.raw.WebGLTexture
 
 import scala.scalajs.js.JSConverters._

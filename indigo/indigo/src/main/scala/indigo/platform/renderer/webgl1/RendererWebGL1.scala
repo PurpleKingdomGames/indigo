@@ -20,12 +20,12 @@ import indigo.shared.platform.RendererConfig
 import indigo.shared.scenegraph.Camera
 import indigo.shared.shader.RawShaderCode
 import indigo.shared.time.Seconds
+import org.scalajs.dom.WebGLRenderingContext
+import org.scalajs.dom.WebGLRenderingContext._
 import org.scalajs.dom.html
 import org.scalajs.dom.raw
 import org.scalajs.dom.raw.WebGLBuffer
 import org.scalajs.dom.raw.WebGLProgram
-import org.scalajs.dom.raw.WebGLRenderingContext
-import org.scalajs.dom.raw.WebGLRenderingContext._
 import org.scalajs.dom.raw.WebGLUniformLocation
 
 import scala.scalajs.js.typedarray.Float32Array
