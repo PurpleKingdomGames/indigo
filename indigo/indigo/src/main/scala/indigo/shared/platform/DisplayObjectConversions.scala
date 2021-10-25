@@ -651,6 +651,10 @@ object DisplayObjectConversions {
           // println(s"Found an array, current is empty, set current to: ${u.toArray.toList}")
           rec(us, u.toArray, acc)
 
+        case u :: us if current.length == 1 && u.length == 2 =>
+          //println("Current value is float, must not straddle byte boundary when adding vec2")
+          rec(us, current ++ Array(0.0f) ++ u.toArray, acc)
+
         case u :: _ if current.length + u.length > 4 =>
           // println(s"doesn't fit, expanded: ${current.toList} to ${expandTo4(current).toList},  sub-result: ${(acc ++ expandTo4(current)).toList}")
           rec(remaining, empty0, acc ++ expandTo4(current))

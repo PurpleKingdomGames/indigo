@@ -151,6 +151,28 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
 
   }
 
+  test("ubo packing - do not straddle byte boundaries") {
+
+    import indigo.shared.shader.ShaderPrimitive._
+
+    val uniforms =
+      List(
+        Uniform("a") -> float(1),
+        Uniform("b") -> vec2(2, 3)
+      )
+
+    val expected: Array[Float] =
+      Array[Array[Float]](
+        Array[Float](1, 0, 2, 3)
+      ).flatten
+
+    val actual: Array[Float] =
+      DisplayObjectConversions.packUBO(uniforms)
+
+    assertEquals(actual.toList, expected.toList)
+
+  }
+
   test("ubo packing - arrays") {
 
     import indigo.shared.shader.ShaderPrimitive._
