@@ -18,6 +18,7 @@ import indigo.shared.scenegraph.Blending
 import indigo.shared.scenegraph.CloneBlank
 import indigo.shared.scenegraph.CloneId
 import indigo.shared.scenegraph.DirectionLight
+import indigo.shared.scenegraph.EntityNode
 import indigo.shared.scenegraph.Falloff
 import indigo.shared.scenegraph.Graphic
 import indigo.shared.scenegraph.Light
@@ -77,6 +78,9 @@ final class SceneProcessor(
                 anim
               )
             }
+
+        case e: EntityNode =>
+          Some(displayObjectConverterClone.sceneEntityToDisplayObject(e, assetMapping))
 
         case _ =>
           None
