@@ -13,6 +13,7 @@ import indigo.shared.display.DisplayCloneBatch
 import indigo.shared.display.DisplayCloneTiles
 import indigo.shared.display.DisplayEntity
 import indigo.shared.display.DisplayGroup
+import indigo.shared.display.DisplayMutants
 import indigo.shared.display.DisplayObject
 import indigo.shared.display.DisplayText
 import indigo.shared.scenegraph.CloneBatchData
@@ -281,7 +282,7 @@ class LayerRenderer(
     val uniformHash: String = d.shaderUniformData.map(_.uniformHash).mkString
     if uniformHash.nonEmpty && uniformHash != currentUniformHash then
       d.shaderUniformData.zipWithIndex.foreach { case (ud, i) =>
-        val buff = customDataUBOBuffers.getOrElseUpdate(ud.uniformHash, gl2.createBuffer())
+        val buff = customDataUBOBuffers.getOrElseUpdate(ud.blockName, gl2.createBuffer())
 
         WebGLHelper.attachUBOData(gl2, ud.data, buff)
         WebGLHelper.bindUBO(
@@ -294,7 +295,7 @@ class LayerRenderer(
       }
 
     // Atlas
-    if (d.atlasName != atlasName) then
+    if d.atlasName != atlasName then
       d.atlasName.flatMap { nextAtlas =>
         textureLocations.find(t => t.name == nextAtlas)
       } match
@@ -412,6 +413,19 @@ class LayerRenderer(
       bindData(rotationInstanceArray, rotationData)
 
       gl2.drawArraysInstanced(TRIANGLE_STRIP, 0, 4, instanceCount)
+
+  def prepareCloneProgramBuffer(): Unit =
+    disableCloneMode()
+    bindData(translateScaleInstanceArray, translateScaleData)
+    bindData(refFlipInstanceArray, refFlipData)
+    bindData(sizeAndFrameScaleInstanceArray, sizeAndFrameScaleData)
+    bindData(channelOffsets01InstanceArray, channelOffsets01Data)
+    bindData(channelOffsets23InstanceArray, channelOffsets23Data)
+    bindData(textureSizeAtlasSizeInstanceArray, textureSizeAtlasSizeData)
+    bindData(rotationInstanceArray, rotationData)
+
+  def drawSingleCloneProgram(): Unit =
+    gl2.drawArraysInstanced(TRIANGLE_STRIP, 0, 4, 1)
 
   private given CanEqual[List[DisplayEntity], List[DisplayEntity]] = CanEqual.derived
 
@@ -587,6 +601,42 @@ class LayerRenderer(
 
             i += 1
 
+          case c: DisplayMutants =>
+            drawBuffer(batchCount)
+
+            var cloneBlankExists = false
+
+            if c.id.toString != currentCloneId.toString then
+              cloneBlankDisplayObjects.get(c.id) match
+                case None => ()
+                case Some(d) =>
+                  currentCloneId = c.id
+                  currentCloneRef = d
+                  cloneBlankExists = true
+            else cloneBlankExists = true
+
+            if cloneBlankExists &&
+              requiresContextChange(currentCloneRef, atlasName, currentShader, currentShaderHash)
+            then
+              doContextChange(
+                currentCloneRef,
+                atlasName,
+                currentShader,
+                currentShaderHash,
+                customShaders,
+                baseTransform,
+                0
+              )
+
+              processMutants(c, currentCloneRef, currentProgram)
+
+              batchCount = 0
+              atlasName = currentCloneRef.atlasName
+              currentShader = currentCloneRef.shaderId
+              currentShaderHash = currentCloneRef.shaderUniformData.map(_.uniformHash).mkString
+
+            i += 1
+
           case t: DisplayText =>
             drawBuffer(batchCount)
 
@@ -615,7 +665,7 @@ class LayerRenderer(
               setMode(0)
 
             // UBO data
-            val buff = customDataUBOBuffers.getOrElseUpdate("FILLTYPE0", gl2.createBuffer())
+            val buff = customDataUBOBuffers.getOrElseUpdate("[indigo_internal_buffer_textbox]", gl2.createBuffer())
             WebGLHelper.attachUBOData(gl2, Array[Float](0), buff)
             WebGLHelper.bindUBO(
               gl2,
@@ -745,5 +795,45 @@ class LayerRenderer(
 
     count
   }
+
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while"))
+  private def processMutants(
+      c: DisplayMutants,
+      refDisplayObject: DisplayObject,
+      activeShader: WebGLProgram
+  ): Unit =
+    if (c.cloneData.length > 0) {
+      updateData(refDisplayObject, 0)
+      prepareCloneProgramBuffer()
+
+      val count: Int                 = c.cloneData.length
+      var i: Int                     = 0
+      var currentUniformHash: String = ""
+
+      while (i < count) {
+        val shaderUniformData = c.cloneData(i)
+
+        // UBO data
+        val uniformHash: String = shaderUniformData.map(_.uniformHash).mkString
+        if uniformHash.nonEmpty && uniformHash != currentUniformHash then
+          shaderUniformData.zipWithIndex.foreach { case (ud, i) =>
+            val buff = customDataUBOBuffers.getOrElseUpdate(ud.blockName, gl2.createBuffer())
+
+            WebGLHelper.attachUBOData(gl2, ud.data, buff)
+            WebGLHelper.bindUBO(
+              gl2,
+              activeShader,
+              ud.blockName,
+              RendererWebGL2Constants.customDataBlockOffsetPointer + i,
+              buff
+            )
+          }
+          currentUniformHash = uniformHash
+
+        drawSingleCloneProgram()
+
+        i += 1
+      }
+    }
 
 }

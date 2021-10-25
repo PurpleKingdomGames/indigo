@@ -37,6 +37,13 @@ final case class DisplayCloneTiles(
 ) extends DisplayEntity
     derives CanEqual
 
+final case class DisplayMutants(
+    id: CloneId,
+    z: Double,
+    cloneData: Array[Array[DisplayObjectUniformData]]
+) extends DisplayEntity
+    derives CanEqual
+
 final case class DisplayObject(
     x: Float,
     y: Float,

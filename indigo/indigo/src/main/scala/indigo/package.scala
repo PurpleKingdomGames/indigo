@@ -522,6 +522,9 @@ val CloneTiles: shared.scenegraph.CloneTiles.type = shared.scenegraph.CloneTiles
 type CloneTileData = shared.scenegraph.CloneTileData
 val CloneTileData: shared.scenegraph.CloneTileData.type = shared.scenegraph.CloneTileData
 
+type Mutants = shared.scenegraph.Mutants
+val Mutants: shared.scenegraph.Mutants.type = shared.scenegraph.Mutants
+
 // Lights
 type PointLight = shared.scenegraph.PointLight
 val PointLight: shared.scenegraph.PointLight.type = shared.scenegraph.PointLight

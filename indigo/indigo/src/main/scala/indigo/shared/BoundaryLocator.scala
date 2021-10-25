@@ -15,6 +15,7 @@ import indigo.shared.scenegraph.CloneTiles
 import indigo.shared.scenegraph.EntityNode
 import indigo.shared.scenegraph.Graphic
 import indigo.shared.scenegraph.Group
+import indigo.shared.scenegraph.Mutants
 import indigo.shared.scenegraph.SceneNode
 import indigo.shared.scenegraph.Shape
 import indigo.shared.scenegraph.Sprite
@@ -72,6 +73,9 @@ final class BoundaryLocator(
         None
 
       case _: CloneTiles =>
+        None
+
+      case _: Mutants =>
         None
 
       case s: Sprite[_] =>

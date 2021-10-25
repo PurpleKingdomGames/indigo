@@ -21,6 +21,7 @@ import indigo.shared.display.DisplayCloneBatch
 import indigo.shared.display.DisplayCloneTiles
 import indigo.shared.display.DisplayEntity
 import indigo.shared.display.DisplayGroup
+import indigo.shared.display.DisplayMutants
 import indigo.shared.display.DisplayObject
 import indigo.shared.display.DisplayObjectUniformData
 import indigo.shared.display.DisplayText
@@ -35,6 +36,7 @@ import indigo.shared.scenegraph.DependentNode
 import indigo.shared.scenegraph.EntityNode
 import indigo.shared.scenegraph.Graphic
 import indigo.shared.scenegraph.Group
+import indigo.shared.scenegraph.Mutants
 import indigo.shared.scenegraph.RenderNode
 import indigo.shared.scenegraph.SceneGraphNode
 import indigo.shared.scenegraph.SceneNode
@@ -45,6 +47,7 @@ import indigo.shared.scenegraph.TextBox
 import indigo.shared.scenegraph.TextLine
 import indigo.shared.shader.ShaderPrimitive
 import indigo.shared.shader.Uniform
+import indigo.shared.shader.UniformBlock
 import indigo.shared.time.GameTime
 
 import scala.annotation.tailrec
@@ -117,6 +120,22 @@ final class DisplayObjectConversions(
         cloneData = batch.cloneData
       )
 
+  private def mutantsToDisplayEntities(batch: Mutants): DisplayMutants =
+    val uniformDataConvert: List[UniformBlock] => Array[DisplayObjectUniformData] = uniformBlocks =>
+      uniformBlocks.map { ub =>
+        DisplayObjectUniformData(
+          uniformHash = ub.uniformHash,
+          blockName = ub.blockName,
+          data = DisplayObjectConversions.packUBO(ub.uniforms)
+        )
+      }.toArray
+
+    new DisplayMutants(
+      id = batch.id,
+      z = batch.depth.toDouble,
+      cloneData = batch.uniformBlocks.map(uniformDataConvert)
+    )
+
   def sceneNodesToDisplayObjects(
       sceneNodes: List[SceneGraphNode],
       gameTime: GameTime,
@@ -169,7 +188,7 @@ final class DisplayObjectConversions(
           case None =>
             DisplayGroup.empty
 
-          case Some(refDisplayObject) =>
+          case Some(_) =>
             cloneBatchDataToDisplayEntities(c)
         }
 
@@ -178,8 +197,17 @@ final class DisplayObjectConversions(
           case None =>
             DisplayGroup.empty
 
-          case Some(refDisplayObject) =>
+          case Some(_) =>
             cloneTilesDataToDisplayEntities(c)
+        }
+
+      case c: Mutants =>
+        cloneBlankDisplayObjects.get(c.id) match {
+          case None =>
+            DisplayGroup.empty
+
+          case Some(_) =>
+            mutantsToDisplayEntities(c)
         }
 
       case g: Group =>

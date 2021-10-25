@@ -1,10 +1,12 @@
 package com.example.sandbox
 
+import com.example.sandbox.scenes.Archetype
 import com.example.sandbox.scenes.BoundsScene
 import com.example.sandbox.scenes.CameraScene
 import com.example.sandbox.scenes.ConfettiScene
 import com.example.sandbox.scenes.LegacyEffectsScene
 import com.example.sandbox.scenes.LightsScene
+import com.example.sandbox.scenes.MutantsScene
 import com.example.sandbox.scenes.OriginalScene
 import com.example.sandbox.scenes.RefractionScene
 import com.example.sandbox.scenes.Shaders
@@ -27,13 +29,15 @@ import scala.scalajs.js.annotation._
 @JSExportTopLevel("IndigoGame")
 object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, SandboxGameModel, SandboxViewModel] {
 
-  private val targetFPS: Int          = 60
-  private val magnificationLevel: Int = 2
-  private val viewportWidth: Int      = 228 * magnificationLevel
-  private val viewportHeight: Int     = 128 * magnificationLevel
+  val targetFPS: Int          = 60
+  val magnificationLevel: Int = 2
+  val gameWidth: Int          = 228
+  val gameHeight: Int         = 128
+  val viewportWidth: Int      = gameWidth * magnificationLevel  // 456
+  val viewportHeight: Int     = gameHeight * magnificationLevel // 256
 
   def initialScene(bootData: SandboxBootData): Option[SceneName] =
-    Some(ConfettiScene.name)
+    Some(MutantsScene.name)
 
   def scenes(bootData: SandboxBootData): NonEmptyList[Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]] =
     NonEmptyList(
@@ -47,7 +51,8 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
       CameraScene,
       TextureTileScene,
       UiScene,
-      ConfettiScene
+      ConfettiScene,
+      MutantsScene
     )
 
   val eventFilters: EventFilters = EventFilters.Permissive
@@ -71,7 +76,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
           magnification = magnificationLevel
         ),
         SandboxBootData(flags.getOrElse("key", "No entry for 'key'."), gameViewport)
-      ).withAssets(SandboxAssets.assets ++ Shaders.assets)
+      ).withAssets(SandboxAssets.assets ++ Shaders.assets ++ Archetype.assets)
         .withFonts(Fonts.fontInfo)
         .withSubSystems(
           FPSCounter(
@@ -84,7 +89,8 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
           Shaders.circle,
           Shaders.external,
           Shaders.sea,
-          LegacyEffects.entityShader
+          LegacyEffects.entityShader,
+          Archetype.shader
         )
         .addShaders(Refraction.shaders)
     )

@@ -17,6 +17,7 @@ import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.shared.display.DisplayCloneBatch
 import indigo.shared.display.DisplayCloneTiles
 import indigo.shared.display.DisplayGroup
+import indigo.shared.display.DisplayMutants
 import indigo.shared.display.DisplayObject
 import indigo.shared.display.DisplayText
 import indigo.shared.materials.Material
@@ -68,6 +69,9 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
       case _: DisplayCloneTiles =>
         throw new Exception("failed (DisplayCloneTiles)")
 
+      case _: DisplayMutants =>
+        throw new Exception("failed (DisplayMutants)")
+
       case _: DisplayText =>
         throw new Exception("failed (DisplayText)")
 
@@ -95,6 +99,9 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
 
       case _: DisplayCloneTiles =>
         throw new Exception("failed (DisplayCloneTiles)")
+
+      case _: DisplayMutants =>
+        throw new Exception("failed (DisplayMutants)")
 
       case _: DisplayText =>
         throw new Exception("failed (DisplayText)")
