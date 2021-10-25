@@ -650,8 +650,7 @@ object Shape {
             )
 
           case l: Lit =>
-            l.toShaderData(s.shaderId.getOrElse(StandardShaders.LitShapeBox.id))
-              .addUniformBlock(shapeUniformBlock)
+            l.toShaderData(s.shaderId.getOrElse(StandardShaders.LitShapeBox.id), None, List(shapeUniformBlock))
         }
 
       case s: Shape.Circle =>
@@ -673,8 +672,7 @@ object Shape {
             )
 
           case l: Lit =>
-            l.toShaderData(s.shaderId.getOrElse(StandardShaders.LitShapeCircle.id))
-              .addUniformBlock(shapeUniformBlock)
+            l.toShaderData(s.shaderId.getOrElse(StandardShaders.LitShapeCircle.id), None, List(shapeUniformBlock))
         }
 
       case s: Shape.Line =>
@@ -704,8 +702,7 @@ object Shape {
             )
 
           case l: Lit =>
-            l.toShaderData(s.shaderId.getOrElse(StandardShaders.LitShapeLine.id))
-              .addUniformBlock(shapeUniformBlock)
+            l.toShaderData(s.shaderId.getOrElse(StandardShaders.LitShapeLine.id), None, List(shapeUniformBlock))
         }
 
       case s: Shape.Polygon =>
@@ -736,7 +733,6 @@ object Shape {
             )
 
           case l: Lit =>
-            l.toShaderData(s.shaderId.getOrElse(StandardShaders.LitShapePolygon.id))
-              .addUniformBlock(shapeUniformBlock)
+            l.toShaderData(s.shaderId.getOrElse(StandardShaders.LitShapePolygon.id), None, List(shapeUniformBlock))
         }
 }
