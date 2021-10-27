@@ -43,7 +43,7 @@ const siteConfig = {
     { blog: true, label: 'Blog' },
     { doc: 'guides', label: 'Guides' },
     { doc: 'development-status', label: 'Docs' },
-    { href: "/api/api/indigo.html", label: "APIs", external: false },
+    { href: "/api/", label: "APIs", external: false },
     { page: 'tools', label: 'Tools' },
     { href: "https://github.com/PurpleKingdomGames/indigo", label: "GitHub", external: true },
   ],

@@ -241,13 +241,9 @@ lazy val indigoProject =
     .enablePlugins(ScalaUnidocPlugin)
     .settings(commonSettings: _*)
     .settings(
-      unidocProjectFilter in (ScalaUnidoc, unidoc) := inAnyProject -- inProjects(indigoShaders, sandbox, perf, docs)
-    )
-    .settings(
-      code               := { "code ." ! },
-      openshareddocs     := { "open -a Firefox indigo-shared/.jvm/target/scala-3.0.0/api/indigo/index.html" ! },
-      openindigodocs     := { "open -a Firefox indigo/.jvm/target/scala-3.0.0/api/indigo/index.html" ! },
-      openindigoextsdocs := { "open -a Firefox indigo-exts/.jvm/target/scala-3.0.0/api/indigoexts/index.html" ! }
+      name := "Indigo",
+      ScalaUnidoc / unidoc / unidocProjectFilter := inAnyProject -- inProjects(indigoShaders, sandbox, perf, docs),
+      code := { "code ." ! }
     )
     .aggregate(
       indigo,
@@ -263,22 +259,10 @@ addCommandAlias(
   "gendocs",
   List(
     "cleanAll",
-    "indigo/doc", // Docs in ./indigo/target/scala-3.1.0/api/
+    "unidoc",   // Docs in ./target/scala-3.1.0/unidoc/
     "docs/mdoc" // Docs in ./indigo/indigo-docs/target/mdoc
   ).mkString(";", ";", "")
 )
 
 lazy val code =
   taskKey[Unit]("Launch VSCode in the current directory")
-
-// Don't call this, call readdocs
-lazy val openshareddocs =
-  taskKey[Unit]("Open the Indigo Shared API docs in FireFox")
-
-// Don't call this, call readdocs
-lazy val openindigodocs =
-  taskKey[Unit]("Open the Indigo API docs in FireFox")
-
-// Don't call this, call readdocs
-lazy val openindigoextsdocs =
-  taskKey[Unit]("Open the Indigo Extensions API docs in FireFox")
