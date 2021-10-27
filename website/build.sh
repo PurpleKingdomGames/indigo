@@ -19,11 +19,6 @@ cd $WEBSITE_DIR
 
 # -----
 # build the site
-rm -fr $WEBSITE_DIR/static/api
-mkdir -p $WEBSITE_DIR/static/api
-
-cp -R $INDIGO_ENGINE_DIR/target/scala-3.*/unidoc/ $WEBSITE_DIR/static/api
-
 yarn run build
 
 # -----
