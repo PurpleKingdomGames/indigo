@@ -38,3 +38,4 @@ metals.sbt
 .coursier
 
 indigo/site/public/
+website/build/
