@@ -40,8 +40,14 @@
       "presentation/primitives",
       "presentation/scene-update-fragment",
       "presentation/shapes",
-      "presentation/text-and-fonts",
-      "presentation/ui-components"
+      "presentation/text-and-fonts"
+    ],
+    "UI Components": [
+      "uicomponents/ui-components",
+      "uicomponents/button",
+      "uicomponents/hit-area",
+      "uicomponents/input-field",
+      "uicomponents/radio-button"
     ],
     "Shaders": [
       "shaders/shader-overview",
