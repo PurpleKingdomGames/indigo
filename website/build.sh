@@ -11,7 +11,7 @@ INDIGO_ENGINE_DIR=$PROJECT_DIR/indigo/
 
 # -----
 # generate / check docs
-#  - "indigo/doc" // Docs in ./indigo/target/scala-3.0.2/api/
+#  - "indigo/doc" // Docs in ./indigo/target/scala-3.1.0/api/
 #  - "docs/mdoc"  // Docs in ./indigo/indigo-docs/target/mdoc
 cd $INDIGO_ENGINE_DIR
 sbt gendocs
