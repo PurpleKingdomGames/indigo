@@ -155,6 +155,21 @@
       "time/time-varying-values": {
         "title": "Time Varying Values"
       },
+      "uicomponents/button": {
+        "title": "Buttons"
+      },
+      "uicomponents/hit-area": {
+        "title": "Hit Area"
+      },
+      "uicomponents/input-field": {
+        "title": "Input Field"
+      },
+      "uicomponents/radio-button": {
+        "title": "Radio Button"
+      },
+      "uicomponents/ui-components": {
+        "title": "Overview"
+      },
       "unused/computations": {
         "title": "unused/computations"
       },
@@ -178,6 +193,7 @@
       "Organising your game": "Organising your game",
       "The game loop": "The game loop",
       "Presentation": "Presentation",
+      "UI Components": "UI Components",
       "Shaders": "Shaders",
       "Working with Time": "Working with Time",
       "Platform & Publishing": "Platform & Publishing",
