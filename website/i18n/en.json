@@ -98,6 +98,12 @@
       "presentation/depth-and-layers": {
         "title": "Depth & Layers"
       },
+      "presentation/depth": {
+        "title": "Depth"
+      },
+      "presentation/layers": {
+        "title": "Layers"
+      },
       "presentation/lighting": {
         "title": "Lighting"
       },
