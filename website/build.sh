@@ -22,10 +22,6 @@ cd $WEBSITE_DIR
 yarn run build
 
 # -----
-# move to publish
-rm -fr $PROJECT_DIR/docs
-mkdir $PROJECT_DIR/docs
-cp -R $WEBSITE_DIR/build/indigo-site/* $PROJECT_DIR/docs/
-#Fudge, for unknown reasons the styles are not copies over. Suspect docusaurus...
-cp -R $INDIGO_ENGINE_DIR/target/scala-3.*/unidoc/ $PROJECT_DIR/docs/api/
-
+# Publish
+cp -R $INDIGO_ENGINE_DIR/target/scala-3.*/unidoc/ $WEBSITE_DIR/build/indigo-site/api/
+sbt clean makeSite ghpagesPushSite
