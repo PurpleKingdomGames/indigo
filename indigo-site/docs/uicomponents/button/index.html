@@ -1,0 +1,117 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>Buttons · Indigo</title><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="generator" content="Docusaurus"/><meta name="description" content="The out-of-the-box button is created out of three graphics that represent the up, over, and down states. Aside from handling the button&#x27;s state, the main advantage of using the button component is that it&#x27;s easier to to define interactions. Rather than pattern matching on a click event at the top of your update function, and then deciding whether the click happened inside the button or not, you can just define you button as follows and it will do the rest for you, once it has been wired in:"/><meta name="docsearch:language" content="en"/><meta property="og:title" content="Buttons · Indigo"/><meta property="og:type" content="website"/><meta property="og:url" content="https://your-docusaurus-test-site.com/"/><meta property="og:description" content="The out-of-the-box button is created out of three graphics that represent the up, over, and down states. Aside from handling the button&#x27;s state, the main advantage of using the button component is that it&#x27;s easier to to define interactions. Rather than pattern matching on a click event at the top of your update function, and then deciding whether the click happened inside the button or not, you can just define you button as follows and it will do the rest for you, once it has been wired in:"/><meta property="og:image" content="https://your-docusaurus-test-site.com/img/undraw_online.svg"/><meta name="twitter:card" content="summary"/><meta name="twitter:image" content="https://your-docusaurus-test-site.com/img/undraw_tweetstorm.svg"/><link rel="shortcut icon" href="/img/indigo_logo_solid.svg"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><link rel="alternate" type="application/atom+xml" href="https://your-docusaurus-test-site.com/blog/atom.xml" title="Indigo Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://your-docusaurus-test-site.com/blog/feed.xml" title="Indigo Blog RSS Feed"/><script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-169190516-1"></script><script>
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments); }
+              gtag('js', new Date());
+              gtag('config', 'UA-169190516-1');
+            </script><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><script src="/js/scrollSpy.js"></script><link rel="stylesheet" href="/css/main.css"/><script src="/js/codetabs.js"></script></head><body class="sideNavVisible separateOnPageNav"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/"><img class="logo" src="/img/indigo_logo_solid_text.svg" alt="Indigo"/><h2 class="headerTitleWithLogo">Indigo</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class=""><a href="/blog/" target="_self">Blog</a></li><li class=""><a href="/docs/guides" target="_self">Guides</a></li><li class="siteNavGroupActive"><a href="/docs/development-status" target="_self">Docs</a></li><li class=""><a href="/api/" target="_self">APIs</a></li><li class=""><a href="/tools" target="_self">Tools</a></li><li class=""><a href="https://github.com/PurpleKingdomGames/indigo" target="_blank">GitHub</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><div class="hamburger-menu"><div class="line1"></div><div class="line2"></div><div class="line3"></div></div></div><h2><i>›</i><span>UI Components</span></h2><div class="tocToggler" id="tocToggler"><i class="icon-toc"></i></div></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle">Indigo</h3><ul class=""><li class="navListItem"><a class="navItem" href="/docs/development-status">Indigo&#x27;s Development Status</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Getting started</h3><ul class=""><li class="navListItem"><a class="navItem" href="/docs/quickstart/setup-and-configuration">Setup &amp; Configuration</a></li><li class="navListItem"><a class="navItem" href="/docs/quickstart/hello-indigo">Hello, Indigo!</a></li><li class="navListItem"><a class="navItem" href="/docs/quickstart/examples">Examples</a></li><li class="navListItem"><a class="navItem" href="/docs/quickstart/project-templates">Mill &amp; SBT Game Templates</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Organising your game</h3><ul class=""><li class="navListItem"><a class="navItem" href="/docs/organisation/boot-and-start-up">Boot &amp; Start Up</a></li><li class="navListItem"><a class="navItem" href="/docs/organisation/game-entry-points">Game Entry Points</a></li><li class="navListItem"><a class="navItem" href="/docs/organisation/scene-management">Scenes &amp; Scene Management</a></li><li class="navListItem"><a class="navItem" href="/docs/organisation/subsystems">SubSystems</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">The game loop</h3><ul class=""><li class="navListItem"><a class="navItem" href="/docs/gameloop/events">Events</a></li><li class="navListItem"><a class="navItem" href="/docs/gameloop/frame-context">Frame context</a></li><li class="navListItem"><a class="navItem" href="/docs/gameloop/outcome">Outcome Type</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Presentation</h3><ul class=""><li class="navListItem"><a class="navItem" href="/docs/presentation/animation">Animation</a></li><li class="navListItem"><a class="navItem" href="/docs/presentation/audio">Audio</a></li><li class="navListItem"><a class="navItem" href="/docs/presentation/cameras">Cameras</a></li><li class="navListItem"><a class="navItem" href="/docs/presentation/depth">Depth</a></li><li class="navListItem"><a class="navItem" href="/docs/presentation/layers">Layers</a></li><li class="navListItem"><a class="navItem" href="/docs/presentation/lighting">Lighting</a></li><li class="navListItem"><a class="navItem" href="/docs/presentation/materials">Materials</a></li><li class="navListItem"><a class="navItem" href="/docs/presentation/primitives">Primitives &amp; Building Blocks</a></li><li class="navListItem"><a class="navItem" href="/docs/presentation/scene-update-fragment">SceneUpdateFragment</a></li><li class="navListItem"><a class="navItem" href="/docs/presentation/shapes">Shapes</a></li><li class="navListItem"><a class="navItem" href="/docs/presentation/text-and-fonts">Text &amp; Fonts</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">UI Components</h3><ul class=""><li class="navListItem"><a class="navItem" href="/docs/uicomponents/ui-components">Overview</a></li><li class="navListItem navListItemActive"><a class="navItem" href="/docs/uicomponents/button">Buttons</a></li><li class="navListItem"><a class="navItem" href="/docs/uicomponents/hit-area">Hit Area</a></li><li class="navListItem"><a class="navItem" href="/docs/uicomponents/input-field">Input Field</a></li><li class="navListItem"><a class="navItem" href="/docs/uicomponents/radio-button">Radio Button</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Shaders</h3><ul class=""><li class="navListItem"><a class="navItem" href="/docs/shaders/shader-overview">Shaders Overview</a></li><li class="navListItem"><a class="navItem" href="/docs/shaders/constants">Shader Constants, Variables, and Outputs</a></li><li class="navListItem"><a class="navItem" href="/docs/shaders/entity-shaders">Entity Shaders</a></li><li class="navListItem"><a class="navItem" href="/docs/shaders/blending">Blending</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Working with Time</h3><ul class=""><li class="navListItem"><a class="navItem" href="/docs/time/signals">Signals &amp; Signal Functions</a></li><li class="navListItem"><a class="navItem" href="/docs/time/time-varying-values">Time Varying Values</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Platform &amp; Publishing</h3><ul class=""><li class="navListItem"><a class="navItem" href="/docs/platform/assets">Assets &amp; Asset Loading</a></li><li class="navListItem"><a class="navItem" href="/docs/platform/cross-platform-publishing">Cross Platform Publishing</a></li><li class="navListItem"><a class="navItem" href="/docs/platform/importers">File Format Importers</a></li><li class="navListItem"><a class="navItem" href="/docs/platform/input-handling">User Input Handling</a></li><li class="navListItem"><a class="navItem" href="/docs/platform/loading-and-saving-data">Loading &amp; Saving Data</a></li><li class="navListItem"><a class="navItem" href="/docs/platform/logging">Logging</a></li><li class="navListItem"><a class="navItem" href="/docs/platform/networking">Networking</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Other information</h3><ul class=""><li class="navListItem"><a class="navItem" href="/docs/information/alternatives">Alternatives to Indigo</a></li><li class="navListItem"><a class="navItem" href="/docs/information/glossary">Glossary</a></li><li class="navListItem"><a class="navItem" href="/docs/information/key-concepts">Key Concepts</a></li><li class="navListItem"><a class="navItem" href="/docs/information/model-viewmodel-view">Model, ViewModel, &amp; View</a></li><li class="navListItem"><a class="navItem" href="/docs/information/motivation-and-constraints">Motivation &amp; Constraints</a></li><li class="navListItem"><a class="navItem" href="/docs/information/performance">Performance</a></li><li class="navListItem"><a class="navItem" href="/docs/information/prior-art">Prior Art</a></li><li class="navListItem"><a class="navItem" href="/docs/information/rendering-technology">Rendering Technology</a></li></ul></div></div></section></div><script>
+            var coll = document.getElementsByClassName('collapsible');
+            var checkActiveCategory = true;
+            for (var i = 0; i < coll.length; i++) {
+              var links = coll[i].nextElementSibling.getElementsByTagName('*');
+              if (checkActiveCategory){
+                for (var j = 0; j < links.length; j++) {
+                  if (links[j].classList.contains('navListItemActive')){
+                    coll[i].nextElementSibling.classList.toggle('hide');
+                    coll[i].childNodes[1].classList.toggle('rotate');
+                    checkActiveCategory = false;
+                    break;
+                  }
+                }
+              }
+
+              coll[i].addEventListener('click', function() {
+                var arrow = this.childNodes[1];
+                arrow.classList.toggle('rotate');
+                var content = this.nextElementSibling;
+                content.classList.toggle('hide');
+              });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              var headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                var el = event.target;
+                while(el !== headings){
+                  if (el.tagName === 'A') {
+                    document.body.classList.remove('tocActive');
+                    break;
+                  } else{
+                    el = el.parentNode;
+                  }
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                if (!toggler) {
+                  return;
+                }
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1 id="__docusaurus" class="postHeaderTitle">Buttons</h1></header><article><div><span><p>The out-of-the-box button is created out of three graphics that represent the up, over, and down states. Aside from handling the button's state, the main advantage of using the button component is that it's easier to to define interactions. Rather than pattern matching on a click event at the top of your update function, and then deciding whether the click happened inside the button or not, you can just define you button as follows and it will do the rest for you, once it has been wired in:</p>
+<pre><code class="hljs css language-scala"><span class="hljs-keyword">import</span> indigo._
+<span class="hljs-keyword">import</span> indigoextras.ui._
+
+<span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">LaunchTheRocket</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">GlobalEvent</span></span>
+
+<span class="hljs-keyword">val</span> buttonAssets =
+  <span class="hljs-type">ButtonAssets</span>(
+    up = <span class="hljs-type">Graphic</span>(<span class="hljs-number">50</span>, <span class="hljs-number">50</span>, <span class="hljs-type">Material</span>.<span class="hljs-type">Bitmap</span>(<span class="hljs-type">AssetName</span>(<span class="hljs-string">"up"</span>))),
+    over = <span class="hljs-type">Graphic</span>(<span class="hljs-number">50</span>, <span class="hljs-number">50</span>, <span class="hljs-type">Material</span>.<span class="hljs-type">Bitmap</span>(<span class="hljs-type">AssetName</span>(<span class="hljs-string">"over"</span>))),
+    down = <span class="hljs-type">Graphic</span>(<span class="hljs-number">50</span>, <span class="hljs-number">50</span>, <span class="hljs-type">Material</span>.<span class="hljs-type">Bitmap</span>(<span class="hljs-type">AssetName</span>(<span class="hljs-string">"down"</span>)))
+  )
+
+<span class="hljs-keyword">val</span> button = 
+  <span class="hljs-type">Button</span>(
+    buttonAssets = buttonAssets,
+    bounds = <span class="hljs-type">Rectangle</span>(<span class="hljs-number">10</span>, <span class="hljs-number">10</span>, <span class="hljs-number">16</span>, <span class="hljs-number">16</span>),
+    depth = <span class="hljs-type">Depth</span>(<span class="hljs-number">2</span>)
+  ).withUpActions(<span class="hljs-type">LaunchTheRocket</span>)
+</code></pre>
+<p><a href="https://github.com/PurpleKingdomGames/indigo-examples/tree/master/examples/button">The full button example is in the indigo-examples repo.</a></p>
+<p>A quick explanation of the <code>updateViewModel</code> function in the example above, it looks like this:</p>
+<pre><code class="hljs css language-scala"><span class="hljs-keyword">final</span> <span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyViewModel</span>(<span class="hljs-params">button: <span class="hljs-type">Button</span></span>)</span>
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">updateViewModel</span></span>(context: <span class="hljs-type">FrameContext</span>[<span class="hljs-type">Unit</span>], model: <span class="hljs-type">Unit</span>, viewModel: <span class="hljs-type">MyViewModel</span>): <span class="hljs-type">GlobalEvent</span> =&gt; <span class="hljs-type">Outcome</span>[<span class="hljs-type">MyViewModel</span>] = {
+  <span class="hljs-keyword">case</span> <span class="hljs-type">FrameTick</span> =&gt;
+    viewModel.button.update(context.inputState.mouse).map { btn =&gt;
+      viewModel.copy(button = btn)
+    }
+
+  <span class="hljs-keyword">case</span> _ =&gt;
+    <span class="hljs-type">Outcome</span>(viewModel)
+}
+</code></pre>
+<p>To help see what's happening here, we could rewrite this:</p>
+<pre><code class="hljs css language-scala"><span class="hljs-keyword">val</span> viewModel = <span class="hljs-type">MyViewModel</span>(button)
+
+viewModel.button.update(context.inputState.mouse).map { btn =&gt;
+  viewModel.copy(button = btn)
+}
+</code></pre>
+<p>...as:</p>
+<pre><code class="hljs css language-scala"><span class="hljs-keyword">for</span> {
+  updatedButton    &lt;- viewModel.button.update(context.inputState.mouse)
+  updatedViewModel &lt;- <span class="hljs-type">Outcome</span>(viewModel.copy(button = updatedButton))
+} <span class="hljs-keyword">yield</span> updatedViewModel
+</code></pre>
+<p>First we have to update the button, which is done by calling the buttons's built in update method and supplying the current state of the mouse on this frame. The button update returns an <a href="/docs/gameloop/outcome"><code>Outcome</code></a> because as well as containing a freshly updated button, it can also return events that will need to be collected at the end of the frame. Since we need to return an outcome containing an updated view model at the end of the frame, we then need to map over the outcome, and insert the button in the view model.</p>
+<p><strong><em>A word of caution</em></strong>, you might be tempted to do this instead, which appears to work and compiles just fine:</p>
+<pre><code class="hljs css language-scala"><span class="hljs-keyword">val</span> updatedButton = viewModel.button.update(context.inputState.mouse).unsafeGet
+<span class="hljs-keyword">val</span> updatedViewModel = viewModel.copy(button = updatedButton)
+
+<span class="hljs-type">Outcome</span>(updatedViewModel)
+</code></pre>
+<p>The trouble is the by pulling the button instance out of the <code>Outcome</code> after the update by calling <code>.state</code>, <strong><em>you lose any events that the button generated during it's update</em></strong>. You must <code>map</code> or <code>flatMap</code> over the <code>Outcome</code> types.</p>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/docs/uicomponents/ui-components"><span class="arrow-prev">← </span><span>Overview</span></a><a class="docs-next button" href="/docs/uicomponents/hit-area"><span>Hit Area</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/" class="nav-home"><img src="/img/indigo_logo.svg" alt="Indigo" width="66" height="58"/></a><div><h5>Getting Started</h5><a href="/docs/en/quickstart/setup-and-configuration">Setup &amp; Configuration Guide</a><a href="/docs/en/quickstart/hello-indigo">&quot;Hello, Indigo!&quot; Tutorial</a><a href="/docs/en/quickstart/examples">Links to examples</a><a href="/docs/en/quickstart/project-templates">Project templates</a></div><div><h5>Community</h5><a href="https://discord.gg/b5CD47g">Discord</a><a href="https://github.com/PurpleKingdomGames/indigo/discussions">GitHub Discussons</a><a href="https://twitter.com/indigoengine" target="_blank" rel="noreferrer noopener">Twitter</a></div><div><h5>Sponsor us!</h5><a href="https://github.com/sponsors/PurpleKingdomGames">GitHub Sponsors</a><a href="https://www.patreon.com/indigoengine">Patreon</a></div></section></footer></div></body></html>
