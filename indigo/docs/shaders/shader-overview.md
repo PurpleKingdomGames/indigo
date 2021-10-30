@@ -9,13 +9,19 @@ A shader program is a compiled computer program executed on your graphics card t
 
 > The terms "shader", "program", and "shader program" are used somewhat inter-changeably here.
 
+## Aim of the shader docs
+
+Shaders are a big subject and beyond the scope of this documentation site, the aim here is just to give you enough information to get you started with shaders in Indigo (which have a particular flavour), not to teach you how to write shaders in general.
+
 ## How to get started with Shaders
 
 There is a brief introduction to using shaders in your project as part of the ["how to create a custom entity"](guides/howto-custom-entity.md) guide that we recommend you read first, which also has an accompanying [example repo](https://github.com/PurpleKingdomGames/indigo-examples/tree/master/howto/custom-entity).
 
+There is a follow on tutorial to the one above than explains [how to make a fire shader](guides/howto-fire-shader.md) that you may also find useful.
+
 ## Entity vs Blend Shaders
 
-Indigo has two distinct flavors of shader.
+Indigo has two distinct flavours of shader.
 
 1. [Entity shaders](entity-shaders.md) are used to draw individual items / entities on the screen.
 2. Blend shaders are used in the [blending process](blending.md) to tell Indigo how to merge layers together.
