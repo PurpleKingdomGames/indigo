@@ -52,7 +52,6 @@
     "Shaders": [
       "shaders/shader-overview",
       "shaders/constants",
-      "shaders/entity-shaders",
       "shaders/blending"
     ],
     "Working with Time": [
