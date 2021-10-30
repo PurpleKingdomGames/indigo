@@ -42,7 +42,7 @@ Below is an example lighting layer that sets a low (25% white) ambient light so 
 ```scala mdoc:silent
 import indigo._
 
-Layer(Graphic(50, 50, Material.ImageEffects(AssetName("tourch light"))))
+Layer(Graphic(50, 50, Material.ImageEffects(AssetName("torch light"))))
   .withBlending(Blending.Lighting(RGBA.White.withAlpha(0.25)))
 ```
 
