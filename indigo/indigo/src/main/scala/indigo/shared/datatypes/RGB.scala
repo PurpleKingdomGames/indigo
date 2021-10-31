@@ -51,6 +51,24 @@ object RGB:
   val White: RGB   = RGB(1, 1, 1)
   val Black: RGB   = RGB(0, 0, 0)
 
+  val Coral: RGB     = RGBA.Coral.toRGB
+  val Crimson: RGB   = RGBA.Crimson.toRGB
+  val DarkBlue: RGB  = RGBA.DarkBlue.toRGB
+  val Indigo: RGB    = RGBA.Indigo.toRGB
+  val Olive: RGB     = RGBA.Olive.toRGB
+  val Orange: RGB    = RGBA.Orange.toRGB
+  val Pink: RGB      = RGBA.Pink.toRGB
+  val Plum: RGB      = RGBA.Plum.toRGB
+  val Purple: RGB    = RGBA.Purple.toRGB
+  val Salmon: RGB    = RGBA.Salmon.toRGB
+  val SeaGreen: RGB  = RGBA.SeaGreen.toRGB
+  val Silver: RGB    = RGBA.Silver.toRGB
+  val SlateGray: RGB = RGBA.SlateGray.toRGB
+  val SteelBlue: RGB = RGBA.SteelBlue.toRGB
+  val Teal: RGB      = RGBA.Teal.toRGB
+  val Thistle: RGB   = RGBA.Thistle.toRGB
+  val Tomato: RGB    = RGBA.Tomato.toRGB
+
   val Normal: RGB = White
   val None: RGB   = White
   val Zero: RGB   = RGB(0, 0, 0)

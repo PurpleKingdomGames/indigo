@@ -68,6 +68,25 @@ object RGBA:
   val None: RGBA   = White
   val Zero: RGBA   = RGBA(0, 0, 0, 0)
 
+  // https://en.wikipedia.org/wiki/X11_color_names
+  val Coral: RGBA     = fromHexString("#FF7F50")
+  val Crimson: RGBA   = fromHexString("#DC143C")
+  val DarkBlue: RGBA  = fromHexString("#00008B")
+  val Indigo: RGBA    = fromHexString("#4B0082")
+  val Olive: RGBA     = fromHexString("#808000")
+  val Orange: RGBA    = fromHexString("#FFA500")
+  val Pink: RGBA      = fromHexString("#FFC0CB")
+  val Plum: RGBA      = fromHexString("#DDA0DD")
+  val Purple: RGBA    = fromHexString("#A020F0")
+  val Salmon: RGBA    = fromHexString("#FA8072")
+  val SeaGreen: RGBA  = fromHexString("#2E8B57")
+  val Silver: RGBA    = fromHexString("#C0C0C0")
+  val SlateGray: RGBA = fromHexString("#708090")
+  val SteelBlue: RGBA = fromHexString("#4682B4")
+  val Teal: RGBA      = fromHexString("#008080")
+  val Thistle: RGBA   = fromHexString("#D8BFD8")
+  val Tomato: RGBA    = fromHexString("#FF6347")
+
   def apply(r: Double, g: Double, b: Double): RGBA =
     RGBA(r, g, b, 1.0)
 
