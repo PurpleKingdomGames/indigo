@@ -32,6 +32,19 @@ lazy val basicSetup =
       gameAssetsDirectory := "assets"
     )
 
+lazy val blending =
+  project
+    .in(file("blending"))
+    .settings(commonSettings: _*)
+    .enablePlugins(SbtIndigo)
+    .enablePlugins(ScalaJSPlugin)
+    .settings(
+      name := "blending-example",
+      showCursor := true,
+      title := "Blending example",
+      gameAssetsDirectory := "assets"
+    )
+
 lazy val subSystems =
   project
     .in(file("subsystems"))

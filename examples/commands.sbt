@@ -1,6 +1,7 @@
 lazy val exampleProjects: List[String] =
   List(
     "basicSetup",
+    "blending",
     "subSystems",
     "scenesSetup",
     "button",
@@ -236,6 +237,14 @@ addCommandAlias(
   List(
     "subSystems/fastOptJS",
     "subSystems/indigoRun"
+  ).mkString(";", ";", "")
+)
+
+addCommandAlias(
+  "blendingRun",
+  List(
+    "blending/fastOptJS",
+    "blending/indigoRun"
   ).mkString(";", ";", "")
 )
 
