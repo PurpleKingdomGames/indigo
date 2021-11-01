@@ -1,6 +1,8 @@
 package indigo.shared.scenegraph
 
 import indigo.shared.datatypes.BindingKey
+import indigo.shared.datatypes.RGBA
+import indigo.shared.materials.BlendMaterial
 
 class SceneUpdateFragmentTests extends munit.FunSuite {
 
@@ -70,6 +72,30 @@ class SceneUpdateFragmentTests extends munit.FunSuite {
     assert(actual.layers.length == 1)
     assertEquals(actual.layers.head.magnification, Some(2))
 
+  }
+
+  test("Can add a blend material with no Blending instance in place") {
+    val scene =
+      SceneUpdateFragment.empty.withBlendMaterial(BlendMaterial.Lighting(RGBA.Red))
+
+    scene.blendMaterial match
+      case Some(BlendMaterial.Lighting(color)) =>
+        assertEquals(color, RGBA.Red)
+
+      case _ =>
+        fail("match failed")
+  }
+
+  test("Can modify blending with no Blending instance in place") {
+    val scene =
+      SceneUpdateFragment.empty.modifyBlendMaterial(_ => BlendMaterial.Lighting(RGBA.Red))
+
+    scene.blendMaterial match
+      case Some(BlendMaterial.Lighting(color)) =>
+        assertEquals(color, RGBA.Red)
+
+      case _ =>
+        fail("match failed")
   }
 
 }

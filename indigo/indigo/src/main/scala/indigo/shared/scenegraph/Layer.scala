@@ -101,13 +101,13 @@ final case class Layer(
   def withBlending(newBlending: Blending): Layer =
     this.copy(blending = Option(newBlending))
   def withEntityBlend(newBlend: Blend): Layer =
-    this.copy(blending = blending.map(_.withEntityBlend(newBlend)))
+    this.copy(blending = blending.orElse(Option(Blending.Normal)).map(_.withEntityBlend(newBlend)))
   def withLayerBlend(newBlend: Blend): Layer =
-    this.copy(blending = blending.map(_.withLayerBlend(newBlend)))
+    this.copy(blending = blending.orElse(Option(Blending.Normal)).map(_.withLayerBlend(newBlend)))
   def withBlendMaterial(newBlendMaterial: BlendMaterial): Layer =
-    this.copy(blending = blending.map(_.withBlendMaterial(newBlendMaterial)))
+    this.copy(blending = blending.orElse(Option(Blending.Normal)).map(_.withBlendMaterial(newBlendMaterial)))
   def modifyBlending(modifier: Blending => Blending): Layer =
-    this.copy(blending = blending.map(modifier))
+    this.copy(blending = blending.orElse(Option(Blending.Normal)).map(modifier))
 
   def withCamera(newCamera: Camera): Layer =
     this.copy(camera = Option(newCamera))

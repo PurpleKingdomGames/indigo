@@ -76,7 +76,7 @@ final case class SceneUpdateFragment(
   def withBlendMaterial(newBlendMaterial: BlendMaterial): SceneUpdateFragment =
     this.copy(blendMaterial = Option(newBlendMaterial))
   def modifyBlendMaterial(modifier: BlendMaterial => BlendMaterial): SceneUpdateFragment =
-    this.copy(blendMaterial = blendMaterial.map(modifier))
+    this.copy(blendMaterial = blendMaterial.orElse(Option(BlendMaterial.Normal)).map(modifier))
 
   def withMagnification(level: Int): SceneUpdateFragment =
     this.copy(
