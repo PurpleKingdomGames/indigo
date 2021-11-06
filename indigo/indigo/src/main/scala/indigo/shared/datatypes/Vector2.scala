@@ -115,10 +115,10 @@ final case class Vector2(x: Double, y: Double) derives CanEqual:
     matrix4.transform(toVector3).toVector2
 
   def toVector3: Vector3 =
-    Vector3(x, y, 1)
+    Vector3(x, y, 0)
 
   def toVector4: Vector4 =
-    Vector4(x, y, 1, 1)
+    Vector4(x, y, 0, 0)
 
   def ~==(other: Vector2): Boolean =
     Math.abs(x - other.x) < 0.0001 &&

@@ -137,7 +137,7 @@ object Vector4 {
     Vector4(vec1.x / vec2.x, vec1.y / vec2.y, vec1.z / vec2.z, vec1.w / vec2.w)
 
   def position(x: Double, y: Double, z: Double): Vector4 =
-    Vector4(x, y, z, 1)
+    Vector4(x, y, z, 0)
 
   def direction(x: Double, y: Double, z: Double): Vector4 =
     Vector4(x, y, z, 0)

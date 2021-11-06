@@ -92,7 +92,7 @@ final case class Vector3(x: Double, y: Double, z: Double) derives CanEqual {
     Vector2(x, y)
 
   def toVector4: Vector4 =
-    Vector4(x, y, z, 1)
+    Vector4(x, y, z, 0)
 
   def distanceTo(other: Vector3): Double =
     Vector3.distance(this, other)
