@@ -33,7 +33,7 @@ final case class BoundingBox(position: Vertex, size: Vertex) derives CanEqual:
   def contains(vertex: Vertex): Boolean =
     vertex.x >= left && vertex.x < right && vertex.y >= top && vertex.y < bottom
   def contains(vector: Vector2): Boolean =
-    contains(Vertex.fromVector(vector))
+    contains(Vertex.fromVector2(vector))
   def contains(x: Double, y: Double): Boolean =
     contains(Vertex(x, y))
 
@@ -51,12 +51,12 @@ final case class BoundingBox(position: Vertex, size: Vertex) derives CanEqual:
     val d: Vertex = p.abs - halfSize
     d.max(0.0).length + Math.min(Math.max(d.x, d.y), 0.0)
   def sdf(vector: Vector2): Double =
-    sdf(Vertex.fromVector(vector))
+    sdf(Vertex.fromVector2(vector))
 
   def distanceToBoundary(vertex: Vertex): Double =
     sdf(vertex)
   def distanceToBoundary(vector: Vector2): Double =
-    sdf(Vertex.fromVector(vector))
+    sdf(Vertex.fromVector2(vector))
 
   def expand(amount: Double): BoundingBox =
     BoundingBox.expand(this, amount)
@@ -78,19 +78,19 @@ final case class BoundingBox(position: Vertex, size: Vertex) derives CanEqual:
   def moveBy(x: Double, y: Double): BoundingBox =
     moveBy(Vertex(x, y))
   def moveBy(amount: Vector2): BoundingBox =
-    moveBy(Vertex.fromVector(amount))
+    moveBy(Vertex.fromVector2(amount))
 
   def moveTo(newPosition: Vertex): BoundingBox =
     this.copy(position = newPosition)
   def moveTo(x: Double, y: Double): BoundingBox =
     moveTo(Vertex(x, y))
   def moveTo(newPosition: Vector2): BoundingBox =
-    moveTo(Vertex.fromVector(newPosition))
+    moveTo(Vertex.fromVector2(newPosition))
 
   def resize(newSize: Vertex): BoundingBox =
     this.copy(size = newSize)
   def resize(newSize: Vector2): BoundingBox =
-    resize(Vertex.fromVector(newSize))
+    resize(Vertex.fromVector2(newSize))
 
   def toRectangle: Rectangle =
     Rectangle(position.toPoint, Size(size.x.toInt, size.y.toInt))

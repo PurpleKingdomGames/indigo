@@ -58,12 +58,11 @@ final case class Vector2(x: Double, y: Double) derives CanEqual:
       this.x * s + this.y * c
     )
   }
-  def rotateBy(angle: Radians, origin: Vector2): Vector2 = {
+  def rotateBy(angle: Radians, origin: Vector2): Vector2 =
     Vector2.add(
       Vector2.subtract(this, origin).rotateBy(angle),
       origin
     )
-  }
 
   def rotateTo(angle: Radians): Vector2 = {
     val a = angle.wrap.toDouble
@@ -91,22 +90,23 @@ final case class Vector2(x: Double, y: Double) derives CanEqual:
   def dot(other: Vector2): Double =
     Vector2.dotProduct(this, other)
 
-  def normalise: Vector2 = {
+  def normalise: Vector2 =
     val magnitude = length
-
-    if (magnitude == 0) Vector2.zero
+    if magnitude == 0 then Vector2.zero
     else
       Vector2(
         x / magnitude,
         y / magnitude
       )
-  }
 
   def distanceTo(other: Vector2): Double =
     Vector2.distance(this, other)
 
   def toPoint: Point =
     Point(x.toInt, y.toInt)
+
+  def toSize: Size =
+    Size(x.toInt, y.toInt)
 
   def transform(matrix3: Matrix3): Vector2 =
     matrix3.transform(this)
@@ -138,6 +138,9 @@ object Vector2:
 
   def fromPoint(point: Point): Vector2 =
     Vector2(point.x.toDouble, point.y.toDouble)
+
+  def fromSize(size: Size): Vector2 =
+    Vector2(size.width.toDouble, size.height.toDouble)
 
   inline def add(vec1: Vector2, vec2: Vector2): Vector2 =
     Vector2(vec1.x + vec2.x, vec1.y + vec2.y)

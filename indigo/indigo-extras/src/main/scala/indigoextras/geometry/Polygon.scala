@@ -12,19 +12,19 @@ sealed trait Polygon derives CanEqual:
   def moveTo(x: Double, y: Double): Polygon =
     moveTo(Vertex(x, y))
   def moveTo(newPosition: Vector2): Polygon =
-    moveTo(Vertex.fromVector(newPosition))
+    moveTo(Vertex.fromVector2(newPosition))
 
   def moveBy(amount: Vertex): Polygon
   def moveBy(x: Double, y: Double): Polygon =
     moveBy(Vertex(x, y))
   def moveBy(amount: Vector2): Polygon =
-    moveBy(Vertex.fromVector(amount))
+    moveBy(Vertex.fromVector2(amount))
 
   def scaleBy(vec: Vertex): Polygon
   def scaleBy(amount: Double): Polygon =
     scaleBy(Vertex(amount))
   def scaleBy(vec: Vector2): Polygon =
-    scaleBy(Vertex.fromVector(vec))
+    scaleBy(Vertex.fromVector2(vec))
 
   def bounds: BoundingBox =
     BoundingBox.fromVertices(vertices)

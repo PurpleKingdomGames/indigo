@@ -1,6 +1,6 @@
 package indigo.shared.datatypes
 
-final case class Vector4(x: Double, y: Double, z: Double, w: Double) derives CanEqual {
+final case class Vector4(x: Double, y: Double, z: Double, w: Double) derives CanEqual:
 
   def withX(newX: Double): Vector4 =
     this.copy(x = newX)
@@ -78,10 +78,9 @@ final case class Vector4(x: Double, y: Double, z: Double, w: Double) derives Can
   def dot(other: Vector4): Double =
     Vector4.dotProduct(this, other)
 
-  def normalise: Vector4 = {
+  def normalise: Vector4 =
     val magnitude = length
-
-    if (magnitude == 0) Vector4.zero
+    if magnitude == 0 then Vector4.zero
     else
       Vector4(
         x / magnitude,
@@ -89,13 +88,15 @@ final case class Vector4(x: Double, y: Double, z: Double, w: Double) derives Can
         z / magnitude,
         w / magnitude
       )
-  }
 
   def transform(matrix4: Matrix4): Vector4 =
     matrix4.transform(toVector3).toVector4
 
   def toPoint: Point =
     Point(x.toInt, y.toInt)
+
+  def toSize: Size =
+    Size(x.toInt, y.toInt)
 
   def toVector2: Vector2 =
     Vector2(x, y)
@@ -114,15 +115,26 @@ final case class Vector4(x: Double, y: Double, z: Double, w: Double) derives Can
       Math.abs(y - other.y) < 0.0001 &&
       Math.abs(z - other.z) < 0.0001 &&
       Math.abs(w - other.w) < 0.0001
-}
 
-object Vector4 {
+object Vector4:
 
   def apply(d: Double): Vector4 =
     Vector4(d, d, d, d)
 
   val zero: Vector4 = Vector4(0d, 0d, 0d, 0d)
   val one: Vector4  = Vector4(1d, 1d, 1d, 1d)
+
+  def fromPoint(point: Point): Vector4 =
+    Vector4(point.x.toDouble, point.y.toDouble, 0, 0)
+
+  def fromSize(size: Size): Vector4 =
+    Vector4(size.width.toDouble, size.height.toDouble, 0, 0)
+
+  def fromVector2(vector: Vector2): Vector4 =
+    Vector4(vector.x, vector.y, 0, 0)
+
+  def fromVector3(vector: Vector3): Vector4 =
+    Vector4(vector.x, vector.y, vector.z, 0)
 
   inline def add(vec1: Vector4, vec2: Vector4): Vector4 =
     Vector4(vec1.x + vec2.x, vec1.y + vec2.y, vec1.z + vec2.z, vec1.w + vec2.w)
@@ -151,5 +163,3 @@ object Vector4 {
         Math.pow(v2.x - v1.x, 2) + Math.pow(v2.y - v1.y, 2) + Math.pow(v2.z - v1.z, 2) + Math.pow(v2.w - v1.w, 2)
       )
     )
-
-}

@@ -2,6 +2,7 @@ package indigoextras.geometry
 
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Radians
+import indigo.shared.datatypes.Size
 import indigo.shared.datatypes.Vector2
 
 final case class Vertex(x: Double, y: Double) derives CanEqual:
@@ -100,6 +101,9 @@ final case class Vertex(x: Double, y: Double) derives CanEqual:
   def toPoint: Point =
     Point(x.toInt, y.toInt)
 
+  def toSize: Size =
+    Size(x.toInt, y.toInt)
+
   def toVector2: Vector2 =
     Vector2(x, y)
 
@@ -117,7 +121,10 @@ object Vertex:
   def fromPoint(point: Point): Vertex =
     Vertex(point.x.toDouble, point.y.toDouble)
 
-  def fromVector(vector: Vector2): Vertex =
+  def fromSize(size: Size): Vertex =
+    Vertex(size.width.toDouble, size.height.toDouble)
+
+  def fromVector2(vector: Vector2): Vertex =
     Vertex(vector.x, vector.y)
 
   def tuple2ToVertex(t: (Double, Double)): Vertex =

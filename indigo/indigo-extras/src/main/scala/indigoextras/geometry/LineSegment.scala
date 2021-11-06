@@ -26,47 +26,47 @@ final case class LineSegment(start: Vertex, end: Vertex) derives CanEqual:
   def distanceToBoundary(vertex: Vertex): Double =
     sdf(vertex)
   def distanceToBoundary(vector: Vector2): Double =
-    sdf(Vertex.fromVector(vector))
+    sdf(Vertex.fromVector2(vector))
 
   def moveTo(newPosition: Vertex): LineSegment =
     this.copy(start = newPosition, end = newPosition + (end - start))
   def moveTo(x: Double, y: Double): LineSegment =
     moveTo(Vertex(x, y))
   def moveTo(newPosition: Vector2): LineSegment =
-    moveTo(Vertex.fromVector(newPosition))
+    moveTo(Vertex.fromVector2(newPosition))
 
   def moveBy(amount: Vertex): LineSegment =
     moveTo(start + amount)
   def moveBy(x: Double, y: Double): LineSegment =
     moveBy(Vertex(x, y))
   def moveBy(amount: Vector2): LineSegment =
-    moveBy(Vertex.fromVector(amount))
+    moveBy(Vertex.fromVector2(amount))
 
   def moveStartTo(newPosition: Vertex): LineSegment =
     this.copy(start = newPosition)
   def moveStartTo(x: Double, y: Double): LineSegment =
     moveStartTo(Vertex(x, y))
   def moveStartTo(newPosition: Vector2): LineSegment =
-    moveStartTo(Vertex.fromVector(newPosition))
+    moveStartTo(Vertex.fromVector2(newPosition))
   def moveStartBy(amount: Vertex): LineSegment =
     moveStartTo(start + amount)
   def moveStartBy(x: Double, y: Double): LineSegment =
     moveStartBy(Vertex(x, y))
   def moveStartBy(amount: Vector2): LineSegment =
-    moveStartBy(Vertex.fromVector(amount))
+    moveStartBy(Vertex.fromVector2(amount))
 
   def moveEndTo(newPosition: Vertex): LineSegment =
     this.copy(end = newPosition)
   def moveEndTo(x: Double, y: Double): LineSegment =
     moveEndTo(Vertex(x, y))
   def moveEndTo(newPosition: Vector2): LineSegment =
-    moveEndTo(Vertex.fromVector(newPosition))
+    moveEndTo(Vertex.fromVector2(newPosition))
   def moveEndBy(amount: Vertex): LineSegment =
     moveEndTo(end + amount)
   def moveEndBy(x: Double, y: Double): LineSegment =
     moveEndBy(Vertex(x, y))
   def moveEndBy(amount: Vector2): LineSegment =
-    moveEndBy(Vertex.fromVector(amount))
+    moveEndBy(Vertex.fromVector2(amount))
 
   def invert: LineSegment =
     LineSegment(end, start)
@@ -111,12 +111,12 @@ final case class LineSegment(start: Vertex, end: Vertex) derives CanEqual:
   def contains(vertex: Vertex): Boolean =
     contains(vertex, 0.5d)
   def contains(vector: Vector2): Boolean =
-    contains(Vertex.fromVector(vector))
+    contains(Vertex.fromVector2(vector))
 
   def isFacingVertex(vertex: Vertex): Boolean =
     (normal.dot(vertex.makeVectorWith(center))) < 0
   def isFacingVertex(vector: Vector2): Boolean =
-    isFacingVertex(Vertex.fromVector(vector))
+    isFacingVertex(Vertex.fromVector2(vector))
 
   def closestPointOnLine(to: Vertex): Option[Vertex] =
     val a   = end.y - start.y
@@ -134,7 +134,7 @@ final case class LineSegment(start: Vertex, end: Vertex) derives CanEqual:
       )
     else None
   def closestPointOnLine(to: Vector2): Option[Vertex] =
-    closestPointOnLine(Vertex.fromVector(to))
+    closestPointOnLine(Vertex.fromVector2(to))
 
   def ~==(other: LineSegment): Boolean =
     (start ~== other.start) && (end ~== other.end)

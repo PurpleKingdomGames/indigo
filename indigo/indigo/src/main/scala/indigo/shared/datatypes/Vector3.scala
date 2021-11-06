@@ -1,6 +1,6 @@
 package indigo.shared.datatypes
 
-final case class Vector3(x: Double, y: Double, z: Double) derives CanEqual {
+final case class Vector3(x: Double, y: Double, z: Double) derives CanEqual:
 
   def withX(newX: Double): Vector3 =
     this.copy(x = newX)
@@ -70,23 +70,24 @@ final case class Vector3(x: Double, y: Double, z: Double) derives CanEqual {
   def dot(other: Vector3): Double =
     Vector3.dotProduct(this, other)
 
-  def normalise: Vector3 = {
+  def normalise: Vector3 =
     val magnitude = length
-
-    if (magnitude == 0) Vector3.zero
+    if magnitude == 0 then Vector3.zero
     else
       Vector3(
         x / magnitude,
         y / magnitude,
         z / magnitude
       )
-  }
 
   def applyMatrix4(matrix4: Matrix4): Vector3 =
     matrix4.transform(this)
 
   def toPoint: Point =
     Point(x.toInt, y.toInt)
+
+  def toSize: Size =
+    Size(x.toInt, y.toInt)
 
   def toVector2: Vector2 =
     Vector2(x, y)
@@ -101,15 +102,23 @@ final case class Vector3(x: Double, y: Double, z: Double) derives CanEqual {
     Math.abs(x - other.x) < 0.0001 &&
       Math.abs(y - other.y) < 0.0001 &&
       Math.abs(z - other.z) < 0.0001
-}
 
-object Vector3 {
+object Vector3:
 
   def apply(d: Double): Vector3 =
     Vector3(d, d, d)
 
   val zero: Vector3 = Vector3(0d, 0d, 0d)
   val one: Vector3  = Vector3(1d, 1d, 1d)
+
+  def fromPoint(point: Point): Vector3 =
+    Vector3(point.x.toDouble, point.y.toDouble, 0)
+
+  def fromSize(size: Size): Vector3 =
+    Vector3(size.width.toDouble, size.height.toDouble, 0)
+
+  def fromVector2(vector: Vector2): Vector3 =
+    Vector3(vector.x, vector.y, 0)
 
   inline def add(vec1: Vector3, vec2: Vector3): Vector3 =
     Vector3(vec1.x + vec2.x, vec1.y + vec2.y, vec1.z + vec2.z)
@@ -128,5 +137,3 @@ object Vector3 {
 
   def distance(v1: Vector3, v2: Vector3): Double =
     Math.sqrt(Math.abs(Math.pow(v2.x - v1.x, 2) + Math.pow(v2.y - v1.y, 2) + Math.pow(v2.z - v1.z, 2)))
-
-}

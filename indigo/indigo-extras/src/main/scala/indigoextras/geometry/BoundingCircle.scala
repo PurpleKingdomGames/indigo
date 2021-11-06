@@ -20,7 +20,7 @@ final case class BoundingCircle(position: Vertex, radius: Double) derives CanEqu
   def contains(x: Double, y: Double): Boolean =
     contains(Vertex(x, y))
   def contains(vector: Vector2): Boolean =
-    contains(Vertex.fromVector(vector))
+    contains(Vertex.fromVector2(vector))
 
   def +(d: Double): BoundingCircle = resize(radius + d)
   def -(d: Double): BoundingCircle = resize(radius - d)
@@ -30,12 +30,12 @@ final case class BoundingCircle(position: Vertex, radius: Double) derives CanEqu
   def sdf(vertex: Vertex): Double =
     BoundingCircle.signedDistanceFunction(vertex - position, radius)
   def sdf(vector: Vector2): Double =
-    sdf(Vertex.fromVector(vector))
+    sdf(Vertex.fromVector2(vector))
 
   def distanceToBoundary(vertex: Vertex): Double =
     sdf(vertex)
   def distanceToBoundary(vector: Vector2): Double =
-    sdf(Vertex.fromVector(vector))
+    sdf(Vertex.fromVector2(vector))
 
   def expandToInclude(other: BoundingCircle): BoundingCircle =
     BoundingCircle.expandToInclude(this, other)
@@ -51,14 +51,14 @@ final case class BoundingCircle(position: Vertex, radius: Double) derives CanEqu
   def moveBy(x: Double, y: Double): BoundingCircle =
     moveBy(Vertex(x, y))
   def moveBy(amount: Vector2): BoundingCircle =
-    moveBy(Vertex.fromVector(amount))
+    moveBy(Vertex.fromVector2(amount))
 
   def moveTo(newPosition: Vertex): BoundingCircle =
     this.copy(position = newPosition)
   def moveTo(x: Double, y: Double): BoundingCircle =
     moveTo(Vertex(x, y))
   def moveTo(newPosition: Vector2): BoundingCircle =
-    moveTo(Vertex.fromVector(newPosition))
+    moveTo(Vertex.fromVector2(newPosition))
 
   def resize(newRadius: Double): BoundingCircle =
     this.copy(radius = newRadius)
