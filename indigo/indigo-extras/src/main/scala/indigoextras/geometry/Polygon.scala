@@ -1,56 +1,60 @@
 package indigoextras.geometry
 
 import indigo.shared.datatypes.Rectangle
+import indigo.shared.datatypes.Vector2
 
 import scala.annotation.tailrec
 
-sealed trait Polygon derives CanEqual {
+sealed trait Polygon derives CanEqual:
   val vertices: List[Vertex]
 
   def moveTo(newPosition: Vertex): Polygon
   def moveTo(x: Double, y: Double): Polygon =
     moveTo(Vertex(x, y))
+  def moveTo(newPosition: Vector2): Polygon =
+    moveTo(Vertex.fromVector(newPosition))
 
   def moveBy(amount: Vertex): Polygon
   def moveBy(x: Double, y: Double): Polygon =
     moveBy(Vertex(x, y))
+  def moveBy(amount: Vector2): Polygon =
+    moveBy(Vertex.fromVector(amount))
 
   def scaleBy(vec: Vertex): Polygon
   def scaleBy(amount: Double): Polygon =
     scaleBy(Vertex(amount))
+  def scaleBy(vec: Vector2): Polygon =
+    scaleBy(Vertex.fromVector(vec))
 
   def bounds: BoundingBox =
     BoundingBox.fromVertices(vertices)
 
   def edgeCount: Int =
-    this match {
+    this match
       case Polygon.Open(vs) =>
         vs.length - 1
 
       case Polygon.Closed(vs) =>
         vs.length
-    }
 
   lazy val lineSegments: List[LineSegment] =
     Polygon.toLineSegments(this)
 
   def addVertex(vertex: Vertex): Polygon =
-    this match {
+    this match
       case Polygon.Open(vs) =>
         Polygon.Open(vs ++ List(vertex))
 
       case Polygon.Closed(vs) =>
         Polygon.Closed(vs ++ List(vertex))
-    }
 
   def contains(vertex: Vertex): Boolean =
-    this match {
+    this match
       case Polygon.Open(_) =>
         false
 
       case p @ Polygon.Closed(_) =>
         bounds.contains(vertex) && p.lineSegments.forall(l => !l.isFacingVertex(vertex))
-    }
 
   def lineIntersectCheck(lineSegment: LineSegment): Boolean =
     lineSegments.exists(_.intersectsWithLine(lineSegment))
@@ -62,17 +66,14 @@ sealed trait Polygon derives CanEqual {
     polygon.lineSegments.exists(lineIntersectCheck)
 
   override def toString: String =
-    this match {
+    this match
       case Polygon.Open(vs) =>
         s"Polygon.Open(${vs.toString()})"
 
       case Polygon.Closed(vs) =>
         s"Polygon.Closed(${vs.toString()})"
-    }
 
-}
-
-object Polygon {
+object Polygon:
 
   def fromRectangle(rectangle: Rectangle): Closed =
     Closed(
@@ -90,18 +91,17 @@ object Polygon {
       boundingBox.topRight
     )
 
-  def toLineSegments(polygon: Polygon): List[LineSegment] = {
+  def toLineSegments(polygon: Polygon): List[LineSegment] =
     @tailrec
     def rec(remaining: List[Vertex], current: Vertex, acc: List[LineSegment]): List[LineSegment] =
-      remaining match {
+      remaining match
         case Nil =>
           acc.reverse
 
         case x :: xs =>
           rec(xs, x, LineSegment(current, x) :: acc)
-      }
 
-    polygon match {
+    polygon match
       case Open(Nil) =>
         Nil
 
@@ -113,8 +113,6 @@ object Polygon {
 
       case Closed(h :: t) =>
         rec(t ++ List(h), h, Nil)
-    }
-  }
 
   final case class Open(vertices: List[Vertex]) extends Polygon:
     def moveTo(newPosition: Vertex): Open =
@@ -126,14 +124,13 @@ object Polygon {
     def scaleBy(vec: Vertex): Open =
       this.copy(vertices = vertices.map(_.scaleBy(vec)))
 
-  object Open {
+  object Open:
 
     val empty: Open =
       Open(Nil)
 
     def apply(vertices: Vertex*): Open =
       new Open(vertices.toList)
-  }
 
   final case class Closed(vertices: List[Vertex]) extends Polygon:
     def moveTo(newPosition: Vertex): Closed =
@@ -145,13 +142,10 @@ object Polygon {
     def scaleBy(vec: Vertex): Closed =
       this.copy(vertices = vertices.map(_.scaleBy(vec)))
 
-  object Closed {
+  object Closed:
 
     val empty: Closed =
       Closed(Nil)
 
     def apply(vertices: Vertex*): Closed =
       new Closed(vertices.toList)
-  }
-
-}

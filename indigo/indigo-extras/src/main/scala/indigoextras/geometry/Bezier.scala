@@ -7,20 +7,19 @@ import indigo.shared.time.Seconds
 import scala.annotation.tailrec
 
 opaque type Bezier = List[Vertex]
-object Bezier {
+object Bezier:
 
   inline def apply(vertices: List[Vertex]): Bezier = vertices
 
   inline def apply(start: Vertex, vertices: Vertex*): Bezier =
     start :: vertices.toList
 
-  extension (b: Bezier) {
-
+  extension (b: Bezier)
     /** Calculate the position of a Bezier curve using specialised calculations
       * for linear, quadratic and cubic curves.
       */
     def at(unitInterval: Double): Vertex =
-      b match {
+      b match
         case Nil =>
           Vertex.zero
 
@@ -38,7 +37,6 @@ object Bezier {
 
         case _ =>
           reduce(b, Math.max(0, Math.min(1, unitInterval)))
-      }
 
     def toVertices(subdivisions: Int): List[Vertex] =
       (0 to subdivisions).toList.map { i =>
@@ -58,7 +56,6 @@ object Bezier {
 
     def bounds: BoundingBox =
       BoundingBox.fromVertices(b)
-  }
 
   def pure(start: Vertex, vertices: List[Vertex]): Bezier =
     Bezier(start :: vertices.toList)
@@ -79,10 +76,10 @@ object Bezier {
     a + ((b - a) * unitInterval)
 
   @tailrec
-  def reduce(vertices: List[Vertex], unitInterval: Double): Vertex = {
+  def reduce(vertices: List[Vertex], unitInterval: Double): Vertex =
     @tailrec
     def pair(remaining: List[Vertex], acc: List[(Vertex, Vertex)]): List[(Vertex, Vertex)] =
-      remaining match {
+      remaining match
         case Nil =>
           acc.reverse
 
@@ -91,9 +88,8 @@ object Bezier {
 
         case x :: y :: xs =>
           pair(y :: xs, (x, y) :: acc)
-      }
 
-    vertices match {
+    vertices match
       case Nil =>
         Vertex.zero
 
@@ -105,13 +101,8 @@ object Bezier {
 
       case ps =>
         reduce(pair(ps, Nil).map(p => interpolate(p._1, p._2, unitInterval)), unitInterval)
-    }
-  }
 
-}
-
-object BezierMath {
-
+object BezierMath:
   /*
    * Linear
    * B(t) = P0 + ((P1 - P0) * t)
@@ -163,4 +154,3 @@ object BezierMath {
 
   def cubicNormalised(t: Double, p0: Vertex, p1: Vertex, p2: Vertex, p3: Vertex): Vertex =
     cubicWithVertices(Math.max(0, Math.min(1, t)), p0, p1, p2, p3)
-}

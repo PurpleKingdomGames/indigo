@@ -4,7 +4,7 @@ import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.Vector2
 
-final case class Vertex(x: Double, y: Double) derives CanEqual {
+final case class Vertex(x: Double, y: Double) derives CanEqual:
 
   def withX(newX: Double): Vertex =
     this.copy(x = newX)
@@ -59,7 +59,7 @@ final case class Vertex(x: Double, y: Double) derives CanEqual {
   def scaleBy(amount: Double): Vertex =
     scaleBy(Vertex(amount))
 
-  def rotateBy(angle: Radians): Vertex = {
+  def rotateBy(angle: Radians): Vertex =
     val a = angle.wrap.toDouble
     val s = Math.sin(a)
     val c = Math.cos(a)
@@ -68,15 +68,13 @@ final case class Vertex(x: Double, y: Double) derives CanEqual {
       this.x * c - this.y * s,
       this.x * s + this.y * c
     )
-  }
-  def rotateBy(angle: Radians, origin: Vertex): Vertex = {
-    (this - origin).rotateBy(angle) + origin
-  }
 
-  def rotateTo(angle: Radians): Vertex = {
+  def rotateBy(angle: Radians, origin: Vertex): Vertex =
+    (this - origin).rotateBy(angle) + origin
+
+  def rotateTo(angle: Radians): Vertex =
     val a = angle.wrap.toDouble
     Vertex(this.length * Math.cos(a), this.length * Math.sin(a))
-  }
 
   def angle: Radians = Radians(Math.atan2(this.y, this.x))
 
@@ -109,12 +107,9 @@ final case class Vertex(x: Double, y: Double) derives CanEqual {
     Vector2((other.x - x), (other.y - y))
 
   def ~==(other: Vertex): Boolean =
-    Math.abs(x - other.x) < 0.0001 &&
-      Math.abs(y - other.y) < 0.0001
+    Math.abs(x - other.x) < 0.0001 && Math.abs(y - other.y) < 0.0001
 
-}
-
-object Vertex {
+object Vertex:
 
   def apply(d: Double): Vertex =
     Vertex(d, d)
@@ -130,5 +125,3 @@ object Vertex {
 
   val zero: Vertex = Vertex(0d, 0d)
   val one: Vertex  = Vertex(1d, 1d)
-
-}

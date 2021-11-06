@@ -2,6 +2,7 @@ package indigoextras.geometry
 
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Size
+import indigo.shared.datatypes.Vector2
 
 import scala.annotation.tailrec
 
@@ -31,7 +32,8 @@ final case class BoundingBox(position: Vertex, size: Vertex) derives CanEqual:
 
   def contains(vertex: Vertex): Boolean =
     vertex.x >= left && vertex.x < right && vertex.y >= top && vertex.y < bottom
-
+  def contains(vector: Vector2): Boolean =
+    contains(Vertex.fromVector(vector))
   def contains(x: Double, y: Double): Boolean =
     contains(Vertex(x, y))
 
@@ -44,14 +46,17 @@ final case class BoundingBox(position: Vertex, size: Vertex) derives CanEqual:
   def /(rect: BoundingBox): BoundingBox = BoundingBox(x / rect.x, y / rect.y, width / rect.width, height / rect.height)
   def /(d: Double): BoundingBox         = BoundingBox(x / d, y / d, width / d, height / d)
 
-  def sdf(vertex: Vertex): Double = {
+  def sdf(vertex: Vertex): Double =
     val p: Vertex = vertex - center
     val d: Vertex = p.abs - halfSize
     d.max(0.0).length + Math.min(Math.max(d.x, d.y), 0.0)
-  }
+  def sdf(vector: Vector2): Double =
+    sdf(Vertex.fromVector(vector))
 
   def distanceToBoundary(vertex: Vertex): Double =
     sdf(vertex)
+  def distanceToBoundary(vector: Vector2): Double =
+    sdf(Vertex.fromVector(vector))
 
   def expand(amount: Double): BoundingBox =
     BoundingBox.expand(this, amount)
@@ -72,14 +77,20 @@ final case class BoundingBox(position: Vertex, size: Vertex) derives CanEqual:
     this.copy(position = position + amount)
   def moveBy(x: Double, y: Double): BoundingBox =
     moveBy(Vertex(x, y))
+  def moveBy(amount: Vector2): BoundingBox =
+    moveBy(Vertex.fromVector(amount))
 
   def moveTo(newPosition: Vertex): BoundingBox =
     this.copy(position = newPosition)
   def moveTo(x: Double, y: Double): BoundingBox =
     moveTo(Vertex(x, y))
+  def moveTo(newPosition: Vector2): BoundingBox =
+    moveTo(Vertex.fromVector(newPosition))
 
   def resize(newSize: Vertex): BoundingBox =
     this.copy(size = newSize)
+  def resize(newSize: Vector2): BoundingBox =
+    resize(Vertex.fromVector(newSize))
 
   def toRectangle: Rectangle =
     Rectangle(position.toPoint, Size(size.x.toInt, size.y.toInt))
