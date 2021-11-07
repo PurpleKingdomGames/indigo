@@ -95,6 +95,9 @@
       "presentation/cameras": {
         "title": "Cameras"
       },
+      "presentation/clones-and-mutants": {
+        "title": "Clones & Mutants"
+      },
       "presentation/depth-and-layers": {
         "title": "Depth & Layers"
       },

@@ -33,6 +33,7 @@
       "presentation/animation",
       "presentation/audio",
       "presentation/cameras",
+      "presentation/clones-and-mutants",
       "presentation/depth",
       "presentation/layers",
       "presentation/lighting",

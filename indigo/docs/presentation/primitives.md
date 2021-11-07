@@ -25,28 +25,6 @@ Non-renderable nodes are nodes that are meaningless except in the context of oth
 
 A group is an element that is removed at render time - but it is used to help organise elements together. Putting several graph nodes into a group allows you to transform them as one unit, any elements that have their own properties set under the group, do so relative to the groups properties. You can also nest groups under groups.
 
-#### Clones & Clone Batches
-
-Clones only work in conjunction with a `Cloneable` primitive: Currently `Sprite`s and `Graphic`s.
-
-The purpose to clones is to render copies of a primitive many times very, very quickly, where you would only want to change a few properties, an example might be clumps of grass scattered around a level.
-
-The specific properties you can change are:
-
-- Depth (see below)
-- Position
-- Rotation
-- Scale
-- Alpha
-- Flip horizontal
-- Flip vertical
-
-There are two clone types: `Clone` and `CloneBatch`.
-
-A `Clone` of a primitive works exactly like a cheap copy. The nice thing about `Clone` is that you can scatter them about in your scene graph and still pay a smaller price per render.
-
-If you've got A LOT of something to render though, you should use a `CloneBatch`, which is even more efficient. The penalty for this efficiency is that you have to draw them all at once, and all at the same depth (otherwise following the normal depth rules).
-
 ### Renderable Node Types
 
 All renderable nodes come with the same set of basic transforms that you see on a clone:
