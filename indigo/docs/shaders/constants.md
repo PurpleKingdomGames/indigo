@@ -56,6 +56,7 @@ Name | Type | Description
 `CHANNEL_0_POSITION`|`vec2`|Top left position of this texture on the atlas in UV coords.
 `CHANNEL_0_SIZE`|`vec2`|Size of this texture on the atlas in UV coords.
 `FRAME_SIZE`|`vec2`|Size of sub-rectangle of the texture to be rendered, e.g. the crop (graphic) or animation frame (sprite).
+`INSTANCE_ID`|`int`|The ID of the current instance, it is a count starting at 0.
 `SIZE`|`vec2`|The width and height in pixels of the space on the screen being drawn to, e.g. the width and height of a graphic.
 `TEXTURE_SIZE`|`vec2`|Size of the texture in pixels.
 `UV`|`vec2`|The interpolates UV coordinates that will be passed to the fragment shader. Ranges from (0,0) top left to (1,1) bottom right. (Equivalent to `TEXTURE_COORDS`, but read only.)
@@ -72,6 +73,10 @@ Name | Type | Description
 `CHANNEL_1_TEXTURE_COORDS`|`vec2`|The scaled, interpolated texture coordinates for the texture in channel 1, uses `CHANNEL_1_ATLAS_OFFSET`.
 `CHANNEL_2_TEXTURE_COORDS`|`vec2`|The scaled, interpolated texture coordinates for the texture in channel 2, uses `CHANNEL_2_ATLAS_OFFSET`.
 `CHANNEL_3_TEXTURE_COORDS`|`vec2`|The scaled, interpolated texture coordinates for the texture in channel 3, uses `CHANNEL_3_ATLAS_OFFSET`.
+`POSITION`|`vec2`|The position of the entity in screen coords (pixels)
+`SCALE`|`vec2`|The scale factor of the entity
+`REF`|`vec2`|The offset reference position of the entity in screen coords (pixels)
+`FLIP`|`vec2`|The horizontal and vertical flip of the entity. -1 is flipped, 1 is not.
 `ROTATION`|`float`|The rotation amount in radians to be applied to the current vertex.
 `TEXTURE_COORDS` (Redundant, use `UV`)|`vec2`|The interpolates UV coordinates that will be passed to the fragment shader. Ranges from (0,0) top left to (1,1) bottom right. (Equivalent to `UV`, but modifiable.)
 
@@ -118,6 +123,7 @@ Name | Type | Description
 `CHANNEL_1_TEXTURE_COORDS`|`vec2`|Scaled texture coordinates.
 `CHANNEL_2_TEXTURE_COORDS`|`vec2`|Scaled texture coordinates.
 `CHANNEL_3_TEXTURE_COORDS`|`vec2`|Scaled texture coordinates.
+`INSTANCE_ID`|`int`|The ID of the current instance, it is a count starting at 0.
 `LIGHT_COUNT`|`int`|Total number of lights in the scene.
 `LIGHT_INDEX`|`int`|Index of the current light starting at 0 with a range of 0 to 7.
 `ROTATION`|`float`|The rotation amount in radians.
