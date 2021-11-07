@@ -177,6 +177,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
           .withDownActions(Log("Down!"))
           .withHoverOverActions(Log("Over!"))
           .withHoverOutActions(Log("Out!"))
+          .withHoldDownActions(Log("Hold down!"))
       )
     )
   }
