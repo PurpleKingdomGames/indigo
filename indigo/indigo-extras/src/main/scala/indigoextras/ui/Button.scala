@@ -24,7 +24,8 @@ final case class Button(
     onDown: () => List[GlobalEvent],
     onHoverOver: () => List[GlobalEvent],
     onHoverOut: () => List[GlobalEvent],
-    onClick: () => List[GlobalEvent]
+    onClick: () => List[GlobalEvent],
+    onHoldDown: () => List[GlobalEvent],
 ) derives CanEqual {
 
   def update(mouse: Mouse): Outcome[Button] = {
@@ -48,7 +49,7 @@ final case class Button(
     state match
       // Stay in Down state
       case ButtonState.Down if mouseInBounds && mouse.leftMouseIsDown =>
-        Outcome(this).addGlobalEvents(mouseButtonEvents)
+        Outcome(this).addGlobalEvents(onHoldDown() ++ mouseButtonEvents)
 
       // Move to Down state
       case ButtonState.Up if mouseInBounds && mouse.mousePressed =>
@@ -123,6 +124,11 @@ final case class Button(
   def withClickActions(actions: => List[GlobalEvent]): Button =
     this.copy(onClick = () => actions)
 
+  def withHoldDownActions(actions: GlobalEvent*): Button =
+    withHoldDownActions(actions.toList)
+  def withHoldDownActions(actions: => List[GlobalEvent]): Button =
+    this.copy(onHoldDown = () => actions)
+
   def toUpState: Button =
     this.copy(state = ButtonState.Up)
 
@@ -145,7 +151,8 @@ object Button {
       onDown = () => Nil,
       onHoverOver = () => Nil,
       onHoverOut = () => Nil,
-      onClick = () => Nil
+      onClick = () => Nil,
+      onHoldDown = () => Nil,
     )
 
 }
