@@ -194,6 +194,26 @@ lazy val indigoShaders =
       publishLocal := {}
     )
 
+lazy val benchmarks =
+  project
+    .in(file("benchmarks"))
+    .enablePlugins(ScalaJSPlugin)
+    .settings(
+      name         := "indigo-benchmarks",
+      version      := indigoVersion,
+      scalaVersion := "3.0.1",
+      organization := "io.indigoengine",
+      libraryDependencies ++= Seq(
+        "com.github.japgolly.scalajs-benchmark" %%% "benchmark"   % "0.10.0",
+        "org.scala-js"                          %%% "scalajs-dom" % "2.0.0"
+      )
+    )
+    .settings(
+      publish      := {},
+      publishLocal := {}
+    )
+    // .dependsOn(indigo)
+
 lazy val jsdocs = project
   .settings(
     scalaVersion := scala3Version,
@@ -241,9 +261,9 @@ lazy val indigoProject =
     .enablePlugins(ScalaUnidocPlugin)
     .settings(commonSettings: _*)
     .settings(
-      name := "Indigo",
+      name                                       := "Indigo",
       ScalaUnidoc / unidoc / unidocProjectFilter := inAnyProject -- inProjects(indigoShaders, sandbox, perf, docs),
-      code := { "code ." ! }
+      code                                       := { "code ." ! }
     )
     .aggregate(
       indigo,
@@ -252,7 +272,8 @@ lazy val indigoProject =
       indigoShaders,
       sandbox,
       perf,
-      docs
+      docs,
+      benchmarks
     )
 
 addCommandAlias(
