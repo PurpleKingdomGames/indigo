@@ -15,6 +15,8 @@ class ButtonTests extends munit.FunSuite {
   val bounds =
     Rectangle(10, 10, 100, 100)
 
+  val holdDownEvent = FakeEvent("mouse held down")
+
   val button =
     Button(
       ButtonAssets(
@@ -28,6 +30,7 @@ class ButtonTests extends munit.FunSuite {
       .withHoverOutActions(FakeEvent("mouse out"))
       .withDownActions(FakeEvent("mouse down"))
       .withUpActions(FakeEvent("mouse up"))
+      .withHoldDownActions(holdDownEvent)
 
   test("Initial state is up") {
     assertEquals(button.state.isUp, true)
@@ -162,6 +165,17 @@ class ButtonTests extends munit.FunSuite {
     assert(clue(actual.unsafeGlobalEvents.contains(FakeEvent("mouse out"))))
   }
 
+  test("If the button is down and we keep the mouse pressed, hold down actions are performed.") {
+    val mouse = new Mouse(Nil, button.bounds.position, true)
+    val actual = for {
+      holdDown <- button.toDownState.update(mouse)
+      holdDownLonger <- holdDown.update(mouse)
+    } yield (holdDown, holdDownLonger)
+
+    assert(actual.unsafeGlobalEvents.length == 2)
+    assert(actual.unsafeGlobalEvents(0) == holdDownEvent)
+    assert(actual.unsafeGlobalEvents(1) == holdDownEvent)
+  }
 }
 
 final case class FakeEvent(message: String) extends GlobalEvent
