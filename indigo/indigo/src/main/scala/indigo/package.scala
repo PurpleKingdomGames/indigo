@@ -1,5 +1,50 @@
 package indigo
 
+object syntax:
+
+  extension (d: Double)
+    def radians: Radians = Radians(d)
+    def seconds: Seconds = Seconds(d)
+    def volume: Volume   = Volume(d)
+    def zoom: Zoom       = Zoom(d)
+
+  extension (i: Int)
+    def depth: Depth      = Depth(i)
+    def fps: GameTime.FPS = GameTime.FPS(i)
+    def pixels: Pixels    = Pixels(i)
+
+  extension (l: Long) def millis: Millis = Millis(l)
+
+  extension (s: String)
+    def animationKey: AnimationKey = AnimationKey(s)
+    def assetName: AssetName       = AssetName(s)
+    def assetPath: AssetPath       = AssetPath(s)
+    def assetTag: AssetTag         = AssetTag(s)
+    def cloneId: CloneId           = CloneId(s)
+    def cycleLabel: CycleLabel     = CycleLabel(s)
+    def fontKey: FontKey           = FontKey(s)
+    def fontFamily: FontFamily     = FontFamily(s)
+    def bindingKey: BindingKey     = BindingKey(s)
+    def scene: scenes.SceneName    = scenes.SceneName(s)
+    def shaderId: ShaderId         = ShaderId(s)
+    def uniform: Uniform           = Uniform(s)
+
+  extension (t: (Double, Double)) def vector2: Vector2 = Vector2(t._1, t._2)
+
+  extension (t: (Double, Double, Double))
+    def rgb: RGB         = RGB(t._1, t._2, t._3)
+    def vector3: Vector3 = Vector3(t._1, t._2, t._3)
+
+  extension (t: (Double, Double, Double, Double))
+    def rgba: RGBA       = RGBA(t._1, t._2, t._3, t._4)
+    def vector4: Vector4 = Vector4(t._1, t._2, t._3, t._4)
+
+  extension (t: (Int, Int))
+    def point: Point = Point(t._1, t._2)
+    def size: Size   = Size(t._1, t._2)
+
+end syntax
+
 val logger: indigo.shared.IndigoLogger.type = indigo.shared.IndigoLogger
 
 type Startup[SuccessType] = shared.Startup[SuccessType]
