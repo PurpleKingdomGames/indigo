@@ -146,6 +146,9 @@
       "shaders/entity-shaders": {
         "title": "Entity Shaders"
       },
+      "shaders/premultiplied-alpha": {
+        "title": "Premultiplied Alpha"
+      },
       "shaders/shader-overview": {
         "title": "Shaders Overview"
       },

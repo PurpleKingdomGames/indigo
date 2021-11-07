@@ -52,7 +52,8 @@
     "Shaders": [
       "shaders/shader-overview",
       "shaders/constants",
-      "shaders/blending"
+      "shaders/blending",
+      "shaders/premultiplied-alpha"
     ],
     "Working with Time": [
       "time/signals",
