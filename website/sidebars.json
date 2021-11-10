@@ -32,6 +32,7 @@
     "Presentation": [
       "presentation/animation",
       "presentation/audio",
+      "presentation/boundaries",
       "presentation/cameras",
       "presentation/clones-and-mutants",
       "presentation/depth",
