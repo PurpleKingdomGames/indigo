@@ -177,5 +177,3 @@ class ButtonTests extends munit.FunSuite {
     assert(actual.unsafeGlobalEvents(1) == holdDownEvent)
   }
 }
-
-final case class FakeEvent(message: String) extends GlobalEvent

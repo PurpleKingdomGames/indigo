@@ -166,7 +166,8 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
           .withClickActions(Log("Click!"))
           .withDownActions(Log("Down!"))
           .withHoverOverActions(Log("Over!"))
-          .withHoverOutActions(Log("Out!")),
+          .withHoverOutActions(Log("Out!"))
+          .withHoldDownActions(Log("Hold down!")),
         Button(
           buttonAssets = buttonAssets,
           bounds = Rectangle(10, 10, 16, 16),
