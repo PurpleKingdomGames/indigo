@@ -3,11 +3,11 @@ id: premultiplied-alpha
 title: Premultiplied Alpha
 ---
 
-A small but essential piece of information to know when writing shaders in Indigo, is that Indigo uses premultiplied alpha everywhere.
+A small but essential piece of information to know when writing shaders in Indigo, is that Indigo uses premultiplied alpha almost everywhere, with the notable exception of Shapes.
 
-It is beyond the scope of these docs to explain straight vs premultiplied alpha, and it's very easy to search for. However, we can look at a practical example.
+It is beyond the scope of these docs to explain straight vs premultiplied alpha, and it's very easy to search for. However, we can take a quick look at a practical example to try and give you some intuition.
 
-What color does this represent?
+The quesiton is: What color does this represent?
 
 ```glsl
 vec4 color = vec4(1.0, 0.0, 0.0, 0.5);
