@@ -15,7 +15,8 @@ final case class HitArea(
     onDown: () => List[GlobalEvent],
     onHoverOver: () => List[GlobalEvent],
     onHoverOut: () => List[GlobalEvent],
-    onClick: () => List[GlobalEvent]
+    onClick: () => List[GlobalEvent],
+    onHoldDown: () => List[GlobalEvent],
 ) derives CanEqual {
 
   def update(mouse: Mouse): Outcome[HitArea] = {
@@ -37,7 +38,16 @@ final case class HitArea(
       downEvents ++ upEvents ++ clickEvents
 
     state match
+      case ButtonState.Down if mouseInBounds && mouse.leftMouseIsDown =>
+        Outcome(this).addGlobalEvents(onHoldDown() ++ mouseButtonEvents)
+
       case ButtonState.Up if mouseInBounds =>
+        Outcome(toOverState).addGlobalEvents(onHoverOver() ++ mouseButtonEvents)
+
+      case ButtonState.Over if mouseInBounds && mouse.mousePressed =>
+        Outcome(toDownState).addGlobalEvents(mouseButtonEvents)
+
+      case ButtonState.Down if mouseInBounds && !mouse.leftMouseIsDown =>
         Outcome(toOverState).addGlobalEvents(onHoverOver() ++ mouseButtonEvents)
 
       case ButtonState.Over if !mouseInBounds =>
@@ -72,11 +82,19 @@ final case class HitArea(
   def withClickActions(actions: => List[GlobalEvent]): HitArea =
     this.copy(onClick = () => actions)
 
+  def withHoldDownActions(actions: GlobalEvent*): HitArea =
+      withHoldDownActions(actions.toList)
+  def withHoldDownActions(actions: => List[GlobalEvent]): HitArea =
+    this.copy(onHoldDown = () => actions)
+
   def toUpState: HitArea =
     this.copy(state = ButtonState.Up)
 
   def toOverState: HitArea =
     this.copy(state = ButtonState.Over)
+
+  def toDownState: HitArea =
+    this.copy(state = ButtonState.Down)
 
   def moveTo(x: Int, y: Int): HitArea =
     moveTo(Point(x, y))
@@ -100,7 +118,8 @@ object HitArea:
       onDown = () => Nil,
       onHoverOver = () => Nil,
       onHoverOut = () => Nil,
-      onClick = () => Nil
+      onClick = () => Nil,
+      onHoldDown = () => Nil,
     )
 
   def apply(area: Polygon.Closed): HitArea =
@@ -111,5 +130,6 @@ object HitArea:
       onDown = () => Nil,
       onHoverOver = () => Nil,
       onHoverOut = () => Nil,
-      onClick = () => Nil
+      onClick = () => Nil,
+      onHoldDown = () => Nil,
     )
