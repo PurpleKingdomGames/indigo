@@ -125,7 +125,14 @@ object ShaderGen {
     val shaderFiles: Seq[File] =
       files.filter(f => fileFilter(f.name)).toSeq
 
-    val glslValidatorExitCode = "glslangValidator -v" !
+    val glslValidatorExitCode = {
+      val command = Seq("glslangValidator", "-v")
+      val run = sys.props("os.name").toLowerCase match {
+        case x if x contains "windows" => Seq("cmd", "/C") ++ command
+        case _ => command
+      }
+      run.!
+    }
 
     println("***************")
     println("GLSL Validation")
@@ -133,7 +140,14 @@ object ShaderGen {
 
     if (glslValidatorExitCode == 0)
       shaderFiles.foreach { f =>
-        val exit = ("glslangValidator " + f.getCanonicalPath) !
+        val exit = {
+          val command = Seq("glslangValidator", f.getCanonicalPath)
+          val run = sys.props("os.name").toLowerCase match {
+            case x if x contains "windows" => Seq("cmd", "/C") ++ command
+            case _ => command
+          }
+          run.!
+        }
 
         if (exit != 0)
           throw new Exception("GLSL Validation Error in: " + f.getName)

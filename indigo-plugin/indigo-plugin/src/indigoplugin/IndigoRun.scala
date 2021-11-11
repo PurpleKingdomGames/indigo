@@ -2,6 +2,7 @@ package indigoplugin
 
 import indigoplugin.templates.ElectronTemplates
 
+import scala.sys.process._
 import os._
 import indigoplugin.templates.SupportScriptTemplate
 
@@ -28,8 +29,15 @@ object IndigoRun {
 
     println(s"Starting '$title'")
 
-    os.proc("npm", "start")
-      .call(cwd = outputDir, stdin = os.Inherit, stdout = os.Inherit, stderr = os.Inherit)
+    sys.props("os.name").toLowerCase match {
+      case x if x contains "windows" =>
+        os.proc("cmd", "/C", "npm", "start")
+          .call(cwd = outputDir, stdin = os.Inherit, stdout = os.Inherit, stderr = os.Inherit)
+
+      case _ =>        
+        os.proc("npm", "start")
+          .call(cwd = outputDir, stdin = os.Inherit, stdout = os.Inherit, stderr = os.Inherit)
+    }
 
     ()
   }

@@ -267,7 +267,14 @@ lazy val indigoProject =
     .settings(
       name                                       := "Indigo",
       ScalaUnidoc / unidoc / unidocProjectFilter := inAnyProject -- inProjects(indigoShaders, sandbox, perf, docs),
-      code                                       := { "code ." ! }
+      code                                       := {
+        val command = Seq("code", ".")
+        val run = sys.props("os.name").toLowerCase match {
+          case x if x contains "windows" => Seq("cmd", "/C") ++ command
+          case _ => command
+        }
+        run.!
+      }
     )
     .aggregate(
       indigo,

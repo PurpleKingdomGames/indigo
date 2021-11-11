@@ -3,6 +3,9 @@
 *.log
 .DS_Store
 
+# Windows specific
+null/
+
 # mill specific
 out
 publish.sh

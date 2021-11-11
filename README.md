@@ -29,7 +29,13 @@ On Mac / Linux, from the repo root to do a full build and test:
 bash build.sh
 ```
 
-> Windows users: Most of the things in the script mentioned above should work, but Indigo is not routinely built on Windows machines so we currently offer no guarantees or support. We hope to in the future.
+On Windows, open up powershell and run:
+
+```powershell
+& build.ps1
+```
+
+> **NOTE:** You may have trouble installing or running the glslangValidator. As long as you have installed it (e.g. `scoop install glslang`) the build will continue, it's just that the shaders may not be validated.
 
 There is also another script which is a bit faster since it doesn't build the examples or demos.
 
