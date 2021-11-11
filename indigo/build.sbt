@@ -197,22 +197,26 @@ lazy val indigoShaders =
 lazy val benchmarks =
   project
     .in(file("benchmarks"))
-    .enablePlugins(ScalaJSPlugin)
+    .enablePlugins(ScalaJSPlugin, JSDependenciesPlugin)
     .settings(
       name         := "indigo-benchmarks",
       version      := indigoVersion,
-      scalaVersion := "3.0.1",
+      scalaVersion := "3.1.0",
       organization := "io.indigoengine",
       libraryDependencies ++= Seq(
-        "com.github.japgolly.scalajs-benchmark" %%% "benchmark"   % "0.10.0",
-        "org.scala-js"                          %%% "scalajs-dom" % "2.0.0"
+        "com.github.japgolly.scalajs-benchmark" %%% "benchmark"   % "0.10.0"
+      ),
+      jsDependencies ++= Seq(
+        "org.webjars" % "chartjs" % "1.0.2" / "Chart.js" minified "Chart.min.js"
       )
     )
     .settings(
       publish      := {},
       publishLocal := {}
     )
-    // .dependsOn(indigo)
+    .dependsOn(indigo)
+    .dependsOn(indigoExtras)
+    .dependsOn(indigoJsonCirce)
 
 lazy val jsdocs = project
   .settings(

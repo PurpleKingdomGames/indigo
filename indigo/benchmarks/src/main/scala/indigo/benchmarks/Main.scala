@@ -8,6 +8,9 @@ import scala.scalajs.js.annotation.JSExportTopLevel
 object Main:
 
   @JSExportTopLevel("main")
-  def main(args: Array[String]) =
+  def main(): Unit =
     val body = document.getElementById("body")
-    BenchmarkGUI.renderSuite(body)(Example.suite)
+    BenchmarkGUI.renderMenu(body)(
+      // Example.suite,
+      Collisions.suite
+    )
