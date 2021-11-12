@@ -92,14 +92,14 @@
       "presentation/audio": {
         "title": "Audio"
       },
+      "presentation/boundaries": {
+        "title": "Boundaries"
+      },
       "presentation/cameras": {
         "title": "Cameras"
       },
       "presentation/clones-and-mutants": {
         "title": "Clones & Mutants"
-      },
-      "presentation/depth-and-layers": {
-        "title": "Depth & Layers"
       },
       "presentation/depth": {
         "title": "Depth"
@@ -125,9 +125,6 @@
       "presentation/text-and-fonts": {
         "title": "Text & Fonts"
       },
-      "presentation/ui-components": {
-        "title": "UI Components"
-      },
       "quickstart/examples": {
         "title": "Examples"
       },
@@ -145,9 +142,6 @@
       },
       "shaders/constants": {
         "title": "Shader Constants, Variables, and Outputs"
-      },
-      "shaders/entity-shaders": {
-        "title": "Entity Shaders"
       },
       "shaders/premultiplied-alpha": {
         "title": "Premultiplied Alpha"
