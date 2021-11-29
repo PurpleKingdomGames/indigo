@@ -45,6 +45,16 @@ If you allocate a lot, the result is garbage collection pressure, which means GC
 
 If you use a `List` rather than an `Array`, you end up with [linear rather than constant speed](https://docs.scala-lang.org/overviews/collections-2.13/performance-characteristics.html) for the kind of operations we care about.
 
+## Performance considerations
+
+Using Clones and Mutants is faster than using standard primitives, however, if for instance you construct a `CloneBatch` of 10,000 elements you might be saddened not to get the performance you were expecting.
+
+The issue is that moving large arrays the various pipeline stages is just expensive, but there are two things you can do to improve performance:
+
+1. Make use of static keys to cache data where possible, e.g. `CloneBatch().withStaticBatchKey(BindingKey("my clone data"))`
+
+2. Divide up your data. Instead of one `CloneBatch` of 10,000 things, try 20 `CloneBatch`s of 500 things.
+
 ## Using Clones and Mutants
 
 ### Clone blanks
