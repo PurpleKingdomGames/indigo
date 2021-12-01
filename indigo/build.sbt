@@ -1,8 +1,6 @@
 import scala.sys.process._
 import scala.language.postfixOps
 
-import org.scalajs.jsenv.nodejs.NodeJSEnv
-
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
 ThisBuild / versionScheme                                  := Some("early-semver")
@@ -32,8 +30,7 @@ lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
   scalafixOnCompile  := true,
   semanticdbEnabled  := true,
   semanticdbVersion  := scalafixSemanticdb.revision,
-  autoAPIMappings    := true,
-  jsEnv := new NodeJSEnv(NodeJSEnv.Config().withArgs(List("--dns-result-order=ipv4first")))
+  autoAPIMappings    := true
 )
 
 lazy val publishSettings = {
