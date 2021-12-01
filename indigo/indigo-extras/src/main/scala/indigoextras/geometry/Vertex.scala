@@ -17,6 +17,8 @@ final case class Vertex(x: Double, y: Double) derives CanEqual:
     */
   def dot(other: Vertex): Double =
     (x * other.x) + (y * other.y)
+  def dot(other: Vector2): Double =
+    dot(Vertex.fromVector2(other))
 
   def abs: Vertex =
     Vertex(Math.abs(x), Math.abs(y))
@@ -25,16 +27,22 @@ final case class Vertex(x: Double, y: Double) derives CanEqual:
     Vertex(Math.min(other.x, x), Math.min(other.y, y))
   def min(value: Double): Vertex =
     Vertex(Math.min(value, x), Math.min(value, y))
+  def min(v: Vector2): Vertex =
+    min(Vertex.fromVector2(v))
 
   def max(other: Vertex): Vertex =
     Vertex(Math.max(other.x, x), Math.max(other.y, y))
   def max(value: Double): Vertex =
     Vertex(Math.max(value, x), Math.max(value, y))
+  def max(v: Vector2): Vertex =
+    max(Vertex.fromVector2(v))
 
   def clamp(min: Double, max: Double): Vertex =
     Vertex(Math.min(max, Math.max(min, x)), Math.min(max, Math.max(min, y)))
   def clamp(min: Vertex, max: Vertex): Vertex =
     Vertex(Math.min(max.x, Math.max(min.x, x)), Math.min(max.y, Math.max(min.y, y)))
+  def clamp(v1: Vector2, v2: Vector2): Vertex =
+    clamp(Vertex.fromVector2(v1), Vertex.fromVector2(v1))
 
   def length: Double =
     distanceTo(Vertex.zero)
@@ -44,21 +52,29 @@ final case class Vertex(x: Double, y: Double) derives CanEqual:
 
   def translate(vec: Vertex): Vertex =
     this + vec
+  def translate(vec: Vector2): Vertex =
+    this + Vertex.fromVector2(vec)
 
   def moveTo(newPosition: Vertex): Vertex =
     newPosition
   def moveTo(x: Double, y: Double): Vertex =
     moveTo(Vertex(x, y))
+  def moveTo(v: Vector2): Vertex =
+    moveTo(Vertex.fromVector2(v))
 
   def moveBy(amount: Vertex): Vertex =
     this + amount
   def moveBy(x: Double, y: Double): Vertex =
     moveBy(Vertex(x, y))
+  def moveBy(v: Vector2): Vertex =
+    moveBy(Vertex.fromVector2(v))
 
   def scaleBy(vec: Vertex): Vertex =
     this * vec
   def scaleBy(amount: Double): Vertex =
     scaleBy(Vertex(amount))
+  def scaleBy(v: Vector2): Vertex =
+    scaleBy(Vertex.fromVector2(v))
 
   def rotateBy(angle: Radians): Vertex =
     val a = angle.wrap.toDouble

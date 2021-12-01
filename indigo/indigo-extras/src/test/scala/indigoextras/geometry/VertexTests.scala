@@ -93,8 +93,15 @@ class VertexTests extends munit.FunSuite {
     assertEquals(Vertex(1, 1).moveTo(Vertex(10, 10)), Vertex(10, 10))
   }
 
+  test("translate | moveBy | moveTo (Vector2)") {
+    assertEquals(Vertex(1, 1).translate(Vector2(10, 10)), Vertex(11, 11))
+    assertEquals(Vertex(1, 1).moveBy(Vector2(10, 10)), Vertex(11, 11))
+    assertEquals(Vertex(1, 1).moveTo(Vector2(10, 10)), Vertex(10, 10))
+  }
+
   test("scaleBy") {
     assertEquals(Vertex(2, 2).scaleBy(Vertex(10, 2)), Vertex(20, 4))
+    assertEquals(Vertex(2, 2).scaleBy(Vector2(10, 2)), Vertex(20, 4))
   }
 
   test("rotate around origin") {
