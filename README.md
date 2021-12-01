@@ -12,6 +12,10 @@ Documentation can be found on [indigoengine.io](https://indigoengine.io).
 
 ## Full local build and test instructions
 
+### Using Nix
+
+The root of the project contains a very very simple `shell.nix` file that, if you have nix installed, will give you all the tools you need to build Indigo by running `nix-shell`.
+
 ### Build requirements
 
 You will need:
