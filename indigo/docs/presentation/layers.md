@@ -105,7 +105,12 @@ Layer(graphicA) |+| Layer(graphicB)
 
 Layers are stored in a `List` in the `SceneUpdateFragment`, and are in general rendered in order from first added to last. Generally speaking between ordering and the use of `BindingKey`s, that's often enough to ensure things appear as expected.
 
-However you can also set depths for layers to ensure they end up in the expected place, just as you can with an entity.
+However you can also set depths for layers to ensure they end up in the expected place.
+
+**_Important!_ Depth on layers currently works in the opposite order to scene entities.**
+
+- With scene entities, ***0*** means ***as close to you as possible*** and bigger numbers are further away.
+- With layers, ***0*** mean ***bottom of the stack***, like the bottom layer of a cake, and bigger numbers are placed above it.
 
 ```scala mdoc:silent
 Layer(graphicA).withDepth(Depth(100))

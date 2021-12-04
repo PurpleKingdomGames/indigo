@@ -26,3 +26,12 @@ List(
 ```
 
 `Group`s are a special case. `Group`s have child nodes, which can also be other groups. When a group is encountered, the depth of it's children are all relative to the group's depth.
+
+### Layer depth
+
+This is mentioned in the [layers](layers.md) documentation, but it's worth calling out here too:
+
+**Depth on layers currently works in the opposite order to scene entities.**
+
+- With scene entities, ***0*** means ***as close to you as possible*** and bigger numbers are further away.
+- With layers, ***0*** mean ***bottom of the stack***, like the bottom layer of a cake, and bigger numbers are placed above it.
