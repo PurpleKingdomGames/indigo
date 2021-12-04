@@ -260,16 +260,17 @@ class LayerRenderer(
     // Switch and reference shader
     val activeShader: WebGLProgram =
       if d.shaderId != currentShader then
-        customShaders.get(d.shaderId) match
-          case Some(s) =>
-            currentProgram = s
-            setupShader(s)
-            s
-
-          case None =>
+        try {
+          currentProgram = customShaders(d.shaderId)
+          setupShader(currentProgram)
+          currentProgram
+        }
+        catch {
+          case _: Throwable =>
             throw new Exception(
               s"Missing entity shader '${d.shaderId}'. Have you remembered to add the shader to the boot sequence or disabled auto-loading of default shaders?"
             )
+        }
       else currentProgram
 
     // Base transform
