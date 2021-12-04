@@ -42,6 +42,7 @@ final class SceneProcessor(
   implicit private val uniformsCache: QuickCache[Array[Float]]             = QuickCache.empty
   implicit private val staticCloneCache: QuickCache[Option[DisplayObject]] = QuickCache.empty
 
+  // Called on asset load/reload to account for atlas rebuilding etc.
   def purgeCaches(): Unit = {
     displayObjectConverter.purgeCaches()
     displayObjectConverterClone.purgeCaches()

@@ -67,6 +67,7 @@ final class DisplayObjectConversions(
   implicit private val cloneTilesCache: QuickCache[DisplayCloneTiles]            = QuickCache.empty
   implicit private val uniformsCache: QuickCache[Array[Float]]                   = QuickCache.empty
 
+  // Called on asset load/reload to account for atlas rebuilding etc.
   def purgeCaches(): Unit = {
     textureRefAndOffsetCache.purgeAllNow()
     vector2Cache.purgeAllNow()
