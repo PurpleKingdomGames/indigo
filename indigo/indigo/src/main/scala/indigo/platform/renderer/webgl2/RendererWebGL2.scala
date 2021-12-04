@@ -271,16 +271,13 @@ final class RendererWebGL2(
         customShaders
       )
 
-      def makeCacheName(m: Int, w: Int, h: Int, cx: Int, cy: Int, cz: Double): String =
-        s"${m.toString}_${w.toString()}x${h.toString()}-${cx.toString},${cy.toString}_${cz.toString}"
-
       val projection =
         layer.magnification match
           case None =>
             defaultLayerProjectionMatrix
 
           case Some(m) =>
-            QuickCache(makeCacheName(m, lastWidth, lastHeight, 0, 0, 1.0d)) {
+            QuickCache(m.toString + lastWidth.toString + lastHeight.toString) {
               CameraHelper
                 .calculateCameraMatrix(
                   lastWidth.toDouble,
