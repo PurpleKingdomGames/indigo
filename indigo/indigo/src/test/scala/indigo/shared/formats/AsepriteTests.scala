@@ -32,7 +32,7 @@ class AsepriteTests extends munit.FunSuite {
 
 object AsepriteSampleData {
 
-  val depth: Depth = Depth(1)
+  val depth: Depth = Depth.zero
 
   val imageAssetRef: AssetName = AssetName("trafficlights")
 

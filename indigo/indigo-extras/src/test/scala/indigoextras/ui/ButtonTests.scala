@@ -25,7 +25,7 @@ class ButtonTests extends munit.FunSuite {
         Graphic(bounds, 1, Material.Bitmap(AssetName("down")))
       ),
       bounds,
-      Depth(1)
+      Depth.zero
     ).withHoverOverActions(FakeEvent("mouse over"))
       .withHoverOutActions(FakeEvent("mouse out"))
       .withDownActions(FakeEvent("mouse down"))
@@ -66,7 +66,9 @@ class ButtonTests extends munit.FunSuite {
     assertEquals(actual.unsafeGet.state.isUp, true)
   }
 
-  test("Transition from Over -> Up when mouse out.Starting within the button: On mouse out, the out action is performed") {
+  test(
+    "Transition from Over -> Up when mouse out.Starting within the button: On mouse out, the out action is performed"
+  ) {
     val mouse =
       new Mouse(Nil, Point(0, 0), false)
     val actual = button.toOverState.update(mouse)
@@ -126,7 +128,9 @@ class ButtonTests extends munit.FunSuite {
     assertEquals(actual.unsafeGet.state.isOver, true)
 
   }
-  test("Transition from Down -> Over on mouse release.Within the button: On mouse release, the up action is performed") {
+  test(
+    "Transition from Down -> Over on mouse release.Within the button: On mouse release, the up action is performed"
+  ) {
     val mouse =
       new Mouse(List(MouseEvent.MouseUp(20, 20)), Point(20, 20), false)
 
@@ -168,7 +172,7 @@ class ButtonTests extends munit.FunSuite {
   test("If the button is down and we keep the mouse pressed, hold down actions are performed.") {
     val mouse = new Mouse(Nil, button.bounds.position, true)
     val actual = for {
-      holdDown <- button.toDownState.update(mouse)
+      holdDown       <- button.toDownState.update(mouse)
       holdDownLonger <- holdDown.update(mouse)
     } yield (holdDown, holdDownLonger)
 

@@ -33,13 +33,13 @@ object Mutants:
   def apply(id: CloneId, uniformBlocks: Array[List[UniformBlock]]): Mutants =
     Mutants(
       id,
-      Depth.one,
+      Depth.zero,
       uniformBlocks
     )
 
   def apply(id: CloneId, uniformBlocks: List[UniformBlock]): Mutants =
     Mutants(
       id,
-      Depth.one,
+      Depth.zero,
       Array(uniformBlocks)
     )

@@ -57,7 +57,7 @@ object CloneTiles:
   def apply(id: CloneId, cloneData: Array[CloneTileData]): CloneTiles =
     CloneTiles(
       id,
-      Depth.one,
+      Depth.zero,
       cloneData,
       None
     )
@@ -65,7 +65,7 @@ object CloneTiles:
   def apply(id: CloneId, cloneData: CloneTileData): CloneTiles =
     CloneTiles(
       id,
-      Depth.one,
+      Depth.zero,
       Array(cloneData),
       None
     )

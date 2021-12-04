@@ -100,7 +100,7 @@ final case class Archetype() extends EntityNode with Cloneable:
   val position: Point                       = Point.zero
   val rotation: Radians                     = Radians.zero
   val scale: Vector2                        = Vector2.one
-  val depth: Depth                          = Depth.one
+  val depth: Depth                          = Depth.zero
   val flip: Flip                            = Flip.default
   val ref: Point                            = Point.zero
   val size: Size                            = Size(16)

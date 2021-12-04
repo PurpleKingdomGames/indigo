@@ -6,9 +6,9 @@ opaque type Depth = Int
 object Depth:
   inline def apply(depth: Int): Depth = depth
 
-  val Zero: Depth = Depth(0)
-  val Base: Depth = Depth(1)
-  val one: Depth  = Base
+  val zero: Depth = Depth(0)
+  val near: Depth = zero
+  val far: Depth = Depth(Int.MaxValue)
 
   extension (d: Depth)
     def +(other: Depth): Depth = Depth(d + other)

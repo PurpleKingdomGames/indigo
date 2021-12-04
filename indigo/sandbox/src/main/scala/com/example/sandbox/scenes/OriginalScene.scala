@@ -72,13 +72,13 @@ object OriginalScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
         .addLayer(
           Layer(
             Graphic(120, 10, 32, 32, 1, SandboxAssets.dotsMaterial),
-            CustomShape(140, 50, 32, 32, Depth(1), ShaderData(Shaders.circleId)),
+            CustomShape(140, 50, 32, 32, Depth.zero, ShaderData(Shaders.circleId)),
             CustomShape(
               140,
               50,
               32,
               32,
-              Depth(1),
+              Depth.zero,
               ShaderData(
                 Shaders.externalId,
                 UniformBlock(
@@ -95,7 +95,7 @@ object OriginalScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
               60,
               32,
               32,
-              Depth(1),
+              Depth.zero,
               ShaderData(
                 Shaders.externalId,
                 UniformBlock(

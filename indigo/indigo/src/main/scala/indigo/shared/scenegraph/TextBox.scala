@@ -146,7 +146,7 @@ object TextBox:
       Point.zero,
       Radians.zero,
       Vector2.one,
-      Depth.Zero,
+      Depth.zero,
       Point.zero,
       Flip.default
     )
@@ -159,7 +159,7 @@ object TextBox:
       Point.zero,
       Radians.zero,
       Vector2.one,
-      Depth.Zero,
+      Depth.zero,
       Point.zero,
       Flip.default
     )

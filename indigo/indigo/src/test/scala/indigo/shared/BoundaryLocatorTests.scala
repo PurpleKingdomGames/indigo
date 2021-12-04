@@ -94,7 +94,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
       def size: Size        = Size(40, 40)
       def rotation: Radians = Radians.zero
       def scale: Vector2    = Vector2.one
-      def depth: Depth      = Depth(0)
+      def depth: Depth      = Depth.zero
       def flip: Flip        = Flip.default
       def ref: Point        = Point.zero
 
@@ -121,7 +121,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
       def size: Size        = Size(40, 40)
       def rotation: Radians = Radians.zero
       def scale: Vector2    = Vector2.one
-      def depth: Depth      = Depth(0)
+      def depth: Depth      = Depth.zero
       def flip: Flip        = Flip.default
       def ref: Point        = Point.zero
 
@@ -148,7 +148,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
       def size: Size        = Size(40, 40)
       def rotation: Radians = Radians.zero
       def scale: Vector2    = Vector2.one
-      def depth: Depth      = Depth(0)
+      def depth: Depth      = Depth.zero
       def flip: Flip        = Flip(true, true)
       def ref: Point        = Point.zero
 
@@ -175,7 +175,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
       def size: Size        = Size(40, 40)
       def rotation: Radians = Radians.zero
       def scale: Vector2    = Vector2.one
-      def depth: Depth      = Depth(0)
+      def depth: Depth      = Depth.zero
       def flip: Flip        = Flip.default
       def ref: Point        = Point(20, 20)
 
@@ -202,7 +202,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
       def size: Size        = Size(40, 40)
       def rotation: Radians = Radians.zero
       def scale: Vector2    = Vector2.one
-      def depth: Depth      = Depth(0)
+      def depth: Depth      = Depth.zero
       def flip: Flip        = Flip.default
       def ref: Point        = Point(40, 40)
 
@@ -229,7 +229,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
       def size: Size        = Size(40, 40)
       def rotation: Radians = Radians.zero
       def scale: Vector2    = Vector2.one
-      def depth: Depth      = Depth(0)
+      def depth: Depth      = Depth.zero
       def flip: Flip        = Flip.default
       def ref: Point        = Point(-10, 0)
 
@@ -256,7 +256,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
       def size: Size        = Size(40, 40)
       def rotation: Radians = Radians.zero
       def scale: Vector2    = Vector2(1, 1)
-      def depth: Depth      = Depth(0)
+      def depth: Depth      = Depth.zero
       def flip: Flip        = Flip.default
       def ref: Point        = Point.zero
 
@@ -283,7 +283,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
       def size: Size        = Size(40, 40)
       def rotation: Radians = Radians.zero
       def scale: Vector2    = Vector2(2, 2)
-      def depth: Depth      = Depth(0)
+      def depth: Depth      = Depth.zero
       def flip: Flip        = Flip.default
       def ref: Point        = Point.zero
 
@@ -310,7 +310,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
       def size: Size        = Size(40, 40)
       def rotation: Radians = Radians.zero
       def scale: Vector2    = Vector2(3, 3)
-      def depth: Depth      = Depth(0)
+      def depth: Depth      = Depth.zero
       def flip: Flip        = Flip.default
       def ref: Point        = Point(20, 20)
 
@@ -337,7 +337,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
       def size: Size        = Size(20, 40)
       def rotation: Radians = Radians.TAUby2
       def scale: Vector2    = Vector2(2, 2)
-      def depth: Depth      = Depth(0)
+      def depth: Depth      = Depth.zero
       def flip: Flip        = Flip.default
       def ref: Point        = Point.zero
 

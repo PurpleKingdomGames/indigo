@@ -160,7 +160,7 @@ object Shape {
         LightingModel.Unlit,
         Radians.zero,
         Vector2.one,
-        Depth(1),
+        Depth.zero,
         Point.zero,
         Flip.default,
         None
@@ -174,7 +174,7 @@ object Shape {
         LightingModel.Unlit,
         Radians.zero,
         Vector2.one,
-        Depth(1),
+        Depth.zero,
         Point.zero,
         Flip.default,
         None
@@ -289,7 +289,7 @@ object Shape {
         LightingModel.Unlit,
         Radians.zero,
         Vector2.one,
-        Depth(1),
+        Depth.zero,
         Point.zero,
         Flip.default,
         None
@@ -304,7 +304,7 @@ object Shape {
         LightingModel.Unlit,
         Radians.zero,
         Vector2.one,
-        Depth(1),
+        Depth.zero,
         Point.zero,
         Flip.default,
         None
@@ -431,7 +431,7 @@ object Shape {
         LightingModel.Unlit,
         Radians.zero,
         Vector2.one,
-        Depth(1),
+        Depth.zero,
         Point.zero,
         Flip.default,
         None
@@ -544,7 +544,7 @@ object Shape {
         LightingModel.Unlit,
         Radians.zero,
         Vector2.one,
-        Depth(1),
+        Depth.zero,
         Point.zero,
         Flip.default,
         None
@@ -558,7 +558,7 @@ object Shape {
         LightingModel.Unlit,
         Radians.zero,
         Vector2.one,
-        Depth(1),
+        Depth.zero,
         Point.zero,
         Flip.default,
         None
@@ -572,7 +572,7 @@ object Shape {
         LightingModel.Unlit,
         Radians.zero,
         Vector2.one,
-        Depth(1),
+        Depth.zero,
         Point.zero,
         Flip.default,
         None

@@ -47,7 +47,7 @@ object CloneBatch:
   def apply(id: CloneId, cloneData: Array[CloneBatchData]): CloneBatch =
     CloneBatch(
       id,
-      Depth.one,
+      Depth.zero,
       cloneData,
       None
     )
@@ -55,7 +55,7 @@ object CloneBatch:
   def apply(id: CloneId, cloneData: CloneBatchData): CloneBatch =
     CloneBatch(
       id,
-      Depth.one,
+      Depth.zero,
       Array(cloneData),
       None
     )

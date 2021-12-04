@@ -168,7 +168,7 @@ object Sprite {
       position = Point.zero,
       rotation = Radians.zero,
       scale = Vector2.one,
-      depth = Depth(1),
+      depth = Depth.zero,
       ref = Point.zero,
       flip = Flip.default,
       bindingKey = bindingKey,

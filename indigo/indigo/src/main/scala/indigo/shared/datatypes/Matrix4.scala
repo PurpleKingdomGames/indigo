@@ -259,7 +259,7 @@ object Matrix4:
     )
 
   def orthographic(width: Double, height: Double): Matrix4 =
-    orthographic(0, width, height, 0, -10000, 10000)
+    orthographic(0, width, height, 0, -1, Int.MaxValue.toDouble)
 
   inline def apply(): Matrix4 = identity
   inline def apply(matrix: List[Double]): Matrix4 =

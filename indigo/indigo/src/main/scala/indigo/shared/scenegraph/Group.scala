@@ -81,10 +81,10 @@ final case class Group(
 object Group {
 
   def apply(children: SceneNode*): Group =
-    Group(children.toList, Point.zero, Radians.zero, Vector2.one, Depth.Zero, Point.zero, Flip.default)
+    Group(children.toList, Point.zero, Radians.zero, Vector2.one, Depth.zero, Point.zero, Flip.default)
 
   def apply(children: List[SceneNode]): Group =
-    Group(children, Point.zero, Radians.zero, Vector2.one, Depth.Zero, Point.zero, Flip.default)
+    Group(children, Point.zero, Radians.zero, Vector2.one, Depth.zero, Point.zero, Flip.default)
 
   def empty: Group =
     apply(Nil)

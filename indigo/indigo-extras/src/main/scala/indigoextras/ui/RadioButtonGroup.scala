@@ -421,7 +421,7 @@ object RadioButtonGroup {
       width: Int,
       height: Int
   ): RadioButtonGroup =
-    RadioButtonGroup(buttonAssets, Rectangle(0, 0, width, height), Depth(1), Nil)
+    RadioButtonGroup(buttonAssets, Rectangle(0, 0, width, height), Depth.zero, Nil)
 
   /** Construct a bare bones radio button group, with no buttons in it.
     *
@@ -436,7 +436,7 @@ object RadioButtonGroup {
       buttonAssets: ButtonAssets,
       hitArea: Rectangle
   ): RadioButtonGroup =
-    RadioButtonGroup(buttonAssets, hitArea, Depth(1), Nil)
+    RadioButtonGroup(buttonAssets, hitArea, Depth.zero, Nil)
 
 }
 

@@ -27,11 +27,27 @@ final case class Aseprite(frames: List[AsepriteFrame], meta: AsepriteMeta) deriv
 
 }
 
-final case class AsepriteFrame(filename: String, frame: AsepriteRectangle, rotated: Boolean, trimmed: Boolean, spriteSourceSize: AsepriteRectangle, sourceSize: AsepriteSize, duration: Int) derives CanEqual
+final case class AsepriteFrame(
+    filename: String,
+    frame: AsepriteRectangle,
+    rotated: Boolean,
+    trimmed: Boolean,
+    spriteSourceSize: AsepriteRectangle,
+    sourceSize: AsepriteSize,
+    duration: Int
+) derives CanEqual
 
 final case class AsepriteRectangle(x: Int, y: Int, w: Int, h: Int) derives CanEqual
 
-final case class AsepriteMeta(app: String, version: String, image: String, format: String, size: AsepriteSize, scale: String, frameTags: List[AsepriteFrameTag]) derives CanEqual
+final case class AsepriteMeta(
+    app: String,
+    version: String,
+    image: String,
+    format: String,
+    size: AsepriteSize,
+    scale: String,
+    frameTags: List[AsepriteFrameTag]
+) derives CanEqual
 
 final case class AsepriteSize(w: Int, h: Int) derives CanEqual
 
@@ -58,7 +74,7 @@ object Aseprite {
               bindingKey = BindingKey.fromDice(dice),
               material = Material.Bitmap(assetName),
               position = Point(0, 0),
-              depth = Depth(1),
+              depth = Depth.zero,
               rotation = Radians.zero,
               scale = Vector2.one,
               animationKey = animations.animationKey,

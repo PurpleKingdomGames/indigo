@@ -196,10 +196,10 @@ object CheapMatrix4:
     )
 
   def orthographic(width: Float, height: Float): CheapMatrix4 =
-    orthographic(0, width, height, 0, -10000, 10000)
+    orthographic(0, width, height, 0, -1, Int.MaxValue.toFloat)
 
   def orthographic(x: Float, y: Float, width: Float, height: Float): CheapMatrix4 =
-    orthographic(x, x + width, y + height, y, -10000, 10000)
+    orthographic(x, x + width, y + height, y, -1, Int.MaxValue.toFloat)
 
   inline def apply(matrix: Array[Float]): CheapMatrix4 =
     matrix
