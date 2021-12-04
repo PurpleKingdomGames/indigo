@@ -26,7 +26,7 @@ final case class Graphic[M <: Material](
 ) extends RenderNode
     with Cloneable
     with SpatialModifiers[Graphic[M]]
-    derives CanEqual {
+    derives CanEqual:
 
   def bounds: Rectangle =
     BoundaryLocator.findBounds(this, position, crop.size, ref)
@@ -98,9 +98,7 @@ final case class Graphic[M <: Material](
   def toShaderData: ShaderData =
     material.toShaderData
 
-}
-
-object Graphic {
+object Graphic:
 
   def apply[M <: Material](x: Int, y: Int, width: Int, height: Int, depth: Int, material: M): Graphic[M] =
     Graphic(
@@ -108,6 +106,18 @@ object Graphic {
       rotation = Radians.zero,
       scale = Vector2.one,
       depth = Depth(depth),
+      ref = Point.zero,
+      flip = Flip.default,
+      crop = Rectangle(0, 0, width, height),
+      material = material
+    )
+
+  def apply[M <: Material](x: Int, y: Int, width: Int, height: Int, material: M): Graphic[M] =
+    Graphic(
+      position = Point(x, y),
+      rotation = Radians.zero,
+      scale = Vector2.one,
+      depth = Depth.Zero,
       ref = Point.zero,
       flip = Flip.default,
       crop = Rectangle(0, 0, width, height),
@@ -126,15 +136,38 @@ object Graphic {
       material = material
     )
 
+  def apply[M <: Material](bounds: Rectangle, material: M): Graphic[M] =
+    Graphic(
+      position = bounds.position,
+      rotation = Radians.zero,
+      scale = Vector2.one,
+      depth = Depth.Zero,
+      ref = Point.zero,
+      flip = Flip.default,
+      crop = bounds,
+      material = material
+    )
+
   def apply[M <: Material](width: Int, height: Int, material: M): Graphic[M] =
     Graphic(
       position = Point.zero,
       rotation = Radians.zero,
       scale = Vector2.one,
-      depth = Depth(1),
+      depth = Depth.Zero,
       ref = Point.zero,
       flip = Flip.default,
       crop = Rectangle(0, 0, width, height),
       material = material
     )
-}
+
+  def apply[M <: Material](size: Size, material: M): Graphic[M] =
+    Graphic(
+      position = Point.zero,
+      rotation = Radians.zero,
+      scale = Vector2.one,
+      depth = Depth.Zero,
+      ref = Point.zero,
+      flip = Flip.default,
+      crop = Rectangle(Point.zero, size),
+      material = material
+    )
