@@ -67,7 +67,7 @@ object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
   val cloneId: CloneId = CloneId("dots")
 
   val cloneBlanks: List[CloneBlank] =
-    List(CloneBlank(cloneId, SandboxAssets.colouredDots).static)
+    List(CloneBlank(cloneId, Graphic(16, 16, Material.Bitmap(SandboxAssets.dots))).static)
 
   val crops =
     Array(
@@ -117,7 +117,7 @@ final case class ConfettiModel(color: Int, particles: Array[Array[Particle]]):
           dice.rollFloat * 2.0f - 1.0f,
           dice.rollFloat * 2.0f,
           color,
-          (dice.rollFloat * 0.5f + 0.5f) * 0.25f
+          ((dice.rollFloat * 0.5f) + 0.5f) * 0.5f
         )
       }) ++ particles
     )
