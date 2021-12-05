@@ -686,11 +686,11 @@ object DisplayObjectConversions {
 
         case u :: us if current.isEmpty && u.isArray =>
           // println(s"Found an array, current is empty, set current to: ${u.toArray.toList}")
-          rec(us, u.toArray.toJSArray, acc)
+          rec(us, u.toJSArray, acc)
 
         case u :: us if current.length == 1 && u.length == 2 =>
           //println("Current value is float, must not straddle byte boundary when adding vec2")
-          rec(us, current ++ Array(0.0f) ++ u.toArray, acc)
+          rec(us, current ++ scalajs.js.Array(0.0f) ++ u.toJSArray, acc)
 
         case u :: _ if current.length + u.length > 4 =>
           // println(s"doesn't fit, expanded: ${current.toList} to ${expandTo4(current).toList},  sub-result: ${(acc ++ expandTo4(current)).toList}")
@@ -702,7 +702,7 @@ object DisplayObjectConversions {
 
         case u :: us =>
           // println(s"fits, current is now: ${(current ++ u.toArray).toList}")
-          rec(us, current ++ u.toArray, acc)
+          rec(us, current ++ u.toJSArray, acc)
       }
 
     QuickCache("u" + uniforms.hashCode.toString) {
