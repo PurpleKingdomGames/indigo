@@ -13,6 +13,7 @@ import indigo.shared.datatypes.mutable.CheapMatrix4
 
 import scala.collection.immutable.ArraySeq
 import scala.reflect.ClassTag
+import scala.scalajs.js.JSConverters._
 
 sealed trait ShaderPrimitive derives CanEqual:
   def length: Int
@@ -136,7 +137,7 @@ object ShaderPrimitive:
     val length: Int = 16
 
     def fromCheapMatrix4(matrix: CheapMatrix4): mat4 =
-      mat4(matrix.toArray)
+      mat4(matrix.toArray.toArray)
 
     def fromMatrix4(matrix: Matrix4): mat4 =
       mat4(matrix.toList.map(_.toFloat).toArray)

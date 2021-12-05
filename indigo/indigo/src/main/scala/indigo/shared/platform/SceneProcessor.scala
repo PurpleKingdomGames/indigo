@@ -29,6 +29,8 @@ import indigo.shared.scenegraph.SpotLight
 import indigo.shared.scenegraph.Sprite
 import indigo.shared.time.GameTime
 
+import scala.scalajs.js.JSConverters._
+
 final class SceneProcessor(
     boundaryLocator: BoundaryLocator,
     animationsRegister: AnimationsRegister,
@@ -39,7 +41,7 @@ final class SceneProcessor(
   private val displayObjectConverterClone: DisplayObjectConversions =
     new DisplayObjectConversions(boundaryLocator, animationsRegister, fontRegister)
 
-  implicit private val uniformsCache: QuickCache[Array[Float]]             = QuickCache.empty
+  implicit private val uniformsCache: QuickCache[scalajs.js.Array[Float]]  = QuickCache.empty
   implicit private val staticCloneCache: QuickCache[Option[DisplayObject]] = QuickCache.empty
 
   // Called on asset load/reload to account for atlas rebuilding etc.
@@ -100,8 +102,8 @@ final class SceneProcessor(
           case Some(displayObject) => acc + (blank.id -> displayObject)
       }
 
-    val displayLayers: Array[DisplayLayer] =
-      scene.layers.toArray
+    val displayLayers: scalajs.js.Array[DisplayLayer] =
+      scene.layers.toJSArray
         .filter(l => l.visible.getOrElse(true))
         .zipWithIndex
         .map { case (l, i) =>
@@ -143,11 +145,11 @@ object SceneProcessor {
 
   private val bareLightData: LightData =
     LightData(
-      Array[Float](),
-      Array[Float](),
-      Array[Float](),
-      Array[Float](),
-      Array[Float]()
+      scalajs.js.Array[Float](),
+      scalajs.js.Array[Float](),
+      scalajs.js.Array[Float](),
+      scalajs.js.Array[Float](),
+      scalajs.js.Array[Float]()
     )
 
   private val missingLightData: Map[Int, List[LightData]] =
@@ -155,33 +157,35 @@ object SceneProcessor {
       (i -> List.fill(i)(LightData.empty))
     }.toMap
 
-  def makeLightsData(lights: List[Light]): Array[Float] = {
+  def makeLightsData(lights: List[Light]): scalajs.js.Array[Float] = {
     val limitedLights = lights.take(MaxLights)
     val count         = limitedLights.length
     val fullLights    = limitedLights.map(makeLightData) ++ missingLightData(MaxLights - count)
 
-    Array[Float](count.toFloat, 0.0f, 0.0f, 0.0f) ++ fullLights.foldLeft(bareLightData)(_ + _).toArray
+    scalajs.js.Array[Float](count.toFloat, 0.0f, 0.0f, 0.0f) ++ fullLights.foldLeft(bareLightData)(_ + _).toArray
   }
 
   def makeLightData(light: Light): LightData =
     light match {
       case l: AmbientLight =>
         LightData(
-          lightFlags = Array[Float](1.0f, 0.0f, 0.0f, 0.0f),
-          lightColor = Array[Float](l.color.r.toFloat, l.color.g.toFloat, l.color.b.toFloat, l.color.a.toFloat),
-          lightSpecular = Array[Float](0.0f, 0.0f, 0.0f, 0.0f),
-          lightPositionRotation = Array[Float](0.0f, 0.0f, 0.0f, 0.0f),
-          lightNearFarAngleIntensity = Array[Float](0.0f, 0.0f, 0.0f, 0.0f)
+          lightFlags = scalajs.js.Array[Float](1.0f, 0.0f, 0.0f, 0.0f),
+          lightColor =
+            scalajs.js.Array[Float](l.color.r.toFloat, l.color.g.toFloat, l.color.b.toFloat, l.color.a.toFloat),
+          lightSpecular = scalajs.js.Array[Float](0.0f, 0.0f, 0.0f, 0.0f),
+          lightPositionRotation = scalajs.js.Array[Float](0.0f, 0.0f, 0.0f, 0.0f),
+          lightNearFarAngleIntensity = scalajs.js.Array[Float](0.0f, 0.0f, 0.0f, 0.0f)
         )
 
       case l: DirectionLight =>
         LightData(
-          lightFlags = Array[Float](1.0f, 1.0f, 0.0f, 0.0f),
-          lightColor = Array[Float](l.color.r.toFloat, l.color.g.toFloat, l.color.b.toFloat, l.color.a.toFloat),
-          lightSpecular =
-            Array[Float](l.specular.r.toFloat, l.specular.g.toFloat, l.specular.b.toFloat, l.specular.a.toFloat),
-          lightPositionRotation = Array[Float](0.0f, 0.0f, l.rotation.toFloat, 0.0f),
-          lightNearFarAngleIntensity = Array[Float](0.0f, 0.0f, 0.0f, 0.0f)
+          lightFlags = scalajs.js.Array[Float](1.0f, 1.0f, 0.0f, 0.0f),
+          lightColor =
+            scalajs.js.Array[Float](l.color.r.toFloat, l.color.g.toFloat, l.color.b.toFloat, l.color.a.toFloat),
+          lightSpecular = scalajs.js
+            .Array[Float](l.specular.r.toFloat, l.specular.g.toFloat, l.specular.b.toFloat, l.specular.a.toFloat),
+          lightPositionRotation = scalajs.js.Array[Float](0.0f, 0.0f, l.rotation.toFloat, 0.0f),
+          lightNearFarAngleIntensity = scalajs.js.Array[Float](0.0f, 0.0f, 0.0f, 0.0f)
         )
 
       case l: PointLight =>
@@ -221,12 +225,13 @@ object SceneProcessor {
           }
 
         LightData(
-          lightFlags = Array[Float](1.0f, 2.0f, useFarCuttOff, falloffType),
-          lightColor = Array[Float](l.color.r.toFloat, l.color.g.toFloat, l.color.b.toFloat, l.color.a.toFloat),
-          lightSpecular =
-            Array[Float](l.specular.r.toFloat, l.specular.g.toFloat, l.specular.b.toFloat, l.specular.a.toFloat),
-          lightPositionRotation = Array[Float](l.position.x.toFloat, l.position.y.toFloat, 0.0f, 0.0f),
-          lightNearFarAngleIntensity = Array[Float](near, far, 0.0f, l.intensity.toFloat)
+          lightFlags = scalajs.js.Array[Float](1.0f, 2.0f, useFarCuttOff, falloffType),
+          lightColor =
+            scalajs.js.Array[Float](l.color.r.toFloat, l.color.g.toFloat, l.color.b.toFloat, l.color.a.toFloat),
+          lightSpecular = scalajs.js
+            .Array[Float](l.specular.r.toFloat, l.specular.g.toFloat, l.specular.b.toFloat, l.specular.a.toFloat),
+          lightPositionRotation = scalajs.js.Array[Float](l.position.x.toFloat, l.position.y.toFloat, 0.0f, 0.0f),
+          lightNearFarAngleIntensity = scalajs.js.Array[Float](near, far, 0.0f, l.intensity.toFloat)
         )
 
       case l: SpotLight =>
@@ -266,19 +271,21 @@ object SceneProcessor {
           }
 
         LightData(
-          lightFlags = Array[Float](1.0f, 3.0f, useFarCuttOff, falloffType),
-          lightColor = Array[Float](l.color.r.toFloat, l.color.g.toFloat, l.color.b.toFloat, l.color.a.toFloat),
-          lightSpecular =
-            Array[Float](l.specular.r.toFloat, l.specular.g.toFloat, l.specular.b.toFloat, l.specular.a.toFloat),
-          lightPositionRotation = Array[Float](l.position.x.toFloat, l.position.y.toFloat, l.rotation.toFloat, 0.0f),
-          lightNearFarAngleIntensity = Array[Float](near, far, l.angle.toFloat, l.intensity.toFloat)
+          lightFlags = scalajs.js.Array[Float](1.0f, 3.0f, useFarCuttOff, falloffType),
+          lightColor =
+            scalajs.js.Array[Float](l.color.r.toFloat, l.color.g.toFloat, l.color.b.toFloat, l.color.a.toFloat),
+          lightSpecular = scalajs.js
+            .Array[Float](l.specular.r.toFloat, l.specular.g.toFloat, l.specular.b.toFloat, l.specular.a.toFloat),
+          lightPositionRotation =
+            scalajs.js.Array[Float](l.position.x.toFloat, l.position.y.toFloat, l.rotation.toFloat, 0.0f),
+          lightNearFarAngleIntensity = scalajs.js.Array[Float](near, far, l.angle.toFloat, l.intensity.toFloat)
         )
     }
 
   def mergeShaderToUniformData(
       shaderData: BlendShaderData
-  )(using QuickCache[Array[Float]]): Array[DisplayObjectUniformData] =
-    shaderData.uniformBlocks.toArray.map { ub =>
+  )(using QuickCache[scalajs.js.Array[Float]]): scalajs.js.Array[DisplayObjectUniformData] =
+    shaderData.uniformBlocks.toJSArray.map { ub =>
       DisplayObjectUniformData(
         uniformHash = ub.uniformHash,
         blockName = ub.blockName,
@@ -288,11 +295,11 @@ object SceneProcessor {
 }
 
 final case class LightData(
-    lightFlags: Array[Float],
-    lightColor: Array[Float],
-    lightSpecular: Array[Float],
-    lightPositionRotation: Array[Float],
-    lightNearFarAngleIntensity: Array[Float]
+    lightFlags: scalajs.js.Array[Float],
+    lightColor: scalajs.js.Array[Float],
+    lightSpecular: scalajs.js.Array[Float],
+    lightPositionRotation: scalajs.js.Array[Float],
+    lightNearFarAngleIntensity: scalajs.js.Array[Float]
 ) derives CanEqual {
   def +(other: LightData): LightData =
     this.copy(
@@ -303,7 +310,7 @@ final case class LightData(
       lightNearFarAngleIntensity = lightNearFarAngleIntensity ++ other.lightNearFarAngleIntensity
     )
 
-  def toArray: Array[Float] =
+  def toArray: scalajs.js.Array[Float] =
     lightFlags ++
       lightColor ++
       lightSpecular ++
@@ -313,13 +320,13 @@ final case class LightData(
 object LightData {
   val empty: LightData =
     LightData(
-      Array[Float](0.0f, 0.0f, 0.0f, 0.0f),
-      Array[Float](0.0f, 0.0f, 0.0f, 0.0f),
-      Array[Float](0.0f, 0.0f, 0.0f, 0.0f),
-      Array[Float](0.0f, 0.0f, 0.0f, 0.0f),
-      Array[Float](0.0f, 0.0f, 0.0f, 0.0f)
+      scalajs.js.Array[Float](0.0f, 0.0f, 0.0f, 0.0f),
+      scalajs.js.Array[Float](0.0f, 0.0f, 0.0f, 0.0f),
+      scalajs.js.Array[Float](0.0f, 0.0f, 0.0f, 0.0f),
+      scalajs.js.Array[Float](0.0f, 0.0f, 0.0f, 0.0f),
+      scalajs.js.Array[Float](0.0f, 0.0f, 0.0f, 0.0f)
     )
 
-  val emptyData: Array[Float] =
+  val emptyData: scalajs.js.Array[Float] =
     empty.toArray
 }

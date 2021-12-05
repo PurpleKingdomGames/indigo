@@ -6,6 +6,8 @@ import indigo.shared.datatypes.Vector3
 import indigo.shared.datatypes.mutable
 import indigo.shared.datatypes.mutable.CheapMatrix4
 
+import scala.scalajs.js
+
 // import annotation.targetName
 
 /** `CheapMatrix4` is intended for use internally within Indigo, but remains available for general use. You are advised
@@ -13,7 +15,7 @@ import indigo.shared.datatypes.mutable.CheapMatrix4
   * mutable data for performance reasons, and takes some shortcuts during multiplication to reduce work based on how the
   * engine itself behaves.
   */
-opaque type CheapMatrix4 = Array[Float]
+opaque type CheapMatrix4 = js.Array[Float]
 
 object CheapMatrix4:
 
@@ -22,7 +24,7 @@ object CheapMatrix4:
     def y: Float = m(13)
 
     def translate(byX: Float, byY: Float, byZ: Float): CheapMatrix4 =
-      m * Array(
+      m * js.Array(
         1,
         0,
         0,
@@ -45,7 +47,7 @@ object CheapMatrix4:
       val c = Math.cos(angle).toFloat
       val s = Math.sin(angle).toFloat
 
-      m * Array(
+      m * js.Array(
         c,
         s,
         0,
@@ -65,7 +67,7 @@ object CheapMatrix4:
       )
 
     def scale(byX: Float, byY: Float, byZ: Float): CheapMatrix4 =
-      m * Array(
+      m * js.Array(
         byX,
         0,
         0,
@@ -150,14 +152,14 @@ object CheapMatrix4:
       m
     }
 
-    def toArray: Array[Float] =
+    def toArray: js.Array[Float] =
       m
 
     def toMatrix4: Matrix4 =
       Matrix4(m.toList.map(_.toDouble))
 
     def deepClone: CheapMatrix4 =
-      CheapMatrix4(Array[Float]().concat(m))
+      CheapMatrix4(js.Array[Float]().concat(m))
 
     def transform(vector: Vector3): Vector3 =
       val col1: List[Float] = List(m(0), m(4), m(8), m(12))
@@ -171,11 +173,11 @@ object CheapMatrix4:
       )
 
   def identity: CheapMatrix4 =
-    CheapMatrix4(Array(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1))
+    CheapMatrix4(js.Array(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1))
 
   def orthographic(left: Float, right: Float, bottom: Float, top: Float, near: Float, far: Float): CheapMatrix4 =
     CheapMatrix4(
-      Array(
+      js.Array(
         2 / (right - left),
         0,
         0,
@@ -201,7 +203,7 @@ object CheapMatrix4:
   def orthographic(x: Float, y: Float, width: Float, height: Float): CheapMatrix4 =
     orthographic(x, x + width, y + height, y, -1, Int.MaxValue.toFloat)
 
-  inline def apply(matrix: Array[Float]): CheapMatrix4 =
+  inline def apply(matrix: js.Array[Float]): CheapMatrix4 =
     matrix
 
   /** SHOULD ONLY BE USED BY TESTS
@@ -213,10 +215,10 @@ object CheapMatrix4:
       row3: (Float, Float, Float, Float)
   ): CheapMatrix4 =
     CheapMatrix4(
-      Array(row0._1, row0._2, row0._3, row0._4) ++
-        Array(row1._1, row1._2, row1._3, row1._4) ++
-        Array(row2._1, row2._2, row2._3, row2._4) ++
-        Array(row3._1, row3._2, row3._3, row3._4)
+      js.Array(row0._1, row0._2, row0._3, row0._4) ++
+        js.Array(row1._1, row1._2, row1._3, row1._4) ++
+        js.Array(row2._1, row2._2, row2._3, row2._4) ++
+        js.Array(row3._1, row3._2, row3._3, row3._4)
     )
 
 end CheapMatrix4

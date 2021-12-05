@@ -203,8 +203,9 @@ class LayerRenderer(
   def init(): LayerRenderer =
 
     // pre-populate array
-    val refData: Array[Float] =
-      List.fill(20)(0.0f).toArray
+    val refData: scalajs.js.Array[Float] =
+      List.fill(20)(0.0f).toArray.toJSArray
+
     WebGLHelper.attachUBOData(gl2, refData, cloneReferenceUBOBuffer)
 
     this
@@ -264,8 +265,7 @@ class LayerRenderer(
           currentProgram = customShaders(d.shaderId)
           setupShader(currentProgram)
           currentProgram
-        }
-        catch {
+        } catch {
           case _: Throwable =>
             throw new Exception(
               s"Missing entity shader '${d.shaderId}'. Have you remembered to add the shader to the boot sequence or disabled auto-loading of default shaders?"
@@ -428,11 +428,9 @@ class LayerRenderer(
   def drawSingleCloneProgram(): Unit =
     gl2.drawArraysInstanced(TRIANGLE_STRIP, 0, 4, 1)
 
-  private given CanEqual[List[DisplayEntity], List[DisplayEntity]] = CanEqual.derived
-
   def drawLayer(
       cloneBlankDisplayObjects: Map[CloneId, DisplayObject],
-      displayEntities: Array[DisplayEntity],
+      displayEntities: scalajs.js.Array[DisplayEntity],
       frameBufferComponents: FrameBufferComponents,
       clearColor: RGBA,
       customShaders: HashMap[ShaderId, WebGLProgram]
@@ -456,7 +454,7 @@ class LayerRenderer(
   )
   private def renderEntities(
       cloneBlankDisplayObjects: Map[CloneId, DisplayObject],
-      displayEntities: Array[DisplayEntity],
+      displayEntities: scalajs.js.Array[DisplayEntity],
       customShaders: HashMap[ShaderId, WebGLProgram],
       baseTransform: CheapMatrix4
   ): Unit = {
@@ -474,8 +472,8 @@ class LayerRenderer(
     var currentCloneRef: DisplayObject = null
 
     //
-    val sortedEntities: Vector[DisplayEntity] =
-      displayEntities.sortWith((d1, d2) => d1.z > d2.z).toVector
+    val sortedEntities: scalajs.js.Array[DisplayEntity] =
+      displayEntities.sortWith((d1, d2) => d1.z > d2.z)
 
     while (i <= count)
       if i == count then
@@ -667,7 +665,7 @@ class LayerRenderer(
 
             // UBO data
             val buff = customDataUBOBuffers.getOrElseUpdate("[indigo_internal_buffer_textbox]", gl2.createBuffer())
-            WebGLHelper.attachUBOData(gl2, Array[Float](0), buff)
+            WebGLHelper.attachUBOData(gl2, scalajs.js.Array[Float](0), buff)
             WebGLHelper.bindUBO(
               gl2,
               activeShader,
@@ -701,8 +699,8 @@ class LayerRenderer(
     val code = refDisplayObject.hashCode
     if currentRefUBOHash == code then ()
     else
-      val refData: Array[Float] =
-        Array(
+      val refData: scalajs.js.Array[Float] =
+        scalajs.js.Array(
           refDisplayObject.refX,
           refDisplayObject.refY,
           refDisplayObject.flipX,

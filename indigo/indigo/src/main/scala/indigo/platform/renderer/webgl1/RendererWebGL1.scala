@@ -164,7 +164,7 @@ final class RendererWebGL1(
   }
 
   def drawLayer(
-      displayEntities: Array[DisplayEntity],
+      displayEntities: scalajs.js.Array[DisplayEntity],
       shaderProgram: WebGLProgram,
       projectionMatrix: scalajs.js.Array[Double]
   ): Unit = {
@@ -189,7 +189,7 @@ final class RendererWebGL1(
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def renderEntities(
-      displayEntities: Array[DisplayEntity],
+      displayEntities: scalajs.js.Array[DisplayEntity],
       shaderProgram: WebGLProgram,
       baseTransform: CheapMatrix4
   ): Unit =

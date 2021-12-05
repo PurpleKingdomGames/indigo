@@ -7,14 +7,14 @@ import indigo.shared.scenegraph.Camera
 import indigo.shared.shader.ShaderId
 
 final case class DisplayLayer(
-    entities: Array[DisplayEntity],
-    lightsData: Array[Float],
+    entities: scalajs.js.Array[DisplayEntity],
+    lightsData: scalajs.js.Array[Float],
     bgColor: RGBA,
     magnification: Option[Int],
     depth: Depth,
     entityBlend: Blend,
     layerBlend: Blend,
     shaderId: ShaderId,
-    shaderUniformData: Array[DisplayObjectUniformData],
+    shaderUniformData: scalajs.js.Array[DisplayObjectUniformData],
     camera: Option[Camera]
 ) derives CanEqual

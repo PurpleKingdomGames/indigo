@@ -61,14 +61,14 @@ object WebGLHelper {
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
-  def attachUBOData(gl2: WebGL2RenderingContext, data: Array[Float], buffer: WebGLBuffer): Unit = {
+  def attachUBOData(gl2: WebGL2RenderingContext, data: scalajs.js.Array[Float], buffer: WebGLBuffer): Unit = {
     gl2.bindBuffer(gl2.UNIFORM_BUFFER, buffer)
     gl2.bufferData(
       gl2.UNIFORM_BUFFER,
       (Math.ceil(data.length.toDouble / 16).toInt * 16) * Float32Array.BYTES_PER_ELEMENT,
       DYNAMIC_DRAW
     )
-    gl2.bufferSubData(gl2.UNIFORM_BUFFER, 0, new Float32Array(data.toJSArray))
+    gl2.bufferSubData(gl2.UNIFORM_BUFFER, 0, new Float32Array(data))
     gl2.bindBuffer(gl2.UNIFORM_BUFFER, null);
   }
 
@@ -83,8 +83,8 @@ object WebGLHelper {
     gl2.uniformBlockBinding(activeShader, gl2.getUniformBlockIndex(activeShader, uboStructName), blockPointer)
   }
 
-  private val textureLocationsLookUp: Array[Int] =
-    Array(
+  private val textureLocationsLookUp: scalajs.js.Array[Int] =
+    scalajs.js.Array(
       TEXTURE0,
       TEXTURE1,
       TEXTURE2,
@@ -119,8 +119,7 @@ object WebGLHelper {
       TEXTURE31
     )
 
-  val intToTextureLocation: Int => Int = index =>
-    textureLocationsLookUp(index)
+  val intToTextureLocation: Int => Int = index => textureLocationsLookUp(index)
 
   def attach(
       gl: WebGLRenderingContext,

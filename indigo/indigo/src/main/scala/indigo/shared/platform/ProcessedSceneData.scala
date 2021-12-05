@@ -8,9 +8,9 @@ import indigo.shared.scenegraph.CloneId
 import indigo.shared.shader.ShaderId
 
 final class ProcessedSceneData(
-    val layers: Array[DisplayLayer],
+    val layers: scalajs.js.Array[DisplayLayer],
     val cloneBlankDisplayObjects: Map[CloneId, DisplayObject],
     val shaderId: ShaderId,
-    val shaderUniformData: Array[DisplayObjectUniformData],
+    val shaderUniformData: scalajs.js.Array[DisplayObjectUniformData],
     val camera: Option[Camera]
 )

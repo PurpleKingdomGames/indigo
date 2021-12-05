@@ -52,6 +52,7 @@ import indigo.shared.time.GameTime
 
 import scala.annotation.tailrec
 import scala.collection.mutable.ListBuffer
+import scala.scalajs.js.JSConverters._
 
 final class DisplayObjectConversions(
     boundaryLocator: BoundaryLocator,
@@ -62,10 +63,10 @@ final class DisplayObjectConversions(
   implicit private val textureRefAndOffsetCache: QuickCache[TextureRefAndOffset] = QuickCache.empty
   implicit private val vector2Cache: QuickCache[Vector2]                         = QuickCache.empty
   implicit private val frameCache: QuickCache[SpriteSheetFrameCoordinateOffsets] = QuickCache.empty
-  implicit private val listDoCache: QuickCache[List[DisplayObject]]              = QuickCache.empty
+  implicit private val listDoCache: QuickCache[scalajs.js.Array[DisplayObject]]              = QuickCache.empty
   implicit private val cloneBatchCache: QuickCache[DisplayCloneBatch]            = QuickCache.empty
   implicit private val cloneTilesCache: QuickCache[DisplayCloneTiles]            = QuickCache.empty
-  implicit private val uniformsCache: QuickCache[Array[Float]]                   = QuickCache.empty
+  implicit private val uniformsCache: QuickCache[scalajs.js.Array[Float]]        = QuickCache.empty
 
   // Called on asset load/reload to account for atlas rebuilding etc.
   def purgeCaches(): Unit = {
@@ -95,14 +96,14 @@ final class DisplayObjectConversions(
         new DisplayCloneBatch(
           id = batch.id,
           z = batch.depth.toDouble,
-          cloneData = batch.cloneData
+          cloneData = batch.cloneData.toJSArray
         )
       }
     else
       new DisplayCloneBatch(
         id = batch.id,
         z = batch.depth.toDouble,
-        cloneData = batch.cloneData
+        cloneData = batch.cloneData.toJSArray
       )
 
   private def cloneTilesDataToDisplayEntities(batch: CloneTiles): DisplayCloneTiles =
@@ -111,30 +112,30 @@ final class DisplayObjectConversions(
         new DisplayCloneTiles(
           id = batch.id,
           z = batch.depth.toDouble,
-          cloneData = batch.cloneData
+          cloneData = batch.cloneData.toJSArray
         )
       }
     else
       new DisplayCloneTiles(
         id = batch.id,
         z = batch.depth.toDouble,
-        cloneData = batch.cloneData
+        cloneData = batch.cloneData.toJSArray
       )
 
   private def mutantsToDisplayEntities(batch: Mutants): DisplayMutants =
-    val uniformDataConvert: List[UniformBlock] => Array[DisplayObjectUniformData] = uniformBlocks =>
-      uniformBlocks.map { ub =>
+    val uniformDataConvert: List[UniformBlock] => scalajs.js.Array[DisplayObjectUniformData] = uniformBlocks =>
+      uniformBlocks.toJSArray.map { ub =>
         DisplayObjectUniformData(
           uniformHash = ub.uniformHash,
           blockName = ub.blockName,
           data = DisplayObjectConversions.packUBO(ub.uniforms)
         )
-      }.toArray
+      }
 
     new DisplayMutants(
       id = batch.id,
       z = batch.depth.toDouble,
-      cloneData = batch.uniformBlocks.map(uniformDataConvert)
+      cloneData = batch.uniformBlocks.toJSArray.map(uniformDataConvert)
     )
 
   def sceneNodesToDisplayObjects(
@@ -142,9 +143,9 @@ final class DisplayObjectConversions(
       gameTime: GameTime,
       assetMapping: AssetMapping,
       cloneBlankDisplayObjects: Map[CloneId, DisplayObject]
-  ): Array[DisplayEntity] =
+  ): scalajs.js.Array[DisplayEntity] =
     val f = sceneNodeToDisplayObject(gameTime, assetMapping, cloneBlankDisplayObjects)
-    sceneNodes.toArray.map(f)
+    sceneNodes.toJSArray.map(f)
 
   private def groupToMatrix(group: Group): CheapMatrix4 =
     CheapMatrix4.identity
@@ -238,7 +239,7 @@ final class DisplayObjectConversions(
             case TextAlignment.Right => -lineBounds.size.width
           }
 
-        val converterFunc: (TextLine, Int, Int) => List[DisplayObject] =
+        val converterFunc: (TextLine, Int, Int) => scalajs.js.Array[DisplayObject] =
           fontRegister
             .findByFontKey(x.fontKey)
             .map { fontInfo =>
@@ -246,13 +247,14 @@ final class DisplayObjectConversions(
             }
             .getOrElse { (_, _, _) =>
               IndigoLogger.errorOnce(s"Cannot render Text, missing Font with key: ${x.fontKey.toString()}")
-              Nil
+              scalajs.js.Array()
             }
 
-        val letters =
+        val letters: scalajs.js.Array[DisplayEntity] =
           boundaryLocator
             .textAsLinesWithBounds(x.text, x.fontKey)
-            .foldLeft(0 -> List[DisplayObject]()) { (acc, textLine) =>
+            .toJSArray
+            .foldLeft(0 -> scalajs.js.Array[DisplayEntity]()) { (acc, textLine) =>
               (
                 acc._1 + textLine.lineBounds.height,
                 acc._2 ++ converterFunc(textLine, alignmentOffsetX(textLine.lineBounds), acc._1)
@@ -260,7 +262,7 @@ final class DisplayObjectConversions(
             }
             ._2
 
-        DisplayGroup(CheapMatrix4.identity, x.depth.toDouble, letters.toArray)
+        DisplayGroup(CheapMatrix4.identity, x.depth.toDouble, letters)
 
       case _: RenderNode =>
         DisplayGroup.empty
@@ -331,7 +333,7 @@ final class DisplayObjectConversions(
       textureSize = vec2Zero,
       atlasSize = vec2Zero,
       shaderId = shader.shaderId,
-      shaderUniformData = uniformData.toArray
+      shaderUniformData = uniformData.toJSArray
     )
   }
 
@@ -397,7 +399,7 @@ final class DisplayObjectConversions(
       textureSize = texture.map(_.size).getOrElse(Vector2.zero),
       atlasSize = texture.map(_.atlasSize).getOrElse(Vector2.zero),
       shaderId = shaderId,
-      shaderUniformData = uniformData.toArray
+      shaderUniformData = uniformData.toJSArray
     )
   }
 
@@ -472,7 +474,7 @@ final class DisplayObjectConversions(
       textureSize = texture.size,
       atlasSize = texture.atlasSize,
       shaderId = shaderId,
-      shaderUniformData = uniformData.toArray
+      shaderUniformData = uniformData.toJSArray
     )
   }
 
@@ -537,7 +539,7 @@ final class DisplayObjectConversions(
       textureSize = texture.size,
       atlasSize = texture.atlasSize,
       shaderId = shaderId,
-      shaderUniformData = uniformData.toArray
+      shaderUniformData = uniformData.toJSArray
     )
   }
 
@@ -545,7 +547,7 @@ final class DisplayObjectConversions(
       leaf: Text[_],
       assetMapping: AssetMapping,
       fontInfo: FontInfo
-  ): (TextLine, Int, Int) => List[DisplayObject] =
+  ): (TextLine, Int, Int) => scalajs.js.Array[DisplayObject] =
     (line, alignmentOffsetX, yOffset) => {
 
       val material       = leaf.material
@@ -574,7 +576,7 @@ final class DisplayObjectConversions(
         }
 
       QuickCache(lineHash) {
-        zipWithCharDetails(line.text.toList, fontInfo).toList.map { case (fontChar, xPosition) =>
+        zipWithCharDetails(line.text.toList, fontInfo).toJSArray.map { case (fontChar, xPosition) =>
           val frameInfo =
             QuickCache(fontChar.bounds.hashCode().toString + "_" + shaderDataHash) {
               SpriteSheetFrame.calculateFrameOffset(
@@ -606,7 +608,7 @@ final class DisplayObjectConversions(
             textureSize = texture.size,
             atlasSize = texture.atlasSize,
             shaderId = shaderId,
-            shaderUniformData = uniformData.toArray
+            shaderUniformData = uniformData.toJSArray
           )
         }
       }
@@ -616,7 +618,7 @@ final class DisplayObjectConversions(
 
   private given CanEqual[List[(Char, FontChar)], List[(Char, FontChar)]] = CanEqual.derived
 
-  private def zipWithCharDetails(charList: List[Char], fontInfo: FontInfo): ListBuffer[(FontChar, Int)] = {
+  private def zipWithCharDetails(charList: List[Char], fontInfo: FontInfo): scalajs.js.Array[(FontChar, Int)] = {
     @tailrec
     def rec(remaining: List[(Char, FontChar)], nextX: Int): ListBuffer[(FontChar, Int)] =
       remaining match {
@@ -629,7 +631,7 @@ final class DisplayObjectConversions(
       }
 
     accCharDetails = new ListBuffer()
-    rec(charList.map(c => (c, fontInfo.findByCharacter(c))), 0)
+    rec(charList.map(c => (c, fontInfo.findByCharacter(c))), 0).toJSArray
   }
 
   def findAssetOffsetValues(
@@ -649,12 +651,12 @@ final class DisplayObjectConversions(
 
 object DisplayObjectConversions {
 
-  private val empty0: Array[Float] = Array[Float]()
-  private val empty1: Array[Float] = Array[Float](0.0f)
-  private val empty2: Array[Float] = Array[Float](0.0f, 0.0f)
-  private val empty3: Array[Float] = Array[Float](0.0f, 0.0f, 0.0f)
+  private val empty0: scalajs.js.Array[Float] = scalajs.js.Array[Float]()
+  private val empty1: scalajs.js.Array[Float] = scalajs.js.Array[Float](0.0f)
+  private val empty2: scalajs.js.Array[Float] = scalajs.js.Array[Float](0.0f, 0.0f)
+  private val empty3: scalajs.js.Array[Float] = scalajs.js.Array[Float](0.0f, 0.0f, 0.0f)
 
-  def expandTo4(arr: Array[Float]): Array[Float] =
+  def expandTo4(arr: scalajs.js.Array[Float]): scalajs.js.Array[Float] =
     arr.length match {
       case 0 => arr
       case 1 => arr ++ empty3
@@ -664,8 +666,14 @@ object DisplayObjectConversions {
       case _ => arr
     }
 
-  def packUBO(uniforms: List[(Uniform, ShaderPrimitive)])(using QuickCache[Array[Float]]): Array[Float] = {
-    def rec(remaining: List[ShaderPrimitive], current: Array[Float], acc: Array[Float]): Array[Float] =
+  def packUBO(
+      uniforms: List[(Uniform, ShaderPrimitive)]
+  )(using QuickCache[scalajs.js.Array[Float]]): scalajs.js.Array[Float] = {
+    def rec(
+        remaining: List[ShaderPrimitive],
+        current: scalajs.js.Array[Float],
+        acc: scalajs.js.Array[Float]
+    ): scalajs.js.Array[Float] =
       remaining match {
         case Nil =>
           // println(s"done, expanded: ${current.toList} to ${expandTo4(current).toList}")
@@ -678,7 +686,7 @@ object DisplayObjectConversions {
 
         case u :: us if current.isEmpty && u.isArray =>
           // println(s"Found an array, current is empty, set current to: ${u.toArray.toList}")
-          rec(us, u.toArray, acc)
+          rec(us, u.toArray.toJSArray, acc)
 
         case u :: us if current.length == 1 && u.length == 2 =>
           //println("Current value is float, must not straddle byte boundary when adding vec2")

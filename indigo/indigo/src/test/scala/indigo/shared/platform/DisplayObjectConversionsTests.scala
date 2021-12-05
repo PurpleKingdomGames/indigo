@@ -30,6 +30,8 @@ import indigo.shared.shader.Uniform
 import indigo.shared.time.GameTime
 import indigo.shared.time.Seconds
 
+import scalajs.js.JSConverters._
+
 @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
 class DisplayObjectConversionsTests extends munit.FunSuite {
 
@@ -44,7 +46,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
 
   val cloneBlankMapping: Map[CloneId, DisplayObject] = Map.empty[CloneId, DisplayObject]
 
-  implicit val cache: QuickCache[Array[Float]] = QuickCache.empty
+  implicit val cache: QuickCache[scalajs.js.Array[Float]] = QuickCache.empty
 
   val doc = new DisplayObjectConversions(
     boundaryLocator,
@@ -142,16 +144,16 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
         Uniform("f") -> float(13)
       )
 
-    val expected: Array[Float] =
+    val expected: scalajs.js.Array[Float] =
       Array[Array[Float]](
         Array[Float](1, 2, 0, 0),
         Array[Float](3, 4, 5, 0),
         Array[Float](6, 0, 0, 0),
         Array[Float](7, 8, 0, 0, 9, 10, 0, 0, 11, 12, 0, 0, 0, 0, 0, 0),
         Array[Float](13, 0, 0, 0)
-      ).flatten
+      ).flatten.toJSArray
 
-    val actual: Array[Float] =
+    val actual: scalajs.js.Array[Float] =
       DisplayObjectConversions.packUBO(uniforms)
 
     assertEquals(actual.toList, expected.toList)
@@ -168,12 +170,12 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
         Uniform("b") -> vec2(2, 3)
       )
 
-    val expected: Array[Float] =
-      Array[Array[Float]](
-        Array[Float](1, 0, 2, 3)
+    val expected: scalajs.js.Array[Float] =
+      scalajs.js.Array[scalajs.js.Array[Float]](
+        scalajs.js.Array[Float](1, 0, 2, 3)
       ).flatten
 
-    val actual: Array[Float] =
+    val actual: scalajs.js.Array[Float] =
       DisplayObjectConversions.packUBO(uniforms)
 
     assertEquals(actual.toList, expected.toList)

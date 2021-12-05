@@ -30,11 +30,11 @@ class SceneProcessorTests extends munit.FunSuite {
 
     val expected: LightData =
       LightData(
-        Array[Float](1.0f, 0.0f, 0.0f, 0.0f), // lightFlags
-        Array[Float](1.0f, 0.0f, 0.0f, 0.5f), // lightColor
-        Array[Float](0.0f, 0.0f, 0.0f, 0.0f), // lightSpecular
-        Array[Float](0.0f, 0.0f, 0.0f, 0.0f), // lightPositionRotation
-        Array[Float](0.0f, 0.0f, 0.0f, 0.0f)  // lightNearFarAngleIntensity
+        scalajs.js.Array[Float](1.0f, 0.0f, 0.0f, 0.0f), // lightFlags
+        scalajs.js.Array[Float](1.0f, 0.0f, 0.0f, 0.5f), // lightColor
+        scalajs.js.Array[Float](0.0f, 0.0f, 0.0f, 0.0f), // lightSpecular
+        scalajs.js.Array[Float](0.0f, 0.0f, 0.0f, 0.0f), // lightPositionRotation
+        scalajs.js.Array[Float](0.0f, 0.0f, 0.0f, 0.0f)  // lightNearFarAngleIntensity
       )
 
     assertEquals(actual.toArray.toList, expected.toArray.toList)
@@ -51,11 +51,11 @@ class SceneProcessorTests extends munit.FunSuite {
 
     val expected: LightData =
       LightData(
-        Array[Float](1.0f, 1.0f, 0.0f, 0.0f),   // lightFlags
-        Array[Float](0.0f, 1.0f, 1.0f, 0.5f),   // lightColor
-        Array[Float](1.0f, 1.0f, 1.0f, 1.0f),   // lightSpecular
-        Array[Float](0.0f, 0.0f, 0.25f, 0.0f), // lightPositionRotation
-        Array[Float](0.0f, 0.0f, 0.0f, 0.0f)    // lightNearFarAngleAttenuation
+        scalajs.js.Array[Float](1.0f, 1.0f, 0.0f, 0.0f),  // lightFlags
+        scalajs.js.Array[Float](0.0f, 1.0f, 1.0f, 0.5f),  // lightColor
+        scalajs.js.Array[Float](1.0f, 1.0f, 1.0f, 1.0f),  // lightSpecular
+        scalajs.js.Array[Float](0.0f, 0.0f, 0.25f, 0.0f), // lightPositionRotation
+        scalajs.js.Array[Float](0.0f, 0.0f, 0.0f, 0.0f)   // lightNearFarAngleAttenuation
       )
 
     assertEquals(actual.toArray.toList, expected.toArray.toList)
@@ -70,33 +70,33 @@ class SceneProcessorTests extends munit.FunSuite {
         AmbientLight(RGBA.Green.withAmount(0.8))
       )
 
-    val actual: Array[Float] =
+    val actual: scalajs.js.Array[Float] =
       SceneProcessor.makeLightsData(lights)
 
-    val expected: Array[Float] =
-      Array[Float](3, 0, 0, 0) ++ // first value, even though single float, requires space of vec4.
+    val expected: scalajs.js.Array[Float] =
+      scalajs.js.Array[Float](3, 0, 0, 0) ++ // first value, even though single float, requires space of vec4.
         (
           LightData(
-            Array[Float](1.0f, 0.0f, 0.0f, 0.0f), // lightFlags
-            Array[Float](1.0f, 0.0f, 0.0f, 0.5f), // lightColor
-            Array[Float](0.0f, 0.0f, 0.0f, 0.0f), // lightSpecular
-            Array[Float](0.0f, 0.0f, 0.0f, 0.0f), // lightPositionRotation
-            Array[Float](0.0f, 0.0f, 0.0f, 0.0f)  // lightNearFarAngleAttenuation
+            scalajs.js.Array[Float](1.0f, 0.0f, 0.0f, 0.0f), // lightFlags
+            scalajs.js.Array[Float](1.0f, 0.0f, 0.0f, 0.5f), // lightColor
+            scalajs.js.Array[Float](0.0f, 0.0f, 0.0f, 0.0f), // lightSpecular
+            scalajs.js.Array[Float](0.0f, 0.0f, 0.0f, 0.0f), // lightPositionRotation
+            scalajs.js.Array[Float](0.0f, 0.0f, 0.0f, 0.0f)  // lightNearFarAngleAttenuation
           ) +
             LightData(
-              Array[Float](1.0f, 1.0f, 0.0f, 0.0f),   // lightFlags
-              Array[Float](0.0f, 1.0f, 1.0f, 0.5f),   // lightColor
-              Array[Float](1.0f, 1.0f, 1.0f, 1.0f),   // lightSpecular
-              Array[Float](0.0f, 0.0f, 0.25f, 0.0f), // lightPositionRotation
-              Array[Float](0.0f, 0.0f, 0.0f, 0.0f)    // lightNearFarAngleAttenuation
+              scalajs.js.Array[Float](1.0f, 1.0f, 0.0f, 0.0f),  // lightFlags
+              scalajs.js.Array[Float](0.0f, 1.0f, 1.0f, 0.5f),  // lightColor
+              scalajs.js.Array[Float](1.0f, 1.0f, 1.0f, 1.0f),  // lightSpecular
+              scalajs.js.Array[Float](0.0f, 0.0f, 0.25f, 0.0f), // lightPositionRotation
+              scalajs.js.Array[Float](0.0f, 0.0f, 0.0f, 0.0f)   // lightNearFarAngleAttenuation
             ) +
             LightData(
-              Array[Float](1.0f, 0.0f, 0.0f, 0.0f), // lightFlags
-              Array[Float](0.0f, 1.0f, 0.0f, 0.8f), // lightColor
-              Array[Float](0.0f, 0.0f, 0.0f, 0.0f), // lightSpecular
-              Array[Float](0.0f, 0.0f, 0.0f, 0.0f), // lightPositionRotation
-              Array[Float](0.0f, 0.0f, 0.0f, 0.0f)  // lightNearFarAngleAttenuation
-            ) + LightData.empty +                   // There are always 8 lights.
+              scalajs.js.Array[Float](1.0f, 0.0f, 0.0f, 0.0f), // lightFlags
+              scalajs.js.Array[Float](0.0f, 1.0f, 0.0f, 0.8f), // lightColor
+              scalajs.js.Array[Float](0.0f, 0.0f, 0.0f, 0.0f), // lightSpecular
+              scalajs.js.Array[Float](0.0f, 0.0f, 0.0f, 0.0f), // lightPositionRotation
+              scalajs.js.Array[Float](0.0f, 0.0f, 0.0f, 0.0f)  // lightNearFarAngleAttenuation
+            ) + LightData.empty +                              // There are always 8 lights.
             LightData.empty +
             LightData.empty +
             LightData.empty +
