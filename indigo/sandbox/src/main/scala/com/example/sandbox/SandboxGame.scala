@@ -4,6 +4,7 @@ import com.example.sandbox.scenes.Archetype
 import com.example.sandbox.scenes.BoundsScene
 import com.example.sandbox.scenes.CameraScene
 import com.example.sandbox.scenes.ConfettiScene
+import com.example.sandbox.scenes.CratesScene
 import com.example.sandbox.scenes.LegacyEffectsScene
 import com.example.sandbox.scenes.LightsScene
 import com.example.sandbox.scenes.MutantsScene
@@ -38,7 +39,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
   val viewportHeight: Int     = gameHeight * magnificationLevel // 256
 
   def initialScene(bootData: SandboxBootData): Option[SceneName] =
-    Some(OriginalScene.name)
+    Some(CratesScene.name)
 
   def scenes(bootData: SandboxBootData): NonEmptyList[Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]] =
     NonEmptyList(
@@ -53,7 +54,8 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
       TextureTileScene,
       UiScene,
       ConfettiScene,
-      MutantsScene
+      MutantsScene,
+      CratesScene
     )
 
   val eventFilters: EventFilters = EventFilters.Permissive

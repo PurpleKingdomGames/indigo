@@ -38,6 +38,8 @@ object SandboxAssets {
   val smoothBumpName: AssetName       = AssetName("smooth-bump2")
   val normalMapName: AssetName        = AssetName("normal-map")
   val trafficLightsName: AssetName    = AssetName("trafficlights")
+  val cratesDiffuseName: AssetName    = AssetName("crates_diffuse")
+  val cratesNormalName: AssetName     = AssetName("crates_normal")
 
   val junctionBoxMaterial: Material.Bitmap =
     Material.Bitmap(junctionBoxAlbedo)
@@ -56,6 +58,11 @@ object SandboxAssets {
 
   val junctionBoxEffectsMaterial: LegacyEffects =
     LegacyEffects(junctionBoxAlbedo)
+
+  val cratesMaterial: Material.Bitmap =
+    Material
+      .Bitmap(cratesDiffuseName)
+      .withLighting(LightingModel.Lit.flat.withNormal(cratesNormalName, 1.0))
 
   val pixelFont: AssetName = AssetName("Pixelated")
 
@@ -77,7 +84,9 @@ object SandboxAssets {
         AssetType.Image(smoothBumpName, AssetPath("assets/" + smoothBumpName + ".png")),
         AssetType.Image(normalMapName, AssetPath("assets/" + normalMapName + ".png"))
       ),
-      AssetType.Image(trafficLightsName, AssetPath("assets/" + trafficLightsName + ".png"))
+      AssetType.Image(trafficLightsName, AssetPath("assets/" + trafficLightsName + ".png")),
+      AssetType.Image(cratesDiffuseName, AssetPath("assets/" + cratesDiffuseName + ".png")),
+      AssetType.Image(cratesNormalName, AssetPath("assets/" + cratesNormalName + ".png"))
     )
 
 }
