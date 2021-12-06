@@ -55,6 +55,8 @@ object snake extends ScalaJSModule with MillIndigo {
     override def moduleKind = T(mill.scalajslib.api.ModuleKind.CommonJSModule)
 
     def scalacOptions = super.scalacOptions() ++ ScalacOptions.test
+
+    override def jsEnvConfig = T { JsEnvConfig.NodeJs(args = List("--dns-result-order=ipv4first")) }
   }
 
 }
