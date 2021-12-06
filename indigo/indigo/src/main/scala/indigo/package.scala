@@ -571,6 +571,8 @@ type Mutants = shared.scenegraph.Mutants
 val Mutants: shared.scenegraph.Mutants.type = shared.scenegraph.Mutants
 
 // Lights
+type Light = shared.scenegraph.Light
+
 type PointLight = shared.scenegraph.PointLight
 val PointLight: shared.scenegraph.PointLight.type = shared.scenegraph.PointLight
 
