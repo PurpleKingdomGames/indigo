@@ -1,18 +1,11 @@
 package com.example.sandbox.scenes
 
-import com.example.sandbox.Log
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
 import com.example.sandbox.SandboxViewModel
-import indigo._
-import indigo.scenes._
-import indigoextras.geometry.Polygon
-import indigoextras.geometry.Vertex
-import indigoextras.ui.HitArea
-
-import scala.annotation.tailrec
-import scala.collection.mutable.ArrayBuffer
+import indigo.*
+import indigo.scenes.*
 
 object CratesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
 
@@ -54,12 +47,15 @@ object CratesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
   val cloneId: CloneId = CloneId("crates")
 
   val cloneBlanks: List[CloneBlank] =
-    List(CloneBlank(cloneId, graphic.withCrop(0, 0, 32, 32).withRef(16, 16)).static)
+    List(CloneBlank(cloneId, graphic).static)
 
-  val lights =
+  val move =
+    Signal.SmoothPulse.map(d => Point(75 + (50 * d).toInt, 80))
+
+  def lights(position: Point): List[Light] =
     List(
       PointLight.default.moveTo(Point(100, 100)).withFalloff(Falloff.smoothLinear),
-      PointLight.default.moveTo(Point(150, 80)).withFalloff(Falloff.smoothLinear).withColor(RGBA.Yellow),
+      PointLight.default.moveTo(position).withFalloff(Falloff.smoothLinear).withColor(RGBA.Yellow),
       AmbientLight(RGBA.Blue.mix(RGBA.White, 0.3).withAmount(0.5))
     )
 
@@ -75,13 +71,13 @@ object CratesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
           CloneTiles(
             cloneId,
             Array(
-              CloneTileData(80, 120, Radians.zero, 1.0, 1.0, 0, 0, 32, 32),
-              CloneTileData(120, 120, Radians.zero, 1.0, 1.0, 0, 32, 16, 16),
-              CloneTileData(160, 120, Radians.zero, 1.0, 1.0, 0, 48, 32, 16),
-              CloneTileData(200, 120, Radians.zero, 1.0, 1.0, 32, 0, 32, 48)
+              CloneTileData(60, 100, Radians.zero, 1.0, 1.0, 0, 0, 32, 32),
+              CloneTileData(100, 100, Radians.zero, 1.0, 1.0, 0, 32, 16, 16),
+              CloneTileData(140, 100, Radians.zero, 1.0, 1.0, 0, 48, 32, 16),
+              CloneTileData(180, 100, Radians.zero, 1.0, 1.0, 32, 0, 32, 48)
             )
           )
         )
       ).addCloneBlanks(cloneBlanks)
-        .addLights(lights)
+        .addLights(lights(move.at(context.running * 0.5)))
     )
