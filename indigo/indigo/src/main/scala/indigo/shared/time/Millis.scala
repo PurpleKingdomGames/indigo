@@ -58,6 +58,18 @@ object Millis:
     def >=(other: Millis): Boolean =
       ms >= other
 
+    def abs: Millis =
+      Millis(Math.abs(ms.toLong))
+
+    def min(other: Millis): Millis =
+      Millis(Math.min(ms.toLong, other.toLong))
+
+    def max(other: Millis): Millis =
+      Millis(Math.max(ms.toLong, other.toLong))
+
+    def clamp(min: Millis, max: Millis): Millis =
+      Millis(Math.min(max.toLong, Math.max(min.toLong, ms.toLong)))
+
     def toInt: Int =
       ms.toInt
 

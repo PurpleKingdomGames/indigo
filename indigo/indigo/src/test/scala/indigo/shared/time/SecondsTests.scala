@@ -18,4 +18,25 @@ class SecondsTests extends munit.FunSuite {
     assertEquals(Seconds(3) % 2, Seconds(1))
   }
 
+  test("abs") {
+    assertEquals(Seconds(10).abs, Seconds(10))
+    assertEquals(Seconds(-10).abs, Seconds(10))
+  }
+
+  test("min") {
+    assertEquals(Seconds(10).min(Seconds(0)), Seconds(0))
+    assertEquals(Seconds(10).min(Seconds(100)), Seconds(10))
+  }
+
+  test("max") {
+    assertEquals(Seconds(10).max(Seconds(0)), Seconds(10))
+    assertEquals(Seconds(10).max(Seconds(100)), Seconds(100))
+  }
+
+  test("clamp") {
+    assertEquals(Seconds(10).clamp(Seconds(0), Seconds(100)), Seconds(10))
+    assertEquals(Seconds(-10).clamp(Seconds(0), Seconds(100)), Seconds(0))
+    assertEquals(Seconds(1000).clamp(Seconds(0), Seconds(100)), Seconds(100))
+  }
+
 }
