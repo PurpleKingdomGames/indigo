@@ -154,7 +154,7 @@ void main(void) {
       case 2:
         ATLAS_SIZE = u_ref_textureSizeAtlasSize.zw;
         TEXTURE_SIZE = u_ref_textureSizeAtlasSize.xy;
-        SIZE = u_ref_sizeAndFrameScale.xy;
+        SIZE = a_sizeAndFrameScale.xy;
         FRAME_SIZE = a_sizeAndFrameScale.zw;
         REF = u_ref_refFlip.xy;
         FLIP = u_ref_refFlip.zw;

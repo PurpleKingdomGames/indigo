@@ -134,6 +134,8 @@ class LayerRenderer(
       rotation: Float,
       scaleX: Float,
       scaleY: Float,
+      width: Float,
+      height: Float,
       frameScaleX: Float,
       frameScaleY: Float,
       channelOffset0X: Float,
@@ -150,6 +152,8 @@ class LayerRenderer(
     translateScaleData((i * 4) + 2) = scaleX
     translateScaleData((i * 4) + 3) = scaleY
 
+    sizeAndFrameScaleData((i * 4) + 0) = width
+    sizeAndFrameScaleData((i * 4) + 1) = height
     sizeAndFrameScaleData((i * 4) + 2) = frameScaleX
     sizeAndFrameScaleData((i * 4) + 3) = frameScaleY
 
@@ -777,6 +781,8 @@ class LayerRenderer(
         rotation = clone.rotation.toFloat,
         scaleX = clone.scaleX.toFloat,
         scaleY = clone.scaleY.toFloat,
+        width = cropWidth.toFloat,
+        height = cropHeight.toFloat,
         frameScaleX = frameScaleX,
         frameScaleY = frameScaleY,
         channelOffset0X = channelOffset0X,
