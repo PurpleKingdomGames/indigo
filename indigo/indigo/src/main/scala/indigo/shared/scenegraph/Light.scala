@@ -20,9 +20,13 @@ final case class PointLight(
 ) extends Light {
   def moveTo(newPosition: Point): PointLight =
     this.copy(position = newPosition)
+  def moveTo(x: Int, y: Int): PointLight =
+    moveTo(Point(x, y))
 
   def moveBy(amount: Point): PointLight =
     this.copy(position = position + amount)
+  def moveBy(x: Int, y: Int): PointLight =
+    moveBy(Point(x, y))
 
   def withColor(newColor: RGBA): PointLight =
     this.copy(color = newColor)
@@ -63,9 +67,13 @@ final case class SpotLight(
 ) extends Light {
   def moveTo(newPosition: Point): SpotLight =
     this.copy(position = newPosition)
+  def moveTo(x: Int, y: Int): SpotLight =
+    moveTo(Point(x, y))
 
   def moveBy(amount: Point): SpotLight =
     this.copy(position = position + amount)
+  def moveBy(x: Int, y: Int): SpotLight =
+    moveBy(Point(x, y))
 
   def withColor(newColor: RGBA): SpotLight =
     this.copy(color = newColor)
