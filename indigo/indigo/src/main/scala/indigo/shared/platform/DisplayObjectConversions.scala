@@ -576,7 +576,7 @@ final class DisplayObjectConversions(
         }
 
       QuickCache(lineHash) {
-        zipWithCharDetails(line.text.toList, fontInfo).toJSArray.map { case (fontChar, xPosition) =>
+        zipWithCharDetails(line.text.toArray, fontInfo).map { case (fontChar, xPosition) =>
           val frameInfo =
             QuickCache(fontChar.bounds.hashCode().toString + "_" + shaderDataHash) {
               SpriteSheetFrame.calculateFrameOffset(
@@ -614,24 +614,20 @@ final class DisplayObjectConversions(
       }
     }
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  private var accCharDetails: ListBuffer[(FontChar, Int)] = new ListBuffer()
+  private var accCharDetails: scalajs.js.Array[(FontChar, Int)] = new scalajs.js.Array()
 
-  private given CanEqual[List[(Char, FontChar)], List[(Char, FontChar)]] = CanEqual.derived
-
-  private def zipWithCharDetails(charList: List[Char], fontInfo: FontInfo): scalajs.js.Array[(FontChar, Int)] = {
+  private def zipWithCharDetails(charList: Array[Char], fontInfo: FontInfo): scalajs.js.Array[(FontChar, Int)] = {
     @tailrec
-    def rec(remaining: List[(Char, FontChar)], nextX: Int): ListBuffer[(FontChar, Int)] =
-      remaining match {
-        case Nil =>
-          accCharDetails
+    def rec(remaining: scalajs.js.Array[(Char, FontChar)], nextX: Int): scalajs.js.Array[(FontChar, Int)] =
+      if remaining.isEmpty then accCharDetails
+      else
+        val x = remaining.head
+        val xs = remaining.tail
+        (x._2, nextX) +=: accCharDetails
+        rec(xs, nextX + x._2.bounds.width)
 
-        case x :: xs =>
-          (x._2, nextX) +=: accCharDetails
-          rec(xs, nextX + x._2.bounds.width)
-      }
-
-    accCharDetails = new ListBuffer()
-    rec(charList.map(c => (c, fontInfo.findByCharacter(c))), 0).toJSArray
+    accCharDetails = new scalajs.js.Array()
+    rec(charList.toJSArray.map(c => (c, fontInfo.findByCharacter(c))), 0)
   }
 
   def findAssetOffsetValues(
