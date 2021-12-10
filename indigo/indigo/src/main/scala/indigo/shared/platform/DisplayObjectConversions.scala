@@ -128,7 +128,7 @@ final class DisplayObjectConversions(
         DisplayObjectUniformData(
           uniformHash = ub.uniformHash,
           blockName = ub.blockName,
-          data = DisplayObjectConversions.packUBO(ub.uniforms)
+          data = DisplayObjectConversions.packUBO(ub.uniforms.toJSArray)
         )
       }
 
@@ -300,12 +300,12 @@ final class DisplayObjectConversions(
     val bounds             = boundsActual.toSquare
 
     val vec2Zero = Vector2.zero
-    val uniformData: List[DisplayObjectUniformData] =
-      shader.uniformBlocks.map { ub =>
+    val uniformData: scalajs.js.Array[DisplayObjectUniformData] =
+      shader.uniformBlocks.toJSArray.map { ub =>
         DisplayObjectUniformData(
           uniformHash = ub.uniformHash,
           blockName = ub.blockName,
-          data = DisplayObjectConversions.packUBO(ub.uniforms)
+          data = DisplayObjectConversions.packUBO(ub.uniforms.toJSArray)
         )
       }
 
@@ -333,7 +333,7 @@ final class DisplayObjectConversions(
       textureSize = vec2Zero,
       atlasSize = vec2Zero,
       shaderId = shader.shaderId,
-      shaderUniformData = uniformData.toJSArray
+      shaderUniformData = uniformData
     )
   }
 
@@ -368,12 +368,12 @@ final class DisplayObjectConversions(
 
     val shaderId = shader.shaderId
 
-    val uniformData: List[DisplayObjectUniformData] =
-      shader.uniformBlocks.map { ub =>
+    val uniformData: scalajs.js.Array[DisplayObjectUniformData] =
+      shader.uniformBlocks.toJSArray.map { ub =>
         DisplayObjectUniformData(
           uniformHash = ub.uniformHash,
           blockName = ub.blockName,
-          data = DisplayObjectConversions.packUBO(ub.uniforms)
+          data = DisplayObjectConversions.packUBO(ub.uniforms.toJSArray)
         )
       }
 
@@ -399,7 +399,7 @@ final class DisplayObjectConversions(
       textureSize = texture.map(_.size).getOrElse(Vector2.zero),
       atlasSize = texture.map(_.atlasSize).getOrElse(Vector2.zero),
       shaderId = shaderId,
-      shaderUniformData = uniformData.toJSArray
+      shaderUniformData = uniformData
     )
   }
 
@@ -443,12 +443,12 @@ final class DisplayObjectConversions(
 
     val shaderId = shaderData.shaderId
 
-    val uniformData: List[DisplayObjectUniformData] =
-      shaderData.uniformBlocks.map { ub =>
+    val uniformData: scalajs.js.Array[DisplayObjectUniformData] =
+      shaderData.uniformBlocks.toJSArray.map { ub =>
         DisplayObjectUniformData(
           uniformHash = ub.uniformHash,
           blockName = ub.blockName,
-          data = DisplayObjectConversions.packUBO(ub.uniforms)
+          data = DisplayObjectConversions.packUBO(ub.uniforms.toJSArray)
         )
       }
 
@@ -474,7 +474,7 @@ final class DisplayObjectConversions(
       textureSize = texture.size,
       atlasSize = texture.atlasSize,
       shaderId = shaderId,
-      shaderUniformData = uniformData.toJSArray
+      shaderUniformData = uniformData
     )
   }
 
@@ -508,12 +508,12 @@ final class DisplayObjectConversions(
 
     val shaderId = shaderData.shaderId
 
-    val uniformData: List[DisplayObjectUniformData] =
-      shaderData.uniformBlocks.map { ub =>
+    val uniformData: scalajs.js.Array[DisplayObjectUniformData] =
+      shaderData.uniformBlocks.toJSArray.map { ub =>
         DisplayObjectUniformData(
           uniformHash = ub.uniformHash,
           blockName = ub.blockName,
-          data = DisplayObjectConversions.packUBO(ub.uniforms)
+          data = DisplayObjectConversions.packUBO(ub.uniforms.toJSArray)
         )
       }
 
@@ -539,7 +539,7 @@ final class DisplayObjectConversions(
       textureSize = texture.size,
       atlasSize = texture.atlasSize,
       shaderId = shaderId,
-      shaderUniformData = uniformData.toJSArray
+      shaderUniformData = uniformData
     )
   }
 
@@ -566,12 +566,12 @@ final class DisplayObjectConversions(
 
       val shaderId = shaderData.shaderId
 
-      val uniformData: List[DisplayObjectUniformData] =
-        shaderData.uniformBlocks.map { ub =>
+      val uniformData: scalajs.js.Array[DisplayObjectUniformData] =
+        shaderData.uniformBlocks.toJSArray.map { ub =>
           DisplayObjectUniformData(
             uniformHash = ub.uniformHash,
             blockName = ub.blockName,
-            data = DisplayObjectConversions.packUBO(ub.uniforms)
+            data = DisplayObjectConversions.packUBO(ub.uniforms.toJSArray)
           )
         }
 
@@ -608,7 +608,7 @@ final class DisplayObjectConversions(
             textureSize = texture.size,
             atlasSize = texture.atlasSize,
             shaderId = shaderId,
-            shaderUniformData = uniformData.toJSArray
+            shaderUniformData = uniformData
           )
         }
       }
@@ -663,15 +663,15 @@ object DisplayObjectConversions {
     }
 
   def packUBO(
-      uniforms: List[(Uniform, ShaderPrimitive)]
+      uniforms: scalajs.js.Array[(Uniform, ShaderPrimitive)]
   )(using QuickCache[scalajs.js.Array[Float]]): scalajs.js.Array[Float] = {
     def rec(
-        remaining: List[ShaderPrimitive],
+        remaining: scalajs.js.Array[ShaderPrimitive],
         current: scalajs.js.Array[Float],
         acc: scalajs.js.Array[Float]
     ): scalajs.js.Array[Float] =
       remaining match {
-        case Nil =>
+        case us if us.isEmpty =>
           // println(s"done, expanded: ${current.toList} to ${expandTo4(current).toList}")
           // println(s"result: ${(acc ++ expandTo4(current)).toList}")
           acc ++ expandTo4(current)
@@ -680,25 +680,25 @@ object DisplayObjectConversions {
           // println(s"current full, sub-result: ${(acc ++ current).toList}")
           rec(us, empty0, acc ++ current)
 
-        case u :: us if current.isEmpty && u.isArray =>
+        case us if current.isEmpty && us.head.isArray =>
           // println(s"Found an array, current is empty, set current to: ${u.toArray.toList}")
-          rec(us, u.toJSArray, acc)
+          rec(us.tail, us.head.toJSArray, acc)
 
-        case u :: us if current.length == 1 && u.length == 2 =>
+        case us if current.length == 1 && us.head.length == 2 =>
           //println("Current value is float, must not straddle byte boundary when adding vec2")
-          rec(us, current ++ scalajs.js.Array(0.0f) ++ u.toJSArray, acc)
+          rec(us.tail, current ++ scalajs.js.Array(0.0f) ++ us.head.toJSArray, acc)
 
-        case u :: _ if current.length + u.length > 4 =>
+        case us if current.length + us.head.length > 4 =>
           // println(s"doesn't fit, expanded: ${current.toList} to ${expandTo4(current).toList},  sub-result: ${(acc ++ expandTo4(current)).toList}")
-          rec(remaining, empty0, acc ++ expandTo4(current))
+          rec(us, empty0, acc ++ expandTo4(current))
 
-        case u :: _ if u.isArray =>
+        case us if us.head.isArray =>
           // println(s"fits but next value is array, expanded: ${current.toList} to ${expandTo4(current).toList},  sub-result: ${(acc ++ expandTo4(current)).toList}")
-          rec(remaining, empty0, acc ++ current)
+          rec(us, empty0, acc ++ current)
 
-        case u :: us =>
+        case us =>
           // println(s"fits, current is now: ${(current ++ u.toArray).toList}")
-          rec(us, current ++ u.toJSArray, acc)
+          rec(us.tail, current ++ us.head.toJSArray, acc)
       }
 
     QuickCache("u" + uniforms.hashCode.toString) {
