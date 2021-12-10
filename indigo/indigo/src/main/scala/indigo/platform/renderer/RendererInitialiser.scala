@@ -19,6 +19,7 @@ import org.scalajs.dom.html
 import org.scalajs.dom.raw
 
 import scala.scalajs.js.Dynamic
+import scala.scalajs.js.JSConverters._
 
 final class RendererInitialiser(
     renderingTechnology: RenderingTechnology,
@@ -39,13 +40,13 @@ final class RendererInitialiser(
     val r =
       tech match {
         case RenderingTechnology.WebGL1 =>
-          new RendererWebGL1(config, loadedTextureAssets, cNc, globalEventStream)
+          new RendererWebGL1(config, loadedTextureAssets.toJSArray, cNc, globalEventStream)
 
         case RenderingTechnology.WebGL2 =>
-          new RendererWebGL2(config, loadedTextureAssets, cNc, globalEventStream, dynamicText)
+          new RendererWebGL2(config, loadedTextureAssets.toJSArray, cNc, globalEventStream, dynamicText)
 
         case RenderingTechnology.WebGL2WithFallback =>
-          new RendererWebGL2(config, loadedTextureAssets, cNc, globalEventStream, dynamicText)
+          new RendererWebGL2(config, loadedTextureAssets.toJSArray, cNc, globalEventStream, dynamicText)
       }
 
     r.init(shaders)

@@ -34,7 +34,7 @@ import scalajs.js.JSConverters._
 
 final class RendererWebGL1(
     config: RendererConfig,
-    loadedTextureAssets: List[LoadedTextureAsset],
+    loadedTextureAssets: scalajs.js.Array[LoadedTextureAsset],
     cNc: ContextAndCanvas,
     globalEventStream: GlobalEventStream
 ) extends Renderer {
@@ -55,7 +55,7 @@ final class RendererWebGL1(
   private val vertexBuffer: WebGLBuffer = gl.createBuffer()
   private val standardShaderProgram     = WebGLHelper.shaderProgramSetup(gl, "Pixel", indigo.shaders.WebGL1)
 
-  private val textureLocations: List[TextureLookupResult] =
+  private val textureLocations: scalajs.js.Array[TextureLookupResult] =
     gl.pixelStorei(UNPACK_PREMULTIPLY_ALPHA_WEBGL, 1);
     loadedTextureAssets.map(li => TextureLookupResult(li.name, WebGLHelper.organiseImage(gl, li.data)))
 

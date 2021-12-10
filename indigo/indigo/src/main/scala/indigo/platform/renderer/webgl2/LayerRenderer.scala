@@ -35,7 +35,7 @@ import scalajs.js.JSConverters._
 
 class LayerRenderer(
     gl2: WebGL2RenderingContext,
-    textureLocations: List[TextureLookupResult],
+    textureLocations: scalajs.js.Array[TextureLookupResult],
     maxBatchSize: Int,
     projectionUBOBuffer: => WebGLBuffer,
     frameDataUBOBuffer: => WebGLBuffer,

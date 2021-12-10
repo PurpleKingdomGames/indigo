@@ -43,7 +43,7 @@ import scala.scalajs.js.typedarray.Float32Array
 @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
 final class RendererWebGL2(
     config: RendererConfig,
-    loadedTextureAssets: List[LoadedTextureAsset],
+    loadedTextureAssets: scalajs.js.Array[LoadedTextureAsset],
     cNc: ContextAndCanvas,
     globalEventStream: GlobalEventStream,
     dynamicText: DynamicText
@@ -58,7 +58,7 @@ final class RendererWebGL2(
   private val gl2: WebGL2RenderingContext =
     gl.asInstanceOf[WebGL2RenderingContext]
 
-  private val textureLocations: List[TextureLookupResult] =
+  private val textureLocations: scalajs.js.Array[TextureLookupResult] =
     gl.pixelStorei(UNPACK_PREMULTIPLY_ALPHA_WEBGL, 1);
     loadedTextureAssets.map { li =>
       new TextureLookupResult(li.name, WebGLHelper.organiseImage(gl, li.data))
