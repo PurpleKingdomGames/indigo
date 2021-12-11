@@ -19,7 +19,7 @@ object PerfView {
         CloneBlank(cloneId, model.dude.sprite)
       )
 
-  private val herdCount: Int      = 150_000 - 1
+  private val herdCount: Int      = 210_000 - 1
   private val cloneBatchSize: Int = 2048
 
   private val positions: List[Point] =
