@@ -18,8 +18,17 @@ sealed trait QuadTree[T] derives CanEqual:
 
   def insertElements(elements: (T, Vertex)*): QuadTree[T] =
     insertElements(elements.toList)
+  @SuppressWarnings(Array("scalafix:DisableSyntax.while", "scalafix:DisableSyntax.var"))
   def insertElements(elements: List[(T, Vertex)]): QuadTree[T] =
-    elements.foldLeft(this)((acc, item) => acc.insertElement(item._1, item._2))
+    val count = elements.length
+    var i     = 0
+    var acc   = this
+    while (i < count) {
+      val item = elements(i)
+      acc = acc.insertElement(item._1, item._2)
+      i += 1
+    }
+    acc
 
   def removeElement(vertex: Vertex): QuadTree[T] =
     QuadTree.removeElement(this, vertex)
