@@ -7,6 +7,7 @@ import indigo.scenes.SceneManager
 import indigo.scenes.SceneName
 import indigo.shared.subsystems.SubSystemsRegister
 import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits._
+
 import scala.concurrent.Future
 
 /** A trait representing a game with scene management baked in

@@ -14,6 +14,7 @@ import org.scalajs.dom.AudioContext
 import org.scalajs.dom.AudioDestinationNode
 import org.scalajs.dom.GainNode
 import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits._
+
 import scala.concurrent.Future
 import scala.scalajs.js
 

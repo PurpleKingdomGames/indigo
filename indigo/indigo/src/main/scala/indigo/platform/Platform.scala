@@ -28,6 +28,7 @@ import org.scalajs.dom
 import org.scalajs.dom.Element
 import org.scalajs.dom.html.Canvas
 import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits._
+
 import scala.util.Failure
 import scala.util.Success
 
