@@ -433,7 +433,7 @@ class LayerRenderer(
 
   def drawLayer(
       cloneBlankDisplayObjects: => immutable.HashMap[CloneId, DisplayObject],
-      displayEntities: scalajs.js.Array[DisplayEntity],
+      displayEntities: => scalajs.js.Array[DisplayEntity],
       frameBufferComponents: FrameBufferComponents,
       clearColor: RGBA,
       customShaders: => mutable.HashMap[ShaderId, WebGLProgram]
@@ -457,7 +457,7 @@ class LayerRenderer(
   )
   private def renderEntities(
       cloneBlankDisplayObjects: => immutable.HashMap[CloneId, DisplayObject],
-      displayEntities: scalajs.js.Array[DisplayEntity],
+      displayEntities: => scalajs.js.Array[DisplayEntity],
       customShaders: => mutable.HashMap[ShaderId, WebGLProgram],
       baseTransform: CheapMatrix4
   ): Unit = {
