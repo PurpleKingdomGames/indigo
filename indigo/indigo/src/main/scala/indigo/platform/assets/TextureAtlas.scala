@@ -10,6 +10,7 @@ import org.scalajs.dom.html
 import org.scalajs.dom.raw
 
 import scala.annotation.tailrec
+import scala.collection.immutable.HashMap
 
 object TextureAtlas {
 
@@ -51,12 +52,12 @@ object TextureAtlas {
     textureAtlas
   }
 
-  val identity: TextureAtlas = TextureAtlas(Map.empty[AtlasId, Atlas], Map.empty[AssetName, AtlasIndex])
+  val identity: TextureAtlas = TextureAtlas(HashMap.empty[AtlasId, Atlas], HashMap.empty[AssetName, AtlasIndex])
 
 }
 
 // Output
-final case class TextureAtlas(atlases: Map[AtlasId, Atlas], legend: Map[AssetName, AtlasIndex]) derives CanEqual {
+final case class TextureAtlas(atlases: HashMap[AtlasId, Atlas], legend: HashMap[AssetName, AtlasIndex]) derives CanEqual {
   def +(other: TextureAtlas): TextureAtlas =
     TextureAtlas(
       this.atlases ++ other.atlases,
@@ -71,7 +72,7 @@ final case class TextureAtlas(atlases: Map[AtlasId, Atlas], legend: Map[AssetNam
     }
 
   def report: String = {
-    val atlasRecordToString: Map[AssetName, AtlasIndex] => ((AtlasId, Atlas)) => String = leg =>
+    val atlasRecordToString: HashMap[AssetName, AtlasIndex] => ((AtlasId, Atlas)) => String = leg =>
       at => {
         val relevant = leg.filter { (k: (AssetName, AtlasIndex)) =>
           k._2.id == at._1
@@ -221,17 +222,17 @@ object TextureAtlasFunctions {
           case n: AtlasQuadNode =>
             val textureMap = n.toTextureMap
 
-            val legend: Map[AssetName, AtlasIndex] =
-              textureMap.textureCoords.foldLeft(Map.empty[AssetName, AtlasIndex]) { (m, t) =>
+            val legend: HashMap[AssetName, AtlasIndex] =
+              textureMap.textureCoords.foldLeft(HashMap.empty[AssetName, AtlasIndex]) { (m, t) =>
                 val name = t.imageRef.name
                 val size = lookupByName(name).map(img => Point(img.data.width, img.data.height)).getOrElse(Point.zero)
-                m ++ Map(name -> new AtlasIndex(atlasId, t.coords, size))
+                m ++ HashMap(name -> new AtlasIndex(atlasId, t.coords, size))
               }
 
             val atlas = createAtlasFunc(textureMap, lookupByName)
 
             TextureAtlas(
-              atlases = Map(
+              atlases = HashMap(
                 atlasId -> atlas
               ),
               legend = legend

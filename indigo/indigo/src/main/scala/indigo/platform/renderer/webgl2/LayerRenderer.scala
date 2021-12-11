@@ -28,7 +28,8 @@ import org.scalajs.dom.raw.WebGLProgram
 import org.scalajs.dom.raw.WebGLTexture
 
 import scala.annotation.tailrec
-import scala.collection.mutable.HashMap
+import scala.collection.immutable
+import scala.collection.mutable
 import scala.scalajs.js.typedarray.Float32Array
 
 import scalajs.js.JSConverters._
@@ -45,8 +46,8 @@ class LayerRenderer(
     textTexture: WebGLTexture
 ) {
 
-  private val customDataUBOBuffers: HashMap[String, WebGLBuffer] =
-    HashMap.empty[String, WebGLBuffer]
+  private val customDataUBOBuffers: mutable.HashMap[String, WebGLBuffer] =
+    mutable.HashMap.empty[String, WebGLBuffer]
 
   // Instance Array Buffers
   private val translateScaleInstanceArray: WebGLBuffer       = gl2.createBuffer()
@@ -257,7 +258,7 @@ class LayerRenderer(
       atlasName: Option[AtlasId],
       currentShader: ShaderId,
       currentUniformHash: String,
-      customShaders: HashMap[ShaderId, WebGLProgram],
+      customShaders: mutable.HashMap[ShaderId, WebGLProgram],
       baseTransform: CheapMatrix4,
       renderMode: Int
   ): Unit = {
@@ -433,11 +434,11 @@ class LayerRenderer(
     gl2.drawArraysInstanced(TRIANGLE_STRIP, 0, 4, 1)
 
   def drawLayer(
-      cloneBlankDisplayObjects: Map[CloneId, DisplayObject],
+      cloneBlankDisplayObjects: => immutable.HashMap[CloneId, DisplayObject],
       displayEntities: scalajs.js.Array[DisplayEntity],
       frameBufferComponents: FrameBufferComponents,
       clearColor: RGBA,
-      customShaders: HashMap[ShaderId, WebGLProgram]
+      customShaders: => mutable.HashMap[ShaderId, WebGLProgram]
   ): Unit = {
 
     FrameBufferFunctions.switchToFramebuffer(gl2, frameBufferComponents.frameBuffer, clearColor, true)
@@ -457,9 +458,9 @@ class LayerRenderer(
     )
   )
   private def renderEntities(
-      cloneBlankDisplayObjects: Map[CloneId, DisplayObject],
+      cloneBlankDisplayObjects: => immutable.HashMap[CloneId, DisplayObject],
       displayEntities: scalajs.js.Array[DisplayEntity],
-      customShaders: HashMap[ShaderId, WebGLProgram],
+      customShaders: => mutable.HashMap[ShaderId, WebGLProgram],
       baseTransform: CheapMatrix4
   ): Unit = {
 

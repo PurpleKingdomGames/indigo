@@ -51,6 +51,7 @@ import indigo.shared.shader.UniformBlock
 import indigo.shared.time.GameTime
 
 import scala.annotation.tailrec
+import scala.collection.immutable.HashMap
 import scala.collection.mutable.ListBuffer
 import scala.scalajs.js.JSConverters._
 
@@ -63,7 +64,7 @@ final class DisplayObjectConversions(
   implicit private val textureRefAndOffsetCache: QuickCache[TextureRefAndOffset] = QuickCache.empty
   implicit private val vector2Cache: QuickCache[Vector2]                         = QuickCache.empty
   implicit private val frameCache: QuickCache[SpriteSheetFrameCoordinateOffsets] = QuickCache.empty
-  implicit private val listDoCache: QuickCache[scalajs.js.Array[DisplayObject]]              = QuickCache.empty
+  implicit private val listDoCache: QuickCache[scalajs.js.Array[DisplayObject]]  = QuickCache.empty
   implicit private val cloneBatchCache: QuickCache[DisplayCloneBatch]            = QuickCache.empty
   implicit private val cloneTilesCache: QuickCache[DisplayCloneTiles]            = QuickCache.empty
   implicit private val uniformsCache: QuickCache[scalajs.js.Array[Float]]        = QuickCache.empty
@@ -142,7 +143,7 @@ final class DisplayObjectConversions(
       sceneNodes: List[SceneGraphNode],
       gameTime: GameTime,
       assetMapping: AssetMapping,
-      cloneBlankDisplayObjects: Map[CloneId, DisplayObject]
+      cloneBlankDisplayObjects: => HashMap[CloneId, DisplayObject]
   ): scalajs.js.Array[DisplayEntity] =
     val f = sceneNodeToDisplayObject(gameTime, assetMapping, cloneBlankDisplayObjects)
     sceneNodes.toJSArray.map(f)
@@ -170,7 +171,7 @@ final class DisplayObjectConversions(
   def sceneNodeToDisplayObject(
       gameTime: GameTime,
       assetMapping: AssetMapping,
-      cloneBlankDisplayObjects: Map[CloneId, DisplayObject]
+      cloneBlankDisplayObjects: => HashMap[CloneId, DisplayObject]
   )(sceneNode: SceneGraphNode): DisplayEntity =
     sceneNode match {
       case x: Graphic[_] =>
@@ -621,7 +622,7 @@ final class DisplayObjectConversions(
     def rec(remaining: scalajs.js.Array[(Char, FontChar)], nextX: Int): scalajs.js.Array[(FontChar, Int)] =
       if remaining.isEmpty then accCharDetails
       else
-        val x = remaining.head
+        val x  = remaining.head
         val xs = remaining.tail
         (x._2, nextX) +=: accCharDetails
         rec(xs, nextX + x._2.bounds.width)

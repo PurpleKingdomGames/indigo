@@ -11,6 +11,8 @@ import indigo.shared.subsystems.SubSystemFrameContext
 import indigo.shared.subsystems.SubSystemFrameContext._
 import indigo.shared.subsystems.SubSystemsRegister
 
+import scala.collection.immutable.HashMap
+
 class SceneManager[StartUpData, GameModel, ViewModel](
     scenes: NonEmptyList[Scene[StartUpData, GameModel, ViewModel]],
     scenesFinder: SceneFinder
@@ -24,12 +26,14 @@ class SceneManager[StartUpData, GameModel, ViewModel](
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var finderInstance: SceneFinder = scenesFinder
 
-  private val subSystemStates: Map[SceneName, SubSystemsRegister] =
-    scenes.toList.map { s =>
-      val r = new SubSystemsRegister()
-      r.register(s.subSystems.toList)
-      (s.name -> r)
-    }.toMap
+  private val subSystemStates: HashMap[SceneName, SubSystemsRegister] =
+    HashMap.from(
+      scenes.toList.map { s =>
+        val r = new SubSystemsRegister()
+        r.register(s.subSystems.toList)
+        (s.name -> r)
+      }
+    )
 
   // Scene delegation
 

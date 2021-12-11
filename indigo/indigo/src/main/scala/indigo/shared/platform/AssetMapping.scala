@@ -2,4 +2,6 @@ package indigo.shared.platform
 
 import indigo.shared.assets.AssetName
 
-final class AssetMapping(val mappings: Map[AssetName, TextureRefAndOffset])
+import scala.collection.immutable.HashMap
+
+final class AssetMapping(val mappings: HashMap[AssetName, TextureRefAndOffset])

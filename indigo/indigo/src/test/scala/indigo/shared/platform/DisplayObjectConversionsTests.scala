@@ -30,6 +30,8 @@ import indigo.shared.shader.Uniform
 import indigo.shared.time.GameTime
 import indigo.shared.time.Seconds
 
+import scala.collection.immutable.HashMap
+
 import scalajs.js.JSConverters._
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
@@ -42,9 +44,9 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
   val fontRegister      = new FontRegister
   val boundaryLocator   = new BoundaryLocator(animationRegister, fontRegister, new DynamicText)
   val texture = new TextureRefAndOffset(AtlasId("texture"), Vector2(100, 100), Vector2.zero, Vector2(200, 100))
-  val assetMapping: AssetMapping = new AssetMapping(Map(AssetName("texture") -> texture))
+  val assetMapping: AssetMapping = new AssetMapping(HashMap(AssetName("texture") -> texture))
 
-  val cloneBlankMapping: Map[CloneId, DisplayObject] = Map.empty[CloneId, DisplayObject]
+  val cloneBlankMapping: HashMap[CloneId, DisplayObject] = HashMap.empty[CloneId, DisplayObject]
 
   implicit val cache: QuickCache[scalajs.js.Array[Float]] = QuickCache.empty
 

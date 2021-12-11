@@ -29,6 +29,7 @@ import indigo.shared.scenegraph.SpotLight
 import indigo.shared.scenegraph.Sprite
 import indigo.shared.time.GameTime
 
+import scala.collection.immutable.HashMap
 import scala.scalajs.js.JSConverters._
 
 final class SceneProcessor(
@@ -88,8 +89,8 @@ final class SceneProcessor(
         case _ =>
           None
 
-    val cloneBlankDisplayObjects =
-      scene.cloneBlanks.foldLeft(Map.empty[CloneId, DisplayObject]) { (acc, blank) =>
+    val cloneBlankDisplayObjects: HashMap[CloneId, DisplayObject] =
+      scene.cloneBlanks.foldLeft(HashMap.empty[CloneId, DisplayObject]) { (acc, blank) =>
         val maybeDO =
           if blank.isStatic then
             QuickCache(blank.id.toString) {
@@ -152,10 +153,12 @@ object SceneProcessor {
       scalajs.js.Array[Float]()
     )
 
-  private val missingLightData: Map[Int, List[LightData]] =
-    (0 to 8).map { i =>
-      (i -> List.fill(i)(LightData.empty))
-    }.toMap
+  private val missingLightData: HashMap[Int, List[LightData]] =
+    HashMap.from(
+      (0 to 8).map { i =>
+        (i -> List.fill(i)(LightData.empty))
+      }
+    )
 
   def makeLightsData(lights: List[Light]): scalajs.js.Array[Float] = {
     val limitedLights = lights.take(MaxLights)
