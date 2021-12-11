@@ -11,7 +11,7 @@ import $ivy.`io.indigoengine::mill-indigo:0.10.1-SNAPSHOT`, millindigo._
 
 object snake extends ScalaJSModule with MillIndigo {
   def scalaVersion   = "3.1.0"
-  def scalaJSVersion = "1.7.1"
+  def scalaJSVersion = "1.8.0"
 
   val gameAssetsDirectory: os.Path = os.pwd / "assets"
   val showCursor: Boolean          = true
@@ -55,8 +55,6 @@ object snake extends ScalaJSModule with MillIndigo {
     override def moduleKind = T(mill.scalajslib.api.ModuleKind.CommonJSModule)
 
     def scalacOptions = super.scalacOptions() ++ ScalacOptions.test
-
-    override def jsEnvConfig = T { JsEnvConfig.NodeJs(args = List("--dns-result-order=ipv4first")) }
   }
 
 }

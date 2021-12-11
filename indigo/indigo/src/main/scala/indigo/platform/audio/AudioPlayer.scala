@@ -13,7 +13,7 @@ import org.scalajs.dom.AudioBufferSourceNode
 import org.scalajs.dom.AudioContext
 import org.scalajs.dom.AudioDestinationNode
 import org.scalajs.dom.GainNode
-
+import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits._
 import scala.concurrent.Future
 import scala.scalajs.js
 
@@ -71,7 +71,6 @@ object AudioContextProxy {
     Array("scalafix:DisableSyntax.null", "scalafix:DisableSyntax.throw")
   )
   final case class WebKitAudioContext(context: js.Dynamic) extends AudioContextProxy {
-    import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
     import scalajs.js.JSConverters._
 
     def createBufferSource(): AudioBufferSourceNode =

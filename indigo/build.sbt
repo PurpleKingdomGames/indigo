@@ -9,7 +9,7 @@ ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports"
 lazy val indigoVersion = IndigoVersion.getVersion
 // For the docs site
 lazy val indigoDocsVersion  = "0.10.0"
-lazy val scalaJsDocsVersion = "1.7.1"
+lazy val scalaJsDocsVersion = "1.8.0"
 lazy val scalaDocsVersion   = "3.1.0"
 //
 
@@ -130,8 +130,9 @@ lazy val indigo =
     .settings(
       name := "indigo",
       libraryDependencies ++= Seq(
-        "org.scalacheck" %%% "scalacheck"  % "1.15.3" % "test",
-        "org.scala-js"   %%% "scalajs-dom" % "2.0.0"
+        "org.scalacheck" %%% "scalacheck"                  % "1.15.3" % "test",
+        "org.scala-js"   %%% "scalajs-dom"                 % "2.0.0",
+        "org.scala-js"   %%% "scala-js-macrotask-executor" % "1.0.0"
       )
     )
     .settings(

@@ -13,10 +13,9 @@ import org.scalajs.dom._
 import org.scalajs.dom.ext.Ajax
 import org.scalajs.dom.html
 import org.scalajs.dom.raw.HTMLImageElement
-
+import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits._
 import scala.concurrent.Future
 import scala.concurrent.Promise
-import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scala.scalajs.js
 import scala.scalajs.js.typedarray.ArrayBuffer
 import scala.util.Failure
