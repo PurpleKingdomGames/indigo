@@ -32,8 +32,6 @@ import indigo.shared.time.Seconds
 
 import scala.collection.immutable.HashMap
 
-import scalajs.js.JSConverters._
-
 @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
 class DisplayObjectConversionsTests extends munit.FunSuite {
 
@@ -146,17 +144,17 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
         Uniform("f") -> float(13)
       )
 
-    val expected: scalajs.js.Array[Float] =
+    val expected: Array[Float] =
       Array[Array[Float]](
         Array[Float](1, 2, 0, 0),
         Array[Float](3, 4, 5, 0),
         Array[Float](6, 0, 0, 0),
         Array[Float](7, 8, 0, 0, 9, 10, 0, 0, 11, 12, 0, 0, 0, 0, 0, 0),
         Array[Float](13, 0, 0, 0)
-      ).flatten.toJSArray
+      ).flatten
 
     val actual: scalajs.js.Array[Float] =
-      DisplayObjectConversions.packUBO(uniforms.toJSArray)
+      DisplayObjectConversions.packUBO(uniforms)
 
     assertEquals(actual.toList, expected.toList)
 
@@ -180,7 +178,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
         .flatten
 
     val actual: scalajs.js.Array[Float] =
-      DisplayObjectConversions.packUBO(uniforms.toJSArray)
+      DisplayObjectConversions.packUBO(uniforms)
 
     assertEquals(actual.toList, expected.toList)
 
@@ -209,14 +207,14 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
       ).flatten
 
     assertEquals(
-      DisplayObjectConversions.packUBO(uniforms.toJSArray).toList,
+      DisplayObjectConversions.packUBO(uniforms).toList,
       expected.toList
     )
 
     // Exact 3 array.
     assertEquals(
       DisplayObjectConversions
-        .packUBO((uniforms :+ Uniform("VERTICES") -> array(3)(vec2(6.0), vec2(7.0), vec2(8.0))).toJSArray)
+        .packUBO((uniforms :+ Uniform("VERTICES") -> array(3)(vec2(6.0), vec2(7.0), vec2(8.0))))
         .toList,
       expected.toList ++ List[Float](6, 6, 0, 0, 7, 7, 0, 0, 8, 8, 0, 0)
     )
@@ -224,7 +222,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
     // 4 array padded.
     assertEquals(
       DisplayObjectConversions
-        .packUBO((uniforms :+ Uniform("VERTICES") -> array(4)(vec2(6.0), vec2(7.0), vec2(8.0))).toJSArray)
+        .packUBO((uniforms :+ Uniform("VERTICES") -> array(4)(vec2(6.0), vec2(7.0), vec2(8.0))))
         .toList,
       expected.toList ++ List[Float](6, 6, 0, 0, 7, 7, 0, 0, 8, 8, 0, 0) ++ List[Float](0, 0, 0, 0)
     )
@@ -232,7 +230,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
     // 5 array padded.
     assertEquals(
       DisplayObjectConversions
-        .packUBO((uniforms :+ Uniform("VERTICES") -> array(5)(vec2(6.0), vec2(7.0), vec2(8.0))).toJSArray)
+        .packUBO((uniforms :+ Uniform("VERTICES") -> array(5)(vec2(6.0), vec2(7.0), vec2(8.0))))
         .toList,
       expected.toList ++ List[Float](6, 6, 0, 0, 7, 7, 0, 0, 8, 8, 0, 0) ++ List[Float](0, 0, 0, 0) ++ List[Float](
         0,
@@ -245,7 +243,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
     // 6 array padded.
     assertEquals(
       DisplayObjectConversions
-        .packUBO((uniforms :+ Uniform("VERTICES") -> array(6)(vec2(6.0), vec2(7.0), vec2(8.0))).toJSArray)
+        .packUBO((uniforms :+ Uniform("VERTICES") -> array(6)(vec2(6.0), vec2(7.0), vec2(8.0))))
         .toList,
       expected.toList ++ List[Float](6, 6, 0, 0, 7, 7, 0, 0, 8, 8, 0, 0) ++ List[Float](0, 0, 0, 0) ++ List[Float](
         0,
@@ -258,7 +256,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
     // 7 array padded.
     assertEquals(
       DisplayObjectConversions
-        .packUBO((uniforms :+ Uniform("VERTICES") -> array(7)(vec2(6.0), vec2(7.0), vec2(8.0))).toJSArray)
+        .packUBO((uniforms :+ Uniform("VERTICES") -> array(7)(vec2(6.0), vec2(7.0), vec2(8.0))))
         .toList,
       expected.toList ++ List[Float](6, 6, 0, 0, 7, 7, 0, 0, 8, 8, 0, 0) ++ List[Float](0, 0, 0, 0) ++ List[Float](
         0,
@@ -271,7 +269,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
     // 8 array padded.
     assertEquals(
       DisplayObjectConversions
-        .packUBO((uniforms :+ Uniform("VERTICES") -> array(8)(vec2(6.0), vec2(7.0), vec2(8.0))).toJSArray)
+        .packUBO((uniforms :+ Uniform("VERTICES") -> array(8)(vec2(6.0), vec2(7.0), vec2(8.0))))
         .toList,
       expected.toList ++ List[Float](6, 6, 0, 0, 7, 7, 0, 0, 8, 8, 0, 0) ++ List[Float](0, 0, 0, 0) ++
         List[Float](0, 0, 0, 0) ++ List[Float](0, 0, 0, 0) ++ List[Float](0, 0, 0, 0) ++
@@ -281,7 +279,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
     // 16 array padded.
     assertEquals(
       DisplayObjectConversions
-        .packUBO((uniforms :+ Uniform("VERTICES") -> array(16)(vec2(6.0), vec2(7.0), vec2(8.0))).toJSArray)
+        .packUBO((uniforms :+ Uniform("VERTICES") -> array(16)(vec2(6.0), vec2(7.0), vec2(8.0))))
         .toList,
       expected.toList ++ List[Float](6, 6, 0, 0, 7, 7, 0, 0, 8, 8, 0, 0) ++
         List[Float](0, 0, 0, 0) ++
@@ -314,7 +312,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
       Array(0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f)
 
     assertEquals(
-      DisplayObjectConversions.packUBO(uniforms.toJSArray).toList,
+      DisplayObjectConversions.packUBO(uniforms).toList,
       expected.toList
     )
 

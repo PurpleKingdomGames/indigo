@@ -292,7 +292,7 @@ object SceneProcessor {
       DisplayObjectUniformData(
         uniformHash = ub.uniformHash,
         blockName = ub.blockName,
-        data = DisplayObjectConversions.packUBO(ub.uniforms.toJSArray)
+        data = DisplayObjectConversions.packUBO(ub.uniforms)
       )
     }
 }

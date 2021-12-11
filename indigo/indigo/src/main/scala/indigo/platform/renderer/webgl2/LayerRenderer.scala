@@ -32,8 +32,6 @@ import scala.collection.immutable
 import scala.collection.mutable
 import scala.scalajs.js.typedarray.Float32Array
 
-import scalajs.js.JSConverters._
-
 class LayerRenderer(
     gl2: WebGL2RenderingContext,
     textureLocations: scalajs.js.Array[TextureLookupResult],
@@ -205,12 +203,12 @@ class LayerRenderer(
     textureSizeAtlasSizeData((i * 4) + 3) = 0
   }
 
+  private val refData: scalajs.js.Array[Float] =
+    scalajs.js.Array(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+      0.0f, 0.0f, 0.0f, 0.0f)
+
   def init(): LayerRenderer =
-
     // pre-populate array
-    val refData: scalajs.js.Array[Float] =
-      List.fill(20)(0.0f).toArray.toJSArray
-
     WebGLHelper.attachUBOData(gl2, refData, cloneReferenceUBOBuffer)
 
     this
@@ -240,7 +238,7 @@ class LayerRenderer(
       gl2.uniformMatrix4fv(
         location = gl2.getUniformLocation(currentProgram, "u_baseTransform"),
         transpose = false,
-        value = Float32Array(baseTransform.toArray.toJSArray)
+        value = Float32Array(baseTransform.toArray)
       )
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))

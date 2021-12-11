@@ -129,7 +129,7 @@ final class DisplayObjectConversions(
         DisplayObjectUniformData(
           uniformHash = ub.uniformHash,
           blockName = ub.blockName,
-          data = DisplayObjectConversions.packUBO(ub.uniforms.toJSArray)
+          data = DisplayObjectConversions.packUBO(ub.uniforms)
         )
       }
 
@@ -306,7 +306,7 @@ final class DisplayObjectConversions(
         DisplayObjectUniformData(
           uniformHash = ub.uniformHash,
           blockName = ub.blockName,
-          data = DisplayObjectConversions.packUBO(ub.uniforms.toJSArray)
+          data = DisplayObjectConversions.packUBO(ub.uniforms)
         )
       }
 
@@ -374,7 +374,7 @@ final class DisplayObjectConversions(
         DisplayObjectUniformData(
           uniformHash = ub.uniformHash,
           blockName = ub.blockName,
-          data = DisplayObjectConversions.packUBO(ub.uniforms.toJSArray)
+          data = DisplayObjectConversions.packUBO(ub.uniforms)
         )
       }
 
@@ -449,7 +449,7 @@ final class DisplayObjectConversions(
         DisplayObjectUniformData(
           uniformHash = ub.uniformHash,
           blockName = ub.blockName,
-          data = DisplayObjectConversions.packUBO(ub.uniforms.toJSArray)
+          data = DisplayObjectConversions.packUBO(ub.uniforms)
         )
       }
 
@@ -514,7 +514,7 @@ final class DisplayObjectConversions(
         DisplayObjectUniformData(
           uniformHash = ub.uniformHash,
           blockName = ub.blockName,
-          data = DisplayObjectConversions.packUBO(ub.uniforms.toJSArray)
+          data = DisplayObjectConversions.packUBO(ub.uniforms)
         )
       }
 
@@ -572,7 +572,7 @@ final class DisplayObjectConversions(
           DisplayObjectUniformData(
             uniformHash = ub.uniformHash,
             blockName = ub.blockName,
-            data = DisplayObjectConversions.packUBO(ub.uniforms.toJSArray)
+            data = DisplayObjectConversions.packUBO(ub.uniforms)
           )
         }
 
@@ -663,8 +663,9 @@ object DisplayObjectConversions {
       case _ => arr
     }
 
+  // takes a list because only converted to JSArray if value not cached.
   def packUBO(
-      uniforms: scalajs.js.Array[(Uniform, ShaderPrimitive)]
+      uniforms: List[(Uniform, ShaderPrimitive)]
   )(using QuickCache[scalajs.js.Array[Float]]): scalajs.js.Array[Float] = {
     def rec(
         remaining: scalajs.js.Array[ShaderPrimitive],
@@ -703,7 +704,7 @@ object DisplayObjectConversions {
       }
 
     QuickCache("u" + uniforms.hashCode.toString) {
-      rec(uniforms.map(_._2), empty0, empty0)
+      rec(uniforms.toJSArray.map(_._2), empty0, empty0)
     }
   }
 

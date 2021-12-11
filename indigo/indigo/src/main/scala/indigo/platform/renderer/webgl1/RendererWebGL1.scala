@@ -30,8 +30,6 @@ import org.scalajs.dom.raw.WebGLUniformLocation
 
 import scala.scalajs.js.typedarray.Float32Array
 
-import scalajs.js.JSConverters._
-
 final class RendererWebGL1(
     config: RendererConfig,
     loadedTextureAssets: scalajs.js.Array[LoadedTextureAsset],
@@ -96,7 +94,7 @@ final class RendererWebGL1(
     gl.clearColor(config.clearColor.r, config.clearColor.g, config.clearColor.b, config.clearColor.a)
     gl.clear(COLOR_BUFFER_BIT)
 
-    val gameProjection: scala.scalajs.js.Array[Double] = orthographicProjectionMatrix.toArray.map(_.toDouble).toJSArray
+    val gameProjection: scala.scalajs.js.Array[Double] = orthographicProjectionMatrix.toArray.map(_.toDouble)
 
     sceneData.layers.foreach { layer =>
       val maybeCamera: Option[Camera] =
@@ -122,7 +120,6 @@ final class RendererWebGL1(
               )
               .toArray
               .map(_.toDouble)
-              .toJSArray
 
           case (None, Some(c)) =>
             CameraHelper
@@ -139,7 +136,6 @@ final class RendererWebGL1(
               )
               .toArray
               .map(_.toDouble)
-              .toJSArray
 
           case (Some(m), Some(c)) =>
             CameraHelper
@@ -156,7 +152,6 @@ final class RendererWebGL1(
               )
               .toArray
               .map(_.toDouble)
-              .toJSArray
         }
 
       drawLayer(layer.entities, standardShaderProgram, projection)
@@ -184,7 +179,7 @@ final class RendererWebGL1(
     gl.uniformMatrix4fv(
       location = gl.getUniformLocation(shaderProgram, "u_baseTransform"),
       transpose = false,
-      value = Float32Array(baseTransform.toArray.toJSArray)
+      value = Float32Array(baseTransform.toArray)
     )
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
