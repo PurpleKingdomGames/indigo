@@ -13,5 +13,7 @@ object Main:
     BenchmarkGUI.renderMenu(body)(
       Caching.suite,
       Collisions.suite,
-      QuadTreeBenchmarks.suite
+      QuadTreeBenchmarks.suite,
+      BoundaryLocatorBenchmarks.suite,
+      SimpleComparisons.suite
     )

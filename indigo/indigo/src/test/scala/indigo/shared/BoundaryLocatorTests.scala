@@ -44,6 +44,22 @@ class BoundaryLocatorTests extends munit.FunSuite {
     assertEquals(actual(1).lineBounds, Rectangle(0, 20, 16, 16))
   }
 
+  test("Text boundary calculations.textAllLineBounds with bounds.empty") {
+    val actual = boundaryLocator.textAllLineBounds("", fontKey)
+    assertEquals(actual.length, 0)
+  }
+  test("Text boundary calculations.textAllLineBounds with bounds.abc") {
+    val actual = boundaryLocator.textAllLineBounds("abc", fontKey)
+    assertEquals(actual.length, 1)
+    assertEquals(actual.headOption.get, Rectangle(0, 0, 42, 20))
+  }
+  test("Text boundary calculations.textAllLineBounds with bounds.ab->c") {
+    val actual = boundaryLocator.textAllLineBounds("ab\nc", fontKey)
+    assertEquals(actual.length, 2)
+    assertEquals(actual(0), Rectangle(0, 0, 26, 20))
+    assertEquals(actual(1), Rectangle(0, 20, 16, 16))
+  }
+
   // These should be identical, regardless of alignment.
   // The lines move around within the same bounding area.
   test("Text boundary calculations.Text bounds.unaligned.empty") {
