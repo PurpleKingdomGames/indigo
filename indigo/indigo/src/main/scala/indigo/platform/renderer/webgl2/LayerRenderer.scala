@@ -16,6 +16,7 @@ import indigo.shared.display.DisplayGroup
 import indigo.shared.display.DisplayMutants
 import indigo.shared.display.DisplayObject
 import indigo.shared.display.DisplayText
+import indigo.shared.display.DisplayTextLetters
 import indigo.shared.scenegraph.CloneBatchData
 import indigo.shared.scenegraph.CloneId
 import indigo.shared.scenegraph.CloneTileData
@@ -487,6 +488,15 @@ class LayerRenderer(
         batchCount = 0
       else
         sortedEntities(i) match {
+          case d: DisplayTextLetters if d.letters.isEmpty =>
+            i += 1
+
+          case d: DisplayTextLetters =>
+            drawBuffer(batchCount)
+            batchCount = 0
+            renderEntities(cloneBlankDisplayObjects, d.letters, customShaders, baseTransform)
+            i += 1
+
           case d: DisplayGroup if d.entities.isEmpty =>
             i += 1
 

@@ -23,6 +23,12 @@ object DisplayGroup:
   val empty: DisplayGroup =
     DisplayGroup(CheapMatrix4.identity, 0.0d, scalajs.js.Array())
 
+final case class DisplayTextLetters(letters: scalajs.js.Array[DisplayEntity]) extends DisplayEntity derives CanEqual:
+  val z: Double = 0.0d // Not used
+object DisplayTextLetters:
+  val empty: DisplayTextLetters =
+    DisplayTextLetters(scalajs.js.Array())
+
 final case class DisplayCloneBatch(
     id: CloneId,
     z: Double,
@@ -140,7 +146,8 @@ object DisplayObject:
       shaderUniformData
     )
 
-final case class DisplayObjectUniformData(uniformHash: String, blockName: String, data: scalajs.js.Array[Float]) derives CanEqual
+final case class DisplayObjectUniformData(uniformHash: String, blockName: String, data: scalajs.js.Array[Float])
+    derives CanEqual
 
 final case class DisplayText(
     text: String,

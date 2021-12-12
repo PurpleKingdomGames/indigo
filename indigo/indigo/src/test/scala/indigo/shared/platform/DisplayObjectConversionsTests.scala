@@ -20,6 +20,7 @@ import indigo.shared.display.DisplayGroup
 import indigo.shared.display.DisplayMutants
 import indigo.shared.display.DisplayObject
 import indigo.shared.display.DisplayText
+import indigo.shared.display.DisplayTextLetters
 import indigo.shared.materials.Material
 import indigo.shared.scenegraph.CloneId
 import indigo.shared.scenegraph.Graphic
@@ -77,6 +78,9 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
       case _: DisplayText =>
         throw new Exception("failed (DisplayText)")
 
+      case _: DisplayTextLetters =>
+        throw new Exception("failed (DisplayTextLetters)")
+
       case _: DisplayGroup =>
         throw new Exception("failed (DisplayGroup)")
 
@@ -107,6 +111,9 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
 
       case _: DisplayText =>
         throw new Exception("failed (DisplayText)")
+
+      case _: DisplayTextLetters =>
+        throw new Exception("failed (DisplayTextLetters)")
 
       case _: DisplayObject =>
         throw new Exception("failed (DisplayObject)")

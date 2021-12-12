@@ -25,6 +25,7 @@ import indigo.shared.display.DisplayMutants
 import indigo.shared.display.DisplayObject
 import indigo.shared.display.DisplayObjectUniformData
 import indigo.shared.display.DisplayText
+import indigo.shared.display.DisplayTextLetters
 import indigo.shared.display.SpriteSheetFrame
 import indigo.shared.display.SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets
 import indigo.shared.materials.ShaderData
@@ -263,7 +264,7 @@ final class DisplayObjectConversions(
             }
             ._2
 
-        DisplayGroup(CheapMatrix4.identity, x.depth.toDouble, letters)
+        DisplayTextLetters(letters)
 
       case _: RenderNode =>
         DisplayGroup.empty
