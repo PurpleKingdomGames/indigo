@@ -14,7 +14,9 @@ object SandboxView {
 
     SceneUpdateFragment.empty
       .addLayer(
-        Layer(gameLayer(model, viewModel))
+        Layer(
+          gameLayer(model, viewModel) ++ uiLayer(inputState)
+        )
           .withDepth(Depth(300))
         // .withBlend(Blend.Alpha)
       )
@@ -91,9 +93,9 @@ object SandboxView {
 
   def uiLayer(inputState: InputState): List[SceneNode] =
     List(
-      Text("AB!\n!C", 2, 2, 5, Fonts.fontKey, SandboxAssets.fontMaterial).alignLeft,
-      Text("AB!\n!C", 100, 2, 5, Fonts.fontKey, SandboxAssets.fontMaterial).alignCenter,
-      Text("AB!\n!C", 200, 2, 5, Fonts.fontKey, SandboxAssets.fontMaterial).alignRight.onEvent {
+      Text("AB!\n!C", 2, 2, 5, Fonts.fontKey, SandboxAssets.fontMaterial.withAlpha(0.5)).alignLeft,
+      Text("AB!\n!C", 100, 2, 5, Fonts.fontKey, SandboxAssets.fontMaterial.withAlpha(0.5)).alignCenter,
+      Text("AB!\n!C", 200, 2, 5, Fonts.fontKey, SandboxAssets.fontMaterial.withAlpha(0.5)).alignRight.onEvent {
         case (bounds, MouseEvent.Click(_)) =>
           if (inputState.mouse.wasMouseClickedWithin(bounds))
             println("Hit me!")
