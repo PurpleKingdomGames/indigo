@@ -13,6 +13,7 @@ import indigo.platform.renderer.shared.TextureLookupResult
 import indigo.platform.renderer.shared.WebGLHelper
 import indigo.shared.QuickCache
 import indigo.shared.config.GameViewport
+import indigo.shared.config.RenderingTechnology
 import indigo.shared.datatypes.RGBA
 import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.mutable.CheapMatrix4
@@ -48,6 +49,8 @@ final class RendererWebGL2(
     globalEventStream: GlobalEventStream,
     dynamicText: DynamicText
 ) extends Renderer {
+
+  val renderingTechnology: RenderingTechnology = RenderingTechnology.WebGL2
 
   implicit private val projectionsCache: QuickCache[scalajs.js.Array[Float]] = QuickCache.empty
 

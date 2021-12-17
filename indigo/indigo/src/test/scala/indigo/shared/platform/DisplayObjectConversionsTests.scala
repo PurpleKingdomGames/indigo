@@ -7,6 +7,7 @@ import indigo.shared.BoundaryLocator
 import indigo.shared.FontRegister
 import indigo.shared.QuickCache
 import indigo.shared.assets.AssetName
+import indigo.shared.config.RenderingTechnology
 import indigo.shared.datatypes.Depth
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Radians
@@ -63,8 +64,10 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
         List(node),
         GameTime.is(Seconds(1)),
         assetMapping,
-        cloneBlankMapping
+        cloneBlankMapping,
+        RenderingTechnology.WebGL2
       )
+      ._1
       .head match {
       case _: DisplayCloneBatch =>
         throw new Exception("failed (DisplayCloneBatch)")
@@ -97,8 +100,10 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
         List(node),
         GameTime.is(Seconds(1)),
         assetMapping,
-        cloneBlankMapping
+        cloneBlankMapping,
+        RenderingTechnology.WebGL2
       )
+      ._1
       .head match {
       case _: DisplayCloneBatch =>
         throw new Exception("failed (DisplayCloneBatch)")

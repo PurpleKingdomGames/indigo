@@ -8,6 +8,7 @@ import indigo.shared.IndigoLogger
 import indigo.shared.QuickCache
 import indigo.shared.animation.AnimationRef
 import indigo.shared.assets.AssetName
+import indigo.shared.config.RenderingTechnology
 import indigo.shared.datatypes.FontChar
 import indigo.shared.datatypes.FontInfo
 import indigo.shared.datatypes.Point
@@ -32,6 +33,7 @@ import indigo.shared.materials.ShaderData
 import indigo.shared.platform.AssetMapping
 import indigo.shared.scenegraph.CloneBatch
 import indigo.shared.scenegraph.CloneId
+import indigo.shared.scenegraph.CloneTileData
 import indigo.shared.scenegraph.CloneTiles
 import indigo.shared.scenegraph.DependentNode
 import indigo.shared.scenegraph.EntityNode
@@ -50,6 +52,7 @@ import indigo.shared.shader.ShaderPrimitive
 import indigo.shared.shader.Uniform
 import indigo.shared.shader.UniformBlock
 import indigo.shared.time.GameTime
+import org.w3c.dom.css.Rect
 
 import scala.annotation.tailrec
 import scala.collection.immutable.HashMap
@@ -65,7 +68,7 @@ final class DisplayObjectConversions(
   implicit private val textureRefAndOffsetCache: QuickCache[TextureRefAndOffset] = QuickCache.empty
   implicit private val vector2Cache: QuickCache[Vector2]                         = QuickCache.empty
   implicit private val frameCache: QuickCache[SpriteSheetFrameCoordinateOffsets] = QuickCache.empty
-  implicit private val listDoCache: QuickCache[scalajs.js.Array[DisplayObject]]  = QuickCache.empty
+  implicit private val listDoCache: QuickCache[scalajs.js.Array[DisplayEntity]]  = QuickCache.empty
   implicit private val cloneBatchCache: QuickCache[DisplayCloneBatch]            = QuickCache.empty
   implicit private val cloneTilesCache: QuickCache[DisplayCloneTiles]            = QuickCache.empty
   implicit private val uniformsCache: QuickCache[scalajs.js.Array[Float]]        = QuickCache.empty
@@ -144,10 +147,12 @@ final class DisplayObjectConversions(
       sceneNodes: List[SceneGraphNode],
       gameTime: GameTime,
       assetMapping: AssetMapping,
-      cloneBlankDisplayObjects: => HashMap[CloneId, DisplayObject]
-  ): scalajs.js.Array[DisplayEntity] =
-    val f = sceneNodeToDisplayObject(gameTime, assetMapping, cloneBlankDisplayObjects)
-    sceneNodes.toJSArray.map(f)
+      cloneBlankDisplayObjects: => HashMap[CloneId, DisplayObject],
+      renderingTechnology: RenderingTechnology
+  ): (scalajs.js.Array[DisplayEntity], scalajs.js.Array[(CloneId, DisplayObject)]) =
+    val f = sceneNodeToDisplayObject(gameTime, assetMapping, cloneBlankDisplayObjects, renderingTechnology)
+    val l = sceneNodes.toJSArray.map(f)
+    (l.map(_._1), l.foldLeft(scalajs.js.Array[(CloneId, DisplayObject)]())(_ ++ _._2))
 
   private def groupToMatrix(group: Group): CheapMatrix4 =
     CheapMatrix4.identity
@@ -172,66 +177,85 @@ final class DisplayObjectConversions(
   def sceneNodeToDisplayObject(
       gameTime: GameTime,
       assetMapping: AssetMapping,
-      cloneBlankDisplayObjects: => HashMap[CloneId, DisplayObject]
-  )(sceneNode: SceneGraphNode): DisplayEntity =
+      cloneBlankDisplayObjects: => HashMap[CloneId, DisplayObject],
+      renderingTechnology: RenderingTechnology
+  )(sceneNode: SceneGraphNode): (DisplayEntity, scalajs.js.Array[(CloneId, DisplayObject)]) =
+    val noClones = scalajs.js.Array[(CloneId, DisplayObject)]()
     sceneNode match {
       case x: Graphic[_] =>
-        graphicToDisplayObject(x, assetMapping)
+        (graphicToDisplayObject(x, assetMapping), noClones)
 
       case s: Shape =>
-        shapeToDisplayObject(s)
+        (shapeToDisplayObject(s), noClones)
 
       case t: TextBox =>
-        textBoxToDisplayText(t)
+        (textBoxToDisplayText(t), noClones)
 
       case s: EntityNode =>
-        sceneEntityToDisplayObject(s, assetMapping)
+        (sceneEntityToDisplayObject(s, assetMapping), noClones)
 
       case c: CloneBatch =>
-        cloneBlankDisplayObjects.get(c.id) match {
-          case None =>
-            DisplayGroup.empty
+        (
+          cloneBlankDisplayObjects.get(c.id) match {
+            case None =>
+              DisplayGroup.empty
 
-          case Some(_) =>
-            cloneBatchDataToDisplayEntities(c)
-        }
+            case Some(_) =>
+              cloneBatchDataToDisplayEntities(c)
+          },
+          noClones
+        )
 
       case c: CloneTiles =>
-        cloneBlankDisplayObjects.get(c.id) match {
-          case None =>
-            DisplayGroup.empty
+        (
+          cloneBlankDisplayObjects.get(c.id) match {
+            case None =>
+              DisplayGroup.empty
 
-          case Some(_) =>
-            cloneTilesDataToDisplayEntities(c)
-        }
+            case Some(_) =>
+              cloneTilesDataToDisplayEntities(c)
+          },
+          noClones
+        )
 
       case c: Mutants =>
-        cloneBlankDisplayObjects.get(c.id) match {
-          case None =>
-            DisplayGroup.empty
+        (
+          cloneBlankDisplayObjects.get(c.id) match {
+            case None =>
+              DisplayGroup.empty
 
-          case Some(_) =>
-            mutantsToDisplayEntities(c)
-        }
+            case Some(_) =>
+              mutantsToDisplayEntities(c)
+          },
+          noClones
+        )
 
       case g: Group =>
-        DisplayGroup(
-          groupToMatrix(g),
-          g.depth.toDouble,
-          sceneNodesToDisplayObjects(g.children, gameTime, assetMapping, cloneBlankDisplayObjects)
+        val children =
+          sceneNodesToDisplayObjects(g.children, gameTime, assetMapping, cloneBlankDisplayObjects, renderingTechnology)
+        (
+          DisplayGroup(
+            groupToMatrix(g),
+            g.depth.toDouble,
+            children._1
+          ),
+          children._2
         )
 
       case x: Sprite[_] =>
-        animationsRegister.fetchAnimationForSprite(gameTime, x.bindingKey, x.animationKey, x.animationActions) match {
-          case None =>
-            IndigoLogger.errorOnce(s"Cannot render Sprite, missing Animations with key: ${x.animationKey.toString()}")
-            DisplayGroup.empty
+        (
+          animationsRegister.fetchAnimationForSprite(gameTime, x.bindingKey, x.animationKey, x.animationActions) match {
+            case None =>
+              IndigoLogger.errorOnce(s"Cannot render Sprite, missing Animations with key: ${x.animationKey.toString()}")
+              DisplayGroup.empty
 
-          case Some(anim) =>
-            spriteToDisplayObject(boundaryLocator, x, assetMapping, anim)
-        }
+            case Some(anim) =>
+              spriteToDisplayObject(boundaryLocator, x, assetMapping, anim)
+          },
+          noClones
+        )
 
-      case x: Text[_] =>
+      case x: Text[_] if renderingTechnology.isWebGL1 =>
         val alignmentOffsetX: Rectangle => Int = lineBounds =>
           x.alignment match {
             case TextAlignment.Left => 0
@@ -241,7 +265,7 @@ final class DisplayObjectConversions(
             case TextAlignment.Right => -lineBounds.size.width
           }
 
-        val converterFunc: (TextLine, Int, Int) => scalajs.js.Array[DisplayObject] =
+        val converterFunc: (TextLine, Int, Int) => scalajs.js.Array[DisplayEntity] =
           fontRegister
             .findByFontKey(x.fontKey)
             .map { fontInfo =>
@@ -264,13 +288,58 @@ final class DisplayObjectConversions(
             }
             ._2
 
-        DisplayTextLetters(letters)
+        (DisplayTextLetters(letters), noClones)
+
+      case x: Text[_] if renderingTechnology.isWebGL2 =>
+        val alignmentOffsetX: Rectangle => Int = lineBounds =>
+          x.alignment match {
+            case TextAlignment.Left => 0
+
+            case TextAlignment.Center => -(lineBounds.size.width / 2)
+
+            case TextAlignment.Right => -lineBounds.size.width
+          }
+
+        val converterFunc
+            : (TextLine, Int, Int) => scalajs.js.Array[(DisplayEntity, scalajs.js.Array[(CloneId, DisplayObject)])] =
+          fontRegister
+            .findByFontKey(x.fontKey)
+            .map { fontInfo => (txtLn: TextLine, xPos: Int, yPos: Int) =>
+              {
+                val (cloneId, clone) = makeTextCloneDisplayObject(x, assetMapping)
+                scalajs.js.Array(
+                  (
+                    textLineToDisplayCloneTiles(x, fontInfo, cloneId)(txtLn, xPos, yPos),
+                    scalajs.js.Array((cloneId, clone))
+                  )
+                )
+              }
+            }
+            .getOrElse { (_, _, _) =>
+              IndigoLogger.errorOnce(s"Cannot render Text, missing Font with key: ${x.fontKey.toString()}")
+              scalajs.js.Array[(DisplayEntity, scalajs.js.Array[(CloneId, DisplayObject)])]()
+            }
+
+        val letters: scalajs.js.Array[(DisplayEntity, scalajs.js.Array[(CloneId, DisplayObject)])] =
+          boundaryLocator
+            .textAsLinesWithBounds(x.text, x.fontKey)
+            .toJSArray
+            .foldLeft(0 -> scalajs.js.Array[(DisplayEntity, scalajs.js.Array[(CloneId, DisplayObject)])]()) {
+              (acc, textLine) =>
+                (
+                  acc._1 + textLine.lineBounds.height,
+                  acc._2 ++ converterFunc(textLine, alignmentOffsetX(textLine.lineBounds), acc._1)
+                )
+            }
+            ._2
+
+        (DisplayTextLetters(letters.map(_._1)), letters.flatMap(_._2))
 
       case _: RenderNode =>
-        DisplayGroup.empty
+        (DisplayGroup.empty, noClones)
 
       case _: DependentNode =>
-        DisplayGroup.empty
+        (DisplayGroup.empty, noClones)
     }
 
   def optionalAssetToOffset(assetMapping: AssetMapping, maybeAssetName: Option[AssetName]): Vector2 =
@@ -549,7 +618,7 @@ final class DisplayObjectConversions(
       leaf: Text[_],
       assetMapping: AssetMapping,
       fontInfo: FontInfo
-  ): (TextLine, Int, Int) => scalajs.js.Array[DisplayObject] =
+  ): (TextLine, Int, Int) => scalajs.js.Array[DisplayEntity] =
     (line, alignmentOffsetX, yOffset) => {
 
       val material       = leaf.material
@@ -615,6 +684,102 @@ final class DisplayObjectConversions(
         }
       }
     }
+
+  def makeTextCloneDisplayObject(
+      leaf: Text[_],
+      assetMapping: AssetMapping
+  ): (CloneId, DisplayObject) = {
+    val material       = leaf.material
+    val shaderData     = material.toShaderData
+    val shaderDataHash = shaderData.hashCode().toString
+    val materialName   = shaderData.channel0.get
+    val emissiveOffset = findAssetOffsetValues(assetMapping, shaderData.channel1, shaderDataHash, "_e")
+    val normalOffset   = findAssetOffsetValues(assetMapping, shaderData.channel2, shaderDataHash, "_n")
+    val specularOffset = findAssetOffsetValues(assetMapping, shaderData.channel3, shaderDataHash, "_s")
+    val texture        = lookupTexture(assetMapping, materialName)
+    val shaderId       = shaderData.shaderId
+
+    val uniformData: scalajs.js.Array[DisplayObjectUniformData] =
+      shaderData.uniformBlocks.toJSArray.map { ub =>
+        DisplayObjectUniformData(
+          uniformHash = ub.uniformHash,
+          blockName = ub.blockName,
+          data = DisplayObjectConversions.packUBO(ub.uniforms)
+        )
+      }
+
+    val frameInfo =
+      SpriteSheetFrame.calculateFrameOffset(
+        atlasSize = texture.atlasSize,
+        frameCrop = Rectangle.one,
+        textureOffset = texture.offset
+      )
+
+    val cloneId: CloneId =
+      CloneId("[indigo_txt_clone]" + leaf.hashCode.toString)
+
+    (
+      cloneId,
+      DisplayObject(
+        x = leaf.position.x.toFloat,
+        y = leaf.position.y.toFloat,
+        scaleX = leaf.scale.x.toFloat,
+        scaleY = leaf.scale.y.toFloat,
+        refX = leaf.ref.x.toFloat,
+        refY = leaf.ref.y.toFloat,
+        flipX = if leaf.flip.horizontal then -1.0 else 1.0,
+        flipY = if leaf.flip.vertical then -1.0 else 1.0,
+        rotation = leaf.rotation,
+        z = leaf.depth.toDouble,
+        width = 1,
+        height = 1,
+        atlasName = Some(texture.atlasName),
+        frame = frameInfo,
+        channelOffset1 = frameInfo.offsetToCoords(emissiveOffset),
+        channelOffset2 = frameInfo.offsetToCoords(normalOffset),
+        channelOffset3 = frameInfo.offsetToCoords(specularOffset),
+        texturePosition = texture.offset,
+        textureSize = texture.size,
+        atlasSize = texture.atlasSize,
+        shaderId = shaderId,
+        shaderUniformData = uniformData
+      )
+    )
+  }
+
+  def textLineToDisplayCloneTiles(
+      leaf: Text[_],
+      fontInfo: FontInfo,
+      cloneId: CloneId
+  ): (TextLine, Int, Int) => DisplayEntity =
+    (line, alignmentOffsetX, yOffset) => {
+      val lineHash: String =
+        "[indigo_tln]" + leaf.hashCode.toString + line.hashCode.toString
+
+      QuickCache(lineHash) {
+        val data: scalajs.js.Array[CloneTileData] =
+          zipWithCharDetails(line.text.toArray, fontInfo).map { case (fontChar, xPosition) =>
+            CloneTileData(
+              x = leaf.position.x + leaf.ref.x + xPosition + alignmentOffsetX,
+              y = leaf.position.y + leaf.ref.y + yOffset,
+              rotation = Radians.zero,
+              scaleX = leaf.scale.x.toFloat,
+              scaleY = leaf.scale.y.toFloat,
+              cropX = fontChar.bounds.x,
+              cropY = fontChar.bounds.y,
+              cropWidth = fontChar.bounds.width,
+              cropHeight = fontChar.bounds.height
+            )
+          }
+
+        new DisplayCloneTiles(
+          id = cloneId,
+          z = leaf.depth.toDouble,
+          cloneData = data
+        )
+      }
+    }
+
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var accCharDetails: scalajs.js.Array[(FontChar, Int)] = new scalajs.js.Array()
 
