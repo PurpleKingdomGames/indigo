@@ -83,6 +83,22 @@ object AdvancedGameConfig {
 enum RenderingTechnology derives CanEqual:
   case WebGL1, WebGL2, WebGL2WithFallback
 
+  def isWebGL1: Boolean =
+    this match
+      case WebGL1 => true
+      case _      => false
+
+  def isWebGL2: Boolean =
+    this match
+      case WebGL2 => true
+      case _      => false
+
+  // Note: This isn't really a thing. Immediately after initialisation the rendering tech is decided to be 1.0 or 2.0
+  def isWebGL2WithFallback: Boolean =
+    this match
+      case WebGL2WithFallback => true
+      case _                  => false
+
 object RenderingTechnology:
   extension (t: RenderingTechnology)
     def name: String =

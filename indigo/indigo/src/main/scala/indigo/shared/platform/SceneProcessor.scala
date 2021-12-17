@@ -4,6 +4,7 @@ import indigo.shared.AnimationsRegister
 import indigo.shared.BoundaryLocator
 import indigo.shared.FontRegister
 import indigo.shared.QuickCache
+import indigo.shared.config.RenderingTechnology
 import indigo.shared.datatypes.Depth
 import indigo.shared.datatypes.RGBA
 import indigo.shared.display.DisplayLayer
@@ -55,7 +56,8 @@ final class SceneProcessor(
   def processScene(
       gameTime: GameTime,
       scene: SceneUpdateFragment,
-      assetMapping: AssetMapping
+      assetMapping: AssetMapping,
+      renderingTechnology: RenderingTechnology
   ): ProcessedSceneData = {
 
     def cloneBlankToDisplayObject(blank: CloneBlank): Option[DisplayObject] =
@@ -103,7 +105,7 @@ final class SceneProcessor(
           case Some(displayObject) => acc + (blank.id -> displayObject)
       }
 
-    val displayLayers: scalajs.js.Array[DisplayLayer] =
+    val displayLayers: scalajs.js.Array[(DisplayLayer, scalajs.js.Array[(CloneId, DisplayObject)])] =
       scene.layers.toJSArray
         .filter(l => l.visible.getOrElse(true))
         .zipWithIndex
@@ -111,9 +113,11 @@ final class SceneProcessor(
           val blending   = l.blending.getOrElse(Blending.Normal)
           val shaderData = blending.blendMaterial.toShaderData
 
-          DisplayLayer(
-            displayObjectConverter
-              .sceneNodesToDisplayObjects(l.nodes, gameTime, assetMapping, cloneBlankDisplayObjects),
+          val conversionResults = displayObjectConverter
+            .sceneNodesToDisplayObjects(l.nodes, gameTime, assetMapping, cloneBlankDisplayObjects, renderingTechnology)
+
+          val layer = DisplayLayer(
+            conversionResults._1,
             SceneProcessor.makeLightsData(scene.lights ++ l.lights),
             blending.clearColor.getOrElse(RGBA.Zero),
             l.magnification,
@@ -124,14 +128,16 @@ final class SceneProcessor(
             SceneProcessor.mergeShaderToUniformData(shaderData),
             l.camera
           )
+
+          (layer, conversionResults._2)
         }
-        .sortBy(_.depth.toInt)
+        .sortBy(_._1.depth.toInt)
 
     val sceneBlend = scene.blendMaterial.getOrElse(BlendMaterial.Normal).toShaderData
 
     new ProcessedSceneData(
-      displayLayers,
-      cloneBlankDisplayObjects,
+      displayLayers.map(_._1),
+      cloneBlankDisplayObjects.concat(displayLayers.flatMap(_._2)),
       sceneBlend.shaderId,
       SceneProcessor.mergeShaderToUniformData(sceneBlend),
       scene.camera

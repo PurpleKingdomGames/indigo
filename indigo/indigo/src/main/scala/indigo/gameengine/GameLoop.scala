@@ -90,7 +90,8 @@ class GameLoop[StartUpData, GameModel, ViewModel](
           val sceneData = sceneProcessor.processScene(
             gameTime,
             scene,
-            gameEngine.assetMapping
+            gameEngine.assetMapping,
+            gameEngine.renderer.renderingTechnology
           )
 
           // Render scene
