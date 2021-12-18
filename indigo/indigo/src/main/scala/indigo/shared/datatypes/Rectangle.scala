@@ -82,7 +82,7 @@ object Rectangle:
   given CanEqual[Option[Rectangle], Option[Rectangle]] = CanEqual.derived
 
   val zero: Rectangle = Rectangle(0, 0, 0, 0)
-  val one: Rectangle = Rectangle(0, 0, 1, 1)
+  val one: Rectangle  = Rectangle(0, 0, 1, 1)
 
   def apply(x: Int, y: Int, width: Int, height: Int): Rectangle =
     Rectangle(Point(x, y), Size(width, height))
