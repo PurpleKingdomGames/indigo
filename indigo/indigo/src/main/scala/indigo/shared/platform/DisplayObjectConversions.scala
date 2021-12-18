@@ -52,7 +52,6 @@ import indigo.shared.shader.ShaderPrimitive
 import indigo.shared.shader.Uniform
 import indigo.shared.shader.UniformBlock
 import indigo.shared.time.GameTime
-import org.w3c.dom.css.Rect
 
 import scala.annotation.tailrec
 import scala.collection.immutable.HashMap
