@@ -106,7 +106,8 @@ class GameLoop[StartUpData, GameModel, ViewModel](
             gameTime,
             scene,
             gameEngine.assetMapping,
-            gameEngine.renderer.renderingTechnology
+            gameEngine.renderer.renderingTechnology,
+            gameConfig.advanced.batchSize
           )
 
           // Render scene

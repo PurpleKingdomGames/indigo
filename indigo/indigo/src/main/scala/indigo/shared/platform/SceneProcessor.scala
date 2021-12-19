@@ -57,7 +57,8 @@ final class SceneProcessor(
       gameTime: GameTime,
       scene: SceneUpdateFragment,
       assetMapping: AssetMapping,
-      renderingTechnology: RenderingTechnology
+      renderingTechnology: RenderingTechnology,
+      maxBatchSize: Int
   ): ProcessedSceneData = {
 
     def cloneBlankToDisplayObject(blank: CloneBlank): Option[DisplayObject] =
@@ -114,7 +115,14 @@ final class SceneProcessor(
           val shaderData = blending.blendMaterial.toShaderData
 
           val conversionResults = displayObjectConverter
-            .sceneNodesToDisplayObjects(l.nodes, gameTime, assetMapping, cloneBlankDisplayObjects, renderingTechnology)
+            .sceneNodesToDisplayObjects(
+              l.nodes,
+              gameTime,
+              assetMapping,
+              cloneBlankDisplayObjects,
+              renderingTechnology,
+              maxBatchSize
+            )
 
           val layer = DisplayLayer(
             conversionResults._1,
