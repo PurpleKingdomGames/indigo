@@ -9,7 +9,6 @@ import indigo.shared.datatypes.Size
 import indigo.shared.datatypes.TextAlignment
 import indigo.shared.datatypes.Vector3
 import indigo.shared.datatypes.mutable.CheapMatrix4
-import indigo.shared.platform.DisplayObjectConversions
 import indigo.shared.scenegraph.CloneBatch
 import indigo.shared.scenegraph.CloneTiles
 import indigo.shared.scenegraph.EntityNode

@@ -64,13 +64,14 @@ final class DisplayObjectConversions(
     fontRegister: FontRegister
 ) {
 
-  implicit private val textureRefAndOffsetCache: QuickCache[TextureRefAndOffset] = QuickCache.empty
-  implicit private val vector2Cache: QuickCache[Vector2]                         = QuickCache.empty
-  implicit private val frameCache: QuickCache[SpriteSheetFrameCoordinateOffsets] = QuickCache.empty
-  implicit private val listDoCache: QuickCache[scalajs.js.Array[DisplayEntity]]  = QuickCache.empty
-  implicit private val cloneBatchCache: QuickCache[DisplayCloneBatch]            = QuickCache.empty
-  implicit private val cloneTilesCache: QuickCache[DisplayCloneTiles]            = QuickCache.empty
-  implicit private val uniformsCache: QuickCache[scalajs.js.Array[Float]]        = QuickCache.empty
+  implicit private val textureRefAndOffsetCache: QuickCache[TextureRefAndOffset]           = QuickCache.empty
+  implicit private val vector2Cache: QuickCache[Vector2]                                   = QuickCache.empty
+  implicit private val frameCache: QuickCache[SpriteSheetFrameCoordinateOffsets]           = QuickCache.empty
+  implicit private val listDoCache: QuickCache[scalajs.js.Array[DisplayEntity]]            = QuickCache.empty
+  implicit private val cloneBatchCache: QuickCache[DisplayCloneBatch]                      = QuickCache.empty
+  implicit private val cloneTilesCache: QuickCache[DisplayCloneTiles]                      = QuickCache.empty
+  implicit private val uniformsCache: QuickCache[scalajs.js.Array[Float]]                  = QuickCache.empty
+  implicit private val textCloneTileDataCache: QuickCache[scalajs.js.Array[CloneTileData]] = QuickCache.empty
 
   // Called on asset load/reload to account for atlas rebuilding etc.
   def purgeCaches(): Unit = {
@@ -81,6 +82,7 @@ final class DisplayObjectConversions(
     cloneBatchCache.purgeAllNow()
     cloneTilesCache.purgeAllNow()
     uniformsCache.purgeAllNow()
+    textCloneTileDataCache.purgeAllNow()
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
@@ -147,9 +149,17 @@ final class DisplayObjectConversions(
       gameTime: GameTime,
       assetMapping: AssetMapping,
       cloneBlankDisplayObjects: => HashMap[CloneId, DisplayObject],
-      renderingTechnology: RenderingTechnology
+      renderingTechnology: RenderingTechnology,
+      maxBatchSize: Int
   ): (scalajs.js.Array[DisplayEntity], scalajs.js.Array[(CloneId, DisplayObject)]) =
-    val f = sceneNodeToDisplayObject(gameTime, assetMapping, cloneBlankDisplayObjects, renderingTechnology)
+    val f =
+      sceneNodeToDisplayObject(
+        gameTime,
+        assetMapping,
+        cloneBlankDisplayObjects,
+        renderingTechnology,
+        maxBatchSize
+      )
     val l = sceneNodes.toJSArray.map(f)
     (l.map(_._1), l.foldLeft(scalajs.js.Array[(CloneId, DisplayObject)]())(_ ++ _._2))
 
@@ -177,7 +187,8 @@ final class DisplayObjectConversions(
       gameTime: GameTime,
       assetMapping: AssetMapping,
       cloneBlankDisplayObjects: => HashMap[CloneId, DisplayObject],
-      renderingTechnology: RenderingTechnology
+      renderingTechnology: RenderingTechnology,
+      maxBatchSize: Int
   )(sceneNode: SceneGraphNode): (DisplayEntity, scalajs.js.Array[(CloneId, DisplayObject)]) =
     val noClones = scalajs.js.Array[(CloneId, DisplayObject)]()
     sceneNode match {
@@ -231,7 +242,14 @@ final class DisplayObjectConversions(
 
       case g: Group =>
         val children =
-          sceneNodesToDisplayObjects(g.children, gameTime, assetMapping, cloneBlankDisplayObjects, renderingTechnology)
+          sceneNodesToDisplayObjects(
+            g.children,
+            gameTime,
+            assetMapping,
+            cloneBlankDisplayObjects,
+            renderingTechnology,
+            maxBatchSize
+          )
         (
           DisplayGroup(
             groupToMatrix(g),
@@ -299,40 +317,45 @@ final class DisplayObjectConversions(
             case TextAlignment.Right => -lineBounds.size.width
           }
 
-        val converterFunc
-            : (TextLine, Int, Int) => scalajs.js.Array[(DisplayEntity, scalajs.js.Array[(CloneId, DisplayObject)])] =
+        val converterFunc: (TextLine, Int, Int) => scalajs.js.Array[CloneTileData] =
           fontRegister
             .findByFontKey(x.fontKey)
             .map { fontInfo => (txtLn: TextLine, xPos: Int, yPos: Int) =>
-              {
-                val (cloneId, clone) = makeTextCloneDisplayObject(x, assetMapping)
-                scalajs.js.Array(
-                  (
-                    textLineToDisplayCloneTiles(x, fontInfo, cloneId)(txtLn, xPos, yPos),
-                    scalajs.js.Array((cloneId, clone))
-                  )
-                )
-              }
+              textLineToDisplayCloneTileData(x, fontInfo)(txtLn, xPos, yPos)
             }
             .getOrElse { (_, _, _) =>
               IndigoLogger.errorOnce(s"Cannot render Text, missing Font with key: ${x.fontKey.toString()}")
-              scalajs.js.Array[(DisplayEntity, scalajs.js.Array[(CloneId, DisplayObject)])]()
+              scalajs.js.Array[CloneTileData]()
             }
 
-        val letters: scalajs.js.Array[(DisplayEntity, scalajs.js.Array[(CloneId, DisplayObject)])] =
+        val (cloneId, clone) = makeTextCloneDisplayObject(x, assetMapping)
+
+        val letters: scalajs.js.Array[CloneTileData] =
           boundaryLocator
             .textAsLinesWithBounds(x.text, x.fontKey)
             .toJSArray
-            .foldLeft(0 -> scalajs.js.Array[(DisplayEntity, scalajs.js.Array[(CloneId, DisplayObject)])]()) {
-              (acc, textLine) =>
-                (
-                  acc._1 + textLine.lineBounds.height,
-                  acc._2 ++ converterFunc(textLine, alignmentOffsetX(textLine.lineBounds), acc._1)
-                )
+            .foldLeft(
+              0 -> scalajs.js.Array[CloneTileData]()
+            ) { (acc, textLine) =>
+              (
+                acc._1 + textLine.lineBounds.height,
+                acc._2 ++ converterFunc(textLine, alignmentOffsetX(textLine.lineBounds), acc._1)
+              )
             }
             ._2
 
-        (DisplayTextLetters(letters.map(_._1)), letters.flatMap(_._2))
+        (
+          DisplayTextLetters(
+            letters.grouped(maxBatchSize).toJSArray.map { d =>
+              new DisplayCloneTiles(
+                id = cloneId,
+                z = x.depth.toDouble,
+                cloneData = d
+              )
+            }
+          ),
+          scalajs.js.Array((cloneId, clone))
+        )
 
       case _: RenderNode =>
         (DisplayGroup.empty, noClones)
@@ -746,36 +769,28 @@ final class DisplayObjectConversions(
     )
   }
 
-  def textLineToDisplayCloneTiles(
+  def textLineToDisplayCloneTileData(
       leaf: Text[_],
-      fontInfo: FontInfo,
-      cloneId: CloneId
-  ): (TextLine, Int, Int) => DisplayEntity =
+      fontInfo: FontInfo
+  ): (TextLine, Int, Int) => scalajs.js.Array[CloneTileData] =
     (line, alignmentOffsetX, yOffset) => {
       val lineHash: String =
         "[indigo_tln]" + leaf.hashCode.toString + line.hashCode.toString
 
       QuickCache(lineHash) {
-        val data: scalajs.js.Array[CloneTileData] =
-          zipWithCharDetails(line.text.toArray, fontInfo).map { case (fontChar, xPosition) =>
-            CloneTileData(
-              x = leaf.position.x + leaf.ref.x + xPosition + alignmentOffsetX,
-              y = leaf.position.y + leaf.ref.y + yOffset,
-              rotation = Radians.zero,
-              scaleX = leaf.scale.x.toFloat,
-              scaleY = leaf.scale.y.toFloat,
-              cropX = fontChar.bounds.x,
-              cropY = fontChar.bounds.y,
-              cropWidth = fontChar.bounds.width,
-              cropHeight = fontChar.bounds.height
-            )
-          }
-
-        new DisplayCloneTiles(
-          id = cloneId,
-          z = leaf.depth.toDouble,
-          cloneData = data
-        )
+        zipWithCharDetails(line.text.toArray, fontInfo).map { case (fontChar, xPosition) =>
+          CloneTileData(
+            x = leaf.position.x + leaf.ref.x + xPosition + alignmentOffsetX,
+            y = leaf.position.y + leaf.ref.y + yOffset,
+            rotation = Radians.zero,
+            scaleX = leaf.scale.x.toFloat,
+            scaleY = leaf.scale.y.toFloat,
+            cropX = fontChar.bounds.x,
+            cropY = fontChar.bounds.y,
+            cropWidth = fontChar.bounds.width,
+            cropHeight = fontChar.bounds.height
+          )
+        }
       }
     }
 

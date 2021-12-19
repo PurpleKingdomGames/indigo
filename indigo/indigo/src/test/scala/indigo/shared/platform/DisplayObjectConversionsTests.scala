@@ -65,7 +65,8 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
         GameTime.is(Seconds(1)),
         assetMapping,
         cloneBlankMapping,
-        RenderingTechnology.WebGL2
+        RenderingTechnology.WebGL2,
+        256
       )
       ._1
       .head match {
@@ -101,7 +102,8 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
         GameTime.is(Seconds(1)),
         assetMapping,
         cloneBlankMapping,
-        RenderingTechnology.WebGL2
+        RenderingTechnology.WebGL2,
+        256
       )
       ._1
       .head match {
