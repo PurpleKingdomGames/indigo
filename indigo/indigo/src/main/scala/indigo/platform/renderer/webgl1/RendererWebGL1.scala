@@ -15,6 +15,7 @@ import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.shared.display.DisplayEntity
 import indigo.shared.display.DisplayGroup
 import indigo.shared.display.DisplayObject
+import indigo.shared.display.DisplayTextLetters
 import indigo.shared.events.ViewportResize
 import indigo.shared.platform.ProcessedSceneData
 import indigo.shared.platform.RendererConfig
@@ -202,9 +203,16 @@ final class RendererWebGL1(
 
         case g: DisplayGroup =>
           (g, AtlasId(""))
+
+        case l: DisplayTextLetters =>
+          (l, AtlasId(""))
       }
       .sortWith((d1, d2) => d1._1.z > d2._1.z)
       .foreach {
+        case (letters: DisplayTextLetters, _) =>
+          renderEntities(letters.letters, shaderProgram, baseTransform)
+          setBaseTransform
+
         case (group: DisplayGroup, _) =>
           renderEntities(group.entities, shaderProgram, group.transform)
           setBaseTransform
