@@ -305,15 +305,16 @@ lazy val indigoProject =
         UsefulTask("", "cleanAll", "Clean all the projects"),
         UsefulTask("", "buildAllNoClean", "Rebuild without cleaning"),
         UsefulTask("", "testAllNoClean", "Test all without cleaning"),
-        UsefulTask("", "crossLocalPublishNoClean", "Locally publich the core modules"),
+        UsefulTask("", "crossLocalPublishNoClean", "Locally publish the core modules"),
         UsefulTask("", "gendocs", "Rebuild the API and markdown docs"),
         UsefulTask("", "sandboxRun", "Run the sandbox game (fastOptJS + Electron)"),
-        UsefulTask("", "perfRun", "Run the perf game (fastOptJS + Electron)")
+        UsefulTask("", "perfRun", "Run the perf game (fastOptJS + Electron)"),
+        UsefulTask("", "code", "Launch VSCode")
       ),
       logoColor        := scala.Console.MAGENTA,
       aliasColor       := scala.Console.CYAN,
       commandColor     := scala.Console.BLUE_B,
-      descriptionColor := scala.Console.YELLOW
+      descriptionColor := scala.Console.WHITE
     )
 
 addCommandAlias(
