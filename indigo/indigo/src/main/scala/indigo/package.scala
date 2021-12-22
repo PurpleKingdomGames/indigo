@@ -511,6 +511,21 @@ val Group: shared.scenegraph.Group.type = shared.scenegraph.Group
 type TextBox = shared.scenegraph.TextBox
 val TextBox: shared.scenegraph.TextBox.type = shared.scenegraph.TextBox
 
+type Clip[M <: Material] = shared.scenegraph.Clip[M]
+val Clip: shared.scenegraph.Clip.type = shared.scenegraph.Clip
+
+type ClipSheet = shared.scenegraph.ClipSheet
+val ClipSheet: shared.scenegraph.ClipSheet.type = shared.scenegraph.ClipSheet
+
+type ClipSheetArrangement = shared.scenegraph.ClipSheetArrangement
+val TexClipSheetArrangementtBox: shared.scenegraph.ClipSheetArrangement.type = shared.scenegraph.ClipSheetArrangement
+
+type ClipPlayDirection = shared.scenegraph.ClipPlayDirection
+val ClipPlayDirection: shared.scenegraph.ClipPlayDirection.type = shared.scenegraph.ClipPlayDirection
+
+type ClipPlayMode = shared.scenegraph.ClipPlayMode
+val ClipPlayMode: shared.scenegraph.ClipPlayMode.type = shared.scenegraph.ClipPlayMode
+
 // TextStyle
 
 type TextStyle = shared.datatypes.TextStyle

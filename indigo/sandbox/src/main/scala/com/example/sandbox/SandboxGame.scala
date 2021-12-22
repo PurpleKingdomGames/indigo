@@ -3,7 +3,6 @@ package com.example.sandbox
 import com.example.sandbox.scenes.Archetype
 import com.example.sandbox.scenes.BoundsScene
 import com.example.sandbox.scenes.CameraScene
-import com.example.sandbox.scenes.Clip
 import com.example.sandbox.scenes.ClipScene
 import com.example.sandbox.scenes.ConfettiScene
 import com.example.sandbox.scenes.CratesScene
