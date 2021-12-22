@@ -10,6 +10,10 @@ object StandardShaders {
       LitBitmap,
       ImageEffects,
       LitImageEffects,
+      BitmapClip,
+      LitBitmapClip,
+      ImageEffectsClip,
+      LitImageEffectsClip,
       ShapeBox,
       LitShapeBox,
       ShapeCircle,
@@ -64,6 +68,24 @@ object StandardShaders {
       light = ShaderLibrary.LightingLight,
       composite = ShaderLibrary.LightingComposite
     )
+
+  // Clips
+
+  def shaderIdToClipShaderId(id: ShaderId): ShaderId =
+    ShaderId(id.toString + "[clip]")
+
+  def makeClipShader(shader: EntityShader.Source): EntityShader.Source =
+    shader.copy(
+      id = shaderIdToClipShaderId(shader.id),
+      vertex = ShaderLibrary.ClipVertex
+    )
+
+  val BitmapClip: EntityShader.Source          = makeClipShader(Bitmap)
+  val LitBitmapClip: EntityShader.Source       = makeClipShader(LitBitmap)
+  val ImageEffectsClip: EntityShader.Source    = makeClipShader(ImageEffects)
+  val LitImageEffectsClip: EntityShader.Source = makeClipShader(LitImageEffects)
+
+  // Shapes
 
   val ShapeBox: EntityShader.Source =
     EntityShader.Source(

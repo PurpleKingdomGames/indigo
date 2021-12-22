@@ -85,8 +85,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
       ).withAssets(
         SandboxAssets.assets ++
           Shaders.assets ++
-          Archetype.assets ++
-          Clip.assets
+          Archetype.assets
       ).withFonts(Fonts.fontInfo)
         .withSubSystems(
           FPSCounter(
@@ -100,8 +99,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
           Shaders.external,
           Shaders.sea,
           LegacyEffects.entityShader,
-          Archetype.shader,
-          Clip.clipShader
+          Archetype.shader
         )
         .addShaders(Refraction.shaders)
     )

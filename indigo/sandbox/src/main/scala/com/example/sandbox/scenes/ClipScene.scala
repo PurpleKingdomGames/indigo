@@ -6,6 +6,7 @@ import com.example.sandbox.SandboxStartupData
 import com.example.sandbox.SandboxViewModel
 import indigo._
 import indigo.scenes._
+import indigo.shared.BoundaryLocator
 import indigo.shared.scenegraph.SpatialModifiers
 
 object ClipScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
@@ -49,17 +50,18 @@ object ClipScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxView
     Outcome(
       SceneUpdateFragment(
         Graphic(Size(128), Material.Bitmap(SandboxAssets.trafficLightsName)),
-        Clip(Point(80, 80), Size(64), ClipSheet(3, Seconds(0.25), 2)),
+        Clip(Point(80, 80), Size(64), ClipSheet(3, Seconds(0.25), 2), Material.Bitmap(SandboxAssets.trafficLightsName)),
         Shape.Box(Rectangle(Point.zero, Size(64)), Fill.None, Stroke(1, RGBA.Green)).moveTo(Point(80, 80)),
-        Clip(Point(144, 80), Size(64), ClipSheet(3, Seconds(0.5), 2)),
+        Clip(Point(144, 80), Size(64), ClipSheet(3, Seconds(0.5), 2), Material.Bitmap(SandboxAssets.trafficLightsName)),
         Shape.Box(Rectangle(Point.zero, Size(64)), Fill.None, Stroke(1, RGBA.Green)).moveTo(Point(144, 80))
       )
     )
 
-final case class Clip(
+final case class Clip[M <: Material](
     size: Size,
     sheet: ClipSheet,
     playMode: ClipPlayMode,
+    material: M,
     position: Point,
     rotation: Radians,
     scale: Vector2,
@@ -68,70 +70,83 @@ final case class Clip(
     flip: Flip
 ) extends EntityNode
     with Cloneable
-    with SpatialModifiers[Clip]
+    with SpatialModifiers[Clip[M]]
     derives CanEqual:
 
-  def withSize(newSize: Size): Clip =
+  def bounds: Rectangle =
+    BoundaryLocator.findBounds(this, position, size, ref)
+
+  lazy val x: Int = position.x
+  lazy val y: Int = position.y
+
+  def withMaterial[MB <: Material](newMaterial: MB): Clip[MB] =
+    this.copy(material = newMaterial)
+
+  def modifyMaterial[MB <: Material](alter: M => MB): Clip[MB] =
+    this.copy(material = alter(material))
+
+  def withSize(newSize: Size): Clip[M] =
     this.copy(size = newSize)
-  def withSize(width: Int, height: Int): Clip =
+  def withSize(width: Int, height: Int): Clip[M] =
     withSize(Size(width, height))
 
-  def withSheet(newSheet: ClipSheet): Clip =
+  def withSheet(newSheet: ClipSheet): Clip[M] =
     this.copy(sheet = newSheet)
 
-  def withPlayMode(newPlayMode: ClipPlayMode): Clip =
+  def withPlayMode(newPlayMode: ClipPlayMode): Clip[M] =
     this.copy(playMode = newPlayMode)
 
-  def moveTo(pt: Point): Clip =
+  def moveTo(pt: Point): Clip[M] =
     this.copy(position = pt)
-  def moveTo(x: Int, y: Int): Clip =
+  def moveTo(x: Int, y: Int): Clip[M] =
     moveTo(Point(x, y))
-  def withPosition(newPosition: Point): Clip =
+  def withPosition(newPosition: Point): Clip[M] =
     moveTo(newPosition)
 
-  def moveBy(pt: Point): Clip =
+  def moveBy(pt: Point): Clip[M] =
     this.copy(position = position + pt)
-  def moveBy(x: Int, y: Int): Clip =
+  def moveBy(x: Int, y: Int): Clip[M] =
     moveBy(Point(x, y))
 
-  def rotateTo(angle: Radians): Clip =
+  def rotateTo(angle: Radians): Clip[M] =
     this.copy(rotation = angle)
-  def rotateBy(angle: Radians): Clip =
+  def rotateBy(angle: Radians): Clip[M] =
     rotateTo(rotation + angle)
-  def withRotation(newRotation: Radians): Clip =
+  def withRotation(newRotation: Radians): Clip[M] =
     rotateTo(newRotation)
 
-  def scaleBy(amount: Vector2): Clip =
+  def scaleBy(amount: Vector2): Clip[M] =
     this.copy(scale = scale * amount)
-  def scaleBy(x: Double, y: Double): Clip =
+  def scaleBy(x: Double, y: Double): Clip[M] =
     scaleBy(Vector2(x, y))
-  def withScale(newScale: Vector2): Clip =
+  def withScale(newScale: Vector2): Clip[M] =
     this.copy(scale = newScale)
 
-  def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): Clip =
+  def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): Clip[M] =
     this.copy(position = newPosition, rotation = newRotation, scale = newScale)
 
-  def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): Clip =
+  def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): Clip[M] =
     transformTo(position + positionDiff, rotation + rotationDiff, scale * scaleDiff)
 
-  def withDepth(newDepth: Depth): Clip =
+  def withDepth(newDepth: Depth): Clip[M] =
     this.copy(depth = newDepth)
 
-  def flipHorizontal(isFlipped: Boolean): Clip =
+  def flipHorizontal(isFlipped: Boolean): Clip[M] =
     this.copy(flip = flip.withHorizontalFlip(isFlipped))
-  def flipVertical(isFlipped: Boolean): Clip =
+  def flipVertical(isFlipped: Boolean): Clip[M] =
     this.copy(flip = flip.withVerticalFlip(isFlipped))
-  def withFlip(newFlip: Flip): Clip =
+  def withFlip(newFlip: Flip): Clip[M] =
     this.copy(flip = newFlip)
 
-  def withRef(newRef: Point): Clip =
+  def withRef(newRef: Point): Clip[M] =
     this.copy(ref = newRef)
-  def withRef(x: Int, y: Int): Clip =
+  def withRef(x: Int, y: Int): Clip[M] =
     withRef(Point(x, y))
 
   def toShaderData: ShaderData =
-    ShaderData(Clip.shaderId)
-      .withChannel0(SandboxAssets.trafficLightsName)
+    val data = material.toShaderData
+    data
+      .withShaderId(StandardShaders.shaderIdToClipShaderId(data.shaderId))
       .addUniformBlock(
         UniformBlock(
           "IndigoClipData",
@@ -145,16 +160,18 @@ final case class Clip(
 
 object Clip:
 
-  def apply(
+  def apply[M <: Material](
       width: Int,
       height: Int,
       sheet: ClipSheet,
-      playMode: ClipPlayMode
-  ): Clip =
+      playMode: ClipPlayMode,
+      material: M
+  ): Clip[M] =
     Clip(
       size = Size(width, height),
       sheet = sheet,
       playMode = playMode,
+      material = material,
       position = Point.zero,
       rotation = Radians.zero,
       scale = Vector2.one,
@@ -163,15 +180,17 @@ object Clip:
       flip = Flip.default
     )
 
-  def apply(
+  def apply[M <: Material](
       width: Int,
       height: Int,
-      sheet: ClipSheet
-  ): Clip =
+      sheet: ClipSheet,
+      material: M
+  ): Clip[M] =
     Clip(
       size = Size(width, height),
       sheet = sheet,
       playMode = ClipPlayMode.default,
+      material = material,
       position = Point.zero,
       rotation = Radians.zero,
       scale = Vector2.one,
@@ -180,18 +199,20 @@ object Clip:
       flip = Flip.default
     )
 
-  def apply(
+  def apply[M <: Material](
       x: Int,
       y: Int,
       width: Int,
       height: Int,
       sheet: ClipSheet,
-      playMode: ClipPlayMode
-  ): Clip =
+      playMode: ClipPlayMode,
+      material: M
+  ): Clip[M] =
     Clip(
       size = Size(width, height),
       sheet = sheet,
       playMode = playMode,
+      material = material,
       position = Point(x, y),
       rotation = Radians.zero,
       scale = Vector2.one,
@@ -200,17 +221,19 @@ object Clip:
       flip = Flip.default
     )
 
-  def apply(
+  def apply[M <: Material](
       x: Int,
       y: Int,
       width: Int,
       height: Int,
-      sheet: ClipSheet
-  ): Clip =
+      sheet: ClipSheet,
+      material: M
+  ): Clip[M] =
     Clip(
       size = Size(width, height),
       sheet = sheet,
       playMode = ClipPlayMode.default,
+      material = material,
       position = Point(x, y),
       rotation = Radians.zero,
       scale = Vector2.one,
@@ -219,15 +242,17 @@ object Clip:
       flip = Flip.default
     )
 
-  def apply(
+  def apply[M <: Material](
       size: Size,
       sheet: ClipSheet,
-      playMode: ClipPlayMode
-  ): Clip =
+      playMode: ClipPlayMode,
+      material: M
+  ): Clip[M] =
     Clip(
       size = size,
       sheet = sheet,
       playMode = playMode,
+      material = material,
       position = Point.zero,
       rotation = Radians.zero,
       scale = Vector2.one,
@@ -236,14 +261,16 @@ object Clip:
       flip = Flip.default
     )
 
-  def apply(
+  def apply[M <: Material](
       size: Size,
-      sheet: ClipSheet
-  ): Clip =
+      sheet: ClipSheet,
+      material: M
+  ): Clip[M] =
     Clip(
       size = size,
       sheet = sheet,
       playMode = ClipPlayMode.default,
+      material = material,
       position = Point.zero,
       rotation = Radians.zero,
       scale = Vector2.one,
@@ -252,16 +279,18 @@ object Clip:
       flip = Flip.default
     )
 
-  def apply(
+  def apply[M <: Material](
       position: Point,
       size: Size,
       sheet: ClipSheet,
-      playMode: ClipPlayMode
-  ): Clip =
+      playMode: ClipPlayMode,
+      material: M
+  ): Clip[M] =
     Clip(
       size = size,
       sheet = sheet,
       playMode = playMode,
+      material = material,
       position = position,
       rotation = Radians.zero,
       scale = Vector2.one,
@@ -270,40 +299,23 @@ object Clip:
       flip = Flip.default
     )
 
-  def apply(
+  def apply[M <: Material](
       position: Point,
       size: Size,
-      sheet: ClipSheet
-  ): Clip =
+      sheet: ClipSheet,
+      material: M
+  ): Clip[M] =
     Clip(
       size = size,
       sheet = sheet,
       playMode = ClipPlayMode.default,
+      material = material,
       position = position,
       rotation = Radians.zero,
       scale = Vector2.one,
       depth = Depth.zero,
       ref = Point.zero,
       flip = Flip.default
-    )
-
-  // TODO: Remove?
-  val shaderId: ShaderId =
-    ShaderId("clip shader")
-
-  val vertAsset: AssetName = AssetName("clip vertex")
-  val fragAsset: AssetName = AssetName("clip fragment")
-
-  val clipShader: EntityShader.External =
-    EntityShader
-      .External(shaderId)
-      .withVertexProgram(vertAsset)
-      .withFragmentProgram(fragAsset)
-
-  def assets: Set[AssetType] =
-    Set(
-      AssetType.Text(vertAsset, AssetPath("assets/clip.vert")),
-      AssetType.Text(fragAsset, AssetPath("assets/clip.frag"))
     )
 
 enum ClipSheetArrangement:
