@@ -71,6 +71,17 @@ final case class Clip(
     with SpatialModifiers[Clip]
     derives CanEqual:
 
+  def withSize(newSize: Size): Clip =
+    this.copy(size = newSize)
+  def withSize(width: Int, height: Int): Clip =
+    withSize(Size(width, height))
+
+  def withSheet(newSheet: ClipSheet): Clip =
+    this.copy(sheet = newSheet)
+
+  def withPlayMode(newPlayMode: ClipPlayMode): Clip =
+    this.copy(playMode = newPlayMode)
+
   def moveTo(pt: Point): Clip =
     this.copy(position = pt)
   def moveTo(x: Int, y: Int): Clip =
