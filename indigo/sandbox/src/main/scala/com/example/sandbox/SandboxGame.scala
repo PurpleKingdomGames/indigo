@@ -3,6 +3,8 @@ package com.example.sandbox
 import com.example.sandbox.scenes.Archetype
 import com.example.sandbox.scenes.BoundsScene
 import com.example.sandbox.scenes.CameraScene
+import com.example.sandbox.scenes.Clip
+import com.example.sandbox.scenes.ClipScene
 import com.example.sandbox.scenes.ConfettiScene
 import com.example.sandbox.scenes.CratesScene
 import com.example.sandbox.scenes.LegacyEffectsScene
@@ -39,7 +41,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
   val viewportHeight: Int     = gameHeight * magnificationLevel // 256
 
   def initialScene(bootData: SandboxBootData): Option[SceneName] =
-    Some(OriginalScene.name)
+    Some(ClipScene.name)
 
   def scenes(bootData: SandboxBootData): NonEmptyList[Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]] =
     NonEmptyList(
@@ -55,7 +57,8 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
       UiScene,
       ConfettiScene,
       MutantsScene,
-      CratesScene
+      CratesScene,
+      ClipScene
     )
 
   val eventFilters: EventFilters = EventFilters.Permissive
@@ -79,8 +82,12 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
           magnification = magnificationLevel
         ),
         SandboxBootData(flags.getOrElse("key", "No entry for 'key'."), gameViewport)
-      ).withAssets(SandboxAssets.assets ++ Shaders.assets ++ Archetype.assets)
-        .withFonts(Fonts.fontInfo)
+      ).withAssets(
+        SandboxAssets.assets ++
+          Shaders.assets ++
+          Archetype.assets ++
+          Clip.assets
+      ).withFonts(Fonts.fontInfo)
         .withSubSystems(
           FPSCounter(
             Point(5, 165),
@@ -93,7 +100,8 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
           Shaders.external,
           Shaders.sea,
           LegacyEffects.entityShader,
-          Archetype.shader
+          Archetype.shader,
+          Clip.clipShader
         )
         .addShaders(Refraction.shaders)
     )
