@@ -1,15 +1,19 @@
 package indigo.shared.shader
 
+import indigo.shared.datatypes.Depth
 import indigo.shared.datatypes.Matrix4
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.RGB
 import indigo.shared.datatypes.RGBA
+import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Size
 import indigo.shared.datatypes.Vector2
 import indigo.shared.datatypes.Vector3
 import indigo.shared.datatypes.Vector4
 import indigo.shared.datatypes.mutable.CheapMatrix4
+import indigo.shared.time.Millis
+import indigo.shared.time.Seconds
 
 import scala.collection.immutable.ArraySeq
 import scala.reflect.ClassTag
@@ -54,6 +58,24 @@ object ShaderPrimitive:
 
     def apply(fill: Double): float =
       float(fill.toFloat)
+
+    def apply(fill: Int): float =
+      float(fill.toFloat)
+
+    def apply(fill: Long): float =
+      float(fill.toFloat)
+
+    def fromDepth(depth: Depth): float =
+      float(depth.toDouble)
+
+    def fromMillis(millis: Millis): float =
+      float(millis.toDouble)
+
+    def fromRadians(radians: Radians): float =
+      float(radians.toDouble)
+
+    def fromSeconds(seconds: Seconds): float =
+      float(seconds.toDouble)
 
     given IsShaderValue[float] =
       IsShaderValue.create[float](length, _.toArray)
@@ -224,7 +246,7 @@ object ShaderPrimitive:
 
   /** Advanced usage only, a raw array of Float's to send to the fragment shader. Warning: The assumption here is that
     * you know what you're doing i.e. how the packing/unpacking rules work. If you don't, use a normal shader `array`!
-    * 
+    *
     * @param arr
     *   The array of Floats to send
     */
