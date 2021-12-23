@@ -47,10 +47,18 @@ object ClipScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxView
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
-        Graphic(Size(128), Material.Bitmap(SandboxAssets.trafficLightsName)),
-        Clip(Point(80, 80), Size(64), ClipSheet(3, Seconds(0.25), 2), Material.Bitmap(SandboxAssets.trafficLightsName)),
-        Shape.Box(Rectangle(Point.zero, Size(64)), Fill.None, Stroke(1, RGBA.Green)).moveTo(Point(80, 80)),
-        Clip(Point(144, 80), Size(64), ClipSheet(3, Seconds(0.5), 2), Material.Bitmap(SandboxAssets.trafficLightsName)),
-        Shape.Box(Rectangle(Point.zero, Size(64)), Fill.None, Stroke(1, RGBA.Green)).moveTo(Point(144, 80))
+        Clip(Point(0), Size(64), ClipSheet(3, Seconds(0.25), 2), Material.Bitmap(SandboxAssets.trafficLightsName)),
+        Shape.Box(Rectangle(Point.zero, Size(64)), Fill.None, Stroke(1, RGBA.Green)).moveTo(Point(0)),
+        Clip(Point(64, 0), Size(64), ClipSheet(3, Seconds(0.5), 2), Material.Bitmap(SandboxAssets.trafficLightsName)),
+        Shape.Box(Rectangle(Point.zero, Size(64)), Fill.None, Stroke(1, RGBA.Green)).moveTo(Point(64, 0)),
+        Clip(
+          Point(128, 0),
+          Size(96, 96),
+          ClipSheet(4, Millis(100).toSeconds, 9)
+            .withArrangement(indigo.shared.scenegraph.ClipSheetArrangement.Vertical)
+            .withStartOffset(29),
+          SandboxAssets.captainMaterial
+        ),
+        Shape.Box(Rectangle(Point.zero, Size(96)), Fill.None, Stroke(1, RGBA.Green)).moveTo(Point(128, 0))
       )
     )

@@ -12,6 +12,26 @@ vec2 scaleCoordsWithOffset(vec2 a, vec2 b){
   return vec2(0.0);
 }
 
+/*
+Horizontal / Vertical
+
+ClipSheet(
+    frameCount: Int,
+    frameDuration: Seconds,
+    wrapAt: Int,
+    arrangement: ClipSheetArrangement,
+    startOffset: Int)
+
+case Forward, Backward, PingPong
+
+enum ClipPlayMode:
+  val direction: ClipPlayDirection
+
+  case Loop(direction: ClipPlayDirection) extends ClipPlayMode
+  case PlayOnce(direction: ClipPlayDirection, startTime: Seconds) extends ClipPlayMode
+  case PlayCount(direction: ClipPlayDirection, startTime: Seconds, times: Int) extends ClipPlayMode
+*/
+
 //<indigo-vertex>
 layout (std140) uniform IndigoClipData {
   float CLIP_FRAME_COUNT;
