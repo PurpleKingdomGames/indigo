@@ -110,9 +110,14 @@ final case class Clip[M <: Material](
         UniformBlock(
           "IndigoClipData",
           List(
-            Uniform("CLIP_FRAME_COUNT")    -> float(sheet.frameCount),
-            Uniform("CLIP_FRAME_DURATION") -> float.fromSeconds(sheet.frameDuration),
-            Uniform("CLIP_WRAP_AT")        -> float(sheet.wrapAt)
+            Uniform("CLIP_SHEET_FRAME_COUNT")    -> float(sheet.frameCount),
+            Uniform("CLIP_SHEET_FRAME_DURATION") -> float.fromSeconds(sheet.frameDuration),
+            Uniform("CLIP_SHEET_WRAP_AT")        -> float(sheet.wrapAt),
+            Uniform("CLIP_SHEET_ARRANGEMENT")    -> float(sheet.arrangement.toInt),
+            Uniform("CLIP_SHEET_START_OFFSET")   -> float(sheet.startOffset),
+            Uniform("CLIP_PLAY_DIRECTION")       -> float(playMode.direction.toInt),
+            Uniform("CLIP_PLAYMODE_START_TIME")  -> float.fromSeconds(playMode.giveStartTime),
+            Uniform("CLIP_PLAYMODE_TIMES")       -> float(playMode.giveTimes)
           )
         )
       )
@@ -277,8 +282,14 @@ object Clip:
       flip = Flip.default
     )
 
-enum ClipSheetArrangement:
+enum ClipSheetArrangement derives CanEqual:
   case Horizontal, Vertical
+
+  // Using this instead of `ordinal` so that order shouldn't break implementation...
+  def toInt: Int =
+    this match
+      case ClipSheetArrangement.Horizontal => 0
+      case ClipSheetArrangement.Vertical   => 1
 
 object ClipSheetArrangement:
   val default: ClipSheetArrangement =
@@ -317,19 +328,38 @@ object ClipSheet:
   def apply(frameCount: Int, frameDuration: Seconds, wrapAt: Int, arrangement: ClipSheetArrangement): ClipSheet =
     ClipSheet(frameCount, frameDuration, wrapAt, arrangement, 0)
 
-enum ClipPlayDirection:
+enum ClipPlayDirection derives CanEqual:
   case Forward, Backward, PingPong
+
+  // Using this instead of `ordinal` so that order shouldn't break implementation...
+  def toInt: Int =
+    this match
+      case ClipPlayDirection.Forward  => 0
+      case ClipPlayDirection.Backward => 1
+      case ClipPlayDirection.PingPong => 2
 
 object ClipPlayDirection:
   val default: ClipPlayDirection =
     ClipPlayDirection.Forward
 
-enum ClipPlayMode:
+enum ClipPlayMode derives CanEqual:
   val direction: ClipPlayDirection
 
   case Loop(direction: ClipPlayDirection) extends ClipPlayMode
   case PlayOnce(direction: ClipPlayDirection, startTime: Seconds) extends ClipPlayMode
   case PlayCount(direction: ClipPlayDirection, startTime: Seconds, times: Int) extends ClipPlayMode
+
+  def giveStartTime: Seconds =
+    this match
+      case _: ClipPlayMode.Loop      => Seconds.zero
+      case x: ClipPlayMode.PlayOnce  => x.startTime
+      case x: ClipPlayMode.PlayCount => x.startTime
+
+  def giveTimes: Int =
+    this match
+      case _: ClipPlayMode.Loop      => -1
+      case _: ClipPlayMode.PlayOnce  => 1
+      case x: ClipPlayMode.PlayCount => x.times
 
 object ClipPlayMode:
   val default: ClipPlayMode =
