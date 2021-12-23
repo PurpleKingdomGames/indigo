@@ -284,7 +284,13 @@ object ClipSheetArrangement:
   val default: ClipSheetArrangement =
     ClipSheetArrangement.Horizontal
 
-final case class ClipSheet(frameCount: Int, frameDuration: Seconds, wrapAt: Int, arrangement: ClipSheetArrangement):
+final case class ClipSheet(
+    frameCount: Int,
+    frameDuration: Seconds,
+    wrapAt: Int,
+    arrangement: ClipSheetArrangement,
+    startOffset: Int
+):
   def withFrameCount(newFrameCount: Int): ClipSheet =
     this.copy(frameCount = newFrameCount)
 
@@ -297,11 +303,19 @@ final case class ClipSheet(frameCount: Int, frameDuration: Seconds, wrapAt: Int,
   def withArrangement(newArrangement: ClipSheetArrangement): ClipSheet =
     this.copy(arrangement = newArrangement)
 
+  def withStartOffset(newStartOffset: Int): ClipSheet =
+    this.copy(startOffset = newStartOffset)
+
 object ClipSheet:
+
   def apply(frameCount: Int, frameDuration: Seconds): ClipSheet =
-    ClipSheet(frameCount, frameDuration, frameCount, ClipSheetArrangement.default)
+    ClipSheet(frameCount, frameDuration, frameCount, ClipSheetArrangement.default, 0)
+
   def apply(frameCount: Int, frameDuration: Seconds, wrapAt: Int): ClipSheet =
-    ClipSheet(frameCount, frameDuration, wrapAt, ClipSheetArrangement.default)
+    ClipSheet(frameCount, frameDuration, wrapAt, ClipSheetArrangement.default, 0)
+
+  def apply(frameCount: Int, frameDuration: Seconds, wrapAt: Int, arrangement: ClipSheetArrangement): ClipSheet =
+    ClipSheet(frameCount, frameDuration, wrapAt, arrangement, 0)
 
 enum ClipPlayDirection:
   case Forward, Backward, PingPong

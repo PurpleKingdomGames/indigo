@@ -6,6 +6,9 @@ import indigoextras.effectmaterials.RefractionEntity
 
 object SandboxAssets {
 
+  val captainName: AssetName           = AssetName("captain clown nose")
+  val captainMaterial: Material.Bitmap = Material.Bitmap(captainName)
+
   val smallFontName: AssetName = AssetName("smallFontName")
   val dudeName: AssetName      = AssetName("base_charactor")
   val light: AssetName         = AssetName("light")
@@ -74,6 +77,7 @@ object SandboxAssets {
       AssetType.Text(AssetName(dudeName.toString + "-json"), AssetPath("assets/" + dudeName + ".json")),
       AssetType.Image(dudeName, AssetPath("assets/" + dudeName + ".png")),
       AssetType.Image(dots, AssetPath("assets/" + dots + ".png")),
+      AssetType.Image(captainName, AssetPath("assets/Captain Clown Nose.png")),
       AssetType.Tagged("atlas1")(
         AssetType.Image(junctionBoxAlbedo, AssetPath("assets/" + junctionBoxAlbedo + ".png")),
         AssetType.Image(junctionBoxEmission, AssetPath("assets/" + junctionBoxEmission + ".png")),
