@@ -361,6 +361,24 @@ enum ClipPlayMode derives CanEqual:
       case _: ClipPlayMode.PlayOnce  => 1
       case x: ClipPlayMode.PlayCount => x.times
 
+  def forwards: ClipPlayMode =
+    this match
+      case x: ClipPlayMode.Loop      => ClipPlayMode.Loop(ClipPlayDirection.Forward)
+      case x: ClipPlayMode.PlayOnce  => ClipPlayMode.PlayOnce(ClipPlayDirection.Forward, x.startTime)
+      case x: ClipPlayMode.PlayCount => ClipPlayMode.PlayCount(ClipPlayDirection.Forward, x.startTime, x.times)
+
+  def backwards: ClipPlayMode =
+    this match
+      case x: ClipPlayMode.Loop      => ClipPlayMode.Loop(ClipPlayDirection.Backward)
+      case x: ClipPlayMode.PlayOnce  => ClipPlayMode.PlayOnce(ClipPlayDirection.Backward, x.startTime)
+      case x: ClipPlayMode.PlayCount => ClipPlayMode.PlayCount(ClipPlayDirection.Backward, x.startTime, x.times)
+
+  def pingpong: ClipPlayMode =
+    this match
+      case x: ClipPlayMode.Loop      => ClipPlayMode.Loop(ClipPlayDirection.PingPong)
+      case x: ClipPlayMode.PlayOnce  => ClipPlayMode.PlayOnce(ClipPlayDirection.PingPong, x.startTime)
+      case x: ClipPlayMode.PlayCount => ClipPlayMode.PlayCount(ClipPlayDirection.PingPong, x.startTime, x.times)
+
 object ClipPlayMode:
   val default: ClipPlayMode =
     ClipPlayMode.Loop(ClipPlayDirection.default)
