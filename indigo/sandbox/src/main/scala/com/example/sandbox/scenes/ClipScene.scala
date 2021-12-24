@@ -40,6 +40,12 @@ object ClipScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxView
   ): GlobalEvent => Outcome[SandboxViewModel] =
     _ => Outcome(viewModel)
 
+  val label: String => TextBox =
+    TextBox(_)
+      .withFontSize(Pixels(8))
+      .withColor(RGBA.White)
+      .withFontFamily(FontFamily.uiMonospace)
+
   def present(
       context: FrameContext[SandboxStartupData],
       model: SandboxGameModel,
@@ -47,14 +53,29 @@ object ClipScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxView
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
+        //
         Clip(Point(0), Size(64), ClipSheet(3, Seconds(0.25), 2), Material.Bitmap(SandboxAssets.trafficLightsName)),
         Shape.Box(Rectangle(Point.zero, Size(64)), Fill.None, Stroke(1, RGBA.Green)).moveTo(Point(0)),
+        label("Forwards (250ms)").moveTo(0, 64),
+        //
+        Clip(Point(0, 80), Size(64), ClipSheet(3, Seconds(0.25), 2), Material.Bitmap(SandboxAssets.trafficLightsName))
+          .withPlayMode(ClipPlayMode.Loop(ClipPlayDirection.Backward)),
+        Shape.Box(Rectangle(Point.zero, Size(64)), Fill.None, Stroke(1, RGBA.Green)).moveTo(Point(0, 80)),
+        label("Backwards (250ms)").moveTo(0, 64 + 80),
+        //
         Clip(Point(64, 0), Size(64), ClipSheet(3, Seconds(0.5), 2), Material.Bitmap(SandboxAssets.trafficLightsName)),
         Shape.Box(Rectangle(Point.zero, Size(64)), Fill.None, Stroke(1, RGBA.Green)).moveTo(Point(64, 0)),
+        label("Forwards (500ms)").moveTo(64, 64),
+        //
+        Clip(Point(64, 80), Size(64), ClipSheet(3, Seconds(0.5), 2), Material.Bitmap(SandboxAssets.trafficLightsName))
+          .withPlayMode(ClipPlayMode.Loop(ClipPlayDirection.PingPong)),
+        Shape.Box(Rectangle(Point.zero, Size(64)), Fill.None, Stroke(1, RGBA.Green)).moveTo(Point(64, 80)),
+        label("Ping-Pong (500ms)").moveTo(64, 64 + 80),
+        // Pirate
         Clip(
           Point(128, 0),
           Size(96, 96),
-          ClipSheet(4, Millis(100).toSeconds, 9)
+          ClipSheet(4, Millis(100).toSeconds, 10)
             .withArrangement(indigo.shared.scenegraph.ClipSheetArrangement.Vertical)
             .withStartOffset(29),
           SandboxAssets.captainMaterial
