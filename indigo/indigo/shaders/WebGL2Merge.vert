@@ -1,6 +1,6 @@
 #version 300 es
 
-precision lowp float;
+precision mediump float;
 
 layout (location = 0) in vec4 a_verticesAndCoords; // a_vertices, a_texcoord
 
