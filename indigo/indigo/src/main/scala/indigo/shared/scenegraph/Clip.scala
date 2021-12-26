@@ -32,6 +32,44 @@ final case class Clip[M <: Material](
     with SpatialModifiers[Clip[M]]
     derives CanEqual:
 
+  def loop: Clip[M] =
+    this.copy(playMode = ClipPlayMode.Loop(playMode.direction))
+
+  def playOnce: Clip[M] =
+    this.copy(playMode = ClipPlayMode.PlayOnce(playMode.direction, Seconds.zero))
+  def playOnce(after: Seconds): Clip[M] =
+    this.copy(playMode = ClipPlayMode.PlayOnce(playMode.direction, after))
+
+  def play: Clip[M] =
+    loop
+  def play(after: Seconds): Clip[M] =
+    this.copy(playMode = ClipPlayMode.PlayOnce(playMode.direction, after))
+  def play(numOfTimes: Int): Clip[M] =
+    this.copy(playMode = ClipPlayMode.PlayCount(playMode.direction, Seconds.zero, numOfTimes))
+  def play(after: Seconds, numOfTimes: Int): Clip[M] =
+    this.copy(playMode = ClipPlayMode.PlayCount(playMode.direction, after, numOfTimes))
+
+  def forwards: Clip[M]       = this.copy(playMode = playMode.forwards)
+  def backwards: Clip[M]      = this.copy(playMode = playMode.backwards)
+  def reverse: Clip[M]        = backwards
+  def pingPong: Clip[M]       = this.copy(playMode = playMode.pingPong)
+  def smoothPingPong: Clip[M] = this.copy(playMode = playMode.smoothPingPong)
+
+  def withFrameCount(newFrameCount: Int): Clip[M] =
+    this.copy(sheet = sheet.withFrameCount(newFrameCount))
+
+  def withFrameDuration(newFrameDuration: Seconds): Clip[M] =
+    this.copy(sheet = sheet.withFrameDuration(newFrameDuration))
+
+  def withWrapAt(newWrapAt: Int): Clip[M] =
+    this.copy(sheet = sheet.withWrapAt(newWrapAt))
+
+  def withArrangement(newArrangement: ClipSheetArrangement): Clip[M] =
+    this.copy(sheet = sheet.withArrangement(newArrangement))
+
+  def withStartOffset(newStartOffset: Int): Clip[M] =
+    this.copy(sheet = sheet.withStartOffset(newStartOffset))
+
   def bounds: Rectangle =
     BoundaryLocator.findBounds(this, position, size, ref)
 
@@ -374,11 +412,17 @@ enum ClipPlayMode derives CanEqual:
       case x: ClipPlayMode.PlayOnce  => ClipPlayMode.PlayOnce(ClipPlayDirection.Backward, x.startTime)
       case x: ClipPlayMode.PlayCount => ClipPlayMode.PlayCount(ClipPlayDirection.Backward, x.startTime, x.times)
 
-  def pingpong: ClipPlayMode =
+  def pingPong: ClipPlayMode =
     this match
       case x: ClipPlayMode.Loop      => ClipPlayMode.Loop(ClipPlayDirection.PingPong)
       case x: ClipPlayMode.PlayOnce  => ClipPlayMode.PlayOnce(ClipPlayDirection.PingPong, x.startTime)
       case x: ClipPlayMode.PlayCount => ClipPlayMode.PlayCount(ClipPlayDirection.PingPong, x.startTime, x.times)
+
+  def smoothPingPong: ClipPlayMode =
+    this match
+      case x: ClipPlayMode.Loop      => ClipPlayMode.Loop(ClipPlayDirection.SmoothPingPong)
+      case x: ClipPlayMode.PlayOnce  => ClipPlayMode.PlayOnce(ClipPlayDirection.SmoothPingPong, x.startTime)
+      case x: ClipPlayMode.PlayCount => ClipPlayMode.PlayCount(ClipPlayDirection.SmoothPingPong, x.startTime, x.times)
 
 object ClipPlayMode:
   val default: ClipPlayMode =
