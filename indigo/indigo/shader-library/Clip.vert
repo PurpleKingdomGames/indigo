@@ -31,7 +31,12 @@ void vertex(){
 
   int direction = int(round(CLIP_PLAY_DIRECTION));
 
-   // 0 = forward, 1 = backward, 2 = ping pong
+  // Can't ping pong if there aren't enough frames.
+  if(direction >= 2 && int(CLIP_SHEET_FRAME_COUNT) <= 2) {
+    direction = 1;
+  }
+
+   // 0 = forward, 1 = backward, 2 = ping pong, 3 = smooth ping pong
   switch(direction) {
     case 0:
       clipTotalTime = CLIP_SHEET_FRAME_COUNT * CLIP_SHEET_FRAME_DURATION;
@@ -50,6 +55,16 @@ void vertex(){
 
       if(currentFrame >= CLIP_SHEET_FRAME_COUNT) {
         currentFrame = (CLIP_SHEET_FRAME_COUNT * 2.0) - 1.0 - currentFrame;
+      }
+
+      break;
+
+    case 3:
+      clipTotalTime = (CLIP_SHEET_FRAME_COUNT + (CLIP_SHEET_FRAME_COUNT - 2.0)) * CLIP_SHEET_FRAME_DURATION;
+      currentFrame = floor(mod(TIME, clipTotalTime) / CLIP_SHEET_FRAME_DURATION);
+
+      if(currentFrame >= CLIP_SHEET_FRAME_COUNT) {
+        currentFrame = (CLIP_SHEET_FRAME_COUNT * 2.0) - 1.0 - (currentFrame + 1.0);
       }
 
       break;
