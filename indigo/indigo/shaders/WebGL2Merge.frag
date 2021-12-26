@@ -1,6 +1,6 @@
 #version 300 es
 
-precision lowp float;
+precision mediump float;
 
 in vec2 SIZE; // In this case, screen size.
 in vec2 UV; // Unscaled texture coordinates

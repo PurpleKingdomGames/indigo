@@ -1,6 +1,6 @@
 #version 300 es
 
-precision lowp float;
+precision mediump float;
 
 // These variables and functions are all placeholders and will be replaced
 // with the real ones at compile time. No values or implementations are
