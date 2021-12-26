@@ -37,17 +37,15 @@ final case class Clip[M <: Material](
 
   def playOnce: Clip[M] =
     this.copy(playMode = ClipPlayMode.PlayOnce(playMode.direction, Seconds.zero))
-  def playOnce(after: Seconds): Clip[M] =
-    this.copy(playMode = ClipPlayMode.PlayOnce(playMode.direction, after))
+  def playOnce(startTime: Seconds): Clip[M] =
+    this.copy(playMode = ClipPlayMode.PlayOnce(playMode.direction, startTime))
 
   def play: Clip[M] =
     loop
-  def play(after: Seconds): Clip[M] =
-    this.copy(playMode = ClipPlayMode.PlayOnce(playMode.direction, after))
-  def play(numOfTimes: Int): Clip[M] =
-    this.copy(playMode = ClipPlayMode.PlayCount(playMode.direction, Seconds.zero, numOfTimes))
-  def play(after: Seconds, numOfTimes: Int): Clip[M] =
-    this.copy(playMode = ClipPlayMode.PlayCount(playMode.direction, after, numOfTimes))
+  def play(startTime: Seconds): Clip[M] =
+    this.copy(playMode = ClipPlayMode.PlayOnce(playMode.direction, startTime))
+  def play(startTime: Seconds, numOfTimes: Int): Clip[M] =
+    this.copy(playMode = ClipPlayMode.PlayCount(playMode.direction, startTime, numOfTimes))
 
   def forwards: Clip[M]       = this.copy(playMode = playMode.forwards)
   def backwards: Clip[M]      = this.copy(playMode = playMode.backwards)
