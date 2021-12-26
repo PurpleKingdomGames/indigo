@@ -13,7 +13,7 @@ float PI;
 float PI_2;
 float PI_4;
 vec2 SCREEN_COORDS;
-float TIME;
+highp float TIME;
 float ROTATION;
 
 int LIGHT_COUNT;

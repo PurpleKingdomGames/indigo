@@ -6,7 +6,7 @@ vec2 CHANNEL_0_TEXTURE_COORDS;
 vec2 CHANNEL_0_ATLAS_OFFSET;
 vec2 UV;
 
-float TIME;
+highp float TIME;
 
 vec2 scaleCoordsWithOffset(vec2 a, vec2 b){
   return vec2(0.0);
