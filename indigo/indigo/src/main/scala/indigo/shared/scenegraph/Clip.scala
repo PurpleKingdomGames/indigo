@@ -329,14 +329,15 @@ object ClipSheet:
     ClipSheet(frameCount, frameDuration, wrapAt, arrangement, 0)
 
 enum ClipPlayDirection derives CanEqual:
-  case Forward, Backward, PingPong
+  case Forward, Backward, PingPong, SmoothPingPong
 
   // Using this instead of `ordinal` so that order shouldn't break implementation...
   def toInt: Int =
     this match
-      case ClipPlayDirection.Forward  => 0
-      case ClipPlayDirection.Backward => 1
-      case ClipPlayDirection.PingPong => 2
+      case ClipPlayDirection.Forward        => 0
+      case ClipPlayDirection.Backward       => 1
+      case ClipPlayDirection.PingPong       => 2
+      case ClipPlayDirection.SmoothPingPong => 3
 
 object ClipPlayDirection:
   val default: ClipPlayDirection =
