@@ -14,15 +14,25 @@ vec2 scaleCoordsWithOffset(vec2 a, vec2 b){
 
 //<indigo-vertex>
 layout (std140) uniform IndigoClipData {
-  float CLIP_SHEET_FRAME_COUNT;
-  float CLIP_SHEET_FRAME_DURATION;
-  float CLIP_SHEET_WRAP_AT;
-  float CLIP_SHEET_ARRANGEMENT; // 0 = horizontal, 1 = vertical
-  float CLIP_SHEET_START_OFFSET;
-  float CLIP_PLAY_DIRECTION; // 0 = forward, 1 = backward, 2 = ping pong
-  float CLIP_PLAYMODE_START_TIME;
-  float CLIP_PLAYMODE_TIMES;
+  highp float CLIP_SHEET_FRAME_COUNT;
+  highp float CLIP_SHEET_FRAME_DURATION;
+  highp float CLIP_SHEET_WRAP_AT;
+  highp float CLIP_SHEET_ARRANGEMENT; // 0 = horizontal, 1 = vertical
+  highp float CLIP_SHEET_START_OFFSET;
+  highp float CLIP_PLAY_DIRECTION; // 0 = forward, 1 = backward, 2 = ping pong
+  highp float CLIP_PLAYMODE_START_TIME;
+  highp float CLIP_PLAYMODE_TIMES;
 };
+
+float calcCurrentFrame(float clipTotalTime) {
+  float t = max(TIME - CLIP_PLAYMODE_START_TIME, 0.0);
+
+  if(int(CLIP_PLAYMODE_TIMES) > 0) {
+    t = min(t, (clipTotalTime * CLIP_PLAYMODE_TIMES) - (CLIP_SHEET_FRAME_DURATION * 0.5));
+  }
+  
+  return floor(mod(t, clipTotalTime) / CLIP_SHEET_FRAME_DURATION) + CLIP_SHEET_START_OFFSET;
+}
 
 void vertex(){
 
@@ -40,18 +50,18 @@ void vertex(){
   switch(direction) {
     case 0:
       clipTotalTime = CLIP_SHEET_FRAME_COUNT * CLIP_SHEET_FRAME_DURATION;
-      currentFrame = floor(mod(TIME, clipTotalTime) / CLIP_SHEET_FRAME_DURATION) + CLIP_SHEET_START_OFFSET;
+      currentFrame = calcCurrentFrame(clipTotalTime);
       break;
 
     case 1:
       clipTotalTime = CLIP_SHEET_FRAME_COUNT * CLIP_SHEET_FRAME_DURATION;
-      currentFrame = floor(mod(TIME, clipTotalTime) / CLIP_SHEET_FRAME_DURATION) + CLIP_SHEET_START_OFFSET;
+      currentFrame = calcCurrentFrame(clipTotalTime);
       currentFrame = CLIP_SHEET_FRAME_COUNT - 1.0 - currentFrame;
       break;
 
     case 2:
-      clipTotalTime = CLIP_SHEET_FRAME_COUNT * 2.0 * CLIP_SHEET_FRAME_DURATION;
-      currentFrame = floor(mod(TIME, clipTotalTime) / CLIP_SHEET_FRAME_DURATION) + CLIP_SHEET_START_OFFSET;
+      clipTotalTime = (CLIP_SHEET_FRAME_COUNT + CLIP_SHEET_FRAME_COUNT) * CLIP_SHEET_FRAME_DURATION;
+      currentFrame = calcCurrentFrame(clipTotalTime);
 
       if(currentFrame >= CLIP_SHEET_FRAME_COUNT) {
         currentFrame = (CLIP_SHEET_FRAME_COUNT * 2.0) - 1.0 - currentFrame;
@@ -61,7 +71,7 @@ void vertex(){
 
     case 3:
       clipTotalTime = (CLIP_SHEET_FRAME_COUNT + (CLIP_SHEET_FRAME_COUNT - 2.0)) * CLIP_SHEET_FRAME_DURATION;
-      currentFrame = floor(mod(TIME, clipTotalTime) / CLIP_SHEET_FRAME_DURATION) + CLIP_SHEET_START_OFFSET;
+      currentFrame = calcCurrentFrame(clipTotalTime);
 
       if(currentFrame >= CLIP_SHEET_FRAME_COUNT) {
         currentFrame = (CLIP_SHEET_FRAME_COUNT * 2.0) - 1.0 - (currentFrame + 1.0);

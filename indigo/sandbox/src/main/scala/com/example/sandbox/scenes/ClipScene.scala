@@ -78,8 +78,7 @@ object ClipScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxView
             Size(64),
             ClipSheet(3, Seconds(0.5), 2),
             Material.Bitmap(SandboxAssets.trafficLightsName)
-          )
-            .withPlayMode(ClipPlayMode.Loop(ClipPlayDirection.SmoothPingPong)),
+          ).smoothPingPong,
           Shape.Box(Rectangle(Point.zero, Size(64)), Fill.None, Stroke(1, RGBA.Green)).moveTo(Point(64, 160)),
           label("Smooth Ping-Pong (500ms)").moveTo(64, 64 + 160),
           // Pirate
@@ -87,11 +86,24 @@ object ClipScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxView
             Point(128, 0),
             Size(96, 96),
             ClipSheet(37, Millis(100).toSeconds, 10)
-              .withArrangement(indigo.shared.scenegraph.ClipSheetArrangement.Vertical)
-              .withStartOffset(29),
+              .withArrangement(indigo.shared.scenegraph.ClipSheetArrangement.Vertical),
             SandboxAssets.captainMaterial
-          ),
-          Shape.Box(Rectangle(Point.zero, Size(96)), Fill.None, Stroke(1, RGBA.Green)).moveTo(Point(128, 0))
+          ).withStartOffset(29),
+          Shape.Box(Rectangle(Point.zero, Size(96)), Fill.None, Stroke(1, RGBA.Green)).moveTo(Point(128, 0)),
+          // Pirate
+          Clip(
+            Point(224, 0),
+            Size(96, 96),
+            ClipSheet(4, Millis(200).toSeconds, 10)
+              .withArrangement(indigo.shared.scenegraph.ClipSheetArrangement.Vertical),
+            SandboxAssets.captainMaterial
+          ).play(startTime = Seconds(5.0), numOfTimes = 9)
+          .withStartOffset(17),
+          Shape.Box(Rectangle(Point.zero, Size(96)), Fill.None, Stroke(1, RGBA.Green)).moveTo(Point(224, 0)),
+          label("Start after 5 seconds").moveTo(224 + 96 + 2, 0),
+          label("Play 9 times and stop").moveTo(224 + 96 + 2, 10),
+          label("Half speed").moveTo(224 + 96 + 2, 20),
+          label("First frame is white").moveTo(224 + 96 + 2, 30),
         ).withMagnification(1)
       )
     )
