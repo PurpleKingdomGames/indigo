@@ -5,7 +5,7 @@ precision mediump float;
 vec2 UV;
 vec4 COLOR;
 float TAU;
-float TIME;
+highp float TIME;
 vec2 SIZE;
 
 //<indigo-fragment>

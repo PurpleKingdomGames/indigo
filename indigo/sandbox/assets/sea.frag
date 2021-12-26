@@ -6,7 +6,7 @@ precision mediump float;
  * Contact: tdmaav@gmail.com
  */
 
-float TIME;
+highp float TIME;
 vec2 UV;
 vec4 COLOR;
 const float PI	 	= 3.141592;

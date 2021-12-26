@@ -12,7 +12,7 @@ out vec4 fragColor;
 
 // public
 layout (std140) uniform IndigoFrameData {
-  float TIME; // Running time
+  highp float TIME; // Running time
   vec2 VIEWPORT_SIZE; // Size of the viewport in pixels
 };
 
