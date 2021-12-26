@@ -40,18 +40,18 @@ void vertex(){
   switch(direction) {
     case 0:
       clipTotalTime = CLIP_SHEET_FRAME_COUNT * CLIP_SHEET_FRAME_DURATION;
-      currentFrame = floor(mod(TIME, clipTotalTime) / CLIP_SHEET_FRAME_DURATION);
+      currentFrame = floor(mod(TIME, clipTotalTime) / CLIP_SHEET_FRAME_DURATION) + CLIP_SHEET_START_OFFSET;
       break;
 
     case 1:
       clipTotalTime = CLIP_SHEET_FRAME_COUNT * CLIP_SHEET_FRAME_DURATION;
-      currentFrame = floor(mod(TIME, clipTotalTime) / CLIP_SHEET_FRAME_DURATION);
+      currentFrame = floor(mod(TIME, clipTotalTime) / CLIP_SHEET_FRAME_DURATION) + CLIP_SHEET_START_OFFSET;
       currentFrame = CLIP_SHEET_FRAME_COUNT - 1.0 - currentFrame;
       break;
 
     case 2:
       clipTotalTime = CLIP_SHEET_FRAME_COUNT * 2.0 * CLIP_SHEET_FRAME_DURATION;
-      currentFrame = floor(mod(TIME, clipTotalTime) / CLIP_SHEET_FRAME_DURATION);
+      currentFrame = floor(mod(TIME, clipTotalTime) / CLIP_SHEET_FRAME_DURATION) + CLIP_SHEET_START_OFFSET;
 
       if(currentFrame >= CLIP_SHEET_FRAME_COUNT) {
         currentFrame = (CLIP_SHEET_FRAME_COUNT * 2.0) - 1.0 - currentFrame;
@@ -61,7 +61,7 @@ void vertex(){
 
     case 3:
       clipTotalTime = (CLIP_SHEET_FRAME_COUNT + (CLIP_SHEET_FRAME_COUNT - 2.0)) * CLIP_SHEET_FRAME_DURATION;
-      currentFrame = floor(mod(TIME, clipTotalTime) / CLIP_SHEET_FRAME_DURATION);
+      currentFrame = floor(mod(TIME, clipTotalTime) / CLIP_SHEET_FRAME_DURATION) + CLIP_SHEET_START_OFFSET;
 
       if(currentFrame >= CLIP_SHEET_FRAME_COUNT) {
         currentFrame = (CLIP_SHEET_FRAME_COUNT * 2.0) - 1.0 - (currentFrame + 1.0);
