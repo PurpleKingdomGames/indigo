@@ -80,7 +80,6 @@ final case class Clip[M <: Material](
 
   def withMaterial[MB <: Material](newMaterial: MB): Clip[MB] =
     this.copy(material = newMaterial)
-
   def modifyMaterial[MB <: Material](alter: M => MB): Clip[MB] =
     this.copy(material = alter(material))
 
@@ -91,9 +90,13 @@ final case class Clip[M <: Material](
 
   def withSheet(newSheet: ClipSheet): Clip[M] =
     this.copy(sheet = newSheet)
+  def modifySheet(alter: ClipSheet => ClipSheet): Clip[M] =
+    this.copy(sheet = alter(sheet))
 
   def withPlayMode(newPlayMode: ClipPlayMode): Clip[M] =
     this.copy(playMode = newPlayMode)
+  def modifyPlayMode(alter: ClipPlayMode => ClipPlayMode): Clip[M] =
+    this.copy(playMode = alter(playMode))
 
   def moveTo(pt: Point): Clip[M] =
     this.copy(position = pt)
@@ -398,8 +401,8 @@ object ClipPlayDirection:
 enum ClipPlayMode derives CanEqual:
   val direction: ClipPlayDirection
 
-  case Loop(direction: ClipPlayDirection) extends ClipPlayMode
-  case PlayOnce(direction: ClipPlayDirection, startTime: Seconds) extends ClipPlayMode
+  case Loop(direction: ClipPlayDirection)                                      extends ClipPlayMode
+  case PlayOnce(direction: ClipPlayDirection, startTime: Seconds)              extends ClipPlayMode
   case PlayCount(direction: ClipPlayDirection, startTime: Seconds, times: Int) extends ClipPlayMode
 
   def giveStartTime: Seconds =
