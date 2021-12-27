@@ -14,6 +14,7 @@ import indigo.shared.shader.ShaderPrimitive.float
 import indigo.shared.shader.StandardShaders
 import indigo.shared.shader.Uniform
 import indigo.shared.shader.UniformBlock
+import indigo.shared.time.FPS
 import indigo.shared.time.Seconds
 
 final case class Clip[M <: Material](
@@ -67,6 +68,9 @@ final case class Clip[M <: Material](
 
   def withStartOffset(newStartOffset: Int): Clip[M] =
     this.copy(sheet = sheet.withStartOffset(newStartOffset))
+
+  def withFPS(fps: FPS): Clip[M] =
+    this.copy(sheet = sheet.withFPS(fps))
 
   def bounds: Rectangle =
     BoundaryLocator.findBounds(this, position, size, ref)
@@ -353,16 +357,28 @@ final case class ClipSheet(
   def withStartOffset(newStartOffset: Int): ClipSheet =
     this.copy(startOffset = newStartOffset)
 
+  def withFPS(fps: FPS): ClipSheet =
+    withFrameDuration(fps.toSeconds)
+
 object ClipSheet:
 
   def apply(frameCount: Int, frameDuration: Seconds): ClipSheet =
     ClipSheet(frameCount, frameDuration, frameCount, ClipSheetArrangement.default, 0)
 
+  def apply(frameCount: Int, fps: FPS): ClipSheet =
+    ClipSheet(frameCount, fps.toSeconds, frameCount, ClipSheetArrangement.default, 0)
+
   def apply(frameCount: Int, frameDuration: Seconds, wrapAt: Int): ClipSheet =
     ClipSheet(frameCount, frameDuration, wrapAt, ClipSheetArrangement.default, 0)
 
+  def apply(frameCount: Int, fps: FPS, wrapAt: Int): ClipSheet =
+    ClipSheet(frameCount, fps.toSeconds, wrapAt, ClipSheetArrangement.default, 0)
+
   def apply(frameCount: Int, frameDuration: Seconds, wrapAt: Int, arrangement: ClipSheetArrangement): ClipSheet =
     ClipSheet(frameCount, frameDuration, wrapAt, arrangement, 0)
+
+  def apply(frameCount: Int, fps: FPS, wrapAt: Int, arrangement: ClipSheetArrangement): ClipSheet =
+    ClipSheet(frameCount, fps.toSeconds, wrapAt, arrangement, 0)
 
 enum ClipPlayDirection derives CanEqual:
   case Forward, Backward, PingPong, SmoothPingPong
