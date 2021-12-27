@@ -85,7 +85,7 @@ object ClipScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxView
           Clip(
             Point(128, 0),
             Size(96, 96),
-            ClipSheet(37, Millis(100).toSeconds, 10)
+            ClipSheet(37, FPS(10), 10)
               .withArrangement(indigo.shared.scenegraph.ClipSheetArrangement.Vertical),
             SandboxAssets.captainMaterial
           ).withStartOffset(29),
@@ -94,7 +94,7 @@ object ClipScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxView
           Clip(
             Point(224, 0),
             Size(96, 96),
-            ClipSheet(4, Millis(200).toSeconds, 10)
+            ClipSheet(4, FPS(5), 10)
               .withArrangement(indigo.shared.scenegraph.ClipSheetArrangement.Vertical),
             SandboxAssets.captainMaterial
           ).play(startTime = Seconds(5.0), numOfTimes = 9)
