@@ -47,7 +47,7 @@ object snake extends ScalaJSModule with MillIndigo {
 
   object test extends Tests {
     def ivyDeps = Agg(
-      ivy"org.scalameta::munit::0.7.26"
+      ivy"org.scalameta::munit::0.7.29"
     )
 
     def testFramework = "munit.Framework"
@@ -55,6 +55,8 @@ object snake extends ScalaJSModule with MillIndigo {
     override def moduleKind = T(mill.scalajslib.api.ModuleKind.CommonJSModule)
 
     def scalacOptions = super.scalacOptions() ++ ScalacOptions.test
+
+    override def jsEnvConfig = T { JsEnvConfig.NodeJs(args = List("--dns-result-order=ipv4first")) }
   }
 
 }
