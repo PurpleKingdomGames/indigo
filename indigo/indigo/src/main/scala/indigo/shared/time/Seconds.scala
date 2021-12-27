@@ -70,6 +70,9 @@ object Seconds:
     def clamp(min: Seconds, max: Seconds): Seconds =
       Seconds(Math.min(max.toDouble, Math.max(min.toDouble, s.toDouble)))
 
+    def ~==(other: Seconds): Boolean =
+      Math.abs(s.toDouble - other.toDouble) < 0.001
+
     def toInt: Int =
       s.toInt
 

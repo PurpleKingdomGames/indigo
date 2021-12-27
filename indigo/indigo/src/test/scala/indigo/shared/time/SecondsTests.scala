@@ -39,4 +39,8 @@ class SecondsTests extends munit.FunSuite {
     assertEquals(Seconds(1000).clamp(Seconds(0), Seconds(100)), Seconds(100))
   }
 
+  test("approx equal") {
+    assert(Seconds(0.033) ~== Seconds(0.0333))
+  }
+
 }
