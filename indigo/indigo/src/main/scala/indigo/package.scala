@@ -9,9 +9,9 @@ object syntax:
     def zoom: Zoom       = Zoom(d)
 
   extension (i: Int)
-    def depth: Depth      = Depth(i)
-    def fps: GameTime.FPS = GameTime.FPS(i)
-    def pixels: Pixels    = Pixels(i)
+    def depth: Depth   = Depth(i)
+    def fps: FPS       = FPS(i)
+    def pixels: Pixels = Pixels(i)
 
   extension (l: Long) def millis: Millis = Millis(l)
 
@@ -58,6 +58,9 @@ val Millis: shared.time.Millis.type = shared.time.Millis
 
 type Seconds = shared.time.Seconds
 val Seconds: shared.time.Seconds.type = shared.time.Seconds
+
+type FPS = shared.time.FPS
+val FPS: shared.time.FPS.type = shared.time.FPS
 
 type Dice = shared.dice.Dice
 val Dice: shared.dice.Dice.type = shared.dice.Dice
