@@ -9,6 +9,7 @@ import indigo.shared.events._
 import indigo.shared.platform.SceneProcessor
 import indigo.shared.scenegraph.SceneGraphViewEvents
 import indigo.shared.scenegraph.SceneUpdateFragment
+import indigo.shared.time.FPS
 import indigo.shared.time.GameTime
 import indigo.shared.time.Millis
 import indigo.shared.time.Seconds
@@ -50,7 +51,7 @@ class GameLoop[StartUpData, GameModel, ViewModel](
       if (gameConfig.advanced.disableSkipModelUpdates || timeDelta < gameConfig.haltModelUpdatesAt) {
 
         val gameTime =
-          new GameTime(Millis(time).toSeconds, Seconds(timeDelta.toDouble / 1000d), GameTime.FPS(gameConfig.frameRate))
+          new GameTime(Millis(time).toSeconds, Seconds(timeDelta.toDouble / 1000d), FPS(gameConfig.frameRate))
         val collectedEvents = gameEngine.globalEventStream.collect ++ List(FrameTick)
         val dice            = Dice.fromSeconds(gameTime.running)
 

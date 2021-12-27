@@ -4,6 +4,7 @@ import indigo.shared.datatypes.BindingKey
 import indigo.shared.dice.Dice
 import indigo.shared.events.FrameTick
 import indigo.shared.events.GlobalEvent
+import indigo.shared.time.FPS
 import indigo.shared.time.GameTime
 import indigo.shared.time.Millis
 import indigo.shared.time.Seconds
@@ -40,7 +41,7 @@ class WorkScheduleTests extends munit.FunSuite {
 
     val workSchedule = WorkSchedule[SampleActor, SampleContext](bindingKey, SampleActor.worker, Nil)
 
-    val gameTime = new GameTime(0, 0, GameTime.FPS(0))
+    val gameTime = new GameTime(0, 0, FPS(0))
 
     val actual = workSchedule.update(gameTime, dice, actor, context)(FrameTick).unsafeGet.workSchedule.jobStack
 
@@ -55,7 +56,7 @@ class WorkScheduleTests extends munit.FunSuite {
     val jobs                   = Fishing(0) :: Nil
 
     val workSchedule = WorkSchedule[SampleActor, SampleContext](bindingKey, SampleActor.worker, jobs)
-    val gameTime     = new GameTime(0, 0, GameTime.FPS(0))
+    val gameTime     = new GameTime(0, 0, FPS(0))
 
     workSchedule.update(gameTime, dice, actor, context)(FrameTick).unsafeGet.workSchedule.jobStack.headOption match {
       case Some(Fishing(done)) =>
@@ -75,7 +76,7 @@ class WorkScheduleTests extends munit.FunSuite {
     val expected: List[Job]    = Nil
 
     val workSchedule = WorkSchedule[SampleActor, SampleContext](bindingKey, SampleActor.worker, Nil)
-    val gameTime     = new GameTime(0, 0, GameTime.FPS(0))
+    val gameTime     = new GameTime(0, 0, FPS(0))
 
     val actual = workSchedule
       .update(gameTime, dice, actor, context)(UnrelatedEvent("ignored!"))
@@ -93,7 +94,7 @@ class WorkScheduleTests extends munit.FunSuite {
     val expected: List[Job]    = jobToAllocate :: Nil
 
     val workSchedule = WorkSchedule[SampleActor, SampleContext](bindingKey, SampleActor.worker, Nil)
-    val gameTime     = new GameTime(0, 0, GameTime.FPS(0))
+    val gameTime     = new GameTime(0, 0, FPS(0))
 
     val allocationId = bindingKey
 
@@ -112,7 +113,7 @@ class WorkScheduleTests extends munit.FunSuite {
     val expected: List[Job]    = WanderTo(100) :: Nil
 
     val workSchedule = WorkSchedule[SampleActor, SampleContext](bindingKey, SampleActor.worker, Nil)
-    val gameTime     = new GameTime(0, 0, GameTime.FPS(0))
+    val gameTime     = new GameTime(0, 0, FPS(0))
 
     val allocationId = bindingKey
 
@@ -160,7 +161,7 @@ class WorkScheduleTests extends munit.FunSuite {
     }
   }
 
-  val gameTime = new GameTime(0, 0, GameTime.FPS(0))
+  val gameTime = new GameTime(0, 0, FPS(0))
 
   val workSchedule2 = workSchedule.update(gameTime, dice, actor, context)(FrameTick).unsafeGet.workSchedule
 
@@ -178,28 +179,28 @@ class WorkScheduleTests extends munit.FunSuite {
     workSchedule2
       .update(gameTime, dice, actor, context)(FrameTick)
       .unsafeGet
-      .workSchedule //20
+      .workSchedule // 20
       .update(gameTime, dice, actor, context)(FrameTick)
       .unsafeGet
-      .workSchedule //30
+      .workSchedule // 30
       .update(gameTime, dice, actor, context)(FrameTick)
       .unsafeGet
-      .workSchedule //40
+      .workSchedule // 40
       .update(gameTime, dice, actor, context)(FrameTick)
       .unsafeGet
-      .workSchedule //50
+      .workSchedule // 50
       .update(gameTime, dice, actor, context)(FrameTick)
       .unsafeGet
-      .workSchedule //60
+      .workSchedule // 60
       .update(gameTime, dice, actor, context)(FrameTick)
       .unsafeGet
-      .workSchedule //70
+      .workSchedule // 70
       .update(gameTime, dice, actor, context)(FrameTick)
       .unsafeGet
-      .workSchedule //80
+      .workSchedule // 80
       .update(gameTime, dice, actor, context)(FrameTick)
       .unsafeGet
-      .workSchedule //90
+      .workSchedule // 90
 
   test("The WorkSchedule.should complete a job and move onto the next one.Nearly done") {
     workSchedule3.currentJob match {
