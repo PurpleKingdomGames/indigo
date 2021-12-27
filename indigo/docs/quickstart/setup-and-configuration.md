@@ -87,7 +87,7 @@ As a rule of thumb, we encourage you to upgrade to the latest Scala 3, Scala.js,
 
 Indigo games are completely normal [Scala.js](https://www.scala-js.org/) projects.
 
-You can use either [Mill](http://www.lihaoyi.com/mill/) (Mill 0.9.9 or above) or [SBT](https://www.scala-sbt.org/) (recommend sbt 1.5.7 or greater) to build your games, and for your convenience both Mill and SBT have associated plugins, `mill-indigo` and `sbt-indigo` respectively.
+You can use either [Mill](http://www.lihaoyi.com/mill/) (Mill 0.9.9 or above) or [SBT](https://www.scala-sbt.org/) (recommend sbt 1.6.0 or greater) to build your games, and for your convenience both Mill and SBT have associated plugins, `mill-indigo` and `sbt-indigo` respectively.
 
 The plugins help you bootstrap your game during development, they marshal your assets and serve as a reference implementation for _one_ fairly basic way to embed your game into a web page or electron app.
 
