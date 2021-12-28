@@ -1,4 +1,4 @@
-package indigoextras.formats
+package indigo.shared.formats
 
 import indigo.shared.animation._
 import indigo.shared.assets.AssetName
@@ -10,11 +10,12 @@ import indigo.shared.formats._
 import indigo.shared.materials.Material
 import indigo.shared.scenegraph._
 import indigo.shared.time.Millis
+import indigo.shared.time.Seconds
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.noValPatterns"))
 class AsepriteTests extends munit.FunSuite {
 
-  test("Create an Aseprite asset.should be able to convert the loaded definition into a renderable Sprite object") {
+  test("should be able to convert the loaded definition into a renderable Sprite object") {
     val SpriteAndAnimations(sprite, animation) =
       AsepriteSampleData.aseprite
         .toSpriteAndAnimations(Dice.loaded(0), AsepriteSampleData.imageAssetRef)
@@ -26,6 +27,29 @@ class AsepriteTests extends munit.FunSuite {
     assertEquals(animation.cycles.length, 1)
     assertEquals(animation.currentCycleLabel, CycleLabel("lights"))
     assertEquals(animation.cycles.find(c => c.label == animation.currentCycleLabel).get.frames.length, 3)
+  }
+
+  test("should be able to convert the loaded definition into a Map of Clip instances") {
+    val actual: Option[Map[CycleLabel, Clip[Material.Bitmap]]] =
+      AsepriteSampleData.aseprite
+        .toClips(AsepriteSampleData.imageAssetRef)
+
+    assert(clue(actual.isDefined))
+
+    val clips: Map[CycleLabel, Clip[Material.Bitmap]] =
+      actual.get
+
+    assertEquals(clips.size, 1)
+    assert(clue(clips.contains(CycleLabel("lights"))))
+
+    val clip: Clip[Material.Bitmap] = clips.get(CycleLabel("lights")).get
+
+    assertEquals(clip.sheet.frameCount, 3)
+    assert(clue(clip.sheet.frameDuration ~== Millis(100).toSeconds))
+    assertEquals(clip.sheet.arrangement, ClipSheetArrangement.Horizontal)
+    assertEquals(clip.sheet.wrapAt, 2)
+    assertEquals(clip.sheet.startOffset, 0)
+    assertEquals(clip.playMode, ClipPlayMode.loop)
   }
 
 }

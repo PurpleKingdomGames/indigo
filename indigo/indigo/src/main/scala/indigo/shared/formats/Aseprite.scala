@@ -4,11 +4,13 @@ import indigo.shared.IndigoLogger
 import indigo.shared.animation.Animation
 import indigo.shared.animation.AnimationKey
 import indigo.shared.animation.Cycle
+import indigo.shared.animation.CycleLabel
 import indigo.shared.animation.Frame
 import indigo.shared.assets.AssetName
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.datatypes.Depth
+import indigo.shared.datatypes.Flip
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.Rectangle
@@ -17,15 +19,20 @@ import indigo.shared.datatypes.Vector2
 import indigo.shared.dice.Dice
 import indigo.shared.events.GlobalEvent
 import indigo.shared.materials.Material
+import indigo.shared.scenegraph.Clip
+import indigo.shared.scenegraph.ClipPlayMode
+import indigo.shared.scenegraph.ClipSheet
+import indigo.shared.scenegraph.ClipSheetArrangement
 import indigo.shared.scenegraph.Sprite
 import indigo.shared.time.Millis
+import indigo.shared.time.Seconds
 
-final case class Aseprite(frames: List[AsepriteFrame], meta: AsepriteMeta) derives CanEqual {
-
+final case class Aseprite(frames: List[AsepriteFrame], meta: AsepriteMeta) derives CanEqual:
   def toSpriteAndAnimations(dice: Dice, assetName: AssetName): Option[SpriteAndAnimations] =
     Aseprite.toSpriteAndAnimations(this, dice, assetName)
 
-}
+  def toClips(assetName: AssetName): Option[Map[CycleLabel, Clip[Material.Bitmap]]] =
+    Aseprite.toClips(this, assetName)
 
 final case class AsepriteFrame(
     filename: String,
@@ -37,7 +44,9 @@ final case class AsepriteFrame(
     duration: Int
 ) derives CanEqual
 
-final case class AsepriteRectangle(x: Int, y: Int, w: Int, h: Int) derives CanEqual
+final case class AsepriteRectangle(x: Int, y: Int, w: Int, h: Int) derives CanEqual:
+  def position: Point = Point(x, y)
+  def size: Size = Size(w, h)
 
 final case class AsepriteMeta(
     app: String,
@@ -49,12 +58,14 @@ final case class AsepriteMeta(
     frameTags: List[AsepriteFrameTag]
 ) derives CanEqual
 
-final case class AsepriteSize(w: Int, h: Int) derives CanEqual
+final case class AsepriteSize(w: Int, h: Int) derives CanEqual:
+  def toSize: Size = Size(w, h)
 
 final case class AsepriteFrameTag(name: String, from: Int, to: Int, direction: String) derives CanEqual
 
 final case class SpriteAndAnimations(sprite: Sprite[Material.Bitmap], animations: Animation) derives CanEqual
-object Aseprite {
+
+object Aseprite:
 
   def toSpriteAndAnimations(aseprite: Aseprite, dice: Dice, assetName: AssetName): Option[SpriteAndAnimations] =
     extractCycles(aseprite) match {
@@ -86,7 +97,28 @@ object Aseprite {
         )
     }
 
-  def extractCycles(aseprite: Aseprite): List[Cycle] =
+  def toClips(aseprite: Aseprite, assetName: AssetName): Option[Map[CycleLabel, Clip[Material.Bitmap]]] =
+    extractClipData(aseprite)
+      .map(
+        _.map { clipData =>
+          clipData.label ->
+            Clip(
+              size = clipData.size,
+              sheet = clipData.sheet,
+              playMode = ClipPlayMode.default,
+              material = Material.Bitmap(assetName),
+              position = Point.zero,
+              rotation = Radians.zero,
+              scale = Vector2.one,
+              depth = Depth.zero,
+              ref = Point.zero,
+              flip = Flip.default
+            )
+        }
+      )
+      .map(_.toMap)
+
+  private def extractCycles(aseprite: Aseprite): List[Cycle] =
     aseprite.meta.frameTags
       .map { frameTag =>
         extractFrames(frameTag, aseprite.frames) match {
@@ -112,4 +144,56 @@ object Aseprite {
       )
     }
 
-}
+  private def extractClipData(aseprite: Aseprite): Option[List[ClipData]] =
+    aseprite.frames match
+      case f :: Nil =>
+        Option(
+          aseprite.meta.frameTags
+            .map { frameTag =>
+              val sheet =
+                ClipSheet(
+                  frameCount = (frameTag.to - frameTag.from) + 1,
+                  frameDuration = Millis(f.duration.toLong).toSeconds,
+                  wrapAt = 1,
+                  arrangement = ClipSheetArrangement.Horizontal,
+                  startOffset = frameTag.from
+                )
+
+              ClipData(CycleLabel(frameTag.name), f.frame.size, sheet)
+            }
+        )
+
+      case f1 :: f2 :: _ =>
+        val arrangement: ClipSheetArrangement =
+          if f2.frame.x > f1.frame.x then ClipSheetArrangement.Horizontal
+          else ClipSheetArrangement.Vertical
+
+        val wrapAt: Int =
+          arrangement match
+            case ClipSheetArrangement.Horizontal =>
+              aseprite.meta.size.toSize.width / f1.frame.w
+
+            case ClipSheetArrangement.Vertical =>
+              aseprite.meta.size.toSize.height / f1.frame.h
+
+        Option(
+          aseprite.meta.frameTags
+            .map { frameTag =>
+              val sheet =
+                ClipSheet(
+                  frameCount = (frameTag.to - frameTag.from) + 1,
+                  frameDuration = Millis(f1.duration.toLong).toSeconds,
+                  wrapAt = wrapAt,
+                  arrangement = arrangement,
+                  startOffset = frameTag.from
+                )
+
+              ClipData(CycleLabel(frameTag.name), f1.frame.size, sheet)
+            }
+        )
+
+      case Nil =>
+        IndigoLogger.info(s"No frames were found during Aseprite converstion to Clips")
+        None
+
+final case class ClipData(label: CycleLabel, size: Size, sheet: ClipSheet)
