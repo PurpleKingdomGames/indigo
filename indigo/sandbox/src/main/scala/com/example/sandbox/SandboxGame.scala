@@ -116,7 +116,8 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
 
     def makeStartupData(
         aseprite: Aseprite,
-        spriteAndAnimations: SpriteAndAnimations
+        spriteAndAnimations: SpriteAndAnimations,
+        clips: Map[CycleLabel, Clip[Material.Bitmap]]
     ): Startup.Success[SandboxStartupData] =
       Startup
         .Success(
@@ -127,7 +128,8 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
                 .withDepth(Depth(3))
                 .withRef(16, 16)      // Initial offset, so when talk about his position it's the center of the sprite
                 .moveTo(screenCenter) // Also place him in the middle of the screen initially
-                .withMaterial(SandboxAssets.dudeMaterial)
+                .withMaterial(SandboxAssets.dudeMaterial),
+              clips
             ),
             screenCenter
           )
@@ -138,7 +140,8 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
       json                <- assetCollection.findTextDataByName(AssetName(SandboxAssets.dudeName.toString + "-json"))
       aseprite            <- Json.asepriteFromJson(json)
       spriteAndAnimations <- aseprite.toSpriteAndAnimations(dice, SandboxAssets.dudeName)
-    } yield makeStartupData(aseprite, spriteAndAnimations)
+      clips               <- aseprite.toClips(SandboxAssets.dudeName)
+    } yield makeStartupData(aseprite, spriteAndAnimations, clips)
 
     Outcome(res.getOrElse(Startup.Failure("Failed to load the dude")))
   }
@@ -223,7 +226,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
             viewModel.offset
         }
 
-      //more stuff
+      // more stuff
       for {
         single <- viewModel.single.update(context)
         multi  <- viewModel.multi.update(context)
@@ -255,7 +258,11 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
     )
 }
 
-final case class Dude(aseprite: Aseprite, sprite: Sprite[Material.ImageEffects])
+final case class Dude(
+    aseprite: Aseprite,
+    sprite: Sprite[Material.ImageEffects],
+    clips: Map[CycleLabel, Clip[Material.Bitmap]]
+)
 final case class SandboxBootData(message: String, gameViewport: GameViewport)
 final case class SandboxStartupData(dude: Dude, viewportCenter: Point)
 final case class SandboxViewModel(
