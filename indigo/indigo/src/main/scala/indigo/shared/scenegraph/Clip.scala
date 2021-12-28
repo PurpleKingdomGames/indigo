@@ -444,3 +444,12 @@ enum ClipPlayMode derives CanEqual:
 object ClipPlayMode:
   val default: ClipPlayMode =
     ClipPlayMode.Loop(ClipPlayDirection.default)
+
+  val loop: ClipPlayMode =
+    ClipPlayMode.Loop(ClipPlayDirection.default)
+
+  def playOnce(startTime: Seconds): ClipPlayMode =
+    ClipPlayMode.PlayOnce(ClipPlayDirection.default, startTime)
+
+  def playCount(startTime: Seconds, times: Int): ClipPlayMode =
+    ClipPlayMode.PlayCount(ClipPlayDirection.default, startTime, times)
