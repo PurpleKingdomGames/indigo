@@ -196,7 +196,7 @@ void main(void) {
   v_uv_size = vec4(UV, SIZE);
   v_channel_coords_01 = vec4(CHANNEL_0_TEXTURE_COORDS, CHANNEL_1_TEXTURE_COORDS);
   v_channel_coords_23 = vec4(CHANNEL_2_TEXTURE_COORDS, CHANNEL_3_TEXTURE_COORDS);
-  v_textureSize = TEXTURE_SIZE, CHANNEL_0_POSITION;
+  v_textureSize = TEXTURE_SIZE;
   v_atlasSizeAsUV = vec4(ATLAS_SIZE, CHANNEL_0_SIZE);
   v_channel_pos_01 = vec4(CHANNEL_0_POSITION, CHANNEL_1_POSITION);
   v_channel_pos_23 = vec4(CHANNEL_2_POSITION, CHANNEL_3_POSITION);
