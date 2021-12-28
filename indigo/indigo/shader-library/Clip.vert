@@ -31,7 +31,7 @@ float calcCurrentFrame(float clipTotalTime) {
     t = min(t, (clipTotalTime * CLIP_PLAYMODE_TIMES) - (CLIP_SHEET_FRAME_DURATION * 0.5));
   }
   
-  return floor(mod(t, clipTotalTime) / CLIP_SHEET_FRAME_DURATION) + CLIP_SHEET_START_OFFSET;
+  return floor(mod(t / CLIP_SHEET_FRAME_DURATION, clipTotalTime / CLIP_SHEET_FRAME_DURATION)) + CLIP_SHEET_START_OFFSET;
 }
 
 void vertex(){
