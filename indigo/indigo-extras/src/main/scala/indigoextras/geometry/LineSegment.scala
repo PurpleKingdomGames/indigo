@@ -139,6 +139,9 @@ final case class LineSegment(start: Vertex, end: Vertex) derives CanEqual:
   def ~==(other: LineSegment): Boolean =
     (start ~== other.start) && (end ~== other.end)
 
+  def toBoundingBox: BoundingBox =
+    BoundingBox.fromTwoVertices(start, end)
+
 object LineSegment:
 
   def apply(x1: Double, y1: Double, x2: Double, y2: Double): LineSegment =
