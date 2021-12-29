@@ -15,5 +15,6 @@ object Main:
       Collisions.suite,
       QuadTreeBenchmarks.suite,
       BoundaryLocatorBenchmarks.suite,
-      SimpleComparisons.suite
+      SimpleComparisons.suite,
+      LineBenchmarks.suite
     )
