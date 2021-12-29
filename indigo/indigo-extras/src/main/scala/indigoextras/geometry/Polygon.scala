@@ -57,7 +57,7 @@ sealed trait Polygon derives CanEqual:
         bounds.contains(vertex) && p.lineSegments.forall(l => !l.isFacingVertex(vertex))
 
   def lineIntersectCheck(lineSegment: LineSegment): Boolean =
-    lineSegments.exists(_.intersectsWithLine(lineSegment))
+    lineSegments.exists(_.intersectsWith(lineSegment))
 
   def rectangleIntersectCheck(rectangle: Rectangle): Boolean =
     Polygon.fromRectangle(rectangle).lineSegments.exists(lineIntersectCheck)

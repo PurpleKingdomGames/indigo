@@ -159,13 +159,12 @@ class LineSegmentTests extends munit.FunSuite {
     assertEquals(line.sdf(Vertex(25, 25)), Math.sqrt(5 * 5 + 5 * 5))
   }
 
-
   test("line intersections.Intersection use case A") {
 
     val lineA = LineSegment((0.0, 0.0), (5.0, 5.0))
     val lineB = LineSegment((0.0, 3.0), (5.0, 3.0))
 
-    assert(lineA.intersectsWithLine(lineB))
+    assert(lineA.intersectsWith(lineB))
     assertEquals(lineA.intersectsAt(lineB), Some(Vertex(3d, 3d)))
 
   }
@@ -174,7 +173,7 @@ class LineSegmentTests extends munit.FunSuite {
     val lineA = LineSegment((0.0, 0.0), (0.0, 5.0))
     val lineB = LineSegment((0.0, 0.5), (5.0, 3.0))
 
-    assert(lineA.intersectsWithLine(lineB))
+    assert(lineA.intersectsWith(lineB))
     assertEquals(lineA.intersectsAt(lineB), Some(Vertex(0.0, 0.5)))
   }
 
