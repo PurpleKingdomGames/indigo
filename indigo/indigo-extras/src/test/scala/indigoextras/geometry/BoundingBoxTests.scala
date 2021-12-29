@@ -21,7 +21,7 @@ class BoundingBoxTests extends munit.FunSuite {
   }
 
   test("creating rectangles.should be able to construct a bounding box from a cloud of vertices") {
-    //left 0, right 6, top 7, bottom 13
+    // left 0, right 6, top 7, bottom 13
     val vertices: List[Vertex] =
       List(
         Vertex(4, 11),
@@ -139,16 +139,12 @@ class BoundingBoxTests extends munit.FunSuite {
     val actual =
       BoundingBox(1, 1, 3, 3)
         .lineIntersectsAt(
-          LineSegment((1d, 0d), (4d, 4d))
+          LineSegment((1d, 0d), (3d, 5d))
         )
-        .map { v =>
-          // Round to 2 dp
-          Vertex(Math.floor(v.x * 100) / 100, Math.floor(v.y * 100) / 100)
-        }
 
-    val expectd = Some(Vertex(1.74, 1))
+    val expectd = Vertex(1.4, 1)
 
-    assertEquals(actual, expectd)
+    assert(clue(actual).get ~== clue(expectd))
   }
 
   test("intersecting lines.should not find intersection for a line outside the bounding box") {
@@ -159,8 +155,16 @@ class BoundingBoxTests extends munit.FunSuite {
     )
   }
 
+  test("intersecting lines.should not find intersection for a line inside the bounding box") {
+    assertEquals(
+      BoundingBox(5, 5, 4, 4)
+        .lineIntersectsAt(LineSegment((6d, 6d), (7d, 7d))),
+      None
+    )
+  }
+
   test("intersecting lines.detecting a hit") {
-    assert(BoundingBox(1, 1, 3, 3).lineIntersects(LineSegment((1d, 2d), (4d, 2.5d))))
+    assert(BoundingBox(1, 1, 3, 3).lineIntersects(LineSegment((1d, 2d), (5d, 2.5d))))
     assert(!BoundingBox(5, 5, 4, 4).lineIntersects(LineSegment((0d, 0d), (3d, 3d))))
   }
 
@@ -190,6 +194,14 @@ class BoundingBoxTests extends munit.FunSuite {
     val b = BoundingBox(15, 15, 100, 10)
 
     assertEquals(BoundingBox.encompassing(a, b), false)
+  }
+
+  test("overlapping bounding box.should return true when A encompases B") {
+    // This is the encompassing test, but if the encompass, then they overlap.
+    val a = BoundingBox(10, 10, 110, 110)
+    val b = BoundingBox(20, 20, 10, 10)
+
+    assertEquals(BoundingBox.overlapping(a, b), true)
   }
 
   test("overlapping bounding boxes.should return true when A overlaps B") {
