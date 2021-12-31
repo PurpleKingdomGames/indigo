@@ -72,6 +72,7 @@ final class DisplayObjectConversions(
   implicit private val cloneTilesCache: QuickCache[DisplayCloneTiles]                      = QuickCache.empty
   implicit private val uniformsCache: QuickCache[scalajs.js.Array[Float]]                  = QuickCache.empty
   implicit private val textCloneTileDataCache: QuickCache[scalajs.js.Array[CloneTileData]] = QuickCache.empty
+  implicit private val displayObjectCache: QuickCache[DisplayObject]                       = QuickCache.empty
 
   // Called on asset load/reload to account for atlas rebuilding etc.
   def purgeCaches(): Unit = {
@@ -83,6 +84,7 @@ final class DisplayObjectConversions(
     cloneTilesCache.purgeAllNow()
     uniformsCache.purgeAllNow()
     textCloneTileDataCache.purgeAllNow()
+    displayObjectCache.purgeAllNow()
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
@@ -649,7 +651,17 @@ final class DisplayObjectConversions(
       val materialName   = shaderData.channel0.get
 
       val lineHash: String =
-        leaf.hashCode.toString + line.hashCode.toString
+        "[indigo_txt]" +
+          leaf.material.hashCode.toString +
+          leaf.position.hashCode.toString +
+          leaf.scale.hashCode.toString +
+          leaf.rotation.hashCode.toString +
+          leaf.ref.hashCode.toString +
+          leaf.flip.horizontal.toString +
+          leaf.flip.vertical.toString +
+          leaf.depth.toString +
+          leaf.fontKey.toString +
+          line.hashCode.toString
 
       val emissiveOffset = findAssetOffsetValues(assetMapping, shaderData.channel1, shaderDataHash, "_e")
       val normalOffset   = findAssetOffsetValues(assetMapping, shaderData.channel2, shaderDataHash, "_n")
@@ -684,7 +696,7 @@ final class DisplayObjectConversions(
             y = leaf.position.y.toFloat,
             scaleX = leaf.scale.x.toFloat,
             scaleY = leaf.scale.y.toFloat,
-            refX = (leaf.ref.x + -(xPosition + alignmentOffsetX)).toFloat, //leaf.ref.x.toFloat,
+            refX = (leaf.ref.x + -(xPosition + alignmentOffsetX)).toFloat,
             refY = (leaf.ref.y - yOffset).toFloat,
             flipX = if leaf.flip.horizontal then -1.0 else 1.0,
             flipY = if leaf.flip.vertical then -1.0 else 1.0,
@@ -711,61 +723,78 @@ final class DisplayObjectConversions(
       leaf: Text[_],
       assetMapping: AssetMapping
   ): (CloneId, DisplayObject) = {
-    val material       = leaf.material
-    val shaderData     = material.toShaderData
-    val shaderDataHash = shaderData.hashCode().toString
-    val materialName   = shaderData.channel0.get
-    val emissiveOffset = findAssetOffsetValues(assetMapping, shaderData.channel1, shaderDataHash, "_e")
-    val normalOffset   = findAssetOffsetValues(assetMapping, shaderData.channel2, shaderDataHash, "_n")
-    val specularOffset = findAssetOffsetValues(assetMapping, shaderData.channel3, shaderDataHash, "_s")
-    val texture        = lookupTexture(assetMapping, materialName)
-    val shaderId       = shaderData.shaderId
 
-    val uniformData: scalajs.js.Array[DisplayObjectUniformData] =
-      shaderData.uniformBlocks.toJSArray.map { ub =>
-        DisplayObjectUniformData(
-          uniformHash = ub.uniformHash,
-          blockName = ub.blockName,
-          data = DisplayObjectConversions.packUBO(ub.uniforms)
+    val cloneId: CloneId =
+      CloneId(
+        "[indigo_txt_clone]" +
+          leaf.material.hashCode.toString +
+          leaf.position.hashCode.toString +
+          leaf.scale.hashCode.toString +
+          leaf.rotation.hashCode.toString +
+          leaf.ref.hashCode.toString +
+          leaf.flip.horizontal.toString +
+          leaf.flip.vertical.toString +
+          leaf.depth.toString +
+          leaf.fontKey.toString
+      )
+
+    val clone =
+      QuickCache(s"[indigo_text_clone_ref][${cloneId.toString}]") {
+        val material       = leaf.material
+        val shaderData     = material.toShaderData
+        val shaderDataHash = shaderData.hashCode().toString
+        val materialName   = shaderData.channel0.get
+        val emissiveOffset = findAssetOffsetValues(assetMapping, shaderData.channel1, shaderDataHash, "_e")
+        val normalOffset   = findAssetOffsetValues(assetMapping, shaderData.channel2, shaderDataHash, "_n")
+        val specularOffset = findAssetOffsetValues(assetMapping, shaderData.channel3, shaderDataHash, "_s")
+        val texture        = lookupTexture(assetMapping, materialName)
+        val shaderId       = shaderData.shaderId
+
+        val uniformData: scalajs.js.Array[DisplayObjectUniformData] =
+          shaderData.uniformBlocks.toJSArray.map { ub =>
+            DisplayObjectUniformData(
+              uniformHash = ub.uniformHash,
+              blockName = ub.blockName,
+              data = DisplayObjectConversions.packUBO(ub.uniforms)
+            )
+          }
+
+        val frameInfo =
+          SpriteSheetFrame.calculateFrameOffset(
+            atlasSize = texture.atlasSize,
+            frameCrop = Rectangle.one,
+            textureOffset = texture.offset
+          )
+
+        DisplayObject(
+          x = leaf.position.x.toFloat,
+          y = leaf.position.y.toFloat,
+          scaleX = leaf.scale.x.toFloat,
+          scaleY = leaf.scale.y.toFloat,
+          refX = leaf.ref.x.toFloat,
+          refY = leaf.ref.y.toFloat,
+          flipX = if leaf.flip.horizontal then -1.0 else 1.0,
+          flipY = if leaf.flip.vertical then -1.0 else 1.0,
+          rotation = leaf.rotation,
+          z = leaf.depth.toDouble,
+          width = 1,
+          height = 1,
+          atlasName = Some(texture.atlasName),
+          frame = frameInfo,
+          channelOffset1 = frameInfo.offsetToCoords(emissiveOffset),
+          channelOffset2 = frameInfo.offsetToCoords(normalOffset),
+          channelOffset3 = frameInfo.offsetToCoords(specularOffset),
+          texturePosition = texture.offset,
+          textureSize = texture.size,
+          atlasSize = texture.atlasSize,
+          shaderId = shaderId,
+          shaderUniformData = uniformData
         )
       }
 
-    val frameInfo =
-      SpriteSheetFrame.calculateFrameOffset(
-        atlasSize = texture.atlasSize,
-        frameCrop = Rectangle.one,
-        textureOffset = texture.offset
-      )
-
-    val cloneId: CloneId =
-      CloneId("[indigo_txt_clone]" + leaf.hashCode.toString)
-
     (
       cloneId,
-      DisplayObject(
-        x = leaf.position.x.toFloat,
-        y = leaf.position.y.toFloat,
-        scaleX = leaf.scale.x.toFloat,
-        scaleY = leaf.scale.y.toFloat,
-        refX = leaf.ref.x.toFloat,
-        refY = leaf.ref.y.toFloat,
-        flipX = if leaf.flip.horizontal then -1.0 else 1.0,
-        flipY = if leaf.flip.vertical then -1.0 else 1.0,
-        rotation = leaf.rotation,
-        z = leaf.depth.toDouble,
-        width = 1,
-        height = 1,
-        atlasName = Some(texture.atlasName),
-        frame = frameInfo,
-        channelOffset1 = frameInfo.offsetToCoords(emissiveOffset),
-        channelOffset2 = frameInfo.offsetToCoords(normalOffset),
-        channelOffset3 = frameInfo.offsetToCoords(specularOffset),
-        texturePosition = texture.offset,
-        textureSize = texture.size,
-        atlasSize = texture.atlasSize,
-        shaderId = shaderId,
-        shaderUniformData = uniformData
-      )
+      clone
     )
   }
 
@@ -775,7 +804,12 @@ final class DisplayObjectConversions(
   ): (TextLine, Int, Int) => scalajs.js.Array[CloneTileData] =
     (line, alignmentOffsetX, yOffset) => {
       val lineHash: String =
-        "[indigo_tln]" + leaf.hashCode.toString + line.hashCode.toString
+        "[indigo_tln]" +
+          leaf.position.hashCode.toString +
+          leaf.ref.hashCode.toString +
+          leaf.scale.hashCode.toString +
+          line.hashCode.toString +
+          leaf.fontKey.toString
 
       QuickCache(lineHash) {
         zipWithCharDetails(line.text.toArray, fontInfo).map { case (fontChar, xPosition) =>
@@ -867,7 +901,7 @@ object DisplayObjectConversions {
           rec(us.tail, us.head.toJSArray, acc)
 
         case us if current.length == 1 && us.head.length == 2 =>
-          //println("Current value is float, must not straddle byte boundary when adding vec2")
+          // println("Current value is float, must not straddle byte boundary when adding vec2")
           rec(us.tail, current ++ scalajs.js.Array(0.0f) ++ us.head.toJSArray, acc)
 
         case us if current.length + us.head.length > 4 =>
