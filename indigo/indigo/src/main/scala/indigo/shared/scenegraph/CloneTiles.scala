@@ -69,3 +69,11 @@ object CloneTiles:
       Array(cloneData),
       None
     )
+
+  def apply(id: CloneId, cloneData: CloneTileData*): CloneTiles =
+    CloneTiles(
+      id,
+      Depth.zero,
+      cloneData.toArray,
+      None
+    )

@@ -59,3 +59,11 @@ object CloneBatch:
       Array(cloneData),
       None
     )
+
+  def apply(id: CloneId, cloneData: CloneBatchData*): CloneBatch =
+    CloneBatch(
+      id,
+      Depth.zero,
+      cloneData.toArray,
+      None
+    )
