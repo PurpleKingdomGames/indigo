@@ -274,7 +274,7 @@ final class DisplayObjectConversions(
           noClones
         )
 
-      case x: Text[_] if renderingTechnology.isWebGL1 =>
+      case x: Text[_] if renderingTechnology.isWebGL1 || !(x.rotation ~== Radians.zero) =>
         val alignmentOffsetX: Rectangle => Int = lineBounds =>
           x.alignment match {
             case TextAlignment.Left => 0
