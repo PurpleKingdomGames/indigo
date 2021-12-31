@@ -242,6 +242,14 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
       println("Exited full screen mode")
       Outcome(viewModel)
 
+    case KeyboardEvent.KeyDown(Key.PAGE_UP) =>
+      Outcome(viewModel)
+        .addGlobalEvents(SceneEvent.Next)
+
+    case KeyboardEvent.KeyDown(Key.PAGE_DOWN) =>
+      Outcome(viewModel)
+        .addGlobalEvents(SceneEvent.Previous)
+
     case _ =>
       Outcome(viewModel)
   }
