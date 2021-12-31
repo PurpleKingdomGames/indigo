@@ -494,6 +494,9 @@ class LayerRenderer(
           case d: DisplayTextLetters =>
             drawBuffer(batchCount)
             batchCount = 0
+            atlasName = None
+            currentShader = ShaderId("")
+            currentShaderHash = ""
             renderEntities(cloneBlankDisplayObjects, d.letters, customShaders, baseTransform)
             i += 1
 
@@ -671,8 +674,12 @@ class LayerRenderer(
             //
 
             // Base transform
-            if shaderId != currentShader then setBaseTransform(baseTransform)
-            if shaderId != currentShader || lastRenderMode != 0 then
+            if shaderId != currentShader then
+              setBaseTransform(baseTransform)
+              lastRenderMode = 0
+              setMode(0)
+              currentShader = shaderId
+            else if lastRenderMode != 0 then
               lastRenderMode = 0
               setMode(0)
 
