@@ -12,32 +12,26 @@ class RadiansTests extends munit.FunSuite {
 
   test("Can make a Radians instance from degrees") {
 
-    assertEquals(round(Radians.fromDegrees(0)), round(Radians.zero))
-    assertEquals(round(Radians.fromDegrees(180)), round(Radians.PI))
-    assertEquals(round(Radians.fromDegrees(359)), round(Radians.TAU - Radians(0.02d)))
-    assertEquals(round(Radians.fromDegrees(360)), round(Radians.zero))
+    assert(Radians.fromDegrees(0) ~== Radians.zero)
+    assert(Radians.fromDegrees(180) ~== Radians.PI)
+    assert(clue(Radians.fromDegrees(359)) ~== clue(clue(Radians.TAU) - Radians(0.0175d)))
+    assert(Radians.fromDegrees(360) ~== Radians.zero)
 
   }
 
   test("Can convert seconds to Radians") {
-    assertEquals(round(Radians.fromSeconds(Seconds(0))), round(Radians.zero))
-    assertEquals(round(Radians.fromSeconds(Seconds(0.5))), round(Radians.PI))
-    assertEquals(round(Radians.fromSeconds(Seconds(1))), round(Radians.zero))
-    assertEquals(round(Radians.fromSeconds(Seconds(1.5))), round(Radians.PI))
+    assert(Radians.fromSeconds(Seconds(0)) ~== Radians.zero)
+    assert(Radians.fromSeconds(Seconds(0.5)) ~== Radians.PI)
+    assert(Radians.fromSeconds(Seconds(1)) ~== Radians.zero)
+    assert(Radians.fromSeconds(Seconds(1.5)) ~== Radians.PI)
   }
 
   test("Wrap Radians") {
-    assertEquals(doubleCloseEnough(Radians(0.0).wrap, Radians(0.0)), true)
-    assertEquals(doubleCloseEnough(Radians(0.1).wrap, Radians(0.1)), true)
-    assertEquals(doubleCloseEnough(Radians(-0.1).wrap, Radians.TAU - Radians(0.1)), true)
-    assertEquals(doubleCloseEnough((Radians.TAU + Radians.TAUby4).wrap, Radians.TAUby4), true)
-    assertEquals(doubleCloseEnough((Radians.TAU - Radians.TAUby4).wrap, Radians.TAUby4 * Radians(3)), true)
+    assert(Radians(0.0).wrap ~== Radians(0.0))
+    assert(Radians(0.1).wrap ~== Radians(0.1))
+    assert(Radians(-0.1).wrap ~== Radians.TAU - Radians(0.1))
+    assert((Radians.TAU + Radians.TAUby4).wrap ~== Radians.TAUby4)
+    assert((Radians.TAU - Radians.TAUby4).wrap ~== Radians.TAUby4 * Radians(3))
   }
-
-  def doubleCloseEnough(r1: Radians, r2: Radians): Boolean =
-    r1.toDouble - 0.001 < r2.toDouble && r1.toDouble + 0.001 > r2.toDouble
-
-  def round(d: Radians): Double =
-    Math.floor(d.toDouble * 100d) / 100d
 
 }

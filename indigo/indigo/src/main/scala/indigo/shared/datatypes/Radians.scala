@@ -61,6 +61,9 @@ object Radians:
     def invert: Radians =
       negative
 
+    def ~==(other: Radians): Boolean =
+      Math.abs(r.toDouble - other.toDouble) < 0.001
+
     def toDouble: Double =
       r
 
