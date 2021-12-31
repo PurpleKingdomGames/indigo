@@ -1,16 +1,16 @@
 package indigoexamples.model
 
-import org.scalacheck._
-import org.scalacheck.Prop._
-import indigo.shared.dice.Dice
-import indigo.shared.time.Seconds
 import indigo.shared.collections.NonEmptyList
-import indigoextras.geometry.Vertex
-import indigoextras.geometry.BoundingBox
-import indigoextras.geometry.Bezier
-import indigo.shared.temporal.Signal
-import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Point
+import indigo.shared.datatypes.Rectangle
+import indigo.shared.dice.Dice
+import indigo.shared.temporal.Signal
+import indigo.shared.time.Seconds
+import indigoextras.geometry.Bezier
+import indigoextras.geometry.BoundingBox
+import indigoextras.geometry.Vertex
+import org.scalacheck.Prop._
+import org.scalacheck._
 
 class ProjectilesSpecification extends Properties("Projectiles") {
 

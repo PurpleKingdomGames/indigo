@@ -2,7 +2,6 @@ package indigoexamples
 
 import indigo._
 import indigoextras.ui._
-import Outcome._
 
 import scala.scalajs.js.annotation._
 

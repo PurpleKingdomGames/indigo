@@ -1,8 +1,8 @@
 package com.example.jobs
 
 import indigo._
-import indigoextras.jobs._
 import indigoextras.datatypes.IncreaseTo
+import indigoextras.jobs._
 
 // Bob is our NPC 'Actor'
 final case class Bob(position: Point, workSchedule: WorkSchedule[Bob, Unit], state: BobState) {

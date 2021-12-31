@@ -1,11 +1,11 @@
 package com.example.jobs
 
 import indigo._
-import indigoextras.jobs.JobMarket
 import indigoextras.geometry.Vertex
+import indigoextras.jobs.JobMarket
+import indigoextras.jobs.JobMarketEvent
 
 import scala.scalajs.js.annotation.JSExportTopLevel
-import indigoextras.jobs.JobMarketEvent
 
 @JSExportTopLevel("IndigoGame")
 object JobsExample extends IndigoDemo[Unit, StartupData, Model, Unit] {

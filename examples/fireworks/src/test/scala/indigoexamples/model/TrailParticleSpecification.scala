@@ -1,10 +1,10 @@
 package indigoexamples.model
 
-import org.scalacheck._
-import org.scalacheck.Prop._
 import indigo.shared.temporal.Signal
-import indigoextras.geometry.Vertex
 import indigo.shared.time.Seconds
+import indigoextras.geometry.Vertex
+import org.scalacheck.Prop._
+import org.scalacheck._
 
 class TrailParticleSpecification extends Properties("TrailParticle") {
 

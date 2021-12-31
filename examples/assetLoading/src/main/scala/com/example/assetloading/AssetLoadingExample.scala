@@ -1,8 +1,8 @@
 package com.example.assetloading
 
 import indigo._
-import indigoextras.ui._
 import indigoextras.subsystems._
+import indigoextras.ui._
 
 import scala.scalajs.js.annotation._
 
@@ -84,16 +84,18 @@ object AssetLoadingExample extends IndigoDemo[Unit, Unit, MyGameModel, MyViewMod
   }
 
   def present(context: FrameContext[Unit], model: MyGameModel, viewModel: MyViewModel): Outcome[SceneUpdateFragment] = {
-    val stuff = if (model.loaded) {
-      List(
-        Graphic(Rectangle(0, 0, 64, 64), 1, Assets.junctionBoxMaterial)
-          .moveTo(30, 30),
-        MyColoredEntity(Point(0, 50))
-      )
-    } else Nil
+    val stuff =
+      if model.loaded then
+        List(
+          Graphic(Rectangle(0, 0, 64, 64), 1, Assets.junctionBoxMaterial)
+            .moveTo(30, 30),
+          MyColoredEntity(Point(0, 50))
+        )
+      else Nil
 
     Outcome(
       SceneUpdateFragment(viewModel.button.draw :: stuff)
+        .addLights(DirectionLight.default)
     )
   }
 }

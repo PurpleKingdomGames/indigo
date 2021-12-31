@@ -1,9 +1,9 @@
 package indigoexamples.automata
 
-import indigoextras.subsystems._
-import indigoexamples.model.TrailParticle
 import indigo._
 import indigoexamples.Assets
+import indigoexamples.model.TrailParticle
+import indigoextras.subsystems._
 
 object TrailAutomata {
 

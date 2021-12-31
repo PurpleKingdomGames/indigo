@@ -39,7 +39,11 @@ object BlendingExample extends IndigoSandbox[Unit, Unit]:
   def present(context: FrameContext[Unit], model: Unit): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
-        Layer(graphic)
+        Layer(
+          TextBox("Re-paint all the pixels in").withFontSize(Pixels(12)),
+          TextBox("the layer bright red.").withFontSize(Pixels(12)).moveBy(0, 12),
+          graphic
+        )
           .withBlending(
             Blending.Normal
               .withBlendMaterial(MyBlendShader())

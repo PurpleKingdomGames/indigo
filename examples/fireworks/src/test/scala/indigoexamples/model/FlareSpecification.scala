@@ -1,12 +1,12 @@
 package indigoexamples.model
 
-import org.scalacheck._
-import org.scalacheck.Prop._
+import indigo.shared.datatypes.Point
+import indigo.shared.datatypes.Radians
 import indigo.shared.dice.Dice
 import indigo.shared.time.Millis
 import indigoextras.geometry.Vertex
-import indigo.shared.datatypes.Radians
-import indigo.shared.datatypes.Point
+import org.scalacheck.Prop._
+import org.scalacheck._
 
 class FlareSpecification extends Properties("Flare") {
 

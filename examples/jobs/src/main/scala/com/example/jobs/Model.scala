@@ -1,8 +1,8 @@
 package com.example.jobs
 
 import indigo._
-import indigoextras.jobs.JobMarketEvent
 import indigoextras.datatypes.IncreaseTo
+import indigoextras.jobs.JobMarketEvent
 
 final case class Model(bob: Bob, grove: Grove, woodPiles: List[Wood], woodCollected: Int) {
 

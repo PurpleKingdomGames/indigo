@@ -1,6 +1,7 @@
 package indigoexamples
 
 import indigo._
+
 import scala.scalajs.js.annotation.JSExportTopLevel
 
 @JSExportTopLevel("IndigoGame")

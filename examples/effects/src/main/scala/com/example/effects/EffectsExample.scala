@@ -1,13 +1,12 @@
 package com.example.lighting
 
 import indigo._
+import indigoextras.effectmaterials.Border
+import indigoextras.effectmaterials.Glow
+import indigoextras.effectmaterials.LegacyEffects
+import indigoextras.effectmaterials.Thickness
 
 import scala.scalajs.js.annotation._
-
-import indigoextras.effectmaterials.LegacyEffects
-import indigoextras.effectmaterials.Border
-import indigoextras.effectmaterials.Thickness
-import indigoextras.effectmaterials.Glow
 
 @JSExportTopLevel("IndigoGame")
 object EffectsExample extends IndigoSandbox[Unit, Unit] {

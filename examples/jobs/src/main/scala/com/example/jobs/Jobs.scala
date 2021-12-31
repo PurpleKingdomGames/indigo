@@ -1,9 +1,9 @@
 package com.example.jobs
 
 import indigo._
+import indigoextras.datatypes.IncreaseTo
 import indigoextras.jobs.Job
 import indigoextras.jobs.JobName
-import indigoextras.datatypes.IncreaseTo
 
 final case class ChopDown(index: Int, position: Point) extends Job {
   val isLocal: Boolean = false

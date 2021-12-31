@@ -1,12 +1,11 @@
 package indigoexamples.automata
 
 import indigo._
-import indigoextras.subsystems._
-import indigoextras.geometry.Vertex
-
 import indigoexamples.Assets
 import indigoexamples.model.Flare
 import indigoexamples.model.Projectiles
+import indigoextras.geometry.Vertex
+import indigoextras.subsystems._
 
 object FlareAutomata {
 

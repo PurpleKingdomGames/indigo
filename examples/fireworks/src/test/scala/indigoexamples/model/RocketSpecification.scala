@@ -1,18 +1,17 @@
 package indigoexamples.model
 
-import org.scalacheck._
-import org.scalacheck.Prop._
-
-import indigo.shared.datatypes.Point
-import indigo.shared.datatypes.Rectangle
-import indigo.shared.temporal.Signal
 import indigo.shared.collections.NonEmptyList
-import indigo.shared.time.Millis
-import indigoextras.geometry.Vertex
-import indigoextras.geometry.BoundingBox
-import indigo.shared.dice.Dice
-import indigoextras.geometry.Bezier
+import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.RGBA
+import indigo.shared.datatypes.Rectangle
+import indigo.shared.dice.Dice
+import indigo.shared.temporal.Signal
+import indigo.shared.time.Millis
+import indigoextras.geometry.Bezier
+import indigoextras.geometry.BoundingBox
+import indigoextras.geometry.Vertex
+import org.scalacheck.Prop._
+import org.scalacheck._
 
 class RocketSpecification extends Properties("Rocket") {
 

@@ -1,11 +1,11 @@
 package com.example.jobs
 
 import indigo.shared.datatypes.Point
-import indigoextras.datatypes.TimeVaryingValue
-import indigo.shared.time.Seconds
-import indigoextras.jobs.JobMarketEvent
 import indigo.shared.time.Millis
+import indigo.shared.time.Seconds
 import indigoextras.datatypes.IncreaseTo
+import indigoextras.datatypes.TimeVaryingValue
+import indigoextras.jobs.JobMarketEvent
 
 class TreeTests extends munit.FunSuite {
 

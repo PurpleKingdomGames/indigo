@@ -1,8 +1,8 @@
 package com.example.sandbox
 
 import indigo._
-import scala.scalajs.js.annotation._
 
+import scala.scalajs.js.annotation._
 import scala.util.control.NoStackTrace
 
 /*

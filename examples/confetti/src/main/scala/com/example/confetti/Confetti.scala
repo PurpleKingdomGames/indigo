@@ -1,9 +1,9 @@
 package com.example.confetti
 
 import indigo._
+import indigoextras.subsystems.FPSCounter
 
 import scala.scalajs.js.annotation.JSExportTopLevel
-import indigoextras.subsystems.FPSCounter
 
 @JSExportTopLevel("IndigoGame")
 object Confetti extends IndigoDemo[Unit, Unit, Model, Unit]:
@@ -63,13 +63,19 @@ object Confetti extends IndigoDemo[Unit, Unit, Model, Unit]:
       .withFontSize(Pixels(12))
       .withColor(RGBA.White)
 
+  val helpText: TextBox =
+    TextBox("Click anywhere!", 640, 20).alignRight
+      .withFontSize(Pixels(12))
+      .withColor(RGBA.White)
+
   def present(context: FrameContext[Unit], model: Model, viewModel: Unit): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
         model.particles.map { p =>
           dots(p.color).moveTo(p.x, p.y).scaleBy(p.scale, p.scale)
         } ++ List(
-          count.withText(s"count: ${model.particles.length}")
+          count.withText(s"count: ${model.particles.length}"),
+          helpText
         )
       )
     )

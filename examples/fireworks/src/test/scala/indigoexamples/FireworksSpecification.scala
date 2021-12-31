@@ -1,14 +1,13 @@
 package indigoexamples
 
-import org.scalacheck._
-
 import indigo.Dice
 import indigo.shared.datatypes.Point
+import indigo.shared.datatypes.Rectangle
 import indigo.shared.time.Millis
 import indigoexamples.automata.LaunchPadAutomata
-import indigo.shared.datatypes.Rectangle
-import indigoextras.geometry.Vertex
 import indigoexamples.model.Projectiles
+import indigoextras.geometry.Vertex
+import org.scalacheck._
 
 class FireworksSpecification extends Properties("FireworksModel") {
 

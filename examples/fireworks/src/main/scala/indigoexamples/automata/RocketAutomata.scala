@@ -1,11 +1,11 @@
 package indigoexamples.automata
 
 import indigo._
-import indigoextras.subsystems._
 import indigoexamples.Assets
-import indigoexamples.model.Rocket
 import indigoexamples.model.Projectiles
+import indigoexamples.model.Rocket
 import indigoextras.geometry.Vertex
+import indigoextras.subsystems._
 
 object RocketAutomata {
 
