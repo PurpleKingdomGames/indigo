@@ -115,7 +115,12 @@ object SandboxModel {
 
 }
 
-final case class SandboxGameModel(dude: DudeModel, saveLoadPhase: SaveLoadPhases, data: Option[String], confetti: ConfettiModel)
+final case class SandboxGameModel(
+    dude: DudeModel,
+    saveLoadPhase: SaveLoadPhases,
+    data: Option[String],
+    confetti: ConfettiModel
+)
 
 final case class DudeModel(dude: Dude, walkDirection: DudeDirection) {
   def idle: DudeModel      = this.copy(walkDirection = DudeIdle)
