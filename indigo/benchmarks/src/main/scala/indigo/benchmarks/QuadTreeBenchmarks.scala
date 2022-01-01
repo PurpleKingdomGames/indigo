@@ -79,11 +79,20 @@ object QuadTreeBenchmarks:
       Benchmark("subdivision") {
         QuadTree.QuadBranch.subdivide(BoundingBox(0, 0, 100, 200))
       },
+      Benchmark("searchByBoundingBox (simple tree)") {
+        QuadTree.searchByBoundingBox(SampleTree.oneElementTree, BoundingBox(0, 1, 2, 2))
+      },
       Benchmark("searchByBoundingBox") {
         QuadTree.searchByBoundingBox(SampleTree.tree, BoundingBox(0, 1, 2, 2))
       },
+      Benchmark("searchByBoundingBoxWithPosition") {
+        QuadTree.searchByBoundingBoxWithPosition(SampleTree.tree, BoundingBox(0, 1, 2, 2))
+      },
       Benchmark("searchByLine") {
         QuadTree.searchByLine(SampleTree.tree, Vertex(0.5, 0.5), Vertex(3.5, 3.5))
+      },
+      Benchmark("searchByLineWithPosition") {
+        QuadTree.searchByLineWithPosition(SampleTree.tree, Vertex(0.5, 0.5), Vertex(3.5, 3.5))
       },
       Benchmark("toList") {
         SampleTree.tree.toList
@@ -114,5 +123,9 @@ object SampleTree {
     .insertElement("3,1", Vertex(3, 1))
     .insertElement("3,2", Vertex(3, 2))
     .insertElement("3,3", Vertex(3, 3))
+
+  val oneElementTree: QuadTree[String] = QuadTree
+    .empty(4, 4)
+    .insertElement("0,1", Vertex(0, 1))
 
 }
