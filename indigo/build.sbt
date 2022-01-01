@@ -10,7 +10,7 @@ ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports"
 
 lazy val indigoVersion = IndigoVersion.getVersion
 // For the docs site
-lazy val indigoDocsVersion  = "0.10.0"
+lazy val indigoDocsVersion  = "0.11.0"
 lazy val scalaJsDocsVersion = "1.8.0"
 lazy val scalaDocsVersion   = "3.1.0"
 //
