@@ -18,14 +18,21 @@ An example of this is that Indigo has support for [Aseprite](https://www.aseprit
 1. Export the animations and frames as a sprite sheet and a JSON description.
 1. Add the sprite sheet and JSON description as a static asset to Indigo.
 1. During startup, use the `AsepriteConverter` and indigo's (confusingly named) `JSON` object to parse the JSON into an `Animation` instance, and add it to the `Startup` result type, thereby making it available to your game.
-1. You then create a `Sprite` and associate it to the Animation using an `AnimationKey`.
+
+You can then either turn that into a `Sprite` or a series of `Clip`s.
+
+For `Sprite`s:
+
+1. You can create a `Sprite` from the loaded `Aseprite` and associate it to the Animation using an `AnimationKey`.
 1. In your game view logic, you can then control the animation by calling the animation methods on the sprite: `play`, `changeCycle`, `jumpToFirstFrame`, `jumpToLastFrame`, and `jumpToFrame`.
+
+Or, for `Clip`s, you can create a `Map` of `CycleLabel -> Clip` from the loaded `Aseprite` and insert them into your game scene.
 
 See the [Sprite example](https://github.com/PurpleKingdomGames/indigo/blob/master/examples/sprite/src/main/scala/indigoexamples/SpriteExample.scala) for a very basic, hand rolled animation example.
 
 >Caution: If two sprites have the same animation key they will play the same animation in the same place using the same cycle - or more correctly - whatever the latter sprite instructed the animation to do. This is very useful! ...but can also cause confusion.
 
-### Registering animations
+### Registering animations (for `Sprite`s)
 
 Animations are registered in two ways:
 

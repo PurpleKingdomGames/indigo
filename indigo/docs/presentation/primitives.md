@@ -45,6 +45,10 @@ Provides basic support for rendering text onto the screen, including things like
 
 Requires you to have registered a `FontInfo` instance that you can link to using a `FontKey`.
 
+#### `TextBox`
+
+Provides a quick way to put font based rendering text onto the screen. Unlike `Text`, requires no special set up unless you want to use custom fonts. However, where `Text` is pixel perfect, `TextBox` is limited to what the browser can render and text will look fuzzy at high magnifications.
+
 #### `Graphic[M <: Material]`
 
 The simplest type of drawn element, simply renders a bitmap (which may be cropped) onto the screen.
@@ -52,6 +56,10 @@ The simplest type of drawn element, simply renders a bitmap (which may be croppe
 #### `Sprite[M <: Material]`
 
 Essentially an animated graphic. You need to provide an `AnimationKey` to link back to your registered `Animation` information, and then you can instruct the sprite to change animation cycles, and play or stop.
+
+#### `Clip[M <: Material]`
+
+An even simpler animation primitive than `Sprite`, `Clip` is a super lightweight way to get simple animations into your game that requires little setup.
 
 ## The Event Loop
 
