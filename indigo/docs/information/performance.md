@@ -32,7 +32,9 @@ Well, two slightly disappointing observations that we've made about 2D games dur
 1. Most 2D games on the market don't actually have that many elements on screen at any one time - there's only so much screen real estate available for use when you have no real perspective or depth. (Naturally there are exceptions)
 2. Most game logic is quite straight forward, and revolve around a few core mechanics. The complexity is in how the elements interact.
 
-With that in mind then: Indigo is fast enough that you should not have to do anything clever or special to be able to hit a respectable frame rate for most games.
+With that in mind then: Indigo is fast enough that you should not have to do anything clever or special to be able to hit a respectable frame rate for simple games.
+
+That said, some games and game developers always have and always will push what can be done by the system and engine they run on to the edge of what is possible. If you do that with your game, you may need to roll up your sleeves and think of clever ways to solve problems efficiently, but it's a high quality problem.
 
 ### Start on the assumption that it will be fast enough
 
@@ -42,18 +44,15 @@ You should only consider changing things if it really isn't fast enough when you
 
 ### One weird trick to grind Indigo to a halt
 
-Two sort of similar features that Indigo _does not_ have are:
+Try and render 1000 standard primitives of any type.
 
-1. GPU rendered particle systems;
-2. Shader based effects like light trails.
-
-Both of these cases can only be simulated on the CPU side, and attempting to do so with very heavy numbers of "particles" will slow Indigo right down, particularly if you use a naive solution.
+Is 1000 a lot? It depends on what you're trying to render. If you want to render a standard roguelike map of 80x50 with every tile full - 4000 tiles - then it's not nearly enough! If you're rendering a little platform then 1000 is probably ample.
 
 ## How to get more speed
 
 Depending on what kind of things you're doing, you can make Indigo do more in less time.
 
-Indigo is single threaded and runs in the browser. JavaScript code execution these days is very fast, and your game logic draining CPU power is probably not a concern, nor is available memory.
+Indigo is single threaded and runs in the browser. JavaScript code execution these days is very fast (currently Chrome/V8 is fastest), and your game logic draining CPU power is probably not a concern, nor is available memory.
 
 **Your main enemy in the quest for performance is memory allocation and subsequent garbage collection pauses.**
 
@@ -111,7 +110,7 @@ With clones, you set up a reference object (that you can update as normal), and 
 
 Clone batches can also be declared static for even more performance, if they never change.
 
-A recent test ran 10,000 animated clones at 60fps alongside other screen elements, which would not be possible with other types of primitives.
+A recent test ran 210,000 animated clones at 60fps alongside other screen elements, which would not be possible with other types of primitives.
 
 ### Cache values
 
@@ -121,11 +120,13 @@ May seem obvious but some values are just expensive to work out. Object boundari
 
 Different types of primitives have different costs, here they are ranked from cheapest to (potentially) most expensive:
 
-1. Clone - Unintelligent copies of things.
+1. CloneBatch/CloneTiles - Unintelligent copies of things.
 2. Graphic - bounds require no calculation, they have no clever inner workings and process no events.
-3. Sprite - processes events, has animation state to update, bounds must be recalculated each time.
-4. Text - no state, but processes events which are based on ver expensive bounds calculations.
-5. Group - no state, no events, but bounds calculation is based on the contents - so can be big.
+3. Clip - again, bounds require no calculation, they have no clever inner workings and process no events.
+4. Sprite - processes events, has animation state to update, bounds must be recalculated each time.
+5. Text - no state, render time varies a lot, but processes events which are based on very expensive bounds calculations.
+6. TextBox - no state, but processes events which are based on very expensive bounds calculations.
+7. Group - no state, no events, but bounds calculation is based on the contents - so can be big.
 
 #### Reuse animations
 
@@ -137,6 +138,10 @@ One way to reduce the cost of animated elements is to reuse them!
 2. Give all of the sprites the same animation key;
 3. Only update the animation of the master sprite;
 4. All the others will be animated identically but with no additional event or animation processing cost.
+
+#### Animate with Clips
+
+If possible, swap Sprites for Clips which are much cheaper to run.
 
 #### Manually cache groups
 
