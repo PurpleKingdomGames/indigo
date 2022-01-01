@@ -32,6 +32,9 @@
       "information/alternatives": {
         "title": "Alternatives to Indigo"
       },
+      "information/antipatterns": {
+        "title": "Anti-Patterns"
+      },
       "information/glossary": {
         "title": "Glossary"
       },

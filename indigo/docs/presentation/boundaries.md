@@ -20,7 +20,7 @@ The boundary locator has a few methods on it, but the two main ones are `findBou
 
 `findBounds` finds the bounds of any scene node you give it.
 
-```scala mdoc:silent
+```scala
 val graphic = Graphic(32, 32, Material.Bitmap(AssetName("my graphic")))
 context.boundaryLocator.findBounds(graphic)
 ```
