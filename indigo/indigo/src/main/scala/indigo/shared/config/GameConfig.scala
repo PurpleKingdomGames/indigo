@@ -2,6 +2,7 @@ package indigo.shared.config
 
 import indigo.shared.datatypes.RGBA
 import indigo.shared.datatypes.Rectangle
+import indigo.shared.datatypes.Size
 
 /** All the base settings needed to get a game up and running.
   *
@@ -22,7 +23,7 @@ final case class GameConfig(
     clearColor: RGBA,
     magnification: Int,
     advanced: AdvancedGameConfig
-) derives CanEqual {
+) derives CanEqual:
   val frameRateDeltaMillis: Int = 1000 / frameRate
   val haltViewUpdatesAt: Int    = frameRateDeltaMillis * 2
   val haltModelUpdatesAt: Int   = frameRateDeltaMillis * 3
@@ -45,6 +46,8 @@ final case class GameConfig(
 
   def withViewport(width: Int, height: Int): GameConfig =
     this.copy(viewport = GameViewport(width, height))
+  def withViewport(size: Size): GameConfig =
+    this.copy(viewport = GameViewport(size.width, size.height))
   def withViewport(newViewport: GameViewport): GameConfig =
     this.copy(viewport = newViewport)
   def withFrameRate(frameRate: Int): GameConfig =
@@ -65,9 +68,8 @@ final case class GameConfig(
     this.copy(advanced = advanced.copy(renderingTechnology = RenderingTechnology.WebGL2))
   def useWebGL2WithFallback: GameConfig =
     this.copy(advanced = advanced.copy(renderingTechnology = RenderingTechnology.WebGL2WithFallback))
-}
 
-object GameConfig {
+object GameConfig:
 
   val default: GameConfig =
     GameConfig(GameViewport(550, 400), 60, RGBA.Black, 1, AdvancedGameConfig.default)
@@ -77,5 +79,3 @@ object GameConfig {
 
   def apply(viewport: GameViewport, frameRate: Int, clearColor: RGBA, magnification: Int): GameConfig =
     GameConfig(viewport, frameRate, clearColor, magnification, AdvancedGameConfig.default)
-
-}
