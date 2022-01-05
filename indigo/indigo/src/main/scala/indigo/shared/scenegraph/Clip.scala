@@ -50,7 +50,7 @@ final case class Clip[M <: Material](
 
   def forwards: Clip[M]       = this.copy(playMode = playMode.forwards)
   def backwards: Clip[M]      = this.copy(playMode = playMode.backwards)
-  def reverse: Clip[M]        = backwards
+  def reverse: Clip[M]        = this.copy(playMode = playMode.reverse)
   def pingPong: Clip[M]       = this.copy(playMode = playMode.pingPong)
   def smoothPingPong: Clip[M] = this.copy(playMode = playMode.smoothPingPong)
 
@@ -394,6 +394,12 @@ enum ClipPlayDirection derives CanEqual:
       case ClipPlayDirection.PingPong       => 2
       case ClipPlayDirection.SmoothPingPong => 3
 
+  def reverse: ClipPlayDirection =
+    this match
+      case ClipPlayDirection.Forward  => ClipPlayDirection.Backward
+      case ClipPlayDirection.Backward => ClipPlayDirection.Forward
+      case d                          => d
+
 object ClipPlayDirection:
   val default: ClipPlayDirection =
     ClipPlayDirection.Forward
@@ -428,6 +434,12 @@ enum ClipPlayMode derives CanEqual:
       case x: ClipPlayMode.Loop      => ClipPlayMode.Loop(ClipPlayDirection.Backward)
       case x: ClipPlayMode.PlayOnce  => ClipPlayMode.PlayOnce(ClipPlayDirection.Backward, x.startTime)
       case x: ClipPlayMode.PlayCount => ClipPlayMode.PlayCount(ClipPlayDirection.Backward, x.startTime, x.times)
+
+  def reverse: ClipPlayMode =
+    this match
+      case x: ClipPlayMode.Loop      => ClipPlayMode.Loop(x.direction.reverse)
+      case x: ClipPlayMode.PlayOnce  => ClipPlayMode.PlayOnce(x.direction.reverse, x.startTime)
+      case x: ClipPlayMode.PlayCount => ClipPlayMode.PlayCount(x.direction.reverse, x.startTime, x.times)
 
   def pingPong: ClipPlayMode =
     this match
