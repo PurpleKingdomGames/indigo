@@ -87,6 +87,12 @@ object Rectangle:
   def apply(x: Int, y: Int, width: Int, height: Int): Rectangle =
     Rectangle(Point(x, y), Size(width, height))
 
+  def apply(width: Int, height: Int): Rectangle =
+    Rectangle(Point.zero, Size(width, height))
+
+  def apply(size: Size): Rectangle =
+    Rectangle(Point.zero, size)
+
   def fromTwoPoints(pt1: Point, pt2: Point): Rectangle = {
     val x = Math.min(pt1.x, pt2.x)
     val y = Math.min(pt1.y, pt2.y)

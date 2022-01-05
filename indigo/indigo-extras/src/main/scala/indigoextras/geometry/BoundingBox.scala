@@ -118,6 +118,12 @@ object BoundingBox:
   def apply(x: Double, y: Double, width: Double, height: Double): BoundingBox =
     BoundingBox(Vertex(x, y), Vertex(width, height))
 
+  def apply(width: Double, height: Double): BoundingBox =
+    BoundingBox(Vertex.zero, Vertex(width, height))
+
+  def apply(size: Vertex): BoundingBox =
+    BoundingBox(Vertex.zero, size)
+
   def fromTwoVertices(pt1: Vertex, pt2: Vertex): BoundingBox = {
     val x = Math.min(pt1.x, pt2.x)
     val y = Math.min(pt1.y, pt2.y)
