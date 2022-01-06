@@ -25,4 +25,17 @@ trait GameLauncher {
   def launch(containerId: String, flags: scala.scalajs.js.Dictionary[String]): Unit =
     ready(containerId, flags.toMap)
 
+  // Scala API
+  def launch(flags: Map[String, String]): Unit =
+    ready(DefaultContainerId, flags)
+
+  def launch(flags: (String, String)*): Unit =
+    ready(DefaultContainerId, flags.toMap)
+
+  def launch(containerId: String, flags: Map[String, String]): Unit =
+    ready(containerId, flags)
+
+  def launch(containerId: String, flags: (String, String)*): Unit =
+    ready(containerId, flags.toMap)
+
 }
