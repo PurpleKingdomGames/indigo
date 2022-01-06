@@ -169,7 +169,7 @@ trait IndigoGame[BootData, StartUpData, Model, ViewModel] extends GameLauncher {
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  final protected def ready(flags: Map[String, String]): Unit =
+  final protected def ready(parentElementId: String, flags: Map[String, String]): Unit =
     boot(flags) match {
       case oe @ Outcome.Error(e, _) =>
         IndigoLogger.error("Error during boot - Halting")
@@ -177,7 +177,7 @@ trait IndigoGame[BootData, StartUpData, Model, ViewModel] extends GameLauncher {
         throw e
 
       case Outcome.Result(b, evts) =>
-        indigoGame(b).start(b.gameConfig, Future(None), b.assets, Future(Set()), evts)
+        indigoGame(b).start(parentElementId, b.gameConfig, Future(None), b.assets, Future(Set()), evts)
     }
 
 }

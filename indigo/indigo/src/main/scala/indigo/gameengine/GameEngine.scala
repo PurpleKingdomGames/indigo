@@ -86,6 +86,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def start(
+      parentElementId: String,
       config: GameConfig,
       configAsync: Future[Option[GameConfig]],
       assets: Set[AssetType],
@@ -96,7 +97,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
     IndigoLogger.info("Starting Indigo")
 
     storage = Storage.default
-    globalEventStream = new GlobalEventStream(rebuildGameLoop(false), audioPlayer, storage, platform)
+    globalEventStream = new GlobalEventStream(rebuildGameLoop(parentElementId, false), audioPlayer, storage, platform)
     gamepadInputCapture = GamepadInputCaptureImpl()
 
     // Intialisation / Boot events
@@ -123,7 +124,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
       assetsAsync.flatMap(aa => AssetLoader.loadAssets(aa ++ assets)).foreach { assetCollection =>
         IndigoLogger.info("Asset load complete")
 
-        rebuildGameLoop(true)(assetCollection)
+        rebuildGameLoop(parentElementId, true)(assetCollection)
 
         if (gameLoop != null)
           platform.tick(gameLoop(0))
@@ -133,7 +134,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  def rebuildGameLoop(firstRun: Boolean): AssetCollection => Unit =
+  def rebuildGameLoop(parentElementId: String, firstRun: Boolean): AssetCollection => Unit =
     ac => {
 
       fontRegister.clearRegister()
@@ -146,7 +147,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
 
       val time = if (firstRun) 0 else gameLoopInstance.runningTimeReference
 
-      platform = new Platform(gameConfig, accumulatedAssetCollection, globalEventStream, dynamicText)
+      platform = new Platform(parentElementId, gameConfig, accumulatedAssetCollection, globalEventStream, dynamicText)
 
       initialise(accumulatedAssetCollection)(Dice.fromSeed(time)) match {
         case oe @ Outcome.Error(error, _) =>

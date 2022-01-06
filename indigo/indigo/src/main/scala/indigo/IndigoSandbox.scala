@@ -128,7 +128,7 @@ trait IndigoSandbox[StartUpData, Model] extends GameLauncher {
     )
   }
 
-  final protected def ready(flags: Map[String, String]): Unit =
-    indigoGame.start(config, Future(None), assets, Future(Set()), Nil)
+  final protected def ready(parentElementId: String, flags: Map[String, String]): Unit =
+    indigoGame.start(parentElementId, config, Future(None), assets, Future(Set()), Nil)
 
 }

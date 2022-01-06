@@ -33,6 +33,7 @@ import scala.util.Failure
 import scala.util.Success
 
 class Platform(
+    parentElementId: String,
     gameConfig: GameConfig,
     assetCollection: AssetCollection,
     globalEventStream: GlobalEventStream,
@@ -55,7 +56,7 @@ class Platform(
       textureAtlas        <- createTextureAtlas(assetCollection)
       loadedTextureAssets <- extractLoadedTextures(textureAtlas)
       assetMapping        <- setupAssetMapping(textureAtlas)
-      canvas              <- createCanvas(gameConfig)
+      canvas              <- createCanvas(parentElementId, gameConfig)
       _                   <- listenToWorldEvents(canvas, gameConfig.magnification, globalEventStream)
       renderer            <- startRenderer(gameConfig, loadedTextureAssets, canvas, shaders)
     } yield {
@@ -106,12 +107,13 @@ class Platform(
 
   private given CanEqual[Option[Element], Option[Element]] = CanEqual.derived
 
-  def createCanvas(gameConfig: GameConfig): Outcome[Canvas] =
-    Option(dom.document.getElementById("indigo-container")) match {
+  def createCanvas(parentElementId: String, gameConfig: GameConfig): Outcome[Canvas] =
+    Option(dom.document.getElementById(parentElementId)) match {
       case None =>
-        Outcome.raiseError(new Exception("""Parent element "indigo-container" could not be found on page."""))
+        Outcome.raiseError(new Exception(s"""Parent element with ID '$parentElementId' could not be found on page."""))
 
       case Some(parent) =>
+        IndigoLogger.info(s"Attaching to element with ID: '$parentElementId'")
         Outcome(
           rendererInit.createCanvas(
             gameConfig.viewport.width,
