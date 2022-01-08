@@ -18,6 +18,7 @@ trait Dice {
   def rollDouble: Double
   def rollAlphaNumeric(length: Int): String
   def rollAlphaNumeric: String
+  def rollBoolean: Boolean = if roll(2) == 1 then true else false
 
   override def toString: String =
     s"Dice(seed = ${seed.toString()})"
