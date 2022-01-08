@@ -21,7 +21,7 @@ class SignalTests extends munit.FunSuite {
     val a = Signal.fixed(1)
     val b = Signal.fixed(2)
 
-    //Alternative to applicative syntax
+    // Alternative to applicative syntax
     assertEquals(a.merge(b)(_ + _).at(Seconds.zero), 3)
   }
 
@@ -57,6 +57,19 @@ class SignalTests extends munit.FunSuite {
     assertEquals(pulse.at(Seconds(23)), true)
     assertEquals(pulse.at(Seconds(1234)), false)
     assertEquals(pulse.at(Seconds(1243)), true)
+
+  }
+
+  test("Signals: Step signal") {
+
+    val step = Signal.Step(Seconds(10))
+
+    assertEquals(step.at(Seconds(0)), false)
+    assertEquals(step.at(Seconds(1)), false)
+    assertEquals(step.at(Seconds(9)), false)
+    assertEquals(step.at(Seconds(10)), true)
+    assertEquals(step.at(Seconds(11)), true)
+    assertEquals(step.at(Seconds(20)), true)
 
   }
 
