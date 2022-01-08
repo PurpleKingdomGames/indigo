@@ -17,13 +17,14 @@ import indigo.shared.scenegraph.Shape
 import indigo.shared.scenegraph.TextBox
 import indigo.shared.subsystems.SubSystem
 import indigo.shared.subsystems.SubSystemFrameContext
+import indigo.shared.time.FPS
 import indigo.shared.time.Seconds
 
 object FPSCounter {
 
   def apply(
       position: Point,
-      targetFPS: Int,
+      targetFPS: FPS,
       layerKey: Option[BindingKey],
       fontFamily: FontFamily,
       fontSize: Pixels
@@ -35,7 +36,7 @@ object FPSCounter {
       _present = present(position, targetFPS, layerKey, fontFamily, fontSize)
     )
 
-  def apply(position: Point, targetFPS: Int, layerKey: Option[BindingKey]): SubSystem =
+  def apply(position: Point, targetFPS: FPS, layerKey: Option[BindingKey]): SubSystem =
     SubSystem[GlobalEvent, FPSCounterState](
       _eventFilter = eventFilter,
       _initialModel = Outcome(FPSCounterState.default),
@@ -43,7 +44,7 @@ object FPSCounter {
       _present = present(position, targetFPS, layerKey, FontFamily.sansSerif, Pixels(12))
     )
 
-  def apply(position: Point, targetFPS: Int, layerKey: BindingKey): SubSystem =
+  def apply(position: Point, targetFPS: FPS, layerKey: BindingKey): SubSystem =
     SubSystem[GlobalEvent, FPSCounterState](
       _eventFilter = eventFilter,
       _initialModel = Outcome(FPSCounterState.default),
@@ -51,7 +52,7 @@ object FPSCounter {
       _present = present(position, targetFPS, Option(layerKey), FontFamily.sansSerif, Pixels(12))
     )
 
-  def apply(position: Point, targetFPS: Int): SubSystem =
+  def apply(position: Point, targetFPS: FPS): SubSystem =
     SubSystem[GlobalEvent, FPSCounterState](
       _eventFilter = eventFilter,
       _initialModel = Outcome(FPSCounterState.default),
@@ -64,13 +65,13 @@ object FPSCounter {
     case _         => None
   }
 
-  def update(targetFPS: Int): (SubSystemFrameContext, FPSCounterState) => GlobalEvent => Outcome[FPSCounterState] =
+  def update(targetFPS: FPS): (SubSystemFrameContext, FPSCounterState) => GlobalEvent => Outcome[FPSCounterState] =
     (frameContext, model) => {
       case FrameTick =>
         if (frameContext.gameTime.running >= (model.lastInterval + Seconds(1)))
           Outcome(
             FPSCounterState(
-              fps = Math.min(targetFPS, model.frameCountSinceInterval + 1),
+              fps = Math.min(targetFPS.toInt, model.frameCountSinceInterval + 1),
               lastInterval = frameContext.gameTime.running,
               frameCountSinceInterval = 0
             )
@@ -84,7 +85,7 @@ object FPSCounter {
 
   def present(
       position: Point,
-      targetFPS: Int,
+      targetFPS: FPS,
       layerKey: Option[BindingKey],
       fontFamily: FontFamily,
       fontSize: Pixels
@@ -93,7 +94,7 @@ object FPSCounter {
       val text: TextBox =
         TextBox(s"""FPS ${model.fps.toString}""")
           .withFontFamily(fontFamily)
-          .withColor(pickTint(targetFPS, model.fps))
+          .withColor(pickTint(targetFPS.toInt, model.fps))
           .withFontSize(fontSize)
           .moveTo(position + 2)
 

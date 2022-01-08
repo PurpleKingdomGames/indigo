@@ -33,7 +33,7 @@ import scala.scalajs.js.annotation.*
 @JSExportTopLevel("IndigoGame")
 object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, SandboxGameModel, SandboxViewModel] {
 
-  val targetFPS: Int          = 60
+  val targetFPS: FPS          = FPS.`60`
   val magnificationLevel: Int = 2
   val gameWidth: Int          = 228
   val gameHeight: Int         = 128

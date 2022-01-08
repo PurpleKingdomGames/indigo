@@ -16,12 +16,10 @@ import scala.scalajs.js.annotation._
 @JSExportTopLevel("IndigoGame")
 object Fireworks extends IndigoDemo[Vertex => Point, FireworksStartupData, Unit, Unit] {
 
-  val targetFPS: Int     = 60
+  val targetFPS: FPS     = FPS.`60`
   val magnification: Int = 3
 
-  /**
-    * Fairly severe. The model only gets one event and the
-    * view model is never run.
+  /** Fairly severe. The model only gets one event and the view model is never run.
     */
   val eventFilters: EventFilters =
     EventFilters(

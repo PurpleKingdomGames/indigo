@@ -9,7 +9,7 @@ import scala.scalajs.js.annotation._
 @JSExportTopLevel("IndigoGame")
 object PerfGame extends IndigoDemo[Unit, Dude, DudeModel, Unit] {
 
-  val targetFPS: Int          = 60
+  val targetFPS: FPS          = FPS.`60`
   val viewportWidth: Int      = 800
   val viewportHeight: Int     = 600
   val magnificationLevel: Int = 1

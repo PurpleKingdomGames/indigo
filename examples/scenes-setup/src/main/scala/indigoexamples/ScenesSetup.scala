@@ -9,7 +9,7 @@ import scala.scalajs.js.annotation._
 @JSExportTopLevel("IndigoGame")
 object ScenesSetup extends IndigoGame[Unit, StartUpData, GameModel, Unit] {
 
-  val targetFPS: Int = 30
+  val targetFPS: FPS = FPS.`30`
 
   def scenes(bootData: Unit): NonEmptyList[Scene[StartUpData, GameModel, Unit]] =
     NonEmptyList(SceneA, SceneB)

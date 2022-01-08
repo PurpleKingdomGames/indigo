@@ -60,7 +60,7 @@ object CursedPirateDemo extends IndigoGame[BootInformation, StartupData, Model, 
       ).withAssets(Assets.initialAssets(assetPath))
         .withFonts(Assets.Fonts.fontInfo)
         .withSubSystems(
-          FPSCounter(Point(10, 10), 60, Option(BindingKey("fps")))
+          FPSCounter(Point(10, 10), FPS.`60`, Option(BindingKey("fps")))
         )
     }
 

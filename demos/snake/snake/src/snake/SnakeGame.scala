@@ -12,6 +12,8 @@ import scala.scalajs.js.annotation.JSExportTopLevel
 @JSExportTopLevel("IndigoGame")
 object SnakeGame extends IndigoGame[ViewConfig, StartupData, GameModel, ViewModel] {
 
+  val targetFPS: FPS = FPS.`60`
+
   def initialScene(bootData: ViewConfig): Option[SceneName] =
     Option(StartScene.name)
 
@@ -32,7 +34,7 @@ object SnakeGame extends IndigoGame[ViewConfig, StartupData, GameModel, ViewMode
       val config =
         GameConfig(
           viewport = viewConfig.viewport,
-          frameRate = 60,
+          frameRate = targetFPS,
           clearColor = RGBA.Black,
           magnification = viewConfig.magnificationLevel
         )
@@ -41,7 +43,7 @@ object SnakeGame extends IndigoGame[ViewConfig, StartupData, GameModel, ViewMode
         .withAssets(GameAssets.assets(assetPath))
         .withFonts(GameAssets.fontInfo)
         .withSubSystems(
-          Set(FPSCounter(Point(5, 5), 60, Option(BindingKey("fps"))))
+          Set(FPSCounter(Point(5, 5), targetFPS, Option(BindingKey("fps"))))
         )
     }
 

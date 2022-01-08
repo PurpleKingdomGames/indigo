@@ -21,7 +21,7 @@ object Confetti extends IndigoDemo[Unit, Unit, Model, Unit]:
             .withFrameRate(60)
         )
         .withAssets(Assets.assets)
-        .withSubSystems(FPSCounter(Point.zero, 60))
+        .withSubSystems(FPSCounter(Point.zero, FPS.`60`))
     )
 
   def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[Unit]] =

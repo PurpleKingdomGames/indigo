@@ -11,7 +11,7 @@ import scala.scalajs.js.annotation._
 @JSExportTopLevel("IndigoGame")
 object EffectsExample extends IndigoSandbox[Unit, Unit] {
 
-  val targetFPS: Int = 60
+  val targetFPS: FPS = FPS.`60`
 
   private val magnificationLevel: Int = 2
   private val viewportWidth: Int      = 550
