@@ -22,6 +22,7 @@ final case class GameConfig(
     frameRate: Int,
     clearColor: RGBA,
     magnification: Int,
+    transparentBackground: Boolean,
     advanced: AdvancedGameConfig
 ) derives CanEqual:
   val frameRateDeltaMillis: Int = 1000 / frameRate
@@ -69,13 +70,41 @@ final case class GameConfig(
   def useWebGL2WithFallback: GameConfig =
     this.copy(advanced = advanced.copy(renderingTechnology = RenderingTechnology.WebGL2WithFallback))
 
+  def withTransparentBackground(enabled: Boolean): GameConfig =
+    this.copy(transparentBackground = enabled)
+  def useTransparentBackground: GameConfig =
+    withTransparentBackground(true)
+  def noTransparentBackground: GameConfig =
+    withTransparentBackground(false)
+
 object GameConfig:
 
   val default: GameConfig =
-    GameConfig(GameViewport(550, 400), 60, RGBA.Black, 1, AdvancedGameConfig.default)
+    GameConfig(
+      viewport = GameViewport(550, 400),
+      frameRate = 60,
+      clearColor = RGBA.Black,
+      magnification = 1,
+      transparentBackground = false,
+      advanced = AdvancedGameConfig.default
+    )
 
   def apply(width: Int, height: Int, frameRate: Int): GameConfig =
-    GameConfig(GameViewport(width, height), frameRate, RGBA.Black, 1, AdvancedGameConfig.default)
+    GameConfig(
+      viewport = GameViewport(width, height),
+      frameRate = frameRate,
+      clearColor = RGBA.Black,
+      magnification = 1,
+      transparentBackground = false,
+      advanced = AdvancedGameConfig.default
+    )
 
   def apply(viewport: GameViewport, frameRate: Int, clearColor: RGBA, magnification: Int): GameConfig =
-    GameConfig(viewport, frameRate, clearColor, magnification, AdvancedGameConfig.default)
+    GameConfig(
+      viewport = viewport,
+      frameRate = frameRate,
+      clearColor = clearColor,
+      magnification = magnification,
+      transparentBackground = false,
+      advanced = AdvancedGameConfig.default
+    )

@@ -21,6 +21,7 @@ final case class AdvancedGameConfig(
     renderingTechnology: RenderingTechnology,
     antiAliasing: Boolean,
     batchSize: Int,
+    premultipliedAlpha: Boolean,
     disableSkipModelUpdates: Boolean,
     disableSkipViewUpdates: Boolean,
     autoLoadStandardShaders: Boolean
@@ -41,6 +42,13 @@ final case class AdvancedGameConfig(
     withAntiAliasing(true)
   def noAntiAliasing: AdvancedGameConfig =
     withAntiAliasing(false)
+
+  def withPremultipliedAlpha(enabled: Boolean): AdvancedGameConfig =
+    this.copy(premultipliedAlpha = enabled)
+  def usePremultipliedAlpha: AdvancedGameConfig =
+    withPremultipliedAlpha(true)
+  def noPremultipliedAlpha: AdvancedGameConfig =
+    withPremultipliedAlpha(false)
 
   def withBatchSize(size: Int): AdvancedGameConfig =
     this.copy(batchSize = size)
@@ -70,6 +78,7 @@ object AdvancedGameConfig {
     AdvancedGameConfig(
       renderingTechnology = WebGL2WithFallback,
       antiAliasing = false,
+      premultipliedAlpha = true,
       batchSize = 256,
       disableSkipModelUpdates = false,
       disableSkipViewUpdates = false,

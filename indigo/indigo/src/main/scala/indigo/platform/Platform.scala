@@ -144,7 +144,9 @@ class Platform(
           clearColor = gameConfig.clearColor,
           magnification = gameConfig.magnification,
           maxBatchSize = gameConfig.advanced.batchSize,
-          antiAliasing = gameConfig.advanced.antiAliasing
+          antiAliasing = gameConfig.advanced.antiAliasing,
+          premultipliedAlpha = gameConfig.advanced.premultipliedAlpha,
+          transparentBackground = gameConfig.transparentBackground
         ),
         loadedTextureAssets,
         canvas,
