@@ -118,6 +118,7 @@ class Platform(
           rendererInit.createCanvas(
             gameConfig.viewport.width,
             gameConfig.viewport.height,
+            parentElementId,
             parent
           )
         )
