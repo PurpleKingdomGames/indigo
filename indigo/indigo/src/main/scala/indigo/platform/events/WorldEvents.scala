@@ -2,6 +2,7 @@ package indigo.platform.events
 
 import indigo.shared.constants.Key
 import indigo.shared.events.KeyboardEvent
+import indigo.shared.events.MouseButton
 import indigo.shared.events.MouseEvent
 import org.scalajs.dom
 import org.scalajs.dom.document
@@ -35,7 +36,8 @@ object WorldEvents {
       globalEventStream.pushGlobalEvent(
         MouseEvent.Click(
           absoluteCoordsX(e.clientX) / magnification,
-          absoluteCoordsY(e.clientY) / magnification
+          absoluteCoordsY(e.clientY) / magnification,
+          MouseButton.fromOrdinal(e.button)
         )
       )
     }
@@ -44,7 +46,8 @@ object WorldEvents {
       globalEventStream.pushGlobalEvent(
         MouseEvent.Move(
           absoluteCoordsX(e.clientX) / magnification,
-          absoluteCoordsY(e.clientY) / magnification
+          absoluteCoordsY(e.clientY) / magnification,
+          MouseButton.fromOrdinal(e.button)
         )
       )
     }
@@ -53,7 +56,8 @@ object WorldEvents {
       globalEventStream.pushGlobalEvent(
         MouseEvent.MouseDown(
           absoluteCoordsX(e.clientX) / magnification,
-          absoluteCoordsY(e.clientY) / magnification
+          absoluteCoordsY(e.clientY) / magnification,
+          MouseButton.fromOrdinal(e.button)
         )
       )
     }
@@ -62,10 +66,14 @@ object WorldEvents {
       globalEventStream.pushGlobalEvent(
         MouseEvent.MouseUp(
           absoluteCoordsX(e.clientX) / magnification,
-          absoluteCoordsY(e.clientY) / magnification
+          absoluteCoordsY(e.clientY) / magnification,
+          MouseButton.fromOrdinal(e.button)
         )
       )
     }
+
+    // Prevent right mouse button from popping up the context menu
+    canvas.oncontextmenu = _.preventDefault()
 
     document.onkeydown = { (e: dom.KeyboardEvent) =>
       globalEventStream.pushGlobalEvent(KeyboardEvent.KeyDown(Key(e.keyCode, e.key)))

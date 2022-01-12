@@ -2,6 +2,7 @@ package indigo.shared.input
 
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
+import indigo.shared.events.MouseButton
 import indigo.shared.events.MouseEvent
 
 import scala.annotation.tailrec
@@ -95,10 +96,10 @@ object Mouse {
       case Nil =>
         isDown
 
-      case MouseEvent.MouseDown(_) :: xs =>
+      case MouseEvent.MouseDown(_, MouseButton.LeftMouseButton) :: xs =>
         isLeftMouseDown(true, xs)
 
-      case MouseEvent.MouseUp(_) :: xs =>
+      case MouseEvent.MouseUp(_, MouseButton.LeftMouseButton) :: xs =>
         isLeftMouseDown(false, xs)
 
       case _ :: xs =>
