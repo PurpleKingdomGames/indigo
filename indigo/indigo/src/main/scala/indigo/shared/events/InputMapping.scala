@@ -20,10 +20,13 @@ final case class InputMapping[A](oneOf: List[(Combo, A)]) {
     oneOf
       .find { c =>
         c._1.mouseInputs.forall {
-          case MouseInput.MouseUp     => mouse.mouseReleased
-          case MouseInput.MouseDown   => mouse.mousePressed
-          case MouseInput.MouseClick  => mouse.mouseClicked
-          case MouseInput.MouseAt(pt) => mouse.position == pt
+          case MouseInput.MouseUp                  => mouse.mouseButtonReleased(MouseButton.LeftMouseButton)
+          case MouseInput.MouseDown                => mouse.mouseButtonPressed(MouseButton.LeftMouseButton)
+          case MouseInput.MouseClick               => mouse.mouseButtonClicked(MouseButton.LeftMouseButton)
+          case MouseInput.MouseAt(pt)              => mouse.position == pt
+          case MouseInput.MouseButtonUp(button)    => mouse.mouseButtonReleased(button)
+          case MouseInput.MouseButtonDown(button)  => mouse.mouseButtonClicked(button)
+          case MouseInput.MouseButtonClick(button) => mouse.mouseButtonPressed(button)
         } &&
         c._1.keyInputs.forall(k => keyboard.keysDown.contains(k)) &&
         c._1.gamepadInputs.forall {
@@ -124,22 +127,22 @@ object Combo {
 }
 
 enum GamepadInput derives CanEqual:
-  case DPAD_UP extends GamepadInput
-  case DPAD_LEFT extends GamepadInput
+  case DPAD_UP    extends GamepadInput
+  case DPAD_LEFT  extends GamepadInput
   case DPAD_RIGHT extends GamepadInput
-  case DPAD_DOWN extends GamepadInput
-  case Cross extends GamepadInput
-  case Circle extends GamepadInput
-  case Square extends GamepadInput
-  case Triangle extends GamepadInput
-  case L1 extends GamepadInput
-  case L2 extends GamepadInput
-  case R1 extends GamepadInput
-  case R2 extends GamepadInput
-  case Options extends GamepadInput
-  case Share extends GamepadInput
-  case PS extends GamepadInput
-  case TouchPad extends GamepadInput
+  case DPAD_DOWN  extends GamepadInput
+  case Cross      extends GamepadInput
+  case Circle     extends GamepadInput
+  case Square     extends GamepadInput
+  case Triangle   extends GamepadInput
+  case L1         extends GamepadInput
+  case L2         extends GamepadInput
+  case R1         extends GamepadInput
+  case R2         extends GamepadInput
+  case Options    extends GamepadInput
+  case Share      extends GamepadInput
+  case PS         extends GamepadInput
+  case TouchPad   extends GamepadInput
   case LEFT_ANALOG(
       x: Double => Boolean,
       y: Double => Boolean,
@@ -152,10 +155,13 @@ enum GamepadInput derives CanEqual:
   ) extends GamepadInput
 
 enum MouseInput derives CanEqual:
-  case MouseDown extends MouseInput
-  case MouseUp extends MouseInput
-  case MouseClick extends MouseInput
-  case MouseAt(position: Point) extends MouseInput
+  case MouseDown                             extends MouseInput
+  case MouseUp                               extends MouseInput
+  case MouseClick                            extends MouseInput
+  case MouseAt(position: Point)              extends MouseInput
+  case MouseButtonDown(button: MouseButton)  extends MouseInput
+  case MouseButtonUp(button: MouseButton)    extends MouseInput
+  case MouseButtonClick(button: MouseButton) extends MouseInput
 
 object MouseInput:
   object MouseAt:
