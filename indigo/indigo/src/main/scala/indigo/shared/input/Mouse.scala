@@ -11,25 +11,35 @@ final class Mouse(mouseEvents: List[MouseEvent], val position: Point, val leftMo
 
   lazy val mousePressed: Boolean =
     mouseEvents.exists {
-      case _: MouseEvent.MouseDown => true
-      case _                       => false
+      case MouseEvent.MouseDown(_, MouseButton.LeftMouseButton) => true
+      case _                                                    => false
     }
 
   lazy val mouseReleased: Boolean =
     mouseEvents.exists {
-      case _: MouseEvent.MouseUp => true
-      case _                     => false
+      case MouseEvent.MouseUp(_, MouseButton.LeftMouseButton) => true
+      case _                                                  => false
     }
 
   lazy val mouseClicked: Boolean =
     mouseEvents.exists {
-      case _: MouseEvent.Click => true
-      case _                   => false
+      case MouseEvent.Click(_, MouseButton.LeftMouseButton) => true
+      case _                                                => false
     }
 
-  lazy val mouseClickAt: Option[Point] = mouseEvents.collectFirst { case m: MouseEvent.Click     => m.position }
-  lazy val mouseUpAt: Option[Point]    = mouseEvents.collectFirst { case m: MouseEvent.MouseUp   => m.position }
-  lazy val mouseDownAt: Option[Point]  = mouseEvents.collectFirst { case m: MouseEvent.MouseDown => m.position }
+  def mouseButtonClickedAt(mouseButton: MouseButton): Option[Point] = mouseEvents.collectFirst {
+    case m: MouseEvent.Click if m.button == mouseButton => m.position
+  }
+  def mouseButtonUpAt(mouseButton: MouseButton): Option[Point] = mouseEvents.collectFirst {
+    case m: MouseEvent.MouseUp if m.button == mouseButton => m.position
+  }
+  def mouseButtonDownAt(mouseButton: MouseButton): Option[Point] = mouseEvents.collectFirst {
+    case m: MouseEvent.MouseDown if m.button == mouseButton => m.position
+  }
+
+  lazy val mouseClickAt: Option[Point] = mouseButtonClickedAt(MouseButton.LeftMouseButton)
+  lazy val mouseUpAt: Option[Point]    = mouseButtonUpAt(MouseButton.LeftMouseButton)
+  lazy val mouseDownAt: Option[Point]  = mouseButtonDownAt(MouseButton.LeftMouseButton)
 
   private def wasMouseAt(position: Point, maybePosition: Option[Point]): Boolean =
     maybePosition match {
@@ -49,7 +59,7 @@ final class Mouse(mouseEvents: List[MouseEvent], val position: Point, val leftMo
   def wasMousePositionAt(target: Point): Boolean  = target == position
   def wasMousePositionAt(x: Int, y: Int): Boolean = wasMousePositionAt(Point(x, y))
 
-  //Within
+  // Within
   private def wasMouseWithin(bounds: Rectangle, maybePosition: Option[Point]): Boolean =
     maybePosition match {
       case Some(pt) => bounds.isPointWithin(pt)
@@ -60,11 +70,15 @@ final class Mouse(mouseEvents: List[MouseEvent], val position: Point, val leftMo
   def wasMouseClickedWithin(x: Int, y: Int, width: Int, height: Int): Boolean =
     wasMouseClickedWithin(Rectangle(x, y, width, height))
 
-  def wasMouseUpWithin(bounds: Rectangle): Boolean                       = wasMouseWithin(bounds, mouseUpAt)
-  def wasMouseUpWithin(x: Int, y: Int, width: Int, height: Int): Boolean = wasMouseUpWithin(Rectangle(x, y, width, height))
+  def wasMouseUpWithin(bounds: Rectangle): Boolean = wasMouseWithin(bounds, mouseUpAt)
+  def wasMouseUpWithin(x: Int, y: Int, width: Int, height: Int): Boolean = wasMouseUpWithin(
+    Rectangle(x, y, width, height)
+  )
 
-  def wasMouseDownWithin(bounds: Rectangle): Boolean                       = wasMouseWithin(bounds, mouseDownAt)
-  def wasMouseDownWithin(x: Int, y: Int, width: Int, height: Int): Boolean = wasMouseDownWithin(Rectangle(x, y, width, height))
+  def wasMouseDownWithin(bounds: Rectangle): Boolean = wasMouseWithin(bounds, mouseDownAt)
+  def wasMouseDownWithin(x: Int, y: Int, width: Int, height: Int): Boolean = wasMouseDownWithin(
+    Rectangle(x, y, width, height)
+  )
 
   def wasMousePositionWithin(bounds: Rectangle): Boolean = bounds.isPointWithin(position)
   def wasMousePositionWithin(x: Int, y: Int, width: Int, height: Int): Boolean =
