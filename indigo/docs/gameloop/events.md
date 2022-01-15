@@ -61,10 +61,16 @@ You can create your own events by simply extending `GlobalEvent`.
 
 What did the mouse do and at what location?
 
-- `Click(x, y)`
-- `MouseUp(x, y)`
-- `MouseDown(x, y)`
+Up to five mouse buttons are supported, including the most common left, middle and right buttons.
+
+Convenience functions are provided for the left mouse button.
+
+- `Click(x, y, button)`
+- `MouseUp(x, y, button)`
+- `MouseDown(x, y, button)`
 - `Move(x, y)`
+
+Notice how the `Move` event is independent of any button.
 
 #### `KeyboardEvent`s
 
