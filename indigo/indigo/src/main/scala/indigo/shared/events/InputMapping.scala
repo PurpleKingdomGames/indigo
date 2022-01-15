@@ -20,9 +20,9 @@ final case class InputMapping[A](oneOf: List[(Combo, A)]) {
     oneOf
       .find { c =>
         c._1.mouseInputs.forall {
-          case MouseInput.MouseUp                  => mouse.mouseButtonReleased(MouseButton.LeftMouseButton)
-          case MouseInput.MouseDown                => mouse.mouseButtonPressed(MouseButton.LeftMouseButton)
-          case MouseInput.MouseClick               => mouse.mouseButtonClicked(MouseButton.LeftMouseButton)
+          case MouseInput.MouseUp                  => mouse.mouseReleased
+          case MouseInput.MouseDown                => mouse.mousePressed
+          case MouseInput.MouseClick               => mouse.mouseClicked
           case MouseInput.MouseAt(pt)              => mouse.position == pt
           case MouseInput.MouseButtonUp(button)    => mouse.mouseButtonReleased(button)
           case MouseInput.MouseButtonDown(button)  => mouse.mouseButtonClicked(button)

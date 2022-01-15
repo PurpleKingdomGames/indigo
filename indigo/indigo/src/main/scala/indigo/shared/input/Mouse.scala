@@ -9,6 +9,10 @@ import scala.annotation.tailrec
 
 final class Mouse(mouseEvents: List[MouseEvent], val position: Point, val leftMouseIsDown: Boolean) {
 
+  lazy val mousePressed  = mouseButtonPressed(MouseButton.LeftMouseButton)
+  lazy val mouseReleased = mouseButtonReleased(MouseButton.LeftMouseButton)
+  lazy val mouseClicked  = mouseButtonClicked(MouseButton.LeftMouseButton)
+
   def mouseButtonPressed(button: MouseButton): Boolean =
     mouseEvents.exists {
       case MouseEvent.MouseDown(_, mouseButton) => true
@@ -27,6 +31,10 @@ final class Mouse(mouseEvents: List[MouseEvent], val position: Point, val leftMo
       case _                           => false
     }
 
+  lazy val mouseClickAt: Option[Point] = mouseButtonClickedAt(MouseButton.LeftMouseButton)
+  lazy val mouseUpAt: Option[Point]    = mouseButtonUpAt(MouseButton.LeftMouseButton)
+  lazy val mouseDownAt: Option[Point]  = mouseButtonDownAt(MouseButton.LeftMouseButton)
+
   def mouseButtonClickedAt(mouseButton: MouseButton): Option[Point] = mouseEvents.collectFirst {
     case m: MouseEvent.Click if m.button == mouseButton => m.position
   }
@@ -37,10 +45,6 @@ final class Mouse(mouseEvents: List[MouseEvent], val position: Point, val leftMo
     case m: MouseEvent.MouseDown if m.button == mouseButton => m.position
   }
 
-  lazy val mouseClickAt: Option[Point] = mouseButtonClickedAt(MouseButton.LeftMouseButton)
-  lazy val mouseUpAt: Option[Point]    = mouseButtonUpAt(MouseButton.LeftMouseButton)
-  lazy val mouseDownAt: Option[Point]  = mouseButtonDownAt(MouseButton.LeftMouseButton)
-
   private def wasMouseAt(position: Point, maybePosition: Option[Point]): Boolean =
     maybePosition match {
       case Some(pt) => position == pt
@@ -49,12 +53,24 @@ final class Mouse(mouseEvents: List[MouseEvent], val position: Point, val leftMo
 
   def wasMouseClickedAt(position: Point): Boolean = wasMouseAt(position, mouseClickAt)
   def wasMouseClickedAt(x: Int, y: Int): Boolean  = wasMouseClickedAt(Point(x, y))
+  def wasMouseButtonClickedAt(position: Point, button: MouseButton): Boolean =
+    wasMouseAt(position, mouseButtonClickedAt(button))
+  def wasMouseButtonClickedAt(x: Int, y: Int, button: MouseButton): Boolean =
+    wasMouseButtonClickedAt(Point(x, y), button)
 
   def wasMouseUpAt(position: Point): Boolean = wasMouseAt(position, mouseUpAt)
   def wasMouseUpAt(x: Int, y: Int): Boolean  = wasMouseUpAt(Point(x, y))
+  def wasMouseButtonUpAt(position: Point, button: MouseButton): Boolean =
+    wasMouseAt(position, mouseButtonUpAt(button))
+  def wasMouseButtonUpAt(x: Int, y: Int, button: MouseButton): Boolean =
+    wasMouseButtonUpAt(Point(x, y), button)
 
   def wasMouseDownAt(position: Point): Boolean = wasMouseAt(position, mouseDownAt)
   def wasMouseDownAt(x: Int, y: Int): Boolean  = wasMouseDownAt(Point(x, y))
+  def wasMouseButtonDownAt(position: Point, button: MouseButton): Boolean =
+    wasMouseAt(position, mouseButtonDownAt(button))
+  def wasMouseButtonDownAt(x: Int, y: Int, button: MouseButton): Boolean =
+    wasMouseButtonDownAt(Point(x, y), button)
 
   def wasMousePositionAt(target: Point): Boolean  = target == position
   def wasMousePositionAt(x: Int, y: Int): Boolean = wasMousePositionAt(Point(x, y))
@@ -69,16 +85,28 @@ final class Mouse(mouseEvents: List[MouseEvent], val position: Point, val leftMo
   def wasMouseClickedWithin(bounds: Rectangle): Boolean = wasMouseWithin(bounds, mouseClickAt)
   def wasMouseClickedWithin(x: Int, y: Int, width: Int, height: Int): Boolean =
     wasMouseClickedWithin(Rectangle(x, y, width, height))
+  def wasMouseButtonClickedWithin(bounds: Rectangle, button: MouseButton): Boolean =
+    wasMouseWithin(bounds, mouseButtonClickedAt(button))
+  def wasMouseButtonClickedWithin(x: Int, y: Int, width: Int, height: Int, button: MouseButton): Boolean =
+    wasMouseButtonClickedWithin(Rectangle(x, y, width, height), button)
 
   def wasMouseUpWithin(bounds: Rectangle): Boolean = wasMouseWithin(bounds, mouseUpAt)
   def wasMouseUpWithin(x: Int, y: Int, width: Int, height: Int): Boolean = wasMouseUpWithin(
     Rectangle(x, y, width, height)
   )
+  def wasMouseButtonUpWithin(bounds: Rectangle, button: MouseButton): Boolean =
+    wasMouseWithin(bounds, mouseButtonUpAt(button))
+  def wasMouseButtonUpWithin(x: Int, y: Int, width: Int, height: Int, button: MouseButton): Boolean =
+    wasMouseButtonUpWithin(Rectangle(x, y, width, height), button)
 
   def wasMouseDownWithin(bounds: Rectangle): Boolean = wasMouseWithin(bounds, mouseDownAt)
   def wasMouseDownWithin(x: Int, y: Int, width: Int, height: Int): Boolean = wasMouseDownWithin(
     Rectangle(x, y, width, height)
   )
+  def wasMouseButtonDownWithin(bounds: Rectangle, button: MouseButton): Boolean =
+    wasMouseWithin(bounds, mouseButtonDownAt(button))
+  def wasMouseButtonDownWithin(x: Int, y: Int, width: Int, height: Int, button: MouseButton): Boolean =
+    wasMouseButtonDownWithin(Rectangle(x, y, width, height), button)
 
   def wasMousePositionWithin(bounds: Rectangle): Boolean = bounds.isPointWithin(position)
   def wasMousePositionWithin(x: Int, y: Int, width: Int, height: Int): Boolean =
