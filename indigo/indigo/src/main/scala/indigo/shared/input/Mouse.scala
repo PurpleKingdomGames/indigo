@@ -9,22 +9,22 @@ import scala.annotation.tailrec
 
 final class Mouse(mouseEvents: List[MouseEvent], val position: Point, val leftMouseIsDown: Boolean) {
 
-  lazy val mousePressed: Boolean =
+  def mouseButtonPressed(button: MouseButton): Boolean =
     mouseEvents.exists {
-      case MouseEvent.MouseDown(_, MouseButton.LeftMouseButton) => true
-      case _                                                    => false
+      case MouseEvent.MouseDown(_, mouseButton) => true
+      case _                                    => false
     }
 
-  lazy val mouseReleased: Boolean =
+  def mouseButtonReleased(button: MouseButton): Boolean =
     mouseEvents.exists {
-      case MouseEvent.MouseUp(_, MouseButton.LeftMouseButton) => true
-      case _                                                  => false
+      case MouseEvent.MouseUp(_, button) => true
+      case _                             => false
     }
 
-  lazy val mouseClicked: Boolean =
+  def mouseButtonClicked(button: MouseButton): Boolean =
     mouseEvents.exists {
-      case MouseEvent.Click(_, MouseButton.LeftMouseButton) => true
-      case _                                                => false
+      case MouseEvent.Click(_, button) => true
+      case _                           => false
     }
 
   def mouseButtonClickedAt(mouseButton: MouseButton): Option[Point] = mouseEvents.collectFirst {
