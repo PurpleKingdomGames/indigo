@@ -32,12 +32,12 @@ object WorldEvents {
   }
 
   def init(canvas: html.Canvas, magnification: Int, globalEventStream: GlobalEventStream): Unit = {
+    // Onclick only supports the left mouse button
     canvas.onclick = { (e: dom.MouseEvent) =>
       globalEventStream.pushGlobalEvent(
         MouseEvent.Click(
           absoluteCoordsX(e.clientX) / magnification,
-          absoluteCoordsY(e.clientY) / magnification,
-          MouseButton.fromOrdinal(e.button)
+          absoluteCoordsY(e.clientY) / magnification
         )
       )
     }
@@ -46,8 +46,7 @@ object WorldEvents {
       globalEventStream.pushGlobalEvent(
         MouseEvent.Move(
           absoluteCoordsX(e.clientX) / magnification,
-          absoluteCoordsY(e.clientY) / magnification,
-          MouseButton.fromOrdinal(e.button)
+          absoluteCoordsY(e.clientY) / magnification
         )
       )
     }
