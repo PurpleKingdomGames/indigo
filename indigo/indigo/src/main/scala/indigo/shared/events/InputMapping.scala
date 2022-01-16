@@ -24,8 +24,8 @@ final case class InputMapping[A](oneOf: List[(Combo, A)]) {
           case MouseInput.MouseDown               => mouse.mousePressed
           case MouseInput.MouseClick              => mouse.mouseClicked
           case MouseInput.MouseAt(pt)             => mouse.position == pt
-          case MouseInput.MouseButtonUp(button)   => mouse.mouseButtonReleased(button)
-          case MouseInput.MouseButtonDown(button) => mouse.mouseButtonPressed(button)
+          case MouseInput.MouseButtonUp(button)   => mouse.released(button)
+          case MouseInput.MouseButtonDown(button) => mouse.pressed(button)
         } &&
         c._1.keyInputs.forall(k => keyboard.keysDown.contains(k)) &&
         c._1.gamepadInputs.forall {
