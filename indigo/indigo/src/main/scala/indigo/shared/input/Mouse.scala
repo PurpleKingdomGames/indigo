@@ -18,14 +18,14 @@ final class Mouse(mouseEvents: List[MouseEvent], val position: Point, val leftMo
 
   def mouseButtonPressed(button: MouseButton): Boolean =
     mouseEvents.exists {
-      case MouseEvent.MouseDown(_, mouseButton) => true
-      case _                                    => false
+      case md: MouseEvent.MouseDown if md.button == button => true
+      case _                                               => false
     }
 
   def mouseButtonReleased(button: MouseButton): Boolean =
     mouseEvents.exists {
-      case MouseEvent.MouseUp(_, button) => true
-      case _                             => false
+      case mu: MouseEvent.MouseUp if mu.button == button => true
+      case _                                             => false
     }
 
   lazy val mouseClickAt: Option[Point] = mouseEvents.collectFirst { case m: MouseEvent.Click =>
