@@ -9,7 +9,7 @@ UI components are generally the kinds of elements your expect to see in any web 
 
 Indigo does not provide a large suite of UI Components out of the box although we hope to expand, [see issue for progress](https://github.com/PurpleKingdomGames/indigo/issues/41). This is because _basic_ UI components are not terribly complicated to build on top of Indigo by aspiring game devs, and so have been pushed down the priority list in favor of more fundamental / specialized pieces of functionality. Help is welcome!
 
-> A word of caution about UI components depending on mouse actions: currently, only the left mouse button is supported for the sake of simplicity. But you can always create another UI component allowing the usage of other mouse actions like the right mouse button click, as Indigo supports it, along with other mouse buttons actions, as you can see at the [events](gamelooop/events.md) page.
+> A word of caution about UI components depending on mouse actions: currently, only the left mouse button is supported for the sake of simplicity. But you can always create another UI component allowing the usage of other mouse actions like the right mouse button up or down, as Indigo supports it, along with other mouse buttons actions, as you can see at the [events](gamelooop/events.md) page.
 
 ## The Pattern
 

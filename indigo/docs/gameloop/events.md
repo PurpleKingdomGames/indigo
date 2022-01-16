@@ -65,12 +65,12 @@ Up to five mouse buttons are supported, including the most common left, middle a
 
 Convenience functions are provided for the left mouse button.
 
-- `Click(x, y, button)`
+- `Click(x, y)`
 - `MouseUp(x, y, button)`
 - `MouseDown(x, y, button)`
 - `Move(x, y)`
 
-Notice how the `Move` event is independent of any button.
+Notice however that the `Click` event is restricted to the left mouse button, and `Move` is independent of any button.
 
 #### `KeyboardEvent`s
 
