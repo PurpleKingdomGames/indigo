@@ -1,6 +1,7 @@
 package com.example.confetti
 
 import indigo._
+import indigo.shared.events.MouseButton
 import indigoextras.subsystems.FPSCounter
 
 import scala.scalajs.js.annotation.JSExportTopLevel
@@ -33,27 +34,36 @@ object Confetti extends IndigoDemo[Unit, Unit, Model, Unit]:
   def initialViewModel(startupData: Unit, model: Model): Outcome[Unit] =
     Outcome(())
 
+  private def maybeMouseUp(mouse: Mouse): Option[LmbOrRmb] =
+    if mouse.released(MouseButton.LeftMouseButton) then Some(MouseButton.LeftMouseButton)
+    else if mouse.released(MouseButton.RightMouseButton) then Some(MouseButton.RightMouseButton)
+    else None
+
   def updateModel(context: FrameContext[Unit], model: Model): GlobalEvent => Outcome[Model] =
-    case FrameTick if context.mouse.leftMouseIsDown =>
-      Outcome(
-        model
-          .spawn(context, 15)
-          .update
-      )
-
     case FrameTick =>
-      Outcome(model.update)
-
+      maybeMouseUp(context.mouse) match
+        case Some(source) =>
+          Outcome(
+            model
+              .spawn(context, 15, source)
+              .update
+          )
+        case None =>
+          Outcome(model.update)
     case _ =>
       Outcome(model)
 
   def updateViewModel(context: FrameContext[Unit], model: Model, viewModel: Unit): GlobalEvent => Outcome[Unit] =
     _ => Outcome(viewModel)
 
-  val dots: List[Graphic[Material.Bitmap]] =
+  val lmbDots: List[Graphic[Material.Bitmap]] =
     List(
       Assets.redDot,
-      Assets.greenDot,
+      Assets.greenDot
+    )
+
+  val rmbDots: List[Graphic[Material.Bitmap]] =
+    List(
       Assets.blueDot,
       Assets.yellowDot
     )
@@ -63,8 +73,9 @@ object Confetti extends IndigoDemo[Unit, Unit, Model, Unit]:
       .withFontSize(Pixels(12))
       .withColor(RGBA.White)
 
-  val helpText: TextBox =
-    TextBox("Click anywhere!", 640, 20).alignRight
+  def helpText(maybeButton: Option[MouseButton]): TextBox =
+    val msg = maybeButton.fold("Click anywhere!")(btn => s"$btn clicked!")
+    TextBox(msg, 640, 20).alignRight
       .withFontSize(Pixels(12))
       .withColor(RGBA.White)
 
@@ -72,15 +83,21 @@ object Confetti extends IndigoDemo[Unit, Unit, Model, Unit]:
     Outcome(
       SceneUpdateFragment(
         model.particles.map { p =>
+          val dots = p.source match
+            case MouseButton.LeftMouseButton  => lmbDots
+            case MouseButton.RightMouseButton => rmbDots
+
           dots(p.color).moveTo(p.x, p.y).scaleBy(p.scale, p.scale)
         } ++ List(
           count.withText(s"count: ${model.particles.length}"),
-          helpText
+          helpText(maybeMouseUp(context.mouse))
         )
       )
     )
 
 opaque type Model = (Int, List[Particle])
+type LmbOrRmb = MouseButton.LeftMouseButton.type | MouseButton.RightMouseButton.type
+
 object Model:
   def empty: Model = (0, Nil)
 
@@ -88,7 +105,7 @@ object Model:
     def color: Int                = m._1
     def particles: List[Particle] = m._2
 
-    def spawn(context: FrameContext[Unit], count: Int): Model =
+    def spawn(context: FrameContext[Unit], count: Int, source: LmbOrRmb): Model =
       (
         m._1,
         (0 until count).toList.map { _ =>
@@ -98,14 +115,15 @@ object Model:
             context.dice.rollDouble * 2.0 - 1.0,
             context.dice.rollDouble * 2.0,
             m._1,
-            context.dice.rollDouble * 0.5 + 0.5
+            context.dice.rollDouble * 0.5 + 0.5,
+            source
           )
         } ++ m._2
       )
 
     def update: Model =
       (
-        (m._1 + 1) % 4,
+        (m._1 + 1) % 2,
         m._2
           .filter(p => p.y < 500)
           .map { p =>
@@ -120,4 +138,4 @@ object Model:
           }
       )
 
-final case class Particle(x: Int, y: Int, fx: Double, fy: Double, color: Int, scale: Double)
+final case class Particle(x: Int, y: Int, fx: Double, fy: Double, color: Int, scale: Double, source: LmbOrRmb)
