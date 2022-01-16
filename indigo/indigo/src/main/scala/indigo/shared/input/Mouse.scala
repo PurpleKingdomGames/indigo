@@ -9,9 +9,12 @@ import scala.annotation.tailrec
 
 final class Mouse(mouseEvents: List[MouseEvent], val position: Point, val leftMouseIsDown: Boolean) {
 
+  lazy val mouseClicked: Boolean = mouseEvents.exists {
+    case _: MouseEvent.Click => true
+    case _                   => false
+  }
   lazy val mousePressed  = mouseButtonPressed(MouseButton.LeftMouseButton)
   lazy val mouseReleased = mouseButtonReleased(MouseButton.LeftMouseButton)
-  lazy val mouseClicked  = mouseButtonClicked(MouseButton.LeftMouseButton)
 
   def mouseButtonPressed(button: MouseButton): Boolean =
     mouseEvents.exists {
@@ -25,19 +28,12 @@ final class Mouse(mouseEvents: List[MouseEvent], val position: Point, val leftMo
       case _                             => false
     }
 
-  def mouseButtonClicked(button: MouseButton): Boolean =
-    mouseEvents.exists {
-      case MouseEvent.Click(_, button) => true
-      case _                           => false
-    }
-
-  lazy val mouseClickAt: Option[Point] = mouseButtonClickedAt(MouseButton.LeftMouseButton)
-  lazy val mouseUpAt: Option[Point]    = mouseButtonUpAt(MouseButton.LeftMouseButton)
-  lazy val mouseDownAt: Option[Point]  = mouseButtonDownAt(MouseButton.LeftMouseButton)
-
-  def mouseButtonClickedAt(mouseButton: MouseButton): Option[Point] = mouseEvents.collectFirst {
-    case m: MouseEvent.Click if m.button == mouseButton => m.position
+  lazy val mouseClickAt: Option[Point] = mouseEvents.collectFirst { case m: MouseEvent.Click =>
+    m.position
   }
+  lazy val mouseUpAt: Option[Point]   = mouseButtonUpAt(MouseButton.LeftMouseButton)
+  lazy val mouseDownAt: Option[Point] = mouseButtonDownAt(MouseButton.LeftMouseButton)
+
   def mouseButtonUpAt(mouseButton: MouseButton): Option[Point] = mouseEvents.collectFirst {
     case m: MouseEvent.MouseUp if m.button == mouseButton => m.position
   }
@@ -46,17 +42,12 @@ final class Mouse(mouseEvents: List[MouseEvent], val position: Point, val leftMo
   }
 
   private def wasMouseAt(position: Point, maybePosition: Option[Point]): Boolean =
-    maybePosition match {
+    maybePosition match
       case Some(pt) => position == pt
       case None     => false
-    }
 
   def wasMouseClickedAt(position: Point): Boolean = wasMouseAt(position, mouseClickAt)
   def wasMouseClickedAt(x: Int, y: Int): Boolean  = wasMouseClickedAt(Point(x, y))
-  def wasMouseButtonClickedAt(position: Point, button: MouseButton): Boolean =
-    wasMouseAt(position, mouseButtonClickedAt(button))
-  def wasMouseButtonClickedAt(x: Int, y: Int, button: MouseButton): Boolean =
-    wasMouseButtonClickedAt(Point(x, y), button)
 
   def wasMouseUpAt(position: Point): Boolean = wasMouseAt(position, mouseUpAt)
   def wasMouseUpAt(x: Int, y: Int): Boolean  = wasMouseUpAt(Point(x, y))
@@ -85,10 +76,6 @@ final class Mouse(mouseEvents: List[MouseEvent], val position: Point, val leftMo
   def wasMouseClickedWithin(bounds: Rectangle): Boolean = wasMouseWithin(bounds, mouseClickAt)
   def wasMouseClickedWithin(x: Int, y: Int, width: Int, height: Int): Boolean =
     wasMouseClickedWithin(Rectangle(x, y, width, height))
-  def wasMouseButtonClickedWithin(bounds: Rectangle, button: MouseButton): Boolean =
-    wasMouseWithin(bounds, mouseButtonClickedAt(button))
-  def wasMouseButtonClickedWithin(x: Int, y: Int, width: Int, height: Int, button: MouseButton): Boolean =
-    wasMouseButtonClickedWithin(Rectangle(x, y, width, height), button)
 
   def wasMouseUpWithin(bounds: Rectangle): Boolean = wasMouseWithin(bounds, mouseUpAt)
   def wasMouseUpWithin(x: Int, y: Int, width: Int, height: Int): Boolean = wasMouseUpWithin(
@@ -134,17 +121,13 @@ object Mouse {
 
   @tailrec
   private def isLeftMouseDown(isDown: Boolean, events: List[MouseEvent]): Boolean =
-    events match {
+    events match
       case Nil =>
         isDown
-
       case MouseEvent.MouseDown(_, MouseButton.LeftMouseButton) :: xs =>
         isLeftMouseDown(true, xs)
-
       case MouseEvent.MouseUp(_, MouseButton.LeftMouseButton) :: xs =>
         isLeftMouseDown(false, xs)
-
       case _ :: xs =>
         isLeftMouseDown(isDown, xs)
-    }
 }

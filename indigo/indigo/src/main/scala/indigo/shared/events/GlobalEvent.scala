@@ -103,9 +103,8 @@ sealed trait MouseEvent extends InputEvent {
   val position: Point
   val x: Int
   val y: Int
-  val button: MouseButton
 }
-object MouseEvent {
+object MouseEvent:
 
   /** The mouse has been clicked.
     *
@@ -113,19 +112,13 @@ object MouseEvent {
     *   X coord relative to magnification level
     * @param y
     *   Y coord relative to magnification level
-    * @param button
-    *   Button that triggered this event
     */
-  final case class Click(position: Point, button: MouseButton) extends MouseEvent:
+  final case class Click(position: Point) extends MouseEvent:
     val x: Int = position.x
     val y: Int = position.y
   object Click:
-    def apply(position: Point): Click =
-      Click(position, MouseButton.LeftMouseButton)
     def apply(x: Int, y: Int): Click =
-      Click(Point(x, y), MouseButton.LeftMouseButton)
-    def apply(x: Int, y: Int, button: MouseButton): Click =
-      Click(Point(x, y), button)
+      Click(Point(x, y))
 
   /** The left mouse button was released.
     *
@@ -173,20 +166,16 @@ object MouseEvent {
     *   X coord relative to magnification level
     * @param y
     *   Y coord relative to magnification level
-    * @param button
-    *   Button that triggered this event
     */
-  final case class Move(position: Point, button: MouseButton) extends MouseEvent:
+  final case class Move(position: Point) extends MouseEvent:
     val x: Int = position.x
     val y: Int = position.y
+
   object Move:
-    def apply(position: Point): Move =
-      Move(position, MouseButton.LeftMouseButton)
     def apply(x: Int, y: Int): Move =
-      Move(Point(x, y), MouseButton.LeftMouseButton)
-    def apply(x: Int, y: Int, button: MouseButton): Move =
-      Move(Point(x, y), button)
-}
+      Move(Point(x, y))
+
+end MouseEvent
 
 /** Represents all keyboard events
   */
