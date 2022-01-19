@@ -1,8 +1,8 @@
 package indigo.shared.scenegraph
 
+import indigo.shared.config.GameViewport
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Radians
-import indigo.shared.config.GameViewport
 
 /** Parent type of camera instances. Cameras are used to look around your games graphics / levels / scenes.
   */
