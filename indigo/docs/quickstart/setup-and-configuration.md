@@ -17,7 +17,7 @@ Add the following to your `project/plugins.sbt` file:
 
 ```scala
 addSbtPlugin("org.scala-js" % "sbt-scalajs" % "@SCALAJS_VERSION@")
-addSbtPlugin("io.indigoengine" %% "sbt-indigo" % "@VERSION@") // Note the double %%
+addSbtPlugin("io.indigoengine" % "sbt-indigo" % "@VERSION@")
 ```
 
 Here is an example minimal `build.sbt` file:
