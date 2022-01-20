@@ -62,6 +62,50 @@ object Scene {
   ): Outcome[SceneUpdateFragment] =
     scene.present(context, scene.modelLens.get(model), scene.viewModelLens.get(viewModel))
 
+  def empty[SD, GM, VM]: Scene[SD, GM, VM] =
+    new Scene[SD, GM, VM] {
+      type SceneModel     = Unit
+      type SceneViewModel = Unit
+
+      val sceneFragment =
+        Outcome(SceneUpdateFragment(List.empty))
+
+      val modelOutcome = Outcome(())
+
+      val name: SceneName =
+        SceneName("empty-scene")
+
+      val modelLens: Lens[GM, Unit] =
+        Lens.unit
+
+      val viewModelLens: Lens[VM, Unit] =
+        Lens.unit
+
+      val eventFilters: EventFilters =
+        EventFilters.BlockAll
+
+      val subSystems: Set[SubSystem] =
+        Set()
+
+      def updateModel(
+          context: FrameContext[SD],
+          model: Unit
+      ): GlobalEvent => Outcome[Unit] =
+        _ => modelOutcome
+
+      def updateViewModel(
+          context: FrameContext[SD],
+          model: Unit,
+          viewModel: Unit
+      ): GlobalEvent => Outcome[Unit] =
+        _ => modelOutcome
+
+      def present(
+          context: FrameContext[SD],
+          model: Unit,
+          viewModel: Unit
+      ): Outcome[SceneUpdateFragment] = sceneFragment
+    }
 }
 
 opaque type SceneName = String
