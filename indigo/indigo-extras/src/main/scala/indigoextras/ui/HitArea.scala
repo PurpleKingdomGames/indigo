@@ -8,6 +8,9 @@ import indigo.shared.input.Mouse
 import indigoextras.geometry.Polygon
 import indigoextras.geometry.Vertex
 
+import scala.annotation.nowarn
+
+@nowarn("msg=value leftMouseIsDown in class Mouse is deprecated")
 final case class HitArea(
     area: Polygon.Closed,
     state: ButtonState,

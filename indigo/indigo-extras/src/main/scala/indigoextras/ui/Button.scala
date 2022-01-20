@@ -15,6 +15,9 @@ import indigo.shared.scenegraph.Sprite
 import indigo.shared.scenegraph.Text
 import indigo.shared.scenegraph.TextBox
 
+import scala.annotation.nowarn
+
+@nowarn("msg=value leftMouseIsDown in class Mouse is deprecated")
 final case class Button(
     buttonAssets: ButtonAssets,
     bounds: Rectangle,
