@@ -5,9 +5,25 @@ import indigo.shared.datatypes.Rectangle
 import indigo.shared.events.MouseButton
 import indigo.shared.events.MouseEvent
 
+import scala.annotation.nowarn
 import scala.annotation.tailrec
 
-final class Mouse(mouseEvents: List[MouseEvent], val position: Point, val leftMouseIsDown: Boolean) {
+final class Mouse(
+    mouseEvents: List[MouseEvent],
+    val position: Point,
+    @deprecated("use `isButtonDown` function instead of this value", "0.12.0") val leftMouseIsDown: Boolean,
+    val buttonsDown: Set[MouseButton]
+) {
+
+  def this(mouseEvents: List[MouseEvent], position: Point, leftMouseIsDown: Boolean) =
+    this(
+      mouseEvents,
+      position,
+      leftMouseIsDown,
+      buttonsDown = if (leftMouseIsDown) Set(MouseButton.LeftMouseButton) else Set.empty
+    )
+
+  def isButtonDown(button: MouseButton): Boolean = buttonsDown.contains(button)
 
   lazy val mouseClicked: Boolean = mouseEvents.exists {
     case _: MouseEvent.Click => true
@@ -100,15 +116,17 @@ final class Mouse(mouseEvents: List[MouseEvent], val position: Point, val leftMo
     wasMousePositionWithin(Rectangle(x, y, width, height))
 
 }
-object Mouse {
+object Mouse:
   val default: Mouse =
     new Mouse(Nil, Point.zero, false)
 
   def calculateNext(previous: Mouse, events: List[MouseEvent]): Mouse =
+    val newButtonsDown = calculateButtonsDown(events, previous.buttonsDown)
     new Mouse(
       events,
       lastMousePosition(previous.position, events),
-      isLeftMouseDown(previous.leftMouseIsDown, events)
+      newButtonsDown.contains(MouseButton.LeftMouseButton),
+      newButtonsDown
     )
 
   private def lastMousePosition(previous: Point, events: List[MouseEvent]): Point =
@@ -119,15 +137,21 @@ object Mouse {
 
   private given CanEqual[List[MouseEvent], List[MouseEvent]] = CanEqual.derived
 
-  @tailrec
-  private def isLeftMouseDown(isDown: Boolean, events: List[MouseEvent]): Boolean =
-    events match
-      case Nil =>
-        isDown
-      case MouseEvent.MouseDown(_, MouseButton.LeftMouseButton) :: xs =>
-        isLeftMouseDown(true, xs)
-      case MouseEvent.MouseUp(_, MouseButton.LeftMouseButton) :: xs =>
-        isLeftMouseDown(false, xs)
-      case _ :: xs =>
-        isLeftMouseDown(isDown, xs)
-}
+  // Similar strategy as followed for `Keyboard`, this one uses Set (no button order preserved)
+  private def calculateButtonsDown(
+      mouseEvents: List[MouseEvent],
+      previousButtonsDown: Set[MouseButton]
+  ): Set[MouseButton] =
+    @tailrec
+    def rec(remaining: List[MouseEvent], buttonsDownAcc: Set[MouseButton]): Set[MouseButton] =
+      remaining match
+        case Nil =>
+          buttonsDownAcc
+        case MouseEvent.MouseDown(_, button) :: moreEvents =>
+          rec(moreEvents, buttonsDownAcc + button)
+        case MouseEvent.MouseUp(_, button) :: moreEvents =>
+          rec(moreEvents, buttonsDownAcc - button)
+        case _ :: moreEvents =>
+          rec(moreEvents, buttonsDownAcc)
+
+    rec(mouseEvents, previousButtonsDown)

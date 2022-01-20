@@ -10,6 +10,9 @@ import indigo.shared.input.Mouse
 import indigo.shared.materials.Material
 import indigo.shared.scenegraph.Graphic
 
+import scala.annotation.nowarn
+
+@nowarn("msg=value leftMouseIsDown in class Mouse is deprecated")
 class ButtonTests extends munit.FunSuite {
 
   val bounds =
