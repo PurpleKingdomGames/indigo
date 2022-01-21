@@ -1,7 +1,6 @@
 package com.example.confetti
 
 import indigo._
-import indigo.shared.events.MouseButton
 import indigoextras.subsystems.FPSCounter
 
 import scala.scalajs.js.annotation.JSExportTopLevel
@@ -34,24 +33,27 @@ object Confetti extends IndigoDemo[Unit, Unit, Model, Unit]:
   def initialViewModel(startupData: Unit, model: Model): Outcome[Unit] =
     Outcome(())
 
-  private def maybeMouseUp(mouse: Mouse): Option[LmbOrRmb] =
-    if mouse.released(MouseButton.LeftMouseButton) then Some(MouseButton.LeftMouseButton)
-    else if mouse.released(MouseButton.RightMouseButton) then Some(MouseButton.RightMouseButton)
-    else None
+  def updateModel(context: FrameContext[Unit], model: Model): GlobalEvent => Outcome[Model] = event =>
+    val isLeftDown  = context.mouse.isButtonDown(MouseButton.LeftMouseButton)
+    val isRightDown = context.mouse.isButtonDown(MouseButton.RightMouseButton)
 
-  def updateModel(context: FrameContext[Unit], model: Model): GlobalEvent => Outcome[Model] =
-    case FrameTick =>
-      maybeMouseUp(context.mouse) match
-        case Some(source) =>
-          Outcome(
-            model
-              .spawn(context, 15, source)
-              .update
-          )
-        case None =>
-          Outcome(model.update)
-    case _ =>
-      Outcome(model)
+    event match
+      case FrameTick if isLeftDown || isRightDown =>
+        (isLeftDown, isRightDown) match
+          case (true, true) =>
+            val lmb = model.spawn(context, 8, MouseButton.LeftMouseButton)
+            val rmb = lmb.spawn(context, 7, MouseButton.RightMouseButton)
+            Outcome(rmb.update)
+          case (true, false) =>
+            Outcome(model.spawn(context, 15, MouseButton.LeftMouseButton).update)
+          case (false, true) =>
+            Outcome(model.spawn(context, 15, MouseButton.RightMouseButton).update)
+          case (false, false) => // Not reachable
+            Outcome(model.update)
+      case FrameTick =>
+        Outcome(model.update)
+      case _ =>
+        Outcome(model)
 
   def updateViewModel(context: FrameContext[Unit], model: Model, viewModel: Unit): GlobalEvent => Outcome[Unit] =
     _ => Outcome(viewModel)
@@ -73,9 +75,8 @@ object Confetti extends IndigoDemo[Unit, Unit, Model, Unit]:
       .withFontSize(Pixels(12))
       .withColor(RGBA.White)
 
-  def helpText(maybeButton: Option[MouseButton]): TextBox =
-    val msg = maybeButton.fold("Click anywhere!")(btn => s"$btn clicked!")
-    TextBox(msg, 640, 20).alignRight
+  val helpText: TextBox =
+    TextBox("Click left, right or both anywhere!", 640, 20).alignRight
       .withFontSize(Pixels(12))
       .withColor(RGBA.White)
 
@@ -90,13 +91,13 @@ object Confetti extends IndigoDemo[Unit, Unit, Model, Unit]:
           dots(p.color).moveTo(p.x, p.y).scaleBy(p.scale, p.scale)
         } ++ List(
           count.withText(s"count: ${model.particles.length}"),
-          helpText(maybeMouseUp(context.mouse))
+          helpText
         )
       )
     )
 
 opaque type Model = (Int, List[Particle])
-type LmbOrRmb = MouseButton.LeftMouseButton.type | MouseButton.RightMouseButton.type
+type LmbOrRmb     = MouseButton.LeftMouseButton.type | MouseButton.RightMouseButton.type
 
 object Model:
   def empty: Model = (0, Nil)
