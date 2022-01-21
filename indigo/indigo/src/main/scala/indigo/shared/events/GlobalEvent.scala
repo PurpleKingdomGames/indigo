@@ -87,8 +87,8 @@ case object FullScreenExited extends ViewEvent
   */
 case object FullScreenExitError extends ViewEvent
 
-/** Follows the MDN spec values https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/button
- *  Relies on the ordinal behavior of Scala 3 enums to match the button number
+/** Follows the MDN spec values https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/button Relies on the ordinal
+  * behavior of Scala 3 enums to match the button number
   */
 enum MouseButton derives CanEqual:
   case LeftMouseButton      extends MouseButton
@@ -96,6 +96,12 @@ enum MouseButton derives CanEqual:
   case RightMouseButton     extends MouseButton
   case BrowserBackButton    extends MouseButton
   case BrowserForwardButton extends MouseButton
+
+object MouseButton:
+  def fromOrdinalOpt(ordinal: Int): Option[MouseButton] =
+    if ordinal >= LeftMouseButton.ordinal && ordinal <= BrowserForwardButton.ordinal then
+      Some(MouseButton.fromOrdinal(ordinal))
+    else Option.empty[MouseButton]
 
 /** Represents all mouse events
   */
