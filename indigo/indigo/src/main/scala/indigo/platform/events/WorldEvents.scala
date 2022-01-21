@@ -52,23 +52,27 @@ object WorldEvents {
     }
 
     canvas.onmousedown = { (e: dom.MouseEvent) =>
-      globalEventStream.pushGlobalEvent(
-        MouseEvent.MouseDown(
-          absoluteCoordsX(e.clientX) / magnification,
-          absoluteCoordsY(e.clientY) / magnification,
-          MouseButton.fromOrdinal(e.button)
+      MouseButton.fromOrdinalOpt(e.button).foreach { mouseButton =>
+        globalEventStream.pushGlobalEvent(
+          MouseEvent.MouseDown(
+            absoluteCoordsX(e.clientX) / magnification,
+            absoluteCoordsY(e.clientY) / magnification,
+            mouseButton
+          )
         )
-      )
+      }
     }
 
     canvas.onmouseup = { (e: dom.MouseEvent) =>
-      globalEventStream.pushGlobalEvent(
-        MouseEvent.MouseUp(
-          absoluteCoordsX(e.clientX) / magnification,
-          absoluteCoordsY(e.clientY) / magnification,
-          MouseButton.fromOrdinal(e.button)
+      MouseButton.fromOrdinalOpt(e.button).foreach { mouseButton =>
+        globalEventStream.pushGlobalEvent(
+          MouseEvent.MouseUp(
+            absoluteCoordsX(e.clientX) / magnification,
+            absoluteCoordsY(e.clientY) / magnification,
+            mouseButton
+          )
         )
-      )
+      }
     }
 
     // Prevent right mouse button from popping up the context menu
