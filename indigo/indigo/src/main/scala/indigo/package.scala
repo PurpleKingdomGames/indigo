@@ -234,6 +234,9 @@ val MouseInput: shared.events.MouseInput.type = shared.events.MouseInput
 type MouseEvent = shared.events.MouseEvent
 val MouseEvent: shared.events.MouseEvent.type = shared.events.MouseEvent
 
+type MouseButton = shared.events.MouseButton
+val MouseButton: shared.events.MouseButton.type = shared.events.MouseButton
+
 type Keyboard = shared.input.Keyboard
 val Keyboard: shared.input.Keyboard.type = shared.input.Keyboard
 
