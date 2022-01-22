@@ -25,6 +25,9 @@ final class Mouse(
 
   def isButtonDown(button: MouseButton): Boolean = buttonsDown.contains(button)
 
+  lazy val isLeftDown: Boolean = buttonsDown.contains(MouseButton.LeftMouseButton)
+  lazy val isRightDown: Boolean = buttonsDown.contains(MouseButton.RightMouseButton)
+
   lazy val mouseClicked: Boolean = mouseEvents.exists {
     case _: MouseEvent.Click => true
     case _                   => false
