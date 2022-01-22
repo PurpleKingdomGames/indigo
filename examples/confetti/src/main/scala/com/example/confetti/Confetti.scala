@@ -34,8 +34,8 @@ object Confetti extends IndigoDemo[Unit, Unit, Model, Unit]:
     Outcome(())
 
   def updateModel(context: FrameContext[Unit], model: Model): GlobalEvent => Outcome[Model] = event =>
-    val isLeftDown  = context.mouse.isButtonDown(MouseButton.LeftMouseButton)
-    val isRightDown = context.mouse.isButtonDown(MouseButton.RightMouseButton)
+    val isLeftDown  = context.mouse.isLeftDown
+    val isRightDown = context.mouse.isRightDown
 
     event match
       case FrameTick if isLeftDown || isRightDown =>
