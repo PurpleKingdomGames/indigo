@@ -148,8 +148,7 @@ lazy val indigoShaders =
       version      := indigoVersion,
       organization := "io.indigoengine",
       libraryDependencies ++= Dependencies.indigoShaders.value,
-      testFrameworks += new TestFramework("munit.Framework"),
-      Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
+      testFrameworks += new TestFramework("munit.Framework")
     )
 
 lazy val benchmarks =
