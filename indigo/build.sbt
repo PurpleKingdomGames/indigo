@@ -7,7 +7,7 @@ val scala3Version = "3.1.0"
 
 ThisBuild / versionScheme                                  := Some("early-semver")
 ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.5.0"
-ThisBuild / scalaVersion := scala3Version
+ThisBuild / scalaVersion                                   := scala3Version
 
 lazy val indigoVersion = IndigoVersion.getVersion
 // For the docs site
@@ -23,14 +23,14 @@ lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
   testFrameworks += new TestFramework("munit.Framework"),
   Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
   scalacOptions ++= Seq("-language:strictEquality"),
-  scalafixOnCompile  := true,
-  semanticdbEnabled  := true,
-  semanticdbVersion  := scalafixSemanticdb.revision,
-  autoAPIMappings    := true,
-  logo               := name.value
+  scalafixOnCompile := true,
+  semanticdbEnabled := true,
+  semanticdbVersion := scalafixSemanticdb.revision,
+  autoAPIMappings   := true,
+  logo              := name.value
 )
 
-lazy val neverPublish = Seq (
+lazy val neverPublish = Seq(
   publish / skip      := true,
   publishLocal / skip := true
 )
@@ -60,11 +60,11 @@ lazy val indigoProject =
     .enablePlugins(ScalaJSPlugin, ScalaUnidocPlugin)
     .settings(
       commonSettings,
-      name := "Indigo",
-      code := codeTaskDefinition,
+      name        := "Indigo",
+      code        := codeTaskDefinition,
       usefulTasks := customTasksAliases,
       presentationSettings(version),
-      ScalaUnidoc / unidoc / unidocProjectFilter := inAnyProject -- inProjects(indigoShaders, sandbox, perf, docs),
+      ScalaUnidoc / unidoc / unidocProjectFilter := inAnyProject -- inProjects(indigoShaders, sandbox, perf, docs)
     )
     .aggregate(indigo, indigoExtras, indigoJsonCirce, indigoShaders, sandbox, perf, docs, benchmarks)
 
@@ -81,7 +81,7 @@ lazy val sandbox =
       name                := "sandbox",
       showCursor          := true,
       title               := "Sandbox",
-      gameAssetsDirectory := "assets",
+      gameAssetsDirectory := "assets"
     )
 
 lazy val perf =
@@ -99,7 +99,6 @@ lazy val perf =
       windowStartWidth    := 800,
       windowStartHeight   := 600
     )
-
 
 // Indigo Extensions
 lazy val indigoExtras =
@@ -162,7 +161,7 @@ lazy val benchmarks =
       name         := "indigo-benchmarks",
       version      := indigoVersion,
       organization := "io.indigoengine",
-      Test / test := { },
+      Test / test  := {},
       libraryDependencies ++= Dependencies.benchmark.value,
       jsDependencies ++= Dependencies.benchmarkJs.value
     )
@@ -182,14 +181,14 @@ lazy val docs = project
   .enablePlugins(MdocPlugin)
   .settings(
     neverPublish,
-    organization := "io.indigoengine",
-    mdocJS := Some(jsdocs),
+    organization       := "io.indigoengine",
+    mdocJS             := Some(jsdocs),
     mdocExtraArguments := List("--no-link-hygiene"),
     mdocVariables := Map(
       "VERSION"         -> indigoDocsVersion,
       "SCALAJS_VERSION" -> scalaJsDocsVersion,
       "SCALA_VERSION"   -> scalaDocsVersion
-    ),
+    )
   )
 
 addCommandAlias(
@@ -202,7 +201,7 @@ addCommandAlias(
 )
 
 def shadersGen =
-  shadersCodeGen("shaders",  files => ShaderGen.makeShader(files, _))
+  shadersCodeGen("shaders", files => ShaderGen.makeShader(files, _))
 
 def shaderLibGen(module: String, path: String) =
   shadersCodeGen("shader-library", files => ShaderLibraryGen.makeShaderLibrary(module, path, files, _))

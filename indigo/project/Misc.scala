@@ -30,7 +30,7 @@ object Misc {
   )
 
   def presentationSettings(version: SettingKey[String]): Seq[Def.Setting[String]] = {
-     val rawLogo: String =
+    val rawLogo: String =
       """
         |      //                  //  //
         |                         //
