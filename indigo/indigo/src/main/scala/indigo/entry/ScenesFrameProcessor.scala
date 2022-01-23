@@ -14,15 +14,15 @@ import indigo.shared.subsystems.SubSystemFrameContext._
 import indigo.shared.subsystems.SubSystemsRegister
 import indigo.shared.time.GameTime
 
-final case class ScenesFrameProcessor[StartUpData, Model, ViewModel](
-    subSystemsRegister: SubSystemsRegister,
-    sceneManager: SceneManager[StartUpData, Model, ViewModel],
-    eventFilters: EventFilters,
-    modelUpdate: (FrameContext[StartUpData], Model) => GlobalEvent => Outcome[Model],
-    viewModelUpdate: (FrameContext[StartUpData], Model, ViewModel) => GlobalEvent => Outcome[ViewModel],
-    viewUpdate: (FrameContext[StartUpData], Model, ViewModel) => Outcome[SceneUpdateFragment]
+final class ScenesFrameProcessor[StartUpData, Model, ViewModel](
+    val subSystemsRegister: SubSystemsRegister,
+    val sceneManager: SceneManager[StartUpData, Model, ViewModel],
+    val eventFilters: EventFilters,
+    val modelUpdate: (FrameContext[StartUpData], Model) => GlobalEvent => Outcome[Model],
+    val viewModelUpdate: (FrameContext[StartUpData], Model, ViewModel) => GlobalEvent => Outcome[ViewModel],
+    val viewUpdate: (FrameContext[StartUpData], Model, ViewModel) => Outcome[SceneUpdateFragment]
 ) extends FrameProcessor[StartUpData, Model, ViewModel]
-    with StandardFrameProcessorFunctions[StartUpData, Model, ViewModel] {
+    with StandardFrameProcessorFunctions[StartUpData, Model, ViewModel]:
 
   def run(
       startUpData: => StartUpData,
@@ -71,35 +71,11 @@ final case class ScenesFrameProcessor[StartUpData, Model, ViewModel](
     )
   }
 
-  def runSkipView(
-      startUpData: => StartUpData,
-      model: => Model,
-      viewModel: => ViewModel,
-      gameTime: GameTime,
-      globalEvents: List[GlobalEvent],
-      inputState: InputState,
-      dice: Dice,
-      boundaryLocator: BoundaryLocator
-  ): Outcome[(Model, ViewModel)] = {
-
-    val frameContext = new FrameContext[StartUpData](gameTime, dice, inputState, boundaryLocator, startUpData)
-
-    val subSystemEvents: Outcome[Unit] =
-      Outcome.merge(
-        subSystemsRegister.update(frameContext.forSubSystems, globalEvents),
-        sceneManager.updateSubSystems(frameContext.forSubSystems, globalEvents)
-      )((_, _) => ())
-
-    Outcome.join(
-      for {
-        m  <- processModel(frameContext, model, globalEvents)
-        sm <- processSceneModel(frameContext, m, globalEvents)
-        e  <- subSystemEvents.eventsAsOutcome
-      } yield Outcome((sm, viewModel), e)
-    )
-  }
-
-  def processSceneModel(frameContext: FrameContext[StartUpData], model: Model, globalEvents: List[GlobalEvent]): Outcome[Model] =
+  def processSceneModel(
+      frameContext: FrameContext[StartUpData],
+      model: Model,
+      globalEvents: List[GlobalEvent]
+  ): Outcome[Model] =
     globalEvents
       .map(sceneManager.eventFilters.modelFilter)
       .collect { case Some(e) => e }
@@ -108,4 +84,3 @@ final case class ScenesFrameProcessor[StartUpData, Model, ViewModel](
           sceneManager.updateModel(frameContext, next)(e)
         }
       }
-}

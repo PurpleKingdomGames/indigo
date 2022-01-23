@@ -13,14 +13,14 @@ import indigo.shared.subsystems.SubSystemFrameContext._
 import indigo.shared.subsystems.SubSystemsRegister
 import indigo.shared.time.GameTime
 
-final case class StandardFrameProcessor[StartUpData, Model, ViewModel](
-    subSystemsRegister: SubSystemsRegister,
-    eventFilters: EventFilters,
-    modelUpdate: (FrameContext[StartUpData], Model) => GlobalEvent => Outcome[Model],
-    viewModelUpdate: (FrameContext[StartUpData], Model, ViewModel) => GlobalEvent => Outcome[ViewModel],
-    viewUpdate: (FrameContext[StartUpData], Model, ViewModel) => Outcome[SceneUpdateFragment]
+final class StandardFrameProcessor[StartUpData, Model, ViewModel](
+    val subSystemsRegister: SubSystemsRegister,
+    val eventFilters: EventFilters,
+    val modelUpdate: (FrameContext[StartUpData], Model) => GlobalEvent => Outcome[Model],
+    val viewModelUpdate: (FrameContext[StartUpData], Model, ViewModel) => GlobalEvent => Outcome[ViewModel],
+    val viewUpdate: (FrameContext[StartUpData], Model, ViewModel) => Outcome[SceneUpdateFragment]
 ) extends FrameProcessor[StartUpData, Model, ViewModel]
-    with StandardFrameProcessorFunctions[StartUpData, Model, ViewModel] {
+    with StandardFrameProcessorFunctions[StartUpData, Model, ViewModel]:
 
   def run(
       startUpData: => StartUpData,
@@ -31,10 +31,8 @@ final case class StandardFrameProcessor[StartUpData, Model, ViewModel](
       inputState: InputState,
       dice: Dice,
       boundaryLocator: BoundaryLocator
-  ): Outcome[(Model, ViewModel, SceneUpdateFragment)] = {
-
+  ): Outcome[(Model, ViewModel, SceneUpdateFragment)] =
     val frameContext = new FrameContext[StartUpData](gameTime, dice, inputState, boundaryLocator, startUpData)
-
     Outcome.join(
       for {
         m  <- processModel(frameContext, model, globalEvents)
@@ -43,39 +41,19 @@ final case class StandardFrameProcessor[StartUpData, Model, ViewModel](
         v  <- processView(frameContext, m, vm)
       } yield Outcome((m, vm, v), e)
     )
-  }
 
-  def runSkipView(
-      startUpData: => StartUpData,
-      model: => Model,
-      viewModel: => ViewModel,
-      gameTime: GameTime,
-      globalEvents: List[GlobalEvent],
-      inputState: InputState,
-      dice: Dice,
-      boundaryLocator: BoundaryLocator
-  ): Outcome[(Model, ViewModel)] = {
-
-    val frameContext = new FrameContext[StartUpData](gameTime, dice, inputState, boundaryLocator, startUpData)
-
-    Outcome.join(
-      for {
-        m <- processModel(frameContext, model, globalEvents)
-        e <- subSystemsRegister.update(frameContext.forSubSystems, globalEvents).eventsAsOutcome
-      } yield Outcome((m, viewModel), e)
-    )
-  }
-
-}
-
-trait StandardFrameProcessorFunctions[StartUpData, Model, ViewModel] {
+trait StandardFrameProcessorFunctions[StartUpData, Model, ViewModel]:
   def subSystemsRegister: SubSystemsRegister
   def eventFilters: EventFilters
   def modelUpdate: (FrameContext[StartUpData], Model) => GlobalEvent => Outcome[Model]
   def viewModelUpdate: (FrameContext[StartUpData], Model, ViewModel) => GlobalEvent => Outcome[ViewModel]
   def viewUpdate: (FrameContext[StartUpData], Model, ViewModel) => Outcome[SceneUpdateFragment]
 
-  def processModel(frameContext: FrameContext[StartUpData], model: Model, globalEvents: List[GlobalEvent]): Outcome[Model] =
+  def processModel(
+      frameContext: FrameContext[StartUpData],
+      model: Model,
+      globalEvents: List[GlobalEvent]
+  ): Outcome[Model] =
     globalEvents
       .map(eventFilters.modelFilter)
       .collect { case Some(e) => e }
@@ -85,7 +63,12 @@ trait StandardFrameProcessorFunctions[StartUpData, Model, ViewModel] {
         }
       }
 
-  def processViewModel(frameContext: FrameContext[StartUpData], model: Model, viewModel: ViewModel, globalEvents: List[GlobalEvent]): Outcome[ViewModel] =
+  def processViewModel(
+      frameContext: FrameContext[StartUpData],
+      model: Model,
+      viewModel: ViewModel,
+      globalEvents: List[GlobalEvent]
+  ): Outcome[ViewModel] =
     globalEvents
       .map(eventFilters.viewModelFilter)
       .collect { case Some(e) => e }
@@ -95,9 +78,12 @@ trait StandardFrameProcessorFunctions[StartUpData, Model, ViewModel] {
         }
       }
 
-  def processView(frameContext: FrameContext[StartUpData], model: Model, viewModel: ViewModel): Outcome[SceneUpdateFragment] =
+  def processView(
+      frameContext: FrameContext[StartUpData],
+      model: Model,
+      viewModel: ViewModel
+  ): Outcome[SceneUpdateFragment] =
     Outcome.merge(
       viewUpdate(frameContext, model, viewModel),
       subSystemsRegister.present(frameContext.forSubSystems)
     )(_ |+| _)
-}
