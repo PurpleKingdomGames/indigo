@@ -26,12 +26,13 @@ lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
   scalafixOnCompile  := true,
   semanticdbEnabled  := true,
   semanticdbVersion  := scalafixSemanticdb.revision,
-  autoAPIMappings    := true
+  autoAPIMappings    := true,
+  logo               := name.value
 )
 
 lazy val neverPublish = Seq (
-  skip / publish      := true,
-  skip / publishLocal := true
+  publish / skip      := true,
+  publishLocal / skip := true
 )
 
 lazy val publishSettings = {
@@ -108,7 +109,7 @@ lazy val indigoExtras =
     .dependsOn(indigo)
     .settings(
       name := "indigo-extras",
-      libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.15.3" % "test",
+      libraryDependencies ++= Dependencies.indigoExtras.value,
       commonSettings ++ publishSettings,
       Compile / sourceGenerators += shaderLibGen("ExtrasShaderLibrary", "indigoextras.shaders").taskValue
     )
@@ -171,7 +172,7 @@ lazy val jsdocs = project
   .settings(
     neverPublish,
     organization := "io.indigoengine",
-    libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "2.0.0"
+    libraryDependencies ++= Dependencies.jsDocs.value
   )
   .enablePlugins(ScalaJSPlugin)
 
