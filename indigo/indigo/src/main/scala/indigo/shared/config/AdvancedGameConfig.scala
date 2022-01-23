@@ -22,8 +22,6 @@ final case class AdvancedGameConfig(
     antiAliasing: Boolean,
     batchSize: Int,
     premultipliedAlpha: Boolean,
-    disableSkipModelUpdates: Boolean,
-    disableSkipViewUpdates: Boolean,
     autoLoadStandardShaders: Boolean
 ) derives CanEqual {
 
@@ -53,12 +51,6 @@ final case class AdvancedGameConfig(
   def withBatchSize(size: Int): AdvancedGameConfig =
     this.copy(batchSize = size)
 
-  def withSkipModelUpdates(skip: Boolean): AdvancedGameConfig =
-    this.copy(disableSkipModelUpdates = skip)
-
-  def withSkipViewUpdates(skip: Boolean): AdvancedGameConfig =
-    this.copy(disableSkipViewUpdates = skip)
-
   def withAutoLoadStandardShaders(autoLoad: Boolean): AdvancedGameConfig =
     this.copy(autoLoadStandardShaders = autoLoad)
 
@@ -68,8 +60,6 @@ final case class AdvancedGameConfig(
        |- Rendering technology:        ${renderingTechnology.name}
        |- AntiAliasing enabled:        ${antiAliasing.toString()}
        |- Render batch size:           ${batchSize.toString()}
-       |- Disabled skip model updates: ${disableSkipModelUpdates.toString()}
-       |- Disabled skip view updates:  ${disableSkipViewUpdates.toString()}
        |""".stripMargin
 }
 
@@ -80,8 +70,6 @@ object AdvancedGameConfig {
       antiAliasing = false,
       premultipliedAlpha = true,
       batchSize = 256,
-      disableSkipModelUpdates = false,
-      disableSkipViewUpdates = false,
       autoLoadStandardShaders = true
     )
 }

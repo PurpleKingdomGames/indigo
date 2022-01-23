@@ -47,101 +47,71 @@ class GameLoop[StartUpData, GameModel, ViewModel](
       val startUpData: StartUpData =
         gameEngine.startUpData
 
-      // Model updates cut off
-      if (gameConfig.advanced.disableSkipModelUpdates || timeDelta < gameConfig.haltModelUpdatesAt) {
+      val gameTime =
+        new GameTime(Millis(time).toSeconds, Seconds(timeDelta.toDouble / 1000d), gameConfig.frameRate)
+      val collectedEvents = gameEngine.globalEventStream.collect ++ List(FrameTick)
+      val dice            = Dice.fromSeconds(gameTime.running)
 
-        val gameTime =
-          new GameTime(Millis(time).toSeconds, Seconds(timeDelta.toDouble / 1000d), gameConfig.frameRate)
-        val collectedEvents = gameEngine.globalEventStream.collect ++ List(FrameTick)
-        val dice            = Dice.fromSeconds(gameTime.running)
+      // Persist input state
+      inputState = InputState.calculateNext(
+        inputState,
+        collectedEvents.collect { case e: InputEvent => e },
+        gameEngine.gamepadInputCapture.giveGamepadState
+      )
 
-        // Persist input state
-        inputState = InputState.calculateNext(
+      val processedFrame: Outcome[(GameModel, ViewModel, SceneUpdateFragment)] =
+        frameProcessor.run(
+          startUpData,
+          gameModelState,
+          viewModelState,
+          gameTime,
+          collectedEvents,
           inputState,
-          collectedEvents.collect { case e: InputEvent => e },
-          gameEngine.gamepadInputCapture.giveGamepadState
+          dice,
+          boundaryLocator
         )
 
-        if (gameConfig.advanced.disableSkipViewUpdates || timeDelta < gameConfig.haltViewUpdatesAt) {
-          val processedFrame: Outcome[(GameModel, ViewModel, SceneUpdateFragment)] =
-            frameProcessor.run(
-              startUpData,
-              gameModelState,
-              viewModelState,
-              gameTime,
-              collectedEvents,
-              inputState,
-              dice,
-              boundaryLocator
-            )
+      // Persist frame state
+      val scene =
+        processedFrame match {
+          case oe @ Outcome.Error(e, _) =>
+            IndigoLogger.error("The game has crashed...")
+            IndigoLogger.error(oe.reportCrash)
+            throw e
 
-          // Persist frame state
-          val scene =
-            processedFrame match {
-              case oe @ Outcome.Error(e, _) =>
-                IndigoLogger.error(oe.reportCrash)
-                throw e
-
-              case Outcome.Result(state, globalEvents) =>
-                gameModelState = state._1
-                viewModelState = state._2
-                globalEvents.foreach(e => gameEngine.globalEventStream.pushGlobalEvent(e))
-                state._3
-            }
-
-          // Process events
-          scene.layers.foreach { layer =>
-            SceneGraphViewEvents.collectViewEvents(
-              boundaryLocator,
-              layer.nodes,
-              collectedEvents,
-              gameEngine.globalEventStream.pushGlobalEvent
-            )
-          }
-
-          // Play audio
-          gameEngine.audioPlayer.playAudio(scene.audio)
-
-          // Prepare scene
-          val sceneData = sceneProcessor.processScene(
-            gameTime,
-            scene,
-            gameEngine.assetMapping,
-            gameEngine.renderer.renderingTechnology,
-            gameConfig.advanced.batchSize
-          )
-
-          // Render scene
-          gameEngine.renderer.drawScene(sceneData, gameTime.running)
-        } else {
-          val processedFrame: Outcome[(GameModel, ViewModel)] =
-            frameProcessor.runSkipView(
-              startUpData,
-              gameModelState,
-              viewModelState,
-              gameTime,
-              collectedEvents,
-              inputState,
-              dice,
-              boundaryLocator
-            )
-
-          // Persist frame state
-          processedFrame match {
-            case oe @ Outcome.Error(e, _) =>
-              IndigoLogger.error("The game has crashed...")
-              IndigoLogger.error(oe.reportCrash)
-              throw e
-
-            case Outcome.Result(state, globalEvents) =>
-              gameModelState = state._1
-              viewModelState = state._2
-              globalEvents.foreach(e => gameEngine.globalEventStream.pushGlobalEvent(e))
-          }
+          case Outcome.Result(state, globalEvents) =>
+            gameModelState = state._1
+            viewModelState = state._2
+            globalEvents.foreach(e => gameEngine.globalEventStream.pushGlobalEvent(e))
+            state._3
         }
 
+      // Process events
+      scene.layers.foreach { layer =>
+        SceneGraphViewEvents.collectViewEvents(
+          boundaryLocator,
+          layer.nodes,
+          collectedEvents,
+          gameEngine.globalEventStream.pushGlobalEvent
+        )
       }
 
+      // Play audio
+      gameEngine.audioPlayer.playAudio(scene.audio)
+
+      // Prepare scene
+      val sceneData = sceneProcessor.processScene(
+        gameTime,
+        scene,
+        gameEngine.assetMapping,
+        gameEngine.renderer.renderingTechnology,
+        gameConfig.advanced.batchSize
+      )
+
+      // Render scene
+      gameEngine.renderer.drawScene(sceneData, gameTime.running)
+
+      // Tick
       gameEngine.platform.tick(gameEngine.gameLoop(time))
     } else gameEngine.platform.tick(loop(lastUpdateTime))
   }

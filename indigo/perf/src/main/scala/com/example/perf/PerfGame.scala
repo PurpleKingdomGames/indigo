@@ -47,8 +47,6 @@ object PerfGame extends IndigoDemo[Unit, Dude, DudeModel, Unit] {
               antiAliasing = false,
               premultipliedAlpha = true,
               batchSize = 512,
-              disableSkipModelUpdates = true,
-              disableSkipViewUpdates = true,
               autoLoadStandardShaders = false
             )
           )

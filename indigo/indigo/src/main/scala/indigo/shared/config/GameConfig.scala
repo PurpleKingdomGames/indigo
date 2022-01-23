@@ -29,8 +29,6 @@ final case class GameConfig(
     advanced: AdvancedGameConfig
 ) derives CanEqual:
   val frameRateDeltaMillis: Int = 1000 / frameRate.toInt
-  val haltViewUpdatesAt: Int    = frameRateDeltaMillis * 2
-  val haltModelUpdatesAt: Int   = frameRateDeltaMillis * 3
 
   def screenDimensions: Rectangle =
     viewport.giveDimensions(magnification)
@@ -40,8 +38,7 @@ final case class GameConfig(
        |Standard settings
        |- Viewpoint:      [${viewport.width.toString()}, ${viewport.height.toString()}]
        |- FPS:            ${frameRate.toString()}
-       |- frameRateDelta: ${frameRateDeltaMillis.toString()} (view updates stop at: ${haltViewUpdatesAt
-      .toString()}, model at: ${haltModelUpdatesAt.toString()}
+       |- frameRateDelta: ${frameRateDeltaMillis.toString()}
        |- Clear color:    {red: ${clearColor.r.toString()}, green: ${clearColor.g.toString()}, blue: ${clearColor.b
       .toString()}, alpha: ${clearColor.a.toString()}}
        |- Magnification:  ${magnification.toString()}
