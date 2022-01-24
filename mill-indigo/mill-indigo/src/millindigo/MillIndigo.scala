@@ -19,7 +19,7 @@ trait MillIndigo extends mill.Module {
 
   def indigoBuild(): Command[Path] =
     T.command {
-      val scriptPathBase: Path = T.dest / os.up / os.up / "fastOpt" / "dest"
+      val scriptPathBase: Path =  T.dest / os.up / "fastOpt.dest"
 
       IndigoBuildMill.build(
         T.dest,
@@ -37,7 +37,7 @@ trait MillIndigo extends mill.Module {
   def indigoBuildFull(): Command[Path] =
     T.command {
       val outputDir: Path      = T.dest
-      val scriptPathBase: Path = T.dest / os.up / os.up / "fullOpt" / "dest"
+      val scriptPathBase: Path = T.dest / os.up / "fullOpt.dest"
 
       IndigoBuildMill.build(
         outputDir,

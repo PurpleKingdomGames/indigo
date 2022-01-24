@@ -13,7 +13,7 @@ class IndigoPluginModule(val crossScalaVersion: String) extends CrossScalaModule
       case _ => "2.13.6"
     }
 
-  def millLibVersion = "0.9.9"
+  def millLibVersion = "0.10.0"
 
   def ivyDeps = Agg(
     ivy"com.lihaoyi::mill-main:${millLibVersion}",
