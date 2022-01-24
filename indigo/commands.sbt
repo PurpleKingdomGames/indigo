@@ -9,8 +9,9 @@ lazy val coreProjects: List[String] =
   releaseProjects ++ List(
     "sandbox",
     "perf",
-    "indigoShaders"
   )
+
+val allProjects = List("indigoProject") // the aggregate
 
 def applyCommand(projects: List[String], command: String): String =
   projects.map(p => p + "/" + command).mkString(";", ";", "")
@@ -20,12 +21,12 @@ def applyCrossCommand(projects: List[String], command: String): String =
 
 def applyToAll(command: String): String =
   List(
-    applyCommand(coreProjects, command)
+    applyCommand(allProjects, command)
   ).mkString
 
 def applyCrossToAll(command: String): String =
   List(
-    applyCrossCommand(coreProjects, command)
+    applyCrossCommand(allProjects, command)
   ).mkString
 
 def applyToAllReleaseable(command: String): String =
@@ -102,10 +103,7 @@ addCommandAlias(
 )
 addCommandAlias(
   "localPublishIndigo",
-  applyCommand(
-    coreProjects.filterNot(name => name == "sandbox" || name == "perf"),
-    "publishLocal"
-  )
+  applyToAll("publishLocal")
 )
 
 addCommandAlias(
@@ -208,26 +206,20 @@ addCommandAlias(
 
 addCommandAlias(
   "crossBuildIndigo",
-  applyCrossCommand(coreProjects, "compile")
+  applyCrossCommand(allProjects, "compile")
 )
 addCommandAlias(
   "crossLocalPublishIndigo",
-  applyCrossCommand(
-    coreProjects.filterNot(name => name == "sandbox" || name == "perf"),
-    "publishLocal"
-  )
+  applyCrossCommand(allProjects, "publishLocal")
 )
 addCommandAlias(
   "crossLocalPublishNoClean",
-  List(
-    "crossBuildIndigo",
-    "crossLocalPublishIndigo"
-  ).mkString(";", ";", "")
+  List("crossLocalPublishIndigo").mkString(";", ";", "")
 )
 
 addCommandAlias(
   "crossTestIndigo",
-  applyCrossCommand(coreProjects, "test")
+  applyCrossCommand(allProjects, "test")
 )
 addCommandAlias(
   "crossTestAllNoClean",
