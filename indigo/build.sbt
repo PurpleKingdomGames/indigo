@@ -1,38 +1,38 @@
-import scala.sys.process._
 import scala.language.postfixOps
-
-import sbtwelcome._
+import Misc._
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
+val scala3Version = "3.1.0"
+
 ThisBuild / versionScheme                                  := Some("early-semver")
 ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.5.0"
+ThisBuild / scalaVersion                                   := scala3Version
 
 lazy val indigoVersion = IndigoVersion.getVersion
 // For the docs site
 lazy val indigoDocsVersion  = "0.11.0"
 lazy val scalaJsDocsVersion = "1.8.0"
 lazy val scalaDocsVersion   = "3.1.0"
-//
-
-val scala3Version = "3.1.0"
 
 lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
   version            := indigoVersion,
-  scalaVersion       := scala3Version,
   crossScalaVersions := Seq(scala3Version),
   organization       := "io.indigoengine",
-  libraryDependencies ++= Seq(
-    "org.scalameta" %%% "munit" % "0.7.29" % Test
-  ),
+  libraryDependencies ++= Dependencies.commonSettings.value,
   testFrameworks += new TestFramework("munit.Framework"),
   Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
   scalacOptions ++= Seq("-language:strictEquality"),
-  crossScalaVersions := Seq(scala3Version),
-  scalafixOnCompile  := true,
-  semanticdbEnabled  := true,
-  semanticdbVersion  := scalafixSemanticdb.revision,
-  autoAPIMappings    := true
+  scalafixOnCompile := true,
+  semanticdbEnabled := true,
+  semanticdbVersion := scalafixSemanticdb.revision,
+  autoAPIMappings   := true,
+  logo              := name.value
+)
+
+lazy val neverPublish = Seq(
+  publish / skip      := true,
+  publishLocal / skip := true
 )
 
 lazy val publishSettings = {
@@ -54,33 +54,45 @@ lazy val publishSettings = {
   )
 }
 
+// Root
+lazy val indigoProject =
+  (project in file("."))
+    .enablePlugins(ScalaJSPlugin, ScalaUnidocPlugin)
+    .settings(
+      neverPublish,
+      commonSettings,
+      name        := "Indigo",
+      code        := codeTaskDefinition,
+      usefulTasks := customTasksAliases,
+      presentationSettings(version),
+      ScalaUnidoc / unidoc / unidocProjectFilter := inAnyProject -- inProjects(sandbox, perf, docs)
+    )
+    .aggregate(indigo, indigoExtras, indigoJsonCirce, sandbox, perf, docs, benchmarks)
+
 // Testing
 
 lazy val sandbox =
   project
-    .enablePlugins(ScalaJSPlugin)
-    .enablePlugins(SbtIndigo)
-    .settings(commonSettings: _*)
+    .enablePlugins(ScalaJSPlugin, SbtIndigo)
+    .dependsOn(indigoExtras)
+    .dependsOn(indigoJsonCirce)
     .settings(
+      neverPublish,
+      commonSettings,
       name                := "sandbox",
       showCursor          := true,
       title               := "Sandbox",
       gameAssetsDirectory := "assets"
     )
-    .settings(
-      publish      := {},
-      publishLocal := {}
-    )
-    .dependsOn(indigo)
-    .dependsOn(indigoExtras)
-    .dependsOn(indigoJsonCirce)
 
 lazy val perf =
   project
-    .enablePlugins(ScalaJSPlugin)
-    .enablePlugins(SbtIndigo)
-    .settings(commonSettings: _*)
+    .enablePlugins(ScalaJSPlugin, SbtIndigo)
+    .dependsOn(indigoExtras)
+    .dependsOn(indigoJsonCirce)
     .settings(
+      neverPublish,
+      commonSettings,
       name                := "indigo-perf",
       showCursor          := true,
       title               := "Perf",
@@ -88,38 +100,18 @@ lazy val perf =
       windowStartWidth    := 800,
       windowStartHeight   := 600
     )
-    .settings(
-      publish      := {},
-      publishLocal := {}
-    )
-    .dependsOn(indigo)
-    .dependsOn(indigoExtras)
-    .dependsOn(indigoJsonCirce)
 
 // Indigo Extensions
 lazy val indigoExtras =
   project
     .in(file("indigo-extras"))
     .enablePlugins(ScalaJSPlugin)
-    .settings(commonSettings: _*)
-    .settings(publishSettings: _*)
     .dependsOn(indigo)
     .settings(
-      name                                     := "indigo-extras",
-      libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.15.3" % "test"
-    )
-    .settings(
-      Compile / sourceGenerators += Def.task {
-        val cachedFun = FileFunction.cached(
-          streams.value.cacheDirectory / "shader-library"
-        ) { (files: Set[File]) =>
-          ShaderLibraryGen
-            .makeShaderLibrary("ExtrasShaderLibrary", "indigoextras.shaders", files, (Compile / sourceManaged).value)
-            .toSet
-        }
-
-        cachedFun(IO.listFiles((baseDirectory.value / "shader-library")).toSet).toSeq
-      }.taskValue
+      name := "indigo-extras",
+      libraryDependencies ++= Dependencies.indigoExtras.value,
+      commonSettings ++ publishSettings,
+      Compile / sourceGenerators += shaderLibGen("ExtrasShaderLibrary", "indigoextras.shaders").taskValue
     )
 
 // Indigo
@@ -127,39 +119,12 @@ lazy val indigo =
   project
     .in(file("indigo"))
     .enablePlugins(ScalaJSPlugin)
-    .settings(commonSettings: _*)
-    .settings(publishSettings: _*)
     .settings(
       name := "indigo",
-      libraryDependencies ++= Seq(
-        "org.scalacheck" %%% "scalacheck"                  % "1.15.3" % "test",
-        "org.scala-js"   %%% "scalajs-dom"                 % "2.0.0",
-        "org.scala-js"   %%% "scala-js-macrotask-executor" % "1.0.0"
-      )
-    )
-    .settings(
-      Compile / sourceGenerators += Def.task {
-        val cachedFun = FileFunction.cached(
-          streams.value.cacheDirectory / "shaders"
-        ) { (files: Set[File]) =>
-          ShaderGen.makeShader(files, (Compile / sourceManaged).value).toSet
-        }
-
-        cachedFun(IO.listFiles((baseDirectory.value / "shaders")).toSet).toSeq
-      }.taskValue
-    )
-    .settings(
-      Compile / sourceGenerators += Def.task {
-        val cachedFun = FileFunction.cached(
-          streams.value.cacheDirectory / "shader-library"
-        ) { (files: Set[File]) =>
-          ShaderLibraryGen
-            .makeShaderLibrary("ShaderLibrary", "indigo.shaders", files, (Compile / sourceManaged).value)
-            .toSet
-        }
-
-        cachedFun(IO.listFiles((baseDirectory.value / "shader-library")).toSet).toSeq
-      }.taskValue
+      commonSettings ++ publishSettings,
+      Compile / sourceGenerators += shadersGen.taskValue,
+      Compile / sourceGenerators += shaderLibGen("ShaderLibrary", "indigo.shaders").taskValue,
+      libraryDependencies ++= Dependencies.indigo.value
     )
 
 // Circe
@@ -167,155 +132,53 @@ lazy val indigoJsonCirce =
   project
     .in(file("indigo-json-circe"))
     .enablePlugins(ScalaJSPlugin)
-    .settings(commonSettings: _*)
-    .settings(publishSettings: _*)
+    .dependsOn(indigo)
     .settings(
       name := "indigo-json-circe",
-      libraryDependencies ++= Seq(
-        "io.circe" %%% "circe-core"   % "0.14.0-M7",
-        "io.circe" %%% "circe-parser" % "0.14.0-M7"
-      )
-    )
-    .dependsOn(indigo)
-
-lazy val indigoShaders =
-  project
-    .in(file("indigo-shaders"))
-    .settings(
-      name         := "indigo-shaders",
-      version      := indigoVersion,
-      scalaVersion := scala3Version,
-      organization := "io.indigoengine",
-      libraryDependencies ++= Seq(
-        "org.scalameta" %%% "munit" % "0.7.29" % Test
-      ),
-      testFrameworks += new TestFramework("munit.Framework"),
-      Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
-    )
-    .settings(
-      publish      := {},
-      publishLocal := {}
+      commonSettings ++ publishSettings,
+      libraryDependencies ++= Dependencies.indigoJsonCirce.value
     )
 
 lazy val benchmarks =
   project
     .in(file("benchmarks"))
     .enablePlugins(ScalaJSPlugin, JSDependenciesPlugin)
-    .settings(
-      name         := "indigo-benchmarks",
-      version      := indigoVersion,
-      scalaVersion := scala3Version,
-      organization := "io.indigoengine",
-      libraryDependencies ++= Seq(
-        "com.github.japgolly.scalajs-benchmark" %%% "benchmark" % "0.10.0"
-      ),
-      jsDependencies ++= Seq(
-        "org.webjars" % "chartjs" % "1.0.2" / "Chart.js" minified "Chart.min.js"
-      )
-    )
-    .settings(
-      publish      := {},
-      publishLocal := {}
-    )
-    .dependsOn(indigo)
     .dependsOn(indigoExtras)
     .dependsOn(indigoJsonCirce)
+    .settings(
+      neverPublish,
+      name         := "indigo-benchmarks",
+      version      := indigoVersion,
+      organization := "io.indigoengine",
+      Test / test  := {},
+      libraryDependencies ++= Dependencies.benchmark.value,
+      jsDependencies ++= Dependencies.benchmarkJs.value
+    )
 
 lazy val jsdocs = project
   .settings(
-    scalaVersion := scala3Version,
-    organization := "io.indigoengine"
-  )
-  .settings(
-    libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "2.0.0"
-  )
-  .settings(
-    publish      := {},
-    publishLocal := {}
+    neverPublish,
+    organization := "io.indigoengine",
+    libraryDependencies ++= Dependencies.jsDocs.value
   )
   .enablePlugins(ScalaJSPlugin)
 
 lazy val docs = project
   .in(file("indigo-docs"))
-  .dependsOn(indigo)
   .dependsOn(indigoExtras)
   .dependsOn(indigoJsonCirce)
   .enablePlugins(MdocPlugin)
   .settings(
-    scalaVersion := scala3Version,
-    organization := "io.indigoengine"
-  )
-  .settings(
+    neverPublish,
+    organization       := "io.indigoengine",
+    mdocJS             := Some(jsdocs),
+    mdocExtraArguments := List("--no-link-hygiene"),
     mdocVariables := Map(
       "VERSION"         -> indigoDocsVersion,
       "SCALAJS_VERSION" -> scalaJsDocsVersion,
       "SCALA_VERSION"   -> scalaDocsVersion
-    ),
-    mdocExtraArguments := List("--no-link-hygiene")
-  )
-  .settings(
-    mdocJS := Some(jsdocs)
-  )
-  .settings(
-    publish      := {},
-    publishLocal := {}
-  )
-
-lazy val rawLogo: String =
-    """
-    |      //                  //  //
-    |                         //
-    |    //  //////      //////  //    ////      //////
-    |   //  //    //  //    //  //  //    //  //    //
-    |  //  //    //  ////////  //  ////////  //////
-    |                                   //
-    |                            //////
-    |""".stripMargin
-// Root
-lazy val indigoProject =
-  (project in file("."))
-    .enablePlugins(ScalaJSPlugin)
-    .enablePlugins(ScalaUnidocPlugin)
-    .settings(commonSettings: _*)
-    .settings(
-      name                                       := "Indigo",
-      ScalaUnidoc / unidoc / unidocProjectFilter := inAnyProject -- inProjects(indigoShaders, sandbox, perf, docs),
-      code := {
-        val command = Seq("code", ".")
-        val run = sys.props("os.name").toLowerCase match {
-          case x if x contains "windows" => Seq("cmd", "/C") ++ command
-          case _                         => command
-        }
-        run.!
-      }
     )
-    .aggregate(
-      indigo,
-      indigoExtras,
-      indigoJsonCirce,
-      indigoShaders,
-      sandbox,
-      perf,
-      docs,
-      benchmarks
-    )
-    .settings(
-      logo := rawLogo + s"version ${version.value}",
-      usefulTasks := Seq(
-        UsefulTask("", "cleanAll", "Clean all the projects"),
-        UsefulTask("", "buildAllNoClean", "Rebuild without cleaning"),
-        UsefulTask("", "testAllNoClean", "Test all without cleaning"),
-        UsefulTask("", "crossLocalPublishNoClean", "Locally publish the core modules"),
-        UsefulTask("", "gendocs", "Rebuild the API and markdown docs"),
-        UsefulTask("", "sandboxRun", "Run the sandbox game (fastOptJS + Electron)"),
-        UsefulTask("", "perfRun", "Run the perf game (fastOptJS + Electron)"),
-        UsefulTask("", "code", "Launch VSCode")
-      ),
-      logoColor        := scala.Console.MAGENTA,
-      aliasColor       := scala.Console.CYAN,
-      commandColor     := scala.Console.BLUE_B,
-      descriptionColor := scala.Console.WHITE
-    )
+  )
 
 addCommandAlias(
   "gendocs",
@@ -326,5 +189,15 @@ addCommandAlias(
   ).mkString(";", ";", "")
 )
 
-lazy val code =
-  taskKey[Unit]("Launch VSCode in the current directory")
+def shadersGen =
+  shadersCodeGen("shaders", files => ShaderGen.makeShader(files, _))
+
+def shaderLibGen(module: String, path: String) =
+  shadersCodeGen("shader-library", files => ShaderLibraryGen.makeShaderLibrary(module, path, files, _))
+
+def shadersCodeGen(dir: String, makeFiles: Set[File] => File => Seq[File]) = Def.task {
+  val cachedFun = FileFunction.cached(streams.value.cacheDirectory / dir) { (files: Set[File]) =>
+    makeFiles(files)((Compile / sourceManaged).value).toSet
+  }
+  cachedFun(IO.listFiles(baseDirectory.value / dir).toSet).toSeq
+}
