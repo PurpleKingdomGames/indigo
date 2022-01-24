@@ -22,8 +22,6 @@ object Dependencies {
 
   val commonSettings = Shared.munit
 
-  val indigoShaders = Shared.munit
-
   val indigoExtras = Shared.scalaCheck
 
   val jsDocs = Shared.scalajsDom

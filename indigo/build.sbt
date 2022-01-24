@@ -59,14 +59,15 @@ lazy val indigoProject =
   (project in file("."))
     .enablePlugins(ScalaJSPlugin, ScalaUnidocPlugin)
     .settings(
+      neverPublish,
       commonSettings,
       name        := "Indigo",
       code        := codeTaskDefinition,
       usefulTasks := customTasksAliases,
       presentationSettings(version),
-      ScalaUnidoc / unidoc / unidocProjectFilter := inAnyProject -- inProjects(indigoShaders, sandbox, perf, docs)
+      ScalaUnidoc / unidoc / unidocProjectFilter := inAnyProject -- inProjects(sandbox, perf, docs)
     )
-    .aggregate(indigo, indigoExtras, indigoJsonCirce, indigoShaders, sandbox, perf, docs, benchmarks)
+    .aggregate(indigo, indigoExtras, indigoJsonCirce, sandbox, perf, docs, benchmarks)
 
 // Testing
 
@@ -136,18 +137,6 @@ lazy val indigoJsonCirce =
       name := "indigo-json-circe",
       commonSettings ++ publishSettings,
       libraryDependencies ++= Dependencies.indigoJsonCirce.value
-    )
-
-lazy val indigoShaders =
-  project
-    .in(file("indigo-shaders"))
-    .settings(
-      neverPublish,
-      name         := "indigo-shaders",
-      version      := indigoVersion,
-      organization := "io.indigoengine",
-      libraryDependencies ++= Dependencies.indigoShaders.value,
-      testFrameworks += new TestFramework("munit.Framework")
     )
 
 lazy val benchmarks =
