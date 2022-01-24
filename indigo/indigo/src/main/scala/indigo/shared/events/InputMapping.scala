@@ -26,6 +26,8 @@ final case class InputMapping[A](oneOf: List[(Combo, A)]) {
           case MouseInput.MouseAt(pt)             => mouse.position == pt
           case MouseInput.MouseButtonUp(button)   => mouse.released(button)
           case MouseInput.MouseButtonDown(button) => mouse.pressed(button)
+          case MouseInput.MouseWheelDown          => mouse.scrolled.exists(_ == MouseWheel.ScrollDown)
+          case MouseInput.MouseWheelUp            => mouse.scrolled.exists(_ == MouseWheel.ScrollUp)
         } &&
         c._1.keyInputs.forall(k => keyboard.keysDown.contains(k)) &&
         c._1.gamepadInputs.forall {
@@ -160,6 +162,8 @@ enum MouseInput derives CanEqual:
   case MouseAt(position: Point)             extends MouseInput
   case MouseButtonDown(button: MouseButton) extends MouseInput
   case MouseButtonUp(button: MouseButton)   extends MouseInput
+  case MouseWheelUp                         extends MouseInput
+  case MouseWheelDown                       extends MouseInput
 
 object MouseInput:
   object MouseAt:
