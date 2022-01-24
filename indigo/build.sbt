@@ -14,6 +14,8 @@ lazy val indigoVersion = IndigoVersion.getVersion
 lazy val indigoDocsVersion  = "0.11.0"
 lazy val scalaJsDocsVersion = "1.8.0"
 lazy val scalaDocsVersion   = "3.1.0"
+lazy val sbtDocsVersion     = "1.6.1"
+lazy val millDocsVersion    = "0.9.9"
 
 lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
   version            := indigoVersion,
@@ -176,7 +178,9 @@ lazy val docs = project
     mdocVariables := Map(
       "VERSION"         -> indigoDocsVersion,
       "SCALAJS_VERSION" -> scalaJsDocsVersion,
-      "SCALA_VERSION"   -> scalaDocsVersion
+      "SCALA_VERSION"   -> scalaDocsVersion,
+      "SBT_VERSION"     -> sbtDocsVersion,
+      "MILL_VERSION"    -> millDocsVersion
     )
   )
 
