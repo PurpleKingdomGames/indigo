@@ -191,6 +191,23 @@ class InputStateTests extends munit.FunSuite {
     assertEquals(state7.mouse.isButtonDown(RightMouseButton), false)
   }
 
+  test("Mouse state.scrolled") {
+    val initialState = InputState.calculateNext(InputState.default, List(MouseEvent.Wheel(0, 0, -5)), gamepadState1)
+    val state2 = InputState.calculateNext(
+      initialState,
+      List(MouseEvent.Wheel(0, 0, -5), MouseEvent.Wheel(0, 0, 10)),
+      gamepadState1
+    )
+    val state3 = InputState.calculateNext(state2, List.empty[MouseEvent], gamepadState1)
+    val state4 =
+      InputState.calculateNext(state3, List(MouseEvent.Wheel(0, 0, -10), MouseEvent.Wheel(0, 0, 10)), gamepadState1)
+
+    assertEquals(initialState.mouse.scrolled, Some(MouseWheel.ScrollUp))
+    assertEquals(state2.mouse.scrolled, Some(MouseWheel.ScrollDown))
+    assertEquals(state3.mouse.scrolled, Option.empty[MouseWheel])
+    assertEquals(state4.mouse.scrolled, Option.empty[MouseWheel])
+  }
+
   val events2: List[KeyboardEvent] =
     List(
       KeyboardEvent.KeyDown(Key.KEY_A),
@@ -317,7 +334,8 @@ class InputStateTests extends munit.FunSuite {
       KeyboardEvent.KeyDown(Key.KEY_C),
       KeyboardEvent.KeyDown(Key.KEY_D),
       MouseEvent.Move(10, 10),
-      MouseEvent.MouseDown(10, 10)
+      MouseEvent.MouseDown(10, 10),
+      MouseEvent.Wheel(10, 10, -15)
     )
 
   val gamepadState2: Gamepad =
@@ -448,7 +466,7 @@ class InputStateTests extends munit.FunSuite {
           GamepadInput.Cross,
           GamepadInput.RIGHT_ANALOG(_ > 0.4, _ == 0.0, true)
         )
-        .withMouseInputs(MouseInput.MouseDown)
+        .withMouseInputs(MouseInput.MouseDown, MouseInput.MouseWheelUp)
         .withKeyInputs(Key.KEY_A, Key.KEY_B)
 
     val comboB =

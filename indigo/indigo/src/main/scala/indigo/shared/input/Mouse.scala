@@ -4,6 +4,7 @@ import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.events.MouseButton
 import indigo.shared.events.MouseEvent
+import indigo.shared.events.MouseWheel
 
 import scala.annotation.nowarn
 import scala.annotation.tailrec
@@ -25,7 +26,7 @@ final class Mouse(
 
   def isButtonDown(button: MouseButton): Boolean = buttonsDown.contains(button)
 
-  lazy val isLeftDown: Boolean = buttonsDown.contains(MouseButton.LeftMouseButton)
+  lazy val isLeftDown: Boolean  = buttonsDown.contains(MouseButton.LeftMouseButton)
   lazy val isRightDown: Boolean = buttonsDown.contains(MouseButton.RightMouseButton)
 
   lazy val mouseClicked: Boolean = mouseEvents.exists {
@@ -46,6 +47,16 @@ final class Mouse(
       case mu: MouseEvent.MouseUp if mu.button == button => true
       case _                                             => false
     }
+
+  lazy val scrolled: Option[MouseWheel] =
+    val amount = mouseEvents.foldLeft(0d) {
+      case (acc, MouseEvent.Wheel(_, deltaY)) => acc + deltaY
+      case (acc, _)                           => acc
+    }
+
+    if amount == 0 then Option.empty[MouseWheel]
+    else if amount < 0 then Some(MouseWheel.ScrollUp)
+    else Some(MouseWheel.ScrollDown)
 
   lazy val mouseClickAt: Option[Point] = mouseEvents.collectFirst { case m: MouseEvent.Click =>
     m.position

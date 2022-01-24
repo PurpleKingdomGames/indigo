@@ -373,6 +373,21 @@ lazy val inputmapper =
       windowStartHeight   := 400
     )
 
+lazy val mouseevents =
+  project
+    .in(file("mouseevents"))
+    .settings(commonSettings: _*)
+    .enablePlugins(SbtIndigo)
+    .enablePlugins(ScalaJSPlugin)
+    .settings(
+      name                := "mouseevents-example",
+      showCursor          := true,
+      title               := "Mouse Events Example",
+      gameAssetsDirectory := "assets",
+      windowStartWidth    := 550,
+      windowStartHeight   := 400
+    )
+
 lazy val errors =
   project
     .in(file("errors"))

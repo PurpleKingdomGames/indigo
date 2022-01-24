@@ -1,6 +1,7 @@
 package indigo.platform.events
 
 import indigo.shared.constants.Key
+import indigo.shared.datatypes.Point
 import indigo.shared.events.KeyboardEvent
 import indigo.shared.events.MouseButton
 import indigo.shared.events.MouseEvent
@@ -40,6 +41,26 @@ object WorldEvents {
           absoluteCoordsY(e.clientY) / magnification
         )
       )
+    }
+
+    /*
+      Follows the most conventional, basic definition of wheel.
+      To be fair, the wheel event doesn't necessarily means that the device is a mouse, or even that the
+      deltaY represents the direction of the vertical scrolling (usually negative is upwards and positive downwards).
+      For the sake of simplicity, we're assuming a common mouse with a simple wheel.
+     
+      More info: https://developer.mozilla.org/en-US/docs/Web/API/WheelEvent
+     */
+    canvas.onwheel = { (e: dom.WheelEvent) =>
+      val wheel = MouseEvent.Wheel(
+        Point(
+          absoluteCoordsX(e.clientX) / magnification,
+          absoluteCoordsY(e.clientY) / magnification
+        ),
+        e.deltaY
+      )
+
+      globalEventStream.pushGlobalEvent(wheel)
     }
 
     canvas.onmousemove = { (e: dom.MouseEvent) =>
