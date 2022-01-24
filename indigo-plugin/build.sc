@@ -21,7 +21,7 @@ class IndigoPluginModule(val crossScalaVersion: String) extends CrossScalaModule
   def artifactName = "indigo-plugin"
 
   def ivyDeps =
-    Agg(ivy"com.lihaoyi::os-lib:0.7.8")
+    Agg(ivy"com.lihaoyi::os-lib:0.8.0")
 
   def repositories =
     super.repositories ++ Seq(
