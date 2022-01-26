@@ -5,18 +5,8 @@ import indigoextras.ui._
 
 import scala.scalajs.js.annotation._
 
-/*
-Two examples in server project:
-a) ws://localhost:8080/ws      // Server sends a Ping! every second
-b) ws://localhost:8080/wsecho  // Server echos back whatever it is sent.
-
-So we want a button that send a message to 2) and outputs to the console
-
-We also want to establish a connection on startup that repeated writes 1)'s
-Ping! to the console.
- */
 @JSExportTopLevel("IndigoGame")
-object WebSocketExample extends IndigoDemo[Unit, MySetupData, Unit, MyViewModel] {
+object WebSocketExample extends IndigoDemo[Unit, WebSocketConfig, List[String], Button] {
 
   val eventFilters: EventFilters = EventFilters.Permissive
 
@@ -34,83 +24,70 @@ object WebSocketExample extends IndigoDemo[Unit, MySetupData, Unit, MyViewModel]
       down = Graphic(0, 0, 16, 16, 2, Material.Bitmap(AssetName("graphics"))).withCrop(32, 32, 16, 16)
     )
 
-  def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[MySetupData]] =
+  def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[WebSocketConfig]] =
     Outcome(
       Startup.Success(
-        MySetupData(
-          pingSocket = WebSocketConfig(
-            id = WebSocketId("ping"),
-            address = "ws://localhost:8080/ws"
-          ),
-          echoSocket = WebSocketConfig(
-            id = WebSocketId("echo"),
-            address = "ws://localhost:8080/wsecho"
-          )
+        WebSocketConfig(
+          id = WebSocketId("echo"),
+          address = "ws://localhost:8080/wsecho"
         )
       )
     )
 
-  def initialModel(startupData: MySetupData): Outcome[Unit] =
-    Outcome(())
+  def initialModel(echoSocket: WebSocketConfig): Outcome[List[String]] =
+    Outcome(Nil)
 
-  def initialViewModel(startupData: MySetupData, model: Unit): Outcome[MyViewModel] =
+  def initialViewModel(echoSocket: WebSocketConfig, log: List[String]): Outcome[Button] =
     Outcome(
-      MyViewModel(
-        ping = Button(
-          buttonAssets = buttonAssets,
-          bounds = Rectangle(10, 32, 16, 16),
-          depth = Depth(2)
-        ).withUpActions(WebSocketEvent.ConnectOnly(startupData.pingSocket)),
-        echo = Button(
-          buttonAssets = buttonAssets,
-          bounds = Rectangle(10, 32, 16, 16),
-          depth = Depth(2)
-        ).withUpActions(WebSocketEvent.Send("Hello!", startupData.echoSocket))
-      )
+      Button(
+        buttonAssets = buttonAssets,
+        bounds = Rectangle(100, 10, 16, 16),
+        depth = Depth(2)
+      ).withUpActions(WebSocketEvent.Send("Hello!", echoSocket))
     )
 
-  def updateModel(context: FrameContext[MySetupData], model: Unit): GlobalEvent => Outcome[Unit] = {
-    case WebSocketEvent.Receive(WebSocketId("ping"), message) =>
-      println("Message from Server: " + message)
-      Outcome(model)
-
+  def updateModel(context: FrameContext[WebSocketConfig], log: List[String]): GlobalEvent => Outcome[List[String]] = {
     case WebSocketEvent.Receive(WebSocketId("echo"), message) =>
-      println("Server says you said: " + message)
-      Outcome(model)
+      val msg = "Server says you said: " + message
+      IndigoLogger.consoleLog(msg)
+      Outcome(msg :: log)
 
     case WebSocketEvent.Error(WebSocketId(id), message) =>
-      println(s"Connection [$id] errored with: " + message)
-      Outcome(model)
+      val msg = s"Connection [$id] errored with: " + message
+      IndigoLogger.consoleLog(msg)
+      Outcome(msg :: log)
 
     case WebSocketEvent.Close(WebSocketId(id)) =>
-      println(s"Connection [$id] closed.")
-      Outcome(model)
+      val msg = s"Connection [$id] closed."
+      IndigoLogger.consoleLog(msg)
+      Outcome(msg :: log)
 
     case _ =>
-      Outcome(model)
+      Outcome(log)
   }
 
-  def updateViewModel(context: FrameContext[MySetupData], model: Unit, viewModel: MyViewModel): GlobalEvent => Outcome[MyViewModel] = {
+  def updateViewModel(context: FrameContext[WebSocketConfig], log: List[String], button: Button): GlobalEvent => Outcome[Button] = {
     case FrameTick =>
-      (viewModel.ping.update(context.inputState.mouse), viewModel.echo.update(context.inputState.mouse)).combine
-        .map {
-          case (ping, echo) =>
-            MyViewModel(ping, echo)
-        }
+      button.update(context.inputState.mouse)
 
     case _ =>
-      Outcome(viewModel)
+      Outcome(button)
   }
 
-  def present(context: FrameContext[MySetupData], model: Unit, viewModel: MyViewModel): Outcome[SceneUpdateFragment] =
+  def present(context: FrameContext[WebSocketConfig], log: List[String], button: Button): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
-        viewModel.ping.draw,
-        viewModel.echo.draw
+        Layer(
+          List(
+            TextBox("Click to connect: ").withColor(RGBA.White).moveTo(5, 12),
+            button.draw,
+            TextBox("Message Log: ").withColor(RGBA.Green).moveTo(5, 25)
+          ) ++
+            log.zipWithIndex.map { case (msg, i) =>
+              val ii = i + 1
+              TextBox(s"(${(log.length - ii).toString}) $msg").withColor(RGBA.Green).moveTo(15, 25 + (ii * 12))
+            }
+        )
       )
     )
 }
-
-final case class MySetupData(pingSocket: WebSocketConfig, echoSocket: WebSocketConfig)
-
-final case class MyViewModel(ping: Button, echo: Button)

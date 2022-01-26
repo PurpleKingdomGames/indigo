@@ -1,22 +1,23 @@
 <html>
   <head>
-    <title>WebSocket test</title>
+    <meta charset="UTF-8" />
+    <title>WebSocket Test</title>
   </head>
   <body>
 
     <p>
       Check console for output<br />
-      Example code borrowed from <a href="https://www.html5rocks.com/en/tutorials/websockets/basics/">here</a>
     </p>
 
     <script language="javascript">
 
-      // var connection = new WebSocket('ws://localhost:8080/ws'); // Server sends a Ping! every second
       var connection = new WebSocket('ws://localhost:8080/wsecho'); // Echos back whatever you sent.
+
+      console.log("echo!")
 
       // When the connection is open, send some data to the server
       connection.onopen = function () {
-        connection.send('Ping'); // Send the message 'Ping' to the server
+        connection.send('echo!');
       };
 
       // Log errors
@@ -26,32 +27,8 @@
 
       // Log messages from the server
       connection.onmessage = function (e) {
-        console.log('Server: ' + e.data);
+        console.log('Our server said! ' + e.data);
       };
-
-      // // Sending String
-      // connection.send('your message');
-      //
-      // // Sending canvas ImageData as ArrayBuffer
-      // var img = canvas_context.getImageData(0, 0, 400, 320);
-      // var binary = new Uint8Array(img.data.length);
-      // for (var i = 0; i < img.data.length; i++) {
-      //   binary[i] = img.data[i];
-      // }
-      // connection.send(binary.buffer);
-      //
-      // // Sending file as Blob
-      // var file = document.querySelector('input[type="file"]').files[0];
-      // connection.send(file);
-      //
-      // // Setting binaryType to accept received binary as either 'blob' or 'arraybuffer'
-      // connection.binaryType = 'arraybuffer';
-      // connection.onmessage = function(e) {
-      //   console.log(e.data.byteLength); // ArrayBuffer object if binary
-      // };
-      //
-      // // Determining accepted extensions
-      // console.log(connection.extensions);
 
     </script>
 
