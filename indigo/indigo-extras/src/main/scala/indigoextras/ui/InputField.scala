@@ -31,7 +31,7 @@ final case class InputField(
     key: Option[BindingKey],
     onFocus: () => List[GlobalEvent],
     onLoseFocus: () => List[GlobalEvent]
-) derives CanEqual {
+) derives CanEqual:
 
   def bounds(boundaryLocator: BoundaryLocator): Option[Rectangle] =
     assets.text.withText(text).moveTo(position).calculatedBounds(boundaryLocator)
@@ -286,9 +286,7 @@ final case class InputField(
     } else List(field)
   }
 
-}
-
-object InputField {
+object InputField:
 
   def apply(text: String, assets: InputFieldAssets): InputField =
     InputField(
@@ -324,13 +322,10 @@ object InputField {
       () => Nil
     )
 
-}
-
-final case class InputFieldAssets(text: Text[_], cursor: Graphic[_]) derives CanEqual {
+final case class InputFieldAssets(text: Text[_], cursor: Graphic[_]) derives CanEqual:
   def withText(newText: Text[_]): InputFieldAssets =
     this.copy(text = newText)
   def withCursor(newCursor: Graphic[_]): InputFieldAssets =
     this.copy(cursor = newCursor)
-}
 
 final case class InputFieldChange(key: BindingKey, updatedText: String) extends GlobalEvent derives CanEqual
