@@ -20,7 +20,7 @@ final case class HitArea(
     onHoverOut: () => List[GlobalEvent],
     onClick: () => List[GlobalEvent],
     onHoldDown: () => List[GlobalEvent],
-) derives CanEqual {
+) derives CanEqual:
 
   def update(mouse: Mouse): Outcome[HitArea] = {
     val mouseInBounds = area.contains(Vertex.fromPoint(mouse.position))
@@ -108,8 +108,6 @@ final case class HitArea(
     moveBy(Point(x, y))
   def moveBy(positionDiff: Point): HitArea =
     this.copy(area = area.moveBy(Vertex.fromPoint(positionDiff)))
-
-}
 
 object HitArea:
 

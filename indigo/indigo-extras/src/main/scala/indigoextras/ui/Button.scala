@@ -4,6 +4,7 @@ import indigo.shared.Outcome
 import indigo.shared.datatypes.Depth
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
+import indigo.shared.datatypes.Size
 import indigo.shared.events.GlobalEvent
 import indigo.shared.input.Mouse
 import indigo.shared.scenegraph.EntityNode
@@ -28,8 +29,29 @@ final case class Button(
     onHoverOver: () => List[GlobalEvent],
     onHoverOut: () => List[GlobalEvent],
     onClick: () => List[GlobalEvent],
-    onHoldDown: () => List[GlobalEvent],
-) derives CanEqual {
+    onHoldDown: () => List[GlobalEvent]
+) derives CanEqual:
+
+  def moveBy(point: Point): Button =
+    this.copy(bounds = bounds.moveBy(point))
+  def moveBy(x: Int, y: Int): Button =
+    moveBy(Point(x, y))
+
+  def moveTo(point: Point): Button =
+    this.copy(bounds = bounds.moveTo(point))
+  def moveTo(x: Int, y: Int): Button =
+    moveTo(Point(x, y))
+
+  def resize(newSize: Size): Button =
+    this.copy(bounds = bounds.resize(newSize))
+  def resize(x: Int, y: Int): Button =
+    resize(Size(x, y))
+
+  def withBounds(newBounds: Rectangle): Button =
+    this.copy(bounds = newBounds)
+
+  def withDepth(newDepth: Depth): Button =
+    this.copy(depth = newDepth)
 
   def update(mouse: Mouse): Outcome[Button] = {
     val mouseInBounds = bounds.isPointWithin(mouse.position)
@@ -140,9 +162,14 @@ final case class Button(
 
   def toDownState: Button =
     this.copy(state = ButtonState.Down)
-}
 
-object Button {
+  def withButtonState(newState: ButtonState): Button =
+    this.copy(state = newState)
+
+  def withButtonAssets(newButtonAssets: ButtonAssets): Button =
+    this.copy(buttonAssets = newButtonAssets)
+
+object Button:
 
   def apply(buttonAssets: ButtonAssets, bounds: Rectangle, depth: Depth): Button =
     Button(
@@ -155,10 +182,8 @@ object Button {
       onHoverOver = () => Nil,
       onHoverOut = () => Nil,
       onClick = () => Nil,
-      onHoldDown = () => Nil,
+      onHoldDown = () => Nil
     )
-
-}
 
 sealed trait ButtonState derives CanEqual {
   def isUp: Boolean
