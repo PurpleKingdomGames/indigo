@@ -8,7 +8,7 @@ There are three parts you can look at.
 2. `websocket.html`
 3. The example/game itself
 
-To run the example, first we need to start a websocket server so we have something to connect to, and we're using a node.js implementation called [ws](https://github.com/websockets/ws) for testing purposes. In this directory, run:
+To run the example, first we need to start a websocket server so we have something to connect to, and we're using a node.js implementation called [ws](https://github.com/websockets/ws) for testing purposes. In the server directory, run:
 
 ```sh
 $ npm install
