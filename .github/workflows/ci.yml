@@ -10,7 +10,7 @@ jobs:
         java-version: adopt@1.11
     - uses: jodersky/setup-mill@master
       with:
-        mill-version: 0.9.9
+        mill-version: 0.10.0
     - name: Install glslangValidator
       run: sudo apt-get install glslang-tools
     - name: Indigo Compile & Test
