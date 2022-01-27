@@ -17,6 +17,7 @@ object ExampleProjects {
       "http",
       "inputfield",
       "inputmapper",
+      "mouseevents",
       "jobs",
       "lighting",
       "radio",

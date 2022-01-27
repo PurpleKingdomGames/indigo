@@ -43,8 +43,10 @@ object MouseEventsExample extends IndigoSandbox[Unit, Model]:
     case _ =>
       Outcome(model)
 
-  def present(context: FrameContext[Unit], model: Model): Outcome[SceneUpdateFragment] =
-    Outcome(SceneUpdateFragment(drawDot(model.dot)))
+  val helpText: TextBox =
+    TextBox("Click left/right or use the scroll wheel to scale the circle", 550, 20).alignCenter
+      .withFontSize(Pixels(12))
+      .withColor(RGBA.White)
 
   def drawDot(dot: Dot): Graphic[Material.Bitmap] =
     Graphic(Rectangle(0, 0, 32, 32), 1, Material.Bitmap(assetName))
@@ -52,6 +54,9 @@ object MouseEventsExample extends IndigoSandbox[Unit, Model]:
       .withScale(Vector2(dot.magnification, dot.magnification))
       .withRef(8, 8)
       .moveTo(dot.center)
+
+  def present(context: FrameContext[Unit], model: Model): Outcome[SceneUpdateFragment] =
+    Outcome(SceneUpdateFragment(drawDot(model.dot), helpText))
 
 end MouseEventsExample
 
