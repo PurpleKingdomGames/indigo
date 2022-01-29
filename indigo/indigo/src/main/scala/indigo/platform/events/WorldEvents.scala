@@ -35,10 +35,12 @@ object WorldEvents {
   def init(canvas: html.Canvas, magnification: Int, globalEventStream: GlobalEventStream): Unit = {
     // Onclick only supports the left mouse button
     canvas.onclick = { (e: dom.MouseEvent) =>
+      val rect = canvas.getBoundingClientRect()
+
       globalEventStream.pushGlobalEvent(
         MouseEvent.Click(
-          absoluteCoordsX(e.clientX) / magnification,
-          absoluteCoordsY(e.clientY) / magnification
+          (absoluteCoordsX(e.clientX) - rect.left.toInt) / magnification,
+          (absoluteCoordsY(e.clientY) - rect.top.toInt) / magnification
         )
       )
     }
@@ -48,7 +50,7 @@ object WorldEvents {
       To be fair, the wheel event doesn't necessarily means that the device is a mouse, or even that the
       deltaY represents the direction of the vertical scrolling (usually negative is upwards and positive downwards).
       For the sake of simplicity, we're assuming a common mouse with a simple wheel.
-     
+
       More info: https://developer.mozilla.org/en-US/docs/Web/API/WheelEvent
      */
     canvas.onwheel = { (e: dom.WheelEvent) =>
@@ -64,20 +66,24 @@ object WorldEvents {
     }
 
     canvas.onmousemove = { (e: dom.MouseEvent) =>
+      val rect = canvas.getBoundingClientRect()
+
       globalEventStream.pushGlobalEvent(
         MouseEvent.Move(
-          absoluteCoordsX(e.clientX) / magnification,
-          absoluteCoordsY(e.clientY) / magnification
+          (absoluteCoordsX(e.clientX) - rect.left.toInt) / magnification,
+          (absoluteCoordsY(e.clientY) - rect.top.toInt) / magnification
         )
       )
     }
 
     canvas.onmousedown = { (e: dom.MouseEvent) =>
+      val rect = canvas.getBoundingClientRect()
+
       MouseButton.fromOrdinalOpt(e.button).foreach { mouseButton =>
         globalEventStream.pushGlobalEvent(
           MouseEvent.MouseDown(
-            absoluteCoordsX(e.clientX) / magnification,
-            absoluteCoordsY(e.clientY) / magnification,
+            (absoluteCoordsX(e.clientX) - rect.left.toInt) / magnification,
+            (absoluteCoordsY(e.clientY) - rect.top.toInt) / magnification,
             mouseButton
           )
         )
@@ -85,11 +91,13 @@ object WorldEvents {
     }
 
     canvas.onmouseup = { (e: dom.MouseEvent) =>
+      val rect = canvas.getBoundingClientRect()
+
       MouseButton.fromOrdinalOpt(e.button).foreach { mouseButton =>
         globalEventStream.pushGlobalEvent(
           MouseEvent.MouseUp(
-            absoluteCoordsX(e.clientX) / magnification,
-            absoluteCoordsY(e.clientY) / magnification,
+            (absoluteCoordsX(e.clientX) - rect.left.toInt) / magnification,
+            (absoluteCoordsY(e.clientY) - rect.top.toInt) / magnification,
             mouseButton
           )
         )
