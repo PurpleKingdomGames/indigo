@@ -19,7 +19,7 @@ object WorldEvents {
       else if (document.body.scrollLeft > 0) document.body.scrollLeft
       else 0
 
-    (relativeX + offset).toInt
+    (relativeX - offset).toInt
   }
 
   def absoluteCoordsY(relativeY: Double): Int = {
@@ -29,7 +29,7 @@ object WorldEvents {
       else if (document.body.scrollTop > 0) document.body.scrollTop
       else 0
 
-    (relativeY + offset).toInt
+    (relativeY - offset).toInt
   }
 
   def init(canvas: html.Canvas, magnification: Int, globalEventStream: GlobalEventStream): Unit = {
@@ -39,8 +39,8 @@ object WorldEvents {
 
       globalEventStream.pushGlobalEvent(
         MouseEvent.Click(
-          (absoluteCoordsX(e.clientX) - rect.left.toInt) / magnification,
-          (absoluteCoordsY(e.clientY) - rect.top.toInt) / magnification
+          absoluteCoordsX(e.pageX.toInt - rect.left.toInt) / magnification,
+          absoluteCoordsY(e.pageY.toInt - rect.top.toInt) / magnification
         )
       )
     }
@@ -70,8 +70,8 @@ object WorldEvents {
 
       globalEventStream.pushGlobalEvent(
         MouseEvent.Move(
-          (absoluteCoordsX(e.clientX) - rect.left.toInt) / magnification,
-          (absoluteCoordsY(e.clientY) - rect.top.toInt) / magnification
+          absoluteCoordsX(e.pageX.toInt - rect.left.toInt) / magnification,
+          absoluteCoordsY(e.pageY.toInt - rect.top.toInt) / magnification
         )
       )
     }
@@ -82,8 +82,8 @@ object WorldEvents {
       MouseButton.fromOrdinalOpt(e.button).foreach { mouseButton =>
         globalEventStream.pushGlobalEvent(
           MouseEvent.MouseDown(
-            (absoluteCoordsX(e.clientX) - rect.left.toInt) / magnification,
-            (absoluteCoordsY(e.clientY) - rect.top.toInt) / magnification,
+            absoluteCoordsX(e.pageX.toInt - rect.left.toInt) / magnification,
+            absoluteCoordsY(e.pageY.toInt - rect.top.toInt) / magnification,
             mouseButton
           )
         )
@@ -96,8 +96,8 @@ object WorldEvents {
       MouseButton.fromOrdinalOpt(e.button).foreach { mouseButton =>
         globalEventStream.pushGlobalEvent(
           MouseEvent.MouseUp(
-            (absoluteCoordsX(e.clientX) - rect.left.toInt) / magnification,
-            (absoluteCoordsY(e.clientY) - rect.top.toInt) / magnification,
+            absoluteCoordsX(e.pageX.toInt - rect.left.toInt) / magnification,
+            absoluteCoordsY(e.pageY.toInt - rect.top.toInt) / magnification,
             mouseButton
           )
         )
