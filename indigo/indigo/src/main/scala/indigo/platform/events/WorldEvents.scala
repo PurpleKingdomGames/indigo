@@ -54,10 +54,11 @@ object WorldEvents {
       More info: https://developer.mozilla.org/en-US/docs/Web/API/WheelEvent
      */
     canvas.onwheel = { (e: dom.WheelEvent) =>
+      val rect = canvas.getBoundingClientRect()
       val wheel = MouseEvent.Wheel(
         Point(
-          absoluteCoordsX(e.clientX) / magnification,
-          absoluteCoordsY(e.clientY) / magnification
+          absoluteCoordsX(e.pageX.toInt - rect.left.toInt) / magnification,
+          absoluteCoordsY(e.pageY.toInt - rect.top.toInt) / magnification
         ),
         e.deltaY
       )
