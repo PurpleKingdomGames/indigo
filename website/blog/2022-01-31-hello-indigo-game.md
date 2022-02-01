@@ -8,6 +8,11 @@ examples? How would you add scene management, or deal with sub systems? In these
 cases it's time to move your game to use `IndigoGame`, which comes with a host
 of features, but also a lot more boiler-plate code.
 
+Note: In this tutorial we'll be moving our code to `IndigoGame`, but we won't be
+making full use of the scene management. If you want to know more about managing
+scenes in Indigo you can read the documentation
+[here](https://indigoengine.io/docs/organisation/scene-management).
+
 Before we begin, we'll start by defining the types of data that `IndigoGame`
 uses and what they may be used for:
 
@@ -24,17 +29,39 @@ to take that example and convert it to `IndigoGame`.
 The first thing to do here is to make the initial conversion. Change line 5
 (the object declaration) to this:
 
-```scala
-object HelloIndigo extends IndigoGame[Unit, Unit, Model, Unit]
+```diff
+ @JSExportTopLevel("IndigoGame")
+-object HelloIndigo extends IndigoSandbox[Unit, Model] {
++object HelloIndigo extends IndigoGame[Unit, Unit, Model, Unit] {
 ```
 
 For this example we set boot and startup data to `Unit` (as we're not going to
 need them), keep our model, and then use `Unit` for the view model as well.
 
 This example doesn't use animations, fonts, or shaders, so we can remove those
-declarations too (lines 12-13, 22-23, and 25-26). We'll keep the asset declaration
+declarations too. We'll keep the asset declaration
 but it's worth noting that we no longer need to declare assets this way, we're
 keeping it like this for convenience.
+
+```diff
+   val config: GameConfig =
+     GameConfig.default.withMagnification(magnification)
+
+-  val animations: Set[Animation] =
+-    Set()
+-
+   val assetName = AssetName("dots")
+
+   val assets: Set[AssetType] =
+       AssetType.Image(AssetName("dots"), AssetPath("assets/dots.png"))
+     )
+
+-  val fonts: Set[FontInfo] =
+-    Set()
+
+-  val shaders: Set[Shader] =
+-    Set()
+```
 
 ## Scene Management
 
@@ -46,19 +73,21 @@ bigger projects though you'll want to explore
 We'll need to import the appropriate package so that we can use scenes. We can
 do that by adding this line to our imports:
 
-```scala
-import indigo.scenes._
+```diff
+ import indigo._
++import indigo.scenes._
+ import scala.scalajs.js.annotation.JSExportTopLevel
 ```
 
 We're going to add a dummy scene to this game as we're doing a very simple
 example. This is done by adding the following lines to `HelloIndigo`:
 
-```scala
-def initialScene(bootData: Unit): Option[SceneName] =
-  None
-
-def scenes(bootData: Unit): NonEmptyList[Scene[Unit, Model, Unit]] =
-  NonEmptyList(Scene.empty)
+```diff
++  def initialScene(bootData: Unit): Option[SceneName] =
++    None
++
++  def scenes(bootData: Unit): NonEmptyList[Scene[Unit, Model, Unit]] =
++    NonEmptyList(Scene.empty)
 ```
 
 ## Events
@@ -68,9 +97,9 @@ to your game if you aren't needing to process them. We'll use the restricted
 event filters here, as that excludes subsystem and view specific events, but will
 allow the click event, which is the only one we need right now. Add the following:
 
-```scala
-val eventFilters: EventFilters =
-  EventFilters.Restricted
+```diff
++  val eventFilters: EventFilters =
++    EventFilters.Restricted
 ```
 
 ## Booting
@@ -80,13 +109,13 @@ We can now tell Indigo which assets to load at
 This is where we'll make use of the assets and config `var` that we left earlier.
 Add the following:
 
-```scala
-def boot(flags: Map[String, String]): Outcome[BootResult[Unit]] =
-  Outcome(
-    BootResult
-      .noData(config)
-      .withAssets(assets)
-  )
+```diff
++  def boot(flags: Map[String, String]): Outcome[BootResult[Unit]] =
++    Outcome(
++      BootResult
++        .noData(config)
++        .withAssets(assets)
++    )
 ```
 
 Here we're telling Indigo to boot using the config already assigned and
@@ -102,16 +131,16 @@ We need to tell Indigo how to update initialise and update our view models. As
 we're using `Unit` for our view models, this is simply a case of passing that
 back for both instances. We can do this like so:
 
-```scala
-def initialViewModel(startupData: Unit, model: Model): Outcome[Unit] =
-  Outcome(())
-
-def updateViewModel(
-    context: FrameContext[Unit],
-    model: Model,
-    viewModel: Unit
-): GlobalEvent => Outcome[Unit] =
-  _ => Outcome(())
+```diff
++  def initialViewModel(startupData: Unit, model: Model): Outcome[Unit] =
++    Outcome(())
++
++  def updateViewModel(
++      context: FrameContext[Unit],
++      model: Model,
++      viewModel: Unit
++  ): GlobalEvent => Outcome[Unit] =
++    _ => Outcome(())
 ```
 
 ## Presenting
@@ -120,12 +149,13 @@ The `present` method is ever so slightly different for an `IndigoGame` as it
 also takes a View Model as an argument. Simply replace the existing method
 signature with the following:
 
-```scala
-def present(
-    context: FrameContext[Unit],
-    model: Model,
-    viewModel: Unit
-): Outcome[SceneUpdateFragment]
+```diff
+   def present(
+       context: FrameContext[Unit],
+-      model: Model
++      model: Model,
++      viewModel: Unit
+   ): Outcome[SceneUpdateFragment] =
 ```
 
 ## Compile, Enjoy, and Further Reading
