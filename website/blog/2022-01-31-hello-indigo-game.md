@@ -8,10 +8,10 @@ examples? How would you add scene management, or deal with sub systems? In these
 cases it's time to move your game to use `IndigoGame`, which comes with a host
 of features, but also a lot more boiler-plate code.
 
-Note: In this tutorial we'll be moving our code to `IndigoGame`, but we won't be
-making full use of the scene management. If you want to know more about managing
-scenes in Indigo you can read the documentation
-[here](https://indigoengine.io/docs/organisation/scene-management).
+Note: In this tutorial we'll be moving our code to `IndigoGame` and using an
+empty scene, but we won't be making full use of the scene management.
+If you want to know more about managing scenes in Indigo you can read the
+documentation [here](https://indigoengine.io/docs/organisation/scene-management).
 
 Before we begin, we'll start by defining the types of data that `IndigoGame`
 uses and what they may be used for:
@@ -23,11 +23,12 @@ uses and what they may be used for:
 
 ## `IndigoSandbox` to `IndigoGame`
 
-One of the main examples we have is called `hello-indigo`. In this part we're
-to take that example and convert it to `IndigoGame`.
+One of the main examples we have is called `hello-indigo`, which you can clone from
+ [here](https://github.com/PurpleKingdomGames/hello-indigo) (mill)
+or [here](https://github.com/PurpleKingdomGames/hello-indigo-sbt) (sbt). In this
+tutorial we're going to take that example and convert it to `IndigoGame`.
 
-The first thing to do here is to make the initial conversion. Change line 5
-(the object declaration) to this:
+The first thing to do here is to make the initial conversion. Change the object declaration like so:
 
 ```diff
  @JSExportTopLevel("IndigoGame")
@@ -80,7 +81,7 @@ do that by adding this line to our imports:
 ```
 
 We're going to add a dummy scene to this game as we're doing a very simple
-example. This is done by adding the following lines to `HelloIndigo`:
+example. This is done by adding the following lines to `HelloIndigo.scala`:
 
 ```diff
 +  def initialScene(bootData: Unit): Option[SceneName] =
@@ -127,7 +128,7 @@ Indigo won't boot.
 We're almost done! Just a couple more steps and we can compile and see our handy
 work.
 
-We need to tell Indigo how to update initialise and update our view models. As
+We need to tell Indigo how to initialise and update our view models. As
 we're using `Unit` for our view models, this is simply a case of passing that
 back for both instances. We can do this like so:
 
@@ -146,8 +147,7 @@ back for both instances. We can do this like so:
 ## Presenting
 
 The `present` method is ever so slightly different for an `IndigoGame` as it
-also takes a View Model as an argument. Simply replace the existing method
-signature with the following:
+also takes a View Model as an argument. Simply add the correct argument like so:
 
 ```diff
    def present(
