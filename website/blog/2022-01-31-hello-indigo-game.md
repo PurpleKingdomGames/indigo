@@ -1,4 +1,8 @@
-# Converting `IndigoSandbox` to `IndigoGame`
+---
+title: Converting `IndigoSandbox` to `IndigoGame`
+author: David North
+authorURL: https://twitter.com/hobnob_uk
+---
 
 ## Basic Concepts
 
