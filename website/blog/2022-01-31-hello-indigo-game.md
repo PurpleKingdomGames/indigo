@@ -98,13 +98,13 @@ example. This is done by adding the following lines to `HelloIndigo.scala`:
 ## Events
 
 We'll need to filter our events, after all it's inefficient to send all events
-to your game if you aren't needing to process them. We'll use the restricted
-event filters here, as that excludes subsystem and view specific events, but will
+to your game if you aren't needing to process them. We'll use the permissive
+event filters here, as that excludes subsystem specific events, but will
 allow the click event, which is the only one we need right now. Add the following:
 
 ```diff
 +  val eventFilters: EventFilters =
-+    EventFilters.Restricted
++    EventFilters.Permissive
 ```
 
 ## Booting
@@ -177,11 +177,9 @@ need to separate your code into more defined instances (such as main menus, or
 levels) you will want to work with scenes and learn about
 [Scene Management](https://indigoengine.io/docs/organisation/scene-management).
 
-You'll also notice that the events are incredibly restricted and won't show you
-custom events. Later you'll probably want to use the permissive event filters
-aptly named `EventFilters.Permissive`. A list of the types of events that Indigo
-supports out of the box can be found
-[here](https://indigoengine.io/docs/gameloop/events).
+As you continue to use Indigo, you'll want to capture many events from the
+player. A list of the types of events that Indigo supports out of the box can be
+found [here](https://indigoengine.io/docs/gameloop/events).
 
 Hopefully you've found all that useful. If you find that you're struggling, have
 questions, or just want a chat about all things Indigo, you can find a very
