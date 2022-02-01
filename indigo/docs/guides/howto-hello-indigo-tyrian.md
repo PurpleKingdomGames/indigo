@@ -30,9 +30,14 @@ be honest, but it should give you an idea of what can be achieved.
 For this guide we'll be using the `hello-indigo` example in either
 [mill](https://github.com/PurpleKingdomGames/hello-indigo) or
 [sbt](https://github.com/PurpleKingdomGames/hello-indigo-sbt).
-In this example clicking on the dots will create a new dot that then rotates
-around the canvas. We'll modify this so that clicking a button does this job
-instead.
+In the existing implementation clicking on the dots will create a new dot
+that then rotates around the canvas. We'll modify this so that clicking a button
+does this job instead.
+
+You'll want to upgrade `hello-indigo` to use `IndigoGame`. To do this either
+follow [this guide]()
+or replace `HelloIndigo.scala` with
+[this](https://gist.github.com/hobnob/c24f00936e91a7b7e5d644d19e4f1b32)
 
 Although Indigo builds and exports to Electron natively, for this project
 we'll export directly to HTML and use Yarn to run our web server, with
@@ -44,11 +49,47 @@ install ParcelJS with `yarn add parcel --dev`.
 ### Setting up the Build
 
 Next you'll need to update either your
-`build.sc` to [this]() or `build.sbt` (if using sbt) to [this]().
+`build.sc` (if using mill) to  with this:
+
+```diff
+   def buildGame() = T.command {
+     T {
+       compile()
+       fastOpt()
+-      indigoBuild()()
+     }
+   }
+
+-  def runGame() = T.command {
+-    T {
+-      compile()
+-      fastOpt()
+-      indigoRun()()
+-    }
+-  }
+-
+   val indigoVersion = "0.11.1"
++  val tyrianVersion = "0.2.2"
+
+   def ivyDeps =
+    Agg(
++     ivy"io.indigoengine::tyrian::$tyrianVersion",
++     ivy"io.indigoengine::tyrian-indigo-bridge::$tyrianVersion",
+      ivy"io.indigoengine::indigo-json-circe::$indigoVersion",
+      ivy"io.indigoengine::indigo::$indigoVersion",
+      ivy"io.indigoengine::indigo-extras::$indigoVersion"
+    )
+```
+
+ or `build.sbt` (if using sbt) to this:
+
+ ```diff
+ ```
 
 What we've done here is add Tyrian and the Tyrian Indigo Bridge to our build.
 Tyrian will deal with all of our HTML and the Indigo Bridge will deal with
-communication between Tyrian and Indigo.
+communication between Tyrian and Indigo. We've also removed `runGame` as this
+would usually run Electron.
 
 ### Setting up the HTML and ParcelJS
 
@@ -56,7 +97,8 @@ Usually Indigo will generate all of our HTML for us and run it through Electron,
 but for this example we're going to generate our own HTML so that we can
 inject CSS.
 
-Firstly we'll create an `index.html` file that looks like [this](). You'll
+Firstly we'll create an `index.html` file that looks like
+[this](https://gist.github.com/hobnob/eaa03bfe2da14562e5f2819078f16d63). You'll
 notice we're using the direct JS output from our build here, which may feel odd.
 What will happen when we run ParcelJS through Yarn is that the HTML will be
 copied to a build directory along with the JS, CSS and any dependant static
@@ -105,28 +147,29 @@ files. Add a `.parcelrc` file and add the following:
 We'll be using the `TyrianSubSystem` as a way of communicating between Indigo
 and Tyrian. Add `import tyrian.TyrianSubSystem` to the imports in
 `HelloIndigo.scala`, and then update the `object` to be a `case class` so that
-it it contains the subsystem as an argument:
+it it contains the subsystem as an argument. We can also remove the top level
+export, as we'll no longer need it:
 
-```scala
-final case class HelloIndigo(tyrianSubSystem: TyrianSubSystem[Int]) extends IndigoGame[Unit, Unit, Model, Unit] {
+```diff
+- import scala.scalajs.js.annotation.JSExportTopLevel
++ import tyrian.TyrianSubSystem
+
+- @JSExportTopLevel("IndigoGame")
+- object HelloIndigo extends IndigoGame[Unit, Unit, Model, Unit] {
++ final case class HelloIndigo(tyrianSubSystem: TyrianSubSystem[Int]) extends IndigoGame[Unit, Unit, Model, Unit] {
 ```
-
-As we're not going to be using Indigo through native JS, we need to remove
-the line `@JSExportTopLevel("IndigoGame")` from that file as well.
 
 We'll also need to tell Indigo to use the new sub-system, which we can do by
 adding an entry to the `boot` method like so:
 
-```scala
-def boot(flags: Map[String, String]): Outcome[BootResult[Unit]] =
-  Outcome(
-    BootResult
-      .noData(
-        config
-      )
-      .withAssets(assets)
-      .withSubSystems(tyrianSubSystem)
-  )
+```diff
+   def boot(flags: Map[String, String]): Outcome[BootResult[Unit]] =
+     Outcome(
+       BootResult
+         .noData(config)
+         .withAssets(assets)
++        .withSubSystems(tyrianSubSystem)
+     )
 ```
 
 ### Create a Tyrian App
@@ -134,7 +177,8 @@ def boot(flags: Map[String, String]): Outcome[BootResult[Unit]] =
 We'll now develop our initial Tyrian app, which will consist simply of
 a canvas (for Indigo), a counter, and a button, wrapped in a few `div` elements.
 Create a new file called `HelloTyrian.scala` inside the `helloindigo/src` folder
-and add the following contents found [here]().
+and add the following contents found
+[here](https://gist.github.com/hobnob/436318b3ae5eed5891ba2b18bb8c264b).
 
 You can now build the project in mill or sbt and then run `yarn start` to see the HelloIndigo demo running inside a Tyrian website. This is great if you want a
 website surrounding your game with no interaction, but it would be much more
@@ -142,34 +186,54 @@ useful to get them both talking to each other... this is what we're doing next!
 
 ## Tyrian to Indigo Communication
 
-The first thing we'll do is get Tyiran to request that Indigo add a new dot. To
+The first thing we'll do is get Tyrian to request that Indigo add a new dot. To
 do this we'll need to add an `OnClick` event to our button, which will tell
 Indigo what to do.
 
-In `HelloTyrian.scala`, we'll need a new message type. Add a new message type called AddDot like so: `case AddDot extends Msg`.
+In `HelloTyrian.scala`, we'll need a new message type. Add a new message type called AddDot like so:
+
+```diff
+   enum Msg:
+     case StartIndigo extends Msg
++    case AddDot      extends Msg
+```.
 
 Next we'll need to deal with that message in Tyrian, by adding a case to `update`
 like this:
 
-```scala
-case Msg.AddDot =>
-  (model, bridge.sendTo(IndigoGameId(gameDivId), ""))
+```diff
+     msg match
++      case Msg.AddDot =>
++        (model, bridge.sendTo(IndigoGameId(gameDivId), ""))
+       case Msg.StartIndigo =>
 ```
 
 The final part on the Tyrian side is to hook the button up to fire the `AddDot`
 message. To do this add an `OnClick` attribute to our button like so:
 
-```scala
-button(onClick(Msg.AddDot))(text("Click me"))
+```diff
+       div(`class`("btn"))(
+-        button()(text("Click me"))
++        button(onClick(Msg.AddDot))(text("Click me"))
+       )
 ```
 
 This will now send an event to Indigo with an integer message, which in this case
 we've set to zero. Now we just need to modify Indigo to receive and
 process that message. To do this change the `MouseEvent.Click` line in
-`HelloIndigo.scala` to `case tyrianSubSystem.TyrianEvent.Receive(msg) =>`. We'll
-also add a line below that to set a `pt` variable as we now longer have a mouse
-position. For now, we'll set that to 100,100 like so: `val pt = Point(100, 100)`
-which is just a fixed point for the dots to rotate around.
+`HelloIndigo.scala` with the following:
+
+```diff
+   ): GlobalEvent => Outcome[Model] = {
+-    case MouseEvent.Click(pt) =>
++    case tyrianSubSystem.TyrianEvent.Receive(msg) =>
++      val pt               = Point(100, 100)
+       val adjustedPosition = pt - model.center
+```
+
+We've also added a line below that to set a `pt` variable as we now longer have
+a mouse position. For now, we've set that to 100,100 like so which is just a
+fixed point for the dots to rotate around.
 
 Once more build the project in mill or sbt and then run `yarn start`. This time
 you'll notice that clicking the game doesn't do anything, but clicking the
@@ -184,27 +248,57 @@ In this part we're going to store a count of the number of dots that Indigo is
 currently displaying. To do this, first update the model in `HelloTyrian.scala`
 so that it has a `count` property which is initialised to zero, like so:
 
-```scala
-final case class TyrianModel(count: Int)
+```diff
+-final case class TyrianModel()
++final case class TyrianModel(count: Int)
 object TyrianModel:
-  val init: TyrianModel =
-    TyrianModel(0)
+-  val init: TyrianModel
++  val init: TyrianModel =
++    TyrianModel(0)
 ```
 
 We'll need to display that count on the website. To do this, we simply modify our
-counting `div` to display what's in the `model` like so:
-`div(``class``("counter"))(text(model.count.toString)),`. A new message type is
-also required as before, so we'll add a new one like so:
-`case IndigoReceive(msg: Int) extends Msg`.
+counting `div` to display what's in the `model` like so
+
+```diff
+-      div(`class`("counter"))(),
++      div(``class``("counter"))(text(model.count.toString))
+```
+
+A new message type is also required as before, so we'll add a new one like so:
+
+```diff
+   enum Msg:
+-    case StartIndigo extends Msg
++    case StartIndigo             extends Msg
+-    case AddDot      extends Msg
++    case AddDot                  extends Msg
++    case IndigoReceive(msg: Int) extends Msg
+```
+
+We'll need to subscribe to incoming Indigo messages so that we can act on them.
+This can be done using the bridge subscriptions like so:
+
+```diff
+   def subscriptions(model: TyrianModel): Sub[Msg] =
+-    Sub.Empty
++    bridge.subscribe { case msg =>
++      Some(Msg.IndigoReceive(msg))
++    }
+```
 
 The final part on the Tyrian side is then to update the model once we get a
 message from Indigo. Indigo will send an Integer message back to Tyrian, which
 we can use directly in our model To do this we simply add the following to our
 `update` pattern:
 
-```scala
-case Msg.IndigoReceive(msg) =>
-  (model.copy(count = msg), Cmd.Empty)
+```diff
+     msg match
+       case Msg.AddDot =>
+         (model, bridge.sendTo(IndigoGameId(gameDivId), ""))
++      case Msg.IndigoReceive(msg) =>
++        (model.copy(count = msg), Cmd.Empty)
+       case Msg.StartIndigo =>
 ```
 
 For the Indigo side we need to modify the `updateModel` so that the new model is
@@ -212,25 +306,42 @@ assigned to a variable for later use. We can then add a global event through
 the Tyrian Subsystem letting the website know how many dots we have. This is done
 with the following:
 
-```scala
-case tyrianSubSystem.TyrianEvent.Receive(msg) =>
-  val pt               = Point(100, 100)
-  val adjustedPosition = pt - model.center
-  val newModel = model.addDot(
-    Dot(
-      Point.distanceBetween(model.center, pt).toInt,
-      Radians(
-        Math.atan2(
-          adjustedPosition.x.toDouble,
-          adjustedPosition.y.toDouble
-        )
-      )
-    )
-  )
-
-  Outcome(newModel)
-    .addGlobalEvents(tyrianSubSystem.send(newModel.dots.length))
+```diff
+     case tyrianSubSystem.TyrianEvent.Receive(msg) =>
+       val pt               = Point(100, 100)
+       val adjustedPosition = pt - model.center
+-
+-      Outcome(
+-        model.addDot(
+-          Dot(
+-            Point.distanceBetween(model.center, pt).toInt,
+-            Radians(
+-              Math.atan2(
+-                adjustedPosition.x.toDouble,
+-                adjustedPosition.y.toDouble
+-              )
+-            )
+-          )
+-        )
+-      )
++      val newModel = model.addDot(
++        Dot(
++          Point.distanceBetween(model.center, pt).toInt,
++          Radians(
++            Math.atan2(
++              adjustedPosition.x.toDouble,
++              adjustedPosition.y.toDouble
++            )
++          )
++        )
++      )
++
++      Outcome(newModel)
++        .addGlobalEvents(tyrianSubSystem.send(newModel.dots.length))
 ```
+
+The important part here is the `addGlobalEvents` which sends a subsystem event
+to Tyrian.
 
 Now whenever you press the button on the website, the counter will increase by
 one! This is the basics of communication to and from Tyrian, but we can go
@@ -246,8 +357,9 @@ sizes. To do this, we'll be making use of
 and [Media Queries](https://developer.mozilla.org/en-US/docs/Web/CSS/Media_Queries/Using_media_queries).
 
 We'll gloss over the initial setup as it's a lot of boiler-plate. Replace your
-`css/main.css` with [this](). All of the work in this part takes place in
-`main.css`.
+`css/main.css` with
+[this](https://gist.github.com/hobnob/10a193a167813b95c690a35cccd9bfc1).
+All of the work in this part takes place in `main.css`.
 
 On a desktop that looks pretty good, so we're going to change the layout for
 mobiles. To do this, we'll first make a media query CSS rule at the end of our
@@ -259,7 +371,7 @@ CSS like so:
 ```
 
 All of the next few parts will now take place within the curly braces of that
-media query. Firstly we'll change the button to be 100% of the sreen width,
+media query. Firstly we'll change the button to be 100% of the screen width,
 and increase it's height so it's easier to click on a mobile:
 
 ```css
