@@ -5,20 +5,10 @@ import indigo.shared.datatypes._
 import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.shared.materials.ShaderData
 
-/** The internal parent type of anything that can affect the visual representation of the game.
-  *
-  * There are some SceneGraphNode's used only for internal scene processing.
-  */
-sealed trait SceneGraphNode derives CanEqual
-object SceneGraphNode {
-  given CanEqual[Option[SceneGraphNode], Option[SceneGraphNode]] = CanEqual.derived
-  given CanEqual[List[SceneGraphNode], List[SceneGraphNode]]     = CanEqual.derived
-}
-
 /** The parent type of all nodes a user might use or create. Defines the fields needed to draw something onto the
   * screen.
   */
-sealed trait SceneNode extends SceneGraphNode:
+sealed trait SceneNode:
   def position: Point
   def rotation: Radians
   def scale: Vector2

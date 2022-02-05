@@ -145,7 +145,7 @@ SceneUpdateFragment(
 
 Note the use of `assetName` again to identify which image you want to use.
 
-`Graphic` is a member of the `SceneGraphNode` types, which also include things like `Sprite`, `Text`, `Group`, and `Clone`. Please note that most of these have a range of constructors to try and make using them easier, and all of them follow a fluent API design to modify their parameters.
+`Graphic` is a member of the `SceneNode` types, which also include things like `Sprite`, `Text`, `Group`, and `Clone`. Please note that most of these have a range of constructors to try and make using them easier, and all of them follow a fluent API design to modify their parameters.
 
 Run the demo again and you should see a graphic in the top left corner at position `(0,0)`!
 

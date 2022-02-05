@@ -29,6 +29,7 @@ import indigo.shared.display.DisplayText
 import indigo.shared.display.DisplayTextLetters
 import indigo.shared.display.SpriteSheetFrame
 import indigo.shared.display.SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets
+import indigo.shared.events.GlobalEvent
 import indigo.shared.materials.ShaderData
 import indigo.shared.platform.AssetMapping
 import indigo.shared.scenegraph.CloneBatch
@@ -37,11 +38,12 @@ import indigo.shared.scenegraph.CloneTileData
 import indigo.shared.scenegraph.CloneTiles
 import indigo.shared.scenegraph.DependentNode
 import indigo.shared.scenegraph.EntityNode
+import indigo.shared.scenegraph.EventHandler
 import indigo.shared.scenegraph.Graphic
 import indigo.shared.scenegraph.Group
 import indigo.shared.scenegraph.Mutants
 import indigo.shared.scenegraph.RenderNode
-import indigo.shared.scenegraph.SceneGraphNode
+import indigo.shared.scenegraph.SceneGraphViewEvents
 import indigo.shared.scenegraph.SceneNode
 import indigo.shared.scenegraph.Shape
 import indigo.shared.scenegraph.Sprite
@@ -146,13 +148,15 @@ final class DisplayObjectConversions(
       cloneData = batch.uniformBlocks.toJSArray.map(uniformDataConvert)
     )
 
-  def sceneNodesToDisplayObjects(
-      sceneNodes: List[SceneGraphNode],
+  def processSceneNodes(
+      sceneNodes: scalajs.js.Array[SceneNode],
       gameTime: GameTime,
       assetMapping: AssetMapping,
       cloneBlankDisplayObjects: => HashMap[CloneId, DisplayObject],
       renderingTechnology: RenderingTechnology,
-      maxBatchSize: Int
+      maxBatchSize: Int,
+      inputEvents: => scalajs.js.Array[GlobalEvent],
+      sendEvent: GlobalEvent => Unit
   ): (scalajs.js.Array[DisplayEntity], scalajs.js.Array[(CloneId, DisplayObject)]) =
     val f =
       sceneNodeToDisplayObject(
@@ -160,9 +164,20 @@ final class DisplayObjectConversions(
         assetMapping,
         cloneBlankDisplayObjects,
         renderingTechnology,
-        maxBatchSize
+        maxBatchSize,
+        inputEvents,
+        sendEvent
       )
-    val l = sceneNodes.toJSArray.map(f)
+    val l = sceneNodes.map { node =>
+      node match
+        case t: EventHandler =>
+          SceneGraphViewEvents.applyInputEvents(t, t.calculatedBounds(boundaryLocator), inputEvents, sendEvent)
+
+        case _ =>
+          ()
+      
+      f(node)
+    }
     (l.map(_._1), l.foldLeft(scalajs.js.Array[(CloneId, DisplayObject)]())(_ ++ _._2))
 
   private def groupToMatrix(group: Group): CheapMatrix4 =
@@ -190,8 +205,10 @@ final class DisplayObjectConversions(
       assetMapping: AssetMapping,
       cloneBlankDisplayObjects: => HashMap[CloneId, DisplayObject],
       renderingTechnology: RenderingTechnology,
-      maxBatchSize: Int
-  )(sceneNode: SceneGraphNode): (DisplayEntity, scalajs.js.Array[(CloneId, DisplayObject)]) =
+      maxBatchSize: Int,
+      inputEvents: => scalajs.js.Array[GlobalEvent],
+      sendEvent: GlobalEvent => Unit
+  )(sceneNode: SceneNode): (DisplayEntity, scalajs.js.Array[(CloneId, DisplayObject)]) =
     val noClones = scalajs.js.Array[(CloneId, DisplayObject)]()
     sceneNode match {
       case x: Graphic[_] =>
@@ -244,13 +261,15 @@ final class DisplayObjectConversions(
 
       case g: Group =>
         val children =
-          sceneNodesToDisplayObjects(
-            g.children,
+          processSceneNodes(
+            g.children.toJSArray,
             gameTime,
             assetMapping,
             cloneBlankDisplayObjects,
             renderingTechnology,
-            maxBatchSize
+            maxBatchSize,
+            inputEvents,
+            sendEvent
           )
         (
           DisplayGroup(
