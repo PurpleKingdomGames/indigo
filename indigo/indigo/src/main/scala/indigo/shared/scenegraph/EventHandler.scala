@@ -6,7 +6,6 @@ import indigo.shared.events.GlobalEvent
 
 /** Tags nodes that can handle events.
   */
-trait EventHandler {
+trait EventHandler:
   def calculatedBounds(locator: BoundaryLocator): Option[Rectangle]
   def eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent]
-}

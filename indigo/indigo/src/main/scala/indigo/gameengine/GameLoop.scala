@@ -15,6 +15,8 @@ import indigo.shared.time.GameTime
 import indigo.shared.time.Millis
 import indigo.shared.time.Seconds
 
+import scala.scalajs.js.JSConverters._
+
 final class GameLoop[StartUpData, GameModel, ViewModel](
     boundaryLocator: BoundaryLocator,
     sceneProcessor: SceneProcessor,
@@ -88,16 +90,6 @@ final class GameLoop[StartUpData, GameModel, ViewModel](
           globalEvents.foreach(e => gameEngine.globalEventStream.pushGlobalEvent(e))
           sceneUpdateFragment
 
-    // Process events
-    scene.layers.foreach { layer =>
-      SceneGraphViewEvents.collectViewEvents(
-        boundaryLocator,
-        layer.nodes,
-        events,
-        gameEngine.globalEventStream.pushGlobalEvent
-      )
-    }
-
     // Play audio
     gameEngine.audioPlayer.playAudio(scene.audio)
 
@@ -107,7 +99,9 @@ final class GameLoop[StartUpData, GameModel, ViewModel](
       scene,
       gameEngine.assetMapping,
       gameEngine.renderer.renderingTechnology,
-      gameConfig.advanced.batchSize
+      gameConfig.advanced.batchSize,
+      events.toJSArray,
+      gameEngine.globalEventStream.pushGlobalEvent
     )
 
     // Render scene

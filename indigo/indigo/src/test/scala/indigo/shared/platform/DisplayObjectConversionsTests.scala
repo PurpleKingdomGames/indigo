@@ -22,17 +22,19 @@ import indigo.shared.display.DisplayMutants
 import indigo.shared.display.DisplayObject
 import indigo.shared.display.DisplayText
 import indigo.shared.display.DisplayTextLetters
+import indigo.shared.events.GlobalEvent
 import indigo.shared.materials.Material
 import indigo.shared.scenegraph.CloneId
 import indigo.shared.scenegraph.Graphic
 import indigo.shared.scenegraph.Group
 import indigo.shared.scenegraph.RenderNode
-import indigo.shared.scenegraph.SceneGraphNode
+import indigo.shared.scenegraph.SceneNode
 import indigo.shared.shader.Uniform
 import indigo.shared.time.GameTime
 import indigo.shared.time.Seconds
 
 import scala.collection.immutable.HashMap
+import scala.scalajs.js.JSConverters._
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
 class DisplayObjectConversionsTests extends munit.FunSuite {
@@ -56,17 +58,19 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
     fontRegister
   )
 
-  def convert(node: SceneGraphNode): DisplayObject = {
+  def convert(node: SceneNode): DisplayObject = {
     doc.purgeCaches()
 
     doc
-      .sceneNodesToDisplayObjects(
-        List(node),
+      .processSceneNodes(
+        List(node).toJSArray,
         GameTime.is(Seconds(1)),
         assetMapping,
         cloneBlankMapping,
         RenderingTechnology.WebGL2,
-        256
+        256,
+        scalajs.js.Array[GlobalEvent](),
+        (e: GlobalEvent) => ()
       )
       ._1
       .head match {
@@ -89,43 +93,6 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
         throw new Exception("failed (DisplayGroup)")
 
       case d: DisplayObject =>
-        d
-    }
-  }
-
-  def convertWithGroup(node: SceneGraphNode): DisplayGroup = {
-    doc.purgeCaches()
-
-    doc
-      .sceneNodesToDisplayObjects(
-        List(node),
-        GameTime.is(Seconds(1)),
-        assetMapping,
-        cloneBlankMapping,
-        RenderingTechnology.WebGL2,
-        256
-      )
-      ._1
-      .head match {
-      case _: DisplayCloneBatch =>
-        throw new Exception("failed (DisplayCloneBatch)")
-
-      case _: DisplayCloneTiles =>
-        throw new Exception("failed (DisplayCloneTiles)")
-
-      case _: DisplayMutants =>
-        throw new Exception("failed (DisplayMutants)")
-
-      case _: DisplayText =>
-        throw new Exception("failed (DisplayText)")
-
-      case _: DisplayTextLetters =>
-        throw new Exception("failed (DisplayTextLetters)")
-
-      case _: DisplayObject =>
-        throw new Exception("failed (DisplayObject)")
-
-      case d: DisplayGroup =>
         d
     }
   }

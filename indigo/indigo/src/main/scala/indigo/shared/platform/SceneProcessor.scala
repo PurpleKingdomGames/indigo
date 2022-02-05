@@ -10,6 +10,7 @@ import indigo.shared.datatypes.RGBA
 import indigo.shared.display.DisplayLayer
 import indigo.shared.display.DisplayObject
 import indigo.shared.display.DisplayObjectUniformData
+import indigo.shared.events.GlobalEvent
 import indigo.shared.materials.BlendMaterial
 import indigo.shared.materials.BlendShaderData
 import indigo.shared.platform.AssetMapping
@@ -58,7 +59,9 @@ final class SceneProcessor(
       scene: SceneUpdateFragment,
       assetMapping: AssetMapping,
       renderingTechnology: RenderingTechnology,
-      maxBatchSize: Int
+      maxBatchSize: Int,
+      inputEvents: => scalajs.js.Array[GlobalEvent],
+      sendEvent: GlobalEvent => Unit
   ): ProcessedSceneData = {
 
     def cloneBlankToDisplayObject(blank: CloneBlank): Option[DisplayObject] =
@@ -115,13 +118,15 @@ final class SceneProcessor(
           val shaderData = blending.blendMaterial.toShaderData
 
           val conversionResults = displayObjectConverter
-            .sceneNodesToDisplayObjects(
-              l.nodes,
+            .processSceneNodes(
+              l.nodes.toJSArray,
               gameTime,
               assetMapping,
               cloneBlankDisplayObjects,
               renderingTechnology,
-              maxBatchSize
+              maxBatchSize,
+              inputEvents,
+              sendEvent
             )
 
           val layer = DisplayLayer(
