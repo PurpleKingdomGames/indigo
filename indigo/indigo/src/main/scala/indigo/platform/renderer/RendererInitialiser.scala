@@ -1,5 +1,6 @@
 package indigo.platform.renderer
 
+import indigo.GameLauncher
 import indigo.facades.WebGL2RenderingContext
 import indigo.platform.assets.DynamicText
 import indigo.platform.events.GlobalEventStream
@@ -60,7 +61,7 @@ final class RendererInitialiser(
   }
 
   def createCanvas(width: Int, height: Int, parentElementId: String, parent: Element): html.Canvas =
-    val name = if parentElementId.isEmpty then "indigo" else s"$parentElementId-indigo"
+    val name = if parentElementId.isEmpty then GameLauncher.DefaultContainerId else s"$parentElementId-indigo"
     createNamedCanvas(width, height, name, Some(parent))
 
   private given CanEqual[Option[Element], Option[Element]] = CanEqual.derived
