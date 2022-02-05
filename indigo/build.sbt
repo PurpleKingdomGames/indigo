@@ -3,7 +3,7 @@ import Misc._
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
-val scala3Version = "3.1.0"
+val scala3Version = "3.1.1"
 
 ThisBuild / versionScheme                                  := Some("early-semver")
 ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.5.0"
@@ -13,7 +13,7 @@ lazy val indigoVersion = IndigoVersion.getVersion
 // For the docs site
 lazy val indigoDocsVersion  = "0.11.0"
 lazy val scalaJsDocsVersion = "1.8.0"
-lazy val scalaDocsVersion   = "3.1.0"
+lazy val scalaDocsVersion   = "3.1.1"
 lazy val sbtDocsVersion     = "1.6.2"
 lazy val millDocsVersion    = "0.9.9"
 
@@ -188,7 +188,7 @@ addCommandAlias(
   "gendocs",
   List(
     "cleanAll",
-    "unidoc",   // Docs in ./target/scala-3.1.0/unidoc/
+    "unidoc",   // Docs in ./target/scala-3.1.1/unidoc/
     "docs/mdoc" // Docs in ./indigo/indigo-docs/target/mdoc
   ).mkString(";", ";", "")
 )
