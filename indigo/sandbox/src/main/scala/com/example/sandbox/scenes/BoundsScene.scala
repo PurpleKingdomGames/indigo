@@ -8,7 +8,7 @@ import com.example.sandbox.SandboxViewModel
 import indigo._
 import indigo.scenes._
 
-object BoundsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel] {
+object BoundsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
 
   type SceneModel     = SandboxGameModel
   type SceneViewModel = SandboxViewModel
@@ -139,33 +139,38 @@ object BoundsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
             shapeBox,
             Shape.Circle(shapeBox.position, 3, Fill.None, Stroke(2, RGBA.White)),
             Shape
-              .Circle(shapeBox.calculatedBounds(context.boundaryLocator).center, 5, Fill.None, Stroke(2, RGBA.White)),
+              .Circle(
+                shapeBox.calculatedBounds(context.boundaryLocator).getOrElse(Rectangle.zero).center,
+                5,
+                Fill.None,
+                Stroke(2, RGBA.White)
+              ),
             Shape.Box(
-              shapeBox.calculatedBounds(context.boundaryLocator),
+              shapeBox.calculatedBounds(context.boundaryLocator).getOrElse(Rectangle.zero),
               Fill.None,
               Stroke(1, RGBA.Magenta)
             ),
             shapeCircle,
             Shape.Box(
-              shapeCircle.calculatedBounds(context.boundaryLocator),
+              shapeCircle.calculatedBounds(context.boundaryLocator).getOrElse(Rectangle.zero),
               Fill.None,
               Stroke(1, RGBA.Magenta)
             ),
             shapeLine,
             Shape.Box(
-              shapeLine.calculatedBounds(context.boundaryLocator),
+              shapeLine.calculatedBounds(context.boundaryLocator).getOrElse(Rectangle.zero),
               Fill.None,
               Stroke(1, RGBA.Magenta)
             ),
             shapePolygon,
             Shape.Box(
-              shapePolygon.calculatedBounds(context.boundaryLocator),
+              shapePolygon.calculatedBounds(context.boundaryLocator).getOrElse(Rectangle.zero),
               Fill.None,
               Stroke(1, RGBA.Magenta)
             ),
             group,
             Shape.Box(
-              group.calculatedBounds(context.boundaryLocator),
+              group.calculatedBounds(context.boundaryLocator).getOrElse(Rectangle.zero),
               Fill.None,
               Stroke(1, RGBA.Yellow)
             ),
@@ -180,14 +185,10 @@ object BoundsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
       )
     )
 
-}
-
-object BoundsAssets {
+object BoundsAssets:
 
   val junctionBoxMaterialOff: Material.Bitmap =
     Material.Bitmap(
       SandboxAssets.junctionBoxAlbedo,
       LightingModel.Unlit
     )
-
-}

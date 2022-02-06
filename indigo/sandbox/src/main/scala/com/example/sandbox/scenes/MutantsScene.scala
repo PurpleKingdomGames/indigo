@@ -111,6 +111,10 @@ final case class Archetype() extends EntityNode with Cloneable:
       .withChannel0(SandboxAssets.dots)
       .withUniformBlocks(Archetype.makeUniformBlock(position, scale, 1.0d))
 
+  lazy val eventHandlerEnabled: Boolean                             = false
+  def eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent] = _ => Nil
+  def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] = None
+
 object Archetype:
 
   val vertAsset: AssetName = AssetName("mutant vertex")

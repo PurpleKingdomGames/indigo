@@ -9,6 +9,7 @@ import com.example.sandbox.scenes.ConfettiScene
 import com.example.sandbox.scenes.CratesScene
 import com.example.sandbox.scenes.LegacyEffectsScene
 import com.example.sandbox.scenes.LightsScene
+import com.example.sandbox.scenes.ManyEventHandlers
 import com.example.sandbox.scenes.MutantsScene
 import com.example.sandbox.scenes.OriginalScene
 import com.example.sandbox.scenes.RefractionScene
@@ -32,7 +33,7 @@ import indigoextras.ui.*
 import scala.scalajs.js.annotation.*
 
 @JSExportTopLevel("IndigoGame")
-object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, SandboxGameModel, SandboxViewModel] {
+object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, SandboxGameModel, SandboxViewModel]:
 
   val targetFPS: FPS          = FPS.`60`
   val magnificationLevel: Int = 2
@@ -42,7 +43,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
   val viewportHeight: Int     = gameHeight * magnificationLevel // 256
 
   def initialScene(bootData: SandboxBootData): Option[SceneName] =
-    Some(BoxesScene.name)
+    Some(ManyEventHandlers.name)
 
   def scenes(bootData: SandboxBootData): NonEmptyList[Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]] =
     NonEmptyList(
@@ -61,7 +62,8 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
       CratesScene,
       ClipScene,
       TextScene,
-      BoxesScene
+      BoxesScene,
+      ManyEventHandlers
     )
 
   val eventFilters: EventFilters = EventFilters.Permissive
@@ -268,7 +270,6 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
           .withCamera(Camera.default)
       )
     )
-}
 
 final case class Dude(
     aseprite: Aseprite,

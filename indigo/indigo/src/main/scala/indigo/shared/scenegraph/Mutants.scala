@@ -1,6 +1,8 @@
 package indigo.shared.scenegraph
 
+import indigo.shared.BoundaryLocator
 import indigo.shared.datatypes._
+import indigo.shared.events.GlobalEvent
 import indigo.shared.shader.UniformBlock
 
 /** Represents many identical clones of the same clone blank, differentiated only by their shader data. Intended for use
@@ -27,6 +29,10 @@ final case class Mutants(
 
   def addBlocks(additionalBlocks: Array[List[UniformBlock]]): Mutants =
     this.copy(uniformBlocks = uniformBlocks ++ additionalBlocks)
+
+  lazy val eventHandlerEnabled: Boolean                             = false
+  def eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent] = _ => Nil
+  def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] = None
 
 object Mutants:
 

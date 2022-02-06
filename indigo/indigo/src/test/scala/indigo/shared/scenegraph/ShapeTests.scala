@@ -24,7 +24,7 @@ class ShapeTests extends munit.FunSuite:
       s.calculatedBounds(boundaryLocator)
 
     val expected =
-      Rectangle(15 - 4, 25 - 4, 100 + 8, 200 + 8)
+      Option(Rectangle(15 - 4, 25 - 4, 100 + 8, 200 + 8))
 
     assertEquals(actual, expected)
   }
@@ -43,7 +43,7 @@ class ShapeTests extends munit.FunSuite:
       s.calculatedBounds(boundaryLocator)
 
     val expected =
-      Rectangle(50 - 17 - 3, 50 - 17 - 3, 17 + 17 + 7, 17 + 17 + 7)
+      Option(Rectangle(50 - 17 - 3, 50 - 17 - 3, 17 + 17 + 7, 17 + 17 + 7))
 
     assertEquals(actual, expected)
   }
@@ -63,7 +63,7 @@ class ShapeTests extends munit.FunSuite:
       s.calculatedBounds(boundaryLocator)
 
     val expected =
-      Rectangle(50 - 2, 10 - 2, 25 + 5 + 2, 50 + 5 + 2)
+      Option(Rectangle(50 - 2, 10 - 2, 25 + 5 + 2, 50 + 5 + 2))
 
     assertEquals(actual, expected)
   }
@@ -88,7 +88,7 @@ class ShapeTests extends munit.FunSuite:
       s.calculatedBounds(boundaryLocator)
 
     val expected =
-      Rectangle(25 - 2, 10 - 2, 50 + 4, 50 + 4)
+      Option(Rectangle(25 - 2, 10 - 2, 50 + 4, 50 + 4))
 
     assertEquals(actual, expected)
 

@@ -115,7 +115,7 @@ object OriginalScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
 }
 
 final case class CustomShape(x: Int, y: Int, width: Int, height: Int, depth: Depth, shader: ShaderData)
-    extends EntityNode {
+    extends EntityNode:
   val flip: Flip               = Flip.default
   val bounds: Rectangle        = Rectangle(x, y, width, height)
   val position: Point          = bounds.position
@@ -127,9 +127,12 @@ final case class CustomShape(x: Int, y: Int, width: Int, height: Int, depth: Dep
 
   def withDepth(newDepth: Depth): CustomShape =
     this.copy(depth = newDepth)
-}
 
-object Shaders {
+  lazy val eventHandlerEnabled: Boolean                             = false
+  def eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent] = _ => Nil
+  def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] = None
+
+object Shaders:
 
   val circleId: ShaderId =
     ShaderId("circle")
@@ -196,5 +199,3 @@ object Shaders {
       AssetType.Text(fragAsset, AssetPath("assets/shader.frag")),
       AssetType.Text(seaAsset, AssetPath("assets/sea.frag"))
     )
-
-}

@@ -17,6 +17,7 @@ final case class Sprite[M <: Material](
     material: M,
     animationKey: AnimationKey,
     animationActions: List[AnimationAction],
+    eventHandlerEnabled: Boolean,
     eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent],
     position: Point,
     rotation: Radians,
@@ -25,10 +26,9 @@ final case class Sprite[M <: Material](
     ref: Point,
     flip: Flip
 ) extends DependentNode
-    with EventHandler
     with Cloneable
     with SpatialModifiers[Sprite[M]]
-    derives CanEqual {
+    derives CanEqual:
 
   lazy val x: Int = position.x
   lazy val y: Int = position.y
@@ -111,11 +111,13 @@ final case class Sprite[M <: Material](
     this.copy(animationActions = animationActions ++ List(JumpToFrame(number)))
 
   def onEvent(e: ((Rectangle, GlobalEvent)) => List[GlobalEvent]): Sprite[M] =
-    this.copy(eventHandler = e)
+    this.copy(eventHandler = e, eventHandlerEnabled = true)
+  def enableEvents: Sprite[M] =
+    this.copy(eventHandlerEnabled = true)
+  def disableEvents: Sprite[M] =
+    this.copy(eventHandlerEnabled = false)
 
-}
-
-object Sprite {
+object Sprite:
   def apply[M <: Material](
       bindingKey: BindingKey,
       x: Int,
@@ -133,6 +135,7 @@ object Sprite {
       flip = Flip.default,
       bindingKey = bindingKey,
       animationKey = animationKey,
+      eventHandlerEnabled = false,
       eventHandler = (_: (Rectangle, GlobalEvent)) => Nil,
       animationActions = Nil,
       material = material
@@ -158,6 +161,7 @@ object Sprite {
       flip = Flip.default,
       bindingKey = bindingKey,
       animationKey = animationKey,
+      eventHandlerEnabled = true,
       eventHandler = eventHandler,
       animationActions = Nil,
       material = material
@@ -173,8 +177,8 @@ object Sprite {
       flip = Flip.default,
       bindingKey = bindingKey,
       animationKey = animationKey,
+      eventHandlerEnabled = false,
       eventHandler = (_: (Rectangle, GlobalEvent)) => Nil,
       animationActions = Nil,
       material = material
     )
-}

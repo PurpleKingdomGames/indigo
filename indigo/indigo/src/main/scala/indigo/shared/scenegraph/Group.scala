@@ -2,11 +2,14 @@ package indigo.shared.scenegraph
 
 import indigo.shared.BoundaryLocator
 import indigo.shared.datatypes._
+import indigo.shared.events.GlobalEvent
 
 /** Used to group elements to allow them to be manipulated as a collection.
   */
 final case class Group(
     children: List[SceneNode],
+    eventHandlerEnabled: Boolean,
+    eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent],
     position: Point,
     rotation: Radians,
     scale: Vector2,
@@ -15,7 +18,7 @@ final case class Group(
     flip: Flip
 ) extends DependentNode
     with SpatialModifiers[Group]
-    derives CanEqual {
+    derives CanEqual:
 
   lazy val x: Int = position.x
   lazy val y: Int = position.y
@@ -67,25 +70,49 @@ final case class Group(
   def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): Group =
     transformTo(position + positionDiff, rotation + rotationDiff, scale * scaleDiff)
 
-  def calculatedBounds(locator: BoundaryLocator): Rectangle =
-    val rect = locator.groupBounds(this)
-    BoundaryLocator.findBounds(this, rect.position, rect.size, ref)
+  def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] =
+    locator.findBounds(this)
 
   def addChild(child: SceneNode): Group =
     this.copy(children = children ++ List(child))
 
   def addChildren(additionalChildren: List[SceneNode]): Group =
     this.copy(children = children ++ additionalChildren)
-}
 
-object Group {
+  def onEvent(e: ((Rectangle, GlobalEvent)) => List[GlobalEvent]): Group =
+    this.copy(eventHandler = e, eventHandlerEnabled = true)
+  def enableEvents: Group =
+    this.copy(eventHandlerEnabled = true)
+  def disableEvents: Group =
+    this.copy(eventHandlerEnabled = false)
+
+object Group:
 
   def apply(children: SceneNode*): Group =
-    Group(children.toList, Point.zero, Radians.zero, Vector2.one, Depth.zero, Point.zero, Flip.default)
+    Group(
+      children.toList,
+      false,
+      (_: (Rectangle, GlobalEvent)) => Nil,
+      Point.zero,
+      Radians.zero,
+      Vector2.one,
+      Depth.zero,
+      Point.zero,
+      Flip.default
+    )
 
   def apply(children: List[SceneNode]): Group =
-    Group(children, Point.zero, Radians.zero, Vector2.one, Depth.zero, Point.zero, Flip.default)
+    Group(
+      children,
+      false,
+      (_: (Rectangle, GlobalEvent)) => Nil,
+      Point.zero,
+      Radians.zero,
+      Vector2.one,
+      Depth.zero,
+      Point.zero,
+      Flip.default
+    )
 
   def empty: Group =
     apply(Nil)
-}

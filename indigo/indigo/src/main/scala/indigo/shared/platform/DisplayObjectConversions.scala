@@ -38,12 +38,10 @@ import indigo.shared.scenegraph.CloneTileData
 import indigo.shared.scenegraph.CloneTiles
 import indigo.shared.scenegraph.DependentNode
 import indigo.shared.scenegraph.EntityNode
-import indigo.shared.scenegraph.EventHandler
 import indigo.shared.scenegraph.Graphic
 import indigo.shared.scenegraph.Group
 import indigo.shared.scenegraph.Mutants
 import indigo.shared.scenegraph.RenderNode
-import indigo.shared.scenegraph.SceneGraphViewEvents
 import indigo.shared.scenegraph.SceneNode
 import indigo.shared.scenegraph.Shape
 import indigo.shared.scenegraph.Sprite
@@ -169,13 +167,15 @@ final class DisplayObjectConversions(
         sendEvent
       )
     val l = sceneNodes.map { node =>
-      node match
-        case t: EventHandler =>
-          SceneGraphViewEvents.applyInputEvents(t, t.calculatedBounds(boundaryLocator), inputEvents, sendEvent)
+      if node.eventHandlerEnabled then
+        node.calculatedBounds(boundaryLocator).foreach { bounds =>
+          inputEvents.foreach { e =>
+            node.eventHandler((bounds, e)).foreach { ee =>
+              sendEvent(ee)
+            }
+          }
+        }
 
-        case _ =>
-          ()
-      
       f(node)
     }
     (l.map(_._1), l.foldLeft(scalajs.js.Array[(CloneId, DisplayObject)]())(_ ++ _._2))

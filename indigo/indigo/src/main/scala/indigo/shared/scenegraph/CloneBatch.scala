@@ -1,6 +1,8 @@
 package indigo.shared.scenegraph
 
+import indigo.shared.BoundaryLocator
 import indigo.shared.datatypes._
+import indigo.shared.events.GlobalEvent
 
 /** Represents many clones of the same clone blank, differentiated only by their transform data.
   */
@@ -41,6 +43,10 @@ final case class CloneBatch(
 
   def clearStaticBatchKey: CloneBatch =
     withMaybeStaticBatchKey(None)
+
+  lazy val eventHandlerEnabled: Boolean                             = false
+  def eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent] = _ => Nil
+  def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] = None
 
 object CloneBatch:
 
