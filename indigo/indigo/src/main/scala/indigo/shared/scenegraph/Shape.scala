@@ -11,6 +11,7 @@ import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Size
 import indigo.shared.datatypes.Stroke
 import indigo.shared.datatypes.Vector2
+import indigo.shared.events.GlobalEvent
 import indigo.shared.materials.LightingModel
 import indigo.shared.materials.LightingModel.Lit
 import indigo.shared.materials.LightingModel.Unlit
@@ -25,7 +26,7 @@ import indigo.shared.shader.UniformBlock
   * quite versitile and support different fills and stroke effects, even lighting. Due to the way strokes around shapes
   * are drawn, the corners are always rounded.
   */
-sealed trait Shape extends RenderNode with Cloneable with SpatialModifiers[Shape] derives CanEqual {
+sealed trait Shape extends RenderNode with Cloneable with SpatialModifiers[Shape] derives CanEqual:
   def moveTo(pt: Point): Shape
   def moveTo(x: Int, y: Int): Shape
   def withPosition(newPosition: Point): Shape
@@ -50,12 +51,10 @@ sealed trait Shape extends RenderNode with Cloneable with SpatialModifiers[Shape
   def flipVertical(isFlipped: Boolean): Shape
   def withFlip(newFlip: Flip): Shape
 
-  def calculatedBounds(locator: BoundaryLocator): Rectangle =
-    val rect = locator.shapeBounds(this)
-    BoundaryLocator.findBounds(this, rect.position, rect.size, ref)
-}
+  def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] =
+    locator.findBounds(this)
 
-object Shape {
+object Shape:
 
   /** Draws a coloured box that occupies a rectangle on the screen.
     */
@@ -64,6 +63,8 @@ object Shape {
       fill: Fill,
       stroke: Stroke,
       lighting: LightingModel,
+      eventHandlerEnabled: Boolean,
+      eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent],
       rotation: Radians,
       scale: Vector2,
       depth: Depth,
@@ -149,6 +150,13 @@ object Shape {
 
     def withShaderId(newShaderId: ShaderId): Box =
       this.copy(shaderId = Option(newShaderId))
+
+    def onEvent(e: ((Rectangle, GlobalEvent)) => List[GlobalEvent]): Box =
+      this.copy(eventHandler = e, eventHandlerEnabled = true)
+    def enableEvents: Box =
+      this.copy(eventHandlerEnabled = true)
+    def disableEvents: Box =
+      this.copy(eventHandlerEnabled = false)
   }
   object Box {
 
@@ -158,6 +166,8 @@ object Shape {
         fill,
         Stroke.None,
         LightingModel.Unlit,
+        false,
+        (_: (Rectangle, GlobalEvent)) => Nil,
         Radians.zero,
         Vector2.one,
         Depth.zero,
@@ -172,6 +182,8 @@ object Shape {
         fill,
         stroke,
         LightingModel.Unlit,
+        false,
+        (_: (Rectangle, GlobalEvent)) => Nil,
         Radians.zero,
         Vector2.one,
         Depth.zero,
@@ -190,6 +202,8 @@ object Shape {
       fill: Fill,
       stroke: Stroke,
       lighting: LightingModel,
+      eventHandlerEnabled: Boolean,
+      eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent],
       rotation: Radians,
       scale: Vector2,
       depth: Depth,
@@ -277,6 +291,13 @@ object Shape {
     def withShaderId(newShaderId: ShaderId): Circle =
       this.copy(shaderId = Option(newShaderId))
 
+    def onEvent(e: ((Rectangle, GlobalEvent)) => List[GlobalEvent]): Circle =
+      this.copy(eventHandler = e, eventHandlerEnabled = true)
+    def enableEvents: Circle =
+      this.copy(eventHandlerEnabled = true)
+    def disableEvents: Circle =
+      this.copy(eventHandlerEnabled = false)
+
   }
   object Circle {
 
@@ -287,6 +308,8 @@ object Shape {
         fill,
         Stroke.None,
         LightingModel.Unlit,
+        false,
+        (_: (Rectangle, GlobalEvent)) => Nil,
         Radians.zero,
         Vector2.one,
         Depth.zero,
@@ -302,6 +325,8 @@ object Shape {
         fill,
         stroke,
         LightingModel.Unlit,
+        false,
+        (_: (Rectangle, GlobalEvent)) => Nil,
         Radians.zero,
         Vector2.one,
         Depth.zero,
@@ -319,6 +344,8 @@ object Shape {
       end: Point,
       stroke: Stroke,
       lighting: LightingModel,
+      eventHandlerEnabled: Boolean,
+      eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent],
       rotation: Radians,
       scale: Vector2,
       depth: Depth,
@@ -332,7 +359,7 @@ object Shape {
 
     lazy val size: Size =
       Rectangle
-        .fromTwoPoints(
+        .fromPoints(
           position,
           Point(Math.max(start.x, end.x), Math.max(start.y, end.y)) + stroke.width
         )
@@ -420,6 +447,13 @@ object Shape {
 
     def withShaderId(newShaderId: ShaderId): Line =
       this.copy(shaderId = Option(newShaderId))
+
+    def onEvent(e: ((Rectangle, GlobalEvent)) => List[GlobalEvent]): Line =
+      this.copy(eventHandler = e, eventHandlerEnabled = true)
+    def enableEvents: Line =
+      this.copy(eventHandlerEnabled = true)
+    def disableEvents: Line =
+      this.copy(eventHandlerEnabled = false)
   }
   object Line {
 
@@ -429,6 +463,8 @@ object Shape {
         end,
         stroke,
         LightingModel.Unlit,
+        false,
+        (_: (Rectangle, GlobalEvent)) => Nil,
         Radians.zero,
         Vector2.one,
         Depth.zero,
@@ -446,6 +482,8 @@ object Shape {
       fill: Fill,
       stroke: Stroke,
       lighting: LightingModel,
+      eventHandlerEnabled: Boolean,
+      eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent],
       rotation: Radians,
       scale: Vector2,
       depth: Depth,
@@ -533,6 +571,13 @@ object Shape {
     def withShaderId(newShaderId: ShaderId): Polygon =
       this.copy(shaderId = Option(newShaderId))
 
+    def onEvent(e: ((Rectangle, GlobalEvent)) => List[GlobalEvent]): Polygon =
+      this.copy(eventHandler = e, eventHandlerEnabled = true)
+    def enableEvents: Polygon =
+      this.copy(eventHandlerEnabled = true)
+    def disableEvents: Polygon =
+      this.copy(eventHandlerEnabled = false)
+
   }
   object Polygon {
 
@@ -542,6 +587,8 @@ object Shape {
         fill,
         Stroke.None,
         LightingModel.Unlit,
+        false,
+        (_: (Rectangle, GlobalEvent)) => Nil,
         Radians.zero,
         Vector2.one,
         Depth.zero,
@@ -556,6 +603,8 @@ object Shape {
         fill,
         stroke,
         LightingModel.Unlit,
+        false,
+        (_: (Rectangle, GlobalEvent)) => Nil,
         Radians.zero,
         Vector2.one,
         Depth.zero,
@@ -570,6 +619,8 @@ object Shape {
         fill,
         stroke,
         LightingModel.Unlit,
+        false,
+        (_: (Rectangle, GlobalEvent)) => Nil,
         Radians.zero,
         Vector2.one,
         Depth.zero,
@@ -735,4 +786,5 @@ object Shape {
           case l: Lit =>
             l.toShaderData(s.shaderId.getOrElse(StandardShaders.LitShapePolygon.id), None, List(shapeUniformBlock))
         }
-}
+
+end Shape

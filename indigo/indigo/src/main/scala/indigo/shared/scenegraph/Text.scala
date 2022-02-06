@@ -14,6 +14,7 @@ final case class Text[M <: Material](
     alignment: TextAlignment,
     fontKey: FontKey,
     material: M,
+    eventHandlerEnabled: Boolean,
     eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent],
     position: Point,
     rotation: Radians,
@@ -22,9 +23,8 @@ final case class Text[M <: Material](
     ref: Point,
     flip: Flip
 ) extends DependentNode
-    with EventHandler
     with SpatialModifiers[Text[M]]
-    derives CanEqual {
+    derives CanEqual:
 
   def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] =
     Option(locator.textBounds(this)).map { rect =>
@@ -111,11 +111,13 @@ final case class Text[M <: Material](
     this.copy(fontKey = newFontKey)
 
   def onEvent(e: ((Rectangle, GlobalEvent)) => List[GlobalEvent]): Text[M] =
-    this.copy(eventHandler = e)
+    this.copy(eventHandler = e, eventHandlerEnabled = true)
+  def enableEvents: Text[M] =
+    this.copy(eventHandlerEnabled = true)
+  def disableEvents: Text[M] =
+    this.copy(eventHandlerEnabled = false)
 
-}
-
-object Text {
+object Text:
 
   def apply[M <: Material](text: String, x: Int, y: Int, depth: Int, fontKey: FontKey, material: M): Text[M] =
     Text(
@@ -128,6 +130,7 @@ object Text {
       text = text,
       alignment = TextAlignment.Left,
       fontKey = fontKey,
+      eventHandlerEnabled = false,
       eventHandler = (_: (Rectangle, GlobalEvent)) => Nil,
       material = material
     )
@@ -143,8 +146,7 @@ object Text {
       text = text,
       alignment = TextAlignment.Left,
       fontKey = fontKey,
+      eventHandlerEnabled = false,
       eventHandler = (_: (Rectangle, GlobalEvent)) => Nil,
       material = material
     )
-
-}

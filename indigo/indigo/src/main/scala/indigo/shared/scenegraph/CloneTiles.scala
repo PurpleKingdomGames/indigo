@@ -1,6 +1,8 @@
 package indigo.shared.scenegraph
 
+import indigo.shared.BoundaryLocator
 import indigo.shared.datatypes._
+import indigo.shared.events.GlobalEvent
 
 /** Represents many clones of the same cloneblank, differentiated by their transform data and which part of the texture
   * it is cropped on.
@@ -51,6 +53,10 @@ final case class CloneTiles(
 
   def clearStaticBatchKey: CloneTiles =
     withMaybeStaticBatchKey(None)
+
+  lazy val eventHandlerEnabled: Boolean                             = false
+  def eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent] = _ => Nil
+  def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] = None
 
 object CloneTiles:
 

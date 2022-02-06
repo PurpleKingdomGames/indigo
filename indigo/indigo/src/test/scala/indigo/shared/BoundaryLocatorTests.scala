@@ -9,6 +9,7 @@ import indigo.shared.datatypes.FontKey
 import indigo.shared.datatypes.RGBA
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Stroke
+import indigo.shared.events.GlobalEvent
 import indigo.shared.materials.Material
 import indigo.shared.scenegraph.Shape
 import indigo.shared.scenegraph.Text
@@ -123,6 +124,10 @@ class BoundaryLocatorTests extends munit.FunSuite {
       // Members declared in scala.Product
       def productArity: Int           = ???
       def productElement(n: Int): Any = ???
+
+      def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] = None
+      val eventHandlerEnabled: Boolean                                  = false
+      def eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent] = _ => Nil
     }
 
     val actual   = BoundaryLocator.findBounds(entity, entity.position, entity.size, entity.ref)
@@ -150,6 +155,10 @@ class BoundaryLocatorTests extends munit.FunSuite {
       // Members declared in scala.Product
       def productArity: Int           = ???
       def productElement(n: Int): Any = ???
+
+      def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] = None
+      val eventHandlerEnabled: Boolean                                  = false
+      def eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent] = _ => Nil
     }
 
     val actual   = BoundaryLocator.findBounds(entity, entity.position, Size(30, 40), entity.ref)
@@ -177,6 +186,10 @@ class BoundaryLocatorTests extends munit.FunSuite {
       // Members declared in scala.Product
       def productArity: Int           = ???
       def productElement(n: Int): Any = ???
+
+      def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] = None
+      val eventHandlerEnabled: Boolean                                  = false
+      def eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent] = _ => Nil
     }
 
     val actual   = BoundaryLocator.findBounds(entity, entity.position, entity.size, entity.ref)
@@ -204,6 +217,10 @@ class BoundaryLocatorTests extends munit.FunSuite {
       // Members declared in scala.Product
       def productArity: Int           = ???
       def productElement(n: Int): Any = ???
+
+      def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] = None
+      val eventHandlerEnabled: Boolean                                  = false
+      def eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent] = _ => Nil
     }
 
     val actual   = BoundaryLocator.findBounds(entity, entity.position, entity.size, entity.ref)
@@ -231,6 +248,10 @@ class BoundaryLocatorTests extends munit.FunSuite {
       // Members declared in scala.Product
       def productArity: Int           = ???
       def productElement(n: Int): Any = ???
+
+      def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] = None
+      val eventHandlerEnabled: Boolean                                  = false
+      def eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent] = _ => Nil
     }
 
     val actual   = BoundaryLocator.findBounds(entity, entity.position, entity.size, entity.ref)
@@ -258,6 +279,10 @@ class BoundaryLocatorTests extends munit.FunSuite {
       // Members declared in scala.Product
       def productArity: Int           = ???
       def productElement(n: Int): Any = ???
+
+      def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] = None
+      val eventHandlerEnabled: Boolean                                  = false
+      def eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent] = _ => Nil
     }
 
     val actual   = BoundaryLocator.findBounds(entity, entity.position, entity.size, entity.ref)
@@ -285,6 +310,10 @@ class BoundaryLocatorTests extends munit.FunSuite {
       // Members declared in scala.Product
       def productArity: Int           = ???
       def productElement(n: Int): Any = ???
+
+      def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] = None
+      val eventHandlerEnabled: Boolean                                  = false
+      def eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent] = _ => Nil
     }
 
     val actual   = BoundaryLocator.findBounds(entity, entity.position, entity.size, entity.ref)
@@ -312,6 +341,10 @@ class BoundaryLocatorTests extends munit.FunSuite {
       // Members declared in scala.Product
       def productArity: Int           = ???
       def productElement(n: Int): Any = ???
+
+      def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] = None
+      val eventHandlerEnabled: Boolean                                  = false
+      def eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent] = _ => Nil
     }
 
     val actual   = BoundaryLocator.findBounds(entity, entity.position, entity.size, entity.ref)
@@ -339,6 +372,10 @@ class BoundaryLocatorTests extends munit.FunSuite {
       // Members declared in scala.Product
       def productArity: Int           = ???
       def productElement(n: Int): Any = ???
+
+      def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] = None
+      val eventHandlerEnabled: Boolean                                  = false
+      def eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent] = _ => Nil
     }
 
     val actual   = BoundaryLocator.findBounds(entity, entity.position, entity.size, entity.ref)
@@ -366,6 +403,10 @@ class BoundaryLocatorTests extends munit.FunSuite {
       // Members declared in scala.Product
       def productArity: Int           = ???
       def productElement(n: Int): Any = ???
+
+      def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] = None
+      val eventHandlerEnabled: Boolean                                  = false
+      def eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent] = _ => Nil
     }
 
     val actual   = BoundaryLocator.findBounds(entity, entity.position, entity.size, entity.ref)

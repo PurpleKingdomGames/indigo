@@ -215,11 +215,9 @@ object BoundaryLocator:
         .scale(entity.scale.x.toFloat, entity.scale.y.toFloat, 1.0f)
         .translate(position.x.toFloat, position.y.toFloat, 0.0f)
 
-    Rectangle.fromPointCloud(
-      List(
-        m.transform(Vector3(0, 0, 0)).toPoint,
-        m.transform(Vector3(size.width, 0, 0)).toPoint,
-        m.transform(Vector3(size.width, size.height, 0)).toPoint,
-        m.transform(Vector3(0, size.height, 0)).toPoint
-      )
+    Rectangle.fromPoints(
+      m.transform(Vector3(0, 0, 0)).toPoint,
+      m.transform(Vector3(size.width, 0, 0)).toPoint,
+      m.transform(Vector3(size.width, size.height, 0)).toPoint,
+      m.transform(Vector3(0, size.height, 0)).toPoint
     )

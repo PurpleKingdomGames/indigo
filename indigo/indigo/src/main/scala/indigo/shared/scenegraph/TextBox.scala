@@ -16,6 +16,7 @@ import indigo.shared.datatypes.TextAlign
 import indigo.shared.datatypes.TextStroke
 import indigo.shared.datatypes.TextStyle
 import indigo.shared.datatypes.Vector2
+import indigo.shared.events.GlobalEvent
 import indigo.shared.materials.ShaderData
 import indigo.shared.shader.StandardShaders
 
@@ -27,6 +28,8 @@ final case class TextBox(
     text: String,
     style: TextStyle,
     size: Size,
+    eventHandlerEnabled: Boolean,
+    eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent],
     position: Point,
     rotation: Radians,
     scale: Vector2,
@@ -39,6 +42,9 @@ final case class TextBox(
 
   def bounds: Rectangle =
     BoundaryLocator.findBounds(this, position, size, ref)
+
+  def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] =
+    locator.findBounds(this)
 
   def withText(newText: String): TextBox =
     this.copy(text = newText)
@@ -137,12 +143,21 @@ final case class TextBox(
   def withRef(x: Int, y: Int): TextBox =
     withRef(Point(x, y))
 
+  def onEvent(e: ((Rectangle, GlobalEvent)) => List[GlobalEvent]): TextBox =
+    this.copy(eventHandler = e, eventHandlerEnabled = true)
+  def enableEvents: TextBox =
+    this.copy(eventHandlerEnabled = true)
+  def disableEvents: TextBox =
+    this.copy(eventHandlerEnabled = false)
+
 object TextBox:
   def apply(text: String): TextBox =
     TextBox(
       text,
       TextStyle.default,
       Size(300),
+      false,
+      (_: (Rectangle, GlobalEvent)) => Nil,
       Point.zero,
       Radians.zero,
       Vector2.one,
@@ -156,6 +171,8 @@ object TextBox:
       text,
       TextStyle.default,
       Size(maxWidth, maxHeight),
+      false,
+      (_: (Rectangle, GlobalEvent)) => Nil,
       Point.zero,
       Radians.zero,
       Vector2.one,

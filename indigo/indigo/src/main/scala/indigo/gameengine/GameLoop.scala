@@ -9,7 +9,6 @@ import indigo.shared.events.FrameTick
 import indigo.shared.events.InputEvent
 import indigo.shared.events.InputState
 import indigo.shared.platform.SceneProcessor
-import indigo.shared.scenegraph.SceneGraphViewEvents
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.time.GameTime
 import indigo.shared.time.Millis

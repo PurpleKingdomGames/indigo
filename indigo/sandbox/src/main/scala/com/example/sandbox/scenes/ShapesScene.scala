@@ -6,7 +6,7 @@ import com.example.sandbox.SandboxViewModel
 import indigo._
 import indigo.scenes._
 
-object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel] {
+object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
 
   type SceneModel     = SandboxGameModel
   type SceneViewModel = SandboxViewModel
@@ -105,16 +105,16 @@ object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
             .moveTo(175, 10),
           blue,
           Shape.Box(
-            blue.calculatedBounds(context.boundaryLocator),
+            blue.calculatedBounds(context.boundaryLocator).getOrElse(Rectangle.zero),
             Fill.None,
             Stroke(1, RGBA.Blue)
-          ), //outline blue
+          ), // outline blue
           red,
           Shape.Box(
-            red.calculatedBounds(context.boundaryLocator),
+            red.calculatedBounds(context.boundaryLocator).getOrElse(Rectangle.zero),
             Fill.None,
             Stroke(1, RGBA.Red)
-          ), //outline red
+          ), // outline red
           Shape
             .Box(Rectangle(0, 0, 100, 100), Fill.Color(RGBA.Green.withAlpha(0.5)), Stroke.None)
         )
@@ -123,5 +123,3 @@ object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
         )
     )
   }
-
-}

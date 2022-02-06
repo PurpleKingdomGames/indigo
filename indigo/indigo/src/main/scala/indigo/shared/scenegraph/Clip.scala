@@ -8,6 +8,7 @@ import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Size
 import indigo.shared.datatypes.Vector2
+import indigo.shared.events.GlobalEvent
 import indigo.shared.materials.Material
 import indigo.shared.materials.ShaderData
 import indigo.shared.shader.ShaderPrimitive.float
@@ -164,6 +165,10 @@ final case class Clip[M <: Material](
           )
         )
       )
+
+  lazy val eventHandlerEnabled: Boolean                             = false
+  def eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent] = _ => Nil
+  def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] = None
 
 object Clip:
 
