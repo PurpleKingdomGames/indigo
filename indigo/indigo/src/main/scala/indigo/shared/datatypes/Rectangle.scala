@@ -93,16 +93,35 @@ object Rectangle:
   def apply(size: Size): Rectangle =
     Rectangle(Point.zero, size)
 
-  def fromTwoPoints(pt1: Point, pt2: Point): Rectangle = {
+  def fromPoints(pt1: Point, pt2: Point): Rectangle =
     val x = Math.min(pt1.x, pt2.x)
     val y = Math.min(pt1.y, pt2.y)
     val w = Math.max(pt1.x, pt2.x) - x
     val h = Math.max(pt1.y, pt2.y) - y
 
     Rectangle(x, y, w, h)
-  }
 
-  def fromPointCloud(points: List[Point]): Rectangle = {
+  def fromPoints(pt1: Point, pt2: Point, pt3: Point): Rectangle =
+    val x = Math.min(Math.min(pt1.x, pt2.x), pt3.x)
+    val y = Math.min(Math.min(pt1.y, pt2.y), pt3.y)
+    val w = Math.max(Math.max(pt1.x, pt2.x), pt3.x) - x
+    val h = Math.max(Math.max(pt1.y, pt2.y), pt3.y) - y
+
+    Rectangle(x, y, w, h)
+
+  def fromPoints(pt1: Point, pt2: Point, pt3: Point, pt4: Point): Rectangle =
+    val x = Math.min(Math.min(Math.min(pt1.x, pt2.x), pt3.x), pt4.x)
+    val y = Math.min(Math.min(Math.min(pt1.y, pt2.y), pt3.y), pt4.y)
+    val w = Math.max(Math.max(Math.max(pt1.x, pt2.x), pt3.x), pt4.x) - x
+    val h = Math.max(Math.max(Math.max(pt1.y, pt2.y), pt3.y), pt4.y) - y
+
+    Rectangle(x, y, w, h)
+
+  @deprecated("Use `fromPoints(pt1, pt2)` instead")
+  def fromTwoPoints(pt1: Point, pt2: Point): Rectangle =
+    fromPoints(pt1, pt2)
+
+  def fromPointCloud(points: List[Point]): Rectangle =
     @tailrec
     def rec(remaining: List[Point], left: Int, top: Int, right: Int, bottom: Int): Rectangle =
       remaining match {
@@ -120,7 +139,6 @@ object Rectangle:
       }
 
     rec(points, Int.MaxValue, Int.MaxValue, Int.MinValue, Int.MinValue)
-  }
 
   def expand(rectangle: Rectangle, amount: Int): Rectangle =
     Rectangle(
