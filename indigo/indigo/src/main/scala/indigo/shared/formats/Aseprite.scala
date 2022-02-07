@@ -46,7 +46,7 @@ final case class AsepriteFrame(
 
 final case class AsepriteRectangle(x: Int, y: Int, w: Int, h: Int) derives CanEqual:
   def position: Point = Point(x, y)
-  def size: Size = Size(w, h)
+  def size: Size      = Size(w, h)
 
 final case class AsepriteMeta(
     app: String,
@@ -84,13 +84,16 @@ object Aseprite:
             Sprite(
               bindingKey = BindingKey.fromDice(dice),
               material = Material.Bitmap(assetName),
+              animationKey = animations.animationKey,
+              animationActions = Nil,
+              eventHandlerEnabled = false,
+              eventHandler = (_: (Rectangle, GlobalEvent)) => Nil,
               position = Point(0, 0),
-              depth = Depth.zero,
               rotation = Radians.zero,
               scale = Vector2.one,
-              animationKey = animations.animationKey,
+              depth = Depth.zero,
               ref = Point(0, 0),
-              eventHandler = (_: (Rectangle, GlobalEvent)) => Nil
+              flip = Flip.default
             ),
             animations
           )
