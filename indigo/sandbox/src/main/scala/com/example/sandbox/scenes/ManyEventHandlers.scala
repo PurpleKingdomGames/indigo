@@ -68,7 +68,7 @@ object ManyEventHandlers extends Scene[SandboxStartupData, SandboxGameModel, San
     Outcome(
       SceneUpdateFragment(
         Layer(
-          sprites(model.dude.dude.sprite.withRef(Point.zero).moveTo(Point.zero).disableEvents)
+          sprites(model.dude.dude.sprite.withRef(Point.zero).moveTo(Point.zero))
         ).withMagnification(1)
       )
     )
