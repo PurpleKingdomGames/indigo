@@ -26,35 +26,40 @@ final class BoundaryLocator(
     animationsRegister: AnimationsRegister,
     fontRegister: FontRegister,
     dynamicText: DynamicText
-) {
+):
 
   implicit private val maybeBoundsCache: QuickCache[Option[Rectangle]]      = QuickCache.empty
   implicit private val boundsCache: QuickCache[Rectangle]                   = QuickCache.empty
   implicit private val textLinesCache: QuickCache[List[TextLine]]           = QuickCache.empty
   implicit private val textAllLineBoundsCache: QuickCache[Array[Rectangle]] = QuickCache.empty
 
-  def purgeCache(): Unit = {
+  private[indigo] def purgeCache(): Unit = {
     maybeBoundsCache.purgeAllNow()
     boundsCache.purgeAllNow()
     textLinesCache.purgeAllNow()
     textAllLineBoundsCache.purgeAllNow()
   }
 
-  def measureText(t: TextBox): Rectangle =
+  /** Measures the size of a `TextBox` using the browsers canvas APIs. This is a slow operation.
+    */
+  def measureText(textBox: TextBox): Rectangle =
     val rect =
       dynamicText
         .measureText(
-          t.text,
-          t.style,
-          t.size.width,
-          t.size.height
+          textBox.text,
+          textBox.style,
+          textBox.size.width,
+          textBox.size.height
         )
-        .moveTo(t.position)
+        .moveTo(textBox.position)
 
-    BoundaryLocator.findBounds(t, rect.position, rect.size, t.ref)
+    BoundaryLocator.findBounds(textBox, rect.position, rect.size, textBox.ref)
 
-  def findBounds(sceneGraphNode: SceneNode): Option[Rectangle] =
-    sceneGraphNode match {
+  /** Safely finds the bounds of any given scene node, if the node has bounds. It is not possible to sensibly measure the
+    * bounds of some node types, such as clones, and some nodes are dependant on external data that may be missing.
+    */
+  def findBounds(sceneNode: SceneNode): Option[Rectangle] =
+    sceneNode match {
       case s: Shape[_] =>
         Option(BoundaryLocator.findShapeBounds(s))
 
@@ -88,6 +93,11 @@ final class BoundaryLocator(
       case _ =>
         None
     }
+
+  /** Finds the bounds or returns a `Rectangle` of size zero for convenience.
+    */
+  def bounds(sceneNode: SceneNode): Rectangle =
+    findBounds(sceneNode).getOrElse(Rectangle.zero)
 
   private def groupBounds(group: Group): Rectangle =
     val rect =
@@ -189,8 +199,6 @@ final class BoundaryLocator(
       }
 
     BoundaryLocator.findBounds(text, rect.position, rect.size, text.ref + Point(offset, 0))
-
-}
 
 object BoundaryLocator:
   def findBounds(entity: SceneNode, position: Point, size: Size, ref: Point): Rectangle =
