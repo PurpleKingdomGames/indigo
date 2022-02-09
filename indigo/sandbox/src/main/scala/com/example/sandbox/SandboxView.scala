@@ -20,7 +20,7 @@ object SandboxView:
     SceneUpdateFragment.empty
       .addLayer(
         Layer(
-          gameLayer(model, viewModel) ++ uiLayer(mouse, bl)
+          gameLayer(model, viewModel) ++ uiLayer(bl)
         )
           .withDepth(Depth(300))
         // .withBlend(Blend.Alpha)
@@ -96,7 +96,7 @@ object SandboxView:
         .moveTo(mouse.position.x, mouse.position.y)
     )
 
-  def uiLayer(mouse: Mouse, bl: BoundaryLocator): List[SceneNode] =
+  def uiLayer(bl: BoundaryLocator): List[SceneNode] =
     List(
       Text("AB!\n!C", 2, 2, 5, Fonts.fontKey, SandboxAssets.fontMaterial.withAlpha(0.5)).alignLeft,
       Text("AB!\n!C", 100, 2, 5, Fonts.fontKey, SandboxAssets.fontMaterial.withAlpha(0.5)).alignCenter,
