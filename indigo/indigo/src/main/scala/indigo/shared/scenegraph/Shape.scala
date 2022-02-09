@@ -26,33 +26,33 @@ import indigo.shared.shader.UniformBlock
   * quite versitile and support different fills and stroke effects, even lighting. Due to the way strokes around shapes
   * are drawn, the corners are always rounded.
   */
-sealed trait Shape extends RenderNode with Cloneable with SpatialModifiers[Shape] derives CanEqual:
-  def moveTo(pt: Point): Shape
-  def moveTo(x: Int, y: Int): Shape
-  def withPosition(newPosition: Point): Shape
+sealed trait Shape[T <: Shape[_]] extends RenderNode[T] with Cloneable with SpatialModifiers[T] derives CanEqual:
+  def moveTo(pt: Point): T
+  def moveTo(x: Int, y: Int): T
+  def withPosition(newPosition: Point): T
 
-  def moveBy(pt: Point): Shape
-  def moveBy(x: Int, y: Int): Shape
+  def moveBy(pt: Point): T
+  def moveBy(x: Int, y: Int): T
 
-  def rotateTo(angle: Radians): Shape
-  def rotateBy(angle: Radians): Shape
-  def withRotation(newRotation: Radians): Shape
+  def rotateTo(angle: Radians): T
+  def rotateBy(angle: Radians): T
+  def withRotation(newRotation: Radians): T
 
-  def scaleBy(amount: Vector2): Shape
-  def scaleBy(x: Double, y: Double): Shape
-  def withScale(newScale: Vector2): Shape
+  def scaleBy(amount: Vector2): T
+  def scaleBy(x: Double, y: Double): T
+  def withScale(newScale: Vector2): T
 
-  def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): Shape
-  def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): Shape
+  def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): T
+  def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): T
 
-  def withDepth(newDepth: Depth): Shape
+  def withDepth(newDepth: Depth): T
 
-  def flipHorizontal(isFlipped: Boolean): Shape
-  def flipVertical(isFlipped: Boolean): Shape
-  def withFlip(newFlip: Flip): Shape
+  def flipHorizontal(isFlipped: Boolean): T
+  def flipVertical(isFlipped: Boolean): T
+  def withFlip(newFlip: Flip): T
 
-  def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] =
-    locator.findBounds(this)
+  def bounds: Rectangle =
+    BoundaryLocator.findShapeBounds(this)
 
 object Shape:
 
@@ -64,14 +64,14 @@ object Shape:
       stroke: Stroke,
       lighting: LightingModel,
       eventHandlerEnabled: Boolean,
-      eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent],
+      eventHandler: GlobalEvent => Option[GlobalEvent],
       rotation: Radians,
       scale: Vector2,
       depth: Depth,
       ref: Point,
       flip: Flip,
       shaderId: Option[ShaderId]
-  ) extends Shape {
+  ) extends Shape[Box] {
 
     lazy val position: Point =
       dimensions.position - (stroke.width / 2)
@@ -151,8 +151,8 @@ object Shape:
     def withShaderId(newShaderId: ShaderId): Box =
       this.copy(shaderId = Option(newShaderId))
 
-    def onEvent(e: ((Rectangle, GlobalEvent)) => List[GlobalEvent]): Box =
-      this.copy(eventHandler = e, eventHandlerEnabled = true)
+    def withEventHandler(f: GlobalEvent => Option[GlobalEvent]): Box =
+      this.copy(eventHandler = f, eventHandlerEnabled = true)
     def enableEvents: Box =
       this.copy(eventHandlerEnabled = true)
     def disableEvents: Box =
@@ -167,7 +167,7 @@ object Shape:
         Stroke.None,
         LightingModel.Unlit,
         false,
-        (_: (Rectangle, GlobalEvent)) => Nil,
+        Function.const(None),
         Radians.zero,
         Vector2.one,
         Depth.zero,
@@ -183,7 +183,7 @@ object Shape:
         stroke,
         LightingModel.Unlit,
         false,
-        (_: (Rectangle, GlobalEvent)) => Nil,
+        Function.const(None),
         Radians.zero,
         Vector2.one,
         Depth.zero,
@@ -203,14 +203,14 @@ object Shape:
       stroke: Stroke,
       lighting: LightingModel,
       eventHandlerEnabled: Boolean,
-      eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent],
+      eventHandler: GlobalEvent => Option[GlobalEvent],
       rotation: Radians,
       scale: Vector2,
       depth: Depth,
       ref: Point,
       flip: Flip,
       shaderId: Option[ShaderId]
-  ) extends Shape {
+  ) extends Shape[Circle] {
 
     lazy val position: Point =
       center - radius - (stroke.width / 2)
@@ -291,8 +291,8 @@ object Shape:
     def withShaderId(newShaderId: ShaderId): Circle =
       this.copy(shaderId = Option(newShaderId))
 
-    def onEvent(e: ((Rectangle, GlobalEvent)) => List[GlobalEvent]): Circle =
-      this.copy(eventHandler = e, eventHandlerEnabled = true)
+    def withEventHandler(f: GlobalEvent => Option[GlobalEvent]): Circle =
+      this.copy(eventHandler = f, eventHandlerEnabled = true)
     def enableEvents: Circle =
       this.copy(eventHandlerEnabled = true)
     def disableEvents: Circle =
@@ -309,7 +309,7 @@ object Shape:
         Stroke.None,
         LightingModel.Unlit,
         false,
-        (_: (Rectangle, GlobalEvent)) => Nil,
+        Function.const(None),
         Radians.zero,
         Vector2.one,
         Depth.zero,
@@ -326,7 +326,7 @@ object Shape:
         stroke,
         LightingModel.Unlit,
         false,
-        (_: (Rectangle, GlobalEvent)) => Nil,
+        Function.const(None),
         Radians.zero,
         Vector2.one,
         Depth.zero,
@@ -345,14 +345,14 @@ object Shape:
       stroke: Stroke,
       lighting: LightingModel,
       eventHandlerEnabled: Boolean,
-      eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent],
+      eventHandler: GlobalEvent => Option[GlobalEvent],
       rotation: Radians,
       scale: Vector2,
       depth: Depth,
       ref: Point,
       flip: Flip,
       shaderId: Option[ShaderId]
-  ) extends Shape {
+  ) extends Shape[Line] {
 
     lazy val position: Point =
       Point(Math.min(start.x, end.x), Math.min(start.y, end.y)) - (stroke.width / 2)
@@ -448,8 +448,8 @@ object Shape:
     def withShaderId(newShaderId: ShaderId): Line =
       this.copy(shaderId = Option(newShaderId))
 
-    def onEvent(e: ((Rectangle, GlobalEvent)) => List[GlobalEvent]): Line =
-      this.copy(eventHandler = e, eventHandlerEnabled = true)
+    def withEventHandler(f: GlobalEvent => Option[GlobalEvent]): Line =
+      this.copy(eventHandler = f, eventHandlerEnabled = true)
     def enableEvents: Line =
       this.copy(eventHandlerEnabled = true)
     def disableEvents: Line =
@@ -464,7 +464,7 @@ object Shape:
         stroke,
         LightingModel.Unlit,
         false,
-        (_: (Rectangle, GlobalEvent)) => Nil,
+        Function.const(None),
         Radians.zero,
         Vector2.one,
         Depth.zero,
@@ -483,14 +483,14 @@ object Shape:
       stroke: Stroke,
       lighting: LightingModel,
       eventHandlerEnabled: Boolean,
-      eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent],
+      eventHandler: GlobalEvent => Option[GlobalEvent],
       rotation: Radians,
       scale: Vector2,
       depth: Depth,
       ref: Point,
       flip: Flip,
       shaderId: Option[ShaderId]
-  ) extends Shape {
+  ) extends Shape[Polygon] {
 
     private lazy val verticesBounds: Rectangle =
       Rectangle.fromPointCloud(vertices).expand(stroke.width / 2)
@@ -571,8 +571,8 @@ object Shape:
     def withShaderId(newShaderId: ShaderId): Polygon =
       this.copy(shaderId = Option(newShaderId))
 
-    def onEvent(e: ((Rectangle, GlobalEvent)) => List[GlobalEvent]): Polygon =
-      this.copy(eventHandler = e, eventHandlerEnabled = true)
+    def withEventHandler(f: GlobalEvent => Option[GlobalEvent]): Polygon =
+      this.copy(eventHandler = f, eventHandlerEnabled = true)
     def enableEvents: Polygon =
       this.copy(eventHandlerEnabled = true)
     def disableEvents: Polygon =
@@ -588,7 +588,7 @@ object Shape:
         Stroke.None,
         LightingModel.Unlit,
         false,
-        (_: (Rectangle, GlobalEvent)) => Nil,
+        Function.const(None),
         Radians.zero,
         Vector2.one,
         Depth.zero,
@@ -604,7 +604,7 @@ object Shape:
         stroke,
         LightingModel.Unlit,
         false,
-        (_: (Rectangle, GlobalEvent)) => Nil,
+        Function.const(None),
         Radians.zero,
         Vector2.one,
         Depth.zero,
@@ -620,7 +620,7 @@ object Shape:
         stroke,
         LightingModel.Unlit,
         false,
-        (_: (Rectangle, GlobalEvent)) => Nil,
+        Function.const(None),
         Radians.zero,
         Vector2.one,
         Depth.zero,
@@ -673,7 +673,7 @@ object Shape:
       case _: Fill.RadialGradient => float(2.0)
     }
 
-  def toShaderData(shape: Shape, bounds: Rectangle): ShaderData =
+  def toShaderData(shape: Shape[_], bounds: Rectangle): ShaderData =
     shape match
       case s: Shape.Box =>
         val aspect: Vector2 =
@@ -727,9 +727,6 @@ object Shape:
         }
 
       case s: Shape.Line =>
-        // val bounds: Rectangle =
-        //   Rectangle.fromTwoPoints(s.start, s.end)
-
         // Relative to bounds
         val ss = s.start - bounds.position + (s.stroke.width / 2)
         val ee = s.end - bounds.position + (s.stroke.width / 2)

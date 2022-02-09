@@ -136,10 +136,10 @@ class AutomataTests extends munit.FunSuite {
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  def toRenderNode(node: SceneNode): RenderNode =
+  def toRenderNode(node: SceneNode): RenderNode[_] =
     node match {
-      case r: RenderNode => r
-      case _             => throw new Exception("Wasn't a render node")
+      case r: RenderNode[_] => r
+      case _                => throw new Exception("Wasn't a render node")
     }
 
   test("AutomatonNode.one of") {

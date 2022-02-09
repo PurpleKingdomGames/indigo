@@ -18,23 +18,20 @@ final case class Sprite[M <: Material](
     animationKey: AnimationKey,
     animationActions: List[AnimationAction],
     eventHandlerEnabled: Boolean,
-    eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent],
+    eventHandler: GlobalEvent => Option[GlobalEvent],
     position: Point,
     rotation: Radians,
     scale: Vector2,
     depth: Depth,
     ref: Point,
     flip: Flip
-) extends DependentNode
+) extends DependentNode[Sprite[M]]
     with Cloneable
     with SpatialModifiers[Sprite[M]]
     derives CanEqual:
 
   lazy val x: Int = position.x
   lazy val y: Int = position.y
-
-  def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] =
-    locator.spriteBounds(this).map(rect => BoundaryLocator.findBounds(this, rect.position, rect.size, ref))
 
   def withDepth(newDepth: Depth): Sprite[M] =
     this.copy(depth = newDepth)
@@ -110,8 +107,8 @@ final case class Sprite[M <: Material](
   def jumpToFrame(number: Int): Sprite[M] =
     this.copy(animationActions = animationActions ++ List(JumpToFrame(number)))
 
-  def onEvent(e: ((Rectangle, GlobalEvent)) => List[GlobalEvent]): Sprite[M] =
-    this.copy(eventHandler = e, eventHandlerEnabled = true)
+  def withEventHandler(f: GlobalEvent => Option[GlobalEvent]): Sprite[M] =
+    this.copy(eventHandler = f, eventHandlerEnabled = true)
   def enableEvents: Sprite[M] =
     this.copy(eventHandlerEnabled = true)
   def disableEvents: Sprite[M] =
@@ -136,7 +133,7 @@ object Sprite:
       bindingKey = bindingKey,
       animationKey = animationKey,
       eventHandlerEnabled = false,
-      eventHandler = (_: (Rectangle, GlobalEvent)) => Nil,
+      eventHandler = Function.const(None),
       animationActions = Nil,
       material = material
     )
@@ -149,7 +146,7 @@ object Sprite:
       scale: Vector2,
       animationKey: AnimationKey,
       ref: Point,
-      eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent],
+      eventHandler: GlobalEvent => Option[GlobalEvent],
       material: M
   ): Sprite[M] =
     Sprite(
@@ -178,7 +175,7 @@ object Sprite:
       bindingKey = bindingKey,
       animationKey = animationKey,
       eventHandlerEnabled = false,
-      eventHandler = (_: (Rectangle, GlobalEvent)) => Nil,
+      eventHandler = Function.const(None),
       animationActions = Nil,
       material = material
     )

@@ -12,7 +12,7 @@ final case class Mutants(
     id: CloneId,
     depth: Depth,
     uniformBlocks: Array[List[UniformBlock]]
-) extends DependentNode
+) extends DependentNode[Mutants]
     derives CanEqual:
 
   lazy val scale: Vector2    = Vector2.one
@@ -30,9 +30,8 @@ final case class Mutants(
   def addBlocks(additionalBlocks: Array[List[UniformBlock]]): Mutants =
     this.copy(uniformBlocks = uniformBlocks ++ additionalBlocks)
 
-  lazy val eventHandlerEnabled: Boolean                             = false
-  def eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent] = _ => Nil
-  def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] = None
+  val eventHandlerEnabled: Boolean                     = false
+  def eventHandler: GlobalEvent => Option[GlobalEvent] = Function.const(None)
 
 object Mutants:
 

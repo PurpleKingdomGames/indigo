@@ -21,7 +21,7 @@ class ShapeTests extends munit.FunSuite:
       )
 
     val actual =
-      s.calculatedBounds(boundaryLocator)
+      boundaryLocator.findBounds(s)
 
     val expected =
       Option(Rectangle(15 - 4, 25 - 4, 100 + 8, 200 + 8))
@@ -40,7 +40,7 @@ class ShapeTests extends munit.FunSuite:
       )
 
     val actual =
-      s.calculatedBounds(boundaryLocator)
+      boundaryLocator.findBounds(s)
 
     val expected =
       Option(Rectangle(50 - 17 - 3, 50 - 17 - 3, 17 + 17 + 7, 17 + 17 + 7))
@@ -60,7 +60,7 @@ class ShapeTests extends munit.FunSuite:
       )
 
     val actual =
-      s.calculatedBounds(boundaryLocator)
+      boundaryLocator.findBounds(s)
 
     val expected =
       Option(Rectangle(50 - 2, 10 - 2, 25 + 5 + 2, 50 + 5 + 2))
@@ -85,7 +85,7 @@ class ShapeTests extends munit.FunSuite:
       )
 
     val actual =
-      s.calculatedBounds(boundaryLocator)
+      boundaryLocator.findBounds(s)
 
     val expected =
       Option(Rectangle(25 - 2, 10 - 2, 50 + 4, 50 + 4))

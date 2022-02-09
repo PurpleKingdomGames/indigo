@@ -39,7 +39,7 @@ class TextTests extends munit.FunSuite {
     val t = Text("abc", 10, 20, 1, fontKey, material)
 
     assertEquals(
-      t.calculatedBounds(boundaryLocator).get,
+      boundaryLocator.findBounds(t).get,
       Rectangle(10, 20, 16 * 3, 16)
     )
 
@@ -62,7 +62,7 @@ class TextTests extends munit.FunSuite {
 
     val t = Text("abc", 10, 20, 1, fontKey, material)
 
-    val actual   = t.calculatedBounds(boundaryLocator).get // 48 x 16
+    val actual   = boundaryLocator.findBounds(t).get // 48 x 16
     val expected = Rectangle(10, 20, 10 + 20 + 30, 30)     // 60 x 30
 
     assertEquals(actual, expected)
@@ -88,7 +88,7 @@ class TextTests extends munit.FunSuite {
 
     val width = 16 * 3
 
-    val actual   = t.calculatedBounds(boundaryLocator).get
+    val actual   = boundaryLocator.findBounds(t).get
     val expected = Rectangle(10 - (width / 2), 20, width, 16)
 
     assertEquals(actual, expected)
@@ -114,7 +114,7 @@ class TextTests extends munit.FunSuite {
 
     val width = 16 * 3
 
-    val actual   = t.calculatedBounds(boundaryLocator).get
+    val actual   = boundaryLocator.findBounds(t).get
     val expected = Rectangle(10 - width, 20, width, 16)
 
     assertEquals(actual, expected)
@@ -142,7 +142,7 @@ class TextTests extends munit.FunSuite {
 
     val width = 16 * 3
 
-    val actual   = t.calculatedBounds(boundaryLocator).get
+    val actual   = boundaryLocator.findBounds(t).get
     val expected = Rectangle(0, -16, width, 16)
 
     assertEquals(actual, expected)

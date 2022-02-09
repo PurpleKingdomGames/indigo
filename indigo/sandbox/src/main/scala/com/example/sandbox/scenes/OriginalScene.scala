@@ -49,7 +49,7 @@ object OriginalScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
   ): Outcome[SceneUpdateFragment] = {
     val scene: SceneUpdateFragment =
       SandboxView
-        .updateView(model, viewModel, context.inputState)
+        .updateView(model, viewModel, context.inputState, context.boundaryLocator)
         .addLayer(
           Layer(
             // viewModel.single.draw(gameTime, boundaryLocator) //|+|
@@ -115,11 +115,10 @@ object OriginalScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
 }
 
 final case class CustomShape(x: Int, y: Int, width: Int, height: Int, depth: Depth, shader: ShaderData)
-    extends EntityNode:
+    extends EntityNode[CustomShape]:
   val flip: Flip               = Flip.default
-  val bounds: Rectangle        = Rectangle(x, y, width, height)
-  val position: Point          = bounds.position
-  val size: Size               = bounds.size
+  val position: Point          = Point(x, y)
+  val size: Size               = Size(width, height)
   val ref: Point               = Point.zero
   val rotation: Radians        = Radians.zero
   val scale: Vector2           = Vector2.one
@@ -128,9 +127,11 @@ final case class CustomShape(x: Int, y: Int, width: Int, height: Int, depth: Dep
   def withDepth(newDepth: Depth): CustomShape =
     this.copy(depth = newDepth)
 
-  lazy val eventHandlerEnabled: Boolean                             = false
-  def eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent] = _ => Nil
-  def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] = None
+  val eventHandlerEnabled: Boolean                                         = false
+  def eventHandler: GlobalEvent => Option[GlobalEvent]                     = Function.const(None)
+  def withEventHandler(f: GlobalEvent => Option[GlobalEvent]): CustomShape = this
+  def enableEvents: CustomShape                                            = this
+  def disableEvents: CustomShape                                           = this
 
 object Shaders:
 

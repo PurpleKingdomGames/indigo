@@ -18,8 +18,7 @@ sealed trait SceneNode:
   def ref: Point
   def withDepth(newDepth: Depth): SceneNode
   def eventHandlerEnabled: Boolean
-  def eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent]
-  def calculatedBounds(locator: BoundaryLocator): Option[Rectangle]
+  def eventHandler: GlobalEvent => Option[GlobalEvent]
 object SceneNode:
   given CanEqual[Option[SceneNode], Option[SceneNode]] = CanEqual.derived
   given CanEqual[List[SceneNode], List[SceneNode]]     = CanEqual.derived
@@ -27,31 +26,38 @@ object SceneNode:
 /** RenderNodes are built-in node types that have their own size, and where Indigo understands how to build the shader
   * data.
   */
-trait RenderNode extends SceneNode:
+trait RenderNode[T <: SceneNode] extends SceneNode:
   def size: Size
-  override def withDepth(newDepth: Depth): RenderNode
+  override def withDepth(newDepth: Depth): T
+  def withEventHandler(f: GlobalEvent => Option[GlobalEvent]): T
+  def onEvent(f: PartialFunction[GlobalEvent, GlobalEvent]): T = withEventHandler(f.lift)
+  def enableEvents: T
+  def disableEvents: T
 
 object RenderNode:
-  given CanEqual[Option[RenderNode], Option[RenderNode]] = CanEqual.derived
-  given CanEqual[List[RenderNode], List[RenderNode]]     = CanEqual.derived
+  given [T <: SceneNode]: CanEqual[Option[RenderNode[T]], Option[RenderNode[T]]] = CanEqual.derived
+  given [T <: SceneNode]: CanEqual[List[RenderNode[T]], List[RenderNode[T]]]     = CanEqual.derived
 
 /** DependentNodes are built-in node types where Indigo understands how to build the shader data, and the bounds are
   * dependant on the contents of the node.
   */
-trait DependentNode extends SceneNode:
-  override def withDepth(newDepth: Depth): DependentNode
+trait DependentNode[T <: SceneNode] extends SceneNode:
+  override def withDepth(newDepth: Depth): T
 object DependentNode:
-  given CanEqual[Option[DependentNode], Option[DependentNode]] = CanEqual.derived
-  given CanEqual[List[DependentNode], List[DependentNode]]     = CanEqual.derived
+  given [T <: SceneNode]: CanEqual[Option[DependentNode[T]], Option[DependentNode[T]]] = CanEqual.derived
+  given [T <: SceneNode]: CanEqual[List[DependentNode[T]], List[DependentNode[T]]]     = CanEqual.derived
 
 /** EntityNodes can be extended to create custom scene elements.
   *
   * Can be made cloneable by extending `Cloneable`.
   */
-trait EntityNode extends RenderNode:
+trait EntityNode[T <: SceneNode] extends RenderNode[T]:
   def toShaderData: ShaderData
-  override def withDepth(newDepth: Depth): EntityNode
+  override def withDepth(newDepth: Depth): T
+
+  def bounds: Rectangle =
+    BoundaryLocator.findBounds(this, position, size, ref)
 
 object EntityNode:
-  given CanEqual[Option[EntityNode], Option[EntityNode]] = CanEqual.derived
-  given CanEqual[List[EntityNode], List[EntityNode]]     = CanEqual.derived
+  given [T <: SceneNode]: CanEqual[Option[EntityNode[T]], Option[EntityNode[T]]] = CanEqual.derived
+  given [T <: SceneNode]: CanEqual[List[EntityNode[T]], List[EntityNode[T]]]     = CanEqual.derived

@@ -11,7 +11,7 @@ final case class CloneBatch(
     depth: Depth,
     cloneData: Array[CloneBatchData],
     staticBatchKey: Option[BindingKey]
-) extends DependentNode
+) extends DependentNode[CloneBatch]
     derives CanEqual:
 
   lazy val scale: Vector2    = Vector2.one
@@ -44,9 +44,8 @@ final case class CloneBatch(
   def clearStaticBatchKey: CloneBatch =
     withMaybeStaticBatchKey(None)
 
-  lazy val eventHandlerEnabled: Boolean                             = false
-  def eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent] = _ => Nil
-  def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] = None
+  val eventHandlerEnabled: Boolean                     = false
+  def eventHandler: GlobalEvent => Option[GlobalEvent] = Function.const(None)
 
 object CloneBatch:
 

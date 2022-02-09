@@ -60,7 +60,7 @@ object BoxesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVie
       boxStroke
     )
 
-  val shapes: List[Shape] =
+  val shapes: List[Shape[_]] =
     val d = Dice.fromSeed(0)
     (1 to 30).toList.flatMap { _ =>
       List(makeLine(d), makeBox(d))

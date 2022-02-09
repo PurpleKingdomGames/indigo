@@ -23,13 +23,15 @@ final case class Clip[M <: Material](
     sheet: ClipSheet,
     playMode: ClipPlayMode,
     material: M,
+    eventHandlerEnabled: Boolean,
+    eventHandler: GlobalEvent => Option[GlobalEvent],
     position: Point,
     rotation: Radians,
     scale: Vector2,
     depth: Depth,
     ref: Point,
     flip: Flip
-) extends EntityNode
+) extends EntityNode[Clip[M]]
     with Cloneable
     with SpatialModifiers[Clip[M]]
     derives CanEqual:
@@ -72,9 +74,6 @@ final case class Clip[M <: Material](
 
   def withFPS(fps: FPS): Clip[M] =
     this.copy(sheet = sheet.withFPS(fps))
-
-  def bounds: Rectangle =
-    BoundaryLocator.findBounds(this, position, size, ref)
 
   lazy val x: Int = position.x
   lazy val y: Int = position.y
@@ -166,9 +165,12 @@ final case class Clip[M <: Material](
         )
       )
 
-  lazy val eventHandlerEnabled: Boolean                             = false
-  def eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent] = _ => Nil
-  def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] = None
+  def withEventHandler(f: GlobalEvent => Option[GlobalEvent]): Clip[M] =
+    this.copy(eventHandler = f, eventHandlerEnabled = true)
+  def enableEvents: Clip[M] =
+    this.copy(eventHandlerEnabled = true)
+  def disableEvents: Clip[M] =
+    this.copy(eventHandlerEnabled = false)
 
 object Clip:
 
@@ -184,6 +186,8 @@ object Clip:
       sheet = sheet,
       playMode = playMode,
       material = material,
+      eventHandlerEnabled = false,
+      eventHandler = Function.const(None),
       position = Point.zero,
       rotation = Radians.zero,
       scale = Vector2.one,
@@ -203,6 +207,8 @@ object Clip:
       sheet = sheet,
       playMode = ClipPlayMode.default,
       material = material,
+      eventHandlerEnabled = false,
+      eventHandler = Function.const(None),
       position = Point.zero,
       rotation = Radians.zero,
       scale = Vector2.one,
@@ -225,6 +231,8 @@ object Clip:
       sheet = sheet,
       playMode = playMode,
       material = material,
+      eventHandlerEnabled = false,
+      eventHandler = Function.const(None),
       position = Point(x, y),
       rotation = Radians.zero,
       scale = Vector2.one,
@@ -246,6 +254,8 @@ object Clip:
       sheet = sheet,
       playMode = ClipPlayMode.default,
       material = material,
+      eventHandlerEnabled = false,
+      eventHandler = Function.const(None),
       position = Point(x, y),
       rotation = Radians.zero,
       scale = Vector2.one,
@@ -265,6 +275,8 @@ object Clip:
       sheet = sheet,
       playMode = playMode,
       material = material,
+      eventHandlerEnabled = false,
+      eventHandler = Function.const(None),
       position = Point.zero,
       rotation = Radians.zero,
       scale = Vector2.one,
@@ -283,6 +295,8 @@ object Clip:
       sheet = sheet,
       playMode = ClipPlayMode.default,
       material = material,
+      eventHandlerEnabled = false,
+      eventHandler = Function.const(None),
       position = Point.zero,
       rotation = Radians.zero,
       scale = Vector2.one,
@@ -303,6 +317,8 @@ object Clip:
       sheet = sheet,
       playMode = playMode,
       material = material,
+      eventHandlerEnabled = false,
+      eventHandler = Function.const(None),
       position = position,
       rotation = Radians.zero,
       scale = Vector2.one,
@@ -322,6 +338,8 @@ object Clip:
       sheet = sheet,
       playMode = ClipPlayMode.default,
       material = material,
+      eventHandlerEnabled = false,
+      eventHandler = Function.const(None),
       position = position,
       rotation = Radians.zero,
       scale = Vector2.one,

@@ -461,9 +461,9 @@ val BlendFactor: shared.scenegraph.BlendFactor.type = shared.scenegraph.BlendFac
 type SceneNode = shared.scenegraph.SceneNode
 val SceneNode: shared.scenegraph.SceneNode.type = shared.scenegraph.SceneNode
 
-type EntityNode    = shared.scenegraph.EntityNode
-type DependentNode = shared.scenegraph.DependentNode
-type RenderNode    = shared.scenegraph.RenderNode
+type EntityNode[T <: shared.scenegraph.SceneNode]    = shared.scenegraph.EntityNode[T]
+type DependentNode[T <: shared.scenegraph.SceneNode] = shared.scenegraph.DependentNode[T]
+type RenderNode[T <: shared.scenegraph.SceneNode]    = shared.scenegraph.RenderNode[T]
 
 // Audio
 type SceneAudio = shared.scenegraph.SceneAudio
@@ -501,7 +501,7 @@ type AnimationAction = indigo.shared.animation.AnimationAction
 val AnimationAction: indigo.shared.animation.AnimationAction.type = indigo.shared.animation.AnimationAction
 
 // Primitives
-type Shape = shared.scenegraph.Shape
+type Shape[T <: shared.scenegraph.Shape[_]] = shared.scenegraph.Shape[T]
 val Shape: shared.scenegraph.Shape.type = shared.scenegraph.Shape
 
 type Sprite[M <: Material] = shared.scenegraph.Sprite[M]

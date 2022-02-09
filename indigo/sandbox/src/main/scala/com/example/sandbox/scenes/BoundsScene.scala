@@ -119,19 +119,19 @@ object BoundsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
             Shape.Box(graphic.bounds, Fill.None, Stroke(1, RGBA.Green)),
             sprite,
             Shape.Box(
-              sprite.calculatedBounds(context.boundaryLocator).getOrElse(Rectangle.zero),
+              context.findBounds(sprite).getOrElse(Rectangle.zero),
               Fill.None,
               Stroke(1, RGBA.Red)
             ),
             text,
             Shape.Box(
-              text.calculatedBounds(context.boundaryLocator).getOrElse(Rectangle.zero),
+              context.findBounds(text).getOrElse(Rectangle.zero),
               Fill.None,
               Stroke(1, RGBA.Cyan)
             ),
             Shape.Circle(text.position, 3, Fill.None, Stroke(2, RGBA.White)),
             Shape.Circle(
-              text.calculatedBounds(context.boundaryLocator).getOrElse(Rectangle.zero).center,
+              context.findBounds(text).getOrElse(Rectangle.zero).center,
               5,
               Fill.None,
               Stroke(2, RGBA.White)
@@ -140,37 +140,37 @@ object BoundsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
             Shape.Circle(shapeBox.position, 3, Fill.None, Stroke(2, RGBA.White)),
             Shape
               .Circle(
-                shapeBox.calculatedBounds(context.boundaryLocator).getOrElse(Rectangle.zero).center,
+                context.findBounds(shapeBox).getOrElse(Rectangle.zero).center,
                 5,
                 Fill.None,
                 Stroke(2, RGBA.White)
               ),
             Shape.Box(
-              shapeBox.calculatedBounds(context.boundaryLocator).getOrElse(Rectangle.zero),
+              context.findBounds(shapeBox).getOrElse(Rectangle.zero),
               Fill.None,
               Stroke(1, RGBA.Magenta)
             ),
             shapeCircle,
             Shape.Box(
-              shapeCircle.calculatedBounds(context.boundaryLocator).getOrElse(Rectangle.zero),
+              context.findBounds(shapeCircle).getOrElse(Rectangle.zero),
               Fill.None,
               Stroke(1, RGBA.Magenta)
             ),
             shapeLine,
             Shape.Box(
-              shapeLine.calculatedBounds(context.boundaryLocator).getOrElse(Rectangle.zero),
+              context.findBounds(shapeLine).getOrElse(Rectangle.zero),
               Fill.None,
               Stroke(1, RGBA.Magenta)
             ),
             shapePolygon,
             Shape.Box(
-              shapePolygon.calculatedBounds(context.boundaryLocator).getOrElse(Rectangle.zero),
+              context.findBounds(shapePolygon).getOrElse(Rectangle.zero),
               Fill.None,
               Stroke(1, RGBA.Magenta)
             ),
             group,
             Shape.Box(
-              group.calculatedBounds(context.boundaryLocator).getOrElse(Rectangle.zero),
+              context.findBounds(group).getOrElse(Rectangle.zero),
               Fill.None,
               Stroke(1, RGBA.Yellow)
             ),

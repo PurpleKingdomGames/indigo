@@ -19,23 +19,20 @@ final case class Graphic[M <: Material](
     material: M,
     crop: Rectangle,
     eventHandlerEnabled: Boolean,
-    eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent],
+    eventHandler: GlobalEvent => Option[GlobalEvent],
     position: Point,
     rotation: Radians,
     scale: Vector2,
     depth: Depth,
     ref: Point,
     flip: Flip
-) extends RenderNode
+) extends RenderNode[Graphic[M]]
     with Cloneable
     with SpatialModifiers[Graphic[M]]
     derives CanEqual:
 
   def bounds: Rectangle =
     BoundaryLocator.findBounds(this, position, crop.size, ref)
-
-  def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] =
-    locator.findBounds(this)
 
   lazy val size: Size =
     crop.size
@@ -104,8 +101,8 @@ final case class Graphic[M <: Material](
   def toShaderData: ShaderData =
     material.toShaderData
 
-  def onEvent(e: ((Rectangle, GlobalEvent)) => List[GlobalEvent]): Graphic[M] =
-    this.copy(eventHandler = e, eventHandlerEnabled = true)
+  def withEventHandler(f: GlobalEvent => Option[GlobalEvent]): Graphic[M] =
+    this.copy(eventHandler = f, eventHandlerEnabled = true)
   def enableEvents: Graphic[M] =
     this.copy(eventHandlerEnabled = true)
   def disableEvents: Graphic[M] =
@@ -116,7 +113,7 @@ object Graphic:
   def apply[M <: Material](x: Int, y: Int, width: Int, height: Int, depth: Int, material: M): Graphic[M] =
     Graphic(
       eventHandlerEnabled = false,
-      eventHandler = (_: (Rectangle, GlobalEvent)) => Nil,
+      eventHandler = Function.const(None),
       position = Point(x, y),
       rotation = Radians.zero,
       scale = Vector2.one,
@@ -130,7 +127,7 @@ object Graphic:
   def apply[M <: Material](x: Int, y: Int, width: Int, height: Int, material: M): Graphic[M] =
     Graphic(
       eventHandlerEnabled = false,
-      eventHandler = (_: (Rectangle, GlobalEvent)) => Nil,
+      eventHandler = Function.const(None),
       position = Point(x, y),
       rotation = Radians.zero,
       scale = Vector2.one,
@@ -144,7 +141,7 @@ object Graphic:
   def apply[M <: Material](bounds: Rectangle, depth: Int, material: M): Graphic[M] =
     Graphic(
       eventHandlerEnabled = false,
-      eventHandler = (_: (Rectangle, GlobalEvent)) => Nil,
+      eventHandler = Function.const(None),
       position = bounds.position,
       rotation = Radians.zero,
       scale = Vector2.one,
@@ -158,7 +155,7 @@ object Graphic:
   def apply[M <: Material](bounds: Rectangle, material: M): Graphic[M] =
     Graphic(
       eventHandlerEnabled = false,
-      eventHandler = (_: (Rectangle, GlobalEvent)) => Nil,
+      eventHandler = Function.const(None),
       position = bounds.position,
       rotation = Radians.zero,
       scale = Vector2.one,
@@ -172,7 +169,7 @@ object Graphic:
   def apply[M <: Material](width: Int, height: Int, material: M): Graphic[M] =
     Graphic(
       eventHandlerEnabled = false,
-      eventHandler = (_: (Rectangle, GlobalEvent)) => Nil,
+      eventHandler = Function.const(None),
       position = Point.zero,
       rotation = Radians.zero,
       scale = Vector2.one,
@@ -186,7 +183,7 @@ object Graphic:
   def apply[M <: Material](size: Size, material: M): Graphic[M] =
     Graphic(
       eventHandlerEnabled = false,
-      eventHandler = (_: (Rectangle, GlobalEvent)) => Nil,
+      eventHandler = Function.const(None),
       position = Point.zero,
       rotation = Radians.zero,
       scale = Vector2.one,

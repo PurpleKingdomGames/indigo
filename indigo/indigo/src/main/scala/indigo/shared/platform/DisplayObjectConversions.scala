@@ -168,11 +168,9 @@ final class DisplayObjectConversions(
       )
     val l = sceneNodes.map { node =>
       if node.eventHandlerEnabled then
-        node.calculatedBounds(boundaryLocator).foreach { bounds =>
-          inputEvents.foreach { e =>
-            node.eventHandler((bounds, e)).foreach { ee =>
-              sendEvent(ee)
-            }
+        inputEvents.foreach { e =>
+          node.eventHandler(e).foreach { ee =>
+            sendEvent(ee)
           }
         }
 
@@ -214,13 +212,13 @@ final class DisplayObjectConversions(
       case x: Graphic[_] =>
         (graphicToDisplayObject(x, assetMapping), noClones)
 
-      case s: Shape =>
+      case s: Shape[_] =>
         (shapeToDisplayObject(s), noClones)
 
       case t: TextBox =>
         (textBoxToDisplayText(t), noClones)
 
-      case s: EntityNode =>
+      case s: EntityNode[_] =>
         (sceneEntityToDisplayObject(s, assetMapping), noClones)
 
       case c: CloneBatch =>
@@ -378,10 +376,10 @@ final class DisplayObjectConversions(
           scalajs.js.Array((cloneId, clone))
         )
 
-      case _: RenderNode =>
+      case _: RenderNode[_] =>
         (DisplayGroup.empty, noClones)
 
-      case _: DependentNode =>
+      case _: DependentNode[_] =>
         (DisplayGroup.empty, noClones)
     }
 
@@ -394,7 +392,7 @@ final class DisplayObjectConversions(
         lookupTexture(assetMapping, assetName).offset
     }
 
-  def shapeToDisplayObject(leaf: Shape): DisplayObject = {
+  def shapeToDisplayObject(leaf: Shape[_]): DisplayObject = {
 
     val offset = leaf match
       case s: Shape.Box =>
@@ -408,7 +406,7 @@ final class DisplayObjectConversions(
       case _ =>
         Point.zero
 
-    val boundsActual = boundaryLocator.shapeBounds(leaf)
+    val boundsActual = BoundaryLocator.untransformedShapeBounds(leaf)
 
     val shader: ShaderData = Shape.toShaderData(leaf, boundsActual)
     val bounds             = boundsActual.toSquare
@@ -453,7 +451,7 @@ final class DisplayObjectConversions(
 
   private given CanEqual[Option[TextureRefAndOffset], Option[TextureRefAndOffset]] = CanEqual.derived
 
-  def sceneEntityToDisplayObject(leaf: EntityNode, assetMapping: AssetMapping): DisplayObject = {
+  def sceneEntityToDisplayObject(leaf: EntityNode[_], assetMapping: AssetMapping): DisplayObject = {
     val shader: ShaderData = leaf.toShaderData
 
     val channelOffset1 = optionalAssetToOffset(assetMapping, shader.channel1)
@@ -618,7 +616,7 @@ final class DisplayObjectConversions(
         )
       }
 
-    val bounds = boundaryLocator.spriteBounds(leaf).getOrElse(Rectangle.zero)
+    val bounds = boundaryLocator.spriteFrameBounds(leaf).getOrElse(Rectangle.zero)
 
     val shaderId = shaderData.shaderId
 
