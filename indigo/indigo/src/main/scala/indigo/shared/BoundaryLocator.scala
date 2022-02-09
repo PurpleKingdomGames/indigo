@@ -55,8 +55,8 @@ final class BoundaryLocator(
 
   def findBounds(sceneGraphNode: SceneNode): Option[Rectangle] =
     sceneGraphNode match {
-      case s: Shape =>
-        Option(shapeBounds(s)).map(rect => BoundaryLocator.findBounds(s, rect.position, rect.size, s.ref))
+      case s: Shape[_] =>
+        Option(BoundaryLocator.findShapeBounds(s))
 
       case g: Graphic[_] =>
         Option(g.bounds)
@@ -64,11 +64,11 @@ final class BoundaryLocator(
       case t: TextBox =>
         Option(t.bounds)
 
-      case s: EntityNode =>
+      case s: EntityNode[_] =>
         Option(BoundaryLocator.findBounds(s, s.position, s.size, s.ref))
 
       case g: Group =>
-        Option(groupBounds(g)).map(rect => BoundaryLocator.findBounds(g, rect.position, rect.size, g.ref))
+        Option(groupBounds(g))
 
       case _: CloneBatch =>
         None
@@ -80,42 +80,35 @@ final class BoundaryLocator(
         None
 
       case s: Sprite[_] =>
-        spriteBounds(s).map(rect => BoundaryLocator.findBounds(s, rect.position, rect.size, s.ref))
+        spriteBounds(s)
 
       case t: Text[_] =>
-        Option(textBounds(t)).map { rect =>
-
-          val offset: Int =
-            t.alignment match {
-              case TextAlignment.Left   => 0
-              case TextAlignment.Center => rect.size.width / 2
-              case TextAlignment.Right  => rect.size.width
-            }
-
-          BoundaryLocator.findBounds(t, rect.position, rect.size, t.ref + Point(offset, 0))
-        }
+        Option(textBounds(t))
 
       case _ =>
         None
     }
 
-  def groupBounds(group: Group): Rectangle =
-    group.children match {
-      case Nil =>
-        Rectangle.zero
+  private def groupBounds(group: Group): Rectangle =
+    val rect =
+      group.children match {
+        case Nil =>
+          Rectangle.zero
 
-      case x :: xs =>
-        xs.foldLeft(findBounds(x)) { (acc, node) =>
-          (acc, findBounds(node)) match
-            case (Some(a), Some(b)) => Option(Rectangle.expandToInclude(a, b))
-            case (r @ Some(_), _)   => r
-            case (_, r @ Some(_))   => r
-            case (r, _)             => r
-        }.map(_.moveBy(group.position))
-          .getOrElse(Rectangle.zero)
-    }
+        case x :: xs =>
+          xs.foldLeft(findBounds(x)) { (acc, node) =>
+            (acc, findBounds(node)) match
+              case (Some(a), Some(b)) => Option(Rectangle.expandToInclude(a, b))
+              case (r @ Some(_), _)   => r
+              case (_, r @ Some(_))   => r
+              case (r, _)             => r
+          }.map(_.moveBy(group.position))
+            .getOrElse(Rectangle.zero)
+      }
 
-  def spriteBounds(sprite: Sprite[_]): Option[Rectangle] =
+    BoundaryLocator.findBounds(group, rect.position, rect.size, group.ref)
+
+  def spriteFrameBounds(sprite: Sprite[_]): Option[Rectangle] =
     QuickCache(s"""sprite-${sprite.bindingKey.toString}-${sprite.animationKey.toString}""") {
       animationsRegister.fetchAnimationInLastState(sprite.bindingKey, sprite.animationKey) match {
         case Some(animation) =>
@@ -126,6 +119,9 @@ final class BoundaryLocator(
           None
       }
     }
+
+  private def spriteBounds(sprite: Sprite[_]): Option[Rectangle] =
+    spriteFrameBounds(sprite).map(rect => BoundaryLocator.findBounds(sprite, rect.position, rect.size, sprite.ref))
 
   // Text / Fonts
 
@@ -182,9 +178,37 @@ final class BoundaryLocator(
           acc.resize(Size(Math.max(acc.width, next.width), acc.height + next.height))
         }
 
-    unaligned.moveTo(text.position)
+    val rect =
+      unaligned.moveTo(text.position)
 
-  def shapeBounds(shape: Shape): Rectangle =
+    val offset: Int =
+      text.alignment match {
+        case TextAlignment.Left   => 0
+        case TextAlignment.Center => rect.size.width / 2
+        case TextAlignment.Right  => rect.size.width
+      }
+
+    BoundaryLocator.findBounds(text, rect.position, rect.size, text.ref + Point(offset, 0))
+
+}
+
+object BoundaryLocator:
+  def findBounds(entity: SceneNode, position: Point, size: Size, ref: Point): Rectangle =
+    val m =
+      CheapMatrix4.identity
+        .translate(-ref.x.toFloat, -ref.y.toFloat, 0.0f)
+        .rotate(entity.rotation.toFloat)
+        .scale(entity.scale.x.toFloat, entity.scale.y.toFloat, 1.0f)
+        .translate(position.x.toFloat, position.y.toFloat, 0.0f)
+
+    Rectangle.fromPoints(
+      m.transform(Vector3(0, 0, 0)).toPoint,
+      m.transform(Vector3(size.width, 0, 0)).toPoint,
+      m.transform(Vector3(size.width, size.height, 0)).toPoint,
+      m.transform(Vector3(0, size.height, 0)).toPoint
+    )
+
+  def untransformedShapeBounds(shape: Shape[_]): Rectangle =
     shape match
       case s: Shape.Box =>
         Rectangle(
@@ -204,20 +228,6 @@ final class BoundaryLocator(
       case s: Shape.Polygon =>
         Rectangle.fromPointCloud(s.vertices).expand(s.stroke.width / 2)
 
-}
-
-object BoundaryLocator:
-  def findBounds(entity: SceneNode, position: Point, size: Size, ref: Point): Rectangle =
-    val m =
-      CheapMatrix4.identity
-        .translate(-ref.x.toFloat, -ref.y.toFloat, 0.0f)
-        .rotate(entity.rotation.toFloat)
-        .scale(entity.scale.x.toFloat, entity.scale.y.toFloat, 1.0f)
-        .translate(position.x.toFloat, position.y.toFloat, 0.0f)
-
-    Rectangle.fromPoints(
-      m.transform(Vector3(0, 0, 0)).toPoint,
-      m.transform(Vector3(size.width, 0, 0)).toPoint,
-      m.transform(Vector3(size.width, size.height, 0)).toPoint,
-      m.transform(Vector3(0, size.height, 0)).toPoint
-    )
+  def findShapeBounds(shape: Shape[_]): Rectangle =
+    val rect = untransformedShapeBounds(shape)
+    findBounds(shape, rect.position, rect.size, shape.ref)

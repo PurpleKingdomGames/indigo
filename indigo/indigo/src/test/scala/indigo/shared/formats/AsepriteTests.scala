@@ -190,7 +190,7 @@ object AsepriteSampleData {
       scale = Vector2.one,
       animationKey = animationKey,
       ref = Point.zero,
-      (_: (Rectangle, GlobalEvent)) => Nil,
+      Function.const(None),
       Material.Bitmap(imageAssetRef)
     )
 

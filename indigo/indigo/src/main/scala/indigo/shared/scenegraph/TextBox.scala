@@ -29,22 +29,19 @@ final case class TextBox(
     style: TextStyle,
     size: Size,
     eventHandlerEnabled: Boolean,
-    eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent],
+    eventHandler: GlobalEvent => Option[GlobalEvent],
     position: Point,
     rotation: Radians,
     scale: Vector2,
     depth: Depth,
     ref: Point,
     flip: Flip
-) extends RenderNode
+) extends RenderNode[TextBox]
     with SpatialModifiers[TextBox]
     derives CanEqual:
 
   def bounds: Rectangle =
     BoundaryLocator.findBounds(this, position, size, ref)
-
-  def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] =
-    locator.findBounds(this)
 
   def withText(newText: String): TextBox =
     this.copy(text = newText)
@@ -143,8 +140,8 @@ final case class TextBox(
   def withRef(x: Int, y: Int): TextBox =
     withRef(Point(x, y))
 
-  def onEvent(e: ((Rectangle, GlobalEvent)) => List[GlobalEvent]): TextBox =
-    this.copy(eventHandler = e, eventHandlerEnabled = true)
+  def withEventHandler(f: GlobalEvent => Option[GlobalEvent]): TextBox =
+    this.copy(eventHandler = f, eventHandlerEnabled = true)
   def enableEvents: TextBox =
     this.copy(eventHandlerEnabled = true)
   def disableEvents: TextBox =
@@ -157,7 +154,7 @@ object TextBox:
       TextStyle.default,
       Size(300),
       false,
-      (_: (Rectangle, GlobalEvent)) => Nil,
+      Function.const(None),
       Point.zero,
       Radians.zero,
       Vector2.one,
@@ -172,7 +169,7 @@ object TextBox:
       TextStyle.default,
       Size(maxWidth, maxHeight),
       false,
-      (_: (Rectangle, GlobalEvent)) => Nil,
+      Function.const(None),
       Point.zero,
       Radians.zero,
       Vector2.one,

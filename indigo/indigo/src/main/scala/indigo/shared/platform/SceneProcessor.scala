@@ -66,7 +66,7 @@ final class SceneProcessor(
 
     def cloneBlankToDisplayObject(blank: CloneBlank): Option[DisplayObject] =
       blank.cloneable() match
-        case s: Shape =>
+        case s: Shape[_] =>
           Some(displayObjectConverterClone.shapeToDisplayObject(s))
 
         case g: Graphic[_] =>
@@ -89,7 +89,7 @@ final class SceneProcessor(
               )
             }
 
-        case e: EntityNode =>
+        case e: EntityNode[_] =>
           Some(displayObjectConverterClone.sceneEntityToDisplayObject(e, assetMapping))
 
         case _ =>

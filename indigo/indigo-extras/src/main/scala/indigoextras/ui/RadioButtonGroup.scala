@@ -371,7 +371,7 @@ final case class RadioButtonGroup(
 
   private def applyPositionAndDepth(sceneNode: SceneNode, pt: Point, d: Depth): SceneNode =
     sceneNode match {
-      case n: Shape      => n.withPosition(pt).withDepth(d)
+      case n: Shape[_]   => n.withPosition(pt).withDepth(d)
       case n: Graphic[_] => n.withPosition(pt).withDepth(d)
       case n: Sprite[_]  => n.withPosition(pt).withDepth(d)
       case n: Text[_]    => n.withPosition(pt).withDepth(d)

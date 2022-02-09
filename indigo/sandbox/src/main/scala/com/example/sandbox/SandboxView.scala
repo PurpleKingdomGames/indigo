@@ -6,7 +6,12 @@ object SandboxView {
 
   val dudeCloneId: CloneId = CloneId("Dude")
 
-  def updateView(model: SandboxGameModel, viewModel: SandboxViewModel, inputState: InputState): SceneUpdateFragment = {
+  def updateView(
+      model: SandboxGameModel,
+      viewModel: SandboxViewModel,
+      inputState: InputState,
+      bl: BoundaryLocator
+  ): SceneUpdateFragment = {
     inputState.mouse.mouseClickAt match {
       case Some(position) => println("Mouse clicked at: " + position.toString())
       case None           => ()
@@ -15,7 +20,7 @@ object SandboxView {
     SceneUpdateFragment.empty
       .addLayer(
         Layer(
-          gameLayer(model, viewModel) ++ uiLayer(inputState)
+          gameLayer(model, viewModel) ++ uiLayer(inputState, bl)
         )
           .withDepth(Depth(300))
         // .withBlend(Blend.Alpha)
@@ -91,17 +96,19 @@ object SandboxView {
         .moveTo(inputState.mouse.position.x, inputState.mouse.position.y)
     )
 
-  def uiLayer(inputState: InputState): List[SceneNode] =
+  def uiLayer(inputState: InputState, bl: BoundaryLocator): List[SceneNode] =
+    val right = Text("AB!\n!C", 200, 2, 5, Fonts.fontKey, SandboxAssets.fontMaterial.withAlpha(0.5)).alignRight
+
     List(
       Text("AB!\n!C", 2, 2, 5, Fonts.fontKey, SandboxAssets.fontMaterial.withAlpha(0.5)).alignLeft,
       Text("AB!\n!C", 100, 2, 5, Fonts.fontKey, SandboxAssets.fontMaterial.withAlpha(0.5)).alignCenter,
-      Text("AB!\n!C", 200, 2, 5, Fonts.fontKey, SandboxAssets.fontMaterial.withAlpha(0.5)).alignRight.onEvent {
-        case (bounds, _: MouseEvent.Click) =>
-          if (inputState.mouse.wasMouseClickedWithin(bounds))
-            println("Hit me!")
-          Nil
+      right.withEventHandler {
+        case MouseEvent.Click(pt) if inputState.mouse.wasMouseClickedWithin(bl.findBounds(right).getOrElse(Rectangle.zero)) =>
+          println("Clicked me!")
+          None
 
-        case _ => Nil
+        case _ =>
+          None
       }
     )
 

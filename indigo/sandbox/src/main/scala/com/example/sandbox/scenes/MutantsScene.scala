@@ -96,7 +96,7 @@ object MutantsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxV
       ).addCloneBlanks(cloneBlank)
     )
 
-final case class Archetype() extends EntityNode with Cloneable:
+final case class Archetype() extends EntityNode[Archetype] with Cloneable:
   val position: Point                       = Point.zero
   val rotation: Radians                     = Radians.zero
   val scale: Vector2                        = Vector2.one
@@ -111,9 +111,11 @@ final case class Archetype() extends EntityNode with Cloneable:
       .withChannel0(SandboxAssets.dots)
       .withUniformBlocks(Archetype.makeUniformBlock(position, scale, 1.0d))
 
-  lazy val eventHandlerEnabled: Boolean                             = false
-  def eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent] = _ => Nil
-  def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] = None
+  val eventHandlerEnabled: Boolean                                       = false
+  def eventHandler: GlobalEvent => Option[GlobalEvent]                   = Function.const(None)
+  def withEventHandler(f: GlobalEvent => Option[GlobalEvent]): Archetype = this
+  def enableEvents: Archetype                                            = this
+  def disableEvents: Archetype                                           = this
 
 object Archetype:
 

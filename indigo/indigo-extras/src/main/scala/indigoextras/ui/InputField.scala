@@ -34,7 +34,7 @@ final case class InputField(
 ) derives CanEqual:
 
   def bounds(boundaryLocator: BoundaryLocator): Option[Rectangle] =
-    assets.text.withText(text).moveTo(position).calculatedBounds(boundaryLocator)
+    boundaryLocator.findBounds(assets.text.withText(text).moveTo(position))
 
   def withText(newText: String): InputField =
     this.copy(

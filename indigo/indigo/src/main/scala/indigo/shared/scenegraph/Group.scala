@@ -9,14 +9,14 @@ import indigo.shared.events.GlobalEvent
 final case class Group(
     children: List[SceneNode],
     eventHandlerEnabled: Boolean,
-    eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent],
+    eventHandler: GlobalEvent => Option[GlobalEvent],
     position: Point,
     rotation: Radians,
     scale: Vector2,
     depth: Depth,
     ref: Point,
     flip: Flip
-) extends DependentNode
+) extends DependentNode[Group]
     with SpatialModifiers[Group]
     derives CanEqual:
 
@@ -70,17 +70,14 @@ final case class Group(
   def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): Group =
     transformTo(position + positionDiff, rotation + rotationDiff, scale * scaleDiff)
 
-  def calculatedBounds(locator: BoundaryLocator): Option[Rectangle] =
-    locator.findBounds(this)
-
   def addChild(child: SceneNode): Group =
     this.copy(children = children ++ List(child))
 
   def addChildren(additionalChildren: List[SceneNode]): Group =
     this.copy(children = children ++ additionalChildren)
 
-  def onEvent(e: ((Rectangle, GlobalEvent)) => List[GlobalEvent]): Group =
-    this.copy(eventHandler = e, eventHandlerEnabled = true)
+  def withEventHandler(f: GlobalEvent => Option[GlobalEvent]): Group =
+    this.copy(eventHandler = f, eventHandlerEnabled = true)
   def enableEvents: Group =
     this.copy(eventHandlerEnabled = true)
   def disableEvents: Group =
@@ -92,7 +89,7 @@ object Group:
     Group(
       children.toList,
       false,
-      (_: (Rectangle, GlobalEvent)) => Nil,
+      Function.const(None),
       Point.zero,
       Radians.zero,
       Vector2.one,
@@ -105,7 +102,7 @@ object Group:
     Group(
       children,
       false,
-      (_: (Rectangle, GlobalEvent)) => Nil,
+      Function.const(None),
       Point.zero,
       Radians.zero,
       Vector2.one,
