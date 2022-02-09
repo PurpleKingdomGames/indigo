@@ -44,8 +44,8 @@ final case class CloneBatch(
   def clearStaticBatchKey: CloneBatch =
     withMaybeStaticBatchKey(None)
 
-  val eventHandlerEnabled: Boolean                     = false
-  def eventHandler: GlobalEvent => Option[GlobalEvent] = Function.const(None)
+  val eventHandlerEnabled: Boolean                                     = false
+  def eventHandler: ((CloneBatch, GlobalEvent)) => Option[GlobalEvent] = Function.const(None)
 
 object CloneBatch:
 

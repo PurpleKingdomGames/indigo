@@ -111,11 +111,8 @@ final case class Archetype() extends EntityNode[Archetype] with Cloneable:
       .withChannel0(SandboxAssets.dots)
       .withUniformBlocks(Archetype.makeUniformBlock(position, scale, 1.0d))
 
-  val eventHandlerEnabled: Boolean                                       = false
-  def eventHandler: GlobalEvent => Option[GlobalEvent]                   = Function.const(None)
-  def withEventHandler(f: GlobalEvent => Option[GlobalEvent]): Archetype = this
-  def enableEvents: Archetype                                            = this
-  def disableEvents: Archetype                                           = this
+  val eventHandlerEnabled: Boolean                                    = false
+  def eventHandler: ((Archetype, GlobalEvent)) => Option[GlobalEvent] = Function.const(None)
 
 object Archetype:
 

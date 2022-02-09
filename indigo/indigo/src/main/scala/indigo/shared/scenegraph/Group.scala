@@ -9,7 +9,7 @@ import indigo.shared.events.GlobalEvent
 final case class Group(
     children: List[SceneNode],
     eventHandlerEnabled: Boolean,
-    eventHandler: GlobalEvent => Option[GlobalEvent],
+    eventHandler: ((Group, GlobalEvent)) => Option[GlobalEvent],
     position: Point,
     rotation: Radians,
     scale: Vector2,
@@ -76,8 +76,10 @@ final case class Group(
   def addChildren(additionalChildren: List[SceneNode]): Group =
     this.copy(children = children ++ additionalChildren)
 
-  def withEventHandler(f: GlobalEvent => Option[GlobalEvent]): Group =
+  def withEventHandler(f: ((Group, GlobalEvent)) => Option[GlobalEvent]): Group =
     this.copy(eventHandler = f, eventHandlerEnabled = true)
+  def onEvent(f: PartialFunction[((Group, GlobalEvent)), GlobalEvent]): Group =
+    withEventHandler(f.lift)
   def enableEvents: Group =
     this.copy(eventHandlerEnabled = true)
   def disableEvents: Group =

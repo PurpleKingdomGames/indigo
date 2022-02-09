@@ -15,7 +15,7 @@ final case class Text[M <: Material](
     fontKey: FontKey,
     material: M,
     eventHandlerEnabled: Boolean,
-    eventHandler: GlobalEvent => Option[GlobalEvent],
+    eventHandler: ((Text[_], GlobalEvent)) => Option[GlobalEvent],
     position: Point,
     rotation: Radians,
     scale: Vector2,
@@ -98,9 +98,9 @@ final case class Text[M <: Material](
   def withFontKey(newFontKey: FontKey): Text[M] =
     this.copy(fontKey = newFontKey)
 
-  def withEventHandler(f: GlobalEvent => Option[GlobalEvent]): Text[M] =
+  def withEventHandler(f: ((Text[_], GlobalEvent)) => Option[GlobalEvent]): Text[M] =
     this.copy(eventHandler = f, eventHandlerEnabled = true)
-  def onEvent(f: PartialFunction[GlobalEvent, GlobalEvent]): Text[M] =
+  def onEvent(f: PartialFunction[((Text[_], GlobalEvent)), GlobalEvent]): Text[M] =
     withEventHandler(f.lift)
   def enableEvents: Text[M] =
     this.copy(eventHandlerEnabled = true)

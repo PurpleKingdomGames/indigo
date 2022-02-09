@@ -166,13 +166,26 @@ final class DisplayObjectConversions(
         inputEvents,
         sendEvent
       )
+
     val l = sceneNodes.map { node =>
-      if node.eventHandlerEnabled then
-        inputEvents.foreach { e =>
-          node.eventHandler(e).foreach { ee =>
-            sendEvent(ee)
-          }
-        }
+      node match
+        case n: RenderNode[_] =>
+          val nn = n.asInstanceOf[n.Out]
+          if n.eventHandlerEnabled then
+            inputEvents.foreach { e =>
+              n.eventHandler((nn, e)).foreach { ee =>
+                sendEvent(ee)
+              }
+            }
+
+        case n: DependentNode[_] =>
+          val nn = n.asInstanceOf[n.Out]
+          if n.eventHandlerEnabled then
+            inputEvents.foreach { e =>
+              n.eventHandler((nn, e)).foreach { ee =>
+                sendEvent(ee)
+              }
+            }
 
       f(node)
     }

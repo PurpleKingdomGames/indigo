@@ -29,7 +29,7 @@ final case class TextBox(
     style: TextStyle,
     size: Size,
     eventHandlerEnabled: Boolean,
-    eventHandler: GlobalEvent => Option[GlobalEvent],
+    eventHandler: ((TextBox, GlobalEvent)) => Option[GlobalEvent],
     position: Point,
     rotation: Radians,
     scale: Vector2,
@@ -140,8 +140,10 @@ final case class TextBox(
   def withRef(x: Int, y: Int): TextBox =
     withRef(Point(x, y))
 
-  def withEventHandler(f: GlobalEvent => Option[GlobalEvent]): TextBox =
+  def withEventHandler(f: ((TextBox, GlobalEvent)) => Option[GlobalEvent]): TextBox =
     this.copy(eventHandler = f, eventHandlerEnabled = true)
+  def onEvent(f: PartialFunction[(TextBox, GlobalEvent), GlobalEvent]): TextBox =
+    withEventHandler(f.lift)
   def enableEvents: TextBox =
     this.copy(eventHandlerEnabled = true)
   def disableEvents: TextBox =

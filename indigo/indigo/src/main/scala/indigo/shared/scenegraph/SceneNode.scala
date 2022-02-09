@@ -17,8 +17,6 @@ sealed trait SceneNode:
   def flip: Flip
   def ref: Point
   def withDepth(newDepth: Depth): SceneNode
-  def eventHandlerEnabled: Boolean
-  def eventHandler: GlobalEvent => Option[GlobalEvent]
 object SceneNode:
   given CanEqual[Option[SceneNode], Option[SceneNode]] = CanEqual.derived
   given CanEqual[List[SceneNode], List[SceneNode]]     = CanEqual.derived
@@ -27,13 +25,11 @@ object SceneNode:
   * data.
   */
 trait RenderNode[T <: SceneNode] extends SceneNode:
+  type Out = T
   def size: Size
   override def withDepth(newDepth: Depth): T
-  def withEventHandler(f: GlobalEvent => Option[GlobalEvent]): T
-  def onEvent(f: PartialFunction[GlobalEvent, GlobalEvent]): T = withEventHandler(f.lift)
-  def enableEvents: T
-  def disableEvents: T
-
+  def eventHandlerEnabled: Boolean
+  def eventHandler: ((T, GlobalEvent)) => Option[GlobalEvent]
 object RenderNode:
   given [T <: SceneNode]: CanEqual[Option[RenderNode[T]], Option[RenderNode[T]]] = CanEqual.derived
   given [T <: SceneNode]: CanEqual[List[RenderNode[T]], List[RenderNode[T]]]     = CanEqual.derived
@@ -42,7 +38,10 @@ object RenderNode:
   * dependant on the contents of the node.
   */
 trait DependentNode[T <: SceneNode] extends SceneNode:
+  type Out = T
   override def withDepth(newDepth: Depth): T
+  def eventHandlerEnabled: Boolean
+  def eventHandler: ((T, GlobalEvent)) => Option[GlobalEvent]
 object DependentNode:
   given [T <: SceneNode]: CanEqual[Option[DependentNode[T]], Option[DependentNode[T]]] = CanEqual.derived
   given [T <: SceneNode]: CanEqual[List[DependentNode[T]], List[DependentNode[T]]]     = CanEqual.derived

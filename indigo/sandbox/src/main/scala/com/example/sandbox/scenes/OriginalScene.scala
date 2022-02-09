@@ -49,7 +49,7 @@ object OriginalScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
   ): Outcome[SceneUpdateFragment] = {
     val scene: SceneUpdateFragment =
       SandboxView
-        .updateView(model, viewModel, context.inputState, context.boundaryLocator)
+        .updateView(model, viewModel, context.inputState.mouse, context.boundaryLocator)
         .addLayer(
           Layer(
             // viewModel.single.draw(gameTime, boundaryLocator) //|+|
@@ -127,11 +127,8 @@ final case class CustomShape(x: Int, y: Int, width: Int, height: Int, depth: Dep
   def withDepth(newDepth: Depth): CustomShape =
     this.copy(depth = newDepth)
 
-  val eventHandlerEnabled: Boolean                                         = false
-  def eventHandler: GlobalEvent => Option[GlobalEvent]                     = Function.const(None)
-  def withEventHandler(f: GlobalEvent => Option[GlobalEvent]): CustomShape = this
-  def enableEvents: CustomShape                                            = this
-  def disableEvents: CustomShape                                           = this
+  val eventHandlerEnabled: Boolean                                      = false
+  def eventHandler: ((CustomShape, GlobalEvent)) => Option[GlobalEvent] = Function.const(None)
 
 object Shaders:
 
