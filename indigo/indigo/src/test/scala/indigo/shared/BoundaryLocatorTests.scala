@@ -114,13 +114,10 @@ class BoundaryLocatorTests extends munit.FunSuite {
       flip: Flip,
       ref: Point
   ) extends EntityNode[TestEntity]:
-    def toShaderData: ShaderData                                            = ShaderData(ShaderId("test shader"))
-    def withDepth(newDepth: Depth): TestEntity                              = this
-    val eventHandlerEnabled: Boolean                                        = false
-    def eventHandler: GlobalEvent => Option[GlobalEvent]                    = Function.const(None)
-    def withEventHandler(f: GlobalEvent => Option[GlobalEvent]): TestEntity = this
-    def enableEvents: TestEntity                                            = this
-    def disableEvents: TestEntity                                           = this
+    def toShaderData: ShaderData                                         = ShaderData(ShaderId("test shader"))
+    def withDepth(newDepth: Depth): TestEntity                           = this
+    val eventHandlerEnabled: Boolean                                     = false
+    def eventHandler: ((TestEntity, GlobalEvent)) => Option[GlobalEvent] = Function.const(None)
 
   test("EntityNode bounds - normal") {
     val entity = TestEntity(

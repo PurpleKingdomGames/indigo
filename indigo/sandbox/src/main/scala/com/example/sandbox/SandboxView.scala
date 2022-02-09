@@ -2,17 +2,17 @@ package com.example.sandbox
 
 import indigo._
 
-object SandboxView {
+object SandboxView:
 
   val dudeCloneId: CloneId = CloneId("Dude")
 
   def updateView(
       model: SandboxGameModel,
       viewModel: SandboxViewModel,
-      inputState: InputState,
+      mouse: Mouse,
       bl: BoundaryLocator
   ): SceneUpdateFragment = {
-    inputState.mouse.mouseClickAt match {
+    mouse.mouseClickAt match {
       case Some(position) => println("Mouse clicked at: " + position.toString())
       case None           => ()
     }
@@ -20,20 +20,20 @@ object SandboxView {
     SceneUpdateFragment.empty
       .addLayer(
         Layer(
-          gameLayer(model, viewModel) ++ uiLayer(inputState, bl)
+          gameLayer(model, viewModel) ++ uiLayer(mouse, bl)
         )
           .withDepth(Depth(300))
         // .withBlend(Blend.Alpha)
       )
       .addLayer(
         if (viewModel.useLightingLayer)
-          Layer(lightingLayer(inputState))
+          Layer(lightingLayer(mouse))
             .withDepth(Depth(301))
             .withBlending(Blending.Lighting(RGBA.White.withAlpha(0.25)))
         else
           Layer.empty
       )
-      // .addLayer(Layer(uiLayer(inputState)))
+      // .addLayer(Layer(uiLayer(mouse)))
       .addCloneBlanks(CloneBlank(dudeCloneId, model.dude.dude.sprite))
     // .withSaturationLevel(0.5)
     // .withTint(RGBA.Cyan.withAmount(0.25))
@@ -83,7 +83,7 @@ object SandboxView {
       CloneBatch(dudeCloneId, CloneBatchData(16, 64, Radians.zero, -1.0, 1.0))
     )
 
-  def lightingLayer(inputState: InputState): List[SceneNode] =
+  def lightingLayer(mouse: Mouse): List[SceneNode] =
     List(
       Graphic(114, 64 - 20, 320, 240, 1, SandboxAssets.lightMaterial.withTint(RGBA.Red))
         .withRef(Point(160, 120)),
@@ -93,23 +93,20 @@ object SandboxView {
         .withRef(Point(160, 120)),
       Graphic(0, 0, 320, 240, 1, SandboxAssets.lightMaterial.withTint(RGBA(1, 1, 0.0, 1)).withAlpha(1))
         .withRef(Point(160, 120))
-        .moveTo(inputState.mouse.position.x, inputState.mouse.position.y)
+        .moveTo(mouse.position.x, mouse.position.y)
     )
 
-  def uiLayer(inputState: InputState, bl: BoundaryLocator): List[SceneNode] =
-    val right = Text("AB!\n!C", 200, 2, 5, Fonts.fontKey, SandboxAssets.fontMaterial.withAlpha(0.5)).alignRight
-
+  def uiLayer(mouse: Mouse, bl: BoundaryLocator): List[SceneNode] =
     List(
       Text("AB!\n!C", 2, 2, 5, Fonts.fontKey, SandboxAssets.fontMaterial.withAlpha(0.5)).alignLeft,
       Text("AB!\n!C", 100, 2, 5, Fonts.fontKey, SandboxAssets.fontMaterial.withAlpha(0.5)).alignCenter,
-      right.withEventHandler {
-        case MouseEvent.Click(pt) if inputState.mouse.wasMouseClickedWithin(bl.findBounds(right).getOrElse(Rectangle.zero)) =>
-          println("Clicked me!")
-          None
+      Text("AB!\n!C", 200, 2, 5, Fonts.fontKey, SandboxAssets.fontMaterial.withAlpha(0.5)).alignRight
+        .withEventHandler {
+          case (txt, MouseEvent.Click(pt)) if bl.bounds(txt).contains(pt) =>
+            println("Clicked me!")
+            None
 
-        case _ =>
-          None
-      }
+          case _ =>
+            None
+        }
     )
-
-}

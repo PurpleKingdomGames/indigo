@@ -54,8 +54,8 @@ final case class CloneTiles(
   def clearStaticBatchKey: CloneTiles =
     withMaybeStaticBatchKey(None)
 
-  val eventHandlerEnabled: Boolean                     = false
-  def eventHandler: GlobalEvent => Option[GlobalEvent] = Function.const(None)
+  val eventHandlerEnabled: Boolean                                     = false
+  def eventHandler: ((CloneTiles, GlobalEvent)) => Option[GlobalEvent] = Function.const(None)
 
 object CloneTiles:
 

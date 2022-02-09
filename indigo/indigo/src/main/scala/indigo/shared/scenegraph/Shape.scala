@@ -64,7 +64,7 @@ object Shape:
       stroke: Stroke,
       lighting: LightingModel,
       eventHandlerEnabled: Boolean,
-      eventHandler: GlobalEvent => Option[GlobalEvent],
+      eventHandler: ((Box, GlobalEvent)) => Option[GlobalEvent],
       rotation: Radians,
       scale: Vector2,
       depth: Depth,
@@ -151,8 +151,10 @@ object Shape:
     def withShaderId(newShaderId: ShaderId): Box =
       this.copy(shaderId = Option(newShaderId))
 
-    def withEventHandler(f: GlobalEvent => Option[GlobalEvent]): Box =
+    def withEventHandler(f: ((Box, GlobalEvent)) => Option[GlobalEvent]): Box =
       this.copy(eventHandler = f, eventHandlerEnabled = true)
+    def onEvent(f: PartialFunction[(Box, GlobalEvent), GlobalEvent]): Box =
+      withEventHandler(f.lift)
     def enableEvents: Box =
       this.copy(eventHandlerEnabled = true)
     def disableEvents: Box =
@@ -203,7 +205,7 @@ object Shape:
       stroke: Stroke,
       lighting: LightingModel,
       eventHandlerEnabled: Boolean,
-      eventHandler: GlobalEvent => Option[GlobalEvent],
+      eventHandler: ((Circle, GlobalEvent)) => Option[GlobalEvent],
       rotation: Radians,
       scale: Vector2,
       depth: Depth,
@@ -291,8 +293,10 @@ object Shape:
     def withShaderId(newShaderId: ShaderId): Circle =
       this.copy(shaderId = Option(newShaderId))
 
-    def withEventHandler(f: GlobalEvent => Option[GlobalEvent]): Circle =
+    def withEventHandler(f: ((Circle, GlobalEvent)) => Option[GlobalEvent]): Circle =
       this.copy(eventHandler = f, eventHandlerEnabled = true)
+    def onEvent(f: PartialFunction[(Circle, GlobalEvent), GlobalEvent]): Circle =
+      withEventHandler(f.lift)
     def enableEvents: Circle =
       this.copy(eventHandlerEnabled = true)
     def disableEvents: Circle =
@@ -345,7 +349,7 @@ object Shape:
       stroke: Stroke,
       lighting: LightingModel,
       eventHandlerEnabled: Boolean,
-      eventHandler: GlobalEvent => Option[GlobalEvent],
+      eventHandler: ((Line, GlobalEvent)) => Option[GlobalEvent],
       rotation: Radians,
       scale: Vector2,
       depth: Depth,
@@ -448,8 +452,10 @@ object Shape:
     def withShaderId(newShaderId: ShaderId): Line =
       this.copy(shaderId = Option(newShaderId))
 
-    def withEventHandler(f: GlobalEvent => Option[GlobalEvent]): Line =
+    def withEventHandler(f: ((Line, GlobalEvent)) => Option[GlobalEvent]): Line =
       this.copy(eventHandler = f, eventHandlerEnabled = true)
+    def onEvent(f: PartialFunction[(Line, GlobalEvent), GlobalEvent]): Line =
+      withEventHandler(f.lift)
     def enableEvents: Line =
       this.copy(eventHandlerEnabled = true)
     def disableEvents: Line =
@@ -483,7 +489,7 @@ object Shape:
       stroke: Stroke,
       lighting: LightingModel,
       eventHandlerEnabled: Boolean,
-      eventHandler: GlobalEvent => Option[GlobalEvent],
+      eventHandler: ((Polygon, GlobalEvent)) => Option[GlobalEvent],
       rotation: Radians,
       scale: Vector2,
       depth: Depth,
@@ -571,8 +577,10 @@ object Shape:
     def withShaderId(newShaderId: ShaderId): Polygon =
       this.copy(shaderId = Option(newShaderId))
 
-    def withEventHandler(f: GlobalEvent => Option[GlobalEvent]): Polygon =
+    def withEventHandler(f: ((Polygon, GlobalEvent)) => Option[GlobalEvent]): Polygon =
       this.copy(eventHandler = f, eventHandlerEnabled = true)
+    def onEvent(f: PartialFunction[(Polygon, GlobalEvent), GlobalEvent]): Polygon =
+      withEventHandler(f.lift)
     def enableEvents: Polygon =
       this.copy(eventHandlerEnabled = true)
     def disableEvents: Polygon =

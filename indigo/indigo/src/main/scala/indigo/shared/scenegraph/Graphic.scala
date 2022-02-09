@@ -12,14 +12,14 @@ import indigo.shared.events.GlobalEvent
 import indigo.shared.materials.Material
 import indigo.shared.materials.ShaderData
 
-/** Graphics are used to draw images on the screen, in a cheap efficient but expressive way. Graphics party trick is
+/** Graphics are used to draw images on the screen, in a cheap efficient but expressive way. Graphic's party trick is
   * it's ability to crop images.
   */
 final case class Graphic[M <: Material](
     material: M,
     crop: Rectangle,
     eventHandlerEnabled: Boolean,
-    eventHandler: GlobalEvent => Option[GlobalEvent],
+    eventHandler: ((Graphic[_], GlobalEvent)) => Option[GlobalEvent],
     position: Point,
     rotation: Radians,
     scale: Vector2,
@@ -101,8 +101,10 @@ final case class Graphic[M <: Material](
   def toShaderData: ShaderData =
     material.toShaderData
 
-  def withEventHandler(f: GlobalEvent => Option[GlobalEvent]): Graphic[M] =
+  def withEventHandler(f: ((Graphic[_], GlobalEvent)) => Option[GlobalEvent]): Graphic[M] =
     this.copy(eventHandler = f, eventHandlerEnabled = true)
+  def onEvent(f: PartialFunction[(Graphic[_], GlobalEvent), GlobalEvent]): Graphic[M] =
+    withEventHandler(f.lift)
   def enableEvents: Graphic[M] =
     this.copy(eventHandlerEnabled = true)
   def disableEvents: Graphic[M] =

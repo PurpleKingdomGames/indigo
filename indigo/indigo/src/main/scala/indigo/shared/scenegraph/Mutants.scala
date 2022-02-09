@@ -30,8 +30,8 @@ final case class Mutants(
   def addBlocks(additionalBlocks: Array[List[UniformBlock]]): Mutants =
     this.copy(uniformBlocks = uniformBlocks ++ additionalBlocks)
 
-  val eventHandlerEnabled: Boolean                     = false
-  def eventHandler: GlobalEvent => Option[GlobalEvent] = Function.const(None)
+  val eventHandlerEnabled: Boolean                                  = false
+  def eventHandler: ((Mutants, GlobalEvent)) => Option[GlobalEvent] = Function.const(None)
 
 object Mutants:
 
