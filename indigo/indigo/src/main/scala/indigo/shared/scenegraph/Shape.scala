@@ -639,46 +639,11 @@ object Shape:
 
   }
 
-  def gradientUniforms(fill: Fill): List[(Uniform, vec4)] =
+  def fillType(fill: Fill): Float =
     fill match {
-      case Fill.Color(color) =>
-        val c = vec4(color.r, color.g, color.b, color.a)
-        List(
-          Uniform("GRADIENT_FROM_TO")    -> vec4(0.0d),
-          Uniform("GRADIENT_FROM_COLOR") -> c,
-          Uniform("GRADIENT_TO_COLOR")   -> c
-        )
-
-      case Fill.LinearGradient(fromPoint, fromColor, toPoint, toColor) =>
-        List(
-          Uniform("GRADIENT_FROM_TO") -> vec4(
-            fromPoint.x.toDouble,
-            fromPoint.y.toDouble,
-            toPoint.x.toDouble,
-            toPoint.y.toDouble
-          ),
-          Uniform("GRADIENT_FROM_COLOR") -> vec4(fromColor.r, fromColor.g, fromColor.b, fromColor.a),
-          Uniform("GRADIENT_TO_COLOR")   -> vec4(toColor.r, toColor.g, toColor.b, toColor.a)
-        )
-
-      case Fill.RadialGradient(fromPoint, fromColor, toPoint, toColor) =>
-        List(
-          Uniform("GRADIENT_FROM_TO") -> vec4(
-            fromPoint.x.toDouble,
-            fromPoint.y.toDouble,
-            toPoint.x.toDouble,
-            toPoint.y.toDouble
-          ),
-          Uniform("GRADIENT_FROM_COLOR") -> vec4(fromColor.r, fromColor.g, fromColor.b, fromColor.a),
-          Uniform("GRADIENT_TO_COLOR")   -> vec4(toColor.r, toColor.g, toColor.b, toColor.a)
-        )
-    }
-
-  def fillType(fill: Fill): float =
-    fill match {
-      case _: Fill.Color          => float(0.0)
-      case _: Fill.LinearGradient => float(1.0)
-      case _: Fill.RadialGradient => float(2.0)
+      case _: Fill.Color          => 0.0f
+      case _: Fill.LinearGradient => 1.0f
+      case _: Fill.RadialGradient => 2.0f
     }
 
   def toShaderData(shape: Shape[_], bounds: Rectangle): ShaderData =
@@ -693,12 +658,21 @@ object Shape:
         val shapeUniformBlock =
           UniformBlock(
             "IndigoShapeData",
+            // ASPECT_RATIO (vec2), STROKE_WIDTH (float), FILL_TYPE (float), STROKE_COLOR (vec4)
             List(
-              Uniform("ASPECT_RATIO") -> vec2(aspect.x, aspect.y),
-              Uniform("STROKE_WIDTH") -> float(s.stroke.width.toFloat),
-              Uniform("FILL_TYPE")    -> fillType(s.fill),
-              Uniform("STROKE_COLOR") -> vec4(s.stroke.color.r, s.stroke.color.g, s.stroke.color.b, s.stroke.color.a)
-            ) ++ gradientUniforms(s.fill)
+              Uniform("Shape_DATA") -> rawJSArray(
+                scalajs.js.Array[Float](
+                  aspect.x.toFloat,
+                  aspect.y.toFloat,
+                  s.stroke.width.toFloat,
+                  fillType(s.fill),
+                  s.stroke.color.r.toFloat,
+                  s.stroke.color.g.toFloat,
+                  s.stroke.color.b.toFloat,
+                  s.stroke.color.a.toFloat
+                )
+              )
+            ) ++ s.fill.toUniformData("SHAPE")
           )
 
         s.lighting match {
@@ -716,11 +690,21 @@ object Shape:
         val shapeUniformBlock =
           UniformBlock(
             "IndigoShapeData",
+            // STROKE_WIDTH (float), FILL_TYPE (float), STROKE_COLOR (vec4)
             List(
-              Uniform("STROKE_WIDTH") -> float(s.stroke.width.toFloat),
-              Uniform("FILL_TYPE")    -> fillType(s.fill),
-              Uniform("STROKE_COLOR") -> vec4(s.stroke.color.r, s.stroke.color.g, s.stroke.color.b, s.stroke.color.a)
-            ) ++ gradientUniforms(s.fill)
+              Uniform("Shape_DATA") -> rawJSArray(
+                scalajs.js.Array[Float](
+                  s.stroke.width.toFloat,
+                  fillType(s.fill),
+                  0.0f,
+                  0.0f,
+                  s.stroke.color.r.toFloat,
+                  s.stroke.color.g.toFloat,
+                  s.stroke.color.b.toFloat,
+                  s.stroke.color.a.toFloat
+                )
+              )
+            ) ++ s.fill.toUniformData("SHAPE")
           )
 
         s.lighting match {
@@ -742,11 +726,24 @@ object Shape:
         val shapeUniformBlock =
           UniformBlock(
             "IndigoShapeData",
+            // STROKE_WIDTH (float), STROKE_COLOR (vec4), START (vec2), END (vec2)
             List(
-              Uniform("STROKE_WIDTH") -> float(s.stroke.width.toFloat),
-              Uniform("STROKE_COLOR") -> vec4(s.stroke.color.r, s.stroke.color.g, s.stroke.color.b, s.stroke.color.a),
-              Uniform("START")        -> vec2(ss.x.toFloat, ss.y.toFloat),
-              Uniform("END")          -> vec2(ee.x.toFloat, ee.y.toFloat)
+              Uniform("Shape_DATA") -> rawJSArray(
+                scalajs.js.Array[Float](
+                  s.stroke.width.toFloat,
+                  0.0f,
+                  0.0f,
+                  0.0f,
+                  s.stroke.color.r.toFloat,
+                  s.stroke.color.g.toFloat,
+                  s.stroke.color.b.toFloat,
+                  s.stroke.color.a.toFloat,
+                  ss.x.toFloat,
+                  ss.y.toFloat,
+                  ee.x.toFloat,
+                  ee.y.toFloat
+                )
+              )
             )
           )
 
@@ -773,12 +770,21 @@ object Shape:
         val shapeUniformBlock =
           UniformBlock(
             "IndigoShapeData",
+            // STROKE_WIDTH (float), FILL_TYPE (float), COUNT (float), STROKE_COLOR (vec4)
             List(
-              Uniform("STROKE_WIDTH") -> float(s.stroke.width.toFloat),
-              Uniform("FILL_TYPE")    -> fillType(s.fill),
-              Uniform("COUNT")        -> float(verts.length.toFloat),
-              Uniform("STROKE_COLOR") -> vec4(s.stroke.color.r, s.stroke.color.g, s.stroke.color.b, s.stroke.color.a)
-            ) ++ gradientUniforms(s.fill) ++ List(Uniform("VERTICES") -> array[vec2](16, verts))
+              Uniform("Shape_DATA") -> rawJSArray(
+                scalajs.js.Array[Float](
+                  s.stroke.width.toFloat,
+                  fillType(s.fill),
+                  verts.length.toFloat,
+                  0.0f,
+                  s.stroke.color.r.toFloat,
+                  s.stroke.color.g.toFloat,
+                  s.stroke.color.b.toFloat,
+                  s.stroke.color.a.toFloat
+                )
+              )
+            ) ++ s.fill.toUniformData("SHAPE") ++ List(Uniform("VERTICES") -> array[vec2](16, verts))
           )
 
         s.lighting match {

@@ -10,8 +10,7 @@ import indigo.shared.materials.ShaderData
 import indigo.shared.shader.EntityShader
 import indigo.shared.shader.ShaderId
 import indigo.shared.shader.ShaderPrimitive
-import indigo.shared.shader.ShaderPrimitive.vec3
-import indigo.shared.shader.ShaderPrimitive.vec4
+import indigo.shared.shader.ShaderPrimitive.rawJSArray
 import indigo.shared.shader.Uniform
 import indigo.shared.shader.UniformBlock
 import indigoextras.shaders.ExtrasShaderLibrary
@@ -24,7 +23,8 @@ final case class LegacyEffects(
     saturation: Double,
     border: Border,
     glow: Glow
-) extends Material derives CanEqual:
+) extends Material
+    derives CanEqual:
 
   def withAlpha(newAlpha: Double): LegacyEffects =
     this.copy(alpha = newAlpha)
@@ -47,42 +47,7 @@ final case class LegacyEffects(
     this.copy(glow = newGlow)
 
   def toShaderData: ShaderData =
-    val gradientUniforms: List[(Uniform, ShaderPrimitive)] =
-      overlay match {
-        case Fill.Color(color) =>
-          val c = vec4(color.r, color.g, color.b, color.a)
-          List(
-            Uniform("GRADIENT_FROM_TO")    -> vec4(0.0d),
-            Uniform("GRADIENT_FROM_COLOR") -> c,
-            Uniform("GRADIENT_TO_COLOR")   -> c
-          )
-
-        case Fill.LinearGradient(fromPoint, fromColor, toPoint, toColor) =>
-          List(
-            Uniform("GRADIENT_FROM_TO") -> vec4(
-              fromPoint.x.toDouble,
-              fromPoint.y.toDouble,
-              toPoint.x.toDouble,
-              toPoint.y.toDouble
-            ),
-            Uniform("GRADIENT_FROM_COLOR") -> vec4(fromColor.r, fromColor.g, fromColor.b, fromColor.a),
-            Uniform("GRADIENT_TO_COLOR")   -> vec4(toColor.r, toColor.g, toColor.b, toColor.a)
-          )
-
-        case Fill.RadialGradient(fromPoint, fromColor, toPoint, toColor) =>
-          List(
-            Uniform("GRADIENT_FROM_TO") -> vec4(
-              fromPoint.x.toDouble,
-              fromPoint.y.toDouble,
-              toPoint.x.toDouble,
-              toPoint.y.toDouble
-            ),
-            Uniform("GRADIENT_FROM_COLOR") -> vec4(fromColor.r, fromColor.g, fromColor.b, fromColor.a),
-            Uniform("GRADIENT_TO_COLOR")   -> vec4(toColor.r, toColor.g, toColor.b, toColor.a)
-          )
-      }
-
-    val overlayType: Double =
+    val overlayType: Float =
       overlay match
         case _: Fill.Color          => 0.0
         case _: Fill.LinearGradient => 1.0
@@ -94,17 +59,37 @@ final case class LegacyEffects(
         UniformBlock(
           "IndigoLegacyEffectsData",
           List(
-            Uniform("ALPHA_SATURATION_OVERLAYTYPE") -> vec3(alpha, saturation, overlayType),
-            Uniform("TINT")                         -> vec4(tint.r, tint.g, tint.b, tint.a)
-          ) ++ gradientUniforms ++
+            // ALPHA_SATURATION_OVERLAYTYPE (vec3), TINT (vec4)
+            Uniform("LegacyEffects_DATA") -> rawJSArray(
+              scalajs.js.Array(
+                alpha.toFloat,
+                saturation.toFloat,
+                overlayType,
+                0.0f,
+                tint.r.toFloat,
+                tint.g.toFloat,
+                tint.b.toFloat,
+                tint.a.toFloat
+              )
+            )
+          ) ++ overlay.toUniformData("LegacyEffects") ++
+            // BORDER_COLOR (vec4), GLOW_COLOR (vec4), EFFECT_AMOUNTS (vec4)
             List(
-              Uniform("BORDER_COLOR") -> vec4(border.color.r, border.color.g, border.color.b, border.color.a),
-              Uniform("GLOW_COLOR")   -> vec4(glow.color.r, glow.color.g, glow.color.b, glow.color.a),
-              Uniform("EFFECT_AMOUNTS") -> vec4(
-                border.outerThickness.toInt.toDouble,
-                border.innerThickness.toInt.toDouble,
-                glow.outerGlowAmount,
-                glow.innerGlowAmount
+              Uniform("LegacyEffects_EFFECTS") -> rawJSArray(
+                scalajs.js.Array(
+                  border.color.r.toFloat,
+                  border.color.g.toFloat,
+                  border.color.b.toFloat,
+                  border.color.a.toFloat,
+                  glow.color.r.toFloat,
+                  glow.color.g.toFloat,
+                  glow.color.b.toFloat,
+                  glow.color.a.toFloat,
+                  border.outerThickness.toInt.toFloat,
+                  border.innerThickness.toInt.toFloat,
+                  glow.outerGlowAmount.toFloat,
+                  glow.innerGlowAmount.toFloat
+                )
               )
             )
         )
