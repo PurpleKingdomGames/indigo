@@ -1,21 +1,19 @@
 package indigo.shared
 
-import scala.collection.mutable
-
-final class QuickCache[A](private val cache: mutable.HashMap[CacheKey, A]) {
+final class QuickCache[A](private val cache: scalajs.js.Dictionary[A]):
 
   def fetch(key: CacheKey): Option[A] =
-    cache.get(key)
+    cache.get(key.toString)
 
   def add(key: CacheKey, value: => A): A = {
-    cache.update(key, value)
+    cache.update(key.toString, value)
     value
   }
 
   def fetchOrAdd(key: CacheKey, disabled: Boolean, value: => A): A =
     if (disabled) value
     else
-      try cache(key)
+      try cache(key.toString)
       catch {
         case _: Throwable =>
           add(key, value)
@@ -30,33 +28,31 @@ final class QuickCache[A](private val cache: mutable.HashMap[CacheKey, A]) {
   }
 
   def purge(key: CacheKey): QuickCache[A] = {
-    cache.remove(key)
+    cache.remove(key.toString)
     this
   }
 
   def keys: List[CacheKey] =
-    cache.keys.toList
+    cache.keys.map(CacheKey(_)).toList
 
   def all: List[(CacheKey, A)] =
-    cache.toList
+    cache.toList.map(p => (CacheKey(p._1), p._2))
 
   def entryExistsFor(key: CacheKey): Boolean =
-    cache.keys.exists(_ == key)
+    cache.keys.exists(_ == key.toString)
 
   def unsafeFetch(key: CacheKey): A =
-    cache(key)
+    cache(key.toString)
 
   def size: Int =
     cache.size
 
   def toMap[K](keyConvertor: CacheKey => K): Map[K, A] =
-    cache.toMap.map { (pair: (CacheKey, A)) =>
-      (keyConvertor(pair._1), pair._2)
+    cache.toMap.map { (pair: (String, A)) =>
+      (keyConvertor(CacheKey(pair._1)), pair._2)
     }
 
-}
-
-object QuickCache {
+object QuickCache:
 
   def apply[A](key: String)(value: => A)(implicit cache: QuickCache[A]): A =
     cache.fetchOrAdd(CacheKey(key), false, value)
@@ -65,20 +61,20 @@ object QuickCache {
     cache.fetchOrAdd(CacheKey(key), disabled, value)
 
   def empty[A]: QuickCache[A] =
-    new QuickCache[A](mutable.HashMap.empty[CacheKey, A])
-
-}
+    new QuickCache[A](scalajs.js.Dictionary.empty[A])
 
 opaque type CacheKey = String
 object CacheKey:
   inline def apply(value: String): CacheKey = value
 
+  extension (c: CacheKey) inline def toString: String = c
+
   given CanEqual[CacheKey, CacheKey] = CanEqual.derived
 
-trait ToCacheKey[A] {
+trait ToCacheKey[A]:
   def toKey(a: A): CacheKey
-}
-object ToCacheKey {
+
+object ToCacheKey:
   def apply[A](f: A => CacheKey): ToCacheKey[A] =
     new ToCacheKey[A] {
       def toKey(a: A): CacheKey = f(a)
@@ -89,5 +85,3 @@ object ToCacheKey {
 
   implicit val i: ToCacheKey[Int] =
     ToCacheKey(p => CacheKey(p.toString))
-
-}
