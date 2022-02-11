@@ -42,6 +42,9 @@ final class SubSystemFrameContext(
   def findBounds(sceneGraphNode: SceneNode): Option[Rectangle] =
     boundaryLocator.findBounds(sceneGraphNode)
 
+  def bounds(sceneGraphNode: SceneNode): Rectangle =
+    boundaryLocator.bounds(sceneGraphNode)
+
 }
 object SubSystemFrameContext {
 
