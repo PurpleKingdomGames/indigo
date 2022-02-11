@@ -51,11 +51,8 @@ object TextExample extends IndigoSandbox[Unit, Model] {
           Material.ImageEffects(fontName).withTint(model.tint)
         ).alignRight
           .onEvent {
-            case (bounds, MouseEvent.Click(_)) if context.inputState.mouse.wasMouseClickedWithin(bounds) =>
-              List(ChangeColour)
-
-            case _ =>
-              Nil
+            case (txt, MouseEvent.Click(pt)) if context.bounds(txt).contains(pt) =>
+              ChangeColour
           }
       )
     )
