@@ -1,17 +1,15 @@
 package indigo.shared
 
-import scala.collection.mutable.ArrayBuffer
-
 /** A very, very simple logger that logs to the Browsers console with a few standard headers and the log message.
   */
-object IndigoLogger {
+object IndigoLogger:
 
   private val INFO: String  = "INFO"
   private val ERROR: String = "ERROR"
   private val DEBUG: String = "DEBUG"
 
-  private val errorLogs: ArrayBuffer[String] = new ArrayBuffer[String]()
-  private val debugLogs: ArrayBuffer[String] = new ArrayBuffer[String]()
+  private val errorLogs: scalajs.js.Array[String] = new scalajs.js.Array[String]()
+  private val debugLogs: scalajs.js.Array[String] = new scalajs.js.Array[String]()
 
   private def formatMessage(level: String, message: String): String =
     s"""[$level] [Indigo] $message"""
@@ -23,18 +21,16 @@ object IndigoLogger {
   private val errorString: String => Unit = message => println(formatMessage(ERROR, message))
 
   private val errorOnceString: String => Unit = message =>
-    if (!errorLogs.contains(message)) {
+    if !errorLogs.contains(message) then
       errorLogs += message
       println(formatMessage(ERROR, message))
-    }
 
   private val debugString: String => Unit = message => println(formatMessage(DEBUG, message))
 
   private val debugOnceString: String => Unit = message =>
-    if (!debugLogs.contains(message)) {
+    if !debugLogs.contains(message) then
       debugLogs += message
       println(formatMessage(DEBUG, message))
-    }
 
   def consoleLog(messages: String*): Unit =
     consoleLogString(messages.toList.mkString(", "))
@@ -53,5 +49,3 @@ object IndigoLogger {
 
   def debugOnce(messages: String*): Unit =
     debugOnceString(messages.toList.mkString(", "))
-
-}
