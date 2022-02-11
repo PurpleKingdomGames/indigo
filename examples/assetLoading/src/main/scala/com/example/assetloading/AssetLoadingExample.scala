@@ -148,7 +148,7 @@ object Assets {
 
 }
 
-final case class MyColoredEntity(position: Point) extends EntityNode:
+final case class MyColoredEntity(position: Point) extends EntityNode[MyColoredEntity]:
   def size: Size        = Size(32, 32)
   def flip: Flip        = Flip.default
   def ref: Point        = Point.zero
@@ -161,6 +161,10 @@ final case class MyColoredEntity(position: Point) extends EntityNode:
 
   def toShaderData: ShaderData =
     ShaderData(MyColoredEntity.shader.id)
+
+  def eventHandler: ((MyColoredEntity, GlobalEvent)) => Option[indigo.shared.events.GlobalEvent] =
+    Function.const(None)
+  def eventHandlerEnabled: Boolean = false
 
 object MyColoredEntity:
   val shader: EntityShader =
