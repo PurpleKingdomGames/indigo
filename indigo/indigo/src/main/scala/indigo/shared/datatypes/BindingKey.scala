@@ -12,5 +12,7 @@ object BindingKey:
   inline def generate(dice: Dice): BindingKey =
     dice.rollAlphaNumeric
 
+  extension (b: BindingKey) inline def toString: String = b
+
   given CanEqual[BindingKey, BindingKey]                 = CanEqual.derived
   given CanEqual[Option[BindingKey], Option[BindingKey]] = CanEqual.derived
