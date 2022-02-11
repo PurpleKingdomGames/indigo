@@ -24,6 +24,7 @@ sealed trait ShaderPrimitive derives CanEqual:
   def toArray: Array[Float]
   def toJSArray: scala.scalajs.js.Array[Float]
   def isArray: Boolean
+  def hash: String
 
 sealed trait IsShaderValue[T]:
   def giveLength: Int
@@ -53,6 +54,7 @@ object ShaderPrimitive:
     def toArray: Array[Float]                    = Array(value)
     def toJSArray: scala.scalajs.js.Array[Float] = scala.scalajs.js.Array(value)
     val isArray: Boolean                         = false
+    val hash: String                             = value.toString
   object float:
     val length: Int = 1
 
@@ -85,6 +87,7 @@ object ShaderPrimitive:
     def toArray: Array[Float]                    = Array(x, y)
     def toJSArray: scala.scalajs.js.Array[Float] = scala.scalajs.js.Array(x, y)
     val isArray: Boolean                         = false
+    val hash: String                             = x.toString + y.toString
   object vec2:
     val length: Int = 2
 
@@ -109,6 +112,7 @@ object ShaderPrimitive:
     def toArray: Array[Float]                    = Array(x, y, z, 0.0f)
     def toJSArray: scala.scalajs.js.Array[Float] = scala.scalajs.js.Array(x, y, z, 0.0f)
     val isArray: Boolean                         = false
+    val hash: String                             = x.toString + y.toString + z.toString
   object vec3:
     val length: Int = 4
 
@@ -132,6 +136,7 @@ object ShaderPrimitive:
     def toArray: Array[Float]                    = Array(x, y, z, w)
     def toJSArray: scala.scalajs.js.Array[Float] = scala.scalajs.js.Array(x, y, z, w)
     val isArray: Boolean                         = false
+    val hash: String                             = x.toString + y.toString + z.toString + w.toString
   object vec4:
     val length: Int = 4
 
@@ -155,6 +160,7 @@ object ShaderPrimitive:
   final case class mat4(mat: Array[Float]) extends ShaderPrimitive:
     val length: Int      = mat4.length
     val isArray: Boolean = false
+    val hash: String     = mat.mkString
 
     @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
     def toArray: Array[Float] =
@@ -186,6 +192,7 @@ object ShaderPrimitive:
   final case class array[T](size: Int, values: ArraySeq[T])(using ev: IsShaderValue[T]) extends ShaderPrimitive:
     val length: Int      = values.length * 4
     val isArray: Boolean = true
+    val hash: String     = size.toString + values.mkString
 
     def toArray: Array[Float] =
       val data =
@@ -238,6 +245,7 @@ object ShaderPrimitive:
     val isArray: Boolean                         = true
     def toArray: Array[Float]                    = arr
     def toJSArray: scala.scalajs.js.Array[Float] = toArray.toJSArray
+    val hash: String                             = arr.mkString
   object rawArray:
     def apply(values: Float*): rawArray =
       rawArray(values.toArray[Float])
@@ -255,6 +263,7 @@ object ShaderPrimitive:
     val isArray: Boolean                         = true
     def toArray: Array[Float]                    = arr.toArray
     def toJSArray: scala.scalajs.js.Array[Float] = arr
+    val hash: String                             = arr.mkString
   object rawJSArray:
     def apply(values: Float*): rawJSArray =
       rawJSArray(values.toJSArray)

@@ -310,7 +310,7 @@ object SceneProcessor {
       DisplayObjectUniformData(
         uniformHash = ub.uniformHash,
         blockName = ub.blockName,
-        data = DisplayObjectConversions.packUBO(ub.uniforms)
+        data = DisplayObjectConversions.packUBO(ub.uniforms, ub.uniformHash, false)
       )
     }
 }
