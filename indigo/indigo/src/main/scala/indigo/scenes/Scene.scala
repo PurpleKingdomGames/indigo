@@ -110,6 +110,7 @@ object Scene {
 
 opaque type SceneName = String
 object SceneName:
-  inline def apply(sceneName: String): SceneName       = sceneName
-  given CanEqual[SceneName, SceneName]                 = CanEqual.derived
-  given CanEqual[Option[SceneName], Option[SceneName]] = CanEqual.derived
+  inline def apply(sceneName: String): SceneName        = sceneName
+  extension (sn: SceneName) inline def toString: String = sn
+  given CanEqual[SceneName, SceneName]                  = CanEqual.derived
+  given CanEqual[Option[SceneName], Option[SceneName]]  = CanEqual.derived
