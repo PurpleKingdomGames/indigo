@@ -11,57 +11,59 @@ import indigo.shared.networking.WebSocketReadyState.CLOSED
 import indigo.shared.networking.WebSocketReadyState.CLOSING
 import org.scalajs.dom
 
-import scala.collection.mutable
+object WebSockets:
 
-object WebSockets {
-
-  private val connections: mutable.HashMap[WebSocketId, dom.WebSocket] = mutable.HashMap()
-
-  private val configs: mutable.HashMap[WebSocketId, WebSocketConfig] = mutable.HashMap()
+  private val connections: scalajs.js.Dictionary[dom.WebSocket] = scalajs.js.Dictionary.empty
+  private val configs: scalajs.js.Dictionary[WebSocketConfig]   = scalajs.js.Dictionary.empty
 
   def processSendEvent(event: WebSocketEvent with NetworkSendEvent, globalEventStream: GlobalEventStream): Unit =
-    try event match {
-      case WebSocketEvent.ConnectOnly(config) =>
-        reEstablishConnection(insertUpdateConfig(config), None, globalEventStream)
-        ()
+    try
+      event match {
+        case WebSocketEvent.ConnectOnly(config) =>
+          reEstablishConnection(insertUpdateConfig(config), None, globalEventStream)
+          ()
 
-      case WebSocketEvent.Open(message, config) =>
-        reEstablishConnection(insertUpdateConfig(config), Option(message), globalEventStream)
-        ()
+        case WebSocketEvent.Open(message, config) =>
+          reEstablishConnection(insertUpdateConfig(config), Option(message), globalEventStream)
+          ()
 
-      case WebSocketEvent.Send(message, config) =>
-        reEstablishConnection(insertUpdateConfig(config), None, globalEventStream).foreach { socket =>
-          socket.send(message)
-        }
-    } catch {
+        case WebSocketEvent.Send(message, config) =>
+          reEstablishConnection(insertUpdateConfig(config), None, globalEventStream).foreach { socket =>
+            socket.send(message)
+          }
+      }
+    catch {
       case e: Throwable =>
         globalEventStream.pushGlobalEvent(WebSocketEvent.Error(event.giveId, e.getMessage))
     }
 
   private def insertUpdateConfig(config: WebSocketConfig): WebSocketConfig = {
-    val maybeConfig = configs.get(config.id)
+    val maybeConfig = configs.get(config.id.id)
 
     maybeConfig
       .flatMap { c =>
-        if (c == config)
-          Option(c)
+        if (c == config) Option(c)
         else {
-          configs.remove(config.id)
-          configs.put(config.id, config)
+          configs.remove(config.id.id)
+          configs.put(config.id.id, config)
         }
       }
       .getOrElse(config)
   }
 
-  private def reEstablishConnection(config: WebSocketConfig, onOpenSendMessage: Option[String], globalEventStream: GlobalEventStream): Option[dom.WebSocket] =
+  private def reEstablishConnection(
+      config: WebSocketConfig,
+      onOpenSendMessage: Option[String],
+      globalEventStream: GlobalEventStream
+  ): Option[dom.WebSocket] =
     connections
-      .get(config.id)
+      .get(config.id.id)
       .flatMap { conn =>
         WebSocketReadyState.fromInt(conn.readyState) match {
           case CLOSING | CLOSED =>
             newConnection(config, onOpenSendMessage, globalEventStream).flatMap { newConn =>
-              connections.remove(config.id)
-              connections.put(config.id, newConn)
+              connections.remove(config.id.id)
+              connections.put(config.id.id, newConn)
             }
 
           case _ =>
@@ -70,20 +72,26 @@ object WebSockets {
       }
       .orElse {
         newConnection(config, onOpenSendMessage, globalEventStream).flatMap { newConn =>
-          connections.remove(config.id)
-          connections.put(config.id, newConn)
+          connections.remove(config.id.id)
+          connections.put(config.id.id, newConn)
         }
       }
 
-  private def newConnection(config: WebSocketConfig, onOpenSendMessage: Option[String], globalEventStream: GlobalEventStream): Option[dom.WebSocket] =
+  private def newConnection(
+      config: WebSocketConfig,
+      onOpenSendMessage: Option[String],
+      globalEventStream: GlobalEventStream
+  ): Option[dom.WebSocket] =
     try {
       val socket = new dom.WebSocket(config.address)
 
-      socket.onmessage = (e: dom.MessageEvent) => globalEventStream.pushGlobalEvent(WebSocketEvent.Receive(config.id, e.data.toString))
+      socket.onmessage = (e: dom.MessageEvent) =>
+        globalEventStream.pushGlobalEvent(WebSocketEvent.Receive(config.id, e.data.toString))
 
       socket.onopen = (_: dom.Event) => onOpenSendMessage.foreach(msg => socket.send(msg))
 
-      socket.onerror = (_: dom.Event) => globalEventStream.pushGlobalEvent(WebSocketEvent.Error(config.id, "Web socket connection error"))
+      socket.onerror = (_: dom.Event) =>
+        globalEventStream.pushGlobalEvent(WebSocketEvent.Error(config.id, "Web socket connection error"))
 
       socket.onclose = (_: dom.CloseEvent) => globalEventStream.pushGlobalEvent(WebSocketEvent.Close(config.id))
 
@@ -93,5 +101,3 @@ object WebSockets {
         IndigoLogger.info("Error trying to set up a websocket: " + e.getMessage)
         None
     }
-
-}
