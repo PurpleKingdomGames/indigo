@@ -7,11 +7,10 @@ import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.subsystems.SubSystemFrameContext
 
 import java.util.UUID
-import scala.collection.mutable
 
 final class SubSystemsRegister() {
 
-  val stateMap: mutable.HashMap[String, Object] = new mutable.HashMap[String, Object]()
+  val stateMap: scalajs.js.Dictionary[Object] = scalajs.js.Dictionary.empty
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var registeredSubSystems: List[RegisteredSubSystem] = Nil
