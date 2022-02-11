@@ -37,7 +37,6 @@ import org.scalajs.dom.raw.WebGLBuffer
 import org.scalajs.dom.raw.WebGLFramebuffer
 import org.scalajs.dom.raw.WebGLProgram
 
-import scala.collection.mutable
 import scala.scalajs.js.Dynamic
 import scala.scalajs.js.typedarray.Float32Array
 
@@ -80,8 +79,8 @@ final class RendererWebGL2(
 
   private val vao = gl2.createVertexArray()
 
-  private val customShaders: mutable.HashMap[ShaderId, WebGLProgram] =
-    new mutable.HashMap()
+  private val customShaders: scalajs.js.Dictionary[WebGLProgram] =
+    scalajs.js.Dictionary.empty
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var resizeRun: Boolean = false
@@ -147,9 +146,9 @@ final class RendererWebGL2(
   def init(shaders: Set[RawShaderCode]): Unit = {
 
     shaders.foreach { shader =>
-      if (!customShaders.contains(shader.id))
+      if (!customShaders.contains(shader.id.toString))
         customShaders.put(
-          shader.id,
+          shader.id.toString,
           WebGLHelper.shaderProgramSetup(gl, shader.id.toString, shader)
         )
     }

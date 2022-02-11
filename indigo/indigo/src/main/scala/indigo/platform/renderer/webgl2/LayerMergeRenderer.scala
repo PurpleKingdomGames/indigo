@@ -12,15 +12,14 @@ import org.scalajs.dom.raw.WebGLBuffer
 import org.scalajs.dom.raw.WebGLProgram
 import org.scalajs.dom.raw.WebGLTexture
 
-import scala.collection.mutable.HashMap
 import scala.scalajs.js.JSConverters._
 
 class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => WebGLBuffer) {
 
   private val displayObjectUBOBuffer: WebGLBuffer =
     gl2.createBuffer()
-  private val customDataUBOBuffers: HashMap[String, WebGLBuffer] =
-    HashMap.empty[String, WebGLBuffer]
+  private val customDataUBOBuffers: scalajs.js.Dictionary[WebGLBuffer] =
+    scalajs.js.Dictionary.empty[WebGLBuffer]
 
   // They're all blocks of 16, it's the only block length allowed in WebGL.
   private val displayObjectUBODataSize: Int = 16
@@ -64,7 +63,7 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
       height: Int,
       clearColor: RGBA,
       isCanvasMerge: Boolean,
-      customShaders: HashMap[ShaderId, WebGLProgram],
+      customShaders: scalajs.js.Dictionary[WebGLProgram],
       shaderId: ShaderId,
       shaderUniformData: scalajs.js.Array[DisplayObjectUniformData]
   ): Unit = {
@@ -78,7 +77,7 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
 
     // Switch and reference shader
     val activeShader: WebGLProgram =
-      customShaders.get(shaderId) match {
+      customShaders.get(shaderId.toString) match {
         case Some(s) =>
           setupShader(s, projection, width, height)
           s
