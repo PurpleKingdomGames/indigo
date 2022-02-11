@@ -1,6 +1,7 @@
 package indigo.platform
 
 import indigo.platform.assets.AssetCollection
+import indigo.platform.assets.AtlasId
 import indigo.platform.assets.DynamicText
 import indigo.platform.assets.ImageRef
 import indigo.platform.assets.TextureAtlas
@@ -82,7 +83,7 @@ class Platform(
   def extractLoadedTextures(textureAtlas: TextureAtlas): Outcome[List[LoadedTextureAsset]] =
     Outcome(
       textureAtlas.atlases.toList
-        .map(a => a._2.imageData.map(data => new LoadedTextureAsset(a._1, data)))
+        .map(a => a._2.imageData.map(data => new LoadedTextureAsset(AtlasId(a._1), data)))
         .collect { case Some(s) => s }
     )
 
@@ -94,7 +95,7 @@ class Platform(
             p._1 -> new TextureRefAndOffset(
               atlasName = p._2.id,
               atlasSize = textureAtlas.atlases
-                .get(p._2.id)
+                .get(p._2.id.toString)
                 .map(_.size.value)
                 .map(i => Vector2(i.toDouble))
                 .getOrElse(Vector2.one),

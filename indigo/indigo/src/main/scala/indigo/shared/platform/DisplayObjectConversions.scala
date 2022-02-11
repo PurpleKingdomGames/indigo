@@ -98,7 +98,7 @@ final class DisplayObjectConversions(
   private def lookupTexture(assetMapping: AssetMapping, name: AssetName): TextureRefAndOffset =
     QuickCache("tex-" + name.toString) {
       assetMapping.mappings
-        .find(p => p._1 == name)
+        .find(p => p._1 == name.toString)
         .map(_._2)
         .getOrElse {
           throw new Exception("Failed to find texture ref + offset for: " + name)

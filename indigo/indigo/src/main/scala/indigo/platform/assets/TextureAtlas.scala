@@ -10,7 +10,8 @@ import org.scalajs.dom.html
 import org.scalajs.dom.raw
 
 import scala.annotation.tailrec
-import scala.collection.immutable.HashMap
+
+import scalajs.js.JSConverters._
 
 object TextureAtlas {
 
@@ -52,30 +53,31 @@ object TextureAtlas {
     textureAtlas
   }
 
-  val identity: TextureAtlas = TextureAtlas(HashMap.empty[AtlasId, Atlas], HashMap.empty[AssetName, AtlasIndex])
+  val identity: TextureAtlas = TextureAtlas(scalajs.js.Dictionary.empty[Atlas], scalajs.js.Dictionary.empty[AtlasIndex])
 
 }
 
 // Output
-final case class TextureAtlas(atlases: HashMap[AtlasId, Atlas], legend: HashMap[AssetName, AtlasIndex]) derives CanEqual {
+final case class TextureAtlas(atlases: scalajs.js.Dictionary[Atlas], legend: scalajs.js.Dictionary[AtlasIndex])
+    derives CanEqual {
   def +(other: TextureAtlas): TextureAtlas =
     TextureAtlas(
-      this.atlases ++ other.atlases,
-      this.legend ++ other.legend
+      (atlases ++ other.atlases).toJSDictionary,
+      (legend ++ other.legend).toJSDictionary
     )
 
   def lookUpByName(name: AssetName): Option[AtlasLookupResult] =
-    legend.get(name).flatMap { i =>
-      atlases.get(i.id).map { a =>
+    legend.get(name.toString).flatMap { i =>
+      atlases.get(i.id.toString).map { a =>
         new AtlasLookupResult(name, i.id, a, i.offset)
       }
     }
 
   def report: String = {
-    val atlasRecordToString: HashMap[AssetName, AtlasIndex] => ((AtlasId, Atlas)) => String = leg =>
+    val atlasRecordToString: scalajs.js.Dictionary[AtlasIndex] => ((String, Atlas)) => String = leg =>
       at => {
-        val relevant = leg.filter { (k: (AssetName, AtlasIndex)) =>
-          k._2.id == at._1
+        val relevant = leg.filter { (k: (String, AtlasIndex)) =>
+          k._2.id.toString == at._1
         }
 
         s"Atlas [${at._1}] [${at._2.size.value.toString()}] contains images: ${relevant.toList.map(_._1).mkString(", ")}"
@@ -93,9 +95,10 @@ final case class TextureAtlas(atlases: HashMap[AtlasId, Atlas], legend: HashMap[
 
 opaque type AtlasId = String
 object AtlasId:
-  inline def apply(id: String): AtlasId            = id
-  given CanEqual[AtlasId, AtlasId]                 = CanEqual.derived
-  given CanEqual[Option[AtlasId], Option[AtlasId]] = CanEqual.derived
+  inline def apply(id: String): AtlasId                = id
+  extension (aid: AtlasId) inline def toString: String = aid
+  given CanEqual[AtlasId, AtlasId]                     = CanEqual.derived
+  given CanEqual[Option[AtlasId], Option[AtlasId]]     = CanEqual.derived
 
 final case class AtlasIndex(id: AtlasId, offset: Point, size: Point) derives CanEqual
 
@@ -222,18 +225,18 @@ object TextureAtlasFunctions {
           case n: AtlasQuadNode =>
             val textureMap = n.toTextureMap
 
-            val legend: HashMap[AssetName, AtlasIndex] =
-              textureMap.textureCoords.foldLeft(HashMap.empty[AssetName, AtlasIndex]) { (m, t) =>
+            val legend: scalajs.js.Dictionary[AtlasIndex] =
+              textureMap.textureCoords.foldLeft(scalajs.js.Dictionary.empty[AtlasIndex]) { (m, t) =>
                 val name = t.imageRef.name
                 val size = lookupByName(name).map(img => Point(img.data.width, img.data.height)).getOrElse(Point.zero)
-                m ++ HashMap(name -> new AtlasIndex(atlasId, t.coords, size))
+                (m ++ scalajs.js.Dictionary(name.toString -> new AtlasIndex(atlasId, t.coords, size))).toJSDictionary
               }
 
             val atlas = createAtlasFunc(textureMap, lookupByName)
 
             TextureAtlas(
-              atlases = HashMap(
-                atlasId -> atlas
+              atlases = scalajs.js.Dictionary(
+                atlasId.toString -> atlas
               ),
               legend = legend
             )
