@@ -8,9 +8,7 @@ import indigo.shared.materials.LightingModel.Lit
 import indigo.shared.materials.LightingModel.Unlit
 import indigo.shared.shader.ShaderId
 import indigo.shared.shader.ShaderPrimitive
-import indigo.shared.shader.ShaderPrimitive.float
-import indigo.shared.shader.ShaderPrimitive.vec3
-import indigo.shared.shader.ShaderPrimitive.vec4
+import indigo.shared.shader.ShaderPrimitive.rawJSArray
 import indigo.shared.shader.StandardShaders
 import indigo.shared.shader.Uniform
 import indigo.shared.shader.UniformBlock
@@ -48,7 +46,7 @@ object Material {
 
     def toShaderData: ShaderData = {
 
-      val imageFillType: Double =
+      val imageFillType: Float =
         fillType match {
           case FillType.Normal  => 0.0
           case FillType.Stretch => 1.0
@@ -59,7 +57,7 @@ object Material {
         UniformBlock(
           "IndigoBitmapData",
           List(
-            Uniform("FILLTYPE") -> float(imageFillType)
+            Uniform("FILLTYPE") -> rawJSArray(scalajs.js.Array(imageFillType))
           )
         )
 
@@ -137,61 +135,100 @@ object Material {
       Material.Bitmap(diffuse, lighting, shaderId, fillType)
 
     def toShaderData: ShaderData = {
+      // GRADIENT_FROM_TO (vec4), GRADIENT_FROM_COLOR (vec4), GRADIENT_TO_COLOR (vec4),
       val gradientUniforms: List[(Uniform, ShaderPrimitive)] =
-        overlay match {
+        overlay match
           case Fill.Color(color) =>
-            val c = vec4(color.r, color.g, color.b, color.a)
             List(
-              Uniform("GRADIENT_FROM_TO")    -> vec4(0.0d),
-              Uniform("GRADIENT_FROM_COLOR") -> c,
-              Uniform("GRADIENT_TO_COLOR")   -> c
+              Uniform("fill") -> rawJSArray(
+                scalajs.js.Array(
+                  0.0f,
+                  0.0f,
+                  0.0f,
+                  0.0f,
+                  color.r.toFloat,
+                  color.g.toFloat,
+                  color.b.toFloat,
+                  color.a.toFloat,
+                  color.r.toFloat,
+                  color.g.toFloat,
+                  color.b.toFloat,
+                  color.a.toFloat
+                )
+              )
             )
 
           case Fill.LinearGradient(fromPoint, fromColor, toPoint, toColor) =>
             List(
-              Uniform("GRADIENT_FROM_TO") -> vec4(
-                fromPoint.x.toDouble,
-                fromPoint.y.toDouble,
-                toPoint.x.toDouble,
-                toPoint.y.toDouble
-              ),
-              Uniform("GRADIENT_FROM_COLOR") -> vec4(fromColor.r, fromColor.g, fromColor.b, fromColor.a),
-              Uniform("GRADIENT_TO_COLOR")   -> vec4(toColor.r, toColor.g, toColor.b, toColor.a)
+              Uniform("fill") -> rawJSArray(
+                scalajs.js.Array(
+                  fromPoint.x.toFloat,
+                  fromPoint.y.toFloat,
+                  toPoint.x.toFloat,
+                  toPoint.y.toFloat,
+                  fromColor.r.toFloat,
+                  fromColor.g.toFloat,
+                  fromColor.b.toFloat,
+                  fromColor.a.toFloat,
+                  toColor.r.toFloat,
+                  toColor.g.toFloat,
+                  toColor.b.toFloat,
+                  toColor.a.toFloat
+                )
+              )
             )
 
           case Fill.RadialGradient(fromPoint, fromColor, toPoint, toColor) =>
             List(
-              Uniform("GRADIENT_FROM_TO") -> vec4(
-                fromPoint.x.toDouble,
-                fromPoint.y.toDouble,
-                toPoint.x.toDouble,
-                toPoint.y.toDouble
-              ),
-              Uniform("GRADIENT_FROM_COLOR") -> vec4(fromColor.r, fromColor.g, fromColor.b, fromColor.a),
-              Uniform("GRADIENT_TO_COLOR")   -> vec4(toColor.r, toColor.g, toColor.b, toColor.a)
+              Uniform("fill") -> rawJSArray(
+                scalajs.js.Array(
+                  fromPoint.x.toFloat,
+                  fromPoint.y.toFloat,
+                  toPoint.x.toFloat,
+                  toPoint.y.toFloat,
+                  fromColor.r.toFloat,
+                  fromColor.g.toFloat,
+                  fromColor.b.toFloat,
+                  fromColor.a.toFloat,
+                  toColor.r.toFloat,
+                  toColor.g.toFloat,
+                  toColor.b.toFloat,
+                  toColor.a.toFloat
+                )
+              )
             )
-        }
 
-      val overlayType: Double =
+      val overlayType: Float =
         overlay match {
           case _: Fill.Color          => 0.0
           case _: Fill.LinearGradient => 1.0
           case _: Fill.RadialGradient => 2.0
         }
 
-      val imageFillType: Double =
+      val imageFillType: Float =
         fillType match {
           case FillType.Normal  => 0.0
           case FillType.Stretch => 1.0
           case FillType.Tile    => 2.0
         }
 
+      // ALPHA_SATURATION_OVERLAYTYPE_FILLTYPE (vec4), TINT (vec4)
       val effectsUniformBlock: UniformBlock =
         UniformBlock(
           "IndigoImageEffectsData",
           List(
-            Uniform("ALPHA_SATURATION_OVERLAYTYPE_FILLTYPE") -> vec4(alpha, saturation, overlayType, imageFillType),
-            Uniform("TINT")                                  -> vec4(tint.r, tint.g, tint.b, tint.a)
+            Uniform("data") -> rawJSArray(
+              scalajs.js.Array(
+                alpha.toFloat,
+                saturation.toFloat,
+                overlayType,
+                imageFillType,
+                tint.r.toFloat,
+                tint.g.toFloat,
+                tint.b.toFloat,
+                tint.a.toFloat
+              )
+            )
           ) ++ gradientUniforms
         )
 
