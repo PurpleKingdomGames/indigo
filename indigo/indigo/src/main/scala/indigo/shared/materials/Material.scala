@@ -57,7 +57,7 @@ object Material {
         UniformBlock(
           "IndigoBitmapData",
           List(
-            Uniform("FILLTYPE") -> rawJSArray(scalajs.js.Array(imageFillType))
+            Uniform("Bitmap_FILLTYPE") -> rawJSArray(scalajs.js.Array(imageFillType))
           )
         )
 
@@ -135,69 +135,6 @@ object Material {
       Material.Bitmap(diffuse, lighting, shaderId, fillType)
 
     def toShaderData: ShaderData = {
-      // GRADIENT_FROM_TO (vec4), GRADIENT_FROM_COLOR (vec4), GRADIENT_TO_COLOR (vec4),
-      val gradientUniforms: List[(Uniform, ShaderPrimitive)] =
-        overlay match
-          case Fill.Color(color) =>
-            List(
-              Uniform("fill") -> rawJSArray(
-                scalajs.js.Array(
-                  0.0f,
-                  0.0f,
-                  0.0f,
-                  0.0f,
-                  color.r.toFloat,
-                  color.g.toFloat,
-                  color.b.toFloat,
-                  color.a.toFloat,
-                  color.r.toFloat,
-                  color.g.toFloat,
-                  color.b.toFloat,
-                  color.a.toFloat
-                )
-              )
-            )
-
-          case Fill.LinearGradient(fromPoint, fromColor, toPoint, toColor) =>
-            List(
-              Uniform("fill") -> rawJSArray(
-                scalajs.js.Array(
-                  fromPoint.x.toFloat,
-                  fromPoint.y.toFloat,
-                  toPoint.x.toFloat,
-                  toPoint.y.toFloat,
-                  fromColor.r.toFloat,
-                  fromColor.g.toFloat,
-                  fromColor.b.toFloat,
-                  fromColor.a.toFloat,
-                  toColor.r.toFloat,
-                  toColor.g.toFloat,
-                  toColor.b.toFloat,
-                  toColor.a.toFloat
-                )
-              )
-            )
-
-          case Fill.RadialGradient(fromPoint, fromColor, toPoint, toColor) =>
-            List(
-              Uniform("fill") -> rawJSArray(
-                scalajs.js.Array(
-                  fromPoint.x.toFloat,
-                  fromPoint.y.toFloat,
-                  toPoint.x.toFloat,
-                  toPoint.y.toFloat,
-                  fromColor.r.toFloat,
-                  fromColor.g.toFloat,
-                  fromColor.b.toFloat,
-                  fromColor.a.toFloat,
-                  toColor.r.toFloat,
-                  toColor.g.toFloat,
-                  toColor.b.toFloat,
-                  toColor.a.toFloat
-                )
-              )
-            )
-
       val overlayType: Float =
         overlay match {
           case _: Fill.Color          => 0.0
@@ -217,7 +154,7 @@ object Material {
         UniformBlock(
           "IndigoImageEffectsData",
           List(
-            Uniform("data") -> rawJSArray(
+            Uniform("ImageEffects_DATA") -> rawJSArray(
               scalajs.js.Array(
                 alpha.toFloat,
                 saturation.toFloat,
@@ -229,7 +166,7 @@ object Material {
                 tint.a.toFloat
               )
             )
-          ) ++ gradientUniforms
+          ) ++ overlay.toUniformData("ImageEffects")
         )
 
       lighting match {
