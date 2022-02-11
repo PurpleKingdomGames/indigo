@@ -145,7 +145,7 @@ final case class Clip[M <: Material](
   def withRef(x: Int, y: Int): Clip[M] =
     withRef(Point(x, y))
 
-  def toShaderData: ShaderData =
+  lazy val toShaderData: ShaderData =
     val data = material.toShaderData
     data
       .withShaderId(StandardShaders.shaderIdToClipShaderId(data.shaderId))

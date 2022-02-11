@@ -69,7 +69,7 @@ final case class RefractionEntity(diffuse: AssetName, fillType: FillType) extend
   def tile: RefractionEntity =
     withFillType(FillType.Tile)
 
-  def toShaderData: ShaderData = {
+  lazy val toShaderData: ShaderData = {
     val imageFillType: Double =
       fillType match {
         case FillType.Normal  => 0.0
@@ -100,7 +100,7 @@ object RefractionEntity:
     RefractionEntity(diffuse, FillType.Normal)
 
 final case class RefractionBlend(multiplier: Double) extends BlendMaterial derives CanEqual {
-  def toShaderData: BlendShaderData =
+  lazy val toShaderData: BlendShaderData =
     BlendShaderData(
       Refraction.blendShader.id,
       List(

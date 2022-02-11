@@ -106,7 +106,7 @@ final case class Archetype() extends EntityNode[Archetype] with Cloneable:
   val size: Size                            = Size(16)
   def withDepth(newDepth: Depth): Archetype = this
 
-  def toShaderData: ShaderData =
+  lazy val toShaderData: ShaderData =
     ShaderData(Archetype.shaderId)
       .withChannel0(SandboxAssets.dots)
       .withUniformBlocks(Archetype.makeUniformBlock(position, scale, 1.0d))

@@ -11,7 +11,8 @@ final case class ShaderData(
     channel1: Option[AssetName],
     channel2: Option[AssetName],
     channel3: Option[AssetName]
-) extends Material derives CanEqual:
+) extends Material
+    derives CanEqual:
 
   def withShaderId(newShaderId: ShaderId): ShaderData =
     this.copy(shaderId = newShaderId)
@@ -34,7 +35,7 @@ final case class ShaderData(
   def withChannel3(assetName: AssetName): ShaderData =
     this.copy(channel3 = Some(assetName))
 
-  def toShaderData: ShaderData =
+  lazy val toShaderData: ShaderData =
     this
 
 object ShaderData:

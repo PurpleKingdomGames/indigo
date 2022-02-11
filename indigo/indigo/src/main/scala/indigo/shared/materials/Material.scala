@@ -44,7 +44,7 @@ object Material {
     def toImageEffects: Material.ImageEffects =
       Material.ImageEffects(diffuse, lighting, shaderId)
 
-    def toShaderData: ShaderData = {
+    lazy val toShaderData: ShaderData = {
 
       val imageFillType: Float =
         fillType match {
@@ -134,7 +134,7 @@ object Material {
     def toBitmap: Material.Bitmap =
       Material.Bitmap(diffuse, lighting, shaderId, fillType)
 
-    def toShaderData: ShaderData = {
+    lazy val toShaderData: ShaderData = {
       val overlayType: Float =
         overlay match {
           case _: Fill.Color          => 0.0
