@@ -46,7 +46,7 @@ final case class LegacyEffects(
   def withGlow(newGlow: Glow): LegacyEffects =
     this.copy(glow = newGlow)
 
-  def toShaderData: ShaderData =
+  lazy val toShaderData: ShaderData =
     val overlayType: Float =
       overlay match
         case _: Fill.Color          => 0.0

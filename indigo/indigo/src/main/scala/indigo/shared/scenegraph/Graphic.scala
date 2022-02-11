@@ -98,7 +98,7 @@ final case class Graphic[M <: Material](
   def withCrop(x: Int, y: Int, width: Int, height: Int): Graphic[M] =
     withCrop(Rectangle(x, y, width, height))
 
-  def toShaderData: ShaderData =
+  lazy val toShaderData: ShaderData =
     material.toShaderData
 
   def withEventHandler(f: ((Graphic[_], GlobalEvent)) => Option[GlobalEvent]): Graphic[M] =

@@ -18,7 +18,8 @@ object LightingModel {
       emissive: Option[Texture],
       normal: Option[Texture],
       roughness: Option[Texture]
-  ) extends LightingModel derives CanEqual {
+  ) extends LightingModel
+      derives CanEqual {
 
     def withEmissive(emissiveAssetName: AssetName, amount: Double): Lit =
       this.copy(emissive = Some(Texture(emissiveAssetName, amount)))
@@ -53,7 +54,11 @@ object LightingModel {
     def withRoughnessAmount(amount: Double): Lit =
       this.copy(roughness = roughness.map(_.withAmount(amount)))
 
-    def toShaderData(shaderId: ShaderId, albedo: Option[AssetName], additionalUniformBlocks: List[UniformBlock]): ShaderData =
+    def toShaderData(
+        shaderId: ShaderId,
+        albedo: Option[AssetName],
+        additionalUniformBlocks: List[UniformBlock]
+    ): ShaderData =
       ShaderData(
         shaderId,
         List(
