@@ -12,7 +12,6 @@ import indigoextras.geometry.Vertex
 import indigoextras.ui.HitArea
 
 import scala.annotation.tailrec
-import scala.collection.mutable.ArrayBuffer
 
 object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
 
