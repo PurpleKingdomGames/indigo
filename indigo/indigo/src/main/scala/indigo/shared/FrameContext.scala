@@ -42,3 +42,6 @@ final class FrameContext[StartUpData](
 
   def findBounds(sceneNode: SceneNode): Option[Rectangle] =
     boundaryLocator.findBounds(sceneNode)
+
+  def bounds(sceneGraphNode: SceneNode): Rectangle =
+    boundaryLocator.bounds(sceneGraphNode)
