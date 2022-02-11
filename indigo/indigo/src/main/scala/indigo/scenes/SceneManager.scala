@@ -11,29 +11,30 @@ import indigo.shared.subsystems.SubSystemFrameContext
 import indigo.shared.subsystems.SubSystemFrameContext._
 import indigo.shared.subsystems.SubSystemsRegister
 
-import scala.collection.immutable.HashMap
-
 class SceneManager[StartUpData, GameModel, ViewModel](
     scenes: NonEmptyList[Scene[StartUpData, GameModel, ViewModel]],
     scenesFinder: SceneFinder
 ) {
 
-  private
-  given CanEqual[Option[Scene[StartUpData, GameModel, ViewModel]], Option[Scene[StartUpData, GameModel, ViewModel]]] =
+  private given CanEqual[Option[Scene[StartUpData, GameModel, ViewModel]], Option[
+    Scene[StartUpData, GameModel, ViewModel]
+  ]] =
     CanEqual.derived
 
   // Scene management
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var finderInstance: SceneFinder = scenesFinder
 
-  private val subSystemStates: HashMap[SceneName, SubSystemsRegister] =
-    HashMap.from(
-      scenes.toList.map { s =>
-        val r = new SubSystemsRegister()
-        r.register(s.subSystems.toList)
-        (s.name -> r)
-      }
-    )
+  private val subSystemStates: scalajs.js.Dictionary[SubSystemsRegister] =
+    scalajs.js.Dictionary
+      .empty[SubSystemsRegister]
+      .addAll(
+        scenes.toList.map { s =>
+          val r = new SubSystemsRegister()
+          r.register(s.subSystems.toList)
+          (s.name.toString -> r)
+        }
+      )
 
   // Scene delegation
 
@@ -88,7 +89,7 @@ class SceneManager[StartUpData, GameModel, ViewModel](
       .find(_.name == finderInstance.current.name)
       .flatMap { scene =>
         subSystemStates
-          .get(scene.name)
+          .get(scene.name.toString)
           .map {
             _.update(frameContext, globalEvents)
           }
@@ -125,7 +126,7 @@ class SceneManager[StartUpData, GameModel, ViewModel](
 
       case Some(scene) =>
         val subsystemView = subSystemStates
-          .get(scene.name)
+          .get(scene.name.toString)
           .map { ssr =>
             ssr.present(frameContext.forSubSystems)
           }
