@@ -104,7 +104,7 @@ final class SceneProcessor(
           else cloneBlankToDisplayObject(blank)
 
         maybeDO match
-          case None                => acc
+          case None => acc
           case Some(displayObject) =>
             acc.put(blank.id.toString, displayObject)
             acc
@@ -148,6 +148,9 @@ final class SceneProcessor(
         .sortBy(_._1.depth.toInt)
 
     val sceneBlend = scene.blendMaterial.getOrElse(BlendMaterial.Normal).toShaderData
+
+    displayObjectConverter.purgeEachFrame()
+    displayObjectConverterClone.purgeEachFrame()
 
     new ProcessedSceneData(
       displayLayers.map(_._1),

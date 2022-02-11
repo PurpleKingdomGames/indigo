@@ -16,7 +16,7 @@ final case class AnimationRef(
     cycles: Map[CycleLabel, CycleRef]
 ) derives CanEqual {
 
-  lazy val frameHash: String =
+  val frameHash: String =
     currentFrame.crop.hashCode().toString
 
   def currentCycle: CycleRef =

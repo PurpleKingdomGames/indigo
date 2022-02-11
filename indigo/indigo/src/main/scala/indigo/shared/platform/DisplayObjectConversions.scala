@@ -63,6 +63,7 @@ final class DisplayObjectConversions(
     fontRegister: FontRegister
 ) {
 
+  // Per asset load
   implicit private val textureRefAndOffsetCache: QuickCache[TextureRefAndOffset]           = QuickCache.empty
   implicit private val vector2Cache: QuickCache[Vector2]                                   = QuickCache.empty
   implicit private val frameCache: QuickCache[SpriteSheetFrameCoordinateOffsets]           = QuickCache.empty
@@ -72,6 +73,9 @@ final class DisplayObjectConversions(
   implicit private val uniformsCache: QuickCache[scalajs.js.Array[Float]]                  = QuickCache.empty
   implicit private val textCloneTileDataCache: QuickCache[scalajs.js.Array[CloneTileData]] = QuickCache.empty
   implicit private val displayObjectCache: QuickCache[DisplayObject]                       = QuickCache.empty
+
+  // Per frame
+  implicit private val perFrameAnimCache: QuickCache[Option[AnimationRef]] = QuickCache.empty
 
   // Called on asset load/reload to account for atlas rebuilding etc.
   def purgeCaches(): Unit = {
@@ -84,7 +88,11 @@ final class DisplayObjectConversions(
     uniformsCache.purgeAllNow()
     textCloneTileDataCache.purgeAllNow()
     displayObjectCache.purgeAllNow()
+    perFrameAnimCache.purgeAllNow()
   }
+
+  def purgeEachFrame(): Unit =
+    perFrameAnimCache.purgeAllNow()
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   private def lookupTexture(assetMapping: AssetMapping, name: AssetName): TextureRefAndOffset =
@@ -291,8 +299,12 @@ final class DisplayObjectConversions(
         )
 
       case x: Sprite[_] =>
+        val animation = QuickCache("anim-" + x.bindingKey + x.animationKey + x.animationActions.hashCode.toString) {
+          animationsRegister.fetchAnimationForSprite(gameTime, x.bindingKey, x.animationKey, x.animationActions)
+        }
+
         (
-          animationsRegister.fetchAnimationForSprite(gameTime, x.bindingKey, x.animationKey, x.animationActions) match {
+          animation match {
             case None =>
               IndigoLogger.errorOnce(s"Cannot render Sprite, missing Animations with key: ${x.animationKey.toString()}")
               DisplayGroup.empty
