@@ -30,7 +30,6 @@ import org.scalajs.dom.raw.WebGLTexture
 
 import scala.annotation.tailrec
 import scala.collection.immutable
-import scala.collection.mutable
 import scala.scalajs.js.typedarray.Float32Array
 
 class LayerRenderer(
@@ -45,8 +44,8 @@ class LayerRenderer(
     textTexture: WebGLTexture
 ) {
 
-  private val customDataUBOBuffers: mutable.HashMap[String, WebGLBuffer] =
-    mutable.HashMap.empty[String, WebGLBuffer]
+  private val customDataUBOBuffers: scalajs.js.Dictionary[WebGLBuffer] =
+    scalajs.js.Dictionary.empty[WebGLBuffer]
 
   // Instance Array Buffers
   private val translateScaleInstanceArray: WebGLBuffer       = gl2.createBuffer()
@@ -257,7 +256,7 @@ class LayerRenderer(
       atlasName: Option[AtlasId],
       currentShader: ShaderId,
       currentUniformHash: String,
-      customShaders: mutable.HashMap[ShaderId, WebGLProgram],
+      customShaders: scalajs.js.Dictionary[WebGLProgram],
       baseTransform: CheapMatrix4,
       renderMode: Int
   ): Unit = {
@@ -266,7 +265,7 @@ class LayerRenderer(
     val activeShader: WebGLProgram =
       if d.shaderId != currentShader then
         try {
-          currentProgram = customShaders(d.shaderId)
+          currentProgram = customShaders(d.shaderId.toString)
           setupShader(currentProgram)
           currentProgram
         } catch {
@@ -433,11 +432,11 @@ class LayerRenderer(
     gl2.drawArraysInstanced(TRIANGLE_STRIP, 0, 4, 1)
 
   def drawLayer(
-      cloneBlankDisplayObjects: => immutable.HashMap[CloneId, DisplayObject],
+      cloneBlankDisplayObjects: => scalajs.js.Dictionary[DisplayObject],
       displayEntities: => scalajs.js.Array[DisplayEntity],
       frameBufferComponents: FrameBufferComponents,
       clearColor: RGBA,
-      customShaders: => mutable.HashMap[ShaderId, WebGLProgram]
+      customShaders: => scalajs.js.Dictionary[WebGLProgram]
   ): Unit = {
 
     FrameBufferFunctions.switchToFramebuffer(gl2, frameBufferComponents.frameBuffer, clearColor, true)
@@ -457,9 +456,9 @@ class LayerRenderer(
     )
   )
   private def renderEntities(
-      cloneBlankDisplayObjects: => immutable.HashMap[CloneId, DisplayObject],
+      cloneBlankDisplayObjects: => scalajs.js.Dictionary[DisplayObject],
       displayEntities: => scalajs.js.Array[DisplayEntity],
-      customShaders: => mutable.HashMap[ShaderId, WebGLProgram],
+      customShaders: => scalajs.js.Dictionary[WebGLProgram],
       baseTransform: CheapMatrix4
   ): Unit = {
 
@@ -541,7 +540,7 @@ class LayerRenderer(
             var refreshCloneUBO  = false
 
             if c.id.toString != currentCloneId.toString then
-              cloneBlankDisplayObjects.get(c.id) match
+              cloneBlankDisplayObjects.get(c.id.toString) match
                 case None => ()
                 case Some(d) =>
                   currentCloneId = c.id
@@ -582,7 +581,7 @@ class LayerRenderer(
             var refreshCloneUBO  = false
 
             if c.id.toString != currentCloneId.toString then
-              cloneBlankDisplayObjects.get(c.id) match
+              cloneBlankDisplayObjects.get(c.id.toString) match
                 case None => ()
                 case Some(d) =>
                   currentCloneId = c.id
@@ -622,7 +621,7 @@ class LayerRenderer(
             var cloneBlankExists = false
 
             if c.id.toString != currentCloneId.toString then
-              cloneBlankDisplayObjects.get(c.id) match
+              cloneBlankDisplayObjects.get(c.id.toString) match
                 case None => ()
                 case Some(d) =>
                   currentCloneId = c.id
@@ -659,7 +658,7 @@ class LayerRenderer(
             val shaderId = indigo.shared.shader.StandardShaders.Bitmap.id
             val activeShader: WebGLProgram =
               if (currentShader != shaderId) {
-                customShaders.get(shaderId) match {
+                customShaders.get(shaderId.toString) match {
                   case Some(s) =>
                     currentProgram = s
                     setupShader(s)

@@ -54,7 +54,6 @@ import indigo.shared.shader.UniformBlock
 import indigo.shared.time.GameTime
 
 import scala.annotation.tailrec
-import scala.collection.immutable.HashMap
 import scala.collection.mutable.ListBuffer
 import scala.scalajs.js.JSConverters._
 
@@ -150,12 +149,12 @@ final class DisplayObjectConversions(
       sceneNodes: scalajs.js.Array[SceneNode],
       gameTime: GameTime,
       assetMapping: AssetMapping,
-      cloneBlankDisplayObjects: => HashMap[CloneId, DisplayObject],
+      cloneBlankDisplayObjects: => scalajs.js.Dictionary[DisplayObject],
       renderingTechnology: RenderingTechnology,
       maxBatchSize: Int,
       inputEvents: => scalajs.js.Array[GlobalEvent],
       sendEvent: GlobalEvent => Unit
-  ): (scalajs.js.Array[DisplayEntity], scalajs.js.Array[(CloneId, DisplayObject)]) =
+  ): (scalajs.js.Array[DisplayEntity], scalajs.js.Array[(String, DisplayObject)]) =
     val f =
       sceneNodeToDisplayObject(
         gameTime,
@@ -189,7 +188,7 @@ final class DisplayObjectConversions(
 
       f(node)
     }
-    (l.map(_._1), l.foldLeft(scalajs.js.Array[(CloneId, DisplayObject)]())(_ ++ _._2))
+    (l.map(_._1), l.foldLeft(scalajs.js.Array[(String, DisplayObject)]())(_ ++ _._2))
 
   private def groupToMatrix(group: Group): CheapMatrix4 =
     CheapMatrix4.identity
@@ -214,13 +213,13 @@ final class DisplayObjectConversions(
   def sceneNodeToDisplayObject(
       gameTime: GameTime,
       assetMapping: AssetMapping,
-      cloneBlankDisplayObjects: => HashMap[CloneId, DisplayObject],
+      cloneBlankDisplayObjects: => scalajs.js.Dictionary[DisplayObject],
       renderingTechnology: RenderingTechnology,
       maxBatchSize: Int,
       inputEvents: => scalajs.js.Array[GlobalEvent],
       sendEvent: GlobalEvent => Unit
-  )(sceneNode: SceneNode): (DisplayEntity, scalajs.js.Array[(CloneId, DisplayObject)]) =
-    val noClones = scalajs.js.Array[(CloneId, DisplayObject)]()
+  )(sceneNode: SceneNode): (DisplayEntity, scalajs.js.Array[(String, DisplayObject)]) =
+    val noClones = scalajs.js.Array[(String, DisplayObject)]()
     sceneNode match {
       case x: Graphic[_] =>
         (graphicToDisplayObject(x, assetMapping), noClones)
@@ -236,7 +235,7 @@ final class DisplayObjectConversions(
 
       case c: CloneBatch =>
         (
-          cloneBlankDisplayObjects.get(c.id) match {
+          cloneBlankDisplayObjects.get(c.id.toString) match {
             case None =>
               DisplayGroup.empty
 
@@ -248,7 +247,7 @@ final class DisplayObjectConversions(
 
       case c: CloneTiles =>
         (
-          cloneBlankDisplayObjects.get(c.id) match {
+          cloneBlankDisplayObjects.get(c.id.toString) match {
             case None =>
               DisplayGroup.empty
 
@@ -260,7 +259,7 @@ final class DisplayObjectConversions(
 
       case c: Mutants =>
         (
-          cloneBlankDisplayObjects.get(c.id) match {
+          cloneBlankDisplayObjects.get(c.id.toString) match {
             case None =>
               DisplayGroup.empty
 
@@ -386,7 +385,7 @@ final class DisplayObjectConversions(
               )
             }
           ),
-          scalajs.js.Array((cloneId, clone))
+          scalajs.js.Array((cloneId.toString, clone))
         )
 
       case _: RenderNode[_] =>

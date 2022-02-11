@@ -7,11 +7,9 @@ import indigo.shared.scenegraph.Camera
 import indigo.shared.scenegraph.CloneId
 import indigo.shared.shader.ShaderId
 
-import scala.collection.immutable.HashMap
-
 final class ProcessedSceneData(
     val layers: scalajs.js.Array[DisplayLayer],
-    val cloneBlankDisplayObjects: HashMap[CloneId, DisplayObject],
+    val cloneBlankDisplayObjects: scalajs.js.Dictionary[DisplayObject],
     val shaderId: ShaderId,
     val shaderUniformData: scalajs.js.Array[DisplayObjectUniformData],
     val camera: Option[Camera]

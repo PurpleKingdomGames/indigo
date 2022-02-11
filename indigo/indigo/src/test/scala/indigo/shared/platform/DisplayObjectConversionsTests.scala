@@ -48,7 +48,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
   val texture = new TextureRefAndOffset(AtlasId("texture"), Vector2(100, 100), Vector2.zero, Vector2(200, 100))
   val assetMapping: AssetMapping = new AssetMapping(HashMap(AssetName("texture") -> texture))
 
-  val cloneBlankMapping: HashMap[CloneId, DisplayObject] = HashMap.empty[CloneId, DisplayObject]
+  val cloneBlankMapping: scalajs.js.Dictionary[DisplayObject] = scalajs.js.Dictionary.empty[DisplayObject]
 
   implicit val cache: QuickCache[scalajs.js.Array[Float]] = QuickCache.empty
 
