@@ -135,7 +135,7 @@ final class DisplayObjectConversions(
         DisplayObjectUniformData(
           uniformHash = ub.uniformHash,
           blockName = ub.blockName,
-          data = DisplayObjectConversions.packUBO(ub.uniforms)
+          data = DisplayObjectConversions.packUBO(ub.uniforms, ub.uniformHash, false)
         )
       }
 
@@ -429,7 +429,7 @@ final class DisplayObjectConversions(
         DisplayObjectUniformData(
           uniformHash = ub.uniformHash,
           blockName = ub.blockName,
-          data = DisplayObjectConversions.packUBO(ub.uniforms)
+          data = DisplayObjectConversions.packUBO(ub.uniforms, ub.uniformHash, false)
         )
       }
 
@@ -497,7 +497,7 @@ final class DisplayObjectConversions(
         DisplayObjectUniformData(
           uniformHash = ub.uniformHash,
           blockName = ub.blockName,
-          data = DisplayObjectConversions.packUBO(ub.uniforms)
+          data = DisplayObjectConversions.packUBO(ub.uniforms, ub.uniformHash, false)
         )
       }
 
@@ -547,7 +547,7 @@ final class DisplayObjectConversions(
 
   def graphicToDisplayObject(leaf: Graphic[_], assetMapping: AssetMapping): DisplayObject = {
     val shaderData     = leaf.material.toShaderData
-    val shaderDataHash = shaderData.hashCode().toString
+    val shaderDataHash = shaderData.toCacheKey
     val materialName   = shaderData.channel0.get
 
     val emissiveOffset = findAssetOffsetValues(assetMapping, shaderData.channel1, shaderDataHash, "_e")
@@ -572,7 +572,7 @@ final class DisplayObjectConversions(
         DisplayObjectUniformData(
           uniformHash = ub.uniformHash,
           blockName = ub.blockName,
-          data = DisplayObjectConversions.packUBO(ub.uniforms)
+          data = DisplayObjectConversions.packUBO(ub.uniforms, ub.uniformHash, false)
         )
       }
 
@@ -610,7 +610,7 @@ final class DisplayObjectConversions(
   ): DisplayObject = {
     val material       = leaf.material
     val shaderData     = material.toShaderData
-    val shaderDataHash = shaderData.hashCode().toString
+    val shaderDataHash = shaderData.toCacheKey
     val materialName   = shaderData.channel0.get
 
     val emissiveOffset = findAssetOffsetValues(assetMapping, shaderData.channel1, shaderDataHash, "_e")
@@ -637,7 +637,7 @@ final class DisplayObjectConversions(
         DisplayObjectUniformData(
           uniformHash = ub.uniformHash,
           blockName = ub.blockName,
-          data = DisplayObjectConversions.packUBO(ub.uniforms)
+          data = DisplayObjectConversions.packUBO(ub.uniforms, ub.uniformHash, false)
         )
       }
 
@@ -676,7 +676,7 @@ final class DisplayObjectConversions(
 
       val material       = leaf.material
       val shaderData     = material.toShaderData
-      val shaderDataHash = shaderData.hashCode().toString
+      val shaderDataHash = shaderData.toCacheKey
       val materialName   = shaderData.channel0.get
 
       val lineHash: String =
@@ -705,7 +705,7 @@ final class DisplayObjectConversions(
           DisplayObjectUniformData(
             uniformHash = ub.uniformHash,
             blockName = ub.blockName,
-            data = DisplayObjectConversions.packUBO(ub.uniforms)
+            data = DisplayObjectConversions.packUBO(ub.uniforms, ub.uniformHash, false)
           )
         }
 
@@ -771,7 +771,7 @@ final class DisplayObjectConversions(
       QuickCache(s"[indigo_text_clone_ref][${cloneId.toString}]") {
         val material       = leaf.material
         val shaderData     = material.toShaderData
-        val shaderDataHash = shaderData.hashCode().toString
+        val shaderDataHash = shaderData.toCacheKey
         val materialName   = shaderData.channel0.get
         val emissiveOffset = findAssetOffsetValues(assetMapping, shaderData.channel1, shaderDataHash, "_e")
         val normalOffset   = findAssetOffsetValues(assetMapping, shaderData.channel2, shaderDataHash, "_n")
@@ -784,7 +784,7 @@ final class DisplayObjectConversions(
             DisplayObjectUniformData(
               uniformHash = ub.uniformHash,
               blockName = ub.blockName,
-              data = DisplayObjectConversions.packUBO(ub.uniforms)
+              data = DisplayObjectConversions.packUBO(ub.uniforms, ub.uniformHash, false)
             )
           }
 
@@ -887,6 +887,15 @@ final class DisplayObjectConversions(
         }
         .getOrElse(Vector2.zero)
     }
+
+  extension (sd: ShaderData)
+    def toCacheKey: String =
+      sd.shaderId.toString +
+        sd.channel0.map(_.toString).getOrElse("") +
+        sd.channel1.map(_.toString).getOrElse("") +
+        sd.channel2.map(_.toString).getOrElse("") +
+        sd.channel3.map(_.toString).getOrElse("") +
+        sd.uniformBlocks.map(_.uniformHash).mkString
 }
 
 object DisplayObjectConversions {
@@ -908,14 +917,16 @@ object DisplayObjectConversions {
 
   // takes a list because only converted to JSArray if value not cached.
   def packUBO(
-      uniforms: List[(Uniform, ShaderPrimitive)]
+      uniforms: List[(Uniform, ShaderPrimitive)],
+      cacheKey: String,
+      disableCache: Boolean
   )(using QuickCache[scalajs.js.Array[Float]]): scalajs.js.Array[Float] = {
     def rec(
         remaining: scalajs.js.Array[ShaderPrimitive],
         current: scalajs.js.Array[Float],
         acc: scalajs.js.Array[Float]
     ): scalajs.js.Array[Float] =
-      remaining match {
+      remaining match
         case us if us.isEmpty =>
           // println(s"done, expanded: ${current.toList} to ${expandTo4(current).toList}")
           // println(s"result: ${(acc ++ expandTo4(current)).toList}")
@@ -944,9 +955,8 @@ object DisplayObjectConversions {
         case us =>
           // println(s"fits, current is now: ${(current ++ u.toArray).toList}")
           rec(us.tail, current ++ us.head.toJSArray, acc)
-      }
 
-    QuickCache("u" + uniforms.hashCode.toString) {
+    QuickCache(cacheKey, disableCache) {
       rec(uniforms.toJSArray.map(_._2), empty0, empty0)
     }
   }
