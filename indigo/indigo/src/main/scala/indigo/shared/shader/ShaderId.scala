@@ -14,6 +14,7 @@ object ShaderId:
     dice.rollAlphaNumeric
   inline def generate(dice: Dice): ShaderId =
     dice.rollAlphaNumeric
+  extension (sid: ShaderId) inline def toString: String = sid
 
   given CanEqual[ShaderId, ShaderId]                 = CanEqual.derived
   given CanEqual[Option[ShaderId], Option[ShaderId]] = CanEqual.derived

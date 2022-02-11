@@ -34,4 +34,5 @@ trait Cloneable
   */
 opaque type CloneId = String
 object CloneId:
-  inline def apply(value: String): CloneId = value
+  inline def apply(value: String): CloneId             = value
+  extension (cid: CloneId) inline def toString: String = cid
