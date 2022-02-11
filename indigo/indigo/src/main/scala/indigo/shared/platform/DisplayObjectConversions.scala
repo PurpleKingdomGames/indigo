@@ -54,7 +54,6 @@ import indigo.shared.shader.UniformBlock
 import indigo.shared.time.GameTime
 
 import scala.annotation.tailrec
-import scala.collection.mutable.ListBuffer
 import scala.scalajs.js.JSConverters._
 
 final class DisplayObjectConversions(
