@@ -42,13 +42,20 @@ object ManyEventHandlers extends Scene[SandboxStartupData, SandboxGameModel, San
     _ => Outcome(viewModel)
 
   val coords: List[Point] =
-    // more - 1080 @ 59fps
-    val offset = 8
-    (0 until 40).flatMap { x =>
-      (0 until 27).map { y =>
+    // more - 2,800 @ 59fps
+    val offset = 4
+    (0 until 70).flatMap { x =>
+      (0 until 40).map { y =>
         Point(x, y) * offset
       }
     }.toList
+  // more - 1080 @ 59fps
+  // val offset = 8
+  // (0 until 40).flatMap { x =>
+  //   (0 until 27).map { y =>
+  //     Point(x, y) * offset
+  //   }
+  // }.toList
   // normal - 792 @ 40fps
   // val offset = 16
   // (0 until 33).flatMap { x =>
