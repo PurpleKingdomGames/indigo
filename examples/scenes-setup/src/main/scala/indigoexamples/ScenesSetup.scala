@@ -7,7 +7,7 @@ import indigoextras.subsystems.FPSCounter
 import scala.scalajs.js.annotation._
 
 @JSExportTopLevel("IndigoGame")
-object ScenesSetup extends IndigoGame[Unit, StartUpData, GameModel, Unit] {
+object ScenesSetup extends IndigoGame[Unit, StartUpData, GameModel, Unit]:
 
   val targetFPS: FPS = FPS.`30`
 
@@ -25,11 +25,11 @@ object ScenesSetup extends IndigoGame[Unit, StartUpData, GameModel, Unit] {
         .noData(
           defaultGameConfig
             .withClearColor(RGBA.fromHexString("0xAA3399"))
-            .withFrameRate(targetFPS)
+            .withFrameRateLimit(targetFPS)
         )
         .withAssets(AssetType.Image(FontStuff.fontName, AssetPath("assets/boxy_font.png")))
         .withFonts(FontStuff.fontInfo)
-        .withSubSystems(FPSCounter(Point(10, 360), targetFPS, None))
+        .withSubSystems(FPSCounter(Point(10, 360), targetFPS))
     )
 
   def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[StartUpData]] =
@@ -54,7 +54,6 @@ object ScenesSetup extends IndigoGame[Unit, StartUpData, GameModel, Unit] {
 
   def present(context: FrameContext[StartUpData], model: GameModel, viewModel: Unit): Outcome[SceneUpdateFragment] =
     Outcome(SceneUpdateFragment.empty)
-}
 
 final case class StartUpData(messageA: String, messageB: String)
 final case class GameModel(sceneA: MessageA, sceneB: MessageB)

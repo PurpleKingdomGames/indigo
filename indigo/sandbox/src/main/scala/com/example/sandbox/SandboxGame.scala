@@ -35,7 +35,6 @@ import scala.scalajs.js.annotation.*
 @JSExportTopLevel("IndigoGame")
 object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, SandboxGameModel, SandboxViewModel]:
 
-  val targetFPS: FPS          = FPS.`60`
   val magnificationLevel: Int = 2
   val gameWidth: Int          = 228
   val gameHeight: Int         = 128
@@ -82,7 +81,6 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
       BootResult(
         GameConfig(
           viewport = gameViewport,
-          frameRate = targetFPS,
           clearColor = RGBA(0.4, 0.2, 0.5, 1),
           magnification = magnificationLevel
         ),
@@ -95,8 +93,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
         .withSubSystems(
           FPSCounter(
             Point(5, 165),
-            targetFPS,
-            Option(BindingKey("fps counter"))
+            BindingKey("fps counter")
           )
         )
         .withShaders(

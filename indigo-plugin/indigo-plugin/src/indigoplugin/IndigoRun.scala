@@ -8,12 +8,19 @@ import indigoplugin.templates.SupportScriptTemplate
 
 object IndigoRun {
 
-  def run(outputDir: Path, buildDir: Path, title: String, windowWidth: Int, windowHeight: Int): Unit = {
+  def run(
+      outputDir: Path,
+      buildDir: Path,
+      title: String,
+      windowWidth: Int,
+      windowHeight: Int,
+      disableFrameRateLimit: Boolean
+  ): Unit = {
 
     os.remove.all(outputDir)
     os.makeDir.all(outputDir)
 
-    filesToWrite(windowWidth, windowHeight).foreach { f =>
+    filesToWrite(windowWidth, windowHeight, disableFrameRateLimit).foreach { f =>
       os.write.over(outputDir / f.name, f.contents)
     }
 
@@ -34,7 +41,7 @@ object IndigoRun {
         os.proc("cmd", "/C", "npm", "start")
           .call(cwd = outputDir, stdin = os.Inherit, stdout = os.Inherit, stderr = os.Inherit)
 
-      case _ =>        
+      case _ =>
         os.proc("npm", "start")
           .call(cwd = outputDir, stdin = os.Inherit, stdout = os.Inherit, stderr = os.Inherit)
     }
@@ -42,11 +49,11 @@ object IndigoRun {
     ()
   }
 
-  def filesToWrite(windowWidth: Int, windowHeight: Int): List[FileToWrite] =
+  def filesToWrite(windowWidth: Int, windowHeight: Int, disableFrameRateLimit: Boolean): List[FileToWrite] =
     List(
       FileToWrite("main.js", ElectronTemplates.mainFileTemplate(windowWidth, windowHeight)),
       FileToWrite("preload.js", ElectronTemplates.preloadFileTemplate),
-      FileToWrite("package.json", ElectronTemplates.packageFileTemplate)
+      FileToWrite("package.json", ElectronTemplates.packageFileTemplate(disableFrameRateLimit))
     )
 
 }

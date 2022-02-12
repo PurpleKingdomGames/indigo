@@ -7,9 +7,7 @@ import indigoextras.effectmaterials.RefractionEntity
 import scala.scalajs.js.annotation._
 
 @JSExportTopLevel("IndigoGame")
-object DistortionGame extends IndigoSandbox[Unit, Unit] {
-
-  val targetFPS: FPS = FPS.`60`
+object DistortionGame extends IndigoSandbox[Unit, Unit]:
 
   private val magnificationLevel: Int = 3
   private val viewportWidth: Int      = 228 * magnificationLevel
@@ -18,7 +16,6 @@ object DistortionGame extends IndigoSandbox[Unit, Unit] {
   val config: GameConfig =
     GameConfig(
       viewport = GameViewport(viewportWidth, viewportHeight),
-      frameRate = targetFPS,
       clearColor = RGBA(0.0, 0.0, 0.2, 1.0),
       magnification = magnificationLevel
     )
@@ -101,9 +98,8 @@ object DistortionGame extends IndigoSandbox[Unit, Unit] {
           )
       )
     )
-}
 
-object DistortionAssets {
+object DistortionAssets:
 
   val junctionBoxAlbedo: AssetName = AssetName("junctionbox_albedo")
   val junctionBoxEmission: Texture = Texture(AssetName("junctionbox_emission"), 1.0d)
@@ -137,5 +133,3 @@ object DistortionAssets {
         AssetType.Image(normalName, AssetPath("assets/" + normalName + ".png"))
       )
     )
-
-}

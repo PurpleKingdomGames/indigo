@@ -16,3 +16,5 @@ object FPS:
     def toDouble: Double   = fps.toDouble
     def toSeconds: Seconds = Seconds(1.0d / fps.toDouble)
     def toMillis: Millis   = toSeconds.toMillis
+
+  given CanEqual[FPS, FPS] = CanEqual.derived

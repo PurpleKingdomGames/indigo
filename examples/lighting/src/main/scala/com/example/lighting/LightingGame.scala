@@ -5,9 +5,7 @@ import indigo._
 import scala.scalajs.js.annotation._
 
 @JSExportTopLevel("IndigoGame")
-object LightingGame extends IndigoSandbox[Unit, Unit] {
-
-  val targetFPS: FPS = FPS.`60`
+object LightingGame extends IndigoSandbox[Unit, Unit]:
 
   private val magnificationLevel: Int = 3
   private val viewportWidth: Int      = 228 * magnificationLevel
@@ -16,7 +14,6 @@ object LightingGame extends IndigoSandbox[Unit, Unit] {
   val config: GameConfig =
     GameConfig(
       viewport = GameViewport(viewportWidth, viewportHeight),
-      frameRate = targetFPS,
       clearColor = RGBA(0.0, 0.0, 0.2, 1.0),
       magnification = magnificationLevel
     )
@@ -111,9 +108,8 @@ object LightingGame extends IndigoSandbox[Unit, Unit] {
           .withFalloff(Falloff.None(15, 100))
       )
     )
-}
 
-object LightingAssets {
+object LightingAssets:
 
   val junctionBoxAlbedo: AssetName = AssetName("junctionbox_albedo")
   val junctionBoxEmission: Texture = Texture(AssetName("junctionbox_emission"), 1.0d)
@@ -157,5 +153,3 @@ object LightingAssets {
         AssetType.Image(trafficLightsName, AssetPath("assets/" + trafficLightsName + ".png"))
       )
     )
-
-}

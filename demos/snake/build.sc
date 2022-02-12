@@ -13,11 +13,12 @@ object snake extends ScalaJSModule with MillIndigo {
   def scalaVersion   = "3.1.1"
   def scalaJSVersion = "1.8.0"
 
-  val gameAssetsDirectory: os.Path = os.pwd / "assets"
-  val showCursor: Boolean          = true
-  val title: String                = "Snake - Made with Indigo"
-  val windowStartWidth: Int        = 720
-  val windowStartHeight: Int       = 516
+  val gameAssetsDirectory: os.Path   = os.pwd / "assets"
+  val showCursor: Boolean            = true
+  val title: String                  = "Snake - Made with Indigo"
+  val windowStartWidth: Int          = 720
+  val windowStartHeight: Int         = 516
+  val disableFrameRateLimit: Boolean = false
 
   def buildGame() = T.command {
     T {

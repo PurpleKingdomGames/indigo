@@ -24,6 +24,7 @@ object SbtIndigo extends sbt.AutoPlugin {
     val title: SettingKey[String]          = settingKey[String]("Title of your game. Defaults to 'Made with Indigo'.")
     val windowStartWidth: SettingKey[Int]  = settingKey[Int]("Initial window width. Defaults to 550 pixels.")
     val windowStartHeight: SettingKey[Int] = settingKey[Int]("Initial window height. Defaults to 400 pixels.")
+    val disableFrameRateLimit: SettingKey[Boolean] = settingKey[Boolean]("If possible, disables the runtime's frame rate limit. Defaults to false.")
   }
 
   import autoImport._
@@ -39,7 +40,8 @@ object SbtIndigo extends sbt.AutoPlugin {
     title := "Made with Indigo",
     gameAssetsDirectory := ".",
     windowStartWidth := 550,
-    windowStartHeight := 400
+    windowStartHeight := 400,
+    disableFrameRateLimit := false
   )
 
   def giveScriptBasePath(baseDir: String, scalaVersion: String): String =
@@ -123,7 +125,8 @@ object SbtIndigo extends sbt.AutoPlugin {
         buildDir = buildDir,
         title = title.value,
         windowWidth = windowStartWidth.value,
-        windowHeight = windowStartHeight.value
+        windowHeight = windowStartHeight.value,
+        disableFrameRateLimit = disableFrameRateLimit.value
       )
     }
 
@@ -138,7 +141,8 @@ object SbtIndigo extends sbt.AutoPlugin {
         buildDir = buildDir,
         title = title.value,
         windowWidth = windowStartWidth.value,
-        windowHeight = windowStartHeight.value
+        windowHeight = windowStartHeight.value,
+        disableFrameRateLimit = disableFrameRateLimit.value
       )
     }
 

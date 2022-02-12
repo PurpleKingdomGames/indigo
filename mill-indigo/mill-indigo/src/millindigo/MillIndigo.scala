@@ -11,15 +11,33 @@ import indigoplugin.IndigoCordova
 
 trait MillIndigo extends mill.Module {
 
+  /** Title of your game.
+    */
   val title: String
+
+  /** Show the cursor?
+    */
   val showCursor: Boolean
+
+  /** Project relative path to a directory that contains all of the assets the game needs to load.
+    */
   val gameAssetsDirectory: Path
+
+  /** Initial window width.
+    */
   val windowStartWidth: Int
+
+  /** Initial window height.
+    */
   val windowStartHeight: Int
+
+  /** If possible, disables the runtime's frame rate limit, recommended to be `false`.
+    */
+  val disableFrameRateLimit: Boolean
 
   def indigoBuild(): Command[Path] =
     T.command {
-      val scriptPathBase: Path =  T.dest / os.up / "fastOpt.dest"
+      val scriptPathBase: Path = T.dest / os.up / "fastOpt.dest"
 
       IndigoBuildMill.build(
         T.dest,
@@ -57,7 +75,7 @@ trait MillIndigo extends mill.Module {
       val outputDir: Path = T.dest
       val buildDir: Path  = indigoBuild()()
 
-      IndigoRun.run(outputDir, buildDir, title, windowStartWidth, windowStartHeight)
+      IndigoRun.run(outputDir, buildDir, title, windowStartWidth, windowStartHeight, disableFrameRateLimit)
     }
 
   def indigoRunFull(): Command[Unit] =
@@ -65,7 +83,7 @@ trait MillIndigo extends mill.Module {
       val outputDir: Path = T.dest
       val buildDir: Path  = indigoBuildFull()()
 
-      IndigoRun.run(outputDir, buildDir, title, windowStartWidth, windowStartHeight)
+      IndigoRun.run(outputDir, buildDir, title, windowStartWidth, windowStartHeight, disableFrameRateLimit)
     }
 
   def indigoCordovaBuild(): Command[Unit] =

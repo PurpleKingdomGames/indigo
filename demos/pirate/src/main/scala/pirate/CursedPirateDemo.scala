@@ -17,7 +17,7 @@ The parameter types are "boot data", "start up data", "model", "view model"
  */
 // This is the only line of Scala.js you *must* use!
 @JSExportTopLevel("IndigoGame")
-object CursedPirateDemo extends IndigoGame[BootInformation, StartupData, Model, ViewModel] {
+object CursedPirateDemo extends IndigoGame[BootInformation, StartupData, Model, ViewModel]:
 
   // The scene's list is ordered, so that you can go forward a backwards.
   // `initialScene` allows you to specify which scene to start at, but in
@@ -60,7 +60,7 @@ object CursedPirateDemo extends IndigoGame[BootInformation, StartupData, Model, 
       ).withAssets(Assets.initialAssets(assetPath))
         .withFonts(Assets.Fonts.fontInfo)
         .withSubSystems(
-          FPSCounter(Point(10, 10), FPS.`60`, Option(BindingKey("fps")))
+          FPSCounter(Point(10, 10), BindingKey("fps"))
         )
     }
 
@@ -97,7 +97,5 @@ object CursedPirateDemo extends IndigoGame[BootInformation, StartupData, Model, 
         .addLayer(Layer(BindingKey("ui")))
         .addLayer(Layer(BindingKey("fps")))
     )
-
-}
 
 final case class BootInformation(assetPath: String, screenDimensions: Rectangle)

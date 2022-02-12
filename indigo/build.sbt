@@ -81,10 +81,11 @@ lazy val sandbox =
     .settings(
       neverPublish,
       commonSettings,
-      name                := "sandbox",
-      showCursor          := true,
-      title               := "Sandbox",
-      gameAssetsDirectory := "assets"
+      name                  := "sandbox",
+      showCursor            := true,
+      title                 := "Sandbox",
+      gameAssetsDirectory   := "assets",
+      disableFrameRateLimit := true
     )
 
 lazy val perf =
@@ -95,12 +96,13 @@ lazy val perf =
     .settings(
       neverPublish,
       commonSettings,
-      name                := "indigo-perf",
-      showCursor          := true,
-      title               := "Perf",
-      gameAssetsDirectory := "assets",
-      windowStartWidth    := 800,
-      windowStartHeight   := 600
+      name                  := "indigo-perf",
+      showCursor            := true,
+      title                 := "Perf",
+      gameAssetsDirectory   := "assets",
+      windowStartWidth      := 800,
+      windowStartHeight     := 600,
+      disableFrameRateLimit := true
     )
 
 // Indigo Extensions

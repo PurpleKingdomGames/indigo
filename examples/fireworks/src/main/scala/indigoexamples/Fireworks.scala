@@ -16,7 +16,6 @@ import scala.scalajs.js.annotation._
 @JSExportTopLevel("IndigoGame")
 object Fireworks extends IndigoDemo[Vertex => Point, FireworksStartupData, Unit, Unit] {
 
-  val targetFPS: FPS     = FPS.`60`
   val magnification: Int = 3
 
   /** Fairly severe. The model only gets one event and the view model is never run.
@@ -37,7 +36,6 @@ object Fireworks extends IndigoDemo[Vertex => Point, FireworksStartupData, Unit,
     Outcome {
       val config =
         defaultGameConfig
-          .withFrameRate(targetFPS)
           .withMagnification(magnification)
           .withViewport(GameViewport.at720p)
 
@@ -50,7 +48,7 @@ object Fireworks extends IndigoDemo[Vertex => Point, FireworksStartupData, Unit,
       ).withAssets(Assets.assets)
         .withFonts(FontDetails.fontInfo)
         .withSubSystems(
-          FPSCounter(Point(5, 5), targetFPS, None),
+          FPSCounter(Point(5, 5)),
           LaunchPadAutomata.automata,
           RocketAutomata.automata(toScreenSpace),
           TrailAutomata.automata,

@@ -221,12 +221,13 @@ lazy val fireworks =
     .enablePlugins(SbtIndigo)
     .enablePlugins(ScalaJSPlugin)
     .settings(
-      name                := "fireworks-example",
-      showCursor          := true,
-      title               := "Fireworks!",
-      gameAssetsDirectory := "assets",
-      windowStartWidth    := 1280,
-      windowStartHeight   := 720,
+      name                  := "fireworks-example",
+      showCursor            := true,
+      title                 := "Fireworks!",
+      gameAssetsDirectory   := "assets",
+      windowStartWidth      := 1280,
+      windowStartHeight     := 720,
+      disableFrameRateLimit := true,
       libraryDependencies ++= Seq(
         "org.scalacheck" %%% "scalacheck" % "1.15.3" % "test"
       )
