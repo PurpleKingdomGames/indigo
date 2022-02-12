@@ -83,7 +83,7 @@ class Platform(
   def extractLoadedTextures(textureAtlas: TextureAtlas): Outcome[List[LoadedTextureAsset]] =
     Outcome(
       textureAtlas.atlases.toList
-        .map(a => a._2.imageData.map(data => new LoadedTextureAsset(AtlasId(a._1), data)))
+        .map { case (atlasId, atlas) => atlas.imageData.map(data => new LoadedTextureAsset(AtlasId(atlasId), data)) }
         .collect { case Some(s) => s }
     )
 
@@ -91,16 +91,16 @@ class Platform(
     Outcome(
       new AssetMapping(
         mappings = textureAtlas.legend
-          .map { p =>
-            p._1 -> new TextureRefAndOffset(
-              atlasName = p._2.id,
+          .map { case (name, atlasIndex) =>
+            name -> new TextureRefAndOffset(
+              atlasName = atlasIndex.id,
               atlasSize = textureAtlas.atlases
-                .get(p._2.id.toString)
+                .get(atlasIndex.id.toString)
                 .map(_.size.value)
                 .map(i => Vector2(i.toDouble))
                 .getOrElse(Vector2.one),
-              offset = p._2.offset.toVector,
-              size = p._2.size.toVector
+              offset = atlasIndex.offset.toVector,
+              size = atlasIndex.size.toVector
             )
           }
       )
