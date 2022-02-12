@@ -117,6 +117,7 @@ final class BoundaryLocator(
       }
 
     BoundaryLocator.findBounds(group, rect.position, rect.size, group.ref)
+  end groupBounds
 
   def spriteFrameBounds(sprite: Sprite[_]): Option[Rectangle] =
     QuickCache(s"""sprite-${sprite.bindingKey.toString}-${sprite.animationKey.toString}""") {
