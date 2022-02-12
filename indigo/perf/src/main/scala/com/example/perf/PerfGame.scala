@@ -9,7 +9,6 @@ import scala.scalajs.js.annotation._
 @JSExportTopLevel("IndigoGame")
 object PerfGame extends IndigoDemo[Unit, Dude, DudeModel, Unit] {
 
-  val targetFPS: FPS          = FPS.`60`
   val viewportWidth: Int      = 800
   val viewportHeight: Int     = 600
   val magnificationLevel: Int = 1
@@ -38,7 +37,7 @@ object PerfGame extends IndigoDemo[Unit, Dude, DudeModel, Unit] {
         .noData(
           GameConfig(
             viewport = GameViewport(viewportWidth, viewportHeight),
-            frameRate = targetFPS,
+            frameRateLimit = None,
             clearColor = RGBA(0.4, 0.2, 0.5, 1),
             magnification = magnificationLevel,
             transparentBackground = false,
@@ -53,7 +52,7 @@ object PerfGame extends IndigoDemo[Unit, Dude, DudeModel, Unit] {
         )
         .withAssets(PerfAssets.assets)
         .withFonts(Fonts.fontInfo)
-        .withSubSystems(FPSCounter(Point(10, 565), targetFPS, None))
+        .withSubSystems(FPSCounter(Point(10, 565)))
         .withShaders(
           StandardShaders.Bitmap,
           StandardShaders.ImageEffects,

@@ -7,11 +7,11 @@ import annotation.targetName
   * current frame. The most commonly used fields (e.g. for animation) are the running time of the game and the time
   * delta since the last frame.
   */
-final case class GameTime(running: Seconds, delta: Seconds, targetFPS: FPS) derives CanEqual:
-  lazy val frameDuration: Millis = targetFPS.toMillis
+final case class GameTime(running: Seconds, delta: Seconds, targetFPS: Option[FPS]) derives CanEqual:
+  lazy val frameDuration: Option[Millis] = targetFPS.map(_.toMillis)
 
   def setTargetFPS(fps: FPS): GameTime =
-    this.copy(targetFPS = fps)
+    this.copy(targetFPS = Option(fps))
   @targetName("setTargetFPS_Int")
   def setTargetFPS(fps: Int): GameTime =
     setTargetFPS(FPS(fps))
@@ -19,10 +19,10 @@ final case class GameTime(running: Seconds, delta: Seconds, targetFPS: FPS) deri
 object GameTime:
 
   val zero: GameTime =
-    GameTime(Seconds.zero, Seconds.zero, FPS.Default)
+    GameTime(Seconds.zero, Seconds.zero, None)
 
   def is(running: Seconds): GameTime =
-    GameTime(running, Seconds.zero, FPS.Default)
+    GameTime(running, Seconds.zero, None)
 
   def withDelta(running: Seconds, delta: Seconds): GameTime =
-    GameTime(running, delta, FPS.Default)
+    GameTime(running, delta, None)

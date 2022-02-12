@@ -9,9 +9,7 @@ import indigoextras.effectmaterials.Thickness
 import scala.scalajs.js.annotation._
 
 @JSExportTopLevel("IndigoGame")
-object EffectsExample extends IndigoSandbox[Unit, Unit] {
-
-  val targetFPS: FPS = FPS.`60`
+object EffectsExample extends IndigoSandbox[Unit, Unit]:
 
   private val magnificationLevel: Int = 2
   private val viewportWidth: Int      = 550
@@ -20,7 +18,6 @@ object EffectsExample extends IndigoSandbox[Unit, Unit] {
   val config: GameConfig =
     GameConfig(
       viewport = GameViewport(viewportWidth, viewportHeight),
-      frameRate = targetFPS,
       clearColor = RGBA(0.0, 0.0, 0.2, 1.0),
       magnification = magnificationLevel
     )
@@ -108,9 +105,8 @@ object EffectsExample extends IndigoSandbox[Unit, Unit] {
       )
     )
   }
-}
 
-object EffectsAssets {
+object EffectsAssets:
 
   val junctionBoxAlbedo: AssetName = AssetName("junctionbox_albedo")
 
@@ -121,5 +117,3 @@ object EffectsAssets {
     Set(
       AssetType.Image(junctionBoxAlbedo, AssetPath("assets/" + junctionBoxAlbedo + ".png"))
     )
-
-}

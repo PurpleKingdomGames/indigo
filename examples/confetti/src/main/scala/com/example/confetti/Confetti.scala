@@ -18,10 +18,9 @@ object Confetti extends IndigoDemo[Unit, Unit, Model, Unit]:
             .withViewport(640, 480)
             .withClearColor(RGBA(0.0, 0.2, 0.0, 1.0))
             .withMagnification(1)
-            .withFrameRate(60)
         )
         .withAssets(Assets.assets)
-        .withSubSystems(FPSCounter(Point.zero, FPS.`60`))
+        .withSubSystems(FPSCounter(Point.zero))
     )
 
   def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[Unit]] =

@@ -43,16 +43,22 @@ final class GameLoop[StartUpData, GameModel, ViewModel](
     _runningTimeReference = time
     val timeDelta: Long = time - lastUpdateTime
 
-    if timeDelta >= gameConfig.frameRateDeltaMillis.toLong - 1 then
-      runFrame(time, timeDelta)
-      gameEngine.platform.tick(gameEngine.gameLoop(time))
-    else gameEngine.platform.tick(loop(lastUpdateTime))
+    gameConfig.frameRateLimit match
+      case None =>
+        runFrame(time, timeDelta)
+        gameEngine.platform.tick(gameEngine.gameLoop(time))
+
+      case Some(fps) =>
+        if timeDelta >= gameConfig.frameRateDeltaMillis.toLong - 1 then
+          runFrame(time, timeDelta)
+          gameEngine.platform.tick(gameEngine.gameLoop(time))
+        else gameEngine.platform.tick(loop(lastUpdateTime))
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   private def runFrame(time: Long, timeDelta: Long): Unit =
 
-    val gameTime = new GameTime(Millis(time).toSeconds, Millis(timeDelta).toSeconds, gameConfig.frameRate)
+    val gameTime = new GameTime(Millis(time).toSeconds, Millis(timeDelta).toSeconds, gameConfig.frameRateLimit)
     val events   = gameEngine.globalEventStream.collect ++ List(FrameTick)
 
     // Persist input state

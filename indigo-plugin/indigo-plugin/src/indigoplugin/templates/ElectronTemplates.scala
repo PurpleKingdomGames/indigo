@@ -51,15 +51,14 @@ app.on('window-all-closed', function () {
 // code. You can also put them in separate files and require them here.
     """
 
-  lazy val packageFileTemplate: String =
-    """
-{
+  def packageFileTemplate(disableFrameRateLimit: Boolean): String =
+    s"""{
   "name": "indigo-runner",
   "version": "1.0.0",
   "description": "Indigo Runner",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron${if(disableFrameRateLimit) " --disable-frame-rate-limit" else ""} ."
   },
   "repository": "",
   "author": "Purple Kingdom Games",
@@ -68,8 +67,7 @@ app.on('window-all-closed', function () {
     """
 
   lazy val preloadFileTemplate: String =
-    """
-// All of the Node.js APIs are available in the preload process.
+    """// All of the Node.js APIs are available in the preload process.
 // It has the same sandbox as a Chrome extension.
 window.addEventListener('DOMContentLoaded', () => {
   const replaceText = (selector, text) => {

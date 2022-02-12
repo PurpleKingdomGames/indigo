@@ -12,36 +12,39 @@ import scala.annotation.targetName
   * @param viewport
   *   How big is the window initially? Defaults to 550 x 400 pixels.
   * @param frameRate
-  *   Desired frame rate (browsers cap at 60 FPS). Defaults to 60 FPS.
+  *   Optionally throttles frame rate. By default (`None`), the browser sets the limits, recommended unless you
+  *   specifically need a lower framerate.
   * @param clearColor
   *   Default background colour. Defaults to Black.
   * @param magnification
   *   Pixel magnification level. Defaults to 1.
+  * @param transparentBackground
+  *   Make the canvas background transparent.
   * @param advanced
   *   Additional settings to help tune your game.
   */
 final case class GameConfig(
     viewport: GameViewport,
-    frameRate: FPS,
+    frameRateLimit: Option[FPS],
     clearColor: RGBA,
     magnification: Int,
     transparentBackground: Boolean,
     advanced: AdvancedGameConfig
 ) derives CanEqual:
-  val frameRateDeltaMillis: Int = 1000 / frameRate.toInt
+  lazy val frameRateDeltaMillis: Int = 1000 / frameRateLimit.map(_.toInt).getOrElse(FPS.Default.toInt)
 
   def screenDimensions: Rectangle =
     viewport.giveDimensions(magnification)
 
-  val asString: String =
+  lazy val asString: String =
     s"""
        |Standard settings
-       |- Viewpoint:      [${viewport.width.toString()}, ${viewport.height.toString()}]
-       |- FPS:            ${frameRate.toString()}
-       |- frameRateDelta: ${frameRateDeltaMillis.toString()}
-       |- Clear color:    {red: ${clearColor.r.toString()}, green: ${clearColor.g.toString()}, blue: ${clearColor.b
+       |- Viewpoint:       [${viewport.width.toString()}, ${viewport.height.toString()}]
+       |- Framerate Limit: ${frameRateLimit.map(_.toString()).getOrElse("Unlimited")}
+       |- Framerate Delta: ${frameRateDeltaMillis.toString()}
+       |- Clear color:     {red: ${clearColor.r.toString()}, green: ${clearColor.g.toString()}, blue: ${clearColor.b
       .toString()}, alpha: ${clearColor.a.toString()}}
-       |- Magnification:  ${magnification.toString()}
+       |- Magnification:   ${magnification.toString()}
        |${advanced.asString}
        |""".stripMargin
 
@@ -52,11 +55,13 @@ final case class GameConfig(
   def withViewport(newViewport: GameViewport): GameConfig =
     this.copy(viewport = newViewport)
 
-  def withFrameRate(frameRate: FPS): GameConfig =
-    this.copy(frameRate = frameRate)
+  def withFrameRateLimit(limit: FPS): GameConfig =
+    this.copy(frameRateLimit = Option(limit))
   @targetName("withFrameRate_Int")
-  def withFrameRate(frameRate: Int): GameConfig =
-    this.copy(frameRate = FPS(frameRate))
+  def withFrameRateLimit(limit: Int): GameConfig =
+    this.copy(frameRateLimit = Option(FPS(limit)))
+  def noFrameRateLimit: GameConfig =
+    this.copy(frameRateLimit = None)
 
   def withClearColor(clearColor: RGBA): GameConfig =
     this.copy(clearColor = clearColor)
@@ -87,27 +92,37 @@ object GameConfig:
   val default: GameConfig =
     GameConfig(
       viewport = GameViewport(550, 400),
-      frameRate = FPS.`60`,
+      frameRateLimit = None,
       clearColor = RGBA.Black,
       magnification = 1,
       transparentBackground = false,
       advanced = AdvancedGameConfig.default
     )
 
-  def apply(width: Int, height: Int, frameRate: FPS): GameConfig =
+  def apply(width: Int, height: Int): GameConfig =
     GameConfig(
       viewport = GameViewport(width, height),
-      frameRate = frameRate,
+      frameRateLimit = None,
       clearColor = RGBA.Black,
       magnification = 1,
       transparentBackground = false,
       advanced = AdvancedGameConfig.default
     )
 
-  def apply(viewport: GameViewport, frameRate: FPS, clearColor: RGBA, magnification: Int): GameConfig =
+  def apply(viewport: GameViewport, clearColor: RGBA, magnification: Int): GameConfig =
     GameConfig(
       viewport = viewport,
-      frameRate = frameRate,
+      frameRateLimit = None,
+      clearColor = clearColor,
+      magnification = magnification,
+      transparentBackground = false,
+      advanced = AdvancedGameConfig.default
+    )
+
+  def apply(width: Int, height: Int, clearColor: RGBA, magnification: Int): GameConfig =
+    GameConfig(
+      viewport = GameViewport(width, height),
+      frameRateLimit = None,
       clearColor = clearColor,
       magnification = magnification,
       transparentBackground = false,
