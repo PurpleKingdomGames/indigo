@@ -57,7 +57,7 @@ object Dice:
       rec(numberOfDice - 1, NonEmptyList(diceSidesN(sides, seed).roll))
     else None
 
-  private[indigo] def loaded(fixedTo: Int): Dice =
+  def loaded(fixedTo: Int): Dice =
     new Dice {
       val seed: Long = 0
 
