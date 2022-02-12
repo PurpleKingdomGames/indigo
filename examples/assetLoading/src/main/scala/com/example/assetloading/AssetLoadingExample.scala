@@ -162,9 +162,9 @@ final case class MyColoredEntity(position: Point) extends EntityNode[MyColoredEn
   def toShaderData: ShaderData =
     ShaderData(MyColoredEntity.shader.id)
 
-  def eventHandler: ((MyColoredEntity, GlobalEvent)) => Option[indigo.shared.events.GlobalEvent] =
+  val eventHandler: ((MyColoredEntity, GlobalEvent)) => Option[indigo.shared.events.GlobalEvent] =
     Function.const(None)
-  def eventHandlerEnabled: Boolean = false
+  val eventHandlerEnabled: Boolean = false
 
 object MyColoredEntity:
   val shader: EntityShader =
