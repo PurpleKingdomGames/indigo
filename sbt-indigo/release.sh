@@ -7,4 +7,4 @@ export GPG_TTY=$(tty)
 source credentials.sh
 
 echo "Attempting plugin release"
-sbt clean compile publishSigned sonatypeBundleRelease
+sbt clean update compile publishSigned sonatypeBundleRelease

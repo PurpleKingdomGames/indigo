@@ -11,11 +11,11 @@ ThisBuild / scalaVersion                                   := scala3Version
 
 lazy val indigoVersion = IndigoVersion.getVersion
 // For the docs site
-lazy val indigoDocsVersion  = "0.11.0"
+lazy val indigoDocsVersion  = "0.12.0"
 lazy val scalaJsDocsVersion = "1.8.0"
 lazy val scalaDocsVersion   = "3.1.1"
 lazy val sbtDocsVersion     = "1.6.2"
-lazy val millDocsVersion    = "0.9.9"
+lazy val millDocsVersion    = "0.10.0"
 
 lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
   version            := indigoVersion,

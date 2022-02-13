@@ -1,4 +1,5 @@
 
+mill clean
 mill clean indigo-plugin[2.12]
 mill clean indigo-plugin[2.13]
 

@@ -2,6 +2,7 @@
 
 cd snake
 
+mill clean
 mill snake.test
 mill snake.fastOpt
 mill snake.indigoBuild

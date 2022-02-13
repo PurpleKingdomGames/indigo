@@ -1,4 +1,5 @@
 cd -Path snake -PassThru
+mill clean
 mill snake.test
 mill snake.fastOpt
 mill snake.indigoBuild
