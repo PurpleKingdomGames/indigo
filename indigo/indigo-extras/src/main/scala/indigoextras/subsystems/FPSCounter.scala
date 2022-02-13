@@ -30,6 +30,15 @@ final case class FPSCounter(
   type EventType      = GlobalEvent
   type SubSystemModel = FPSCounterState
 
+  private val idealFps: Int = targetFPS.getOrElse(FPS.`60`).toInt
+  private val decideNextFps: Int => Int =
+    targetFPS match
+      case None =>
+        frameCountSinceInterval => frameCountSinceInterval + 1
+
+      case Some(target) =>
+        frameCountSinceInterval => Math.min(target.toInt, frameCountSinceInterval + 1)
+
   def eventFilter: GlobalEvent => Option[EventType] = {
     case FrameTick          => Some(FrameTick)
     case e: FPSCounter.Move => Some(e)
@@ -42,16 +51,9 @@ final case class FPSCounter(
   def update(context: SubSystemFrameContext, model: FPSCounterState): GlobalEvent => Outcome[FPSCounterState] = {
     case FrameTick =>
       if (context.gameTime.running >= (model.lastInterval + Seconds(1)))
-        val nextFps = targetFPS match
-          case None =>
-            model.frameCountSinceInterval + 1
-
-          case Some(target) =>
-            Math.min(target.toInt, model.frameCountSinceInterval + 1)
-
         Outcome(
           model.copy(
-            fps = nextFps,
+            fps = decideNextFps(model.frameCountSinceInterval),
             lastInterval = context.gameTime.running,
             frameCountSinceInterval = 0
           )
@@ -65,12 +67,16 @@ final case class FPSCounter(
       Outcome(model)
   }
 
+  private val textBox: TextBox =
+    TextBox("")
+      .withFontFamily(fontFamily)
+      .withFontSize(fontSize)
+
   def present(context: SubSystemFrameContext, model: FPSCounterState): Outcome[SceneUpdateFragment] =
     val text: TextBox =
-      TextBox(s"""FPS ${model.fps.toString}""")
-        .withFontFamily(fontFamily)
-        .withColor(pickTint(targetFPS.getOrElse(FPS.`60`).toInt, model.fps))
-        .withFontSize(fontSize)
+      textBox
+        .withText(s"""FPS ${model.fps.toString}""")
+        .withColor(pickTint(idealFps, model.fps))
         .moveTo(model.position + 2)
 
     val size: Rectangle =

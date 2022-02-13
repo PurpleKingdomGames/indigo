@@ -39,20 +39,24 @@ final class GameLoop[StartUpData, GameModel, ViewModel](
   def viewModelState: ViewModel  = _viewModelState
   def runningTimeReference: Long = _runningTimeReference
 
+  private val runner: (Long, Long, Long) => Unit =
+    gameConfig.frameRateLimit match
+      case None =>
+        (time, timeDelta, lastUpdateTime) =>
+          runFrame(time, timeDelta)
+          gameEngine.platform.tick(gameEngine.gameLoop(time))
+
+      case Some(fps) =>
+        (time, timeDelta, lastUpdateTime) =>
+          if timeDelta >= gameConfig.frameRateDeltaMillis.toLong - 1 then
+            runFrame(time, timeDelta)
+            gameEngine.platform.tick(gameEngine.gameLoop(time))
+          else gameEngine.platform.tick(loop(lastUpdateTime))
+
   def loop(lastUpdateTime: Long): Long => Unit = { time =>
     _runningTimeReference = time
     val timeDelta: Long = time - lastUpdateTime
-
-    gameConfig.frameRateLimit match
-      case None =>
-        runFrame(time, timeDelta)
-        gameEngine.platform.tick(gameEngine.gameLoop(time))
-
-      case Some(fps) =>
-        if timeDelta >= gameConfig.frameRateDeltaMillis.toLong - 1 then
-          runFrame(time, timeDelta)
-          gameEngine.platform.tick(gameEngine.gameLoop(time))
-        else gameEngine.platform.tick(loop(lastUpdateTime))
+    runner(time, timeDelta, lastUpdateTime)
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
