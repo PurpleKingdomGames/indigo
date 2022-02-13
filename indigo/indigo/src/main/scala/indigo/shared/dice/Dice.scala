@@ -9,22 +9,23 @@ import scala.util.Random
 
 /** All dice rolls are from value 1 to N inclusive. Like a dice.
   */
-trait Dice {
+trait Dice:
   val seed: Long
   def roll: Int
   def roll(sides: Int): Int
+  def rollFromZero: Int
   def rollFromZero(sides: Int): Int
   def rollFloat: Float
   def rollDouble: Double
   def rollAlphaNumeric(length: Int): String
   def rollAlphaNumeric: String
   def rollBoolean: Boolean = if roll(2) == 1 then true else false
+  def shuffle[A](items: List[A]): List[A]
 
   override def toString: String =
     s"Dice(seed = ${seed.toString()})"
-}
 
-object Dice {
+object Dice:
 
   def fromSeconds(time: Seconds): Dice =
     Sides.MaxInt(time.toMillis.toLong)
@@ -38,10 +39,10 @@ object Dice {
   private val isPositive: Int => Boolean =
     _ > 0
 
-  val sanitise: Int => Int =
+  private val sanitise: Int => Int =
     i => Math.max(1, Math.abs(i))
 
-  def roll(dice: Int, sides: Int, seed: Long): Option[NonEmptyList[Int]] = {
+  def rollMany(numberOfDice: Int, sides: Int, seed: Long): Option[NonEmptyList[Int]] =
     @tailrec
     def rec(remaining: Int, acc: NonEmptyList[Int]): Option[NonEmptyList[Int]] =
       remaining match {
@@ -52,11 +53,9 @@ object Dice {
           rec(n - 1, diceSidesN(sides, seed).roll :: acc)
       }
 
-    if (isPositive(dice) && isPositive(sides))
-      rec(dice - 1, NonEmptyList(diceSidesN(sides, seed).roll))
-    else
-      None
-  }
+    if isPositive(numberOfDice) && isPositive(sides) then
+      rec(numberOfDice - 1, NonEmptyList(diceSidesN(sides, seed).roll))
+    else None
 
   def loaded(fixedTo: Int): Dice =
     new Dice {
@@ -66,6 +65,9 @@ object Dice {
         fixedTo
 
       def roll(sides: Int): Int =
+        fixedTo
+
+      def rollFromZero: Int =
         fixedTo
 
       def rollFromZero(sides: Int): Int =
@@ -82,34 +84,9 @@ object Dice {
 
       def rollAlphaNumeric: String =
         rollAlphaNumeric(16)
-    }
 
-  def arbitrary(from: Int, to: Int, seedValue: Long): Dice =
-    new Dice {
-      val seed: Long = seedValue
-
-      val r: Random = new Random(seed)
-
-      def roll: Int =
-        r.nextInt(sanitise(to) - sanitise(from)) + sanitise(from)
-
-      def roll(sides: Int): Int =
-        r.nextInt(sanitise(sides)) + 1
-
-      def rollFromZero(sides: Int): Int =
-        roll(sides + 1) - 1
-
-      def rollFloat: Float =
-        r.nextFloat()
-
-      def rollDouble: Double =
-        r.nextDouble()
-
-      def rollAlphaNumeric(length: Int): String =
-        r.alphanumeric.take(length).mkString
-
-      def rollAlphaNumeric: String =
-        rollAlphaNumeric(16)
+      def shuffle[A](items: List[A]): List[A] =
+        items
     }
 
   def diceSidesN(sides: Int, seedValue: Long): Dice =
@@ -124,8 +101,11 @@ object Dice {
       def roll(sides: Int): Int =
         r.nextInt(sanitise(sides)) + 1
 
+      def rollFromZero: Int =
+        roll - 1
+
       def rollFromZero(sides: Int): Int =
-        roll(sides + 1) - 1
+        roll(sides) - 1
 
       def rollFloat: Float =
         r.nextFloat()
@@ -138,13 +118,13 @@ object Dice {
 
       def rollAlphaNumeric: String =
         rollAlphaNumeric(16)
+
+      def shuffle[A](items: List[A]): List[A] =
+        r.shuffle(items)
     }
 
-  val ZeroIndexed: Long => Dice =
-    (seed: Long) => arbitrary(0, Int.MaxValue, seed)
-
-  object Sides {
-    val MaxInt: Long => Dice   = (seed: Long) => arbitrary(1, Int.MaxValue, seed)
+  object Sides:
+    val MaxInt: Long => Dice   = (seed: Long) => diceSidesN(Int.MaxValue, seed)
     val One: Long => Dice      = (seed: Long) => diceSidesN(1, seed)
     val Two: Long => Dice      = (seed: Long) => diceSidesN(2, seed)
     val Three: Long => Dice    = (seed: Long) => diceSidesN(3, seed)
@@ -161,6 +141,3 @@ object Dice {
     val Fourteen: Long => Dice = (seed: Long) => diceSidesN(14, seed)
     val Fifteen: Long => Dice  = (seed: Long) => diceSidesN(15, seed)
     val Sixteen: Long => Dice  = (seed: Long) => diceSidesN(16, seed)
-  }
-
-}
