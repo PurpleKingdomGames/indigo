@@ -89,7 +89,7 @@ object Dice:
         items
     }
 
-  private[dice] def diceSidesN(sides: Int, seedValue: Long): Dice =
+  def diceSidesN(sides: Int, seedValue: Long): Dice =
     new Dice {
       val seed: Long = seedValue
 
