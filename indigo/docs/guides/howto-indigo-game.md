@@ -122,6 +122,15 @@ Add the following:
 +    )
 ```
 
+We'll also need to add the boot data to the `setup` signature:
+```diff
+  def setup(
++     bootData: Unit,
+      assetCollection: AssetCollection,
+      dice: Dice
+  ): 
+```
+
 Here we're telling Indigo to boot using the config already assigned and
 the 'dots' asset. It's worth noting that if anything fails at this stage
 Indigo won't boot.
