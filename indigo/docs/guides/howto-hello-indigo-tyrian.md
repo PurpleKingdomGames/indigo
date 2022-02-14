@@ -68,8 +68,8 @@ Next you'll need to update either your
 -    }
 -  }
 -
-   val indigoVersion = "0.11.1"
-+  val tyrianVersion = "0.2.2"
+   val indigoVersion = "0.12.0"
++  val tyrianVersion = "0.3.0"
 
    def ivyDeps =
     Agg(
@@ -97,7 +97,7 @@ Usually Indigo will generate all of our HTML for us and run it through Electron,
 but for this example we're going to generate our own HTML so that we can
 inject CSS.
 
-Firstly we'll create an `index.html` file that looks like
+Firstly we'll create an `index.html` and `app.js` file that looks like
 [this](https://gist.github.com/hobnob/eaa03bfe2da14562e5f2819078f16d63). You'll
 notice we're using the direct JS output from our build here, which may feel odd.
 What will happen when we run ParcelJS through Yarn is that the HTML will be
@@ -204,7 +204,7 @@ like this:
 ```diff
      msg match
 +      case Msg.AddDot =>
-+        (model, bridge.sendTo(IndigoGameId(gameDivId), ""))
++        (model, model.bridge.publish(IndigoGameId(gameDivId), ""))
        case Msg.StartIndigo =>
 ```
 
@@ -212,9 +212,9 @@ The final part on the Tyrian side is to hook the button up to fire the `AddDot`
 message. To do this add an `OnClick` attribute to our button like so:
 
 ```diff
-       div(`class`("btn"))(
--        button()(text("Click me"))
-+        button(onClick(Msg.AddDot))(text("Click me"))
+       div(`class` := "btn")(
+-        button()("Click me")
++        button(onClick(Msg.AddDot))("Click me")
        )
 ```
 
@@ -249,20 +249,20 @@ currently displaying. To do this, first update the model in `HelloTyrian.scala`
 so that it has a `count` property which is initialised to zero, like so:
 
 ```diff
--final case class TyrianModel()
-+final case class TyrianModel(count: Int)
+-final case class TyrianModel(bridge: TyrianIndigoBridge[Int])
++final case class TyrianModel(bridge: TyrianIndigoBridge[Int], count: Int)
 object TyrianModel:
 -  val init: TyrianModel
 +  val init: TyrianModel =
-+    TyrianModel(0)
++    TyrianModel(TyrianIndigoBridge(), 0)
 ```
 
 We'll need to display that count on the website. To do this, we simply modify our
 counting `div` to display what's in the `model` like so
 
 ```diff
--      div(`class`("counter"))(),
-+      div(``class``("counter"))(text(model.count.toString))
+-      div(`class` := "counter")(),
++      div(``class`` := "counter")(model.count.toString)
 ```
 
 A new message type is also required as before, so we'll add a new one like so:
@@ -282,7 +282,7 @@ This can be done using the bridge subscriptions like so:
 ```diff
    def subscriptions(model: TyrianModel): Sub[Msg] =
 -    Sub.Empty
-+    bridge.subscribe { case msg =>
++    model.bridge.subscribe { case msg =>
 +      Some(Msg.IndigoReceive(msg))
 +    }
 ```
@@ -295,7 +295,7 @@ we can use directly in our model To do this we simply add the following to our
 ```diff
      msg match
        case Msg.AddDot =>
-         (model, bridge.sendTo(IndigoGameId(gameDivId), ""))
+         (model, model.bridge.publish(IndigoGameId(gameDivId), 0))
 +      case Msg.IndigoReceive(msg) =>
 +        (model.copy(count = msg), Cmd.Empty)
        case Msg.StartIndigo =>
