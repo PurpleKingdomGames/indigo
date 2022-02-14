@@ -204,7 +204,7 @@ like this:
 ```diff
      msg match
 +      case Msg.AddDot =>
-+        (model, model.bridge.publish(IndigoGameId(gameDivId), ""))
++        (model, model.bridge.publish(IndigoGameId(gameDivId), 0))
        case Msg.StartIndigo =>
 ```
 
