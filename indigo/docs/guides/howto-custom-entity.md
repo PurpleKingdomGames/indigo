@@ -96,7 +96,7 @@ Walking through it, `position` and `depth` have been moved to be case class argu
 
 Then things get a little more complicated. `toShaderData` has been implemented by creating a `ShaderData` instance that only takes a `ShaderId`, which it sources from the companion object.
 
-The companion object defines the shader that is going to color in our entity by declaring an `EntityShader` (as a pose to a `BlendShader`). `Shader` instances whether a `BlendShader` or an `EntityShader` come in two forms: `EnityShader.Source(..)` or `EnityShader.External(..)`. The difference is that `Source` instances literally take the GLSL program as a `String`, and `External` instances look for loaded assets, which is a much nicer editing experience.
+The companion object defines the shader that is going to color in our entity by declaring an `EntityShader` (as opposed to a `BlendShader`). `Shader` instances whether a `BlendShader` or an `EntityShader` come in two forms: `EnityShader.Source(..)` or `EnityShader.External(..)`. The difference is that `Source` instances literally take the GLSL program as a `String`, and `External` instances look for loaded assets, which is a much nicer editing experience.
 
 There are several parts to an Indigo shader program that can be set (or default implementations are used), but in this case we're only setting the fragment program as follows:
 

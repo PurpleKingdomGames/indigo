@@ -117,7 +117,7 @@ To light a pixel on a surface we need to know it's [normal](https://en.wikipedia
 
 The normal is used to work out how much light from a light source makes it to the camera / eye and therefore allows us (as people) to interpret what angle the surface was at.
 
-Consider a sphere - which is a single surface. The angle of the normal of a sphere's surface rotates around depending on which point of the sphere you're looking at. This change in normal is what gives the appearance of a smooth spherical surface, as a pose to a flat circle.
+Consider a sphere - which is a single surface. The angle of the normal of a sphere's surface rotates around depending on which point of the sphere you're looking at. This change in normal is what gives the appearance of a smooth spherical surface, as opposed to a flat circle.
 
 Knowing that, we can take a completely flat image and _pretend_ it's bumpy or textured by _bending_ the real normal to a new angle at different co-ordinates on the texture.
 

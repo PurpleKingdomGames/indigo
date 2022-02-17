@@ -11,7 +11,7 @@ We want pure, referentially transparent, testable, procedural animations.
 
 ## Background
 
-The goal of Indigo is to make programming games (as a pose to making them...), easier to reason about and easier to test by leveraging the good ideas that come with functional programming.
+The goal of Indigo is to make programming games (as opposed to making them...), easier to reason about and easier to test by leveraging the good ideas that come with functional programming.
 
 One of those good ideas that Indigo borrows is the notion of Signals and Signal Functions. Signals for animation were first proposed in the Functional Reactive ANimation (FRAN) system, but are most readily seen in [Yampa](https://github.com/ivanperez-keera/Yampa).
 
