@@ -98,12 +98,38 @@ Usually Indigo will generate all of our HTML for us and run it through Electron,
 but for this example we're going to generate our own HTML so that we can
 inject CSS.
 
-Firstly we'll create an `index.html` and `app.js` file that looks like
-[this](https://gist.github.com/hobnob/eaa03bfe2da14562e5f2819078f16d63). You'll
-notice we're using the direct JS output from our build here, which may feel odd.
-What will happen when we run ParcelJS through Yarn is that the HTML will be
-copied to a build directory along with the JS, CSS and any dependant static
-files (such as images) that may be needed.
+Firstly we'll create an `app.js` file that simply loads Tyrian and then launches
+it for our page:
+
+```js
+import {
+    TyrianApp
+} from './out/HelloIndigo/fastOpt.dest/out.js';
+
+TyrianApp.launch("main");
+```
+
+We'll also need an `index.html` to hold our basic HTML data:
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+      <meta charset="UTF-8">
+      <title>Hello Indigo</title>
+      <link rel="stylesheet" href="css/main.css" />
+      <script type="module" defer src="app.js"></script>
+  </head>
+  <body>
+      <div id="main"></div>
+  </body>
+</html>
+```
+
+You'll notice we're using the direct JS output from our build here, which may
+feel odd. What will happen when we run ParcelJS through Yarn is that the HTML
+will be copied to a build directory along with the JS, CSS and any dependant
+static files (such as images) that may be needed.
 
 Now generate an empty `css/main.css`.
 
