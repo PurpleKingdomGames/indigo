@@ -1,6 +1,6 @@
 ---
 id: howto-responsive-ui-with-tyrian
-title: How to make a custom entity
+title: How to make a responsive UI using Tyrian
 ---
 
 ## Responsive UI Using Tyrian
