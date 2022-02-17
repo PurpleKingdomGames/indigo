@@ -122,12 +122,12 @@ These are the low level events used to load additional assets at runtime. If you
 
 Note that the `LoadAsset` event is a convenience event, and in fact loads a bundle containing one element, which is why there is no corresponding "`AssetLoadError`" event, just the bundle version.
 
-> The load events also have a `makeAvailable` flag, which if set to false, loads the asset but doesn't add it to the engine. The `available` flag on the response indicates whether the asset has been made available or not.
+> The load events also have a `makeAvailable` flag, which if set to false, loads the asset to the browsers cache but doesn't add it to the engine, this means you can add it to the engine quickly later. The `available` flag on the response indicates whether the asset has been made available or not.
 
-- `LoadAsset(assetType, optional key, makeAvailable)` - Delete the data stored against the given key
-- `LoadAssetBatch(set of assetType, optional key, makeAvailable)` - Delete the data stored against the given key
-- `AssetBatchLoaded(optional key, available)` - Delete the data stored against the given key
-- `AssetBatchLoadError(optional key)` - Delete the data stored against the given key
+- `LoadAsset(assetType, optional key, makeAvailable)` - Load a single asset
+- `LoadAssetBatch(set of assetType, optional key, makeAvailable)` - Load a batch of assets
+- `AssetBatchLoaded(optional key, available)` - The response event to `LoadAsset` or `LoadAssetBatch`
+- `AssetBatchLoadError(optional key)` - If an error occurs during load, the game will be sent this event
 
 ### Scenes
 
