@@ -35,7 +35,7 @@ that then rotates around the canvas. We'll modify this so that clicking a button
 does this job instead.
 
 You'll want to upgrade `hello-indigo` to use `IndigoGame`. To do this either
-follow [this guide]()
+follow [this guide](howto-indigo-game.md)
 or replace `HelloIndigo.scala` with
 [this](https://gist.github.com/hobnob/c24f00936e91a7b7e5d644d19e4f1b32)
 
