@@ -22,7 +22,7 @@ object SupportScriptTemplate {
       |
       |
       |function resizeCanvas() {
-      |  var c = document.getElementById("indigo-container");
+      |  var c = document.getElementById("indigo-container-indigo");
       |  c.height = window.innerHeight;
       |  c.width = window.innerWidth;
       |}
