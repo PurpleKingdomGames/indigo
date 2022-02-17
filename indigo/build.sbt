@@ -185,6 +185,9 @@ lazy val docs = project
       "MILL_VERSION"    -> millDocsVersion
     )
   )
+  .settings(
+    run / fork := true
+  )
 
 addCommandAlias(
   "gendocs",
