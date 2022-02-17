@@ -13,8 +13,9 @@ These tend to scale with the size of the screen and the position of such
 elements may change depending on the capabilities of the display. Many game
 engines provide a way to create overlay UI elements that scale in some way to
 the space they're in using a separate UI system. In Indigo we're exporting to
-JavaScript so it makes sense for us to use other web technologies for a problem
-that is already, ultimately, solved.
+JavaScript and a browser (even in Electron), so depending on how we want the UI
+to look, one option is to employ more standard web technologies to do this work
+for us, i.e. HTML and CSS.
 
 Using Tyrian we can utilise HTML and CSS to ensure our overlay UI scales
 no matter what screen size we use.
