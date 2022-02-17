@@ -20,8 +20,8 @@ Using Tyrian we can utilise HTML and CSS to ensure our overlay UI scales
 no matter what screen size we use.
 
 In this guide we'll take the basic `hello-indigo` example and add a button and
-a counter that scales with the size of the screen. It's a pretty basic example to
-be honest, but it should give you an idea of what can be achieved.
+a counter that scales with the size of the screen. It's a pretty basic example,
+but it should give you an idea of what can be achieved.
 
 ## Setup
 
