@@ -110,7 +110,7 @@ allow the click event, which is the only one we need right now. Add the followin
 
 We can now tell Indigo which assets to load at
 [boot time](https://indigoengine.io/docs/organisation/boot-and-start-up).
-This is where we'll make use of the assets and config `var` that we left earlier.
+This is where we'll make use of the assets and config `val` that we left earlier.
 Add the following:
 
 ```diff
