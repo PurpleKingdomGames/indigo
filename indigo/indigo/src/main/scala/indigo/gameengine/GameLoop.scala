@@ -34,6 +34,8 @@ final class GameLoop[StartUpData, GameModel, ViewModel](
   private var _runningTimeReference: Long = 0
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var _inputState: InputState = InputState.default
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  private var _running: Boolean = true
 
   def gameModelState: GameModel  = _gameModelState
   def viewModelState: ViewModel  = _viewModelState
@@ -53,10 +55,19 @@ final class GameLoop[StartUpData, GameModel, ViewModel](
             gameEngine.platform.tick(gameEngine.gameLoop(time))
           else gameEngine.platform.tick(loop(lastUpdateTime))
 
+  @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
+  def kill(): Unit =
+    _running = false
+    _gameModelState = null.asInstanceOf[GameModel]
+    _viewModelState = null.asInstanceOf[ViewModel]
+    _runningTimeReference = 0
+    _inputState = null
+    ()
+
   def loop(lastUpdateTime: Long): Long => Unit = { time =>
     _runningTimeReference = time
     val timeDelta: Long = time - lastUpdateTime
-    runner(time, timeDelta, lastUpdateTime)
+    if _running then runner(time, timeDelta, lastUpdateTime)
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))

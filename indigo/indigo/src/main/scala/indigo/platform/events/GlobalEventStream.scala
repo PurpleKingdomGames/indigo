@@ -30,6 +30,10 @@ final class GlobalEventStream(
   private val eventQueue: mutable.Queue[GlobalEvent] =
     new mutable.Queue[GlobalEvent]()
 
+  def kill(): Unit =
+    eventQueue.clear()
+    ()
+
   val pushGlobalEvent: GlobalEvent => Unit = {
     // Networking
     case httpRequest: HttpRequest =>

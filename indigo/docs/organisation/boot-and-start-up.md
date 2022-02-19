@@ -73,6 +73,16 @@ Flags can represent anything you like. In the Snake example we are providing the
 
 The main limitation on flags is that they are typed to `Map[String, String]`, which is bothersome if you're trying to supply a number for instance. Perhaps the best way to use more sophisticated data at start up would be to supply JSON by setting a data flag, e.g. `{ data = '{width: 10, height: 10}' }`, and then pulling out the data flag at boot time and parsing the JSON string.
 
+#### Halting a game
+
+If you are embedding your game in a web page, you may have the need to stop a running game and free up it's resources, which you can do by calling the opposite function to `launch`, called `halt`:
+
+```javascript
+IndigoGame.halt();
+```
+
+Calling `halt` does not clean up your page in any way, the assumption is that you will remove the relevant HTML dom nodes.
+
 #### BootResult[_]
 
 In a simple game, all of your animations, fonts, subsystems, shaders, and assets can be declared during the boot stage. For more complex games, such as ones that have a pre-loader, you should only include the elements you need for the preloader scene here.

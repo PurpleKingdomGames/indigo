@@ -176,6 +176,14 @@ final class AudioPlayer(context: AudioContextProxy) {
         }
       }
 
+  @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
+  def kill(): Unit =
+    soundAssets = Nil
+    sourceA = null
+    sourceB = null
+    sourceC = null
+    ()
+
   private class AudioSourceState(val bindingKey: BindingKey, val audioNodes: Option[AudioNodes])
   private class AudioNodes(val audioBufferSourceNode: AudioBufferSourceNode, val gainNode: GainNode)
 

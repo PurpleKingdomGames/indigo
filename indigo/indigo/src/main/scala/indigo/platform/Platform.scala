@@ -44,13 +44,11 @@ class Platform(
   val rendererInit: RendererInitialiser =
     new RendererInitialiser(gameConfig.advanced.renderingTechnology, globalEventStream, dynamicText)
 
-  @SuppressWarnings(
-    Array(
-      "scalafix:DisableSyntax.null",
-      "scalafix:DisableSyntax.var"
-    )
-  )
+  @SuppressWarnings(Array("scalafix:DisableSyntax.null", "scalafix:DisableSyntax.var"))
   private var _canvas: Canvas = null
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  private var _running: Boolean         = true
+  private val _worldEvents: WorldEvents = new WorldEvents
 
   def initialise(shaders: Set[RawShaderCode]): Outcome[(Renderer, AssetMapping)] =
     for {
@@ -67,9 +65,14 @@ class Platform(
     }
 
   def tick(loop: Long => Unit): Unit = {
-    dom.window.requestAnimationFrame(t => loop(t.toLong))
+    if _running then dom.window.requestAnimationFrame(t => loop(t.toLong))
     ()
   }
+
+  def kill(): Unit =
+    _running = false
+    _worldEvents.kill(_canvas)
+    ()
 
   def createTextureAtlas(assetCollection: AssetCollection): Outcome[TextureAtlas] =
     Outcome(
@@ -128,7 +131,7 @@ class Platform(
   def listenToWorldEvents(canvas: Canvas, magnification: Int, globalEventStream: GlobalEventStream): Outcome[Unit] =
     Outcome {
       IndigoLogger.info("Starting world events")
-      WorldEvents.init(canvas, magnification, globalEventStream)
+      _worldEvents.init(canvas, magnification, globalEventStream)
       GamepadInputCaptureImpl.init()
     }
 
