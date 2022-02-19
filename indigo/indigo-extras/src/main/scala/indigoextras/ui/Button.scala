@@ -16,9 +16,6 @@ import indigo.shared.scenegraph.Sprite
 import indigo.shared.scenegraph.Text
 import indigo.shared.scenegraph.TextBox
 
-import scala.annotation.nowarn
-
-@nowarn("msg=value leftMouseIsDown in class Mouse is deprecated")
 final case class Button(
     buttonAssets: ButtonAssets,
     bounds: Rectangle,
@@ -73,7 +70,7 @@ final case class Button(
 
     state match
       // Stay in Down state
-      case ButtonState.Down if mouseInBounds && mouse.leftMouseIsDown =>
+      case ButtonState.Down if mouseInBounds && mouse.isLeftDown =>
         Outcome(this).addGlobalEvents(onHoldDown() ++ mouseButtonEvents)
 
       // Move to Down state
@@ -84,10 +81,10 @@ final case class Button(
         Outcome(toDownState).addGlobalEvents(mouseButtonEvents)
 
       // Out of Down state
-      case ButtonState.Down if mouseInBounds && !mouse.leftMouseIsDown =>
+      case ButtonState.Down if mouseInBounds && !mouse.isLeftDown =>
         Outcome(toOverState).addGlobalEvents(onHoverOver() ++ mouseButtonEvents)
 
-      case ButtonState.Down if !mouseInBounds && !mouse.leftMouseIsDown =>
+      case ButtonState.Down if !mouseInBounds && !mouse.isLeftDown =>
         Outcome(toUpState).addGlobalEvents(onHoverOut() ++ mouseButtonEvents)
 
       //

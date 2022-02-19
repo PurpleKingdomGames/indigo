@@ -6,7 +6,6 @@ import indigo.shared.events.MouseButton
 import indigo.shared.events.MouseEvent
 import indigo.shared.events.MouseWheel
 
-import scala.annotation.nowarn
 import scala.annotation.tailrec
 
 final class Mouse(
@@ -26,8 +25,8 @@ final class Mouse(
 
   def isButtonDown(button: MouseButton): Boolean = buttonsDown.contains(button)
 
-  lazy val isLeftDown: Boolean  = buttonsDown.contains(MouseButton.LeftMouseButton)
-  lazy val isRightDown: Boolean = buttonsDown.contains(MouseButton.RightMouseButton)
+  lazy val isLeftDown: Boolean  = isButtonDown(MouseButton.LeftMouseButton)
+  lazy val isRightDown: Boolean = isButtonDown(MouseButton.RightMouseButton)
 
   lazy val mouseClicked: Boolean = mouseEvents.exists {
     case _: MouseEvent.Click => true

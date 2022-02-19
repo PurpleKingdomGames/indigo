@@ -9,9 +9,6 @@ import indigo.shared.input.GamepadAnalogControls
 import indigo.shared.input.GamepadButtons
 import indigo.shared.input.GamepadDPad
 
-import scala.annotation.nowarn
-
-@nowarn("msg=value leftMouseIsDown in class Mouse is deprecated")
 class InputStateTests extends munit.FunSuite {
 
   val bounds: Rectangle =
@@ -24,7 +21,7 @@ class InputStateTests extends munit.FunSuite {
     Gamepad.default
 
   test("The default state object does the expected thing") {
-    assertEquals(inputState.mouse.leftMouseIsDown, false)
+    assertEquals(inputState.mouse.isLeftDown, false)
     assertEquals(inputState.mouse.position, Point.zero)
 
     assertEquals(inputState.mouse.wasMouseClickedWithin(bounds), false)
@@ -132,7 +129,7 @@ class InputStateTests extends munit.FunSuite {
     assertEquals(state.mouse.wasMousePositionWithin(Rectangle(5, 5, 10, 10)), true)
   }
 
-  test("Mouse state.leftMouseIsDown") {
+  test("Mouse state.isLeftDown") {
 
     val state2 = InputState.calculateNext(state, List(MouseEvent.MouseDown(0, 0)), gamepadState1)     // true
     val state3 = InputState.calculateNext(state2, Nil, gamepadState1)                                 // still true
@@ -149,13 +146,13 @@ class InputStateTests extends munit.FunSuite {
       gamepadState1
     )
 
-    assertEquals(state.mouse.leftMouseIsDown, false)
-    assertEquals(state2.mouse.leftMouseIsDown, true)
-    assertEquals(state3.mouse.leftMouseIsDown, true)
-    assertEquals(state4.mouse.leftMouseIsDown, true)
-    assertEquals(state5.mouse.leftMouseIsDown, true)
-    assertEquals(state6.mouse.leftMouseIsDown, false)
-    assertEquals(state7.mouse.leftMouseIsDown, false)
+    assertEquals(state.mouse.isLeftDown, false)
+    assertEquals(state2.mouse.isLeftDown, true)
+    assertEquals(state3.mouse.isLeftDown, true)
+    assertEquals(state4.mouse.isLeftDown, true)
+    assertEquals(state5.mouse.isLeftDown, true)
+    assertEquals(state6.mouse.isLeftDown, false)
+    assertEquals(state7.mouse.isLeftDown, false)
   }
 
   test("Mouse state.rigthMouseIsDown") {
