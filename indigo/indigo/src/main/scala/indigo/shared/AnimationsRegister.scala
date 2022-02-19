@@ -10,8 +10,13 @@ import indigo.shared.time.GameTime
 
 final class AnimationsRegister:
 
-  private val animationRegistry: scalajs.js.Dictionary[AnimationRef] = scalajs.js.Dictionary.empty
+  private val animationRegistry: scalajs.js.Dictionary[AnimationRef]   = scalajs.js.Dictionary.empty
   private val animationStates: scalajs.js.Dictionary[AnimationMemento] = scalajs.js.Dictionary.empty
+
+  def kill(): Unit =
+    animationRegistry.clear()
+    animationStates.clear()
+    ()
 
   def register(animation: Animation): Unit = {
     animationRegistry.put(animation.animationKey.toString, AnimationRef.fromAnimation(animation))

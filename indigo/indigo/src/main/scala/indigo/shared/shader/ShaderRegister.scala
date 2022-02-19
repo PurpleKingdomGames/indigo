@@ -7,6 +7,9 @@ final class ShaderRegister {
 
   implicit private val cache: QuickCache[RawShaderCode] = QuickCache.empty
 
+  def kill(): Unit =
+    clearRegister()
+
   def register(shader: Shader): Unit =
     shader match {
       case s: EntityShader.Source =>

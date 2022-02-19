@@ -7,6 +7,9 @@ final class FontRegister {
 
   implicit private val cache: QuickCache[FontInfo] = QuickCache.empty
 
+  def kill(): Unit =
+    clearRegister()
+
   def register(fontInfo: FontInfo): Unit = {
     QuickCache(fontInfo.fontKey.toString)(fontInfo)
     ()

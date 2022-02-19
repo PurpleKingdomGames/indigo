@@ -85,6 +85,31 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
   var platform: Platform = null
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
+  def kill(): Unit =
+    platform.kill()
+    gameLoopInstance.kill()
+    animationsRegister.kill()
+    fontRegister.kill()
+    shaderRegister.kill()
+    shaderRegister.kill()
+    boundaryLocator.purgeCache()
+    sceneProcessor.purgeCaches()
+    audioPlayer.kill()
+    globalEventStream.kill()
+
+    gameConfig = null
+    storage = null
+    globalEventStream = null
+    gamepadInputCapture = null
+    gameLoopInstance = null
+    accumulatedAssetCollection = null
+    assetMapping = null
+    renderer = null
+    startUpData = null.asInstanceOf[StartUpData]
+    platform = null
+    ()
+
+  @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def start(
       parentElementId: String,
       config: GameConfig,
@@ -92,7 +117,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
       assets: Set[AssetType],
       assetsAsync: Future[Set[AssetType]],
       bootEvents: List[GlobalEvent]
-  ): Unit = {
+  ): GameEngine[StartUpData, GameModel, ViewModel] = {
 
     IndigoLogger.info("Starting Indigo")
 
@@ -131,6 +156,8 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
       }
 
     }
+
+    this
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
@@ -164,7 +191,11 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
 
           GameEngine.registerAnimations(animationsRegister, animations ++ startupData.additionalAnimations)
           GameEngine.registerFonts(fontRegister, fonts ++ startupData.additionalFonts)
-          GameEngine.registerShaders(shaderRegister, shaders ++ startupData.additionalShaders, accumulatedAssetCollection)
+          GameEngine.registerShaders(
+            shaderRegister,
+            shaders ++ startupData.additionalShaders,
+            accumulatedAssetCollection
+          )
 
           def modelToUse(startUpSuccessData: => StartUpData): Outcome[GameModel] =
             if (firstRun) initialModel(startUpSuccessData)

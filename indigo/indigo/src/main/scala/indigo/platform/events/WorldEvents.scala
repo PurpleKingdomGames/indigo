@@ -10,7 +10,7 @@ import org.scalajs.dom.document
 import org.scalajs.dom.html
 import org.scalajs.dom.window
 
-object WorldEvents {
+final class WorldEvents:
 
   def absoluteCoordsX(relativeX: Double): Int = {
     val offset: Double =
@@ -118,4 +118,14 @@ object WorldEvents {
 
   }
 
-}
+  def kill(canvas: html.Canvas): Unit = {
+    canvas.removeEventListener("click", (e: dom.MouseEvent) => ())
+    canvas.removeEventListener("wheel", (e: dom.WheelEvent) => ())
+    canvas.removeEventListener("mousemove", (e: dom.MouseEvent) => ())
+    canvas.removeEventListener("mousedown", (e: dom.MouseEvent) => ())
+    canvas.removeEventListener("mouseup", (e: dom.MouseEvent) => ())
+    document.removeEventListener("keydown", (e: dom.KeyboardEvent) => ())
+    document.removeEventListener("keyup", (e: dom.KeyboardEvent) => ())
+  }
+
+end WorldEvents
