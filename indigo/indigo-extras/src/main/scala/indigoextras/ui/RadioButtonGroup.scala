@@ -15,7 +15,6 @@ import indigo.shared.scenegraph.Sprite
 import indigo.shared.scenegraph.Text
 import indigo.shared.scenegraph.TextBox
 
-import scala.annotation.nowarn
 import scala.annotation.tailrec
 
 /** Represents an individual option button in a radio button group. This class just containing the distinct information
@@ -34,7 +33,6 @@ import scala.annotation.tailrec
   * @param state
   *   The current state of the radio button i.e., selected, hover, or normal
   */
-@nowarn("msg=value leftMouseIsDown in class Mouse is deprecated")
 final case class RadioButton(
     position: Point,
     onSelected: () => List[GlobalEvent],
@@ -223,7 +221,6 @@ object RadioButton:
   * @param depth
   *   The depth at which to present the buttons
   */
-@nowarn("msg=value leftMouseIsDown in class Mouse is deprecated")
 final case class RadioButtonGroup(
     buttonAssets: ButtonAssets,
     hitArea: Rectangle,
@@ -324,7 +321,7 @@ final case class RadioButtonGroup(
     val selected: Option[Int] =
       indexedOptions.flatMap {
         case (o, i)
-            if mouse.leftMouseIsDown && o.hitArea.getOrElse(hitArea).moveBy(o.position).isPointWithin(mouse.position) =>
+            if mouse.isLeftDown && o.hitArea.getOrElse(hitArea).moveBy(o.position).isPointWithin(mouse.position) =>
           List(i)
 
         case _ =>
@@ -351,7 +348,7 @@ final case class RadioButtonGroup(
 
         // Not selected, no mouse click, mouse within, should be in hover state.
         case (o, _)
-            if !o.inSelectedState && !mouse.leftMouseIsDown && o.hitArea
+            if !o.inSelectedState && !mouse.isLeftDown && o.hitArea
               .getOrElse(hitArea)
               .moveBy(o.position)
               .isPointWithin(mouse.position) =>
