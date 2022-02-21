@@ -69,13 +69,12 @@ Next you'll need to update either your
 -    }
 -  }
 -
-   val indigoVersion = "0.12.0"
-+  val tyrianVersion = "0.3.0"
+   val indigoVersion = "0.12.1"
 
    def ivyDeps =
     Agg(
-+     ivy"io.indigoengine::tyrian::$tyrianVersion",
-+     ivy"io.indigoengine::tyrian-indigo-bridge::$tyrianVersion",
++     ivy"io.indigoengine::tyrian::0.3.1",
++     ivy"io.indigoengine::tyrian-indigo-bridge::0.3.1",
       ivy"io.indigoengine::indigo-json-circe::$indigoVersion",
       ivy"io.indigoengine::indigo::$indigoVersion",
       ivy"io.indigoengine::indigo-extras::$indigoVersion"
@@ -85,6 +84,11 @@ Next you'll need to update either your
  or `build.sbt` (if using sbt) to this:
 
  ```diff
+ libraryDependencies ++= Seq(
+   "io.indigoengine" %%% "indigo"            % "0.12.1",
++  "io.indigoengine" %%% "tyrian"               % "0.3.1",
++  "io.indigoengine" %%% "tyrian-indigo-bridge" % "0.3.1",
+ )
  ```
 
 What we've done here is add Tyrian and the Tyrian Indigo Bridge to our build.
