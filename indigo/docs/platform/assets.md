@@ -19,7 +19,7 @@ Text is different. Plain text isn't useful in of itself in the scene constructio
 
 The `IndigoSandbox` entry point defines a setup function with the following signature:
 
-```scala mdoc:silent
+```scala
 import indigo._
 
 def setup(assetCollection: AssetCollection, dice: Dice): Startup[Unit] = ???
@@ -31,7 +31,7 @@ As previously mentioned, this is particularly useful for reading plain text file
 
 The interesting methods on an `AssetCollection` are:
 
-```scala mdoc:silent
+```scala
 import org.scalajs.dom
 import org.scalajs.dom.html
 
@@ -52,7 +52,7 @@ Asset loading happens in either one or two phases, depending on whether you only
 
 The simplest from of asset loading happens based on your initial game definition, for example:
 
-```scala mdoc:silent
+```scala
 val baseUrl = "./"
 
 // If you're using the `IndigoSandbox` entry point
@@ -110,7 +110,7 @@ You can either use the basic inbuilt events to load your assets, and manage the 
 
 To kick off an asset bundle load, you need to fire off an `AssetBundleLoaderEvent.Load` event by attaching it to an `Outcome` or `SceneUpdateFragment`. In the example linked to above, we use a button (I've simplified here slightly):
 
-```scala mdoc:silent
+```scala
 import indigoextras.ui._
 import indigoextras.subsystems._
 
@@ -145,7 +145,7 @@ As you can see, the asset bundle is just another `Set[AssetType]` like we'd use 
 
 We can then track the progress of our bundle load by pattern matching the relevant events:
 
-```scala mdoc:silent
+```scala
 def updateModel(context: FrameContext[Unit], model: MyGameModel): GlobalEvent => Outcome[MyGameModel] = {
   case AssetBundleLoaderEvent.Started(key) =>
     println("Load started! " + key.toString())
@@ -177,7 +177,7 @@ You can't use an asset before you've loaded it.
 
 The eagle eyed among you may have noticed that the super simple model above has a loaded flag in it's definition, here is the whole thing:
 
-```scala mdoc:silent
+```scala
 final case class MyGameModel(loaded: Boolean)
 
 val model = MyGameModel(true)
@@ -185,7 +185,7 @@ val model = MyGameModel(true)
 
 The loaded flag above is a crude way of us saying "Ok, the assets are ready for use now!", so that once set to true, we can start drawing with them, again a minimal example could be:
 
-```scala mdoc:silent
+```scala
 SceneUpdateFragment(
   if (model.loaded) {
     List(

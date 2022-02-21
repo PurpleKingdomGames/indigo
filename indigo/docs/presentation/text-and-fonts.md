@@ -25,7 +25,7 @@ The `TextBox` primitive works by utilising the browsers ability to render fonts.
 
 You can use system fonts, but if you're keen on using something specific then there is a new `Font` `AssetType`, which works the same as loading any other kind of asset:
 
-```scala mdoc:silent
+```scala
 import indigo._
 
 AssetType.Font(AssetName("My Font"), AssetPath("assets/my-favourite-font.woff2"))
@@ -33,7 +33,7 @@ AssetType.Font(AssetName("My Font"), AssetPath("assets/my-favourite-font.woff2")
 
 And is used as follows:
 
-```scala mdoc:silent
+```scala
 // FontFamily("My Font") aligns to the loaded asset name AssetName("My Font")
 TextBox("Indigo... with fonts?", 200, 30).withFontFamily(FontFamily("My Font"))
 ```
@@ -44,7 +44,7 @@ There are things to be aware of with fonts, but the rules for fonts in Indigo ar
 
 As with all the APIs in Indigo, the available features of the `TextBox` type are all easily discoverable via your favorite IDE, but here is an example to get you started:
 
-```scala mdoc:silent
+```scala
 TextBox("Hello, World!", 200, 30)
   .withFontFamily(FontFamily.cursive)
   .withColor(RGBA.White)
@@ -60,7 +60,7 @@ The alternative to `TextBox` is the `Text` primitive, which renders text using w
 
 You can create a Text node using one of it's constructors and manipulate its properties with fluent API methods like this:
 
-```scala mdoc:silent
+```scala
 Text("Hello, world!\nThis is some text!", FontKey("my font"), Material.Bitmap(AssetName("my font sheet"))).alignRight
 ```
 
@@ -78,7 +78,7 @@ It's inconvenient and a bit simplistic, but it works, and the results look good 
 
 At the beginning of your (`IndigoSandbox`) game definition, you were given a couple of blanks to fill in that looked like this:
 
-```scala mdoc:silent
+```scala
 val fonts: Set[FontInfo] =
   Set()
 
@@ -94,7 +94,7 @@ The image might look like this:
 
 Which you would load in the usual way:
 
-```scala mdoc:silent:reset
+```scala
 import indigo._
 
 val imageAsset = AssetName("my font image")
@@ -105,7 +105,7 @@ val assets: Set[AssetType] =
 
 And the associated `FontInfo` definition would be as follows, where the `FontChar` contains the character to match, and an image crop rectangle:
 
-```scala mdoc:silent
+```scala
 val fontKey: FontKey = FontKey("my font")
 
 val fontInfo: FontInfo =
@@ -136,7 +136,7 @@ Well you still need the asset and the `FontInfo`, but we have a process to make 
 
 Then load both assets:
 
-```scala mdoc:silent:reset
+```scala
 import indigo._
 
 val imageAsset = "my font image"
@@ -151,7 +151,7 @@ val assets: Set[AssetType] =
 
 ..and then during the `setup` function where you create the `Startup` data, you can do something like the following:
 
-```scala mdoc:silent
+```scala
 import indigo.json.Json
 //Placeholder: AssetCollection is one of the setup function arguments.
 import indigo.platform.assets.AssetCollection

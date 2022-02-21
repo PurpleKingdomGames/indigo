@@ -63,7 +63,7 @@ Name|Sequential order|description
 
 To override a function you simply need to declare it. In an `Source` shader type, this could be done as follows:
 
-```scala mdoc:silent
+```scala
 import indigo._
 
 val shader: EntityShader =
@@ -122,13 +122,13 @@ This allows the GLSL linting tools to pass since the variable is declared before
 
 The different shader types also have some shared and some specific constants available to them, for example entity shaders read texture colours from the `CHANNEL_0`, `CHANNEL_1`, `CHANNEL_2` and `CHANNEL_3` variables, but blend shaders use `SRC` and `DST` instead.
 
-A complete list is available on the ("Shader Constants, Variables, and Outputs")[constants.md] page.
+A complete list is available on the ["Shader Constants, Variables, and Outputs"](constants.md) page.
 
 ## Loading external shader files
 
 Getting an external shader into Indigo is no different from loading any other text asset:
 
-```scala mdoc:silent
+```scala
 def assets: Set[AssetType] =
   Set(
     AssetType.Text(AssetName("my vertex shader"), AssetPath("assets/shader.vert")),
@@ -142,7 +142,7 @@ Here we're loading two shader files with potentially a complete set of function 
 
 Next we need to build our shader:
 
-```scala mdoc:silent
+```scala
 object CustomShader:
   val vertAsset: AssetName = AssetName("my vertex shader")
   val fragAsset: AssetName = AssetName("my fragment shader")
@@ -157,7 +157,7 @@ object CustomShader:
 
 Finally we need to tell Indigo about these shaders, or we won't be able to use them:
 
-```scala mdoc:silent
+```scala
     Outcome(
       BootResult.noData(GameConfig.default)
         .withShaders(CustomShader.shader)
@@ -178,7 +178,7 @@ Shaders without any data can still be useful if you have a known effect, and not
 
 In the [guide](guides/howto-custom-entity.md), we create a custom entity that fills it's self with a solid color:
 
-```scala mdoc:silent
+```scala
 final case class MyColoredEntity(position: Point, depth: Depth) extends EntityNode:
   def size: Size        = Size(32, 32)
   def flip: Flip        = Flip.default
@@ -207,7 +207,7 @@ object MyColoredEntity:
 
 If we wanted to supply the colour, we need to modify our code as follows:
 
-```scala mdoc:silent:nest
+```scala
 import indigo.ShaderPrimitive._
 
 final case class MyColoredEntity(position: Point, depth: Depth, color: RGBA) extends EntityNode:

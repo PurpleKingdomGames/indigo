@@ -15,7 +15,7 @@ Zero is right in front of the camera, and bigger numbers are further away. It ma
 
 If several things have the same depth, the elements are draw in the order given to the `SceneUpdateFragment` e.g.:
 
-```scala mdoc:silent
+```scala
 import indigo._
 
 List(

@@ -27,17 +27,17 @@ Fixed cameras are very much the same as the Indigo default camera, except that y
 
 Here is an example of a fixed camera, positioned at (10, 10), zoomed in by a factor of 2, and rotated by 45 degrees:
 
-```scala mdoc:invisible
+```scala
 import indigo._
 ```
 
-```scala mdoc:silent
+```scala
 Camera.Fixed(Point(10, 10), Zoom.x2, Radians.fromDegrees(45))
 ```
 
 `Camera.LookAt` works differently, in that targeting a 'look at' camera at (10,10) centers position (10,10) on the screen. Here is the same camera but as a 'look at', which centers the `target` position on the screen.
 
-```scala mdoc:silent
+```scala
 Camera.LookAt(Point(10, 10), Zoom.x2, Radians.fromDegrees(45))
 ```
 
@@ -45,7 +45,7 @@ Camera.LookAt(Point(10, 10), Zoom.x2, Radians.fromDegrees(45))
 
 Cameras can be optionally added to your `SceneUpdateFragment`s or `Layer`s, e.g.:
 
-```scala mdoc:silent
+```scala
 Layer(BindingKey("my layer"))
   .withCamera(Camera.LookAt(Point(10, 10), Zoom.x2, Radians.fromDegrees(45)))
 ```
@@ -63,23 +63,23 @@ Cameras are affected by `Layer` and `SceneUpdateFragment` composition, ***and th
 
 In this example, the camera in `sceneB` looking at position `Point(20, 20)` is retained:
 
-```scala mdoc:silent
+```scala
 val sceneA = SceneUpdateFragment.empty.withCamera(Camera.LookAt(Point(10, 10)))
 val sceneB = SceneUpdateFragment.empty.withCamera(Camera.LookAt(Point(20, 20)))
 ```
 
-```scala mdoc
+```scala
 (sceneA |+| sceneB).camera
 ```
 
 ..where as here, the camera in `layerA` looking at position `Point(10, 10)` is selected.
 
-```scala mdoc:silent
+```scala
 val layerA = Layer(BindingKey("Layer A")).withCamera(Camera.LookAt(Point(10, 10)))
 val layerB = Layer(BindingKey("Layer B")).withCamera(Camera.LookAt(Point(20, 20)))
 ```
 
-```scala mdoc
+```scala
 (layerA |+| layerB).camera
 ```
 

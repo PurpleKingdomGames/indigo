@@ -16,7 +16,7 @@ For example, let's say you update your game's model, and it turns out that the p
 
 This could be described in an Outcome as follows:
 
-```scala mdoc:silent
+```scala
 import indigo._
 import indigo.scenes._
 
@@ -31,7 +31,7 @@ val outcome =
 
 You can access the state or global events with:
 
-```scala mdoc:silent
+```scala
 outcome.getOrElse(Model(0))
 outcome.globalEventsOrNil
 ```
@@ -48,7 +48,7 @@ There are lots of ways to manipulate Outcomes, and all of them preserve the even
 
 An Outcome behaves much like other Monadic types in Scala such as `Option` or `Either`. They are bias towards the state it holds rather than the events. Some basic operations are below:
 
-```scala mdoc:silent
+```scala
 Outcome(10)                                // Outcome(10)
 Outcome(10).map(_ * 20)                    // Outcome(200)
 Outcome(10).ap(Outcome((i: Int) => i * 5)) // Outcome(50)
@@ -61,7 +61,7 @@ As mentioned, `Outcome`'s map function is bias towards the state, but you can al
 
 Sequencing can be done as follows:
 
-```scala mdoc:silent
+```scala
 import Outcome._
 
 List(Outcome(1), Outcome(2), Outcome(3)).sequence // Outcome(List(1, 2, 3))
@@ -71,7 +71,7 @@ List(Outcome(1), Outcome(2), Outcome(3)).sequence // Outcome(List(1, 2, 3))
 
 Sometimes, you need to reference the new state to decide if we should emit an event:
 
-```scala mdoc:silent
+```scala
 final case class Counter(count: Int)
 
 val newState = Counter(count = 10)
@@ -83,7 +83,7 @@ Outcome(newState)
 
 But this is boring and requires the creation of a couple of variables. The thing to observe is that this scenario is about creating events based on the _updated_ state rather than the original state. Instead, you can do this:
 
-```scala mdoc:silent
+```scala
 Outcome(Counter(count = 10))
   .createGlobalEvents(foo => if(foo.count > 5) List(PlaySound(AssetName("tada"), Volume.Max)) else Nil)
 ```
@@ -98,7 +98,7 @@ The `Outcome` type also comes with error handling.
 
 If an exception is thrown within an outcome's constructor then it will be caught in a similar way to Scala standard `Try` monad. E.g.:
 
-```scala mdoc:silent
+```scala
 Outcome(throw new Exception("Boom!"))
 ```
 
@@ -106,7 +106,7 @@ Exceptions are a fact of life on the JVM and also in JS. If you access an array 
 
 You can model errors with types like `Either[Error, A]` or as an ADT that live in your `Outcome` as it's value:
 
-```scala mdoc:silent
+```scala
 sealed trait MyJourney
 case object HappyPath extends MyJourney
 case object UnhappyPath extends MyJourney // Error case
@@ -122,7 +122,7 @@ To handle such an error, we can do the following:
 
 > Please note that - contrary to the following example - you should really only catch exceptions you're expecting by declaring a class that extends Exception and catching that.
 
-```scala mdoc:silent
+```scala
 Outcome(10)
   .map[Int](_ => throw new Exception("Boom!"))
   .map(i => i * i)
@@ -138,7 +138,7 @@ Here we start with a value and throw an exception during the first map. We attem
 
 That said, if your game is going to crash then it might be helpful to log something useful in the dying moments. Indigo itself looks out for exceptions and attempts to log them before it crashes a game. You can give it something meaningful to log by using the `logCrash` outcome method. Invoked similarly to `handleError` above, it is a partial function that takes an exception and returns any string value you like. Indigo then logs this message before the game crashes.
 
-```scala mdoc:silent
+```scala
 Outcome(10)
   .map[Int](i => throw new Exception(i.toString))
   .map(i => i * i)

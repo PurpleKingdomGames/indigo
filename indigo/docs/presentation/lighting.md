@@ -39,7 +39,7 @@ There are two blending jobs to do:
 
 Below is an example lighting layer that sets a low (25% white) ambient light so the scene is never absolutely black.
 
-```scala mdoc:silent
+```scala
 import indigo._
 
 Layer(Graphic(50, 50, Material.ImageEffects(AssetName("torch light"))))
@@ -76,7 +76,7 @@ Most of a lights have a number of properties you can experiment with that are ea
 
 Point lights are a point in space that emit light evenly in all directions. Example:
 
-```scala mdoc:silent
+```scala
 PointLight(Point.zero, RGBA.White)
   .withFalloff(Falloff.SmoothQuadratic(0, 100))
 ```
@@ -85,7 +85,7 @@ PointLight(Point.zero, RGBA.White)
 
 Spotlights shine a cone of light onto a scene at a given angle. Example:
 
-```scala mdoc:silent
+```scala
 SpotLight(Point.zero, RGBA.White)
   .withAngle(Radians.fromDegrees(45))
   .lookAt(Point(100, 100))
@@ -95,7 +95,7 @@ SpotLight(Point.zero, RGBA.White)
 
 Direction lights shin light evenly along one angle, as if from very far away. Useful for things like sun and moonlight. Example:
 
-```scala mdoc:silent
+```scala
 DirectionLight(Radians.fromDegrees(45), RGBA.Blue)
 ```
 
@@ -103,7 +103,7 @@ DirectionLight(Radians.fromDegrees(45), RGBA.Blue)
 
 Ambient lights illuminate the whole scene evenly with some amount of 'background' light. Example:
 
-```scala mdoc:silent
+```scala
 AmbientLight(RGBA.White.withAlpha(0.2))
 ```
 

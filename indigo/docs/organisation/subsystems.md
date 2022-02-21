@@ -13,7 +13,7 @@ As an example, consider this simple (and arguably unhelpful) subsystem that trac
 
 > ["The Cursed Pirate"](https://github.com/PurpleKingdomGames/indigo-examples/blob/master/demos/pirate/src/main/scala/pirate/scenes/level/subsystems/CloudsSubSystem.scala) uses an alternative and arguable cleaner SubSystem construction method than the one below.
 
-```scala mdoc:silent
+```scala
 import indigo._
 
 final case class PointsTrackerExample(startingPoints: Int) extends SubSystem:

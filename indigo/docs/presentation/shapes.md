@@ -25,7 +25,7 @@ Below are examples of each to help get you started.
 
 ## Box
 
-```scala mdoc:silent
+```scala
 import indigo._
 
 Shape.Box(
@@ -37,7 +37,7 @@ Shape.Box(
 
 ## Circle
 
-```scala mdoc:silent
+```scala
 Shape.Circle(
   center = Point(30, 30),
   radius = 20,
@@ -53,13 +53,13 @@ Shape.Circle(
 
 ## Line
 
-```scala mdoc:silent
+```scala
 Shape.Line(Point(30, 80), Point(100, 20), Stroke(6, RGBA.Cyan))
 ```
 
 ## Polygon
 
-```scala mdoc:silent
+```scala
 Shape.Polygon(
   Fill.LinearGradient(Point(0), RGBA.Magenta, Point(45), RGBA.Cyan),
   Stroke(4, RGBA.Black)

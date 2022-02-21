@@ -43,7 +43,7 @@ The default interfaces you are presented with as part of Indigo's framework offe
 
 Beneath the APIs of the entry points is a _single function_ that looks a bit like this:
 
-```scala mdoc:silent
+```scala
 import indigo._
 
 final case class Model(count: Int)
@@ -64,7 +64,7 @@ The point of this function is purity: What you get out, should be a result of wh
 
 > Scala is an impure functional programming language, so you are not restricted to writing games that obey these notions of purity and referential transparency in the name of, say, performance -  but you should start there.
 
-## Inputs are immutable and predictable
+##  Inputs are immutable and predictable
 
 It will come as no surprise to Scala functional programmers, but all of the inputs to the run function above are immutable. You can access them and read from them but you can't change them. This eliminates a whole class of errors around race conditions during frame evaluation.
 
@@ -84,13 +84,13 @@ Walking through them one at a time:
 
 Some clarification, the return type of the function above is:
 
-```scala mdoc:silent
+```scala
 def outcome: Outcome[(Model, ViewModel, SceneUpdateFragment)] = ???
 ```
 
 But it's easier to think of this as:
 
-```scala mdoc:silent:nest
+```scala
 def outcome: (Model, ViewModel, SceneUpdateFragment, List[GlobalEvent]) = ???
 ```
 

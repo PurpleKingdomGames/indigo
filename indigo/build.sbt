@@ -163,14 +163,19 @@ lazy val jsdocs = project
   .settings(
     neverPublish,
     organization := "io.indigoengine",
-    libraryDependencies ++= Dependencies.jsDocs.value
+    libraryDependencies ++= Dependencies.jsDocs.value,
+    // libraryDependencies ++= Seq(
+    //   "io.indigoengine" %%% "indigo-json-circe" % indigoDocsVersion,
+    //   "io.indigoengine" %%% "indigo"            % indigoDocsVersion,
+    //   "io.indigoengine" %%% "indigo-extras"     % indigoDocsVersion
+    // )
   )
   .enablePlugins(ScalaJSPlugin)
 
 lazy val docs = project
   .in(file("indigo-docs"))
-  .dependsOn(indigoExtras)
-  .dependsOn(indigoJsonCirce)
+  // .dependsOn(indigoExtras)
+  // .dependsOn(indigoJsonCirce)
   .enablePlugins(MdocPlugin)
   .settings(
     neverPublish,

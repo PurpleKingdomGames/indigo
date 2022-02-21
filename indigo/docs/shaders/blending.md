@@ -22,7 +22,7 @@ Blend modes are hardware level functions with limited but important options. The
 
 Explaining blend modes is beyond the scope of this guide, and there are many tutorials available, but as an example, we can compare Indigo's standard entity blend mode with it's entity lighting blend mode (used in image based [lighting](presentation/lighting.md)):
 
-```scala mdoc:silent
+```scala
 import indigo._
 
 // Normal
@@ -69,7 +69,7 @@ Blending the final scene is less fine grained, and a `SceneUpdateFragment` can o
 
 Here is the `Blending` description for Indigo's image based [lighting](presentation/lighting.md).
 
-```scala mdoc:silent
+```scala
 val ambientLightColor = RGBA.White.withAlpha(0.25)
 
 Blending(
@@ -86,7 +86,7 @@ Starting at the bottom, we're doing lighting! So the first thing we want to do i
 
 Entities are then blended onto the layer using the mode we saw before, which multiplies the colors together such that putting a full red dot on a full green dot on a full blue dot would result in a white dot:
 
-```scala mdoc:silent
+```scala
 Blend.Lighten(BlendFactor.SrcAlpha, BlendFactor.DstAlpha)
 ```
 

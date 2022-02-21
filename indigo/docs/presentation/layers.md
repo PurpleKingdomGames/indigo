@@ -15,7 +15,7 @@ A layers primary function is to hold scene nodes to be rendered.
 
 All indigo projects require you to describe your games visuals, here is a simple example:
 
-```scala mdoc:silent
+```scala
 import indigo._
 
 val graphic =
@@ -30,7 +30,7 @@ SceneUpdateFragment(
 
 This is a nice easy way to get started, but when you create a scene fragment like that, what you've actually done is this:
 
-```scala mdoc:silent
+```scala
 SceneUpdateFragment(
   Layer(
     graphic.moveTo(10, 10),
@@ -42,7 +42,7 @@ SceneUpdateFragment(
 
 You can always add layers to scene fragments:
 
-```scala mdoc:silent
+```scala
 SceneUpdateFragment.empty.addLayers(Layer(graphic), Layer(graphic))
 ```
 
@@ -50,7 +50,7 @@ SceneUpdateFragment.empty.addLayers(Layer(graphic), Layer(graphic))
 
 Combining scene fragments works as you might expect:
 
-```scala mdoc:silent
+```scala
 val graphicA = Graphic(50, 50, Material.Bitmap(AssetName("a")))
 val graphicB = Graphic(50, 50, Material.Bitmap(AssetName("b")))
 
@@ -62,7 +62,7 @@ a |+| b
 
 Results in:
 
-```scala mdoc:silent
+```scala
 SceneUpdateFragment(
   Layer(graphicA, graphicA, graphicA),
   Layer(graphicB, graphicB, graphicB)
@@ -71,7 +71,7 @@ SceneUpdateFragment(
 
 However, you may want to merge scenes and have all the elements end up on the same layer, in which case you need to name the layers:
 
-```scala mdoc:silent
+```scala
 val c = SceneUpdateFragment(
   Layer(BindingKey("my layer"), graphicA, graphicA, graphicA)
 )
@@ -84,7 +84,7 @@ c |+| d
 
 Results in:
 
-```scala mdoc:silent
+```scala
 SceneUpdateFragment(
   Layer(
     BindingKey("my layer"),
@@ -95,7 +95,7 @@ SceneUpdateFragment(
 
 Layers can be merged to!
 
-```scala mdoc:silent
+```scala
 Layer(graphicA) |+| Layer(graphicB)
 ```
 
@@ -112,7 +112,7 @@ However you can also set depths for layers to ensure they end up in the expected
 - With scene entities, ***0*** means ***as close to you as possible*** and bigger numbers are further away.
 - With layers, ***0*** mean ***bottom of the stack***, like the bottom layer of a cake, and bigger numbers are placed above it.
 
-```scala mdoc:silent
+```scala
 Layer(graphicA).withDepth(Depth(100))
 ```
 

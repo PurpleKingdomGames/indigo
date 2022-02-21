@@ -7,7 +7,7 @@ A curious quirk of the way Indigo works is that it seems unusual to need to find
 
 Nonetheless, Indigo does have a facility for discovering the dimensions of a scene node called the 'Boundary Locator' which can be found on the `FrameContext[_]` instance.
 
-```scala mdoc:invisible
+```scala
 import indigo._
 import indigo.platform.assets.DynamicText
 import indigo.shared.AnimationsRegister

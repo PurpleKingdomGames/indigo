@@ -65,7 +65,7 @@ A clone blank can be any primitive that extends the `Cloneable` trait, which inc
 
 Clone blanks are processed once per frame, and you can add them to your scene as follows:
 
-```scala mdoc:silent
+```scala
 import indigo.*
 
 val graphic = Graphic(32, 32, Material.Bitmap(AssetName("bob texture")))
@@ -85,7 +85,7 @@ The simplest and most high volume type of clone is the `CloneBatch`.
 
 This example will render three instances of the clone blank in different positions on the screen.
 
-```scala mdoc:silent
+```scala
 val particles = Array(Point(10), Point(20), Point(30))
 
 CloneBatch(
@@ -102,7 +102,7 @@ The problem with `CloneBatch` is that the copies are pretty much identical - par
 
 This example renders our three instances again but this time crops the texture in three different places.
 
-```scala mdoc:silent
+```scala
 val crops = Array(Rectangle(0, 0, 10, 10), Rectangle(10, 0, 10, 10), Rectangle(0, 10, 10, 10))
 
 CloneTiles(
@@ -121,7 +121,7 @@ The idea of mutants is to take a clone blank and 'mutate' it per instance by pro
 
 From a usage perspective, `Mutants` are no more difficult to use than `CloneBatch`s or `CloneTiles`, here is a simple example that renders a single copy of a clone blank:
 
-```scala mdoc:silent
+```scala
 Mutants(
   cloneId,
   Array(

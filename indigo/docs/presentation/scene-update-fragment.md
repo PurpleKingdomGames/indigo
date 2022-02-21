@@ -7,7 +7,7 @@ The `SceneUpdateFragment` is one of the most important types in Indigo, as it is
 
 Below is an example of it's usage:
 
-```scala mdoc:silent
+```scala
 import indigo._
 
 val graphic =
@@ -44,7 +44,7 @@ sceneAudio |+| background |+| clouds |+| player |+| foreground
 
 Consider also the following:
 
-```scala mdoc:silent
+```scala
 val visible = true
 val vanishingThing =
   if(visible) SceneUpdateFragment(graphic)
@@ -55,7 +55,7 @@ SceneUpdateFragment(graphic) |+| vanishingThing
 
 Or this:
 
-```scala mdoc:silent
+```scala
 val scene = SceneUpdateFragment(graphic)
 val l: List[SceneUpdateFragment] = List(scene, scene, scene)
 
@@ -64,7 +64,7 @@ l.foldLeft(SceneUpdateFragment.empty)(_ |+| _)
 
 There are some special rules about what happens when you combine `SceneUpdateFragment`s that optionally have things like cameras. The rules are: Lists are concatenated in the expected way. Optional elements (cameras, blend materials, scene audio elements) are "appended" such that a defined element is always taken in preference to an undefined element, and if two are defined, the last or "incoming" version is assumed to be the desired one. Consider the following illustration:
 
-```scala mdoc:silent
+```scala
 val a: Option[Int] = Some(1)
 val b: Option[Int] = None
 

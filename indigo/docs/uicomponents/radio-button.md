@@ -7,7 +7,7 @@ Radio buttons are a collection of buttons where only one of them can be in a sel
 
 To set up Radio buttons, you would initialize them in your view model as follows:
 
-```scala mdoc:invisible
+```scala
 import indigo._
 import indigo.platform.assets.DynamicText
 import indigo.shared.AnimationsRegister
@@ -16,7 +16,7 @@ val boundaryLocator = new BoundaryLocator(new AnimationsRegister, new FontRegist
 val context = new FrameContext(GameTime.zero, Dice.fromSeed(1l), InputState.default, boundaryLocator, ())
 ```
 
-```scala mdoc:silent
+```scala
 import indigo._
 import indigoextras.ui._
 

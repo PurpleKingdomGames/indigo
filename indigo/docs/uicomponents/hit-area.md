@@ -15,7 +15,7 @@ Like other ui components, hit areas are intended to live in your view model, and
 
 Here is an example:
 
-```scala mdoc:silent
+```scala
 import indigo._
 import indigoextras.ui._
 import indigoextras.geometry._
@@ -41,7 +41,7 @@ val viewModel =
 
 You must then update as usual during the `updateViewModel` function:
 
-```scala mdoc:invisible
+```scala
 import indigo._
 import indigo.platform.assets.DynamicText
 import indigo.shared.AnimationsRegister
@@ -50,6 +50,6 @@ val boundaryLocator = new BoundaryLocator(new AnimationsRegister, new FontRegist
 val context = new FrameContext(GameTime.zero, Dice.fromSeed(1l), InputState.default, boundaryLocator, ())
 ```
 
-```scala mdoc:silent
+```scala
 viewModel.update(context.mouse)
 ```

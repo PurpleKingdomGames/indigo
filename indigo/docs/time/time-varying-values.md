@@ -11,7 +11,7 @@ For example:
 
 You have a little lumber jack, he walks over to a tree and is now going to cut to down. Work is effort over time, and you can track his progress by having an `IncreaseTo` time varying value in your model, like this.
 
-```scala mdoc:silent
+```scala
 import indigo._
 import indigoextras.datatypes._
 

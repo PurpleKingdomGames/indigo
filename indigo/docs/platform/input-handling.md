@@ -46,7 +46,7 @@ For this we have created the input mapper, which can be found inside the input s
 
 Here is an example of a "dot" that can be moved up, down, left, right, _and_ diagonally using combinations of the W, A, S, and D keys.
 
-```scala mdoc:silent
+```scala
 import indigo._
 
 final case class Dot(center: Point) {

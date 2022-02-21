@@ -7,7 +7,7 @@ Input fields are text boxes that all users to type values into them. As with but
 
 Setting up an input field is as simple as adding something like this to your view model:
 
-```scala mdoc:invisible
+```scala
 import indigo._
 import indigo.platform.assets.DynamicText
 import indigo.shared.AnimationsRegister
@@ -16,7 +16,7 @@ val boundaryLocator = new BoundaryLocator(new AnimationsRegister, new FontRegist
 val context = new FrameContext(GameTime.zero, Dice.fromSeed(1l), InputState.default, boundaryLocator, ())
 ```
 
-```scala mdoc:silent
+```scala
 import indigo._
 import indigoextras.ui._
 
@@ -35,7 +35,7 @@ val inputField =
 
 Then updating it in the view model:
 
-```scala mdoc:silent
+```scala
 final case class AnotherViewModel(myInputField: InputField)
 val anotherViewModel = AnotherViewModel(inputField)
 
@@ -44,7 +44,7 @@ anotherViewModel.myInputField.update(context)
 
 ...and drawing it:
 
-```scala mdoc:silent
+```scala
 anotherViewModel.myInputField.draw(context.gameTime, context.boundaryLocator)
 ```
 

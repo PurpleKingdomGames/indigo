@@ -15,7 +15,7 @@ To help with that, along with the usual logger methods, we've added the `errorOn
 
 The available logging options are:
 
-```scala mdoc:silent
+```scala
 import indigo.IndigoLogger._
 
 consoleLog("message to log")
