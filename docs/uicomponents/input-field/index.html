@@ -62,6 +62,13 @@
         </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1 id="__docusaurus" class="postHeaderTitle">Input Field</h1></header><article><div><span><p>Input fields are text boxes that all users to type values into them. As with button, you need to provide some assets, specifically font information and a graphic to use as the cursor while a user is inputing values. Indigo's input field is quite basic, but input fields are a bit fiddly to implement. Hopefully it will either save someone some time or be useful as a reference to someone who'd like to do make something more sophisticated.</p>
 <p>Setting up an input field is as simple as adding something like this to your view model:</p>
 <pre><code class="hljs css language-scala"><span class="hljs-keyword">import</span> indigo._
+<span class="hljs-keyword">import</span> indigo.platform.assets.<span class="hljs-type">DynamicText</span>
+<span class="hljs-keyword">import</span> indigo.shared.<span class="hljs-type">AnimationsRegister</span>
+<span class="hljs-keyword">import</span> indigo.shared.<span class="hljs-type">FontRegister</span>
+<span class="hljs-keyword">val</span> boundaryLocator = <span class="hljs-keyword">new</span> <span class="hljs-type">BoundaryLocator</span>(<span class="hljs-keyword">new</span> <span class="hljs-type">AnimationsRegister</span>, <span class="hljs-keyword">new</span> <span class="hljs-type">FontRegister</span>, <span class="hljs-keyword">new</span> <span class="hljs-type">DynamicText</span>)
+<span class="hljs-keyword">val</span> context = <span class="hljs-keyword">new</span> <span class="hljs-type">FrameContext</span>(<span class="hljs-type">GameTime</span>.zero, <span class="hljs-type">Dice</span>.fromSeed(<span class="hljs-number">1</span>l), <span class="hljs-type">InputState</span>.<span class="hljs-keyword">default</span>, boundaryLocator, ())
+</code></pre>
+<pre><code class="hljs css language-scala"><span class="hljs-keyword">import</span> indigo._
 <span class="hljs-keyword">import</span> indigoextras.ui._
 
 <span class="hljs-comment">// Placeholder values</span>

@@ -71,6 +71,8 @@
 <p>There are two types of camera built into Indigo: 'Fixed' and 'Look at'.</p>
 <p>Fixed cameras are very much the same as the Indigo default camera, except that you can zoom and rotate them. Placing a <code>Camera.Fixed</code> at position (10, 10), effectively moves (10,10) to (0,0) for rendering purposes.</p>
 <p>Here is an example of a fixed camera, positioned at (10, 10), zoomed in by a factor of 2, and rotated by 45 degrees:</p>
+<pre><code class="hljs css language-scala"><span class="hljs-keyword">import</span> indigo._
+</code></pre>
 <pre><code class="hljs css language-scala"><span class="hljs-type">Camera</span>.<span class="hljs-type">Fixed</span>(<span class="hljs-type">Point</span>(<span class="hljs-number">10</span>, <span class="hljs-number">10</span>), <span class="hljs-type">Zoom</span>.x2, <span class="hljs-type">Radians</span>.fromDegrees(<span class="hljs-number">45</span>))
 </code></pre>
 <p><code>Camera.LookAt</code> works differently, in that targeting a 'look at' camera at (10,10) centers position (10,10) on the screen. Here is the same camera but as a 'look at', which centers the <code>target</code> position on the screen.</p>
@@ -97,14 +99,12 @@
 <span class="hljs-keyword">val</span> sceneB = <span class="hljs-type">SceneUpdateFragment</span>.empty.withCamera(<span class="hljs-type">Camera</span>.<span class="hljs-type">LookAt</span>(<span class="hljs-type">Point</span>(<span class="hljs-number">20</span>, <span class="hljs-number">20</span>)))
 </code></pre>
 <pre><code class="hljs css language-scala">(sceneA |+| sceneB).camera
-<span class="hljs-comment">// res3: Option[Camera] = Some(LookAt(Point(20, 20), 1.0, 0.0))</span>
 </code></pre>
 <p>..where as here, the camera in <code>layerA</code> looking at position <code>Point(10, 10)</code> is selected.</p>
 <pre><code class="hljs css language-scala"><span class="hljs-keyword">val</span> layerA = <span class="hljs-type">Layer</span>(<span class="hljs-type">BindingKey</span>(<span class="hljs-string">"Layer A"</span>)).withCamera(<span class="hljs-type">Camera</span>.<span class="hljs-type">LookAt</span>(<span class="hljs-type">Point</span>(<span class="hljs-number">10</span>, <span class="hljs-number">10</span>)))
 <span class="hljs-keyword">val</span> layerB = <span class="hljs-type">Layer</span>(<span class="hljs-type">BindingKey</span>(<span class="hljs-string">"Layer B"</span>)).withCamera(<span class="hljs-type">Camera</span>.<span class="hljs-type">LookAt</span>(<span class="hljs-type">Point</span>(<span class="hljs-number">20</span>, <span class="hljs-number">20</span>)))
 </code></pre>
 <pre><code class="hljs css language-scala">(layerA |+| layerB).camera
-<span class="hljs-comment">// res4: Option[Camera] = Some(LookAt(Point(10, 10), 1.0, 0.0))</span>
 </code></pre>
 <blockquote>
 <p><code>Layer</code>s and <code>SceneUpdateFragments</code> without cameras that are added to scenes with cameras retain the defined one.</p>

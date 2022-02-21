@@ -88,6 +88,13 @@
   )
 </code></pre>
 <p>You must then update as usual during the <code>updateViewModel</code> function:</p>
+<pre><code class="hljs css language-scala"><span class="hljs-keyword">import</span> indigo._
+<span class="hljs-keyword">import</span> indigo.platform.assets.<span class="hljs-type">DynamicText</span>
+<span class="hljs-keyword">import</span> indigo.shared.<span class="hljs-type">AnimationsRegister</span>
+<span class="hljs-keyword">import</span> indigo.shared.<span class="hljs-type">FontRegister</span>
+<span class="hljs-keyword">val</span> boundaryLocator = <span class="hljs-keyword">new</span> <span class="hljs-type">BoundaryLocator</span>(<span class="hljs-keyword">new</span> <span class="hljs-type">AnimationsRegister</span>, <span class="hljs-keyword">new</span> <span class="hljs-type">FontRegister</span>, <span class="hljs-keyword">new</span> <span class="hljs-type">DynamicText</span>)
+<span class="hljs-keyword">val</span> context = <span class="hljs-keyword">new</span> <span class="hljs-type">FrameContext</span>(<span class="hljs-type">GameTime</span>.zero, <span class="hljs-type">Dice</span>.fromSeed(<span class="hljs-number">1</span>l), <span class="hljs-type">InputState</span>.<span class="hljs-keyword">default</span>, boundaryLocator, ())
+</code></pre>
 <pre><code class="hljs css language-scala">viewModel.update(context.mouse)
 </code></pre>
 </span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/docs/uicomponents/button"><span class="arrow-prev">← </span><span>Buttons</span></a><a class="docs-next button" href="/docs/uicomponents/input-field"><span>Input Field</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/" class="nav-home"><img src="/img/indigo_logo.svg" alt="Indigo" width="66" height="58"/></a><div><h5>Getting Started</h5><a href="/docs/en/quickstart/setup-and-configuration">Setup &amp; Configuration Guide</a><a href="/docs/en/quickstart/hello-indigo">&quot;Hello, Indigo!&quot; Tutorial</a><a href="/docs/en/quickstart/examples">Links to examples</a><a href="/docs/en/quickstart/project-templates">Project templates</a></div><div><h5>Community</h5><a href="https://discord.gg/b5CD47g">Discord</a><a href="https://github.com/PurpleKingdomGames/indigo/discussions">GitHub Discussons</a><a href="https://twitter.com/indigoengine" target="_blank" rel="noreferrer noopener">Twitter</a></div><div><h5>Sponsor us!</h5><a href="https://github.com/sponsors/PurpleKingdomGames">GitHub Sponsors</a><a href="https://www.patreon.com/indigoengine">Patreon</a></div></section></footer></div></body></html>

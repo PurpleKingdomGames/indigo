@@ -1,0 +1,151 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>Converting `IndigoSandbox` to `IndigoGame` · Indigo</title><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="generator" content="Docusaurus"/><meta name="description" content="## Basic Concepts"/><meta name="docsearch:language" content="en"/><meta property="og:title" content="Converting `IndigoSandbox` to `IndigoGame` · Indigo"/><meta property="og:type" content="website"/><meta property="og:url" content="https://your-docusaurus-test-site.com/"/><meta property="og:description" content="## Basic Concepts"/><meta property="og:image" content="https://your-docusaurus-test-site.com/img/undraw_online.svg"/><meta name="twitter:card" content="summary"/><meta name="twitter:image" content="https://your-docusaurus-test-site.com/img/undraw_tweetstorm.svg"/><link rel="shortcut icon" href="/img/indigo_logo_solid.svg"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><link rel="alternate" type="application/atom+xml" href="https://your-docusaurus-test-site.com/blog/atom.xml" title="Indigo Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://your-docusaurus-test-site.com/blog/feed.xml" title="Indigo Blog RSS Feed"/><script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-169190516-1"></script><script>
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments); }
+              gtag('js', new Date());
+              gtag('config', 'UA-169190516-1');
+            </script><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><script src="/js/scrollSpy.js"></script><link rel="stylesheet" href="/css/main.css"/><script src="/js/codetabs.js"></script></head><body class="sideNavVisible separateOnPageNav"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/"><img class="logo" src="/img/indigo_logo_solid_text.svg" alt="Indigo"/><h2 class="headerTitleWithLogo">Indigo</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class=""><a href="/blog/" target="_self">Blog</a></li><li class=""><a href="/docs/guides" target="_self">Guides</a></li><li class=""><a href="/docs/development-status" target="_self">Docs</a></li><li class=""><a href="/api/" target="_self">APIs</a></li><li class=""><a href="/tools" target="_self">Tools</a></li><li class=""><a href="https://github.com/PurpleKingdomGames/indigo" target="_blank">GitHub</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1 id="__docusaurus" class="postHeaderTitle">Converting `IndigoSandbox` to `IndigoGame`</h1></header><article><div><span><h2><a class="anchor" aria-hidden="true" id="basic-concepts"></a><a href="#basic-concepts" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Basic Concepts</h2>
+<p>You may have noticed that many of our tutorials and examples make use of
+<code>IndigoSandbox</code> and <code>IndigoDemo</code>. But what if you want to go further than these
+examples? How would you add scene management, or deal with sub systems? In these
+cases it's time to move your game to use <code>IndigoGame</code>, which comes with a host
+of features, but also a lot more boiler-plate code.</p>
+<p>Note: In this tutorial we'll be moving our code to <code>IndigoGame</code> and using an
+empty scene, but we won't be making full use of the scene management.
+If you want to know more about managing scenes in Indigo you can read the
+documentation <a href="https://indigoengine.io/docs/organisation/scene-management">here</a>.</p>
+<p>Before we begin, we'll start by defining the types of data that <code>IndigoGame</code>
+uses and what they may be used for:</p>
+<ul>
+<li>BootData: Used for initial boot data, such as your foundation game settings</li>
+<li>StartUpData: Used for game data or config that may change during asset loading, screen resizes etc.</li>
+<li>Model: The model holding your main game data</li>
+<li>ViewModel: The model used when drawing data. Typically this is transformed from your model</li>
+</ul>
+<h2><a class="anchor" aria-hidden="true" id="indigosandbox-to-indigogame"></a><a href="#indigosandbox-to-indigogame" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>IndigoSandbox</code> to <code>IndigoGame</code></h2>
+<p>One of the main examples we have is called <code>hello-indigo</code>, which you can clone from
+<a href="https://github.com/PurpleKingdomGames/hello-indigo">here</a> (mill)
+or <a href="https://github.com/PurpleKingdomGames/hello-indigo-sbt">here</a> (sbt). In this
+tutorial we're going to take that example and convert it to <code>IndigoGame</code>.</p>
+<p>The first thing to do here is to make the initial conversion. Change the object declaration like so:</p>
+<pre><code class="hljs css language-diff"> @JSExportTopLevel("IndigoGame")
+<span class="hljs-deletion">-object HelloIndigo extends IndigoSandbox[Unit, Model] {</span>
+<span class="hljs-addition">+object HelloIndigo extends IndigoGame[Unit, Unit, Model, Unit] {</span>
+</code></pre>
+<p>For this example we set boot and startup data to <code>Unit</code> (as we're not going to
+need them), keep our model, and then use <code>Unit</code> for the view model as well.</p>
+<p>This example doesn't use animations, fonts, or shaders, so we can remove those
+declarations too. We'll keep the asset declaration
+but it's worth noting that we no longer need to declare assets this way, we're
+keeping it like this for convenience.</p>
+<pre><code class="hljs css language-diff">   val config: GameConfig =
+     GameConfig.default.withMagnification(magnification)
+
+<span class="hljs-deletion">-  val animations: Set[Animation] =</span>
+<span class="hljs-deletion">-    Set()</span>
+<span class="hljs-deletion">-</span>
+   val assetName = AssetName("dots")
+
+   val assets: Set[AssetType] =
+       AssetType.Image(AssetName("dots"), AssetPath("assets/dots.png"))
+     )
+
+<span class="hljs-deletion">-  val fonts: Set[FontInfo] =</span>
+<span class="hljs-deletion">-    Set()</span>
+
+<span class="hljs-deletion">-  val shaders: Set[Shader] =</span>
+<span class="hljs-deletion">-    Set()</span>
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" id="scene-management"></a><a href="#scene-management" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Scene Management</h2>
+<p><code>IndigoGame</code> comes with a built in scene manager. For this exercise we're using
+a single scene, so we may as well keep all our logic in this one file. For
+bigger projects though you'll want to explore
+<a href="https://indigoengine.io/docs/organisation/scene-management">how scenes work</a>.</p>
+<p>We'll need to import the appropriate package so that we can use scenes. We can
+do that by adding this line to our imports:</p>
+<pre><code class="hljs css language-diff"> import indigo._
+<span class="hljs-addition">+import indigo.scenes._</span>
+ import scala.scalajs.js.annotation.JSExportTopLevel
+</code></pre>
+<p>We're going to add a dummy scene to this game as we're doing a very simple
+example. This is done by adding the following lines to <code>HelloIndigo.scala</code>:</p>
+<pre><code class="hljs css language-diff"><span class="hljs-addition">+  def initialScene(bootData: Unit): Option[SceneName] =</span>
+<span class="hljs-addition">+    None</span>
+<span class="hljs-addition">+</span>
+<span class="hljs-addition">+  def scenes(bootData: Unit): NonEmptyList[Scene[Unit, Model, Unit]] =</span>
+<span class="hljs-addition">+    NonEmptyList(Scene.empty)</span>
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" id="events"></a><a href="#events" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Events</h2>
+<p>We'll need to filter our events, after all it's inefficient to send all events
+to your game if you aren't needing to process them. We'll use the permissive
+event filters here, as that excludes subsystem specific events, but will
+allow the click event, which is the only one we need right now. Add the following:</p>
+<pre><code class="hljs css language-diff"><span class="hljs-addition">+  val eventFilters: EventFilters =</span>
+<span class="hljs-addition">+    EventFilters.Permissive</span>
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" id="booting"></a><a href="#booting" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Booting</h2>
+<p>We can now tell Indigo which assets to load at
+<a href="https://indigoengine.io/docs/organisation/boot-and-start-up">boot time</a>.
+This is where we'll make use of the assets and config <code>val</code> that we left earlier.
+Add the following:</p>
+<pre><code class="hljs css language-diff"><span class="hljs-addition">+  def boot(flags: Map[String, String]): Outcome[BootResult[Unit]] =</span>
+<span class="hljs-addition">+    Outcome(</span>
+<span class="hljs-addition">+      BootResult</span>
+<span class="hljs-addition">+        .noData(config)</span>
+<span class="hljs-addition">+        .withAssets(assets)</span>
+<span class="hljs-addition">+    )</span>
+</code></pre>
+<p>We'll also need to add the boot data to the <code>setup</code> signature:</p>
+<pre><code class="hljs css language-diff">  def setup(
+<span class="hljs-addition">+     bootData: Unit,</span>
+      assetCollection: AssetCollection,
+      dice: Dice
+  ): 
+</code></pre>
+<p>Here we're telling Indigo to boot using the config already assigned and
+the 'dots' asset. It's worth noting that if anything fails at this stage
+Indigo won't boot.</p>
+<h2><a class="anchor" aria-hidden="true" id="view-models"></a><a href="#view-models" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>View Models</h2>
+<p>We're almost done! Just a couple more steps and we can compile and see our handy
+work.</p>
+<p>We need to tell Indigo how to initialise and update our view models. As
+we're using <code>Unit</code> for our view models, this is simply a case of passing that
+back for both instances. We can do this like so:</p>
+<pre><code class="hljs css language-diff"><span class="hljs-addition">+  def initialViewModel(startupData: Unit, model: Model): Outcome[Unit] =</span>
+<span class="hljs-addition">+    Outcome(())</span>
+<span class="hljs-addition">+</span>
+<span class="hljs-addition">+  def updateViewModel(</span>
+<span class="hljs-addition">+      context: FrameContext[Unit],</span>
+<span class="hljs-addition">+      model: Model,</span>
+<span class="hljs-addition">+      viewModel: Unit</span>
+<span class="hljs-addition">+  ): GlobalEvent =&gt; Outcome[Unit] =</span>
+<span class="hljs-addition">+    _ =&gt; Outcome(())</span>
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" id="presenting"></a><a href="#presenting" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Presenting</h2>
+<p>The <code>present</code> method is ever so slightly different for an <code>IndigoGame</code> as it
+also takes a View Model as an argument. Simply add the correct argument like so:</p>
+<pre><code class="hljs css language-diff">   def present(
+       context: FrameContext[Unit],
+<span class="hljs-deletion">-      model: Model</span>
+<span class="hljs-addition">+      model: Model,</span>
+<span class="hljs-addition">+      viewModel: Unit</span>
+   ): Outcome[SceneUpdateFragment] =
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" id="compile-enjoy-and-further-reading"></a><a href="#compile-enjoy-and-further-reading" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Compile, Enjoy, and Further Reading</h2>
+<p>And that's it! If you now compile that code and run it either in a browser or
+in electron the results should be exactly the same as they were before. If,
+for whatever reason, you've gotten a compile error or something looks wrong
+you can refer
+<a href="https://gist.github.com/hobnob/c24f00936e91a7b7e5d644d19e4f1b32">here</a> for the
+full file and <a href="https://gist.github.com/hobnob/9a1e5a2d1039576948e3a904d915fc64">here</a>
+for the diff.</p>
+<p>What we've done here is fine for a single scene simple example, but when you
+need to separate your code into more defined instances (such as main menus, or
+levels) you will want to work with scenes and learn about
+<a href="https://indigoengine.io/docs/organisation/scene-management">Scene Management</a>.</p>
+<p>As you continue to use Indigo, you'll want to capture many events from the
+player. A list of the types of events that Indigo supports out of the box can be
+found <a href="https://indigoengine.io/docs/gameloop/events">here</a>.</p>
+<p>Hopefully you've found all that useful. If you find that you're struggling, have
+questions, or just want a chat about all things Indigo, you can find a very
+friendly community hanging out on <a href="https://discord.gg/b5CD47g">Discord</a>.</p>
+</span></div></article></div><div class="docs-prevnext"></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#basic-concepts">Basic Concepts</a></li><li><a href="#indigosandbox-to-indigogame"><code>IndigoSandbox</code> to <code>IndigoGame</code></a></li><li><a href="#scene-management">Scene Management</a></li><li><a href="#events">Events</a></li><li><a href="#booting">Booting</a></li><li><a href="#view-models">View Models</a></li><li><a href="#presenting">Presenting</a></li><li><a href="#compile-enjoy-and-further-reading">Compile, Enjoy, and Further Reading</a></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/" class="nav-home"><img src="/img/indigo_logo.svg" alt="Indigo" width="66" height="58"/></a><div><h5>Getting Started</h5><a href="/docs/en/quickstart/setup-and-configuration">Setup &amp; Configuration Guide</a><a href="/docs/en/quickstart/hello-indigo">&quot;Hello, Indigo!&quot; Tutorial</a><a href="/docs/en/quickstart/examples">Links to examples</a><a href="/docs/en/quickstart/project-templates">Project templates</a></div><div><h5>Community</h5><a href="https://discord.gg/b5CD47g">Discord</a><a href="https://github.com/PurpleKingdomGames/indigo/discussions">GitHub Discussons</a><a href="https://twitter.com/indigoengine" target="_blank" rel="noreferrer noopener">Twitter</a></div><div><h5>Sponsor us!</h5><a href="https://github.com/sponsors/PurpleKingdomGames">GitHub Sponsors</a><a href="https://www.patreon.com/indigoengine">Patreon</a></div></section></footer></div></body></html>

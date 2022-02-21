@@ -112,14 +112,19 @@
 <li><code>FullScreenExitError</code> - A problem occurred trying to exit full screen</li>
 </ul>
 <h3><a class="anchor" aria-hidden="true" id="inputevents"></a><a href="#inputevents" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>InputEvent</code>s</h3>
+<p>Handling <code>InputEvent</code>s can be a bit tricky in some situations, so Indigo includes <code>Mouse</code> and <code>Keyboard</code> classes that can be accessed from the <a href="/docs/gameloop/frame-context">frame context</a>, providing a rich interface to gather more complex information from those input devices.</p>
 <h4><a class="anchor" aria-hidden="true" id="mouseevents"></a><a href="#mouseevents" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>MouseEvent</code>s</h4>
 <p>What did the mouse do and at what location?</p>
+<p>Up to five mouse buttons are supported, including the most common left, middle and right buttons.</p>
+<p>Convenience functions are provided for the left mouse button.</p>
 <ul>
 <li><code>Click(x, y)</code></li>
-<li><code>MouseUp(x, y)</code></li>
-<li><code>MouseDown(x, y)</code></li>
+<li><code>MouseUp(x, y, button)</code></li>
+<li><code>MouseDown(x, y, button)</code></li>
 <li><code>Move(x, y)</code></li>
+<li><code>Wheel(x, y, amount)</code></li>
 </ul>
+<p>Notice however that the <code>Click</code> event is restricted to the left mouse button, and <code>Move</code> is independent of any button.</p>
 <h4><a class="anchor" aria-hidden="true" id="keyboardevents"></a><a href="#keyboardevents" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>KeyboardEvent</code>s</h4>
 <ul>
 <li><code>KeyUp(key)</code></li>
@@ -162,13 +167,13 @@
 <p>These are the low level events used to load additional assets at runtime. If you want a slightly more sophisticated loading experience, please look at the asset bundle loader sub system.</p>
 <p>Note that the <code>LoadAsset</code> event is a convenience event, and in fact loads a bundle containing one element, which is why there is no corresponding &quot;<code>AssetLoadError</code>&quot; event, just the bundle version.</p>
 <blockquote>
-<p>The load events also have a <code>makeAvailable</code> flag, which if set to false, loads the asset but doesn't add it to the engine. The <code>available</code> flag on the response indicates whether the asset has been made available or not.</p>
+<p>The load events also have a <code>makeAvailable</code> flag, which if set to false, loads the asset to the browsers cache but doesn't add it to the engine, this means you can add it to the engine quickly later. The <code>available</code> flag on the response indicates whether the asset has been made available or not.</p>
 </blockquote>
 <ul>
-<li><code>LoadAsset(assetType, optional key, makeAvailable)</code> - Delete the data stored against the given key</li>
-<li><code>LoadAssetBatch(set of assetType, optional key, makeAvailable)</code> - Delete the data stored against the given key</li>
-<li><code>AssetBatchLoaded(optional key, available)</code> - Delete the data stored against the given key</li>
-<li><code>AssetBatchLoadError(optional key)</code> - Delete the data stored against the given key</li>
+<li><code>LoadAsset(assetType, optional key, makeAvailable)</code> - Load a single asset</li>
+<li><code>LoadAssetBatch(set of assetType, optional key, makeAvailable)</code> - Load a batch of assets</li>
+<li><code>AssetBatchLoaded(optional key, available)</code> - The response event to <code>LoadAsset</code> or <code>LoadAssetBatch</code></li>
+<li><code>AssetBatchLoadError(optional key)</code> - If an error occurs during load, the game will be sent this event</li>
 </ul>
 <h3><a class="anchor" aria-hidden="true" id="scenes"></a><a href="#scenes" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Scenes</h3>
 <ul>
