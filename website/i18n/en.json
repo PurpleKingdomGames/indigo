@@ -26,6 +26,9 @@
       "guides/howto-fire-shader": {
         "title": "How to write a fire shader"
       },
+      "guides/howto-indigo-game": {
+        "title": "Converting `IndigoSandbox` to `IndigoGame`"
+      },
       "guides/howto-parcel": {
         "title": "How to bundle up an Indigo game with Parcel.js"
       },
