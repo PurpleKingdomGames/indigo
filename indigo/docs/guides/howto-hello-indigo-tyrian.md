@@ -129,7 +129,8 @@ We'll also need an `index.html` to hold our basic HTML data:
 You'll notice we're using the direct JS output from our build here, which may
 feel odd. What will happen when we run ParcelJS through Yarn is that the HTML
 will be copied to a build directory along with the JS, CSS and any dependant
-static files (such as images) that may be needed.
+static files (such as images) that may be needed, and everything will be correctly
+linked by Parcel.
 
 Now generate an empty `css/main.css`.
 
