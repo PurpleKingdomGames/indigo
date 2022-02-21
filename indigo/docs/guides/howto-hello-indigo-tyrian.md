@@ -24,6 +24,23 @@ In this guide we'll take the basic `hello-indigo` example and add a button and
 a counter that scales with the size of the screen. It's a pretty basic example,
 but it should give you an idea of what can be achieved.
 
+## Overview
+
+This is a fairly involved guide with many parts to it that need to be implemented
+in order to get everything working. However the concept is pretty simple - we'll
+be using the Tyrian Bridge as a communication layer between Indigo and our
+`index.html` (which is controlled by Tyrian).
+
+These are the steps we're going to take:
+
+* [Set up the environment](#setting-up-the-environment) - e.g. clone `hello-indigo` and set up ParcelJS
+* [Modify our build files](#setting-up-the-build) - e.g. update our `build.sbt` or `build.sc` files
+* [Create our static files](#setting-up-the-html-and-parceljs) - e.ge create our html, js, css and other static content
+* [Update Indigo with a new subsystem](#update-helloindigoscala) and [Initialise our Tyrian app](#create-a-tyrian-app)
+* [Get Tyrian publishing messages to Indigo](#tyrian-to-indigo-communication) (and Indigo to subscribe to them)
+* [Get Indigo publishing messages to Tyrian](#indigo-to-tyrian-communication) (and Tyrian to subscribe to them)
+* And finally [creating a responsive UI in CSS](#responsive-ui)
+
 ## Setup
 
 ### Setting up the Environment
@@ -206,7 +223,7 @@ adding an entry to the `boot` method like so:
      )
 ```
 
-### Create a Tyrian App
+## Create a Tyrian App
 
 We'll now develop our initial Tyrian app, which will consist simply of
 a canvas (for Indigo), a counter, and a button, wrapped in a few `div` elements.
