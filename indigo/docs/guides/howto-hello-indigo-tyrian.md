@@ -126,6 +126,10 @@ We'll also need an `index.html` to hold our basic HTML data:
 </html>
 ```
 
+Tyrian currently uses `snabbdom` for adding and removing elements in a web page.
+To do this we will need to add a dependency to `snabbdom` by running
+`yarn add snabbdom`.
+
 You'll notice we're using the direct JS output from our build here, which may
 feel odd. What will happen when we run ParcelJS through Yarn is that the HTML
 will be copied to a build directory along with the JS, CSS and any dependant
@@ -155,10 +159,8 @@ following to `package.json`:
 }
 ```
 
-We need to add a couple of dependencies. Firstly we'll add the
-dependency for static files by running
-`yarn add parcel-reporter-static-files-copy --dev` from the command line; and
-secondly we'll add `snabbdom` for Tyrian by running `yarn add snabbdom`.
+We need to add the dependency for static files by running
+`yarn add parcel-reporter-static-files-copy --dev` from the command line.
 
 Finally, we need to configure ParcelJS so that it knows how to copy our static
 files. Add a `.parcelrc` file and add the following:
