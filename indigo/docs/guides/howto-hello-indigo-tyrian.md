@@ -178,8 +178,7 @@ We'll be using the
 [`TyrianSubSystem`](https://tyrian.indigoengine.io/concepts/tyrian-indigo-bridge/)
 as a way of communicating between Indigo and Tyrian. Add
 `import tyrian.TyrianSubSystem` to the imports in `HelloIndigo.scala`, and then
-update the `object` to be a `case class` so that it it contains the subsystem as
-an argument. We can also remove the top level export, as we'll no longer need it:
+update the `object` to be a `case class` so that we can pass in the subsystem as an argument. We can also remove the top level export, as we'll no longer need it:
 
 ```diff
 - import scala.scalajs.js.annotation.JSExportTopLevel
