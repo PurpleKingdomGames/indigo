@@ -174,11 +174,12 @@ files. Add a `.parcelrc` file and add the following:
 
 ### Update HelloIndigo.scala
 
-We'll be using the `TyrianSubSystem` as a way of communicating between Indigo
-and Tyrian. Add `import tyrian.TyrianSubSystem` to the imports in
-`HelloIndigo.scala`, and then update the `object` to be a `case class` so that
-it it contains the subsystem as an argument. We can also remove the top level
-export, as we'll no longer need it:
+We'll be using the
+[`TyrianSubSystem`](https://tyrian.indigoengine.io/concepts/tyrian-indigo-bridge/)
+as a way of communicating between Indigo and Tyrian. Add
+`import tyrian.TyrianSubSystem` to the imports in `HelloIndigo.scala`, and then
+update the `object` to be a `case class` so that it it contains the subsystem as
+an argument. We can also remove the top level export, as we'll no longer need it:
 
 ```diff
 - import scala.scalajs.js.annotation.JSExportTopLevel
