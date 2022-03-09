@@ -5,7 +5,9 @@
     ],
     "Gamedev": [
       "guides/howto-custom-entity",
-      "guides/howto-fire-shader"
+      "guides/howto-fire-shader",
+      "guides/howto-indigo-game",
+      "guides/howto-responsive-ui-with-tyrian"
     ]
   },
   "docs": {
