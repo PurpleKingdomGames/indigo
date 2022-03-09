@@ -48,7 +48,7 @@ These are the steps we're going to take:
 For this guide we'll be using the `hello-indigo` example in either
 [mill](https://github.com/PurpleKingdomGames/hello-indigo) or
 [sbt](https://github.com/PurpleKingdomGames/hello-indigo-sbt).
-In the existing implementation clicking on the dots will create a new dot
+In the existing implementation clicking on the game window will create a new dot
 that then rotates around the canvas. We'll modify this so that clicking a button
 does this job instead.
 
@@ -106,6 +106,10 @@ Next you'll need to update either your
 +  "io.indigoengine" %%% "tyrian"               % "0.3.1",
 +  "io.indigoengine" %%% "tyrian-indigo-bridge" % "0.3.1",
  )
+
+-addCommandAlias("buildGame", ";compile;fastOptJS;indigoBuild")
++addCommandAlias("buildGame", ";compile;fastOptJS")
+-addCommandAlias("runGame", ";compile;fastOptJS;indigoRun")
  ```
 
 What we've done here is add Tyrian and the Tyrian Indigo Bridge to our build.
@@ -121,6 +125,8 @@ inject CSS.
 
 Firstly we'll create an `app.js` file that simply loads Tyrian and then launches
 it for our page:
+
+> Note: The path in this example is from a Mill build, sbt's output will live in the `target` directory.
 
 ```js
 import {
@@ -228,10 +234,61 @@ adding an entry to the `boot` method like so:
 We'll now develop our initial Tyrian app, which will consist simply of
 a canvas (for Indigo), a counter, and a button, wrapped in a few `div` elements.
 Create a new file called `HelloTyrian.scala` inside the `helloindigo/src` folder
-and add the following contents found
+and add the following contents found below, or
 [here](https://gist.github.com/hobnob/436318b3ae5eed5891ba2b18bb8c264b).
 
-You can now build the project in mill or sbt and then run `yarn start` to see the HelloIndigo demo running inside a Tyrian website. This is great if you want a
+```scala
+import tyrian.*
+import tyrian.Html.*
+import org.scalajs.dom.document
+import scala.scalajs.js.annotation.*
+
+enum Msg:
+  case StartIndigo extends Msg
+
+@JSExportTopLevel("TyrianApp")
+object Main extends TyrianApp[Msg, TyrianModel]:
+  val gameDivId = "game-container"
+
+  def init(flags: Map[String, String]): (TyrianModel, Cmd[Msg]) =
+    (TyrianModel.init, Cmd.Emit(Msg.StartIndigo))
+
+  def update(msg: Msg, model: TyrianModel): (TyrianModel, Cmd[Msg]) =
+    msg match
+      case Msg.StartIndigo =>
+        (
+          model,
+          Cmd.SideEffect { () =>
+            HelloIndigo(model.bridge.subSystem(IndigoGameId(gameDivId)))
+              .launch(
+                gameDivId,
+                "width"  -> "550",
+                "height" -> "400"
+              )
+          }
+        )
+
+  def view(model: TyrianModel): Html[Msg] =
+    div(`class` := "main")(
+      div(`class` := "game", id := gameDivId)(),
+      div(`class`:= "counter")(),
+      div(`class`:= "btn")(
+        button()("Click me")
+      )
+    )
+
+  def subscriptions(model: TyrianModel): Sub[Msg] =
+    Sub.Empty
+
+  def main(args: Array[String]): Unit =
+    Tyrian.start(document.getElementById("main"), init, update, view, subscriptions)
+
+final case class TyrianModel(bridge: TyrianIndigoBridge[Int])
+object TyrianModel:
+  val init: TyrianModel(TyrianIndigoBridge())
+```
+
+You can now build the project in mill (`mill helloindigo.buildGame`) or sbt (`sbt buildGame`)  and then run `yarn start` to see the HelloIndigo demo running inside a Tyrian website. This is great if you want a
 website surrounding your game with no interaction, but it would be much more
 useful to get them both talking to each other... this is what we're doing next!
 
@@ -247,10 +304,9 @@ In `HelloTyrian.scala`, we'll need a new message type. Add a new message type ca
    enum Msg:
      case StartIndigo extends Msg
 +    case AddDot      extends Msg
-```.
+```
 
-Next we'll need to deal with that message in Tyrian, by adding a case to `update`
-like this:
+Next we'll need to deal with that message in Tyrian, by adding a case to `update` like this:
 
 ```diff
      msg match
@@ -313,7 +369,7 @@ counting `div` to display what's in the `model` like so
 
 ```diff
 -      div(`class` := "counter")(),
-+      div(``class`` := "counter")(model.count.toString)
++      div(`class` := "counter")(model.count.toString)
 ```
 
 A new message type is also required as before, so we'll add a new one like so:
