@@ -20,6 +20,7 @@ final case class Key(code: Int, key: String) derives CanEqual {
       case _ => false
     }
 
+  override def hashCode: Int = code
 }
 
 object Key {
