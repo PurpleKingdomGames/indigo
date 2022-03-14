@@ -175,6 +175,13 @@ class RectangleTests extends munit.FunSuite {
     assert(!Rectangle.overlapping(a, b))
   }
 
+  test("overlapping rectangles.should return true when A is more than 1 in height, but B is 1 in height.") {
+    val a = Rectangle(3, 5, 2, 2)
+    val b = Rectangle(4, 5, 2, 1)
+
+    assert(Rectangle.overlapping(a, b))
+  }
+
   test("Expand should be able to expand in size by a given amount") {
     val a = Rectangle(10, 10, 20, 20)
     val b = Rectangle(0, 10, 100, 5)
