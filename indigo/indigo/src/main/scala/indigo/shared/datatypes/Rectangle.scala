@@ -23,8 +23,8 @@ final case class Rectangle(position: Point, size: Size) derives CanEqual:
   lazy val center: Point      = Point(horizontalCenter, verticalCenter)
   lazy val halfSize: Size     = (size / 2).abs
 
-  lazy private val halfWidth: Double = (size.width / 2.0).abs
-  lazy private val halfHeight: Double = (size.height / 2.0).abs
+  lazy private val halfWidth: Double = (size.width * 0.5).abs
+  lazy private val halfHeight: Double = (size.height * 0.5).abs
 
   lazy val corners: List[Point] =
     List(topLeft, topRight, bottomRight, bottomLeft)
