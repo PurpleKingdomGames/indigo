@@ -23,6 +23,9 @@ final case class Rectangle(position: Point, size: Size) derives CanEqual:
   lazy val center: Point      = Point(horizontalCenter, verticalCenter)
   lazy val halfSize: Size     = (size / 2).abs
 
+  lazy private val halfWidth: Double = (size.width / 2.0).abs
+  lazy private val halfHeight: Double = (size.height / 2.0).abs
+
   lazy val corners: List[Point] =
     List(topLeft, topRight, bottomRight, bottomLeft)
 
@@ -171,5 +174,5 @@ object Rectangle:
     b.x >= a.x && b.y >= a.y && (b.width + (b.x - a.x)) <= a.width && (b.height + (b.y - a.y)) <= a.height
 
   def overlapping(a: Rectangle, b: Rectangle): Boolean =
-    Math.abs(a.center.x - b.center.x) < a.halfSize.width + b.halfSize.width &&
-      Math.abs(a.center.y - b.center.y) < a.halfSize.height + b.halfSize.height
+    Math.abs(a.center.x - b.center.x) < a.halfWidth + b.halfWidth &&
+      Math.abs(a.center.y - b.center.y) < a.halfHeight + b.halfHeight
