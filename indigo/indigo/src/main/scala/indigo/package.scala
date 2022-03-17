@@ -386,6 +386,9 @@ val TiledGridLayer: shared.formats.TiledGridLayer.type = shared.formats.TiledGri
 type TiledGridCell[A] = shared.formats.TiledGridCell[A]
 val TiledGridCell: shared.formats.TiledGridCell.type = shared.formats.TiledGridCell
 
+type Tileset = indigo.shared.formats.Tileset
+val Tileset: indigo.shared.formats.Tileset.type = indigo.shared.formats.Tileset
+
 type Gamepad = shared.input.Gamepad
 val Gamepad: shared.input.Gamepad.type = shared.input.Gamepad
 
