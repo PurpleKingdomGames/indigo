@@ -2,7 +2,7 @@ package indigo.shared.formats
 
 import indigo._
 
-class TilesetTests extends munit.FunSuite {
+class TileSheetTests extends munit.FunSuite {
   private val tileWidth  = 16
   private val tileHeight = 16
   private val margin     = 1
@@ -10,7 +10,7 @@ class TilesetTests extends munit.FunSuite {
   private val columns    = 32
   private val width      = (tileWidth + margin) * rows - margin
   private val height     = (tileHeight + margin) * columns - margin
-  private val testFixture = Tileset(
+  private val testFixture = TileSheet(
     AssetName("ignored"),
     Size(width, height),
     Size(tileWidth, tileHeight),
