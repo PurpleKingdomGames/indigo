@@ -6,7 +6,7 @@ import indigo._
   * uniform, with each sprite having the same width and height, and a
   * (possibly zero-pixel) inner margin.
   */
-final case class Tileset(
+final case class TileSheet(
     assetName: AssetName,
     imageSize: Size,
     tileSize: Size,
@@ -70,7 +70,7 @@ final case class Tileset(
   def apply(pt: Point): Option[Graphic[Material.Bitmap]] =
     fromPoint(pt)
 }
-object Tileset {
+object TileSheet {
   def apply(
     assetName: AssetName,
     width: Int,
@@ -78,8 +78,8 @@ object Tileset {
     tileWidth: Int,
     tileHeight: Int,
     margin: Int
-  ): Tileset =
-    Tileset(
+  ): TileSheet =
+    TileSheet(
       assetName = assetName,
       imageSize = Size(width, height),
       tileSize  = Size(tileWidth, tileHeight),
