@@ -2,7 +2,7 @@ package indigo.shared.formats
 
 import indigo._
 
-class TileSheetTests extends munit.FunSuite {
+class TileSheetTests extends munit.FunSuite:
   private val tileWidth  = 16
   private val tileHeight = 16
   private val margin     = 1
@@ -80,4 +80,3 @@ class TileSheetTests extends munit.FunSuite {
         .contains(Rectangle(0, tileHeight + margin, tileWidth, tileHeight))
     )
   }
-}

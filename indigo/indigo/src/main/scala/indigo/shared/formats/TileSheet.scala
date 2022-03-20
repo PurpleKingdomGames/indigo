@@ -11,7 +11,7 @@ final case class TileSheet(
     imageSize: Size,
     tileSize: Size,
     margin: Int
-) {
+):
   val maxRows: Int    = (imageSize.height + margin) / (tileSize.height + margin)
   val maxColumns: Int = (imageSize.width + margin) / (tileSize.width + margin)
   val maxIndex: Int   = maxRows * maxColumns - 1
@@ -20,15 +20,12 @@ final case class TileSheet(
   def rectangleForIndex(index: Int): Option[Rectangle] =
     rectangleForCoords(column = index % maxColumns, row = index / maxColumns)
 
-  def rectangleForCoords(column: Int, row: Int): Option[Rectangle] = {
-    if (column < 0 || column >= maxColumns || row < 0 || row >= maxRows)
-      None
-    else {
+  def rectangleForCoords(column: Int, row: Int): Option[Rectangle] =
+    if column < 0 || column >= maxColumns || row < 0 || row >= maxRows then None
+    else
       val x = column * (tileSize.width + margin)
       val y = row * (tileSize.height + margin)
       Some(Rectangle(Point(x, y), tileSize))
-    }
-  }
 
   def graphicFromRectangle(boundsOpt: Option[Rectangle]): Option[Graphic[Material.Bitmap]] =
     boundsOpt.map { bounds =>
@@ -69,8 +66,8 @@ final case class TileSheet(
   /** @see #fromPoint */
   def apply(pt: Point): Option[Graphic[Material.Bitmap]] =
     fromPoint(pt)
-}
-object TileSheet {
+
+object TileSheet:
   def apply(
     assetName: AssetName,
     width: Int,
@@ -85,4 +82,3 @@ object TileSheet {
       tileSize  = Size(tileWidth, tileHeight),
       margin    = margin
     )
-}
