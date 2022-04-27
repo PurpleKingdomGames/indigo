@@ -11,6 +11,8 @@ import publish._
 object `indigo-plugin` extends Cross[IndigoPluginModule]("2.12", "2.13")
 class IndigoPluginModule(val crossScalaVersion: String) extends CrossScalaModule with PublishModule {
 
+  def indigoVersion = T.input { IndigoVersion.getVersion }
+
   def scalaVersion =
     crossScalaVersion match {
       case "2.12" => "2.12.15"
@@ -42,7 +44,7 @@ class IndigoPluginModule(val crossScalaVersion: String) extends CrossScalaModule
     def scalacOptions = ScalacOptions.scala213Test
   }
 
-  def publishVersion = IndigoVersion.getVersion
+  def publishVersion = indigoVersion()
 
   def pomSettings =
     PomSettings(

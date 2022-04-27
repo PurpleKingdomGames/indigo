@@ -15,13 +15,15 @@ class IndigoPluginModule(val crossScalaVersion: String) extends CrossScalaModule
 
   def millLibVersion = "0.10.0"
 
+  def indigoVersion = T.input { IndigoVersion.getVersion }
+
   def ivyDeps = Agg(
     ivy"com.lihaoyi::mill-main:${millLibVersion}",
     ivy"com.lihaoyi::mill-main-api:${millLibVersion}",
     ivy"com.lihaoyi::mill-scalalib:${millLibVersion}",
     ivy"com.lihaoyi::mill-scalalib-api:${millLibVersion}",
     ivy"com.lihaoyi::os-lib:0.8.0",
-    ivy"io.indigoengine::indigo-plugin:${IndigoVersion.getVersion}"
+    ivy"io.indigoengine::indigo-plugin:${indigoVersion()}"
   )
 
   def repositories = super.repositories ++ Seq(
@@ -34,7 +36,7 @@ class IndigoPluginModule(val crossScalaVersion: String) extends CrossScalaModule
     def testFramework = "munit.Framework"
   }
 
-  def publishVersion = IndigoVersion.getVersion
+  def publishVersion = indigoVersion()
 
   def pomSettings = PomSettings(
     description = "mill-indigo",
