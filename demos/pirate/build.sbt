@@ -2,7 +2,7 @@
 // The essentials.
 //-----------------------------------
 
-val scala3Version = "3.1.1"
+val scala3Version = "3.1.2"
 
 lazy val pirate =
   (project in file("."))

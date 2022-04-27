@@ -9,10 +9,10 @@ import indigo.shared.assets.AssetType
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.events.AssetEvent
 import org.scalajs.dom
+import org.scalajs.dom.HTMLImageElement
 import org.scalajs.dom._
 import org.scalajs.dom.ext.Ajax
 import org.scalajs.dom.html
-import org.scalajs.dom.raw.HTMLImageElement
 import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits._
 
 import scala.concurrent.Future
@@ -158,12 +158,14 @@ object AssetLoader {
       val context = AudioPlayer.giveAudioContext()
 
       response.arrayBuffer().toFuture.flatMap { ab =>
-        context.decodeAudioData(
-          ab,
-          (audioBuffer: AudioBuffer) => audioBuffer,
-          () => IndigoLogger.info("Error decoding audio from: " + audioAsset.path)
-        ).toFuture
-        .map(audioBuffer => new LoadedAudioAsset(audioAsset.name, audioBuffer))
+        context
+          .decodeAudioData(
+            ab,
+            (audioBuffer: AudioBuffer) => audioBuffer,
+            () => IndigoLogger.info("Error decoding audio from: " + audioAsset.path)
+          )
+          .toFuture
+          .map(audioBuffer => new LoadedAudioAsset(audioAsset.name, audioBuffer))
       }
     }
   }

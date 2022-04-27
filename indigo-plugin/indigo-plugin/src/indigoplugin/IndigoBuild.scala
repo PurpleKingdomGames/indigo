@@ -6,10 +6,16 @@ import indigoplugin.templates.SupportScriptTemplate
 
 object IndigoBuild {
 
-  def build(templateOptions: TemplateOptions, directoryStructure: DirectoryStructure, newScriptName: String): Unit = {
+  def build(
+      templateOptions: TemplateOptions,
+      directoryStructure: DirectoryStructure,
+      scriptNames: List[String]
+  ): Unit = {
+
+    val scriptName = findScriptName(scriptNames, templateOptions.scriptPathBase)
 
     // copy built js file into scripts dir
-    IndigoBuild.copyScript(templateOptions, directoryStructure.artefacts, newScriptName)
+    IndigoBuild.copyScript(templateOptions, directoryStructure.artefacts, scriptName)
 
     // copy assets into folder
     IndigoBuild.copyAssets(templateOptions.gameAssetsDirectoryPath, directoryStructure.assets)
@@ -18,7 +24,7 @@ object IndigoBuild {
     IndigoBuild.copyScript(
       templateOptions,
       directoryStructure.artefacts,
-      newScriptName + ".map"
+      scriptName + ".map"
     )
 
     // Write an empty cordova.js file so the script reference is intact,
@@ -30,13 +36,24 @@ object IndigoBuild {
     os.write(directoryStructure.base / "scripts" / "indigo-support.js", support)
 
     // Fill out html template
-    val html = HtmlTemplate.template(templateOptions.title, templateOptions.showCursor, newScriptName)
+    val html = HtmlTemplate.template(templateOptions.title, templateOptions.showCursor, scriptName)
 
     // Write out file
     val outputPath = IndigoBuild.writeHtml(directoryStructure, html)
 
     println(outputPath.toString())
   }
+
+  def findScriptName(names: List[String], scriptDirPath: Path): String =
+    names
+      .find(name => os.exists(scriptDirPath / name))
+      .getOrElse(
+        throw new Exception(
+          "Could not find a script file with any of the following names " +
+            names.mkString("[", ", ", "]") +
+            s" in '${scriptDirPath.toString}'"
+        )
+      )
 
   def createDirectoryStructure(baseDir: Path): DirectoryStructure = {
     println("dirPath: " + baseDir.toString())

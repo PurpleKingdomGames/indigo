@@ -4,12 +4,12 @@ import indigo.facades.WebGL2RenderingContext
 import indigo.shared.IndigoLogger
 import indigo.shared.scenegraph.BlendFactor
 import indigo.shared.shader.RawShaderCode
+import org.scalajs.dom.ImageData
+import org.scalajs.dom.WebGLBuffer
+import org.scalajs.dom.WebGLProgram
 import org.scalajs.dom.WebGLRenderingContext
 import org.scalajs.dom.WebGLRenderingContext._
-import org.scalajs.dom.raw
-import org.scalajs.dom.raw.WebGLBuffer
-import org.scalajs.dom.raw.WebGLProgram
-import org.scalajs.dom.raw.WebGLTexture
+import org.scalajs.dom.WebGLTexture
 
 import scala.scalajs.js.JSConverters._
 import scala.scalajs.js.typedarray.Float32Array
@@ -17,8 +17,8 @@ import scala.scalajs.js.typedarray.Float32Array
 object WebGLHelper {
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  def shaderProgramSetup(gl: raw.WebGLRenderingContext, layerLabel: String, shader: RawShaderCode): WebGLProgram = {
-    //Create a vertex shader program object and compile it
+  def shaderProgramSetup(gl: WebGLRenderingContext, layerLabel: String, shader: RawShaderCode): WebGLProgram = {
+    // Create a vertex shader program object and compile it
     val vertShader = gl.createShader(VERTEX_SHADER)
     gl.shaderSource(vertShader, shader.vertex)
     gl.compileShader(vertShader)
@@ -32,7 +32,7 @@ object WebGLHelper {
       throw new Exception(s"Fatal: Vertex shader compile error ($layerLabel)")
     }
 
-    //Create a fragment shader program object and compile it
+    // Create a fragment shader program object and compile it
     val fragShader = gl.createShader(FRAGMENT_SHADER)
     gl.shaderSource(fragShader, shader.fragment)
     gl.compileShader(fragShader)
@@ -46,7 +46,7 @@ object WebGLHelper {
       throw new Exception(s"Fatal: Fragment shader compile error ($layerLabel)")
     }
 
-    //Create and use combined shader program
+    // Create and use combined shader program
     val shaderProgram = gl.createProgram()
     gl.attachShader(shaderProgram, vertShader)
     gl.attachShader(shaderProgram, fragShader)
@@ -134,13 +134,13 @@ object WebGLHelper {
   }
 
   // Blend Equations
-  def setBlendAdd(gl: raw.WebGLRenderingContext): Unit =
+  def setBlendAdd(gl: WebGLRenderingContext): Unit =
     gl.blendEquation(FUNC_ADD)
 
-  def setBlendSubtract(gl: raw.WebGLRenderingContext): Unit =
+  def setBlendSubtract(gl: WebGLRenderingContext): Unit =
     gl.blendEquation(FUNC_SUBTRACT)
 
-  def setBlendReverseSubtract(gl: raw.WebGLRenderingContext): Unit =
+  def setBlendReverseSubtract(gl: WebGLRenderingContext): Unit =
     gl.blendEquation(FUNC_REVERSE_SUBTRACT)
 
   def setBlendMin(gl2: WebGL2RenderingContext): Unit =
@@ -154,13 +154,13 @@ object WebGLHelper {
     setBlendMax(gl2)
 
   // Blend Modes
-  def setAlphaBlend(gl: raw.WebGLRenderingContext): Unit =
+  def setAlphaBlend(gl: WebGLRenderingContext): Unit =
     gl.blendFunc(SRC_ALPHA, DST_ALPHA)
 
-  def setNormalBlend(gl: raw.WebGLRenderingContext): Unit =
+  def setNormalBlend(gl: WebGLRenderingContext): Unit =
     gl.blendFunc(ONE, ONE_MINUS_SRC_ALPHA)
 
-  def setLightsBlend(gl: raw.WebGLRenderingContext): Unit =
+  def setLightsBlend(gl: WebGLRenderingContext): Unit =
     gl.blendFunc(SRC_ALPHA, ONE)
 
   def convertBlendFactor(bf: BlendFactor): Int =
@@ -178,10 +178,10 @@ object WebGLHelper {
       case BlendFactor.SrcAlphaSaturate => SRC_ALPHA_SATURATE
     }
 
-  def setBlendFunc(gl: raw.WebGLRenderingContext, src: BlendFactor, dst: BlendFactor): Unit =
+  def setBlendFunc(gl: WebGLRenderingContext, src: BlendFactor, dst: BlendFactor): Unit =
     gl.blendFunc(convertBlendFactor(src), convertBlendFactor(dst))
 
-  def organiseImage(gl: raw.WebGLRenderingContext, image: raw.ImageData): WebGLTexture = {
+  def organiseImage(gl: WebGLRenderingContext, image: ImageData): WebGLTexture = {
     val texture = createAndBindTexture(gl)
 
     gl.texImage2D(TEXTURE_2D, 0, RGBA, RGBA, UNSIGNED_BYTE, image)
@@ -190,7 +190,7 @@ object WebGLHelper {
     texture
   }
 
-  def createAndBindTexture(gl: raw.WebGLRenderingContext): WebGLTexture = {
+  def createAndBindTexture(gl: WebGLRenderingContext): WebGLTexture = {
     val texture = gl.createTexture()
     gl.bindTexture(TEXTURE_2D, texture)
 

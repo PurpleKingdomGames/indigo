@@ -17,10 +17,12 @@ import indigo.shared.scenegraph.Shape
 import indigo.shared.scenegraph.TextBox
 import indigo.shared.subsystems.SubSystem
 import indigo.shared.subsystems.SubSystemFrameContext
+import indigo.shared.subsystems.SubSystemId
 import indigo.shared.time.FPS
 import indigo.shared.time.Seconds
 
 final case class FPSCounter(
+    id: SubSystemId,
     startPosition: Point,
     targetFPS: Option[FPS],
     layerKey: Option[BindingKey],
@@ -110,17 +112,32 @@ final case class FPSCounter(
     else RGBA.Red
 
 object FPSCounter:
+
+  val DefaultId: SubSystemId = SubSystemId("[indigo_FPSCounter_subsystem]")
+
   def apply(position: Point): SubSystem =
-    FPSCounter(position, None, None, FontFamily.sansSerif, Pixels(12))
+    FPSCounter(DefaultId, position, None, None, FontFamily.sansSerif, Pixels(12))
 
   def apply(position: Point, targetFPS: FPS): SubSystem =
-    FPSCounter(position, Option(targetFPS), None, FontFamily.sansSerif, Pixels(12))
+    FPSCounter(DefaultId, position, Option(targetFPS), None, FontFamily.sansSerif, Pixels(12))
 
   def apply(position: Point, layerKey: BindingKey): SubSystem =
-    FPSCounter(position, None, Option(layerKey), FontFamily.sansSerif, Pixels(12))
+    FPSCounter(DefaultId, position, None, Option(layerKey), FontFamily.sansSerif, Pixels(12))
 
   def apply(position: Point, targetFPS: FPS, layerKey: BindingKey): SubSystem =
-    FPSCounter(position, Option(targetFPS), Option(layerKey), FontFamily.sansSerif, Pixels(12))
+    FPSCounter(DefaultId, position, Option(targetFPS), Option(layerKey), FontFamily.sansSerif, Pixels(12))
+
+  def apply(id: SubSystemId, position: Point): SubSystem =
+    FPSCounter(id, position, None, None, FontFamily.sansSerif, Pixels(12))
+
+  def apply(id: SubSystemId, position: Point, targetFPS: FPS): SubSystem =
+    FPSCounter(id, position, Option(targetFPS), None, FontFamily.sansSerif, Pixels(12))
+
+  def apply(id: SubSystemId, position: Point, layerKey: BindingKey): SubSystem =
+    FPSCounter(id, position, None, Option(layerKey), FontFamily.sansSerif, Pixels(12))
+
+  def apply(id: SubSystemId, position: Point, targetFPS: FPS, layerKey: BindingKey): SubSystem =
+    FPSCounter(id, position, Option(targetFPS), Option(layerKey), FontFamily.sansSerif, Pixels(12))
 
   final case class Move(to: Point) extends GlobalEvent
 

@@ -37,7 +37,22 @@ trait MillIndigo extends mill.Module {
 
   def indigoBuild(): Command[Path] =
     T.command {
-      val scriptPathBase: Path = T.dest / os.up / "fastOpt.dest"
+      val scriptPathBase: Path = {
+        val paths =
+          List(
+            T.dest / os.up / "fastOpt.dest",
+            T.dest / os.up / "fastOpt" / "dest"
+          )
+
+        paths.find(os.exists) match {
+          case Some(p) => p
+          case None =>
+            throw new Exception(
+              "Could not find fastOpt dir, did you compile to JS? Tried: " +
+                paths.map(_.toString).mkString("[", ", ", "]")
+            )
+        }
+      }
 
       IndigoBuildMill.build(
         T.dest,
@@ -54,8 +69,23 @@ trait MillIndigo extends mill.Module {
 
   def indigoBuildFull(): Command[Path] =
     T.command {
-      val outputDir: Path      = T.dest
-      val scriptPathBase: Path = T.dest / os.up / "fullOpt.dest"
+      val outputDir: Path = T.dest
+      val scriptPathBase: Path = {
+        val paths =
+          List(
+            T.dest / os.up / "fullOpt.dest",
+            T.dest / os.up / "fullOpt" / "dest"
+          )
+
+        paths.find(os.exists) match {
+          case Some(p) => p
+          case None =>
+            throw new Exception(
+              "Could not find fullOpt dir, did you compile to JS? Tried: " +
+                paths.map(_.toString).mkString("[", ", ", "]")
+            )
+        }
+      }
 
       IndigoBuildMill.build(
         outputDir,

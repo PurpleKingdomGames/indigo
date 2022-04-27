@@ -11,7 +11,7 @@ object IndigoBuildMill {
     IndigoBuild.build(
       templateOptions,
       IndigoBuild.createDirectoryStructure(baseDir),
-      "out.js"
+      List("main.js", "out.js")
     )
   }
 

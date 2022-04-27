@@ -3,11 +3,11 @@ import scala.language.postfixOps
 
 import sbtwelcome._
 
-val scala3Version = "3.1.1"
+val scala3Version = "3.1.2"
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
-ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.5.0"
+ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.6.0"
 
 lazy val commonSettings = Seq(
   version      := "0.0.1",

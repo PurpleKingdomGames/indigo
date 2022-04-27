@@ -23,7 +23,7 @@ object JobsExample extends IndigoDemo[Unit, StartupData, Model, Unit] {
         )
         .withAssets(Assets.assets)
         .withFonts(Assets.fontInfo)
-        .withSubSystems(JobMarket.subSystem)
+        .withSubSystems(JobMarket.subSystem(SubSystemId("market")))
     )
 
   def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[StartupData]] = {

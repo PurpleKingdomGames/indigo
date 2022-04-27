@@ -7,7 +7,7 @@ class SubSystemTests extends munit.FunSuite {
 
   import FakeSubSystemFrameContext._
 
-  val subSystem = PointsTrackerExample(0)
+  val subSystem = PointsTrackerExample(1, 0)
 
   test("A SubSystem (PointsTracker example).should render the initial state correctly") {
     val expected = subSystem.present(context(6), 1230).unsafeGet.layers.head.nodes.head.asInstanceOf[Text[_]].text

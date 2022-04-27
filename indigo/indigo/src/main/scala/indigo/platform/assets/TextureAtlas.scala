@@ -6,8 +6,8 @@ import indigo.shared.assets.AssetName
 import indigo.shared.assets.AssetTag
 import indigo.shared.datatypes.Point
 import org.scalajs.dom
+import org.scalajs.dom.ImageData
 import org.scalajs.dom.html
-import org.scalajs.dom.raw
 
 import scala.annotation.tailrec
 
@@ -104,7 +104,7 @@ final case class AtlasIndex(id: AtlasId, offset: Point, size: Point) derives Can
 
 final case class Atlas(
     size: PowerOfTwo,
-    imageData: Option[raw.ImageData]
+    imageData: Option[ImageData]
 ) derives CanEqual // Yuk. Only optional so that testing is bearable.
 
 final case class AtlasLookupResult(name: AssetName, atlasId: AtlasId, atlas: Atlas, offset: Point) derives CanEqual
@@ -164,30 +164,19 @@ object TextureAtlasFunctions {
 
         }
 
-      // @tailrec
-      // def splitByTags(remaining: List[TextureDetails]): List[List[TextureDetails]] =
-      //   remaining.sortBy(_.tag.getOrElse("")) match {
-
-      //   }
-
       def sortAndGroupByTag: List[TextureDetails] => List[(String, List[TextureDetails])] =
         _.groupBy(_.tag.map(_.toString).getOrElse("")).toList.sortBy(_._1)
 
-      // val x: List[List[TextureDetails]] =
       sortAndGroupByTag(list).flatMap { case (_, tds) =>
         createBuckets(tds, Nil, Nil, Nil, max)
       }
-
-      // x
-
-      // createBuckets(list, Nil, Nil, Nil, max)
     }
 
   // @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
   private def createCanvas(width: Int, height: Int): html.Canvas = {
     val canvas: html.Canvas = dom.document.createElement("canvas").asInstanceOf[html.Canvas]
     // Handy if you want to draw the atlas to the page...
-//    dom.document.body.appendChild(canvas)
+    // dom.document.body.appendChild(canvas)
     canvas.width = width
     canvas.height = height
 
@@ -206,8 +195,8 @@ object TextureAtlasFunctions {
 
     }
 
-    val imageData: raw.ImageData =
-      ctx.getImageData(0, 0, textureMap.size.value, textureMap.size.value).asInstanceOf[raw.ImageData]
+    val imageData: ImageData =
+      ctx.getImageData(0, 0, textureMap.size.value, textureMap.size.value).asInstanceOf[ImageData]
 
     new Atlas(textureMap.size, Option(imageData))
   }

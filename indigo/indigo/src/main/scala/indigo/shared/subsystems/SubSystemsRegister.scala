@@ -6,8 +6,6 @@ import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.subsystems.SubSystemFrameContext
 
-import java.util.UUID
-
 final class SubSystemsRegister() {
 
   val stateMap: scalajs.js.Dictionary[Object] = scalajs.js.Dictionary.empty
@@ -31,7 +29,7 @@ final class SubSystemsRegister() {
 
   // @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
   private def initialiseSubSystem(subSystem: SubSystem): Outcome[RegisteredSubSystem] = {
-    val key = UUID.randomUUID().toString
+    val key = subSystem.id.toString
     val res = RegisteredSubSystem(key, subSystem)
 
     subSystem.initialModel.map { model =>

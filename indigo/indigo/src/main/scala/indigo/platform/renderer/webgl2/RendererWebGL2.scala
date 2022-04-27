@@ -29,13 +29,12 @@ import indigo.shared.shader.StandardShaders
 import indigo.shared.time.Seconds
 import org.scalajs.dom
 import org.scalajs.dom.Element
+import org.scalajs.dom.WebGLBuffer
+import org.scalajs.dom.WebGLFramebuffer
+import org.scalajs.dom.WebGLProgram
 import org.scalajs.dom.WebGLRenderingContext
 import org.scalajs.dom.WebGLRenderingContext._
 import org.scalajs.dom.html
-import org.scalajs.dom.raw
-import org.scalajs.dom.raw.WebGLBuffer
-import org.scalajs.dom.raw.WebGLFramebuffer
-import org.scalajs.dom.raw.WebGLProgram
 
 import scala.scalajs.js.Dynamic
 import scala.scalajs.js.typedarray.Float32Array
