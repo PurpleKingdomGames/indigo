@@ -6,6 +6,9 @@ final case class HelloSubSystem(initialMessage: String, fontKey: FontKey) extend
   type EventType      = GlobalEvent
   type SubSystemModel = String
 
+  val id: SubSystemId =
+    SubSystemId("hello")
+
   val eventFilter: GlobalEvent => Option[EventType] =
     _ => None
 

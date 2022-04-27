@@ -17,6 +17,7 @@ object CloudsSubSystem {
 
   def apply(screenWidth: Int): SubSystem =
     SubSystem[FrameTick, CloudsState](
+      SubSystemId("clouds"),
       eventFilter,
       Outcome(CloudsState.initial),
       update(screenWidth),

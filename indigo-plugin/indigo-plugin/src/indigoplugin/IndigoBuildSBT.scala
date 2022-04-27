@@ -11,7 +11,7 @@ object IndigoBuildSBT {
     IndigoBuild.build(
       templateOptions,
       IndigoBuild.createDirectoryStructure(Path(baseDir) / "target" / outputFolderName),
-      scriptName
+      List(scriptName)
     )
   }
 

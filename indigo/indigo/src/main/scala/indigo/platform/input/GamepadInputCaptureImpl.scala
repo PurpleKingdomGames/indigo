@@ -6,9 +6,9 @@ import indigo.shared.input.GamepadAnalogControls
 import indigo.shared.input.GamepadButtons
 import indigo.shared.input.GamepadDPad
 import indigo.shared.input.GamepadInputCapture
-import org.scalajs.dom.experimental.gamepad.GamepadNavigator
-import org.scalajs.dom.experimental.gamepad.{Gamepad => GamepadJS}
+import org.scalajs.dom.Navigator
 import org.scalajs.dom.window
+import org.scalajs.dom.{Gamepad => GamepadJS}
 
 object GamepadInputCaptureImpl {
 
@@ -90,13 +90,13 @@ object GamepadInputCaptureImpl {
   def init(): Unit = {
     window.addEventListener(
       "gamepadconnected",
-      (_: Any) => gamepads = window.navigator.asInstanceOf[GamepadNavigator].getGamepads(),
+      (_: Any) => gamepads = window.navigator.asInstanceOf[Navigator].getGamepads(),
       false
     )
 
     window.addEventListener(
       "gamepaddisconnected",
-      (_: Any) => gamepads = window.navigator.asInstanceOf[GamepadNavigator].getGamepads(),
+      (_: Any) => gamepads = window.navigator.asInstanceOf[Navigator].getGamepads(),
       false
     )
   }

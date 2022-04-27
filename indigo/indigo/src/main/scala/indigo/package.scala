@@ -166,6 +166,9 @@ val SignalFunction: shared.temporal.SignalFunction.type = shared.temporal.Signal
 type SubSystem = shared.subsystems.SubSystem
 val SubSystem: shared.subsystems.SubSystem.type = shared.subsystems.SubSystem
 
+type SubSystemId = shared.subsystems.SubSystemId
+val SubSystemId: shared.subsystems.SubSystemId.type = shared.subsystems.SubSystemId
+
 /** defaultGameConfig Provides a useful default config set up:
   *   - Game Viewport = 550 x 400
   *   - FPS = 30

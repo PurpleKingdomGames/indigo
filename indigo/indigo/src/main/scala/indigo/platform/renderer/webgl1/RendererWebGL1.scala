@@ -22,13 +22,12 @@ import indigo.shared.platform.RendererConfig
 import indigo.shared.scenegraph.Camera
 import indigo.shared.shader.RawShaderCode
 import indigo.shared.time.Seconds
+import org.scalajs.dom.WebGLBuffer
+import org.scalajs.dom.WebGLProgram
 import org.scalajs.dom.WebGLRenderingContext
 import org.scalajs.dom.WebGLRenderingContext._
+import org.scalajs.dom.WebGLUniformLocation
 import org.scalajs.dom.html
-import org.scalajs.dom.raw
-import org.scalajs.dom.raw.WebGLBuffer
-import org.scalajs.dom.raw.WebGLProgram
-import org.scalajs.dom.raw.WebGLUniformLocation
 
 import scala.scalajs.js.typedarray.Float32Array
 
@@ -236,7 +235,7 @@ final class RendererWebGL1(
 
           gl.drawArrays(TRIANGLE_STRIP, 0, 4)
 
-        case null =>
+        case _ =>
           ()
       }
 
@@ -259,7 +258,7 @@ final class RendererWebGL1(
     }
   }
 
-  def bindAttibuteBuffer(gl: raw.WebGLRenderingContext, attributeLocation: Int, size: Int): Unit = {
+  def bindAttibuteBuffer(gl: WebGLRenderingContext, attributeLocation: Int, size: Int): Unit = {
     gl.enableVertexAttribArray(attributeLocation)
     gl.vertexAttribPointer(
       indx = attributeLocation,
@@ -272,7 +271,7 @@ final class RendererWebGL1(
   }
 
   def setupVertexShaderState(
-      gl: raw.WebGLRenderingContext,
+      gl: WebGLRenderingContext,
       displayObject: DisplayObject,
       shaderProgram: WebGLProgram
   ): Unit = {

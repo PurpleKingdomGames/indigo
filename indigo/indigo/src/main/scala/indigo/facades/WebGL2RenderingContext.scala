@@ -1,8 +1,8 @@
 package indigo.facades
 
+import org.scalajs.dom.WebGLBuffer
+import org.scalajs.dom.WebGLProgram
 import org.scalajs.dom.WebGLRenderingContext
-import org.scalajs.dom.raw.WebGLBuffer
-import org.scalajs.dom.raw.WebGLProgram
 
 import scala.annotation.nowarn
 import scala.scalajs.js
@@ -96,7 +96,18 @@ trait WebGL2RenderingContext extends WebGLRenderingContext {
   def drawBuffers(buffers: scalajs.js.Array[Int]): Unit =
     js.native
 
-  def blitFramebuffer(srcX0: Int, srcY0: Int, srcX1: Int, srcY1: Int, dstX0: Int, dstY0: Int, dstX1: Int, dstY1: Int, mask: Int, filter: Int): Unit =
+  def blitFramebuffer(
+      srcX0: Int,
+      srcY0: Int,
+      srcX1: Int,
+      srcY1: Int,
+      dstX0: Int,
+      dstY0: Int,
+      dstX1: Int,
+      dstY1: Int,
+      mask: Int,
+      filter: Int
+  ): Unit =
     js.native
 
 }

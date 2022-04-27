@@ -11,11 +11,14 @@ import indigo.shared.events.SubSystemEvent
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.subsystems.SubSystem
 import indigo.shared.subsystems.SubSystemFrameContext
+import indigo.shared.subsystems.SubSystemId
 
 // Provides "at least once" message delivery for updates on a bundle's loading status.
 object AssetBundleLoader extends SubSystem {
   type EventType      = GlobalEvent
   type SubSystemModel = AssetBundleTracker
+
+  val id: SubSystemId = SubSystemId("[indigo_AssetBundleLoader_subsystem]")
 
   val eventFilter: GlobalEvent => Option[GlobalEvent] = {
     case e: AssetBundleLoaderEvent => Some(e)

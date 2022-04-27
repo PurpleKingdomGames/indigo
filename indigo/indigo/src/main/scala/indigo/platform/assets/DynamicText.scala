@@ -14,8 +14,8 @@ import indigo.shared.datatypes.TextBaseLine
 import indigo.shared.datatypes.TextDirection
 import indigo.shared.datatypes.TextStyle
 import org.scalajs.dom
+import org.scalajs.dom.HTMLCanvasElement
 import org.scalajs.dom.html
-import org.scalajs.dom.raw
 
 import scala.scalajs.js.Dynamic
 import scala.scalajs.js.undefined
@@ -54,7 +54,7 @@ final class DynamicText:
       .getContext("2d", Dynamic.literal())
       .asInstanceOf[IndigoCanvasRenderingContext2D]
 
-  def makeTextImageData(text: String, style: TextStyle, width: Int, height: Int): raw.HTMLCanvasElement =
+  def makeTextImageData(text: String, style: TextStyle, width: Int, height: Int): HTMLCanvasElement =
     setupText(text, style, width, height)
 
     val x: Int =

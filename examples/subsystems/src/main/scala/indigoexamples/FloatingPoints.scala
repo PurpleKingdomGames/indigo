@@ -7,6 +7,9 @@ final case class FloatingPoints(fontKey: FontKey) extends SubSystem {
   type EventType      = FloatingPointEvent
   type SubSystemModel = List[FloatingPointEntity]
 
+  val id: SubSystemId =
+    SubSystemId("floating points")
+
   val eventFilter: GlobalEvent => Option[FloatingPointEvent] = {
     case s: FloatingPointEvent.Spawn => Option(s)
     case FrameTick                   => Option(FloatingPointEvent.Update)

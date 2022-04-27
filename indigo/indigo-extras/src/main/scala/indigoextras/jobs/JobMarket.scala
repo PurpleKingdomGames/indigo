@@ -6,6 +6,7 @@ import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.subsystems.SubSystem
 import indigo.shared.subsystems.SubSystemFrameContext
+import indigo.shared.subsystems.SubSystemId
 
 /**
   * The JobMarket is a subsystem that manages a global pool of available jobs.
@@ -16,7 +17,7 @@ import indigo.shared.subsystems.SubSystemFrameContext
   *
   * @param availableJobs Jobs currently available for allocation to workers.
   */
-final case class JobMarket(availableJobs: List[Job]) extends SubSystem {
+final case class JobMarket(id: SubSystemId, availableJobs: List[Job]) extends SubSystem {
   type EventType      = JobMarketEvent
   type SubSystemModel = List[Job]
 
@@ -60,11 +61,11 @@ object JobMarket {
     *
     * @return An empty JobMarket
     */
-  def subSystem: JobMarket =
-    JobMarket(Nil)
+  def subSystem(id: SubSystemId): JobMarket =
+    JobMarket(id, Nil)
 
-  def apply(availableJobs: Job*): JobMarket =
-    JobMarket(availableJobs.toList)
+  def apply(id: SubSystemId, availableJobs: Job*): JobMarket =
+    JobMarket(id, availableJobs.toList)
 
   def findJob(availableJobs: List[Job], canTakeJob: Job => Boolean): (Option[Job], List[Job]) = {
     @annotation.tailrec

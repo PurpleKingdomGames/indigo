@@ -9,9 +9,11 @@ import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.scenegraph.Text
 import indigo.shared.subsystems.SubSystemFrameContext
 
-final case class PointsTrackerExample(startingPoints: Int) extends SubSystem {
+final case class PointsTrackerExample(num: Int, startingPoints: Int) extends SubSystem {
   type EventType      = PointsTrackerEvent
   type SubSystemModel = Int
+
+  val id: SubSystemId = SubSystemId("points-" + num.toString)
 
   val eventFilter: GlobalEvent => Option[PointsTrackerEvent] = {
     case e: PointsTrackerEvent => Option(e)

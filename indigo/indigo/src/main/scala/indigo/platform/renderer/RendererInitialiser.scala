@@ -17,7 +17,6 @@ import org.scalajs.dom
 import org.scalajs.dom.Element
 import org.scalajs.dom.WebGLRenderingContext
 import org.scalajs.dom.html
-import org.scalajs.dom.raw
 
 import scala.scalajs.js.Dynamic
 import scala.scalajs.js.JSConverters._
@@ -136,7 +135,7 @@ final class RendererInitialiser(
 
     def useWebGL1(): (WebGLRenderingContext, RenderingTechnology) = {
       val gl = (canvas.getContext("webgl", args) || canvas.getContext("experimental-webgl", args))
-        .asInstanceOf[raw.WebGLRenderingContext]
+        .asInstanceOf[WebGLRenderingContext]
       if (gl == null) throw new Exception("This browser does not appear to support WebGL 1.0.")
       else {
         IndigoLogger.info("Using WebGL 1.0.")
@@ -145,7 +144,7 @@ final class RendererInitialiser(
     }
 
     def useWebGL2(): (WebGLRenderingContext, RenderingTechnology) = {
-      val gl2 = (canvas.getContext("webgl2", args)).asInstanceOf[raw.WebGLRenderingContext]
+      val gl2 = (canvas.getContext("webgl2", args)).asInstanceOf[WebGLRenderingContext]
       (gl2, RenderingTechnology.WebGL2)
     }
 
@@ -180,7 +179,7 @@ final class RendererInitialiser(
         RenderingTechnology.WebGL1
 
       case RenderingTechnology.WebGL2 =>
-        val gl2 = (tempCanvas.getContext("webgl2", args)).asInstanceOf[raw.WebGLRenderingContext]
+        val gl2 = (tempCanvas.getContext("webgl2", args)).asInstanceOf[WebGLRenderingContext]
 
         if (gl2 == null)
           throw new Exception("WebGL 2.0 required by indigo game. This browser does not appear to support WebGL 2.0.")
@@ -194,7 +193,7 @@ final class RendererInitialiser(
         }
 
       case RenderingTechnology.WebGL2WithFallback =>
-        var gl2 = (tempCanvas.getContext("webgl2", args)).asInstanceOf[raw.WebGLRenderingContext]
+        var gl2 = (tempCanvas.getContext("webgl2", args)).asInstanceOf[WebGLRenderingContext]
 
         if (gl2 == null) {
           IndigoLogger.info("This browser does not appear to support WebGL 2.0, trying WebGL 1.0.")
@@ -217,7 +216,7 @@ final class RendererInitialiser(
       "scalafix:DisableSyntax.null"
     )
   )
-  private def isWebGL2ReallySupported(gl2: raw.WebGLRenderingContext): Boolean = {
+  private def isWebGL2ReallySupported(gl2: WebGLRenderingContext): Boolean = {
     IndigoLogger.info("Checking WebGL 2.0 availability...")
 
     def testWebGL2Compatibility(param: Int, min: Int, name: String): Boolean =

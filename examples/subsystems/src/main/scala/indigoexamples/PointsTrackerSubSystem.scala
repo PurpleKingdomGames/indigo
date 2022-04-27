@@ -6,6 +6,9 @@ final case class PointsTrackerSubSystem(fontKey: FontKey) extends SubSystem {
   type EventType      = Int
   type SubSystemModel = Int
 
+  val id: SubSystemId =
+    SubSystemId("points tracker")
+
   val eventFilter: GlobalEvent => Option[Int] = {
     case e: PointsTrackerEvent.Add => Option(e.points)
     case _                         => None

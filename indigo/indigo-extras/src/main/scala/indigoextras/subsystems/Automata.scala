@@ -12,6 +12,7 @@ import indigo.shared.scenegraph.SceneNode
 import indigo.shared.scenegraph._
 import indigo.shared.subsystems.SubSystem
 import indigo.shared.subsystems.SubSystemFrameContext
+import indigo.shared.subsystems.SubSystemId
 import indigo.shared.temporal.Signal
 import indigo.shared.temporal.SignalReader
 import indigo.shared.time.GameTime
@@ -26,6 +27,8 @@ final case class Automata(
 ) extends SubSystem {
   type EventType      = AutomataEvent
   type SubSystemModel = AutomataState
+
+  val id: SubSystemId = SubSystemId(poolKey.toString)
 
   def withMaxPoolSize(limit: Int): Automata =
     Automata(poolKey, automaton, layerKey, Option(limit))

@@ -14,6 +14,8 @@ trait SubSystem {
   type EventType
   type SubSystemModel
 
+  def id: SubSystemId
+
   def eventFilter: GlobalEvent => Option[EventType]
 
   def initialModel: Outcome[SubSystemModel]
@@ -26,6 +28,7 @@ trait SubSystem {
 object SubSystem {
 
   def apply[Event, Model](
+      _id: SubSystemId,
       _eventFilter: GlobalEvent => Option[Event],
       _initialModel: Outcome[Model],
       _update: (SubSystemFrameContext, Model) => Event => Outcome[Model],
@@ -34,6 +37,9 @@ object SubSystem {
     new SubSystem {
       type EventType      = Event
       type SubSystemModel = Model
+
+      def id: SubSystemId =
+        _id
 
       def eventFilter: GlobalEvent => Option[EventType] =
         _eventFilter
