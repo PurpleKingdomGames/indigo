@@ -1,3 +1,7 @@
+import indigoplugin.ElectronInstall
+
+Global / onChangedBuildSource := ReloadOnSourceChanges
+
 //-----------------------------------
 // The essentials.
 //-----------------------------------
@@ -31,6 +35,7 @@ lazy val pirate =
       windowStartWidth      := 1280,
       windowStartHeight     := 720,
       disableFrameRateLimit := false,
+      electronInstall       := ElectronInstall.Global,
       libraryDependencies ++= Seq(
         "io.indigoengine" %%% "indigo-json-circe" % IndigoVersion.getVersion, // Needed for Aseprite & Tiled support
         "io.indigoengine" %%% "indigo"            % IndigoVersion.getVersion, // Important! :-)
