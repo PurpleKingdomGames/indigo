@@ -1,5 +1,7 @@
 package indigoplugin.templates
 
+import indigoplugin.ElectronInstall
+
 object ElectronTemplates {
 
   def mainFileTemplate(windowWidth: Int, windowHeight: Int): String =
@@ -51,18 +53,21 @@ app.on('window-all-closed', function () {
 // code. You can also put them in separate files and require them here.
     """
 
-  def packageFileTemplate(disableFrameRateLimit: Boolean): String =
+  def packageFileTemplate(disableFrameRateLimit: Boolean, electronInstall: ElectronInstall): String =
     s"""{
   "name": "indigo-runner",
   "version": "1.0.0",
   "description": "Indigo Runner",
   "main": "main.js",
   "scripts": {
-    "start": "electron${if(disableFrameRateLimit) " --disable-frame-rate-limit" else ""} ."
+    "start": "${electronInstall.executable}${if (disableFrameRateLimit) " --disable-frame-rate-limit" else ""} ."
   },
   "repository": "",
   "author": "Purple Kingdom Games",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    ${electronInstall.devDependencies}
+  }
 }
     """
 

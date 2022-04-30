@@ -35,6 +35,11 @@ trait MillIndigo extends mill.Module {
     */
   val disableFrameRateLimit: Boolean
 
+  /** How should electron be run? ElectronInstall.Global | ElectronInstall.Version(version: String) |
+    * ElectronInstall.Latest | ElectronInstall.PathToExecutable(path: String)
+    */
+  val electronInstall: ElectronInstall
+
   def indigoBuild(): Command[Path] =
     T.command {
       val scriptPathBase: Path = {
@@ -105,7 +110,7 @@ trait MillIndigo extends mill.Module {
       val outputDir: Path = T.dest
       val buildDir: Path  = indigoBuild()()
 
-      IndigoRun.run(outputDir, buildDir, title, windowStartWidth, windowStartHeight, disableFrameRateLimit)
+      IndigoRun.run(outputDir, buildDir, title, windowStartWidth, windowStartHeight, disableFrameRateLimit, electronInstall)
     }
 
   def indigoRunFull(): Command[Unit] =
@@ -113,7 +118,7 @@ trait MillIndigo extends mill.Module {
       val outputDir: Path = T.dest
       val buildDir: Path  = indigoBuildFull()()
 
-      IndigoRun.run(outputDir, buildDir, title, windowStartWidth, windowStartHeight, disableFrameRateLimit)
+      IndigoRun.run(outputDir, buildDir, title, windowStartWidth, windowStartHeight, disableFrameRateLimit, electronInstall)
     }
 
   def indigoCordovaBuild(): Command[Unit] =
