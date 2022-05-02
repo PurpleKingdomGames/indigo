@@ -148,6 +148,9 @@ val Outcome: shared.Outcome.type = shared.Outcome
 type Key = shared.constants.Key
 val Key: shared.constants.Key.type = shared.constants.Key
 
+type Chain[A] = shared.collections.Chain[A]
+val Chain: shared.collections.Chain.type = shared.collections.Chain
+
 type NonEmptyList[A] = shared.collections.NonEmptyList[A]
 val NonEmptyList: shared.collections.NonEmptyList.type = shared.collections.NonEmptyList
 
