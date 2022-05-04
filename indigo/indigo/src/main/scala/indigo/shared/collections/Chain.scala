@@ -1,5 +1,6 @@
 package indigo.shared.collections
 
+import scala.annotation.tailrec
 import scala.reflect.ClassTag
 
 import scalajs.js
@@ -12,6 +13,7 @@ sealed trait Chain[+A]:
   def foreach(f: A => Unit): Unit
   def head: A
   def headOption: Option[A]
+  def size: Int
   def apply(index: Int): A
   def toJSArray[B >: A]: js.Array[B]
 
@@ -157,6 +159,43 @@ object Chain:
     def foreach(f: A => Unit): Unit =
       chain1.foreach(f)
       chain2.foreach(f)
+    def head: A               = chain1.head
+    def headOption: Option[A] = chain1.headOption
+
+    @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while"))
+    def toJSArray[B >: A]: js.Array[B] =
+      val arr = new js.Array[B](size)
+
+      @tailrec
+      def rec(remaining: List[Chain[A]], i: Int): Unit =
+        remaining match
+          case Nil =>
+            ()
+
+          case Chain.Empty :: xs =>
+            rec(xs, i)
+
+          case Chain.Singleton(v) :: xs =>
+            arr(i) = v
+            rec(xs, i + 1)
+
+          case Chain.Combine(c1, c2) :: xs =>
+            rec(c1 :: c2 :: xs, i)
+
+          case Chain.Wrapped(vs) :: xs =>
+            val count = vs.size
+            var j     = 0
+
+            while (j < count) {
+              arr(i + j) = vs(j)
+              j = j + 1
+            }
+
+            rec(xs, i + count)
+
+      rec(List(chain1, chain2), 0)
+      arr
+
     @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
     def apply(index: Int): A =
       if index < 0 || index > size then throw new IndexOutOfBoundsException
