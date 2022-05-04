@@ -5,6 +5,27 @@ import scalajs.js
 @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
 class ChainTests extends munit.FunSuite {
 
+  test("apply") {
+    val chain =
+      Chain.Combine(
+        Chain.Singleton(10),
+        Chain.Combine(
+          Chain.Combine(
+            Chain(20),
+            Chain(30)
+          ),
+          Chain(40, 50, 60)
+        )
+      )
+
+    assertEquals(chain(0), 10)
+    assertEquals(chain(1), 20)
+    assertEquals(chain(2), 30)
+    assertEquals(chain(3), 40)
+    assertEquals(chain(4), 50)
+    assertEquals(chain(5), 60)
+  }
+
   test("compact") {
     val actual =
       Chain.Combine(

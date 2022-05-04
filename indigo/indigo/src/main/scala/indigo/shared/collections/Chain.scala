@@ -12,6 +12,7 @@ sealed trait Chain[+A]:
   def foreach(f: A => Unit): Unit
   def head: A
   def headOption: Option[A]
+  def apply(index: Int): A
   def toJSArray[B >: A]: js.Array[B]
 
   override def toString: String =
@@ -106,6 +107,10 @@ object Chain:
     def toJSArray[B]: js.Array[B]         = js.Array[B]()
 
     @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
+    def apply(index: Int): Nothing =
+      throw new NoSuchElementException(s"Chain.Empty.apply($index)")
+
+    @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
     def head: Nothing               = throw new NoSuchElementException("Chain.Empty.head")
     def headOption: Option[Nothing] = None
 
@@ -119,6 +124,10 @@ object Chain:
     def head: A                        = value
     def headOption: Option[A]          = Some(value)
     def toJSArray[B >: A]: js.Array[B] = js.Array[B](value)
+
+    @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
+    def apply(index: Int): A =
+      if index == 0 then value else throw new IndexOutOfBoundsException
 
     override def equals(that: Any): Boolean =
       given CanEqual[Empty.type, Any]   = CanEqual.derived
@@ -150,9 +159,12 @@ object Chain:
     def foreach(f: A => Unit): Unit =
       chain1.foreach(f)
       chain2.foreach(f)
-    def head: A                        = chain1.head
-    def headOption: Option[A]          = chain1.headOption
-    def toJSArray[B >: A]: js.Array[B] = chain1.toJSArray ++ chain2.toJSArray
+    @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
+    def apply(index: Int): A =
+      if index < 0 || index > size then throw new IndexOutOfBoundsException
+      else if index < chain1.size then chain1(index)
+      else chain2(index - chain1.size)
+
 
     override def equals(that: Any): Boolean =
       given CanEqual[Empty.type, Any]   = CanEqual.derived
@@ -185,6 +197,11 @@ object Chain:
     def head: A                        = values.head
     def headOption: Option[A]          = values.headOption
     def toJSArray[B >: A]: js.Array[B] = values.asInstanceOf[js.Array[B]]
+
+    @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
+    def apply(index: Int): A =
+      if index < 0 || index > size then throw new IndexOutOfBoundsException
+      else values(index)
 
     override def equals(that: Any): Boolean =
       given CanEqual[Empty.type, Any]   = CanEqual.derived
