@@ -41,15 +41,13 @@ object ChainBenchmarks:
     )
   }
 
-  println(bigList.size)
-  println(bigJsArray.size)
-  println(bigChain.size)
-  println(bigNestedChain.size)
-
   val suite = GuiSuite(
     Suite("Chain Benchmarks")(
       Benchmark("concat - list") {
         bigList ++ bigList
+      },
+      Benchmark("concat - js.Array") {
+        bigJsArray ++ bigJsArray
       },
       Benchmark("concat - chain") {
         bigChain ++ bigChain
@@ -59,6 +57,9 @@ object ChainBenchmarks:
       },
       Benchmark("map - list") {
         bigList.map(_.moveBy(5, 5))
+      },
+      Benchmark("map - js.Array") {
+        bigJsArray.map(_.moveBy(5, 5))
       },
       Benchmark("map - chain") {
         bigChain.map(_.moveBy(5, 5))
