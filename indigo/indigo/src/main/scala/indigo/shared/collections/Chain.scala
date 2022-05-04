@@ -38,12 +38,6 @@ sealed trait Chain[+A]:
   def compact[B >: A]: Chain.Wrapped[B] =
     Chain.Wrapped(toJSArray)
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  lazy val size: Int =
-    var s = 0
-    foreach(_ => s = s + 1)
-    s
-
   def toArray[B >: A: ClassTag]: Array[B] =
     toJSArray.toArray
 
@@ -114,6 +108,8 @@ object Chain:
     def head: Nothing               = throw new NoSuchElementException("Chain.Empty.head")
     def headOption: Option[Nothing] = None
 
+    val size: Int = 0
+
     override def equals(that: Any): Boolean =
       that.isInstanceOf[Chain.Empty.type]
 
@@ -128,6 +124,8 @@ object Chain:
     @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
     def apply(index: Int): A =
       if index == 0 then value else throw new IndexOutOfBoundsException
+
+    val size: Int = 1
 
     override def equals(that: Any): Boolean =
       given CanEqual[Empty.type, Any]   = CanEqual.derived
@@ -165,6 +163,7 @@ object Chain:
       else if index < chain1.size then chain1(index)
       else chain2(index - chain1.size)
 
+    lazy val size: Int = chain1.size + chain2.size
 
     override def equals(that: Any): Boolean =
       given CanEqual[Empty.type, Any]   = CanEqual.derived
@@ -202,6 +201,8 @@ object Chain:
     def apply(index: Int): A =
       if index < 0 || index > size then throw new IndexOutOfBoundsException
       else values(index)
+
+    lazy val size: Int = values.length
 
     override def equals(that: Any): Boolean =
       given CanEqual[Empty.type, Any]   = CanEqual.derived
