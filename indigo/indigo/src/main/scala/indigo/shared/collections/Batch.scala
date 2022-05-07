@@ -6,6 +6,10 @@ import scala.reflect.ClassTag
 import scalajs.js
 import scalajs.js.JSConverters.*
 
+/** Batch is a really thin wrapper over `js.Array` to replace `List` on the Indigo APIs. Its purpose is to provide fast
+  * scene construction and fast conversion back to js.Array for the engine to use. It also gives some basic List-like
+  * features but not all of them since they aren't typically used in scene construction and are generally discouraged.
+  */
 sealed trait Batch[+A]:
   private lazy val _jsArray: js.Array[A] = toJSArray
 
