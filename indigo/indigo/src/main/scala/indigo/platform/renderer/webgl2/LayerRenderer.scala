@@ -30,6 +30,7 @@ import org.scalajs.dom.WebGLTexture
 
 import scala.annotation.tailrec
 import scala.collection.immutable
+import scala.scalajs.js.Dictionary
 import scala.scalajs.js.typedarray.Float32Array
 
 class LayerRenderer(
@@ -292,9 +293,9 @@ class LayerRenderer(
         WebGLHelper.bindUBO(
           gl2,
           activeShader,
-          ud.blockName,
           RendererWebGL2Constants.customDataBlockOffsetPointer + i,
-          buff
+          buff,
+          gl2.getUniformBlockIndex(activeShader, ud.blockName)
         )
       }
 
@@ -319,30 +320,30 @@ class LayerRenderer(
     WebGLHelper.bindUBO(
       gl2,
       program,
-      "IndigoProjectionData",
       RendererWebGL2Constants.projectionBlockPointer,
-      projectionUBOBuffer
+      projectionUBOBuffer,
+      gl2.getUniformBlockIndex(program, "IndigoProjectionData")
     )
     WebGLHelper.bindUBO(
       gl2,
       program,
-      "IndigoFrameData",
       RendererWebGL2Constants.frameDataBlockPointer,
-      frameDataUBOBuffer
+      frameDataUBOBuffer,
+      gl2.getUniformBlockIndex(program, "IndigoFrameData")
     )
     WebGLHelper.bindUBO(
       gl2,
       program,
-      "IndigoCloneReferenceData",
       RendererWebGL2Constants.cloneReferenceDataBlockPointer,
-      cloneReferenceUBOBuffer
+      cloneReferenceUBOBuffer,
+      gl2.getUniformBlockIndex(program, "IndigoCloneReferenceData")
     )
     WebGLHelper.bindUBO(
       gl2,
       program,
-      "IndigoDynamicLightingData",
       RendererWebGL2Constants.lightDataBlockPointer,
-      lightDataUBOBuffer
+      lightDataUBOBuffer,
+      gl2.getUniformBlockIndex(program, "IndigoDynamicLightingData")
     )
 
     // Instance attributes
@@ -688,9 +689,9 @@ class LayerRenderer(
             WebGLHelper.bindUBO(
               gl2,
               activeShader,
-              "IndigoBitmapData",
               RendererWebGL2Constants.customDataBlockOffsetPointer,
-              buff
+              buff,
+              gl2.getUniformBlockIndex(activeShader, "IndigoBitmapData")
             )
             //
 
@@ -830,6 +831,8 @@ class LayerRenderer(
       var i: Int                     = 0
       var currentUniformHash: String = ""
 
+      val blockIndexLookup: Dictionary[Double] = Dictionary()
+
       while (i < count) {
         val shaderUniformData = c.cloneData(i)
 
@@ -837,15 +840,25 @@ class LayerRenderer(
         val uniformHash: String = shaderUniformData.map(_.uniformHash).mkString
         if uniformHash.nonEmpty && uniformHash != currentUniformHash then
           shaderUniformData.zipWithIndex.foreach { case (ud, i) =>
-            val buff = customDataUBOBuffers.getOrElseUpdate(ud.blockName, gl2.createBuffer())
+            val blockName = ud.blockName
+
+            val buff = customDataUBOBuffers.getOrElseUpdate(blockName, gl2.createBuffer())
+
+            val blockIndex: Double =
+              blockIndexLookup.get(blockName) match
+                case Some(idx) => idx
+                case None =>
+                  val idx = gl2.getUniformBlockIndex(activeShader, blockName)
+                  blockIndexLookup.update(blockName, idx)
+                  idx
 
             WebGLHelper.attachUBOData(gl2, ud.data, buff)
             WebGLHelper.bindUBO(
               gl2,
               activeShader,
-              ud.blockName,
               RendererWebGL2Constants.customDataBlockOffsetPointer + i,
-              buff
+              buff,
+              blockIndex
             )
           }
           currentUniformHash = uniformHash

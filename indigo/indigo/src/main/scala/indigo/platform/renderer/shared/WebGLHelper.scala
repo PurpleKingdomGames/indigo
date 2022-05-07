@@ -75,12 +75,12 @@ object WebGLHelper {
   def bindUBO(
       gl2: WebGL2RenderingContext,
       activeShader: WebGLProgram,
-      uboStructName: String,
       blockPointer: Int,
-      buffer: WebGLBuffer
+      buffer: WebGLBuffer,
+      uniformBlockIndex: Double
   ): Unit = {
     gl2.bindBufferBase(gl2.UNIFORM_BUFFER, blockPointer, buffer)
-    gl2.uniformBlockBinding(activeShader, gl2.getUniformBlockIndex(activeShader, uboStructName), blockPointer)
+    gl2.uniformBlockBinding(activeShader, uniformBlockIndex, blockPointer)
   }
 
   private val textureLocationsLookUp: scalajs.js.Array[Int] =
