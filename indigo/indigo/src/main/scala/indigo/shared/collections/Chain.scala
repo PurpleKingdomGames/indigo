@@ -8,6 +8,10 @@ import scalajs.js.JSConverters.*
 
 sealed trait Chain[+A]:
 
+  private[collections] def isBranch: Boolean
+  private[collections] def isLeaf: Boolean
+  private[collections] def split: (Chain[A], Chain[A])
+
   def isEmpty: Boolean
   def map[B](f: A => B): Chain[B]
   def foreach(f: A => Unit): Unit
@@ -96,7 +100,32 @@ object Chain:
   def combineAll[A](chains: Chain[A]*): Chain[A] =
     chains.toList.foldLeft(Chain.empty[A])(_ ++ _)
 
+  /** Structural hasNext. Checks for the presence of a non-empty right-side of a combine.
+    */
+  def hasNextChain[A](chain: Chain[A]): Boolean =
+    if chain.isBranch then !chain.split._2.isEmpty
+    else false
+
+  /** Structural split of the chain, returning the next non-empty chain, and the remaining chain. Note that it is _not_
+    * returning the values, so the next chain could be an array of values.
+    */
+  def splitChain[A](chain: Chain[A]): (Chain[A], Chain[A]) =
+    if chain.isBranch then
+      val (a, b) = chain.split
+      if a.isEmpty then splitChain(b)
+      else if a.isLeaf then (a, b)
+      else
+        val (aa, bb) = a.split
+        if aa.isEmpty then splitChain(bb ++ b)
+        else (aa, bb ++ b)
+    else (chain, Chain.empty)
+
   case object Empty extends Chain[Nothing]:
+    private[collections] val isBranch: Boolean = false
+    private[collections] val isLeaf: Boolean   = true
+    private[collections] lazy val split: (Chain[Nothing], Chain[Nothing]) =
+      (this, this)
+
     val isEmpty: Boolean                  = true
     def map[B](f: Nothing => B): Chain[B] = this
     def foreach(f: Nothing => Unit): Unit = ()
@@ -116,6 +145,11 @@ object Chain:
       that.isInstanceOf[Chain.Empty.type]
 
   final case class Singleton[A](value: A) extends Chain[A]:
+    private[collections] val isBranch: Boolean = false
+    private[collections] val isLeaf: Boolean   = true
+    private[collections] lazy val split: (Chain[A], Chain[A]) =
+      (this, this)
+
     val isEmpty: Boolean               = false
     def map[B](f: A => B): Chain[B]    = this.copy(value = f(value))
     def foreach(f: A => Unit): Unit    = f(value)
@@ -154,6 +188,11 @@ object Chain:
       catch { _ => false }
 
   final case class Combine[A](chain1: Chain[A], chain2: Chain[A]) extends Chain[A]:
+    private[collections] val isBranch: Boolean = true
+    private[collections] val isLeaf: Boolean   = false
+    private[collections] lazy val split: (Chain[A], Chain[A]) =
+      (chain1, chain2)
+
     val isEmpty: Boolean            = chain1.isEmpty && chain2.isEmpty
     def map[B](f: A => B): Chain[B] = this.copy(chain1 = chain1.map(f), chain2 = chain2.map(f))
     def foreach(f: A => Unit): Unit =
@@ -229,6 +268,11 @@ object Chain:
       catch { _ => false }
 
   final case class Wrapped[A](values: js.Array[A]) extends Chain[A]:
+    private[collections] val isBranch: Boolean = false
+    private[collections] val isLeaf: Boolean   = true
+    private[collections] lazy val split: (Chain[A], Chain[A]) =
+      (this, this)
+
     val isEmpty: Boolean               = values.isEmpty
     def map[B](f: A => B): Chain[B]    = this.copy(values = values.map(f))
     def foreach(f: A => Unit): Unit    = values.foreach(f)

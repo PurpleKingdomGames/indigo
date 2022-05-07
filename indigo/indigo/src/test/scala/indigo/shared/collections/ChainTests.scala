@@ -234,4 +234,97 @@ class ChainTests extends munit.FunSuite {
     assert(!Chain.Wrapped(js.Array(1, 2, 3)).isEmpty)
   }
 
+  test("splitChain") {
+    val chain =
+      Chain.Combine(
+        Chain.Singleton(1),
+        Chain.Combine(
+          Chain.Combine(
+            Chain(2),
+            Chain(3)
+          ),
+          Chain(4, 5, 6)
+        )
+      )
+
+    assertEquals(Chain.splitChain(chain)._1, Chain(1))
+    assertEquals(Chain.splitChain(Chain.splitChain(chain)._2)._1, Chain(2))
+    assertEquals(Chain.splitChain(Chain.splitChain(Chain.splitChain(chain)._2)._2)._1, Chain(3))
+    assertEquals(Chain.splitChain(Chain.splitChain(Chain.splitChain(Chain.splitChain(chain)._2)._2)._2)._1, Chain(4, 5, 6))
+  }
+
+  test("splitChain - empty left") {
+    val chain =
+      Chain.Combine(
+        Chain.empty,
+        Chain(1)
+      )
+
+    assertEquals(Chain.splitChain(chain)._1, Chain(1))
+  }
+
+  test("splitChain - empty right") {
+    val chain =
+      Chain.Combine(
+        Chain(1),
+        Chain.empty
+      )
+
+    assertEquals(Chain.splitChain(chain)._1, Chain(1))
+  }
+
+  test("splitChain - combine of combine") {
+    val chain =
+      Chain.Combine(
+        Chain.Combine(
+          Chain(1),
+          Chain.empty
+        ),
+        Chain(2)
+      )
+
+    assertEquals(Chain.splitChain(chain)._1, Chain(1))
+    assertEquals(Chain.splitChain(chain)._2, Chain(2))
+  }
+
+  test("splitChain - combine of combine (first empty)") {
+    val chain =
+      Chain.Combine(
+        Chain.Combine(
+          Chain.empty,
+          Chain(1)
+        ),
+        Chain(2)
+      )
+
+    assertEquals(Chain.splitChain(chain)._1, Chain(1))
+    assertEquals(Chain.splitChain(chain)._2, Chain(2))
+  }
+
+  test("splitChain - combine of combine of combine") {
+    val chain =
+      Chain.Combine(
+        Chain.Combine(
+          Chain.Combine(
+            Chain(1),
+            Chain.empty
+          ),
+          Chain.empty
+        ),
+        Chain(2)
+      )
+
+
+    assertEquals(Chain.splitChain(chain)._1, Chain(1))
+    assertEquals(Chain.splitChain(chain)._2, Chain(2))
+  }
+
+  test("hasNextChain") {
+    assert(!Chain.hasNextChain(Chain.Empty))
+    assert(!Chain.hasNextChain(Chain(1)))
+    assert(!Chain.hasNextChain(Chain(1,2,3)))
+    assert(!Chain.hasNextChain(Chain.Combine(Chain(1), Chain.Empty)))
+    assert(Chain.hasNextChain(Chain.Combine(Chain(1), Chain(2))))
+  }
+
 }
