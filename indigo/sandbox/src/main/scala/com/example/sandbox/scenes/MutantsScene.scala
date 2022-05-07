@@ -61,7 +61,7 @@ object MutantsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxV
 
   // A large mutant data set (60 fps on my machine)
   val dataMax: Array[Batch[UniformBlock]] =
-    (0 until 2100).toArray.map { i =>
+    (0 until 3500).toArray.map { i =>
       val d  = Dice.fromSeed(i)
       val pt = Point(d.rollFromZero(SandboxGame.gameWidth), d.rollFromZero(SandboxGame.gameHeight))
       val sc = Vector2(0.3d + (d.rollDouble * 3.0d))

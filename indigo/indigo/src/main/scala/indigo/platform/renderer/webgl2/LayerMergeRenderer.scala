@@ -38,16 +38,16 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
     WebGLHelper.bindUBO(
       gl2,
       program,
-      "IndigoMergeData",
       RendererWebGL2Constants.mergeObjectBlockPointer,
-      displayObjectUBOBuffer
+      displayObjectUBOBuffer,
+      gl2.getUniformBlockIndex(program, "IndigoMergeData")
     )
     WebGLHelper.bindUBO(
       gl2,
       program,
-      "IndigoFrameData",
       RendererWebGL2Constants.frameDataBlockPointer,
-      frameDataUBOBuffer
+      frameDataUBOBuffer,
+      gl2.getUniformBlockIndex(program, "IndigoFrameData")
     )
   }
 
@@ -96,9 +96,9 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
         WebGLHelper.bindUBO(
           gl2,
           activeShader,
-          ud.blockName,
           RendererWebGL2Constants.blendDataBlockOffsetPointer + i,
-          buff
+          buff,
+          gl2.getUniformBlockIndex(activeShader, ud.blockName)
         )
       }
     }
