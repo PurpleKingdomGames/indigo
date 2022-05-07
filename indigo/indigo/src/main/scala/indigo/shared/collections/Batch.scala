@@ -1,6 +1,7 @@
 package indigo.shared.collections
 
 import scala.annotation.tailrec
+import scala.annotation.targetName
 import scala.reflect.ClassTag
 
 import scalajs.js
@@ -108,6 +109,15 @@ object Batch:
 
   def apply[A](batch1: Batch[A], batch2: Batch[A]): Batch[A] =
     Combine(batch1, batch2)
+
+  def fromJSArray[A](values: js.Array[A]): Batch[A] =
+    Wrapped(values)
+
+  def fromArray[A](values: Array[A]): Batch[A] =
+    Wrapped(values.toJSArray)
+
+  def fromList[A](values: List[A]): Batch[A] =
+    Wrapped(values.toJSArray)
 
   def empty[A]: Batch[A] =
     Batch.Empty
