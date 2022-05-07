@@ -8,15 +8,15 @@ import japgolly.scalajs.benchmark.gui._
 import scalajs.js
 import scalajs.js.JSConverters.*
 
-object ChainBenchmarks:
+object BatchBenchmarks:
 
   val graphics1000 =
     (0 to 1000).map(_ => Graphic(Size(32), Material.Bitmap(AssetName("test"))))
 
   val bigList    = graphics1000.toList
   val bigJsArray = graphics1000.toJSArray
-  val bigChain   = Chain.Wrapped(bigJsArray)
-  val bigNestedChain = {
+  val bigBatch   = Batch.Wrapped(bigJsArray)
+  val bigNestedBatch = {
     val s1 = bigJsArray.splitAt(100)
     val s2 = s1._2.splitAt(300)
     val s3 = s2._2.splitAt(200)
@@ -26,34 +26,34 @@ object ChainBenchmarks:
     val a3 = s3._1
     val a4 = s3._2
 
-    Chain.Combine(
-      Chain.Singleton(a1.head),
-      Chain.Combine(
-        Chain.Wrapped(a1.tail),
-        Chain.Combine(
-          Chain.Combine(
-            Chain(a2),
-            Chain(a3) |+| Chain(a4)
+    Batch.Combine(
+      Batch.Singleton(a1.head),
+      Batch.Combine(
+        Batch.Wrapped(a1.tail),
+        Batch.Combine(
+          Batch.Combine(
+            Batch(a2),
+            Batch(a3) |+| Batch(a4)
           ),
-          Chain.Empty
+          Batch.Empty
         )
       )
     )
   }
 
   val suite = GuiSuite(
-    Suite("Chain Benchmarks")(
+    Suite("Batch Benchmarks")(
       Benchmark("concat - list") {
         bigList ++ bigList
       },
       Benchmark("concat - js.Array") {
         bigJsArray ++ bigJsArray
       },
-      Benchmark("concat - chain") {
-        bigChain ++ bigChain
+      Benchmark("concat - batch") {
+        bigBatch ++ bigBatch
       },
-      Benchmark("concat - chain nested") {
-        bigNestedChain ++ bigNestedChain
+      Benchmark("concat - batch nested") {
+        bigNestedBatch ++ bigNestedBatch
       },
       Benchmark("map - list") {
         bigList.map(_.moveBy(5, 5))
@@ -61,20 +61,20 @@ object ChainBenchmarks:
       Benchmark("map - js.Array") {
         bigJsArray.map(_.moveBy(5, 5))
       },
-      Benchmark("map - chain") {
-        bigChain.map(_.moveBy(5, 5))
+      Benchmark("map - batch") {
+        bigBatch.map(_.moveBy(5, 5))
       },
-      Benchmark("map - chain nested") {
-        bigNestedChain.map(_.moveBy(5, 5))
+      Benchmark("map - batch nested") {
+        bigNestedBatch.map(_.moveBy(5, 5))
       },
       Benchmark("toJSArray - list") {
         bigList.toJSArray
       },
-      Benchmark("toJSArray - chain") {
-        bigChain.toJSArray
+      Benchmark("toJSArray - batch") {
+        bigBatch.toJSArray
       },
-      Benchmark("toJSArray - chain nested") {
-        bigNestedChain.toJSArray
+      Benchmark("toJSArray - batch nested") {
+        bigNestedBatch.toJSArray
       }
     )
   )
