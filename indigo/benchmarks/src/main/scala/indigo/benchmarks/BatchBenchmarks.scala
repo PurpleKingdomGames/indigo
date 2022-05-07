@@ -55,6 +55,18 @@ object BatchBenchmarks:
       Benchmark("concat - batch nested") {
         bigNestedBatch ++ bigNestedBatch
       },
+      Benchmark("foreach - list") {
+        bigList.foreach(_.moveBy(5, 5))
+      },
+      Benchmark("foreach - js.Array") {
+        bigJsArray.foreach(_.moveBy(5, 5))
+      },
+      Benchmark("foreach - batch") {
+        bigBatch.foreach(_.moveBy(5, 5))
+      },
+      Benchmark("foreach - batch nested") {
+        bigNestedBatch.foreach(_.moveBy(5, 5))
+      },
       Benchmark("map - list") {
         bigList.map(_.moveBy(5, 5))
       },

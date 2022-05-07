@@ -227,104 +227,43 @@ class BatchTests extends munit.FunSuite {
     assert(res == 21)
   }
 
+  test("foreachWithIndex") {
+    val actual =
+      Batch.Combine(
+        Batch.Singleton(10),
+        Batch.Combine(
+          Batch.Combine(
+            Batch(20),
+            Batch(30)
+          ),
+          Batch(40, 50, 60)
+        )
+      )
+
+    var res = Array[(Int, Int)]()
+
+    actual.foreachWithIndex { case (value, index) =>
+      res = res ++ Array((index, value))
+    }
+
+    val expected =
+      List(
+        (0, 10),
+        (1, 20),
+        (2, 30),
+        (3, 40),
+        (4, 50),
+        (5, 60)
+      )
+
+    assertEquals(res.toList, expected)
+  }
+
   test("isEmpty") {
     assert(Batch.Empty.isEmpty)
     assert(!Batch.Singleton(1).isEmpty)
     assert(!Batch.Combine(Batch.Singleton(1), Batch.Singleton(2)).isEmpty)
     assert(!Batch.Wrapped(js.Array(1, 2, 3)).isEmpty)
-  }
-
-  test("splitBatch") {
-    val batch =
-      Batch.Combine(
-        Batch.Singleton(1),
-        Batch.Combine(
-          Batch.Combine(
-            Batch(2),
-            Batch(3)
-          ),
-          Batch(4, 5, 6)
-        )
-      )
-
-    assertEquals(Batch.splitBatch(batch)._1, Batch(1))
-    assertEquals(Batch.splitBatch(Batch.splitBatch(batch)._2)._1, Batch(2))
-    assertEquals(Batch.splitBatch(Batch.splitBatch(Batch.splitBatch(batch)._2)._2)._1, Batch(3))
-    assertEquals(Batch.splitBatch(Batch.splitBatch(Batch.splitBatch(Batch.splitBatch(batch)._2)._2)._2)._1, Batch(4, 5, 6))
-  }
-
-  test("splitBatch - empty left") {
-    val batch =
-      Batch.Combine(
-        Batch.empty,
-        Batch(1)
-      )
-
-    assertEquals(Batch.splitBatch(batch)._1, Batch(1))
-  }
-
-  test("splitBatch - empty right") {
-    val batch =
-      Batch.Combine(
-        Batch(1),
-        Batch.empty
-      )
-
-    assertEquals(Batch.splitBatch(batch)._1, Batch(1))
-  }
-
-  test("splitBatch - combine of combine") {
-    val batch =
-      Batch.Combine(
-        Batch.Combine(
-          Batch(1),
-          Batch.empty
-        ),
-        Batch(2)
-      )
-
-    assertEquals(Batch.splitBatch(batch)._1, Batch(1))
-    assertEquals(Batch.splitBatch(batch)._2, Batch(2))
-  }
-
-  test("splitBatch - combine of combine (first empty)") {
-    val batch =
-      Batch.Combine(
-        Batch.Combine(
-          Batch.empty,
-          Batch(1)
-        ),
-        Batch(2)
-      )
-
-    assertEquals(Batch.splitBatch(batch)._1, Batch(1))
-    assertEquals(Batch.splitBatch(batch)._2, Batch(2))
-  }
-
-  test("splitBatch - combine of combine of combine") {
-    val batch =
-      Batch.Combine(
-        Batch.Combine(
-          Batch.Combine(
-            Batch(1),
-            Batch.empty
-          ),
-          Batch.empty
-        ),
-        Batch(2)
-      )
-
-
-    assertEquals(Batch.splitBatch(batch)._1, Batch(1))
-    assertEquals(Batch.splitBatch(batch)._2, Batch(2))
-  }
-
-  test("hasNextBatch") {
-    assert(!Batch.hasNextBatch(Batch.Empty))
-    assert(!Batch.hasNextBatch(Batch(1)))
-    assert(!Batch.hasNextBatch(Batch(1,2,3)))
-    assert(!Batch.hasNextBatch(Batch.Combine(Batch(1), Batch.Empty)))
-    assert(Batch.hasNextBatch(Batch.Combine(Batch(1), Batch(2))))
   }
 
 }

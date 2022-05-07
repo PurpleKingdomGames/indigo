@@ -7,22 +7,16 @@ import scalajs.js
 import scalajs.js.JSConverters.*
 
 sealed trait Batch[+A]:
-
-  private[collections] def isBranch: Boolean
-  private[collections] def isLeaf: Boolean
-  private[collections] def split: (Batch[A], Batch[A])
+  private lazy val _jsArray: js.Array[A] = toJSArray
 
   def isEmpty: Boolean
-  def map[B](f: A => B): Batch[B]
-  def foreach(f: A => Unit): Unit
   def head: A
   def headOption: Option[A]
   def size: Int
-  def apply(index: Int): A
   def toJSArray[B >: A]: js.Array[B]
 
   override def toString: String =
-    "Batch(" + toJSArray.mkString(", ") + ")"
+    "Batch(" + _jsArray.mkString(", ") + ")"
 
   def ++[B >: A](other: Batch[B]): Batch[B] =
     if this.isEmpty then other
@@ -41,14 +35,31 @@ sealed trait Batch[+A]:
   def :+[B >: A](value: B): Batch[B] =
     this ++ Batch.Singleton(value)
 
+  def apply(index: Int): A =
+    _jsArray(index)
+
   def compact[B >: A]: Batch.Wrapped[B] =
-    Batch.Wrapped(toJSArray)
+    Batch.Wrapped(_jsArray.asInstanceOf[js.Array[B]])
 
   def toArray[B >: A: ClassTag]: Array[B] =
-    toJSArray.toArray
+    _jsArray.asInstanceOf[js.Array[B]].toArray
 
   def toList: List[A] =
-    toJSArray.toList
+    _jsArray.toList
+
+  def map[B](f: A => B): Batch[B] =
+    Batch.Wrapped(_jsArray.map(f))
+
+  def foreach(f: A => Unit): Unit =
+    _jsArray.foreach(f)
+
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  def foreachWithIndex(f: (A, Int) => Unit): Unit =
+    var idx: Int = 0
+    foreach { v =>
+      f(v, idx)
+      idx = idx + 1
+    }
 
 object Batch:
 
@@ -100,40 +111,9 @@ object Batch:
   def combineAll[A](batchs: Batch[A]*): Batch[A] =
     batchs.toList.foldLeft(Batch.empty[A])(_ ++ _)
 
-  /** Structural hasNext. Checks for the presence of a non-empty right-side of a combine.
-    */
-  def hasNextBatch[A](batch: Batch[A]): Boolean =
-    if batch.isBranch then !batch.split._2.isEmpty
-    else false
-
-  /** Structural split of the batch, returning the next non-empty batch, and the remaining batch. Note that it is _not_
-    * returning the values, so the next batch could be an array of values.
-    */
-  def splitBatch[A](batch: Batch[A]): (Batch[A], Batch[A]) =
-    if batch.isBranch then
-      val (a, b) = batch.split
-      if a.isEmpty then splitBatch(b)
-      else if a.isLeaf then (a, b)
-      else
-        val (aa, bb) = a.split
-        if aa.isEmpty then splitBatch(bb ++ b)
-        else (aa, bb ++ b)
-    else (batch, Batch.empty)
-
   case object Empty extends Batch[Nothing]:
-    private[collections] val isBranch: Boolean = false
-    private[collections] val isLeaf: Boolean   = true
-    private[collections] lazy val split: (Batch[Nothing], Batch[Nothing]) =
-      (this, this)
-
-    val isEmpty: Boolean                  = true
-    def map[B](f: Nothing => B): Batch[B] = this
-    def foreach(f: Nothing => Unit): Unit = ()
-    def toJSArray[B]: js.Array[B]         = js.Array[B]()
-
-    @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-    def apply(index: Int): Nothing =
-      throw new NoSuchElementException(s"Batch.Empty.apply($index)")
+    val isEmpty: Boolean          = true
+    def toJSArray[B]: js.Array[B] = js.Array[B]()
 
     @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
     def head: Nothing               = throw new NoSuchElementException("Batch.Empty.head")
@@ -145,21 +125,10 @@ object Batch:
       that.isInstanceOf[Batch.Empty.type]
 
   final case class Singleton[A](value: A) extends Batch[A]:
-    private[collections] val isBranch: Boolean = false
-    private[collections] val isLeaf: Boolean   = true
-    private[collections] lazy val split: (Batch[A], Batch[A]) =
-      (this, this)
-
     val isEmpty: Boolean               = false
-    def map[B](f: A => B): Batch[B]    = this.copy(value = f(value))
-    def foreach(f: A => Unit): Unit    = f(value)
     def head: A                        = value
     def headOption: Option[A]          = Some(value)
     def toJSArray[B >: A]: js.Array[B] = js.Array[B](value)
-
-    @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-    def apply(index: Int): A =
-      if index == 0 then value else throw new IndexOutOfBoundsException
 
     val size: Int = 1
 
@@ -188,16 +157,7 @@ object Batch:
       catch { _ => false }
 
   final case class Combine[A](batch1: Batch[A], batch2: Batch[A]) extends Batch[A]:
-    private[collections] val isBranch: Boolean = true
-    private[collections] val isLeaf: Boolean   = false
-    private[collections] lazy val split: (Batch[A], Batch[A]) =
-      (batch1, batch2)
-
-    val isEmpty: Boolean            = batch1.isEmpty && batch2.isEmpty
-    def map[B](f: A => B): Batch[B] = this.copy(batch1 = batch1.map(f), batch2 = batch2.map(f))
-    def foreach(f: A => Unit): Unit =
-      batch1.foreach(f)
-      batch2.foreach(f)
+    val isEmpty: Boolean      = batch1.isEmpty && batch2.isEmpty
     def head: A               = batch1.head
     def headOption: Option[A] = batch1.headOption
 
@@ -235,12 +195,6 @@ object Batch:
       rec(List(batch1, batch2), 0)
       arr
 
-    @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-    def apply(index: Int): A =
-      if index < 0 || index > size then throw new IndexOutOfBoundsException
-      else if index < batch1.size then batch1(index)
-      else batch2(index - batch1.size)
-
     lazy val size: Int = batch1.size + batch2.size
 
     override def equals(that: Any): Boolean =
@@ -268,22 +222,10 @@ object Batch:
       catch { _ => false }
 
   final case class Wrapped[A](values: js.Array[A]) extends Batch[A]:
-    private[collections] val isBranch: Boolean = false
-    private[collections] val isLeaf: Boolean   = true
-    private[collections] lazy val split: (Batch[A], Batch[A]) =
-      (this, this)
-
     val isEmpty: Boolean               = values.isEmpty
-    def map[B](f: A => B): Batch[B]    = this.copy(values = values.map(f))
-    def foreach(f: A => Unit): Unit    = values.foreach(f)
     def head: A                        = values.head
     def headOption: Option[A]          = values.headOption
     def toJSArray[B >: A]: js.Array[B] = values.asInstanceOf[js.Array[B]]
-
-    @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-    def apply(index: Int): A =
-      if index < 0 || index > size then throw new IndexOutOfBoundsException
-      else values(index)
 
     lazy val size: Int = values.length
 
