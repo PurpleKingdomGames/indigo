@@ -109,7 +109,7 @@ object Batch:
     Batch.Empty
 
   def combineAll[A](batchs: Batch[A]*): Batch[A] =
-    batchs.toList.foldLeft(Batch.empty[A])(_ ++ _)
+    batchs.foldLeft(Batch.empty[A])(_ ++ _)
 
   case object Empty extends Batch[Nothing]:
     val isEmpty: Boolean          = true
