@@ -1,6 +1,7 @@
 package indigo.shared.assets
 
 import indigo.shared.assets.AssetType.Image
+import indigo.shared.collections.Batch
 
 class AssetTypeTests extends munit.FunSuite {
 
@@ -18,10 +19,46 @@ class AssetTypeTests extends munit.FunSuite {
         AssetType.Text(AssetName("text"), AssetPath("text path"))
       )
 
-    assertEquals(assets.toList.flatMap(_.toList).collect { case i: Image => i }.find(_.name == AssetName("image 1")).get.tag, Some(AssetTag("fish")))
-    assertEquals(assets.toList.flatMap(_.toList).collect { case i: Image => i }.find(_.name == AssetName("image 2")).get.tag, Some(AssetTag("fish")))
-    assertEquals(assets.toList.flatMap(_.toList).collect { case i: Image => i }.find(_.name == AssetName("image 3")).get.tag, Some(AssetTag("fish")))
-    assertEquals(assets.toList.flatMap(_.toList).collect { case i: Image => i }.find(_.name == AssetName("image 4")).get.tag, None)
+    assertEquals(
+      Batch
+        .fromSet(assets)
+        .flatMap(_.toBatch)
+        .collect { case i: Image => i }
+        .find(_.name == AssetName("image 1"))
+        .get
+        .tag,
+      Some(AssetTag("fish"))
+    )
+    assertEquals(
+      Batch
+        .fromSet(assets)
+        .flatMap(_.toBatch)
+        .collect { case i: Image => i }
+        .find(_.name == AssetName("image 2"))
+        .get
+        .tag,
+      Some(AssetTag("fish"))
+    )
+    assertEquals(
+      Batch
+        .fromSet(assets)
+        .flatMap(_.toBatch)
+        .collect { case i: Image => i }
+        .find(_.name == AssetName("image 3"))
+        .get
+        .tag,
+      Some(AssetTag("fish"))
+    )
+    assertEquals(
+      Batch
+        .fromSet(assets)
+        .flatMap(_.toBatch)
+        .collect { case i: Image => i }
+        .find(_.name == AssetName("image 4"))
+        .get
+        .tag,
+      None
+    )
 
   }
 

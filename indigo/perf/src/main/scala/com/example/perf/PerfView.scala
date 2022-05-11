@@ -1,6 +1,7 @@
 package com.example.perf
 
 import indigo._
+import indigo.syntax.*
 
 import scala.annotation.tailrec
 import scala.util.Random
@@ -23,13 +24,13 @@ object PerfView {
   private val cloneBatchSize: Int = 2048
 
   private val positions: List[Point] =
-    (1 to herdCount).toList.map { _ =>
+    (1 to herdCount).map { _ =>
       Point((Random.nextFloat() * PerfGame.viewportWidth).toInt, (Random.nextFloat() * PerfGame.viewportHeight).toInt)
-    }
+    }.toList
 
-  private val theHerd: List[CloneBatch] = {
+  private val theHerd: Batch[CloneBatch] = {
     @tailrec
-    def rec(remaining: List[Point], batchSize: Int, batchNumber: Int, acc: List[CloneBatch]): List[CloneBatch] =
+    def rec(remaining: List[Point], batchSize: Int, batchNumber: Int, acc: Batch[CloneBatch]): Batch[CloneBatch] =
       remaining match {
         case Nil =>
           acc
@@ -53,11 +54,11 @@ object PerfView {
               )
       }
 
-    rec(positions, cloneBatchSize, 0, Nil)
+    rec(positions, cloneBatchSize, 0, Batch.Empty)
   }
 
-  def gameLayer(currentState: DudeModel): List[SceneNode] =
-    List(
+  def gameLayer(currentState: DudeModel): Batch[SceneNode] =
+    Batch(
       currentState.walkDirection match {
         case d @ DudeLeft =>
           currentState.dude.sprite
@@ -86,8 +87,8 @@ object PerfView {
       }
     ) ++ theHerd
 
-  val uiLayer: List[SceneNode] =
-    List(
+  val uiLayer: Batch[SceneNode] =
+    Batch(
       Text(
         (herdCount + 1).toString + " Naked dudes!",
         PerfGame.viewportWidth / 2,

@@ -4,6 +4,7 @@ import indigo.shared.assets.AssetName
 import indigo.shared.assets.AssetPath
 import indigo.shared.assets.AssetType
 import indigo.shared.assets.AssetTypePrimitive
+import indigo.shared.collections.Batch
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.events.AssetEvent
 
@@ -11,8 +12,8 @@ class AssetBundleLoaderTests extends munit.FunSuite {
 
   import indigoextras.subsystems.FakeSubSystemFrameContext._
 
-  val defaultAssets: List[AssetTypePrimitive] =
-    List(
+  val defaultAssets: Batch[AssetTypePrimitive] =
+    Batch(
       AssetType.Image(AssetName("image 1"), AssetPath("/image_1.png")),
       AssetType.Image(AssetName("image 2"), AssetPath("/image_2.png")),
       AssetType.Image(AssetName("image 3"), AssetPath("/image_3.png"))
@@ -150,12 +151,12 @@ class AssetBundleLoaderTests extends munit.FunSuite {
 
   test("AssetBundleTracker.Doesn't add empty bundles") {
     assertEquals(AssetBundleTracker.empty.bundleCount, 0)
-    assertEquals(AssetBundleTracker.empty.addBundle(BindingKey("a"), Nil).bundleCount, 0)
+    assertEquals(AssetBundleTracker.empty.addBundle(BindingKey("a"), Batch.Empty).bundleCount, 0)
   }
 
   test("AssetBundleTracker.Doesn't re-add or replace bundles with existing identical keys") {
-    val assets: List[AssetTypePrimitive] =
-      List(
+    val assets: Batch[AssetTypePrimitive] =
+      Batch(
         AssetType.Image(AssetName("image 1"), AssetPath("/image_1.png")),
         AssetType.Image(AssetName("image 2"), AssetPath("/image_2.png")),
         AssetType.Image(AssetName("image 3"), AssetPath("/image_3.png")),
@@ -249,7 +250,7 @@ class AssetBundleLoaderTests extends munit.FunSuite {
         assertEquals(percent, 100)
         assertEquals(completed, 3)
         assertEquals(count, 3)
-        assertEquals(failures, List(AssetPath("/image_2.png"), AssetPath("/image_3.png")))
+        assertEquals(failures, Batch(AssetPath("/image_2.png"), AssetPath("/image_3.png")))
 
       case _ =>
         assertEquals("failed", "fail")

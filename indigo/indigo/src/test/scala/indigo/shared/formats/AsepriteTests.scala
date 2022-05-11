@@ -2,7 +2,7 @@ package indigo.shared.formats
 
 import indigo.shared.animation._
 import indigo.shared.assets.AssetName
-import indigo.shared.collections.NonEmptyList
+import indigo.shared.collections.NonEmptyBatch
 import indigo.shared.datatypes._
 import indigo.shared.dice.Dice
 import indigo.shared.events.GlobalEvent
@@ -160,10 +160,10 @@ object AsepriteSampleData {
     Animation(
       animationKey,
       currentCycleLabel = CycleLabel("lights"),
-      cycles = NonEmptyList(
+      cycles = NonEmptyBatch(
         Cycle.create(
           label = "lights",
-          frames = NonEmptyList(
+          frames = NonEmptyBatch(
             Frame(
               crop = Rectangle(Point(0, 0), Size(64, 64)),
               duration = Millis(100)

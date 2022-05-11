@@ -6,6 +6,7 @@ import com.example.sandbox.SandboxStartupData
 import com.example.sandbox.SandboxViewModel
 import indigo._
 import indigo.scenes._
+import indigo.syntax.*
 import indigoextras.effectmaterials.Refraction
 
 object ManyEventHandlers extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
@@ -41,14 +42,14 @@ object ManyEventHandlers extends Scene[SandboxStartupData, SandboxGameModel, San
   ): GlobalEvent => Outcome[SandboxViewModel] =
     _ => Outcome(viewModel)
 
-  val coords: List[Point] =
+  val coords: Batch[Point] =
     // more - 2,800 @ 59fps
     val offset = 4
     (0 until 70).flatMap { x =>
       (0 until 40).map { y =>
         Point(x, y) * offset
       }
-    }.toList
+    }.toBatch
   // more - 1080 @ 59fps
   // val offset = 8
   // (0 until 40).flatMap { x =>
@@ -64,7 +65,7 @@ object ManyEventHandlers extends Scene[SandboxStartupData, SandboxGameModel, San
   //   }
   // }.toList
 
-  def sprites(dude: Sprite[Material.ImageEffects]): List[Sprite[Material.ImageEffects]] =
+  def sprites(dude: Sprite[Material.ImageEffects]): Batch[Sprite[Material.ImageEffects]] =
     coords.map(pt => dude.moveTo(pt))
 
   def present(

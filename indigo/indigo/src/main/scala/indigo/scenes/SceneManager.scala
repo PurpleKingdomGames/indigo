@@ -3,7 +3,8 @@ package indigo.scenes
 import indigo.shared.FrameContext
 import indigo.shared.IndigoLogger
 import indigo.shared.Outcome
-import indigo.shared.collections.NonEmptyList
+import indigo.shared.collections.Batch
+import indigo.shared.collections.NonEmptyBatch
 import indigo.shared.events.EventFilters
 import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.SceneUpdateFragment
@@ -12,7 +13,7 @@ import indigo.shared.subsystems.SubSystemFrameContext._
 import indigo.shared.subsystems.SubSystemsRegister
 
 class SceneManager[StartUpData, GameModel, ViewModel](
-    scenes: NonEmptyList[Scene[StartUpData, GameModel, ViewModel]],
+    scenes: NonEmptyBatch[Scene[StartUpData, GameModel, ViewModel]],
     scenesFinder: SceneFinder
 ) {
 
@@ -29,9 +30,9 @@ class SceneManager[StartUpData, GameModel, ViewModel](
     scalajs.js.Dictionary
       .empty[SubSystemsRegister]
       .addAll(
-        scenes.toList.map { s =>
+        scenes.toBatch.toList.map { s =>
           val r = new SubSystemsRegister()
-          r.register(s.subSystems.toList)
+          r.register(Batch.fromSet(s.subSystems))
           (s.name.toString -> r)
         }
       )
@@ -44,8 +45,8 @@ class SceneManager[StartUpData, GameModel, ViewModel](
       finderInstance = finderInstance.forward
       val to = finderInstance.current.name
       val events =
-        if (from == to) Nil
-        else List(SceneEvent.SceneChange(from, to, frameContext.gameTime.running))
+        if (from == to) Batch.Empty
+        else Batch(SceneEvent.SceneChange(from, to, frameContext.gameTime.running))
 
       Outcome(model, events)
 
@@ -54,8 +55,8 @@ class SceneManager[StartUpData, GameModel, ViewModel](
       finderInstance = finderInstance.backward
       val to = finderInstance.current.name
       val events =
-        if (from == to) Nil
-        else List(SceneEvent.SceneChange(from, to, frameContext.gameTime.running))
+        if (from == to) Batch.Empty
+        else Batch(SceneEvent.SceneChange(from, to, frameContext.gameTime.running))
 
       Outcome(model, events)
 
@@ -64,8 +65,8 @@ class SceneManager[StartUpData, GameModel, ViewModel](
       finderInstance = finderInstance.jumpToSceneByName(name)
       val to = finderInstance.current.name
       val events =
-        if (from == to) Nil
-        else List(SceneEvent.SceneChange(from, to, frameContext.gameTime.running))
+        if (from == to) Batch.Empty
+        else Batch(SceneEvent.SceneChange(from, to, frameContext.gameTime.running))
 
       Outcome(model, events)
 
@@ -83,7 +84,7 @@ class SceneManager[StartUpData, GameModel, ViewModel](
 
   def updateSubSystems(
       frameContext: SubSystemFrameContext,
-      globalEvents: List[GlobalEvent]
+      globalEvents: Batch[GlobalEvent]
   ): Outcome[SubSystemsRegister] =
     scenes
       .find(_.name == finderInstance.current.name)
@@ -151,7 +152,7 @@ class SceneManager[StartUpData, GameModel, ViewModel](
 object SceneManager {
 
   def apply[StartUpData, GameModel, ViewModel](
-      scenes: NonEmptyList[Scene[StartUpData, GameModel, ViewModel]],
+      scenes: NonEmptyBatch[Scene[StartUpData, GameModel, ViewModel]],
       initialScene: SceneName
   ): SceneManager[StartUpData, GameModel, ViewModel] =
     new SceneManager[StartUpData, GameModel, ViewModel](

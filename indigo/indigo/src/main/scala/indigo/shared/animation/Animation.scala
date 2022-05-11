@@ -1,12 +1,13 @@
 package indigo.shared.animation
 
-import indigo.shared.collections.NonEmptyList
+import indigo.shared.collections.Batch
+import indigo.shared.collections.NonEmptyBatch
 import indigo.shared.time.Millis
 
 final case class Animation(
     animationKey: AnimationKey,
     currentCycleLabel: CycleLabel,
-    cycles: NonEmptyList[Cycle]
+    cycles: NonEmptyBatch[Cycle]
 ) derives CanEqual {
 
   def addCycle(cycle: Cycle): Animation =
@@ -27,10 +28,10 @@ object Animation {
     Animation(
       animationKey,
       CycleLabel("default"),
-      NonEmptyList(Cycle(CycleLabel("default"), NonEmptyList(frameOne, frames.toList), 0, Millis.zero))
+      NonEmptyBatch(Cycle(CycleLabel("default"), NonEmptyBatch(frameOne, Batch.fromSeq(frames)), 0, Millis.zero))
     )
 
   def create(animationKey: AnimationKey, cycle: Cycle): Animation =
-    apply(animationKey, cycle.label, NonEmptyList(cycle))
+    apply(animationKey, cycle.label, NonEmptyBatch(cycle))
 
 }

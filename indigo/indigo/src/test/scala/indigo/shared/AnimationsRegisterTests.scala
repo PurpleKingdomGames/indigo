@@ -8,7 +8,8 @@ import indigo.shared.animation.AnimationMemento
 import indigo.shared.animation.Cycle
 import indigo.shared.animation.CycleLabel
 import indigo.shared.animation.Frame
-import indigo.shared.collections.NonEmptyList
+import indigo.shared.collections.Batch
+import indigo.shared.collections.NonEmptyBatch
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
@@ -46,7 +47,7 @@ class AnimationsRegisterTests extends munit.FunSuite {
       GameTime.is(Seconds(0)),
       bindingKey,
       AnimationSample.key,
-      Nil
+      Batch.Empty
     )
 
     val actual = register.findMementoByBindingKey(bindingKey)
@@ -72,7 +73,7 @@ class AnimationsRegisterTests extends munit.FunSuite {
       GameTime.is(Seconds(0)),
       bindingKey,
       AnimationSample.key,
-      Nil
+      Batch.Empty
     )
 
     assertEquals(updatedAnim1.isDefined, true)
@@ -96,7 +97,7 @@ class AnimationsRegisterTests extends munit.FunSuite {
       GameTime.is(Millis(100).toSeconds),
       bindingKey,
       AnimationSample.key,
-      List(ChangeCycle(AnimationSample.cycleLabel2), Play)
+      Batch(ChangeCycle(AnimationSample.cycleLabel2), Play)
     )
 
     assertEquals(updatedAnim2.isDefined, true)
@@ -120,7 +121,7 @@ class AnimationsRegisterTests extends munit.FunSuite {
       GameTime.is(Millis(200).toSeconds),
       bindingKey,
       AnimationSample.key,
-      List(Play)
+      Batch(Play)
     )
 
     assertEquals(updatedAnim3.isDefined, true)
@@ -144,7 +145,7 @@ class AnimationsRegisterTests extends munit.FunSuite {
       GameTime.is(Millis(400).toSeconds),
       bindingKey,
       AnimationSample.key,
-      List(Play)
+      Batch(Play)
     )
 
     assertEquals(updatedAnim4.isDefined, true)
@@ -197,13 +198,13 @@ object AnimationSample {
     CycleLabel("cycle 2")
 
   val cycle1: Cycle =
-    Cycle.create(cycleLabel1.toString, NonEmptyList(frame1, frame2, frame3))
+    Cycle.create(cycleLabel1.toString, NonEmptyBatch(frame1, frame2, frame3))
 
   val cycle2: Cycle =
-    Cycle.create(cycleLabel2.toString, NonEmptyList(frame4, frame5, frame6))
+    Cycle.create(cycleLabel2.toString, NonEmptyBatch(frame4, frame5, frame6))
 
-  val cycles: NonEmptyList[Cycle] =
-    NonEmptyList(cycle1, cycle2)
+  val cycles: NonEmptyBatch[Cycle] =
+    NonEmptyBatch(cycle1, cycle2)
 
   val key: AnimationKey =
     AnimationKey("test anim")

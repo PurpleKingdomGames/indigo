@@ -6,6 +6,7 @@ import indigo.platform.events.GlobalEventStream
 import indigo.shared.IndigoLogger
 import indigo.shared.assets.AssetName
 import indigo.shared.assets.AssetType
+import indigo.shared.collections.Batch
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.events.AssetEvent
 import org.scalajs.dom
@@ -31,10 +32,10 @@ object AssetLoader {
       key: BindingKey,
       makeAvailable: Boolean
   ): Unit = {
-    val assetList: List[AssetType] =
-      assets.toList.flatMap(_.toList)
+    val assetBatch: Batch[AssetType] =
+      Batch.fromSet(assets).flatMap(_.toBatch)
 
-    IndigoLogger.info(s"Background loading ${assetList.length.toString()} assets with key: $key")
+    IndigoLogger.info(s"Background loading ${assetBatch.size.toString()} assets with key: $key")
 
     loadAssets(assets)
       .onComplete {
@@ -53,53 +54,53 @@ object AssetLoader {
   }
 
   def loadAssets(assets: Set[AssetType]): Future[AssetCollection] = {
-    val assetList: List[AssetType] =
-      assets.toList.flatMap(_.toList)
+    val assetBatch: Batch[AssetType] =
+      Batch.fromSet(assets).flatMap(_.toBatch)
 
-    IndigoLogger.info(s"Loading ${assetList.length.toString()} assets")
+    IndigoLogger.info(s"Loading ${assetBatch.size.toString()} assets")
 
     for {
-      t <- loadTextAssets(filterOutTextAssets(assetList))
-      i <- loadImageAssets(filterOutImageAssets(assetList))
-      a <- loadAudioAssets(filterOutAudioAssets(assetList))
-      f <- loadFontAssets(filterOutFontAssets(assetList))
+      t <- loadTextAssets(filterOutTextAssets(assetBatch))
+      i <- loadImageAssets(filterOutImageAssets(assetBatch))
+      a <- loadAudioAssets(filterOutAudioAssets(assetBatch))
+      f <- loadFontAssets(filterOutFontAssets(assetBatch))
     } yield new AssetCollection(i, t, a, f)
   }
 
-  def filterOutTextAssets(l: List[AssetType]): List[AssetType.Text] =
+  def filterOutTextAssets(l: Batch[AssetType]): Batch[AssetType.Text] =
     l.flatMap { at =>
       at match {
-        case t: AssetType.Text => List(t)
-        case _                 => Nil
+        case t: AssetType.Text => Batch(t)
+        case _                 => Batch.Empty
       }
     }
 
-  def filterOutImageAssets(l: List[AssetType]): List[AssetType.Image] =
+  def filterOutImageAssets(l: Batch[AssetType]): Batch[AssetType.Image] =
     l.flatMap { at =>
       at match {
-        case t: AssetType.Image => List(t)
-        case _                  => Nil
+        case t: AssetType.Image => Batch(t)
+        case _                  => Batch.Empty
       }
     }
 
-  def filterOutAudioAssets(l: List[AssetType]): List[AssetType.Audio] =
+  def filterOutAudioAssets(l: Batch[AssetType]): Batch[AssetType.Audio] =
     l.flatMap { at =>
       at match {
-        case t: AssetType.Audio => List(t)
-        case _                  => Nil
+        case t: AssetType.Audio => Batch(t)
+        case _                  => Batch.Empty
       }
     }
 
-  def filterOutFontAssets(l: List[AssetType]): List[AssetType.Font] =
+  def filterOutFontAssets(l: Batch[AssetType]): Batch[AssetType.Font] =
     l.flatMap { at =>
       at match {
-        case t: AssetType.Font => List(t)
-        case _                 => Nil
+        case t: AssetType.Font => Batch(t)
+        case _                 => Batch.Empty
       }
     }
 
-  val loadImageAssets: List[AssetType.Image] => Future[List[LoadedImageAsset]] =
-    imageAssets => Future.sequence(imageAssets.map(loadImageAsset))
+  val loadImageAssets: Batch[AssetType.Image] => Future[Batch[LoadedImageAsset]] =
+    imageAssets => Future.sequence(imageAssets.toList.map(loadImageAsset)).map(Batch.fromList)
 
   def onLoadImageFuture(image: HTMLImageElement): Future[HTMLImageElement] =
     if (image.complete) Future.successful(image)
@@ -132,8 +133,8 @@ object AssetLoader {
 
   // Text
 
-  val loadTextAssets: List[AssetType.Text] => Future[List[LoadedTextAsset]] =
-    textAssets => Future.sequence(textAssets.map(loadTextAsset))
+  val loadTextAssets: Batch[AssetType.Text] => Future[Batch[LoadedTextAsset]] =
+    textAssets => Future.sequence(textAssets.toList.map(loadTextAsset)).map(Batch.fromList)
 
   def loadTextAsset(textAsset: AssetType.Text): Future[LoadedTextAsset] = {
     IndigoLogger.info(s"[Text] Loading ${textAsset.path}")
@@ -146,8 +147,8 @@ object AssetLoader {
 
   // Audio
 
-  val loadAudioAssets: List[AssetType.Audio] => Future[List[LoadedAudioAsset]] =
-    audioAssets => Future.sequence(audioAssets.map(loadAudioAsset))
+  val loadAudioAssets: Batch[AssetType.Audio] => Future[Batch[LoadedAudioAsset]] =
+    audioAssets => Future.sequence(audioAssets.toList.map(loadAudioAsset)).map(Batch.fromList)
 
   // @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
   def loadAudioAsset(audioAsset: AssetType.Audio): Future[LoadedAudioAsset] = {
@@ -172,8 +173,8 @@ object AssetLoader {
 
   // Fonts
 
-  val loadFontAssets: List[AssetType.Font] => Future[List[LoadedFontAsset]] =
-    fontAssets => Future.sequence(fontAssets.map(loadFontAsset))
+  val loadFontAssets: Batch[AssetType.Font] => Future[Batch[LoadedFontAsset]] =
+    fontAssets => Future.sequence(fontAssets.toList.map(loadFontAsset)).map(Batch.fromList)
 
   // @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
   def loadFontAsset(fontAsset: AssetType.Font): Future[LoadedFontAsset] =
@@ -187,7 +188,7 @@ object AssetLoader {
       // add font to document
       js.Dynamic.global.document.fonts.add(font)
       // enable font with CSS class
-      js.Dynamic.global.document.body.classList.add("indigo-fonts-loaded")
+      js.Dynamic.global.document.body.classBatch.add("indigo-fonts-loaded")
 
       LoadedFontAsset(AssetName(fontFace.family))
     }

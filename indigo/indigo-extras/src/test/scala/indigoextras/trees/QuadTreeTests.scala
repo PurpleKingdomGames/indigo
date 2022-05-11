@@ -1,5 +1,6 @@
 package indigoextras.trees
 
+import indigo.shared.collections.Batch
 import indigoextras.geometry.BoundingBox
 import indigoextras.geometry.Vertex
 import indigoextras.trees.QuadTree.QuadBranch
@@ -64,7 +65,7 @@ class QuadTreeTests extends munit.FunSuite {
     assertEquals(actual, expected)
 
     assert(
-      List(Vertex(9, 2), Vertex(0, 0), Vertex(10, 10)).forall { v =>
+      Batch(Vertex(9, 2), Vertex(0, 0), Vertex(10, 10)).forall { v =>
         clue(tree.fetchElementAt(clue(v))) == actual.fetchElementAt(v) &&
         tree.fetchElementAt(v) == expected.fetchElementAt(v)
       }
@@ -107,17 +108,17 @@ class QuadTreeTests extends munit.FunSuite {
 
   }
 
-  test("toList") {
+  test("toBatch") {
 
-    val actual: List[String] = QuadTree
+    val actual: Batch[String] = QuadTree
       .empty(2, 2)
       .insertElement("a", Vertex(0, 0))
       .insertElement("b", Vertex(0, 1))
       .insertElement("c", Vertex(1, 0))
-      .toList
+      .toBatch
 
-    val expected: List[String] =
-      List("a", "b", "c")
+    val expected: Batch[String] =
+      Batch("a", "b", "c")
 
     assert(actual.length == expected.length)
     assert(actual.forall(expected.contains))
@@ -125,15 +126,15 @@ class QuadTreeTests extends munit.FunSuite {
 
   test("toPositionedList") {
 
-    val actual: List[(Vertex, String)] = QuadTree
+    val actual: Batch[(Vertex, String)] = QuadTree
       .empty(2, 2)
       .insertElement("a", Vertex(0, 0))
       .insertElement("b", Vertex(0, 1))
       .insertElement("c", Vertex(1, 0))
-      .toListWithPosition
+      .toBatchWithPosition
 
-    val expected: List[(Vertex, String)] =
-      List(
+    val expected: Batch[(Vertex, String)] =
+      Batch(
         (Vertex(0, 0), "a"),
         (Vertex(0, 1), "b"),
         (Vertex(1, 0), "c")
@@ -254,8 +255,8 @@ class QuadTreeTests extends munit.FunSuite {
   test("should allow a search of squares where the line points are in the same square") {
     val actual = QuadTree.searchByLine(SampleTree.tree, Vertex(1, 1), Vertex(1, 1))
 
-    val expected: List[String] =
-      List(
+    val expected: Batch[String] =
+      Batch(
         "1,1"
       )
 
@@ -266,8 +267,8 @@ class QuadTreeTests extends munit.FunSuite {
   test("should allow a search of squares between two horizontal points") {
     val actual = QuadTree.searchByLine(SampleTree.tree, Vertex(1.1, 1.5), Vertex(3.5, 1.5))
 
-    val expected: List[String] =
-      List(
+    val expected: Batch[String] =
+      Batch(
         "1,1",
         "2,1",
         "3,1"
@@ -280,8 +281,8 @@ class QuadTreeTests extends munit.FunSuite {
   test("should allow a search of squares between two vertical points") {
     val actual = QuadTree.searchByLine(SampleTree.tree, Vertex(2.1, 0.5), Vertex(2.1, 2.1))
 
-    val expected: List[String] =
-      List(
+    val expected: Batch[String] =
+      Batch(
         "2,0",
         "2,1",
         "2,2"
@@ -294,8 +295,8 @@ class QuadTreeTests extends munit.FunSuite {
   test("should allow a search of squares between two 45 degree points") {
     val actual = QuadTree.searchByLine(SampleTree.tree, Vertex(0.5, 0.5), Vertex(3.5, 3.5))
 
-    val expected: List[String] =
-      List(
+    val expected: Batch[String] =
+      Batch(
         "0,0",
         "1,0",
         "0,1",
@@ -323,8 +324,8 @@ class QuadTreeTests extends munit.FunSuite {
   test("should allow a search of squares between two diagonal points") {
     val actual = QuadTree.searchByLine(SampleTree.tree, Vertex(0.5, 1.5), Vertex(3.5, 2.5))
 
-    val expected: List[String] =
-      List(
+    val expected: Batch[String] =
+      Batch(
         "0,1",
         "1,1",
         "1,2",
@@ -342,7 +343,7 @@ class QuadTreeTests extends munit.FunSuite {
 
     val actual = QuadTree.searchByBoundingBox(SampleTree.tree, r)
 
-    val expected: List[String] = List("1,1")
+    val expected: Batch[String] = Batch("1,1")
 
     assertEquals(actual.length, expected.length)
     assert(actual.forall(expected.contains))
@@ -353,7 +354,7 @@ class QuadTreeTests extends munit.FunSuite {
 
     val actual = QuadTree.searchByBoundingBox(SampleTree.tree, r)
 
-    val expected: List[String] = List(
+    val expected: Batch[String] = Batch(
       "0,1",
       "1,1",
       "0,2",
@@ -369,8 +370,8 @@ class QuadTreeTests extends munit.FunSuite {
 
     val actual = QuadTree.searchByBoundingBox(SampleTree.tree, r)
 
-    val expected: List[String] =
-      List(
+    val expected: Batch[String] =
+      Batch(
         "0,0",
         "0,1",
         "0,2",
@@ -398,8 +399,8 @@ class QuadTreeTests extends munit.FunSuite {
 
     val actual = QuadTree.searchByBoundingBox(SampleTree.tree, r)
 
-    val expected: List[String] =
-      List(
+    val expected: Batch[String] =
+      Batch(
         "0,1",
         "1,1",
         "2,1",
@@ -425,7 +426,7 @@ class QuadTreeTests extends munit.FunSuite {
     assert(q4 ~== BoundingBox(50, 100, 50, 100))
 
     val recombined: BoundingBox =
-      List(q1, q2, q3, q4)
+      Batch(q1, q2, q3, q4)
         .reduce(_.expandToInclude(_))
 
     assert(recombined ~== original)
@@ -443,7 +444,7 @@ class QuadTreeTests extends munit.FunSuite {
     val (q1, q2, q3, q4) = QuadTree.QuadBranch.subdivide(original)
 
     val recombined: BoundingBox =
-      List(q1, q2, q3, q4)
+      Batch(q1, q2, q3, q4)
         .reduce(_.expandToInclude(_))
     // .foldLeft(z)((acc, next) => acc.expandToInclude(next))
 

@@ -1,6 +1,7 @@
 package indigo.shared.scenegraph
 
 import indigo.shared.BoundaryLocator
+import indigo.shared.collections.Batch
 import indigo.shared.datatypes._
 import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.shared.events.GlobalEvent
@@ -19,7 +20,7 @@ sealed trait SceneNode:
   def withDepth(newDepth: Depth): SceneNode
 object SceneNode:
   given CanEqual[Option[SceneNode], Option[SceneNode]] = CanEqual.derived
-  given CanEqual[List[SceneNode], List[SceneNode]]     = CanEqual.derived
+  given CanEqual[Batch[SceneNode], Batch[SceneNode]]     = CanEqual.derived
 
 /** RenderNodes are built-in node types that have their own size, and where Indigo understands how to build the shader
   * data.
@@ -32,7 +33,7 @@ trait RenderNode[T <: SceneNode] extends SceneNode:
   def eventHandler: ((T, GlobalEvent)) => Option[GlobalEvent]
 object RenderNode:
   given [T <: SceneNode]: CanEqual[Option[RenderNode[T]], Option[RenderNode[T]]] = CanEqual.derived
-  given [T <: SceneNode]: CanEqual[List[RenderNode[T]], List[RenderNode[T]]]     = CanEqual.derived
+  given [T <: SceneNode]: CanEqual[Batch[RenderNode[T]], Batch[RenderNode[T]]]     = CanEqual.derived
 
 /** DependentNodes are built-in node types where Indigo understands how to build the shader data, and the bounds are
   * dependant on the contents of the node.
@@ -44,7 +45,7 @@ trait DependentNode[T <: SceneNode] extends SceneNode:
   def eventHandler: ((T, GlobalEvent)) => Option[GlobalEvent]
 object DependentNode:
   given [T <: SceneNode]: CanEqual[Option[DependentNode[T]], Option[DependentNode[T]]] = CanEqual.derived
-  given [T <: SceneNode]: CanEqual[List[DependentNode[T]], List[DependentNode[T]]]     = CanEqual.derived
+  given [T <: SceneNode]: CanEqual[Batch[DependentNode[T]], Batch[DependentNode[T]]]     = CanEqual.derived
 
 /** EntityNodes can be extended to create custom scene elements.
   *
@@ -59,4 +60,4 @@ trait EntityNode[T <: SceneNode] extends RenderNode[T]:
 
 object EntityNode:
   given [T <: SceneNode]: CanEqual[Option[EntityNode[T]], Option[EntityNode[T]]] = CanEqual.derived
-  given [T <: SceneNode]: CanEqual[List[EntityNode[T]], List[EntityNode[T]]]     = CanEqual.derived
+  given [T <: SceneNode]: CanEqual[Batch[EntityNode[T]], Batch[EntityNode[T]]]     = CanEqual.derived

@@ -1,5 +1,7 @@
 package indigo.shared.constants
 
+import indigo.shared.collections.Batch
+
 final case class Key(code: Int, key: String) derives CanEqual {
   def isPrintable: Boolean =
     (key != "") && Key.printable.map(_.code).contains(this.code)
@@ -131,8 +133,8 @@ object Key {
   val CLOSE_BRAKET: Key     = 221 -> ")"
   val SINGLE_QUOTE: Key     = 222 -> "\'"
 
-  val printable: List[Key] =
-    List(
+  val printable: Batch[Key] =
+    Batch(
       SPACE,
       KEY_0,
       KEY_1,

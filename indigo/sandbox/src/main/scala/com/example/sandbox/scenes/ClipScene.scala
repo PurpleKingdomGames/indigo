@@ -6,6 +6,7 @@ import com.example.sandbox.SandboxStartupData
 import com.example.sandbox.SandboxViewModel
 import indigo._
 import indigo.scenes._
+import indigo.syntax.*
 
 object ClipScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
 
@@ -54,7 +55,7 @@ object ClipScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxView
     Outcome(
       SceneUpdateFragment(
         Layer(
-          List(
+          Batch(
             //
             Clip(Point(0), Size(64), ClipSheet(3, Seconds(0.25), 2), Material.Bitmap(SandboxAssets.trafficLightsName)),
             Shape.Box(Rectangle(Point.zero, Size(64)), Fill.None, Stroke(1, RGBA.Green)).moveTo(Point(0)),
@@ -129,10 +130,14 @@ object ClipScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxView
       )
     )
 
-  def makeDudeAnim(label: CycleLabel, position: Point, clips: Map[CycleLabel, Clip[Material.Bitmap]]): List[SceneNode] =
+  def makeDudeAnim(
+      label: CycleLabel,
+      position: Point,
+      clips: Map[CycleLabel, Clip[Material.Bitmap]]
+  ): Batch[SceneNode] =
     clips
       .get(label)
       .map(_.moveTo(position))
-      .toList ++ List(
+      .toBatch ++ Batch(
       Shape.Box(Rectangle(Point.zero, Size(32)), Fill.None, Stroke(1, RGBA.Cyan)).moveTo(position)
     )

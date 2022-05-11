@@ -1,13 +1,14 @@
 package indigo.shared.scenegraph
 
 import indigo.shared.BoundaryLocator
+import indigo.shared.collections.Batch
 import indigo.shared.datatypes._
 import indigo.shared.events.GlobalEvent
 
 /** Used to group elements to allow them to be manipulated as a collection.
   */
 final case class Group(
-    children: List[SceneNode],
+    children: Batch[SceneNode],
     eventHandlerEnabled: Boolean,
     eventHandler: ((Group, GlobalEvent)) => Option[GlobalEvent],
     position: Point,
@@ -71,9 +72,9 @@ final case class Group(
     transformTo(position + positionDiff, rotation + rotationDiff, scale * scaleDiff)
 
   def addChild(child: SceneNode): Group =
-    this.copy(children = children ++ List(child))
+    this.copy(children = children ++ Batch(child))
 
-  def addChildren(additionalChildren: List[SceneNode]): Group =
+  def addChildren(additionalChildren: Batch[SceneNode]): Group =
     this.copy(children = children ++ additionalChildren)
 
   def withEventHandler(f: ((Group, GlobalEvent)) => Option[GlobalEvent]): Group =
@@ -89,7 +90,7 @@ object Group:
 
   def apply(children: SceneNode*): Group =
     Group(
-      children.toList,
+      Batch.fromSeq(children),
       false,
       Function.const(None),
       Point.zero,
@@ -100,7 +101,7 @@ object Group:
       Flip.default
     )
 
-  def apply(children: List[SceneNode]): Group =
+  def apply(children: Batch[SceneNode]): Group =
     Group(
       children,
       false,
@@ -114,4 +115,4 @@ object Group:
     )
 
   def empty: Group =
-    apply(Nil)
+    apply(Batch.Empty)

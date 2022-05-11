@@ -54,6 +54,12 @@ final case class Vector3(x: Double, y: Double, z: Double) derives CanEqual:
   def round: Vector3 =
     Vector3(Math.round(x).toDouble, Math.round(y).toDouble, Math.round(z).toDouble)
 
+  def toArray: Array[Double] =
+    Array(x, y, z)
+
+  def toJSArray: scalajs.js.Array[Double] =
+    scalajs.js.Array(x, y, z)
+
   def toList: List[Double] =
     List(x, y, z)
 

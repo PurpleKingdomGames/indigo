@@ -1,5 +1,7 @@
 package indigoextras.geometry
 
+import indigo.shared.collections.Batch
+
 class BoundingCircleTests extends munit.FunSuite {
 
   test("contains") {
@@ -59,7 +61,7 @@ class BoundingCircleTests extends munit.FunSuite {
   test("Constructor - fromVertices") {
     val actual =
       BoundingCircle.fromVertices(
-        List(
+        Batch(
           Vertex(10, 10), // tl
           Vertex(20, 10), // tr
           Vertex(20, 20), // br
@@ -108,7 +110,7 @@ class BoundingCircleTests extends munit.FunSuite {
 
     val expected =
       Some(
-        List(
+        Batch(
           Vertex(20, 10)
         )
       )
@@ -122,7 +124,7 @@ class BoundingCircleTests extends munit.FunSuite {
 
     val expected =
       Some(
-        List(
+        Batch(
           Vertex(11, 15),
           Vertex(29, 15)
         )

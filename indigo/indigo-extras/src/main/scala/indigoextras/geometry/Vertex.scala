@@ -1,5 +1,6 @@
 package indigoextras.geometry
 
+import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.Size
@@ -111,8 +112,8 @@ final case class Vertex(x: Double, y: Double) derives CanEqual:
   def distanceTo(other: Vertex): Double =
     Math.sqrt(Math.abs(Math.pow(other.x - x, 2) + Math.pow(other.y - y, 2)))
 
-  def toList: List[Double] =
-    List(x, y)
+  def toBatch: Batch[Double] =
+    Batch(x, y)
 
   def toPoint: Point =
     Point(x.toInt, y.toInt)

@@ -1,6 +1,7 @@
 package indigo.shared.dice
 
-import indigo.shared.collections.NonEmptyList
+import indigo.shared.collections.Batch
+import indigo.shared.collections.NonEmptyBatch
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
 class DiceTests extends munit.FunSuite {
@@ -17,14 +18,16 @@ class DiceTests extends munit.FunSuite {
   }
 
   test("should have a roll multiple dice function") {
+    import Batch.Unapply.*
+    
     Dice.rollMany(2, 6, 0) match {
-      case Some(NonEmptyList(d1, d2 :: Nil)) =>
+      case Some(NonEmptyBatch(d1, d2 :: _)) =>
         assertEquals(checkDice(d1, 6), true)
 
         assertEquals(checkDice(d2, 6), true)
 
-      case _ =>
-        throw new java.lang.AssertionError("Match fail!")
+      case res =>
+        throw new java.lang.AssertionError("Match fail! Got: " + res)
     }
   }
 

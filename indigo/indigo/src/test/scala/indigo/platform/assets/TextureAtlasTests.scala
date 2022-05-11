@@ -4,6 +4,7 @@ import indigo.platform.assets._
 import indigo.shared.PowerOfTwo
 import indigo.shared.assets.AssetName
 import indigo.shared.assets.AssetTag
+import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Point
 
 class TextureAtlasTests extends munit.FunSuite {
@@ -12,7 +13,7 @@ class TextureAtlasTests extends munit.FunSuite {
 
   test("A texture atlas.should be able to generate a TextureAtlas with the default maximum") {
 
-    val imageRefs = List(
+    val imageRefs = Batch(
       ImageRef(AssetName("a"), 10, 10, None),
       ImageRef(AssetName("b"), 1024, 1024, None),
       ImageRef(AssetName("c"), 512, 512, None),
@@ -85,7 +86,7 @@ class TextureAtlasTests extends munit.FunSuite {
 
   test("A texture atlas.should be able to generate a tighter TextureAtlas") {
 
-    val imageRefs = List(
+    val imageRefs = Batch(
       ImageRef(AssetName("a"), 64, 64, None),
       ImageRef(AssetName("b"), 100, 100, None),
       ImageRef(AssetName("c"), 128, 128, None),
@@ -169,14 +170,14 @@ class TextureAtlasTests extends munit.FunSuite {
 
   test("The texture atlas functions.should be able to sort the images into descending size order") {
 
-    val original = List(
+    val original = Batch(
       ImageRef(AssetName("a"), 10, 10, None),
       ImageRef(AssetName("b"), 1024, 1024, None),
       ImageRef(AssetName("c"), 512, 512, None),
       ImageRef(AssetName("d"), 700, 600, None)
     )
 
-    val expected = List(
+    val expected = Batch(
       TextureDetails(ImageRef(AssetName("d"), 700, 600, None), PowerOfTwo._1024, None),
       TextureDetails(ImageRef(AssetName("b"), 1024, 1024, None), PowerOfTwo._1024, None),
       TextureDetails(ImageRef(AssetName("c"), 512, 512, None), PowerOfTwo._512, None),
@@ -211,7 +212,7 @@ class TextureAtlasTests extends munit.FunSuite {
 
     val tex = (name: AssetName, pow: PowerOfTwo) => TextureDetails(ImageRef(name, 1, 1, None), pow, None)
 
-    val list: List[TextureDetails] = List(
+    val list: Batch[TextureDetails] = Batch(
       tex(AssetName("a"), PowerOfTwo._256),
       tex(AssetName("b"), PowerOfTwo._256),
       tex(AssetName("c"), PowerOfTwo._128),
@@ -237,7 +238,7 @@ class TextureAtlasTests extends munit.FunSuite {
     val tex = (name: AssetName, pow: PowerOfTwo, tag: AssetTag) =>
       TextureDetails(ImageRef(name, 1, 1, None), pow, if (tag.toString.isEmpty()) None else Some(tag))
 
-    val list: List[TextureDetails] = List(
+    val list: Batch[TextureDetails] = Batch(
       tex(AssetName("a"), PowerOfTwo._256, AssetTag("tag 1")),
       tex(AssetName("b"), PowerOfTwo._256, AssetTag("tag 1")),
       tex(AssetName("c"), PowerOfTwo._128, AssetTag("")),
@@ -269,12 +270,12 @@ class TextureAtlasTests extends munit.FunSuite {
 
     // println(pretty)
 
-    assertEquals(result.length, 4)
+    assertEquals(result.size, 4)
 
-    assertEquals(result(0).length, 2)
-    assertEquals(result(1).length, 3)
-    assertEquals(result(2).length, 3)
-    assertEquals(result(3).length, 3)
+    assertEquals(result(0).size, 2)
+    assertEquals(result(1).size, 3)
+    assertEquals(result(2).size, 3)
+    assertEquals(result(3).size, 3)
 
     assertEquals(result(0).forall(_.tag.isEmpty), true)
     assertEquals(result(1).forall(_.tag.get == AssetTag("tag 1")), true)

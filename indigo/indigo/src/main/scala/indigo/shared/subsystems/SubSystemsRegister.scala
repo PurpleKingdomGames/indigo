@@ -2,6 +2,7 @@ package indigo.shared.subsystems
 
 import indigo.shared.IndigoLogger
 import indigo.shared.Outcome
+import indigo.shared.collections.Batch
 import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.subsystems.SubSystemFrameContext
@@ -11,10 +12,10 @@ final class SubSystemsRegister() {
   val stateMap: scalajs.js.Dictionary[Object] = scalajs.js.Dictionary.empty
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  private var registeredSubSystems: List[RegisteredSubSystem] = Nil
+  private var registeredSubSystems: Batch[RegisteredSubSystem] = Batch.Empty
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  def register(newSubSystems: List[SubSystem]): List[GlobalEvent] =
+  def register(newSubSystems: Batch[SubSystem]): Batch[GlobalEvent] =
     newSubSystems.map(initialiseSubSystem).sequence match {
       case oe @ Outcome.Error(e, _) =>
         IndigoLogger.error("Error during subsystem setup - Halting.")
@@ -40,14 +41,14 @@ final class SubSystemsRegister() {
   }
 
   // @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
-  def update(frameContext: SubSystemFrameContext, globalEvents: List[GlobalEvent]): Outcome[SubSystemsRegister] = {
-    def outcomeEvents: Outcome[List[GlobalEvent]] =
+  def update(frameContext: SubSystemFrameContext, globalEvents: Batch[GlobalEvent]): Outcome[SubSystemsRegister] = {
+    def outcomeEvents: Outcome[Batch[GlobalEvent]] =
       registeredSubSystems
         .map { rss =>
           val key       = rss.id
           val subSystem = rss.subSystem
 
-          val filteredEvents: List[subSystem.EventType] =
+          val filteredEvents: Batch[subSystem.EventType] =
             globalEvents
               .map(subSystem.eventFilter)
               .collect { case Some(e) => e }
@@ -68,7 +69,7 @@ final class SubSystemsRegister() {
           }
         }
         .sequence
-        .map(_.flatten)
+        .map(_.flatMap(identity))
 
     outcomeEvents.flatMap(l => Outcome(this, l))
   }
@@ -85,7 +86,7 @@ final class SubSystemsRegister() {
       .foldLeft(Outcome(SceneUpdateFragment.empty))((acc, next) => Outcome.merge(acc, next)(_ |+| _))
 
   def size: Int =
-    registeredSubSystems.length
+    registeredSubSystems.size
 
 }
 

@@ -4,6 +4,7 @@ import indigo.gameengine.FrameProcessor
 import indigo.shared.BoundaryLocator
 import indigo.shared.FrameContext
 import indigo.shared.Outcome
+import indigo.shared.collections.Batch
 import indigo.shared.dice.Dice
 import indigo.shared.events.EventFilters
 import indigo.shared.events.GlobalEvent
@@ -27,7 +28,7 @@ final class StandardFrameProcessor[StartUpData, Model, ViewModel](
       model: => Model,
       viewModel: => ViewModel,
       gameTime: GameTime,
-      globalEvents: List[GlobalEvent],
+      globalEvents: Batch[GlobalEvent],
       inputState: InputState,
       dice: Dice,
       boundaryLocator: BoundaryLocator
@@ -52,7 +53,7 @@ trait StandardFrameProcessorFunctions[StartUpData, Model, ViewModel]:
   def processModel(
       frameContext: FrameContext[StartUpData],
       model: Model,
-      globalEvents: List[GlobalEvent]
+      globalEvents: Batch[GlobalEvent]
   ): Outcome[Model] =
     globalEvents
       .map(eventFilters.modelFilter)
@@ -67,7 +68,7 @@ trait StandardFrameProcessorFunctions[StartUpData, Model, ViewModel]:
       frameContext: FrameContext[StartUpData],
       model: Model,
       viewModel: ViewModel,
-      globalEvents: List[GlobalEvent]
+      globalEvents: Batch[GlobalEvent]
   ): Outcome[ViewModel] =
     globalEvents
       .map(eventFilters.viewModelFilter)

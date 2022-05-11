@@ -1,5 +1,6 @@
 package indigoextras.pathfinding
 
+import indigo.shared.collections.Batch
 import indigo.shared.dice.Dice
 import indigoextras.pathfinding.GridSquare.EmptySquare
 import indigoextras.pathfinding.GridSquare.EndSquare
@@ -16,14 +17,14 @@ class PathFindingTests extends munit.FunSuite {
     val end: Coords        = Coords(0, 2)
     val impassable: Coords = Coords(1, 0)
 
-    val searchGrid = SearchGrid.generate(start, end, List(impassable), 3, 3)
+    val searchGrid = SearchGrid.generate(start, end, Batch(impassable), 3, 3)
 
-    val path: List[Coords] = searchGrid.locatePath(Dice.fromSeed(0))
+    val path: Batch[Coords] = searchGrid.locatePath(Dice.fromSeed(0))
 
-    val possiblePaths: List[List[Coords]] = List(
-      List(start, Coords(2, 2), Coords(1, 2), end),
-      List(start, Coords(1, 1), Coords(0, 1), end),
-      List(start, Coords(1, 1), Coords(1, 2), end)
+    val possiblePaths: Batch[Batch[Coords]] = Batch(
+      Batch(start, Coords(2, 2), Coords(1, 2), end),
+      Batch(start, Coords(1, 1), Coords(0, 1), end),
+      Batch(start, Coords(1, 1), Coords(1, 2), end)
     )
 
     assertEquals(possiblePaths.contains(path), true)
@@ -35,10 +36,10 @@ class PathFindingTests extends munit.FunSuite {
     val end: Coords        = Coords(0, 2)
     val impassable: Coords = Coords(1, 0)
 
-    val searchGrid = SearchGrid.generate(start, end, List(impassable), 3, 3)
+    val searchGrid = SearchGrid.generate(start, end, Batch(impassable), 3, 3)
 
-    val expected: List[GridSquare] =
-      List(
+    val expected: Batch[GridSquare] =
+      Batch(
         EmptySquare(0, Coords(0, 0), Some(2)),
         ImpassableSquare(1, Coords(1, 0)),
         EmptySquare(2, Coords(2, 0), None), // Unscored squares are returned to keep sampleAt working correctly
@@ -59,10 +60,10 @@ class PathFindingTests extends munit.FunSuite {
     val end: Coords        = Coords(3, 2)
     val impassable: Coords = Coords(2, 2)
 
-    val searchGrid = SearchGrid.generate(start, end, List(impassable), 4, 3)
+    val searchGrid = SearchGrid.generate(start, end, Batch(impassable), 4, 3)
 
-    val expected: List[GridSquare] =
-      List(
+    val expected: Batch[GridSquare] =
+      Batch(
         EmptySquare(2, Coords(2, 0), None),
         StartSquare(5, Coords(1, 1)),
         //Sample point
@@ -78,10 +79,10 @@ class PathFindingTests extends munit.FunSuite {
     val end: Coords        = Coords(3, 2)
     val impassable: Coords = Coords(2, 2)
 
-    val searchGrid = SearchGrid.generate(start, end, List(impassable), 4, 3)
+    val searchGrid = SearchGrid.generate(start, end, Batch(impassable), 4, 3)
 
-    val expected: List[GridSquare] =
-      List(
+    val expected: Batch[GridSquare] =
+      Batch(
         EmptySquare(3, Coords(3, 0), None),
         EmptySquare(6, Coords(2, 1), None),
         //Sample point
@@ -96,10 +97,10 @@ class PathFindingTests extends munit.FunSuite {
     val end: Coords        = Coords(3, 2)
     val impassable: Coords = Coords(2, 2)
 
-    val searchGrid = SearchGrid.generate(start, end, List(impassable), 4, 3)
+    val searchGrid = SearchGrid.generate(start, end, Batch(impassable), 4, 3)
 
-    val expected: List[GridSquare] =
-      List(
+    val expected: Batch[GridSquare] =
+      Batch(
         //Sample point
         EmptySquare(1, Coords(1, 0), None),
         EmptySquare(4, Coords(0, 1), None)
@@ -130,7 +131,7 @@ class PathFindingTests extends munit.FunSuite {
   val end: Coords        = Coords(3, 2)
   val impassable: Coords = Coords(2, 2)
 
-  val searchGrid = SearchGrid.generate(start, end, List(impassable), 4, 3)
+  val searchGrid = SearchGrid.generate(start, end, Batch(impassable), 4, 3)
 
   test("Generating a grid.should be able to generate a simple search grid.is valid") {
     assertEquals(searchGrid.isValid, true)
@@ -152,7 +153,7 @@ class PathFindingTests extends munit.FunSuite {
     val start: Coords = Coords(1, 1)
     val end: Coords   = Coords(2, 2)
 
-    val grid: List[GridSquare] = List(
+    val grid: Batch[GridSquare] = Batch(
       StartSquare(0, start),
       EmptySquare(0, coords, None),
       EmptySquare(0, coords, None),
@@ -171,7 +172,7 @@ class PathFindingTests extends munit.FunSuite {
     val start: Coords = Coords(1, 1)
     val end: Coords   = Coords(2, 2)
 
-    val grid: List[GridSquare] = List(
+    val grid: Batch[GridSquare] = Batch(
       EmptySquare(0, coords, None),
       EmptySquare(0, coords, None),
       EmptySquare(0, coords, None),
@@ -190,7 +191,7 @@ class PathFindingTests extends munit.FunSuite {
     val start: Coords = Coords(1, 1)
     val end: Coords   = Coords(2, 2)
 
-    val grid: List[GridSquare] = List(
+    val grid: Batch[GridSquare] = Batch(
       StartSquare(0, start),
       EmptySquare(0, coords, None),
       EmptySquare(0, coords, None),
@@ -210,7 +211,7 @@ class PathFindingTests extends munit.FunSuite {
     val start: Coords = Coords(1, 1)
     val end: Coords   = Coords(2, 2)
 
-    val grid: List[GridSquare] = List(
+    val grid: Batch[GridSquare] = Batch(
       StartSquare(0, start),
       EmptySquare(0, coords, None),
       EmptySquare(0, coords, None),

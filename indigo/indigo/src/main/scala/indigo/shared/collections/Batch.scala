@@ -8,20 +8,21 @@ import scalajs.js
 import scalajs.js.JSConverters.*
 
 /** Batch is a really thin wrapper over `js.Array` to replace `List` on the Indigo APIs. Its purpose is to provide fast
-  * scene construction and fast conversion back to js.Array for the engine to use. It also gives some basic List-like
-  * features but not all of them since they aren't typically used in scene construction and are generally discouraged.
+  * scene construction and fast conversion back to js.Array for the engine to use. Most operations that require any sort
+  * of traversal are performed by flattening the structure and delegated to `js.Array`. In practice, scene construction
+  * is mostly about building the structure, so the penalty is acceptable, and still faster than using `List`.
   */
 sealed trait Batch[+A]:
   private lazy val _jsArray: js.Array[A] = toJSArray
 
-  def isEmpty: Boolean
   def head: A
   def headOption: Option[A]
+  def isEmpty: Boolean
   def size: Int
   def toJSArray[B >: A]: js.Array[B]
 
-  override def toString: String =
-    "Batch(" + _jsArray.mkString(", ") + ")"
+  def length: Int                  = size
+  def lengthCompare(len: Int): Int = _jsArray.lengthCompare(len)
 
   def ++[B >: A](other: Batch[B]): Batch[B] =
     if this.isEmpty then other
@@ -43,17 +44,51 @@ sealed trait Batch[+A]:
   def apply(index: Int): A =
     _jsArray(index)
 
+  def collect[B >: A, C](f: PartialFunction[B, C]): Batch[C] =
+    Batch.Wrapped(_jsArray.collect(f))
+
+  def collectFirst[B >: A, C](f: PartialFunction[B, C]): Option[C] =
+    _jsArray.collectFirst(f)
+
   def compact[B >: A]: Batch.Wrapped[B] =
     Batch.Wrapped(_jsArray.asInstanceOf[js.Array[B]])
 
-  def toArray[B >: A: ClassTag]: Array[B] =
-    _jsArray.asInstanceOf[js.Array[B]].toArray
+  def contains[B >: A](p: B): Boolean =
+    given CanEqual[B, B] = CanEqual.derived
+    _jsArray.exists(_ == p)
 
-  def toList: List[A] =
-    _jsArray.toList
+  def drop(count: Int): Batch[A] =
+    Batch.Wrapped(_jsArray.drop(count))
 
-  def map[B](f: A => B): Batch[B] =
-    Batch.Wrapped(_jsArray.map(f))
+  def dropRight(count: Int): Batch[A] =
+    Batch.Wrapped(_jsArray.dropRight(count))
+
+  def exists(p: A => Boolean): Boolean =
+    _jsArray.exists(p)
+
+  def find(p: A => Boolean): Option[A] =
+    _jsArray.find(p)
+
+  def filter(p: A => Boolean): Batch[A] =
+    Batch.Wrapped(_jsArray.filter(p))
+
+  def filterNot(p: A => Boolean): Batch[A] =
+    Batch.Wrapped(_jsArray.filterNot(p))
+
+  def flatMap[B](f: A => Batch[B]): Batch[B] =
+    Batch.Wrapped(toJSArray.flatMap(v => f(v).toJSArray))
+
+  def forall(p: A => Boolean): Boolean =
+    _jsArray.forall(p)
+
+  def fold[B >: A](z: B)(f: (B, B) => B): B =
+    _jsArray.fold(z)(f)
+
+  def foldLeft[B](z: B)(f: (B, A) => B): B =
+    _jsArray.foldLeft(z)(f)
+
+  def foldRight[B](z: B)(f: (A, B) => B): B =
+    _jsArray.foldRight(z)(f)
 
   def foreach(f: A => Unit): Unit =
     _jsArray.foreach(f)
@@ -66,7 +101,92 @@ sealed trait Batch[+A]:
       idx = idx + 1
     }
 
+  def groupBy[K](f: A => K): Map[K, Batch[A]] =
+    _jsArray.groupBy(f).map(p => (p._1, Batch(p._2)))
+
+  def partition(p: A => Boolean): (Batch[A], Batch[A]) =
+    val (a, b) = _jsArray.partition(p)
+    (Batch.Wrapped(a), Batch.Wrapped(b))
+
+  def map[B](f: A => B): Batch[B] =
+    Batch.Wrapped(_jsArray.map(f))
+
+  /** Delegates to `mkString(separator: String): String`
+    * @return
+    *   `String`
+    */
+  def mkString: String =
+    mkString("")
+
+  /** Converts the batch into a String
+    * @param separator
+    *   A string to add between the elements
+    * @return
+    *   `String`
+    */
+  def mkString(separator: String): String =
+    head.toString + separator + tail.toJSArray.mkString(separator)
+
+  /** Converts the batch into a String
+    * @param prefix
+    *   A string to add before the elements
+    * @param separator
+    *   A string to add between the elements
+    * @param suffix
+    *   A string to add after the elements
+    * @return
+    *   `String`
+    */
+  def mkString(prefix: String, separator: String, suffix: String): String =
+    prefix + head.toString + separator + tail.toJSArray.mkString(separator) + suffix
+
+  def reduce[B >: A](f: (B, B) => B): B =
+    _jsArray.reduce(f)
+
+  def reverse: Batch[A] =
+    Batch.Wrapped(_jsArray.reverse)
+
+  def sortBy[B](f: A => B)(implicit ord: Ordering[B]): Batch[A] =
+    Batch.Wrapped(_jsArray.sortBy(f))
+
+  def sortWith(f: (A, A) => Boolean): Batch[A] =
+    Batch.Wrapped(_jsArray.sortWith(f))
+
+  def sum[B >: A](implicit num: Numeric[B]): B =
+    _jsArray.sum
+
+  def tail: Batch[A] =
+    Batch.Wrapped(_jsArray.tail)
+
+  def toArray[B >: A: ClassTag]: Array[B] =
+    _jsArray.asInstanceOf[js.Array[B]].toArray
+
+  def toList: List[A] =
+    _jsArray.toList
+
+  def toMap[K, V](using A <:< (K, V)) =
+    _jsArray.toMap
+
+  def toSet[B >: A]: Set[B] =
+    _jsArray.toSet
+
+  override def toString: String =
+    "Batch(" + _jsArray.mkString(", ") + ")"
+
+  def zipWithIndex: Batch[(A, Int)] =
+    Batch.Wrapped(_jsArray.zipWithIndex)
+
+  def zip[B](other: Batch[B]): Batch[(A, B)] =
+    Batch.Wrapped(_jsArray.zip(other.toJSArray))
+
 object Batch:
+
+  object Unapply:
+    object :: {
+      def unapply[A](b: Batch[A]): Option[(A, Batch[A])] =
+        if b.isEmpty then None
+        else Some((b.head, b.tail))
+    }
 
   given CanEqual[Batch[_], Batch[_]]           = CanEqual.derived
   given CanEqual[Batch[_], Batch.Empty.type]   = CanEqual.derived
@@ -118,6 +238,27 @@ object Batch:
 
   def fromList[A](values: List[A]): Batch[A] =
     Wrapped(values.toJSArray)
+
+  def fromSet[A](values: Set[A]): Batch[A] =
+    Wrapped(values.toJSArray)
+
+  def fromSeq[A](values: Seq[A]): Batch[A] =
+    Wrapped(values.toJSArray)
+
+  def fromIndexedSeq[A](values: IndexedSeq[A]): Batch[A] =
+    Wrapped(values.toJSArray)
+
+  def fromIterator[A](values: Iterator[A]): Batch[A] =
+    Wrapped(values.toJSArray)
+
+  def fromMap[K, V](values: Map[K, V]): Batch[(K, V)] =
+    Wrapped(values.toJSArray)
+
+  def fromOption[A](value: Option[A]): Batch[A] =
+    Wrapped(value.toJSArray)
+
+  def fromRange[A](value: Range): Batch[Int] =
+    Wrapped(value.toJSArray)
 
   def empty[A]: Batch[A] =
     Batch.Empty

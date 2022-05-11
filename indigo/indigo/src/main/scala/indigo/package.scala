@@ -2,6 +2,17 @@ package indigo
 
 object syntax:
 
+  extension [A](a: scalajs.js.Array[A]) def toBatch: Batch[A] = Batch.fromJSArray(a)
+  extension [A](a: Array[A]) def toBatch: Batch[A]            = Batch.fromArray(a)
+  extension [A](a: List[A]) def toBatch: Batch[A]             = Batch.fromList(a)
+  extension [A](a: Set[A]) def toBatch: Batch[A]              = Batch.fromSet(a)
+  extension [A](a: Seq[A]) def toBatch: Batch[A]              = Batch.fromSeq(a)
+  extension [A](a: IndexedSeq[A]) def toBatch: Batch[A]       = Batch.fromIndexedSeq(a)
+  extension [A](a: Iterator[A]) def toBatch: Batch[A]         = Batch.fromIterator(a)
+  extension [K, V](a: Map[K, V]) def toBatch: Batch[(K, V)]   = Batch.fromMap(a)
+  extension [A](a: Option[A]) def toBatch: Batch[A]           = Batch.fromOption(a)
+  extension (a: Range) def toBatch: Batch[Int]                = Batch.fromRange(a)
+
   extension (d: Double)
     def radians: Radians = Radians(d)
     def seconds: Seconds = Seconds(d)
@@ -151,8 +162,8 @@ val Key: shared.constants.Key.type = shared.constants.Key
 type Batch[A] = shared.collections.Batch[A]
 val Batch: shared.collections.Batch.type = shared.collections.Batch
 
-type NonEmptyList[A] = shared.collections.NonEmptyList[A]
-val NonEmptyList: shared.collections.NonEmptyList.type = shared.collections.NonEmptyList
+type NonEmptyBatch[A] = shared.collections.NonEmptyBatch[A]
+val NonEmptyBatch: shared.collections.NonEmptyBatch.type = shared.collections.NonEmptyBatch
 
 type Signal[A] = shared.temporal.Signal[A]
 val Signal: shared.temporal.Signal.type = shared.temporal.Signal

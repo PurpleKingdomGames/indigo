@@ -1,6 +1,7 @@
 package indigoextras.jobs
 
 import indigo.shared.Outcome
+import indigo.shared.collections.Batch
 import indigoextras.jobs.SampleJobs.Fishing
 
 sealed trait SampleJobs extends Job
@@ -55,15 +56,15 @@ object SampleActor {
           true
       }
 
-      def onJobComplete(context: WorkContext[SampleActor, SampleContext]): Job => Outcome[(List[Job], SampleActor)] = {
+      def onJobComplete(context: WorkContext[SampleActor, SampleContext]): Job => Outcome[(Batch[Job], SampleActor)] = {
         case SampleJobs.Fishing(_) =>
-          Outcome((List(SampleJobs.WanderTo(0)), context.actor), Nil)
+          Outcome((Batch(SampleJobs.WanderTo(0)), context.actor), Batch.Empty)
 
         case SampleJobs.WanderTo(_) =>
-          Outcome((Nil, context.actor))
+          Outcome((Batch.Empty, context.actor))
 
         case _ =>
-          Outcome((Nil, context.actor))
+          Outcome((Batch.Empty, context.actor))
       }
 
       def workOnJob(context: WorkContext[SampleActor, SampleContext]): Job => (Job, SampleActor) = {
@@ -80,8 +81,8 @@ object SampleActor {
           (job, context.actor)
       }
 
-      def generateJobs(context: WorkContext[SampleActor, SampleContext]): List[Job] =
-        List(SampleJobs.WanderTo(100))
+      def generateJobs(context: WorkContext[SampleActor, SampleContext]): Batch[Job] =
+        Batch(SampleJobs.WanderTo(100))
 
       def canTakeJob(context: WorkContext[SampleActor, SampleContext]): Job => Boolean = {
         case SampleJobs.CantHave() =>

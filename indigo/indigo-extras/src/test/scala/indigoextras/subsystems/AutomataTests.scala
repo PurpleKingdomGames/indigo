@@ -1,7 +1,8 @@
 package indigoextras.subsystems
 
 import indigo.shared.assets.AssetName
-import indigo.shared.collections.NonEmptyList
+import indigo.shared.collections.Batch
+import indigo.shared.collections.NonEmptyBatch
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.datatypes.Point
 import indigo.shared.dice.Dice
@@ -26,8 +27,8 @@ class AutomataTests extends munit.FunSuite {
 
   val graphic = Graphic(0, 0, 10, 10, 1, Material.Bitmap(AssetName("fish")))
 
-  val onCull: AutomatonSeedValues => List[GlobalEvent] =
-    _ => List(eventInstance)
+  val onCull: AutomatonSeedValues => Batch[GlobalEvent] =
+    _ => Batch(eventInstance)
 
   val automaton: Automaton =
     Automaton(
@@ -44,7 +45,7 @@ class AutomataTests extends munit.FunSuite {
 
   val startingState: AutomataState =
     automata
-      .update(context(1), AutomataState(0, Nil))(AutomataEvent.Spawn(poolKey, Point.zero, None, None))
+      .update(context(1), AutomataState(0, Batch.Empty))(AutomataEvent.Spawn(poolKey, Point.zero, None, None))
       .unsafeGet
 
   test("Starting state should contain 1 automaton") {
@@ -143,8 +144,8 @@ class AutomataTests extends munit.FunSuite {
     }
 
   test("AutomatonNode.one of") {
-    val nodeList: NonEmptyList[SceneNode] =
-      NonEmptyList(
+    val nodeList: NonEmptyBatch[SceneNode] =
+      NonEmptyBatch(
         graphic.moveTo(0, 0),
         graphic.moveTo(0, 10),
         graphic.moveTo(0, 20)
@@ -162,7 +163,7 @@ class AutomataTests extends munit.FunSuite {
     assertEquals(
       (0 to 100).toList.forall { _ =>
         val g = toRenderNode(nodes.giveNode(0, dice)).position.y
-        nodeList.toList.map(n => toRenderNode(n).position.y).contains(g)
+        nodeList.toBatch.map(n => toRenderNode(n).position.y).contains(g)
       },
       true
     )
@@ -170,8 +171,8 @@ class AutomataTests extends munit.FunSuite {
   }
 
   test("AutomatonNode.cycle") {
-    val nodeList: NonEmptyList[SceneNode] =
-      NonEmptyList(
+    val nodeList: NonEmptyBatch[SceneNode] =
+      NonEmptyBatch(
         graphic.moveTo(0, 0),
         graphic.moveTo(0, 10),
         graphic.moveTo(0, 20)
@@ -207,12 +208,12 @@ class AutomataTests extends munit.FunSuite {
           AutomatonUpdate(
             sceneGraphNode match {
               case g: Graphic[_] =>
-                List(g.moveTo(position))
+                Batch(g.moveTo(position))
 
               case _ =>
-                Nil
+                Batch.Empty
             },
-            Nil
+            Batch.Empty
           )
         }
       }

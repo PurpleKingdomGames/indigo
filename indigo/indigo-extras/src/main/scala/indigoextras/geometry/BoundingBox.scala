@@ -1,5 +1,6 @@
 package indigoextras.geometry
 
+import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Size
 import indigo.shared.datatypes.Vector2
@@ -27,8 +28,8 @@ final case class BoundingBox(position: Vertex, size: Vertex) derives CanEqual:
   lazy val center: Vertex      = Vertex(horizontalCenter, verticalCenter)
   lazy val halfSize: Vertex    = (size / 2).abs
 
-  lazy val corners: List[Vertex] =
-    List(topLeft, topRight, bottomRight, bottomLeft)
+  lazy val corners: Batch[Vertex] =
+    Batch(topLeft, topRight, bottomRight, bottomLeft)
 
   def contains(vertex: Vertex): Boolean =
     vertex.x >= left && vertex.x < right && vertex.y >= top && vertex.y < bottom
@@ -98,7 +99,7 @@ final case class BoundingBox(position: Vertex, size: Vertex) derives CanEqual:
   def toBoundingCircle: BoundingCircle =
     BoundingCircle.fromBoundingBox(this)
 
-  def toLineSegments: List[LineSegment] =
+  def toLineSegments: Batch[LineSegment] =
     BoundingBox.toLineSegments(this)
 
   def lineIntersects(line: LineSegment): Boolean =
@@ -133,14 +134,12 @@ object BoundingBox:
     BoundingBox(x, y, w, h)
   }
 
-  def fromVertices(vertices: List[Vertex]): BoundingBox = {
+  def fromVertices(vertices: Batch[Vertex]): BoundingBox = {
+    import Batch.Unapply.*
     val margin: Double = 0.001
     @tailrec
-    def rec(remaining: List[Vertex], left: Double, top: Double, right: Double, bottom: Double): BoundingBox =
-      remaining match {
-        case Nil =>
-          BoundingBox(left, top, right - left + margin, bottom - top + margin)
-
+    def rec(remaining: Batch[Vertex], left: Double, top: Double, right: Double, bottom: Double): BoundingBox =
+      remaining match
         case p :: ps =>
           rec(
             ps,
@@ -149,7 +148,9 @@ object BoundingBox:
             Math.max(right, p.x),
             Math.max(bottom, p.y)
           )
-      }
+
+        case _ =>
+          BoundingBox(left, top, right - left + margin, bottom - top + margin)
 
     rec(vertices, Double.MaxValue, Double.MaxValue, Double.MinValue, Double.MinValue)
   }
@@ -158,7 +159,7 @@ object BoundingBox:
     * checks are < not <= (to allow bounds to sit next to each other with no overlap), a small fixed margin of 0.001 is
     * add to the size values.
     */
-  def fromVertexCloud(vertices: List[Vertex]): BoundingBox =
+  def fromVertexCloud(vertices: Batch[Vertex]): BoundingBox =
     fromVertices(vertices)
 
   def fromRectangle(rectangle: Rectangle): BoundingBox =
@@ -170,8 +171,8 @@ object BoundingBox:
   def fromBoundingCircle(boundingCircle: BoundingCircle): BoundingBox =
     boundingCircle.toBoundingBox
 
-  def toLineSegments(boundingBox: BoundingBox): List[LineSegment] =
-    List(
+  def toLineSegments(boundingBox: BoundingBox): Batch[LineSegment] =
+    Batch(
       LineSegment(boundingBox.topLeft, boundingBox.bottomLeft),
       LineSegment(boundingBox.bottomLeft, boundingBox.bottomRight),
       LineSegment(boundingBox.bottomRight, boundingBox.topRight),
@@ -213,18 +214,18 @@ object BoundingBox:
       Math.abs(a.center.y - b.center.y) < a.halfSize.y + b.halfSize.y
 
   def lineIntersects(boundingBox: BoundingBox, line: LineSegment): Boolean =
+    import Batch.Unapply.*
     @tailrec
-    def rec(remaining: List[LineSegment]): Boolean =
-      remaining match {
-        case Nil =>
-          false
-
+    def rec(remaining: Batch[LineSegment]): Boolean =
+      remaining match
         case x :: _ if x.intersectsAt(line).isDefined =>
           true
 
         case _ :: xs =>
           rec(xs)
-      }
+
+        case _ =>
+          false
 
     val containsStart = boundingBox.contains(line.start)
     val containsEnd   = boundingBox.contains(line.end)
@@ -249,8 +250,8 @@ object BoundingBox:
         .flatMap { ln =>
           if ln.isFacingVertex(outside) then
             val at = ln.intersectsAt(line)
-            if at.isDefined then List(at.get) else Nil
-          else Nil
+            if at.isDefined then Batch(at.get) else Batch.Empty
+          else Batch.Empty
         }
         .sortWith((a, b) => a.distanceTo(outside) < b.distanceTo(outside))
         .headOption

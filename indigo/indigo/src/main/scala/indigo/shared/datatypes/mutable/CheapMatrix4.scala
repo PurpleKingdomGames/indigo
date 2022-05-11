@@ -1,5 +1,6 @@
 package indigo.shared.datatypes.mutable
 
+import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Matrix4
 import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.Vector3
@@ -156,15 +157,15 @@ object CheapMatrix4:
       m
 
     def toMatrix4: Matrix4 =
-      Matrix4(m.toList.map(_.toDouble))
+      Matrix4(Batch(m.map(_.toDouble)))
 
     def deepClone: CheapMatrix4 =
       CheapMatrix4(js.Array[Float]().concat(m))
 
     def transform(vector: Vector3): Vector3 =
-      val col1: List[Float] = List(m(0), m(4), m(8), m(12))
-      val col2: List[Float] = List(m(1), m(5), m(9), m(13))
-      val col3: List[Float] = List(m(2), m(6), m(10), m(14))
+      val col1: js.Array[Float] = js.Array(m(0), m(4), m(8), m(12))
+      val col2: js.Array[Float] = js.Array(m(1), m(5), m(9), m(13))
+      val col3: js.Array[Float] = js.Array(m(2), m(6), m(10), m(14))
 
       Vector3(
         x = col1(0) * vector.x + col1(1) * vector.y + col1(2) * vector.z + col1(3),

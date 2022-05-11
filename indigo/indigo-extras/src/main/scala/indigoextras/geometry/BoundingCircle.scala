@@ -1,5 +1,6 @@
 package indigoextras.geometry
 
+import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Vector2
 
 final case class BoundingCircle(position: Vertex, radius: Double) derives CanEqual:
@@ -80,11 +81,11 @@ object BoundingCircle:
   def fromTwoVertices(center: Vertex, boundary: Vertex): BoundingCircle =
     BoundingCircle(center, center.distanceTo(boundary))
 
-  def fromVertices(vertices: List[Vertex]): BoundingCircle =
+  def fromVertices(vertices: Batch[Vertex]): BoundingCircle =
     val bb = BoundingBox.fromVertices(vertices)
     BoundingCircle(bb.center, bb.center.distanceTo(bb.topLeft))
 
-  def fromVertexCloud(vertices: List[Vertex]): BoundingCircle =
+  def fromVertexCloud(vertices: Batch[Vertex]): BoundingCircle =
     fromVertices(vertices)
 
   def fromBoundingBox(boundingBox: BoundingBox): BoundingCircle =
@@ -165,11 +166,11 @@ sealed trait BoundingCircleLineIntersect derives CanEqual:
       case BoundingCircleLineIntersect.One(at)     => Some(at)
       case BoundingCircleLineIntersect.Two(_, far) => Some(far)
 
-  def toOption: Option[List[Vertex]] =
+  def toOption: Option[Batch[Vertex]] =
     this match
       case BoundingCircleLineIntersect.Zero           => None
-      case BoundingCircleLineIntersect.One(at)        => Some(List(at))
-      case BoundingCircleLineIntersect.Two(near, far) => Some(List(near, far))
+      case BoundingCircleLineIntersect.One(at)        => Some(Batch(at))
+      case BoundingCircleLineIntersect.Two(near, far) => Some(Batch(near, far))
 
   def |+|(other: BoundingCircleLineIntersect): BoundingCircleLineIntersect
 

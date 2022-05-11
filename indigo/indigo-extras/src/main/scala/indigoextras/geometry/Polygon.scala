@@ -1,12 +1,14 @@
 package indigoextras.geometry
 
+import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Vector2
 
+import scala.annotation.nowarn
 import scala.annotation.tailrec
 
 sealed trait Polygon derives CanEqual:
-  val vertices: List[Vertex]
+  val vertices: Batch[Vertex]
 
   def moveTo(newPosition: Vertex): Polygon
   def moveTo(x: Double, y: Double): Polygon =
@@ -32,21 +34,21 @@ sealed trait Polygon derives CanEqual:
   def edgeCount: Int =
     this match
       case Polygon.Open(vs) =>
-        vs.length - 1
+        vs.size - 1
 
       case Polygon.Closed(vs) =>
-        vs.length
+        vs.size
 
-  lazy val lineSegments: List[LineSegment] =
+  lazy val lineSegments: Batch[LineSegment] =
     Polygon.toLineSegments(this)
 
   def addVertex(vertex: Vertex): Polygon =
     this match
       case Polygon.Open(vs) =>
-        Polygon.Open(vs ++ List(vertex))
+        Polygon.Open(vs ++ Batch(vertex))
 
       case Polygon.Closed(vs) =>
-        Polygon.Closed(vs ++ List(vertex))
+        Polygon.Closed(vs ++ Batch(vertex))
 
   def contains(vertex: Vertex): Boolean =
     this match
@@ -91,30 +93,29 @@ object Polygon:
       boundingBox.topRight
     )
 
-  def toLineSegments(polygon: Polygon): List[LineSegment] =
-    @tailrec
-    def rec(remaining: List[Vertex], current: Vertex, acc: List[LineSegment]): List[LineSegment] =
-      remaining match
-        case Nil =>
-          acc.reverse
+  def toLineSegments(polygon: Polygon): Batch[LineSegment] =
+    import Batch.Unapply.*
 
+    @tailrec
+    def rec(remaining: Batch[Vertex], current: Vertex, acc: Batch[LineSegment]): Batch[LineSegment] =
+      remaining match
         case x :: xs =>
           rec(xs, x, LineSegment(current, x) :: acc)
 
+        case _ =>
+          acc.reverse
+
     polygon match
-      case Open(Nil) =>
-        Nil
-
-      case Closed(Nil) =>
-        Nil
-
       case Open(h :: t) =>
-        rec(t, h, Nil)
+        rec(t, h, Batch.Empty)
 
       case Closed(h :: t) =>
-        rec(t ++ List(h), h, Nil)
+        rec(t ++ Batch(h), h, Batch.Empty)
 
-  final case class Open(vertices: List[Vertex]) extends Polygon:
+      case _ =>
+        Batch.Empty
+
+  final case class Open(vertices: Batch[Vertex]) extends Polygon:
     def moveTo(newPosition: Vertex): Open =
       moveBy(vertices.headOption.map(v => newPosition - v).getOrElse(Vertex.zero))
 
@@ -127,12 +128,12 @@ object Polygon:
   object Open:
 
     val empty: Open =
-      Open(Nil)
+      Open(Batch.Empty)
 
     def apply(vertices: Vertex*): Open =
-      new Open(vertices.toList)
+      new Open(Batch.fromSeq(vertices))
 
-  final case class Closed(vertices: List[Vertex]) extends Polygon:
+  final case class Closed(vertices: Batch[Vertex]) extends Polygon:
     def moveTo(newPosition: Vertex): Closed =
       moveBy(vertices.headOption.map(v => newPosition - v).getOrElse(Vertex.zero))
 
@@ -145,7 +146,7 @@ object Polygon:
   object Closed:
 
     val empty: Closed =
-      Closed(Nil)
+      Closed(Batch.Empty)
 
     def apply(vertices: Vertex*): Closed =
-      new Closed(vertices.toList)
+      new Closed(Batch.fromSeq(vertices))

@@ -1,6 +1,6 @@
 package com.example.sandbox
 
-import indigo._
+import indigo.*
 import indigoextras.effectmaterials.LegacyEffects
 import indigoextras.effectmaterials.RefractionEntity
 

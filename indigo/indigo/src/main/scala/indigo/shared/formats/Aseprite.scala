@@ -7,7 +7,8 @@ import indigo.shared.animation.Cycle
 import indigo.shared.animation.CycleLabel
 import indigo.shared.animation.Frame
 import indigo.shared.assets.AssetName
-import indigo.shared.collections.NonEmptyList
+import indigo.shared.collections.Batch
+import indigo.shared.collections.NonEmptyBatch
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.datatypes.Depth
 import indigo.shared.datatypes.Flip
@@ -77,7 +78,7 @@ object Aseprite:
           Animation(
             animationKey = AnimationKey.fromDice(dice),
             currentCycleLabel = x.label,
-            cycles = NonEmptyList.pure(x, xs)
+            cycles = NonEmptyBatch.pure(x, Batch.fromList(xs))
           )
         Option(
           SpriteAndAnimations(
@@ -85,7 +86,7 @@ object Aseprite:
               bindingKey = BindingKey.fromDice(dice),
               material = Material.Bitmap(assetName),
               animationKey = animations.animationKey,
-              animationActions = Nil,
+              animationActions = Batch.Empty,
               eventHandlerEnabled = false,
               eventHandler = Function.const(None),
               position = Point(0, 0),
@@ -130,9 +131,10 @@ object Aseprite:
           case Nil =>
             IndigoLogger.info(s"Failed to extract cycle with frameTag: ${frameTag.toString()}")
             None
+
           case x :: xs =>
             Option(
-              Cycle.create(frameTag.name, NonEmptyList.pure(x, xs))
+              Cycle.create(frameTag.name, NonEmptyBatch.pure(x, Batch.fromList(xs)))
             )
         }
       }

@@ -125,7 +125,7 @@ trait IndigoDemo[BootData, StartUpData, Model, ViewModel] extends GameLauncher[S
     new SubSystemsRegister()
 
   private def indigoGame(bootUp: BootResult[BootData]): GameEngine[StartUpData, Model, ViewModel] = {
-    val subSystemEvents = subSystemsRegister.register(bootUp.subSystems.toList)
+    val subSystemEvents = subSystemsRegister.register(Batch.fromSet(bootUp.subSystems))
 
     val frameProcessor: StandardFrameProcessor[StartUpData, Model, ViewModel] =
       new StandardFrameProcessor(
@@ -149,7 +149,10 @@ trait IndigoDemo[BootData, StartUpData, Model, ViewModel] extends GameLauncher[S
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  final protected def ready(parentElementId: String, flags: Map[String, String]): GameEngine[StartUpData, Model, ViewModel] =
+  final protected def ready(
+      parentElementId: String,
+      flags: Map[String, String]
+  ): GameEngine[StartUpData, Model, ViewModel] =
     boot(flags) match
       case oe @ Outcome.Error(e, _) =>
         IndigoLogger.error("Error during boot - Halting")

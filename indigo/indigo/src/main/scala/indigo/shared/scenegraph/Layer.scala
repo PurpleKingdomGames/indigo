@@ -1,5 +1,6 @@
 package indigo.shared.scenegraph
 
+import indigo.shared.collections.Batch
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.datatypes.Depth
 import indigo.shared.materials.BlendMaterial
@@ -9,7 +10,7 @@ import indigo.shared.materials.BlendMaterial
   * During the scene render, each layer in depth order is _blended_ into the one below it, a bit like doing a foldLeft
   * over a list. You can control how the blend is performed to create effects.
   *
-  * Layer fields are all either Lists or options to denote that you _can_ have them but that it isn't necessary. Layers
+  * Layer fields are all either Batchs or options to denote that you _can_ have them but that it isn't necessary. Layers
   * are "monoids" which just means that they can be empty and they can be combined. It is important to note that when
   * they combine they are left bias in the case of all optional fields, which means, that if you do: a.show |+| b.hide,
   * the layer will be visible. This may look odd, and maybe it is (time will tell!), but the idea is that you can set
@@ -33,8 +34,8 @@ import indigo.shared.materials.BlendMaterial
   *   Optional camera specifically for this layer. If None, fallback to scene camera, or default camera.
   */
 final case class Layer(
-    nodes: List[SceneNode],
-    lights: List[Light],
+    nodes: Batch[SceneNode],
+    lights: Batch[Light],
     key: Option[BindingKey],
     magnification: Option[Int],
     depth: Option[Depth],
@@ -56,28 +57,28 @@ final case class Layer(
   def combine(other: Layer): Layer =
     this |+| other
 
-  def withNodes(newNodes: List[SceneNode]): Layer =
+  def withNodes(newNodes: Batch[SceneNode]): Layer =
     this.copy(nodes = newNodes)
   def withNodes(newNodes: SceneNode*): Layer =
-    withNodes(newNodes.toList)
-  def addNodes(moreNodes: List[SceneNode]): Layer =
+    withNodes(Batch.fromSeq(newNodes))
+  def addNodes(moreNodes: Batch[SceneNode]): Layer =
     withNodes(nodes ++ moreNodes)
   def addNodes(moreNodes: SceneNode*): Layer =
-    addNodes(moreNodes.toList)
-  def ++(moreNodes: List[SceneNode]): Layer =
+    addNodes(Batch.fromSeq(moreNodes))
+  def ++(moreNodes: Batch[SceneNode]): Layer =
     addNodes(moreNodes)
 
   def noLights: Layer =
-    this.copy(lights = Nil)
+    this.copy(lights = Batch.Empty)
 
   def withLights(newLights: Light*): Layer =
-    withLights(newLights.toList)
-  def withLights(newLights: List[Light]): Layer =
+    withLights(Batch.fromSeq(newLights))
+  def withLights(newLights: Batch[Light]): Layer =
     this.copy(lights = newLights)
 
   def addLights(newLights: Light*): Layer =
-    addLights(newLights.toList)
-  def addLights(newLights: List[Light]): Layer =
+    addLights(Batch.fromSeq(newLights))
+  def addLights(newLights: Batch[Light]): Layer =
     withLights(lights ++ newLights)
 
   def withMagnification(level: Int): Layer =
@@ -120,27 +121,27 @@ final case class Layer(
 object Layer {
 
   def empty: Layer =
-    Layer(Nil, Nil, None, None, None, None, None, None)
+    Layer(Batch.Empty, Batch.Empty, None, None, None, None, None, None)
 
   def apply(key: BindingKey): Layer =
-    Layer(Nil, Nil, Option(key), None, None, None, None, None)
+    Layer(Batch.Empty, Batch.Empty, Option(key), None, None, None, None, None)
 
   def apply(nodes: SceneNode*): Layer =
-    Layer(nodes.toList, Nil, None, None, None, None, None, None)
+    Layer(Batch.fromSeq(nodes), Batch.Empty, None, None, None, None, None, None)
 
-  def apply(nodes: List[SceneNode]): Layer =
-    Layer(nodes, Nil, None, None, None, None, None, None)
+  def apply(nodes: Batch[SceneNode]): Layer =
+    Layer(nodes, Batch.Empty, None, None, None, None, None, None)
 
-  def apply(key: BindingKey, nodes: List[SceneNode]): Layer =
-    Layer(nodes, Nil, Option(key), None, None, None, None, None)
+  def apply(key: BindingKey, nodes: Batch[SceneNode]): Layer =
+    Layer(nodes, Batch.Empty, Option(key), None, None, None, None, None)
 
   def apply(key: BindingKey, nodes: SceneNode*): Layer =
-    Layer(nodes.toList, Nil, Option(key), None, None, None, None, None)
+    Layer(Batch.fromSeq(nodes), Batch.Empty, Option(key), None, None, None, None, None)
 
   def apply(key: BindingKey, magnification: Int, depth: Depth): Layer =
-    Layer(Nil, Nil, Option(key), Option(magnification), Option(depth), None, None, None)
+    Layer(Batch.Empty, Batch.Empty, Option(key), Option(magnification), Option(depth), None, None, None)
 
-  def apply(key: BindingKey, magnification: Int, depth: Depth, nodes: List[SceneNode]): Layer =
-    Layer(nodes.toList, Nil, Option(key), Option(magnification), Option(depth), None, None, None)
+  def apply(key: BindingKey, magnification: Int, depth: Depth, nodes: Batch[SceneNode]): Layer =
+    Layer(nodes, Batch.Empty, Option(key), Option(magnification), Option(depth), None, None, None)
 
 }

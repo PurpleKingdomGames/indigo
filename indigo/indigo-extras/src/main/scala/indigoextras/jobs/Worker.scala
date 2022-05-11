@@ -1,6 +1,7 @@
 package indigoextras.jobs
 
 import indigo.shared.Outcome
+import indigo.shared.collections.Batch
 import indigo.shared.dice.Dice
 import indigo.shared.time.GameTime
 
@@ -21,9 +22,9 @@ trait Worker[Actor, Context] {
     * When a job is completed, produce an outcome of any new jobs and an updated Actor.
     *
     * @param context Information about the context the worker is in
-    * @return Job => Outcome[(List[Job], Actor)]
+    * @return Job => Outcome[(Batch[Job], Actor)]
     */
-  def onJobComplete(context: WorkContext[Actor, Context]): Job => Outcome[(List[Job], Actor)]
+  def onJobComplete(context: WorkContext[Actor, Context]): Job => Outcome[(Batch[Job], Actor)]
 
   /**
     * A function describing how this actor does work on whichever jobs they are able to work on.
@@ -37,9 +38,9 @@ trait Worker[Actor, Context] {
     * The worker has nothing to do, create jobs from within the given context.
     *
     * @param context Information about the context the worker is in
-    * @return List[Job]
+    * @return Batch[Job]
     */
-  def generateJobs(context: WorkContext[Actor, Context]): List[Job]
+  def generateJobs(context: WorkContext[Actor, Context]): Batch[Job]
 
   /**
     * Predicate discriminator used to determine if a worker can carry out a job.
@@ -63,22 +64,22 @@ object Worker {
     */
   def create[Actor, Context](
       isComplete: WorkContext[Actor, Context] => Job => Boolean,
-      onComplete: WorkContext[Actor, Context] => Job => Outcome[(List[Job], Actor)],
+      onComplete: WorkContext[Actor, Context] => Job => Outcome[(Batch[Job], Actor)],
       doWork: WorkContext[Actor, Context] => Job => (Job, Actor),
-      jobGenerator: WorkContext[Actor, Context] => List[Job],
+      jobGenerator: WorkContext[Actor, Context] => Batch[Job],
       jobAcceptable: WorkContext[Actor, Context] => Job => Boolean
   ): Worker[Actor, Context] =
     new Worker[Actor, Context] {
       def isJobComplete(context: WorkContext[Actor, Context]): Job => Boolean =
         isComplete(context)
 
-      def onJobComplete(context: WorkContext[Actor, Context]): Job => Outcome[(List[Job], Actor)] =
+      def onJobComplete(context: WorkContext[Actor, Context]): Job => Outcome[(Batch[Job], Actor)] =
         onComplete(context)
 
       def workOnJob(context: WorkContext[Actor, Context]): Job => (Job, Actor) =
         doWork(context)
 
-      def generateJobs(context: WorkContext[Actor, Context]): List[Job] =
+      def generateJobs(context: WorkContext[Actor, Context]): Batch[Job] =
         jobGenerator(context)
 
       def canTakeJob(context: WorkContext[Actor, Context]): Job => Boolean =

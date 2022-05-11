@@ -1,5 +1,6 @@
 package indigoextras.trees
 
+import indigo.shared.collections.Batch
 import indigoextras.geometry.BoundingBox
 import indigoextras.geometry.LineSegment
 import indigoextras.geometry.Vertex
@@ -17,20 +18,20 @@ sealed trait QuadTree[T] derives CanEqual:
     QuadTree.insertElementAt(vertex, this, element)
 
   def insertElements(elements: (T, Vertex)*): QuadTree[T] =
-    insertElements(elements.toList)
-  def insertElements(elements: List[(T, Vertex)]): QuadTree[T] =
+    insertElements(Batch.fromSeq(elements))
+  def insertElements(elements: Batch[(T, Vertex)]): QuadTree[T] =
     elements.foldLeft(this)((acc, item) => acc.insertElement(item._1, item._2))
 
   def removeElement(vertex: Vertex): QuadTree[T] =
     QuadTree.removeElement(this, vertex)
 
-  @deprecated("use `toList` or `toListWithPosition` instead.")
-  def asElementList(using CanEqual[T, T]): List[T] =
-    QuadTree.asElementList(this)
-  def toList(using CanEqual[T, T]): List[T] =
-    QuadTree.toList(this)
-  def toListWithPosition(using CanEqual[T, T]): List[(Vertex, T)] =
-    QuadTree.toListWithPosition(this)
+  @deprecated("use `toBatch` or `toBatchWithPosition` instead.")
+  def asElementBatch(using CanEqual[T, T]): Batch[T] =
+    QuadTree.asElementBatch(this)
+  def toBatch(using CanEqual[T, T]): Batch[T] =
+    QuadTree.toBatch(this)
+  def toBatchWithPosition(using CanEqual[T, T]): Batch[(Vertex, T)] =
+    QuadTree.toBatchWithPosition(this)
 
   def prune: QuadTree[T] =
     QuadTree.prune(this)
@@ -43,22 +44,22 @@ sealed trait QuadTree[T] derives CanEqual:
   def findClosestToWithPosition(vertex: Vertex)(using CanEqual[T, T]): Option[(Vertex, T)] =
     QuadTree.findClosestToWithPosition(this, vertex)
 
-  def searchByLine(start: Vertex, end: Vertex)(using CanEqual[T, T]): List[T] =
+  def searchByLine(start: Vertex, end: Vertex)(using CanEqual[T, T]): Batch[T] =
     QuadTree.searchByLine(this, start, end)
-  def searchByLine(line: LineSegment)(using CanEqual[T, T]): List[T] =
+  def searchByLine(line: LineSegment)(using CanEqual[T, T]): Batch[T] =
     QuadTree.searchByLine(this, line)
 
-  def searchByLineWithPosition(start: Vertex, end: Vertex)(using CanEqual[T, T]): List[(Vertex, T)] =
+  def searchByLineWithPosition(start: Vertex, end: Vertex)(using CanEqual[T, T]): Batch[(Vertex, T)] =
     QuadTree.searchByLineWithPosition(this, start, end)
-  def searchByLineWithPosition(line: LineSegment)(using CanEqual[T, T]): List[(Vertex, T)] =
+  def searchByLineWithPosition(line: LineSegment)(using CanEqual[T, T]): Batch[(Vertex, T)] =
     QuadTree.searchByLineWithPosition(this, line)
 
   @deprecated("use `searchByBoundingBox` or `searchByBoundingBoxWithPosition` instead")
-  def searchByRectangle(boundingBox: BoundingBox)(using CanEqual[T, T]): List[T] =
+  def searchByRectangle(boundingBox: BoundingBox)(using CanEqual[T, T]): Batch[T] =
     QuadTree.searchByBoundingBox(this, boundingBox)
-  def searchByBoundingBox(boundingBox: BoundingBox)(using CanEqual[T, T]): List[T] =
+  def searchByBoundingBox(boundingBox: BoundingBox)(using CanEqual[T, T]): Batch[T] =
     QuadTree.searchByBoundingBox(this, boundingBox)
-  def searchByBoundingBoxWithPosition(boundingBox: BoundingBox)(using CanEqual[T, T]): List[(Vertex, T)] =
+  def searchByBoundingBoxWithPosition(boundingBox: BoundingBox)(using CanEqual[T, T]): Batch[(Vertex, T)] =
     QuadTree.searchByBoundingBoxWithPosition(this, boundingBox)
 
   def prettyPrint: String =
@@ -81,16 +82,17 @@ sealed trait QuadTree[T] derives CanEqual:
     rec(this, "")
 
   def ===(other: QuadTree[T])(using CanEqual[T, T]): Boolean =
+    import Batch.Unapply.*
     @tailrec
-    def rec(a: List[QuadTree[T]], b: List[QuadTree[T]]): Boolean =
+    def rec(a: Batch[QuadTree[T]], b: Batch[QuadTree[T]]): Boolean =
       (a, b) match
-        case (Nil, Nil) =>
+        case (Batch.Empty, Batch.Empty) =>
           true
 
-        case (Nil, _) =>
+        case (Batch.Empty, _) =>
           false
 
-        case (_, Nil) =>
+        case (_, Batch.Empty) =>
           false
 
         case (QuadTree.QuadEmpty(b1) :: as, QuadTree.QuadEmpty(b2) :: bs) if b1 ~== b2 =>
@@ -107,7 +109,7 @@ sealed trait QuadTree[T] derives CanEqual:
         case _ =>
           false
 
-    rec(List(this), List(other))
+    rec(Batch(this), Batch(other))
 
   def !==(other: QuadTree[T])(using CanEqual[T, T]): Boolean =
     !(this === other)
@@ -115,7 +117,7 @@ sealed trait QuadTree[T] derives CanEqual:
 object QuadTree:
 
   given [T](using CanEqual[T, T]): CanEqual[Option[QuadTree[T]], Option[QuadTree[T]]] = CanEqual.derived
-  given [T](using CanEqual[T, T]): CanEqual[List[QuadTree[T]], List[QuadTree[T]]]     = CanEqual.derived
+  given [T](using CanEqual[T, T]): CanEqual[Batch[QuadTree[T]], Batch[QuadTree[T]]]   = CanEqual.derived
 
   def empty[T](width: Double, height: Double): QuadTree[T] =
     QuadEmpty(BoundingBox(0, 0, width, height))
@@ -124,8 +126,8 @@ object QuadTree:
     QuadEmpty(BoundingBox(Vertex.zero, gridSize))
 
   def apply[T](elements: (T, Vertex)*): QuadTree[T] =
-    QuadTree(elements.toList)
-  def apply[T](elements: List[(T, Vertex)]): QuadTree[T] =
+    QuadTree(Batch.fromSeq(elements))
+  def apply[T](elements: Batch[(T, Vertex)]): QuadTree[T] =
     QuadEmpty(BoundingBox.fromVertexCloud(elements.map(_._2))).insertElements(elements)
 
   final case class QuadBranch[T](bounds: BoundingBox, a: QuadTree[T], b: QuadTree[T], c: QuadTree[T], d: QuadTree[T])
@@ -184,22 +186,23 @@ object QuadTree:
   end QuadBranch
 
   def fetchElementAt[T](quadTree: QuadTree[T], vertex: Vertex)(using CanEqual[T, T]): Option[T] =
+    import Batch.Unapply.*
     @tailrec
-    def rec(remaining: List[QuadTree[T]]): Option[T] =
+    def rec(remaining: Batch[QuadTree[T]]): Option[T] =
       remaining match
-        case Nil =>
-          None
-
         case QuadLeaf(_, position, value) :: xs if position ~== vertex =>
           Some(value)
 
         case QuadBranch(bounds, a, b, c, d) :: xs if bounds.contains(vertex) =>
-          rec(xs ++ List(a, b, c, d))
+          rec(xs ++ Batch(a, b, c, d))
 
         case _ :: xs =>
           rec(xs)
 
-    rec(List(quadTree))
+        case _ =>
+          None
+
+    rec(Batch(quadTree))
 
   def insertElementAt[T](vertex: Vertex, quadTree: QuadTree[T], element: T): QuadTree[T] =
     quadTree match
@@ -249,17 +252,14 @@ object QuadTree:
       case tree =>
         tree
 
-  @deprecated("use `toList` or `toListWithPosition` instead.")
-  def asElementList[T](quadTree: QuadTree[T])(using CanEqual[T, T]): List[T] =
-    toList(quadTree)
+  @deprecated("use `toBatch` or `toBatchWithPosition` instead.")
+  def asElementBatch[T](quadTree: QuadTree[T])(using CanEqual[T, T]): Batch[T] =
+    toBatch(quadTree)
 
-  def toList[T](quadTree: QuadTree[T])(using CanEqual[T, T]): List[T] =
+  def toBatch[T](quadTree: QuadTree[T])(using CanEqual[T, T]): Batch[T] =
     @tailrec
-    def rec(open: List[QuadTree[T]], acc: List[T]): List[T] =
+    def rec(open: List[QuadTree[T]], acc: Batch[T]): Batch[T] =
       open match
-        case Nil =>
-          acc
-
         case x :: xs =>
           x match {
             case _: QuadEmpty[T] =>
@@ -281,15 +281,15 @@ object QuadTree:
               rec(xs ++ next, acc)
           }
 
-    rec(List(quadTree), Nil)
-
-  def toListWithPosition[T](quadTree: QuadTree[T])(using CanEqual[T, T]): List[(Vertex, T)] =
-    @tailrec
-    def rec(open: List[QuadTree[T]], acc: List[(Vertex, T)]): List[(Vertex, T)] =
-      open match
-        case Nil =>
+        case _ =>
           acc
 
+    rec(List(quadTree), Batch.Empty)
+
+  def toBatchWithPosition[T](quadTree: QuadTree[T])(using CanEqual[T, T]): Batch[(Vertex, T)] =
+    @tailrec
+    def rec(open: List[QuadTree[T]], acc: Batch[(Vertex, T)]): Batch[(Vertex, T)] =
+      open match
         case x :: xs =>
           x match {
             case _: QuadEmpty[T] =>
@@ -311,7 +311,10 @@ object QuadTree:
               rec(xs ++ next, acc)
           }
 
-    rec(List(quadTree), Nil)
+        case _ =>
+          acc
+
+    rec(List(quadTree), Batch.Empty)
 
   def prune[T](quadTree: QuadTree[T]): QuadTree[T] =
     quadTree match
@@ -331,12 +334,10 @@ object QuadTree:
   def searchByPoint[T](quadTree: QuadTree[T], vertex: Vertex)(using CanEqual[T, T]): Option[T] =
     findClosestTo(quadTree, vertex)
   def findClosestToWithPosition[T](quadTree: QuadTree[T], vertex: Vertex)(using CanEqual[T, T]): Option[(Vertex, T)] =
+    import Batch.Unapply.*
     @tailrec
-    def rec(remaining: List[QuadTree[T]], closestDistance: Double, acc: Option[(Vertex, T)]): Option[(Vertex, T)] =
+    def rec(remaining: Batch[QuadTree[T]], closestDistance: Double, acc: Option[(Vertex, T)]): Option[(Vertex, T)] =
       remaining match
-        case Nil =>
-          acc
-
         case QuadLeaf(_, pos, value) :: rs if vertex.distanceTo(pos) < closestDistance =>
           rec(rs, vertex.distanceTo(pos), Some((pos, value)))
 
@@ -346,34 +347,35 @@ object QuadTree:
         case _ :: rs =>
           rec(rs, closestDistance, acc)
 
-    rec(List(quadTree), Double.MaxValue, None)
+        case _ =>
+          acc
+
+    rec(Batch(quadTree), Double.MaxValue, None)
   def findClosestTo[T](quadTree: QuadTree[T], vertex: Vertex)(using CanEqual[T, T]): Option[T] =
     findClosestToWithPosition(quadTree, vertex).map(_._2)
 
-  def searchByLine[T](quadTree: QuadTree[T], start: Vertex, end: Vertex)(using CanEqual[T, T]): List[T] =
+  def searchByLine[T](quadTree: QuadTree[T], start: Vertex, end: Vertex)(using CanEqual[T, T]): Batch[T] =
     searchByLine(quadTree, LineSegment(start, end))
   def searchByLineWithPosition[T](quadTree: QuadTree[T], start: Vertex, end: Vertex)(using
       CanEqual[T, T]
-  ): List[(Vertex, T)] =
+  ): Batch[(Vertex, T)] =
     searchByLineWithPosition(quadTree, LineSegment(start, end))
 
   def searchByLineWithPosition[T](quadTree: QuadTree[T], lineSegment: LineSegment)(using
       CanEqual[T, T]
-  ): List[(Vertex, T)] =
+  ): Batch[(Vertex, T)] =
+    import Batch.Unapply.*
     @tailrec
-    def rec(remaining: List[QuadTree[T]], acc: List[(Vertex, T)]): List[(Vertex, T)] =
+    def rec(remaining: Batch[QuadTree[T]], acc: Batch[(Vertex, T)]): Batch[(Vertex, T)] =
       remaining match
-        case Nil =>
-          acc
-
         case QuadBranch(bounds, a, b, c, d) :: rs if bounds.contains(lineSegment.start) =>
-          rec(rs ++ List(a, b, c, d), acc)
+          rec(rs ++ Batch(a, b, c, d), acc)
 
         case QuadBranch(bounds, a, b, c, d) :: rs if bounds.contains(lineSegment.end) =>
-          rec(rs ++ List(a, b, c, d), acc)
+          rec(rs ++ Batch(a, b, c, d), acc)
 
         case QuadBranch(bounds, a, b, c, d) :: rs if bounds.lineIntersects(lineSegment) =>
-          rec(rs ++ List(a, b, c, d), acc)
+          rec(rs ++ Batch(a, b, c, d), acc)
 
         case QuadLeaf(bounds, pos, value) :: rs if bounds.contains(lineSegment.start) =>
           rec(rs, (pos, value) :: acc)
@@ -387,32 +389,36 @@ object QuadTree:
         case _ :: rs =>
           rec(rs, acc)
 
-    rec(List(quadTree), Nil)
+        case _ =>
+          acc
 
-  def searchByLine[T](quadTree: QuadTree[T], lineSegment: LineSegment)(using CanEqual[T, T]): List[T] =
+    rec(Batch(quadTree), Batch.Empty)
+
+  def searchByLine[T](quadTree: QuadTree[T], lineSegment: LineSegment)(using CanEqual[T, T]): Batch[T] =
     searchByLineWithPosition(quadTree, lineSegment).map(_._2)
 
   def searchByBoundingBoxWithPosition[T](quadTree: QuadTree[T], boundingBox: BoundingBox)(using
       CanEqual[T, T]
-  ): List[(Vertex, T)] =
+  ): Batch[(Vertex, T)] =
+    import Batch.Unapply.*
     @tailrec
-    def rec(remaining: List[QuadTree[T]], acc: List[(Vertex, T)]): List[(Vertex, T)] =
+    def rec(remaining: Batch[QuadTree[T]], acc: Batch[(Vertex, T)]): Batch[(Vertex, T)] =
       remaining match
-        case Nil =>
-          acc
-
         case QuadLeaf(_, exactPosition, value) :: rs if boundingBox.contains(exactPosition) =>
           rec(rs, (exactPosition, value) :: acc)
 
         case QuadBranch(bounds, a, b, c, d) :: rs if boundingBox.overlaps(bounds) =>
-          rec(rs ++ List(a, b, c, d), acc)
+          rec(rs ++ Batch(a, b, c, d), acc)
 
         case _ :: rs =>
           rec(rs, acc)
 
-    rec(List(quadTree), Nil)
+        case _ =>
+          acc
 
-  def searchByBoundingBox[T](quadTree: QuadTree[T], boundingBox: BoundingBox)(using CanEqual[T, T]): List[T] =
+    rec(Batch(quadTree), Batch.Empty)
+
+  def searchByBoundingBox[T](quadTree: QuadTree[T], boundingBox: BoundingBox)(using CanEqual[T, T]): Batch[T] =
     searchByBoundingBoxWithPosition(quadTree, boundingBox).map(_._2)
 
 end QuadTree

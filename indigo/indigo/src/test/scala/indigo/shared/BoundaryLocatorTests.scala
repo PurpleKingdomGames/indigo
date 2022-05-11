@@ -2,6 +2,7 @@ package indigo.shared
 
 import indigo.platform.assets.DynamicText
 import indigo.shared.assets.AssetName
+import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Fill
 import indigo.shared.datatypes.FontChar
 import indigo.shared.datatypes.FontInfo
@@ -79,7 +80,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
   object Samples {
     val material = Material.Bitmap(AssetName("font-sheet"))
 
-    val chars = List(
+    val chars = Batch(
       FontChar("a", 0, 16, 16, 16),
       FontChar("b", 16, 16, 10, 20),
       FontChar("c", 32, 16, 16, 16)
@@ -382,7 +383,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
   test("calculateShapeBounds - polygon") {
 
     val verts =
-      List(
+      Batch(
         Point(50, 10),
         Point(75, 60),
         Point(25, 60)
