@@ -86,13 +86,13 @@ sealed trait QuadTree[T] derives CanEqual:
     @tailrec
     def rec(a: Batch[QuadTree[T]], b: Batch[QuadTree[T]]): Boolean =
       (a, b) match
-        case (Batch.Empty, Batch.Empty) =>
+        case (_, _) if a.isEmpty && b.isEmpty =>
           true
 
-        case (Batch.Empty, _) =>
+        case (_, _) if a.isEmpty =>
           false
 
-        case (_, Batch.Empty) =>
+        case (_, _) if b.isEmpty =>
           false
 
         case (QuadTree.QuadEmpty(b1) :: as, QuadTree.QuadEmpty(b2) :: bs) if b1 ~== b2 =>
