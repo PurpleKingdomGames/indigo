@@ -6,7 +6,6 @@ import com.example.sandbox.SandboxStartupData
 import com.example.sandbox.SandboxViewModel
 import indigo._
 import indigo.scenes._
-import indigo.syntax.*
 
 object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel] {
 
@@ -38,7 +37,7 @@ object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
     Graphic(Rectangle(0, 0, 40, 40), 1, LightingAssets.junctionBoxMaterialOn)
       .withRef(20, 20)
 
-  val grid: Batch[Graphic[Material.Bitmap]] = {
+  val grid: List[Graphic[Material.Bitmap]] = {
     val rows    = 4
     val columns = 6
     val offset  = Point(0)
@@ -47,7 +46,7 @@ object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
       (0 to columns).toList.map { column =>
         graphic.withRef(Point(0)).moveTo(Point(column * 40, row * 40) + offset)
       }
-    }.toBatch
+    }
   }
 
   def present(context: FrameContext[SandboxStartupData], model: SandboxGameModel, viewModel: SandboxViewModel): Outcome[SceneUpdateFragment] =

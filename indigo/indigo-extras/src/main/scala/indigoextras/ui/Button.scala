@@ -1,7 +1,6 @@
 package indigoextras.ui
 
 import indigo.shared.Outcome
-import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Depth
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
@@ -22,12 +21,12 @@ final case class Button(
     bounds: Rectangle,
     depth: Depth,
     state: ButtonState,
-    onUp: () => Batch[GlobalEvent],
-    onDown: () => Batch[GlobalEvent],
-    onHoverOver: () => Batch[GlobalEvent],
-    onHoverOut: () => Batch[GlobalEvent],
-    onClick: () => Batch[GlobalEvent],
-    onHoldDown: () => Batch[GlobalEvent]
+    onUp: () => List[GlobalEvent],
+    onDown: () => List[GlobalEvent],
+    onHoverOver: () => List[GlobalEvent],
+    onHoverOut: () => List[GlobalEvent],
+    onClick: () => List[GlobalEvent],
+    onHoldDown: () => List[GlobalEvent]
 ) derives CanEqual:
 
   def moveBy(point: Point): Button =
@@ -54,19 +53,19 @@ final case class Button(
   def update(mouse: Mouse): Outcome[Button] = {
     val mouseInBounds = bounds.isPointWithin(mouse.position)
 
-    val upEvents: Batch[GlobalEvent] =
+    val upEvents: List[GlobalEvent] =
       if mouseInBounds && mouse.mouseReleased then onUp()
-      else Batch.Empty
+      else Nil
 
-    val clickEvents: Batch[GlobalEvent] =
+    val clickEvents: List[GlobalEvent] =
       if mouseInBounds && mouse.mouseClicked then onClick()
-      else Batch.Empty
+      else Nil
 
-    val downEvents: Batch[GlobalEvent] =
+    val downEvents: List[GlobalEvent] =
       if mouseInBounds && mouse.mousePressed then onDown()
-      else Batch.Empty
+      else Nil
 
-    val mouseButtonEvents: Batch[GlobalEvent] =
+    val mouseButtonEvents: List[GlobalEvent] =
       downEvents ++ upEvents ++ clickEvents
 
     state match
@@ -123,33 +122,33 @@ final case class Button(
     }
 
   def withUpActions(actions: GlobalEvent*): Button =
-    withUpActions(Batch.fromSeq(actions))
-  def withUpActions(actions: => Batch[GlobalEvent]): Button =
+    withUpActions(actions.toList)
+  def withUpActions(actions: => List[GlobalEvent]): Button =
     this.copy(onUp = () => actions)
 
   def withDownActions(actions: GlobalEvent*): Button =
-    withDownActions(Batch.fromSeq(actions))
-  def withDownActions(actions: => Batch[GlobalEvent]): Button =
+    withDownActions(actions.toList)
+  def withDownActions(actions: => List[GlobalEvent]): Button =
     this.copy(onDown = () => actions)
 
   def withHoverOverActions(actions: GlobalEvent*): Button =
-    withHoverOverActions(Batch.fromSeq(actions))
-  def withHoverOverActions(actions: => Batch[GlobalEvent]): Button =
+    withHoverOverActions(actions.toList)
+  def withHoverOverActions(actions: => List[GlobalEvent]): Button =
     this.copy(onHoverOver = () => actions)
 
   def withHoverOutActions(actions: GlobalEvent*): Button =
-    withHoverOutActions(Batch.fromSeq(actions))
-  def withHoverOutActions(actions: => Batch[GlobalEvent]): Button =
+    withHoverOutActions(actions.toList)
+  def withHoverOutActions(actions: => List[GlobalEvent]): Button =
     this.copy(onHoverOut = () => actions)
 
   def withClickActions(actions: GlobalEvent*): Button =
-    withClickActions(Batch.fromSeq(actions))
-  def withClickActions(actions: => Batch[GlobalEvent]): Button =
+    withClickActions(actions.toList)
+  def withClickActions(actions: => List[GlobalEvent]): Button =
     this.copy(onClick = () => actions)
 
   def withHoldDownActions(actions: GlobalEvent*): Button =
-    withHoldDownActions(Batch.fromSeq(actions))
-  def withHoldDownActions(actions: => Batch[GlobalEvent]): Button =
+    withHoldDownActions(actions.toList)
+  def withHoldDownActions(actions: => List[GlobalEvent]): Button =
     this.copy(onHoldDown = () => actions)
 
   def toUpState: Button =
@@ -175,12 +174,12 @@ object Button:
       bounds,
       depth,
       ButtonState.Up,
-      onUp = () => Batch.Empty,
-      onDown = () => Batch.Empty,
-      onHoverOver = () => Batch.Empty,
-      onHoverOut = () => Batch.Empty,
-      onClick = () => Batch.Empty,
-      onHoldDown = () => Batch.Empty
+      onUp = () => Nil,
+      onDown = () => Nil,
+      onHoverOver = () => Nil,
+      onHoverOut = () => Nil,
+      onClick = () => Nil,
+      onHoldDown = () => Nil
     )
 
 sealed trait ButtonState derives CanEqual {

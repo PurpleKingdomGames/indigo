@@ -1,6 +1,6 @@
 package indigo.shared.dice
 
-import indigo.shared.collections.NonEmptyBatch
+import indigo.shared.collections.NonEmptyList
 import indigo.shared.time.Millis
 import indigo.shared.time.Seconds
 
@@ -42,9 +42,9 @@ object Dice:
   private val sanitise: Int => Int =
     i => Math.max(1, Math.abs(i))
 
-  def rollMany(numberOfDice: Int, sides: Int, seed: Long): Option[NonEmptyBatch[Int]] =
+  def rollMany(numberOfDice: Int, sides: Int, seed: Long): Option[NonEmptyList[Int]] =
     @tailrec
-    def rec(remaining: Int, acc: NonEmptyBatch[Int]): Option[NonEmptyBatch[Int]] =
+    def rec(remaining: Int, acc: NonEmptyList[Int]): Option[NonEmptyList[Int]] =
       remaining match {
         case 0 =>
           Option(acc)
@@ -54,7 +54,7 @@ object Dice:
       }
 
     if isPositive(numberOfDice) && isPositive(sides) then
-      rec(numberOfDice - 1, NonEmptyBatch(diceSidesN(sides, seed).roll))
+      rec(numberOfDice - 1, NonEmptyList(diceSidesN(sides, seed).roll))
     else None
 
   def loaded(fixedTo: Int): Dice =
@@ -80,7 +80,7 @@ object Dice:
         if (fixedTo == 0) 0 else 1
 
       def rollAlphaNumeric(length: Int): String =
-        Array.fill(length)(fixedTo.toString()).mkString.take(length)
+        List.fill(length)(fixedTo.toString()).mkString.take(length)
 
       def rollAlphaNumeric: String =
         rollAlphaNumeric(16)

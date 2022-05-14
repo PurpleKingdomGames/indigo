@@ -62,12 +62,6 @@ final case class Vector4(x: Double, y: Double, z: Double, w: Double) derives Can
   def round: Vector4 =
     Vector4(Math.round(x).toDouble, Math.round(y).toDouble, Math.round(z).toDouble, Math.round(w).toDouble)
 
-  def toArray: Array[Double] =
-    Array(x, y, z, w)
-
-  def toJSArray: scalajs.js.Array[Double] =
-    scalajs.js.Array(x, y, z, w)
-
   def toList: List[Double] =
     List(x, y, z, w)
 

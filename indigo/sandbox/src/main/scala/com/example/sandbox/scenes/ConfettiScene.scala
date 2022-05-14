@@ -7,7 +7,6 @@ import com.example.sandbox.SandboxStartupData
 import com.example.sandbox.SandboxViewModel
 import indigo._
 import indigo.scenes._
-import indigo.syntax.*
 import indigoextras.geometry.Polygon
 import indigoextras.geometry.Vertex
 import indigoextras.ui.HitArea
@@ -66,8 +65,8 @@ object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
 
   val cloneId: CloneId = CloneId("dots")
 
-  val cloneBlanks: Batch[CloneBlank] =
-    Batch(CloneBlank(cloneId, Graphic(16, 16, Material.Bitmap(SandboxAssets.dots))).static)
+  val cloneBlanks: List[CloneBlank] =
+    List(CloneBlank(cloneId, Graphic(16, 16, Material.Bitmap(SandboxAssets.dots))).static)
 
   val crops =
     Array(
@@ -99,7 +98,7 @@ object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
     Outcome(
       SceneUpdateFragment(
         Layer(
-          model.particles.map(particlesToCloneTiles).toBatch
+          model.particles.map(particlesToCloneTiles).toList
         ).withMagnification(1),
         Layer(
           count.withText(s"count: ${model.particles.length * spawnCount}")
@@ -148,4 +147,4 @@ object ConfettiModel:
 final case class Particle(x: Int, y: Int, fx: Float, fy: Float, color: Int, scale: Float)
 object Particle:
   given CanEqual[Option[Particle], Option[Particle]] = CanEqual.derived
-  given CanEqual[Batch[Particle], Batch[Particle]]     = CanEqual.derived
+  given CanEqual[List[Particle], List[Particle]]     = CanEqual.derived

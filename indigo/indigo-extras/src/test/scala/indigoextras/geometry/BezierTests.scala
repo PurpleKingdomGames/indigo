@@ -1,6 +1,5 @@
 package indigoextras.geometry
 
-import indigo.shared.collections.Batch
 import indigo.shared.time.Seconds
 
 class BezierTests extends munit.FunSuite {
@@ -12,23 +11,23 @@ class BezierTests extends munit.FunSuite {
   }
 
   test("Reduction.Empty list") {
-    assertEquals(Bezier.reduce(Batch.Empty, 0d) == Vertex.zero, true)
+    assertEquals(Bezier.reduce(Nil, 0d) == Vertex.zero, true)
   }
 
   test("Reduction.one point") {
-    assertEquals(Bezier.reduce(Batch(Vertex(1, 1)), 0d) == Vertex(1, 1), true)
+    assertEquals(Bezier.reduce(List(Vertex(1, 1)), 0d) == Vertex(1, 1), true)
   }
 
   test("Reduction.two points") {
-    assertEquals(Bezier.reduce(Batch(Vertex(0, 0), Vertex(10, 10)), 0d) == Vertex(0, 0), true)
-    assertEquals(Bezier.reduce(Batch(Vertex(0, 0), Vertex(10, 10)), 0.5d) == Vertex(5, 5), true)
-    assertEquals(Bezier.reduce(Batch(Vertex(0, 0), Vertex(10, 10)), 1d) == Vertex(10, 10), true)
+    assertEquals(Bezier.reduce(List(Vertex(0, 0), Vertex(10, 10)), 0d) == Vertex(0, 0), true)
+    assertEquals(Bezier.reduce(List(Vertex(0, 0), Vertex(10, 10)), 0.5d) == Vertex(5, 5), true)
+    assertEquals(Bezier.reduce(List(Vertex(0, 0), Vertex(10, 10)), 1d) == Vertex(10, 10), true)
   }
 
   test("Reduction.three points") {
-    assertEquals(Bezier.reduce(Batch(Vertex(0, 0), Vertex(5, 5), Vertex(10, 0)), 0d) == Vertex(0, 0), true)
-    assertEquals(Bezier.reduce(Batch(Vertex(0, 0), Vertex(5, 5), Vertex(10, 0)), 0.5d) == Vertex(5, 2.5), true)
-    assertEquals(Bezier.reduce(Batch(Vertex(0, 0), Vertex(5, 5), Vertex(10, 0)), 1d) == Vertex(10, 0), true)
+    assertEquals(Bezier.reduce(List(Vertex(0, 0), Vertex(5, 5), Vertex(10, 0)), 0d) == Vertex(0, 0), true)
+    assertEquals(Bezier.reduce(List(Vertex(0, 0), Vertex(5, 5), Vertex(10, 0)), 0.5d) == Vertex(5, 2.5), true)
+    assertEquals(Bezier.reduce(List(Vertex(0, 0), Vertex(5, 5), Vertex(10, 0)), 1d) == Vertex(10, 0), true)
   }
 
   test("One dimensional (1 point)") {
@@ -135,7 +134,7 @@ class BezierTests extends munit.FunSuite {
     val actual = bezier.toVertices(10)
 
     val expected =
-      Batch(
+      List(
         Vertex(0, 0),
         Vertex(10, 0),
         Vertex(20, 0),
@@ -160,7 +159,7 @@ class BezierTests extends munit.FunSuite {
     val actual = bezier.toVertices(2)
 
     val expected =
-      Batch(
+      List(
         Vertex(2, 2),
         Vertex(9.625, 19.125),
         Vertex(3, 100)

@@ -1,8 +1,7 @@
 package indigo.shared.formats
 
 import indigo.shared.assets.AssetName
-import indigo.shared.collections.Batch
-import indigo.shared.collections.NonEmptyBatch
+import indigo.shared.collections.NonEmptyList
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Size
@@ -24,7 +23,7 @@ final case class TiledMap(
     height: Int,
     infinite: Boolean,
     layers: List[TiledLayer],
-    nextobjectid: Int, // Stores the next available ID for new objects. This number is stored to prevent reuse of the same ID after objects have been removed.
+    nextobjectid: Int,   // Stores the next available ID for new objects. This number is stored to prevent reuse of the same ID after objects have been removed.
     orientation: String, // orthogonal, isometric, staggered and hexagonal
     renderorder: String, // right-down (the default), right-up, left-down and left-up. In all cases, the map is drawn row-by-row.
     tiledversion: String,
@@ -36,7 +35,7 @@ final case class TiledMap(
     staggeraxis: Option[String], // For staggered and hexagonal maps, determines which axis ("x" or "y") is staggered
     staggerindex: Option[
       String
-    ], // For staggered and hexagonal maps, determines whether the "even" or "odd" indexes along the staggered axis are shifted.
+    ],                              // For staggered and hexagonal maps, determines whether the "even" or "odd" indexes along the staggered axis are shifted.
     backgroundcolor: Option[String] // #AARRGGBB
 ) derives CanEqual {
 
@@ -44,7 +43,7 @@ final case class TiledMap(
 
     def toGridLayer(tiledLayer: TiledLayer): TiledGridLayer[A] =
       TiledGridLayer(
-        Batch.fromList(rec(tiledLayer.data.map(mapper).zipWithIndex, tiledLayer.width, Nil)),
+        rec(tiledLayer.data.map(mapper).zipWithIndex, tiledLayer.width, Nil),
         tiledLayer.width,
         tiledLayer.height
       )
@@ -68,7 +67,7 @@ final case class TiledMap(
       case l :: ls =>
         Option(
           TiledGridMap[A](
-            NonEmptyBatch(toGridLayer(l), Batch.fromList(ls.map(toGridLayer)))
+            NonEmptyList(toGridLayer(l), ls.map(toGridLayer))
           )
         )
 
@@ -124,46 +123,42 @@ object TiledMap {
     tiledMap.tilesets.headOption.flatMap(_.columns).map { tileSheetColumnCount =>
       val tileSize: Size = Size(tiledMap.tilewidth, tiledMap.tileheight)
 
-      val layers: Batch[Group] =
-        Batch.fromList(
-          tiledMap.layers.map { layer =>
-            val tilesInUse: Map[Int, Graphic[Material.Bitmap]] =
-              layer.data.toSet.foldLeft(Map.empty[Int, Graphic[Material.Bitmap]]) { (tiles, i) =>
-                tiles ++ Map(
-                  i ->
-                    Graphic(Rectangle(Point.zero, tileSize), 1, Material.Bitmap(assetName))
-                      .withCrop(
-                        Rectangle(fromIndex(i - 1, tileSheetColumnCount) * tileSize.toPoint, tileSize)
-                      )
-                )
-              }
-
-            Group(
-              Batch.fromList(
-                layer.data.zipWithIndex.flatMap { case (tileIndex, positionIndex) =>
-                  if (tileIndex == 0) Nil
-                  else
-                    tilesInUse
-                      .get(tileIndex)
-                      .map(g => List(g.moveTo(fromIndex(positionIndex, tiledMap.width) * tileSize.toPoint)))
-                      .getOrElse(Nil)
-                }
+      val layers: List[Group] =
+        tiledMap.layers.map { layer =>
+          val tilesInUse: Map[Int, Graphic[Material.Bitmap]] =
+            layer.data.toSet.foldLeft(Map.empty[Int, Graphic[Material.Bitmap]]) { (tiles, i) =>
+              tiles ++ Map(
+                i ->
+                  Graphic(Rectangle(Point.zero, tileSize), 1, Material.Bitmap(assetName))
+                    .withCrop(
+                      Rectangle(fromIndex(i - 1, tileSheetColumnCount) * tileSize.toPoint, tileSize)
+                    )
               )
-            )
-          }
-        )
+            }
+
+          Group(
+            layer.data.zipWithIndex.flatMap { case (tileIndex, positionIndex) =>
+              if (tileIndex == 0) Nil
+              else
+                tilesInUse
+                  .get(tileIndex)
+                  .map(g => List(g.moveTo(fromIndex(positionIndex, tiledMap.width) * tileSize.toPoint)))
+                  .getOrElse(Nil)
+            }
+          )
+        }
 
       Group(layers)
     }
 
 }
 
-final case class TiledGridMap[A](layers: NonEmptyBatch[TiledGridLayer[A]]) derives CanEqual {
+final case class TiledGridMap[A](layers: NonEmptyList[TiledGridLayer[A]]) derives CanEqual {
 
-  lazy val toListPerLayer: NonEmptyBatch[Batch[TiledGridCell[A]]] =
+  lazy val toListPerLayer: NonEmptyList[List[TiledGridCell[A]]] =
     layers.map(_.grid)
 
-  lazy val toList2DPerLayer: NonEmptyBatch[Batch[Batch[TiledGridCell[A]]]] = {
+  lazy val toList2DPerLayer: NonEmptyList[List[List[TiledGridCell[A]]]] = {
     given CanEqual[List[TiledGridCell[A]], List[TiledGridCell[A]]] = CanEqual.derived
 
     @tailrec
@@ -171,26 +166,26 @@ final case class TiledGridMap[A](layers: NonEmptyBatch[TiledGridLayer[A]]) deriv
         remaining: List[TiledGridCell[A]],
         columnCount: Int,
         current: List[TiledGridCell[A]],
-        acc: List[Batch[TiledGridCell[A]]]
-    ): List[Batch[TiledGridCell[A]]] =
+        acc: List[List[TiledGridCell[A]]]
+    ): List[List[TiledGridCell[A]]] =
       remaining match {
         case Nil =>
           acc.reverse
 
         case x :: xs if x.column == columnCount - 1 =>
-          rec(xs, columnCount, Nil, Batch.fromList(current ++ List(x)) :: acc)
+          rec(xs, columnCount, Nil, (current ++ List(x)) :: acc)
 
         case x :: xs =>
           rec(xs, columnCount, current ++ List(x), acc)
       }
 
     layers.map { layer =>
-      Batch.fromList(rec(layer.grid.toList, layer.columnCount, Nil, Nil))
+      rec(layer.grid, layer.columnCount, Nil, Nil)
     }
   }
 
 }
-final case class TiledGridLayer[A](grid: Batch[TiledGridCell[A]], columnCount: Int, rowCount: Int) derives CanEqual
+final case class TiledGridLayer[A](grid: List[TiledGridCell[A]], columnCount: Int, rowCount: Int) derives CanEqual
 final case class TiledGridCell[A](column: Int, row: Int, tile: A) derives CanEqual {
   lazy val x: Int = column
   lazy val y: Int = row

@@ -103,9 +103,9 @@ object AudioContextProxy {
 final class AudioPlayer(context: AudioContextProxy) {
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  private var soundAssets: js.Array[LoadedAudioAsset] = js.Array()
+  private var soundAssets: List[LoadedAudioAsset] = Nil
 
-  def addAudioAssets(audioAssets: js.Array[LoadedAudioAsset]): Unit =
+  def addAudioAssets(audioAssets: List[LoadedAudioAsset]): Unit =
     soundAssets = soundAssets ++ audioAssets
 
   private def setupNodes(audioBuffer: dom.AudioBuffer, volume: Volume, loop: Boolean): AudioNodes = {
@@ -178,7 +178,7 @@ final class AudioPlayer(context: AudioContextProxy) {
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def kill(): Unit =
-    soundAssets = js.Array()
+    soundAssets = Nil
     sourceA = null
     sourceB = null
     sourceC = null

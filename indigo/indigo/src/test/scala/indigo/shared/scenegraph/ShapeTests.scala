@@ -71,7 +71,7 @@ class ShapeTests extends munit.FunSuite:
   test("Bounds calculation - polygon") {
 
     val verts =
-      Batch(
+      List(
         Point(50, 10),
         Point(75, 60),
         Point(25, 60)

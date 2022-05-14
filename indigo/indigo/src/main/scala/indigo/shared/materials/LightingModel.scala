@@ -1,7 +1,6 @@
 package indigo.shared.materials
 
 import indigo.shared.assets.AssetName
-import indigo.shared.collections.Batch
 import indigo.shared.shader.ShaderId
 import indigo.shared.shader.ShaderPrimitive.vec2
 import indigo.shared.shader.Uniform
@@ -58,14 +57,14 @@ object LightingModel {
     def toShaderData(
         shaderId: ShaderId,
         albedo: Option[AssetName],
-        additionalUniformBlocks: Batch[UniformBlock]
+        additionalUniformBlocks: List[UniformBlock]
     ): ShaderData =
       ShaderData(
         shaderId,
-        Batch(
+        List(
           UniformBlock(
             "IndigoMaterialLightingData",
-            Batch(
+            List(
               Uniform("LIGHT_EMISSIVE") -> vec2(
                 emissive.map(_ => 1.0).getOrElse(-1.0),
                 emissive.map(_.amount).getOrElse(0.0)
@@ -87,9 +86,9 @@ object LightingModel {
         roughness.map(_.assetName)
       )
     def toShaderData(shaderId: ShaderId, albedo: Option[AssetName]): ShaderData =
-      toShaderData(shaderId, albedo, Batch.Empty)
+      toShaderData(shaderId, albedo, Nil)
     def toShaderData(shaderId: ShaderId): ShaderData =
-      toShaderData(shaderId, None, Batch.Empty)
+      toShaderData(shaderId, None, Nil)
   }
   object Lit {
     def apply(): Lit =

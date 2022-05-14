@@ -8,7 +8,6 @@ import com.example.sandbox.SandboxStartupData
 import com.example.sandbox.SandboxViewModel
 import indigo._
 import indigo.scenes._
-import indigo.syntax.*
 import indigoextras.geometry.Polygon
 import indigoextras.geometry.Vertex
 import indigoextras.ui.HitArea
@@ -51,7 +50,7 @@ object MutantsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxV
   val cloneBlank = CloneBlank(cloneId, Archetype())
 
   // A pretty mutant data set
-  val data: Array[Batch[UniformBlock]] =
+  val data: Array[List[UniformBlock]] =
     (0 until 100).toArray.map { i =>
       val d  = Dice.fromSeed(i)
       val pt = Point(d.rollFromZero(SandboxGame.gameWidth), d.rollFromZero(SandboxGame.gameHeight))
@@ -61,7 +60,7 @@ object MutantsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxV
     }
 
   // A large mutant data set (60 fps on my machine)
-  val dataMax: Array[Batch[UniformBlock]] =
+  val dataMax: Array[List[UniformBlock]] =
     (0 until 2100).toArray.map { i =>
       val d  = Dice.fromSeed(i)
       val pt = Point(d.rollFromZero(SandboxGame.gameWidth), d.rollFromZero(SandboxGame.gameHeight))
@@ -71,8 +70,8 @@ object MutantsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxV
     }
 
   // Equivalent to dataMax using standard primitives - 1/7 the volume! (60 fps on my machine)
-  val gfx: Batch[Graphic[Material.ImageEffects]] =
-    (0 until 300).map { i =>
+  val gfx: List[Graphic[Material.ImageEffects]] =
+    (0 until 300).toList.map { i =>
       val d  = Dice.fromSeed(i)
       val pt = Point(d.rollFromZero(SandboxGame.gameWidth), d.rollFromZero(SandboxGame.gameHeight))
       val sc = Vector2(0.3d + (d.rollDouble * 3.0d))
@@ -82,7 +81,7 @@ object MutantsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxV
         .withRef(Point.zero)
         .scaleBy(sc)
         .modifyMaterial(m => Material.ImageEffects(m.diffuse).withAlpha(a))
-    }.toBatch
+    }
 
   def present(
       context: FrameContext[SandboxStartupData],
@@ -135,11 +134,11 @@ object Archetype:
       AssetType.Text(fragAsset, AssetPath("assets/mutant.frag"))
     )
 
-  def makeUniformBlock(position: Point, scale: Vector2, alpha: Double): Batch[UniformBlock] =
-    Batch(
+  def makeUniformBlock(position: Point, scale: Vector2, alpha: Double): List[UniformBlock] =
+    List(
       UniformBlock(
         "MutantData",
-        Batch(
+        List(
           Uniform("MOVE_TO")  -> vec2.fromPoint(position),
           Uniform("SCALE_TO") -> vec2.fromVector2(scale),
           Uniform("ALPHA")    -> float(alpha)

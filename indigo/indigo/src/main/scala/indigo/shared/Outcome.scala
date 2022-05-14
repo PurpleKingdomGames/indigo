@@ -1,6 +1,5 @@
 package indigo.shared
 
-import indigo.shared.collections.Batch
 import indigo.shared.events.GlobalEvent
 
 import scala.annotation.tailrec
@@ -18,8 +17,8 @@ sealed trait Outcome[+A] derives CanEqual {
   def getOrElse[B >: A](b: => B): B
   def orElse[B >: A](b: => Outcome[B]): Outcome[B]
 
-  def unsafeGlobalEvents: Batch[GlobalEvent]
-  def globalEventsOrNil: Batch[GlobalEvent]
+  def unsafeGlobalEvents: List[GlobalEvent]
+  def globalEventsOrNil: List[GlobalEvent]
 
   def handleError[B >: A](recoverWith: Throwable => Outcome[B]): Outcome[B]
 
@@ -27,17 +26,17 @@ sealed trait Outcome[+A] derives CanEqual {
 
   def addGlobalEvents(newEvents: GlobalEvent*): Outcome[A]
 
-  def addGlobalEvents(newEvents: => Batch[GlobalEvent]): Outcome[A]
+  def addGlobalEvents(newEvents: => List[GlobalEvent]): Outcome[A]
 
-  def createGlobalEvents(f: A => Batch[GlobalEvent]): Outcome[A]
+  def createGlobalEvents(f: A => List[GlobalEvent]): Outcome[A]
 
   def clearGlobalEvents: Outcome[A]
 
-  def replaceGlobalEvents(f: Batch[GlobalEvent] => Batch[GlobalEvent]): Outcome[A]
+  def replaceGlobalEvents(f: List[GlobalEvent] => List[GlobalEvent]): Outcome[A]
 
-  def eventsAsOutcome: Outcome[Batch[GlobalEvent]]
+  def eventsAsOutcome: Outcome[List[GlobalEvent]]
 
-  def mapAll[B](f: A => B, g: Batch[GlobalEvent] => Batch[GlobalEvent]): Outcome[B]
+  def mapAll[B](f: A => B, g: List[GlobalEvent] => List[GlobalEvent]): Outcome[B]
 
   def map[B](f: A => B): Outcome[B]
 
@@ -53,7 +52,7 @@ sealed trait Outcome[+A] derives CanEqual {
 }
 object Outcome {
 
-  final case class Result[+A](state: A, globalEvents: Batch[GlobalEvent]) extends Outcome[A] {
+  final case class Result[+A](state: A, globalEvents: List[GlobalEvent]) extends Outcome[A] {
 
     def isResult: Boolean = true
     def isError: Boolean  = false
@@ -65,9 +64,9 @@ object Outcome {
     def orElse[B >: A](b: => Outcome[B]): Outcome[B] =
       this
 
-    def unsafeGlobalEvents: Batch[GlobalEvent] =
+    def unsafeGlobalEvents: List[GlobalEvent] =
       globalEvents
-    def globalEventsOrNil: Batch[GlobalEvent] =
+    def globalEventsOrNil: List[GlobalEvent] =
       globalEvents
 
     def handleError[B >: A](recoverWith: Throwable => Outcome[B]): Outcome[B] =
@@ -77,24 +76,24 @@ object Outcome {
       this
 
     def addGlobalEvents(newEvents: GlobalEvent*): Outcome[A] =
-      addGlobalEvents(Batch.fromSeq(newEvents))
+      addGlobalEvents(newEvents.toList)
 
-    def addGlobalEvents(newEvents: => Batch[GlobalEvent]): Outcome[A] =
+    def addGlobalEvents(newEvents: => List[GlobalEvent]): Outcome[A] =
       Outcome(state, globalEvents ++ newEvents)
 
-    def createGlobalEvents(f: A => Batch[GlobalEvent]): Outcome[A] =
+    def createGlobalEvents(f: A => List[GlobalEvent]): Outcome[A] =
       Outcome(state, globalEvents ++ f(state))
 
     def clearGlobalEvents: Outcome[A] =
       Outcome(state)
 
-    def replaceGlobalEvents(f: Batch[GlobalEvent] => Batch[GlobalEvent]): Outcome[A] =
+    def replaceGlobalEvents(f: List[GlobalEvent] => List[GlobalEvent]): Outcome[A] =
       Outcome(state, f(globalEvents))
 
-    def eventsAsOutcome: Outcome[Batch[GlobalEvent]] =
+    def eventsAsOutcome: Outcome[List[GlobalEvent]] =
       Outcome(globalEvents)
 
-    def mapAll[B](f: A => B, g: Batch[GlobalEvent] => Batch[GlobalEvent]): Outcome[B] =
+    def mapAll[B](f: A => B, g: List[GlobalEvent] => List[GlobalEvent]): Outcome[B] =
       Outcome(f(state), g(globalEvents))
 
     def map[B](f: A => B): Outcome[B] =
@@ -148,10 +147,10 @@ object Outcome {
     def orElse[B >: Nothing](b: => Outcome[B]): Outcome[B] =
       b
 
-    def unsafeGlobalEvents: Batch[GlobalEvent] =
+    def unsafeGlobalEvents: List[GlobalEvent] =
       throw e
-    def globalEventsOrNil: Batch[GlobalEvent] =
-      Batch.Empty
+    def globalEventsOrNil: List[GlobalEvent] =
+      Nil
 
     def handleError[B >: Nothing](recoverWith: Throwable => Outcome[B]): Outcome[B] =
       recoverWith(e)
@@ -164,19 +163,19 @@ object Outcome {
         e.getMessage + "\n" + e.getStackTrace.mkString("\n")
       }(e)
 
-    def addGlobalEvents(newEvents: GlobalEvent*): Error                                = this
-    def addGlobalEvents(newEvents: => Batch[GlobalEvent]): Error                       = this
-    def createGlobalEvents(f: Nothing => Batch[GlobalEvent]): Error                    = this
-    def clearGlobalEvents: Error                                                       = this
-    def replaceGlobalEvents(f: Batch[GlobalEvent] => Batch[GlobalEvent]): Error        = this
-    def eventsAsOutcome: Outcome[Batch[GlobalEvent]]                                   = this
-    def mapAll[B](f: Nothing => B, g: Batch[GlobalEvent] => Batch[GlobalEvent]): Error = this
-    def map[B](f: Nothing => B): Error                                                 = this
-    def mapGlobalEvents(f: GlobalEvent => GlobalEvent): Error                          = this
-    def ap[B](of: Outcome[Nothing => B]): Outcome[B]                                   = this
-    def merge[B, C](other: Outcome[B])(f: (Nothing, B) => C): Error                    = this
-    def combine[B](other: Outcome[B]): Error                                           = this
-    def flatMap[B](f: Nothing => Outcome[B]): Error                                    = this
+    def addGlobalEvents(newEvents: GlobalEvent*): Error                              = this
+    def addGlobalEvents(newEvents: => List[GlobalEvent]): Error                      = this
+    def createGlobalEvents(f: Nothing => List[GlobalEvent]): Error                   = this
+    def clearGlobalEvents: Error                                                     = this
+    def replaceGlobalEvents(f: List[GlobalEvent] => List[GlobalEvent]): Error        = this
+    def eventsAsOutcome: Outcome[List[GlobalEvent]]                                  = this
+    def mapAll[B](f: Nothing => B, g: List[GlobalEvent] => List[GlobalEvent]): Error = this
+    def map[B](f: Nothing => B): Error                                               = this
+    def mapGlobalEvents(f: GlobalEvent => GlobalEvent): Error                        = this
+    def ap[B](of: Outcome[Nothing => B]): Outcome[B]                                 = this
+    def merge[B, C](other: Outcome[B])(f: (Nothing, B) => C): Error                  = this
+    def combine[B](other: Outcome[B]): Error                                         = this
+    def flatMap[B](f: Nothing => Outcome[B]): Error                                  = this
 
   }
 
@@ -185,8 +184,8 @@ object Outcome {
       Error(e, { case (ee: Throwable) => ee.getMessage })
   }
 
-  implicit class BatchWithOutcomeSequence[A](private val l: Batch[Outcome[A]]) extends AnyVal {
-    def sequence: Outcome[Batch[A]] =
+  implicit class ListWithOutcomeSequence[A](private val l: List[Outcome[A]]) extends AnyVal {
+    def sequence: Outcome[List[A]] =
       Outcome.sequence(l)
   }
   implicit class tuple2Outcomes[A, B](private val t: (Outcome[A], Outcome[B])) extends AnyVal {
@@ -223,20 +222,20 @@ object Outcome {
   }
 
   def apply[A](state: => A): Outcome[A] =
-    try Outcome.Result[A](state, Batch.Empty)
+    try Outcome.Result[A](state, Nil)
     catch {
       case NonFatal(e) =>
         Outcome.Error(e)
     }
 
-  def apply[A](state: => A, globalEvents: => Batch[GlobalEvent]): Outcome[A] =
+  def apply[A](state: => A, globalEvents: => List[GlobalEvent]): Outcome[A] =
     try Outcome.Result[A](state, globalEvents)
     catch {
       case NonFatal(e) =>
         Outcome.Error(e)
     }
 
-  def unapply[A](outcome: Outcome[A]): Option[(A, Batch[GlobalEvent])] =
+  def unapply[A](outcome: Outcome[A]): Option[(A, List[GlobalEvent])] =
     outcome match {
       case Outcome.Error(_, _) =>
         None
@@ -248,18 +247,23 @@ object Outcome {
   def raiseError(throwable: Throwable): Outcome.Error =
     Outcome.Error(throwable)
 
-  def sequence[A](l: Batch[Outcome[A]]): Outcome[Batch[A]] = {
+  def sequence[A](l: List[Outcome[A]]): Outcome[List[A]] = {
     given CanEqual[Outcome[A], Outcome[A]] = CanEqual.derived
 
     @tailrec
-    def rec(remaining: Batch[Outcome[A]], accA: Batch[A], accEvents: Batch[GlobalEvent]): Outcome[Batch[A]] =
-      if remaining.isEmpty then Outcome(accA).addGlobalEvents(accEvents)
-      else
-        remaining.head match
-          case Error(e, r)   => Error(e, r)
-          case Result(s, es) => rec(remaining.tail, accA ++ Batch(s), accEvents ++ es)
+    def rec(remaining: List[Outcome[A]], accA: List[A], accEvents: List[GlobalEvent]): Outcome[List[A]] =
+      remaining match {
+        case Nil =>
+          Outcome(accA).addGlobalEvents(accEvents)
 
-    rec(l, Batch.Empty, Batch.Empty)
+        case Error(e, r) :: _ =>
+          Error(e, r)
+
+        case Result(s, es) :: xs =>
+          rec(xs, accA ++ List(s), accEvents ++ es)
+      }
+
+    rec(l, Nil, Nil)
   }
 
   def merge[A, B, C](oa: Outcome[A], ob: Outcome[B])(f: (A, B) => C): Outcome[C] =

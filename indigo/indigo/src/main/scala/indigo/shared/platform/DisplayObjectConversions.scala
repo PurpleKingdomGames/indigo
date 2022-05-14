@@ -8,7 +8,6 @@ import indigo.shared.IndigoLogger
 import indigo.shared.QuickCache
 import indigo.shared.animation.AnimationRef
 import indigo.shared.assets.AssetName
-import indigo.shared.collections.Batch
 import indigo.shared.config.RenderingTechnology
 import indigo.shared.datatypes.FontChar
 import indigo.shared.datatypes.FontInfo
@@ -138,7 +137,7 @@ final class DisplayObjectConversions(
       )
 
   private def mutantsToDisplayEntities(batch: Mutants): DisplayMutants =
-    val uniformDataConvert: Batch[UniformBlock] => scalajs.js.Array[DisplayObjectUniformData] = uniformBlocks =>
+    val uniformDataConvert: List[UniformBlock] => scalajs.js.Array[DisplayObjectUniformData] = uniformBlocks =>
       uniformBlocks.toJSArray.map { ub =>
         DisplayObjectUniformData(
           uniformHash = ub.uniformHash,
@@ -929,7 +928,7 @@ object DisplayObjectConversions {
 
   // takes a list because only converted to JSArray if value not cached.
   def packUBO(
-      uniforms: Batch[(Uniform, ShaderPrimitive)],
+      uniforms: List[(Uniform, ShaderPrimitive)],
       cacheKey: String,
       disableCache: Boolean
   )(using QuickCache[scalajs.js.Array[Float]]): scalajs.js.Array[Float] = {

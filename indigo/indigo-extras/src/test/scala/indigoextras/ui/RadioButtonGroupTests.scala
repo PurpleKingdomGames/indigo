@@ -1,7 +1,6 @@
 package indigoextras.ui
 
 import indigo.shared.assets.AssetName
-import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.events.GlobalEvent
@@ -47,27 +46,27 @@ class RadioButtonGroupTests extends munit.FunSuite {
   test("No mouse interaction") {
 
     val mouse =
-      new Mouse(Batch.Empty, Point(-10, -10), false)
+      new Mouse(Nil, Point(-10, -10), false)
 
     val actual = radioButtons.update(mouse)
 
     val expected = radioButtons
 
     assertEquals(actual.unsafeGet, expected)
-    assertEquals(actual.unsafeGlobalEvents, Batch.Empty)
+    assertEquals(actual.unsafeGlobalEvents, Nil)
 
   }
 
   test("hover over unselected button") {
 
     val mouse =
-      new Mouse(Batch.Empty, Point(5, 25), false)
+      new Mouse(Nil, Point(5, 25), false)
 
     val actual = radioButtons.update(mouse)
 
     val expected =
       radioButtons.copy(
-        options = Batch(
+        options = List(
           option1,
           option2.copy(state = RadioButtonState.Hover),
           option3
@@ -75,18 +74,18 @@ class RadioButtonGroupTests extends munit.FunSuite {
       )
 
     assertEquals(actual.unsafeGet, expected)
-    assertEquals(actual.unsafeGlobalEvents, Batch(RadioTestEvent("option 2 hover over")))
+    assertEquals(actual.unsafeGlobalEvents, List(RadioTestEvent("option 2 hover over")))
   }
 
   test("hover out unselected button") {
 
     val mouse =
-      new Mouse(Batch.Empty, Point(-5, 25), false)
+      new Mouse(Nil, Point(-5, 25), false)
 
     val actual =
       radioButtons
         .copy(
-          options = Batch(
+          options = List(
             option1,
             option2.copy(state = RadioButtonState.Hover),
             option3
@@ -96,7 +95,7 @@ class RadioButtonGroupTests extends munit.FunSuite {
 
     val expected =
       radioButtons.copy(
-        options = Batch(
+        options = List(
           option1,
           option2.deselected,
           option3
@@ -104,18 +103,18 @@ class RadioButtonGroupTests extends munit.FunSuite {
       )
 
     assertEquals(actual.unsafeGet, expected)
-    assertEquals(actual.unsafeGlobalEvents, Batch(RadioTestEvent("option 2 hover out")))
+    assertEquals(actual.unsafeGlobalEvents, List(RadioTestEvent("option 2 hover out")))
   }
 
   test("selecting a hovered button") {
 
     val mouse =
-      new Mouse(Batch(MouseEvent.Click(5, 25)), Point(5, 25), true)
+      new Mouse(List(MouseEvent.Click(5, 25)), Point(5, 25), true)
 
     val actual =
       radioButtons
         .copy(
-          options = Batch(
+          options = List(
             option1.deselected,
             option2.copy(state = RadioButtonState.Hover),
             option3
@@ -125,7 +124,7 @@ class RadioButtonGroupTests extends munit.FunSuite {
 
     val expected =
       radioButtons.copy(
-        options = Batch(
+        options = List(
           option1.deselected,
           option2.selected,
           option3
@@ -133,17 +132,17 @@ class RadioButtonGroupTests extends munit.FunSuite {
       )
 
     assertEquals(actual.unsafeGet.options.map(_.state), expected.options.map(_.state))
-    assertEquals(actual.unsafeGlobalEvents, Batch(RadioTestEvent("option 2 selected")))
+    assertEquals(actual.unsafeGlobalEvents, List(RadioTestEvent("option 2 selected")))
   }
 
   test("selecting a hovered button, existing selected is de-selected") {
     val mouse =
-      new Mouse(Batch(MouseEvent.Click(5, 25)), Point(5, 25), true)
+      new Mouse(List(MouseEvent.Click(5, 25)), Point(5, 25), true)
 
     val actual =
       radioButtons
         .copy(
-          options = Batch(
+          options = List(
             option1.selected,
             option2.copy(state = RadioButtonState.Hover),
             option3
@@ -153,7 +152,7 @@ class RadioButtonGroupTests extends munit.FunSuite {
 
     val expected =
       radioButtons.copy(
-        options = Batch(
+        options = List(
           option1.deselected,
           option2.selected,
           option3
@@ -161,7 +160,7 @@ class RadioButtonGroupTests extends munit.FunSuite {
       )
 
     assertEquals(actual.unsafeGet.options.map(_.state), expected.options.map(_.state))
-    assertEquals(actual.unsafeGlobalEvents, Batch(RadioTestEvent("option 1 unselected"), RadioTestEvent("option 2 selected")))
+    assertEquals(actual.unsafeGlobalEvents, List(RadioTestEvent("option 1 unselected"), RadioTestEvent("option 2 selected")))
   }
 
 }

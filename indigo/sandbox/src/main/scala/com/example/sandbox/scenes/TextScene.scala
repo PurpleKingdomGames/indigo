@@ -51,7 +51,7 @@ object TextScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxView
     Outcome(
       SceneUpdateFragment(
         Layer(
-          Batch(
+          List(
             Text("The quick brown fox\njumps over the\nlazy dog.", Fonts.fontKey, textMaterial)
               .moveTo(10, 10)
           )

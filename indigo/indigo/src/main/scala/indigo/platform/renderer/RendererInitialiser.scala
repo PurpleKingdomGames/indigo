@@ -9,7 +9,6 @@ import indigo.platform.renderer.shared.LoadedTextureAsset
 import indigo.platform.renderer.webgl1.RendererWebGL1
 import indigo.platform.renderer.webgl2.RendererWebGL2
 import indigo.shared.IndigoLogger
-import indigo.shared.collections.Batch
 import indigo.shared.config.RenderingTechnology
 import indigo.shared.events.RendererDetails
 import indigo.shared.platform.RendererConfig
@@ -30,7 +29,7 @@ final class RendererInitialiser(
 
   def setup(
       config: RendererConfig,
-      loadedTextureAssets: Batch[LoadedTextureAsset],
+      loadedTextureAssets: List[LoadedTextureAsset],
       canvas: html.Canvas,
       shaders: Set[RawShaderCode]
   ): Renderer = {
@@ -234,7 +233,7 @@ final class RendererInitialiser(
         case _: Throwable => false
       }
 
-    val tests = Batch(
+    val tests = List(
       (WebGL2RenderingContext.MAX_3D_TEXTURE_SIZE, 256, "MAX_3D_TEXTURE_SIZE"),
       (WebGL2RenderingContext.MAX_DRAW_BUFFERS, 4, "MAX_DRAW_BUFFERS"),
       (WebGL2RenderingContext.MAX_COLOR_ATTACHMENTS, 4, "MAX_COLOR_ATTACHMENTS"),

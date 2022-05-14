@@ -1,6 +1,5 @@
 package indigoextras.geometry
 
-import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Size
@@ -23,8 +22,8 @@ class BoundingBoxTests extends munit.FunSuite {
 
   test("creating rectangles.should be able to construct a bounding box from a cloud of vertices") {
     // left 0, right 6, top 7, bottom 13
-    val vertices: Batch[Vertex] =
-      Batch(
+    val vertices: List[Vertex] =
+      List(
         Vertex(4, 11),
         Vertex(6, 8),
         Vertex(2, 9),
@@ -123,7 +122,7 @@ class BoundingBoxTests extends munit.FunSuite {
 
   test("Convert bounding box to line segments") {
     val expected =
-      Batch(
+      List(
         LineSegment(Vertex(0, 0), Vertex(0, 3)),
         LineSegment(Vertex(0, 3), Vertex(3, 3)),
         LineSegment(Vertex(3, 3), Vertex(3, 0)),

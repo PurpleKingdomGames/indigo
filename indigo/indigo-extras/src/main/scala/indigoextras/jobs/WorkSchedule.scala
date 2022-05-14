@@ -1,33 +1,32 @@
 package indigoextras.jobs
 
 import indigo.shared.Outcome
-import indigo.shared.collections.Batch
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.dice.Dice
 import indigo.shared.events.FrameTick
 import indigo.shared.events.GlobalEvent
 import indigo.shared.time.GameTime
 
-/** Represents an Actor's work schedule
+/**
+  * Represents an Actor's work schedule
   *
   * @param id
   * @param jobStack
   */
-final case class WorkSchedule[Actor, Context](id: BindingKey, worker: Worker[Actor, Context], jobStack: Batch[Job])
-    derives CanEqual {
+final case class WorkSchedule[Actor, Context](val id: BindingKey, val worker: Worker[Actor, Context], val jobStack: List[Job]) derives CanEqual {
 
-  /** Give the job currently being worked on
+  /**
+    * Give the job currently being worked on
     *
-    * @return
-    *   Option[Job]
+    * @return Option[Job]
     */
   def currentJob: Option[Job] =
     WorkSchedule.current(this)
 
-  /** When supplied with a global event, creates an outcome of the updated work schedule.
-    *
-    * The update function coordinates all of the work for this worker, creating work, finding jobs, working on tasks
-    * etc.
+  /**
+    * When supplied with a global event, creates an outcome of the updated work schedule.
+    * 
+    * The update function coordinates all of the work for this worker, creating work, finding jobs, working on tasks etc.
     *
     * @param gameTime
     * @param dice
@@ -35,19 +34,13 @@ final case class WorkSchedule[Actor, Context](id: BindingKey, worker: Worker[Act
     * @param context
     * @return
     */
-  def update(
-      gameTime: GameTime,
-      dice: Dice,
-      actor: Actor,
-      context: Context
-  ): GlobalEvent => Outcome[WorkProgressReport[Actor, Context]] =
+  def update(gameTime: GameTime, dice: Dice, actor: Actor, context: Context): GlobalEvent => Outcome[WorkProgressReport[Actor, Context]] =
     WorkSchedule.update(id, this, gameTime, dice, actor, context, worker)
 
-  /** The significance of this function is that any local jobs are lost, but any global jobs are returned to the
-    * JobMarket.
+  /**
+    * The significance of this function is that any local jobs are lost, but any global jobs are returned to the JobMarket.
     *
-    * @return
-    *   An Outcome of an empty work schedule of the same type.
+    * @return An Outcome of an empty work schedule of the same type.
     */
   def destroy(): Outcome[WorkSchedule[Actor, Context]] =
     WorkSchedule.destroy(this)
@@ -56,7 +49,7 @@ final case class WorkSchedule[Actor, Context](id: BindingKey, worker: Worker[Act
 object WorkSchedule {
 
   def apply[Actor, Context](id: BindingKey)(implicit worker: Worker[Actor, Context]): WorkSchedule[Actor, Context] =
-    new WorkSchedule[Actor, Context](id, worker, Batch.Empty)
+    new WorkSchedule[Actor, Context](id, worker, Nil)
 
   def current[Actor, Context](workSchedule: WorkSchedule[Actor, Context]): Option[Job] =
     workSchedule.jobStack.headOption
@@ -97,17 +90,26 @@ object WorkSchedule {
       workContext: WorkContext[Actor, Context],
       worker: Worker[Actor, Context]
   ): Outcome[WorkProgressReport[Actor, Context]] =
-    import Batch.Unapply.*
-
-    workSchedule.jobStack match
-      case current :: _ if worker.isJobComplete(workContext)(current) =>
-        worker.onJobComplete(workContext)(current).map { case (jobs, actor) =>
+    workSchedule.jobStack match {
+      case Nil =>
+        Outcome(
           WorkProgressReport(
             workSchedule.copy[Actor, Context](
-              jobStack = jobs ++ workSchedule.jobStack.drop(1)
+              jobStack = worker.generateJobs(workContext)
             ),
-            actor
+            workContext.actor
           )
+        ).addGlobalEvents(JobMarketEvent.Find(workSchedule.id, worker.canTakeJob(workContext)))
+
+      case current :: _ if worker.isJobComplete(workContext)(current) =>
+        worker.onJobComplete(workContext)(current).map {
+          case (jobs, actor) =>
+            WorkProgressReport(
+              workSchedule.copy[Actor, Context](
+                jobStack = jobs ++ workSchedule.jobStack.drop(1)
+              ),
+              actor
+            )
         }
 
       case h :: t =>
@@ -120,32 +122,21 @@ object WorkSchedule {
             res._2
           )
         )
-
-      case _ =>
-        Outcome(
-          WorkProgressReport(
-            workSchedule.copy[Actor, Context](
-              jobStack = worker.generateJobs(workContext)
-            ),
-            workContext.actor
-          )
-        ).addGlobalEvents(JobMarketEvent.Find(workSchedule.id, worker.canTakeJob(workContext)))
+    }
 
   def destroy[Actor, Context](workSchedule: WorkSchedule[Actor, Context]): Outcome[WorkSchedule[Actor, Context]] =
     Outcome(
-      workSchedule.copy[Actor, Context](jobStack = Batch.Empty),
+      workSchedule.copy[Actor, Context](jobStack = Nil),
       workSchedule.jobStack.filterNot(_.isLocal).map(j => JobMarketEvent.Post(j))
     )
 
 }
 
-/** Encapsulates an updated schedule and an updated actor. Work is done by workers, but work can also affect workers,
-  * e.g. making them stronger, smarter, or tired.
+/**
+  * Encapsulates an updated schedule and an updated actor.
+  * Work is done by workers, but work can also affect workers, e.g. making them stronger, smarter, or tired.
   *
-  * @param workSchedule
-  *   The updated work schedule.
-  * @param actor
-  *   The updated actor.
+  * @param workSchedule The updated work schedule.
+  * @param actor The updated actor.
   */
-final case class WorkProgressReport[Actor, Context](workSchedule: WorkSchedule[Actor, Context], actor: Actor)
-    derives CanEqual
+final case class WorkProgressReport[Actor, Context](workSchedule: WorkSchedule[Actor, Context], actor: Actor) derives CanEqual

@@ -1,20 +1,19 @@
 package indigo.scenes
 
-import indigo.shared.collections.Batch
-import indigo.shared.collections.NonEmptyBatch
+import indigo.shared.collections.NonEmptyList
 
 class SceneFinderTests extends munit.FunSuite {
 
   import TestScenes._
 
-  val scenes: NonEmptyBatch[Scene[Unit, TestGameModel, TestViewModel]] =
-    NonEmptyBatch(sceneA, sceneB)
+  val scenes: NonEmptyList[Scene[Unit, TestGameModel, TestViewModel]] =
+    NonEmptyList(sceneA, sceneB)
 
   val sceneFinder: SceneFinder =
     SceneFinder(
-      Batch.Empty,
+      Nil,
       ScenePosition(0, sceneA.name),
-      Batch(ScenePosition(1, sceneB.name))
+      List(ScenePosition(1, sceneB.name))
     )
 
   test("managing the scenes list.should be able to construct a SceneFinder from a Scenes object") {
@@ -26,12 +25,12 @@ class SceneFinderTests extends munit.FunSuite {
   }
 
   test("managing the scenes list.should be able to produce a list of ScenePositions") {
-    assert(SceneFinder.fromScenes(scenes).toBatch == Batch(ScenePosition(0, sceneA.name), ScenePosition(1, sceneB.name)))
+    assertEquals(SceneFinder.fromScenes(scenes).toList == List(ScenePosition(0, sceneA.name), ScenePosition(1, sceneB.name)), true)
   }
 
   test("managing the scenes list.should be able to produce a non-empty list of ScenePositions") {
     val a = SceneFinder.fromScenes(scenes).toNel
-    val b = NonEmptyBatch(ScenePosition(0, sceneA.name), ScenePosition(1, sceneB.name))
+    val b = NonEmptyList(ScenePosition(0, sceneA.name), ScenePosition(1, sceneB.name))
 
     assertEquals(a == b, true)
   }

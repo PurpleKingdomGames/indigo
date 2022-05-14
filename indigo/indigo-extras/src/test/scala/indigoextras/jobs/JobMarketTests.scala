@@ -4,7 +4,6 @@ import indigo.platform.assets.DynamicText
 import indigo.shared.AnimationsRegister
 import indigo.shared.BoundaryLocator
 import indigo.shared.FontRegister
-import indigo.shared.collections.Batch
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.dice.Dice
 import indigo.shared.events.FrameTick
@@ -55,19 +54,19 @@ class JobMarketTests extends munit.FunSuite {
     val allocateEvent: JobMarketEvent     = JobMarketEvent.Allocate(bindingKey, job)
     val nothingFoundEvent: JobMarketEvent = JobMarketEvent.NothingFound(bindingKey)
 
-    val updatedA = market.update(context, Batch(job))(allocateEvent)
-    assertEquals(updatedA.unsafeGet, Batch(job))
-    assertEquals(updatedA.unsafeGlobalEvents, Batch.Empty)
+    val updatedA = market.update(context, List(job))(allocateEvent)
+    assertEquals(updatedA.unsafeGet, List(job))
+    assertEquals(updatedA.unsafeGlobalEvents, Nil)
 
     val updatedB = market.update(context, updatedA.unsafeGet)(nothingFoundEvent)
-    assertEquals(updatedB.unsafeGet, Batch(job))
-    assertEquals(updatedB.unsafeGlobalEvents, Batch.Empty)
+    assertEquals(updatedB.unsafeGet, List(job))
+    assertEquals(updatedB.unsafeGlobalEvents, Nil)
 
   }
 
   test("The job market.should be able to report it's current jobs") {
     val job: Job          = SampleJobs.CantHave()
-    val market: JobMarket = JobMarket(SubSystemId("market"), Batch(job))
+    val market: JobMarket = JobMarket(SubSystemId("market"), List(job))
 
     val report = market.availableJobs.map(_.jobName.toString).mkString(",")
 
@@ -78,15 +77,15 @@ class JobMarketTests extends munit.FunSuite {
     val job: Job          = SampleJobs.WanderTo(10)
     val market: JobMarket = JobMarket.subSystem(SubSystemId("market"))
 
-    assertEquals(market.present(context, Batch(job)).unsafeGet.layers.flatMap(_.nodes).isEmpty, true)
-    assertEquals(market.present(context, Batch(job)).unsafeGlobalEvents.isEmpty, true)
-    assertEquals(market.present(context, Batch(job)).unsafeGet.audio, SceneAudio.None)
+    assertEquals(market.present(context, List(job)).unsafeGet.layers.flatMap(_.nodes).isEmpty, true)
+    assertEquals(market.present(context, List(job)).unsafeGlobalEvents.isEmpty, true)
+    assertEquals(market.present(context, List(job)).unsafeGet.audio, SceneAudio.None)
   }
 
   test("The job market.should have an empty subsystem representation") {
     val market = JobMarket.subSystem(SubSystemId("market"))
 
-    assertEquals(market.availableJobs, Batch.Empty)
+    assertEquals(market.availableJobs, Nil)
   }
 
   test("The job market.should allow a you to find work.when there is a job you can do") {
@@ -95,9 +94,9 @@ class JobMarketTests extends munit.FunSuite {
     val market: JobMarket         = JobMarket.subSystem(SubSystemId("market"))
     val findEvent: JobMarketEvent = JobMarketEvent.Find(bindingKey, SampleActor.worker.canTakeJob(workContext))
 
-    val updated = market.update(context, Batch(job))(findEvent)
+    val updated = market.update(context, List(job))(findEvent)
 
-    assertEquals(updated.unsafeGet, Batch.Empty)
+    assertEquals(updated.unsafeGet, Nil)
     assertEquals(updated.unsafeGlobalEvents.head, JobMarketEvent.Allocate(bindingKey, job))
   }
 
@@ -106,9 +105,9 @@ class JobMarketTests extends munit.FunSuite {
     val market: JobMarket         = JobMarket.subSystem(SubSystemId("market"))
     val findEvent: JobMarketEvent = JobMarketEvent.Find(bindingKey, SampleActor.worker.canTakeJob(workContext))
 
-    val updated = market.update(context, Batch.Empty)(findEvent)
+    val updated = market.update(context, Nil)(findEvent)
 
-    assertEquals(updated.unsafeGet, Batch.Empty)
+    assertEquals(updated.unsafeGet, Nil)
     assertEquals(updated.unsafeGlobalEvents.head, JobMarketEvent.NothingFound(bindingKey))
   }
 
@@ -118,21 +117,21 @@ class JobMarketTests extends munit.FunSuite {
     val market: JobMarket         = JobMarket.subSystem(SubSystemId("market"))
     val findEvent: JobMarketEvent = JobMarketEvent.Find(bindingKey, SampleActor.worker.canTakeJob(workContext))
 
-    val updated = market.update(context, Batch(job))(findEvent)
+    val updated = market.update(context, List(job))(findEvent)
 
-    assertEquals(updated.unsafeGet, Batch(job))
+    assertEquals(updated.unsafeGet, List(job))
     assertEquals(updated.unsafeGlobalEvents.head, JobMarketEvent.NothingFound(bindingKey))
   }
 
   test("The job market.should allow a you to find work.should give you the highest priority job first") {
     val bindingKey: BindingKey    = BindingKey("0001")
-    val jobs: Batch[Job]           = Batch(SampleJobs.WanderTo(10), SampleJobs.WanderTo(20), SampleJobs.Fishing(0))
+    val jobs: List[Job]           = List(SampleJobs.WanderTo(10), SampleJobs.WanderTo(20), SampleJobs.Fishing(0))
     val market: JobMarket         = JobMarket.subSystem(SubSystemId("market"))
     val findEvent: JobMarketEvent = JobMarketEvent.Find(bindingKey, SampleActor.worker.canTakeJob(workContext))
 
     val updated = market.update(context, jobs)(findEvent)
 
-    assertEquals(updated.unsafeGet, Batch(SampleJobs.WanderTo(10), SampleJobs.WanderTo(20)))
+    assertEquals(updated.unsafeGet, List(SampleJobs.WanderTo(10), SampleJobs.WanderTo(20)))
     assertEquals(updated.unsafeGlobalEvents.head, JobMarketEvent.Allocate(bindingKey, SampleJobs.Fishing(0)))
   }
 
@@ -141,9 +140,9 @@ class JobMarketTests extends munit.FunSuite {
     val market: JobMarket         = JobMarket.subSystem(SubSystemId("market"))
     val postEvent: JobMarketEvent = JobMarketEvent.Post(job)
 
-    val updated = market.update(context, Batch.Empty)(postEvent)
+    val updated = market.update(context, Nil)(postEvent)
 
-    assertEquals(updated.unsafeGet, Batch(job))
+    assertEquals(updated.unsafeGet, List(job))
   }
 
   test("The job market.should allow you to post a job.and append to a non-empty market") {
@@ -151,9 +150,9 @@ class JobMarketTests extends munit.FunSuite {
     val market: JobMarket         = JobMarket.subSystem(SubSystemId("market"))
     val postEvent: JobMarketEvent = JobMarketEvent.Post(job)
 
-    val updated = market.update(context, Batch(SampleJobs.Fishing(0)))(postEvent)
+    val updated = market.update(context, List(SampleJobs.Fishing(0)))(postEvent)
 
-    assertEquals(updated.unsafeGet, Batch(SampleJobs.Fishing(0), job))
+    assertEquals(updated.unsafeGet, List(SampleJobs.Fishing(0), job))
   }
 
   test("The job market.should allow you to post a job.the jobs state will be preserved") {
@@ -161,9 +160,9 @@ class JobMarketTests extends munit.FunSuite {
     val market: JobMarket         = JobMarket.subSystem(SubSystemId("market"))
     val postEvent: JobMarketEvent = JobMarketEvent.Post(job)
 
-    val updated = market.update(context, Batch.Empty)(postEvent)
+    val updated = market.update(context, Nil)(postEvent)
 
-    assertEquals(updated.unsafeGet, Batch(SampleJobs.Fishing(50)))
+    assertEquals(updated.unsafeGet, List(SampleJobs.Fishing(50)))
   }
 
 }

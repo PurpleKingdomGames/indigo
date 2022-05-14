@@ -5,7 +5,6 @@ import indigo.shared.animation.AnimationAction
 import indigo.shared.animation.AnimationKey
 import indigo.shared.animation.AnimationMemento
 import indigo.shared.animation.AnimationRef
-import indigo.shared.collections.Batch
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.time.GameTime
 
@@ -34,7 +33,7 @@ final class AnimationsRegister:
       gameTime: GameTime,
       bindingKey: BindingKey,
       animationKey: AnimationKey,
-      animationActions: Batch[AnimationAction]
+      animationActions: List[AnimationAction]
   ): Option[AnimationRef] =
     fetchAnimationInLastState(bindingKey, animationKey).map { anim =>
       val newAnim = anim.runActions(animationActions, gameTime)

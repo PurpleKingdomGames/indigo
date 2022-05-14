@@ -1,6 +1,5 @@
 package indigo.shared.events
 
-import indigo.shared.collections.Batch
 import indigo.shared.constants.Key
 import indigo.shared.datatypes.Point
 import indigo.shared.input.Gamepad
@@ -10,11 +9,11 @@ import indigo.shared.input.Mouse
 /** Input mapping instances describe combinations of "live" inputs like key combinations or gamepad buttons, and map
   * them to some user defined value.
   */
-final case class InputMapping[A](oneOf: Batch[(Combo, A)]) {
+final case class InputMapping[A](oneOf: List[(Combo, A)]) {
 
   def add(combos: (Combo, A)*): InputMapping[A] =
-    add(Batch.fromSeq(combos))
-  def add(combos: Batch[(Combo, A)]): InputMapping[A] =
+    add(combos.toList)
+  def add(combos: List[(Combo, A)]): InputMapping[A] =
     this.copy(oneOf = oneOf ++ combos)
 
   def find(mouse: Mouse, keyboard: Keyboard, gamepad: Gamepad): Option[A] =
@@ -65,66 +64,66 @@ object InputMapping {
     empty
 
   def empty[A]: InputMapping[A] =
-    InputMapping(Batch.Empty)
+    InputMapping(Nil)
 
   def apply[A](combos: (Combo, A)*): InputMapping[A] =
-    InputMapping(Batch.fromSeq(combos))
+    InputMapping(combos.toList)
 
 }
 
-final case class Combo(mouseInputs: Batch[MouseInput], keyInputs: Batch[Key], gamepadInputs: Batch[GamepadInput]) {
+final case class Combo(mouseInputs: List[MouseInput], keyInputs: List[Key], gamepadInputs: List[GamepadInput]) {
   def |+|(other: Combo): Combo =
     Combo(mouseInputs ++ other.mouseInputs, keyInputs ++ other.keyInputs, gamepadInputs ++ other.gamepadInputs)
 
   def withMouseInputs(newInputs: MouseInput*): Combo =
-    withMouseInputs(Batch.fromSeq(newInputs))
-  def withMouseInputs(newInputs: Batch[MouseInput]): Combo =
+    withMouseInputs(newInputs.toList)
+  def withMouseInputs(newInputs: List[MouseInput]): Combo =
     this.copy(mouseInputs = mouseInputs ++ newInputs)
 
   def withKeyInputs(newInputs: Key*): Combo =
-    withKeyInputs(Batch.fromSeq(newInputs))
-  def withKeyInputs(newInputs: Batch[Key]): Combo =
+    withKeyInputs(newInputs.toList)
+  def withKeyInputs(newInputs: List[Key]): Combo =
     this.copy(keyInputs = keyInputs ++ newInputs)
 
   def withGamepadInputs(newInputs: GamepadInput*): Combo =
-    withGamepadInputs(Batch.fromSeq(newInputs))
-  def withGamepadInputs(newInputs: Batch[GamepadInput]): Combo =
+    withGamepadInputs(newInputs.toList)
+  def withGamepadInputs(newInputs: List[GamepadInput]): Combo =
     this.copy(gamepadInputs = gamepadInputs ++ newInputs)
 
 }
 object Combo {
 
   def empty: Combo =
-    Combo(Batch.Empty, Batch.Empty, Batch.Empty)
+    Combo(Nil, Nil, Nil)
 
   def MouseInputs(inputs: MouseInput*): Combo =
-    MouseInputs(Batch.fromSeq(inputs))
-  def MouseInputs(inputs: Batch[MouseInput]): Combo =
-    Combo(inputs, Batch.Empty, Batch.Empty)
+    MouseInputs(inputs.toList)
+  def MouseInputs(inputs: List[MouseInput]): Combo =
+    Combo(inputs, Nil, Nil)
 
   def KeyInputs(inputs: Key*): Combo =
-    KeyInputs(Batch.fromSeq(inputs))
-  def KeyInputs(inputs: Batch[Key]): Combo =
-    Combo(Batch.Empty, inputs, Batch.Empty)
+    KeyInputs(inputs.toList)
+  def KeyInputs(inputs: List[Key]): Combo =
+    Combo(Nil, inputs, Nil)
 
   def GamepadInputs(inputs: GamepadInput*): Combo =
-    GamepadInputs(Batch.fromSeq(inputs))
-  def GamepadInputs(inputs: Batch[GamepadInput]): Combo =
-    Combo(Batch.Empty, Batch.Empty, inputs)
+    GamepadInputs(inputs.toList)
+  def GamepadInputs(inputs: List[GamepadInput]): Combo =
+    Combo(Nil, Nil, inputs)
 
   def withMouseInputs(newInputs: MouseInput*): Combo =
-    withMouseInputs(Batch.fromSeq(newInputs))
-  def withMouseInputs(newInputs: Batch[MouseInput]): Combo =
+    withMouseInputs(newInputs.toList)
+  def withMouseInputs(newInputs: List[MouseInput]): Combo =
     MouseInputs(newInputs)
 
   def withKeyInputs(newInputs: Key*): Combo =
-    withKeyInputs(Batch.fromSeq(newInputs))
-  def withKeyInputs(newInputs: Batch[Key]): Combo =
+    withKeyInputs(newInputs.toList)
+  def withKeyInputs(newInputs: List[Key]): Combo =
     KeyInputs(newInputs)
 
   def withGamepadInputs(newInputs: GamepadInput*): Combo =
-    withGamepadInputs(Batch.fromSeq(newInputs))
-  def withGamepadInputs(newInputs: Batch[GamepadInput]): Combo =
+    withGamepadInputs(newInputs.toList)
+  def withGamepadInputs(newInputs: List[GamepadInput]): Combo =
     GamepadInputs(newInputs)
 }
 

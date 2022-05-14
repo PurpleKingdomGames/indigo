@@ -4,7 +4,6 @@ import indigo.shared.Outcome
 import indigo.shared.assets.AssetPath
 import indigo.shared.assets.AssetType
 import indigo.shared.assets.AssetTypePrimitive
-import indigo.shared.collections.Batch
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.events.AssetEvent
 import indigo.shared.events.GlobalEvent
@@ -80,10 +79,10 @@ object AssetBundleLoader extends SubSystem {
       assets: Set[AssetType],
       tracker: AssetBundleTracker
   ): Outcome[AssetBundleTracker] = {
-    val assetPrimitives = AssetType.flattenAssetBatch(Batch.fromSet(assets))
+    val assetPrimitives = AssetType.flattenAssetList(assets.toList)
 
-    val events: Batch[GlobalEvent] =
-      assetPrimitives
+    val events: List[GlobalEvent] =
+      assetPrimitives.toList
         .map(asset => AssetEvent.LoadAsset(asset, BindingKey(asset.path.toString), false))
 
     Outcome(
@@ -99,26 +98,26 @@ object AssetBundleLoader extends SubSystem {
     val updatedTracker =
       tracker.assetLoadComplete(path, completedSuccessfully)
 
-    val statusBasedEvents: Batch[GlobalEvent] =
+    val statusBasedEvents: List[GlobalEvent] =
       updatedTracker.register
         .filter(_.containsAsset(path))
         .flatMap { bundle =>
           bundle.status match {
             case AssetBundleStatus.LoadComplete(completed, count) =>
-              Batch[GlobalEvent](
+              List[GlobalEvent](
                 AssetBundleLoaderEvent.LoadProgress(bundle.key, 100, completed, count),
                 AssetEvent.LoadAssetBatch(bundle.giveAssetSet, bundle.key, true)
               )
 
             case AssetBundleStatus.LoadFailed(percent, completed, count, _) =>
-              Batch[GlobalEvent](
+              List[GlobalEvent](
                 AssetBundleLoaderEvent.LoadProgress(bundle.key, percent, completed, count),
                 AssetEvent
                   .AssetBatchLoadError(bundle.key, s"Asset batch with key '${bundle.key.toString}' failed to load")
               )
 
             case AssetBundleStatus.LoadInProgress(percent, completed, count) =>
-              Batch[GlobalEvent](
+              List[GlobalEvent](
                 AssetBundleLoaderEvent.LoadProgress(bundle.key, percent, completed, count)
               )
           }
@@ -144,11 +143,11 @@ object AssetBundleLoaderEvent {
   final case class Failure(key: BindingKey, message: String) extends AssetBundleLoaderEvent
 }
 
-final case class AssetBundleTracker(val register: Batch[AssetBundle]) {
+final case class AssetBundleTracker(val register: List[AssetBundle]) {
   val bundleCount: Int =
-    register.size
+    register.length
 
-  def addBundle(key: BindingKey, assets: Batch[AssetTypePrimitive]): AssetBundleTracker =
+  def addBundle(key: BindingKey, assets: List[AssetTypePrimitive]): AssetBundleTracker =
     if (assets.isEmpty || findBundleByKey(key).isDefined) this
     else {
       val newBundle =
@@ -160,14 +159,14 @@ final case class AssetBundleTracker(val register: Batch[AssetBundle]) {
           }.toMap
         )
 
-      AssetBundleTracker(register ++ Batch(newBundle))
+      AssetBundleTracker(register ++ List(newBundle))
     }
 
   def findBundleByKey(key: BindingKey): Option[AssetBundle] =
     register.find(_.key == key)
 
-  def findAssetByPath(path: AssetPath): Batch[AssetToLoad] =
-    register.flatMap(p => Batch.fromOption(p.assets.get(path)))
+  def findAssetByPath(path: AssetPath): List[AssetToLoad] =
+    register.flatMap(_.assets.get(path).toList)
 
   def containsBundle(key: BindingKey): Boolean =
     register.exists(_.key == key)
@@ -186,7 +185,7 @@ final case class AssetBundleTracker(val register: Batch[AssetBundle]) {
 }
 object AssetBundleTracker {
   val empty: AssetBundleTracker =
-    new AssetBundleTracker(Batch.Empty)
+    new AssetBundleTracker(Nil)
 }
 final case class AssetBundle(key: BindingKey, assetCount: Int, assets: Map[AssetPath, AssetToLoad]) {
   private given CanEqual[Option[AssetToLoad], Option[AssetToLoad]] = CanEqual.derived
@@ -202,12 +201,12 @@ final case class AssetBundle(key: BindingKey, assetCount: Int, assets: Map[Asset
     )
 
   def status: AssetBundleStatus = {
-    val assetList         = Batch.fromMap(assets)
-    val count             = assetList.size
+    val assetList         = assets.toList
+    val count             = assetList.length
     val errors            = assetList.filter(p => p._2.complete && !p._2.loaded).map(_._1)
-    val errorCount        = errors.size
+    val errorCount        = errors.length
     val successes         = assetList.filter(p => p._2.complete && p._2.loaded).map(_._1)
-    val successCount      = successes.size
+    val successCount      = successes.length
     val combined          = errorCount + successCount
     val percentage        = Math.round(100.0d * combined.toDouble / count.toDouble).toInt
     val clampedPercentage = Math.min(100, Math.max(0, percentage))
@@ -240,7 +239,7 @@ object AssetBundleStatus {
   final case class LoadComplete(completed: Int, count: Int) extends AssetBundleStatus {
     val percent: Int = 100
   }
-  final case class LoadFailed(percent: Int, completed: Int, count: Int, failures: Batch[AssetPath])
+  final case class LoadFailed(percent: Int, completed: Int, count: Int, failures: List[AssetPath])
       extends AssetBundleStatus
   final case class LoadInProgress(percent: Int, completed: Int, count: Int) extends AssetBundleStatus
 }

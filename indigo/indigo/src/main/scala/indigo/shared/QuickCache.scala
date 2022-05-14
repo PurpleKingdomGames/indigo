@@ -1,7 +1,5 @@
 package indigo.shared
 
-import indigo.shared.collections.Batch
-
 final class QuickCache[A](private val cache: scalajs.js.Dictionary[A]):
 
   def fetch(key: CacheKey): Option[A] =
@@ -34,11 +32,11 @@ final class QuickCache[A](private val cache: scalajs.js.Dictionary[A]):
     this
   }
 
-  def keys: Batch[CacheKey] =
-    Batch.fromList(cache.keys.toList.map(CacheKey(_)))
+  def keys: List[CacheKey] =
+    cache.keys.map(CacheKey(_)).toList
 
-  def all: Batch[(CacheKey, A)] =
-    Batch.fromList(cache.toList).map(p => (CacheKey(p._1), p._2))
+  def all: List[(CacheKey, A)] =
+    cache.toList.map(p => (CacheKey(p._1), p._2))
 
   def entryExistsFor(key: CacheKey): Boolean =
     cache.keys.exists(_ == key.toString)

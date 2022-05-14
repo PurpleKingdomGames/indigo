@@ -15,7 +15,6 @@ import indigo.platform.renderer.shared.LoadedTextureAsset
 import indigo.shared.IndigoLogger
 import indigo.shared.Outcome
 import indigo.shared.assets.AssetName
-import indigo.shared.collections.Batch
 import indigo.shared.config.GameConfig
 import indigo.shared.datatypes.Vector2
 import indigo.shared.events.FullScreenEnterError
@@ -33,8 +32,6 @@ import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits._
 
 import scala.util.Failure
 import scala.util.Success
-
-import scalajs.js.JSConverters.*
 
 class Platform(
     parentElementId: String,
@@ -86,13 +83,11 @@ class Platform(
       )
     )
 
-  def extractLoadedTextures(textureAtlas: TextureAtlas): Outcome[Batch[LoadedTextureAsset]] =
+  def extractLoadedTextures(textureAtlas: TextureAtlas): Outcome[List[LoadedTextureAsset]] =
     Outcome(
-      Batch(
-        textureAtlas.atlases.toJSArray
-          .map { case (atlasId, atlas) => atlas.imageData.map(data => new LoadedTextureAsset(AtlasId(atlasId), data)) }
-          .collect { case Some(s) => s }
-      )
+      textureAtlas.atlases.toList
+        .map { case (atlasId, atlas) => atlas.imageData.map(data => new LoadedTextureAsset(AtlasId(atlasId), data)) }
+        .collect { case Some(s) => s }
     )
 
   def setupAssetMapping(textureAtlas: TextureAtlas): Outcome[AssetMapping] =
@@ -142,7 +137,7 @@ class Platform(
 
   def startRenderer(
       gameConfig: GameConfig,
-      loadedTextureAssets: Batch[LoadedTextureAsset],
+      loadedTextureAssets: List[LoadedTextureAsset],
       canvas: Canvas,
       shaders: Set[RawShaderCode]
   ): Outcome[Renderer] =

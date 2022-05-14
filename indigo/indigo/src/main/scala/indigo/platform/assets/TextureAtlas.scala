@@ -4,7 +4,6 @@ import indigo.shared.IndigoLogger
 import indigo.shared.PowerOfTwo
 import indigo.shared.assets.AssetName
 import indigo.shared.assets.AssetTag
-import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Point
 import org.scalajs.dom
 import org.scalajs.dom.ImageData
@@ -26,7 +25,7 @@ object TextureAtlas {
 
   def createWithMaxSize(
       max: PowerOfTwo,
-      imageRefs: Batch[ImageRef],
+      imageRefs: List[ImageRef],
       lookupByName: AssetName => Option[LoadedImageAsset],
       createAtlasFunc: (TextureMap, AssetName => Option[LoadedImageAsset]) => Atlas
   ): TextureAtlas =
@@ -37,7 +36,7 @@ object TextureAtlas {
     )
 
   def create(
-      imageRefs: Batch[ImageRef],
+      imageRefs: List[ImageRef],
       lookupByName: AssetName => Option[LoadedImageAsset],
       createAtlasFunc: (TextureMap, AssetName => Option[LoadedImageAsset]) => Atlas
   ): TextureAtlas = {
@@ -123,7 +122,7 @@ object TextureAtlasFunctions {
   def isTooBig(max: PowerOfTwo, width: Int, height: Int): Boolean =
     if (width > max.value || height > max.value) true else false
 
-  val inflateAndSortByPowerOfTwo: Batch[ImageRef] => Batch[TextureDetails] = images =>
+  val inflateAndSortByPowerOfTwo: List[ImageRef] => List[TextureDetails] = images =>
     images
       .map(i =>
         TextureDetails(
@@ -135,33 +134,41 @@ object TextureAtlasFunctions {
       .sortBy(_.size.value)
       .reverse
 
-  def groupTexturesIntoAtlasBuckets(max: PowerOfTwo): Batch[TextureDetails] => Batch[Batch[TextureDetails]] =
+  def groupTexturesIntoAtlasBuckets(max: PowerOfTwo): List[TextureDetails] => List[List[TextureDetails]] =
     list => {
-      val runningTotal: Batch[TextureDetails] => Int = _.map(_.size.value).sum
+      val runningTotal: List[TextureDetails] => Int = _.map(_.size.value).sum
 
       @tailrec
       def createBuckets(
-          remaining: Batch[TextureDetails],
-          current: Batch[TextureDetails],
-          rejected: Batch[TextureDetails],
-          acc: Batch[Batch[TextureDetails]],
+          remaining: List[TextureDetails],
+          current: List[TextureDetails],
+          rejected: List[TextureDetails],
+          acc: List[List[TextureDetails]],
           maximum: PowerOfTwo
-      ): Batch[Batch[TextureDetails]] =
-        if remaining.isEmpty && rejected.isEmpty then current :: acc
-        else if remaining.isEmpty then createBuckets(rejected, Batch.Empty, Batch.Empty, current :: acc, maximum)
-        else
-          val x  = remaining.head
-          val xs = remaining.tail
-          if x.size >= maximum then createBuckets(xs, current, rejected, Batch(x) :: acc, maximum)
-          else if runningTotal(current) + x.size.value > maximum.value * 2 then
-            createBuckets(xs, current, x :: rejected, acc, maximum)
-          else createBuckets(xs, x :: current, rejected, acc, maximum)
+      ): List[List[TextureDetails]] =
+        (remaining, rejected) match {
+          case (Nil, Nil) =>
+            current :: acc
 
-      def sortAndGroupByTag: Batch[TextureDetails] => Batch[(String, Batch[TextureDetails])] =
-        b => Batch.fromMap(b.groupBy(_.tag.map(_.toString).getOrElse(""))).sortBy(_._1)
+          case (Nil, x :: xs) =>
+            createBuckets(x :: xs, Nil, Nil, current :: acc, maximum)
+
+          case (x :: xs, _) if x.size >= maximum =>
+            createBuckets(xs, current, rejected, List(x) :: acc, maximum)
+
+          case (x :: xs, _) if runningTotal(current) + x.size.value > maximum.value * 2 =>
+            createBuckets(xs, current, x :: rejected, acc, maximum)
+
+          case (x :: xs, _) =>
+            createBuckets(xs, x :: current, rejected, acc, maximum)
+
+        }
+
+      def sortAndGroupByTag: List[TextureDetails] => List[(String, List[TextureDetails])] =
+        _.groupBy(_.tag.map(_.toString).getOrElse("")).toList.sortBy(_._1)
 
       sortAndGroupByTag(list).flatMap { case (_, tds) =>
-        createBuckets(tds, Batch.Empty, Batch.Empty, Batch.Empty, max)
+        createBuckets(tds, Nil, Nil, Nil, max)
       }
     }
 
@@ -199,7 +206,7 @@ object TextureAtlasFunctions {
 
   val convertToTextureAtlas: ((TextureMap, AssetName => Option[LoadedImageAsset]) => Atlas) => (
       AssetName => Option[LoadedImageAsset]
-  ) => (AtlasId, Batch[TextureDetails]) => TextureAtlas = createAtlasFunc =>
+  ) => (AtlasId, List[TextureDetails]) => TextureAtlas = createAtlasFunc =>
     lookupByName =>
       (atlasId, list) =>
         list.map(convertTextureDetailsToTree).foldLeft(AtlasQuadTree.identity)(_ + _) match {
@@ -224,11 +231,11 @@ object TextureAtlasFunctions {
             )
         }
 
-  val combineTextureAtlases: Batch[TextureAtlas] => TextureAtlas = list => list.foldLeft(TextureAtlas.identity)(_ + _)
+  val combineTextureAtlases: List[TextureAtlas] => TextureAtlas = list => list.foldLeft(TextureAtlas.identity)(_ + _)
 
   val convertToAtlas: ((TextureMap, AssetName => Option[LoadedImageAsset]) => Atlas) => (
       AssetName => Option[LoadedImageAsset]
-  ) => Batch[Batch[TextureDetails]] => TextureAtlas = createAtlasFunc =>
+  ) => List[List[TextureDetails]] => TextureAtlas = createAtlasFunc =>
     lookupByName =>
       list =>
         combineTextureAtlases(
@@ -292,7 +299,7 @@ final case class ImageRef(name: AssetName, width: Int, height: Int, tag: Option[
 
 final case class TextureDetails(imageRef: ImageRef, size: PowerOfTwo, tag: Option[AssetTag]) derives CanEqual
 
-final case class TextureMap(size: PowerOfTwo, textureCoords: Batch[TextureAndCoords]) derives CanEqual
+final case class TextureMap(size: PowerOfTwo, textureCoords: List[TextureAndCoords]) derives CanEqual
 final case class TextureAndCoords(imageRef: ImageRef, coords: Point) derives CanEqual
 
 sealed trait AtlasQuadTree {
@@ -302,7 +309,7 @@ sealed trait AtlasQuadTree {
 
   def +(other: AtlasQuadTree): AtlasQuadTree = AtlasQuadTree.append(this, other)
 
-  def toTextureCoordsBatch(offset: Point): Batch[TextureAndCoords]
+  def toTextureCoordsList(offset: Point): List[TextureAndCoords]
 }
 
 object AtlasQuadTree {
@@ -355,28 +362,28 @@ final case class AtlasQuadNode(size: PowerOfTwo, atlas: AtlasSum) extends AtlasQ
         this.atlas
     })
 
-  def toTextureCoordsBatch(offset: Point): Batch[TextureAndCoords] =
+  def toTextureCoordsList(offset: Point): List[TextureAndCoords] =
     atlas match {
       case AtlasTexture(imageRef) =>
-        Batch(TextureAndCoords(imageRef, offset))
+        List(TextureAndCoords(imageRef, offset))
 
       case AtlasQuadDivision(q1, q2, q3, q4) =>
-        q1.toTextureCoordsBatch(offset) ++
-          q2.toTextureCoordsBatch(offset + size.halved.toPoint.withY(0)) ++
-          q3.toTextureCoordsBatch(offset + size.halved.toPoint.withX(0)) ++
-          q4.toTextureCoordsBatch(offset + size.halved.toPoint)
+        q1.toTextureCoordsList(offset) ++
+          q2.toTextureCoordsList(offset + size.halved.toPoint.withY(0)) ++
+          q3.toTextureCoordsList(offset + size.halved.toPoint.withX(0)) ++
+          q4.toTextureCoordsList(offset + size.halved.toPoint)
 
     }
 
   def toTextureMap: TextureMap =
-    TextureMap(size, toTextureCoordsBatch(Point.zero))
+    TextureMap(size, toTextureCoordsList(Point.zero))
 }
 
 final case class AtlasQuadEmpty(size: PowerOfTwo) extends AtlasQuadTree derives CanEqual {
   def canAccommodate(requiredSize: PowerOfTwo): Boolean = size >= requiredSize
   def insert(tree: AtlasQuadTree): AtlasQuadTree        = this
 
-  def toTextureCoordsBatch(offset: Point): Batch[TextureAndCoords] = Batch.Empty
+  def toTextureCoordsList(offset: Point): List[TextureAndCoords] = Nil
 }
 
 sealed trait AtlasSum {

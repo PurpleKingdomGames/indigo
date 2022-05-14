@@ -1,6 +1,5 @@
 package indigo.shared.input
 
-import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.events.MouseButton
@@ -10,13 +9,13 @@ import indigo.shared.events.MouseWheel
 import scala.annotation.tailrec
 
 final class Mouse(
-    mouseEvents: Batch[MouseEvent],
+    mouseEvents: List[MouseEvent],
     val position: Point,
     @deprecated("use `isButtonDown` function instead of this value", "0.12.0") val leftMouseIsDown: Boolean,
     val buttonsDown: Set[MouseButton]
 ) {
 
-  def this(mouseEvents: Batch[MouseEvent], position: Point, leftMouseIsDown: Boolean) =
+  def this(mouseEvents: List[MouseEvent], position: Point, leftMouseIsDown: Boolean) =
     this(
       mouseEvents,
       position,
@@ -132,9 +131,9 @@ final class Mouse(
 }
 object Mouse:
   val default: Mouse =
-    new Mouse(Batch.Empty, Point.zero, false)
+    new Mouse(Nil, Point.zero, false)
 
-  def calculateNext(previous: Mouse, events: Batch[MouseEvent]): Mouse =
+  def calculateNext(previous: Mouse, events: List[MouseEvent]): Mouse =
     val newButtonsDown = calculateButtonsDown(events, previous.buttonsDown)
     new Mouse(
       events,
@@ -143,31 +142,29 @@ object Mouse:
       newButtonsDown
     )
 
-  private def lastMousePosition(previous: Point, events: Batch[MouseEvent]): Point =
+  private def lastMousePosition(previous: Point, events: List[MouseEvent]): Point =
     events.collect { case mp: MouseEvent.Move => mp.position }.reverse.headOption match {
       case None           => previous
       case Some(position) => position
     }
 
-  private given CanEqual[Batch[MouseEvent], Batch[MouseEvent]] = CanEqual.derived
+  private given CanEqual[List[MouseEvent], List[MouseEvent]] = CanEqual.derived
 
   // Similar strategy as followed for `Keyboard`, this one uses Set (no button order preserved)
   private def calculateButtonsDown(
-      mouseEvents: Batch[MouseEvent],
+      mouseEvents: List[MouseEvent],
       previousButtonsDown: Set[MouseButton]
   ): Set[MouseButton] =
     @tailrec
-    def rec(remaining: Batch[MouseEvent], buttonsDownAcc: Set[MouseButton]): Set[MouseButton] =
-      if remaining.isEmpty then buttonsDownAcc
-      else
-        remaining.head match
-          case MouseEvent.MouseDown(_, button) =>
-            rec(remaining.tail, buttonsDownAcc + button)
-
-          case MouseEvent.MouseUp(_, button) =>
-            rec(remaining.tail, buttonsDownAcc - button)
-
-          case _ =>
-            rec(remaining.tail, buttonsDownAcc)
+    def rec(remaining: List[MouseEvent], buttonsDownAcc: Set[MouseButton]): Set[MouseButton] =
+      remaining match
+        case Nil =>
+          buttonsDownAcc
+        case MouseEvent.MouseDown(_, button) :: moreEvents =>
+          rec(moreEvents, buttonsDownAcc + button)
+        case MouseEvent.MouseUp(_, button) :: moreEvents =>
+          rec(moreEvents, buttonsDownAcc - button)
+        case _ :: moreEvents =>
+          rec(moreEvents, buttonsDownAcc)
 
     rec(mouseEvents, previousButtonsDown)

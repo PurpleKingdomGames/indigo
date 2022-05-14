@@ -7,7 +7,6 @@ import indigo.platform.audio.AudioPlayer
 import indigo.platform.networking.Http
 import indigo.platform.networking.WebSockets
 import indigo.platform.storage.Storage
-import indigo.shared.collections.Batch
 import indigo.shared.events.AssetEvent
 import indigo.shared.events.EnterFullScreen
 import indigo.shared.events.ExitFullScreen
@@ -43,7 +42,7 @@ final class GlobalEventStream(
     case webSocketEvent: WebSocketEvent with NetworkSendEvent =>
       WebSockets.processSendEvent(webSocketEvent, this)
 
-    // Audio
+    //Audio
     case PlaySound(assetName, volume) =>
       audioPlayer.playSound(assetName, volume)
 
@@ -87,6 +86,6 @@ final class GlobalEventStream(
       eventQueue.enqueue(e)
   }
 
-  def collect: Batch[GlobalEvent] =
-    Batch.fromSeq(eventQueue.dequeueAll(_ => true))
+  def collect: List[GlobalEvent] =
+    eventQueue.dequeueAll(_ => true).toList
 }

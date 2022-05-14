@@ -1,28 +1,27 @@
 package indigo.shared.datatypes
 
 import indigo.shared.QuickCache
-import indigo.shared.collections.Batch
 import indigo.shared.materials.Material
 
 final case class FontInfo(
     fontKey: FontKey,
     fontSheetBounds: Size,
     unknownChar: FontChar,
-    fontChars: Batch[FontChar],
+    fontChars: List[FontChar],
     caseSensitive: Boolean
 ) derives CanEqual:
   import FontInfo.fontCharCache
 
-  private val nonEmptyChars: Batch[FontChar] = unknownChar +: fontChars
+  private val nonEmptyChars: List[FontChar] = unknownChar +: fontChars
 
   def addChar(fontChar: FontChar): FontInfo =
-    this.copy(fontChars = nonEmptyChars ++ Batch(fontChar))
+    this.copy(fontChars = nonEmptyChars ++ List(fontChar))
 
-  def addChars(chars: Batch[FontChar]): FontInfo =
+  def addChars(chars: List[FontChar]): FontInfo =
     this.copy(fontChars = fontChars ++ chars)
 
   def addChars(chars: FontChar*): FontInfo =
-    addChars(Batch.fromSeq(chars))
+    addChars(chars.toList)
 
   def findByCharacter(character: String): FontChar =
     QuickCache("char-" + character + "-" + fontKey.toString) {
@@ -52,7 +51,7 @@ object FontInfo:
       fontKey = fontKey,
       fontSheetBounds = Size(sheetWidth, sheetHeight),
       unknownChar = unknownChar,
-      fontChars = Batch.fromSeq(chars),
+      fontChars = chars.toList,
       caseSensitive = false
     )
 

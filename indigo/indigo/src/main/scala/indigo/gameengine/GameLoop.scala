@@ -3,7 +3,6 @@ package indigo.gameengine
 import indigo.shared.BoundaryLocator
 import indigo.shared.IndigoLogger
 import indigo.shared.Outcome
-import indigo.shared.collections.Batch
 import indigo.shared.config.GameConfig
 import indigo.shared.dice.Dice
 import indigo.shared.events.FrameTick
@@ -75,7 +74,7 @@ final class GameLoop[StartUpData, GameModel, ViewModel](
   private def runFrame(time: Long, timeDelta: Long): Unit =
 
     val gameTime = new GameTime(Millis(time).toSeconds, Millis(timeDelta).toSeconds, gameConfig.frameRateLimit)
-    val events   = gameEngine.globalEventStream.collect ++ Batch(FrameTick)
+    val events   = gameEngine.globalEventStream.collect ++ List(FrameTick)
 
     // Persist input state
     _inputState = InputState.calculateNext(

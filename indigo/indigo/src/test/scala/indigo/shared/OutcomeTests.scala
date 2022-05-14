@@ -1,6 +1,5 @@
 package indigo.shared
 
-import indigo.shared.collections.Batch
 import indigo.shared.events.GlobalEvent
 
 import Outcome._
@@ -9,28 +8,26 @@ import Outcome._
 class OutcomeTests extends munit.FunSuite {
 
   test("Adding events.adding events after the fact") {
-    assertEquals(Outcome(10).unsafeGlobalEvents, Batch.Empty)
-    assertEquals(Outcome(10).addGlobalEvents(TestEvent("a")).unsafeGlobalEvents, Batch(TestEvent("a")))
+    assertEquals(Outcome(10).unsafeGlobalEvents, Nil)
+    assertEquals(Outcome(10).addGlobalEvents(TestEvent("a")).unsafeGlobalEvents, List(TestEvent("a")))
   }
 
   test("Adding events.creating events based on new state") {
     val actual = Outcome(10)
       .addGlobalEvents(TestEvent("a"))
-      .createGlobalEvents(i => Batch(TestEvent(s"count: $i")))
+      .createGlobalEvents(i => List(TestEvent(s"count: $i")))
       .unsafeGlobalEvents
 
-    val expected = Batch(TestEvent("a"), TestEvent("count: 10"))
+    val expected = List(TestEvent("a"), TestEvent("count: 10"))
 
     assertEquals(actual, expected)
   }
 
   test("Extractor should allow pattern match") {
-    import Batch.Unapply.*
-
     val a = Outcome(1).addGlobalEvents(TestEvent("a"))
 
     a match {
-      case Outcome(n, TestEvent(s) :: _) =>
+      case Outcome(n, TestEvent(s) :: Nil) =>
         assertEquals(n, 1)
         assertEquals(s, "a")
 
@@ -40,18 +37,18 @@ class OutcomeTests extends munit.FunSuite {
   }
 
   test("Transforming outcomes.sequencing") {
-    val l: Batch[Outcome[Int]] =
-      Batch(
+    val l: List[Outcome[Int]] =
+      List(
         Outcome(1).addGlobalEvents(TestEvent("a")),
         Outcome(2).addGlobalEvents(TestEvent("b")),
         Outcome(3).addGlobalEvents(TestEvent("c"))
       )
 
-    val actual: Outcome[Batch[Int]] =
+    val actual: Outcome[List[Int]] =
       l.sequence
 
-    val expected: Outcome[Batch[Int]] =
-      Outcome(Batch(1, 2, 3))
+    val expected: Outcome[List[Int]] =
+      Outcome(List(1, 2, 3))
         .addGlobalEvents(TestEvent("a"), TestEvent("b"), TestEvent("c"))
 
     assertEquals(actual.unsafeGet, expected.unsafeGet)
@@ -92,7 +89,7 @@ class OutcomeTests extends munit.FunSuite {
         .clearGlobalEvents
 
     val expected =
-      Outcome(10, Batch.Empty)
+      Outcome(10, Nil)
 
     assertEquals(actual.unsafeGet, expected.unsafeGet)
     assertEquals(actual.unsafeGlobalEvents, expected.unsafeGlobalEvents)

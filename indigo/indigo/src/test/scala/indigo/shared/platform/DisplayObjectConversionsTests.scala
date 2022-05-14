@@ -7,7 +7,6 @@ import indigo.shared.BoundaryLocator
 import indigo.shared.FontRegister
 import indigo.shared.QuickCache
 import indigo.shared.assets.AssetName
-import indigo.shared.collections.Batch
 import indigo.shared.config.RenderingTechnology
 import indigo.shared.datatypes.Depth
 import indigo.shared.datatypes.Point
@@ -63,7 +62,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
 
     doc
       .processSceneNodes(
-        Batch(node).toJSArray,
+        List(node).toJSArray,
         GameTime.is(Seconds(1)),
         assetMapping,
         cloneBlankMapping,
@@ -116,7 +115,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
     import indigo.shared.shader.ShaderPrimitive._
 
     val uniforms =
-      Batch(
+      List(
         Uniform("a") -> float(1),
         Uniform("b") -> float(2),
         Uniform("c") -> vec3(3, 4, 5),
@@ -146,7 +145,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
     import indigo.shared.shader.ShaderPrimitive._
 
     val uniforms =
-      Batch(
+      List(
         Uniform("a") -> float(1),
         Uniform("b") -> vec2(2, 3)
       )
@@ -170,7 +169,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
     import indigo.shared.shader.ShaderPrimitive._
 
     val uniforms =
-      Batch(
+      List(
         Uniform("ASPECT_RATIO") -> vec2(1.0),
         Uniform("STROKE_WIDTH") -> float(2.0),
         Uniform("COUNT")        -> float(3.0),
@@ -197,7 +196,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
       DisplayObjectConversions
         .packUBO((uniforms :+ Uniform("VERTICES") -> array(3)(vec2(6.0), vec2(7.0), vec2(8.0))), "", true)
         .toList,
-      expected.toList ++ Array[Float](6, 6, 0, 0, 7, 7, 0, 0, 8, 8, 0, 0)
+      expected.toList ++ List[Float](6, 6, 0, 0, 7, 7, 0, 0, 8, 8, 0, 0)
     )
 
     // 4 array padded.
@@ -205,7 +204,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
       DisplayObjectConversions
         .packUBO((uniforms :+ Uniform("VERTICES") -> array(4)(vec2(6.0), vec2(7.0), vec2(8.0))), "", true)
         .toList,
-      expected.toList ++ Array[Float](6, 6, 0, 0, 7, 7, 0, 0, 8, 8, 0, 0) ++ Array[Float](0, 0, 0, 0)
+      expected.toList ++ List[Float](6, 6, 0, 0, 7, 7, 0, 0, 8, 8, 0, 0) ++ List[Float](0, 0, 0, 0)
     )
 
     // 5 array padded.
@@ -213,7 +212,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
       DisplayObjectConversions
         .packUBO((uniforms :+ Uniform("VERTICES") -> array(5)(vec2(6.0), vec2(7.0), vec2(8.0))), "", true)
         .toList,
-      expected.toList ++ Array[Float](6, 6, 0, 0, 7, 7, 0, 0, 8, 8, 0, 0) ++ Array[Float](0, 0, 0, 0) ++ Array[Float](
+      expected.toList ++ List[Float](6, 6, 0, 0, 7, 7, 0, 0, 8, 8, 0, 0) ++ List[Float](0, 0, 0, 0) ++ List[Float](
         0,
         0,
         0,
@@ -226,12 +225,12 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
       DisplayObjectConversions
         .packUBO((uniforms :+ Uniform("VERTICES") -> array(6)(vec2(6.0), vec2(7.0), vec2(8.0))), "", true)
         .toList,
-      expected.toList ++ Array[Float](6, 6, 0, 0, 7, 7, 0, 0, 8, 8, 0, 0) ++ Array[Float](0, 0, 0, 0) ++ Array[Float](
+      expected.toList ++ List[Float](6, 6, 0, 0, 7, 7, 0, 0, 8, 8, 0, 0) ++ List[Float](0, 0, 0, 0) ++ List[Float](
         0,
         0,
         0,
         0
-      ) ++ Array[Float](0, 0, 0, 0)
+      ) ++ List[Float](0, 0, 0, 0)
     )
 
     // 7 array padded.
@@ -239,12 +238,12 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
       DisplayObjectConversions
         .packUBO((uniforms :+ Uniform("VERTICES") -> array(7)(vec2(6.0), vec2(7.0), vec2(8.0))), "", true)
         .toList,
-      expected.toList ++ Array[Float](6, 6, 0, 0, 7, 7, 0, 0, 8, 8, 0, 0) ++ Array[Float](0, 0, 0, 0) ++ Array[Float](
+      expected.toList ++ List[Float](6, 6, 0, 0, 7, 7, 0, 0, 8, 8, 0, 0) ++ List[Float](0, 0, 0, 0) ++ List[Float](
         0,
         0,
         0,
         0
-      ) ++ Array[Float](0, 0, 0, 0) ++ Array[Float](0, 0, 0, 0)
+      ) ++ List[Float](0, 0, 0, 0) ++ List[Float](0, 0, 0, 0)
     )
 
     // 8 array padded.
@@ -252,9 +251,9 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
       DisplayObjectConversions
         .packUBO((uniforms :+ Uniform("VERTICES") -> array(8)(vec2(6.0), vec2(7.0), vec2(8.0))), "", true)
         .toList,
-      expected.toList ++ Array[Float](6, 6, 0, 0, 7, 7, 0, 0, 8, 8, 0, 0) ++ Array[Float](0, 0, 0, 0) ++
-        Array[Float](0, 0, 0, 0) ++ Array[Float](0, 0, 0, 0) ++ Array[Float](0, 0, 0, 0) ++
-        Array[Float](0, 0, 0, 0)
+      expected.toList ++ List[Float](6, 6, 0, 0, 7, 7, 0, 0, 8, 8, 0, 0) ++ List[Float](0, 0, 0, 0) ++
+        List[Float](0, 0, 0, 0) ++ List[Float](0, 0, 0, 0) ++ List[Float](0, 0, 0, 0) ++
+        List[Float](0, 0, 0, 0)
     )
 
     // 16 array padded.
@@ -262,20 +261,20 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
       DisplayObjectConversions
         .packUBO((uniforms :+ Uniform("VERTICES") -> array(16)(vec2(6.0), vec2(7.0), vec2(8.0))), "", true)
         .toList,
-      expected.toList ++ Array[Float](6, 6, 0, 0, 7, 7, 0, 0, 8, 8, 0, 0) ++
-        Array[Float](0, 0, 0, 0) ++
-        Array[Float](0, 0, 0, 0) ++
-        Array[Float](0, 0, 0, 0) ++
-        Array[Float](0, 0, 0, 0) ++
-        Array[Float](0, 0, 0, 0) ++
-        Array[Float](0, 0, 0, 0) ++
-        Array[Float](0, 0, 0, 0) ++
-        Array[Float](0, 0, 0, 0) ++
-        Array[Float](0, 0, 0, 0) ++
-        Array[Float](0, 0, 0, 0) ++
-        Array[Float](0, 0, 0, 0) ++
-        Array[Float](0, 0, 0, 0) ++
-        Array[Float](0, 0, 0, 0)
+      expected.toList ++ List[Float](6, 6, 0, 0, 7, 7, 0, 0, 8, 8, 0, 0) ++
+        List[Float](0, 0, 0, 0) ++
+        List[Float](0, 0, 0, 0) ++
+        List[Float](0, 0, 0, 0) ++
+        List[Float](0, 0, 0, 0) ++
+        List[Float](0, 0, 0, 0) ++
+        List[Float](0, 0, 0, 0) ++
+        List[Float](0, 0, 0, 0) ++
+        List[Float](0, 0, 0, 0) ++
+        List[Float](0, 0, 0, 0) ++
+        List[Float](0, 0, 0, 0) ++
+        List[Float](0, 0, 0, 0) ++
+        List[Float](0, 0, 0, 0) ++
+        List[Float](0, 0, 0, 0)
     )
 
   }
@@ -285,7 +284,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
     import indigo.shared.shader.ShaderPrimitive._
 
     val uniforms =
-      Batch(
+      List(
         Uniform("TEST") -> rawArray(Array(0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f))
       )
 

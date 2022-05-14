@@ -1,7 +1,6 @@
 package indigo.shared.scenegraph
 
 import indigo.shared.BoundaryLocator
-import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Depth
 import indigo.shared.datatypes.Flip
 import indigo.shared.datatypes.Point
@@ -153,7 +152,7 @@ final case class Clip[M <: Material](
       .addUniformBlock(
         UniformBlock(
           "IndigoClipData",
-          Batch(
+          List(
             Uniform("CLIP_SHEET_FRAME_COUNT")    -> float(sheet.frameCount),
             Uniform("CLIP_SHEET_FRAME_DURATION") -> float.fromSeconds(sheet.frameDuration),
             Uniform("CLIP_SHEET_WRAP_AT")        -> float(sheet.wrapAt),

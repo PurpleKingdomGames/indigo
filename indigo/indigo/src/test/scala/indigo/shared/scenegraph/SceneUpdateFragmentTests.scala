@@ -14,7 +14,7 @@ class SceneUpdateFragmentTests extends munit.FunSuite {
     val actual =
       scene.addLayer(Layer(BindingKey("key A")))
 
-    assert(actual.layers.size == 1)
+    assert(actual.layers.length == 1)
     assertEquals(actual.layers.head.magnification, None)
 
   }
@@ -27,7 +27,7 @@ class SceneUpdateFragmentTests extends munit.FunSuite {
     val actual =
       scene.addLayer(Layer(BindingKey("key A")).withMagnification(1))
 
-    assert(actual.layers.size == 1)
+    assert(actual.layers.length == 1)
     assertEquals(actual.layers.head.magnification, Some(2))
 
   }
@@ -40,7 +40,7 @@ class SceneUpdateFragmentTests extends munit.FunSuite {
     val actual =
       scene.addLayer(Layer(BindingKey("key A")).withMagnification(1))
 
-    assert(actual.layers.size == 1)
+    assert(actual.layers.length == 1)
     assertEquals(actual.layers.head.magnification, Some(1))
 
   }
@@ -53,7 +53,7 @@ class SceneUpdateFragmentTests extends munit.FunSuite {
     val actual =
       scene.addLayer(Layer(BindingKey("key A")))
 
-    assert(actual.layers.size == 1)
+    assert(actual.layers.length == 1)
     assertEquals(actual.layers.head.magnification, Some(2))
 
   }
@@ -69,7 +69,7 @@ class SceneUpdateFragmentTests extends munit.FunSuite {
     val actual: SceneUpdateFragment =
       sceneA |+| sceneB
 
-    assert(actual.layers.size == 1)
+    assert(actual.layers.length == 1)
     assertEquals(actual.layers.head.magnification, Some(2))
 
   }

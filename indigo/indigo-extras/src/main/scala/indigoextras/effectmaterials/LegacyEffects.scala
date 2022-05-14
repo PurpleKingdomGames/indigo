@@ -2,7 +2,6 @@ package indigoextras.effectmaterials
 
 import indigo.shaders.ShaderLibrary
 import indigo.shared.assets.AssetName
-import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Fill
 import indigo.shared.datatypes.RGB
 import indigo.shared.datatypes.RGBA
@@ -56,10 +55,10 @@ final case class LegacyEffects(
 
     ShaderData(
       LegacyEffects.entityShader.id,
-      Batch(
+      List(
         UniformBlock(
           "IndigoLegacyEffectsData",
-          Batch(
+          List(
             // ALPHA_SATURATION_OVERLAYTYPE (vec3), TINT (vec4)
             Uniform("LegacyEffects_DATA") -> rawJSArray(
               scalajs.js.Array(
@@ -75,7 +74,7 @@ final case class LegacyEffects(
             )
           ) ++ overlay.toUniformData("LegacyEffects") ++
             // BORDER_COLOR (vec4), GLOW_COLOR (vec4), EFFECT_AMOUNTS (vec4)
-            Batch(
+            List(
               Uniform("LegacyEffects_EFFECTS") -> rawJSArray(
                 scalajs.js.Array(
                   border.color.r.toFloat,

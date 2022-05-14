@@ -1,7 +1,6 @@
 package indigo.shared.materials
 
 import indigo.shared.assets.AssetName
-import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Fill
 import indigo.shared.datatypes.RGB
 import indigo.shared.datatypes.RGBA
@@ -57,7 +56,7 @@ object Material {
       val uniformBlock: UniformBlock =
         UniformBlock(
           "IndigoBitmapData",
-          Batch(
+          List(
             Uniform("Bitmap_FILLTYPE") -> rawJSArray(scalajs.js.Array(imageFillType))
           )
         )
@@ -66,7 +65,7 @@ object Material {
         case Unlit =>
           ShaderData(
             shaderId.getOrElse(StandardShaders.Bitmap.id),
-            Batch(uniformBlock),
+            List(uniformBlock),
             Some(diffuse),
             None,
             None,
@@ -74,7 +73,7 @@ object Material {
           )
 
         case l: Lit =>
-          l.toShaderData(shaderId.getOrElse(StandardShaders.LitBitmap.id), Some(diffuse), Batch(uniformBlock))
+          l.toShaderData(shaderId.getOrElse(StandardShaders.LitBitmap.id), Some(diffuse), List(uniformBlock))
       }
     }
   }
@@ -154,7 +153,7 @@ object Material {
       val effectsUniformBlock: UniformBlock =
         UniformBlock(
           "IndigoImageEffectsData",
-          Batch(
+          List(
             Uniform("ImageEffects_DATA") -> rawJSArray(
               scalajs.js.Array(
                 alpha.toFloat,
@@ -174,7 +173,7 @@ object Material {
         case Unlit =>
           ShaderData(
             shaderId.getOrElse(StandardShaders.ImageEffects.id),
-            Batch(effectsUniformBlock),
+            List(effectsUniformBlock),
             Some(diffuse),
             None,
             None,
@@ -185,7 +184,7 @@ object Material {
           l.toShaderData(
             shaderId.getOrElse(StandardShaders.LitImageEffects.id),
             Some(diffuse),
-            Batch(effectsUniformBlock)
+            List(effectsUniformBlock)
           )
       }
     }

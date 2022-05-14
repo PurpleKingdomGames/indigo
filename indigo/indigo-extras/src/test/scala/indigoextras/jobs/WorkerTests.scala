@@ -1,7 +1,6 @@
 package indigoextras.jobs
 
 import indigo.shared.Outcome
-import indigo.shared.collections.Batch
 import indigo.shared.dice.Dice
 import indigo.shared.time.GameTime
 import indigo.shared.time.Seconds
@@ -26,14 +25,14 @@ class WorkerTests extends munit.FunSuite {
     val isComplete: WorkContext[TestActor, TestContext] => Job => Boolean =
       _ => _ => true
 
-    val onComplete: WorkContext[TestActor, TestContext] => Job => Outcome[(Batch[Job], TestActor)] =
-      w => _ => Outcome((Batch.Empty, w.actor))
+    val onComplete: WorkContext[TestActor, TestContext] => Job => Outcome[(List[Job], TestActor)] =
+      w => _ => Outcome((Nil, w.actor))
 
     val doWork: WorkContext[TestActor, TestContext] => Job => (Job, TestActor) =
       w => j => (j, w.actor)
 
-    val jobGenerator: WorkContext[TestActor, TestContext] => Batch[Job] =
-      _ => Batch.Empty
+    val jobGenerator: WorkContext[TestActor, TestContext] => List[Job] =
+      _ => Nil
 
     val jobAcceptable: WorkContext[TestActor, TestContext] => Job => Boolean =
       _ => _ => false
@@ -63,11 +62,11 @@ class WorkerTests extends munit.FunSuite {
     assertEquals(worker.isJobComplete(workContext)(job), true)
 
     val completed = worker.onJobComplete(workContext)(job)
-    assertEquals(completed.unsafeGet, (Batch.Empty, TestActor()))
-    assertEquals(completed.unsafeGlobalEvents, Batch.Empty)
+    assertEquals(completed.unsafeGet, (Nil, TestActor()))
+    assertEquals(completed.unsafeGlobalEvents, Nil)
 
     assertEquals(worker.workOnJob(workContext)(job), (job, actor))
-    assertEquals(worker.generateJobs(workContext), Batch.Empty)
+    assertEquals(worker.generateJobs(workContext), Nil)
     assertEquals(worker.canTakeJob(workContext)(job), false)
   }
 
@@ -84,10 +83,7 @@ class WorkerTests extends munit.FunSuite {
   }
 
   test("A Worker instance.should be able to perform an action when a job completes") {
-    assertEquals(
-      worker.onJobComplete(workContext(0d, false))(Fishing(Fishing.totalWorkUnits)).unsafeGet._1.head,
-      WanderTo(0)
-    )
+    assertEquals(worker.onJobComplete(workContext(0d, false))(Fishing(Fishing.totalWorkUnits)).unsafeGet._1.head, WanderTo(0))
   }
 
   test("A Worker instance.should be able to work on a job") {
@@ -101,7 +97,7 @@ class WorkerTests extends munit.FunSuite {
   }
 
   test("A Worker instance.should be able to generate jobs") {
-    assertEquals(worker.generateJobs(workContext(0d, true)), Batch(WanderTo(100)))
+    assertEquals(worker.generateJobs(workContext(0d, true)), List(WanderTo(100)))
   }
 
   test("A Worker instance.should be able to distinguish between jobs you can take and ones you can't") {

@@ -1,6 +1,5 @@
 package indigo.shared.materials
 
-import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Fill
 import indigo.shared.datatypes.RGB
 import indigo.shared.datatypes.RGBA
@@ -17,17 +16,20 @@ object BlendMaterial {
 
   case object Normal extends BlendMaterial derives CanEqual {
     lazy val toShaderData: BlendShaderData =
-      BlendShaderData(StandardShaders.NormalBlend.id)
+      BlendShaderData(
+        StandardShaders.NormalBlend.id,
+        Nil
+      )
   }
 
   final case class Lighting(ambient: RGBA) extends BlendMaterial derives CanEqual {
     lazy val toShaderData: BlendShaderData =
       BlendShaderData(
         StandardShaders.LightingBlend.id,
-        Batch(
+        List(
           UniformBlock(
             "IndigoLightingBlendData",
-            Batch(
+            List(
               Uniform("AMBIENT_LIGHT_COLOR") -> rawJSArray(
                 ambient.r.toFloat,
                 ambient.g.toFloat,
@@ -80,10 +82,10 @@ object BlendMaterial {
 
       BlendShaderData(
         StandardShaders.BlendEffects.id,
-        Batch(
+        List(
           UniformBlock(
             "IndigoBlendEffectsData",
-            Batch(
+            List(
               // ALPHA_SATURATION_OVERLAYTYPE_BG (vec4), TINT (vec4)
               Uniform("BlendEffects_DATA") -> rawJSArray(
                 scalajs.js.Array(

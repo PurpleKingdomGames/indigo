@@ -1,18 +1,16 @@
 package indigo.shared.datatypes
 
-import indigo.shared.collections.Batch
-
 import util.control.Breaks._
 
-final case class Matrix3(private val mat: Batch[Double]) derives CanEqual {
+final case class Matrix3(private val mat: List[Double]) derives CanEqual {
 
-  lazy val row1: Batch[Double] = Batch(mat(0), mat(1), mat(2))
-  lazy val row2: Batch[Double] = Batch(mat(3), mat(4), mat(5))
-  lazy val row3: Batch[Double] = Batch(mat(6), mat(7), mat(8))
+  lazy val row1: List[Double] = List(mat(0), mat(1), mat(2))
+  lazy val row2: List[Double] = List(mat(3), mat(4), mat(5))
+  lazy val row3: List[Double] = List(mat(6), mat(7), mat(8))
 
-  lazy val col1: Batch[Double] = Batch(mat(0), mat(3), mat(6))
-  lazy val col2: Batch[Double] = Batch(mat(1), mat(4), mat(7))
-  lazy val col3: Batch[Double] = Batch(mat(2), mat(5), mat(8))
+  lazy val col1: List[Double] = List(mat(0), mat(3), mat(6))
+  lazy val col2: List[Double] = List(mat(1), mat(4), mat(7))
+  lazy val col3: List[Double] = List(mat(2), mat(5), mat(8))
 
   def identity: Matrix3 =
     Matrix3.identity
@@ -35,7 +33,7 @@ final case class Matrix3(private val mat: Batch[Double]) derives CanEqual {
   def flip(horizontal: Boolean, vertical: Boolean): Matrix3 =
     this * Matrix3.flip(horizontal, vertical)
 
-  def toList: Batch[Double] =
+  def toList: List[Double] =
     mat
 
   def transform(vector: Vector2): Vector2 =
@@ -51,8 +49,8 @@ final case class Matrix3(private val mat: Batch[Double]) derives CanEqual {
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while"))
   def ~==(other: Matrix3): Boolean =
-    if (mat.size == other.mat.size) {
-      var count = mat.size - 1
+    if (mat.length == other.mat.length) {
+      var count = mat.length - 1
       var same  = true
       while (count > 0) {
         breakable {
@@ -63,7 +61,8 @@ final case class Matrix3(private val mat: Batch[Double]) derives CanEqual {
         count = count - 1
       }
       same
-    } else false
+    } else
+      false
 
 }
 
@@ -229,7 +228,7 @@ object Matrix3 {
       row2: (Double, Double, Double)
   ): Matrix3 =
     Matrix3(
-      Batch(row0._1, row0._2, row0._3, row1._1, row1._2, row1._3, row2._1, row2._2, row2._3)
+      List(row0._1, row0._2, row0._3, row1._1, row1._2, row1._3, row2._1, row2._2, row2._3)
     )
 
   def apply(
@@ -244,7 +243,7 @@ object Matrix3 {
       c3: Double
   ): Matrix3 =
     Matrix3(
-      Batch(
+      List(
         a1,
         a2,
         a3,

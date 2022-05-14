@@ -33,7 +33,7 @@ trait IndigoGame[BootData, StartUpData, Model, ViewModel] extends GameLauncher[S
     * @return
     *   A list of scenes that ensures at least one scene exists.
     */
-  def scenes(bootData: BootData): NonEmptyBatch[Scene[StartUpData, Model, ViewModel]]
+  def scenes(bootData: BootData): NonEmptyList[Scene[StartUpData, Model, ViewModel]]
 
   /** Optional name of the first scene. If None is provided then the first scene is the head of the scenes list.
     *
@@ -147,7 +147,7 @@ trait IndigoGame[BootData, StartUpData, Model, ViewModel] extends GameLauncher[S
 
   private def indigoGame(bootUp: BootResult[BootData]): GameEngine[StartUpData, Model, ViewModel] = {
 
-    val subSystemEvents = subSystemsRegister.register(Batch.fromSet(bootUp.subSystems))
+    val subSystemEvents = subSystemsRegister.register(bootUp.subSystems.toList)
 
     val sceneManager: SceneManager[StartUpData, Model, ViewModel] = {
       val s = scenes(bootUp.bootData)
@@ -184,10 +184,7 @@ trait IndigoGame[BootData, StartUpData, Model, ViewModel] extends GameLauncher[S
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  final protected def ready(
-      parentElementId: String,
-      flags: Map[String, String]
-  ): GameEngine[StartUpData, Model, ViewModel] =
+  final protected def ready(parentElementId: String, flags: Map[String, String]): GameEngine[StartUpData, Model, ViewModel] =
     boot(flags) match
       case oe @ Outcome.Error(e, _) =>
         IndigoLogger.error("Error during boot - Halting")

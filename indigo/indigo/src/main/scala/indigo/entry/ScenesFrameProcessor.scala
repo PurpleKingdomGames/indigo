@@ -5,7 +5,6 @@ import indigo.scenes.SceneManager
 import indigo.shared.BoundaryLocator
 import indigo.shared.FrameContext
 import indigo.shared.Outcome
-import indigo.shared.collections.Batch
 import indigo.shared.dice.Dice
 import indigo.shared.events.EventFilters
 import indigo.shared.events.GlobalEvent
@@ -30,7 +29,7 @@ final class ScenesFrameProcessor[StartUpData, Model, ViewModel](
       model: => Model,
       viewModel: => ViewModel,
       gameTime: GameTime,
-      globalEvents: Batch[GlobalEvent],
+      globalEvents: List[GlobalEvent],
       inputState: InputState,
       dice: Dice,
       boundaryLocator: BoundaryLocator
@@ -75,7 +74,7 @@ final class ScenesFrameProcessor[StartUpData, Model, ViewModel](
   def processSceneModel(
       frameContext: FrameContext[StartUpData],
       model: Model,
-      globalEvents: Batch[GlobalEvent]
+      globalEvents: List[GlobalEvent]
   ): Outcome[Model] =
     globalEvents
       .map(sceneManager.eventFilters.modelFilter)

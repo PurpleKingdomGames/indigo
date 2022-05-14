@@ -1,6 +1,5 @@
 package indigo.shared.datatypes
 
-import indigo.shared.collections.Batch
 import indigo.shared.shader.ShaderPrimitive
 import indigo.shared.shader.ShaderPrimitive.rawJSArray
 import indigo.shared.shader.Uniform
@@ -71,10 +70,10 @@ object Fill:
 
   // GRADIENT_FROM_TO (vec4), GRADIENT_FROM_COLOR (vec4), GRADIENT_TO_COLOR (vec4),
   extension (fill: Fill)
-    def toUniformData(prefix: String): Batch[(Uniform, ShaderPrimitive)] =
+    def toUniformData(prefix: String): List[(Uniform, ShaderPrimitive)] =
       fill match
         case Fill.Color(color) =>
-          Batch(
+          List(
             Uniform(prefix + "_GRADIENT") -> rawJSArray(
               scalajs.js.Array(
                 0.0f,
@@ -94,7 +93,7 @@ object Fill:
           )
 
         case Fill.LinearGradient(fromPoint, fromColor, toPoint, toColor) =>
-          Batch(
+          List(
             Uniform(prefix + "_GRADIENT") -> rawJSArray(
               scalajs.js.Array(
                 fromPoint.x.toFloat,
@@ -114,7 +113,7 @@ object Fill:
           )
 
         case Fill.RadialGradient(fromPoint, fromColor, toPoint, toColor) =>
-          Batch(
+          List(
             Uniform(prefix + "_GRADIENT") -> rawJSArray(
               scalajs.js.Array(
                 fromPoint.x.toFloat,

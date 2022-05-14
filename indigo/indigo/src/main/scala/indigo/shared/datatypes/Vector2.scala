@@ -74,12 +74,6 @@ final case class Vector2(x: Double, y: Double) derives CanEqual:
   def round: Vector2 =
     Vector2(Math.round(x).toDouble, Math.round(y).toDouble)
 
-  def toArray: Array[Double] =
-    Array(x, y)
-
-  def toJSArray: scalajs.js.Array[Double] =
-    scalajs.js.Array(x, y)
-
   def toList: List[Double] =
     List(x, y)
 

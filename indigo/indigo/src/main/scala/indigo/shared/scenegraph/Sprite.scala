@@ -5,7 +5,6 @@ import indigo.shared.animation.AnimationAction
 import indigo.shared.animation.AnimationAction._
 import indigo.shared.animation.AnimationKey
 import indigo.shared.animation.CycleLabel
-import indigo.shared.collections.Batch
 import indigo.shared.datatypes._
 import indigo.shared.events.GlobalEvent
 import indigo.shared.materials.Material
@@ -17,7 +16,7 @@ final case class Sprite[M <: Material](
     bindingKey: BindingKey,
     material: M,
     animationKey: AnimationKey,
-    animationActions: Batch[AnimationAction],
+    animationActions: List[AnimationAction],
     eventHandlerEnabled: Boolean,
     eventHandler: ((Sprite[_], GlobalEvent)) => Option[GlobalEvent],
     position: Point,
@@ -94,19 +93,19 @@ final case class Sprite[M <: Material](
     this.copy(animationKey = newAnimationKey)
 
   def play(): Sprite[M] =
-    this.copy(animationActions = animationActions ++ Batch(Play))
+    this.copy(animationActions = animationActions ++ List(Play))
 
   def changeCycle(label: CycleLabel): Sprite[M] =
-    this.copy(animationActions = animationActions ++ Batch(ChangeCycle(label)))
+    this.copy(animationActions = animationActions ++ List(ChangeCycle(label)))
 
   def jumpToFirstFrame(): Sprite[M] =
-    this.copy(animationActions = animationActions ++ Batch(JumpToFirstFrame))
+    this.copy(animationActions = animationActions ++ List(JumpToFirstFrame))
 
   def jumpToLastFrame(): Sprite[M] =
-    this.copy(animationActions = animationActions ++ Batch(JumpToLastFrame))
+    this.copy(animationActions = animationActions ++ List(JumpToLastFrame))
 
   def jumpToFrame(number: Int): Sprite[M] =
-    this.copy(animationActions = animationActions ++ Batch(JumpToFrame(number)))
+    this.copy(animationActions = animationActions ++ List(JumpToFrame(number)))
 
   def withEventHandler(f: ((Sprite[_], GlobalEvent)) => Option[GlobalEvent]): Sprite[M] =
     this.copy(eventHandler = f, eventHandlerEnabled = true)
@@ -137,7 +136,7 @@ object Sprite:
       animationKey = animationKey,
       eventHandlerEnabled = false,
       eventHandler = Function.const(None),
-      animationActions = Batch.Empty,
+      animationActions = Nil,
       material = material
     )
 
@@ -163,7 +162,7 @@ object Sprite:
       animationKey = animationKey,
       eventHandlerEnabled = true,
       eventHandler = eventHandler,
-      animationActions = Batch.Empty,
+      animationActions = Nil,
       material = material
     )
 
@@ -179,6 +178,6 @@ object Sprite:
       animationKey = animationKey,
       eventHandlerEnabled = false,
       eventHandler = Function.const(None),
-      animationActions = Batch.Empty,
+      animationActions = Nil,
       material = material
     )

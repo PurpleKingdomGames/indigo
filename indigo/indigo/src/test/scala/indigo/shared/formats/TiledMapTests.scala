@@ -1,8 +1,7 @@
 package indigo.shared.formats
 
 import indigo.shared.assets.AssetName
-import indigo.shared.collections.Batch
-import indigo.shared.collections.NonEmptyBatch
+import indigo.shared.collections.NonEmptyList
 import indigo.shared.datatypes.Point
 import indigo.shared.formats.TileSet
 import indigo.shared.formats.TiledLayer
@@ -22,7 +21,7 @@ class TiledMapTests extends munit.FunSuite {
         .head
         .map(_.tile)
 
-    val expected: Batch[Int] =
+    val expected: List[Int] =
       TiledSamples.gridMapInt.layers.head.grid.map(_.tile)
 
     assertEquals(actual, expected)
@@ -60,7 +59,7 @@ class TiledMapTests extends munit.FunSuite {
   }
 
   test("should be able to convert to a TiledGridMap.to 2D grid (int)") {
-    val actual: Batch[Batch[Int]] =
+    val actual: List[List[Int]] =
       TiledSamples.tiledMap
         .toGrid[Int](identity[Int])
         .get
@@ -68,7 +67,7 @@ class TiledMapTests extends munit.FunSuite {
         .head
         .map(_.map(_.tile))
 
-    val expected: Batch[Batch[Int]] =
+    val expected: List[List[Int]] =
       TiledSamples.gridMapInt2D
 
     assertEquals(actual, expected)
@@ -81,7 +80,7 @@ class TiledMapTests extends munit.FunSuite {
     actual.children.head match {
       case g: Group =>
         // Only 3 tiles have contents.
-        val graphics: Batch[Graphic[_]] =
+        val graphics: List[Graphic[_]] =
           g.children.collect { case graphic: Graphic[_] => graphic }
 
         assertEquals(graphics.length, 3)
@@ -111,9 +110,9 @@ object TiledSamples {
 
   val gridMapInt: TiledGridMap[Int] =
     TiledGridMap(
-      NonEmptyBatch(
+      NonEmptyList(
         TiledGridLayer(
-          Batch(
+          List(
             TiledGridCell(0, 0, 0),
             TiledGridCell(1, 0, 0),
             TiledGridCell(2, 0, 0),
@@ -137,27 +136,27 @@ object TiledSamples {
       )
     )
 
-  val gridMapInt2D: Batch[Batch[Int]] =
-    Batch(
-      Batch(
+  val gridMapInt2D: List[List[Int]] =
+    List(
+      List(
         TiledGridCell(0, 0, 0),
         TiledGridCell(1, 0, 0),
         TiledGridCell(2, 0, 0),
         TiledGridCell(3, 0, 0)
       ).map(_.tile),
-      Batch(
+      List(
         TiledGridCell(0, 1, 0),
         TiledGridCell(1, 1, 0),
         TiledGridCell(2, 1, 0),
         TiledGridCell(3, 1, 0)
       ).map(_.tile),
-      Batch(
+      List(
         TiledGridCell(0, 2, 0),
         TiledGridCell(1, 2, 2),
         TiledGridCell(2, 2, 1),
         TiledGridCell(3, 2, 0)
       ).map(_.tile),
-      Batch(
+      List(
         TiledGridCell(0, 3, 0),
         TiledGridCell(1, 3, 0),
         TiledGridCell(2, 3, 1),
@@ -173,7 +172,7 @@ object TiledSamples {
       List(
         TiledLayer(
           "Tile Layer 1",
-          gridMapInt.layers.head.grid.map(_.tile).toList,
+          gridMapInt.layers.head.grid.map(_.tile),
           0,
           0,
           4,
@@ -189,24 +188,7 @@ object TiledSamples {
       "1.3.2",
       32,
       32,
-      List(
-        TileSet(
-          Some(17),
-          1,
-          Some("terrain.png"),
-          Some(160),
-          Some(544),
-          Some(0),
-          Some("Palm Island"),
-          Some(0),
-          None,
-          Some(85),
-          Some(32),
-          None,
-          Some(32),
-          None
-        )
-      ),
+      List(TileSet(Some(17), 1, Some("terrain.png"), Some(160), Some(544), Some(0), Some("Palm Island"), Some(0), None, Some(85), Some(32), None, Some(32), None)),
       "map",
       None,
       None,

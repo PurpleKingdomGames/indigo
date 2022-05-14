@@ -119,8 +119,8 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
       dst: FrameBufferComponents.SingleOutput
   ): Unit = {
 
-    val uniformTextures: scalajs.js.Array[(String, WebGLTexture)] =
-      scalajs.js.Array(
+    val uniformTextures: List[(String, WebGLTexture)] =
+      List(
         "SRC_CHANNEL" -> src.diffuse,
         "DST_CHANNEL" -> dst.diffuse
       )

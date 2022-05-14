@@ -1,7 +1,6 @@
 package indigoextras.jobs
 
 import indigo.shared.Outcome
-import indigo.shared.collections.Batch
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.SceneUpdateFragment
@@ -18,23 +17,23 @@ import indigo.shared.subsystems.SubSystemId
   *
   * @param availableJobs Jobs currently available for allocation to workers.
   */
-final case class JobMarket(id: SubSystemId, availableJobs: Batch[Job]) extends SubSystem {
+final case class JobMarket(id: SubSystemId, availableJobs: List[Job]) extends SubSystem {
   type EventType      = JobMarketEvent
-  type SubSystemModel = Batch[Job]
+  type SubSystemModel = List[Job]
 
   val eventFilter: GlobalEvent => Option[JobMarketEvent] = {
     case e: JobMarketEvent => Option(e)
     case _                 => None
   }
 
-  val initialModel: Outcome[Batch[Job]] =
+  val initialModel: Outcome[List[Job]] =
     Outcome(availableJobs)
 
   private given CanEqual[Option[Job], Option[Job]] = CanEqual.derived
 
-  def update(frameContext: SubSystemFrameContext, jobs: Batch[Job]): JobMarketEvent => Outcome[Batch[Job]] = {
+  def update(frameContext: SubSystemFrameContext, jobs: List[Job]): JobMarketEvent => Outcome[List[Job]] = {
     case JobMarketEvent.Post(job) =>
-      Outcome(jobs ++ Batch(job))
+      Outcome(jobs ++ List(job))
 
     case JobMarketEvent.Find(id, canTakeJob) =>
       JobMarket.findJob(jobs, canTakeJob) match {
@@ -51,7 +50,7 @@ final case class JobMarket(id: SubSystemId, availableJobs: Batch[Job]) extends S
       Outcome(jobs)
   }
 
-  def present(frameContext: SubSystemFrameContext, jobs: Batch[Job]): Outcome[SceneUpdateFragment] =
+  def present(frameContext: SubSystemFrameContext, jobs: List[Job]): Outcome[SceneUpdateFragment] =
     Outcome(SceneUpdateFragment.empty)
 }
 
@@ -63,28 +62,26 @@ object JobMarket {
     * @return An empty JobMarket
     */
   def subSystem(id: SubSystemId): JobMarket =
-    JobMarket(id, Batch.Empty)
+    JobMarket(id, Nil)
 
   def apply(id: SubSystemId, availableJobs: Job*): JobMarket =
-    JobMarket(id, Batch.fromSeq(availableJobs))
+    JobMarket(id, availableJobs.toList)
 
-  def findJob(availableJobs: Batch[Job], canTakeJob: Job => Boolean): (Option[Job], Batch[Job]) = {
-    import Batch.Unapply.*
-
+  def findJob(availableJobs: List[Job], canTakeJob: Job => Boolean): (Option[Job], List[Job]) = {
     @annotation.tailrec
-    def rec(remaining: Batch[Job], acc: Batch[Job]): (Option[Job], Batch[Job]) =
+    def rec(remaining: List[Job], acc: List[Job]): (Option[Job], List[Job]) =
       remaining match {
+        case Nil =>
+          (None, acc)
+
         case j :: js if canTakeJob(j) =>
           (Option(j), acc ++ js)
 
         case j :: js =>
           rec(js, j :: acc)
-
-        case _ =>
-          (None, acc)
       }
 
-    rec(availableJobs.sortBy(_.priority), Batch.Empty)
+    rec(availableJobs.sortBy(_.priority), Nil)
   }
 
 }

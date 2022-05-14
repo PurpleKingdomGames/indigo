@@ -1,6 +1,5 @@
 package indigo.shared.scenegraph
 
-import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.Vector2
@@ -18,4 +17,4 @@ object CloneBatchData:
     CloneBatchData(x, y, rotation, 1.0d, 1.0d)
 
   given CanEqual[Option[CloneBatchData], Option[CloneBatchData]] = CanEqual.derived
-  given CanEqual[Batch[CloneBatchData], Batch[CloneBatchData]]     = CanEqual.derived
+  given CanEqual[List[CloneBatchData], List[CloneBatchData]]     = CanEqual.derived

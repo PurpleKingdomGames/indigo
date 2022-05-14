@@ -1,7 +1,6 @@
 package indigoextras.ui
 
 import indigo.shared.Outcome
-import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Depth
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
@@ -36,10 +35,10 @@ import scala.annotation.tailrec
   */
 final case class RadioButton(
     position: Point,
-    onSelected: () => Batch[GlobalEvent],
-    onUnselected: () => Batch[GlobalEvent],
-    onHoverOver: () => Batch[GlobalEvent],
-    onHoverOut: () => Batch[GlobalEvent],
+    onSelected: () => List[GlobalEvent],
+    onUnselected: () => List[GlobalEvent],
+    onHoverOver: () => List[GlobalEvent],
+    onHoverOut: () => List[GlobalEvent],
     hitArea: Option[Rectangle],
     buttonAssets: Option[ButtonAssets],
     state: RadioButtonState
@@ -62,7 +61,7 @@ final case class RadioButton(
     * @return
     */
   def withSelectedActions(actions: GlobalEvent*): RadioButton =
-    withSelectedActions(Batch.fromSeq(actions))
+    withSelectedActions(actions.toList)
 
   /** Events to fire when selected.
     *
@@ -70,7 +69,7 @@ final case class RadioButton(
     *   A list of events to fire
     * @return
     */
-  def withSelectedActions(actions: => Batch[GlobalEvent]): RadioButton =
+  def withSelectedActions(actions: => List[GlobalEvent]): RadioButton =
     this.copy(onSelected = () => actions)
 
   /** Events to fire when deselected.
@@ -80,7 +79,7 @@ final case class RadioButton(
     * @return
     */
   def withDeselectedActions(actions: GlobalEvent*): RadioButton =
-    withDeselectedActions(Batch.fromSeq(actions))
+    withDeselectedActions(actions.toList)
 
   /** Events to fire when deselected.
     *
@@ -88,7 +87,7 @@ final case class RadioButton(
     *   A list of events to fire
     * @return
     */
-  def withDeselectedActions(actions: => Batch[GlobalEvent]): RadioButton =
+  def withDeselectedActions(actions: => List[GlobalEvent]): RadioButton =
     this.copy(onUnselected = () => actions)
 
   /** Events to fire on hover over.
@@ -98,7 +97,7 @@ final case class RadioButton(
     * @return
     */
   def withHoverOverActions(actions: GlobalEvent*): RadioButton =
-    withHoverOverActions(Batch.fromSeq(actions))
+    withHoverOverActions(actions.toList)
 
   /** Events to fire on hover over.
     *
@@ -106,7 +105,7 @@ final case class RadioButton(
     *   A list of events to fire
     * @return
     */
-  def withHoverOverActions(actions: => Batch[GlobalEvent]): RadioButton =
+  def withHoverOverActions(actions: => List[GlobalEvent]): RadioButton =
     this.copy(onHoverOver = () => actions)
 
   /** Events to fire on hover out.
@@ -116,7 +115,7 @@ final case class RadioButton(
     * @return
     */
   def withHoverOutActions(actions: GlobalEvent*): RadioButton =
-    withHoverOutActions(Batch.fromSeq(actions))
+    withHoverOutActions(actions.toList)
 
   /** Events to fire on hover out.
     *
@@ -124,7 +123,7 @@ final case class RadioButton(
     *   A list of events to fire
     * @return
     */
-  def withHoverOutActions(actions: => Batch[GlobalEvent]): RadioButton =
+  def withHoverOutActions(actions: => List[GlobalEvent]): RadioButton =
     this.copy(onHoverOut = () => actions)
 
   /** Give this button it's own hit area
@@ -209,16 +208,7 @@ object RadioButton:
     *   on screen location of the radio button
     */
   def apply(position: Point): RadioButton =
-    RadioButton(
-      position,
-      () => Batch.Empty,
-      () => Batch.Empty,
-      () => Batch.Empty,
-      () => Batch.Empty,
-      None,
-      None,
-      RadioButtonState.Normal
-    )
+    RadioButton(position, () => Nil, () => Nil, () => Nil, () => Nil, None, None, RadioButtonState.Normal)
 
 /** A group of mutually exclusive radio buttons.
   *
@@ -235,7 +225,7 @@ final case class RadioButtonGroup(
     buttonAssets: ButtonAssets,
     hitArea: Rectangle,
     depth: Depth,
-    options: Batch[RadioButton]
+    options: List[RadioButton]
 ) derives CanEqual:
 
   /** Specify a new hit area for the radio buttons
@@ -266,7 +256,7 @@ final case class RadioButtonGroup(
     *   RadioButtonGroup
     */
   def withRadioButtons(radioButtons: RadioButton*): RadioButtonGroup =
-    withRadioButtons(Batch.fromSeq(radioButtons))
+    withRadioButtons(radioButtons.toList)
 
   /** Replace the radio buttons in this group
     *
@@ -275,7 +265,7 @@ final case class RadioButtonGroup(
     * @return
     *   RadioButtonGroup
     */
-  def withRadioButtons(radioButtons: Batch[RadioButton]): RadioButtonGroup =
+  def withRadioButtons(radioButtons: List[RadioButton]): RadioButtonGroup =
     this.copy(options = selectFirstOnly(radioButtons))
 
   /** Append radio buttons to this group
@@ -286,7 +276,7 @@ final case class RadioButtonGroup(
     *   RadioButtonGroup
     */
   def addRadioButtons(radioButtons: RadioButton*): RadioButtonGroup =
-    addRadioButtons(Batch.fromSeq(radioButtons))
+    addRadioButtons(radioButtons.toList)
 
   /** Append radio buttons to this group
     *
@@ -295,14 +285,15 @@ final case class RadioButtonGroup(
     * @return
     *   RadioButtonGroup
     */
-  def addRadioButtons(radioButtons: Batch[RadioButton]): RadioButtonGroup =
+  def addRadioButtons(radioButtons: List[RadioButton]): RadioButtonGroup =
     this.copy(options = selectFirstOnly(options ++ radioButtons))
 
-  private def selectFirstOnly(radioButtons: Batch[RadioButton]): Batch[RadioButton] = {
-    import Batch.Unapply.*
+  private def selectFirstOnly(radioButtons: List[RadioButton]): List[RadioButton] = {
     @tailrec
-    def rec(remaining: Batch[RadioButton], foundSelected: Boolean, acc: Batch[RadioButton]): Batch[RadioButton] =
-      remaining match
+    def rec(remaining: List[RadioButton], foundSelected: Boolean, acc: List[RadioButton]): List[RadioButton] =
+      remaining match {
+        case Nil =>
+          acc.reverse
 
         case head :: next if head.inSelectedState && !foundSelected =>
           rec(next, true, head :: acc)
@@ -312,11 +303,9 @@ final case class RadioButtonGroup(
 
         case head :: next =>
           rec(next, foundSelected, head :: acc)
+      }
 
-        case _ =>
-          acc.reverse
-
-    rec(radioButtons, false, Batch.Empty)
+    rec(radioButtons, false, Nil)
   }
 
   /** Update all the option buttons according to the newest state of mouse input.
@@ -333,13 +322,13 @@ final case class RadioButtonGroup(
       indexedOptions.flatMap {
         case (o, i)
             if mouse.isLeftDown && o.hitArea.getOrElse(hitArea).moveBy(o.position).isPointWithin(mouse.position) =>
-          Batch(i)
+          List(i)
 
         case _ =>
-          Batch.Empty
+          Nil
       }.headOption
 
-    val updatedOptions: Batch[Outcome[RadioButton]] =
+    val updatedOptions: List[Outcome[RadioButton]] =
       indexedOptions.map {
         // Selected already
         case (o, _) if o.inSelectedState && selected.isEmpty =>
@@ -439,7 +428,7 @@ object RadioButtonGroup:
       width: Int,
       height: Int
   ): RadioButtonGroup =
-    RadioButtonGroup(buttonAssets, Rectangle(0, 0, width, height), Depth.zero, Batch.Empty)
+    RadioButtonGroup(buttonAssets, Rectangle(0, 0, width, height), Depth.zero, Nil)
 
   /** Construct a bare bones radio button group, with no buttons in it.
     *
@@ -454,7 +443,7 @@ object RadioButtonGroup:
       buttonAssets: ButtonAssets,
       hitArea: Rectangle
   ): RadioButtonGroup =
-    RadioButtonGroup(buttonAssets, hitArea, Depth.zero, Batch.Empty)
+    RadioButtonGroup(buttonAssets, hitArea, Depth.zero, Nil)
 
 sealed trait RadioButtonState derives CanEqual:
   def toButtonState: ButtonState =

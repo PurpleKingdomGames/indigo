@@ -94,11 +94,11 @@ object QuadTreeBenchmarks:
       Benchmark("searchByLineWithPosition") {
         QuadTree.searchByLineWithPosition(SampleTree.tree, Vertex(0.5, 0.5), Vertex(3.5, 3.5))
       },
-      Benchmark("toBatch") {
-        SampleTree.tree.toBatch
+      Benchmark("toList") {
+        SampleTree.tree.toList
       },
       Benchmark("toListWithPosition") {
-        SampleTree.tree.toBatchWithPosition
+        SampleTree.tree.toListWithPosition
       }
     )
   )

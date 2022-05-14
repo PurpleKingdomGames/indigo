@@ -1,13 +1,11 @@
 package indigo.shared.assets
 
-import indigo.shared.collections.Batch
-
 import scala.annotation.tailrec
 
 /** Parent type of the different kinds of assets Indigo understands.
   */
 sealed trait AssetType derives CanEqual {
-  def toBatch: Batch[AssetType]
+  def toList: List[AssetType]
 }
 
 /** Represents concrete, loadable asset types.
@@ -27,24 +25,26 @@ object AssetType {
     * @param assets
     *   The potentially tagged hierarchy list.
     * @return
-    *   Batch[AssetTypePrimitive]
+    *   List[AssetTypePrimitive]
     */
-  def flattenAssetBatch(assets: Batch[AssetType]): Batch[AssetTypePrimitive] = {
+  def flattenAssetList(assets: List[AssetType]): List[AssetTypePrimitive] = {
     @tailrec
-    def rec(remaining: Batch[AssetType], acc: Batch[AssetTypePrimitive]): Batch[AssetTypePrimitive] =
-      if remaining.isEmpty then acc.reverse
-      else
-        remaining.head match
-          case Tagged(imgs) =>
-            rec(imgs ++ remaining.tail, acc)
+    def rec(remaining: List[AssetType], acc: List[AssetTypePrimitive]): List[AssetTypePrimitive] =
+      remaining match {
+        case Nil =>
+          acc.reverse
 
-          case (x: AssetTypePrimitive) =>
-            rec(remaining.tail, x :: acc)
+        case Tagged(imgs) :: xs =>
+          rec(imgs ++ xs, acc)
 
-          case _ =>
-            rec(remaining.tail, acc)
+        case (x: AssetTypePrimitive) :: xs =>
+          rec(xs, x :: acc)
 
-    rec(assets, Batch.Empty)
+        case _ :: xs =>
+          rec(xs, acc)
+      }
+
+    rec(assets, Nil)
   }
 
   /** Tagged instance, the preferred constructor is the apply method: Tagged("my tag")(image1..imageN)
@@ -57,8 +57,8 @@ object AssetType {
     * @param images
     *   The image assets to be tagged
     */
-  final case class Tagged(tag: AssetTag, images: Batch[Image]) extends AssetType derives CanEqual {
-    def toBatch: Batch[Image] = images.map(_.withTag(tag))
+  final case class Tagged(tag: AssetTag, images: List[Image]) extends AssetType derives CanEqual {
+    def toList: List[Image] = images.map(_.withTag(tag))
   }
   object Tagged {
 
@@ -73,7 +73,7 @@ object AssetType {
       *   An instance of Tagged which can be nested along side your usual asset declarations
       */
     def apply(tag: String)(images: Image*): Tagged =
-      Tagged(AssetTag(tag), Batch.fromSeq(images))
+      Tagged(AssetTag(tag), images.toList)
 
     /** Extractor for Tagged
       *
@@ -82,8 +82,8 @@ object AssetType {
       * @return
       *   a list of tagged image assets
       */
-    def unapply(tagged: Tagged): Option[Batch[Image]] =
-      Some(tagged.toBatch)
+    def unapply(tagged: Tagged): Option[List[Image]] =
+      Some(tagged.toList)
   }
 
   /** Represents a text asset, Indigo does not care about the type of data held in the text file, it is up to the
@@ -95,7 +95,7 @@ object AssetType {
     *   the path to the asset
     */
   final case class Text(name: AssetName, path: AssetPath) extends AssetTypePrimitive derives CanEqual {
-    def toBatch: Batch[AssetType] = Batch(this)
+    def toList: List[AssetType] = List(this)
   }
 
   /** Represents any browser compatible image asset
@@ -116,8 +116,8 @@ object AssetType {
     def noTag: Image =
       this.copy(tag = None)
 
-    def toBatch: Batch[AssetType] =
-      Batch(this)
+    def toList: List[AssetType] =
+      List(this)
   }
   object Image {
     def apply(name: AssetName, path: AssetPath): Image = Image(name, path, None)
@@ -131,11 +131,11 @@ object AssetType {
     *   the path to the asset
     */
   final case class Audio(name: AssetName, path: AssetPath) extends AssetTypePrimitive derives CanEqual {
-    def toBatch: Batch[AssetType] = Batch(this)
+    def toList: List[AssetType] = List(this)
   }
 
   final case class Font(name: AssetName, path: AssetPath) extends AssetTypePrimitive derives CanEqual {
-    def toBatch: Batch[AssetType] = Batch(this)
+    def toList: List[AssetType] = List(this)
   }
 
 }

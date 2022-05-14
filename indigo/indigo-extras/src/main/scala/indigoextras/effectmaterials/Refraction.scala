@@ -2,7 +2,6 @@ package indigoextras.effectmaterials
 
 import indigo.shaders.ShaderLibrary
 import indigo.shared.assets.AssetName
-import indigo.shared.collections.Batch
 import indigo.shared.datatypes.RGBA
 import indigo.shared.materials.BlendMaterial
 import indigo.shared.materials.BlendShaderData
@@ -81,14 +80,14 @@ final case class RefractionEntity(diffuse: AssetName, fillType: FillType) extend
     val uniformBlock: UniformBlock =
       UniformBlock(
         "IndigoBitmapData",
-        Batch(
+        List(
           Uniform("FILLTYPE") -> float(imageFillType)
         )
       )
 
     ShaderData(
       Refraction.entityShader.id,
-      Batch(uniformBlock),
+      List(uniformBlock),
       Some(diffuse),
       None,
       None,
@@ -104,10 +103,10 @@ final case class RefractionBlend(multiplier: Double) extends BlendMaterial deriv
   lazy val toShaderData: BlendShaderData =
     BlendShaderData(
       Refraction.blendShader.id,
-      Batch(
+      List(
         UniformBlock(
           "IndigoRefractionBlendData",
-          Batch(
+          List(
             Uniform("REFRACTION_AMOUNT") -> float(multiplier)
           )
         )
