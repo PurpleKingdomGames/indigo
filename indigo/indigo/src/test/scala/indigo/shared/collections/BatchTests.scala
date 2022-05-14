@@ -70,6 +70,40 @@ class BatchTests extends munit.FunSuite {
     assertEquals(a.toString, "Batch(1, 2, 3, 4, 5, 6)")
   }
 
+  test("exists") {
+    val a =
+      Batch.Combine(
+        Batch.Singleton(1),
+        Batch.Combine(
+          Batch.Combine(
+            Batch(2),
+            Batch(3)
+          ),
+          Batch(4, 5, 6)
+        )
+      )
+
+    assert(a.exists(_ == 5))
+    assert(!a.exists(_ == 7))
+  }
+
+  test("find") {
+    val a =
+      Batch.Combine(
+        Batch.Singleton(1),
+        Batch.Combine(
+          Batch.Combine(
+            Batch(2),
+            Batch(3)
+          ),
+          Batch(4, 5, 6)
+        )
+      )
+
+    assertEquals(a.find(_ > 5), Some(6))
+    assertEquals(a.find(_ < 1), None)
+  }
+
   test("equals") {
     assert(Batch.Singleton(1) != Batch.Empty)
     assert(Batch.Singleton(1) == Batch.Wrapped(js.Array(1)))
@@ -203,6 +237,25 @@ class BatchTests extends munit.FunSuite {
 
     assertEquals(
       actual.map(_ * 10).toList,
+      List(10, 20, 30, 40, 50, 60)
+    )
+  }
+
+  test("flatMap") {
+    val actual =
+      Batch.Combine(
+        Batch.Singleton(1),
+        Batch.Combine(
+          Batch.Combine(
+            Batch(2),
+            Batch(3)
+          ),
+          Batch(4, 5, 6)
+        )
+      )
+
+    assertEquals(
+      actual.flatMap(v => Batch(v * 10)).toList,
       List(10, 20, 30, 40, 50, 60)
     )
   }
