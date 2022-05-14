@@ -90,13 +90,13 @@ object Bezier:
           acc.reverse
 
     vertices match
-      case vs if vs.isEmpty =>
+      case Batch.Empty =>
         Vertex.zero
 
-      case x :: vs if vs.isEmpty =>
+      case x :: Batch.Empty =>
         x
 
-      case p1 :: p2 :: vs if vs.isEmpty =>
+      case p1 :: p2 :: Batch.Empty =>
         interpolate(p1, p2, unitInterval)
 
       case ps =>

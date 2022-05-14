@@ -6,8 +6,7 @@ import indigo.shared.collections.NonEmptyBatch
 
 import scala.annotation.tailrec
 
-final case class SceneFinder(previous: Batch[ScenePosition], current: ScenePosition, next: Batch[ScenePosition])
-    derives CanEqual:
+final case class SceneFinder(previous: Batch[ScenePosition], current: ScenePosition, next: Batch[ScenePosition]) derives CanEqual {
 
   val sceneCount: Int =
     toBatch.size
@@ -25,11 +24,22 @@ final case class SceneFinder(previous: Batch[ScenePosition], current: ScenePosit
     }
 
   def forward: SceneFinder =
-    if next.isEmpty then this else SceneFinder(previous ++ Batch(current), next.head, next.tail)
+    next match {
+      case Batch.Empty =>
+        this
+
+      case b =>
+        SceneFinder(previous ++ Batch(current), b.head, b.tail)
+    }
 
   def backward: SceneFinder =
-    val b = previous.reverse
-    if b.isEmpty then this else SceneFinder(b.tail.reverse, b.head, current :: next)
+    previous.reverse match {
+      case Batch.Empty =>
+        this
+
+      case b =>
+        SceneFinder(b.tail.reverse, b.head, current :: next)
+    }
 
   @tailrec
   def jumpToSceneByPosition(index: Int): SceneFinder =
@@ -65,14 +75,19 @@ final case class SceneFinder(previous: Batch[ScenePosition], current: ScenePosit
         this
     }
 
-object SceneFinder:
+}
+
+object SceneFinder {
   given CanEqual[Option[SceneFinder], Option[SceneFinder]] = CanEqual.derived
 
   def fromScenes[StartUpData, GameModel, ViewModel](
       scenesBatch: NonEmptyBatch[Scene[StartUpData, GameModel, ViewModel]]
-  ): SceneFinder =
+  ): SceneFinder = {
     val a = scenesBatch.map(_.name).zipWithIndex.map(p => ScenePosition(p._2, p._1))
 
     SceneFinder(Batch.Empty, a.head, a.tail)
+  }
+
+}
 
 final case class ScenePosition(index: Int, name: SceneName) derives CanEqual
