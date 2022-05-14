@@ -151,6 +151,9 @@ val Key: shared.constants.Key.type = shared.constants.Key
 type Batch[A] = shared.collections.Batch[A]
 val Batch: shared.collections.Batch.type = shared.collections.Batch
 
+type NonEmptyBatch[A] = shared.collections.NonEmptyBatch[A]
+val NonEmptyBatch: shared.collections.NonEmptyBatch.type = shared.collections.NonEmptyBatch
+
 type NonEmptyList[A] = shared.collections.NonEmptyList[A]
 val NonEmptyList: shared.collections.NonEmptyList.type = shared.collections.NonEmptyList
 

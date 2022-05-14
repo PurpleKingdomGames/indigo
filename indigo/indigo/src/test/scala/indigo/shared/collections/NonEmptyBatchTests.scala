@@ -3,6 +3,13 @@ package indigo.shared.collections
 @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
 class NonEmptyBatchTests extends munit.FunSuite {
 
+  test("pattern matching - first") {
+    import NonEmptyBatch.==:
+    NonEmptyBatch(1, 2, 3) match
+      case i ==: is => assert(i == 1)
+      case _        => assert(false)
+  }
+
   test("NonEmptyBatch AsString should be able to show a batch of Ints") {
     val nel = NonEmptyBatch(1, 2, 3)
     assertEquals(nel.toString(), "NonEmptyBatch[1][2, 3]")

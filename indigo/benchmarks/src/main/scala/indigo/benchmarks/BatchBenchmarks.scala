@@ -15,7 +15,7 @@ object BatchBenchmarks:
 
   val bigList    = graphics1000.toList
   val bigJsArray = graphics1000.toJSArray
-  val bigBatch   = Batch.Wrapped(bigJsArray)
+  val bigBatch   = Batch(bigJsArray)
   val bigNestedBatch = {
     val s1 = bigJsArray.splitAt(100)
     val s2 = s1._2.splitAt(300)
@@ -26,19 +26,7 @@ object BatchBenchmarks:
     val a3 = s3._1
     val a4 = s3._2
 
-    Batch.Combine(
-      Batch.Singleton(a1.head),
-      Batch.Combine(
-        Batch.Wrapped(a1.tail),
-        Batch.Combine(
-          Batch.Combine(
-            Batch(a2),
-            Batch(a3) |+| Batch(a4)
-          ),
-          Batch.Empty
-        )
-      )
-    )
+    Batch(a1.head) |+| (Batch(a1.tail) |+| (Batch(a2) |+| Batch(a3) |+| Batch(a4)) |+| Batch.empty)
   }
 
   val suite = GuiSuite(

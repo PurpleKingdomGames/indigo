@@ -230,6 +230,15 @@ object Batch:
   def apply[A](batch1: Batch[A], batch2: Batch[A]): Batch[A] =
     Combine(batch1, batch2)
 
+  def unapplySeq[A](b: Batch[A]): Seq[A] =
+    b.toList
+
+  object ==: {
+    def unapply[A](b: Batch[A]): Option[(A, Batch[A])] =
+      if b.isEmpty then None
+      else Some(b.head -> b.tail)
+  }
+
   def fromJSArray[A](values: js.Array[A]): Batch[A] =
     Wrapped(values)
 
@@ -266,7 +275,7 @@ object Batch:
   def combineAll[A](batchs: Batch[A]*): Batch[A] =
     batchs.foldLeft(Batch.empty[A])(_ ++ _)
 
-  case object Empty extends Batch[Nothing]:
+  private[collections] case object Empty extends Batch[Nothing]:
     val isEmpty: Boolean          = true
     def toJSArray[B]: js.Array[B] = js.Array[B]()
 
@@ -279,7 +288,7 @@ object Batch:
     override def equals(that: Any): Boolean =
       that.isInstanceOf[Batch.Empty.type]
 
-  final case class Singleton[A](value: A) extends Batch[A]:
+  private[collections] final case class Singleton[A](value: A) extends Batch[A]:
     val isEmpty: Boolean               = false
     def head: A                        = value
     def headOption: Option[A]          = Some(value)
@@ -311,7 +320,7 @@ object Batch:
 
       catch { _ => false }
 
-  final case class Combine[A](batch1: Batch[A], batch2: Batch[A]) extends Batch[A]:
+  private[collections] final case class Combine[A](batch1: Batch[A], batch2: Batch[A]) extends Batch[A]:
     val isEmpty: Boolean      = batch1.isEmpty && batch2.isEmpty
     def head: A               = batch1.head
     def headOption: Option[A] = batch1.headOption
@@ -376,7 +385,7 @@ object Batch:
 
       catch { _ => false }
 
-  final case class Wrapped[A](values: js.Array[A]) extends Batch[A]:
+  private[collections] final case class Wrapped[A](values: js.Array[A]) extends Batch[A]:
     val isEmpty: Boolean               = values.isEmpty
     def head: A                        = values.head
     def headOption: Option[A]          = values.headOption
