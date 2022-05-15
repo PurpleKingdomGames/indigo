@@ -1,6 +1,6 @@
 package indigoexamples.model
 
-import indigo.shared.collections.NonEmptyList
+import indigo.shared.collections.NonEmptyBatch
 import indigo.shared.datatypes.RGBA
 import indigo.shared.datatypes.Radians
 import indigo.shared.dice.Dice
@@ -23,8 +23,8 @@ object Flare {
     Flare(flightTime, signalFunction(dice), tint)
   }
 
-  def createArcControlVertices(startPosition: Vertex): Vertex => NonEmptyList[Vertex] =
-    target => NonEmptyList(startPosition, startPosition + target)
+  def createArcControlVertices(startPosition: Vertex): Vertex => NonEmptyBatch[Vertex] =
+    target => NonEmptyBatch(startPosition, startPosition + target)
 
   def pickEndPoint(initialAngle: Radians): Dice => Vertex =
     dice => {

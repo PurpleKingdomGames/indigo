@@ -46,7 +46,7 @@ object AssetLoadingExample extends IndigoDemo[Unit, Unit, MyGameModel, MyViewMod
           depth = Depth(2)
         ).withUpActions {
           println("Start loading assets...")
-          List(AssetBundleLoaderEvent.Load(BindingKey("Junction box assets"), Assets.junctionboxImageAssets ++ Assets.otherAssetsToLoad))
+          Batch(AssetBundleLoaderEvent.Load(BindingKey("Junction box assets"), Assets.junctionboxImageAssets ++ Assets.otherAssetsToLoad))
         }
       )
     }
@@ -86,12 +86,12 @@ object AssetLoadingExample extends IndigoDemo[Unit, Unit, MyGameModel, MyViewMod
   def present(context: FrameContext[Unit], model: MyGameModel, viewModel: MyViewModel): Outcome[SceneUpdateFragment] = {
     val stuff =
       if model.loaded then
-        List(
+        Batch(
           Graphic(Rectangle(0, 0, 64, 64), 1, Assets.junctionBoxMaterial)
             .moveTo(30, 30),
           MyColoredEntity(Point(0, 50))
         )
-      else Nil
+      else Batch.empty
 
     Outcome(
       SceneUpdateFragment(viewModel.button.draw :: stuff)

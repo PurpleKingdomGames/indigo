@@ -56,11 +56,13 @@ object Fireworks extends IndigoDemo[Vertex => Point, FireworksStartupData, Unit,
         )
     }
 
-  def launchFireworks(dice: Dice, toScreenSpace: Vertex => Point): List[AutomataEvent.Spawn] =
-    List.fill(dice.roll(5) + 5)(
-      LaunchPadAutomata.spawnEvent(
-        LaunchPad.generateLaunchPad(dice),
-        toScreenSpace
+  def launchFireworks(dice: Dice, toScreenSpace: Vertex => Point): Batch[AutomataEvent.Spawn] =
+    Batch.fromList(
+      List.fill(dice.roll(5) + 5)(
+        LaunchPadAutomata.spawnEvent(
+          LaunchPad.generateLaunchPad(dice),
+          toScreenSpace
+        )
       )
     )
 

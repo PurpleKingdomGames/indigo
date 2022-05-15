@@ -32,12 +32,12 @@ object Rocket {
       case 5 => RGBA.Cyan
     }
 
-  def createArcControlVertices(dice: Dice, launchPadStartPosition: Vertex): Vertex => NonEmptyList[Vertex] =
+  def createArcControlVertices(dice: Dice, launchPadStartPosition: Vertex): Vertex => NonEmptyBatch[Vertex] =
     target => {
       val baseValue: Double =
         (0.5d * Math.max(0, Math.min(1.0d, dice.rollDouble))) + 0.5d
 
-      NonEmptyList(
+      NonEmptyBatch(
         launchPadStartPosition,
         Vertex(
           x = if (target.x < 0) -(baseValue * target.x) else baseValue * target.x,

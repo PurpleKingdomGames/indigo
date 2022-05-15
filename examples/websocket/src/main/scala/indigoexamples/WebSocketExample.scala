@@ -78,12 +78,12 @@ object WebSocketExample extends IndigoDemo[Unit, WebSocketConfig, List[String], 
     Outcome(
       SceneUpdateFragment(
         Layer(
-          List(
+          Batch(
             TextBox("Click to connect: ").withColor(RGBA.White).moveTo(5, 12),
             button.draw,
             TextBox("Message Log: ").withColor(RGBA.Green).moveTo(5, 25)
           ) ++
-            log.zipWithIndex.map { case (msg, i) =>
+            Batch.fromList(log).zipWithIndex.map { case (msg, i) =>
               val ii = i + 1
               TextBox(s"(${(log.length - ii).toString}) $msg").withColor(RGBA.Green).moveTo(15, 25 + (ii * 12))
             }

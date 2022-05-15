@@ -1,5 +1,6 @@
 package com.example.jobs
 
+import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Point
 import indigo.shared.time.Millis
 import indigo.shared.time.Seconds
@@ -55,7 +56,7 @@ class TreeTests extends munit.FunSuite {
       )
 
     assertEquals(actual.unsafeGet, expected)
-    assertEquals(actual.unsafeGlobalEvents, Nil)
+    assertEquals(actual.unsafeGlobalEvents, Batch.empty)
   }
 
   test("Tree update function.general growth 1000 millis") {
@@ -69,7 +70,7 @@ class TreeTests extends munit.FunSuite {
       )
 
     assertEquals(actual.unsafeGet, expected)
-    assertEquals(actual.unsafeGlobalEvents, Nil)
+    assertEquals(actual.unsafeGlobalEvents, Batch.empty)
   }
 
   test("Tree update function.fully grown") {
@@ -83,7 +84,7 @@ class TreeTests extends munit.FunSuite {
       )
 
     assertEquals(actual.unsafeGet, expected)
-    assertEquals(actual.unsafeGlobalEvents, List(JobMarketEvent.Post(ChopDown(0, Point.zero))))
+    assertEquals(actual.unsafeGlobalEvents, Batch(JobMarketEvent.Post(ChopDown(0, Point.zero))))
   }
 
 }

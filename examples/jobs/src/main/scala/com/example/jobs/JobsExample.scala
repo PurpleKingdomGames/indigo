@@ -27,7 +27,7 @@ object JobsExample extends IndigoDemo[Unit, StartupData, Model, Unit] {
     )
 
   def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[StartupData]] = {
-    val treeData = (1 to (dice.roll(3) + 3)).toList.map { i =>
+    val treeData = Batch.fromList((1 to (dice.roll(3) + 3)).toList).map { i =>
       TreeData(
         i,
         Vertex(
@@ -74,6 +74,6 @@ object JobsExample extends IndigoDemo[Unit, StartupData, Model, Unit] {
     Outcome(View.present(model))
 }
 
-final case class StartupData(trees: List[TreeData])
+final case class StartupData(trees: Batch[TreeData])
 
 final case class TreeData(index: Int, position: Vertex, growthRate: Double)

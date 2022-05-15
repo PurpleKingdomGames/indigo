@@ -26,9 +26,9 @@ object Projectiles {
     )
   }
 
-  def createArcSignal(lifeSpan: Seconds): NonEmptyList[Vertex] => Signal[Vertex] =
+  def createArcSignal(lifeSpan: Seconds): NonEmptyBatch[Vertex] => Signal[Vertex] =
     Bezier
-      .fromVerticesNel(_)
+      .fromVerticesNonEmpty(_)
       .toSignal(lifeSpan)
 
   def pickFlightTime(dice: Dice, min: Seconds, max: Seconds): Seconds =
@@ -40,9 +40,9 @@ object Projectiles {
       max + ((min - max) * dice.rollDouble).toDouble
     }
 
-  def emitTrailEvents(position: Point, tint: RGBA, interval: Seconds): Signal[List[AutomataEvent.Spawn]] =
+  def emitTrailEvents(position: Point, tint: RGBA, interval: Seconds): Signal[Batch[AutomataEvent.Spawn]] =
     Signal.Pulse(interval).map { predicate =>
-      if (predicate) List(TrailAutomata.spawnEvent(position, tint)) else Nil
+      if (predicate) Batch(TrailAutomata.spawnEvent(position, tint)) else Batch.empty
     }
 
 }
