@@ -181,6 +181,8 @@ sealed trait Batch[+A]:
 
 object Batch:
 
+  extension [A](s: Seq[A]) def toBatch: Batch[A] = Batch.fromSeq(s)
+
   object Unapply:
     object :: {
       def unapply[A](b: Batch[A]): Option[(A, Batch[A])] =

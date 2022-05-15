@@ -6,6 +6,7 @@ import indigo.shared.BoundaryLocator
 import indigo.shared.FontRegister
 import indigo.shared.FrameContext
 import indigo.shared.assets.AssetName
+import indigo.shared.collections.Batch
 import indigo.shared.constants.Key
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.datatypes.FontChar
@@ -61,7 +62,10 @@ class InputFieldTests extends munit.FunSuite {
     assertEquals(InputField("Hello, world!", assets).cursorHome.cursorRight.cursorPosition, 1)
     assertEquals(InputField("Hello, world!", assets).cursorHome.cursorRight.cursorRight.cursorPosition, 2)
     assertEquals(InputField("Hello, world!", assets).cursorHome.cursorRight.cursorRight.cursorLeft.cursorPosition, 1)
-    assertEquals(InputField("Hello, world!", assets).cursorHome.cursorRight.cursorRight.cursorLeft.cursorLeft.cursorPosition, 0)
+    assertEquals(
+      InputField("Hello, world!", assets).cursorHome.cursorRight.cursorRight.cursorLeft.cursorLeft.cursorPosition,
+      0
+    )
   }
   test("Editing operations.cursor left treats newlines as a normal character") {
     assertEquals(InputField("ab\nc", assets).cursorEnd.cursorPosition, 4)
@@ -75,7 +79,10 @@ class InputFieldTests extends munit.FunSuite {
     assertEquals(InputField("ab\nc", assets).cursorHome.cursorRight.cursorPosition, 1)
     assertEquals(InputField("ab\nc", assets).cursorHome.cursorRight.cursorRight.cursorPosition, 2)
     assertEquals(InputField("ab\nc", assets).cursorHome.cursorRight.cursorRight.cursorRight.cursorPosition, 3)
-    assertEquals(InputField("ab\nc", assets).cursorHome.cursorRight.cursorRight.cursorRight.cursorRight.cursorPosition, 4)
+    assertEquals(
+      InputField("ab\nc", assets).cursorHome.cursorRight.cursorRight.cursorRight.cursorRight.cursorPosition,
+      4
+    )
   }
   test("Editing operations.cursor home") {
     assertEquals(InputField("Hello, world!", assets).cursorHome.cursorPosition, 0)
@@ -229,7 +236,7 @@ class InputFieldTests extends munit.FunSuite {
       field.update(context).flatMap(_.update(context))
 
     assertEquals(actual.unsafeGet.text, "ABCABC")
-    assertEquals(actual.unsafeGlobalEvents, Nil)
+    assertEquals(actual.unsafeGlobalEvents, Batch.empty)
   }
 
   test("Cursor drawing.Focusing an input field emits events") {
@@ -242,7 +249,7 @@ class InputFieldTests extends munit.FunSuite {
         .giveFocus
 
     assertEquals(actual.unsafeGet.hasFocus, true)
-    assertEquals(actual.unsafeGlobalEvents, List(event))
+    assertEquals(actual.unsafeGlobalEvents, Batch(event))
   }
 
   test("Cursor drawing.Losing focus on an input field emits events") {
@@ -257,11 +264,11 @@ class InputFieldTests extends munit.FunSuite {
         .loseFocus
 
     assertEquals(actual.unsafeGet.hasFocus, false)
-    assertEquals(actual.unsafeGlobalEvents, List(event))
+    assertEquals(actual.unsafeGlobalEvents, Batch(event))
   }
 
-  val keysUp: List[KeyboardEvent.KeyUp] =
-    List(
+  val keysUp: Batch[KeyboardEvent.KeyUp] =
+    Batch(
       KeyboardEvent.KeyUp(Key.KEY_A),
       KeyboardEvent.KeyUp(Key.KEY_B),
       KeyboardEvent.KeyUp(Key.KEY_C)
@@ -271,7 +278,7 @@ class InputFieldTests extends munit.FunSuite {
     new FrameContext[Unit](
       GameTime.zero,
       Dice.loaded(1),
-      new InputState(Mouse.default, new Keyboard(keysUp, Nil, None), Gamepad.default),
+      new InputState(Mouse.default, new Keyboard(keysUp, Batch.empty, None), Gamepad.default),
       new BoundaryLocator(new AnimationsRegister, new FontRegister, new DynamicText),
       ()
     )
@@ -279,7 +286,7 @@ class InputFieldTests extends munit.FunSuite {
   object Samples {
     val material = Material.Bitmap(AssetName("font-sheet"))
 
-    val chars = List(
+    val chars = Batch(
       FontChar("a", 0, 16, 16, 16),
       FontChar("b", 16, 16, 10, 20),
       FontChar("c", 32, 16, 16, 16)

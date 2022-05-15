@@ -1,6 +1,7 @@
 package indigoextras.ui
 
 import indigo.shared.Outcome
+import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.events.GlobalEvent
@@ -11,30 +12,30 @@ import indigoextras.geometry.Vertex
 final case class HitArea(
     area: Polygon.Closed,
     state: ButtonState,
-    onUp: () => List[GlobalEvent],
-    onDown: () => List[GlobalEvent],
-    onHoverOver: () => List[GlobalEvent],
-    onHoverOut: () => List[GlobalEvent],
-    onClick: () => List[GlobalEvent],
-    onHoldDown: () => List[GlobalEvent],
+    onUp: () => Batch[GlobalEvent],
+    onDown: () => Batch[GlobalEvent],
+    onHoverOver: () => Batch[GlobalEvent],
+    onHoverOut: () => Batch[GlobalEvent],
+    onClick: () => Batch[GlobalEvent],
+    onHoldDown: () => Batch[GlobalEvent],
 ) derives CanEqual:
 
   def update(mouse: Mouse): Outcome[HitArea] = {
     val mouseInBounds = area.contains(Vertex.fromPoint(mouse.position))
 
-    val upEvents: List[GlobalEvent] =
+    val upEvents: Batch[GlobalEvent] =
       if mouseInBounds && mouse.mouseReleased then onUp()
-      else Nil
+      else Batch.empty
 
-    val clickEvents: List[GlobalEvent] =
+    val clickEvents: Batch[GlobalEvent] =
       if mouseInBounds && mouse.mouseClicked then onClick()
-      else Nil
+      else Batch.empty
 
-    val downEvents: List[GlobalEvent] =
+    val downEvents: Batch[GlobalEvent] =
       if mouseInBounds && mouse.mousePressed then onDown()
-      else Nil
+      else Batch.empty
 
-    val mouseButtonEvents: List[GlobalEvent] =
+    val mouseButtonEvents: Batch[GlobalEvent] =
       downEvents ++ upEvents ++ clickEvents
 
     state match
@@ -58,33 +59,33 @@ final case class HitArea(
   }
 
   def withUpActions(actions: GlobalEvent*): HitArea =
-    withUpActions(actions.toList)
-  def withUpActions(actions: => List[GlobalEvent]): HitArea =
+    withUpActions(Batch.fromSeq(actions))
+  def withUpActions(actions: => Batch[GlobalEvent]): HitArea =
     this.copy(onUp = () => actions)
 
   def withDownActions(actions: GlobalEvent*): HitArea =
-    withDownActions(actions.toList)
-  def withDownActions(actions: => List[GlobalEvent]): HitArea =
+    withDownActions(Batch.fromSeq(actions))
+  def withDownActions(actions: => Batch[GlobalEvent]): HitArea =
     this.copy(onDown = () => actions)
 
   def withHoverOverActions(actions: GlobalEvent*): HitArea =
-    withHoverOverActions(actions.toList)
-  def withHoverOverActions(actions: => List[GlobalEvent]): HitArea =
+    withHoverOverActions(Batch.fromSeq(actions))
+  def withHoverOverActions(actions: => Batch[GlobalEvent]): HitArea =
     this.copy(onHoverOver = () => actions)
 
   def withHoverOutActions(actions: GlobalEvent*): HitArea =
-    withHoverOutActions(actions.toList)
-  def withHoverOutActions(actions: => List[GlobalEvent]): HitArea =
+    withHoverOutActions(Batch.fromSeq(actions))
+  def withHoverOutActions(actions: => Batch[GlobalEvent]): HitArea =
     this.copy(onHoverOut = () => actions)
 
   def withClickActions(actions: GlobalEvent*): HitArea =
-    withClickActions(actions.toList)
-  def withClickActions(actions: => List[GlobalEvent]): HitArea =
+    withClickActions(Batch.fromSeq(actions))
+  def withClickActions(actions: => Batch[GlobalEvent]): HitArea =
     this.copy(onClick = () => actions)
 
   def withHoldDownActions(actions: GlobalEvent*): HitArea =
-      withHoldDownActions(actions.toList)
-  def withHoldDownActions(actions: => List[GlobalEvent]): HitArea =
+      withHoldDownActions(Batch.fromSeq(actions))
+  def withHoldDownActions(actions: => Batch[GlobalEvent]): HitArea =
     this.copy(onHoldDown = () => actions)
 
   def toUpState: HitArea =
@@ -112,22 +113,22 @@ object HitArea:
     HitArea(
       Polygon.fromRectangle(bounds),
       ButtonState.Up,
-      onUp = () => Nil,
-      onDown = () => Nil,
-      onHoverOver = () => Nil,
-      onHoverOut = () => Nil,
-      onClick = () => Nil,
-      onHoldDown = () => Nil,
+      onUp = () => Batch.empty,
+      onDown = () => Batch.empty,
+      onHoverOver = () => Batch.empty,
+      onHoverOut = () => Batch.empty,
+      onClick = () => Batch.empty,
+      onHoldDown = () => Batch.empty,
     )
 
   def apply(area: Polygon.Closed): HitArea =
     HitArea(
       area,
       ButtonState.Up,
-      onUp = () => Nil,
-      onDown = () => Nil,
-      onHoverOver = () => Nil,
-      onHoverOut = () => Nil,
-      onClick = () => Nil,
-      onHoldDown = () => Nil,
+      onUp = () => Batch.empty,
+      onDown = () => Batch.empty,
+      onHoverOver = () => Batch.empty,
+      onHoverOut = () => Batch.empty,
+      onClick = () => Batch.empty,
+      onHoldDown = () => Batch.empty,
     )

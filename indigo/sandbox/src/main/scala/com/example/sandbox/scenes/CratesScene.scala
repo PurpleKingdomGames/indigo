@@ -46,14 +46,14 @@ object CratesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
 
   val cloneId: CloneId = CloneId("crates")
 
-  val cloneBlanks: List[CloneBlank] =
-    List(CloneBlank(cloneId, graphic).static)
+  val cloneBlanks: Batch[CloneBlank] =
+    Batch(CloneBlank(cloneId, graphic).static)
 
   val move =
     Signal.SmoothPulse.map(d => Point(75 + (50 * d).toInt, 80))
 
-  def lights(position: Point): List[Light] =
-    List(
+  def lights(position: Point): Batch[Light] =
+    Batch(
       PointLight.default.moveTo(Point(100, 100)).withFalloff(Falloff.smoothLinear),
       PointLight.default.moveTo(position).withFalloff(Falloff.smoothLinear).withColor(RGBA.Yellow),
       AmbientLight(RGBA.Blue.mix(RGBA.White, 0.3).withAmount(0.5))

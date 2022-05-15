@@ -6,6 +6,7 @@ import indigo.shared.BoundaryLocator
 import indigo.shared.FontRegister
 import indigo.shared.FrameContext
 import indigo.shared.Outcome
+import indigo.shared.collections.Batch
 import indigo.shared.datatypes.RGBA
 import indigo.shared.dice.Dice
 import indigo.shared.events.EventFilters
@@ -30,7 +31,7 @@ class StandardFrameProcessorTests extends munit.FunSuite {
       model,
       viewModel,
       GameTime.zero,
-      List(EventsOnlyEvent.Increment),
+      Batch(EventsOnlyEvent.Increment),
       InputState.default,
       Dice.loaded(0),
       boundaryLocator
@@ -55,7 +56,7 @@ class StandardFrameProcessorTests extends munit.FunSuite {
     assert(outcome.unsafeGlobalEvents.length == 2)
     assert(outcome.unsafeGlobalEvents.contains(EventsOnlyEvent.Increment))
     assert(outcome.unsafeGlobalEvents.contains(EventsOnlyEvent.Total(1)))
-    assert(outcome.unsafeGlobalEvents == List(EventsOnlyEvent.Total(1), EventsOnlyEvent.Increment))
+    assert(outcome.unsafeGlobalEvents == Batch(EventsOnlyEvent.Total(1), EventsOnlyEvent.Increment))
 
   }
 

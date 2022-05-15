@@ -222,6 +222,12 @@ object NonEmptyList {
         None
     }
 
+  def fromBatch[A](b: Batch[A]): Option[NonEmptyList[A]] =
+    fromList(b.toList)
+
+  def fromNonEmptyBatch[A](neb: NonEmptyBatch[A]): NonEmptyList[A] =
+    NonEmptyList(neb.head, neb.tail.toList)
+
   def length[A](fa: NonEmptyList[A]): Int =
     fa.tail.length + 1
 

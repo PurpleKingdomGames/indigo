@@ -1,6 +1,7 @@
 package indigo.shared
 
 import indigo.platform.assets.DynamicText
+import indigo.shared.collections.Batch
 import indigo.shared.datatypes.FontInfo
 import indigo.shared.datatypes.FontKey
 import indigo.shared.datatypes.Point
@@ -55,8 +56,8 @@ final class BoundaryLocator(
 
     BoundaryLocator.findBounds(textBox, rect.position, rect.size, textBox.ref)
 
-  /** Safely finds the bounds of any given scene node, if the node has bounds. It is not possible to sensibly measure the
-    * bounds of some node types, such as clones, and some nodes are dependant on external data that may be missing.
+  /** Safely finds the bounds of any given scene node, if the node has bounds. It is not possible to sensibly measure
+    * the bounds of some node types, such as clones, and some nodes are dependant on external data that may be missing.
     */
   def findBounds(sceneNode: SceneNode): Option[Rectangle] =
     sceneNode match {
@@ -101,20 +102,18 @@ final class BoundaryLocator(
 
   private def groupBounds(group: Group): Rectangle =
     val rect =
-      group.children match {
-        case Nil =>
-          Rectangle.zero
-
-        case x :: xs =>
-          xs.foldLeft(findBounds(x)) { (acc, node) =>
+      if group.children.isEmpty then Rectangle.zero
+      else
+        group.children.tail
+          .foldLeft(findBounds(group.children.head)) { (acc, node) =>
             (acc, findBounds(node)) match
               case (Some(a), Some(b)) => Option(Rectangle.expandToInclude(a, b))
               case (r @ Some(_), _)   => r
               case (_, r @ Some(_))   => r
               case (r, _)             => r
-          }.map(_.moveBy(group.position))
-            .getOrElse(Rectangle.zero)
-      }
+          }
+          .map(_.moveBy(group.position))
+          .getOrElse(Rectangle.zero)
 
     BoundaryLocator.findBounds(group, rect.position, rect.size, group.ref)
   end groupBounds

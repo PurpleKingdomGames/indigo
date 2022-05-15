@@ -1,13 +1,14 @@
 package indigo.shared.input
 
+import indigo.shared.collections.Batch
 import indigo.shared.constants.Key
 import indigo.shared.events.KeyboardEvent
 
 import scala.annotation.tailrec
 
-final class Keyboard(keyboardEvents: List[KeyboardEvent], val keysDown: List[Key], val lastKeyHeldDown: Option[Key]) {
+final class Keyboard(keyboardEvents: Batch[KeyboardEvent], val keysDown: Batch[Key], val lastKeyHeldDown: Option[Key]) {
 
-  lazy val keysReleased: List[Key] = keyboardEvents.collect { case k: KeyboardEvent.KeyUp => k.keyCode }
+  lazy val keysReleased: Batch[Key] = keyboardEvents.collect { case k: KeyboardEvent.KeyUp => k.keyCode }
 
   def keysAreDown(keys: Key*): Boolean = keys.forall(keyCode => keysDown.contains(keyCode))
   def keysAreUp(keys: Key*): Boolean   = keys.forall(keyCode => keysReleased.contains(keyCode))
@@ -16,9 +17,9 @@ final class Keyboard(keyboardEvents: List[KeyboardEvent], val keysDown: List[Key
 object Keyboard {
 
   val default: Keyboard =
-    new Keyboard(Nil, Nil, None)
+    new Keyboard(Batch.empty, Batch.empty, None)
 
-  def calculateNext(previous: Keyboard, events: List[KeyboardEvent]): Keyboard = {
+  def calculateNext(previous: Keyboard, events: Batch[KeyboardEvent]): Keyboard = {
     val keysDown = calculateKeysDown(events, previous.keysDown)
 
     new Keyboard(
@@ -28,14 +29,14 @@ object Keyboard {
     )
   }
 
-  private given CanEqual[List[KeyboardEvent], List[KeyboardEvent]] = CanEqual.derived
+  private given CanEqual[Batch[KeyboardEvent], Batch[KeyboardEvent]] = CanEqual.derived
 
-  def calculateKeysDown(keyboardEvents: List[KeyboardEvent], previousKeysDown: List[Key]): List[Key] = {
+  def calculateKeysDown(keyboardEvents: Batch[KeyboardEvent], previousKeysDown: Batch[Key]): Batch[Key] = {
     @tailrec
-    def rec(remaining: List[KeyboardEvent], keysDownAcc: List[Key]): List[Key] =
+    def rec(remaining: List[KeyboardEvent], keysDownAcc: List[Key]): Batch[Key] =
       remaining match {
         case Nil =>
-          keysDownAcc.reverse
+          Batch.fromList(keysDownAcc.reverse)
 
         case KeyboardEvent.KeyDown(k) :: tl =>
           rec(tl, k :: keysDownAcc)
@@ -44,7 +45,7 @@ object Keyboard {
           rec(tl, keysDownAcc.filterNot(p => p === k))
       }
 
-    rec(keyboardEvents, previousKeysDown.reverse)
+    rec(keyboardEvents.toList, previousKeysDown.reverse.toList)
   }
 
 }

@@ -147,7 +147,7 @@ trait IndigoGame[BootData, StartUpData, Model, ViewModel] extends GameLauncher[S
 
   private def indigoGame(bootUp: BootResult[BootData]): GameEngine[StartUpData, Model, ViewModel] = {
 
-    val subSystemEvents = subSystemsRegister.register(bootUp.subSystems.toList)
+    val subSystemEvents = subSystemsRegister.register(Batch.fromSet(bootUp.subSystems))
 
     val sceneManager: SceneManager[StartUpData, Model, ViewModel] = {
       val s = scenes(bootUp.bootData)

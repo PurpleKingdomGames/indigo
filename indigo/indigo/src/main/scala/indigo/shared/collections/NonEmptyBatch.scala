@@ -256,6 +256,12 @@ object NonEmptyBatch:
     if b.isEmpty then None
     else Some(pure(b.head, b.tail))
 
+  def fromList[A](l: List[A]): Option[NonEmptyBatch[A]] =
+    fromBatch(Batch.fromList(l))
+    
+  def fromNonEmptyList[A](nel: NonEmptyList[A]): NonEmptyBatch[A] =
+    NonEmptyBatch(nel.head, Batch.fromList(nel.tail))
+
   def size[A](fa: NonEmptyBatch[A]): Int =
     fa.tail.size + 1
 

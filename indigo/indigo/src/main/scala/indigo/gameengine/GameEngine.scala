@@ -17,6 +17,7 @@ import indigo.shared.Startup
 import indigo.shared.animation._
 import indigo.shared.assets.AssetName
 import indigo.shared.assets.AssetType
+import indigo.shared.collections.Batch
 import indigo.shared.config.GameConfig
 import indigo.shared.datatypes.FontInfo
 import indigo.shared.dice.Dice
@@ -41,7 +42,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
     initialModel: StartUpData => Outcome[GameModel],
     initialViewModel: StartUpData => GameModel => Outcome[ViewModel],
     frameProccessor: FrameProcessor[StartUpData, GameModel, ViewModel],
-    initialisationEvents: List[GlobalEvent]
+    initialisationEvents: Batch[GlobalEvent]
 ) {
 
   val animationsRegister: AnimationsRegister =
@@ -116,7 +117,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
       configAsync: Future[Option[GameConfig]],
       assets: Set[AssetType],
       assetsAsync: Future[Set[AssetType]],
-      bootEvents: List[GlobalEvent]
+      bootEvents: Batch[GlobalEvent]
   ): GameEngine[StartUpData, GameModel, ViewModel] = {
 
     IndigoLogger.info("Starting Indigo")

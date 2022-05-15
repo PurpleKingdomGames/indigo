@@ -1,5 +1,6 @@
 package indigo.shared.platform
 
+import indigo.shared.collections.Batch
 import indigo.shared.datatypes.RGBA
 import indigo.shared.datatypes.Radians
 import indigo.shared.scenegraph.AmbientLight
@@ -63,15 +64,15 @@ class SceneProcessorTests extends munit.FunSuite {
   }
 
   test("Combining lights into data") {
-    val lights: List[Light] =
-      List(
+    val lights: Batch[Light] =
+      Batch(
         AmbientLight(RGBA.Red.withAmount(0.5)),
         DirectionLight(RGBA.Cyan.withAlpha(0.5), RGBA.White, Radians(0.25)),
         AmbientLight(RGBA.Green.withAmount(0.8))
       )
 
     val actual: scalajs.js.Array[Float] =
-      SceneProcessor.makeLightsData(lights)
+      SceneProcessor.makeLightsData(lights.toJSArray)
 
     val expected: scalajs.js.Array[Float] =
       scalajs.js.Array[Float](3, 0, 0, 0) ++ // first value, even though single float, requires space of vec4.

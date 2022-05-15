@@ -1,5 +1,6 @@
 package indigo.shared.scenegraph
 
+import indigo.shared.collections.Batch
 import indigo.shared.materials.BlendMaterial
 
 import annotation.targetName
@@ -26,13 +27,15 @@ import annotation.targetName
   *   Scene level camera enabling pan and zoom.
   */
 final case class SceneUpdateFragment(
-    layers: List[Layer],
-    lights: List[Light],
+    layers: Batch[Layer],
+    lights: Batch[Light],
     audio: SceneAudio,
     blendMaterial: Option[BlendMaterial],
-    cloneBlanks: List[CloneBlank],
+    cloneBlanks: Batch[CloneBlank],
     camera: Option[Camera]
-) derives CanEqual {
+) derives CanEqual:
+  import Batch.*
+
   def |+|(other: SceneUpdateFragment): SceneUpdateFragment =
     SceneUpdateFragment.append(this, other)
 
@@ -40,37 +43,37 @@ final case class SceneUpdateFragment(
     this.copy(layers = SceneUpdateFragment.addLayer(layers, newLayer))
 
   def addLayer(nodes: SceneNode*): SceneUpdateFragment =
-    addLayer(nodes.toList)
-  def addLayer(nodes: List[SceneNode]): SceneUpdateFragment =
-    this.copy(layers = SceneUpdateFragment.addLayer(layers, Layer(nodes.toList)))
+    addLayer(nodes.toBatch)
+  def addLayer(nodes: Batch[SceneNode]): SceneUpdateFragment =
+    this.copy(layers = SceneUpdateFragment.addLayer(layers, Layer(nodes)))
 
   def addLayers(newLayers: Layer*): SceneUpdateFragment =
-    addLayers(newLayers.toList)
-  def addLayers(newLayers: List[Layer]): SceneUpdateFragment =
+    addLayers(newLayers.toBatch)
+  def addLayers(newLayers: Batch[Layer]): SceneUpdateFragment =
     this.copy(layers = newLayers.foldLeft(layers)((acc, l) => SceneUpdateFragment.addLayer(acc, l)))
 
   def noLights: SceneUpdateFragment =
-    this.copy(lights = Nil)
+    this.copy(lights = Batch.empty)
 
   def withLights(newLights: Light*): SceneUpdateFragment =
-    withLights(newLights.toList)
+    withLights(newLights.toBatch)
 
-  def withLights(newLights: List[Light]): SceneUpdateFragment =
+  def withLights(newLights: Batch[Light]): SceneUpdateFragment =
     this.copy(lights = newLights)
 
   def addLights(newLights: Light*): SceneUpdateFragment =
-    addLights(newLights.toList)
+    addLights(newLights.toBatch)
 
-  def addLights(newLights: List[Light]): SceneUpdateFragment =
+  def addLights(newLights: Batch[Light]): SceneUpdateFragment =
     withLights(lights ++ newLights)
 
   def withAudio(sceneAudio: SceneAudio): SceneUpdateFragment =
     this.copy(audio = sceneAudio)
 
   def addCloneBlanks(blanks: CloneBlank*): SceneUpdateFragment =
-    addCloneBlanks(blanks.toList)
+    addCloneBlanks(blanks.toBatch)
 
-  def addCloneBlanks(blanks: List[CloneBlank]): SceneUpdateFragment =
+  def addCloneBlanks(blanks: Batch[CloneBlank]): SceneUpdateFragment =
     this.copy(cloneBlanks = cloneBlanks ++ blanks)
 
   def withBlendMaterial(newBlendMaterial: BlendMaterial): SceneUpdateFragment =
@@ -89,24 +92,25 @@ final case class SceneUpdateFragment(
     this.copy(camera = Option(modifier(camera.getOrElse(Camera.default))))
   def noCamera: SceneUpdateFragment =
     this.copy(camera = None)
-}
-object SceneUpdateFragment {
+
+object SceneUpdateFragment:
+  import Batch.*
 
   def apply(nodes: SceneNode*): SceneUpdateFragment =
-    SceneUpdateFragment(nodes.toList)
+    SceneUpdateFragment(nodes.toBatch)
 
-  def apply(nodes: List[SceneNode]): SceneUpdateFragment =
-    SceneUpdateFragment(List(Layer(nodes)), Nil, SceneAudio.None, None, Nil, None)
+  def apply(nodes: Batch[SceneNode]): SceneUpdateFragment =
+    SceneUpdateFragment(Batch(Layer(nodes)), Batch.empty, SceneAudio.None, None, Batch.empty, None)
 
   def apply(layer: Layer): SceneUpdateFragment =
-    SceneUpdateFragment(List(layer), Nil, SceneAudio.None, None, Nil, None)
+    SceneUpdateFragment(Batch(layer), Batch.empty, SceneAudio.None, None, Batch.empty, None)
 
   @targetName("suf-apply-many-layers")
   def apply(layers: Layer*): SceneUpdateFragment =
-    SceneUpdateFragment(layers.toList, Nil, SceneAudio.None, None, Nil, None)
+    SceneUpdateFragment(layers.toBatch, Batch.empty, SceneAudio.None, None, Batch.empty, None)
 
   val empty: SceneUpdateFragment =
-    SceneUpdateFragment(Nil, Nil, SceneAudio.None, None, Nil, None)
+    SceneUpdateFragment(Batch.empty, Batch.empty, SceneAudio.None, None, Batch.empty, None)
 
   def append(a: SceneUpdateFragment, b: SceneUpdateFragment): SceneUpdateFragment =
     SceneUpdateFragment(
@@ -118,10 +122,9 @@ object SceneUpdateFragment {
       b.camera.orElse(a.camera)
     )
 
-  def addLayer(layers: List[Layer], layer: Layer): List[Layer] =
+  def addLayer(layers: Batch[Layer], layer: Layer): Batch[Layer] =
     if (layer.key.isDefined && layers.exists(_.key == layer.key))
       layers.map { l =>
         if (l.key == layer.key) l |+| layer else l
       }
     else layers :+ layer
-}

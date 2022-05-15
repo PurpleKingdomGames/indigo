@@ -1,6 +1,7 @@
 package indigoextras.jobs
 
 import indigo.shared.Outcome
+import indigo.shared.collections.Batch
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.dice.Dice
 import indigo.shared.events.FrameTick
@@ -127,7 +128,7 @@ object WorkSchedule {
   def destroy[Actor, Context](workSchedule: WorkSchedule[Actor, Context]): Outcome[WorkSchedule[Actor, Context]] =
     Outcome(
       workSchedule.copy[Actor, Context](jobStack = Nil),
-      workSchedule.jobStack.filterNot(_.isLocal).map(j => JobMarketEvent.Post(j))
+      Batch.fromList(workSchedule.jobStack.filterNot(_.isLocal).map(j => JobMarketEvent.Post(j)))
     )
 
 }

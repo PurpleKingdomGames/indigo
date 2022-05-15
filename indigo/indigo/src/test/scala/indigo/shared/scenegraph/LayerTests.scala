@@ -1,5 +1,6 @@
 package indigo.shared.scenegraph
 
+import indigo.shared.collections.Batch
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.datatypes.RGBA
 import indigo.shared.materials.BlendMaterial
@@ -10,8 +11,8 @@ class LayerTests extends munit.FunSuite {
 
     assertEquals(Layer(BindingKey("key A")).key, Some(BindingKey("key A")))
     assertEquals((Layer(BindingKey("key A")) |+| Layer(BindingKey("key B"))).key, Some(BindingKey("key A")))
-    assertEquals((Layer(BindingKey("key A")) |+| Layer(Nil)).key, Some(BindingKey("key A")))
-    assertEquals((Layer(Nil) |+| Layer(BindingKey("key B"))).key, Some(BindingKey("key B")))
+    assertEquals((Layer(BindingKey("key A")) |+| Layer(Batch.empty)).key, Some(BindingKey("key A")))
+    assertEquals((Layer(Batch.empty) |+| Layer(BindingKey("key B"))).key, Some(BindingKey("key B")))
 
   }
 

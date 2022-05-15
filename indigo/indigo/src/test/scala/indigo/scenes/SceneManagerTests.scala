@@ -1,6 +1,7 @@
 package indigo.scenes
 
 import indigo.shared.Outcome
+import indigo.shared.collections.Batch
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.events.FrameTick
 import indigo.shared.events.GlobalEvent
@@ -53,7 +54,7 @@ class SceneManagerTests extends munit.FunSuite {
 
     val sceneManager = new SceneManager[Unit, TestGameModel, TestViewModel](scenes, sceneFinder)
 
-    val events = List(FrameTick)
+    val events = Batch(FrameTick)
 
     val expected = TestGameModel(TestSceneModelA(1), TestSceneModelB(0))
 
@@ -67,7 +68,7 @@ class SceneManagerTests extends munit.FunSuite {
 
     val sceneManager = new SceneManager[Unit, TestGameModel, TestViewModel](scenes, sceneFinder)
 
-    val events = List(SceneEvent.Next, FrameTick)
+    val events = Batch(SceneEvent.Next, FrameTick)
 
     val expected = TestGameModel(TestSceneModelA(0), TestSceneModelB(10))
 
@@ -81,7 +82,7 @@ class SceneManagerTests extends munit.FunSuite {
     val sceneManager = new SceneManager[Unit, TestGameModel, TestViewModel](scenes, sceneFinder)
 
     // A = 2, B = 40
-    val events = List(
+    val events = Batch(
       FrameTick,                      // update scene A - 1
       SceneEvent.Next,                // move to scene B
       FrameTick,                      // update scene B - 10
@@ -99,7 +100,7 @@ class SceneManagerTests extends munit.FunSuite {
     val expected =
       Outcome(TestGameModel(TestSceneModelA(2), TestSceneModelB(40)))
         .addGlobalEvents(
-          List(
+          Batch(
             SceneEvent.SceneChange(TestScenes.sceneNameA, TestScenes.sceneNameB, Seconds.zero),
             SceneEvent.SceneChange(TestScenes.sceneNameB, TestScenes.sceneNameA, Seconds.zero),
             SceneEvent.SceneChange(TestScenes.sceneNameA, TestScenes.sceneNameB, Seconds.zero),
@@ -114,7 +115,7 @@ class SceneManagerTests extends munit.FunSuite {
 
   }
 
-  private def runModel(events: List[GlobalEvent], model: TestGameModel, sceneManager: SceneManager[Unit, TestGameModel, TestViewModel]): Outcome[TestGameModel] =
+  private def runModel(events: Batch[GlobalEvent], model: TestGameModel, sceneManager: SceneManager[Unit, TestGameModel, TestViewModel]): Outcome[TestGameModel] =
     events.foldLeft(Outcome(model))((m, e) => m.flatMap(mm => sceneManager.updateModel(context(6), mm)(e)))
 
 }

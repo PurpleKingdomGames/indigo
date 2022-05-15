@@ -1,5 +1,6 @@
 package indigoextras.jobs
 
+import indigo.shared.collections.Batch
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.dice.Dice
 import indigo.shared.events.FrameTick
@@ -128,8 +129,8 @@ class WorkScheduleTests extends munit.FunSuite {
 
   test("The WorkSchedule.should be able to post to a global job board on destruction") {
 
-    val globalJob                      = CantHave()
-    val expected: List[JobMarketEvent] = JobMarketEvent.Post(globalJob) :: Nil
+    val globalJob                       = CantHave()
+    val expected: Batch[JobMarketEvent] = Batch(JobMarketEvent.Post(globalJob))
 
     val workSchedule = WorkSchedule[SampleActor, SampleContext](bindingKey, SampleActor.worker, List(globalJob))
 

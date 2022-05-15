@@ -1,5 +1,6 @@
 package indigo.shared.events
 
+import indigo.shared.collections.Batch
 import indigo.shared.input.Gamepad
 import indigo.shared.input.Keyboard
 import indigo.shared.input.Mouse
@@ -31,7 +32,7 @@ object InputState {
   val default: InputState =
     new InputState(Mouse.default, Keyboard.default, Gamepad.default)
 
-  def calculateNext(previous: InputState, events: List[InputEvent], gamepadState: Gamepad): InputState =
+  def calculateNext(previous: InputState, events: Batch[InputEvent], gamepadState: Gamepad): InputState =
     new InputState(
       Mouse.calculateNext(previous.mouse, events.collect { case e: MouseEvent => e }),
       Keyboard.calculateNext(previous.keyboard, events.collect { case e: KeyboardEvent => e }),

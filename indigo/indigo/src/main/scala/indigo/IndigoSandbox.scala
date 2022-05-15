@@ -120,11 +120,11 @@ trait IndigoSandbox[StartUpData, Model] extends GameLauncher[StartUpData, Model,
       (sd: StartUpData) => initialModel(sd),
       (_: StartUpData) => (_: Model) => Outcome(()),
       frameProcessor,
-      Nil
+      Batch.empty
     )
   }
 
   final protected def ready(parentElementId: String, flags: Map[String, String]): GameEngine[StartUpData, Model, Unit] =
-    indigoGame.start(parentElementId, config, Future(None), assets, Future(Set()), Nil)
+    indigoGame.start(parentElementId, config, Future(None), assets, Future(Set()), Batch.empty)
 
 }

@@ -1,6 +1,7 @@
 package indigoextras.jobs
 
 import indigo.shared.Outcome
+import indigo.shared.collections.Batch
 import indigo.shared.dice.Dice
 import indigo.shared.time.GameTime
 import indigo.shared.time.Seconds
@@ -63,7 +64,7 @@ class WorkerTests extends munit.FunSuite {
 
     val completed = worker.onJobComplete(workContext)(job)
     assertEquals(completed.unsafeGet, (Nil, TestActor()))
-    assertEquals(completed.unsafeGlobalEvents, Nil)
+    assertEquals(completed.unsafeGlobalEvents, Batch.empty)
 
     assertEquals(worker.workOnJob(workContext)(job), (job, actor))
     assertEquals(worker.generateJobs(workContext), Nil)

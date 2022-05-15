@@ -27,29 +27,41 @@ object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
   def subSystems: Set[SubSystem] =
     Set()
 
-  def updateModel(context: FrameContext[SandboxStartupData], model: SandboxGameModel): GlobalEvent => Outcome[SandboxGameModel] =
+  def updateModel(
+      context: FrameContext[SandboxStartupData],
+      model: SandboxGameModel
+  ): GlobalEvent => Outcome[SandboxGameModel] =
     _ => Outcome(model)
 
-  def updateViewModel(context: FrameContext[SandboxStartupData], model: SandboxGameModel, viewModel: SandboxViewModel): GlobalEvent => Outcome[SandboxViewModel] =
+  def updateViewModel(
+      context: FrameContext[SandboxStartupData],
+      model: SandboxGameModel,
+      viewModel: SandboxViewModel
+  ): GlobalEvent => Outcome[SandboxViewModel] =
     _ => Outcome(viewModel)
 
   val graphic: Graphic[Material.Bitmap] =
     Graphic(Rectangle(0, 0, 40, 40), 1, LightingAssets.junctionBoxMaterialOn)
       .withRef(20, 20)
 
-  val grid: List[Graphic[Material.Bitmap]] = {
+  val grid: Batch[Graphic[Material.Bitmap]] =
     val rows    = 4
     val columns = 6
     val offset  = Point(0)
 
-    (0 to rows).toList.flatMap { row =>
-      (0 to columns).toList.map { column =>
-        graphic.withRef(Point(0)).moveTo(Point(column * 40, row * 40) + offset)
+    Batch.fromList(
+      (0 to rows).toList.flatMap { row =>
+        (0 to columns).toList.map { column =>
+          graphic.withRef(Point(0)).moveTo(Point(column * 40, row * 40) + offset)
+        }
       }
-    }
-  }
+    )
 
-  def present(context: FrameContext[SandboxStartupData], model: SandboxGameModel, viewModel: SandboxViewModel): Outcome[SceneUpdateFragment] =
+  def present(
+      context: FrameContext[SandboxStartupData],
+      model: SandboxGameModel,
+      viewModel: SandboxViewModel
+  ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment.empty
         .addLayer(
@@ -61,7 +73,10 @@ object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
                   .withOverlay(Fill.Color(RGBA.Magenta))
               ) :+
             Shape
-              .Polygon(Fill.LinearGradient(Point(0), RGBA.Magenta, Point(45), RGBA.Cyan), Stroke(4, RGBA.Black.withAlpha(0.75)))(
+              .Polygon(
+                Fill.LinearGradient(Point(0), RGBA.Magenta, Point(45), RGBA.Cyan),
+                Stroke(4, RGBA.Black.withAlpha(0.75))
+              )(
                 Point(10, 10),
                 Point(20, 70),
                 Point(90, 90),
