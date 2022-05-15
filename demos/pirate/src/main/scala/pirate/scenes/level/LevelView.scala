@@ -32,7 +32,7 @@ object LevelView {
             .addLayer(
               Layer(
                 BindingKey("background"),
-                List(Graphic(Rectangle(0, 0, 640, 360), 50, Material.Bitmap(Assets.Static.backgroundRef))) ++
+                Batch(Graphic(Rectangle(0, 0, 640, 360), 50, Material.Bitmap(Assets.Static.backgroundRef))) ++
                   drawWater(assets.waterReflections)
               )
             )
@@ -52,15 +52,15 @@ object LevelView {
         }
         .getOrElse(SceneUpdateFragment.empty)
 
-    def drawWater(waterReflections: Sprite[Material.Bitmap]): List[SceneNode] =
-      List(
+    def drawWater(waterReflections: Sprite[Material.Bitmap]): Batch[SceneNode] =
+      Batch(
         waterReflections.play(),
         waterReflections.moveBy(150, 30).play(),
         waterReflections.moveBy(-100, 60).play()
       )
 
-    def drawForeground(assets: LevelDataStore): List[SceneNode] =
-      List(
+    def drawForeground(assets: LevelDataStore): Batch[SceneNode] =
+      Batch(
         assets.flag.play(),
         assets.helm.play(),
         Assets.Trees.tallTrunkGraphic.moveTo(420, 236),

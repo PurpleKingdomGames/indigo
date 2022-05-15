@@ -67,10 +67,10 @@ final case class PirateViewState(
 
     }
 
-  def updateWalkSound(gameTime: GameTime, soundLastPlayed: Seconds): (List[GlobalEvent], Seconds) =
+  def updateWalkSound(gameTime: GameTime, soundLastPlayed: Seconds): (Batch[GlobalEvent], Seconds) =
     if (gameTime.running > soundLastPlayed + Seconds(0.25))
-      (List(PlaySound(Assets.Sounds.walkSound, Volume(0.5d))), gameTime.running)
-    else (Nil, soundLastPlayed)
+      (Batch(PlaySound(Assets.Sounds.walkSound, Volume(0.5d))), gameTime.running)
+    else (Batch.empty, soundLastPlayed)
 
 }
 object PirateViewState {
