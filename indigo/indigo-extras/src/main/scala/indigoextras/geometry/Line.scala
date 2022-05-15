@@ -1,5 +1,7 @@
 package indigoextras.geometry
 
+import indigo.shared.collections.Batch
+
 /** Defines a line in terms of y = mx + b
   */
 sealed trait Line derives CanEqual:
@@ -105,10 +107,10 @@ object Line:
         LineIntersectionResult.NoIntersection
 
       case (Line.Components(m1, b1), Line.Components(m2, b2)) =>
-        //x = -b/m
+        // x = -b/m
         val x: Double = (b2 - b1) / (m1 - m2)
 
-        //y = mx + b
+        // y = mx + b
         val y: Double = (m1 * x) + b1
 
         LineIntersectionResult.IntersectionVertex(x, y)
@@ -130,7 +132,7 @@ object Line:
 
 sealed trait LineIntersectionResult:
   def toOption: Option[Vertex]
-  def toList: List[Vertex]
+  def toBatch: Batch[Vertex]
   def hasIntersected: Boolean
 
 object LineIntersectionResult:
@@ -141,13 +143,13 @@ object LineIntersectionResult:
     def toOption: Option[Vertex] =
       Some(toVertex)
 
-    def toList: List[Vertex] =
-      List(toVertex)
+    def toBatch: Batch[Vertex] =
+      Batch(toVertex)
 
     def hasIntersected: Boolean =
       true
 
   case object NoIntersection extends LineIntersectionResult:
     def toOption: Option[Vertex] = None
-    def toList: List[Vertex]     = Nil
+    def toBatch: Batch[Vertex]    = Batch.empty
     def hasIntersected: Boolean  = false

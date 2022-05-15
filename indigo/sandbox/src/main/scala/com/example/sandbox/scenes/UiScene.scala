@@ -51,8 +51,8 @@ object UiScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewMo
     case _ =>
       Outcome(viewModel)
 
-  val points: List[Point] =
-    List(
+  val points: Batch[Point] =
+    Batch(
       Point(10, 10),
       Point(20, 70),
       Point(90, 90),

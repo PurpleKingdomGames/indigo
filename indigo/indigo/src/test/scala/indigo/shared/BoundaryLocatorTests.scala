@@ -383,7 +383,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
   test("calculateShapeBounds - polygon") {
 
     val verts =
-      List(
+      Batch(
         Point(50, 10),
         Point(75, 60),
         Point(25, 60)

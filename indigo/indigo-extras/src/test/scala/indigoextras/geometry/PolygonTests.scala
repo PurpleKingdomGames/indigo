@@ -1,5 +1,6 @@
 package indigoextras.geometry
 
+import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Size
@@ -76,33 +77,33 @@ class PolygonTests extends munit.FunSuite {
 
   test("Operations.should be able to produce line segments (open)") {
 
-    val expected: List[LineSegment] =
-      List(
+    val expected: Batch[LineSegment] =
+      Batch(
         LineSegment(Vertex(0, 0), Vertex(5, 5)),
         LineSegment(Vertex(5, 5), Vertex(10, 0)),
         LineSegment(Vertex(10, 0), Vertex(5, -5))
       )
 
-    val actual: List[LineSegment] =
+    val actual: Batch[LineSegment] =
       open.lineSegments
 
-    assertEquals(actual == expected, true)
+    assertEquals(actual, expected)
   }
 
   test("Operations.should be able to produce line segments (closed)") {
 
-    val expected: List[LineSegment] =
-      List(
+    val expected: Batch[LineSegment] =
+      Batch(
         LineSegment(Vertex(0, 0), Vertex(5, 5)),
         LineSegment(Vertex(5, 5), Vertex(10, 0)),
         LineSegment(Vertex(10, 0), Vertex(5, -5)),
         LineSegment(Vertex(5, -5), Vertex(0, 0))
       )
 
-    val actual: List[LineSegment] =
+    val actual: Batch[LineSegment] =
       closed.lineSegments
 
-    assertEquals(actual == expected, true)
+    assertEquals(actual, expected)
   }
 
   test("Intersections.contains point (open shapes can't contain)") {

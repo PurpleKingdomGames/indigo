@@ -1,5 +1,7 @@
 package indigo.shared.datatypes
 
+import indigo.shared.collections.Batch
+
 import scala.annotation.tailrec
 
 final case class Rectangle(position: Point, size: Size) derives CanEqual:
@@ -23,11 +25,11 @@ final case class Rectangle(position: Point, size: Size) derives CanEqual:
   lazy val center: Point      = Point(horizontalCenter, verticalCenter)
   lazy val halfSize: Size     = (size / 2).abs
 
-  lazy private val halfWidth: Double = (size.width * 0.5).abs
+  lazy private val halfWidth: Double  = (size.width * 0.5).abs
   lazy private val halfHeight: Double = (size.height * 0.5).abs
 
-  lazy val corners: List[Point] =
-    List(topLeft, topRight, bottomRight, bottomLeft)
+  lazy val corners: Batch[Point] =
+    Batch(topLeft, topRight, bottomRight, bottomLeft)
 
   def contains(pt: Point): Boolean =
     pt.x >= left && pt.x < right && pt.y >= top && pt.y < bottom
@@ -124,22 +126,19 @@ object Rectangle:
   def fromTwoPoints(pt1: Point, pt2: Point): Rectangle =
     fromPoints(pt1, pt2)
 
-  def fromPointCloud(points: List[Point]): Rectangle =
+  def fromPointCloud(points: Batch[Point]): Rectangle =
     @tailrec
-    def rec(remaining: List[Point], left: Int, top: Int, right: Int, bottom: Int): Rectangle =
-      remaining match {
-        case Nil =>
-          Rectangle(left, top, right - left, bottom - top)
-
-        case p :: ps =>
-          rec(
-            ps,
-            Math.min(left, p.x),
-            Math.min(top, p.y),
-            Math.max(right, p.x),
-            Math.max(bottom, p.y)
-          )
-      }
+    def rec(remaining: Batch[Point], left: Int, top: Int, right: Int, bottom: Int): Rectangle =
+      if remaining.isEmpty then Rectangle(left, top, right - left, bottom - top)
+      else
+        val p = remaining.head
+        rec(
+          remaining.tail,
+          Math.min(left, p.x),
+          Math.min(top, p.y),
+          Math.max(right, p.x),
+          Math.max(bottom, p.y)
+        )
 
     rec(points, Int.MaxValue, Int.MaxValue, Int.MinValue, Int.MinValue)
 

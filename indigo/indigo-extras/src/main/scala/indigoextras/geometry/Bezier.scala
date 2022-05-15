@@ -1,52 +1,44 @@
 package indigoextras.geometry
 
+import indigo.shared.collections.Batch
+import indigo.shared.collections.NonEmptyBatch
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.temporal.Signal
 import indigo.shared.time.Seconds
 
 import scala.annotation.tailrec
 
-opaque type Bezier = List[Vertex]
+opaque type Bezier = Batch[Vertex]
 object Bezier:
 
-  inline def apply(vertices: List[Vertex]): Bezier = vertices
+  inline def apply(vertices: Batch[Vertex]): Bezier = vertices
 
   inline def apply(start: Vertex, vertices: Vertex*): Bezier =
-    start :: vertices.toList
+    start :: Batch.fromSeq(vertices)
 
   extension (b: Bezier)
-    /** Calculate the position of a Bezier curve using specialised calculations
-      * for linear, quadratic and cubic curves.
+    /** Calculate the position of a Bezier curve using specialised calculations for linear, quadratic and cubic curves.
       */
     def at(unitInterval: Double): Vertex =
-      b match
-        case Nil =>
-          Vertex.zero
+      b.length match
+        case 0 => Vertex.zero
+        case 1 => b.head
+        case 2 => BezierMath.linearNormalised(unitInterval, b(0), b(1))
+        case 3 => BezierMath.quadraticNormalised(unitInterval, b(0), b(1), b(2))
+        case 4 => BezierMath.cubicNormalised(unitInterval, b(0), b(1), b(2), b(3))
+        case _ => reduce(b, Math.max(0, Math.min(1, unitInterval)))
 
-        case x :: Nil =>
-          x
-
-        case p0 :: p1 :: Nil =>
-          BezierMath.linearNormalised(unitInterval, p0, p1)
-
-        case p0 :: p1 :: p2 :: Nil =>
-          BezierMath.quadraticNormalised(unitInterval, p0, p1, p2)
-
-        case p0 :: p1 :: p2 :: p3 :: Nil =>
-          BezierMath.cubicNormalised(unitInterval, p0, p1, p2, p3)
-
-        case _ =>
-          reduce(b, Math.max(0, Math.min(1, unitInterval)))
-
-    def toVertices(subdivisions: Int): List[Vertex] =
-      (0 to subdivisions).toList.map { i =>
-        b.at((1 / subdivisions.toDouble) * i.toDouble)
-      }
+    def toVertices(subdivisions: Int): Batch[Vertex] =
+      Batch.fromIndexedSeq(
+        (0 to subdivisions).map { i =>
+          b.at((1 / subdivisions.toDouble) * i.toDouble)
+        }
+      )
 
     def toPolygon(subdivisions: Int): Polygon =
       Polygon.Open(toVertices(subdivisions))
 
-    def toLineSegments(subdivisions: Int): List[LineSegment] =
+    def toLineSegments(subdivisions: Int): Batch[LineSegment] =
       Polygon.Open(toVertices(subdivisions)).lineSegments
 
     def toSignal(duration: Seconds): Signal[Vertex] =
@@ -57,17 +49,19 @@ object Bezier:
     def bounds: BoundingBox =
       BoundingBox.fromVertices(b)
 
-  def pure(start: Vertex, vertices: List[Vertex]): Bezier =
-    Bezier(start :: vertices.toList)
+  def pure(start: Vertex, vertices: Batch[Vertex]): Bezier =
+    Bezier(start :: vertices)
 
-  def fromPoints(vertices: List[Vertex]): Option[Bezier] =
-    NonEmptyList.fromList(vertices).map(fromVerticesNel)
+  def fromPoints(vertices: Batch[Vertex]): Option[Bezier] =
+    NonEmptyBatch.fromBatch(vertices).map(fromVerticesNonEmpty)
 
-  def fromVerticesNel(vertices: NonEmptyList[Vertex]): Bezier =
-    Bezier(vertices.toList)
+  def fromVerticesNonEmpty(vertices: NonEmptyBatch[Vertex]): Bezier =
+    Bezier(vertices.toBatch)
+  @deprecated("Bezier.fromVerticesNel deprecated, use 'fromVerticesNonEmpty' instead.")
+  def fromVerticesNel(vertices: NonEmptyBatch[Vertex]): Bezier =
+    fromVerticesNonEmpty(vertices)
 
-  /** Calculate the position of a Bezier curve using the same calculation
-    * method regardless of vertex count.
+  /** Calculate the position of a Bezier curve using the same calculation method regardless of vertex count.
     */
   def atUnspecialised(bezier: Bezier, unitInterval: Double): Vertex =
     reduce(bezier, Math.max(0, Math.min(1, unitInterval)))
@@ -76,9 +70,9 @@ object Bezier:
     a + ((b - a) * unitInterval)
 
   @tailrec
-  def reduce(vertices: List[Vertex], unitInterval: Double): Vertex =
+  def reduce(vertices: Batch[Vertex], unitInterval: Double): Vertex =
     @tailrec
-    def pair(remaining: List[Vertex], acc: List[(Vertex, Vertex)]): List[(Vertex, Vertex)] =
+    def pair(remaining: List[Vertex], acc: Batch[(Vertex, Vertex)]): Batch[(Vertex, Vertex)] =
       remaining match
         case Nil =>
           acc.reverse
@@ -89,18 +83,11 @@ object Bezier:
         case x :: y :: xs =>
           pair(y :: xs, (x, y) :: acc)
 
-    vertices match
-      case Nil =>
-        Vertex.zero
-
-      case x :: Nil =>
-        x
-
-      case p1 :: p2 :: Nil =>
-        interpolate(p1, p2, unitInterval)
-
-      case ps =>
-        reduce(pair(ps, Nil).map(p => interpolate(p._1, p._2, unitInterval)), unitInterval)
+    vertices.length match
+      case 0 => Vertex.zero
+      case 1 => vertices.head
+      case 2 => interpolate(vertices.head, vertices(1), unitInterval)
+      case _ => reduce(pair(vertices.toList, Batch.empty).map(p => interpolate(p._1, p._2, unitInterval)), unitInterval)
 
 object BezierMath:
   /*
