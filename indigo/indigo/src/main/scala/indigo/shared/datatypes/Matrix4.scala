@@ -2,27 +2,27 @@ package indigo.shared.datatypes
 
 import util.control.Breaks._
 
-opaque type Matrix4 = List[Double]
+opaque type Matrix4 = Array[Double]
 
 object Matrix4:
 
   extension (m: Matrix4)
-    def toList: List[Double] =
+    def toArray: Array[Double] =
       m
 
-    inline def row1: List[Double] = List(m(0), m(1), m(2), m(3))
-    inline def row2: List[Double] = List(m(4), m(5), m(6), m(7))
-    inline def row3: List[Double] = List(m(8), m(9), m(10), m(11))
-    inline def row4: List[Double] = List(m(12), m(13), m(14), m(15))
-    inline def col1: List[Double] = List(m(0), m(4), m(8), m(12))
-    inline def col2: List[Double] = List(m(1), m(5), m(9), m(13))
-    inline def col3: List[Double] = List(m(2), m(6), m(10), m(14))
-    inline def col4: List[Double] = List(m(3), m(7), m(11), m(15))
+    inline def row1: Array[Double] = Array(m(0), m(1), m(2), m(3))
+    inline def row2: Array[Double] = Array(m(4), m(5), m(6), m(7))
+    inline def row3: Array[Double] = Array(m(8), m(9), m(10), m(11))
+    inline def row4: Array[Double] = Array(m(12), m(13), m(14), m(15))
+    inline def col1: Array[Double] = Array(m(0), m(4), m(8), m(12))
+    inline def col2: Array[Double] = Array(m(1), m(5), m(9), m(13))
+    inline def col3: Array[Double] = Array(m(2), m(6), m(10), m(14))
+    inline def col4: Array[Double] = Array(m(3), m(7), m(11), m(15))
     inline def x: Double          = m(12)
     inline def y: Double          = m(13)
     inline def z: Double          = m(14)
-    inline def data: (List[Double], List[Double]) =
-      (List(m(0), m(1), m(4), m(5)), List(m(12), m(13), m(14)))
+    inline def data: (Array[Double], Array[Double]) =
+      (Array(m(0), m(1), m(4), m(5)), Array(m(12), m(13), m(14)))
 
     def translate(by: Vector3): Matrix4 =
       translate(by.x, by.y, by.z)
@@ -114,8 +114,8 @@ object Matrix4:
       )
 
     def *(other: Matrix4): Matrix4 =
-      val listA = m.toList
-      val listB = other.toList
+      val listA = m.toArray
+      val listB = other.toArray
 
       val a00 = listA(0 * 4 + 0)
       val a01 = listA(0 * 4 + 1)
@@ -185,12 +185,12 @@ object Matrix4:
 
     @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while"))
     def ~==(other: Matrix4): Boolean =
-      if (m.length == other.toList.length) {
+      if (m.length == other.toArray.length) {
         var count = m.length - 1
         var same  = true
         while (count > 0) {
           breakable {
-            if (Math.abs(m(count) - other.toList(count)) > 0.001)
+            if (Math.abs(m(count) - other.toArray(count)) > 0.001)
               same = false
             break()
           }
@@ -262,7 +262,7 @@ object Matrix4:
     orthographic(0, width, height, 0, -1, Int.MaxValue.toDouble)
 
   inline def apply(): Matrix4 = identity
-  inline def apply(matrix: List[Double]): Matrix4 =
+  inline def apply(matrix: Array[Double]): Matrix4 =
     matrix
 
   inline def apply(
@@ -272,10 +272,10 @@ object Matrix4:
       row3: (Double, Double, Double, Double)
   ): Matrix4 =
     Matrix4(
-      List(row0._1, row0._2, row0._3, row0._4) ++
-        List(row1._1, row1._2, row1._3, row1._4) ++
-        List(row2._1, row2._2, row2._3, row2._4) ++
-        List(row3._1, row3._2, row3._3, row3._4)
+      Array(row0._1, row0._2, row0._3, row0._4) ++
+        Array(row1._1, row1._2, row1._3, row1._4) ++
+        Array(row2._1, row2._2, row2._3, row2._4) ++
+        Array(row3._1, row3._2, row3._3, row3._4)
     )
 
   inline def apply(
@@ -297,7 +297,7 @@ object Matrix4:
       d4: Double
   ): Matrix4 =
     Matrix4(
-      List(
+      Array(
         a1,
         a2,
         a3,

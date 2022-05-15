@@ -253,7 +253,7 @@ final class RendererWebGL2(
                 c.rotation,
                 c.isLookAt
               )
-              .toArray
+              .toJSArray
 
       WebGLHelper.attachUBOData(gl2, layerProjection, projectionUBOBuffer)
 
@@ -291,7 +291,7 @@ final class RendererWebGL2(
                   Radians.zero,
                   false
                 )
-                .toArray
+                .toJSArray
             }
 
       // Clear the blend mode
@@ -402,10 +402,10 @@ final class RendererWebGL2(
 
       orthographicProjectionMatrix =
         CheapMatrix4.orthographic(actualWidth.toFloat / magnification, actualHeight.toFloat / magnification)
-      defaultLayerProjectionMatrix = orthographicProjectionMatrix.scale(1.0, -1.0, 1.0).toArray
-      orthographicProjectionMatrixNoMag = CheapMatrix4.orthographic(actualWidth.toFloat, actualHeight.toFloat).toArray
+      defaultLayerProjectionMatrix = orthographicProjectionMatrix.scale(1.0, -1.0, 1.0).toJSArray
+      orthographicProjectionMatrixNoMag = CheapMatrix4.orthographic(actualWidth.toFloat, actualHeight.toFloat).toJSArray
       orthographicProjectionMatrixNoMagFlipped =
-        CheapMatrix4.orthographic(actualWidth.toFloat, actualHeight.toFloat).scale(1.0, -1.0, 1.0).toArray
+        CheapMatrix4.orthographic(actualWidth.toFloat, actualHeight.toFloat).scale(1.0, -1.0, 1.0).toJSArray
 
       layerEntityFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
       scalingFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
