@@ -43,6 +43,12 @@ final case class NonEmptyList[A](head: A, tail: List[A]) derives CanEqual {
   def toList: List[A] =
     head :: tail
 
+  /** Converts the NonEmptyList back to a regular Batch.
+    * @return
+    */
+  def toBatch: Batch[A] =
+    head :: Batch.fromList(tail)
+
   /** `foldLeft` differs from reduce it two important ways:
     *   1. It has an initial value onto which all other values are applied
     *   1. It does not require the result type to be the same as the list type.

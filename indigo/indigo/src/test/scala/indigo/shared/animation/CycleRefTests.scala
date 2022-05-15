@@ -1,5 +1,6 @@
 package indigo.shared.animation
 
+import indigo.shared.collections.Batch
 import indigo.shared.datatypes._
 import indigo.shared.time._
 
@@ -15,7 +16,7 @@ class CycleRefTests extends munit.FunSuite {
     Frame(Rectangle(0, 0, 30, 10), Millis(10))
 
   val cycle: CycleRef =
-    CycleRef.create(CycleLabel("test"), List(frame1, frame2, frame3))
+    CycleRef.create(CycleLabel("test"), Batch(frame1, frame2, frame3))
 
   test("General functions.calculate next play head position") {
     val actual: CycleMemento =
@@ -69,8 +70,8 @@ class CycleRefTests extends munit.FunSuite {
   test("Running actions.Play") {
     val actual =
       cycle
-        .runActions(GameTime.is(Seconds(0)), List(Play))
-        .runActions(GameTime.is(Seconds(10)), List(Play))
+        .runActions(GameTime.is(Seconds(0)), Batch(Play))
+        .runActions(GameTime.is(Seconds(10)), Batch(Play))
         .currentFrame
 
     val expected =
@@ -81,23 +82,23 @@ class CycleRefTests extends munit.FunSuite {
 
   test("Running actions.ChangeCycle") {
     //no op
-    assertEquals(cycle.runActions(GameTime.zero, List(ChangeCycle(CycleLabel("fish")))).currentFrame == frame1, true)
+    assertEquals(cycle.runActions(GameTime.zero, Batch(ChangeCycle(CycleLabel("fish")))).currentFrame == frame1, true)
   }
 
   test("Running actions.JumpToFirstFrame") {
-    assertEquals(cycle.applyMemento(CycleMemento(2, Millis(0))).runActions(GameTime.zero, List(JumpToFirstFrame)).currentFrame == frame1, true)
+    assertEquals(cycle.applyMemento(CycleMemento(2, Millis(0))).runActions(GameTime.zero, Batch(JumpToFirstFrame)).currentFrame == frame1, true)
   }
 
   test("Running actions.JumpToLastFrame") {
-    assertEquals(cycle.runActions(GameTime.zero, List(JumpToLastFrame)).currentFrame == frame3, true)
+    assertEquals(cycle.runActions(GameTime.zero, Batch(JumpToLastFrame)).currentFrame == frame3, true)
   }
 
   test("Running actions.JumpToFrame") {
-    assertEquals(cycle.runActions(GameTime.zero, List(JumpToFrame(1))).currentFrame == frame2, true)
+    assertEquals(cycle.runActions(GameTime.zero, Batch(JumpToFrame(1))).currentFrame == frame2, true)
   }
 
   test("Running actions.JumpToFrame (capped at max)") {
-    assertEquals(cycle.runActions(GameTime.zero, List(JumpToFrame(10))).currentFrame == frame3, true)
+    assertEquals(cycle.runActions(GameTime.zero, Batch(JumpToFrame(10))).currentFrame == frame3, true)
   }
 
 }
