@@ -87,7 +87,7 @@ object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
   def particlesToCloneTiles(particles: js.Array[Particle]): CloneTiles =
     CloneTiles(
       cloneId,
-      particles.toArray.map { p =>
+      Batch(particles).map { p =>
         val crop = crops(p.color)
         CloneTileData(p.x, p.y, Radians.zero, p.scale, p.scale, crop(0), crop(1), crop(2), crop(3))
       }
