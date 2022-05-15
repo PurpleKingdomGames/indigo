@@ -1,6 +1,7 @@
 package indigo.shared.scenegraph
 
 import indigo.shared.BoundaryLocator
+import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Depth
 import indigo.shared.datatypes.Fill
 import indigo.shared.datatypes.Flip
@@ -659,7 +660,7 @@ object Shape:
           UniformBlock(
             "IndigoShapeData",
             // ASPECT_RATIO (vec2), STROKE_WIDTH (float), FILL_TYPE (float), STROKE_COLOR (vec4)
-            List(
+            Batch(
               Uniform("Shape_DATA") -> rawJSArray(
                 scalajs.js.Array[Float](
                   aspect.x.toFloat,
@@ -683,7 +684,7 @@ object Shape:
             )
 
           case l: Lit =>
-            l.toShaderData(s.shaderId.getOrElse(StandardShaders.LitShapeBox.id), None, List(shapeUniformBlock))
+            l.toShaderData(s.shaderId.getOrElse(StandardShaders.LitShapeBox.id), None, Batch(shapeUniformBlock))
         }
 
       case s: Shape.Circle =>
@@ -691,7 +692,7 @@ object Shape:
           UniformBlock(
             "IndigoShapeData",
             // STROKE_WIDTH (float), FILL_TYPE (float), STROKE_COLOR (vec4)
-            List(
+            Batch(
               Uniform("Shape_DATA") -> rawJSArray(
                 scalajs.js.Array[Float](
                   s.stroke.width.toFloat,
@@ -715,7 +716,7 @@ object Shape:
             )
 
           case l: Lit =>
-            l.toShaderData(s.shaderId.getOrElse(StandardShaders.LitShapeCircle.id), None, List(shapeUniformBlock))
+            l.toShaderData(s.shaderId.getOrElse(StandardShaders.LitShapeCircle.id), None, Batch(shapeUniformBlock))
         }
 
       case s: Shape.Line =>
@@ -727,7 +728,7 @@ object Shape:
           UniformBlock(
             "IndigoShapeData",
             // STROKE_WIDTH (float), STROKE_COLOR (vec4), START (vec2), END (vec2)
-            List(
+            Batch(
               Uniform("Shape_DATA") -> rawJSArray(
                 scalajs.js.Array[Float](
                   s.stroke.width.toFloat,
@@ -755,7 +756,7 @@ object Shape:
             )
 
           case l: Lit =>
-            l.toShaderData(s.shaderId.getOrElse(StandardShaders.LitShapeLine.id), None, List(shapeUniformBlock))
+            l.toShaderData(s.shaderId.getOrElse(StandardShaders.LitShapeLine.id), None, Batch(shapeUniformBlock))
         }
 
       case s: Shape.Polygon =>
@@ -771,7 +772,7 @@ object Shape:
           UniformBlock(
             "IndigoShapeData",
             // STROKE_WIDTH (float), FILL_TYPE (float), COUNT (float), STROKE_COLOR (vec4)
-            List(
+            Batch(
               Uniform("Shape_DATA") -> rawJSArray(
                 scalajs.js.Array[Float](
                   s.stroke.width.toFloat,
@@ -784,7 +785,7 @@ object Shape:
                   s.stroke.color.a.toFloat
                 )
               )
-            ) ++ s.fill.toUniformData("SHAPE") ++ List(Uniform("VERTICES") -> array[vec2](16, verts))
+            ) ++ s.fill.toUniformData("SHAPE") ++ Batch(Uniform("VERTICES") -> array[vec2](16, verts))
           )
 
         s.lighting match {
@@ -795,7 +796,7 @@ object Shape:
             )
 
           case l: Lit =>
-            l.toShaderData(s.shaderId.getOrElse(StandardShaders.LitShapePolygon.id), None, List(shapeUniformBlock))
+            l.toShaderData(s.shaderId.getOrElse(StandardShaders.LitShapePolygon.id), None, Batch(shapeUniformBlock))
         }
 
 end Shape

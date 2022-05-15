@@ -1,5 +1,6 @@
 package indigo.shared.materials
 
+import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Fill
 import indigo.shared.datatypes.RGB
 import indigo.shared.datatypes.RGBA
@@ -18,7 +19,7 @@ object BlendMaterial {
     lazy val toShaderData: BlendShaderData =
       BlendShaderData(
         StandardShaders.NormalBlend.id,
-        Nil
+        Batch.empty
       )
   }
 
@@ -26,10 +27,10 @@ object BlendMaterial {
     lazy val toShaderData: BlendShaderData =
       BlendShaderData(
         StandardShaders.LightingBlend.id,
-        List(
+        Batch(
           UniformBlock(
             "IndigoLightingBlendData",
-            List(
+            Batch(
               Uniform("AMBIENT_LIGHT_COLOR") -> rawJSArray(
                 ambient.r.toFloat,
                 ambient.g.toFloat,
@@ -82,10 +83,10 @@ object BlendMaterial {
 
       BlendShaderData(
         StandardShaders.BlendEffects.id,
-        List(
+        Batch(
           UniformBlock(
             "IndigoBlendEffectsData",
-            List(
+            Batch(
               // ALPHA_SATURATION_OVERLAYTYPE_BG (vec4), TINT (vec4)
               Uniform("BlendEffects_DATA") -> rawJSArray(
                 scalajs.js.Array(
