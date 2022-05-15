@@ -9,7 +9,7 @@ object ViewModel {
   def initialViewModel(startupData: StartupData, model: GameModel): ViewModel =
     ViewModel(
       walls = Group(
-        model.gameMap.findWalls.map { wall =>
+        Batch.fromList(model.gameMap.findWalls).map { wall =>
           startupData.staticAssets.wall
             .moveTo(
               GameView.gridPointToPoint(wall.gridPoint, startupData.viewConfig.gridSize, startupData.viewConfig.gridSquareSize)

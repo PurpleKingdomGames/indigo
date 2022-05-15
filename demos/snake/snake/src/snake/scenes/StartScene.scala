@@ -80,10 +80,17 @@ object StartScene extends Scene[StartupData, GameModel, ViewModel] {
         )
     }
 
-  def drawTitleText(center: Int, middle: Int): List[SceneNode] =
-    List(
+  def drawTitleText(center: Int, middle: Int): Batch[SceneNode] =
+    Batch(
       Text("snake!", center, middle - 20, 1, GameAssets.fontKey, GameAssets.fontMaterial).alignCenter,
-      Text("presented in glorious 1 bit graphics", center, middle - 5, 1, GameAssets.fontKey, GameAssets.fontMaterial).alignCenter,
+      Text(
+        "presented in glorious 1 bit graphics",
+        center,
+        middle - 5,
+        1,
+        GameAssets.fontKey,
+        GameAssets.fontMaterial
+      ).alignCenter,
       Text("Made by Dave", center, middle + 10, 1, GameAssets.fontKey, GameAssets.fontMaterial).alignCenter
     )
 }

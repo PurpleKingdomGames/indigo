@@ -62,25 +62,25 @@ object ControlsScene extends Scene[StartupData, GameModel, ViewModel] {
           Layer(
             BindingKey("ui"),
             drawControlsText(24, verticalMiddle, sceneModel) ++
-              List(drawSelectText(horizontalCenter)) ++
+              Batch(drawSelectText(horizontalCenter)) ++
               SharedElements.drawHitSpaceToStart(horizontalCenter, Seconds(1), context.gameTime)
           )
         )
     }
 
-  def drawControlsText(center: Int, middle: Int, controlScheme: ControlScheme): List[SceneNode] =
-    List(
+  def drawControlsText(center: Int, middle: Int, controlScheme: ControlScheme): Batch[SceneNode] =
+    Batch(
       Text("select controls", center, middle - 20, 1, GameAssets.fontKey, GameAssets.fontMaterial).alignLeft
     ) ++ {
       controlScheme match {
         case ControlScheme.Turning(_, _) =>
-          List(
+          Batch(
             Text("[_] direction (all arrow keys)", center, middle - 5, 1, GameAssets.fontKey, GameAssets.fontMaterial).alignLeft,
             Text("[x] turn (left and right arrows)", center, middle + 10, 1, GameAssets.fontKey, GameAssets.fontMaterial).alignLeft
           )
 
         case ControlScheme.Directed(_, _, _, _) =>
-          List(
+          Batch(
             Text("[x] direction (all arrow keys)", center, middle - 5, 1, GameAssets.fontKey, GameAssets.fontMaterial).alignLeft,
             Text("[_] turn (left and right arrows)", center, middle + 10, 1, GameAssets.fontKey, GameAssets.fontMaterial).alignLeft
           )
