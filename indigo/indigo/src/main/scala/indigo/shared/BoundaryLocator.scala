@@ -31,7 +31,7 @@ final class BoundaryLocator(
 
   implicit private val maybeBoundsCache: QuickCache[Option[Rectangle]]      = QuickCache.empty
   implicit private val boundsCache: QuickCache[Rectangle]                   = QuickCache.empty
-  implicit private val textLinesCache: QuickCache[List[TextLine]]           = QuickCache.empty
+  implicit private val textLinesCache: QuickCache[Batch[TextLine]]          = QuickCache.empty
   implicit private val textAllLineBoundsCache: QuickCache[Array[Rectangle]] = QuickCache.empty
 
   private[indigo] def purgeCache(): Unit = {
@@ -145,21 +145,21 @@ final class BoundaryLocator(
         }
     }
 
-  def textAsLinesWithBounds(text: String, fontKey: FontKey): List[TextLine] =
+  def textAsLinesWithBounds(text: String, fontKey: FontKey): Batch[TextLine] =
     QuickCache(s"""text-lines-$fontKey-$text""") {
       fontRegister
         .findByFontKey(fontKey)
         .map { fontInfo =>
           text.linesIterator.toList
             .map(lineText => new TextLine(lineText, textLineBounds(lineText, fontInfo)))
-            .foldLeft((0, List[TextLine]())) { case ((yPos, lines), textLine) =>
-              (yPos + textLine.lineBounds.height, lines ++ List(textLine.moveTo(0, yPos)))
+            .foldLeft((0, Batch.empty[TextLine])) { case ((yPos, lines), textLine) =>
+              (yPos + textLine.lineBounds.height, lines ++ Batch(textLine.moveTo(0, yPos)))
             }
             ._2
         }
         .getOrElse {
           IndigoLogger.errorOnce(s"Cannot build Text lines, missing Font with key: ${fontKey.toString()}")
-          Nil
+          Batch.empty
         }
     }
 
