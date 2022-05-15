@@ -120,11 +120,11 @@ final case class Automata(
     Outcome(
       SceneUpdateFragment(
         layerKey match {
-          case None      => Layer(Batch(updated.nodes))
-          case Some(key) => Layer(key, Batch(updated.nodes))
+          case None      => Layer(updated.nodes)
+          case Some(key) => Layer(key, updated.nodes)
         }
       ),
-      Batch(updated.events)
+      updated.events
     )
 
 object Automata:
@@ -137,9 +137,11 @@ object Automata:
 
   def renderNoLayer(pool: js.Array[SpawnedAutomaton], gameTime: GameTime): AutomatonUpdate =
     AutomatonUpdate.sequence(
-      pool.map { sa =>
-        sa.modifier.run((sa.seedValues, sa.sceneGraphNode)).at(gameTime.running - sa.seedValues.createdAt)
-      }
+      Batch(
+        pool.map { sa =>
+          sa.modifier.run((sa.seedValues, sa.sceneGraphNode)).at(gameTime.running - sa.seedValues.createdAt)
+        }
+      )
     )
 
 final case class AutomataState(totalSpawned: Long, pool: js.Array[SpawnedAutomaton])
@@ -255,28 +257,28 @@ final case class SpawnedAutomaton(
   def isAlive(currentTime: Seconds): Boolean =
     seedValues.createdAt + seedValues.lifeSpan > currentTime
 
-final case class AutomatonUpdate(nodes: js.Array[SceneNode], events: js.Array[GlobalEvent]) derives CanEqual:
+final case class AutomatonUpdate(nodes: Batch[SceneNode], events: Batch[GlobalEvent]) derives CanEqual:
   def |+|(other: AutomatonUpdate): AutomatonUpdate =
     AutomatonUpdate(nodes ++ other.nodes, events ++ other.events)
 
   def addGlobalEvents(newEvents: GlobalEvent*): AutomatonUpdate =
-    addGlobalEvents(newEvents.toList)
+    addGlobalEvents(Batch.fromSeq(newEvents))
 
-  def addGlobalEvents(newEvents: List[GlobalEvent]): AutomatonUpdate =
+  def addGlobalEvents(newEvents: Batch[GlobalEvent]): AutomatonUpdate =
     AutomatonUpdate(nodes, events ++ newEvents)
 
 object AutomatonUpdate:
 
   def empty: AutomatonUpdate =
-    new AutomatonUpdate(js.Array(), js.Array())
+    new AutomatonUpdate(Batch.empty, Batch.empty)
 
   def apply(nodes: SceneNode*): AutomatonUpdate =
-    new AutomatonUpdate(nodes.toJSArray, js.Array())
+    new AutomatonUpdate(Batch.fromSeq(nodes), Batch.empty)
 
-  def apply(nodes: js.Array[SceneNode]): AutomatonUpdate =
-    new AutomatonUpdate(nodes, js.Array())
+  def apply(nodes: Batch[SceneNode]): AutomatonUpdate =
+    new AutomatonUpdate(nodes, Batch.empty)
 
-  def sequence(l: js.Array[AutomatonUpdate]): AutomatonUpdate =
+  def sequence(l: Batch[AutomatonUpdate]): AutomatonUpdate =
     new AutomatonUpdate(
       nodes = l.flatMap(_.nodes),
       events = l.flatMap(_.events)

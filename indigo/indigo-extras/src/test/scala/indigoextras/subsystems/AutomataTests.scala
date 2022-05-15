@@ -210,12 +210,12 @@ class AutomataTests extends munit.FunSuite {
           AutomatonUpdate(
             sceneGraphNode match {
               case g: Graphic[_] =>
-                js.Array(g.moveTo(position))
+                Batch(g.moveTo(position))
 
               case _ =>
-                js.Array()
+                Batch.empty
             },
-            js.Array()
+            Batch.empty
           )
         }
       }
