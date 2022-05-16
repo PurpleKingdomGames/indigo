@@ -104,6 +104,9 @@ sealed trait Batch[+A]:
   def groupBy[K](f: A => K): Map[K, Batch[A]] =
     _jsArray.groupBy(f).map(p => (p._1, Batch(p._2)))
 
+  def lift(index: Int): Option[A] =
+    _jsArray.lift(index)
+
   def partition(p: A => Boolean): (Batch[A], Batch[A]) =
     val (a, b) = _jsArray.partition(p)
     (Batch.Wrapped(a), Batch.Wrapped(b))
@@ -140,6 +143,9 @@ sealed trait Batch[+A]:
   def mkString(prefix: String, separator: String, suffix: String): String =
     prefix + head.toString + separator + tail.toJSArray.mkString(separator) + suffix
 
+  def nonEmpty: Boolean =
+    !isEmpty
+
   def reduce[B >: A](f: (B, B) => B): B =
     _jsArray.reduce(f)
 
@@ -151,6 +157,10 @@ sealed trait Batch[+A]:
 
   def sortWith(f: (A, A) => Boolean): Batch[A] =
     Batch.Wrapped(_jsArray.sortWith(f))
+
+  def splitAt(n: Int): (Batch[A], Batch[A])=
+    val p = _jsArray.splitAt(n)
+    (Batch.Wrapped(p._1), Batch.Wrapped(p._2))
 
   def sum[B >: A](implicit num: Numeric[B]): B =
     _jsArray.sum
