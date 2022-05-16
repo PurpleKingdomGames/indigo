@@ -158,7 +158,7 @@ sealed trait Batch[+A]:
   def sortWith(f: (A, A) => Boolean): Batch[A] =
     Batch.Wrapped(_jsArray.sortWith(f))
 
-  def splitAt(n: Int): (Batch[A], Batch[A])=
+  def splitAt(n: Int): (Batch[A], Batch[A]) =
     val p = _jsArray.splitAt(n)
     (Batch.Wrapped(p._1), Batch.Wrapped(p._2))
 
@@ -250,6 +250,9 @@ object Batch:
       if b.isEmpty then None
       else Some(b.head -> b.tail)
   }
+
+  def fill[A](n: Int)(elem: => A): Batch[A] =
+    Batch.fromList(List.fill[A](n)(elem))
 
   def fromJSArray[A](values: js.Array[A]): Batch[A] =
     Wrapped(values)
