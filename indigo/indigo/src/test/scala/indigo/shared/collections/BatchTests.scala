@@ -5,12 +5,24 @@ import scalajs.js
 @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
 class BatchTests extends munit.FunSuite {
 
+  test("update a value") {
+    val actual   = Batch(1, 2, 3, 4, 5).update(2, 10)
+    val expected = Batch(1, 2, 10, 4, 5)
+    assertEquals(actual, expected)
+  }
+
+  test("insert a value") {
+    val actual   = Batch(1, 2, 3, 4, 5).insert(2, 10)
+    val expected = Batch(1, 2, 10, 3, 4, 5)
+    assertEquals(actual, expected)
+  }
+
   test("pattern matching - empty") {
     import Batch.==:
     Batch.empty[Int] match
-      case Batch() => assert(true)
+      case Batch()  => assert(true)
       case i ==: is => assert(i == 1)
-      case _       => assert(false)
+      case _        => assert(false)
   }
 
   test("pattern matching - first") {

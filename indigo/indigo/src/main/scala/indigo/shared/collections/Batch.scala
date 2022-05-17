@@ -104,6 +104,10 @@ sealed trait Batch[+A]:
   def groupBy[K](f: A => K): Map[K, Batch[A]] =
     _jsArray.groupBy(f).map(p => (p._1, Batch(p._2)))
 
+  def insert[B >: A](index: Int, value: B): Batch[B] =
+    val p = _jsArray.splitAt(index)
+    Batch((p._1 :+ value) ++ p._2)
+
   def lift(index: Int): Option[A] =
     _jsArray.lift(index)
 
@@ -182,6 +186,10 @@ sealed trait Batch[+A]:
 
   override def toString: String =
     "Batch(" + _jsArray.mkString(", ") + ")"
+
+  def update[B >: A](index: Int, value: B): Batch[B] =
+    val p = _jsArray.splitAt(index)
+    Batch((p._1 :+ value) ++ p._2.tail)
 
   def zipWithIndex: Batch[(A, Int)] =
     Batch.Wrapped(_jsArray.zipWithIndex)
