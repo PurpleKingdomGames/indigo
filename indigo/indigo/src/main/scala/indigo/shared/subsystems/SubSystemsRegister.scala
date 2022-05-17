@@ -2,19 +2,22 @@ package indigo.shared.subsystems
 
 import indigo.shared.IndigoLogger
 import indigo.shared.Outcome
+import indigo.shared.collections.Batch
 import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.subsystems.SubSystemFrameContext
+
+import scalajs.js
 
 final class SubSystemsRegister() {
 
   val stateMap: scalajs.js.Dictionary[Object] = scalajs.js.Dictionary.empty
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  private var registeredSubSystems: List[RegisteredSubSystem] = Nil
+  private var registeredSubSystems: js.Array[RegisteredSubSystem] = js.Array()
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  def register(newSubSystems: List[SubSystem]): List[GlobalEvent] =
+  def register(newSubSystems: Batch[SubSystem]): Batch[GlobalEvent] =
     newSubSystems.map(initialiseSubSystem).sequence match {
       case oe @ Outcome.Error(e, _) =>
         IndigoLogger.error("Error during subsystem setup - Halting.")
@@ -23,7 +26,7 @@ final class SubSystemsRegister() {
         throw e
 
       case Outcome.Result(toBeRegistered, events) =>
-        registeredSubSystems = registeredSubSystems ++ toBeRegistered
+        registeredSubSystems = registeredSubSystems ++ toBeRegistered.toJSArray
         events
     }
 
@@ -40,35 +43,39 @@ final class SubSystemsRegister() {
   }
 
   // @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
-  def update(frameContext: SubSystemFrameContext, globalEvents: List[GlobalEvent]): Outcome[SubSystemsRegister] = {
-    def outcomeEvents: Outcome[List[GlobalEvent]] =
-      registeredSubSystems
-        .map { rss =>
-          val key       = rss.id
-          val subSystem = rss.subSystem
+  def update(frameContext: SubSystemFrameContext, globalEvents: js.Array[GlobalEvent]): Outcome[SubSystemsRegister] = {
+    def outcomeEvents: Outcome[Batch[GlobalEvent]] =
+      Outcome
+        .sequence(
+          Batch(
+            registeredSubSystems
+              .map { rss =>
+                val key       = rss.id
+                val subSystem = rss.subSystem
 
-          val filteredEvents: List[subSystem.EventType] =
-            globalEvents
-              .map(subSystem.eventFilter)
-              .collect { case Some(e) => e }
+                val filteredEvents: js.Array[subSystem.EventType] =
+                  globalEvents
+                    .map(subSystem.eventFilter)
+                    .collect { case Some(e) => e }
 
-          val model: subSystem.SubSystemModel = stateMap(key).asInstanceOf[subSystem.SubSystemModel]
+                val model: subSystem.SubSystemModel = stateMap(key).asInstanceOf[subSystem.SubSystemModel]
 
-          filteredEvents.foldLeft(Outcome(model)) { (acc, e) =>
-            acc.flatMap { m =>
-              subSystem.update(frameContext, m)(e)
-            }
-          } match {
-            case Outcome.Error(e, _) =>
-              Outcome.raiseError(e)
+                filteredEvents.foldLeft(Outcome(model)) { (acc, e) =>
+                  acc.flatMap { m =>
+                    subSystem.update(frameContext, m)(e)
+                  }
+                } match {
+                  case Outcome.Error(e, _) =>
+                    Outcome.raiseError(e)
 
-            case Outcome.Result(state, globalEvents) =>
-              stateMap.put(key, state.asInstanceOf[Object])
-              Outcome(globalEvents)
-          }
-        }
-        .sequence
-        .map(_.flatten)
+                  case Outcome.Result(state, globalEvents) =>
+                    stateMap.put(key, state.asInstanceOf[Object])
+                    Outcome(globalEvents)
+                }
+              }
+          )
+        )
+        .map(_.flatMap(identity))
 
     outcomeEvents.flatMap(l => Outcome(this, l))
   }

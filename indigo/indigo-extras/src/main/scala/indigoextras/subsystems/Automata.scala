@@ -1,6 +1,7 @@
 package indigoextras.subsystems
 
 import indigo.shared.Outcome
+import indigo.shared.collections.Batch
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.datatypes.Point
@@ -19,12 +20,15 @@ import indigo.shared.time.GameTime
 import indigo.shared.time.Seconds
 import indigoextras.subsystems.AutomataEvent._
 
+import scalajs.js
+import scalajs.js.JSConverters.*
+
 final case class Automata(
     poolKey: AutomataPoolKey,
     automaton: Automaton,
     layerKey: Option[BindingKey],
     maxPoolSize: Option[Int]
-) extends SubSystem {
+) extends SubSystem:
   type EventType      = AutomataEvent
   type SubSystemModel = AutomataState
 
@@ -33,7 +37,7 @@ final case class Automata(
   def withMaxPoolSize(limit: Int): Automata =
     Automata(poolKey, automaton, layerKey, Option(limit))
 
-  val eventFilter: GlobalEvent => Option[AutomataEvent] = {
+  val eventFilter: GlobalEvent => Option[AutomataEvent] =
     case e: AutomataEvent =>
       Some(e)
 
@@ -42,14 +46,13 @@ final case class Automata(
 
     case _ =>
       None
-  }
 
   val initialModel: Outcome[AutomataState] =
-    Outcome(AutomataState(0, Nil))
+    Outcome(AutomataState(0, js.Array()))
 
   private given CanEqual[Option[Int], Option[Int]] = CanEqual.derived
 
-  def update(frameContext: SubSystemFrameContext, state: AutomataState): AutomataEvent => Outcome[AutomataState] = {
+  def update(frameContext: SubSystemFrameContext, state: AutomataState): AutomataEvent => Outcome[AutomataState] =
     case Spawn(key, position, lifeSpan, payload) if key == poolKey =>
       val spawned =
         SpawnedAutomaton(
@@ -70,49 +73,48 @@ final case class Automata(
           case None =>
             state.copy(
               totalSpawned = state.totalSpawned + 1,
-              pool = spawned :: state.pool
+              pool = spawned +: state.pool
             )
 
           case Some(limit) if state.pool.length < limit =>
             state.copy(
               totalSpawned = state.totalSpawned + 1,
-              pool = spawned :: state.pool
+              pool = spawned +: state.pool
             )
 
           case Some(limit) if state.pool.length == limit =>
             state.copy(
               totalSpawned = state.totalSpawned + 1,
-              pool = spawned :: state.pool.dropRight(1)
+              pool = spawned +: state.pool.dropRight(1)
             )
 
           case Some(limit) =>
             state.copy(
               totalSpawned = state.totalSpawned + 1,
-              pool = spawned :: state.pool.dropRight(limit - state.pool.length + 1)
+              pool = spawned +: state.pool.dropRight(limit - state.pool.length + 1)
             )
         }
       )
 
     case KillAll(key) if key == poolKey =>
-      Outcome(state.copy(pool = Nil))
+      Outcome(state.copy(pool = js.Array()))
 
     case Update(key) if key == poolKey =>
       val cullEvents = state.pool
         .filterNot(_.isAlive(frameContext.gameTime.running))
-        .toList
         .flatMap(sa => sa.onCull(sa.seedValues))
 
       Outcome(
         state.copy(
           pool = state.pool.filter(_.isAlive(frameContext.gameTime.running))
-        )
-      ).addGlobalEvents(cullEvents)
+        ),
+        Batch(cullEvents)
+      )
 
     case _ =>
       Outcome(state)
-  }
 
-  def present(frameContext: SubSystemFrameContext, state: AutomataState): Outcome[SceneUpdateFragment] = {
+  def present(frameContext: SubSystemFrameContext, state: AutomataState): Outcome[SceneUpdateFragment] =
     val updated = Automata.renderNoLayer(state.pool, frameContext.gameTime)
 
     Outcome(
@@ -125,9 +127,7 @@ final case class Automata(
       updated.events
     )
 
-  }
-}
-object Automata {
+object Automata:
 
   def apply(poolKey: AutomataPoolKey, automaton: Automaton): Automata =
     Automata(poolKey, automaton, None, None)
@@ -135,16 +135,16 @@ object Automata {
   def apply(poolKey: AutomataPoolKey, automaton: Automaton, layerKey: BindingKey): Automata =
     Automata(poolKey, automaton, Some(layerKey), None)
 
-  def renderNoLayer(pool: List[SpawnedAutomaton], gameTime: GameTime): AutomatonUpdate =
+  def renderNoLayer(pool: js.Array[SpawnedAutomaton], gameTime: GameTime): AutomatonUpdate =
     AutomatonUpdate.sequence(
-      pool.map { sa =>
-        sa.modifier.run((sa.seedValues, sa.sceneGraphNode)).at(gameTime.running - sa.seedValues.createdAt)
-      }
+      Batch(
+        pool.map { sa =>
+          sa.modifier.run((sa.seedValues, sa.sceneGraphNode)).at(gameTime.running - sa.seedValues.createdAt)
+        }
+      )
     )
 
-}
-
-final case class AutomataState(totalSpawned: Long, pool: List[SpawnedAutomaton])
+final case class AutomataState(totalSpawned: Long, pool: js.Array[SpawnedAutomaton])
 
 sealed trait AutomataEvent extends SubSystemEvent derives CanEqual
 object AutomataEvent {
@@ -173,16 +173,15 @@ final case class Automaton(
     lifespan: Seconds,
     modifier: SignalReader[(AutomatonSeedValues, SceneNode), AutomatonUpdate],
     onCull: AutomatonSeedValues => List[GlobalEvent]
-) {
+):
 
   def withModifier(newModifier: SignalReader[(AutomatonSeedValues, SceneNode), AutomatonUpdate]): Automaton =
     this.copy(modifier = newModifier)
 
   def withOnCullEvent(onCullEvent: AutomatonSeedValues => List[GlobalEvent]): Automaton =
     this.copy(onCull = onCullEvent)
-}
 
-object Automaton {
+object Automaton:
 
   def NoOpModifier: SignalReader[(AutomatonSeedValues, SceneNode), AutomatonUpdate] =
     SignalReader { case (_, n) =>
@@ -205,31 +204,25 @@ object Automaton {
   def apply(node: AutomatonNode, lifespan: Seconds, placeModifier: (Point, SceneNode) => SceneNode): Automaton =
     Automaton(node, lifespan, FixedModifier((sa, n) => placeModifier(sa.spawnedAt, n)), NoCullEvent)
 
-}
-
-sealed trait AutomatonNode derives CanEqual {
+sealed trait AutomatonNode derives CanEqual:
   def giveNode(totalSpawned: Long, dice: Dice): SceneNode
-}
-object AutomatonNode {
 
-  final case class Fixed(node: SceneNode) extends AutomatonNode {
+object AutomatonNode:
+
+  final case class Fixed(node: SceneNode) extends AutomatonNode:
     def giveNode(totalSpawned: Long, dice: Dice): SceneNode =
       node
-  }
 
-  final case class OneOf(nodes: NonEmptyList[SceneNode]) extends AutomatonNode {
-    def giveNode(totalSpawned: Long, dice: Dice): SceneNode = {
+  final case class OneOf(nodes: NonEmptyList[SceneNode]) extends AutomatonNode:
+    def giveNode(totalSpawned: Long, dice: Dice): SceneNode =
       val nodeList = nodes.toList
-
       nodeList(dice.rollFromZero(nodeList.length - 1))
-    }
-  }
-  object OneOf {
+
+  object OneOf:
     def apply(node: SceneNode, nodes: SceneNode*): OneOf =
       OneOf(NonEmptyList(node, nodes.toList))
-  }
 
-  final case class Cycle(nodes: NonEmptyList[SceneNode]) extends AutomatonNode {
+  final case class Cycle(nodes: NonEmptyList[SceneNode]) extends AutomatonNode:
     private def correctMod(dividend: Double, divisor: Double): Int =
       (((dividend % divisor) + divisor) % divisor).toInt
 
@@ -238,13 +231,10 @@ object AutomatonNode {
 
       nodeList(correctMod(totalSpawned.toDouble, nodeList.length.toDouble))
     }
-  }
-  object Cycle {
+
+  object Cycle:
     def apply(node: SceneNode, nodes: SceneNode*): Cycle =
       Cycle(NonEmptyList(node, nodes.toList))
-  }
-
-}
 
 final case class AutomatonSeedValues(
     spawnedAt: Point,
@@ -252,53 +242,44 @@ final case class AutomatonSeedValues(
     lifeSpan: Seconds,
     randomSeed: Int,
     payload: Option[AutomatonPayload]
-) derives CanEqual {
-
+) derives CanEqual:
   /** A value progressing from 0 to 1 as the automaton reaches its end.
     */
   def progression(timeAlive: Seconds): Double =
     timeAlive.toDouble / lifeSpan.toDouble
-
-}
 
 final case class SpawnedAutomaton(
     sceneGraphNode: SceneNode,
     modifier: SignalReader[(AutomatonSeedValues, SceneNode), AutomatonUpdate],
     onCull: AutomatonSeedValues => List[GlobalEvent],
     seedValues: AutomatonSeedValues
-) derives CanEqual {
+) derives CanEqual:
   def isAlive(currentTime: Seconds): Boolean =
     seedValues.createdAt + seedValues.lifeSpan > currentTime
-}
 
-final case class AutomatonUpdate(nodes: List[SceneNode], events: List[GlobalEvent]) derives CanEqual {
-
+final case class AutomatonUpdate(nodes: Batch[SceneNode], events: Batch[GlobalEvent]) derives CanEqual:
   def |+|(other: AutomatonUpdate): AutomatonUpdate =
     AutomatonUpdate(nodes ++ other.nodes, events ++ other.events)
 
   def addGlobalEvents(newEvents: GlobalEvent*): AutomatonUpdate =
-    addGlobalEvents(newEvents.toList)
+    addGlobalEvents(Batch.fromSeq(newEvents))
 
-  def addGlobalEvents(newEvents: List[GlobalEvent]): AutomatonUpdate =
+  def addGlobalEvents(newEvents: Batch[GlobalEvent]): AutomatonUpdate =
     AutomatonUpdate(nodes, events ++ newEvents)
 
-}
-
-object AutomatonUpdate {
+object AutomatonUpdate:
 
   def empty: AutomatonUpdate =
-    new AutomatonUpdate(Nil, Nil)
+    new AutomatonUpdate(Batch.empty, Batch.empty)
 
   def apply(nodes: SceneNode*): AutomatonUpdate =
-    new AutomatonUpdate(nodes.toList, Nil)
+    new AutomatonUpdate(Batch.fromSeq(nodes), Batch.empty)
 
-  def apply(nodes: List[SceneNode]): AutomatonUpdate =
-    new AutomatonUpdate(nodes, Nil)
+  def apply(nodes: Batch[SceneNode]): AutomatonUpdate =
+    new AutomatonUpdate(nodes, Batch.empty)
 
-  def sequence(l: List[AutomatonUpdate]): AutomatonUpdate =
+  def sequence(l: Batch[AutomatonUpdate]): AutomatonUpdate =
     new AutomatonUpdate(
       nodes = l.flatMap(_.nodes),
       events = l.flatMap(_.events)
     )
-
-}

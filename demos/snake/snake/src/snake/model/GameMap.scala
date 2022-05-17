@@ -1,6 +1,7 @@
 package snake.model
 
 import indigo.Dice
+import indigo.Batch
 import indigoextras.geometry.BoundingBox
 import indigoextras.trees.QuadTree
 import indigoextras.geometry.Vertex
@@ -19,14 +20,14 @@ final case class GameMap(quadTree: QuadTree[MapElement], gridSize: BoundingBox) 
 
   def insertElements(elements: List[MapElement]): GameMap =
     this.copy(
-      quadTree = quadTree.insertElements(elements.map(me => (me, me.giveGridPoint))).prune
+      quadTree = quadTree.insertElements(Batch.fromList(elements).map(me => (me, me.giveGridPoint))).prune
     )
 
   def findEmptySpace(dice: Dice, not: List[Vertex]): Vertex =
     GameMap.findEmptySpace(quadTree, dice, gridSize, not)
 
   def asElementList: List[MapElement] =
-    quadTree.toList
+    quadTree.toBatch.toList
 
   lazy val findWalls: List[MapElement.Wall] =
     asElementList.flatMap {
@@ -127,7 +128,7 @@ object GameMap {
 }
 
 enum MapElement derives CanEqual:
-  case Wall(gridPoint: Vertex) extends MapElement
+  case Wall(gridPoint: Vertex)  extends MapElement
   case Apple(gridPoint: Vertex) extends MapElement
 object MapElement:
   extension (me: MapElement)

@@ -4,6 +4,7 @@ import indigo.shared.Outcome
 import indigo.shared.assets.AssetPath
 import indigo.shared.assets.AssetType
 import indigo.shared.assets.AssetTypePrimitive
+import indigo.shared.collections.Batch
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.events.AssetEvent
 import indigo.shared.events.GlobalEvent
@@ -81,9 +82,11 @@ object AssetBundleLoader extends SubSystem {
   ): Outcome[AssetBundleTracker] = {
     val assetPrimitives = AssetType.flattenAssetList(assets.toList)
 
-    val events: List[GlobalEvent] =
-      assetPrimitives.toList
-        .map(asset => AssetEvent.LoadAsset(asset, BindingKey(asset.path.toString), false))
+    val events: Batch[GlobalEvent] =
+      Batch.fromList(
+        assetPrimitives
+          .map(asset => AssetEvent.LoadAsset(asset, BindingKey(asset.path.toString), false))
+      )
 
     Outcome(
       tracker.addBundle(key, assetPrimitives)
@@ -123,7 +126,7 @@ object AssetBundleLoader extends SubSystem {
           }
         }
 
-    Outcome(updatedTracker).addGlobalEvents(statusBasedEvents)
+    Outcome(updatedTracker, Batch.fromList(statusBasedEvents))
   }
 }
 
@@ -131,11 +134,9 @@ sealed trait AssetBundleLoaderEvent extends GlobalEvent derives CanEqual
 object AssetBundleLoaderEvent {
   // commands
   final case class Load(key: BindingKey, assets: Set[AssetType]) extends AssetBundleLoaderEvent with SubSystemEvent
-  final case class Retry(key: BindingKey)
-      extends AssetBundleLoaderEvent
-      with SubSystemEvent
+  final case class Retry(key: BindingKey)                        extends AssetBundleLoaderEvent with SubSystemEvent
 
-      // result events
+  // result events
   final case class Started(key: BindingKey) extends AssetBundleLoaderEvent
   final case class LoadProgress(key: BindingKey, percent: Int, completed: Int, total: Int)
       extends AssetBundleLoaderEvent

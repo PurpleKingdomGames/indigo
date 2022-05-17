@@ -43,6 +43,17 @@ object syntax:
     def point: Point = Point(t._1, t._2)
     def size: Size   = Size(t._1, t._2)
 
+  extension [A](values: scalajs.js.Array[A]) def toBatch: Batch[A] = Batch.fromJSArray(values)
+  extension [A](values: Array[A]) def toBatch: Batch[A]            = Batch.fromArray(values)
+  extension [A](values: List[A]) def toBatch: Batch[A]             = Batch.fromList(values)
+  extension [A](values: Set[A]) def toBatch: Batch[A]              = Batch.fromSet(values)
+  extension [A](values: Seq[A]) def toBatch: Batch[A]              = Batch.fromSeq(values)
+  extension [A](values: IndexedSeq[A]) def toBatch: Batch[A]       = Batch.fromIndexedSeq(values)
+  extension [A](values: Iterator[A]) def toBatch: Batch[A]         = Batch.fromIterator(values)
+  extension [K, V](values: Map[K, V]) def toBatch: Batch[(K, V)]   = Batch.fromMap(values)
+  extension [A](values: Option[A]) def toBatch: Batch[A]           = Batch.fromOption(values)
+  extension (values: Range) def toBatch: Batch[Int]                = Batch.fromRange(values)
+
 end syntax
 
 val logger: indigo.shared.IndigoLogger.type = indigo.shared.IndigoLogger
@@ -147,6 +158,12 @@ val Outcome: shared.Outcome.type = shared.Outcome
 
 type Key = shared.constants.Key
 val Key: shared.constants.Key.type = shared.constants.Key
+
+type Batch[A] = shared.collections.Batch[A]
+val Batch: shared.collections.Batch.type = shared.collections.Batch
+
+type NonEmptyBatch[A] = shared.collections.NonEmptyBatch[A]
+val NonEmptyBatch: shared.collections.NonEmptyBatch.type = shared.collections.NonEmptyBatch
 
 type NonEmptyList[A] = shared.collections.NonEmptyList[A]
 val NonEmptyList: shared.collections.NonEmptyList.type = shared.collections.NonEmptyList

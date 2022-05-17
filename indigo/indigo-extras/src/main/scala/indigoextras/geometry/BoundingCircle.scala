@@ -1,5 +1,6 @@
 package indigoextras.geometry
 
+import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Vector2
 
 final case class BoundingCircle(position: Vertex, radius: Double) derives CanEqual:
@@ -80,11 +81,11 @@ object BoundingCircle:
   def fromTwoVertices(center: Vertex, boundary: Vertex): BoundingCircle =
     BoundingCircle(center, center.distanceTo(boundary))
 
-  def fromVertices(vertices: List[Vertex]): BoundingCircle =
+  def fromVertices(vertices: Batch[Vertex]): BoundingCircle =
     val bb = BoundingBox.fromVertices(vertices)
     BoundingCircle(bb.center, bb.center.distanceTo(bb.topLeft))
 
-  def fromVertexCloud(vertices: List[Vertex]): BoundingCircle =
+  def fromVertexCloud(vertices: Batch[Vertex]): BoundingCircle =
     fromVertices(vertices)
 
   def fromBoundingBox(boundingBox: BoundingBox): BoundingCircle =

@@ -2,15 +2,15 @@ package indigo.shared.datatypes
 
 import util.control.Breaks._
 
-final case class Matrix3(private val mat: List[Double]) derives CanEqual {
+final case class Matrix3(private val mat: Array[Double]) derives CanEqual {
 
-  lazy val row1: List[Double] = List(mat(0), mat(1), mat(2))
-  lazy val row2: List[Double] = List(mat(3), mat(4), mat(5))
-  lazy val row3: List[Double] = List(mat(6), mat(7), mat(8))
+  lazy val row1: Array[Double] = Array(mat(0), mat(1), mat(2))
+  lazy val row2: Array[Double] = Array(mat(3), mat(4), mat(5))
+  lazy val row3: Array[Double] = Array(mat(6), mat(7), mat(8))
 
-  lazy val col1: List[Double] = List(mat(0), mat(3), mat(6))
-  lazy val col2: List[Double] = List(mat(1), mat(4), mat(7))
-  lazy val col3: List[Double] = List(mat(2), mat(5), mat(8))
+  lazy val col1: Array[Double] = Array(mat(0), mat(3), mat(6))
+  lazy val col2: Array[Double] = Array(mat(1), mat(4), mat(7))
+  lazy val col3: Array[Double] = Array(mat(2), mat(5), mat(8))
 
   def identity: Matrix3 =
     Matrix3.identity
@@ -33,8 +33,11 @@ final case class Matrix3(private val mat: List[Double]) derives CanEqual {
   def flip(horizontal: Boolean, vertical: Boolean): Matrix3 =
     this * Matrix3.flip(horizontal, vertical)
 
-  def toList: List[Double] =
+  def toArray: Array[Double] =
     mat
+
+  def toList: List[Double] =
+    mat.toList
 
   def transform(vector: Vector2): Vector2 =
     Vector2(
@@ -228,7 +231,7 @@ object Matrix3 {
       row2: (Double, Double, Double)
   ): Matrix3 =
     Matrix3(
-      List(row0._1, row0._2, row0._3, row1._1, row1._2, row1._3, row2._1, row2._2, row2._3)
+      Array(row0._1, row0._2, row0._3, row1._1, row1._2, row1._3, row2._1, row2._2, row2._3)
     )
 
   def apply(
@@ -243,7 +246,7 @@ object Matrix3 {
       c3: Double
   ): Matrix3 =
     Matrix3(
-      List(
+      Array(
         a1,
         a2,
         a3,

@@ -1,5 +1,6 @@
 package indigoextras.geometry
 
+import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Size
 import indigo.shared.datatypes.Vector2
@@ -27,8 +28,8 @@ final case class BoundingBox(position: Vertex, size: Vertex) derives CanEqual:
   lazy val center: Vertex      = Vertex(horizontalCenter, verticalCenter)
   lazy val halfSize: Vertex    = (size / 2).abs
 
-  lazy val corners: List[Vertex] =
-    List(topLeft, topRight, bottomRight, bottomLeft)
+  lazy val corners: Batch[Vertex] =
+    Batch(topLeft, topRight, bottomRight, bottomLeft)
 
   def contains(vertex: Vertex): Boolean =
     vertex.x >= left && vertex.x < right && vertex.y >= top && vertex.y < bottom
@@ -98,7 +99,7 @@ final case class BoundingBox(position: Vertex, size: Vertex) derives CanEqual:
   def toBoundingCircle: BoundingCircle =
     BoundingCircle.fromBoundingBox(this)
 
-  def toLineSegments: List[LineSegment] =
+  def toLineSegments: Batch[LineSegment] =
     BoundingBox.toLineSegments(this)
 
   def lineIntersects(line: LineSegment): Boolean =
@@ -133,7 +134,7 @@ object BoundingBox:
     BoundingBox(x, y, w, h)
   }
 
-  def fromVertices(vertices: List[Vertex]): BoundingBox = {
+  def fromVertices(vertices: Batch[Vertex]): BoundingBox = {
     val margin: Double = 0.001
     @tailrec
     def rec(remaining: List[Vertex], left: Double, top: Double, right: Double, bottom: Double): BoundingBox =
@@ -151,14 +152,14 @@ object BoundingBox:
           )
       }
 
-    rec(vertices, Double.MaxValue, Double.MaxValue, Double.MinValue, Double.MinValue)
+    rec(vertices.toList, Double.MaxValue, Double.MaxValue, Double.MinValue, Double.MinValue)
   }
 
   /** Produces a bounding box that could include all of the vertices. Since the `contains` methods right and bottom
     * checks are < not <= (to allow bounds to sit next to each other with no overlap), a small fixed margin of 0.001 is
     * add to the size values.
     */
-  def fromVertexCloud(vertices: List[Vertex]): BoundingBox =
+  def fromVertexCloud(vertices: Batch[Vertex]): BoundingBox =
     fromVertices(vertices)
 
   def fromRectangle(rectangle: Rectangle): BoundingBox =
@@ -170,8 +171,8 @@ object BoundingBox:
   def fromBoundingCircle(boundingCircle: BoundingCircle): BoundingBox =
     boundingCircle.toBoundingBox
 
-  def toLineSegments(boundingBox: BoundingBox): List[LineSegment] =
-    List(
+  def toLineSegments(boundingBox: BoundingBox): Batch[LineSegment] =
+    Batch(
       LineSegment(boundingBox.topLeft, boundingBox.bottomLeft),
       LineSegment(boundingBox.bottomLeft, boundingBox.bottomRight),
       LineSegment(boundingBox.bottomRight, boundingBox.topRight),
@@ -231,7 +232,7 @@ object BoundingBox:
 
     if containsStart && containsEnd then false
     else if !line.toBoundingBox.overlaps(boundingBox) then false
-    else rec(boundingBox.toLineSegments)
+    else rec(boundingBox.toLineSegments.toList)
 
   def lineIntersectsAt(boundingBox: BoundingBox, line: LineSegment): Option[Vertex] =
     val containsStart = boundingBox.contains(line.start)
@@ -249,8 +250,8 @@ object BoundingBox:
         .flatMap { ln =>
           if ln.isFacingVertex(outside) then
             val at = ln.intersectsAt(line)
-            if at.isDefined then List(at.get) else Nil
-          else Nil
+            if at.isDefined then Batch(at.get) else Batch.empty
+          else Batch.empty
         }
         .sortWith((a, b) => a.distanceTo(outside) < b.distanceTo(outside))
         .headOption

@@ -27,12 +27,12 @@ object PerfView {
       Point((Random.nextFloat() * PerfGame.viewportWidth).toInt, (Random.nextFloat() * PerfGame.viewportHeight).toInt)
     }
 
-  private val theHerd: List[CloneBatch] = {
+  private val theHerd: Batch[CloneBatch] = {
     @tailrec
-    def rec(remaining: List[Point], batchSize: Int, batchNumber: Int, acc: List[CloneBatch]): List[CloneBatch] =
+    def rec(remaining: List[Point], batchSize: Int, batchNumber: Int, acc: List[CloneBatch]): Batch[CloneBatch] =
       remaining match {
         case Nil =>
-          acc
+          Batch.fromList(acc)
 
         case rs =>
           val (l, r) = rs.splitAt(batchSize)
@@ -48,7 +48,7 @@ object PerfView {
                 batchNumber + 1,
                 CloneBatch(
                   cloneId,
-                  ps.map(p => CloneBatchData(p.x, p.y)).toArray
+                  Batch.fromList(ps).map(p => CloneBatchData(p.x, p.y))
                 ).withStaticBatchKey(BindingKey("herd" + batchNumber.toString)) :: acc
               )
       }
@@ -56,8 +56,8 @@ object PerfView {
     rec(positions, cloneBatchSize, 0, Nil)
   }
 
-  def gameLayer(currentState: DudeModel): List[SceneNode] =
-    List(
+  def gameLayer(currentState: DudeModel): Batch[SceneNode] =
+    Batch(
       currentState.walkDirection match {
         case d @ DudeLeft =>
           currentState.dude.sprite
@@ -86,8 +86,8 @@ object PerfView {
       }
     ) ++ theHerd
 
-  val uiLayer: List[SceneNode] =
-    List(
+  val uiLayer: Batch[SceneNode] =
+    Batch(
       Text(
         (herdCount + 1).toString + " Naked dudes!",
         PerfGame.viewportWidth / 2,

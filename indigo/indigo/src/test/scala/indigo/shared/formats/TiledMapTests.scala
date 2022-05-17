@@ -1,6 +1,7 @@
 package indigo.shared.formats
 
 import indigo.shared.assets.AssetName
+import indigo.shared.collections.Batch
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.datatypes.Point
 import indigo.shared.formats.TileSet
@@ -80,7 +81,7 @@ class TiledMapTests extends munit.FunSuite {
     actual.children.head match {
       case g: Group =>
         // Only 3 tiles have contents.
-        val graphics: List[Graphic[_]] =
+        val graphics: Batch[Graphic[_]] =
           g.children.collect { case graphic: Graphic[_] => graphic }
 
         assertEquals(graphics.length, 3)

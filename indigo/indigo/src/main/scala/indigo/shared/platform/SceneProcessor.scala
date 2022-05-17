@@ -132,7 +132,7 @@ final class SceneProcessor(
 
           val layer = DisplayLayer(
             conversionResults._1,
-            SceneProcessor.makeLightsData(scene.lights ++ l.lights),
+            SceneProcessor.makeLightsData((scene.lights ++ l.lights).toJSArray),
             blending.clearColor.getOrElse(RGBA.Zero),
             l.magnification,
             l.depth.getOrElse(Depth(i)),
@@ -176,12 +176,12 @@ object SceneProcessor {
       scalajs.js.Array[Float]()
     )
 
-  private val missingLightData: scalajs.js.Array[List[LightData]] =
+  private val missingLightData: scalajs.js.Array[scalajs.js.Array[LightData]] =
     (0 to 8).map { i =>
-      List.fill(i)(LightData.empty)
+      List.fill(i)(LightData.empty).toJSArray
     }.toJSArray
 
-  def makeLightsData(lights: List[Light]): scalajs.js.Array[Float] = {
+  def makeLightsData(lights: scalajs.js.Array[Light]): scalajs.js.Array[Float] = {
     val limitedLights = lights.take(MaxLights)
     val count         = limitedLights.length
     val fullLights    = limitedLights.map(makeLightData) ++ missingLightData(MaxLights - count)

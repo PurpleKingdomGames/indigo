@@ -1,6 +1,7 @@
 package indigo.shared.scenegraph
 
 import indigo.shared.BoundaryLocator
+import indigo.shared.collections.Batch
 import indigo.shared.datatypes._
 import indigo.shared.events.GlobalEvent
 
@@ -10,7 +11,7 @@ import indigo.shared.events.GlobalEvent
 final case class CloneTiles(
     id: CloneId,
     depth: Depth,
-    cloneData: Array[CloneTileData],
+    cloneData: Batch[CloneTileData],
     staticBatchKey: Option[BindingKey]
 ) extends DependentNode[CloneTiles]
     derives CanEqual:
@@ -26,12 +27,12 @@ final case class CloneTiles(
 
   def withDepth(newDepth: Depth): CloneTiles =
     this.copy(depth = newDepth)
-  def addClones(additionalClones: Array[CloneTileData]): CloneTiles =
+  def addClones(additionalClones: Batch[CloneTileData]): CloneTiles =
     this.copy(cloneData = cloneData ++ additionalClones)
   def addClone(x: Int, y: Int, cropX: Int, cropY: Int, cropWidth: Int, cropHeight: Int): CloneTiles =
-    addClones(Array(CloneTileData(x, y, cropX, cropY, cropWidth, cropHeight)))
+    addClones(Batch(CloneTileData(x, y, cropX, cropY, cropWidth, cropHeight)))
   def addClone(x: Int, y: Int, rotation: Radians, cropX: Int, cropY: Int, cropWidth: Int, cropHeight: Int): CloneTiles =
-    addClones(Array(CloneTileData(x, y, rotation, cropX, cropY, cropWidth, cropHeight)))
+    addClones(Batch(CloneTileData(x, y, rotation, cropX, cropY, cropWidth, cropHeight)))
   def addClones(
       x: Int,
       y: Int,
@@ -43,7 +44,7 @@ final case class CloneTiles(
       cropWidth: Int,
       cropHeight: Int
   ): CloneTiles =
-    addClones(Array(CloneTileData(x, y, rotation, scaleX, scaleY, cropX, cropY, cropWidth, cropHeight)))
+    addClones(Batch(CloneTileData(x, y, rotation, scaleX, scaleY, cropX, cropY, cropWidth, cropHeight)))
 
   def withMaybeStaticBatchKey(maybeKey: Option[BindingKey]): CloneTiles =
     this.copy(staticBatchKey = maybeKey)
@@ -59,7 +60,7 @@ final case class CloneTiles(
 
 object CloneTiles:
 
-  def apply(id: CloneId, cloneData: Array[CloneTileData]): CloneTiles =
+  def apply(id: CloneId, cloneData: Batch[CloneTileData]): CloneTiles =
     CloneTiles(
       id,
       Depth.zero,
@@ -71,7 +72,7 @@ object CloneTiles:
     CloneTiles(
       id,
       Depth.zero,
-      Array(cloneData),
+      Batch(cloneData),
       None
     )
 
@@ -79,6 +80,6 @@ object CloneTiles:
     CloneTiles(
       id,
       Depth.zero,
-      cloneData.toArray,
+      Batch.fromSeq(cloneData),
       None
     )

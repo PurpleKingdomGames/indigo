@@ -7,6 +7,7 @@ import indigo.shared.BoundaryLocator
 import indigo.shared.FontRegister
 import indigo.shared.QuickCache
 import indigo.shared.assets.AssetName
+import indigo.shared.collections.Batch
 import indigo.shared.config.RenderingTechnology
 import indigo.shared.datatypes.Depth
 import indigo.shared.datatypes.Point
@@ -115,7 +116,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
     import indigo.shared.shader.ShaderPrimitive._
 
     val uniforms =
-      List(
+      Batch(
         Uniform("a") -> float(1),
         Uniform("b") -> float(2),
         Uniform("c") -> vec3(3, 4, 5),
@@ -145,7 +146,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
     import indigo.shared.shader.ShaderPrimitive._
 
     val uniforms =
-      List(
+      Batch(
         Uniform("a") -> float(1),
         Uniform("b") -> vec2(2, 3)
       )
@@ -169,7 +170,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
     import indigo.shared.shader.ShaderPrimitive._
 
     val uniforms =
-      List(
+      Batch(
         Uniform("ASPECT_RATIO") -> vec2(1.0),
         Uniform("STROKE_WIDTH") -> float(2.0),
         Uniform("COUNT")        -> float(3.0),
@@ -284,7 +285,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
     import indigo.shared.shader.ShaderPrimitive._
 
     val uniforms =
-      List(
+      Batch(
         Uniform("TEST") -> rawArray(Array(0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f))
       )
 

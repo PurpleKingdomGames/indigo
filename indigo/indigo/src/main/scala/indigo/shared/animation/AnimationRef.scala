@@ -5,6 +5,7 @@ import indigo.shared.animation.AnimationAction.JumpToFirstFrame
 import indigo.shared.animation.AnimationAction.JumpToFrame
 import indigo.shared.animation.AnimationAction.JumpToLastFrame
 import indigo.shared.animation.AnimationAction.Play
+import indigo.shared.collections.Batch
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.temporal.Signal
 import indigo.shared.time.GameTime
@@ -42,7 +43,7 @@ final case class AnimationRef(
       }
     )
 
-  def runActions(actions: List[AnimationAction], gameTime: GameTime): AnimationRef =
+  def runActions(actions: Batch[AnimationAction], gameTime: GameTime): AnimationRef =
     actions.foldLeft(this) { (anim, action) =>
       action match {
         case ChangeCycle(newLabel) if cycles.contains(newLabel) =>
@@ -70,7 +71,7 @@ object AnimationRef {
     new AnimationRef(
       animation.animationKey,
       animation.currentCycleLabel,
-      animation.cycles.toList.map(c => (c.label, CycleRef.fromCycle(c))).toMap
+      animation.cycles.toBatch.map(c => (c.label, CycleRef.fromCycle(c))).toMap
     )
 
   given CanEqual[Option[AnimationRef], Option[AnimationRef]] = CanEqual.derived
@@ -78,7 +79,7 @@ object AnimationRef {
 
 final case class CycleRef(
     label: CycleLabel,
-    frames: List[Frame],
+    frames: Batch[Frame],
     playheadPosition: Int,
     lastFrameAdvance: Millis
 ) derives CanEqual {
@@ -98,7 +99,7 @@ final case class CycleRef(
   def applyMemento(memento: CycleMemento): CycleRef =
     updatePlayheadAndLastAdvance(memento.playheadPosition, memento.lastFrameAdvance)
 
-  def runActions(gameTime: GameTime, actions: List[AnimationAction]): CycleRef =
+  def runActions(gameTime: GameTime, actions: Batch[AnimationAction]): CycleRef =
     actions.foldLeft(this) { (cycle, action) =>
       action match {
         case Play =>
@@ -134,12 +135,12 @@ object CycleRef:
   def fromCycle(cycle: Cycle): CycleRef =
     new CycleRef(
       cycle.label,
-      cycle.frames.toList,
+      cycle.frames.toBatch,
       cycle.playheadPosition,
       cycle.lastFrameAdvance
     )
 
-  def create(label: CycleLabel, frames: List[Frame]): CycleRef =
+  def create(label: CycleLabel, frames: Batch[Frame]): CycleRef =
     new CycleRef(label, frames, 0, Millis.zero)
 
   def calculateNextPlayheadPosition(

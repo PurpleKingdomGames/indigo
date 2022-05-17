@@ -1,6 +1,7 @@
 package indigoextras.jobs
 
 import indigo.shared.Outcome
+import indigo.shared.collections.Batch
 import indigoextras.jobs.SampleJobs.Fishing
 
 sealed trait SampleJobs extends Job
@@ -57,13 +58,13 @@ object SampleActor {
 
       def onJobComplete(context: WorkContext[SampleActor, SampleContext]): Job => Outcome[(List[Job], SampleActor)] = {
         case SampleJobs.Fishing(_) =>
-          Outcome((List(SampleJobs.WanderTo(0)), context.actor), Nil)
+          Outcome((List(SampleJobs.WanderTo(0)), context.actor), Batch.empty)
 
         case SampleJobs.WanderTo(_) =>
-          Outcome((Nil, context.actor))
+          Outcome((List.empty, context.actor))
 
         case _ =>
-          Outcome((Nil, context.actor))
+          Outcome((List.empty, context.actor))
       }
 
       def workOnJob(context: WorkContext[SampleActor, SampleContext]): Job => (Job, SampleActor) = {

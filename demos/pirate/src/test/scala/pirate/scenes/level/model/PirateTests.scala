@@ -8,6 +8,7 @@ import indigo.shared.constants.Key
 import indigo.shared.events.KeyboardEvent.KeyDown
 import indigoextras.geometry.BoundingBox
 import indigoextras.geometry.Vertex
+import indigo.shared.collections.Batch
 
 class PirateTests extends munit.FunSuite {
 
@@ -15,7 +16,7 @@ class PirateTests extends munit.FunSuite {
     val keyboard =
       Keyboard.calculateNext(
         Keyboard.default,
-        List(KeyDown(Key.LEFT_ARROW), KeyDown(Key.SPACE))
+        Batch(KeyDown(Key.LEFT_ARROW), KeyDown(Key.SPACE))
       )
 
     val actual: Option[Vector2] =
@@ -37,7 +38,7 @@ class PirateTests extends munit.FunSuite {
     val keyboard =
       Keyboard.calculateNext(
         Keyboard.default,
-        List(KeyDown(Key.RIGHT_ARROW))
+        Batch(KeyDown(Key.RIGHT_ARROW))
       )
 
     val actual: Option[Vector2] =
@@ -59,7 +60,7 @@ class PirateTests extends munit.FunSuite {
     val keyboard =
       Keyboard.calculateNext(
         Keyboard.default,
-        List(KeyDown(Key.SPACE))
+        Batch(KeyDown(Key.SPACE))
       )
 
     val actual: Option[Vector2] =

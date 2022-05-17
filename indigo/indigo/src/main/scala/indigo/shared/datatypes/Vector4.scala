@@ -1,5 +1,7 @@
 package indigo.shared.datatypes
 
+import indigo.shared.collections.Batch
+
 final case class Vector4(x: Double, y: Double, z: Double, w: Double) derives CanEqual:
 
   def withX(newX: Double): Vector4 =
@@ -62,8 +64,8 @@ final case class Vector4(x: Double, y: Double, z: Double, w: Double) derives Can
   def round: Vector4 =
     Vector4(Math.round(x).toDouble, Math.round(y).toDouble, Math.round(z).toDouble, Math.round(w).toDouble)
 
-  def toList: List[Double] =
-    List(x, y, z, w)
+  def toBatch: Batch[Double] =
+    Batch(x, y, z, w)
 
   def +(other: Vector4): Vector4 = Vector4.add(this, other)
   def -(other: Vector4): Vector4 = Vector4.subtract(this, other)

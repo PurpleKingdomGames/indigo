@@ -1,6 +1,6 @@
 package indigoexamples.model
 
-import indigo.shared.collections.NonEmptyList
+import indigo.shared.collections.NonEmptyBatch
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.dice.Dice
@@ -67,11 +67,11 @@ class ProjectilesSpecification extends Properties("Projectiles") {
   property("arc signal should always produce a value inside the beziers bounds") = Prop.forAll { (dice: Dice, target: Vertex, time: Seconds) =>
     Prop.forAll(vertexGen, vertexGen) {
       case (va, vb) =>
-        val vertices: NonEmptyList[Vertex] =
-          NonEmptyList(va, vb)
+        val vertices: NonEmptyBatch[Vertex] =
+          NonEmptyBatch(va, vb)
 
         val bounds: BoundingBox =
-          Bezier.fromVerticesNel(vertices).bounds
+          Bezier.fromVerticesNonEmpty(vertices).bounds
 
         val signal: Signal[Vertex] =
           Projectiles.createArcSignal(Seconds(1000))(vertices)
@@ -95,8 +95,8 @@ class ProjectilesSpecification extends Properties("Projectiles") {
   property("Over time, the signal should always generate values moving closer to the target") = Prop.forAll { (dice: Dice, target: Vertex) =>
     Prop.forAll(nowNextSeconds(0, 1), vertexGen) {
       case ((now, next), target) =>
-        val vertices: NonEmptyList[Vertex] =
-          NonEmptyList(Vertex.zero, target / 2, target)
+        val vertices: NonEmptyBatch[Vertex] =
+          NonEmptyBatch(Vertex.zero, target / 2, target)
 
         val signal: Signal[Vertex] =
           Projectiles.createArcSignal(Seconds(1))(vertices)

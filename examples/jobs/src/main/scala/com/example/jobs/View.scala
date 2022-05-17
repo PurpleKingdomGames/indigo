@@ -41,7 +41,7 @@ object View {
         }
     )
 
-  def drawWood(woodPiles: List[Wood]): Group =
+  def drawWood(woodPiles: Batch[Wood]): Group =
     Group(
       woodPiles.map { wood =>
         Assets.yellowDot

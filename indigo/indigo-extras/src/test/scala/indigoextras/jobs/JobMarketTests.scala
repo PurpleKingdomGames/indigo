@@ -4,6 +4,7 @@ import indigo.platform.assets.DynamicText
 import indigo.shared.AnimationsRegister
 import indigo.shared.BoundaryLocator
 import indigo.shared.FontRegister
+import indigo.shared.collections.Batch
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.dice.Dice
 import indigo.shared.events.FrameTick
@@ -56,11 +57,11 @@ class JobMarketTests extends munit.FunSuite {
 
     val updatedA = market.update(context, List(job))(allocateEvent)
     assertEquals(updatedA.unsafeGet, List(job))
-    assertEquals(updatedA.unsafeGlobalEvents, Nil)
+    assertEquals(updatedA.unsafeGlobalEvents, Batch.empty)
 
     val updatedB = market.update(context, updatedA.unsafeGet)(nothingFoundEvent)
     assertEquals(updatedB.unsafeGet, List(job))
-    assertEquals(updatedB.unsafeGlobalEvents, Nil)
+    assertEquals(updatedB.unsafeGlobalEvents, Batch.empty)
 
   }
 

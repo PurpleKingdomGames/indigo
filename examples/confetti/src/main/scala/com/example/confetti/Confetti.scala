@@ -88,27 +88,27 @@ object Confetti extends IndigoDemo[Unit, Unit, Model, Unit]:
             case MouseButton.RightMouseButton => rmbDots
 
           dots(p.color).moveTo(p.x, p.y).scaleBy(p.scale, p.scale)
-        } ++ List(
+        } ++ Batch(
           count.withText(s"count: ${model.particles.length}"),
           helpText
         )
       )
     )
 
-opaque type Model = (Int, List[Particle])
+opaque type Model = (Int, Batch[Particle])
 type LmbOrRmb     = MouseButton.LeftMouseButton.type | MouseButton.RightMouseButton.type
 
 object Model:
-  def empty: Model = (0, Nil)
+  def empty: Model = (0, Batch.empty)
 
   extension (m: Model)
     def color: Int                = m._1
-    def particles: List[Particle] = m._2
+    def particles: Batch[Particle] = m._2
 
     def spawn(context: FrameContext[Unit], count: Int, source: LmbOrRmb): Model =
       (
         m._1,
-        (0 until count).toList.map { _ =>
+        Batch.fromIndexedSeq(0 until count).map { _ =>
           Particle(
             context.mouse.position.x,
             context.mouse.position.y,

@@ -1,6 +1,7 @@
 package indigo.shared.formats
 
 import indigo.shared.assets.AssetName
+import indigo.shared.collections.Batch
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
@@ -123,8 +124,8 @@ object TiledMap {
     tiledMap.tilesets.headOption.flatMap(_.columns).map { tileSheetColumnCount =>
       val tileSize: Size = Size(tiledMap.tilewidth, tiledMap.tileheight)
 
-      val layers: List[Group] =
-        tiledMap.layers.map { layer =>
+      val layers: Batch[Group] =
+        Batch.fromList(tiledMap.layers).map { layer =>
           val tilesInUse: Map[Int, Graphic[Material.Bitmap]] =
             layer.data.toSet.foldLeft(Map.empty[Int, Graphic[Material.Bitmap]]) { (tiles, i) =>
               tiles ++ Map(
@@ -137,13 +138,13 @@ object TiledMap {
             }
 
           Group(
-            layer.data.zipWithIndex.flatMap { case (tileIndex, positionIndex) =>
-              if (tileIndex == 0) Nil
+            Batch.fromList(layer.data).zipWithIndex.flatMap { case (tileIndex, positionIndex) =>
+              if (tileIndex == 0) Batch.empty
               else
                 tilesInUse
                   .get(tileIndex)
-                  .map(g => List(g.moveTo(fromIndex(positionIndex, tiledMap.width) * tileSize.toPoint)))
-                  .getOrElse(Nil)
+                  .map(g => Batch(g.moveTo(fromIndex(positionIndex, tiledMap.width) * tileSize.toPoint)))
+                  .getOrElse(Batch.empty)
             }
           )
         }

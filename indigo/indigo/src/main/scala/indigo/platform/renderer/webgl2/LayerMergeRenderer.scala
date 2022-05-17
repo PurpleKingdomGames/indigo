@@ -14,7 +14,7 @@ import org.scalajs.dom.WebGLTexture
 
 import scala.scalajs.js.JSConverters._
 
-class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => WebGLBuffer) {
+class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => WebGLBuffer):
 
   private val displayObjectUBOBuffer: WebGLBuffer =
     gl2.createBuffer()
@@ -112,26 +112,10 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
 
   }
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while"))
   def setupMergeFragmentShaderState(
       program: WebGLProgram,
       src: FrameBufferComponents.SingleOutput,
       dst: FrameBufferComponents.SingleOutput
-  ): Unit = {
-
-    val uniformTextures: List[(String, WebGLTexture)] =
-      List(
-        "SRC_CHANNEL" -> src.diffuse,
-        "DST_CHANNEL" -> dst.diffuse
-      )
-
-    var i: Int = 0
-
-    while (i < uniformTextures.length) {
-      val tex = uniformTextures(i)
-      WebGLHelper.attach(gl2, program, i + 1, tex._1, tex._2)
-      i = i + 1
-    }
-  }
-
-}
+  ): Unit =
+    WebGLHelper.attach(gl2, program, 0, "SRC_CHANNEL", src.diffuse)
+    WebGLHelper.attach(gl2, program, 1, "DST_CHANNEL", dst.diffuse)

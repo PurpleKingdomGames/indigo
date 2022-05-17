@@ -56,7 +56,7 @@ object TextSamples {
 
   val material = Material.Bitmap(AssetName("font-sheet"))
 
-  val chars = List(
+  val chars = Batch(
     FontChar("a", 0, 16, 16, 16),
     FontChar("b", 16, 16, 10, 20),
     FontChar("c", 32, 16, 16, 16),

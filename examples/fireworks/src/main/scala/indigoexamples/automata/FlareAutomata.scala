@@ -39,7 +39,7 @@ object FlareAutomata {
               for {
                 position <- moveSignal |> SignalFunction(toScreenSpace)
                 events   <- Projectiles.emitTrailEvents(position, tint, Millis(25).toSeconds)
-              } yield AutomatonUpdate(List(r.moveTo(position)), events)
+              } yield AutomatonUpdate(Batch(r.moveTo(position)), events)
 
             case _ =>
               Signal.fixed(AutomatonUpdate.empty)

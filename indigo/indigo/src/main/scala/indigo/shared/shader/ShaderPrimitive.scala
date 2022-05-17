@@ -171,10 +171,10 @@ object ShaderPrimitive:
     val length: Int = 16
 
     def fromCheapMatrix4(matrix: CheapMatrix4): mat4 =
-      mat4(matrix.toArray.toArray)
+      mat4(matrix.toJSArray.toArray)
 
     def fromMatrix4(matrix: Matrix4): mat4 =
-      mat4(matrix.toList.map(_.toFloat).toArray)
+      mat4(matrix.toArray.map(_.toFloat))
 
     given IsShaderValue[mat4] =
       IsShaderValue.create[mat4](length, _.toArray)

@@ -3,6 +3,7 @@ package indigoextras.ui
 import indigo.shared.BoundaryLocator
 import indigo.shared.FrameContext
 import indigo.shared.Outcome
+import indigo.shared.collections.Batch
 import indigo.shared.constants.Key
 import indigo.shared.datatypes._
 import indigo.shared.events.GlobalEvent
@@ -29,8 +30,8 @@ final case class InputField(
     cursorPosition: Int,
     lastCursorMove: Seconds,
     key: Option[BindingKey],
-    onFocus: () => List[GlobalEvent],
-    onLoseFocus: () => List[GlobalEvent]
+    onFocus: () => Batch[GlobalEvent],
+    onLoseFocus: () => Batch[GlobalEvent]
 ) derives CanEqual:
 
   def bounds(boundaryLocator: BoundaryLocator): Option[Rectangle] =
@@ -155,13 +156,13 @@ final case class InputField(
   }
 
   def withFocusActions(actions: GlobalEvent*): InputField =
-    withFocusActions(actions.toList)
-  def withFocusActions(actions: => List[GlobalEvent]): InputField =
+    withFocusActions(Batch.fromSeq(actions))
+  def withFocusActions(actions: => Batch[GlobalEvent]): InputField =
     this.copy(onFocus = () => actions)
 
   def withLoseFocusActions(actions: GlobalEvent*): InputField =
-    withLoseFocusActions(actions.toList)
-  def withLoseFocusActions(actions: => List[GlobalEvent]): InputField =
+    withLoseFocusActions(Batch.fromSeq(actions))
+  def withLoseFocusActions(actions: => Batch[GlobalEvent]): InputField =
     this.copy(onLoseFocus = () => actions)
 
   def update(frameContext: FrameContext[_]): Outcome[InputField] = {
@@ -175,9 +176,9 @@ final case class InputField(
       keysReleased match {
         case Nil =>
           if (touched)
-            Outcome(acc.copy(lastCursorMove = frameContext.gameTime.running), changeEvent.toList)
+            Outcome(acc.copy(lastCursorMove = frameContext.gameTime.running), Batch.fromOption(changeEvent))
           else
-            Outcome(acc, changeEvent.toList)
+            Outcome(acc, Batch.fromOption(changeEvent))
 
         case Key.BACKSPACE :: ks =>
           val next = acc.backspace
@@ -213,7 +214,7 @@ final case class InputField(
 
     val updated: Outcome[InputField] =
       if (hasFocus)
-        rec(frameContext.inputState.keyboard.keysReleased, this, false, None)
+        rec(frameContext.inputState.keyboard.keysReleased.toList, this, false, None)
       else Outcome(this)
 
     if (frameContext.inputState.mouse.mouseReleased)
@@ -229,7 +230,7 @@ final case class InputField(
   def draw(
       gameTime: GameTime,
       boundaryLocator: BoundaryLocator
-  ): List[SceneNode] = {
+  ): Batch[SceneNode] = {
     val field =
       assets.text
         .withText(this.text)
@@ -257,7 +258,7 @@ final case class InputField(
 
       cursorBlinkRate match {
         case None =>
-          List(
+          Batch(
             field,
             assets.cursor
               .moveTo(cursorPositionPoint)
@@ -270,10 +271,10 @@ final case class InputField(
             .map(p => if (gameTime.running - lastCursorMove < Seconds(0.5)) true else p)
             .map {
               case false =>
-                List(field)
+                Batch(field)
 
               case true =>
-                List(
+                Batch(
                   field,
                   assets.cursor
                     .moveTo(cursorPositionPoint)
@@ -283,7 +284,7 @@ final case class InputField(
             .at(gameTime.running)
       }
 
-    } else List(field)
+    } else Batch(field)
   }
 
 object InputField:
@@ -301,8 +302,8 @@ object InputField:
       text.length(),
       Seconds.zero,
       None,
-      () => Nil,
-      () => Nil
+      () => Batch.empty,
+      () => Batch.empty
     )
 
   def apply(text: String, characterLimit: Int, multiLine: Boolean, assets: InputFieldAssets): InputField =
@@ -318,8 +319,8 @@ object InputField:
       text.length(),
       Seconds.zero,
       None,
-      () => Nil,
-      () => Nil
+      () => Batch.empty,
+      () => Batch.empty
     )
 
 final case class InputFieldAssets(text: Text[_], cursor: Graphic[_]) derives CanEqual:

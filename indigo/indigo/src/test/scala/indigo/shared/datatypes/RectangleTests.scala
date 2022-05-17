@@ -1,5 +1,7 @@
 package indigo.shared.datatypes
 
+import indigo.shared.collections.Batch
+
 class RectangleTests extends munit.FunSuite {
 
   test("should be able to construct a rectangle from two points") {
@@ -34,8 +36,8 @@ class RectangleTests extends munit.FunSuite {
 
   test("should be able to construct a rectangle from a cloud of points") {
     //left 0, right 6, top 7, bottom 13
-    val points: List[Point] =
-      List(
+    val points: Batch[Point] =
+      Batch(
         Point(4, 11),
         Point(6, 8),
         Point(2, 9),

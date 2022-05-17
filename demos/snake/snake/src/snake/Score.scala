@@ -40,7 +40,7 @@ object Score {
           sceneGraphNode match {
             case t: Text[_] =>
               workOutPosition(seed).map { position =>
-                AutomatonUpdate(List(t.moveTo(position)), Nil)
+                AutomatonUpdate(Batch(t.moveTo(position)), Batch.empty)
               }
 
             case _ =>

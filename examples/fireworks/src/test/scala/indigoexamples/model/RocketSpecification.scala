@@ -1,6 +1,6 @@
 package indigoexamples.model
 
-import indigo.shared.collections.NonEmptyList
+import indigo.shared.collections.NonEmptyBatch
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.RGBA
 import indigo.shared.datatypes.Rectangle
@@ -24,11 +24,8 @@ class RocketSpecification extends Properties("Rocket") {
   property("control points are always in order [start, mid, target]") = Prop.forAll(diceGen, launchPadVertexGen) { (dice: Dice, launch: Vertex) =>
     Prop.forAll(rocketTargetVertexGen(launch)) { target =>
       Rocket.createArcControlVertices(dice, launch)(target) match {
-        case NonEmptyList(s, _ :: e :: Nil) =>
-          s == launch && e == target
-
-        case _ =>
-          false
+        case NonEmptyBatch(s, t) =>
+          s == launch && t(1) == target
       }
     }
   }
@@ -36,11 +33,8 @@ class RocketSpecification extends Properties("Rocket") {
   property("arc mid control point y is always in line with the target y position") = Prop.forAll(diceGen, launchPadVertexGen) { (dice: Dice, launch: Vertex) =>
     Prop.forAll(rocketTargetVertexGen(launch)) { target =>
       Rocket.createArcControlVertices(dice, launch)(target) match {
-        case NonEmptyList(s, m :: e :: Nil) =>
-          m.y == e.y
-
-        case _ =>
-          false
+        case NonEmptyBatch(s, t) =>
+          t(0).y == t(1).y
       }
     }
   }
@@ -52,11 +46,8 @@ class RocketSpecification extends Properties("Rocket") {
 
       "Vertices X's: " + vertices.toList.map(_.x).mkString("[", ", ", "]") |: Prop.all(
         vertices match {
-          case NonEmptyList(s, m :: e :: Nil) =>
-            Math.abs(m.x) >= (Math.abs(e.x) - Math.abs(s.x)) / 2
-
-          case _ =>
-            false
+          case NonEmptyBatch(s, t) =>
+            Math.abs(t(0).x) >= (Math.abs(t(1).x) - Math.abs(s.x)) / 2
         }
       )
     }

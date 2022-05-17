@@ -43,9 +43,9 @@ object SceneA extends Scene[StartUpData, GameModel, Unit] {
   // Show some text
   // When the user clicks anywhere in the screen, trigger an event to jump to the other scene.
   def present(context: FrameContext[StartUpData], sceneModel: MessageA, sceneViewModel: Unit): Outcome[SceneUpdateFragment] = {
-    val events: List[GlobalEvent] =
-      if (context.inputState.mouse.wasMouseClickedWithin(Rectangle(0, 0, 550, 400))) List(SceneEvent.JumpTo(SceneB.name))
-      else Nil
+    val events: Batch[GlobalEvent] =
+      if (context.inputState.mouse.wasMouseClickedWithin(Rectangle(0, 0, 550, 400))) Batch(SceneEvent.JumpTo(SceneB.name))
+      else Batch.empty
 
     val text: Text[_] = Text(sceneModel.value, 20, 20, 1, FontStuff.fontKey, FontStuff.fontMaterial)
 

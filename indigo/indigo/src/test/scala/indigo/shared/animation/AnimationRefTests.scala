@@ -1,5 +1,6 @@
 package indigo.shared.animation
 
+import indigo.shared.collections.Batch
 import indigo.shared.datatypes._
 import indigo.shared.time.Millis
 
@@ -30,10 +31,10 @@ class AnimationRefTests extends munit.FunSuite {
     CycleLabel("cycle 2")
 
   val cycle1: CycleRef =
-    CycleRef.create(cycleLabel1, List(frame1, frame2, frame3))
+    CycleRef.create(cycleLabel1, Batch(frame1, frame2, frame3))
 
   val cycle2: CycleRef =
-    CycleRef.create(cycleLabel2, List(frame4, frame5, frame6))
+    CycleRef.create(cycleLabel2, Batch(frame4, frame5, frame6))
 
   val cycles: Map[CycleLabel, CycleRef] =
     Map(cycle1.label -> cycle1, cycle2.label -> cycle2)

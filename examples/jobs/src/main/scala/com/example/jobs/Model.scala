@@ -4,7 +4,7 @@ import indigo._
 import indigoextras.datatypes.IncreaseTo
 import indigoextras.jobs.JobMarketEvent
 
-final case class Model(bob: Bob, grove: Grove, woodPiles: List[Wood], woodCollected: Int) {
+final case class Model(bob: Bob, grove: Grove, woodPiles: Batch[Wood], woodCollected: Int) {
 
   def update(gameTime: GameTime, dice: Dice): GlobalEvent => Outcome[Model] = {
     case e @ FrameTick =>
@@ -26,7 +26,7 @@ final case class Model(bob: Bob, grove: Grove, woodPiles: List[Wood], woodCollec
 
     case DropWood(position) =>
       val wood =
-        List(
+        Batch(
           Wood(BindingKey.fromDice(dice), position + Point(-8, -8)),
           Wood(BindingKey.fromDice(dice), position + Point(8, 8))
         )
@@ -75,13 +75,13 @@ object Model {
             )
         }
       ),
-      woodPiles = Nil,
+      woodPiles = Batch.empty,
       woodCollected = 0
     )
 
 }
 
-final case class Grove(trees: List[Tree]) {
+final case class Grove(trees: Batch[Tree]) {
 
   def update(timeDelta: Seconds): Outcome[Grove] =
     Outcome
@@ -107,7 +107,7 @@ final case class Tree(index: Int, position: Point, growth: IncreaseTo, fullyGrow
           fullyGrown = isFullyGrown
         )
       ).addGlobalEvents(
-        if (isFullyGrown) List(JobMarketEvent.Post(ChopDown(index, position))) else Nil
+        if (isFullyGrown) Batch(JobMarketEvent.Post(ChopDown(index, position))) else Batch.empty
       )
     }
 

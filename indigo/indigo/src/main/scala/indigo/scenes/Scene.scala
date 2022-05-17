@@ -2,6 +2,7 @@ package indigo.scenes
 
 import indigo.shared.FrameContext
 import indigo.shared.Outcome
+import indigo.shared.collections.Batch
 import indigo.shared.events.EventFilters
 import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.SceneUpdateFragment
@@ -68,7 +69,7 @@ object Scene {
       type SceneViewModel = Unit
 
       val sceneFragment =
-        Outcome(SceneUpdateFragment(List.empty))
+        Outcome(SceneUpdateFragment(Batch.empty))
 
       val modelOutcome = Outcome(())
 

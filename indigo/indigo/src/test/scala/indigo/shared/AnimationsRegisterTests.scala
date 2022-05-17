@@ -8,6 +8,7 @@ import indigo.shared.animation.AnimationMemento
 import indigo.shared.animation.Cycle
 import indigo.shared.animation.CycleLabel
 import indigo.shared.animation.Frame
+import indigo.shared.collections.Batch
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.datatypes.Point
@@ -46,7 +47,7 @@ class AnimationsRegisterTests extends munit.FunSuite {
       GameTime.is(Seconds(0)),
       bindingKey,
       AnimationSample.key,
-      Nil
+      Batch.empty
     )
 
     val actual = register.findMementoByBindingKey(bindingKey)
@@ -72,7 +73,7 @@ class AnimationsRegisterTests extends munit.FunSuite {
       GameTime.is(Seconds(0)),
       bindingKey,
       AnimationSample.key,
-      Nil
+      Batch.empty
     )
 
     assertEquals(updatedAnim1.isDefined, true)
@@ -96,7 +97,7 @@ class AnimationsRegisterTests extends munit.FunSuite {
       GameTime.is(Millis(100).toSeconds),
       bindingKey,
       AnimationSample.key,
-      List(ChangeCycle(AnimationSample.cycleLabel2), Play)
+      Batch(ChangeCycle(AnimationSample.cycleLabel2), Play)
     )
 
     assertEquals(updatedAnim2.isDefined, true)
@@ -120,7 +121,7 @@ class AnimationsRegisterTests extends munit.FunSuite {
       GameTime.is(Millis(200).toSeconds),
       bindingKey,
       AnimationSample.key,
-      List(Play)
+      Batch(Play)
     )
 
     assertEquals(updatedAnim3.isDefined, true)
@@ -144,7 +145,7 @@ class AnimationsRegisterTests extends munit.FunSuite {
       GameTime.is(Millis(400).toSeconds),
       bindingKey,
       AnimationSample.key,
-      List(Play)
+      Batch(Play)
     )
 
     assertEquals(updatedAnim4.isDefined, true)

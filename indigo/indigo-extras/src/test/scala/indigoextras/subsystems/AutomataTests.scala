@@ -1,6 +1,7 @@
 package indigoextras.subsystems
 
 import indigo.shared.assets.AssetName
+import indigo.shared.collections.Batch
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.datatypes.Point
@@ -13,6 +14,8 @@ import indigo.shared.scenegraph.SceneNode
 import indigo.shared.temporal.Signal
 import indigo.shared.temporal.SignalReader
 import indigo.shared.time.Seconds
+
+import scalajs.js
 
 class AutomataTests extends munit.FunSuite {
 
@@ -44,7 +47,7 @@ class AutomataTests extends munit.FunSuite {
 
   val startingState: AutomataState =
     automata
-      .update(context(1), AutomataState(0, Nil))(AutomataEvent.Spawn(poolKey, Point.zero, None, None))
+      .update(context(1), AutomataState(0, js.Array()))(AutomataEvent.Spawn(poolKey, Point.zero, None, None))
       .unsafeGet
 
   test("Starting state should contain 1 automaton") {
@@ -207,12 +210,12 @@ class AutomataTests extends munit.FunSuite {
           AutomatonUpdate(
             sceneGraphNode match {
               case g: Graphic[_] =>
-                List(g.moveTo(position))
+                Batch(g.moveTo(position))
 
               case _ =>
-                Nil
+                Batch.empty
             },
-            Nil
+            Batch.empty
           )
         }
       }

@@ -114,7 +114,7 @@ object BoundsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
     Outcome(
       SceneUpdateFragment(
         Layer(
-          List(
+          Batch(
             graphic,
             Shape.Box(graphic.bounds, Fill.None, Stroke(1, RGBA.Green)),
             sprite,

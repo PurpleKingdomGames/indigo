@@ -12,7 +12,7 @@ class Matrix4Tests extends munit.FunSuite {
         (0, 0, 0, 1)
       )
 
-    assertEquals(Matrix4.identity, expected)
+    assertEquals(Matrix4.identity.toArray.toList, expected.toArray.toList)
 
   }
 
@@ -26,7 +26,7 @@ class Matrix4Tests extends munit.FunSuite {
         (2, 0, 0, 1)
       )
 
-    assertEquals(Matrix4.identity.translate(Vector3(2.0, 0, 0)), expected)
+    assertEquals(Matrix4.identity.translate(Vector3(2.0, 0, 0)).toArray.toList, expected.toArray.toList)
 
   }
 
@@ -40,7 +40,7 @@ class Matrix4Tests extends munit.FunSuite {
         (0, 2, 0, 1)
       )
 
-    assertEquals(Matrix4.identity.translate(Vector3(0, 2.0, 0)), expected)
+    assertEquals(Matrix4.identity.translate(Vector3(0, 2.0, 0)).toArray.toList, expected.toArray.toList)
 
   }
 
@@ -54,7 +54,7 @@ class Matrix4Tests extends munit.FunSuite {
         (0, 0, 2, 1)
       )
 
-    assertEquals(Matrix4.identity.translate(Vector3(0, 0, 2.0)), expected)
+    assertEquals(Matrix4.identity.translate(Vector3(0, 0, 2.0)).toArray.toList, expected.toArray.toList)
 
   }
 
@@ -71,7 +71,7 @@ class Matrix4Tests extends munit.FunSuite {
         (0, 0, 0, 1)
       )
 
-    assertEquals(Matrix4.identity.rotate(Radians.PI), expected)
+    assertEquals(Matrix4.identity.rotate(Radians.PI).toArray.toList, expected.toArray.toList)
   }
 
   test("scale") {
@@ -84,7 +84,7 @@ class Matrix4Tests extends munit.FunSuite {
         (0, 0, 0, 1)
       )
 
-    assertEquals(Matrix4.identity.scale(Vector3(2.0, 3.0, 4.0)), expected)
+    assertEquals(Matrix4.identity.scale(Vector3(2.0, 3.0, 4.0)).toArray.toList, expected.toArray.toList)
 
   }
 
@@ -106,7 +106,7 @@ class Matrix4Tests extends munit.FunSuite {
         (4, 8, 12, 16)
       )
 
-    assertEquals(mat.transpose, expected)
+    assertEquals(mat.transpose.toArray.toList, expected.toArray.toList)
   }
 
   test("multiply") {
@@ -137,7 +137,7 @@ class Matrix4Tests extends munit.FunSuite {
     val actual: Matrix4 =
       mat1 * mat2
 
-    assertEquals(actual, expected)
+    assertEquals(actual.toArray.toList, expected.toArray.toList)
   }
 
   test("transforming vectors - translation") {

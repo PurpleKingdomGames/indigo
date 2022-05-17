@@ -1,5 +1,6 @@
 package indigoextras.trees
 
+import indigo.shared.collections.Batch
 import indigoextras.geometry.BoundingBox
 import indigoextras.geometry.Vertex
 import indigoextras.trees.QuadTree.QuadBranch
@@ -107,33 +108,33 @@ class QuadTreeTests extends munit.FunSuite {
 
   }
 
-  test("toList") {
+  test("toBatch") {
 
-    val actual: List[String] = QuadTree
+    val actual: Batch[String] = QuadTree
       .empty(2, 2)
       .insertElement("a", Vertex(0, 0))
       .insertElement("b", Vertex(0, 1))
       .insertElement("c", Vertex(1, 0))
-      .toList
+      .toBatch
 
-    val expected: List[String] =
-      List("a", "b", "c")
+    val expected: Batch[String] =
+      Batch("a", "b", "c")
 
     assert(actual.length == expected.length)
     assert(actual.forall(expected.contains))
   }
 
-  test("toPositionedList") {
+  test("toPositionedBatch") {
 
-    val actual: List[(Vertex, String)] = QuadTree
+    val actual: Batch[(Vertex, String)] = QuadTree
       .empty(2, 2)
       .insertElement("a", Vertex(0, 0))
       .insertElement("b", Vertex(0, 1))
       .insertElement("c", Vertex(1, 0))
-      .toListWithPosition
+      .toBatchWithPosition
 
-    val expected: List[(Vertex, String)] =
-      List(
+    val expected: Batch[(Vertex, String)] =
+      Batch(
         (Vertex(0, 0), "a"),
         (Vertex(0, 1), "b"),
         (Vertex(1, 0), "c")
