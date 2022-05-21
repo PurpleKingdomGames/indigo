@@ -43,7 +43,16 @@ object Material {
       withFillType(FillType.Tile)
 
     def toImageEffects: Material.ImageEffects =
-      Material.ImageEffects(diffuse, lighting, shaderId)
+      Material.ImageEffects(
+        diffuse,
+        1.0,
+        RGBA.None,
+        Fill.Color.default,
+        1.0,
+        lighting,
+        shaderId,
+        fillType
+      )
 
     lazy val toShaderData: ShaderData = {
 
