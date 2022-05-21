@@ -42,20 +42,31 @@ object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
 
   val graphic: Graphic[Material.Bitmap] =
     Graphic(Rectangle(0, 0, 40, 40), 1, LightingAssets.junctionBoxMaterialOn)
+      .withCrop(0, 0, 275, 200)
+      .modifyMaterial(_.withFillType(FillType.Tile))
+
+  val graphic2: Graphic[Material.ImageEffects] =
+    graphic
       .withRef(20, 20)
+      .moveTo((Point(550, 400) / 2 / 2) + Point(10))
+      .withMaterial(
+        LightingAssets.junctionBoxEffects
+          .withOverlay(Fill.Color(RGBA.Magenta))
+      )
 
-  val grid: Batch[Graphic[Material.Bitmap]] =
-    val rows    = 4
-    val columns = 6
-    val offset  = Point(0)
-
-    Batch.fromList(
-      (0 to rows).toList.flatMap { row =>
-        (0 to columns).toList.map { column =>
-          graphic.withRef(Point(0)).moveTo(Point(column * 40, row * 40) + offset)
-        }
-      }
-    )
+  val shape =
+    Shape
+      .Polygon(
+        Fill.LinearGradient(Point(0), RGBA.Magenta, Point(45), RGBA.Cyan),
+        Stroke(4, RGBA.Black.withAlpha(0.75))
+      )(
+        Point(10, 10),
+        Point(20, 70),
+        Point(90, 90),
+        Point(70, 20)
+      )
+      .moveTo(175, 10)
+      .withLighting(LightingModel.Lit.flat)
 
   def present(
       context: FrameContext[SandboxStartupData],
@@ -63,28 +74,7 @@ object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
       viewModel: SandboxViewModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(
-      SceneUpdateFragment.empty
-        .addLayer(
-          grid :+
-            graphic
-              .moveTo(context.startUpData.viewportCenter + Point(10))
-              .withMaterial(
-                LightingAssets.junctionBoxEffects
-                  .withOverlay(Fill.Color(RGBA.Magenta))
-              ) :+
-            Shape
-              .Polygon(
-                Fill.LinearGradient(Point(0), RGBA.Magenta, Point(45), RGBA.Cyan),
-                Stroke(4, RGBA.Black.withAlpha(0.75))
-              )(
-                Point(10, 10),
-                Point(20, 70),
-                Point(90, 90),
-                Point(70, 20)
-              )
-              .moveTo(175, 10)
-              .withLighting(LightingModel.Lit.flat)
-        )
+      SceneUpdateFragment(graphic, graphic2, shape)
         .withMagnification(2)
         .withLights(
           AmbientLight(RGBA.Blue.withAlpha(0.1)),
