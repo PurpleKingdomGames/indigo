@@ -650,11 +650,17 @@ object Shape:
   def toShaderData(shape: Shape[_], bounds: Rectangle): ShaderData =
     shape match
       case s: Shape.Box =>
+        // A terrible fix, but it works. In cases where we have a perfect aspect
+        // division, like 1.0 to 0.5, the resulting SDF is a jagged line. So by
+        // crudly adding a very small number, we avoid perfect divisions and get
+        // nice straight edges...
+        val avoidPerfection = 0.00001
+
         val aspect: Vector2 =
           if (bounds.size.width > bounds.size.height)
-            Vector2(1.0, bounds.size.height.toDouble / bounds.size.width.toDouble)
+            Vector2(1.0, (bounds.size.height.toDouble / bounds.size.width.toDouble) + avoidPerfection)
           else
-            Vector2(bounds.size.width.toDouble / bounds.size.height.toDouble, 1.0)
+            Vector2((bounds.size.width.toDouble / bounds.size.height.toDouble) + avoidPerfection, 1.0)
 
         val shapeUniformBlock =
           UniformBlock(
