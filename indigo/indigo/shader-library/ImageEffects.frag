@@ -4,13 +4,20 @@ precision mediump float;
 
 uniform sampler2D SRC_CHANNEL;
 
-vec4 CHANNEL_0;
 vec4 COLOR;
 vec2 UV;
 vec2 SIZE;
 vec2 TEXTURE_SIZE;
+
+vec4 CHANNEL_0;
 vec2 CHANNEL_0_POSITION;
 vec2 CHANNEL_0_SIZE;
+vec4 CHANNEL_1;
+vec2 CHANNEL_1_POSITION;
+vec4 CHANNEL_2;
+vec2 CHANNEL_2_POSITION;
+vec4 CHANNEL_3;
+vec2 CHANNEL_3_POSITION;
 
 //<indigo-fragment>
 layout (std140) uniform IndigoImageEffectsData {
@@ -69,33 +76,39 @@ vec4 calculateSaturation(vec4 color) {
   return mix(grayscale, color, max(0.0, min(1.0, saturation)));
 }
 
+vec2 stretchedUVs(vec2 pos, vec2 size) {
+  return pos + UV * size;
+}
+
+vec2 tiledUVs(vec2 pos, vec2 size) {
+  return pos + (fract(UV * (SIZE / TEXTURE_SIZE)) * size);
+}
+
 void fragment(){
 
   // 0 = normal; 1 = stretch; 2 = tile
   int fillType = int(round(ALPHA_SATURATION_OVERLAYTYPE_FILLTYPE.w));
-  vec4 textureColor;
 
   switch(fillType) {
-    case 0:
-      textureColor = CHANNEL_0;
-      break;
-
     case 1:
-      vec2 stretchedUVs = CHANNEL_0_POSITION + UV * CHANNEL_0_SIZE;
-      textureColor = texture(SRC_CHANNEL, stretchedUVs);
+      CHANNEL_0 = texture(SRC_CHANNEL, stretchedUVs(CHANNEL_0_POSITION, CHANNEL_0_SIZE));
+      CHANNEL_1 = texture(SRC_CHANNEL, stretchedUVs(CHANNEL_1_POSITION, CHANNEL_0_SIZE));
+      CHANNEL_2 = texture(SRC_CHANNEL, stretchedUVs(CHANNEL_2_POSITION, CHANNEL_0_SIZE));
+      CHANNEL_3 = texture(SRC_CHANNEL, stretchedUVs(CHANNEL_3_POSITION, CHANNEL_0_SIZE));
       break;
 
     case 2:
-      vec2 tiledUVs = CHANNEL_0_POSITION + (fract(UV * (SIZE / TEXTURE_SIZE)) * CHANNEL_0_SIZE);
-      textureColor = texture(SRC_CHANNEL, tiledUVs);
+      CHANNEL_0 = texture(SRC_CHANNEL, tiledUVs(CHANNEL_0_POSITION, CHANNEL_0_SIZE));
+      CHANNEL_1 = texture(SRC_CHANNEL, tiledUVs(CHANNEL_1_POSITION, CHANNEL_0_SIZE));
+      CHANNEL_2 = texture(SRC_CHANNEL, tiledUVs(CHANNEL_2_POSITION, CHANNEL_0_SIZE));
+      CHANNEL_3 = texture(SRC_CHANNEL, tiledUVs(CHANNEL_3_POSITION, CHANNEL_0_SIZE));
       break;
 
     default:
-      textureColor = CHANNEL_0;
       break;
   }
 
-  vec4 baseColor = applyBasicEffects(textureColor);
+  vec4 baseColor = applyBasicEffects(CHANNEL_0);
 
   // 0 = color; 1 = linear gradient; 2 = radial gradient
   int overlayType = int(round(ALPHA_SATURATION_OVERLAYTYPE_FILLTYPE.z));
