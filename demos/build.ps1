@@ -1,8 +1,8 @@
 cd -Path snake -PassThru
-mill clean
-mill snake.test
-mill snake.fastOpt
-mill snake.indigoBuild
+mill -i clean
+mill -i snake.test
+mill -i snake.fastOpt
+mill -i snake.indigoBuild
 cd -Path .. -PassThru
 
 cd -Path pirate -PassThru

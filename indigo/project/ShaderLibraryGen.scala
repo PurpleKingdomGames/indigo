@@ -34,7 +34,7 @@ object ShaderLibraryGen {
     """.stripMargin
 
   def extractShaderCode(text: String, tag: String, assetName: String, newName: String): Seq[ShaderSnippet] =
-    s"""//<indigo-$tag>\n((.|\n|\r)*)//</indigo-$tag>""".r
+    s"""//<indigo-$tag>((.|\r\n|\n|\r)*)//</indigo-$tag>""".r
       .findAllIn(text)
       .toSeq
       .map(_.toString)

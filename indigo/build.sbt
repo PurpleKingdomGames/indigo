@@ -85,7 +85,14 @@ lazy val sandbox =
       showCursor            := true,
       title                 := "Sandbox",
       gameAssetsDirectory   := "assets",
-      disableFrameRateLimit := true
+      disableFrameRateLimit := (sys.props("os.name").toLowerCase match {
+        case x if x contains "windows" => false
+        case _ => true
+      }),
+      electronInstall       := (sys.props("os.name").toLowerCase match {
+        case x if x contains "windows" => indigoplugin.ElectronInstall.Version("^18.0.0")
+        case _ => indigoplugin.ElectronInstall.Global
+      })
     )
 
 lazy val perf =
@@ -102,7 +109,14 @@ lazy val perf =
       gameAssetsDirectory   := "assets",
       windowStartWidth      := 800,
       windowStartHeight     := 600,
-      disableFrameRateLimit := true
+      disableFrameRateLimit := (sys.props("os.name").toLowerCase match {
+        case x if x contains "windows" => false
+        case _ => true
+      }),
+      electronInstall       := (sys.props("os.name").toLowerCase match {
+        case x if x contains "windows" => indigoplugin.ElectronInstall.Version("^18.0.0")
+        case _ => indigoplugin.ElectronInstall.Global
+      })
     )
 
 // Indigo Extensions
