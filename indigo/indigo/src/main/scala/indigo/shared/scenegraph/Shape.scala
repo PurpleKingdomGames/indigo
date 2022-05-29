@@ -726,6 +726,12 @@ object Shape:
         }
 
       case s: Shape.Line =>
+        // A terrible fix, but it works. In cases where we have a perfect aspect
+        // division, like 1.0 to 0.5, the resulting SDF is a jagged line. So by
+        // crudly adding a very small number, we avoid perfect divisions and get
+        // nice straight edges...
+        val avoidPerfection = 0.00001f
+
         // Relative to bounds
         val ss = s.start - bounds.position + (s.stroke.width / 2)
         val ee = s.end - bounds.position + (s.stroke.width / 2)
@@ -745,10 +751,10 @@ object Shape:
                   s.stroke.color.g.toFloat,
                   s.stroke.color.b.toFloat,
                   s.stroke.color.a.toFloat,
-                  ss.x.toFloat,
-                  ss.y.toFloat,
-                  ee.x.toFloat,
-                  ee.y.toFloat
+                  ss.x.toFloat + avoidPerfection,
+                  ss.y.toFloat + avoidPerfection,
+                  ee.x.toFloat + avoidPerfection,
+                  ee.y.toFloat + avoidPerfection
                 )
               )
             )
