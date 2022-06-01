@@ -65,8 +65,8 @@
 <p><a href="https://github.com/PurpleKingdomGames/indigo.g8">https://github.com/PurpleKingdomGames/indigo.g8</a></p>
 <h3><a class="anchor" aria-hidden="true" id="for-sbt"></a><a href="#for-sbt" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>For sbt</h3>
 <p>Add the following to your <code>project/plugins.sbt</code> file:</p>
-<pre><code class="hljs css language-scala">addSbtPlugin(<span class="hljs-string">"org.scala-js"</span> % <span class="hljs-string">"sbt-scalajs"</span> % <span class="hljs-string">"1.9.0"</span>)
-addSbtPlugin(<span class="hljs-string">"io.indigoengine"</span> % <span class="hljs-string">"sbt-indigo"</span> % <span class="hljs-string">"0.12.1"</span>)
+<pre><code class="hljs css language-scala">addSbtPlugin(<span class="hljs-string">"org.scala-js"</span> % <span class="hljs-string">"sbt-scalajs"</span> % <span class="hljs-string">"1.10.0"</span>)
+addSbtPlugin(<span class="hljs-string">"io.indigoengine"</span> % <span class="hljs-string">"sbt-indigo"</span> % <span class="hljs-string">"0.13.0"</span>)
 </code></pre>
 <p>Here is an example minimal <code>build.sbt</code> file:</p>
 <pre><code class="hljs css language-scala"><span class="hljs-keyword">lazy</span> <span class="hljs-keyword">val</span> mygame =
@@ -75,7 +75,7 @@ addSbtPlugin(<span class="hljs-string">"io.indigoengine"</span> % <span class="h
     .settings( <span class="hljs-comment">// Standard SBT settings</span>
       name := <span class="hljs-string">"mygame"</span>,
       version := <span class="hljs-string">"0.0.1"</span>,
-      scalaVersion := <span class="hljs-string">"3.1.1"</span>,
+      scalaVersion := <span class="hljs-string">"3.1.2"</span>,
       organization := <span class="hljs-string">"org.mygame"</span>
     )
     .settings( <span class="hljs-comment">// Indigo specific settings</span>
@@ -85,9 +85,9 @@ addSbtPlugin(<span class="hljs-string">"io.indigoengine"</span> % <span class="h
       windowStartWidth := <span class="hljs-number">720</span>, <span class="hljs-comment">// Width of Electron window, used with `indigoRun`.</span>
       windowStartHeight := <span class="hljs-number">480</span>, <span class="hljs-comment">// Height of Electron window, used with `indigoRun`.</span>
       libraryDependencies ++= <span class="hljs-type">Seq</span>(
-        <span class="hljs-string">"io.indigoengine"</span> %%% <span class="hljs-string">"indigo"</span> % <span class="hljs-string">"0.12.1"</span>,
-        <span class="hljs-string">"io.indigoengine"</span> %%% <span class="hljs-string">"indigo-extras"</span> % <span class="hljs-string">"0.12.1"</span>,
-        <span class="hljs-string">"io.indigoengine"</span> %%% <span class="hljs-string">"indigo-json-circe"</span> % <span class="hljs-string">"0.12.1"</span>,
+        <span class="hljs-string">"io.indigoengine"</span> %%% <span class="hljs-string">"indigo"</span> % <span class="hljs-string">"0.13.0"</span>,
+        <span class="hljs-string">"io.indigoengine"</span> %%% <span class="hljs-string">"indigo-extras"</span> % <span class="hljs-string">"0.13.0"</span>,
+        <span class="hljs-string">"io.indigoengine"</span> %%% <span class="hljs-string">"indigo-json-circe"</span> % <span class="hljs-string">"0.13.0"</span>,
       )
     )
 </code></pre>
@@ -98,11 +98,11 @@ addSbtPlugin(<span class="hljs-string">"io.indigoengine"</span> % <span class="h
 <span class="hljs-keyword">import</span> mill.scalajslib._
 <span class="hljs-keyword">import</span> mill.scalajslib.api._
 
-<span class="hljs-keyword">import</span> $ivy.`io.indigoengine::mill-indigo:<span class="hljs-number">0.12</span><span class="hljs-number">.1</span>`, millindigo._
+<span class="hljs-keyword">import</span> $ivy.`io.indigoengine::mill-indigo:<span class="hljs-number">0.13</span><span class="hljs-number">.0</span>`, millindigo._
 
 <span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">mygame</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">ScalaJSModule</span> <span class="hljs-keyword">with</span> <span class="hljs-title">MillIndigo</span> </span>{
-  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">scalaVersion</span>   </span>= <span class="hljs-string">"3.1.1"</span>
-  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">scalaJSVersion</span> </span>= <span class="hljs-string">"1.9.0"</span>
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">scalaVersion</span>   </span>= <span class="hljs-string">"3.1.2"</span>
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">scalaJSVersion</span> </span>= <span class="hljs-string">"1.10.0"</span>
 
   <span class="hljs-keyword">val</span> gameAssetsDirectory: os.<span class="hljs-type">Path</span> = os.pwd / <span class="hljs-string">"assets"</span>
   <span class="hljs-keyword">val</span> showCursor: <span class="hljs-type">Boolean</span>          = <span class="hljs-literal">true</span>
@@ -111,9 +111,9 @@ addSbtPlugin(<span class="hljs-string">"io.indigoengine"</span> % <span class="h
   <span class="hljs-keyword">val</span> windowStartHeight: <span class="hljs-type">Int</span>       = <span class="hljs-number">480</span> <span class="hljs-comment">// Height of Electron window, used with `indigoRun`.</span>
 
   <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">ivyDeps</span> </span>= <span class="hljs-type">Agg</span>(
-    <span class="hljs-string">ivy"io.indigoengine::indigo::0.12.1"</span>,
-    <span class="hljs-string">ivy"io.indigoengine::indigo-extras::0.12.1"</span>,
-    <span class="hljs-string">ivy"io.indigoengine::indigo-json-circe::0.12.1"</span>
+    <span class="hljs-string">ivy"io.indigoengine::indigo::0.13.0"</span>,
+    <span class="hljs-string">ivy"io.indigoengine::indigo-extras::0.13.0"</span>,
+    <span class="hljs-string">ivy"io.indigoengine::indigo-json-circe::0.13.0"</span>
   )
 
 }
@@ -123,7 +123,7 @@ addSbtPlugin(<span class="hljs-string">"io.indigoengine"</span> % <span class="h
 <p>As a rule of thumb, we encourage you to upgrade to the latest Scala 3, Scala.js, sbt, and Mill versions that you can at the point of project creation, and you should be fine.</p>
 <h2><a class="anchor" aria-hidden="true" id="building-indigo-games"></a><a href="#building-indigo-games" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Building Indigo Games</h2>
 <p>Indigo games are completely normal <a href="https://www.scala-js.org/">Scala.js</a> projects.</p>
-<p>You can use either <a href="http://www.lihaoyi.com/mill/">Mill</a> (Mill 0.10.0  or above) or <a href="https://www.scala-sbt.org/">SBT</a> (recommend sbt 1.6.2 or greater) to build your games, and for your convenience both Mill and SBT have associated plugins, <code>mill-indigo</code> and <code>sbt-indigo</code> respectively.</p>
+<p>You can use either <a href="http://www.lihaoyi.com/mill/">Mill</a> (Mill 0.10.4  or above) or <a href="https://www.scala-sbt.org/">SBT</a> (recommend sbt 1.6.2 or greater) to build your games, and for your convenience both Mill and SBT have associated plugins, <code>mill-indigo</code> and <code>sbt-indigo</code> respectively.</p>
 <p>The plugins help you bootstrap your game during development, they marshal your assets and serve as a reference implementation for <em>one</em> fairly basic way to embed your game into a web page or electron app.</p>
 <p>The plugins let you build a simple web page via the <code>indigoBuild</code> task, or run an Electron app of your game with <code>indigoRun</code>.</p>
 <p>Example output from a Mill indigo build of the <a href="https://github.com/PurpleKingdomGames/indigo/tree/master/demos/snake">Snake example game</a>, the SBT version is nearly identical:</p>
@@ -172,11 +172,11 @@ mill mygame.indigoBuild <span class="hljs-comment"># Marshall scripts and assets
 <span class="hljs-keyword">import</span> mill.scalajslib._
 <span class="hljs-keyword">import</span> mill.scalajslib.api._
 
-<span class="hljs-keyword">import</span> $ivy.`io.indigoengine::mill-indigo:<span class="hljs-number">0.12</span><span class="hljs-number">.1</span>`, millindigo._
+<span class="hljs-keyword">import</span> $ivy.`io.indigoengine::mill-indigo:<span class="hljs-number">0.13</span><span class="hljs-number">.0</span>`, millindigo._
 
 <span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">mygame</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">ScalaJSModule</span> <span class="hljs-keyword">with</span> <span class="hljs-title">MillIndigo</span> </span>{
-  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">scalaVersion</span>   </span>= <span class="hljs-string">"3.1.1"</span>
-  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">scalaJSVersion</span> </span>= <span class="hljs-string">"1.9.0"</span>
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">scalaVersion</span>   </span>= <span class="hljs-string">"3.1.2"</span>
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">scalaJSVersion</span> </span>= <span class="hljs-string">"1.10.0"</span>
 
   <span class="hljs-keyword">val</span> gameAssetsDirectory: os.<span class="hljs-type">Path</span> = os.pwd / <span class="hljs-string">"assets"</span>
   <span class="hljs-keyword">val</span> showCursor: <span class="hljs-type">Boolean</span>          = <span class="hljs-literal">true</span>
@@ -185,9 +185,9 @@ mill mygame.indigoBuild <span class="hljs-comment"># Marshall scripts and assets
   <span class="hljs-keyword">val</span> windowStartHeight: <span class="hljs-type">Int</span>       = <span class="hljs-number">480</span> <span class="hljs-comment">// Height of Electron window, used with `indigoRun`.</span>
 
   <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">ivyDeps</span> </span>= <span class="hljs-type">Agg</span>(
-    <span class="hljs-string">ivy"io.indigoengine::indigo::0.12.1"</span>,
-    <span class="hljs-string">ivy"io.indigoengine::indigo-extras::0.12.1"</span>,
-    <span class="hljs-string">ivy"io.indigoengine::indigo-json-circe::0.12.1"</span>
+    <span class="hljs-string">ivy"io.indigoengine::indigo::0.13.0"</span>,
+    <span class="hljs-string">ivy"io.indigoengine::indigo-extras::0.13.0"</span>,
+    <span class="hljs-string">ivy"io.indigoengine::indigo-json-circe::0.13.0"</span>
   )
 
 }
@@ -246,8 +246,8 @@ mill mygame.indigoBuild <span class="hljs-comment"># Marshall scripts and assets
 <h2><a class="anchor" aria-hidden="true" id="sbt-guide"></a><a href="#sbt-guide" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>SBT Guide</h2>
 <h3><a class="anchor" aria-hidden="true" id="pluginssbt"></a><a href="#pluginssbt" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>plugins.sbt</h3>
 <p>Add the following to your <code>project/plugins.sbt</code> file:</p>
-<pre><code class="hljs css language-scala">addSbtPlugin(<span class="hljs-string">"org.scala-js"</span> % <span class="hljs-string">"sbt-scalajs"</span> % <span class="hljs-string">"1.9.0"</span>)
-addSbtPlugin(<span class="hljs-string">"io.indigoengine"</span> %% <span class="hljs-string">"sbt-indigo"</span> % <span class="hljs-string">"0.12.1"</span>) <span class="hljs-comment">// Note the double %%</span>
+<pre><code class="hljs css language-scala">addSbtPlugin(<span class="hljs-string">"org.scala-js"</span> % <span class="hljs-string">"sbt-scalajs"</span> % <span class="hljs-string">"1.10.0"</span>)
+addSbtPlugin(<span class="hljs-string">"io.indigoengine"</span> %% <span class="hljs-string">"sbt-indigo"</span> % <span class="hljs-string">"0.13.0"</span>) <span class="hljs-comment">// Note the double %%</span>
 </code></pre>
 <h3><a class="anchor" aria-hidden="true" id="buildsbt"></a><a href="#buildsbt" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>build.sbt</h3>
 <p>Example minimal <code>build.sbt</code> file for the root of your project:</p>
@@ -257,7 +257,7 @@ addSbtPlugin(<span class="hljs-string">"io.indigoengine"</span> %% <span class="
     .settings( <span class="hljs-comment">// Standard SBT settings</span>
       name := <span class="hljs-string">"mygame"</span>,
       version := <span class="hljs-string">"0.0.1"</span>,
-      scalaVersion := <span class="hljs-string">"3.1.1"</span>,
+      scalaVersion := <span class="hljs-string">"3.1.2"</span>,
       organization := <span class="hljs-string">"org.mygame"</span>
     )
     .settings( <span class="hljs-comment">// Indigo specific settings</span>
@@ -267,9 +267,9 @@ addSbtPlugin(<span class="hljs-string">"io.indigoengine"</span> %% <span class="
       windowStartWidth := <span class="hljs-number">720</span>, <span class="hljs-comment">// Width of Electron window, used with `indigoRun`.</span>
       windowStartHeight := <span class="hljs-number">480</span>, <span class="hljs-comment">// Height of Electron window, used with `indigoRun`.</span>
       libraryDependencies ++= <span class="hljs-type">Seq</span>(
-        <span class="hljs-string">"io.indigoengine"</span> %%% <span class="hljs-string">"indigo"</span> % <span class="hljs-string">"0.12.1"</span>,
-        <span class="hljs-string">"io.indigoengine"</span> %%% <span class="hljs-string">"indigo-extras"</span> % <span class="hljs-string">"0.12.1"</span>,
-        <span class="hljs-string">"io.indigoengine"</span> %%% <span class="hljs-string">"indigo-json-circe"</span> % <span class="hljs-string">"0.12.1"</span>,
+        <span class="hljs-string">"io.indigoengine"</span> %%% <span class="hljs-string">"indigo"</span> % <span class="hljs-string">"0.13.0"</span>,
+        <span class="hljs-string">"io.indigoengine"</span> %%% <span class="hljs-string">"indigo-extras"</span> % <span class="hljs-string">"0.13.0"</span>,
+        <span class="hljs-string">"io.indigoengine"</span> %%% <span class="hljs-string">"indigo-json-circe"</span> % <span class="hljs-string">"0.13.0"</span>,
       )
     )
 </code></pre>
