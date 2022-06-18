@@ -15,7 +15,7 @@ object ClipScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxView
   def eventFilters: EventFilters =
     EventFilters.Permissive
 
-  def modelLens: indigo.scenes.Lens[SandboxGameModel, SandboxGameModel] =
+  def modelLens: Lens[SandboxGameModel, SandboxGameModel] =
     Lens.keepOriginal
 
   def viewModelLens: Lens[SandboxViewModel, SandboxViewModel] =

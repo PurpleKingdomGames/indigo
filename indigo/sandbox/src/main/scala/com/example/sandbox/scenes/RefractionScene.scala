@@ -17,7 +17,7 @@ object RefractionScene extends Scene[SandboxStartupData, SandboxGameModel, Sandb
   def eventFilters: EventFilters =
     EventFilters.Restricted
 
-  def modelLens: indigo.scenes.Lens[SandboxGameModel, SandboxGameModel] =
+  def modelLens: Lens[SandboxGameModel, SandboxGameModel] =
     Lens.keepOriginal
 
   def viewModelLens: Lens[SandboxViewModel, SandboxViewModel] =
@@ -29,10 +29,17 @@ object RefractionScene extends Scene[SandboxStartupData, SandboxGameModel, Sandb
   def subSystems: Set[SubSystem] =
     Set()
 
-  def updateModel(context: FrameContext[SandboxStartupData], model: SandboxGameModel): GlobalEvent => Outcome[SandboxGameModel] =
+  def updateModel(
+      context: FrameContext[SandboxStartupData],
+      model: SandboxGameModel
+  ): GlobalEvent => Outcome[SandboxGameModel] =
     _ => Outcome(model)
 
-  def updateViewModel(context: FrameContext[SandboxStartupData], model: SandboxGameModel, viewModel: SandboxViewModel): GlobalEvent => Outcome[SandboxViewModel] =
+  def updateViewModel(
+      context: FrameContext[SandboxStartupData],
+      model: SandboxGameModel,
+      viewModel: SandboxViewModel
+  ): GlobalEvent => Outcome[SandboxViewModel] =
     _ => Outcome(viewModel)
 
   val graphic: Graphic[Material.Bitmap] =
@@ -56,7 +63,11 @@ object RefractionScene extends Scene[SandboxStartupData, SandboxGameModel, Sandb
       distortion.moveTo(Point(70, 70 + (50 * d).toInt))
     }
 
-  def present(context: FrameContext[SandboxStartupData], model: SandboxGameModel, viewModel: SandboxViewModel): Outcome[SceneUpdateFragment] = {
+  def present(
+      context: FrameContext[SandboxStartupData],
+      model: SandboxGameModel,
+      viewModel: SandboxViewModel
+  ): Outcome[SceneUpdateFragment] = {
     val viewCenter: Point = context.startUpData.viewportCenter
 
     Outcome(

@@ -1,6 +1,6 @@
 package indigo.scenes
 
-import indigo.Outcome
+import indigo.*
 import indigo.shared.FrameContext
 import indigo.shared.events.EventFilters
 import indigo.shared.events.GlobalEvent
@@ -64,10 +64,18 @@ final case class TestSceneA() extends Scene[Unit, TestGameModel, TestViewModel] 
   def updateModel(context: FrameContext[Unit], sceneModel: TestSceneModelA): GlobalEvent => Outcome[TestSceneModelA] =
     _ => Outcome(sceneModel.copy(count = sceneModel.count + 1))
 
-  def updateViewModel(context: FrameContext[Unit], sceneModel: TestSceneModelA, sceneViewModel: TestSceneViewModelA): GlobalEvent => Outcome[TestSceneViewModelA] =
+  def updateViewModel(
+      context: FrameContext[Unit],
+      sceneModel: TestSceneModelA,
+      sceneViewModel: TestSceneViewModelA
+  ): GlobalEvent => Outcome[TestSceneViewModelA] =
     _ => Outcome(TestSceneViewModelA())
 
-  def present(context: FrameContext[Unit], sceneModel: TestSceneModelA, sceneViewModel: TestSceneViewModelA): Outcome[SceneUpdateFragment] =
+  def present(
+      context: FrameContext[Unit],
+      sceneModel: TestSceneModelA,
+      sceneViewModel: TestSceneViewModelA
+  ): Outcome[SceneUpdateFragment] =
     Outcome(SceneUpdateFragment.empty)
 }
 
@@ -119,10 +127,18 @@ final case class TestSceneB() extends Scene[Unit, TestGameModel, TestViewModel] 
   def updateModel(context: FrameContext[Unit], sceneModel: TestSceneModelB): GlobalEvent => Outcome[TestSceneModelB] =
     _ => Outcome(sceneModel.copy(count = sceneModel.count + 10))
 
-  def updateViewModel(context: FrameContext[Unit], sceneModel: TestSceneModelB, sceneViewModel: TestSceneViewModelB): GlobalEvent => Outcome[TestSceneViewModelB] =
+  def updateViewModel(
+      context: FrameContext[Unit],
+      sceneModel: TestSceneModelB,
+      sceneViewModel: TestSceneViewModelB
+  ): GlobalEvent => Outcome[TestSceneViewModelB] =
     _ => Outcome(TestSceneViewModelB())
 
-  def present(context: FrameContext[Unit], sceneModel: TestSceneModelB, sceneViewModel: TestSceneViewModelB): Outcome[SceneUpdateFragment] =
+  def present(
+      context: FrameContext[Unit],
+      sceneModel: TestSceneModelB,
+      sceneViewModel: TestSceneViewModelB
+  ): Outcome[SceneUpdateFragment] =
     Outcome(SceneUpdateFragment.empty)
 }
 

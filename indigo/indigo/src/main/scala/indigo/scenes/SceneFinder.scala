@@ -5,7 +5,8 @@ import indigo.shared.collections.NonEmptyList
 
 import scala.annotation.tailrec
 
-final case class SceneFinder(previous: List[ScenePosition], current: ScenePosition, next: List[ScenePosition]) derives CanEqual {
+final case class SceneFinder(previous: List[ScenePosition], current: ScenePosition, next: List[ScenePosition])
+    derives CanEqual {
 
   val sceneCount: Int =
     toList.length

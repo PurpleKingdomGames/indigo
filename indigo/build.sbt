@@ -63,7 +63,7 @@ lazy val indigoProject =
     .settings(
       neverPublish,
       commonSettings,
-      name        := "Indigo",
+      name        := "IndigoProject",
       code        := codeTaskDefinition,
       usefulTasks := customTasksAliases,
       presentationSettings(version),
@@ -81,17 +81,17 @@ lazy val sandbox =
     .settings(
       neverPublish,
       commonSettings,
-      name                  := "sandbox",
-      showCursor            := true,
-      title                 := "Sandbox",
-      gameAssetsDirectory   := "assets",
+      name                := "sandbox",
+      showCursor          := true,
+      title               := "Sandbox",
+      gameAssetsDirectory := "assets",
       disableFrameRateLimit := (sys.props("os.name").toLowerCase match {
         case x if x contains "windows" => false
-        case _ => true
+        case _                         => true
       }),
-      electronInstall       := (sys.props("os.name").toLowerCase match {
+      electronInstall := (sys.props("os.name").toLowerCase match {
         case x if x contains "windows" => indigoplugin.ElectronInstall.Version("^18.0.0")
-        case _ => indigoplugin.ElectronInstall.Global
+        case _                         => indigoplugin.ElectronInstall.Global
       })
     )
 
@@ -103,19 +103,19 @@ lazy val perf =
     .settings(
       neverPublish,
       commonSettings,
-      name                  := "indigo-perf",
-      showCursor            := true,
-      title                 := "Perf",
-      gameAssetsDirectory   := "assets",
-      windowStartWidth      := 800,
-      windowStartHeight     := 600,
+      name                := "indigo-perf",
+      showCursor          := true,
+      title               := "Perf",
+      gameAssetsDirectory := "assets",
+      windowStartWidth    := 800,
+      windowStartHeight   := 600,
       disableFrameRateLimit := (sys.props("os.name").toLowerCase match {
         case x if x contains "windows" => false
-        case _ => true
+        case _                         => true
       }),
-      electronInstall       := (sys.props("os.name").toLowerCase match {
+      electronInstall := (sys.props("os.name").toLowerCase match {
         case x if x contains "windows" => indigoplugin.ElectronInstall.Version("^18.0.0")
-        case _ => indigoplugin.ElectronInstall.Global
+        case _                         => indigoplugin.ElectronInstall.Global
       })
     )
 
@@ -177,7 +177,7 @@ lazy val jsdocs = project
   .settings(
     neverPublish,
     organization := "io.indigoengine",
-    libraryDependencies ++= Dependencies.jsDocs.value,
+    libraryDependencies ++= Dependencies.jsDocs.value
     // libraryDependencies ++= Seq(
     //   "io.indigoengine" %%% "indigo-json-circe" % indigoDocsVersion,
     //   "io.indigoengine" %%% "indigo"            % indigoDocsVersion,

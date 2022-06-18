@@ -26,7 +26,7 @@ object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
   def eventFilters: EventFilters =
     EventFilters.Permissive
 
-  def modelLens: indigo.scenes.Lens[SandboxGameModel, ConfettiModel] =
+  def modelLens: Lens[SandboxGameModel, ConfettiModel] =
     Lens(_.confetti, (m, c) => m.copy(confetti = c))
 
   def viewModelLens: Lens[SandboxViewModel, Unit] =

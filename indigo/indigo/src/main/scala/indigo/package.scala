@@ -633,3 +633,6 @@ val AmbientLight: shared.scenegraph.AmbientLight.type = shared.scenegraph.Ambien
 
 type Falloff = shared.scenegraph.Falloff
 val Falloff: shared.scenegraph.Falloff.type = shared.scenegraph.Falloff
+
+type Lens[A, B] = shared.utils.Lens[A, B]
+val Lens: shared.utils.Lens.type = shared.utils.Lens
