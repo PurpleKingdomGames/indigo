@@ -16,7 +16,7 @@ object TextureTileScene extends Scene[SandboxStartupData, SandboxGameModel, Sand
   def eventFilters: EventFilters =
     EventFilters.Restricted
 
-  def modelLens: indigo.scenes.Lens[SandboxGameModel, SandboxGameModel] =
+  def modelLens: Lens[SandboxGameModel, SandboxGameModel] =
     Lens.keepOriginal
 
   def viewModelLens: Lens[SandboxViewModel, SandboxViewModel] =
@@ -62,7 +62,7 @@ object TextureTileScene extends Scene[SandboxStartupData, SandboxGameModel, Sand
               .modifyMaterial(_.withAlpha(0.2)),
             Graphic(64, 64, Material.Bitmap(SandboxAssets.dots).normal).moveTo(10, 90),
             Graphic(200, 75, Material.Bitmap(SandboxAssets.dots).tile).moveTo(10, 10),
-            Graphic(50, 75, Material.Bitmap(SandboxAssets.dots).stretch).moveTo(100, 75),
+            Graphic(50, 75, Material.Bitmap(SandboxAssets.dots).stretch).moveTo(100, 75)
           )
         )
     )

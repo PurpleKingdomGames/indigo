@@ -1,5 +1,6 @@
 package indigo.scenes
 
+import indigo.*
 import indigo.shared.FrameContext
 import indigo.shared.Outcome
 import indigo.shared.collections.Batch

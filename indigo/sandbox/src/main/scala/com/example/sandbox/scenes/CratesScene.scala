@@ -17,7 +17,7 @@ object CratesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
   def eventFilters: EventFilters =
     EventFilters.Permissive
 
-  def modelLens: indigo.scenes.Lens[SandboxGameModel, Unit] =
+  def modelLens: Lens[SandboxGameModel, Unit] =
     Lens.unit
 
   def viewModelLens: Lens[SandboxViewModel, Unit] =

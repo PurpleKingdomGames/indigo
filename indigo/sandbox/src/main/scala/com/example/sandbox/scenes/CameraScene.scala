@@ -15,7 +15,7 @@ object CameraScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
   def eventFilters: EventFilters =
     EventFilters.Restricted
 
-  def modelLens: indigo.scenes.Lens[SandboxGameModel, SandboxGameModel] =
+  def modelLens: Lens[SandboxGameModel, SandboxGameModel] =
     Lens.keepOriginal
 
   def viewModelLens: Lens[SandboxViewModel, SandboxViewModel] =

@@ -19,7 +19,7 @@ object LegacyEffectsScene extends Scene[SandboxStartupData, SandboxGameModel, Sa
   def eventFilters: EventFilters =
     EventFilters.Restricted
 
-  def modelLens: indigo.scenes.Lens[SandboxGameModel, SandboxGameModel] =
+  def modelLens: Lens[SandboxGameModel, SandboxGameModel] =
     Lens.keepOriginal
 
   def viewModelLens: Lens[SandboxViewModel, SandboxViewModel] =
@@ -69,7 +69,7 @@ object LegacyEffectsScene extends Scene[SandboxStartupData, SandboxGameModel, Sa
           .moveTo(viewCenter)
           .moveBy(-30, -40)
           .modifyMaterial(_.withSaturation(0.0)),
-        graphic //color overlay - identical to ImageEffects material
+        graphic // color overlay - identical to ImageEffects material
           .moveTo(viewCenter)
           .moveBy(30, -40)
           .modifyMaterial(_.withOverlay(Fill.Color(RGBA.Magenta.withAmount(0.75)))),

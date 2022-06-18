@@ -1,4 +1,4 @@
-package indigo.scenes
+package indigo.shared.utils
 
 /** Represents a simple-as-they-come lens, primarily for use with scenes in order to extract and replace the parts of,
   * say, a model that the scene wants to operate on.
