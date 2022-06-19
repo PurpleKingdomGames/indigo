@@ -2,7 +2,7 @@ package indigoplugin.templates
 
 object HtmlTemplate {
 
-  def template(title: String, showCursor: Boolean, scriptName: String): String =
+  def template(title: String, showCursor: Boolean, scriptName: String, backgroundColor: String): String =
     s"""<!DOCTYPE html>
       |<html>
       |  <head>
@@ -15,6 +15,7 @@ object HtmlTemplate {
       |        margin:0px;
       |        overflow-x: hidden;
       |        overflow-y: hidden;
+      |        background-color: $backgroundColor;
       |      }
       |      #indigo-container {
       |        padding:0px;
