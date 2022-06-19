@@ -19,6 +19,10 @@ trait MillIndigo extends mill.Module {
     */
   val showCursor: Boolean
 
+  /** HTML page background color
+    */
+  val backgroundColor: String
+
   /** Project relative path to a directory that contains all of the assets the game needs to load.
     */
   val gameAssetsDirectory: Path
@@ -65,7 +69,8 @@ trait MillIndigo extends mill.Module {
           title,
           showCursor,
           scriptPathBase,
-          gameAssetsDirectory
+          gameAssetsDirectory,
+          backgroundColor
         )
       )
 
@@ -98,7 +103,8 @@ trait MillIndigo extends mill.Module {
           title,
           showCursor,
           scriptPathBase,
-          gameAssetsDirectory
+          gameAssetsDirectory,
+          backgroundColor
         )
       )
 

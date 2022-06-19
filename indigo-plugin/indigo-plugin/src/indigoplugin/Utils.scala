@@ -6,7 +6,8 @@ final case class TemplateOptions(
     title: String,
     showCursor: Boolean,
     scriptPathBase: Path,
-    gameAssetsDirectoryPath: Path
+    gameAssetsDirectoryPath: Path,
+    backgroundColor: String = "white"
 )
 
 object Utils {

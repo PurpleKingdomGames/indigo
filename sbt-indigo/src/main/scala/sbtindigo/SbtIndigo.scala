@@ -21,8 +21,10 @@ object SbtIndigo extends sbt.AutoPlugin {
       taskKey[Unit]("Build an Indigo game Cordova template that has been compressed.")
     val gameAssetsDirectory: SettingKey[String] =
       settingKey[String]("Project relative path to a directory that contains all of the assets the game needs to load.")
-    val showCursor: SettingKey[Boolean]    = settingKey[Boolean]("Show the cursor? True by default.")
-    val title: SettingKey[String]          = settingKey[String]("Title of your game. Defaults to 'Made with Indigo'.")
+    val showCursor: SettingKey[Boolean] = settingKey[Boolean]("Show the cursor? True by default.")
+    val title: SettingKey[String]       = settingKey[String]("Title of your game. Defaults to 'Made with Indigo'.")
+    val backgroundColor: SettingKey[String] =
+      settingKey[String]("HTML page background color CSS property. Defaults to 'initial'.")
     val windowStartWidth: SettingKey[Int]  = settingKey[Int]("Initial window width. Defaults to 550 pixels.")
     val windowStartHeight: SettingKey[Int] = settingKey[Int]("Initial window height. Defaults to 400 pixels.")
     val disableFrameRateLimit: SettingKey[Boolean] =
@@ -43,6 +45,7 @@ object SbtIndigo extends sbt.AutoPlugin {
     indigoCordovaBuildFull := indigoCordovaBuildFullTask.value,
     showCursor             := true,
     title                  := "Made with Indigo",
+    backgroundColor        := "white",
     gameAssetsDirectory    := ".",
     windowStartWidth       := 550,
     windowStartHeight      := 400,
@@ -79,7 +82,8 @@ object SbtIndigo extends sbt.AutoPlugin {
             if (gameAssetsDirectory.value.startsWith("/"))
               gameAssetsDirectory.value
             else baseDir.replace("/.js", "") + "/" + gameAssetsDirectory.value
-          )
+          ),
+          backgroundColor = backgroundColor.value
         ),
         outputDir,
         Keys.projectID.value.name + "-fastopt.js"
@@ -111,7 +115,8 @@ object SbtIndigo extends sbt.AutoPlugin {
             if (gameAssetsDirectory.value.startsWith("/"))
               gameAssetsDirectory.value
             else baseDir + "/" + gameAssetsDirectory.value
-          )
+          ),
+          backgroundColor = backgroundColor.value
         ),
         outputDir,
         Keys.projectID.value.name + "-opt.js"
