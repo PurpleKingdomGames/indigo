@@ -15,8 +15,8 @@ A layers primary function is to hold scene nodes to be rendered.
 
 All indigo projects require you to describe your games visuals, here is a simple example:
 
-```scala
-import indigo._
+```scala mdoc:js:shared
+import indigo.*
 
 val graphic =
   Graphic(50, 50, Material.Bitmap(AssetName("my texture")))
@@ -30,7 +30,7 @@ SceneUpdateFragment(
 
 This is a nice easy way to get started, but when you create a scene fragment like that, what you've actually done is this:
 
-```scala
+```scala mdoc:js
 SceneUpdateFragment(
   Layer(
     graphic.moveTo(10, 10),
@@ -42,7 +42,7 @@ SceneUpdateFragment(
 
 You can always add layers to scene fragments:
 
-```scala
+```scala mdoc:js
 SceneUpdateFragment.empty.addLayers(Layer(graphic), Layer(graphic))
 ```
 
@@ -50,7 +50,7 @@ SceneUpdateFragment.empty.addLayers(Layer(graphic), Layer(graphic))
 
 Combining scene fragments works as you might expect:
 
-```scala
+```scala mdoc:js:shared
 val graphicA = Graphic(50, 50, Material.Bitmap(AssetName("a")))
 val graphicB = Graphic(50, 50, Material.Bitmap(AssetName("b")))
 
@@ -62,7 +62,7 @@ a |+| b
 
 Results in:
 
-```scala
+```scala mdoc:js
 SceneUpdateFragment(
   Layer(graphicA, graphicA, graphicA),
   Layer(graphicB, graphicB, graphicB)
@@ -71,7 +71,7 @@ SceneUpdateFragment(
 
 However, you may want to merge scenes and have all the elements end up on the same layer, in which case you need to name the layers:
 
-```scala
+```scala mdoc:js
 val c = SceneUpdateFragment(
   Layer(BindingKey("my layer"), graphicA, graphicA, graphicA)
 )
@@ -84,18 +84,18 @@ c |+| d
 
 Results in:
 
-```scala
+```scala mdoc:js
 SceneUpdateFragment(
   Layer(
     BindingKey("my layer"),
-    List(graphicA, graphicA, graphicA, graphicB, graphicB, graphicB)
+    Batch(graphicA, graphicA, graphicA, graphicB, graphicB, graphicB)
   )
 )
 ```
 
 Layers can be merged to!
 
-```scala
+```scala mdoc:js
 Layer(graphicA) |+| Layer(graphicB)
 ```
 
@@ -103,7 +103,7 @@ Layer(graphicA) |+| Layer(graphicB)
 
 ### Depth
 
-Layers are stored in a `List` in the `SceneUpdateFragment`, and are in general rendered in order from first added to last. Generally speaking between ordering and the use of `BindingKey`s, that's often enough to ensure things appear as expected.
+Layers are stored in a `Batch` in the `SceneUpdateFragment`, and are in general rendered in order from first added to last. Generally speaking between ordering and the use of `BindingKey`s, that's often enough to ensure things appear as expected.
 
 However you can also set depths for layers to ensure they end up in the expected place.
 
@@ -112,7 +112,7 @@ However you can also set depths for layers to ensure they end up in the expected
 - With scene entities, ***0*** means ***as close to you as possible*** and bigger numbers are further away.
 - With layers, ***0*** mean ***bottom of the stack***, like the bottom layer of a cake, and bigger numbers are placed above it.
 
-```scala
+```scala mdoc:js
 Layer(graphicA).withDepth(Depth(100))
 ```
 

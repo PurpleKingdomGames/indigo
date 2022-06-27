@@ -39,8 +39,8 @@ There are two blending jobs to do:
 
 Below is an example lighting layer that sets a low (25% white) ambient light so the scene is never absolutely black.
 
-```scala
-import indigo._
+```scala mdoc:js:shared
+import indigo.*
 
 Layer(Graphic(50, 50, Material.ImageEffects(AssetName("torch light"))))
   .withBlending(Blending.Lighting(RGBA.White.withAlpha(0.25)))
@@ -50,9 +50,9 @@ Layer(Graphic(50, 50, Material.ImageEffects(AssetName("torch light"))))
 
 Dynamic lighting changes the scene's lighting as the light moves around. It highlights corners and outlines objects. They can be added to your scene or layer like this:
 
-```scala
+```scala mdoc:js
 SceneUpdateFragment(
-  Layer("my layer").withLights(PointLight(Point(100, 100), RGBA.Green))
+  Layer(BindingKey("my layer")).withLights(PointLight(Point(100, 100), RGBA.Green))
 ).withLights(AmbientLight(RGBA.Blue.withAlpha(0.2)))
 ```
 
@@ -76,7 +76,7 @@ Most of a lights have a number of properties you can experiment with that are ea
 
 Point lights are a point in space that emit light evenly in all directions. Example:
 
-```scala
+```scala mdoc:js
 PointLight(Point.zero, RGBA.White)
   .withFalloff(Falloff.SmoothQuadratic(0, 100))
 ```
@@ -85,7 +85,7 @@ PointLight(Point.zero, RGBA.White)
 
 Spotlights shine a cone of light onto a scene at a given angle. Example:
 
-```scala
+```scala mdoc:js
 SpotLight(Point.zero, RGBA.White)
   .withAngle(Radians.fromDegrees(45))
   .lookAt(Point(100, 100))
@@ -95,7 +95,7 @@ SpotLight(Point.zero, RGBA.White)
 
 Direction lights shin light evenly along one angle, as if from very far away. Useful for things like sun and moonlight. Example:
 
-```scala
+```scala mdoc:js
 DirectionLight(Radians.fromDegrees(45), RGBA.Blue)
 ```
 
@@ -103,7 +103,7 @@ DirectionLight(Radians.fromDegrees(45), RGBA.Blue)
 
 Ambient lights illuminate the whole scene evenly with some amount of 'background' light. Example:
 
-```scala
+```scala mdoc:js
 AmbientLight(RGBA.White.withAlpha(0.2))
 ```
 

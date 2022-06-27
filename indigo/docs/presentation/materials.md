@@ -19,15 +19,15 @@ You can create your own materials, and Indigo comes with two other materials in 
 
 This is the `Bitmap` material:
 
-```scala
-import indigo._
+```scala mdoc:js:shared
+import indigo.*
 
 Material.Bitmap(AssetName("funny cat"))
 ```
 
 `Bitmap` is a simple flat texture that does nothing more than take the texture and render it as-is. It can be used in a `Graphic` like this:
 
-```scala
+```scala mdoc:js
 SceneUpdateFragment(
   Graphic(32, 32, Material.Bitmap(AssetName("funny cat")))
 )
@@ -56,7 +56,7 @@ There are some properties that are common to both standard materials.
 
 If you would like to take the basic form of one of the standard shaders (i.e. and the data they provide) and write your own shader, you can swap the shader id like this:
 
-```scala
+```scala mdoc:js
 Material.Bitmap(AssetName("funny cat"))
   .withShaderId(ShaderId("my bitmap shader"))
 ```
@@ -67,7 +67,7 @@ Arguably you would usually be better off just writing your own Material + Shader
 
 The standard materials support options for telling Indigo how to fill the space with the material.
 
-```scala
+```scala mdoc:js
 val material = Material.Bitmap(AssetName("funny cat"))
 
 material.normal

@@ -12,6 +12,7 @@ ThisBuild / scalaVersion                                   := scala3Version
 lazy val indigoVersion = IndigoVersion.getVersion
 // For the docs site
 lazy val indigoDocsVersion  = "0.13.0"
+lazy val tyrianDocsVersion  = "0.5.1"
 lazy val scalaJsDocsVersion = "1.10.0"
 lazy val scalaDocsVersion   = "3.1.2"
 lazy val sbtDocsVersion     = "1.6.2"
@@ -177,19 +178,19 @@ lazy val jsdocs = project
   .settings(
     neverPublish,
     organization := "io.indigoengine",
-    libraryDependencies ++= Dependencies.jsDocs.value
-    // libraryDependencies ++= Seq(
-    //   "io.indigoengine" %%% "indigo-json-circe" % indigoDocsVersion,
-    //   "io.indigoengine" %%% "indigo"            % indigoDocsVersion,
-    //   "io.indigoengine" %%% "indigo-extras"     % indigoDocsVersion
-    // )
+    libraryDependencies ++= Dependencies.jsDocs.value,
+    libraryDependencies ++= Seq(
+      "io.indigoengine" %%% "indigo-json-circe"    % indigoDocsVersion,
+      "io.indigoengine" %%% "indigo"               % indigoDocsVersion,
+      "io.indigoengine" %%% "indigo-extras"        % indigoDocsVersion,
+      "io.indigoengine" %%% "tyrian-io"            % tyrianDocsVersion,
+      "io.indigoengine" %%% "tyrian-indigo-bridge" % tyrianDocsVersion
+    )
   )
   .enablePlugins(ScalaJSPlugin)
 
 lazy val docs = project
   .in(file("indigo-docs"))
-  // .dependsOn(indigoExtras)
-  // .dependsOn(indigoJsonCirce)
   .enablePlugins(MdocPlugin)
   .settings(
     neverPublish,

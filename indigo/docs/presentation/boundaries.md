@@ -7,8 +7,8 @@ A curious quirk of the way Indigo works is that it seems unusual to need to find
 
 Nonetheless, Indigo does have a facility for discovering the dimensions of a scene node called the 'Boundary Locator' which can be found on the `FrameContext[_]` instance.
 
-```scala
-import indigo._
+```scala mdoc:js:shared:invisible
+import indigo.*
 import indigo.platform.assets.DynamicText
 import indigo.shared.AnimationsRegister
 import indigo.shared.FontRegister
@@ -20,14 +20,14 @@ The boundary locator has a few methods on it, but the two main ones are `findBou
 
 `findBounds` finds the bounds of any scene node you give it.
 
-```scala
+```scala mdoc:js
 val graphic = Graphic(32, 32, Material.Bitmap(AssetName("my graphic")))
 context.boundaryLocator.findBounds(graphic)
 ```
 
 `measureText` is used specifically to find the real size of the text in a `TextBox`. This is costly as it requires rendering the text with all it's font properties in the background.
 
-```scala
+```scala mdoc:js
 val tb = TextBox("hello, world!")
 context.boundaryLocator.measureText(tb)
 ```

@@ -15,8 +15,8 @@ To help with that, along with the usual logger methods, we've added the `errorOn
 
 The available logging options are:
 
-```scala
-import indigo.IndigoLogger._
+```scala mdoc:js
+import indigo.IndigoLogger.*
 
 consoleLog("message to log")
 info("message to log")

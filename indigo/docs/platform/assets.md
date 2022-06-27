@@ -19,8 +19,8 @@ Text is different. Plain text isn't useful in of itself in the scene constructio
 
 The `IndigoSandbox` entry point defines a setup function with the following signature:
 
-```scala
-import indigo._
+```scala mdoc:js:shared
+import indigo.*
 
 def setup(assetCollection: AssetCollection, dice: Dice): Startup[Unit] = ???
 ```
@@ -31,7 +31,7 @@ As previously mentioned, this is particularly useful for reading plain text file
 
 The interesting methods on an `AssetCollection` are:
 
-```scala
+```scala mdoc:js
 import org.scalajs.dom
 import org.scalajs.dom.html
 
@@ -52,7 +52,7 @@ Asset loading happens in either one or two phases, depending on whether you only
 
 The simplest from of asset loading happens based on your initial game definition, for example:
 
-```scala
+```scala mdoc:js:shared
 val baseUrl = "./"
 
 // If you're using the `IndigoSandbox` entry point
@@ -110,9 +110,9 @@ You can either use the basic inbuilt events to load your assets, and manage the 
 
 To kick off an asset bundle load, you need to fire off an `AssetBundleLoaderEvent.Load` event by attaching it to an `Outcome` or `SceneUpdateFragment`. In the example linked to above, we use a button (I've simplified here slightly):
 
-```scala
-import indigoextras.ui._
-import indigoextras.subsystems._
+```scala mdoc:js
+import indigoextras.ui.*
+import indigoextras.subsystems.*
 
 val otherAssetsToLoad: Set[AssetType] =
   Set(
@@ -137,7 +137,7 @@ Button(
   depth = Depth(2)
 ).withUpActions {
   println("Start loading assets...")
-  List(AssetBundleLoaderEvent.Load(BindingKey("bundle 1"), otherAssetsToLoad))
+  Batch(AssetBundleLoaderEvent.Load(BindingKey("bundle 1"), otherAssetsToLoad))
 }
 ```
 
@@ -145,7 +145,11 @@ As you can see, the asset bundle is just another `Set[AssetType]` like we'd use 
 
 We can then track the progress of our bundle load by pattern matching the relevant events:
 
-```scala
+```scala mdoc:js:shared
+import indigoextras.subsystems.*
+
+final case class MyGameModel(loaded: Boolean)
+
 def updateModel(context: FrameContext[Unit], model: MyGameModel): GlobalEvent => Outcome[MyGameModel] = {
   case AssetBundleLoaderEvent.Started(key) =>
     println("Load started! " + key.toString())
@@ -177,22 +181,20 @@ You can't use an asset before you've loaded it.
 
 The eagle eyed among you may have noticed that the super simple model above has a loaded flag in it's definition, here is the whole thing:
 
-```scala
-final case class MyGameModel(loaded: Boolean)
-
+```scala mdoc:js:shared
 val model = MyGameModel(true)
 ```
 
 The loaded flag above is a crude way of us saying "Ok, the assets are ready for use now!", so that once set to true, we can start drawing with them, again a minimal example could be:
 
-```scala
+```scala mdoc:js
 SceneUpdateFragment(
   if (model.loaded) {
-    List(
+    Batch(
       Graphic(Rectangle(0, 0, 64, 64), 1, Material.Bitmap(AssetName("junction box")))
         .moveTo(30, 30)
     )
-  } else Nil
+  } else Batch.empty
 )
 ```
 

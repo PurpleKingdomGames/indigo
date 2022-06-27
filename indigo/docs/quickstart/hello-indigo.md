@@ -27,8 +27,8 @@ We'll skip over the initial project set up and assume that you followed the [set
 
 Here is our starting point:
 
-```scala
-import indigo._
+```scala mdoc:js:shared
+import indigo.*
 import scala.scalajs.js.annotation.JSExportTopLevel
 
 @JSExportTopLevel("IndigoGame")
@@ -112,14 +112,14 @@ On the assumption that you have the same assets as the demo repo (note that you 
 
 Replace:
 
-```scala
+```scala mdoc:js
 val assets: Set[AssetType] =
   Set()
 ```
 
 with:
 
-```scala
+```scala mdoc:js:shared
 val assetName = AssetName("dots")
 
 val assets: Set[indigo.AssetType] = Set(
@@ -137,7 +137,7 @@ SceneUpdateFragment.empty
 
 with:
 
-```scala
+```scala mdoc:js
 SceneUpdateFragment(
   Graphic(Rectangle(0, 0, 32, 32), 1, Material.Bitmap(assetName))
 )
@@ -151,7 +151,7 @@ Run the demo again and you should see a graphic in the top left corner at positi
 
 It's quite small though... so come back to your code and replace `GameConfig.default` with:
 
-```scala
+```scala mdoc:js:shared
 val magnification = 3
 
 val config: indigo.GameConfig =
@@ -164,7 +164,7 @@ Indigo is built for pixel art, and will automatically scale up not just your gra
 
 `Graphic`s are relatively cheap on-screen objects, in terms of performance, but their unique party trick is being able to crop their contents. Update this:
 
-```scala
+```scala mdoc:js
 SceneUpdateFragment(
   Graphic(Rectangle(0, 0, 32, 32), 1, Material.Bitmap(assetName))
 )
@@ -172,7 +172,7 @@ SceneUpdateFragment(
 
 to:
 
-```scala
+```scala mdoc:js
 SceneUpdateFragment(
   Graphic(Rectangle(0, 0, 32, 32), 1, Material.Bitmap(assetName)),
   Graphic(Rectangle(0, 0, 32, 32), 1, Material.Bitmap(assetName))
@@ -192,7 +192,7 @@ We're going to make the dot move using a `Signal`. Signals are powerful but a bi
 
 You can get the running time of the game from the `FrameContext` provided in all update functions:
 
-```scala
+```scala mdoc:js:shared:invisible
 import indigo.platform.assets.DynamicText
 import indigo.shared.AnimationsRegister
 import indigo.shared.FontRegister
@@ -202,7 +202,7 @@ val context = new FrameContext[Unit](GameTime.zero, Dice.fromSeed(1l), InputStat
 
 Replace:
 
-```scala
+```scala mdoc:js
 Graphic(Rectangle(0, 0, 32, 32), 1, Material.Bitmap(assetName))
   .withCrop(Rectangle(16, 16, 16, 16))
   .withRef(8, 8)
@@ -211,7 +211,7 @@ Graphic(Rectangle(0, 0, 32, 32), 1, Material.Bitmap(assetName))
 
 with:
 
-```scala
+```scala mdoc:js
 Graphic(Rectangle(0, 0, 32, 32), 1, Material.Bitmap(assetName))
   .withCrop(Rectangle(16, 16, 16, 16))
   .withRef(8, 8)
@@ -239,11 +239,11 @@ Before we move on, if you're new to game development, it's worth noting the impo
 
 Consider how we might move something along the x-axis:
 
-```scala
+```scala mdoc:js:shared
 val graphic = Graphic(10, 10, Material.Bitmap(AssetName("graphic")))
 ```
 
-```scala
+```scala mdoc:js
 graphic.moveBy(10, 0)
 ```
 
@@ -291,8 +291,8 @@ To do that we're going to need a simple model, so let us define some case classe
 
 Add this to the bottom of your file:
 
-```scala
-final case class Model(center: Point, dots: List[Dot]) {
+```scala mdoc:js:shared
+final case class Model(center: Point, dots: Batch[Dot]) {
   def addDot(dot: Dot): Model =
     this.copy(dots = dot :: dots)
 
@@ -300,7 +300,7 @@ final case class Model(center: Point, dots: List[Dot]) {
     this.copy(dots = dots.map(_.update(timeDelta)))
 }
 object Model {
-  def initial(center: Point): Model = Model(center, Nil)
+  def initial(center: Point): Model = Model(center, Batch.empty)
 }
 
 final case class Dot(orbitDistance: Int, angle: Radians) {
@@ -344,14 +344,14 @@ Then we need to give Indigo the empty or first version of our model.
 
 Replace:
 
-```scala
+```scala mdoc:js
 def initialModel(startupData: Unit): Outcome[Unit] =
   Outcome(())
 ```
 
 with:
 
-```scala
+```scala mdoc:js
 def initialModel(startupData: Unit): Outcome[Model] =
   Outcome(
     Model.initial(
@@ -362,7 +362,7 @@ def initialModel(startupData: Unit): Outcome[Model] =
 
 And then we need to update it, replace:
 
-```scala
+```scala mdoc:js
 def updateModel(
     context: FrameContext[Unit],
     model: Unit
@@ -372,7 +372,7 @@ def updateModel(
 
 with
 
-```scala
+```scala mdoc:js
 def updateModel(
     context: FrameContext[Unit],
     model: Model
@@ -428,15 +428,15 @@ Finally we need to draw something, replace:
 
 with:
 
-```scala
+```scala mdoc:js:shared
 val model = Model.initial(Point.zero)
 ```
 
-```scala
+```scala mdoc:js
 def drawDots(
     center: Point,
-    dots: List[Dot]
-): List[Graphic[_]] =
+    dots: Batch[Dot]
+): Batch[Graphic[_]] =
   dots.map { dot =>
     val position = Point(
       x = (Math.sin(dot.angle.toDouble) * dot.orbitDistance + center.x).toInt,

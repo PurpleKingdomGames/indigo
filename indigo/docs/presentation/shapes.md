@@ -25,8 +25,8 @@ Below are examples of each to help get you started.
 
 ## Box
 
-```scala
-import indigo._
+```scala mdoc:js:shared
+import indigo.*
 
 Shape.Box(
   Rectangle(Point(100, 100), Size(50, 50)),
@@ -37,7 +37,7 @@ Shape.Box(
 
 ## Circle
 
-```scala
+```scala mdoc:js
 Shape.Circle(
   center = Point(30, 30),
   radius = 20,
@@ -53,13 +53,13 @@ Shape.Circle(
 
 ## Line
 
-```scala
+```scala mdoc:js
 Shape.Line(Point(30, 80), Point(100, 20), Stroke(6, RGBA.Cyan))
 ```
 
 ## Polygon
 
-```scala
+```scala mdoc:js
 Shape.Polygon(
   Fill.LinearGradient(Point(0), RGBA.Magenta, Point(45), RGBA.Cyan),
   Stroke(4, RGBA.Black)

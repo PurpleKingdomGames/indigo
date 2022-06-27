@@ -33,9 +33,9 @@ To use scenes, you need to use the `IndigoGame` entry point (extend an object in
 
 The `IndigoGame` entry point looks almost the same as `IndigoDemo`, but adds these functions:
 
-```scala
-import indigo._
-import indigo.scenes._
+```scala mdoc:js:shared
+import indigo.*
+import indigo.scenes.*
 
 // Just examples
 final case class BootData(debugModeOn: Boolean)
@@ -56,7 +56,7 @@ These mean that you...
 
 A scene is built by creating an object (or class) that extends `Scene[StartupData, GameModel, ViewModel]`. Here's the trait:
 
-```scala
+```scala mdoc:js
 trait Scene[StartUpData, GameModel, ViewModel] derives CanEqual {
   type SceneModel
   type SceneViewModel
@@ -88,7 +88,7 @@ This choice - right or wrong - was made because most of Indigo is vanilla Scala*
 
 The two used above are `NonEmptyList` and `Lens`. The latter is discussed in the next section. A `NonEmptyList` is a `List` that cannot be empty, i.e. it will always have at least one element, and so the normally unsafe (i.e. throws an exception if the list is empty) `.head` method becomes a safe operation. You can think of the encoding as being like this:
 
-```scala
+```scala mdoc:js
 final case class NonEmptyList[A](head: A, tail: List[A]) {
   def toList: List[A] = head :: tail
 }
@@ -117,7 +117,7 @@ But this isn't actually necessary since `StartScene` is at the head of the list.
 
 To move between scenes you use events, defined simply as:
 
-```scala
+```scala mdoc:js
 enum SceneEvent extends GlobalEvent:
   case Next extends SceneEvent
   case Previous extends SceneEvent
@@ -135,7 +135,7 @@ The final thing to know about with `Scene`s, is how they manage state.
 
 Essentially the model of the game contains the state for all scenes. This applies to both model and view model, but we'll just talk about the model from now on. Consider a game with the following model:
 
-```scala
+```scala mdoc:js:shared
 final case class MenuModel(menuItems: List[String])
 final case class LevelModel(health: Int, inventory: Map[String, Int])
 final case class DungeonGameModel(menuScene: MenuModel, level: LevelModel)
@@ -146,7 +146,7 @@ val model: DungeonGameModel = DungeonGameModel(MenuModel(List("Press space to st
 
 Here is a simple lens that will extract the `LevelModel` from the `DungeonGameModel` and put it back again:
 
-```scala
+```scala mdoc:js
 Lens[DungeonGameModel, LevelModel](
   getter = (model: DungeonGameModel) => model.level,
   setter = (model: DungeonGameModel, nextLevel: LevelModel) => model.copy(level = nextLevel)
@@ -155,7 +155,7 @@ Lens[DungeonGameModel, LevelModel](
 
 Let's declare a scene that is using this fictional model:
 
-```scala
+```scala mdoc:js
 object LevelScene extends Scene[Unit, DungeonGameModel, Unit]:
   type SceneModel = LevelModel
   type SceneViewModel = Unit
@@ -186,7 +186,7 @@ To formalize this sort of relationship, Indigo has a just-about-good-enough `Len
 
 An Indigo lens implements a `get` and a `set` function, like so:
 
-```scala
+```scala mdoc:js
 def get[A, B](from: A): B = ???
 def set[A, B](into: A, value: B): A = ???
 ```
@@ -196,7 +196,7 @@ def set[A, B](into: A, value: B): A = ???
 
 Lets try it out! Lets start with the simple `copy` example from earlier:
 
-```scala
+```scala mdoc:js
 val modelLens =
   Lens[DungeonGameModel, LevelModel](
     getter = (model: DungeonGameModel) => model.level,
@@ -213,7 +213,7 @@ You can also do things like construct temporary models by aggregating several pa
 
 We can also posed the question of how you update things inside other things, for this we have to compose lenses together using the `andThen` operator, for example:
 
-```scala
+```scala mdoc:js
 final case class Sword(shininess: Int)
 final case class Weapons(sword: Sword)
 final case class Inventory(weapons: Weapons)
@@ -273,7 +273,7 @@ When one scene is running none of the others are, but sometimes it's useful to b
 
 This turns out to be very easy in Indigo. Since events are ordered and strictly evaluated, all you need to do is:
 
-```scala
+```scala mdoc:js
 final case class MessageForNextScene(message: String) extends GlobalEvent
 
 Outcome(model) // here, the result of a model update, but could be any Outcome

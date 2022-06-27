@@ -57,6 +57,141 @@ follow [this guide](howto-indigo-game.md)
 or replace `HelloIndigo.scala` with
 [this](https://gist.github.com/hobnob/c24f00936e91a7b7e5d644d19e4f1b32)
 
+```scala mdoc:js:shared:invisible
+import indigo.*
+import indigo.scenes.*
+import tyrian.TyrianSubSystem
+import cats.effect.IO
+
+final case class HelloIndigo(tyrianSubSystem: TyrianSubSystem[IO, Int]) extends IndigoGame[Unit, Unit, Model, Unit] {
+
+  val magnification = 3
+
+  val config: GameConfig =
+    GameConfig.default.withMagnification(magnification)
+
+  val assetName = AssetName("dots")
+
+  val assets: Set[AssetType] =
+    Set(
+      AssetType.Image(AssetName("dots"), AssetPath("assets/dots.png"))
+    )
+
+  def initialScene(bootData: Unit): Option[SceneName] =
+    None
+
+  def scenes(bootData: Unit): NonEmptyList[Scene[Unit, Model, Unit]] =
+    NonEmptyList(Scene.empty)
+
+  val eventFilters: EventFilters =
+    EventFilters.Permissive
+
+  def boot(flags: Map[String, String]): Outcome[BootResult[Unit]] =
+    Outcome(
+      BootResult
+        .noData(config)
+        .withAssets(assets)
+        .withSubSystems(tyrianSubSystem)
+    )
+
+  def setup(
+      bootData: Unit,
+      assetCollection: AssetCollection,
+      dice: Dice
+  ): Outcome[Startup[Unit]] =
+    Outcome(Startup.Success(()))
+
+  def initialModel(startupData: Unit): Outcome[Model] =
+    Outcome(
+      Model.initial(
+        config.viewport.giveDimensions(magnification).center
+      )
+    )
+
+  def updateModel(
+      context: FrameContext[Unit],
+      model: Model
+  ): GlobalEvent => Outcome[Model] = {
+    case MouseEvent.Click(pt) =>
+      val adjustedPosition = pt - model.center
+
+      Outcome(
+        model.addDot(
+          Dot(
+            Point.distanceBetween(model.center, pt).toInt,
+            Radians(
+              Math.atan2(
+                adjustedPosition.x.toDouble,
+                adjustedPosition.y.toDouble
+              )
+            )
+          )
+        )
+      )
+
+    case FrameTick =>
+      Outcome(model.update(context.delta))
+
+    case _ =>
+      Outcome(model)
+  }
+
+  def initialViewModel(startupData: Unit, model: Model): Outcome[Unit] =
+    Outcome(())
+
+  def updateViewModel(
+      context: FrameContext[Unit],
+      model: Model,
+      viewModel: Unit
+  ): GlobalEvent => Outcome[Unit] =
+    _ => Outcome(())
+
+  def present(
+      context: FrameContext[Unit],
+      model: Model,
+      viewModel: Unit
+  ): Outcome[SceneUpdateFragment] =
+    Outcome(
+      SceneUpdateFragment(
+        Graphic(Rectangle(0, 0, 32, 32), 1, Material.Bitmap(assetName)) ::
+          drawDots(model.center, model.dots)
+      )
+    )
+
+  def drawDots(
+      center: Point,
+      dots: Batch[Dot]
+  ): Batch[Graphic[_]] =
+    dots.map { dot =>
+      val position = Point(
+        (Math.sin(dot.angle.toDouble) * dot.orbitDistance + center.x).toInt,
+        (Math.cos(dot.angle.toDouble) * dot.orbitDistance + center.y).toInt
+      )
+
+      Graphic(Rectangle(0, 0, 32, 32), 1, Material.Bitmap(assetName))
+        .withCrop(Rectangle(16, 16, 16, 16))
+        .withRef(8, 8)
+        .moveTo(position)
+    }
+
+}
+
+case class Model(center: Point, dots: Batch[Dot]) {
+  def addDot(dot: Dot): Model =
+    this.copy(dots = dot :: dots)
+
+  def update(timeDelta: Seconds): Model =
+    this.copy(dots = dots.map(_.update(timeDelta)))
+}
+object Model {
+  def initial(center: Point): Model = Model(center, Batch.empty)
+}
+case class Dot(orbitDistance: Int, angle: Radians) {
+  def update(timeDelta: Seconds): Dot =
+    this.copy(angle = angle + Radians.fromSeconds(timeDelta))
+}
+```
+
 Although Indigo builds and exports to Electron natively, for this project
 we'll export directly to HTML and use Yarn to run our web server, with
 ParcelJS to copy and package up our HTML, JS, and CSS.
@@ -210,10 +345,11 @@ update the `object` to be a `case class` so that we can pass in the subsystem as
 ```diff
 - import scala.scalajs.js.annotation.JSExportTopLevel
 + import tyrian.TyrianSubSystem
++ import cats.effect.IO
 
 - @JSExportTopLevel("IndigoGame")
 - object HelloIndigo extends IndigoGame[Unit, Unit, Model, Unit] {
-+ final case class HelloIndigo(tyrianSubSystem: TyrianSubSystem[Int]) extends IndigoGame[Unit, Unit, Model, Unit] {
++ final case class HelloIndigo(tyrianSubSystem: TyrianSubSystem[IO, Int]) extends IndigoGame[Unit, Unit, Model, Unit] {
 ```
 
 We'll also need to tell Indigo to use the new sub-system, which we can do by
@@ -237,7 +373,8 @@ Create a new file called `HelloTyrian.scala` inside the `helloindigo/src` folder
 and add the following contents found below, or
 [here](https://gist.github.com/hobnob/436318b3ae5eed5891ba2b18bb8c264b).
 
-```scala
+```scala mdoc:js
+import cats.effect.IO
 import tyrian.*
 import tyrian.Html.*
 import org.scalajs.dom.document
@@ -246,27 +383,26 @@ import scala.scalajs.js.annotation.*
 enum Msg:
   case StartIndigo extends Msg
 
-@JSExportTopLevel("TyrianApp")
+// @JSExportTopLevel("TyrianApp") // Pandering to mdoc...
 object Main extends TyrianApp[Msg, TyrianModel]:
   val gameDivId = "game-container"
 
-  def init(flags: Map[String, String]): (TyrianModel, Cmd[Msg]) =
+  def init(flags: Map[String, String]): (TyrianModel, Cmd[IO, Msg]) =
     (TyrianModel.init, Cmd.Emit(Msg.StartIndigo))
 
-  def update(msg: Msg, model: TyrianModel): (TyrianModel, Cmd[Msg]) =
-    msg match
-      case Msg.StartIndigo =>
-        (
-          model,
-          Cmd.SideEffect { () =>
-            HelloIndigo(model.bridge.subSystem(IndigoGameId(gameDivId)))
-              .launch(
-                gameDivId,
-                "width"  -> "550",
-                "height" -> "400"
-              )
-          }
-        )
+  def update(model: TyrianModel): Msg => (TyrianModel, Cmd[IO, Msg]) =
+    case Msg.StartIndigo =>
+      (
+        model,
+        Cmd.SideEffect {
+          HelloIndigo(model.bridge.subSystem(IndigoGameId(gameDivId)))
+            .launch(
+              gameDivId,
+              "width"  -> "550",
+              "height" -> "400"
+            )
+        }
+      )
 
   def view(model: TyrianModel): Html[Msg] =
     div(`class` := "main")(
@@ -277,15 +413,15 @@ object Main extends TyrianApp[Msg, TyrianModel]:
       )
     )
 
-  def subscriptions(model: TyrianModel): Sub[Msg] =
-    Sub.Empty
+  def subscriptions(model: TyrianModel): Sub[IO, Msg] =
+    Sub.None
 
   def main(args: Array[String]): Unit =
-    Tyrian.start(document.getElementById("main"), init, update, view, subscriptions)
+    Tyrian.start(document.getElementById("main"), init(Map()), update, view, subscriptions, 1024)
 
-final case class TyrianModel(bridge: TyrianIndigoBridge[Int])
+final case class TyrianModel(bridge: TyrianIndigoBridge[IO, Int])
 object TyrianModel:
-  val init: TyrianModel(TyrianIndigoBridge())
+  val init: TyrianModel = TyrianModel(TyrianIndigoBridge())
 ```
 
 You can now build the project in mill (`mill helloindigo.buildGame`) or sbt (`sbt buildGame`)  and then run `yarn start` to see the HelloIndigo demo running inside a Tyrian website. This is great if you want a

@@ -7,8 +7,8 @@ The `SceneUpdateFragment` is one of the most important types in Indigo, as it is
 
 Below is an example of it's usage:
 
-```scala
-import indigo._
+```scala mdoc:js:shared
+import indigo.*
 
 val graphic =
   Graphic(50, 50, Material.Bitmap(AssetName("placeholder"))
@@ -32,7 +32,7 @@ Unlike `Outcome`, `SceneUpdateFragment`s are not Functors, but they are Monoids,
 
 This is really important as it allows you to build parts of your scene up in lots of different ways, and then easily and reliably combine all the results together at the end. For example:
 
-```scala
+```scala mdoc:js
 val sceneAudio: SceneUpdateFragment = ???
 val background: SceneUpdateFragment = ???
 val clouds: SceneUpdateFragment = ???
@@ -44,7 +44,7 @@ sceneAudio |+| background |+| clouds |+| player |+| foreground
 
 Consider also the following:
 
-```scala
+```scala mdoc:js
 val visible = true
 val vanishingThing =
   if(visible) SceneUpdateFragment(graphic)
@@ -55,16 +55,16 @@ SceneUpdateFragment(graphic) |+| vanishingThing
 
 Or this:
 
-```scala
+```scala mdoc:js
 val scene = SceneUpdateFragment(graphic)
-val l: List[SceneUpdateFragment] = List(scene, scene, scene)
+val b: Batch[SceneUpdateFragment] = Batch(scene, scene, scene)
 
-l.foldLeft(SceneUpdateFragment.empty)(_ |+| _)
+b.foldLeft(SceneUpdateFragment.empty)(_ |+| _)
 ```
 
 There are some special rules about what happens when you combine `SceneUpdateFragment`s that optionally have things like cameras. The rules are: Lists are concatenated in the expected way. Optional elements (cameras, blend materials, scene audio elements) are "appended" such that a defined element is always taken in preference to an undefined element, and if two are defined, the last or "incoming" version is assumed to be the desired one. Consider the following illustration:
 
-```scala
+```scala mdoc:js
 val a: Option[Int] = Some(1)
 val b: Option[Int] = None
 

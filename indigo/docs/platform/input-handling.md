@@ -34,8 +34,17 @@ Indigo does this by sampling the input states of the mouse, keyboard and gamepad
 
 To continue our example from above: If you wanted the current mouse position, rather than listening to all of the `Move` events and redundantly reprocessing your model many times per frame, you can simply access the position directly with:
 
-```scala
-context.mouse.position // returns a Point(x, y)
+```scala mdoc:js:shared:invisible
+import indigo.*
+import indigo.platform.assets.DynamicText
+import indigo.shared.AnimationsRegister
+import indigo.shared.FontRegister
+val boundaryLocator = new BoundaryLocator(new AnimationsRegister, new FontRegister, new DynamicText)
+val context = new FrameContext(GameTime.zero, Dice.fromSeed(1l), InputState.default, boundaryLocator, ())
+```
+
+```scala mdoc:js
+val mousePosition = context.mouse.position // returns a Point(x, y)
 ```
 
 ### Input Mapping
@@ -46,8 +55,8 @@ For this we have created the input mapper, which can be found inside the input s
 
 Here is an example of a "dot" that can be moved up, down, left, right, _and_ diagonally using combinations of the W, A, S, and D keys.
 
-```scala
-import indigo._
+```scala mdoc:js
+import indigo.*
 
 final case class Dot(center: Point) {
   def update(timeDelta: Seconds, inputState: InputState): Outcome[Dot] = {

@@ -33,8 +33,8 @@ val f: String => Int
 
 A `Signal[A]` is similar and looks like this:
 
-```scala
-import indigo._
+```scala mdoc:js
+import indigo.*
 
 final case class Signal[A](f: Seconds => A)
 ```
@@ -77,7 +77,7 @@ That's a much slower rate of progress than method #1 but if we want it to go fas
 
 Since it is designed for pixel art, Indigo works in whole pixels by default which are represented as integers. Consider the following:
 
-```scala
+```scala mdoc:js
 val positionX: Int = 0 // We start at 0 but this works at any value
 val unitsPerSsecond: Int = 1 // move at 1 pixel per second
 val timeDelta: Double = 0.01666666667 // Average time delta for 60 frames per second
@@ -114,7 +114,7 @@ To make this work we need some initial conditions and a function that given thos
 
 Lets try it in vanilla Scala first.
 
-```scala
+```scala mdoc:js
 def calculatePosition(
     startPositionX: Int, // initial condition
     runningTime: Double // how long the animation has been running, a relative value
@@ -147,8 +147,8 @@ calculatePosition(0, 15)
 
 So that's an animation described in terms of a function of time ...which means we must be able to encode that as a `Signal`, so lets try the `Signal` version:
 
-```scala
-import indigo._
+```scala mdoc:js:shared
+import indigo.*
 
 def calculatePosition(startPositionX: Int): Signal[Int] =
   Signal { t =>
@@ -210,8 +210,8 @@ Making signals can get complicated, particularly if you try to wrap up all of th
 
 Signals are Monads, meaning that many of the usual functions like `map`, `ap`, and `flatMap` that you'd expect to see are available to use. For example, here is a signal being constructed in a for comprehension:
 
-```scala
-import indigo._
+```scala mdoc:js
+import indigo.*
 
 val signal =
   for {
@@ -253,8 +253,8 @@ SignalFunction((time => A) => (time => B))
 
 The constructor for a Signal function is actually `SignalFunction(f: A => B)`, as a pose to `SignalFunction(f: Signal[A] => Signal[B])`. this is much more convenient and better explains what you're actually doing with signal functions. Here's a simple example:
 
-```scala
-import indigo._
+```scala mdoc:js
+import indigo.*
 
 val signal = Signal.fixed(10) |> SignalFunction((i: Int) => "count: " + i.toString)
 
@@ -264,8 +264,8 @@ signal.at(Seconds.zero)
 
 In this example we pipe a fixed value (ignores time) into a signal function which prints a string. So far, we could have achieved this by just using `map`:
 
-```scala
-import indigo._
+```scala mdoc:js
+import indigo.*
 
 val signal = Signal.fixed(10).map(i => "count: " + i.toString)
 
@@ -275,8 +275,8 @@ signal.at(Seconds.zero)
 
 You don't _need_ signal functions, but they are a nice way to describe combining and processing signals. Here is an more interesting example:
 
-```scala
-import indigo._
+```scala mdoc:js
+import indigo.*
 
 val makeRange: SignalFunction[Boolean, List[Int]] =
   SignalFunction { p =>

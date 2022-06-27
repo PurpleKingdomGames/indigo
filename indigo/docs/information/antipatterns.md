@@ -19,22 +19,19 @@ A common thing to do, is to organise your game model into a hierarchy of classes
 
 #### Example: Health potions
 
-In your game, all characters - player or otherwise - have an inventory and so you decide to model it like this:
+In your game, all characters - player or otherwise - have an inventory:
 
-```scala
-trait Character:
-  def inventory: Inventory
-
-final case class Player(health: Int, inventory: Inventory) extends Character
+```scala mdoc:js:shared
+final case class Player(health: Int, inventory: Inventory)
 ```
 
 Your player can can pick up health potions around the game and store them in their inventory, which can only hold one health potion at a time. Lets model the inventory as dumbly as possible to keep this really simple:
 
-```scala
+```scala mdoc:js:shared
 case object HealthPotion
-final case class Inventory(healthPotion: Option[HealthPotion]):
+final case class Inventory(healthPotion: Option[HealthPotion.type]):
 
-  def add(hp: HealthPotion): Inventory = 
+  def add(hp: HealthPotion.type): Inventory = 
     this.copy(healthPotion = Some(hp))
 
   def use: Inventory =
@@ -45,10 +42,10 @@ final case class Inventory(healthPotion: Option[HealthPotion]):
 
 We've given it nice little `add` and `use` methods too! While we're at it, the player needs updating:
 
-```scala
-final case class Player(health: Int, inventory: Inventory) extends Character:
+```scala mdoc:js
+final case class Player(health: Int, inventory: Inventory):
 
-  def add(hp: HealthPotion): Player =
+  def add(hp: HealthPotion.type): Player =
     this.copy(inventory = inventory.add(hp))
 
   def use: Player =
@@ -83,14 +80,16 @@ Here again we're going to inflate the return type so that now we can accept the 
 
 Instead of doing any weird feedback with the return types, we can just use the `Outcome` type to fire off events, consider the following alternate inventory implementation:
 
-```scala
-final case class CannotAddThis(healthPotion: HealthPotion) extends GlobalEvent
+```scala mdoc:js:shared
+import indigo.*
+
+final case class CannotAddThis(healthPotion: HealthPotion.type) extends GlobalEvent
 case object NoHealthPotionToUse extends GlobalEvent
 case object IncreasePlayerHealth extends GlobalEvent
 
-final case class Inventory(healthPotion: Option[HealthPotion]):
+final case class AltInventory(healthPotion: Option[HealthPotion.type]):
 
-  def add(hp: HealthPotion): Outcome[Inventory] =
+  def add(hp: HealthPotion.type): Outcome[AltInventory] =
     healthPotion match
       case None =>
         Outcome(this.copy(healthPotion = Some(hp)))
@@ -99,7 +98,7 @@ final case class Inventory(healthPotion: Option[HealthPotion]):
         Outcome(this)
           .addGlobalEvents(CannotAddThis(hp))
 
-  def use: Outcome[Inventory] =
+  def use: Outcome[AltInventory] =
     healthPotion match
       case None =>
         Outcome(this)
@@ -114,15 +113,15 @@ Now, when we consume a health potion we either report that there was one, or tha
 
 This will require a change to our player too to make it work:
 
-```scala
-final case class Player(health: Int, inventory: Inventory) extends Character:
+```scala mdoc:js
+final case class AltPlayer(health: Int, inventory: AltInventory):
 
-  def add(hp: HealthPotion): Outcome[Player] =
+  def add(hp: HealthPotion.type): Outcome[AltPlayer] =
     inventory.add(hp).map { inv =>
       this.copy(inventory = inv)
     }
 
-  def use: Outcome[Player] =
+  def use: Outcome[AltPlayer] =
     inventory.use.map { inv =>
       this.copy(inventory = inv)
     }
@@ -130,7 +129,7 @@ final case class Player(health: Int, inventory: Inventory) extends Character:
 
 When we call `use`, it now returns an `Outcome[Inventory]` which we can map over (retaining any events created when we called `inventory.use`) and update our player.
 
-Note that we don't try and update the player's health yet. To do that we'd add a new `increaseHealth` method to `Player` and have it invoked when the `updateModel` function receives the `IncreasePlayerHealth` event.
+Note that we don't try and update the player's health yet. To do that we'd add a new `increaseHealth` method to `AltPlayer` and have it invoked when the `updateModel` function receives the `IncreasePlayerHealth` event.
 
 ### Simultaneous updates
 

@@ -13,12 +13,14 @@ As an example, consider this simple (and arguably unhelpful) subsystem that trac
 
 > ["The Cursed Pirate"](https://github.com/PurpleKingdomGames/indigo-examples/blob/master/demos/pirate/src/main/scala/pirate/scenes/level/subsystems/CloudsSubSystem.scala) uses an alternative and arguable cleaner SubSystem construction method than the one below.
 
-```scala
-import indigo._
+```scala mdoc:js
+import indigo.*
 
 final case class PointsTrackerExample(startingPoints: Int) extends SubSystem:
   type EventType      = PointsTrackerEvent
   type SubSystemModel = Int
+
+  val id: SubSystemId = SubSystemId("points tracker")
 
   val eventFilter: GlobalEvent => Option[PointsTrackerEvent] = {
     case e: PointsTrackerEvent => Option(e)

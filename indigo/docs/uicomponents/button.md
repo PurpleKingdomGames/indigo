@@ -5,9 +5,9 @@ title: Buttons
 
 The out-of-the-box button is created out of three graphics that represent the up, over, and down states. Aside from handling the button's state, the main advantage of using the button component is that it's easier to to define interactions. Rather than pattern matching on a click event at the top of your update function, and then deciding whether the click happened inside the button or not, you can just define you button as follows and it will do the rest for you, once it has been wired in:
 
-```scala
-import indigo._
-import indigoextras.ui._
+```scala mdoc:js:shared
+import indigo.*
+import indigoextras.ui.*
 
 case object LaunchTheRocket extends GlobalEvent
 
@@ -30,7 +30,7 @@ val button =
 
 A quick explanation of the `updateViewModel` function in the example above, it looks like this:
 
-```scala
+```scala mdoc:js:shared
 final case class MyViewModel(button: Button)
 
 def updateViewModel(context: FrameContext[Unit], model: Unit, viewModel: MyViewModel): GlobalEvent => Outcome[MyViewModel] = {
@@ -46,8 +46,8 @@ def updateViewModel(context: FrameContext[Unit], model: Unit, viewModel: MyViewM
 
 To help see what's happening here, we could rewrite this:
 
-```scala
-import indigo._
+```scala mdoc:js:shared:invisible
+import indigo.*
 import indigo.platform.assets.DynamicText
 import indigo.shared.AnimationsRegister
 import indigo.shared.FontRegister
@@ -55,7 +55,7 @@ val boundaryLocator = new BoundaryLocator(new AnimationsRegister, new FontRegist
 val context = new FrameContext(GameTime.zero, Dice.fromSeed(1l), InputState.default, boundaryLocator, ())
 ```
 
-```scala
+```scala mdoc:js:shared
 val viewModel = MyViewModel(button)
 
 viewModel.button.update(context.inputState.mouse).map { btn =>
@@ -65,7 +65,7 @@ viewModel.button.update(context.inputState.mouse).map { btn =>
 
 ...as:
 
-```scala
+```scala mdoc:js
 for {
   updatedButton    <- viewModel.button.update(context.inputState.mouse)
   updatedViewModel <- Outcome(viewModel.copy(button = updatedButton))
@@ -76,7 +76,7 @@ First we have to update the button, which is done by calling the buttons's built
 
 ***A word of caution***, you might be tempted to do this instead, which appears to work and compiles just fine:
 
-```scala
+```scala mdoc:js
 val updatedButton = viewModel.button.update(context.inputState.mouse).unsafeGet
 val updatedViewModel = viewModel.copy(button = updatedButton)
 

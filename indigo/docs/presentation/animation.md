@@ -45,20 +45,24 @@ During boot, how you add your animations depends on the entry point you are usin
 
 With `IndigoSandbox` you will add your animations to:
 
-```scala
+```scala mdoc:js:shared
+import indigo.*
+
+val myAnimation: Animation = Animation(AnimationKey("my anim"), Frame(Rectangle(0, 0, 32, 32), Millis(100)))
+
 val animations: Set[Animation] = Set(myAnimation)
 ```
 
 However, to add an animation to the boot sequence of `IndigoDemo` or `IndigoGame`, you will need to add them to the `BootResult`:
 
-```scala
+```scala mdoc:js
 BootResult.noData(GameConfig.default).addAnimations(myAnimation)
 ```
 
 During setup, you can add an animation like this:
 
-```scala
-Startup.Success(()).addAnimations(spriteAndAnimations.animations)
+```scala mdoc:js
+Startup.Success(()).addAnimations(myAnimation)
 ```
 
 The advantage of adding animations during the set up stage is that they can be based on loaded data, for example an imported Aseprite animation.
@@ -92,8 +96,8 @@ As a brief introduction to `Signal`s, a signal is a value of type: `t: Seconds -
 
 For example:
 
-```scala
-import indigo._
+```scala mdoc:js:shared
+import indigo.*
 
 // a signal that outputs 10 'units' per second
 val signal: Signal[Double] = Signal(t => t.toDouble * 10)
@@ -106,7 +110,7 @@ signal.at(Seconds(2.0)) // 20
 
 You can also use them to bend time:
 
-```scala
+```scala mdoc:js
 signal.affectTime(0.5).at(Seconds(2.0)) // 10
 signal.affectTime(1.0).at(Seconds(2.0)) // 20
 signal.affectTime(1.5).at(Seconds(2.0)) // 30
@@ -136,7 +140,7 @@ def and[C](other: SignalFunction[A, C]): SignalFunction[A, (B, C)] = ???
 
 Example, one could calculate an orbit like this:
 
-```scala
+```scala mdoc:js
 val xPos: SignalFunction[Radians, Double] =
   SignalFunction(r => Math.sin(r.toDouble))
 

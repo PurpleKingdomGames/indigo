@@ -65,7 +65,7 @@ A clone blank can be any primitive that extends the `Cloneable` trait, which inc
 
 Clone blanks are processed once per frame, and you can add them to your scene as follows:
 
-```scala
+```scala mdoc:js:shared
 import indigo.*
 
 val graphic = Graphic(32, 32, Material.Bitmap(AssetName("bob texture")))
@@ -85,8 +85,8 @@ The simplest and most high volume type of clone is the `CloneBatch`.
 
 This example will render three instances of the clone blank in different positions on the screen.
 
-```scala
-val particles = Array(Point(10), Point(20), Point(30))
+```scala mdoc:js:shared
+val particles = Batch(Point(10), Point(20), Point(30))
 
 CloneBatch(
   cloneId,
@@ -102,8 +102,8 @@ The problem with `CloneBatch` is that the copies are pretty much identical - par
 
 This example renders our three instances again but this time crops the texture in three different places.
 
-```scala
-val crops = Array(Rectangle(0, 0, 10, 10), Rectangle(10, 0, 10, 10), Rectangle(0, 10, 10, 10))
+```scala mdoc:js
+val crops = Batch(Rectangle(0, 0, 10, 10), Rectangle(10, 0, 10, 10), Rectangle(0, 10, 10, 10))
 
 CloneTiles(
   cloneId,
@@ -121,14 +121,14 @@ The idea of mutants is to take a clone blank and 'mutate' it per instance by pro
 
 From a usage perspective, `Mutants` are no more difficult to use than `CloneBatch`s or `CloneTiles`, here is a simple example that renders a single copy of a clone blank:
 
-```scala
+```scala mdoc:js
 Mutants(
   cloneId,
   Array(
-    List(
+    Batch(
       UniformBlock(
         "MutantData",
-        List(
+        Batch(
           Uniform("MOVE_TO")  -> vec2(10.0, 10.0),
           Uniform("SCALE_TO") -> vec2(2.0, 2.0),
           Uniform("ALPHA")    -> float(0.75)

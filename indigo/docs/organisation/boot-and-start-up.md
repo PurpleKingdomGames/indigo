@@ -26,8 +26,8 @@ Sandbox games (that implement `IndigoSandbox`) have a different boot sequence th
 
 `IndigoGame`'s and `IndigoDemo`s have a boot method such as this one, where "`BootData`" is some user defined type:
 
-```scala
-import indigo._
+```scala mdoc:js:shared
+import indigo.*
 
 final case class BootData(myData: String)
 
@@ -46,8 +46,8 @@ Let's look at the [Snake game on our website as a simple example](https://indigo
 
 Well we use a flag, like this:
 
-```scala
-import indigo._
+```scala mdoc:js
+import indigo.*
 
 def boot(flags: Map[String, String]): Outcome[BootResult[GameViewport]] = {
   val assetPath: String =
@@ -91,7 +91,7 @@ In a simple game, all of your animations, fonts, subsystems, shaders, and assets
 
 Optionally the boot sequence can result in a value, particularly since the boot sequence has access to the initial flags. For example you might return:
 
-```scala
+```scala mdoc:js
 final case class BootData(runFullScreen: Boolean)
 ```
 
@@ -107,7 +107,7 @@ If "boot" is for marshaling your foundation game settings (bootstrapping), then 
 
 The setup function signature looks like this:
 
-```scala
+```scala mdoc:js
 final case class StartUpData(debugMode: Boolean) // an example custom start up data type
 
 def setup(bootData: BootData, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[StartUpData]] = ???
@@ -143,7 +143,7 @@ If you don't need say anything other than "success", you can just say `Startup.S
 
 Should your setup function has fail, you should report errors like this:
 
-```scala
+```scala mdoc:js
 Startup.Failure(
   "error message 1",
   "error message 2",

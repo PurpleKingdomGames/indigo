@@ -12,7 +12,7 @@ For simplicity, we'll only talk about model updates from here on but this applie
 
 One of the goals of Indigo is to make frame updates referentially transparent and testable. Superficially that's easy, here's a simple model class:
 
-```scala
+```scala mdoc:js
 import indigo.Point
 
 final case class Bob(position: Point):
@@ -24,7 +24,7 @@ So when we update Bob he's going to proceed across the screen. The trouble is th
 
 What if we wanted to make Bob's movement totally erratic?
 
-```scala
+```scala mdoc:js
 import indigo.Point
 import scala.util.Random
 
@@ -49,17 +49,18 @@ To make these things testable, a deterministic frame context is provided to give
 
 For some given starting definitions:
 
-```scala
+```scala mdoc:js:shared
 final case class StartUpData()
 final case class Model()
 ```
 
 Here is the definition of the model update function from `IndigoDemo`:
 
-```scala
-import indigo._
+```scala mdoc:js
+import indigo.*
 
-def updateModel(context: FrameContext[StartUpData], model: Model): GlobalEvent => Outcome[Model] = ???
+def updateModel(context: FrameContext[StartUpData], model: Model): GlobalEvent => Outcome[Model] =
+  _ => Outcome(model)
 ```
 
 This function is supposed to update the model given some events, but it does so in the presence of `context: FrameContext[StartUpData]`.

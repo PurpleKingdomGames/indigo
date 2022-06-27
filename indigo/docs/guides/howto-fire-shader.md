@@ -19,9 +19,9 @@ Every game engine implements shaders in a slightly different way. This is becaus
 
 If you haven't already, you should go and read the ["How to make a custom entity"](howto-custom-entity.md) guide first, because this how-to builds on that one. You will indeed need a custom entity to run your shader in, this is the one I'm using:
 
-```scala
-import indigo._
-import indigo.ShaderPrimitive._
+```scala mdoc:js:shared
+import indigo.*
+import indigo.ShaderPrimitive.*
 
 final case class Fire(
     position: Point,
@@ -31,7 +31,7 @@ final case class Fire(
     inner: RGB,
     center: RGB,
     offset: Double
-) extends EntityNode:
+) extends EntityNode[Fire]:
   def flip: Flip        = Flip.default
   def ref: Point        = Point.zero
   def rotation: Radians = Radians.zero
@@ -40,12 +40,16 @@ final case class Fire(
   def withDepth(newDepth: Depth): Fire =
     this.copy(depth = newDepth)
 
+  def eventHandler: ((Fire, GlobalEvent)) => Option[GlobalEvent] =
+    _ => None
+  def eventHandlerEnabled: Boolean = false
+
   def toShaderData: ShaderData =
     ShaderData(
       Fire.shaderId,
       UniformBlock(
         "FireData",
-        List(
+        Batch(
           Uniform("OFFSET")       -> float(offset),
           Uniform("COLOR_OUTER")  -> vec3(outer.r, outer.g, outer.b),
           Uniform("COLOR_INNER")  -> vec3(inner.r, inner.g, inner.b),
@@ -100,7 +104,7 @@ Taking them in turn:
 
 ### The `EntityShader`
 
-```scala
+```scala mdoc:js
 def shader(fragProgram: AssetName): EntityShader =
   EntityShader
     .External(ShaderId("my fire shader"))
@@ -142,7 +146,7 @@ The advantage of using an external file is that you can use a nice editor with G
 
 You _MUST_ remember to register your shader, like this (or under `val shader: Set[Shader]` in an Indigo sandbox game):
 
-```scala
+```scala mdoc:js
 object Assets:
   val fireProgram = AssetName("fire")
   val assets: Set[AssetType] =
@@ -158,7 +162,7 @@ BootResult
 
 Eventually we're going to need to tell our custom entity which shader to use (`Fire.shaderId`) and also supply values to the shader to change how it behaves. This is the final version, we're skipping to the end, but hopefully it should be fairly self explanatory:
 
-```scala
+```scala mdoc:js
 val offset = 0.0d // Used to make different instances flicker out of sync
 val center = RGB.White
 val inner = RGB.Yellow
@@ -169,7 +173,7 @@ def toShaderData: ShaderData =
     Fire.shaderId,
     UniformBlock(
       "FireData",
-      List(
+      Batch(
         Uniform("OFFSET")       -> float(offset),
         Uniform("COLOR_OUTER")  -> vec3(outer.r, outer.g, outer.b),
         Uniform("COLOR_INNER")  -> vec3(inner.r, inner.g, inner.b),

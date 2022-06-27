@@ -15,10 +15,10 @@ Like other ui components, hit areas are intended to live in your view model, and
 
 Here is an example:
 
-```scala
-import indigo._
-import indigoextras.ui._
-import indigoextras.geometry._
+```scala mdoc:js:shared
+import indigo.*
+import indigoextras.ui.*
+import indigoextras.geometry.*
 
 final case class Log(message: String) extends GlobalEvent
 final case class ViewModel(hitArea: HitArea):
@@ -28,7 +28,7 @@ final case class ViewModel(hitArea: HitArea):
     }
 
 val points =
-  List(Point(5, 0), Point(0, 5), Point(5, 10), Point(10, 5))
+  Batch(Point(5, 0), Point(0, 5), Point(5, 10), Point(10, 5))
     .map(Vertex.fromPoint)
 
 val viewModel =
@@ -41,8 +41,8 @@ val viewModel =
 
 You must then update as usual during the `updateViewModel` function:
 
-```scala
-import indigo._
+```scala mdoc:js:shared:invisible
+import indigo.*
 import indigo.platform.assets.DynamicText
 import indigo.shared.AnimationsRegister
 import indigo.shared.FontRegister
@@ -50,6 +50,6 @@ val boundaryLocator = new BoundaryLocator(new AnimationsRegister, new FontRegist
 val context = new FrameContext(GameTime.zero, Dice.fromSeed(1l), InputState.default, boundaryLocator, ())
 ```
 
-```scala
+```scala mdoc:js
 viewModel.update(context.mouse)
 ```

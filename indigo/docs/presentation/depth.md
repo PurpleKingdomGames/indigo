@@ -15,10 +15,10 @@ Zero is right in front of the camera, and bigger numbers are further away. It ma
 
 If several things have the same depth, the elements are draw in the order given to the `SceneUpdateFragment` e.g.:
 
-```scala
-import indigo._
+```scala mdoc:js
+import indigo.*
 
-List(
+Batch(
   Graphic(10, 10, Material.Bitmap(AssetName("texture 1"))), // drawn first (on the bottom)
   Graphic(10, 10, Material.Bitmap(AssetName("texture 2"))), // drawn second (on top of graphic1)
   Graphic(10, 10, Material.Bitmap(AssetName("texture 3")))  // drawn third (drawn last on top of graphic2)
