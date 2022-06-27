@@ -223,10 +223,11 @@ as a way of communicating between Indigo and Tyrian. Add
 update the <code>object</code> to be a <code>case class</code> so that we can pass in the subsystem as an argument. We can also remove the top level export, as we'll no longer need it:</p>
 <pre><code class="hljs css language-diff"><span class="hljs-deletion">- import scala.scalajs.js.annotation.JSExportTopLevel</span>
 <span class="hljs-addition">+ import tyrian.TyrianSubSystem</span>
+<span class="hljs-addition">+ import cats.effect.IO</span>
 
 <span class="hljs-deletion">- @JSExportTopLevel("IndigoGame")</span>
 <span class="hljs-deletion">- object HelloIndigo extends IndigoGame[Unit, Unit, Model, Unit] {</span>
-<span class="hljs-addition">+ final case class HelloIndigo(tyrianSubSystem: TyrianSubSystem[Int]) extends IndigoGame[Unit, Unit, Model, Unit] {</span>
+<span class="hljs-addition">+ final case class HelloIndigo(tyrianSubSystem: TyrianSubSystem[IO, Int]) extends IndigoGame[Unit, Unit, Model, Unit] {</span>
 </code></pre>
 <p>We'll also need to tell Indigo to use the new sub-system, which we can do by
 adding an entry to the <code>boot</code> method like so:</p>
@@ -244,7 +245,8 @@ a canvas (for Indigo), a counter, and a button, wrapped in a few <code>div</code
 Create a new file called <code>HelloTyrian.scala</code> inside the <code>helloindigo/src</code> folder
 and add the following contents found below, or
 <a href="https://gist.github.com/hobnob/436318b3ae5eed5891ba2b18bb8c264b">here</a>.</p>
-<pre><code class="hljs css language-scala"><span class="hljs-keyword">import</span> tyrian.*
+<pre><code class="hljs css language-scala"><span class="hljs-keyword">import</span> cats.effect.<span class="hljs-type">IO</span>
+<span class="hljs-keyword">import</span> tyrian.*
 <span class="hljs-keyword">import</span> tyrian.<span class="hljs-type">Html</span>.*
 <span class="hljs-keyword">import</span> org.scalajs.dom.document
 <span class="hljs-keyword">import</span> scala.scalajs.js.annotation.*
@@ -252,27 +254,26 @@ and add the following contents found below, or
 enum <span class="hljs-type">Msg</span>:
   <span class="hljs-keyword">case</span> <span class="hljs-type">StartIndigo</span> <span class="hljs-keyword">extends</span> <span class="hljs-type">Msg</span>
 
-<span class="hljs-meta">@JSExportTopLevel</span>(<span class="hljs-string">"TyrianApp"</span>)
+<span class="hljs-comment">// @JSExportTopLevel("TyrianApp") // Pandering to mdoc...</span>
 <span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">Main</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">TyrianApp</span>[<span class="hljs-type">Msg</span>, <span class="hljs-type">TyrianModel</span>]</span>:
   <span class="hljs-keyword">val</span> gameDivId = <span class="hljs-string">"game-container"</span>
 
-  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">init</span></span>(flags: <span class="hljs-type">Map</span>[<span class="hljs-type">String</span>, <span class="hljs-type">String</span>]): (<span class="hljs-type">TyrianModel</span>, <span class="hljs-type">Cmd</span>[<span class="hljs-type">Msg</span>]) =
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">init</span></span>(flags: <span class="hljs-type">Map</span>[<span class="hljs-type">String</span>, <span class="hljs-type">String</span>]): (<span class="hljs-type">TyrianModel</span>, <span class="hljs-type">Cmd</span>[<span class="hljs-type">IO</span>, <span class="hljs-type">Msg</span>]) =
     (<span class="hljs-type">TyrianModel</span>.init, <span class="hljs-type">Cmd</span>.<span class="hljs-type">Emit</span>(<span class="hljs-type">Msg</span>.<span class="hljs-type">StartIndigo</span>))
 
-  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">update</span></span>(msg: <span class="hljs-type">Msg</span>, model: <span class="hljs-type">TyrianModel</span>): (<span class="hljs-type">TyrianModel</span>, <span class="hljs-type">Cmd</span>[<span class="hljs-type">Msg</span>]) =
-    msg <span class="hljs-keyword">match</span>
-      <span class="hljs-keyword">case</span> <span class="hljs-type">Msg</span>.<span class="hljs-type">StartIndigo</span> =&gt;
-        (
-          model,
-          <span class="hljs-type">Cmd</span>.<span class="hljs-type">SideEffect</span> { () =&gt;
-            <span class="hljs-type">HelloIndigo</span>(model.bridge.subSystem(<span class="hljs-type">IndigoGameId</span>(gameDivId)))
-              .launch(
-                gameDivId,
-                <span class="hljs-string">"width"</span>  -&gt; <span class="hljs-string">"550"</span>,
-                <span class="hljs-string">"height"</span> -&gt; <span class="hljs-string">"400"</span>
-              )
-          }
-        )
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">update</span></span>(model: <span class="hljs-type">TyrianModel</span>): <span class="hljs-type">Msg</span> =&gt; (<span class="hljs-type">TyrianModel</span>, <span class="hljs-type">Cmd</span>[<span class="hljs-type">IO</span>, <span class="hljs-type">Msg</span>]) =
+    <span class="hljs-keyword">case</span> <span class="hljs-type">Msg</span>.<span class="hljs-type">StartIndigo</span> =&gt;
+      (
+        model,
+        <span class="hljs-type">Cmd</span>.<span class="hljs-type">SideEffect</span> {
+          <span class="hljs-type">HelloIndigo</span>(model.bridge.subSystem(<span class="hljs-type">IndigoGameId</span>(gameDivId)))
+            .launch(
+              gameDivId,
+              <span class="hljs-string">"width"</span>  -&gt; <span class="hljs-string">"550"</span>,
+              <span class="hljs-string">"height"</span> -&gt; <span class="hljs-string">"400"</span>
+            )
+        }
+      )
 
   <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">view</span></span>(model: <span class="hljs-type">TyrianModel</span>): <span class="hljs-type">Html</span>[<span class="hljs-type">Msg</span>] =
     div(`<span class="hljs-class"><span class="hljs-keyword">class</span>` </span>:= <span class="hljs-string">"main"</span>)(
@@ -283,16 +284,17 @@ enum <span class="hljs-type">Msg</span>:
       )
     )
 
-  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">subscriptions</span></span>(model: <span class="hljs-type">TyrianModel</span>): <span class="hljs-type">Sub</span>[<span class="hljs-type">Msg</span>] =
-    <span class="hljs-type">Sub</span>.<span class="hljs-type">Empty</span>
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">subscriptions</span></span>(model: <span class="hljs-type">TyrianModel</span>): <span class="hljs-type">Sub</span>[<span class="hljs-type">IO</span>, <span class="hljs-type">Msg</span>] =
+    <span class="hljs-type">Sub</span>.<span class="hljs-type">None</span>
 
   <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span></span>(args: <span class="hljs-type">Array</span>[<span class="hljs-type">String</span>]): <span class="hljs-type">Unit</span> =
-    <span class="hljs-type">Tyrian</span>.start(document.getElementById(<span class="hljs-string">"main"</span>), init, update, view, subscriptions)
+    <span class="hljs-type">Tyrian</span>.start(document.getElementById(<span class="hljs-string">"main"</span>), init(<span class="hljs-type">Map</span>()), update, view, subscriptions, <span class="hljs-number">1024</span>)
 
-<span class="hljs-keyword">final</span> <span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">TyrianModel</span>(<span class="hljs-params">bridge: <span class="hljs-type">TyrianIndigoBridge</span>[<span class="hljs-type">Int</span>]</span>)</span>
+<span class="hljs-keyword">final</span> <span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">TyrianModel</span>(<span class="hljs-params">bridge: <span class="hljs-type">TyrianIndigoBridge</span>[<span class="hljs-type">IO</span>, <span class="hljs-type">Int</span>]</span>)</span>
 <span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">TyrianModel</span></span>:
-  <span class="hljs-keyword">val</span> init: <span class="hljs-type">TyrianModel</span>(<span class="hljs-type">TyrianIndigoBridge</span>())
+  <span class="hljs-keyword">val</span> init: <span class="hljs-type">TyrianModel</span> = <span class="hljs-type">TyrianModel</span>(<span class="hljs-type">TyrianIndigoBridge</span>())
 </code></pre>
+<div id="mdoc-html-run1" data-mdoc-js></div>
 <p>You can now build the project in mill (<code>mill helloindigo.buildGame</code>) or sbt (<code>sbt buildGame</code>)  and then run <code>yarn start</code> to see the HelloIndigo demo running inside a Tyrian website. This is great if you want a
 website surrounding your game with no interaction, but it would be much more
 useful to get them both talking to each other... this is what we're doing next!</p>
@@ -472,4 +474,6 @@ event to Indigo on a canvas resize that will change the size Indigo renders at
 (which is more efficient that the transform we used here). We could also use
 CSS to show a dialog box, preventing the player from interacting with the game
 until they've given feedback.</p>
+<script type="text/javascript" src="howto-hello-indigo-tyrian.md.js" defer></script>
+<script type="text/javascript" src="mdoc.js" defer></script>
 </span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/docs/guides/howto-indigo-game"><span class="arrow-prev">← </span><span class="function-name-prevnext">Converting `IndigoSandbox` to `IndigoGame`</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#responsive-ui-using-tyrian">Responsive UI Using Tyrian</a></li><li><a href="#overview">Overview</a></li><li><a href="#setup">Setup</a><ul class="toc-headings"><li><a href="#setting-up-the-environment">Setting up the Environment</a></li><li><a href="#setting-up-the-build">Setting up the Build</a></li><li><a href="#setting-up-the-html-and-parceljs">Setting up the HTML and ParcelJS</a></li><li><a href="#update-helloindigoscala">Update HelloIndigo.scala</a></li></ul></li><li><a href="#create-a-tyrian-app">Create a Tyrian App</a></li><li><a href="#tyrian-to-indigo-communication">Tyrian to Indigo Communication</a></li><li><a href="#indigo-to-tyrian-communication">Indigo to Tyrian Communication</a></li><li><a href="#responsive-ui">Responsive UI</a></li><li><a href="#further-work">Further Work</a></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/" class="nav-home"><img src="/img/indigo_logo.svg" alt="Indigo" width="66" height="58"/></a><div><h5>Getting Started</h5><a href="/docs/en/quickstart/setup-and-configuration">Setup &amp; Configuration Guide</a><a href="/docs/en/quickstart/hello-indigo">&quot;Hello, Indigo!&quot; Tutorial</a><a href="/docs/en/quickstart/examples">Links to examples</a><a href="/docs/en/quickstart/project-templates">Project templates</a></div><div><h5>Community</h5><a href="https://discord.gg/b5CD47g">Discord</a><a href="https://github.com/PurpleKingdomGames/indigo/discussions">GitHub Discussons</a><a href="https://twitter.com/indigoengine" target="_blank" rel="noreferrer noopener">Twitter</a></div><div><h5>Sponsor us!</h5><a href="https://github.com/sponsors/PurpleKingdomGames">GitHub Sponsors</a><a href="https://www.patreon.com/indigoengine">Patreon</a></div></section></footer></div></body></html>

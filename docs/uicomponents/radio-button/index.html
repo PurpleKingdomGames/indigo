@@ -61,15 +61,8 @@
             });
         </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1 id="__docusaurus" class="postHeaderTitle">Radio Button</h1></header><article><div><span><p>Radio buttons are a collection of buttons where only one of them can be in a selected state at any given time, and one must always be selected once an initial selection has been made. No doubt you've seen them on multiple choice forms.</p>
 <p>To set up Radio buttons, you would initialize them in your view model as follows:</p>
-<pre><code class="hljs css language-scala"><span class="hljs-keyword">import</span> indigo._
-<span class="hljs-keyword">import</span> indigo.platform.assets.<span class="hljs-type">DynamicText</span>
-<span class="hljs-keyword">import</span> indigo.shared.<span class="hljs-type">AnimationsRegister</span>
-<span class="hljs-keyword">import</span> indigo.shared.<span class="hljs-type">FontRegister</span>
-<span class="hljs-keyword">val</span> boundaryLocator = <span class="hljs-keyword">new</span> <span class="hljs-type">BoundaryLocator</span>(<span class="hljs-keyword">new</span> <span class="hljs-type">AnimationsRegister</span>, <span class="hljs-keyword">new</span> <span class="hljs-type">FontRegister</span>, <span class="hljs-keyword">new</span> <span class="hljs-type">DynamicText</span>)
-<span class="hljs-keyword">val</span> context = <span class="hljs-keyword">new</span> <span class="hljs-type">FrameContext</span>(<span class="hljs-type">GameTime</span>.zero, <span class="hljs-type">Dice</span>.fromSeed(<span class="hljs-number">1</span>l), <span class="hljs-type">InputState</span>.<span class="hljs-keyword">default</span>, boundaryLocator, ())
-</code></pre>
-<pre><code class="hljs css language-scala"><span class="hljs-keyword">import</span> indigo._
-<span class="hljs-keyword">import</span> indigoextras.ui._
+<pre><code class="hljs css language-scala"><span class="hljs-keyword">import</span> indigo.*
+<span class="hljs-keyword">import</span> indigoextras.ui.*
 
 <span class="hljs-keyword">final</span> <span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyRadioButtonEvent</span>(<span class="hljs-params">color: <span class="hljs-type">RGBA</span></span>) <span class="hljs-keyword">extends</span> <span class="hljs-title">GlobalEvent</span></span>
 
@@ -89,10 +82,13 @@
     <span class="hljs-type">RadioButton</span>(<span class="hljs-type">Point</span>(<span class="hljs-number">45</span>, <span class="hljs-number">5</span>)).withSelectedActions(<span class="hljs-type">MyRadioButtonEvent</span>(<span class="hljs-type">RGBA</span>.<span class="hljs-type">Blue</span>))
   )
 </code></pre>
+<div id="mdoc-html-run1" data-mdoc-js></div>
 <p>In the example above, we construct an empty <code>RadioButtonGroup</code> group with <code>ButtonAssets</code> display data, and a width and height. The width and height are really producing a hit area <code>Rectangle(0, 0, width, height)</code> that is used to decide if a mouse action should be accounted for. The hit area does not need to start at <code>0, 0</code> though, and can be changed with the <code>.withHitArea</code> method.</p>
 <p>We then add a group of radio buttons that all share the same button assets, giving each a unique position and defining what events will be fired as the radio button pass through the different states we care about.</p>
 <blockquote>
 <p>Please note that each radio button can optionally have a unique <code>ButtonAssets</code> instance and hit area. When unspecified, the radio buttons will use the group level versions.</p>
 </blockquote>
 <p><a href="https://github.com/PurpleKingdomGames/indigo-examples/tree/master/examples/radio">The full radio button example is in the indigo-examples repo.</a></p>
+<script type="text/javascript" src="radio-button.md.js" defer></script>
+<script type="text/javascript" src="mdoc.js" defer></script>
 </span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/docs/uicomponents/input-field"><span class="arrow-prev">← </span><span>Input Field</span></a><a class="docs-next button" href="/docs/shaders/shader-overview"><span>Shaders Overview</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/" class="nav-home"><img src="/img/indigo_logo.svg" alt="Indigo" width="66" height="58"/></a><div><h5>Getting Started</h5><a href="/docs/en/quickstart/setup-and-configuration">Setup &amp; Configuration Guide</a><a href="/docs/en/quickstart/hello-indigo">&quot;Hello, Indigo!&quot; Tutorial</a><a href="/docs/en/quickstart/examples">Links to examples</a><a href="/docs/en/quickstart/project-templates">Project templates</a></div><div><h5>Community</h5><a href="https://discord.gg/b5CD47g">Discord</a><a href="https://github.com/PurpleKingdomGames/indigo/discussions">GitHub Discussons</a><a href="https://twitter.com/indigoengine" target="_blank" rel="noreferrer noopener">Twitter</a></div><div><h5>Sponsor us!</h5><a href="https://github.com/sponsors/PurpleKingdomGames">GitHub Sponsors</a><a href="https://www.patreon.com/indigoengine">Patreon</a></div></section></footer></div></body></html>

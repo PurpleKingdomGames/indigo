@@ -67,7 +67,7 @@
 <p><strong><em>Danger!</em></strong> That does mean that if every log is unique you'll not only be flooded with log messages, but you'll also be filling up your memory with cache entries!</p>
 </blockquote>
 <p>The available logging options are:</p>
-<pre><code class="hljs css language-scala"><span class="hljs-keyword">import</span> indigo.<span class="hljs-type">IndigoLogger</span>._
+<pre><code class="hljs css language-scala"><span class="hljs-keyword">import</span> indigo.<span class="hljs-type">IndigoLogger</span>.*
 
 consoleLog(<span class="hljs-string">"message to log"</span>)
 info(<span class="hljs-string">"message to log"</span>)
@@ -76,9 +76,12 @@ errorOnce(<span class="hljs-string">"message to log"</span>)
 debug(<span class="hljs-string">"message to log"</span>)
 debugOnce(<span class="hljs-string">"message to log"</span>)
 </code></pre>
+<div id="mdoc-html-run0" data-mdoc-js></div>
 <h2><a class="anchor" aria-hidden="true" id="log-format"></a><a href="#log-format" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Log Format</h2>
 <p>Logs are currently written out in a fixed format:</p>
 <p><code>s&quot;&quot;&quot;[${system time millis}] [$level] [Indigo] $message&quot;&quot;&quot;</code></p>
 <p><code>info</code>,<code>error</code>, and <code>debug</code> are just levels you can log at, although this is purely for visual information as the logger has no configuration to change logging levels.</p>
 <p><code>consoleLog</code> prints to standard out (console.log in JavaScript) without any log message formatting.</p>
+<script type="text/javascript" src="logging.md.js" defer></script>
+<script type="text/javascript" src="mdoc.js" defer></script>
 </span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/docs/platform/loading-and-saving-data"><span class="arrow-prev">← </span><span>Loading &amp; Saving Data</span></a><a class="docs-next button" href="/docs/platform/networking"><span>Networking</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#logging">Logging</a></li><li><a href="#log-format">Log Format</a></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/" class="nav-home"><img src="/img/indigo_logo.svg" alt="Indigo" width="66" height="58"/></a><div><h5>Getting Started</h5><a href="/docs/en/quickstart/setup-and-configuration">Setup &amp; Configuration Guide</a><a href="/docs/en/quickstart/hello-indigo">&quot;Hello, Indigo!&quot; Tutorial</a><a href="/docs/en/quickstart/examples">Links to examples</a><a href="/docs/en/quickstart/project-templates">Project templates</a></div><div><h5>Community</h5><a href="https://discord.gg/b5CD47g">Discord</a><a href="https://github.com/PurpleKingdomGames/indigo/discussions">GitHub Discussons</a><a href="https://twitter.com/indigoengine" target="_blank" rel="noreferrer noopener">Twitter</a></div><div><h5>Sponsor us!</h5><a href="https://github.com/sponsors/PurpleKingdomGames">GitHub Sponsors</a><a href="https://www.patreon.com/indigoengine">Patreon</a></div></section></footer></div></body></html>

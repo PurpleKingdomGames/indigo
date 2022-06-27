@@ -72,6 +72,7 @@
   <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">update</span></span>: <span class="hljs-type">Bob</span> =
     <span class="hljs-keyword">this</span>.copy(position = position + <span class="hljs-type">Point</span>(<span class="hljs-number">1</span>, <span class="hljs-number">0</span>))
 </code></pre>
+<div id="mdoc-html-run0" data-mdoc-js></div>
 <p>So when we update Bob he's going to proceed across the screen. The trouble is that his movement is pretty limited because the only things we can base his next move on is Bob's own state.</p>
 <p>What if we wanted to make Bob's movement totally erratic?</p>
 <pre><code class="hljs css language-scala"><span class="hljs-keyword">import</span> indigo.<span class="hljs-type">Point</span>
@@ -81,6 +82,7 @@
   <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">update</span></span>: <span class="hljs-type">Bob</span> =
     <span class="hljs-keyword">this</span>.copy(position = position + <span class="hljs-type">Point</span>(<span class="hljs-type">Random</span>.nextInt(<span class="hljs-number">2</span>), <span class="hljs-type">Random</span>.nextInt(<span class="hljs-number">2</span>)))
 </code></pre>
+<div id="mdoc-html-run1" data-mdoc-js></div>
 <p>Remembering that in <code>Random.nextInt(2)</code>, 2 is an exclusive upper limit - Bob is now going to jitter around by adding random coordinates made of 1's and 0's to his current position.</p>
 <p>The problem is that <code>Random</code> goes against our referential transparency principle. What if you needed to write a test for Bob's update function, how would you know what value was going to come next? You could write a test to say that his next position would be at most 1 pixel away from his current position, but that's the best you could do.</p>
 <blockquote>
@@ -95,10 +97,12 @@
 <span class="hljs-keyword">final</span> <span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Model</span>(<span class="hljs-params"></span>)</span>
 </code></pre>
 <p>Here is the definition of the model update function from <code>IndigoDemo</code>:</p>
-<pre><code class="hljs css language-scala"><span class="hljs-keyword">import</span> indigo._
+<pre><code class="hljs css language-scala"><span class="hljs-keyword">import</span> indigo.*
 
-<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">updateModel</span></span>(context: <span class="hljs-type">FrameContext</span>[<span class="hljs-type">StartUpData</span>], model: <span class="hljs-type">Model</span>): <span class="hljs-type">GlobalEvent</span> =&gt; <span class="hljs-type">Outcome</span>[<span class="hljs-type">Model</span>] = ???
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">updateModel</span></span>(context: <span class="hljs-type">FrameContext</span>[<span class="hljs-type">StartUpData</span>], model: <span class="hljs-type">Model</span>): <span class="hljs-type">GlobalEvent</span> =&gt; <span class="hljs-type">Outcome</span>[<span class="hljs-type">Model</span>] =
+  _ =&gt; <span class="hljs-type">Outcome</span>(model)
 </code></pre>
+<div id="mdoc-html-run3" data-mdoc-js></div>
 <p>This function is supposed to update the model given some events, but it does so in the presence of <code>context: FrameContext[StartUpData]</code>.</p>
 <p>The frame context instance provides:</p>
 <ul>
@@ -108,4 +112,6 @@
 <li><code>boundaryLocator</code> - A service that can be interrogated for the calculated dimensions of composite screen elements.</li>
 <li><code>startUpData</code> - A read only reference to any and all data created during start up / set up.</li>
 </ul>
+<script type="text/javascript" src="frame-context.md.js" defer></script>
+<script type="text/javascript" src="mdoc.js" defer></script>
 </span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/docs/gameloop/events"><span class="arrow-prev">← </span><span>Events</span></a><a class="docs-next button" href="/docs/gameloop/outcome"><span>Outcome Type</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#framecontext_"><code>FrameContext[_]</code></a></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/" class="nav-home"><img src="/img/indigo_logo.svg" alt="Indigo" width="66" height="58"/></a><div><h5>Getting Started</h5><a href="/docs/en/quickstart/setup-and-configuration">Setup &amp; Configuration Guide</a><a href="/docs/en/quickstart/hello-indigo">&quot;Hello, Indigo!&quot; Tutorial</a><a href="/docs/en/quickstart/examples">Links to examples</a><a href="/docs/en/quickstart/project-templates">Project templates</a></div><div><h5>Community</h5><a href="https://discord.gg/b5CD47g">Discord</a><a href="https://github.com/PurpleKingdomGames/indigo/discussions">GitHub Discussons</a><a href="https://twitter.com/indigoengine" target="_blank" rel="noreferrer noopener">Twitter</a></div><div><h5>Sponsor us!</h5><a href="https://github.com/sponsors/PurpleKingdomGames">GitHub Sponsors</a><a href="https://www.patreon.com/indigoengine">Patreon</a></div></section></footer></div></body></html>

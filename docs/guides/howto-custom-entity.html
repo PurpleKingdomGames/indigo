@@ -80,9 +80,9 @@
 </ol>
 <p>These are handled by providing some spatial parameters that Indigo will interpret, and a shader program, respectively.</p>
 <p>Here is the interface we have to satisfy for a hypothetical custom entity called <code>MyCustomEntity</code>:</p>
-<pre><code class="hljs css language-scala"><span class="hljs-keyword">import</span> indigo._
-
-<span class="hljs-keyword">final</span> <span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyCustomEntity</span>(<span class="hljs-params"></span>) <span class="hljs-keyword">extends</span> <span class="hljs-title">EntityNode</span></span>:
+<pre><code class="hljs css language-scala"><span class="hljs-keyword">import</span> indigo.*
+</code></pre>
+<pre><code class="hljs css language-scala"><span class="hljs-keyword">final</span> <span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyCustomEntity</span>(<span class="hljs-params"></span>) <span class="hljs-keyword">extends</span> <span class="hljs-title">EntityNode</span>[<span class="hljs-type">MyCustomEntity</span>]</span>:
   <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">position</span></span>: <span class="hljs-type">Point</span> = ???
   <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">size</span></span>: <span class="hljs-type">Size</span> = ???
   <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">depth</span></span>: <span class="hljs-type">Depth</span> = ???
@@ -91,14 +91,17 @@
   <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">rotation</span></span>: <span class="hljs-type">Radians</span> = ???
   <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">scale</span></span>: <span class="hljs-type">Vector2</span> = ???
   <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">withDepth</span></span>(newDepth: <span class="hljs-type">Depth</span>): <span class="hljs-type">MyCustomEntity</span> = ???
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">eventHandler</span></span>: ((<span class="hljs-type">MyCustomEntity</span>, <span class="hljs-type">GlobalEvent</span>)) =&gt; <span class="hljs-type">Option</span>[<span class="hljs-type">GlobalEvent</span>] = ???
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">eventHandlerEnabled</span></span>: <span class="hljs-type">Boolean</span> = ???
   <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">toShaderData</span></span>: <span class="hljs-type">ShaderData</span> = ???
 </code></pre>
+<div id="mdoc-html-run1" data-mdoc-js></div>
 <p>Case classes work well, but anything that <em>is a</em> <code>EntityNode</code> will be fine.</p>
 <p>Most of the fields are to do with allocating space on the screen, but unlike built-in primitives, you are not required to add all the usual modifiers - whether you want them or not is up to you.</p>
 <p>The <code>toShaderData</code> definition is the part that tells Indigo how to draw the entity.</p>
 <h3><a class="anchor" aria-hidden="true" id="filling-the-space-with-color"></a><a href="#filling-the-space-with-color" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Filling the space with color</h3>
 <p>Here is a modified version of the code above that fills it's area with green.</p>
-<pre><code class="hljs css language-scala">final case class MyColoredEntity(position: Point, depth: Depth) extends EntityNode:
+<pre><code class="hljs css language-scala">final case class MyColoredEntity(position: Point, depth: Depth) extends EntityNode[MyColoredEntity]:
   def size: Size        = Size(32, 32)
   def flip: Flip        = Flip.default
   def ref: Point        = Point.zero
@@ -107,6 +110,10 @@
 
   def withDepth(newDepth: Depth): MyColoredEntity =
     this.copy(depth = newDepth)
+
+  def eventHandler: ((MyColoredEntity, GlobalEvent)) =&gt; Option[GlobalEvent] =
+    _ =&gt; None
+  def eventHandlerEnabled: Boolean = false
 
   def toShaderData: ShaderData =
     ShaderData(MyColoredEntity.shader.id)
@@ -143,6 +150,7 @@ object MyColoredEntity:
       .withShaders(<span class="hljs-type">MyColoredEntity</span>.shader)
   )
 </code></pre>
+<div id="mdoc-html-run3" data-mdoc-js></div>
 <p>Next the fun bit, we need to add it to our scene, e.g.:</p>
 <pre><code class="hljs css language-scala"><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">present</span></span>(context: <span class="hljs-type">FrameContext</span>[<span class="hljs-type">Unit</span>], model: <span class="hljs-type">Unit</span>, viewModel: <span class="hljs-type">Unit</span>): <span class="hljs-type">Outcome</span>[<span class="hljs-type">SceneUpdateFragment</span>] =
   <span class="hljs-type">Outcome</span>(
@@ -151,6 +159,7 @@ object MyColoredEntity:
     )
   )
 </code></pre>
+<div id="mdoc-html-run4" data-mdoc-js></div>
 <blockquote>
 <p>If you wanted to set the color dynamically you'd need to send it to the shader via a <code>UniformBlock</code>, but that's out of scope for this tutorial.</p>
 </blockquote>
@@ -171,7 +180,7 @@ object MyColoredEntity:
 <li>Add the entity to the scene</li>
 <li>Tell indigo to load the asset using the normal asset loading process.</li>
 </ol>
-<pre><code class="hljs css language-scala">final case class MyBitmapEntity(asset: AssetName, position: Point, depth: Depth) extends EntityNode:
+<pre><code class="hljs css language-scala">final case class MyBitmapEntity(asset: AssetName, position: Point, depth: Depth) extends EntityNode[MyBitmapEntity]:
   def size: Size        = Size(32, 32)
   def flip: Flip        = Flip.default
   def ref: Point        = Point.zero
@@ -180,6 +189,10 @@ object MyColoredEntity:
 
   def withDepth(newDepth: Depth): MyBitmapEntity =
     this.copy(depth = newDepth)
+
+  def eventHandler: ((MyBitmapEntity, GlobalEvent)) =&gt; Option[GlobalEvent] =
+    _ =&gt; None
+  def eventHandlerEnabled: Boolean = false
 
   def toShaderData: ShaderData =
     ShaderData(MyBitmapEntity.shader.id)
@@ -197,6 +210,7 @@ object MyBitmapEntity:
         |""".stripMargin
       )
 </code></pre>
+<div id="mdoc-html-run5" data-mdoc-js></div>
 <p>The difference between this one and the last one is that we're telling Indigo to use a texture by assigning it to a channel and referring to it in the shader program.</p>
 <blockquote>
 <p><strong>Important:</strong> Textures aren't quite as straightforward as they seem, a key piece of information is that when you load textures, Indigo attempts to compile them into 4k texture atlases, which reduces context switching. Currently, Indigo is <em>limited</em> to only loading one atlas at a time, so although a <code>ShaderData</code> instance allows you to set four channels with different <code>AssetName</code>s, they must all be on the same atlas. For small games you don't need to worry, but if you have large assets you can force Indigo to place related images onto the same atlas using <code>AssetType.Tagged(&quot;my tag&quot;)(image1..imageN)</code> in your asset list.</p>
@@ -208,4 +222,6 @@ object MyBitmapEntity:
 </code></pre>
 <h2><a class="anchor" aria-hidden="true" id="wrapping-up"></a><a href="#wrapping-up" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Wrapping up</h2>
 <p>I hope that's given you a small taste of the power of writing custom entities, and a starting point for you to begin creating your own. Much of the heavy lifting is done by writing shaders which we haven't gone too far into here, but if you need some shader inspiration I'd recommend heading over to <a href="https://www.shadertoy.com/">shadertoy</a> for a browse.</p>
+<script type="text/javascript" src="howto-custom-entity.md.js" defer></script>
+<script type="text/javascript" src="mdoc.js" defer></script>
 </span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/docs/guides"><span class="arrow-prev">← </span><span>About these guides</span></a><a class="docs-next button" href="/docs/guides/howto-fire-shader"><span>How to write a fire shader</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#what-are-custom-entities">What are custom entities?</a></li><li><a href="#custom-entities-and-built-in-primitives">Custom entities and built in primitives</a></li><li><a href="#making-a-custom-entity">Making a custom entity</a><ul class="toc-headings"><li><a href="#the-basics">The basics</a></li><li><a href="#filling-the-space-with-color">Filling the space with color</a></li><li><a href="#using-textures">Using textures</a></li></ul></li><li><a href="#wrapping-up">Wrapping up</a></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/" class="nav-home"><img src="/img/indigo_logo.svg" alt="Indigo" width="66" height="58"/></a><div><h5>Getting Started</h5><a href="/docs/en/quickstart/setup-and-configuration">Setup &amp; Configuration Guide</a><a href="/docs/en/quickstart/hello-indigo">&quot;Hello, Indigo!&quot; Tutorial</a><a href="/docs/en/quickstart/examples">Links to examples</a><a href="/docs/en/quickstart/project-templates">Project templates</a></div><div><h5>Community</h5><a href="https://discord.gg/b5CD47g">Discord</a><a href="https://github.com/PurpleKingdomGames/indigo/discussions">GitHub Discussons</a><a href="https://twitter.com/indigoengine" target="_blank" rel="noreferrer noopener">Twitter</a></div><div><h5>Sponsor us!</h5><a href="https://github.com/sponsors/PurpleKingdomGames">GitHub Sponsors</a><a href="https://www.patreon.com/indigoengine">Patreon</a></div></section></footer></div></body></html>

@@ -74,7 +74,7 @@
 <h2><a class="anchor" aria-hidden="true" id="blend-modes"></a><a href="#blend-modes" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Blend modes</h2>
 <p>Blend modes are hardware level functions with limited but important options. They instruct the graphics card on fundamentally how to combine two pixels together.</p>
 <p>Explaining blend modes is beyond the scope of this guide, and there are many tutorials available, but as an example, we can compare Indigo's standard entity blend mode with it's entity lighting blend mode (used in image based <a href="/docs/presentation/lighting">lighting</a>):</p>
-<pre><code class="hljs css language-scala"><span class="hljs-keyword">import</span> indigo._
+<pre><code class="hljs css language-scala"><span class="hljs-keyword">import</span> indigo.*
 
 <span class="hljs-comment">// Normal</span>
 <span class="hljs-type">Blend</span>.<span class="hljs-type">Add</span>(<span class="hljs-type">BlendFactor</span>.<span class="hljs-type">One</span>, <span class="hljs-type">BlendFactor</span>.<span class="hljs-type">OneMinusSrcAlpha</span>)
@@ -116,11 +116,15 @@
   clearColor = <span class="hljs-type">Option</span>(<span class="hljs-type">RGBA</span>.<span class="hljs-type">Black</span>)
 )
 </code></pre>
+<div id="mdoc-html-run1" data-mdoc-js></div>
 <p>What is going on here?</p>
 <p>Starting at the bottom, we're doing lighting! So the first thing we want to do is &quot;remove all light&quot; so we clear the screen to black.</p>
 <p>Entities are then blended onto the layer using the mode we saw before, which multiplies the colors together such that putting a full red dot on a full green dot on a full blue dot would result in a white dot:</p>
 <pre><code class="hljs css language-scala"><span class="hljs-type">Blend</span>.<span class="hljs-type">Lighten</span>(<span class="hljs-type">BlendFactor</span>.<span class="hljs-type">SrcAlpha</span>, <span class="hljs-type">BlendFactor</span>.<span class="hljs-type">DstAlpha</span>)
 </code></pre>
+<div id="mdoc-html-run2" data-mdoc-js></div>
 <p>The layer then appears to be blended normally, simply adding this layer onto the layers below it. However this is misleading as the default behavior is overridden in the blend material.</p>
 <p>The blend material actually takes the source and destination pixels and multiplies them together along with an ambient light value, to give the appearance that the scene is lit.</p>
+<script type="text/javascript" src="blending.md.js" defer></script>
+<script type="text/javascript" src="mdoc.js" defer></script>
 </span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/docs/shaders/constants"><span class="arrow-prev">← </span><span>Shader Constants, Variables, and Outputs</span></a><a class="docs-next button" href="/docs/shaders/premultiplied-alpha"><span>Premultiplied Alpha</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#blend-modes">Blend modes</a></li><li><a href="#blend-materials">Blend materials</a><ul class="toc-headings"><li><a href="#built-in-blend-materials">Built in blend materials</a></li></ul></li><li><a href="#blending-layers-and-scenes">Blending Layers and Scenes</a></li><li><a href="#example-lighting">Example: Lighting</a></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/" class="nav-home"><img src="/img/indigo_logo.svg" alt="Indigo" width="66" height="58"/></a><div><h5>Getting Started</h5><a href="/docs/en/quickstart/setup-and-configuration">Setup &amp; Configuration Guide</a><a href="/docs/en/quickstart/hello-indigo">&quot;Hello, Indigo!&quot; Tutorial</a><a href="/docs/en/quickstart/examples">Links to examples</a><a href="/docs/en/quickstart/project-templates">Project templates</a></div><div><h5>Community</h5><a href="https://discord.gg/b5CD47g">Discord</a><a href="https://github.com/PurpleKingdomGames/indigo/discussions">GitHub Discussons</a><a href="https://twitter.com/indigoengine" target="_blank" rel="noreferrer noopener">Twitter</a></div><div><h5>Sponsor us!</h5><a href="https://github.com/sponsors/PurpleKingdomGames">GitHub Sponsors</a><a href="https://www.patreon.com/indigoengine">Patreon</a></div></section></footer></div></body></html>

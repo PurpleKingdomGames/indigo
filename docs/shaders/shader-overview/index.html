@@ -104,7 +104,7 @@
 </tbody>
 </table>
 <p>To override a function you simply need to declare it. In an <code>Source</code> shader type, this could be done as follows:</p>
-<pre><code class="hljs css language-scala">import indigo._
+<pre><code class="hljs css language-scala">import indigo.*
 
 val shader: EntityShader =
   EntityShader
@@ -155,6 +155,7 @@ void "function to override"() {
     <span class="hljs-type">AssetType</span>.<span class="hljs-type">Text</span>(<span class="hljs-type">AssetName</span>(<span class="hljs-string">"my fragment shader"</span>), <span class="hljs-type">AssetPath</span>(<span class="hljs-string">"assets/shader.frag"</span>))
   )
 </code></pre>
+<div id="mdoc-html-run1" data-mdoc-js></div>
 <blockquote>
 <p>Note, best practice is to do what is shown in this example and have two shader files with the same name, one with a <code>.vert</code> and the other with a <code>.frag</code> extension. These are standard shader file names that your GLSL editor of choice will understand. Technically they could all be in the same file, but if you need to pass data from your vertex to your fragment shader (using varyings) then you'll run into problems with conflicting variable names, e.g. you'd have to declare <code>out vec4 mydata;</code> and <code>in vec4 mydata;</code> in the same file, which a linter won't like.</p>
 </blockquote>
@@ -171,6 +172,7 @@ void "function to override"() {
       .withFragmentProgram(fragAsset)
       .withLightProgram(fragAsset)
 </code></pre>
+<div id="mdoc-html-run2" data-mdoc-js></div>
 <p>Finally we need to tell Indigo about these shaders, or we won't be able to use them:</p>
 <pre><code class="hljs css language-scala">    <span class="hljs-type">Outcome</span>(
       <span class="hljs-type">BootResult</span>.noData(<span class="hljs-type">GameConfig</span>.<span class="hljs-keyword">default</span>)
@@ -186,12 +188,15 @@ void "function to override"() {
 <h2><a class="anchor" aria-hidden="true" id="providing-data-to-your-shaders"></a><a href="#providing-data-to-your-shaders" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Providing data to your shaders</h2>
 <p>Shaders without any data can still be useful if you have a known effect, and not sending data is less costly than sending it! However, sometimes you need to tell your shader about what you need it to do, and for that we use <code>UniformBlock</code>s (know as UBO's technically, Uniform Buffer Objects).</p>
 <p>In the <a href="/docs/guides/howto-custom-entity">guide</a>, we create a custom entity that fills it's self with a solid color:</p>
-<pre><code class="hljs css language-scala">final case class MyColoredEntity(position: Point, depth: Depth) extends EntityNode:
+<pre><code class="hljs css language-scala">final case class MyColoredEntity(position: Point, depth: Depth) extends EntityNode[MyColoredEntity]:
   def size: Size        = Size(32, 32)
   def flip: Flip        = Flip.default
   def ref: Point        = Point.zero
   def rotation: Radians = Radians.zero
   def scale: Vector2    = Vector2.one
+
+  def eventHandler: ((MyColoredEntity, GlobalEvent)) =&gt; Option[GlobalEvent] = _ =&gt; None
+  def eventHandlerEnabled: Boolean = false
 
   def withDepth(newDepth: Depth): MyColoredEntity =
     this.copy(depth = newDepth)
@@ -211,15 +216,19 @@ object MyColoredEntity:
         |""".stripMargin
       )
 </code></pre>
+<div id="mdoc-html-run3" data-mdoc-js></div>
 <p>If we wanted to supply the colour, we need to modify our code as follows:</p>
-<pre><code class="hljs css language-scala">import indigo.ShaderPrimitive._
+<pre><code class="hljs css language-scala">import indigo.ShaderPrimitive.*
 
-final case class MyColoredEntity(position: Point, depth: Depth, color: RGBA) extends EntityNode:
+final case class MyColoredEntity(position: Point, depth: Depth, color: RGBA) extends EntityNode[MyColoredEntity]:
   def size: Size        = Size(32, 32)
   def flip: Flip        = Flip.default
   def ref: Point        = Point.zero
   def rotation: Radians = Radians.zero
   def scale: Vector2    = Vector2.one
+
+  def eventHandler: ((MyColoredEntity, GlobalEvent)) =&gt; Option[GlobalEvent] = _ =&gt; None
+  def eventHandlerEnabled: Boolean = false
 
   def withDepth(newDepth: Depth): MyColoredEntity =
     this.copy(depth = newDepth)
@@ -229,7 +238,7 @@ final case class MyColoredEntity(position: Point, depth: Depth, color: RGBA) ext
       MyColoredEntity.shader.id,
       UniformBlock(
         "MyCustomData",
-        List(Uniform("MY_COLOR") -&gt; vec4(color.r, color.g, color.b, color.a))
+        Batch(Uniform("MY_COLOR") -&gt; vec4(color.r, color.g, color.b, color.a))
       )
     )
 
@@ -249,6 +258,7 @@ object MyColoredEntity:
         |""".stripMargin
       )
 </code></pre>
+<div id="mdoc-html-run4" data-mdoc-js></div>
 <p>The <code>toShaderData</code> function now includes a uniform block that declares (in this case) a single variable called &quot;MY_COLOR&quot; of type <code>vec4</code>.</p>
 <blockquote>
 <p>Aside, the variable names are not checked! It's the order that matters, but keep the names the same for your own sanity...</p>
@@ -282,4 +292,6 @@ object MyColoredEntity:
 <span class="hljs-symbol">This</span> is valid: F0VV
 <span class="hljs-keyword">But </span>this isn<span class="hljs-string">'t: FVV0
 </span></code></pre>
+<script type="text/javascript" src="shader-overview.md.js" defer></script>
+<script type="text/javascript" src="mdoc.js" defer></script>
 </span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/docs/uicomponents/radio-button"><span class="arrow-prev">← </span><span>Radio Button</span></a><a class="docs-next button" href="/docs/shaders/constants"><span>Shader Constants, Variables, and Outputs</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#what-is-a-shader">What is a shader?</a></li><li><a href="#aim-of-the-shader-docs">Aim of the shader docs</a></li><li><a href="#how-to-get-started-with-shaders">How to get started with Shaders</a></li><li><a href="#entity-vs-blend-shaders">Entity vs Blend Shaders</a><ul class="toc-headings"><li><a href="#functions-available-for-override">Functions available for override</a></li><li><a href="#constants-and-variables">Constants and variables</a></li></ul></li><li><a href="#loading-external-shader-files">Loading external shader files</a></li><li><a href="#using-shaders-in-your-scene">Using shaders in your scene</a></li><li><a href="#providing-data-to-your-shaders">Providing data to your shaders</a></li><li><a href="#uniformblock--ubo-data-packing-rules"><code>UniformBlock</code> / UBO Data Packing Rules</a></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/" class="nav-home"><img src="/img/indigo_logo.svg" alt="Indigo" width="66" height="58"/></a><div><h5>Getting Started</h5><a href="/docs/en/quickstart/setup-and-configuration">Setup &amp; Configuration Guide</a><a href="/docs/en/quickstart/hello-indigo">&quot;Hello, Indigo!&quot; Tutorial</a><a href="/docs/en/quickstart/examples">Links to examples</a><a href="/docs/en/quickstart/project-templates">Project templates</a></div><div><h5>Community</h5><a href="https://discord.gg/b5CD47g">Discord</a><a href="https://github.com/PurpleKingdomGames/indigo/discussions">GitHub Discussons</a><a href="https://twitter.com/indigoengine" target="_blank" rel="noreferrer noopener">Twitter</a></div><div><h5>Sponsor us!</h5><a href="https://github.com/sponsors/PurpleKingdomGames">GitHub Sponsors</a><a href="https://www.patreon.com/indigoengine">Patreon</a></div></section></footer></div></body></html>
