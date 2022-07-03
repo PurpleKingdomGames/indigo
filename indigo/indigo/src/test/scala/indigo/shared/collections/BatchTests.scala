@@ -106,6 +106,28 @@ class BatchTests extends munit.FunSuite {
     assertEquals(a.toString, "Batch(1, 2, 3, 4, 5, 6)")
   }
 
+  test("mkString") {
+    val a =
+      Batch.Combine(
+        Batch.Singleton(1),
+        Batch.Combine(
+          Batch.Combine(
+            Batch(2),
+            Batch(3)
+          ),
+          Batch(4, 5, 6)
+        )
+      )
+
+    assertEquals(a.mkString, "123456")
+    assertEquals(a.mkString("-"), "1-2-3-4-5-6")
+    assertEquals(a.mkString("{", ":", "}"), "{1:2:3:4:5:6}")
+  }
+
+  test("mkString - empty") {
+    assertEquals(Batch.empty.mkString, "")
+  }
+
   test("exists") {
     val a =
       Batch.Combine(
