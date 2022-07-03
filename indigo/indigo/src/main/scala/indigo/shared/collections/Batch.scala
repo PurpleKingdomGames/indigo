@@ -118,13 +118,12 @@ sealed trait Batch[+A]:
   def map[B](f: A => B): Batch[B] =
     Batch.Wrapped(_jsArray.map(f))
 
-  /** Delegates to `mkString(separator: String): String`
+  /** Converts the batch into a String`
     * @return
     *   `String`
     */
   def mkString: String =
-    if isEmpty then ""
-    else mkString("")
+    toJSArray.mkString
 
   /** Converts the batch into a String
     * @param separator
@@ -133,8 +132,7 @@ sealed trait Batch[+A]:
     *   `String`
     */
   def mkString(separator: String): String =
-    if isEmpty then ""
-    else head.toString + separator + tail.toJSArray.mkString(separator)
+    toJSArray.mkString(separator)
 
   /** Converts the batch into a String
     * @param prefix
@@ -147,8 +145,7 @@ sealed trait Batch[+A]:
     *   `String`
     */
   def mkString(prefix: String, separator: String, suffix: String): String =
-    if isEmpty then prefix + suffix
-    else prefix + head.toString + separator + tail.toJSArray.mkString(separator) + suffix
+    toJSArray.mkString(prefix, separator, suffix)
 
   def nonEmpty: Boolean =
     !isEmpty
