@@ -92,10 +92,25 @@ class BatchTests extends munit.FunSuite {
 
   test("tail") {
     assert(Batch(1, 2, 3).tail == Batch(2, 3))
+
+    intercept[java.lang.UnsupportedOperationException] {
+      Batch.empty.tail
+    }
   }
 
-  test("tail - empty") {
-    assert(Batch.empty.tail == Batch.empty)
+  test("tailOrEmpty - empty") {
+    assert(Batch(1, 2, 3).tailOrEmpty == Batch(2, 3))
+    assert(Batch.empty.tailOrEmpty == Batch.empty)
+  }
+
+  test("tailOption- empty") {
+    assert(Batch(1, 2, 3).tailOption == Some(Batch(2, 3)))
+    assert(Batch.empty.tailOption == None)
+  }
+
+  test("uncons") {
+    assert(Batch(1, 2, 3).uncons == Some((1, Batch(2, 3))))
+    assert(Batch.empty.uncons == None)
   }
 
   test("toString") {
