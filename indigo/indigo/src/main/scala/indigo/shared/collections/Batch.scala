@@ -170,7 +170,8 @@ sealed trait Batch[+A]:
     _jsArray.sum
 
   def tail: Batch[A] =
-    Batch.Wrapped(_jsArray.tail)
+    if _jsArray.isEmpty then Batch.empty
+    else Batch.Wrapped(_jsArray.tail)
 
   def toArray[B >: A: ClassTag]: Array[B] =
     _jsArray.asInstanceOf[js.Array[B]].toArray
