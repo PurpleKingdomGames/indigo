@@ -82,6 +82,14 @@ class BatchTests extends munit.FunSuite {
     assert(Batch.Empty.headOption == None)
   }
 
+  test("tail") {
+    assert(Batch(1, 2, 3).tail == Batch(2, 3))
+  }
+
+  test("tail - empty") {
+    assert(Batch.empty.tail == Batch.empty)
+  }
+
   test("toString") {
     val a =
       Batch.Combine(
