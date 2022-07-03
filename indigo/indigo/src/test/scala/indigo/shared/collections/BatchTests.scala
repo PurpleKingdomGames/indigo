@@ -75,11 +75,19 @@ class BatchTests extends munit.FunSuite {
 
   test("head") {
     assert(Batch(1, 2, 3).head == 1)
+    assert(Batch.Combine(Batch(1), Batch(2, 3)).head == 1)
+    assert((Batch.empty |+| Batch(2, 3)).head == 2)
+    assert(Batch(Batch.Empty, Batch(1, 2, 3)).head == Batch.empty)
+    assert(Batch.combine(Batch.Empty, Batch(1, 2, 3)).head == 1)
   }
 
   test("headOption") {
     assert(Batch(1, 2, 3).headOption == Some(1))
     assert(Batch.Empty.headOption == None)
+    assert(Batch.Combine(Batch(1), Batch(2, 3)).headOption == Some(1))
+    assert((Batch.empty |+| Batch(2, 3)).headOption == Some(2))
+    assert(Batch(Batch.Empty, Batch(1, 2, 3)).headOption == Some(Batch.empty))
+    assert(Batch.combine(Batch.Empty, Batch(1, 2, 3)).headOption == Some(1))
   }
 
   test("tail") {
@@ -221,7 +229,7 @@ class BatchTests extends munit.FunSuite {
   }
 
   test("toList - combine") {
-    assertEquals(Batch(Batch(1), Batch(2)).toList, List(1, 2))
+    assertEquals((Batch(1) |+| Batch(2)).toList, List(1, 2))
   }
 
   test("toList - nested") {

@@ -251,9 +251,6 @@ object Batch:
   def apply[A](values: A*): Batch[A] =
     Wrapped(values.toJSArray)
 
-  def apply[A](batch1: Batch[A], batch2: Batch[A]): Batch[A] =
-    Combine(batch1, batch2)
-
   def unapplySeq[A](b: Batch[A]): Seq[A] =
     b.toList
 
@@ -299,8 +296,11 @@ object Batch:
   def empty[A]: Batch[A] =
     Batch.Empty
 
-  def combineAll[A](batchs: Batch[A]*): Batch[A] =
-    batchs.foldLeft(Batch.empty[A])(_ ++ _)
+  def combine[A](batch1: Batch[A], batch2: Batch[A]): Batch[A] =
+    batch1 ++ batch2
+
+  def combineAll[A](batches: Batch[A]*): Batch[A] =
+    batches.foldLeft(Batch.empty[A])(_ ++ _)
 
   private[collections] case object Empty extends Batch[Nothing]:
     val isEmpty: Boolean          = true
