@@ -123,7 +123,8 @@ sealed trait Batch[+A]:
     *   `String`
     */
   def mkString: String =
-    mkString("")
+    if isEmpty then ""
+    else mkString("")
 
   /** Converts the batch into a String
     * @param separator
@@ -132,7 +133,8 @@ sealed trait Batch[+A]:
     *   `String`
     */
   def mkString(separator: String): String =
-    head.toString + separator + tail.toJSArray.mkString(separator)
+    if isEmpty then ""
+    else head.toString + separator + tail.toJSArray.mkString(separator)
 
   /** Converts the batch into a String
     * @param prefix
@@ -145,7 +147,8 @@ sealed trait Batch[+A]:
     *   `String`
     */
   def mkString(prefix: String, separator: String, suffix: String): String =
-    prefix + head.toString + separator + tail.toJSArray.mkString(separator) + suffix
+    if isEmpty then prefix + suffix
+    else prefix + head.toString + separator + tail.toJSArray.mkString(separator) + suffix
 
   def nonEmpty: Boolean =
     !isEmpty
