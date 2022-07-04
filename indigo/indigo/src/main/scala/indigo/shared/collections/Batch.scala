@@ -34,13 +34,13 @@ sealed trait Batch[+A]:
     this ++ other
 
   def ::[B >: A](value: B): Batch[B] =
-    Batch.Singleton(value) ++ this
+    Batch(value) ++ this
 
   def +:[B >: A](value: B): Batch[B] =
-    Batch.Singleton(value) ++ this
+    Batch(value) ++ this
 
   def :+[B >: A](value: B): Batch[B] =
-    this ++ Batch.Singleton(value)
+    this ++ Batch(value)
 
   def apply(index: Int): A =
     _jsArray(index)
@@ -220,38 +220,20 @@ object Batch:
         else Some((b.head, b.tail))
     }
 
-  given CanEqual[Batch[_], Batch[_]]           = CanEqual.derived
-  given CanEqual[Batch[_], Batch.Empty.type]   = CanEqual.derived
-  given CanEqual[Batch[_], Batch.Singleton[_]] = CanEqual.derived
-  given CanEqual[Batch[_], Batch.Combine[_]]   = CanEqual.derived
-  given CanEqual[Batch[_], Batch.Wrapped[_]]   = CanEqual.derived
+  given CanEqual[Batch[_], Batch[_]]         = CanEqual.derived
+  given CanEqual[Batch[_], Batch.Combine[_]] = CanEqual.derived
+  given CanEqual[Batch[_], Batch.Wrapped[_]] = CanEqual.derived
 
-  given CanEqual[Batch.Empty.type, Batch[_]]           = CanEqual.derived
-  given CanEqual[Batch.Empty.type, Batch.Empty.type]   = CanEqual.derived
-  given CanEqual[Batch.Empty.type, Batch.Singleton[_]] = CanEqual.derived
-  given CanEqual[Batch.Empty.type, Batch.Combine[_]]   = CanEqual.derived
-  given CanEqual[Batch.Empty.type, Batch.Wrapped[_]]   = CanEqual.derived
+  given CanEqual[Batch.Combine[_], Batch[_]]         = CanEqual.derived
+  given CanEqual[Batch.Combine[_], Batch.Combine[_]] = CanEqual.derived
+  given CanEqual[Batch.Combine[_], Batch.Wrapped[_]] = CanEqual.derived
 
-  given CanEqual[Batch.Singleton[_], Batch[_]]           = CanEqual.derived
-  given CanEqual[Batch.Singleton[_], Batch.Empty.type]   = CanEqual.derived
-  given CanEqual[Batch.Singleton[_], Batch.Singleton[_]] = CanEqual.derived
-  given CanEqual[Batch.Singleton[_], Batch.Combine[_]]   = CanEqual.derived
-  given CanEqual[Batch.Singleton[_], Batch.Wrapped[_]]   = CanEqual.derived
-
-  given CanEqual[Batch.Combine[_], Batch[_]]           = CanEqual.derived
-  given CanEqual[Batch.Combine[_], Batch.Empty.type]   = CanEqual.derived
-  given CanEqual[Batch.Combine[_], Batch.Singleton[_]] = CanEqual.derived
-  given CanEqual[Batch.Combine[_], Batch.Combine[_]]   = CanEqual.derived
-  given CanEqual[Batch.Combine[_], Batch.Wrapped[_]]   = CanEqual.derived
-
-  given CanEqual[Batch.Wrapped[_], Batch[_]]           = CanEqual.derived
-  given CanEqual[Batch.Wrapped[_], Batch.Empty.type]   = CanEqual.derived
-  given CanEqual[Batch.Wrapped[_], Batch.Singleton[_]] = CanEqual.derived
-  given CanEqual[Batch.Wrapped[_], Batch.Combine[_]]   = CanEqual.derived
-  given CanEqual[Batch.Wrapped[_], Batch.Wrapped[_]]   = CanEqual.derived
+  given CanEqual[Batch.Wrapped[_], Batch[_]]         = CanEqual.derived
+  given CanEqual[Batch.Wrapped[_], Batch.Combine[_]] = CanEqual.derived
+  given CanEqual[Batch.Wrapped[_], Batch.Wrapped[_]] = CanEqual.derived
 
   def apply[A](value: A): Batch[A] =
-    Singleton(value)
+    Wrapped(js.Array(value))
 
   def apply[A](values: js.Array[A]): Batch[A] =
     Wrapped(values)
@@ -302,58 +284,13 @@ object Batch:
     Wrapped(value.toJSArray)
 
   def empty[A]: Batch[A] =
-    Batch.Empty
+    Batch()
 
   def combine[A](batch1: Batch[A], batch2: Batch[A]): Batch[A] =
     batch1 ++ batch2
 
   def combineAll[A](batches: Batch[A]*): Batch[A] =
     batches.foldLeft(Batch.empty[A])(_ ++ _)
-
-  private[collections] case object Empty extends Batch[Nothing]:
-    val isEmpty: Boolean          = true
-    def toJSArray[B]: js.Array[B] = js.Array[B]()
-
-    @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-    def head: Nothing               = throw new NoSuchElementException("Batch.Empty.head")
-    def headOption: Option[Nothing] = None
-
-    val size: Int = 0
-
-    override def equals(that: Any): Boolean =
-      that.isInstanceOf[Batch.Empty.type]
-
-  private[collections] final case class Singleton[A](value: A) extends Batch[A]:
-    val isEmpty: Boolean               = false
-    def head: A                        = value
-    def headOption: Option[A]          = Some(value)
-    def toJSArray[B >: A]: js.Array[B] = js.Array[B](value)
-
-    val size: Int = 1
-
-    override def equals(that: Any): Boolean =
-      given CanEqual[Empty.type, Any]   = CanEqual.derived
-      given CanEqual[Singleton[_], Any] = CanEqual.derived
-      given CanEqual[Combine[_], Any]   = CanEqual.derived
-      given CanEqual[Wrapped[_], Any]   = CanEqual.derived
-      given CanEqual[A, A]              = CanEqual.derived
-
-      try
-        that match
-          case Empty =>
-            false
-
-          case Singleton(v) =>
-            value == v.asInstanceOf[A]
-
-          case c @ Combine(_, _) =>
-            val cc = c.compact
-            cc.size == 1 && cc.head.asInstanceOf[A] == value
-
-          case Wrapped(arr) =>
-            arr.size == 1 && arr.head.asInstanceOf[A] == value
-
-      catch { case NonFatal(_) => false }
 
   private[collections] final case class Combine[A](batch1: Batch[A], batch2: Batch[A]) extends Batch[A]:
     val isEmpty: Boolean      = batch1.isEmpty && batch2.isEmpty
@@ -369,13 +306,6 @@ object Batch:
         remaining match
           case Nil =>
             ()
-
-          case Batch.Empty :: xs =>
-            rec(xs, i)
-
-          case Batch.Singleton(v) :: xs =>
-            arr(i) = v
-            rec(xs, i + 1)
 
           case Batch.Combine(c1, c2) :: xs =>
             rec(c1 :: c2 :: xs, i)
@@ -397,20 +327,12 @@ object Batch:
     lazy val size: Int = batch1.size + batch2.size
 
     override def equals(that: Any): Boolean =
-      given CanEqual[Empty.type, Any]   = CanEqual.derived
-      given CanEqual[Singleton[_], Any] = CanEqual.derived
-      given CanEqual[Combine[_], Any]   = CanEqual.derived
-      given CanEqual[Wrapped[_], Any]   = CanEqual.derived
-      given CanEqual[A, A]              = CanEqual.derived
+      given CanEqual[Combine[_], Any] = CanEqual.derived
+      given CanEqual[Wrapped[_], Any] = CanEqual.derived
+      given CanEqual[A, A]            = CanEqual.derived
 
       try
         that match
-          case Empty =>
-            isEmpty
-
-          case Singleton(v) =>
-            val cc = compact
-            cc.size == 1 && cc.head == v.asInstanceOf[A]
 
           case c @ Combine(_, _) =>
             compact.values.sameElements(c.compact.values)
@@ -429,20 +351,12 @@ object Batch:
     lazy val size: Int = values.length
 
     override def equals(that: Any): Boolean =
-      given CanEqual[Empty.type, Any]   = CanEqual.derived
-      given CanEqual[Singleton[_], Any] = CanEqual.derived
-      given CanEqual[Combine[_], Any]   = CanEqual.derived
-      given CanEqual[Wrapped[_], Any]   = CanEqual.derived
-      given CanEqual[A, A]              = CanEqual.derived
+      given CanEqual[Combine[_], Any] = CanEqual.derived
+      given CanEqual[Wrapped[_], Any] = CanEqual.derived
+      given CanEqual[A, A]            = CanEqual.derived
 
       try
         that match
-          case Empty =>
-            isEmpty
-
-          case Singleton(v) =>
-            values.size == 1 && values.head == v.asInstanceOf[A]
-
           case c @ Combine(_, _) =>
             values.sameElements(c.compact.values)
 

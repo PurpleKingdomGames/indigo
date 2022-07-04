@@ -36,7 +36,7 @@ class BatchTests extends munit.FunSuite {
   test("apply") {
     val batch =
       Batch.Combine(
-        Batch.Singleton(10),
+        Batch(10),
         Batch.Combine(
           Batch.Combine(
             Batch(20),
@@ -57,7 +57,7 @@ class BatchTests extends munit.FunSuite {
   test("compact") {
     val actual =
       Batch.Combine(
-        Batch.Singleton(1),
+        Batch(1),
         Batch.Combine(
           Batch.Combine(
             Batch(2),
@@ -77,17 +77,17 @@ class BatchTests extends munit.FunSuite {
     assert(Batch(1, 2, 3).head == 1)
     assert(Batch.Combine(Batch(1), Batch(2, 3)).head == 1)
     assert((Batch.empty |+| Batch(2, 3)).head == 2)
-    assert(Batch(Batch.Empty, Batch(1, 2, 3)).head == Batch.empty)
-    assert(Batch.combine(Batch.Empty, Batch(1, 2, 3)).head == 1)
+    assert(Batch(Batch.empty, Batch(1, 2, 3)).head == Batch.empty)
+    assert(Batch.combine(Batch.empty, Batch(1, 2, 3)).head == 1)
   }
 
   test("headOption") {
     assert(Batch(1, 2, 3).headOption == Some(1))
-    assert(Batch.Empty.headOption == None)
+    assert(Batch.empty.headOption == None)
     assert(Batch.Combine(Batch(1), Batch(2, 3)).headOption == Some(1))
     assert((Batch.empty |+| Batch(2, 3)).headOption == Some(2))
-    assert(Batch(Batch.Empty, Batch(1, 2, 3)).headOption == Some(Batch.empty))
-    assert(Batch.combine(Batch.Empty, Batch(1, 2, 3)).headOption == Some(1))
+    assert(Batch(Batch.empty, Batch(1, 2, 3)).headOption == Some(Batch.empty))
+    assert(Batch.combine(Batch.empty, Batch(1, 2, 3)).headOption == Some(1))
   }
 
   test("tail") {
@@ -116,7 +116,7 @@ class BatchTests extends munit.FunSuite {
   test("toString") {
     val a =
       Batch.Combine(
-        Batch.Singleton(1),
+        Batch(1),
         Batch.Combine(
           Batch.Combine(
             Batch(2),
@@ -132,7 +132,7 @@ class BatchTests extends munit.FunSuite {
   test("mkString") {
     val a =
       Batch.Combine(
-        Batch.Singleton(1),
+        Batch(1),
         Batch.Combine(
           Batch.Combine(
             Batch(2),
@@ -154,7 +154,7 @@ class BatchTests extends munit.FunSuite {
   test("exists") {
     val a =
       Batch.Combine(
-        Batch.Singleton(1),
+        Batch(1),
         Batch.Combine(
           Batch.Combine(
             Batch(2),
@@ -171,7 +171,7 @@ class BatchTests extends munit.FunSuite {
   test("find") {
     val a =
       Batch.Combine(
-        Batch.Singleton(1),
+        Batch(1),
         Batch.Combine(
           Batch.Combine(
             Batch(2),
@@ -186,17 +186,17 @@ class BatchTests extends munit.FunSuite {
   }
 
   test("equals") {
-    assert(Batch.Singleton(1) != Batch.Empty)
-    assert(Batch.Singleton(1) == Batch.Wrapped(js.Array(1)))
-    assert(Batch.Singleton(2) != Batch.Wrapped(js.Array(1, 2)))
+    assert(Batch(1) != Batch.empty)
+    assert(Batch(1) == Batch.Wrapped(js.Array(1)))
+    assert(Batch(2) != Batch.Wrapped(js.Array(1, 2)))
     assert(Batch.Wrapped(js.Array(1, 2)) != Batch.Wrapped(js.Array(2, 1)))
-    assert(Batch.Empty == Batch.Empty)
-    assert(Batch.Combine(Batch.Empty, Batch.Empty) == Batch.Empty)
-    assert(Batch.Combine(Batch.Singleton(1), Batch.Empty) == Batch(1))
+    assert(Batch.empty == Batch.empty)
+    assert(Batch.Combine(Batch.empty, Batch.empty) == Batch.empty)
+    assert(Batch.Combine(Batch(1), Batch.empty) == Batch(1))
 
     val a: Batch[Int] =
       Batch.Combine(
-        Batch.Singleton(1),
+        Batch(1),
         Batch.Combine(
           Batch.Combine(
             Batch(2),
@@ -216,7 +216,7 @@ class BatchTests extends munit.FunSuite {
     val actual =
       Batch
         .Combine(
-          Batch.Singleton(1),
+          Batch(1),
           Batch.Combine(
             Batch.Combine(
               Batch(2),
@@ -231,7 +231,7 @@ class BatchTests extends munit.FunSuite {
   }
 
   test("toList - empty") {
-    assertEquals(Batch.Empty.toList, Nil)
+    assertEquals(Batch.empty.toList, Nil)
   }
 
   test("toList - singleton") {
@@ -250,7 +250,7 @@ class BatchTests extends munit.FunSuite {
   test("toList - nested") {
     val actual =
       Batch.Combine(
-        Batch.Singleton(1),
+        Batch(1),
         Batch.Combine(
           Batch.Combine(
             Batch(2),
@@ -266,7 +266,7 @@ class BatchTests extends munit.FunSuite {
   test("toArray - nested") {
     val actual =
       Batch.Combine(
-        Batch.Singleton(1),
+        Batch(1),
         Batch.Combine(
           Batch.Combine(
             Batch(2),
@@ -306,7 +306,7 @@ class BatchTests extends munit.FunSuite {
   test("map") {
     val actual =
       Batch.Combine(
-        Batch.Singleton(1),
+        Batch(1),
         Batch.Combine(
           Batch.Combine(
             Batch(2),
@@ -325,7 +325,7 @@ class BatchTests extends munit.FunSuite {
   test("flatMap") {
     val actual =
       Batch.Combine(
-        Batch.Singleton(1),
+        Batch(1),
         Batch.Combine(
           Batch.Combine(
             Batch(2),
@@ -344,7 +344,7 @@ class BatchTests extends munit.FunSuite {
   test("foreach") {
     val actual =
       Batch.Combine(
-        Batch.Singleton(1),
+        Batch(1),
         Batch.Combine(
           Batch.Combine(
             Batch(2),
@@ -364,7 +364,7 @@ class BatchTests extends munit.FunSuite {
   test("foreachWithIndex") {
     val actual =
       Batch.Combine(
-        Batch.Singleton(10),
+        Batch(10),
         Batch.Combine(
           Batch.Combine(
             Batch(20),
@@ -394,9 +394,9 @@ class BatchTests extends munit.FunSuite {
   }
 
   test("isEmpty") {
-    assert(Batch.Empty.isEmpty)
-    assert(!Batch.Singleton(1).isEmpty)
-    assert(!Batch.Combine(Batch.Singleton(1), Batch.Singleton(2)).isEmpty)
+    assert(Batch.empty.isEmpty)
+    assert(!Batch(1).isEmpty)
+    assert(!Batch.Combine(Batch(1), Batch(2)).isEmpty)
     assert(!Batch.Wrapped(js.Array(1, 2, 3)).isEmpty)
   }
 
