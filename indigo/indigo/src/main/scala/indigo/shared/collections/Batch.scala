@@ -3,6 +3,7 @@ package indigo.shared.collections
 import scala.annotation.tailrec
 import scala.annotation.targetName
 import scala.reflect.ClassTag
+import scala.util.control.NonFatal
 
 import scalajs.js
 import scalajs.js.JSConverters.*
@@ -352,7 +353,7 @@ object Batch:
           case Wrapped(arr) =>
             arr.size == 1 && arr.head.asInstanceOf[A] == value
 
-      catch { _ => false }
+      catch { case NonFatal(_) => false }
 
   private[collections] final case class Combine[A](batch1: Batch[A], batch2: Batch[A]) extends Batch[A]:
     val isEmpty: Boolean      = batch1.isEmpty && batch2.isEmpty
@@ -417,7 +418,7 @@ object Batch:
           case Wrapped(arr) =>
             compact.values.sameElements(arr)
 
-      catch { _ => false }
+      catch { case NonFatal(_) => false }
 
   private[collections] final case class Wrapped[A](values: js.Array[A]) extends Batch[A]:
     val isEmpty: Boolean               = values.isEmpty
@@ -448,4 +449,4 @@ object Batch:
           case Wrapped(arr) =>
             values.sameElements(arr)
 
-      catch { _ => false }
+      catch { case NonFatal(_) => false }
