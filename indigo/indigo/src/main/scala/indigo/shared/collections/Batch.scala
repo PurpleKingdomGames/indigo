@@ -79,6 +79,9 @@ sealed trait Batch[+A]:
   def flatMap[B](f: A => Batch[B]): Batch[B] =
     Batch.Wrapped(toJSArray.flatMap(v => f(v).toJSArray))
 
+  def flatten[B](using asBatch: A => Batch[B]): Batch[B] =
+    flatMap(asBatch)
+
   def forall(p: A => Boolean): Boolean =
     _jsArray.forall(p)
 

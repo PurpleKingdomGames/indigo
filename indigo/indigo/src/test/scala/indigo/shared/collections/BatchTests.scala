@@ -341,6 +341,16 @@ class BatchTests extends munit.FunSuite {
     )
   }
 
+  test("flatten") {
+    val batch =
+      Batch(Batch(1), Batch(2), Batch(3), Batch(4))
+
+    val actual =
+      batch.flatten
+
+    assertEquals(actual, Batch(1, 2, 3, 4))
+  }
+
   test("foreach") {
     val actual =
       Batch.Combine(
