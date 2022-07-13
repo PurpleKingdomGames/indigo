@@ -54,6 +54,9 @@ object syntax:
   extension [A](values: Option[A]) def toBatch: Batch[A]           = Batch.fromOption(values)
   extension (values: Range) def toBatch: Batch[Int]                = Batch.fromRange(values)
 
+  val ==: = shared.collections.Batch.==:
+  val :== = shared.collections.Batch.:==
+
 end syntax
 
 val logger: indigo.shared.IndigoLogger.type = indigo.shared.IndigoLogger

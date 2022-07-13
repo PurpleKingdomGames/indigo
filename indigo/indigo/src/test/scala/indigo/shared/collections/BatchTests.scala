@@ -1,5 +1,7 @@
 package indigo.shared.collections
 
+import indigo.syntax.*
+
 import scalajs.js
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
@@ -18,19 +20,39 @@ class BatchTests extends munit.FunSuite {
   }
 
   test("pattern matching - empty") {
-    import Batch.==:
     Batch.empty[Int] match
-      case Batch()  => assert(true)
+      case Batch() => assert(true)
+      case _       => assert(false)
+  }
+
+  test("pattern matching - first") {
+    Batch(1, 2, 3) match
       case i ==: is => assert(i == 1)
       case _        => assert(false)
   }
 
-  test("pattern matching - first") {
-    import Batch.==:
+  test("pattern matching - first two") {
     Batch(1, 2, 3) match
-      case Batch()  => assert(false)
-      case i ==: is => assert(i == 1)
+      case i ==: ii ==: is => assert(i == 1 && ii == 2)
+      case _               => assert(false)
+  }
+
+  test("pattern matching - last") {
+    Batch(1, 2, 3) match
+      case is :== i => assert(i == 3)
       case _        => assert(false)
+  }
+
+  test("pattern matching - last two") {
+    Batch(1, 2, 3) match
+      case is :== ii :== i => assert(clue(i) == 3 && clue(ii) == 2)
+      case _               => assert(false)
+  }
+
+  test("pattern matching - a specific number of things") {
+    Batch(1, 2, 3) match
+      case Batch(a, b, c) => assert(a == 1 && b == 2 && c == 3)
+      case _              => assert(false)
   }
 
   test("apply") {
