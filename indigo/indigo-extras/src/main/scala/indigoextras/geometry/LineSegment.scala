@@ -129,13 +129,18 @@ final case class LineSegment(start: Vertex, end: Vertex) derives CanEqual:
     val c2  = -b * to.x + a * to.y
     val det = a * a - -b * b
 
-    if det != 0.0 then
-      Some(
-        Vertex(
-          x = (a * c1 - b * c2) / det,
-          y = (a * c2 - -b * c1) / det
-        ).clamp(start, end)
-      )
+    val resX = (a * c1 - b * c2) / det
+    val resY = (a * c2 - -b * c1) / det
+
+    val minX = Math.min(start.x, end.x)
+    val minY = Math.min(start.y, end.y)
+    val maxX = Math.max(start.x, end.x)
+    val maxY = Math.max(start.y, end.y)
+
+    val x = Math.min(maxX, Math.max(minX, resX))
+    val y = Math.min(maxY, Math.max(minY, resY))
+
+    if det != 0.0 then Some(Vertex(x, y))
     else None
   def closestPointOnLine(to: Vector2): Option[Vertex] =
     closestPointOnLine(Vertex.fromVector2(to))

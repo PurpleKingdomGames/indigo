@@ -177,4 +177,20 @@ class LineSegmentTests extends munit.FunSuite {
     assertEquals(lineA.intersectsAt(lineB), Some(Vertex(0.0, 0.5)))
   }
 
+  test("closest point in center of on an X should be correct in all directions") {
+    // Considering the diagonals of the unit square
+    val zero_zero = Vertex(0, 0)
+    val one_one   = Vertex(1, 1)
+    val one_zero  = Vertex(1, 0)
+    val zero_one  = Vertex(0, 1)
+
+    // This point already sits on all of those lines, because it's the centre
+    val testPoint = Vertex(0.5, 0.5)
+
+    assert(clue(LineSegment(zero_zero, one_one).closestPointOnLine(testPoint).get) ~== testPoint)
+    assert(clue(LineSegment(one_one, zero_zero).closestPointOnLine(testPoint).get) ~== testPoint)
+    assert(clue(LineSegment(one_zero, zero_one).closestPointOnLine(testPoint).get) ~== testPoint)
+    assert(clue(LineSegment(zero_one, one_zero).closestPointOnLine(testPoint).get) ~== testPoint)
+  }
+
 }
