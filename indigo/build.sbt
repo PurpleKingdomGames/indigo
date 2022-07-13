@@ -91,8 +91,11 @@ lazy val sandbox =
         case _                         => true
       }),
       electronInstall := (sys.props("os.name").toLowerCase match {
-        case x if x contains "windows" => indigoplugin.ElectronInstall.Version("^18.0.0")
-        case _                         => indigoplugin.ElectronInstall.Global
+        case x if x.contains("windows") || x.contains("linux") =>
+          indigoplugin.ElectronInstall.Version("^18.0.0")
+
+        case _ =>
+          indigoplugin.ElectronInstall.Global
       })
     )
 
@@ -115,8 +118,11 @@ lazy val perf =
         case _                         => true
       }),
       electronInstall := (sys.props("os.name").toLowerCase match {
-        case x if x contains "windows" => indigoplugin.ElectronInstall.Version("^18.0.0")
-        case _                         => indigoplugin.ElectronInstall.Global
+        case x if x.contains("windows") || x.contains("linux") =>
+          indigoplugin.ElectronInstall.Version("^18.0.0")
+
+        case _ =>
+          indigoplugin.ElectronInstall.Global
       })
     )
 
