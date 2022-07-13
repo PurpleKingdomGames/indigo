@@ -216,13 +216,6 @@ object Batch:
 
   extension [A](s: Seq[A]) def toBatch: Batch[A] = Batch.fromSeq(s)
 
-  object Unapply:
-    object :: {
-      def unapply[A](b: Batch[A]): Option[(A, Batch[A])] =
-        if b.isEmpty then None
-        else Some((b.head, b.tail))
-    }
-
   given CanEqual[Batch[_], Batch[_]]         = CanEqual.derived
   given CanEqual[Batch[_], Batch.Combine[_]] = CanEqual.derived
   given CanEqual[Batch[_], Batch.Wrapped[_]] = CanEqual.derived
@@ -251,6 +244,14 @@ object Batch:
     def unapply[A](b: Batch[A]): Option[(A, Batch[A])] =
       if b.isEmpty then None
       else Some(b.head -> b.tail)
+  }
+
+  object :== {
+    def unapply[A](b: Batch[A]): Option[(Batch[A], A)] =
+      if b.isEmpty then None
+      else
+        val r = b.reverse
+        Some(r.tail.reverse -> r.head)
   }
 
   def fill[A](n: Int)(elem: => A): Batch[A] =
