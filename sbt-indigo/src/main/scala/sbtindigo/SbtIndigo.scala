@@ -52,7 +52,7 @@ object SbtIndigo extends sbt.AutoPlugin {
 
   def giveScriptBasePath(baseDir: String, scalaVersion: String): String =
     if (scalaVersion.startsWith("2"))
-      s"$baseDir/target/scala-${scalaVersion.split('.').reverse.tail.reverse.mkString(".")}"
+      s"$baseDir/target/scala-${scalaVersion.split('.').init.mkString(".")}"
     else
       s"$baseDir/target/scala-${scalaVersion}"
 

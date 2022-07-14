@@ -44,8 +44,8 @@ class Platform(
   val rendererInit: RendererInitialiser =
     new RendererInitialiser(gameConfig.advanced.renderingTechnology, globalEventStream, dynamicText)
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.null", "scalafix:DisableSyntax.var"))
-  private var _canvas: Canvas = null
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  private var _canvas: Canvas = _
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var _running: Boolean         = true
   private val _worldEvents: WorldEvents = new WorldEvents
@@ -56,13 +56,10 @@ class Platform(
       loadedTextureAssets <- extractLoadedTextures(textureAtlas)
       assetMapping        <- setupAssetMapping(textureAtlas)
       canvas              <- createCanvas(parentElementId, gameConfig)
-      _                   <- listenToWorldEvents(canvas, gameConfig.magnification, globalEventStream)
+      _                   <- listenToWorldEvents(canvas, gameConfig, globalEventStream)
       renderer            <- startRenderer(gameConfig, loadedTextureAssets, canvas, shaders)
-    } yield {
-      _canvas = canvas
-
-      (renderer, assetMapping)
-    }
+      _ = _canvas = canvas
+    } yield (renderer, assetMapping)
 
   def tick(loop: Long => Unit): Unit = {
     if _running then dom.window.requestAnimationFrame(t => loop(t.toLong))
@@ -71,7 +68,7 @@ class Platform(
 
   def kill(): Unit =
     _running = false
-    _worldEvents.kill(_canvas)
+    _worldEvents.kill()
     ()
 
   def createTextureAtlas(assetCollection: AssetCollection): Outcome[TextureAtlas] =
@@ -95,7 +92,7 @@ class Platform(
       new AssetMapping(
         mappings = textureAtlas.legend
           .map { case (name, atlasIndex) =>
-            name -> new TextureRefAndOffset(
+            name -> TextureRefAndOffset(
               atlasName = atlasIndex.id,
               atlasSize = textureAtlas.atlases
                 .get(atlasIndex.id.toString)
@@ -128,10 +125,10 @@ class Platform(
         )
     }
 
-  def listenToWorldEvents(canvas: Canvas, magnification: Int, globalEventStream: GlobalEventStream): Outcome[Unit] =
+  def listenToWorldEvents(canvas: Canvas, gameConfig: GameConfig, globalEventStream: GlobalEventStream): Outcome[Unit] =
     Outcome {
       IndigoLogger.info("Starting world events")
-      _worldEvents.init(canvas, magnification, globalEventStream)
+      _worldEvents.init(canvas, gameConfig.magnification, gameConfig.advanced.disableContextMenu, globalEventStream)
       GamepadInputCaptureImpl.init()
     }
 
