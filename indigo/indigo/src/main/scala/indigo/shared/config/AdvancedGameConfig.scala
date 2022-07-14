@@ -12,17 +12,16 @@ import indigo.shared.config.RenderingTechnology.WebGL2WithFallback
   *   Smooth the rendered view? Defaults to false.
   * @param batchSize
   *   How many scene nodes to batch together between draws, defaults to 256.
-  * @param disableSkipModelUpdates
-  *   By default, model updates will be skipped if the frame rate drops too low.
-  * @param disableSkipViewUpdates
-  *   By default, view updates will be skipped if the frame rate drops too low.
+  * @param disableContextMenu
+  *   By default, context menu on right-click is disable for the canvas.
   */
 final case class AdvancedGameConfig(
     renderingTechnology: RenderingTechnology,
     antiAliasing: Boolean,
     batchSize: Int,
     premultipliedAlpha: Boolean,
-    autoLoadStandardShaders: Boolean
+    autoLoadStandardShaders: Boolean,
+    disableContextMenu: Boolean
 ) derives CanEqual {
 
   def withRenderingTechnology(tech: RenderingTechnology): AdvancedGameConfig =
@@ -54,12 +53,15 @@ final case class AdvancedGameConfig(
   def withAutoLoadStandardShaders(autoLoad: Boolean): AdvancedGameConfig =
     this.copy(autoLoadStandardShaders = autoLoad)
 
+  def withContextMenu: AdvancedGameConfig =
+    this.copy(disableContextMenu = false)
+
   val asString: String =
     s"""
        |Advanced settings
        |- Rendering technology:        ${renderingTechnology.name}
-       |- AntiAliasing enabled:        ${antiAliasing.toString()}
-       |- Render batch size:           ${batchSize.toString()}
+       |- AntiAliasing enabled:        ${antiAliasing.toString}
+       |- Render batch size:           ${batchSize.toString}
        |""".stripMargin
 }
 
@@ -70,7 +72,8 @@ object AdvancedGameConfig {
       antiAliasing = false,
       premultipliedAlpha = true,
       batchSize = 256,
-      autoLoadStandardShaders = true
+      autoLoadStandardShaders = true,
+      disableContextMenu = true
     )
 }
 
