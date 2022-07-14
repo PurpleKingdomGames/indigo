@@ -262,10 +262,11 @@ class LayerRenderer(
       baseTransform: CheapMatrix4,
       renderMode: Int
   ): Unit = {
+    val shaderHasChanged: Boolean = d.shaderId != currentShader
 
     // Switch and reference shader
     val activeShader: WebGLProgram =
-      if d.shaderId != currentShader then
+      if shaderHasChanged then
         try {
           currentProgram = customShaders(d.shaderId.toString)
           setupShader(currentProgram)
@@ -279,28 +280,30 @@ class LayerRenderer(
       else currentProgram
 
     // Base transform
-    if d.shaderId != currentShader then setBaseTransform(baseTransform)
-    if d.shaderId != currentShader || lastRenderMode != renderMode then
+    if shaderHasChanged then setBaseTransform(baseTransform)
+    if shaderHasChanged || lastRenderMode != renderMode then
       lastRenderMode = renderMode
       setMode(renderMode)
 
     // UBO data
-    val uniformHash: js.Array[String] = d.shaderUniformData.map(_.uniformHash)
-
-    if uniformHash.nonEmpty && (uniformHash.length != currentUniformHash.length ||
-        !uniformHash.sameElements(currentUniformHash))
-    then
+    if d.shaderUniformData.nonEmpty then
       d.shaderUniformData.zipWithIndex.foreach { case (ud, i) =>
-        val buff = customDataUBOBuffers.getOrElseUpdate(ud.blockName, gl2.createBuffer())
+        currentUniformHash.lift(i) match
+          case Some(hash) if !shaderHasChanged && hash == ud.uniformHash =>
+            // This data has already been set on the shader.
+            ()
 
-        WebGLHelper.attachUBOData(gl2, ud.data, buff)
-        WebGLHelper.bindUBO(
-          gl2,
-          activeShader,
-          RendererWebGL2Constants.customDataBlockOffsetPointer + i,
-          buff,
-          gl2.getUniformBlockIndex(activeShader, ud.blockName)
-        )
+          case _ =>
+            val buff = customDataUBOBuffers.getOrElseUpdate(ud.blockName, gl2.createBuffer())
+
+            WebGLHelper.attachUBOData(gl2, ud.data, buff)
+            WebGLHelper.bindUBO(
+              gl2,
+              activeShader,
+              RendererWebGL2Constants.customDataBlockOffsetPointer + i,
+              buff,
+              gl2.getUniformBlockIndex(activeShader, ud.blockName)
+            )
       }
 
     // Atlas
@@ -831,41 +834,45 @@ class LayerRenderer(
       updateData(refDisplayObject, 0)
       prepareCloneProgramBuffer()
 
-      val count: Int                 = c.cloneData.length
-      var i: Int                     = 0
-      var currentUniformHash: String = ""
-
+      val count: Int                              = c.cloneData.length
+      var i: Int                                  = 0
+      var currentUniformHash: js.Array[String]    = new js.Array()
       val blockIndexLookup: js.Dictionary[Double] = js.Dictionary()
 
       while (i < count) {
         val shaderUniformData = c.cloneData(i)
 
         // UBO data
-        val uniformHash: String = shaderUniformData.map(_.uniformHash).mkString
-        if uniformHash.nonEmpty && uniformHash != currentUniformHash then
+        if shaderUniformData.nonEmpty then
           shaderUniformData.zipWithIndex.foreach { case (ud, i) =>
-            val blockName = ud.blockName
+            currentUniformHash.lift(i) match
+              case Some(hash) if hash == ud.uniformHash =>
+                // This data has already been set on the shader.
+                ()
 
-            val buff = customDataUBOBuffers.getOrElseUpdate(blockName, gl2.createBuffer())
+              case _ =>
+                val blockName = ud.blockName
 
-            val blockIndex: Double =
-              blockIndexLookup.get(blockName) match
-                case Some(idx) => idx
-                case None =>
-                  val idx = gl2.getUniformBlockIndex(activeShader, blockName)
-                  blockIndexLookup.update(blockName, idx)
-                  idx
+                val buff = customDataUBOBuffers.getOrElseUpdate(blockName, gl2.createBuffer())
 
-            WebGLHelper.attachUBOData(gl2, ud.data, buff)
-            WebGLHelper.bindUBO(
-              gl2,
-              activeShader,
-              RendererWebGL2Constants.customDataBlockOffsetPointer + i,
-              buff,
-              blockIndex
-            )
+                val blockIndex: Double =
+                  blockIndexLookup.get(blockName) match
+                    case Some(idx) => idx
+                    case None =>
+                      val idx = gl2.getUniformBlockIndex(activeShader, blockName)
+                      blockIndexLookup.update(blockName, idx)
+                      idx
+
+                WebGLHelper.attachUBOData(gl2, ud.data, buff)
+                WebGLHelper.bindUBO(
+                  gl2,
+                  activeShader,
+                  RendererWebGL2Constants.customDataBlockOffsetPointer + i,
+                  buff,
+                  blockIndex
+                )
           }
-          currentUniformHash = uniformHash
+          currentUniformHash = shaderUniformData.map(_.uniformHash)
 
         drawSingleCloneProgram()
 
