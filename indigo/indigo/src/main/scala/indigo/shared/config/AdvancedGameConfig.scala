@@ -55,6 +55,8 @@ final case class AdvancedGameConfig(
 
   def withContextMenu: AdvancedGameConfig =
     this.copy(disableContextMenu = false)
+  def noContextMenu: AdvancedGameConfig =
+    this.copy(disableContextMenu = true)
 
   val asString: String =
     s"""

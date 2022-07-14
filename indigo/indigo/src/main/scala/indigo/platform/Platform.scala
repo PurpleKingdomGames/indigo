@@ -44,8 +44,8 @@ class Platform(
   val rendererInit: RendererInitialiser =
     new RendererInitialiser(gameConfig.advanced.renderingTechnology, globalEventStream, dynamicText)
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  private var _canvas: Canvas = _
+  @SuppressWarnings(Array("scalafix:DisableSyntax.null", "scalafix:DisableSyntax.var"))
+  private var _canvas: Canvas = null
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var _running: Boolean         = true
   private val _worldEvents: WorldEvents = new WorldEvents

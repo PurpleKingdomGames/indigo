@@ -41,7 +41,7 @@ final class WorldEvents:
       onmouseup: dom.MouseEvent => Unit,
       onkeydown: dom.KeyboardEvent => Unit,
       onkeyup: dom.KeyboardEvent => Unit,
-      oncontextmenu: Option[dom.MouseEvent => Unit] = None
+      oncontextmenu: Option[dom.MouseEvent => Unit]
   ) {
     canvas.onclick = onclick
     canvas.onwheel = onwheel
@@ -146,7 +146,7 @@ final class WorldEvents:
         globalEventStream.pushGlobalEvent(KeyboardEvent.KeyUp(Key(e.keyCode, e.key)))
       },
       // Prevent right mouse button from popping up the context menu
-      oncontextmenu = if (disableContextMenu) Some((e: dom.MouseEvent) => e.preventDefault()) else None
+      oncontextmenu = if disableContextMenu then Some((e: dom.MouseEvent) => e.preventDefault()) else None
     )
   }
 
