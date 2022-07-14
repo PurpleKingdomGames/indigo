@@ -218,12 +218,13 @@ class LayerRenderer(
       d: DisplayObject,
       atlasName: Option[AtlasId],
       currentShader: ShaderId,
-      currentUniformHash: String
+      currentUniformHash: scalajs.js.Array[String]
   ): Boolean = {
-    val uniformHash: String = d.shaderUniformData.map(_.uniformHash).mkString
+    val uniformHash: scalajs.js.Array[String] = d.shaderUniformData.map(_.uniformHash)
 
     d.shaderId != currentShader ||
-    (uniformHash.nonEmpty && uniformHash != currentUniformHash) ||
+    (uniformHash.nonEmpty && (uniformHash.length != currentUniformHash.length ||
+      !uniformHash.sameElements(currentUniformHash))) ||
     d.atlasName != atlasName ||
     lastRenderMode != 0
   }
@@ -256,7 +257,7 @@ class LayerRenderer(
       d: DisplayObject,
       atlasName: Option[AtlasId],
       currentShader: ShaderId,
-      currentUniformHash: String,
+      currentUniformHash: scalajs.js.Array[String],
       customShaders: scalajs.js.Dictionary[WebGLProgram],
       baseTransform: CheapMatrix4,
       renderMode: Int
@@ -284,8 +285,11 @@ class LayerRenderer(
       setMode(renderMode)
 
     // UBO data
-    val uniformHash: String = d.shaderUniformData.map(_.uniformHash).mkString
-    if uniformHash.nonEmpty && uniformHash != currentUniformHash then
+    val uniformHash: scalajs.js.Array[String] = d.shaderUniformData.map(_.uniformHash)
+
+    if uniformHash.nonEmpty && (uniformHash.length != currentUniformHash.length ||
+        !uniformHash.sameElements(currentUniformHash))
+    then
       d.shaderUniformData.zipWithIndex.foreach { case (ud, i) =>
         val buff = customDataUBOBuffers.getOrElseUpdate(ud.blockName, gl2.createBuffer())
 
@@ -463,13 +467,13 @@ class LayerRenderer(
       baseTransform: CheapMatrix4
   ): Unit = {
 
-    val count: Int                    = displayEntities.length
-    var i: Int                        = 0
-    var batchCount: Int               = 0
-    var atlasName: Option[AtlasId]    = None
-    var currentShader: ShaderId       = ShaderId("")
-    var currentShaderHash: String     = ""
-    var currentBaseTransformHash: Int = 0
+    val count: Int                                  = displayEntities.length
+    var i: Int                                      = 0
+    var batchCount: Int                             = 0
+    var atlasName: Option[AtlasId]                  = None
+    var currentShader: ShaderId                     = ShaderId("")
+    var currentShaderHash: scalajs.js.Array[String] = new scalajs.js.Array()
+    var currentBaseTransformHash: Int               = 0
 
     // Clones
     var currentCloneId: CloneId        = CloneId("")
@@ -496,7 +500,7 @@ class LayerRenderer(
             batchCount = 0
             atlasName = None
             currentShader = ShaderId("")
-            currentShaderHash = ""
+            currentShaderHash = new scalajs.js.Array()
             renderEntities(cloneBlankDisplayObjects, d.letters, customShaders, baseTransform)
             i += 1
 
@@ -508,7 +512,7 @@ class LayerRenderer(
             batchCount = 0
             atlasName = None
             currentShader = ShaderId("")
-            currentShaderHash = ""
+            currentShaderHash = new scalajs.js.Array()
             renderEntities(cloneBlankDisplayObjects, d.entities, customShaders, d.transform * baseTransform)
             setBaseTransform(baseTransform)
             i += 1
@@ -527,7 +531,7 @@ class LayerRenderer(
             batchCount = 0
             atlasName = d.atlasName
             currentShader = d.shaderId
-            currentShaderHash = d.shaderUniformData.map(_.uniformHash).mkString
+            currentShaderHash = d.shaderUniformData.map(_.uniformHash)
 
           case d: DisplayObject =>
             updateData(d, batchCount)
@@ -571,7 +575,7 @@ class LayerRenderer(
               batchCount = 0
               atlasName = currentCloneRef.atlasName
               currentShader = currentCloneRef.shaderId
-              currentShaderHash = currentCloneRef.shaderUniformData.map(_.uniformHash).mkString
+              currentShaderHash = currentCloneRef.shaderUniformData.map(_.uniformHash)
 
             i += 1
 
@@ -612,7 +616,7 @@ class LayerRenderer(
               batchCount = 0
               atlasName = currentCloneRef.atlasName
               currentShader = currentCloneRef.shaderId
-              currentShaderHash = currentCloneRef.shaderUniformData.map(_.uniformHash).mkString
+              currentShaderHash = currentCloneRef.shaderUniformData.map(_.uniformHash)
 
             i += 1
 
@@ -648,7 +652,7 @@ class LayerRenderer(
               batchCount = 0
               atlasName = currentCloneRef.atlasName
               currentShader = currentCloneRef.shaderId
-              currentShaderHash = currentCloneRef.shaderUniformData.map(_.uniformHash).mkString
+              currentShaderHash = currentCloneRef.shaderUniformData.map(_.uniformHash)
 
             i += 1
 
@@ -708,7 +712,7 @@ class LayerRenderer(
             updateTextData(t, 0)
             batchCount = 1
             atlasName = None
-            currentShaderHash = ""
+            currentShaderHash = new scalajs.js.Array()
             i += 1
         }
   }
