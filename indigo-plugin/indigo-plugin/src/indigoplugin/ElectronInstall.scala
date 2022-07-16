@@ -1,11 +1,12 @@
 package indigoplugin
 
 sealed trait ElectronInstall {
+
   def executable: String =
     this match {
       case ElectronInstall.Global                 => "electron"
-      case ElectronInstall.Version(_)             => "npx electron"
-      case ElectronInstall.Latest                 => "npx electron"
+      case ElectronInstall.Version(_)             => "npx --no-install electron"
+      case ElectronInstall.Latest                 => "npx --no-install electron"
       case ElectronInstall.PathToExecutable(path) => path
     }
 
@@ -17,13 +18,6 @@ sealed trait ElectronInstall {
       case ElectronInstall.PathToExecutable(path) => path
     }
 
-  def requiresInstall: Boolean =
-    this match {
-      case ElectronInstall.Global              => false
-      case ElectronInstall.Version(_)          => true
-      case ElectronInstall.Latest              => true
-      case ElectronInstall.PathToExecutable(_) => false
-    }
 }
 object ElectronInstall {
   case object Global                              extends ElectronInstall
