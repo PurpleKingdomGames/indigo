@@ -19,7 +19,8 @@ object snake extends ScalaJSModule with MillIndigo {
   val windowStartWidth: Int            = 720
   val windowStartHeight: Int           = 516
   val disableFrameRateLimit: Boolean   = false
-  val electronInstall: ElectronInstall = ElectronInstall.Global
+  val electronInstall: ElectronInstall = ElectronInstall.Version("^18.0.0")
+  val backgroundColor: String          = "black"
 
   def buildGame() = T.command {
     T {
