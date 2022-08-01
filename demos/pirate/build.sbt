@@ -20,7 +20,7 @@ lazy val pirate =
       scalaVersion := scala3Version,
       organization := "pirate",
       libraryDependencies ++= Seq(
-        "org.scalameta"  %%% "munit"      % "0.7.26" % Test,
+        "org.scalameta"  %%% "munit"      % "0.7.29" % Test,
         "org.scalacheck" %%% "scalacheck" % "1.15.3" % "test"
       ),
       scalacOptions ++= Seq("-language:strictEquality"),
@@ -35,7 +35,8 @@ lazy val pirate =
       windowStartWidth      := 1280,
       windowStartHeight     := 720,
       disableFrameRateLimit := false,
-      electronInstall       := ElectronInstall.Global,
+      electronInstall       := ElectronInstall.Version("^18.0.0"),
+      backgroundColor       := "black",
       libraryDependencies ++= Seq(
         "io.indigoengine" %%% "indigo-json-circe" % IndigoVersion.getVersion, // Needed for Aseprite & Tiled support
         "io.indigoengine" %%% "indigo"            % IndigoVersion.getVersion, // Important! :-)
