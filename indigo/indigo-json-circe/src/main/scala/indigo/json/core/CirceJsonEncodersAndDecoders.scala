@@ -47,12 +47,11 @@ object CirceJsonEncodersAndDecoders {
         for {
           app       <- c.downField("app").as[String]
           version   <- c.downField("version").as[String]
-          image     <- c.downField("image").as[String]
           format    <- c.downField("format").as[String]
           size      <- c.downField("size").as[AsepriteSize]
           scale     <- c.downField("scale").as[String]
           frameTags <- c.downField("frameTags").as[List[AsepriteFrameTag]]
-        } yield AsepriteMeta(app, version, image, format, size, scale, frameTags)
+        } yield AsepriteMeta(app, version, format, size, scale, frameTags)
     }
 
   implicit val decodeAsepriteSize: Decoder[AsepriteSize] =
