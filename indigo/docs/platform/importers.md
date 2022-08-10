@@ -21,7 +21,7 @@ Graphics can be exported as any web compatible file format. One thing to be awar
 
 Animations can also be exported as a spritesheet with accompanying JSON data, here is an example of the export window.
 
-**PLEASE NOTE:** The export is done as a "hash", Indigo does not support the other "array" option.
+**PLEASE NOTE:** The export is done as an "array", Indigo does not support the other "hash" option.
 
 ![Aseprite export dialogue window](/img/aseprite_export.png "Aseprite export dialogue window")
 
