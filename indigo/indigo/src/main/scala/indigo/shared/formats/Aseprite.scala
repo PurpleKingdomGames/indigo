@@ -52,7 +52,6 @@ final case class AsepriteRectangle(x: Int, y: Int, w: Int, h: Int) derives CanEq
 final case class AsepriteMeta(
     app: String,
     version: String,
-    image: String,
     format: String,
     size: AsepriteSize,
     scale: String,

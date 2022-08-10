@@ -173,7 +173,6 @@ object AsepriteSampleData {
       meta = AsepriteMeta(
         app = "http://www.aseprite.org/",
         version = "1.1.13",
-        image = "/Users/dave/repos/indigo/sandbox/trafficlights.png",
         format = "RGBA8888",
         size = AsepriteSize(128, 128),
         scale = "1",
