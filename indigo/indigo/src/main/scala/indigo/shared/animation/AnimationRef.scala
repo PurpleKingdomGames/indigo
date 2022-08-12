@@ -118,13 +118,13 @@ final case class CycleRef(
           cycle // No op, done at animation level.
 
         case JumpToFirstFrame =>
-          updatePlayheadAndLastAdvance(0, lastFrameAdvance)
+          updatePlayheadAndLastAdvance(0, gameTime.running.toMillis)
 
         case JumpToLastFrame =>
-          updatePlayheadAndLastAdvance(frameCount - 1, lastFrameAdvance)
+          updatePlayheadAndLastAdvance(frameCount - 1, gameTime.running.toMillis)
 
         case JumpToFrame(number) =>
-          updatePlayheadAndLastAdvance(if (number > frameCount - 1) frameCount - 1 else number, lastFrameAdvance)
+          updatePlayheadAndLastAdvance(if (number > frameCount - 1) frameCount - 1 else number, gameTime.running.toMillis)
 
       }
     }
