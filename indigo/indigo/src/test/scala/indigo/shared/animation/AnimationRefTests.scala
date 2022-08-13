@@ -2,6 +2,7 @@ package indigo.shared.animation
 
 import indigo.shared.collections.Batch
 import indigo.shared.datatypes._
+import indigo.shared.time.GameTime
 import indigo.shared.time.Millis
 
 class AnimationRefTests extends munit.FunSuite {
@@ -82,6 +83,28 @@ class AnimationRefTests extends munit.FunSuite {
     assertEquals(updated.currentCycle.lastFrameAdvance, Millis(300))
 
     assertEquals(expected == actual, true)
+
+  }
+
+  test("AnimationAction.JumpToFrame resets cycle timing") {
+
+    //convenience class to cut down on syntax noise
+    final case class Tick(a: AnimationRef, t: GameTime):
+      extension (g: GameTime) def in(d: Millis) = GameTime.withDelta(g.running + d.toSeconds, d.toSeconds)
+      def play(m: Millis) = Tick(a, t.in(m)).run(AnimationAction.Play)
+      def run(aa: AnimationAction) = Tick(a.runActions(Batch(aa), t), t)
+      val playhead = a.currentCycle.playheadPosition
+
+    val tick0 = Tick(animation, GameTime.zero)
+
+    val tick1 = tick0.play(frame1.duration / 2)
+    assertEquals(tick1.playhead, 0)
+
+    val tick2 = tick1.play(frame1.duration / 2)
+    assertEquals(tick2.playhead, 1)
+
+    val tick2alt = tick1.run(AnimationAction.JumpToFrame(0)).play(frame1.duration / 2)
+    assertEquals(tick2alt.playhead, 0)
 
   }
 
