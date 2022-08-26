@@ -62,11 +62,13 @@ object mygame extends ScalaJSModule with MillIndigo {
   def scalaVersion   = "@SCALA_VERSION@"
   def scalaJSVersion = "@SCALAJS_VERSION@"
 
-  val gameAssetsDirectory: os.Path = os.pwd / "assets"
-  val showCursor: Boolean          = true
-  val title: String                = "My Game"
-  val windowStartWidth: Int        = 720 // Width of Electron window, used with `indigoRun`.
-  val windowStartHeight: Int       = 480 // Height of Electron window, used with `indigoRun`.
+  val gameAssetsDirectory: os.Path   = os.pwd / "assets"
+  val showCursor: Boolean            = true
+  val title: String                  = "My Game"
+  val windowStartWidth: Int          = 720 // Width of Electron window, used with `indigoRun`.
+  val windowStartHeight: Int         = 480 // Height of Electron window, used with `indigoRun`.
+  val disableFrameRateLimit: Boolean = false
+  val electronInstall                = indigoplugin.ElectronInstall.Global
 
   def ivyDeps = Agg(
     ivy"io.indigoengine::indigo::@VERSION@",
@@ -173,11 +175,13 @@ object mygame extends ScalaJSModule with MillIndigo {
   def scalaVersion   = "@SCALA_VERSION@"
   def scalaJSVersion = "@SCALAJS_VERSION@"
 
-  val gameAssetsDirectory: os.Path = os.pwd / "assets"
-  val showCursor: Boolean          = true
-  val title: String                = "My Game"
-  val windowStartWidth: Int        = 720 // Width of Electron window, used with `indigoRun`.
-  val windowStartHeight: Int       = 480 // Height of Electron window, used with `indigoRun`.
+  val gameAssetsDirectory: os.Path   = os.pwd / "assets"
+  val showCursor: Boolean            = true
+  val title: String                  = "My Game"
+  val windowStartWidth: Int          = 720 // Width of Electron window, used with `indigoRun`.
+  val windowStartHeight: Int         = 480 // Height of Electron window, used with `indigoRun`.
+  val disableFrameRateLimit: Boolean = false
+  val electronInstall                = indigoplugin.ElectronInstall.Global
 
   def ivyDeps = Agg(
     ivy"io.indigoengine::indigo::@VERSION@",
