@@ -9,6 +9,8 @@ final case class SceneAudio(sourceA: Option[SceneAudioSource], sourceB: Option[S
 }
 object SceneAudio {
 
+  val Mute = SceneAudio(None, None, None)
+
   def apply(sourceA: SceneAudioSource): SceneAudio =
     SceneAudio(Some(sourceA), None, None)
 
