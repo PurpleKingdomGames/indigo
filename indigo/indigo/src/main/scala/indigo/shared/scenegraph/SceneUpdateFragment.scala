@@ -29,7 +29,7 @@ import annotation.targetName
 final case class SceneUpdateFragment(
     layers: Batch[Layer],
     lights: Batch[Light],
-    audio: SceneAudio,
+    audio: Option[SceneAudio],
     blendMaterial: Option[BlendMaterial],
     cloneBlanks: Batch[CloneBlank],
     camera: Option[Camera]
@@ -68,7 +68,7 @@ final case class SceneUpdateFragment(
     withLights(lights ++ newLights)
 
   def withAudio(sceneAudio: SceneAudio): SceneUpdateFragment =
-    this.copy(audio = sceneAudio)
+    this.copy(audio = Some(sceneAudio))
 
   def addCloneBlanks(blanks: CloneBlank*): SceneUpdateFragment =
     addCloneBlanks(blanks.toBatch)
@@ -100,23 +100,23 @@ object SceneUpdateFragment:
     SceneUpdateFragment(nodes.toBatch)
 
   def apply(nodes: Batch[SceneNode]): SceneUpdateFragment =
-    SceneUpdateFragment(Batch(Layer(nodes)), Batch.empty, SceneAudio.None, None, Batch.empty, None)
+    SceneUpdateFragment(Batch(Layer(nodes)), Batch.empty, None, None, Batch.empty, None)
 
   def apply(layer: Layer): SceneUpdateFragment =
-    SceneUpdateFragment(Batch(layer), Batch.empty, SceneAudio.None, None, Batch.empty, None)
+    SceneUpdateFragment(Batch(layer), Batch.empty, None, None, Batch.empty, None)
 
   @targetName("suf-apply-many-layers")
   def apply(layers: Layer*): SceneUpdateFragment =
-    SceneUpdateFragment(layers.toBatch, Batch.empty, SceneAudio.None, None, Batch.empty, None)
+    SceneUpdateFragment(layers.toBatch, Batch.empty, None, None, Batch.empty, None)
 
   val empty: SceneUpdateFragment =
-    SceneUpdateFragment(Batch.empty, Batch.empty, SceneAudio.None, None, Batch.empty, None)
+    SceneUpdateFragment(Batch.empty, Batch.empty, None, None, Batch.empty, None)
 
   def append(a: SceneUpdateFragment, b: SceneUpdateFragment): SceneUpdateFragment =
     SceneUpdateFragment(
       b.layers.foldLeft(a.layers) { case (als, bl) => addLayer(als, bl) },
       a.lights ++ b.lights,
-      a.audio |+| b.audio,
+      b.audio.orElse(a.audio),
       b.blendMaterial.orElse(a.blendMaterial),
       a.cloneBlanks ++ b.cloneBlanks,
       b.camera.orElse(a.camera)
