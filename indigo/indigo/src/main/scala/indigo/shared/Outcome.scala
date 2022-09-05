@@ -1,6 +1,8 @@
 package indigo.shared
 
 import indigo.shared.collections.Batch
+import indigo.shared.collections.NonEmptyBatch
+import indigo.shared.collections.NonEmptyList
 import indigo.shared.events.GlobalEvent
 
 import scala.annotation.tailrec
@@ -9,7 +11,7 @@ import scala.util.control.NonFatal
 /** An `Outcome` represents the result of some part of a frame update. It contains a value or an error (exception), and
   * optionally a list of events to be processed on the next frame.
   */
-sealed trait Outcome[+A] derives CanEqual {
+sealed trait Outcome[+A] derives CanEqual:
 
   def isResult: Boolean
   def isError: Boolean
@@ -50,8 +52,8 @@ sealed trait Outcome[+A] derives CanEqual {
   def combine[B](other: Outcome[B]): Outcome[(A, B)]
 
   def flatMap[B](f: A => Outcome[B]): Outcome[B]
-}
-object Outcome {
+
+object Outcome:
 
   final case class Result[+A](state: A, globalEvents: Batch[GlobalEvent]) extends Outcome[A] {
 
@@ -164,19 +166,19 @@ object Outcome {
         e.getMessage + "\n" + e.getStackTrace.mkString("\n")
       }(e)
 
-    def addGlobalEvents(newEvents: GlobalEvent*): Error                              = this
-    def addGlobalEvents(newEvents: => Batch[GlobalEvent]): Error                      = this
-    def createGlobalEvents(f: Nothing => Batch[GlobalEvent]): Error                   = this
-    def clearGlobalEvents: Error                                                     = this
+    def addGlobalEvents(newEvents: GlobalEvent*): Error                                = this
+    def addGlobalEvents(newEvents: => Batch[GlobalEvent]): Error                       = this
+    def createGlobalEvents(f: Nothing => Batch[GlobalEvent]): Error                    = this
+    def clearGlobalEvents: Error                                                       = this
     def replaceGlobalEvents(f: Batch[GlobalEvent] => Batch[GlobalEvent]): Error        = this
-    def eventsAsOutcome: Outcome[Batch[GlobalEvent]]                                  = this
+    def eventsAsOutcome: Outcome[Batch[GlobalEvent]]                                   = this
     def mapAll[B](f: Nothing => B, g: Batch[GlobalEvent] => Batch[GlobalEvent]): Error = this
-    def map[B](f: Nothing => B): Error                                               = this
-    def mapGlobalEvents(f: GlobalEvent => GlobalEvent): Error                        = this
-    def ap[B](of: Outcome[Nothing => B]): Outcome[B]                                 = this
-    def merge[B, C](other: Outcome[B])(f: (Nothing, B) => C): Error                  = this
-    def combine[B](other: Outcome[B]): Error                                         = this
-    def flatMap[B](f: Nothing => Outcome[B]): Error                                  = this
+    def map[B](f: Nothing => B): Error                                                 = this
+    def mapGlobalEvents(f: GlobalEvent => GlobalEvent): Error                          = this
+    def ap[B](of: Outcome[Nothing => B]): Outcome[B]                                   = this
+    def merge[B, C](other: Outcome[B])(f: (Nothing, B) => C): Error                    = this
+    def combine[B](other: Outcome[B]): Error                                           = this
+    def flatMap[B](f: Nothing => Outcome[B]): Error                                    = this
 
   }
 
@@ -185,24 +187,20 @@ object Outcome {
       Error(e, { case (ee: Throwable) => ee.getMessage })
   }
 
-  implicit class ListWithOutcomeSequence[A](private val l: List[Outcome[A]]) extends AnyVal {
-    def sequence: Outcome[List[A]] =
-      Outcome.sequence(l)
-  }
+  extension [A](b: Batch[Outcome[A]]) def sequence: Outcome[Batch[A]]                 = Outcome.sequenceBatch(b)
+  extension [A](b: NonEmptyBatch[Outcome[A]]) def sequence: Outcome[NonEmptyBatch[A]] = Outcome.sequenceNonEmptyBatch(b)
+  extension [A](l: List[Outcome[A]]) def sequence: Outcome[List[A]]                   = Outcome.sequenceList(l)
+  extension [A](l: NonEmptyList[Outcome[A]]) def sequence: Outcome[NonEmptyList[A]]   = Outcome.sequenceNonEmptyList(l)
 
-  implicit class BatchWithOutcomeSequence[A](private val l: Batch[Outcome[A]]) extends AnyVal {
-    def sequence: Outcome[Batch[A]] =
-      Outcome.sequence(l)
-  }
-  implicit class tuple2Outcomes[A, B](private val t: (Outcome[A], Outcome[B])) extends AnyVal {
+  extension [A, B](t: (Outcome[A], Outcome[B]))
     def combine: Outcome[(A, B)] =
       t._1.combine(t._2)
     def merge[C](f: (A, B) => C): Outcome[C] =
       t._1.merge(t._2)(f)
     def map2[C](f: (A, B) => C): Outcome[C] =
       merge(f)
-  }
-  implicit class tuple3Outcomes[A, B, C](private val t: (Outcome[A], Outcome[B], Outcome[C])) extends AnyVal {
+
+  extension [A, B, C](t: (Outcome[A], Outcome[B], Outcome[C]))
     def combine: Outcome[(A, B, C)] =
       t match {
         case (Result(s1, es1), Result(s2, es2), Result(s3, es3)) =>
@@ -225,7 +223,6 @@ object Outcome {
       } yield f(aa, bb, cc)
     def map3[D](f: (A, B, C) => D): Outcome[D] =
       merge(f)
-  }
 
   def apply[A](state: => A): Outcome[A] =
     try Outcome.Result[A](state, Batch.empty)
@@ -253,7 +250,7 @@ object Outcome {
   def raiseError(throwable: Throwable): Outcome.Error =
     Outcome.Error(throwable)
 
-  def sequence[A](l: Batch[Outcome[A]]): Outcome[Batch[A]] =
+  def sequenceBatch[A](l: Batch[Outcome[A]]): Outcome[Batch[A]] =
     given CanEqual[Outcome[A], Outcome[A]] = CanEqual.derived
 
     @tailrec
@@ -269,7 +266,10 @@ object Outcome {
 
     rec(l, Batch.empty, Batch.empty)
 
-  def sequence[A](l: List[Outcome[A]]): Outcome[List[A]] =
+  def sequenceNonEmptyBatch[A](l: NonEmptyBatch[Outcome[A]]): Outcome[NonEmptyBatch[A]] =
+    sequence(l.toBatch).map(bb => NonEmptyBatch.fromBatch(bb).get) // Use of get is safe, we known it is non-empty
+
+  def sequenceList[A](l: List[Outcome[A]]): Outcome[List[A]] =
     given CanEqual[Outcome[A], Outcome[A]] = CanEqual.derived
 
     @tailrec
@@ -286,6 +286,9 @@ object Outcome {
       }
 
     rec(l, Nil, Nil)
+
+  def sequenceNonEmptyList[A](l: NonEmptyList[Outcome[A]]): Outcome[NonEmptyList[A]] =
+    sequence(l.toList).map(ll => NonEmptyList.fromList(ll).get) // Use of get is safe, we known it is non-empty
 
   def merge[A, B, C](oa: Outcome[A], ob: Outcome[B])(f: (A, B) => C): Outcome[C] =
     oa.merge(ob)(f)
@@ -327,5 +330,3 @@ object Outcome {
     }
   def flatten[A](faa: Outcome[Outcome[A]]): Outcome[A] =
     join(faa)
-
-}
