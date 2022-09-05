@@ -267,7 +267,7 @@ object Outcome:
     rec(l, Batch.empty, Batch.empty)
 
   def sequenceNonEmptyBatch[A](l: NonEmptyBatch[Outcome[A]]): Outcome[NonEmptyBatch[A]] =
-    sequence(l.toBatch).map(bb => NonEmptyBatch.fromBatch(bb).get) // Use of get is safe, we known it is non-empty
+    sequence(l.toBatch).map(bb => NonEmptyBatch.fromBatch(bb).get) // Use of get is safe, we know it is non-empty
 
   def sequenceList[A](l: List[Outcome[A]]): Outcome[List[A]] =
     given CanEqual[Outcome[A], Outcome[A]] = CanEqual.derived
@@ -288,7 +288,7 @@ object Outcome:
     rec(l, Nil, Nil)
 
   def sequenceNonEmptyList[A](l: NonEmptyList[Outcome[A]]): Outcome[NonEmptyList[A]] =
-    sequence(l.toList).map(ll => NonEmptyList.fromList(ll).get) // Use of get is safe, we known it is non-empty
+    sequence(l.toList).map(ll => NonEmptyList.fromList(ll).get) // Use of get is safe, we know it is non-empty
 
   def merge[A, B, C](oa: Outcome[A], ob: Outcome[B])(f: (A, B) => C): Outcome[C] =
     oa.merge(ob)(f)
