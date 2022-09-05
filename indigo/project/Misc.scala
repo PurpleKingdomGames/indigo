@@ -44,8 +44,8 @@ object Misc {
     Seq(
       logo             := rawLogo + s"version ${version.value}",
       logoColor        := scala.Console.MAGENTA,
-      aliasColor       := scala.Console.CYAN,
-      commandColor     := scala.Console.BLUE_B,
+      aliasColor       := scala.Console.BLUE,
+      commandColor     := scala.Console.CYAN,
       descriptionColor := scala.Console.WHITE
     )
   }
