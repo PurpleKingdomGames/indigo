@@ -130,13 +130,15 @@ final class AudioPlayer(context: AudioContextProxy) {
     }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  private var sourceA: AudioSourceState = new AudioSourceState(BindingKey("none"), None)
+  private var sourceA: Option[AudioSourceState] = None
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  private var sourceB: AudioSourceState = new AudioSourceState(BindingKey("none"), None)
+  private var sourceB: Option[AudioSourceState] = None
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  private var sourceC: AudioSourceState = new AudioSourceState(BindingKey("none"), None)
+  private var sourceC: Option[AudioSourceState] = None
 
-  def playAudio(sceneAudio: SceneAudio): Unit = {
+  def playAudio(sceneAudioOption: Option[SceneAudio]): Unit = {
+    val sceneAudio = sceneAudioOption.getOrElse(SceneAudio.Mute)
+
     updateSource(sceneAudio.sourceA, sourceA).foreach { src =>
       sourceA = src
     }
@@ -149,32 +151,36 @@ final class AudioPlayer(context: AudioContextProxy) {
   }
 
   private def updateSource(
-      sceneAudioSource: SceneAudioSource,
-      currentSource: AudioSourceState
-  ): Option[AudioSourceState] =
-    if (sceneAudioSource.bindingKey == currentSource.bindingKey) None
-    else
+      sceneAudioSource: Option[SceneAudioSource],
+      currentSource: Option[AudioSourceState]
+  ): Option[Option[AudioSourceState]] = (currentSource, sceneAudioSource) match {
+    case (None, None) =>
+      None
+    case (Some(playing), Some(next)) if playing.bindingKey == next.bindingKey =>
+      None
+    case (Some(playing), None) =>
+      playing.audioNodes.audioBufferSourceNode.stop()
+      Some(None)
+    case (_, Some(next)) =>
       Option {
-        sceneAudioSource.playbackPattern match {
-          case PlaybackPattern.Silent =>
-            currentSource.audioNodes.foreach(_.audioBufferSourceNode.stop(0))
-            new AudioSourceState(sceneAudioSource.bindingKey, None)
+        currentSource.foreach(_.audioNodes.audioBufferSourceNode.stop())
 
+        next.playbackPattern match {
           case PlaybackPattern.SingleTrackLoop(track) =>
-            currentSource.audioNodes.foreach(_.audioBufferSourceNode.stop(0))
-
             val nodes =
               findAudioDataByName(track.assetName)
-                .map(asset => setupNodes(asset, track.volume * sceneAudioSource.masterVolume, loop = true))
+                .map(asset => setupNodes(asset, track.volume * next.masterVolume, loop = true))
+                .get //throws if no asset found
 
-            nodes.foreach(_.audioBufferSourceNode.start(0))
+            nodes.audioBufferSourceNode.start()
 
-            new AudioSourceState(
-              bindingKey = sceneAudioSource.bindingKey,
+            Some(new AudioSourceState(
+              bindingKey = next.bindingKey,
               audioNodes = nodes
-            )
+            ))
         }
       }
+    }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def kill(): Unit =
@@ -184,7 +190,7 @@ final class AudioPlayer(context: AudioContextProxy) {
     sourceC = null
     ()
 
-  private class AudioSourceState(val bindingKey: BindingKey, val audioNodes: Option[AudioNodes])
+  private class AudioSourceState(val bindingKey: BindingKey, val audioNodes: AudioNodes)
   private class AudioNodes(val audioBufferSourceNode: AudioBufferSourceNode, val gainNode: GainNode)
 
 }

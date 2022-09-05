@@ -52,4 +52,4 @@ SceneUpdateFragment.empty
   )
 ```
 
-A `SceneAudio` can describe up to three music channels at once, called `SceneAudioSource`s. A `SceneAudioSource` specifics a `BindingKey` to keep track of what is being played and it's progression state, and a playback pattern which at the moment can only be either `PlaybackPattern.SingleTrackLoop` or `Silent`. `SingleTrackLoop` takes a `Track` which is very similar to the `PlaySound` type above, taking an `AssetName` to tell it what to play, and optionally a `Volume`.
+A `SceneAudio` can describe up to three music channels at once, called `SceneAudioSource`s. A `SceneAudioSource` specifics a `BindingKey` to keep track of what is being played and it's progression state, and a playback pattern which at the moment can only be `PlaybackPattern.SingleTrackLoop`. `SingleTrackLoop` takes a `Track` which is very similar to the `PlaySound` type above, taking an `AssetName` to tell it what to play, and optionally a `Volume`.

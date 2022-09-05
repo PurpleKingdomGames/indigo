@@ -80,7 +80,7 @@ class JobMarketTests extends munit.FunSuite {
 
     assertEquals(market.present(context, List(job)).unsafeGet.layers.flatMap(_.nodes).isEmpty, true)
     assertEquals(market.present(context, List(job)).unsafeGlobalEvents.isEmpty, true)
-    assertEquals(market.present(context, List(job)).unsafeGet.audio, SceneAudio.None)
+    assertEquals(market.present(context, List(job)).unsafeGet.audio, None)
   }
 
   test("The job market.should have an empty subsystem representation") {
