@@ -258,7 +258,7 @@ object NonEmptyBatch:
 
   def fromList[A](l: List[A]): Option[NonEmptyBatch[A]] =
     fromBatch(Batch.fromList(l))
-    
+
   def fromNonEmptyList[A](nel: NonEmptyList[A]): NonEmptyBatch[A] =
     NonEmptyBatch(nel.head, Batch.fromList(nel.tail))
 
@@ -309,3 +309,6 @@ object NonEmptyBatch:
 
   def exists[A](fa: NonEmptyBatch[A])(p: A => Boolean): Boolean =
     fa.toBatch.exists(p)
+
+  def sequenceOption[A](b: NonEmptyBatch[Option[A]]): Option[NonEmptyBatch[A]] =
+    Batch.sequenceOption(b.toBatch).flatMap(NonEmptyBatch.fromBatch)

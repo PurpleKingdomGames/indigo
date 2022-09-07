@@ -1,5 +1,6 @@
 package indigo.shared.collections
 
+import indigo.shared.Outcome
 import indigo.syntax.*
 
 import scalajs.js
@@ -430,6 +431,26 @@ class BatchTests extends munit.FunSuite {
     assert(!Batch(1).isEmpty)
     assert(!Batch.Combine(Batch(1), Batch(2)).isEmpty)
     assert(!Batch.Wrapped(js.Array(1, 2, 3)).isEmpty)
+  }
+
+  test("sequence - Option") {
+    val actual =
+      Batch(Option(1), None, Option(3))
+
+    val expected =
+      Some(Batch(1, 3))
+
+    assertEquals(actual.sequence, expected)
+  }
+
+  test("sequence - Outcome") {
+    val actual =
+      Batch(Outcome(1), Outcome(2), Outcome(3))
+
+    val expected =
+      Outcome(Batch(1, 2, 3))
+
+    assertEquals(actual.sequence, expected)
   }
 
 }

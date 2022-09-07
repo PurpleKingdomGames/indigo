@@ -368,3 +368,22 @@ object Batch:
             values.sameElements(arr)
 
       catch { case NonFatal(_) => false }
+
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
+  def sequenceOption[A](b: Batch[Option[A]]): Option[Batch[A]] =
+    import indigo.syntax.==:
+    @tailrec
+    def rec(remaining: Batch[Option[A]], acc: Batch[A]): Option[Batch[A]] =
+      if remaining.isEmpty then Option(acc.reverse)
+      else
+        remaining match
+          case None ==: xs =>
+            rec(xs, acc)
+
+          case Some(x) ==: xs =>
+            rec(xs, x :: acc)
+
+          case _ =>
+            throw new Exception("Error encountered sequencing Batch[Option[A]]")
+
+    rec(b, Batch.empty[A])

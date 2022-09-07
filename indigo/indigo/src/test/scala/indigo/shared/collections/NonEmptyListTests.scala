@@ -1,5 +1,8 @@
 package indigo.shared.collections
 
+import indigo.shared.Outcome
+import indigo.syntax.*
+
 @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
 class NonEmptyListTests extends munit.FunSuite {
 
@@ -95,6 +98,46 @@ class NonEmptyListTests extends munit.FunSuite {
   test("NonEmptyList ops.should have: exists") {
     assertEquals(NonEmptyList(1, 2, 3).exists(_ == 2), true)
     assertEquals(NonEmptyList(1, 2, 3).exists(_ == 4), false)
+  }
+
+  test("sequence - List - Option") {
+    val actual =
+      List(Option(1), None, Option(3))
+
+    val expected =
+      Some(List(1, 3))
+
+    assertEquals(actual.sequence, expected)
+  }
+
+  test("sequence - List - Outcome") {
+    val actual =
+      List(Outcome(1), Outcome(2), Outcome(3))
+
+    val expected =
+      Outcome(List(1, 2, 3))
+
+    assertEquals(actual.sequence, expected)
+  }
+
+  test("sequence - Option") {
+    val actual =
+      NonEmptyList(Option(1), None, Option(3))
+
+    val expected =
+      Some(NonEmptyList(1, 3))
+
+    assertEquals(actual.sequence, expected)
+  }
+
+  test("sequence - Outcome") {
+    val actual =
+      NonEmptyList(Outcome(1), Outcome(2), Outcome(3))
+
+    val expected =
+      Outcome(NonEmptyList(1, 2, 3))
+
+    assertEquals(actual.sequence, expected)
   }
 
 }
