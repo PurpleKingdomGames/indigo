@@ -62,6 +62,11 @@ object syntax:
   extension [A](l: List[Outcome[A]]) def sequence: Outcome[List[A]]                   = Outcome.sequenceList(l)
   extension [A](l: NonEmptyList[Outcome[A]]) def sequence: Outcome[NonEmptyList[A]]   = Outcome.sequenceNonEmptyList(l)
 
+  extension [A](b: Batch[Option[A]]) def sequence: Option[Batch[A]]                 = Batch.sequenceOption(b)
+  extension [A](b: NonEmptyBatch[Option[A]]) def sequence: Option[NonEmptyBatch[A]] = NonEmptyBatch.sequenceOption(b)
+  extension [A](l: List[Option[A]]) def sequence: Option[List[A]]                   = NonEmptyList.sequenceListOption(l)
+  extension [A](l: NonEmptyList[Option[A]]) def sequence: Option[NonEmptyList[A]]   = NonEmptyList.sequenceOption(l)
+
 end syntax
 
 val logger: indigo.shared.IndigoLogger.type = indigo.shared.IndigoLogger

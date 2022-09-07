@@ -1,11 +1,13 @@
 package indigo.shared.collections
 
+import scala.annotation.tailrec
+
 /** An ordered list-type object that requires there to always be at least one element present, ruling out the
   * possibility of unsafely accessing the `head` element.
   * @tparam A
   *   The type of element to be stored in the list.
   */
-final case class NonEmptyList[A](head: A, tail: List[A]) derives CanEqual {
+final case class NonEmptyList[A](head: A, tail: List[A]) derives CanEqual:
 
   /** Alias for `head`
     * @return
@@ -206,9 +208,7 @@ final case class NonEmptyList[A](head: A, tail: List[A]) derives CanEqual {
   def mkString(separator: String): String =
     head.toString + separator + tail.mkString(separator)
 
-}
-
-object NonEmptyList {
+object NonEmptyList:
 
   def apply[A](head: A, tail: A*): NonEmptyList[A] =
     pure(head, tail.toList)
@@ -294,4 +294,20 @@ object NonEmptyList {
   def exists[A](fa: NonEmptyList[A])(p: A => Boolean): Boolean =
     fa.toList.exists(p)
 
-}
+  def sequenceListOption[A](l: List[Option[A]]): Option[List[A]] =
+    @tailrec
+    def rec(remaining: List[Option[A]], acc: List[A]): Option[List[A]] =
+      remaining match
+        case Nil =>
+          Some(acc.reverse)
+
+        case None :: as =>
+          rec(as, acc)
+
+        case Some(a) :: as =>
+          rec(as, a :: acc)
+
+    rec(l, Nil)
+
+  def sequenceOption[A](l: NonEmptyList[Option[A]]): Option[NonEmptyList[A]] =
+    sequenceListOption(l.toList).flatMap(NonEmptyList.fromList)

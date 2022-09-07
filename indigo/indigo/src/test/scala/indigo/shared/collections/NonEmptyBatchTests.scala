@@ -1,5 +1,8 @@
 package indigo.shared.collections
 
+import indigo.shared.Outcome
+import indigo.syntax.*
+
 @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
 class NonEmptyBatchTests extends munit.FunSuite {
 
@@ -99,6 +102,26 @@ class NonEmptyBatchTests extends munit.FunSuite {
   test("NonEmptyBatch ops.should have: exists") {
     assertEquals(NonEmptyBatch(1, 2, 3).exists(_ == 2), true)
     assertEquals(NonEmptyBatch(1, 2, 3).exists(_ == 4), false)
+  }
+
+  test("sequence - Option") {
+    val actual =
+      NonEmptyBatch(Option(1), None, Option(3))
+
+    val expected =
+      Some(NonEmptyBatch(1, 3))
+
+    assertEquals(actual.sequence, expected)
+  }
+
+  test("sequence - Outcome") {
+    val actual =
+      NonEmptyBatch(Outcome(1), Outcome(2), Outcome(3))
+
+    val expected =
+      Outcome(NonEmptyBatch(1, 2, 3))
+
+    assertEquals(actual.sequence, expected)
   }
 
 }
