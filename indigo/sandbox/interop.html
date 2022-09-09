@@ -65,7 +65,7 @@
     var isNormalSize = true;
 
     function resizeTheGame() {
-      var indigo = document.getElementById("indigo");
+      var indigo = document.getElementById("indigo-container");
 
       if (isNormalSize) {
         isNormalSize = false;
@@ -94,7 +94,7 @@
     };
 
     function fullscreenIndigo() {
-      var indigo = document.getElementById("indigo");
+      var indigo = document.getElementById("indigo-container");
 
       // indigo.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT); //Chrome
       indigo.mozRequestFullScreen(); //Firefox

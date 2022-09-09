@@ -29,11 +29,6 @@ trait GameLauncher[StartUpData, Model, ViewModel]:
     ()
 
   @JSExport
-  def launch(): Unit =
-    game = (findElement andThen ready(Map[String, String]()))(GameLauncher.DefaultContainerId)
-    ()
-
-  @JSExport
   def launch(containerId: String): Unit =
     game = (findElement andThen ready(Map[String, String]()))(containerId)
     ()
@@ -45,11 +40,6 @@ trait GameLauncher[StartUpData, Model, ViewModel]:
 
   // JS API
   @JSExport
-  def launch(flags: scala.scalajs.js.Dictionary[String]): Unit =
-    game = (findElement andThen ready(flags.toMap))(GameLauncher.DefaultContainerId)
-    ()
-
-  @JSExport
   def launch(containerId: String, flags: scala.scalajs.js.Dictionary[String]): Unit =
     game = (findElement andThen ready(flags.toMap))(containerId)
     ()
@@ -60,14 +50,6 @@ trait GameLauncher[StartUpData, Model, ViewModel]:
     ()
 
   // Scala API
-  def launch(flags: Map[String, String]): Unit =
-    game = (findElement andThen ready(flags))(GameLauncher.DefaultContainerId)
-    ()
-
-  def launch(flags: (String, String)*): Unit =
-    game = (findElement andThen ready(flags.toMap))(GameLauncher.DefaultContainerId)
-    ()
-
   def launch(containerId: String, flags: Map[String, String]): Unit =
     game = (findElement andThen ready(flags))(containerId)
     ()
@@ -83,6 +65,3 @@ trait GameLauncher[StartUpData, Model, ViewModel]:
   def launch(element: Element, flags: (String, String)*): Unit =
     game = ready(flags.toMap)(element)
     ()
-
-object GameLauncher:
-  val DefaultContainerId: String = "indigo-container"
