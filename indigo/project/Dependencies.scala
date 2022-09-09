@@ -7,7 +7,7 @@ object Dependencies {
   object Versions {
     val circe            = "0.14.1"
     val scalaCheck       = "1.15.4"
-    val scalajsDom       = "2.1.0"
+    val scalajsDom       = "2.3.0"
     val scalajsMacroTask = "1.0.0"
     val scalajsBenchmark = "0.10.0"
     val chartjs          = "1.0.2"
