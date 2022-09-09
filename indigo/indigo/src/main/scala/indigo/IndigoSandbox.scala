@@ -4,6 +4,7 @@ import indigo._
 import indigo.entry.StandardFrameProcessor
 import indigo.gameengine.GameEngine
 import indigo.shared.subsystems.SubSystemsRegister
+import org.scalajs.dom.Element
 import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits._
 
 import scala.concurrent.Future
@@ -124,7 +125,7 @@ trait IndigoSandbox[StartUpData, Model] extends GameLauncher[StartUpData, Model,
     )
   }
 
-  final protected def ready(parentElementId: String, flags: Map[String, String]): GameEngine[StartUpData, Model, Unit] =
-    indigoGame.start(parentElementId, config, Future(None), assets, Future(Set()), Batch.empty)
+  protected def ready(flags: Map[String, String]): Element => GameEngine[StartUpData, Model, Unit] = parentElement =>
+    indigoGame.start(parentElement, config, Future(None), assets, Future(Set()), Batch.empty)
 
 }

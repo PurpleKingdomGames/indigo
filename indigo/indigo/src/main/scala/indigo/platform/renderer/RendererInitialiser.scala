@@ -59,9 +59,14 @@ final class RendererInitialiser(
     r
   }
 
-  def createCanvas(width: Int, height: Int, parentElementId: String, parent: Element): html.Canvas =
-    val name = if parentElementId.isEmpty then GameLauncher.DefaultContainerId else s"$parentElementId-indigo"
-    createNamedCanvas(width, height, name, Some(parent))
+  def createCanvas(width: Int, height: Int, parentElement: Element): html.Canvas =
+    val parentElementId =
+      Option(parentElement.id)
+        .map(id => if id.isEmpty then GameLauncher.DefaultContainerId else id)
+        .getOrElse(GameLauncher.DefaultContainerId)
+
+    val name = s"$parentElementId-indigo"
+    createNamedCanvas(width, height, name, Some(parentElement))
 
   private given CanEqual[Option[Element], Option[Element]] = CanEqual.derived
 

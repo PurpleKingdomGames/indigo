@@ -30,6 +30,7 @@ import indigo.shared.shader.EntityShader
 import indigo.shared.shader.Shader
 import indigo.shared.shader.ShaderRegister
 import indigo.shared.shader.StandardShaders
+import org.scalajs.dom.Element
 import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits._
 
 import scala.concurrent.Future
@@ -112,7 +113,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def start(
-      parentElementId: String,
+      parentElement: Element,
       config: GameConfig,
       configAsync: Future[Option[GameConfig]],
       assets: Set[AssetType],
@@ -123,7 +124,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
     IndigoLogger.info("Starting Indigo")
 
     storage = Storage.default
-    globalEventStream = new GlobalEventStream(rebuildGameLoop(parentElementId, false), audioPlayer, storage, platform)
+    globalEventStream = new GlobalEventStream(rebuildGameLoop(parentElement, false), audioPlayer, storage, platform)
     gamepadInputCapture = GamepadInputCaptureImpl()
 
     // Intialisation / Boot events
@@ -150,7 +151,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
       assetsAsync.flatMap(aa => AssetLoader.loadAssets(aa ++ assets)).foreach { assetCollection =>
         IndigoLogger.info("Asset load complete")
 
-        rebuildGameLoop(parentElementId, true)(assetCollection)
+        rebuildGameLoop(parentElement, true)(assetCollection)
 
         if (gameLoop != null)
           platform.tick(gameLoop(0))
@@ -162,7 +163,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  def rebuildGameLoop(parentElementId: String, firstRun: Boolean): AssetCollection => Unit =
+  def rebuildGameLoop(parentElement: Element, firstRun: Boolean): AssetCollection => Unit =
     ac => {
 
       fontRegister.clearRegister()
@@ -175,7 +176,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
 
       val time = if (firstRun) 0 else gameLoopInstance.runningTimeReference
 
-      platform = new Platform(parentElementId, gameConfig, accumulatedAssetCollection, globalEventStream, dynamicText)
+      platform = new Platform(parentElement, gameConfig, accumulatedAssetCollection, globalEventStream, dynamicText)
 
       initialise(accumulatedAssetCollection)(Dice.fromSeed(time)) match {
         case oe @ Outcome.Error(error, _) =>
