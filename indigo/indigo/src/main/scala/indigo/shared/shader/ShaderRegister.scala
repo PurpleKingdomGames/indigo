@@ -23,9 +23,6 @@ final class ShaderRegister {
 
       case _: BlendShader.External =>
         ()
-
-      case _ =>
-        ()
     }
 
   def remove(id: ShaderId): Unit =

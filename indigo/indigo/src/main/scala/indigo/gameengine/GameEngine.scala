@@ -277,9 +277,6 @@ object GameEngine {
       case s: BlendShader.External =>
         shaderRegister.remove(s.id)
         shaderRegister.registerBlendShader(externalBlendShaderToSource(s, assetCollection))
-
-      case _ =>
-        ()
     }
 
   def externalEntityShaderToSource(
