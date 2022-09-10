@@ -131,9 +131,10 @@ Note that the `LoadAsset` event is a convenience event, and in fact loads a bund
 
 ### Scenes
 
-- `Next`
-- `Previous`
-- `JumpTo(sceneName)`
+- `Next` - Instructs Indigo to advance one scene when emitted.
+- `Previous` - Instructs Indigo to go back by one scene when emitted.
+- `JumpTo(sceneName)` - Instructs Indigo to switch to the specified scene when emitted.
+- `SceneChange(from, to, at)` - Indigo emits this event when it changes scene. It is a useful hook that allows you to take action at the point of change. Example: Scene running time can be calculated as `context.running - at` if you need an animation to play from the beginning of a scene.
 
 ### `AutomataEvent`s
 
