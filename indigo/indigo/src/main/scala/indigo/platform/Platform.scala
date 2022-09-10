@@ -34,7 +34,7 @@ import scala.util.Failure
 import scala.util.Success
 
 class Platform(
-    parentElementId: String,
+    parentElement: Element,
     gameConfig: GameConfig,
     assetCollection: AssetCollection,
     globalEventStream: GlobalEventStream,
@@ -55,7 +55,7 @@ class Platform(
       textureAtlas        <- createTextureAtlas(assetCollection)
       loadedTextureAssets <- extractLoadedTextures(textureAtlas)
       assetMapping        <- setupAssetMapping(textureAtlas)
-      canvas              <- createCanvas(parentElementId, gameConfig)
+      canvas              <- createCanvas(parentElement, gameConfig)
       _                   <- listenToWorldEvents(canvas, gameConfig, globalEventStream)
       renderer            <- startRenderer(gameConfig, loadedTextureAssets, canvas, shaders)
       _ = _canvas = canvas
@@ -108,22 +108,14 @@ class Platform(
 
   private given CanEqual[Option[Element], Option[Element]] = CanEqual.derived
 
-  def createCanvas(parentElementId: String, gameConfig: GameConfig): Outcome[Canvas] =
-    Option(dom.document.getElementById(parentElementId)) match {
-      case None =>
-        Outcome.raiseError(new Exception(s"""Parent element with ID '$parentElementId' could not be found on page."""))
-
-      case Some(parent) =>
-        IndigoLogger.info(s"Attaching to element with ID: '$parentElementId'")
-        Outcome(
-          rendererInit.createCanvas(
-            gameConfig.viewport.width,
-            gameConfig.viewport.height,
-            parentElementId,
-            parent
-          )
+  def createCanvas(parentElement: Element, gameConfig: GameConfig): Outcome[Canvas] =
+      Outcome(
+        rendererInit.createCanvas(
+          gameConfig.viewport.width,
+          gameConfig.viewport.height,
+          parentElement
         )
-    }
+      )
 
   def listenToWorldEvents(canvas: Canvas, gameConfig: GameConfig, globalEventStream: GlobalEventStream): Outcome[Unit] =
     Outcome {

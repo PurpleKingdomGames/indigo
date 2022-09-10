@@ -26,11 +26,12 @@ object HtmlTemplate {
       |    </style>
       |  </head>
       |  <body>
+      |    <!-- This div's id is hardcoded, and several parts of this reference implementation look for it. -->
       |    <div id="indigo-container"></div>
       |    <script type="text/javascript" src="scripts/indigo-support.js"></script>
       |    <script type="text/javascript" src="scripts/$scriptName"></script>
       |    <script type="text/javascript">
-      |      IndigoGame.launch({"width": window.innerWidth.toString(), "height": window.innerHeight.toString()})
+      |      IndigoGame.launch("indigo-container", {"width": window.innerWidth.toString(), "height": window.innerHeight.toString()})
       |    </script>
       |    <script src="cordova.js"></script> <!-- only needed for Cordova builds -->
       |  </body>

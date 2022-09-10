@@ -3,6 +3,7 @@ package indigo
 import indigo.entry.StandardFrameProcessor
 import indigo.gameengine.GameEngine
 import indigo.shared.subsystems.SubSystemsRegister
+import org.scalajs.dom.Element
 import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits._
 
 import scala.concurrent.Future
@@ -149,14 +150,15 @@ trait IndigoDemo[BootData, StartUpData, Model, ViewModel] extends GameLauncher[S
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  final protected def ready(parentElementId: String, flags: Map[String, String]): GameEngine[StartUpData, Model, ViewModel] =
-    boot(flags) match
-      case oe @ Outcome.Error(e, _) =>
-        IndigoLogger.error("Error during boot - Halting")
-        IndigoLogger.error(oe.reportCrash)
-        throw e
+  protected def ready(flags: Map[String, String]): Element => GameEngine[StartUpData, Model, ViewModel] =
+    parentElement =>
+      boot(flags) match
+        case oe @ Outcome.Error(e, _) =>
+          IndigoLogger.error("Error during boot - Halting")
+          IndigoLogger.error(oe.reportCrash)
+          throw e
 
-      case Outcome.Result(b, evts) =>
-        indigoGame(b).start(parentElementId, b.gameConfig, Future(None), b.assets, Future(Set()), evts)
+        case Outcome.Result(b, evts) =>
+          indigoGame(b).start(parentElement, b.gameConfig, Future(None), b.assets, Future(Set()), evts)
 
 }
