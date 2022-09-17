@@ -28,13 +28,13 @@ object CratesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
     Set()
 
   def updateModel(
-      context: FrameContext[SandboxStartupData],
+      context: SceneContext[SandboxStartupData],
       model: Unit
   ): GlobalEvent => Outcome[Unit] =
     _ => Outcome(model)
 
   def updateViewModel(
-      context: FrameContext[SandboxStartupData],
+      context: SceneContext[SandboxStartupData],
       model: Unit,
       viewModel: Unit
   ): GlobalEvent => Outcome[Unit] =
@@ -58,7 +58,7 @@ object CratesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
     )
 
   def present(
-      context: FrameContext[SandboxStartupData],
+      context: SceneContext[SandboxStartupData],
       model: Unit,
       viewModel: Unit
   ): Outcome[SceneUpdateFragment] =

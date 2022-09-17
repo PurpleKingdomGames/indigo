@@ -11,6 +11,7 @@ import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.subsystems.SubSystemFrameContext
 import indigo.shared.subsystems.SubSystemFrameContext._
 import indigo.shared.subsystems.SubSystemsRegister
+import indigo.shared.time.Seconds
 
 class SceneManager[StartUpData, GameModel, ViewModel](
     scenes: NonEmptyList[Scene[StartUpData, GameModel, ViewModel]],
@@ -25,6 +26,8 @@ class SceneManager[StartUpData, GameModel, ViewModel](
   // Scene management
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var finderInstance: SceneFinder = scenesFinder
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  private var lastSceneChangeAt: Seconds = Seconds.zero
 
   private val subSystemStates: scalajs.js.Dictionary[SubSystemsRegister] =
     scalajs.js.Dictionary
@@ -41,32 +44,38 @@ class SceneManager[StartUpData, GameModel, ViewModel](
 
   def updateModel(frameContext: FrameContext[StartUpData], model: GameModel): GlobalEvent => Outcome[GameModel] = {
     case SceneEvent.Next =>
+      lastSceneChangeAt = frameContext.gameTime.running
+
       val from = finderInstance.current.name
       finderInstance = finderInstance.forward
       val to = finderInstance.current.name
       val events =
         if (from == to) Batch.empty
-        else Batch(SceneEvent.SceneChange(from, to, frameContext.gameTime.running))
+        else Batch(SceneEvent.SceneChange(from, to, lastSceneChangeAt))
 
       Outcome(model, events)
 
     case SceneEvent.Previous =>
+      lastSceneChangeAt = frameContext.gameTime.running
+
       val from = finderInstance.current.name
       finderInstance = finderInstance.backward
       val to = finderInstance.current.name
       val events =
         if (from == to) Batch.empty
-        else Batch(SceneEvent.SceneChange(from, to, frameContext.gameTime.running))
+        else Batch(SceneEvent.SceneChange(from, to, lastSceneChangeAt))
 
       Outcome(model, events)
 
     case SceneEvent.JumpTo(name) =>
+      lastSceneChangeAt = frameContext.gameTime.running
+
       val from = finderInstance.current.name
       finderInstance = finderInstance.jumpToSceneByName(name)
       val to = finderInstance.current.name
       val events =
         if (from == to) Batch.empty
-        else Batch(SceneEvent.SceneChange(from, to, frameContext.gameTime.running))
+        else Batch(SceneEvent.SceneChange(from, to, lastSceneChangeAt))
 
       Outcome(model, events)
 
@@ -78,7 +87,11 @@ class SceneManager[StartUpData, GameModel, ViewModel](
 
         case Some(scene) =>
           Scene
-            .updateModel(scene, frameContext, model)(event)
+            .updateModel(
+              scene,
+              SceneContext(scene.name, lastSceneChangeAt, frameContext),
+              model
+            )(event)
       }
   }
 
@@ -112,7 +125,12 @@ class SceneManager[StartUpData, GameModel, ViewModel](
         _ => Outcome(viewModel)
 
       case Some(scene) =>
-        Scene.updateViewModel(scene, frameContext, model, viewModel)
+        Scene.updateViewModel(
+          scene,
+          SceneContext(scene.name, lastSceneChangeAt, frameContext),
+          model,
+          viewModel
+        )
     }
 
   def updateView(
@@ -133,7 +151,15 @@ class SceneManager[StartUpData, GameModel, ViewModel](
           }
           .getOrElse(Outcome(SceneUpdateFragment.empty))
 
-        Outcome.merge(Scene.updateView(scene, frameContext, model, viewModel), subsystemView)(_ |+| _)
+        Outcome.merge(
+          Scene.updateView(
+            scene,
+            SceneContext(scene.name, lastSceneChangeAt, frameContext),
+            model,
+            viewModel
+          ),
+          subsystemView
+        )(_ |+| _)
 
     }
 
