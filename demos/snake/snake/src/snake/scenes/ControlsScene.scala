@@ -27,7 +27,7 @@ object ControlsScene extends Scene[StartupData, GameModel, ViewModel] {
     Set()
 
   def updateModel(
-      context: FrameContext[StartupData],
+      context: SceneContext[StartupData],
       controlScheme: ControlScheme
   ): GlobalEvent => Outcome[ControlScheme] = {
     case KeyboardEvent.KeyUp(Key.SPACE) =>
@@ -42,14 +42,14 @@ object ControlsScene extends Scene[StartupData, GameModel, ViewModel] {
   }
 
   def updateViewModel(
-      context: FrameContext[StartupData],
+      context: SceneContext[StartupData],
       controlScheme: ControlScheme,
       sceneViewModel: Unit
   ): GlobalEvent => Outcome[Unit] =
     _ => Outcome(sceneViewModel)
 
   def present(
-      context: FrameContext[StartupData],
+      context: SceneContext[StartupData],
       sceneModel: ControlScheme,
       sceneViewModel: Unit
   ): Outcome[SceneUpdateFragment] =
@@ -76,13 +76,27 @@ object ControlsScene extends Scene[StartupData, GameModel, ViewModel] {
         case ControlScheme.Turning(_, _) =>
           Batch(
             Text("[_] direction (all arrow keys)", center, middle - 5, 1, GameAssets.fontKey, GameAssets.fontMaterial).alignLeft,
-            Text("[x] turn (left and right arrows)", center, middle + 10, 1, GameAssets.fontKey, GameAssets.fontMaterial).alignLeft
+            Text(
+              "[x] turn (left and right arrows)",
+              center,
+              middle + 10,
+              1,
+              GameAssets.fontKey,
+              GameAssets.fontMaterial
+            ).alignLeft
           )
 
         case ControlScheme.Directed(_, _, _, _) =>
           Batch(
             Text("[x] direction (all arrow keys)", center, middle - 5, 1, GameAssets.fontKey, GameAssets.fontMaterial).alignLeft,
-            Text("[_] turn (left and right arrows)", center, middle + 10, 1, GameAssets.fontKey, GameAssets.fontMaterial).alignLeft
+            Text(
+              "[_] turn (left and right arrows)",
+              center,
+              middle + 10,
+              1,
+              GameAssets.fontKey,
+              GameAssets.fontMaterial
+            ).alignLeft
           )
       }
     }

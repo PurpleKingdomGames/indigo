@@ -1,7 +1,7 @@
 package indigoexamples
 
-import indigo._
-import indigo.scenes._
+import indigo.*
+import indigo.scenes.*
 
 // There is no relevant entry in the ViewModel for either scene, so we've just left it as Unit.
 object SceneA extends Scene[StartUpData, GameModel, Unit] {
@@ -27,7 +27,7 @@ object SceneA extends Scene[StartUpData, GameModel, Unit] {
       HelloSubSystem("Scene SubSystem A", FontStuff.fontKey)
     )
 
-  def updateModel(context: FrameContext[StartUpData], sceneModel: MessageA): GlobalEvent => Outcome[MessageA] = {
+  def updateModel(context: SceneContext[StartUpData], sceneModel: MessageA): GlobalEvent => Outcome[MessageA] = {
     case SceneEvent.SceneChange(from, to, at) =>
       println(s"A: Changed scene from '${from}' to '${to}' at running time: ${at}")
       Outcome(sceneModel)
@@ -37,12 +37,12 @@ object SceneA extends Scene[StartUpData, GameModel, Unit] {
   }
 
   // Nothing to do
-  def updateViewModel(context: FrameContext[StartUpData], sceneModel: MessageA, sceneViewModel: Unit): GlobalEvent => Outcome[Unit] =
+  def updateViewModel(context: SceneContext[StartUpData], sceneModel: MessageA, sceneViewModel: Unit): GlobalEvent => Outcome[Unit] =
     _ => Outcome(())
 
   // Show some text
   // When the user clicks anywhere in the screen, trigger an event to jump to the other scene.
-  def present(context: FrameContext[StartUpData], sceneModel: MessageA, sceneViewModel: Unit): Outcome[SceneUpdateFragment] = {
+  def present(context: SceneContext[StartUpData], sceneModel: MessageA, sceneViewModel: Unit): Outcome[SceneUpdateFragment] = {
     val events: Batch[GlobalEvent] =
       if (context.inputState.mouse.wasMouseClickedWithin(Rectangle(0, 0, 550, 400))) Batch(SceneEvent.JumpTo(SceneB.name))
       else Batch.empty

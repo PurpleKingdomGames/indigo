@@ -41,7 +41,7 @@ final case class LevelScene(screenWidth: Int) extends Scene[StartupData, Model, 
     )
 
   def updateModel(
-      context: FrameContext[StartupData],
+      context: SceneContext[StartupData],
       model: LevelModel
   ): GlobalEvent => Outcome[LevelModel] = {
     case FrameTick if model.notReady =>
@@ -66,7 +66,7 @@ final case class LevelScene(screenWidth: Int) extends Scene[StartupData, Model, 
   }
 
   def updateViewModel(
-      context: FrameContext[StartupData],
+      context: SceneContext[StartupData],
       model: LevelModel,
       viewModel: LevelViewModel
   ): GlobalEvent => Outcome[LevelViewModel] = {
@@ -96,7 +96,7 @@ final case class LevelScene(screenWidth: Int) extends Scene[StartupData, Model, 
   }
 
   def present(
-      context: FrameContext[StartupData],
+      context: SceneContext[StartupData],
       model: LevelModel,
       viewModel: SceneViewModel
   ): Outcome[SceneUpdateFragment] =
