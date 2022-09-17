@@ -29,13 +29,13 @@ object ClipScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxView
     Set()
 
   def updateModel(
-      context: FrameContext[SandboxStartupData],
+      context: SceneContext[SandboxStartupData],
       model: SandboxGameModel
   ): GlobalEvent => Outcome[SandboxGameModel] =
     _ => Outcome(model)
 
   def updateViewModel(
-      context: FrameContext[SandboxStartupData],
+      context: SceneContext[SandboxStartupData],
       model: SandboxGameModel,
       viewModel: SandboxViewModel
   ): GlobalEvent => Outcome[SandboxViewModel] =
@@ -48,7 +48,7 @@ object ClipScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxView
       .withFontFamily(FontFamily.uiMonospace)
 
   def present(
-      context: FrameContext[SandboxStartupData],
+      context: SceneContext[SandboxStartupData],
       model: SandboxGameModel,
       viewModel: SandboxViewModel
   ): Outcome[SceneUpdateFragment] =

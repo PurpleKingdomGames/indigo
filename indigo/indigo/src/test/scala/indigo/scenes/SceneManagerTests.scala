@@ -112,7 +112,6 @@ class SceneManagerTests extends munit.FunSuite {
     val actual = runModel(events, gameModel, sceneManager)
 
     assertEquals(actual, expected)
-
   }
 
   private def runModel(events: Batch[GlobalEvent], model: TestGameModel, sceneManager: SceneManager[Unit, TestGameModel, TestViewModel]): Outcome[TestGameModel] =

@@ -28,13 +28,13 @@ object CameraScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
     Set()
 
   def updateModel(
-      context: FrameContext[SandboxStartupData],
+      context: SceneContext[SandboxStartupData],
       model: SandboxGameModel
   ): GlobalEvent => Outcome[SandboxGameModel] =
     _ => Outcome(model)
 
   def updateViewModel(
-      context: FrameContext[SandboxStartupData],
+      context: SceneContext[SandboxStartupData],
       model: SandboxGameModel,
       viewModel: SandboxViewModel
   ): GlobalEvent => Outcome[SandboxViewModel] =
@@ -49,7 +49,7 @@ object CameraScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
     Signal.Orbit(Point.zero, 100.0d).map(_.toPoint)
 
   def present(
-      context: FrameContext[SandboxStartupData],
+      context: SceneContext[SandboxStartupData],
       model: SandboxGameModel,
       viewModel: SandboxViewModel
   ): Outcome[SceneUpdateFragment] = {

@@ -39,7 +39,7 @@ object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
     Set()
 
   def updateModel(
-      context: FrameContext[SandboxStartupData],
+      context: SceneContext[SandboxStartupData],
       model: ConfettiModel
   ): GlobalEvent => Outcome[ConfettiModel] =
 
@@ -60,7 +60,7 @@ object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
       Outcome(model)
 
   def updateViewModel(
-      context: FrameContext[SandboxStartupData],
+      context: SceneContext[SandboxStartupData],
       model: ConfettiModel,
       viewModel: Unit
   ): GlobalEvent => Outcome[Unit] =
@@ -94,7 +94,7 @@ object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
     )
 
   def present(
-      context: FrameContext[SandboxStartupData],
+      context: SceneContext[SandboxStartupData],
       model: ConfettiModel,
       viewModel: Unit
   ): Outcome[SceneUpdateFragment] =

@@ -61,18 +61,18 @@ final case class TestSceneA() extends Scene[Unit, TestGameModel, TestViewModel] 
 
   val subSystems: Set[SubSystem] = Set()
 
-  def updateModel(context: FrameContext[Unit], sceneModel: TestSceneModelA): GlobalEvent => Outcome[TestSceneModelA] =
+  def updateModel(context: SceneContext[Unit], sceneModel: TestSceneModelA): GlobalEvent => Outcome[TestSceneModelA] =
     _ => Outcome(sceneModel.copy(count = sceneModel.count + 1))
 
   def updateViewModel(
-      context: FrameContext[Unit],
+      context: SceneContext[Unit],
       sceneModel: TestSceneModelA,
       sceneViewModel: TestSceneViewModelA
   ): GlobalEvent => Outcome[TestSceneViewModelA] =
     _ => Outcome(TestSceneViewModelA())
 
   def present(
-      context: FrameContext[Unit],
+      context: SceneContext[Unit],
       sceneModel: TestSceneModelA,
       sceneViewModel: TestSceneViewModelA
   ): Outcome[SceneUpdateFragment] =
@@ -124,18 +124,18 @@ final case class TestSceneB() extends Scene[Unit, TestGameModel, TestViewModel] 
 
   val subSystems: Set[SubSystem] = Set()
 
-  def updateModel(context: FrameContext[Unit], sceneModel: TestSceneModelB): GlobalEvent => Outcome[TestSceneModelB] =
+  def updateModel(context: SceneContext[Unit], sceneModel: TestSceneModelB): GlobalEvent => Outcome[TestSceneModelB] =
     _ => Outcome(sceneModel.copy(count = sceneModel.count + 10))
 
   def updateViewModel(
-      context: FrameContext[Unit],
+      context: SceneContext[Unit],
       sceneModel: TestSceneModelB,
       sceneViewModel: TestSceneViewModelB
   ): GlobalEvent => Outcome[TestSceneViewModelB] =
     _ => Outcome(TestSceneViewModelB())
 
   def present(
-      context: FrameContext[Unit],
+      context: SceneContext[Unit],
       sceneModel: TestSceneModelB,
       sceneViewModel: TestSceneViewModelB
   ): Outcome[SceneUpdateFragment] =

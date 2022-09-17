@@ -31,13 +31,13 @@ object UiScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewMo
     Set()
 
   def updateModel(
-      context: FrameContext[SandboxStartupData],
+      context: SceneContext[SandboxStartupData],
       model: SandboxGameModel
   ): GlobalEvent => Outcome[SandboxGameModel] =
     _ => Outcome(model)
 
   def updateViewModel(
-      context: FrameContext[SandboxStartupData],
+      context: SceneContext[SandboxStartupData],
       model: SandboxGameModel,
       viewModel: SandboxViewModel
   ): GlobalEvent => Outcome[SandboxViewModel] =
@@ -60,7 +60,7 @@ object UiScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewMo
     )
 
   def present(
-      context: FrameContext[SandboxStartupData],
+      context: SceneContext[SandboxStartupData],
       model: SandboxGameModel,
       viewModel: SandboxViewModel
   ): Outcome[SceneUpdateFragment] =

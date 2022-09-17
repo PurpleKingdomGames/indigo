@@ -1,7 +1,6 @@
 package indigo.scenes
 
 import indigo.*
-import indigo.shared.FrameContext
 import indigo.shared.Outcome
 import indigo.shared.collections.Batch
 import indigo.shared.events.EventFilters
@@ -21,14 +20,14 @@ trait Scene[StartUpData, GameModel, ViewModel] derives CanEqual {
   def eventFilters: EventFilters
   def subSystems: Set[SubSystem]
 
-  def updateModel(context: FrameContext[StartUpData], model: SceneModel): GlobalEvent => Outcome[SceneModel]
+  def updateModel(context: SceneContext[StartUpData], model: SceneModel): GlobalEvent => Outcome[SceneModel]
   def updateViewModel(
-      context: FrameContext[StartUpData],
+      context: SceneContext[StartUpData],
       model: SceneModel,
       viewModel: SceneViewModel
   ): GlobalEvent => Outcome[SceneViewModel]
   def present(
-      context: FrameContext[StartUpData],
+      context: SceneContext[StartUpData],
       model: SceneModel,
       viewModel: SceneViewModel
   ): Outcome[SceneUpdateFragment]
@@ -37,7 +36,7 @@ object Scene {
 
   def updateModel[SD, GM, VM](
       scene: Scene[SD, GM, VM],
-      context: FrameContext[SD],
+      context: SceneContext[SD],
       gameModel: GM
   ): GlobalEvent => Outcome[GM] =
     e =>
@@ -47,7 +46,7 @@ object Scene {
 
   def updateViewModel[SD, GM, VM](
       scene: Scene[SD, GM, VM],
-      context: FrameContext[SD],
+      context: SceneContext[SD],
       model: GM,
       viewModel: VM
   ): GlobalEvent => Outcome[VM] =
@@ -58,7 +57,7 @@ object Scene {
 
   def updateView[SD, GM, VM](
       scene: Scene[SD, GM, VM],
-      context: FrameContext[SD],
+      context: SceneContext[SD],
       model: GM,
       viewModel: VM
   ): Outcome[SceneUpdateFragment] =
@@ -90,20 +89,20 @@ object Scene {
         Set()
 
       def updateModel(
-          context: FrameContext[SD],
+          context: SceneContext[SD],
           model: Unit
       ): GlobalEvent => Outcome[Unit] =
         _ => modelOutcome
 
       def updateViewModel(
-          context: FrameContext[SD],
+          context: SceneContext[SD],
           model: Unit,
           viewModel: Unit
       ): GlobalEvent => Outcome[Unit] =
         _ => modelOutcome
 
       def present(
-          context: FrameContext[SD],
+          context: SceneContext[SD],
           model: Unit,
           viewModel: Unit
       ): Outcome[SceneUpdateFragment] = sceneFragment

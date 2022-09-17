@@ -29,13 +29,13 @@ object TextureTileScene extends Scene[SandboxStartupData, SandboxGameModel, Sand
     Set()
 
   def updateModel(
-      context: FrameContext[SandboxStartupData],
+      context: SceneContext[SandboxStartupData],
       model: SandboxGameModel
   ): GlobalEvent => Outcome[SandboxGameModel] =
     _ => Outcome(model)
 
   def updateViewModel(
-      context: FrameContext[SandboxStartupData],
+      context: SceneContext[SandboxStartupData],
       model: SandboxGameModel,
       viewModel: SandboxViewModel
   ): GlobalEvent => Outcome[SandboxViewModel] =
@@ -45,7 +45,7 @@ object TextureTileScene extends Scene[SandboxStartupData, SandboxGameModel, Sand
     Vector2(Math.max(screenSize.x / originalSize.x, screenSize.y / originalSize.y))
 
   def present(
-      context: FrameContext[SandboxStartupData],
+      context: SceneContext[SandboxStartupData],
       model: SandboxGameModel,
       viewModel: SandboxViewModel
   ): Outcome[SceneUpdateFragment] = {
