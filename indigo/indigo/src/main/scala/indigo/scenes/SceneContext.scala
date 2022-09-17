@@ -40,7 +40,7 @@ final class SceneContext[StartUpData](
   lazy val gamepad: Gamepad                 = frameContext.inputState.gamepad
 
   def findBounds(sceneNode: SceneNode): Option[Rectangle] =
-    boundaryLocator.findBounds(sceneNode)
+    frameContext.findBounds(sceneNode)
 
   def bounds(sceneGraphNode: SceneNode): Rectangle =
-    boundaryLocator.bounds(sceneGraphNode)
+    frameContext.bounds(sceneGraphNode)
