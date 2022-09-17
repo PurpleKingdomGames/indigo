@@ -48,7 +48,7 @@ final case class LoadingScene(assetPath: String, screenDimensions: Rectangle)
     Set(AssetBundleLoader)
 
   def updateModel(
-      context: FrameContext[StartupData],
+      context: SceneContext[StartupData],
       loadingState: LoadingState
   ): GlobalEvent => Outcome[LoadingState] = {
     case FrameTick =>
@@ -78,14 +78,14 @@ final case class LoadingScene(assetPath: String, screenDimensions: Rectangle)
   }
 
   def updateViewModel(
-      context: FrameContext[StartupData],
+      context: SceneContext[StartupData],
       loadingState: LoadingState,
       viewModel: Unit
   ): GlobalEvent => Outcome[Unit] =
     _ => Outcome(viewModel)
 
   def present(
-      context: FrameContext[StartupData],
+      context: SceneContext[StartupData],
       loadingState: LoadingState,
       viewModel: Unit
   ): Outcome[SceneUpdateFragment] =
