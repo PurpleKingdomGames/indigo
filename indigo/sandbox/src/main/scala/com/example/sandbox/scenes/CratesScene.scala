@@ -9,8 +9,6 @@ import indigo.scenes.*
 
 object CratesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
 
-  val spawnCount: Int = 600
-
   type SceneModel     = Unit
   type SceneViewModel = Unit
 
