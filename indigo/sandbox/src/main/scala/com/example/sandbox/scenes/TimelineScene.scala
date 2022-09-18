@@ -6,6 +6,9 @@ import com.example.sandbox.SandboxStartupData
 import com.example.sandbox.SandboxViewModel
 import indigo.*
 import indigo.scenes.*
+import indigo.syntax.*
+import indigoextras.animation.TimeSlot
+import indigoextras.animation.Timeline
 
 object TimelineScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
 
@@ -44,6 +47,27 @@ object TimelineScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
     .modifyMaterial(_.withLighting(LightingModel.Unlit))
     .withCrop(0, 0, 32, 32)
 
+  // No frills timeline animation
+  val timeline =
+    Timeline(
+      TimeSlot(
+        2.seconds,
+        9.seconds,
+        (g: Graphic[Material.Bitmap]) =>
+          Signal
+            .EaseInOut(
+              5.seconds
+            ) // This doesn't do what you think, warping time affects the distance you can travel, hence the 500 below
+            .map(d => Seconds(d))
+            .map { t =>
+              Signal
+                .Lerp(Point(0), Point(500), 5.seconds)
+                .map(pt => g.moveTo(pt))
+                .at(t)
+            }
+      )
+    )
+
   def present(
       context: FrameContext[SandboxStartupData],
       model: Unit,
@@ -52,7 +76,9 @@ object TimelineScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
     Outcome(
       SceneUpdateFragment(
         Layer(
-          crate
+          Batch.fromOption(
+            timeline.at(context.running)(crate)
+          )
         )
       )
     )
