@@ -18,12 +18,16 @@ final case class Timeline[A](slots: Batch[TimeSlot[A]]):
         val xs = remaining.tail
 
         if x.within(time) then
-          val value = acc.getOrElse(subject) 
-          val next = x.producer(value).at(time - x.start)
+          val value = acc.getOrElse(subject)
+          val next  = x.producer(value).at(time - x.start)
           rec(xs, Some(next))
         else rec(xs, acc)
 
     rec(slots, None)
+
+object Timeline:
+  def apply[A](timeSlots: TimeSlot[A]*): Timeline[A] =
+    Timeline(Batch.fromSeq(timeSlots))
 
 final case class TimeSlot[A](start: Seconds, end: Seconds, producer: A => Signal[A]):
   def within(t: Seconds): Boolean =
