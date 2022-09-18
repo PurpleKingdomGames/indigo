@@ -2,12 +2,14 @@ package indigoextras.animation
 
 import indigo.shared.collections.Batch
 import indigo.shared.temporal.Signal
+import indigo.shared.temporal.SignalFunction
+import indigo.shared.time.Seconds
 import indigo.syntax.*
 
 class TimelineTests extends munit.FunSuite {
 
   test("Timeslot within") {
-    val f  = (i: Int) => Signal(_ => i)
+    val f  = (i: Int) => SignalFunction((_: Seconds) => i)
     val ts = TimeSlot(1.seconds, 3.seconds, f)
 
     assert(!ts.within(0.seconds))
@@ -22,21 +24,19 @@ class TimelineTests extends munit.FunSuite {
 
     val startingValue: Int = 10
 
-    val f1 = (a: Int) => Signal(t => a * t.toInt)
-    val f2 = (a: Int) => Signal(t => a * (t.toInt * 2))
-    val f3 = (a: Int) => Signal(_ => a + 10)
+    val f1 = (a: Int) => SignalFunction((t: Seconds) => a * t.toInt)
+    val f2 = (a: Int) => SignalFunction((t: Seconds) => a * (t.toInt * 2))
+    val f3 = (a: Int) => SignalFunction((_: Seconds) => a + 10)
 
-    assert(f1(startingValue).at(0.seconds) == 0)
-    assert(f1(startingValue).at(1.seconds) == 10)
-    assert(f1(startingValue).at(2.seconds) == 20)
-
-    assert(f2(startingValue).at(0.seconds) == 0)
-    assert(f2(startingValue).at(1.seconds) == 20)
-    assert(f2(startingValue).at(2.seconds) == 40)
-
-    assert(f3(startingValue).at(0.seconds) == 20)
-    assert(f3(startingValue).at(1.seconds) == 20)
-    assert(f3(startingValue).at(2.seconds) == 20)
+    assert((Signal.Time |> f1(startingValue)).at(0.seconds) == 0)
+    assert((Signal.Time |> f1(startingValue)).at(1.seconds) == 10)
+    assert((Signal.Time |> f1(startingValue)).at(2.seconds) == 20)
+    assert((Signal.Time |> f2(startingValue)).at(0.seconds) == 0)
+    assert((Signal.Time |> f2(startingValue)).at(1.seconds) == 20)
+    assert((Signal.Time |> f2(startingValue)).at(2.seconds) == 40)
+    assert((Signal.Time |> f3(startingValue)).at(0.seconds) == 20)
+    assert((Signal.Time |> f3(startingValue)).at(1.seconds) == 20)
+    assert((Signal.Time |> f3(startingValue)).at(2.seconds) == 20)
 
     val slots = Batch(
       TimeSlot(1.seconds, 3.seconds, f1),
