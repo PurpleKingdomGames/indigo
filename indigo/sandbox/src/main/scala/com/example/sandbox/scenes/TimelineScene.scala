@@ -6,6 +6,7 @@ import com.example.sandbox.SandboxStartupData
 import com.example.sandbox.SandboxViewModel
 import indigo.*
 import indigo.scenes.*
+import indigo.shared.temporal.SignalFunction as SF
 import indigo.syntax.*
 import indigoextras.animation.TimeSlot
 import indigoextras.animation.Timeline
@@ -47,16 +48,6 @@ object TimelineScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
     .modifyMaterial(_.withLighting(LightingModel.Unlit))
     .withCrop(0, 0, 32, 32)
 
-  def easeInOut(over: Seconds): SignalFunction[Seconds, Seconds] =
-    def curve(amount: Double) = Math.sin(Math.PI * amount)
-    SignalFunction(t => Seconds(curve((t / over).toDouble)))
-
-  def lerp(over: Seconds): SignalFunction[Seconds, Double] =
-    SignalFunction { t =>
-      val time = Math.max(0.0d, Math.min(1.0d, t.toDouble / over.toDouble))
-      (time - t.toDouble) * 0.0 + time * 1.0d
-    }
-
   def toPoint(from: Point, to: Point): SignalFunction[Double, Point] =
     SignalFunction { amount =>
       def linear(p0: Vector2, p1: Vector2): Vector2 =
@@ -83,9 +74,9 @@ object TimelineScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
     Timeline(
       TimeSlot(
         2.seconds,
-        9.seconds,
+        7.seconds,
         (g: Graphic[Material.Bitmap]) =>
-          easeInOut(5.seconds) >>> lerp(5.seconds) >>> toPoint(Point(0), Point(100)) >>> move(g)
+          SF.easeInOut(5.seconds) >>> toPoint(Point(0), Point(100)) >>> move(g)
       )
     )
 
