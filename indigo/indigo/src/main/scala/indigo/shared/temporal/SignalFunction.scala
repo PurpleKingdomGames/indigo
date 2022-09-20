@@ -75,7 +75,7 @@ object SignalFunction:
 
   private def easeOutDouble(start: Double, end: Double, over: Seconds): Seconds => Double = time =>
     val amount = 1 - lerpDouble(start, end, over)(time)
-    amount * amount
+    1 - (amount * amount)
 
   def easeOut(over: Seconds): SignalFunction[Seconds, Double] =
     SignalFunction(easeOutDouble(0, 1, over))
