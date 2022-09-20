@@ -122,17 +122,17 @@ class SignalFunctionTests extends munit.FunSuite {
   test("easeOut") {
     val sf = Signal.Time |> SF.easeOut(10.seconds)
 
-    assert(clue(round(sf.at(0.seconds))) == clue(1.0))
-    assert(clue(round(sf.at(1.seconds))) == clue(0.81))
-    assert(clue(round(sf.at(2.seconds))) == clue(0.64))
-    assert(clue(round(sf.at(3.seconds))) == clue(0.48))
-    assert(clue(round(sf.at(4.seconds))) == clue(0.36))
-    assert(clue(round(sf.at(5.seconds))) == clue(0.25))
-    assert(clue(round(sf.at(6.seconds))) == clue(0.16))
-    assert(clue(round(sf.at(7.seconds))) == clue(0.09))
-    assert(clue(round(sf.at(8.seconds))) == clue(0.03))
-    assert(clue(round(sf.at(9.seconds))) == clue(0.0))
-    assert(clue(round(sf.at(10.seconds))) == clue(0.0))
+    assert(clue(round(sf.at(0.seconds))) == clue(0.0))
+    assert(clue(round(sf.at(1.seconds))) == clue(0.18))
+    assert(clue(round(sf.at(2.seconds))) == clue(0.35))
+    assert(clue(round(sf.at(3.seconds))) == clue(0.51))
+    assert(clue(round(sf.at(4.seconds))) == clue(0.64))
+    assert(clue(round(sf.at(5.seconds))) == clue(0.75))
+    assert(clue(round(sf.at(6.seconds))) == clue(0.84))
+    assert(clue(round(sf.at(7.seconds))) == clue(0.9))
+    assert(clue(round(sf.at(8.seconds))) == clue(0.96))
+    assert(clue(round(sf.at(9.seconds))) == clue(0.99))
+    assert(clue(round(sf.at(10.seconds))) == clue(1.0))
   }
 
   test("easeInOut") {
