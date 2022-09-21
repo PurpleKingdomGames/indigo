@@ -86,13 +86,14 @@ object SignalFunction:
   def easeOut(start: Point, end: Point, over: Seconds): SignalFunction[Seconds, Point] =
     easeOut(start.toVector, end.toVector, over) >>> SignalFunction(v => v.toPoint)
 
-  private def easeInOutDouble(start: Double, end: Double, over: Seconds): Seconds => Double = time =>
-    val halfTime = over / 2
-    val amount =
-      if time < halfTime then lerpDouble(start, end, halfTime)(time)
-      else 1 - lerpDouble(start, end, halfTime)(time - halfTime)
+  private val pi: Double  = Math.PI
+  private val pi2: Double = Math.PI / 2
 
-    amount * amount
+  private def easeInOutDouble(start: Double, end: Double, over: Seconds): Seconds => Double = time =>
+    val t = time.toDouble / over.toDouble
+    val m = 1 - ((Math.sin(pi2 + (pi * t)) / 2) + 0.5)
+
+    start + ((end - start) * m)
 
   def easeInOut(over: Seconds): SignalFunction[Seconds, Double] =
     SignalFunction(easeInOutDouble(0, 1, over))
