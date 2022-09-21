@@ -6,7 +6,6 @@ import com.example.sandbox.SandboxStartupData
 import com.example.sandbox.SandboxViewModel
 import indigo.*
 import indigo.scenes.*
-import indigo.shared.temporal.SignalFunction as SF
 import indigo.syntax.*
 import indigoextras.animation.TimeSlot
 import indigoextras.animation.Timeline
@@ -48,36 +47,22 @@ object TimelineScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
     .modifyMaterial(_.withLighting(LightingModel.Unlit))
     .withCrop(0, 0, 32, 32)
 
-  def toPoint(from: Point, to: Point): SignalFunction[Double, Point] =
-    SignalFunction { amount =>
-      def linear(p0: Vector2, p1: Vector2): Vector2 =
-        Vector2(
-          (1 - amount) * p0.x + amount * p1.x,
-          (1 - amount) * p0.y + amount * p1.y
-        )
-
-      val interp = linear(from.toVector, to.toVector).toPoint
-
-      Point(
-        x = if (from.x == to.x) from.x else interp.x,
-        y = if (from.y == to.y) from.y else interp.y
-      )
-    }
+  // No frills timeline animation
+  import indigo.shared.temporal.SignalFunction as SF
 
   def move(g: Graphic[Material.Bitmap]): SignalFunction[Point, Graphic[Material.Bitmap]] =
-    SignalFunction { pt =>
-      g.moveTo(pt)
-    }
+    SignalFunction(pt => g.moveTo(pt))
 
-  // No frills timeline animation
+  val modifier1: Graphic[Material.Bitmap] => SignalFunction[Seconds, Graphic[Material.Bitmap]] =
+    SF.easeInOut(5.seconds) >>> SF.lerp(Point(0), Point(100)) >>> move(_)
+
+  val modifier2: Graphic[Material.Bitmap] => SignalFunction[Seconds, Graphic[Material.Bitmap]] =
+    SF.easeInOut(3.seconds) >>> SF.lerp(Point(100), Point(100, 0)) >>> move(_)
+
   val timeline =
     Timeline(
-      TimeSlot(
-        2.seconds,
-        7.seconds,
-        (g: Graphic[Material.Bitmap]) =>
-          SF.easeInOut(5.seconds) >>> toPoint(Point(0), Point(100)) >>> move(g)
-      )
+      TimeSlot(2.seconds, 7.seconds, modifier1),
+      TimeSlot(7.seconds, 10.seconds, modifier2)
     )
 
   def present(
