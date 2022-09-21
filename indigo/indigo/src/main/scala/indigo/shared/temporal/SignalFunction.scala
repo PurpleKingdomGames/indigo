@@ -60,6 +60,16 @@ object SignalFunction:
   def lerp(start: Point, end: Point, over: Seconds): SignalFunction[Seconds, Point] =
     lerp(start.toVector, end.toVector, over) >>> SignalFunction(v => v.toPoint)
 
+  private def lerpFromDouble(start: Double, end: Double): Double => Double = amount =>
+    start + ((end - start) * amount)
+
+  def lerp(start: Double, end: Double): SignalFunction[Double, Double] =
+    SignalFunction(lerpFromDouble(start, end))
+  def lerp(start: Vector2, end: Vector2): SignalFunction[Double, Vector2] =
+    SignalFunction(d => Vector2(lerpFromDouble(start.x, end.x)(d), lerpFromDouble(start.y, end.y)(d)))
+  def lerp(start: Point, end: Point): SignalFunction[Double, Point] =
+    lerp(start.toVector, end.toVector) >>> SignalFunction(v => v.toPoint)
+
   private def easeInDouble(start: Double, end: Double, over: Seconds): Seconds => Double = time =>
     val amount = lerpDouble(start, end, over)(time)
     amount * amount
