@@ -88,7 +88,7 @@ class SignalFunctionTests extends munit.FunSuite {
   test("lerp") {
     val sf = Signal.Time |> SF.lerp(10.seconds)
 
-    assert(sf.at(-1.seconds) == -0.1)
+    assert(sf.at(-1.seconds) == 0.0) // clamped
     assert(sf.at(0.seconds) == 0.0)
     assert(sf.at(1.seconds) == 0.1)
     assert(sf.at(2.seconds) == 0.2)
@@ -100,7 +100,7 @@ class SignalFunctionTests extends munit.FunSuite {
     assert(sf.at(8.seconds) == 0.8)
     assert(sf.at(9.seconds) == 0.9)
     assert(sf.at(10.seconds) == 1.0)
-    assert(sf.at(11.seconds) == 1.1)
+    assert(sf.at(11.seconds) == 1.0) // clamped
   }
 
   test("easeIn") {

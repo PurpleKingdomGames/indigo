@@ -48,8 +48,16 @@ object SignalFunction:
 
   // Helper functions
 
+  private def clampToTime[A](time: Seconds, over: Seconds, start: A, end: A): A => A = value =>
+    if time <= Seconds.zero then start
+    else if time >= over then end
+    else value
+
+
   private def lerpDouble(start: Double, end: Double, over: Seconds): Seconds => Double = time =>
-    start + ((end - start) * (time / over).toDouble)
+    clampToTime(time, over, start, end) {
+      start + ((end - start) * (time / over).toDouble)
+    }
 
   def lerp(over: Seconds): SignalFunction[Seconds, Double] =
     SignalFunction(lerpDouble(0, 1, over))
@@ -61,7 +69,9 @@ object SignalFunction:
     lerp(start.toVector, end.toVector, over) >>> SignalFunction(v => v.toPoint)
 
   private def lerpFromDouble(start: Double, end: Double): Double => Double = amount =>
-    start + ((end - start) * amount)
+    if amount <= 0.0d then start
+    else if amount >= 1.0d then end
+    else start + ((end - start) * amount)
 
   def lerp(start: Double, end: Double): SignalFunction[Double, Double] =
     SignalFunction(lerpFromDouble(start, end))
@@ -71,8 +81,10 @@ object SignalFunction:
     lerp(start.toVector, end.toVector) >>> SignalFunction(v => v.toPoint)
 
   private def easeInDouble(start: Double, end: Double, over: Seconds): Seconds => Double = time =>
-    val amount = lerpDouble(start, end, over)(time)
-    amount * amount
+    clampToTime(time, over, start, end) {
+      val amount = lerpDouble(start, end, over)(time)
+      amount * amount
+    }
 
   def easeIn(over: Seconds): SignalFunction[Seconds, Double] =
     SignalFunction(easeInDouble(0, 1, over))
@@ -84,8 +96,10 @@ object SignalFunction:
     easeIn(start.toVector, end.toVector, over) >>> SignalFunction(v => v.toPoint)
 
   private def easeOutDouble(start: Double, end: Double, over: Seconds): Seconds => Double = time =>
-    val amount = 1 - lerpDouble(start, end, over)(time)
-    1 - (amount * amount)
+    clampToTime(time, over, start, end) {
+      val amount = 1 - lerpDouble(start, end, over)(time)
+      1 - (amount * amount)
+    }
 
   def easeOut(over: Seconds): SignalFunction[Seconds, Double] =
     SignalFunction(easeOutDouble(0, 1, over))
@@ -100,10 +114,12 @@ object SignalFunction:
   private val pi2: Double = Math.PI / 2
 
   private def easeInOutDouble(start: Double, end: Double, over: Seconds): Seconds => Double = time =>
-    val t = time.toDouble / over.toDouble
-    val m = 1 - ((Math.sin(pi2 + (pi * t)) / 2) + 0.5)
+    clampToTime(time, over, start, end) {
+      val t = time.toDouble / over.toDouble
+      val m = 1 - ((Math.sin(pi2 + (pi * t)) / 2) + 0.5)
 
-    start + ((end - start) * m)
+      start + ((end - start) * m)
+    }
 
   def easeInOut(over: Seconds): SignalFunction[Seconds, Double] =
     SignalFunction(easeInOutDouble(0, 1, over))
