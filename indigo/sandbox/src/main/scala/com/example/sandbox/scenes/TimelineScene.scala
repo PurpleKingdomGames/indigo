@@ -63,6 +63,7 @@ object TimelineScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
   val modifier3: Graphic[Material.ImageEffects] => SignalFunction[Seconds, Graphic[Material.ImageEffects]] =
     g => SF.sin >>> SignalFunction(d => (d + 1) / 2) >>> SignalFunction(d => g.modifyMaterial(_.withAlpha(d)))
 
+  // The problem with this is that you can't easily relatively adjust everything.
   val timeline =
     Timeline(
       TimeSlot(2.seconds, 7.seconds, modifier1),
