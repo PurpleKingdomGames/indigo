@@ -91,6 +91,14 @@ class Vector3Tests extends munit.FunSuite {
     assertEquals(Vector3(2, 2, 10).scaleBy(Vector3(10, 2, 3)), Vector3(20, 4, 30))
   }
 
+  test("ceil") {
+    assertEquals(Vector3(2.2, 2.6, 5.1).ceil, Vector3(3, 3, 6))
+  }
+
+  test("floor") {
+    assertEquals(Vector3(2.2, 2.6, 5.1).floor, Vector3(2, 2, 5))
+  }
+
   test("round") {
     assertEquals(Vector3(2.2, 2.6, 5.1).round, Vector3(2, 3, 5))
   }

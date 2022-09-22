@@ -95,6 +95,12 @@ final case class Vertex(x: Double, y: Double) derives CanEqual:
 
   def angle: Radians = Radians(Math.atan2(this.y, this.x))
 
+  def ceil: Vertex =
+    Vertex(Math.ceil(x), Math.ceil(y))
+
+  def floor: Vertex =
+    Vertex(Math.floor(x), Math.floor(y))
+
   def round: Vertex =
     Vertex(Math.round(x).toDouble, Math.round(y).toDouble)
 

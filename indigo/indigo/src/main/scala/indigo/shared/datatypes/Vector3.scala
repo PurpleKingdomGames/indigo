@@ -53,6 +53,12 @@ final case class Vector3(x: Double, y: Double, z: Double) derives CanEqual:
   def scaleBy(amount: Double): Vector3 =
     scaleBy(Vector3(amount))
 
+  def ceil: Vector3 =
+    Vector3(Math.ceil(x), Math.ceil(y), Math.ceil(z))
+
+  def floor: Vector3 =
+    Vector3(Math.floor(x), Math.floor(y), Math.floor(z))
+
   def round: Vector3 =
     Vector3(Math.round(x).toDouble, Math.round(y).toDouble, Math.round(z).toDouble)
 

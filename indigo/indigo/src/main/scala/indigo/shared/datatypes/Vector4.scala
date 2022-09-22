@@ -61,6 +61,12 @@ final case class Vector4(x: Double, y: Double, z: Double, w: Double) derives Can
   def scaleBy(amount: Double): Vector4 =
     scaleBy(Vector4(amount))
 
+  def ceil: Vector4 =
+    Vector4(Math.ceil(x), Math.ceil(y), Math.ceil(z), Math.ceil(w))
+
+  def floor: Vector4 =
+    Vector4(Math.floor(x), Math.floor(y), Math.floor(z), Math.floor(w))
+
   def round: Vector4 =
     Vector4(Math.round(x).toDouble, Math.round(y).toDouble, Math.round(z).toDouble, Math.round(w).toDouble)
 

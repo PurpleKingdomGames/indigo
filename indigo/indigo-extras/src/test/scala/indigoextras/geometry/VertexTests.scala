@@ -138,6 +138,14 @@ class VertexTests extends munit.FunSuite {
     assertEquals(Vertex(0, -8.5).angle, Radians.PIby2 * -1.0)
   }
 
+  test("ceil") {
+    assertEquals(Vertex(2.2, 2.6).ceil, Vertex(3, 3))
+  }
+
+  test("floor") {
+    assertEquals(Vertex(2.2, 2.6).floor, Vertex(2, 2))
+  }
+
   test("round") {
     assertEquals(Vertex(2.2, 2.6).round, Vertex(2, 3))
   }
