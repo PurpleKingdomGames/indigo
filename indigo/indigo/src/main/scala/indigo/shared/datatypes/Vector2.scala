@@ -73,6 +73,12 @@ final case class Vector2(x: Double, y: Double) derives CanEqual:
 
   def angle: Radians = Radians(Math.atan2(this.y, this.x))
 
+  def ceil: Vector2 =
+    Vector2(Math.ceil(x), Math.ceil(y))
+
+  def floor: Vector2 =
+    Vector2(Math.floor(x), Math.floor(y))
+
   def round: Vector2 =
     Vector2(Math.round(x).toDouble, Math.round(y).toDouble)
 
