@@ -17,5 +17,6 @@ object Main:
       BoundaryLocatorBenchmarks.suite,
       SimpleComparisons.suite,
       LineBenchmarks.suite,
-      BatchBenchmarks.suite
+      BatchBenchmarks.suite,
+      SignalFunctionBenchmarks.suite
     )
