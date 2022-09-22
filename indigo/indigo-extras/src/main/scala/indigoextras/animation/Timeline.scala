@@ -6,6 +6,7 @@ import indigo.shared.temporal.SignalFunction
 import indigo.shared.time.Seconds
 
 import scala.annotation.tailrec
+import scala.annotation.targetName
 
 final case class Timeline[A](windows: Batch[TimeWindow[A]]):
 
@@ -35,8 +36,12 @@ final case class Timeline[A](windows: Batch[TimeWindow[A]]):
     rec(windows, None)
 
 object Timeline:
-  def apply[A](timeSlots: TimeWindow[A]*): Timeline[A] =
-    Timeline(Batch.fromSeq(timeSlots))
+  def apply[A](timeWindows: TimeWindow[A]*): Timeline[A] =
+    Timeline(Batch.fromSeq(timeWindows))
+
+  @targetName("timeline_apply_slots")
+  def apply[A](timeSlots: TimeSlot[A]*): Timeline[A] =
+    Timeline(Batch.fromSeq(timeSlots).flatMap(_.toWindows))
 
   def empty[A]: Timeline[A] =
     Timeline(Batch.empty[TimeWindow[A]])
