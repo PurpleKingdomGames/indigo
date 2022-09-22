@@ -66,7 +66,7 @@ object SignalFunction:
   def lerp(start: Vector2, end: Vector2, over: Seconds): SignalFunction[Seconds, Vector2] =
     SignalFunction(t => Vector2(lerpDouble(start.x, end.x, over)(t), lerpDouble(start.y, end.y, over)(t)))
   def lerp(start: Point, end: Point, over: Seconds): SignalFunction[Seconds, Point] =
-    lerp(start.toVector, end.toVector, over) >>> SignalFunction(v => v.toPoint)
+    lerp(start.toVector, end.toVector, over) >>> SignalFunction(v => v.round.toPoint)
 
   private def lerpFromDouble(start: Double, end: Double): Double => Double = amount =>
     if amount <= 0.0d then start
@@ -78,7 +78,7 @@ object SignalFunction:
   def lerp(start: Vector2, end: Vector2): SignalFunction[Double, Vector2] =
     SignalFunction(d => Vector2(lerpFromDouble(start.x, end.x)(d), lerpFromDouble(start.y, end.y)(d)))
   def lerp(start: Point, end: Point): SignalFunction[Double, Point] =
-    lerp(start.toVector, end.toVector) >>> SignalFunction(v => v.toPoint)
+    lerp(start.toVector, end.toVector) >>> SignalFunction(v => v.round.toPoint)
 
   private def easeInDouble(start: Double, end: Double, over: Seconds): Seconds => Double = time =>
     clampToTime(time, over, start, end) {
@@ -93,7 +93,7 @@ object SignalFunction:
   def easeIn(start: Vector2, end: Vector2, over: Seconds): SignalFunction[Seconds, Vector2] =
     SignalFunction(t => Vector2(easeInDouble(start.x, end.x, over)(t), easeInDouble(start.y, end.y, over)(t)))
   def easeIn(start: Point, end: Point, over: Seconds): SignalFunction[Seconds, Point] =
-    easeIn(start.toVector, end.toVector, over) >>> SignalFunction(v => v.toPoint)
+    easeIn(start.toVector, end.toVector, over) >>> SignalFunction(v => v.round.toPoint)
 
   private def easeOutDouble(start: Double, end: Double, over: Seconds): Seconds => Double = time =>
     clampToTime(time, over, start, end) {
@@ -108,7 +108,7 @@ object SignalFunction:
   def easeOut(start: Vector2, end: Vector2, over: Seconds): SignalFunction[Seconds, Vector2] =
     SignalFunction(t => Vector2(easeOutDouble(start.x, end.x, over)(t), easeOutDouble(start.y, end.y, over)(t)))
   def easeOut(start: Point, end: Point, over: Seconds): SignalFunction[Seconds, Point] =
-    easeOut(start.toVector, end.toVector, over) >>> SignalFunction(v => v.toPoint)
+    easeOut(start.toVector, end.toVector, over) >>> SignalFunction(v => v.round.toPoint)
 
   private val pi: Double  = Math.PI
   private val pi2: Double = Math.PI / 2
@@ -128,7 +128,7 @@ object SignalFunction:
   def easeInOut(start: Vector2, end: Vector2, over: Seconds): SignalFunction[Seconds, Vector2] =
     SignalFunction(t => Vector2(easeInOutDouble(start.x, end.x, over)(t), easeInOutDouble(start.y, end.y, over)(t)))
   def easeInOut(start: Point, end: Point, over: Seconds): SignalFunction[Seconds, Point] =
-    easeInOut(start.toVector, end.toVector, over) >>> SignalFunction(v => v.toPoint)
+    easeInOut(start.toVector, end.toVector, over) >>> SignalFunction(v => v.round.toPoint)
 
   def wrap[A](at: Seconds): SignalFunction[Seconds, Seconds] =
     SignalFunction(_ % at)
