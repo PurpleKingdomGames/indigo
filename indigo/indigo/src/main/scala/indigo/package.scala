@@ -4,6 +4,7 @@ object syntax:
 
   extension (d: Double)
     def radians: Radians = Radians(d)
+    def second: Seconds = Seconds(d)
     def seconds: Seconds = Seconds(d)
     def volume: Volume   = Volume(d)
     def zoom: Zoom       = Zoom(d)
