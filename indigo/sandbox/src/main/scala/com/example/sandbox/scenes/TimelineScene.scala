@@ -7,7 +7,7 @@ import com.example.sandbox.SandboxViewModel
 import indigo.*
 import indigo.scenes.*
 import indigo.syntax.*
-import indigoextras.animation.TimeSlot
+import indigoextras.animation.TimeWindow
 import indigoextras.animation.Timeline
 
 object TimelineScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
@@ -43,7 +43,7 @@ object TimelineScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
   ): GlobalEvent => Outcome[Unit] =
     _ => Outcome(viewModel)
 
-  val crate: Graphic[Material.ImageEffects] = 
+  val crate: Graphic[Material.ImageEffects] =
     Graphic(64, 64, SandboxAssets.cratesMaterial)
       .modifyMaterial(_.toImageEffects.withLighting(LightingModel.Unlit))
       .withCrop(0, 0, 32, 32)
@@ -66,10 +66,24 @@ object TimelineScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
   // The problem with this is that you can't easily relatively adjust everything.
   val timeline =
     Timeline(
-      TimeSlot(2.seconds, 7.seconds, modifier1),
-      TimeSlot(7.seconds, 10.seconds, modifier2),
-      TimeSlot(2.seconds, 10.seconds, modifier3)
+      TimeWindow(2.seconds, 7.seconds, modifier1),
+      TimeWindow(7.seconds, 10.seconds, modifier2),
+      TimeWindow(2.seconds, 10.seconds, modifier3)
     )
+
+  import indigoextras.animation.TimeSlot.*
+
+  val timeline2 =
+    Timeline.empty
+      .add(
+        pause(2.seconds) andThen
+          animate(5.seconds)(modifier1) andThen
+          animate(3.seconds)(modifier2)
+      )
+      .add(
+        pause(2.seconds) andThen
+          animate(8.seconds)(modifier3)
+      )
 
   def present(
       context: FrameContext[SandboxStartupData],
@@ -80,7 +94,7 @@ object TimelineScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
       SceneUpdateFragment(
         Layer(
           Batch.fromOption(
-            timeline.at(context.running)(crate)
+            timeline2.at(context.running)(crate)
           )
         )
       )
