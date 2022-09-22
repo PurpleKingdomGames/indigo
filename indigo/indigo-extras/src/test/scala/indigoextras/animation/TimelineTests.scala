@@ -10,7 +10,7 @@ class TimelineTests extends munit.FunSuite {
 
   test("Timeslot within") {
     val f  = (i: Int) => SignalFunction((_: Seconds) => i)
-    val ts = TimeSlot(1.seconds, 3.seconds, f)
+    val ts = TimeWindow(1.seconds, 3.seconds, f)
 
     assert(!ts.within(0.seconds))
     assert(ts.within(1.seconds))
@@ -39,9 +39,9 @@ class TimelineTests extends munit.FunSuite {
     assert((Signal.Time |> f3(startingValue)).at(2.seconds) == 20)
 
     val slots = Batch(
-      TimeSlot(1.seconds, 3.seconds, f1),
-      TimeSlot(4.seconds, 6.seconds, f2),
-      TimeSlot(5.seconds, 6.seconds, f3)
+      TimeWindow(1.seconds, 3.seconds, f1),
+      TimeWindow(4.seconds, 6.seconds, f2),
+      TimeWindow(5.seconds, 6.seconds, f3)
     )
 
     val tl = Timeline(slots)
