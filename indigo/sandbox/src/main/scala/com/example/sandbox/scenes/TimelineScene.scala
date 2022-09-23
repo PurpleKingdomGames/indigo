@@ -74,13 +74,18 @@ object TimelineScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
   import indigoextras.animation.TimeSlot.*
 
   val timeline2 =
-    Timeline(
-      pause(2.seconds) andThen
-        animate(5.seconds)(modifier1) andThen
-        animate(3.seconds)(modifier2),
-      pause(2.seconds) andThen
-        animate(8.seconds)(modifier3)
-    )
+    Timeline.empty
+      .add(
+        pause(2.seconds) andThen
+          animate(5.seconds)(modifier1) andThen
+          animate(3.seconds, modifier2)
+      )
+      .add(
+        pause(2.seconds) andThen
+          animate(8.seconds) {
+            modifier3
+          }
+      )
 
   def present(
       context: FrameContext[SandboxStartupData],
