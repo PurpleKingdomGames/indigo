@@ -1,6 +1,8 @@
 package indigoextras.animation
 
+import indigo.shared.Outcome
 import indigo.shared.collections.Batch
+import indigo.shared.events.GlobalEvent
 import indigo.shared.temporal.Signal
 import indigo.shared.temporal.SignalFunction
 import indigo.shared.time.Seconds
@@ -61,6 +63,22 @@ class TimelineTests extends munit.FunSuite {
       )
 
     assertEquals(actual, expected)
+  }
+
+  test("How to emit an event.") {
+
+    case object MyTestEvent extends GlobalEvent
+
+    val f: Outcome[Int] => SignalFunction[Seconds, Outcome[Int]] = i =>
+      SignalFunction { (t: Seconds) =>
+        if t < 1.5.seconds then i
+        else i.addGlobalEvents(MyTestEvent)
+      }
+
+    val tw = TimeWindow[Outcome[Int]](1.seconds, 3.seconds, f)
+
+    assertEquals(Timeline(tw).at(1.second)(Outcome(1)), Some(Outcome(1)))
+    assertEquals(Timeline(tw).at(3.seconds)(Outcome(2)), Some(Outcome(2, Batch(MyTestEvent))))
   }
 
 }
