@@ -8,18 +8,6 @@ import indigo.syntax.*
 
 class TimelineTests extends munit.FunSuite {
 
-  test("Timeslot within") {
-    val f  = (i: Int) => SignalFunction((_: Seconds) => i)
-    val ts = TimeWindow(1.seconds, 3.seconds, f)
-
-    assert(!ts.within(0.seconds))
-    assert(ts.within(1.seconds))
-    assert(ts.within(2.seconds))
-    assert(ts.within(3.seconds))
-    assert(!ts.within(4.seconds))
-    assert(!ts.within(5.seconds))
-  }
-
   test("check the core types work (no sugar)") {
 
     val startingValue: Int = 10
@@ -38,13 +26,13 @@ class TimelineTests extends munit.FunSuite {
     assert((Signal.Time |> f3(startingValue)).at(1.seconds) == 20)
     assert((Signal.Time |> f3(startingValue)).at(2.seconds) == 20)
 
-    val slots = Batch(
+    val windows = Batch(
       TimeWindow(1.seconds, 3.seconds, f1),
       TimeWindow(4.seconds, 6.seconds, f2),
       TimeWindow(5.seconds, 6.seconds, f3)
     )
 
-    val tl = Timeline(slots)
+    val tl = Timeline(windows)
 
     val actual: List[Option[Int]] =
       List(
