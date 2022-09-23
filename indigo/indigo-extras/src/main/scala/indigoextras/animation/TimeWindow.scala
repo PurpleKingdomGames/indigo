@@ -4,7 +4,6 @@ import indigo.shared.temporal.SignalFunction
 import indigo.shared.time.Seconds
 
 final case class TimeWindow[A](start: Seconds, end: Seconds, modifier: A => SignalFunction[Seconds, A]):
-  // TODO: Write tests for all these fields and methods!
   lazy val length: Seconds    = end
   lazy val totalTime: Seconds = end - start
 
@@ -21,7 +20,7 @@ final case class TimeWindow[A](start: Seconds, end: Seconds, modifier: A => Sign
     this.copy(modifier = newModifier)
 
   def contractBy(amount: Seconds): TimeWindow[A] =
-    multiply((amount / length).toDouble)
+    multiply(1.0 - (amount / length).toDouble)
 
   def expandBy(amount: Seconds): TimeWindow[A] =
     multiply(1.0 + (amount / length).toDouble)
