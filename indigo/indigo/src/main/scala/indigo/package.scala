@@ -4,7 +4,7 @@ object syntax:
 
   extension (d: Double)
     def radians: Radians = Radians(d)
-    def second: Seconds = Seconds(d)
+    def second: Seconds  = Seconds(d)
     def seconds: Seconds = Seconds(d)
     def volume: Volume   = Volume(d)
     def zoom: Zoom       = Zoom(d)
@@ -67,6 +67,39 @@ object syntax:
   extension [A](b: NonEmptyBatch[Option[A]]) def sequence: Option[NonEmptyBatch[A]] = NonEmptyBatch.sequenceOption(b)
   extension [A](l: List[Option[A]]) def sequence: Option[List[A]]                   = NonEmptyList.sequenceListOption(l)
   extension [A](l: NonEmptyList[Option[A]]) def sequence: Option[NonEmptyList[A]]   = NonEmptyList.sequenceOption(l)
+
+  // Timeline animations
+  object animations:
+    import indigo.shared.animation.timeline.*
+    import shared.temporal.SignalFunction
+    import scala.annotation.targetName
+
+    def timeline[A](animations: TimelineAnimation[A]*): Timeline[A] =
+      Timeline(Batch.fromSeq(animations).flatMap(_.compile.toWindows))
+
+    def animation[A](timeslots: TimeSlot[A]*): TimelineAnimation[A] =
+      TimelineAnimation(Batch.fromSeq(timeslots))
+
+    export TimeSlot.start
+    export TimeSlot.startAfter
+    export TimeSlot.pause
+    export TimeSlot.show
+    export TimeSlot.animate
+
+    export SignalFunction.lerp
+    export SignalFunction.easeIn
+    export SignalFunction.easeOut
+    export SignalFunction.easeInOut
+    export SignalFunction.wrap
+    export SignalFunction.clamp
+    export SignalFunction.step
+    export SignalFunction.sin
+    export SignalFunction.cos
+    export SignalFunction.orbit
+    export SignalFunction.pulse
+    export SignalFunction.smoothPulse
+    export SignalFunction.multiply
+  end animations
 
 end syntax
 
@@ -536,6 +569,20 @@ val AnimationKey: indigo.shared.animation.AnimationKey.type = indigo.shared.anim
 
 type AnimationAction = indigo.shared.animation.AnimationAction
 val AnimationAction: indigo.shared.animation.AnimationAction.type = indigo.shared.animation.AnimationAction
+
+// Timeline Animations
+type Timeline[A] = indigo.shared.animation.timeline.Timeline[A]
+val Timeline: indigo.shared.animation.timeline.Timeline.type = indigo.shared.animation.timeline.Timeline
+
+type TimelineWindow[A] = indigo.shared.animation.timeline.TimeWindow[A]
+val TimelineWindow: indigo.shared.animation.timeline.TimeWindow.type = indigo.shared.animation.timeline.TimeWindow
+
+type TimeSlot[A] = indigo.shared.animation.timeline.TimeSlot[A]
+val TimeSlot: indigo.shared.animation.timeline.TimeSlot.type = indigo.shared.animation.timeline.TimeSlot
+
+type TimelineAnimation[A] = indigo.shared.animation.timeline.TimelineAnimation[A]
+val TimelineAnimation: indigo.shared.animation.timeline.TimelineAnimation.type =
+  indigo.shared.animation.timeline.TimelineAnimation
 
 // Primitives
 type Shape[T <: shared.scenegraph.Shape[_]] = shared.scenegraph.Shape[T]

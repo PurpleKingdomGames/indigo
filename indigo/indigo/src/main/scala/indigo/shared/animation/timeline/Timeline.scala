@@ -1,4 +1,4 @@
-package indigoextras.animation
+package indigo.shared.animation.timeline
 
 import indigo.shared.collections.Batch
 import indigo.shared.temporal.Signal
@@ -43,7 +43,9 @@ object Timeline:
   def apply[A](timeSlots: TimeSlot[A]*): Timeline[A] =
     Timeline(Batch.fromSeq(timeSlots).flatMap(_.toWindows))
 
+  @targetName("timeline_apply_animations")
+  def apply[A](animations: TimelineAnimation[A]*): Timeline[A] =
+    Timeline(Batch.fromSeq(animations).flatMap(_.compile.toWindows))
+
   def empty[A]: Timeline[A] =
     Timeline(Batch.empty[TimeWindow[A]])
-
-

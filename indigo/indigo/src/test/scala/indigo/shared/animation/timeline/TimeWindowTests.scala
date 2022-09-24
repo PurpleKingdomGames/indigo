@@ -1,4 +1,4 @@
-package indigoextras.animation
+package indigo.shared.animation.timeline
 
 import indigo.shared.collections.Batch
 import indigo.shared.temporal.Signal
