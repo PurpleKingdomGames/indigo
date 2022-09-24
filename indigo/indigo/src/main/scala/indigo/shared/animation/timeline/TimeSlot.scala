@@ -24,9 +24,9 @@ sealed trait TimeSlot[A]:
           val end = playhead + t
           rec(ts, end, TimeWindow(playhead, end, m) :: acc)
 
-        case TimeSlot.Fixed(t, a) :: ts =>
+        case TimeSlot.Fixed(t, f) :: ts =>
           val end = playhead + t
-          rec(ts, end, TimeWindow(playhead, end, _ => SignalFunction(_ => a)) :: acc)
+          rec(ts, end, TimeWindow(playhead, end, a => SignalFunction(_ => f(a))) :: acc)
 
         case TimeSlot.Combine(a, b) :: ts =>
           rec(a :: b :: ts, playhead, acc)
@@ -44,8 +44,13 @@ object TimeSlot:
   def pause[A](time: Seconds): Wait[A] =
     Wait(time)
 
-  def show[A](time: Seconds, value: A): Fixed[A] =
+  def show[A](time: Seconds)(value: A => A): Fixed[A] =
     Fixed(time, value)
+  @targetName("TimeSlot_animate_unsplit_args")
+  def show[A](time: Seconds, value: A => A): Fixed[A] =
+    Fixed(time, value)
+  def show[A](time: Seconds)(value: A): Fixed[A] =
+    Fixed(time, _ => value)
 
   def animate[A](time: Seconds)(modifier: Seconds ?=> A => SignalFunction[Seconds, A]): Animate[A] =
     given Seconds = time
@@ -58,5 +63,5 @@ object TimeSlot:
 
   final case class Wait[A](time: Seconds)                                               extends TimeSlot[A]
   final case class Animate[A](over: Seconds, modifier: A => SignalFunction[Seconds, A]) extends TimeSlot[A]
-  final case class Fixed[A](over: Seconds, modifier: A)                                 extends TimeSlot[A]
+  final case class Fixed[A](over: Seconds, modifier: A => A)                            extends TimeSlot[A]
   final case class Combine[A](first: TimeSlot[A], second: TimeSlot[A])                  extends TimeSlot[A]
