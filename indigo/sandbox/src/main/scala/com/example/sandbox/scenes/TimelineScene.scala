@@ -70,13 +70,31 @@ object TimelineScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
       )
     )
 
+  val spriteTimeline: Timeline[Sprite[Material.ImageEffects]] =
+    timeline(
+      layer(
+        animate(3.seconds) { sprite =>
+          wrap(700.millis.toSeconds) >>> lerp(700.millis.toSeconds) >>> SignalFunction(d => sprite.scrubTo(d))
+        },
+        show(2.seconds)(_.changeCycle(CycleLabel("blink"))),
+        animate(3.seconds) { sprite =>
+          wrap(700.millis.toSeconds) >>> lerp(700.millis.toSeconds) >>> SignalFunction(d => sprite.scrubTo(d))
+        }
+      )
+    )
+
   def present(
       context: FrameContext[SandboxStartupData],
       model: Unit,
       viewModel: Unit
   ): Outcome[SceneUpdateFragment] =
+    val dude = context.startUpData.dude.sprite.changeCycle(CycleLabel("walk right")).moveTo(32, 32)
+
     Outcome(
       SceneUpdateFragment(
-        tl(2.seconds).at(context.running)(crate).toBatch
+        tl(2.seconds).at(context.running)(crate).toBatch ++
+          spriteTimeline
+            .at(context.running)(dude)
+            .toBatch
       )
     )
