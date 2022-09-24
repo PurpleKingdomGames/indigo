@@ -71,14 +71,16 @@ object TimelineScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
     )
 
   val spriteTimeline: Timeline[Sprite[Material.ImageEffects]] =
+    val loopLength = 700.millis.toSeconds
+
     timeline(
       layer(
         animate(3.seconds) { sprite =>
-          wrap(700.millis.toSeconds) >>> lerp(700.millis.toSeconds) >>> SignalFunction(d => sprite.scrubTo(d))
+          wrap(loopLength) >>> lerp(loopLength) >>> SignalFunction(d => sprite.scrubTo(d))
         },
         show(2.seconds)(_.changeCycle(CycleLabel("blink"))),
         animate(3.seconds) { sprite =>
-          wrap(700.millis.toSeconds) >>> lerp(700.millis.toSeconds) >>> SignalFunction(d => sprite.scrubTo(d))
+          wrap(loopLength) >>> lerp(loopLength) >>> SignalFunction(d => sprite.scrubTo(d))
         }
       )
     )
