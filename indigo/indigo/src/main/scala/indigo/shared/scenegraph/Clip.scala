@@ -37,6 +37,12 @@ final case class Clip[M <: Material](
     with SpatialModifiers[Clip[M]]
     derives CanEqual:
 
+  export sheet.frameCount
+  export sheet.frameDuration
+
+  lazy val length: Seconds =
+    sheet.frameDuration * sheet.frameCount
+
   def loop: Clip[M] =
     this.copy(playMode = ClipPlayMode.Loop(playMode.direction))
 
