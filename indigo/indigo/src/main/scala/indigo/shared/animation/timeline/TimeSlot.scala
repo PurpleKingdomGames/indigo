@@ -7,31 +7,11 @@ import indigo.shared.time.Seconds
 import scala.annotation.tailrec
 import scala.annotation.targetName
 
-sealed trait TimeSlot[A]:
-  def andThen(next: TimeSlot[A]): TimeSlot.Combine[A] = TimeSlot.Combine(this, next)
-
-  def toWindows: Batch[TimeWindow[A]] =
-    @tailrec
-    def rec(remaining: List[TimeSlot[A]], playhead: Seconds, acc: Batch[TimeWindow[A]]): Batch[TimeWindow[A]] =
-      remaining match
-        case Nil =>
-          acc.reverse
-
-        case TimeSlot.Wait(t) :: ts =>
-          rec(ts, playhead + t, acc)
-
-        case TimeSlot.Animate(t, m) :: ts =>
-          val end = playhead + t
-          rec(ts, end, TimeWindow(playhead, end, m) :: acc)
-
-        case TimeSlot.Fixed(t, f) :: ts =>
-          val end = playhead + t
-          rec(ts, end, TimeWindow(playhead, end, a => SignalFunction(_ => f(a))) :: acc)
-
-        case TimeSlot.Combine(a, b) :: ts =>
-          rec(a :: b :: ts, playhead, acc)
-
-    rec(List(this), Seconds.zero, Batch.empty)
+enum TimeSlot[A] derives CanEqual:
+  case Wait[A](time: Seconds)                                               extends TimeSlot[A]
+  case Animate[A](over: Seconds, modifier: A => SignalFunction[Seconds, A]) extends TimeSlot[A]
+  case Fixed[A](over: Seconds, modifier: A => A)                            extends TimeSlot[A]
+  case Combine[A](first: TimeSlot[A], second: TimeSlot[A])                  extends TimeSlot[A]
 
 object TimeSlot:
 
@@ -61,7 +41,28 @@ object TimeSlot:
     given Seconds = time
     Animate(time, modifier)
 
-  final case class Wait[A](time: Seconds)                                               extends TimeSlot[A]
-  final case class Animate[A](over: Seconds, modifier: A => SignalFunction[Seconds, A]) extends TimeSlot[A]
-  final case class Fixed[A](over: Seconds, modifier: A => A)                            extends TimeSlot[A]
-  final case class Combine[A](first: TimeSlot[A], second: TimeSlot[A])                  extends TimeSlot[A]
+  extension [A](ts: TimeSlot[A])
+    def andThen(next: TimeSlot[A]): TimeSlot.Combine[A] = TimeSlot.Combine(ts, next)
+
+    def toWindows: Batch[TimeWindow[A]] =
+      @tailrec
+      def rec(remaining: List[TimeSlot[A]], playhead: Seconds, acc: Batch[TimeWindow[A]]): Batch[TimeWindow[A]] =
+        remaining match
+          case Nil =>
+            acc.reverse
+
+          case TimeSlot.Wait(t) :: ts =>
+            rec(ts, playhead + t, acc)
+
+          case TimeSlot.Animate(t, m) :: ts =>
+            val end = playhead + t
+            rec(ts, end, TimeWindow(playhead, end, m) :: acc)
+
+          case TimeSlot.Fixed(t, f) :: ts =>
+            val end = playhead + t
+            rec(ts, end, TimeWindow(playhead, end, a => SignalFunction(_ => f(a))) :: acc)
+
+          case TimeSlot.Combine(a, b) :: ts =>
+            rec(a :: b :: ts, playhead, acc)
+
+      rec(List(ts), Seconds.zero, Batch.empty)
