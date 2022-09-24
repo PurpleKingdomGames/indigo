@@ -77,7 +77,7 @@ object syntax:
     def timeline[A](animations: TimelineAnimation[A]*): Timeline[A] =
       Timeline(Batch.fromSeq(animations).flatMap(_.compile.toWindows))
 
-    def animation[A](timeslots: TimeSlot[A]*): TimelineAnimation[A] =
+    def layer[A](timeslots: TimeSlot[A]*): TimelineAnimation[A] =
       TimelineAnimation(Batch.fromSeq(timeslots))
 
     export TimeSlot.start

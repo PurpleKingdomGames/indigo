@@ -55,7 +55,7 @@ object TimelineScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
 
   val tl: Seconds => Timeline[Graphic[Material.ImageEffects]] = delay =>
     timeline(
-      animation(
+      layer(
         startAfter(delay),
         animate(5.seconds) {
           easeInOut >>> lerp(Point(0), Point(100)) >>> move(_)
@@ -64,7 +64,7 @@ object TimelineScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
           easeInOut >>> lerp(Point(100), Point(100, 0)) >>> move(_)
         }
       ),
-      animation(
+      layer(
         startAfter(delay),
         animate(8.seconds, modifier)
       )
