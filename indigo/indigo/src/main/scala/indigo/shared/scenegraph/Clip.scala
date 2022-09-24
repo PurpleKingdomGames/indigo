@@ -175,6 +175,38 @@ final case class Clip[M <: Material](
   def disableEvents: Clip[M] =
     this.copy(eventHandlerEnabled = false)
 
+  def toGraphic: Graphic[M] =
+    toGraphic(0)
+
+  def toGraphic(frameNumber: Int): Graphic[M] =
+    val frame = frameNumber + sheet.startOffset
+    def framePositon: Point =
+      sheet.arrangement match
+        case ClipSheetArrangement.Horizontal =>
+          Point(
+            x = frame % sheet.wrapAt,
+            y = frame / sheet.wrapAt
+          )
+
+        case ClipSheetArrangement.Vertical =>
+          Point(
+            x = frame / sheet.wrapAt,
+            y = frame % sheet.wrapAt
+          )
+
+    Graphic(
+      eventHandlerEnabled = false,
+      eventHandler = Function.const(None),
+      position = position,
+      rotation = rotation,
+      scale = scale,
+      depth = depth,
+      ref = ref,
+      flip = flip,
+      crop = Rectangle(framePositon * size.toPoint, size),
+      material = material
+    )
+
 object Clip:
 
   def apply[M <: Material](
