@@ -108,6 +108,17 @@ final case class Sprite[M <: Material](
   def jumpToFrame(number: Int): Sprite[M] =
     this.copy(animationActions = animationActions ++ Batch(JumpToFrame(number)))
 
+  /** Moves the sprite's playhead to a position down the timeline based on a value ranged 0.0 to 1.0, where 0.0 is the
+    * start and 1.0 is the end of the timeline.
+    *
+    * @param position
+    *   A value between `0.0d` and `1.0d`
+    * @return
+    *   Sprite[Material]
+    */
+  def scrubTo(position: Double): Sprite[M] =
+    this.copy(animationActions = animationActions ++ Batch(ScrubTo(Math.min(1.0d, Math.max(0.0d, position)))))
+
   def withEventHandler(f: ((Sprite[_], GlobalEvent)) => Option[GlobalEvent]): Sprite[M] =
     this.copy(eventHandler = f, eventHandlerEnabled = true)
   def onEvent(f: PartialFunction[((Sprite[_], GlobalEvent)), GlobalEvent]): Sprite[M] =

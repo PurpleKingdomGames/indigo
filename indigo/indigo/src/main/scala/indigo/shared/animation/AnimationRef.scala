@@ -5,6 +5,7 @@ import indigo.shared.animation.AnimationAction.JumpToFirstFrame
 import indigo.shared.animation.AnimationAction.JumpToFrame
 import indigo.shared.animation.AnimationAction.JumpToLastFrame
 import indigo.shared.animation.AnimationAction.Play
+import indigo.shared.animation.AnimationAction.ScrubTo
 import indigo.shared.collections.Batch
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.temporal.Signal
@@ -124,6 +125,10 @@ final case class CycleRef(
           updatePlayheadAndLastAdvance(frameCount - 1, gameTime.running.toMillis)
 
         case JumpToFrame(number) =>
+          updatePlayheadAndLastAdvance(if (number > frameCount - 1) frameCount - 1 else number, gameTime.running.toMillis)
+
+        case ScrubTo(position) =>
+          val number = (frameCount.toDouble * position).toInt
           updatePlayheadAndLastAdvance(if (number > frameCount - 1) frameCount - 1 else number, gameTime.running.toMillis)
 
       }
