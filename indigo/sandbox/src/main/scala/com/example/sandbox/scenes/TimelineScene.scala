@@ -7,8 +7,7 @@ import com.example.sandbox.SandboxViewModel
 import indigo.*
 import indigo.scenes.*
 import indigo.syntax.*
-import indigoextras.animation.TimeWindow
-import indigoextras.animation.Timeline
+import indigo.syntax.animations.*
 
 object TimelineScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
 
@@ -48,44 +47,28 @@ object TimelineScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
       .modifyMaterial(_.toImageEffects.withLighting(LightingModel.Unlit))
       .withCrop(0, 0, 32, 32)
 
-  // No frills timeline animation
-  import indigo.shared.temporal.SignalFunction as SF
-
-  def move(g: Graphic[Material.ImageEffects]): SignalFunction[Point, Graphic[Material.ImageEffects]] =
+  val move: Graphic[Material.ImageEffects] => SignalFunction[Point, Graphic[Material.ImageEffects]] = g =>
     SignalFunction(pt => g.moveTo(pt))
 
-  val modifier1: Graphic[Material.ImageEffects] => SignalFunction[Seconds, Graphic[Material.ImageEffects]] =
-    SF.easeInOut(5.seconds) >>> SF.lerp(Point(0), Point(100)) >>> move(_)
+  val modifier: Graphic[Material.ImageEffects] => SignalFunction[Seconds, Graphic[Material.ImageEffects]] =
+    g => sin >>> SignalFunction(d => (d + 1) / 2) >>> SignalFunction(d => g.modifyMaterial(_.withAlpha(d)))
 
-  val modifier2: Graphic[Material.ImageEffects] => SignalFunction[Seconds, Graphic[Material.ImageEffects]] =
-    SF.easeInOut(3.seconds) >>> SF.lerp(Point(100), Point(100, 0)) >>> move(_)
-
-  val modifier3: Graphic[Material.ImageEffects] => SignalFunction[Seconds, Graphic[Material.ImageEffects]] =
-    g => SF.sin >>> SignalFunction(d => (d + 1) / 2) >>> SignalFunction(d => g.modifyMaterial(_.withAlpha(d)))
-
-  // The problem with this is that you can't easily relatively adjust everything.
-  val timeline =
-    Timeline(
-      TimeWindow(2.seconds, 7.seconds, modifier1),
-      TimeWindow(7.seconds, 10.seconds, modifier2),
-      TimeWindow(2.seconds, 10.seconds, modifier3)
+  val tl: Seconds => Timeline[Graphic[Material.ImageEffects]] = delay =>
+    timeline(
+      animation(
+        startAfter(delay),
+        animate(5.seconds) {
+          easeInOut >>> lerp(Point(0), Point(100)) >>> move(_)
+        },
+        animate(3.seconds) {
+          easeInOut >>> lerp(Point(100), Point(100, 0)) >>> move(_)
+        }
+      ),
+      animation(
+        startAfter(delay),
+        animate(8.seconds, modifier)
+      )
     )
-
-  import indigoextras.animation.TimeSlot.*
-
-  val timeline2 =
-    Timeline.empty
-      .add(
-        pause(2.seconds) andThen
-          animate(5.seconds)(modifier1) andThen
-          animate(3.seconds, modifier2)
-      )
-      .add(
-        pause(2.seconds) andThen
-          animate(8.seconds) {
-            modifier3
-          }
-      )
 
   def present(
       context: FrameContext[SandboxStartupData],
@@ -94,10 +77,6 @@ object TimelineScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
-        Layer(
-          Batch.fromOption(
-            timeline2.at(context.running)(crate)
-          )
-        )
+        tl(2.seconds).at(context.running)(crate).toBatch
       )
     )

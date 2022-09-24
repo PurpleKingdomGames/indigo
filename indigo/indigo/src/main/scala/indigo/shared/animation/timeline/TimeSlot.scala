@@ -1,4 +1,4 @@
-package indigoextras.animation
+package indigo.shared.animation.timeline
 
 import indigo.shared.collections.Batch
 import indigo.shared.temporal.SignalFunction
@@ -47,10 +47,13 @@ object TimeSlot:
   def show[A](time: Seconds, value: A): Fixed[A] =
     Fixed(time, value)
 
-  def animate[A](time: Seconds, modifier: A => SignalFunction[Seconds, A]): Animate[A] =
+  def animate[A](time: Seconds)(modifier: Seconds ?=> A => SignalFunction[Seconds, A]): Animate[A] =
+    given Seconds = time
     Animate(time, modifier)
-  @targetName("animate_seperate_args")
-  def animate[A](time: Seconds)(modifier: A => SignalFunction[Seconds, A]): Animate[A] =
+
+  @targetName("TimeSlot_animate_unsplit_args")
+  def animate[A](time: Seconds, modifier: Seconds ?=> A => SignalFunction[Seconds, A]): Animate[A] =
+    given Seconds = time
     Animate(time, modifier)
 
   final case class Wait[A](time: Seconds)                                               extends TimeSlot[A]

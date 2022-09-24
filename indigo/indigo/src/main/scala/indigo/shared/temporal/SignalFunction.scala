@@ -5,6 +5,8 @@ import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.Vector2
 import indigo.shared.time.Seconds
 
+import scala.annotation.targetName
+
 /** A Signal Function is a combinator that maps `Signal[A] -> Signal[B]`. One way to thing of signal functions is to
   * think of each instance as one section of a transformation pipeline. When you attach the pipeline to a `Signal` you
   * can ask the pipeline for a transformed value over time. For example, you could have a signal that produces an
@@ -121,6 +123,9 @@ object SignalFunction:
       start + ((end - start) * m)
     }
 
+  def easeInOut: Seconds ?=> SignalFunction[Seconds, Double] = over ?=>
+     SignalFunction(easeInOutDouble(0, 1, over))
+  @targetName("SF_easeInOut_non-context")
   def easeInOut(over: Seconds): SignalFunction[Seconds, Double] =
     SignalFunction(easeInOutDouble(0, 1, over))
   def easeInOut(start: Double, end: Double, over: Seconds): SignalFunction[Seconds, Double] =
