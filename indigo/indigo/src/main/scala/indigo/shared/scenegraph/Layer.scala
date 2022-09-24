@@ -134,6 +134,9 @@ object Layer:
   def apply(nodes: Batch[SceneNode]): Layer =
     Layer(nodes, Batch.empty, None, None, None, None, None, None)
 
+  def apply(maybeNode: Option[SceneNode]): Layer =
+    Layer(Batch.fromOption(maybeNode), Batch.empty, None, None, None, None, None, None)
+
   def apply(key: BindingKey, nodes: Batch[SceneNode]): Layer =
     Layer(nodes, Batch.empty, Option(key), None, None, None, None, None)
 
