@@ -179,7 +179,8 @@ final case class Clip[M <: Material](
     toGraphic(0)
 
   def toGraphic(frameNumber: Int): Graphic[M] =
-    val frame = frameNumber + sheet.startOffset
+    val num   = Math.min(sheet.frameCount - 1, Math.max(0, frameNumber))
+    val frame = num + sheet.startOffset
     def framePositon: Point =
       sheet.arrangement match
         case ClipSheetArrangement.Horizontal =>
@@ -206,6 +207,10 @@ final case class Clip[M <: Material](
       crop = Rectangle(framePositon * size.toPoint, size),
       material = material
     )
+
+  def scrubTo(position: Double): Graphic[M] =
+    val p = Math.min(1, Math.max(0, position))
+    toGraphic(((sheet.frameCount - 1) * p).toInt)
 
 object Clip:
 
