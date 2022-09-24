@@ -85,6 +85,19 @@ object TimelineScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
       )
     )
 
+  val clipTimeline: Timeline[Clip[Material.Bitmap]] =
+    timeline(
+      layer(
+        animate(5.seconds) { clip =>
+          wrap(clip.length) >>> lerp(0, 1, clip.length) >>> SignalFunction(d => clip.scrubTo(d))
+        }
+      )
+    )
+
+  val trafficLights =
+    Clip(Point(0), Size(64), ClipSheet(3, Seconds(0.25), 2), Material.Bitmap(SandboxAssets.trafficLightsName))
+      .moveTo(50, 0)
+
   def present(
       context: FrameContext[SandboxStartupData],
       model: Unit,
@@ -97,6 +110,9 @@ object TimelineScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
         tl(2.seconds).at(context.running)(crate).toBatch ++
           spriteTimeline
             .at(context.running)(dude)
+            .toBatch ++
+          clipTimeline
+            .at(context.running)(trafficLights)
             .toBatch
       )
     )
