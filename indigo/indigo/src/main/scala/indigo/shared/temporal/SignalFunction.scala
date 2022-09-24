@@ -55,12 +55,13 @@ object SignalFunction:
     else if time >= over then end
     else value
 
-
   private def lerpDouble(start: Double, end: Double, over: Seconds): Seconds => Double = time =>
     clampToTime(time, over, start, end) {
       start + ((end - start) * (time / over).toDouble)
     }
 
+  def lerp: Seconds ?=> SignalFunction[Seconds, Double] = over ?=> lerp(over)
+  @targetName("SF_lerp_non-context")
   def lerp(over: Seconds): SignalFunction[Seconds, Double] =
     SignalFunction(lerpDouble(0, 1, over))
   def lerp(start: Double, end: Double, over: Seconds): SignalFunction[Seconds, Double] =
@@ -88,6 +89,8 @@ object SignalFunction:
       amount * amount
     }
 
+  def easeIn: Seconds ?=> SignalFunction[Seconds, Double] = over ?=> easeIn(over)
+  @targetName("SF_easeIn_non-context")
   def easeIn(over: Seconds): SignalFunction[Seconds, Double] =
     SignalFunction(easeInDouble(0, 1, over))
   def easeIn(start: Double, end: Double, over: Seconds): SignalFunction[Seconds, Double] =
@@ -103,6 +106,8 @@ object SignalFunction:
       1 - (amount * amount)
     }
 
+  def easeOut: Seconds ?=> SignalFunction[Seconds, Double] = over ?=> easeOut(over)
+  @targetName("SF_easeOut_non-context")
   def easeOut(over: Seconds): SignalFunction[Seconds, Double] =
     SignalFunction(easeOutDouble(0, 1, over))
   def easeOut(start: Double, end: Double, over: Seconds): SignalFunction[Seconds, Double] =
@@ -123,8 +128,7 @@ object SignalFunction:
       start + ((end - start) * m)
     }
 
-  def easeInOut: Seconds ?=> SignalFunction[Seconds, Double] = over ?=>
-     SignalFunction(easeInOutDouble(0, 1, over))
+  def easeInOut: Seconds ?=> SignalFunction[Seconds, Double] = over ?=> easeInOut(over)
   @targetName("SF_easeInOut_non-context")
   def easeInOut(over: Seconds): SignalFunction[Seconds, Double] =
     SignalFunction(easeInOutDouble(0, 1, over))
