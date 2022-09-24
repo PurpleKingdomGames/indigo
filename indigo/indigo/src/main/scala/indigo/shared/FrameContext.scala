@@ -33,15 +33,11 @@ final class FrameContext[StartUpData](
 ):
 
   lazy val startUpData = _startUpData
-  val running: Seconds = gameTime.running
-  val delta: Seconds   = gameTime.delta
 
-  val mouse: Mouse       = inputState.mouse
-  val keyboard: Keyboard = inputState.keyboard
-  val gamepad: Gamepad   = inputState.gamepad
-
-  def findBounds(sceneNode: SceneNode): Option[Rectangle] =
-    boundaryLocator.findBounds(sceneNode)
-
-  def bounds(sceneGraphNode: SceneNode): Rectangle =
-    boundaryLocator.bounds(sceneGraphNode)
+  export gameTime.running
+  export gameTime.delta
+  export inputState.mouse
+  export inputState.keyboard
+  export inputState.gamepad
+  export boundaryLocator.findBounds
+  export boundaryLocator.bounds
