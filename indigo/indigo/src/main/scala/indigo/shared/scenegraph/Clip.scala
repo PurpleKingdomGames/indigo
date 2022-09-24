@@ -214,9 +214,16 @@ final case class Clip[M <: Material](
       material = material
     )
 
-  def scrubTo(position: Double): Graphic[M] =
-    val p = Math.min(1, Math.max(0, position))
-    toGraphic(((sheet.frameCount - 1) * p).toInt)
+  def scrubTo(position: Double): Clip[M] =
+    val p = Math.min(1.0d, Math.max(0.0d, position))
+    toFrame((sheet.frameCount * p).toInt)
+
+  def toFrame(frameNumber: Int): Clip[M] =
+    this.copy(
+      sheet = sheet
+        .withStartOffset(frameNumber)
+        .withFrameCount(1)
+    )
 
 object Clip:
 
