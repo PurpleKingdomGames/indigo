@@ -80,6 +80,18 @@ object syntax:
     def layer[A](timeslots: TimeSlot[A]*): TimelineAnimation[A] =
       TimelineAnimation(Batch.fromSeq(timeslots))
 
+    @targetName("SF_ctxfn_lerp")
+    def lerp: Seconds ?=> SignalFunction[Seconds, Double] = over ?=> SignalFunction.lerp(over)
+
+    @targetName("SF_ctxfn_easeIn")
+    def easeIn: Seconds ?=> SignalFunction[Seconds, Double] = over ?=> SignalFunction.easeIn(over)
+
+    @targetName("SF_ctxfn_easeOut")
+    def easeOut: Seconds ?=> SignalFunction[Seconds, Double] = over ?=> SignalFunction.easeOut(over)
+
+    @targetName("SF_ctxfn_easeInOut")
+    def easeInOut: Seconds ?=> SignalFunction[Seconds, Double] = over ?=> SignalFunction.easeInOut(over)
+
     export TimeSlot.start
     export TimeSlot.startAfter
     export TimeSlot.pause
