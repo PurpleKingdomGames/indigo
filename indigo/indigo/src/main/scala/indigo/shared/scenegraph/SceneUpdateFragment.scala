@@ -102,6 +102,9 @@ object SceneUpdateFragment:
   def apply(nodes: Batch[SceneNode]): SceneUpdateFragment =
     SceneUpdateFragment(Batch(Layer(nodes)), Batch.empty, None, None, Batch.empty, None)
 
+  def apply(maybeNode: Option[SceneNode]): SceneUpdateFragment =
+    SceneUpdateFragment(Batch(Layer(Batch.fromOption(maybeNode))), Batch.empty, None, None, Batch.empty, None)
+
   def apply(layer: Layer): SceneUpdateFragment =
     SceneUpdateFragment(Batch(layer), Batch.empty, None, None, Batch.empty, None)
 
