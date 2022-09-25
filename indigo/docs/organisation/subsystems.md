@@ -44,7 +44,7 @@ final case class PointsTrackerExample(startingPoints: Int) extends SubSystem:
       SceneUpdateFragment(Text(points.toString, FontKey(""), Material.Bitmap(AssetName("font"))))
     )
 
-enum PointsTrackerEvent:
+enum PointsTrackerEvent extends GlobalEvent:
   case Add(points: Int) extends PointsTrackerEvent
   case LoseAll          extends PointsTrackerEvent
 

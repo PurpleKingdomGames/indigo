@@ -23,5 +23,5 @@ yarn run build
 
 # -----
 # Publish
-cp -R $INDIGO_ENGINE_DIR/target/scala-3.*/unidoc/ $WEBSITE_DIR/build/indigo-site/api/
+cp -R $INDIGO_ENGINE_DIR/target/scala-3.*/unidoc/. $WEBSITE_DIR/build/indigo-site/api/
 sbt clean makeSite ghpagesPushSite

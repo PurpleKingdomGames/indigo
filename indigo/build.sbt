@@ -11,12 +11,12 @@ ThisBuild / scalaVersion                                   := scala3Version
 
 lazy val indigoVersion = IndigoVersion.getVersion
 // For the docs site
-lazy val indigoDocsVersion  = "0.13.0"
-lazy val tyrianDocsVersion  = "0.5.1"
-lazy val scalaJsDocsVersion = "1.10.0"
-lazy val scalaDocsVersion   = "3.1.2"
-lazy val sbtDocsVersion     = "1.6.2"
-lazy val millDocsVersion    = "0.10.4"
+lazy val indigoDocsVersion  = "0.14.0"
+lazy val tyrianDocsVersion  = "0.6.0"
+lazy val scalaJsDocsVersion = "1.11.0"
+lazy val scalaDocsVersion   = "3.2.0"
+lazy val sbtDocsVersion     = "1.7.1"
+lazy val millDocsVersion    = "0.10.7"
 
 lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
   version            := indigoVersion,
@@ -208,7 +208,8 @@ lazy val docs = project
       "SCALAJS_VERSION" -> scalaJsDocsVersion,
       "SCALA_VERSION"   -> scalaDocsVersion,
       "SBT_VERSION"     -> sbtDocsVersion,
-      "MILL_VERSION"    -> millDocsVersion
+      "MILL_VERSION"    -> millDocsVersion,
+      "js-opt"          -> "fast"
     )
   )
   .settings(

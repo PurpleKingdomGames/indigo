@@ -67,9 +67,9 @@ trait Scene[StartUpData, GameModel, ViewModel] derives CanEqual {
   def eventFilters: EventFilters
   def subSystems: Set[SubSystem]
 
-  def updateModel(context: FrameContext[StartUpData], model: SceneModel): GlobalEvent => Outcome[SceneModel]
-  def updateViewModel(context: FrameContext[StartUpData], model: SceneModel, viewModel: SceneViewModel): GlobalEvent => Outcome[SceneViewModel]
-  def present(context: FrameContext[StartUpData], model: SceneModel, viewModel: SceneViewModel): Outcome[SceneUpdateFragment]
+  def updateModel(context: SceneContext[StartUpData], model: SceneModel): GlobalEvent => Outcome[SceneModel]
+  def updateViewModel(context: SceneContext[StartUpData], model: SceneModel, viewModel: SceneViewModel): GlobalEvent => Outcome[SceneViewModel]
+  def present(context: SceneContext[StartUpData], model: SceneModel, viewModel: SceneViewModel): Outcome[SceneUpdateFragment]
 }
 ```
 
@@ -166,13 +166,13 @@ object LevelScene extends Scene[Unit, DungeonGameModel, Unit]:
   def name: SceneName = SceneName("level")
   def subSystems: Set[SubSystem] = Set()
 
-  def updateModel(context: FrameContext[Unit], model: LevelModel): GlobalEvent => Outcome[LevelModel] =
+  def updateModel(context: SceneContext[Unit], model: LevelModel): GlobalEvent => Outcome[LevelModel] =
     _ => Outcome(model.copy(health = model.health + 1)) // On any event, increase health!
 
-  def updateViewModel(context: FrameContext[Unit], model: LevelModel, viewModel: Unit): GlobalEvent => Outcome[Unit] =
+  def updateViewModel(context: SceneContext[Unit], model: LevelModel, viewModel: Unit): GlobalEvent => Outcome[Unit] =
     _ => Outcome(viewModel)
 
-  def present(context: FrameContext[Unit], model: LevelModel, viewModel: Unit): Outcome[SceneUpdateFragment] =
+  def present(context: SceneContext[Unit], model: LevelModel, viewModel: Unit): Outcome[SceneUpdateFragment] =
     Outcome(SceneUpdateFragment.empty)
 ```
 
