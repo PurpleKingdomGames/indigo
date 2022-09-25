@@ -87,9 +87,13 @@ object Shape:
 
     def withFill(newFill: Fill): Box =
       this.copy(fill = newFill)
+    def modifyFill(modifier: Fill => Fill): Box =
+      this.copy(fill = modifier(fill))
 
     def withStroke(newStroke: Stroke): Box =
       this.copy(stroke = newStroke)
+    def modifyStroke(modifier: Stroke => Stroke): Box =
+      this.copy(stroke = modifier(stroke))
 
     def withStrokeColor(newStrokeColor: RGBA): Box =
       this.copy(stroke = stroke.withColor(newStrokeColor))
@@ -220,11 +224,18 @@ object Shape:
     lazy val size: Size =
       Size(radius * 2) + stroke.width
 
+    @deprecated("Use `withFill` instead")
     def withFillColor(newFill: Fill): Circle =
       this.copy(fill = newFill)
+    def withFill(newFill: Fill): Circle =
+      this.copy(fill = newFill)
+    def modifyFill(modifier: Fill => Fill): Circle =
+      this.copy(fill = modifier(fill))
 
     def withStroke(newStroke: Stroke): Circle =
       this.copy(stroke = newStroke)
+    def modifyStroke(modifier: Stroke => Stroke): Circle =
+      this.copy(stroke = modifier(stroke))
 
     def withStrokeColor(newStrokeColor: RGBA): Circle =
       this.copy(stroke = stroke.withColor(newStrokeColor))
@@ -372,6 +383,8 @@ object Shape:
 
     def withStroke(newStroke: Stroke): Line =
       this.copy(stroke = newStroke)
+    def modifyStroke(modifier: Stroke => Stroke): Line =
+      this.copy(stroke = modifier(stroke))
 
     def withStrokeColor(newStrokeColor: RGBA): Line =
       this.copy(stroke = stroke.withColor(newStrokeColor))
@@ -508,11 +521,18 @@ object Shape:
     lazy val size: Size =
       verticesBounds.size
 
+    @deprecated("Use `withFill` instead")
     def withFillColor(newFill: Fill): Polygon =
       this.copy(fill = newFill)
+    def withFill(newFill: Fill): Polygon =
+      this.copy(fill = newFill)
+    def modifyFill(modifier: Fill => Fill): Polygon =
+      this.copy(fill = modifier(fill))
 
     def withStroke(newStroke: Stroke): Polygon =
       this.copy(stroke = newStroke)
+    def modifyStroke(modifier: Stroke => Stroke): Polygon =
+      this.copy(stroke = modifier(stroke))
 
     def withStrokeColor(newStrokeColor: RGBA): Polygon =
       this.copy(stroke = stroke.withColor(newStrokeColor))
