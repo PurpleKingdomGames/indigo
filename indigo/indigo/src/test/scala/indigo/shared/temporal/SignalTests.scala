@@ -300,49 +300,4 @@ Where a thing moves in a circle for 2 seconds and then stops.
 
   }
 
-  def simplify(d: Double): Int =
-    (d * 100).toInt
-
-  val times: List[Seconds] =
-    (0 to 10).toList.map(i => Seconds(i.toDouble))
-
-  test("Utils.Easing.Easing in out") {
-    val signal =
-      Signal.EaseInOut(Seconds(10))
-
-    val actual =
-      times.map(t => simplify(signal.at(t)))
-
-    val expected =
-      List(0, 2, 9, 20, 34, 50, 65, 79, 90, 97, 100)
-
-    assertEquals(actual, expected)
-  }
-
-  test("Utils.Easing.Easing in") {
-    val signal =
-      Signal.EaseIn(Seconds(10))
-
-    val actual =
-      times.map(t => simplify(signal.at(t)))
-
-    val expected =
-      List(0, 1, 4, 10, 19, 29, 41, 54, 69, 84, 100)
-
-    assertEquals(actual, expected)
-  }
-
-  test("Utils.Easing.Easing out") {
-    val signal =
-      Signal.EaseOut(Seconds(10))
-
-    val actual =
-      times.map(t => simplify(signal.at(t)))
-
-    val expected =
-      List(0, 15, 30, 45, 58, 70, 80, 89, 95, 98, 100)
-
-    assertEquals(actual, expected)
-  }
-
 }
