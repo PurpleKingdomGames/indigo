@@ -39,6 +39,24 @@ object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
   ): GlobalEvent => Outcome[SandboxViewModel] =
     _ => Outcome(viewModel)
 
+  val testPolygon: Shape.Polygon =
+    Shape
+      .Polygon(
+        Batch(Point(0, 0), Point(64, 32), Point(64, 64), Point(0, 32)),
+        Fill.Color(RGBA.SlateGray),
+        Stroke(1, RGBA.White)
+      )
+      .moveTo(10, 10)
+
+  val testPolygon2: Shape.Polygon =
+    Shape
+      .Polygon(
+        Batch(Point(0, 0), Point(0, 64), Point(64, 64), Point(64, 0)),
+        Fill.Color(RGBA.SlateGray),
+        Stroke(1, RGBA.White)
+      )
+      .moveTo(100, 10)
+
   def present(
       context: SceneContext[SandboxStartupData],
       model: SandboxGameModel,
@@ -116,7 +134,9 @@ object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
             Stroke(1, RGBA.Red)
           ), // outline red
           Shape
-            .Box(Rectangle(0, 0, 100, 100), Fill.Color(RGBA.Green.withAlpha(0.5)), Stroke.None)
+            .Box(Rectangle(0, 0, 100, 100), Fill.Color(RGBA.Green.withAlpha(0.5)), Stroke.None),
+          testPolygon,
+          testPolygon2
         )
         .addCloneBlanks(
           CloneBlank(CloneId("shape clone"), Shape.Circle(Point.zero, 5, Fill.Color(RGBA.Green), Stroke(2, RGBA.White)))
