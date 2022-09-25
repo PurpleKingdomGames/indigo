@@ -30,13 +30,13 @@ object TimelineScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
     Set()
 
   def updateModel(
-      context: FrameContext[SandboxStartupData],
+      context: SceneContext[SandboxStartupData],
       model: Unit
   ): GlobalEvent => Outcome[Unit] =
     _ => Outcome(model)
 
   def updateViewModel(
-      context: FrameContext[SandboxStartupData],
+      context: SceneContext[SandboxStartupData],
       model: Unit,
       viewModel: Unit
   ): GlobalEvent => Outcome[Unit] =
@@ -99,7 +99,7 @@ object TimelineScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
       .moveTo(50, 0)
 
   def present(
-      context: FrameContext[SandboxStartupData],
+      context: SceneContext[SandboxStartupData],
       model: Unit,
       viewModel: Unit
   ): Outcome[SceneUpdateFragment] =
