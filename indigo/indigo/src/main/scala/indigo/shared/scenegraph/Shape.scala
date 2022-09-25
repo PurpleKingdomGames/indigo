@@ -772,11 +772,17 @@ object Shape:
         }
 
       case s: Shape.Polygon =>
+        // A terrible fix, but it works. In cases where we have a perfect aspect
+        // division, like 1.0 to 0.5, the resulting SDF is a jagged line. So by
+        // crudly adding a very small number, we avoid perfect divisions and get
+        // nice straight edges...
+        val avoidPerfection = 0.00001
+
         val verts: Batch[vec2] =
           s.vertices.map { v =>
             vec2(
-              (v.x - bounds.x).toFloat,
-              (v.y - bounds.y).toFloat
+              (v.x - bounds.x).toFloat + avoidPerfection,
+              (v.y - bounds.y).toFloat + avoidPerfection
             )
           }
 

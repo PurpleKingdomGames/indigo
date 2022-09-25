@@ -234,7 +234,8 @@ object BoundaryLocator:
         Rectangle(s.position, s.size)
 
       case s: Shape.Polygon =>
-        Rectangle.fromPointCloud(s.vertices).expand(s.stroke.width / 2)
+        val ex = if s.stroke.width == 1 then 1 else s.stroke.width / 2
+        Rectangle.fromPointCloud(s.vertices).expand(ex)
 
   def findShapeBounds(shape: Shape[_]): Rectangle =
     val rect = untransformedShapeBounds(shape)
