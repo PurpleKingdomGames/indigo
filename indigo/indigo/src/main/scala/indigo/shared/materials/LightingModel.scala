@@ -7,13 +7,17 @@ import indigo.shared.shader.ShaderPrimitive.vec2
 import indigo.shared.shader.Uniform
 import indigo.shared.shader.UniformBlock
 
-sealed trait LightingModel
+sealed trait LightingModel:
+  def enableLighting: LightingModel
+  def disableLighting: LightingModel
 
 object LightingModel {
 
   given CanEqual[LightingModel, LightingModel] = CanEqual.derived
 
-  case object Unlit extends LightingModel derives CanEqual
+  case object Unlit extends LightingModel derives CanEqual:
+    def enableLighting: LightingModel = Lit.flat
+    def disableLighting: Unlit.type = this
 
   final case class Lit(
       emissive: Option[Texture],
@@ -21,6 +25,9 @@ object LightingModel {
       roughness: Option[Texture]
   ) extends LightingModel
       derives CanEqual {
+
+    def enableLighting: LightingModel = this
+    def disableLighting: Unlit.type = Unlit
 
     def withEmissive(emissiveAssetName: AssetName, amount: Double): Lit =
       this.copy(emissive = Some(Texture(emissiveAssetName, amount)))

@@ -44,7 +44,7 @@ object TimelineScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
 
   val crate: Graphic[Material.ImageEffects] =
     Graphic(64, 64, SandboxAssets.cratesMaterial)
-      .modifyMaterial(_.toImageEffects.withLighting(LightingModel.Unlit))
+      .modifyMaterial(_.toImageEffects.disableLighting)
       .withCrop(0, 0, 32, 32)
 
   val move: Graphic[Material.ImageEffects] => SignalFunction[Point, Graphic[Material.ImageEffects]] = g =>
