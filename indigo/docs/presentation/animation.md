@@ -3,12 +3,12 @@ id: animation
 title: Animation
 ---
 
-There are two type of animations found in Indigo.
+There are two types of animations found in Indigo.
 
-1. Timeline / Key frame based animations.
-1. Procedural / programmed animations.
+1. Keyframe based animations.
+2. Procedural / programmed animations.
 
-## Timeline Animations
+## Keyframe Animations
 
 Indigo is a "code-only" game engine, there is no GUI or asset creation pipeline. As such, the expectation is that you'll use another tool in order to manufacture animation sprite sheets, and import them into Indigo.
 
@@ -75,18 +75,58 @@ An instance of an animation actually contains at least one sub-animation, called
 
 Procedural animations are any animations and movements produced as a result of code execution, and can be seen in a few forms, notably:
 
-- Hand coded animations
+- Timeline animations
 - Signals & Signal Functions
+- Hand coded animations
 
-### Hand crafted code
+### Timeline Animations
 
-It is entirely reasonable to just do the animation yourself - you're a capable programmer after all! How hard can it be to make something move across the screen?
+> The `Timeline` type is new as of Indigo 0.14.0.
 
-The main gotcha to be aware of with this kind of programming, is that the amount of time that passes between frames is not consistent. In other words, you can't add `1` to a characters `x` position and expect it to move smoothly across the screen.
+Timelines allow you to describe animations over time using a combination of `SignalFunction`s and a nice DSL.
 
-All movement must therefore be described in terms of the amount of time that has passed, and there are a few helpful functions on the `GameTime` instance you are supplied with to help you do that.
+To make use of Timelines, add the following imports:
 
-Timeline animations and Signals already have time either taken care of or factored into the equation for you in some way or other.
+```scala
+import indigo.*
+import indigo.syntax.*
+import indigo.syntax.animations.*
+```
+This allows you to write timelines that look like this:
+
+```scala
+val tl: Timeline[Graphic[Material.Bitmap]] =
+  timeline(
+    layer(
+      startAfter(2.seconds),
+      animate(5.seconds) { graphic =>
+        easeInOut >>>
+          lerp(Point(0), Point(100)) >>>
+          SignalFunction(pt => graphic.moveTo(pt))
+      }
+    )
+  )
+```
+
+Each timeline can animate one type of thing, but they and their sub components are reusable and composable. The one above is animating a `Graphic`.
+
+Timelines are build up of 'layers' which are each their own sequence of 'time slots', such as the ones you can see above (i.e. `startAfter` and `animate`). 
+
+Time slots form a back-to-back chain of things to do. There are two here but you can have as many as you like. If you wanted to add another animated value - say you wanted to fade the graphic in by altering its material's alpha property - then you would add another layer. The two layers would then be squashed together automatically to produce the end result.
+
+In this animation, we have one layer that initially waits 2 seconds. Then over the next 5 seconds, it calculates a points position diagonally (lerp means linear interpolation) from (0, 0) to (100, 100), and finally moves a graphic to that position. All of this is performed using an 'ease-in-out' function that accelerates the movement up initially and slows it down towards the end.
+
+The function inside the `animate` block is built up using `SignalFunction`s (see below) to describe the value transformation that results in the animated movement. There are lots of helpful signal functions available on the `SignalFunction` companion object for you to make use of.
+
+> Timelines do now know that they are for animation, and can 'animate' anything at all. We just need to change our idea of animation from something like 'moving a picture' to 'producing a value over time following a series of transformations'.
+
+To render our timeline in our scene, we can ask it to produce it's result like this:
+
+```scala
+tl.at(context.running)(myGraphic).toBatch
+```
+
+This supplies the timeline with the running time and the graphic to animate, and then it converts that into a `Batch` ready to be inserted into the scene somewhere. Without the conversion to a batch, the timeline would produce an optional value.
 
 ### Signals & Signal Functions
 
@@ -164,3 +204,13 @@ It works by:
 1. Making a `Signal` representing the angle in radians based on the time.
 2. Parallel running the angle through the `xPos` and `yPos` `SignalFunction`s to get the `x` and `y` in a range of -1 to +1.
 3. Piping the xy through the `distance` `SignalFuction` to shift the coordinates out the desired range.
+
+### Hand crafted animation code
+
+It is entirely reasonable to just do the animation yourself - you're a capable programmer after all! How hard can it be to make something move across the screen?
+
+The main gotcha to be aware of with this kind of programming, is that the amount of time that passes between frames is not consistent. In other words, you can't add `1` to a characters `x` position and expect it to move smoothly across the screen.
+
+All movement must therefore be described in terms of the amount of time that has passed, and there are a few helpful functions on the `GameTime` instance you are supplied with to help you do that. The typical approach is to work out how many 'units per second' your animated thing should run at, and multiply that by the time delta provided in the `FrameContext`.
+
+Sprite and Clip based animations and Signals already have time either taken care of or factored into the equation for you in some way or other.
