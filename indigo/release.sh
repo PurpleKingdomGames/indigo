@@ -6,6 +6,6 @@ set -e
 
 export GPG_TTY=$(tty)
 
-source credentials.sh
+source ../credentials.sh
 
 sbt clean update crossIndigoRelease 
