@@ -70,7 +70,7 @@ lazy val indigoProject =
       presentationSettings(version),
       ScalaUnidoc / unidoc / unidocProjectFilter := inAnyProject -- inProjects(sandbox, perf, docs)
     )
-    .aggregate(indigo, indigoExtras, indigoJsonCirce, sandbox, perf, docs, benchmarks)
+    .aggregate(indigo, indigoExtras, indigoJsonCirce, sandbox, perf, docs, benchmarks, shaders)
 
 // Testing
 
@@ -150,6 +150,17 @@ lazy val indigo =
       Compile / sourceGenerators += shadersGen.taskValue,
       Compile / sourceGenerators += shaderLibGen("ShaderLibrary", "indigo.shaders").taskValue,
       libraryDependencies ++= Dependencies.indigo.value
+    )
+
+// Shader
+lazy val shaders =
+  project
+    .in(file("indigo-shaders"))
+    .enablePlugins(ScalaJSPlugin)
+    .settings(
+      neverPublish,
+      name := "indigo-shaders",
+      commonSettings
     )
 
 // Circe
