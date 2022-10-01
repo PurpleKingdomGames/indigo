@@ -21,10 +21,10 @@
 //   object vec3 {
 //     def apply(xyz: Float): vec3 =
 //       vec3(xyz, xyz, xyz)
-    
+
 //     def apply(x: Float, yz: vec2): vec3 =
 //       vec3(x, yz.x, yz.y)
-    
+
 //     def apply(xy: vec2, z: Float): vec3 =
 //       vec3(xy.x, xy.y, z)
 //   }
@@ -36,19 +36,19 @@
 //   object vec4 {
 //     def apply(xyz: Float): vec4 =
 //       vec4(xyz, xyz, xyz, xyz)
-    
+
 //     def apply(xy: vec2, zw: vec2): vec4 =
 //       vec4(xy.x, xy.y, zw.x, zw.y)
-    
+
 //     def apply(x: Float, y: Float, zw: vec2): vec4 =
 //       vec4(x, y, zw.x, zw.y)
-    
+
 //     def apply(xy: vec2, z: Float, w: Float): vec4 =
 //       vec4(xy.x, xy.y, z, w)
-    
+
 //     def apply(x: Float, yzw: vec3): vec4 =
 //       vec4(x, yzw.x, yzw.y, yzw.z)
-    
+
 //     def apply(xyz: vec3, w: Float): vec4 =
 //       vec4(xyz.x, xyz.y, xyz.z, w)
 //   }

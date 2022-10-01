@@ -86,7 +86,8 @@ final case class Assign[T <: ShaderType](name: String, expression: Expression[T]
     )
 }
 
-final case class ShaderFunction[T <: ShaderType](name: String)(statement: Statement)(implicit glsl: AsGLSL[T]) extends ShaderAST {
+final case class ShaderFunction[T <: ShaderType](name: String)(statement: Statement)(implicit glsl: AsGLSL[T])
+    extends ShaderAST {
   def asGLSL(indent: Int): String =
     addIndent(indent)(
       s"${glsl.typeName} $name(void) {\n" + statement.asGLSL(indent + 1) + "}\n"
@@ -189,7 +190,8 @@ object float {
   def apply(value: Float): float =
     float(Literal(value))
 }
-final case class vec2(x: Expression[ShaderType.Float], y: Expression[ShaderType.Float]) extends ShaderValue[ShaderType.Vec2] {
+final case class vec2(x: Expression[ShaderType.Float], y: Expression[ShaderType.Float])
+    extends ShaderValue[ShaderType.Vec2] {
 
   def asGLSL(indent: Int): String =
     ShaderAST.addIndent(indent)(
@@ -200,7 +202,8 @@ object vec2 {
   def apply(x: Float, y: Float): vec2 =
     vec2(float(x), float(y))
 }
-final case class vec3(x: Expression[ShaderType.Float], y: Expression[ShaderType.Float], z: Expression[ShaderType.Float]) extends ShaderValue[ShaderType.Vec3] {
+final case class vec3(x: Expression[ShaderType.Float], y: Expression[ShaderType.Float], z: Expression[ShaderType.Float])
+    extends ShaderValue[ShaderType.Vec3] {
 
   def asGLSL(indent: Int): String =
     ShaderAST.addIndent(indent)(
@@ -211,7 +214,12 @@ object vec3 {
   def apply(x: Float, y: Float, z: Float): vec3 =
     vec3(float(x), float(y), float(z))
 }
-final case class vec4(x: Expression[ShaderType.Float], y: Expression[ShaderType.Float], z: Expression[ShaderType.Float], w: Expression[ShaderType.Float]) extends ShaderValue[ShaderType.Vec4] {
+final case class vec4(
+    x: Expression[ShaderType.Float],
+    y: Expression[ShaderType.Float],
+    z: Expression[ShaderType.Float],
+    w: Expression[ShaderType.Float]
+) extends ShaderValue[ShaderType.Vec4] {
 
   def asGLSL(indent: Int): String =
     ShaderAST.addIndent(indent)(
@@ -250,25 +258,32 @@ final case class divide[T <: ShaderType](a: Expression[T], b: Expression[T]) ext
       s"(${a.asGLSL(0)} / ${b.asGLSL(0)})"
     )
 }
-final case class min(a: Expression[ShaderType.Float], b: Expression[ShaderType.Float]) extends ShaderOp[ShaderType.Float] {
+final case class min(a: Expression[ShaderType.Float], b: Expression[ShaderType.Float])
+    extends ShaderOp[ShaderType.Float] {
   def asGLSL(indent: Int): String =
     ShaderAST.addIndent(indent)(
       s"min(${a.asGLSL(0)}, ${b.asGLSL(0)})"
     )
 }
-final case class max(a: Expression[ShaderType.Float], b: Expression[ShaderType.Float]) extends ShaderOp[ShaderType.Float] {
+final case class max(a: Expression[ShaderType.Float], b: Expression[ShaderType.Float])
+    extends ShaderOp[ShaderType.Float] {
   def asGLSL(indent: Int): String =
     ShaderAST.addIndent(indent)(
       s"max(${a.asGLSL(0)}, ${b.asGLSL(0)})"
     )
 }
-final case class texture2D(textureSample: ShaderRef[ShaderType.Sampler2D], coords: Expression[ShaderType.Vec2]) extends ShaderOp[ShaderType.Vec4] {
+final case class texture2D(textureSample: ShaderRef[ShaderType.Sampler2D], coords: Expression[ShaderType.Vec2])
+    extends ShaderOp[ShaderType.Vec4] {
   def asGLSL(indent: Int): String =
     ShaderAST.addIndent(indent)(
       s"texture2D(${textureSample.asGLSL(0)}, ${coords.asGLSL(0)})"
     )
 }
-final case class mix(a: Expression[ShaderType.Vec4], b: Expression[ShaderType.Vec4], amount: Expression[ShaderType.Float]) extends ShaderOp[ShaderType.Vec4] {
+final case class mix(
+    a: Expression[ShaderType.Vec4],
+    b: Expression[ShaderType.Vec4],
+    amount: Expression[ShaderType.Float]
+) extends ShaderOp[ShaderType.Vec4] {
   def asGLSL(indent: Int): String =
     ShaderAST.addIndent(indent)(
       s"mix(${a.asGLSL(0)}, ${b.asGLSL(0)}, ${amount.asGLSL(0)})"

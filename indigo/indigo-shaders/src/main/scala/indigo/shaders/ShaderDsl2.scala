@@ -12,7 +12,7 @@
 //     val time: float
 //   }
 
-//   trait ShaderExpression extends ShaderAny 
+//   trait ShaderExpression extends ShaderAny
 
 //   // implicit class RefWithFunction1(val ref: ShaderRef) {
 //   //   def ->(exp: ShaderExpression): ShaderFunction1 =

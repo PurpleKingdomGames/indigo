@@ -13,7 +13,6 @@
 //          * Take the vertex position and modify it with cos(t)
 //          */
 //         // val t: Channel = new Channel(() => Float)
-        
 
 //         1 ==> 2
 

@@ -80,7 +80,7 @@ object ShaderDSL:
           s"${left.render} ${op.render} ${right.render}"
       }
 
-    //def value: T = left
+    // def value: T = left
 
   }
   // object Expression:
@@ -113,7 +113,7 @@ object ShaderDSL:
       new GLGLTypeName[vec2] {
         def typeName: String = "vec2"
       }
-    
+
     def apply(xy: Double): vec2 =
       vec2(xy, xy)
   }
@@ -129,13 +129,13 @@ object ShaderDSL:
       new GLGLTypeName[vec3] {
         def typeName: String = "vec3"
       }
-    
+
     def apply(xyz: Double): vec3 =
       vec3(xyz, xyz, xyz)
-    
+
     def apply(x: Double, yz: vec2): vec3 =
       vec3(x, yz.x, yz.y)
-    
+
     def apply(xy: vec2, z: Double): vec3 =
       vec3(xy.x, xy.y, z)
   }
@@ -151,22 +151,22 @@ object ShaderDSL:
       new GLGLTypeName[vec4] {
         def typeName: String = "vec4"
       }
-    
+
     def apply(xyz: Double): vec4 =
       vec4(xyz, xyz, xyz, xyz)
-    
+
     def apply(xy: vec2, zw: vec2): vec4 =
       vec4(xy.x, xy.y, zw.x, zw.y)
-    
+
     def apply(x: Double, y: Double, zw: vec2): vec4 =
       vec4(x, y, zw.x, zw.y)
-    
+
     def apply(xy: vec2, z: Double, w: Double): vec4 =
       vec4(xy.x, xy.y, z, w)
-    
+
     def apply(x: Double, yzw: vec3): vec4 =
       vec4(x, yzw.x, yzw.y, yzw.z)
-    
+
     def apply(xyz: vec3, w: Double): vec4 =
       vec4(xyz.x, xyz.y, xyz.z, w)
   }

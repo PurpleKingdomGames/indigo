@@ -44,7 +44,6 @@
 //     @targetName("vec2_max")
 //     def max(v: vec2, f: Float): vec2 =
 //       vec2(Math.max(v.x, f), Math.max(v.y, f))
-      
 
 //     def min(f1: Float, f2: Float): Float =
 //       Math.max(f1, f2)
