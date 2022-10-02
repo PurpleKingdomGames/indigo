@@ -41,19 +41,47 @@ object ShaderMacros:
         println("term" + expr.asTerm.show)
 
         expr.asTerm match {
+          // case Inlined(optTree, listDefinition, term) =>
+          //   println("tree:")
+          //   println(optTree)
+          //   println("definitions:")
+          //   println(listDefinition)
+          //   println("term:")
+          //   println(term)
+          //   "fishcakes"
+
           case Inlined(
                 _,
                 List(),
                 Block(
                   List(
-                    DefDef(name, valueDefinitions, returnType, statementTerm)
+                    DefDef(_, valueDefinitions, returnType, statementTerm)
                     // DefDef(_,List(List(ValDef(x,Ident(Float),EmptyTree))))
                   ),
                   Closure(_, _)
                 )
               ) =>
-            name + " :: " + valueDefinitions + " :: " + returnType.show + " :: " + statementTerm.map(_.show)
+            valueDefinitions.toString + " :: " + returnType.show + " :: " + statementTerm.map(_.show)
         }
+
+      //$anonfun :: List(List(ValDef(x,Ident(Float),EmptyTree))) :: scala.Float :: Some(x.+(1.0f))
+
+      // val s = 
+      //   Block(
+      //     List(
+      //       DefDef(
+      //         $anonfun,
+      //         List(
+      //           List(
+      //             ValDef(x,Ident(Float),EmptyTree)
+      //           )
+      //         ),
+      //         TypeTree[TypeRef(TermRef(ThisType(TypeRef(NoPrefix,module class <root>)),object scala),Float)],
+      //         Apply(Select(Ident(x),+),List(Literal(Constant(1.0))))
+      //       )
+      //     ),
+      //     Closure(List(),Ident($anonfun),EmptyTree)
+      //   )
 
       Expr(fieldName)
     }
@@ -61,6 +89,13 @@ object ShaderMacros:
     // x
 
     println(x.show)
+
+    import quotes.reflect.*
+
+    // println(">>> " +  x.show(using Printer.TreeStructure))
+    println(">>>" + Printer.TreeStructure.show(expr.asTerm))
+    //>>>Inlined(None, Nil, Block(List(DefDef("$anonfun", List(TermParamClause(List(ValDef("x", TypeIdent("Float"), None)))), Inferred(), Some(Apply(Select(Ident("x"), "+"), List(Literal(FloatConstant(1.0f))))))), Closure(Ident("$anonfun"), None)))
+
 
     /*
 def getNameImpl[T](f: Expr[T => Any])(using Quotes): Expr[String] = {
