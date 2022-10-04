@@ -223,6 +223,9 @@ val array: shared.shader.ShaderPrimitive.array.type = shared.shader.ShaderPrimit
 type rawArray = shared.shader.ShaderPrimitive.rawArray
 val rawArray: shared.shader.ShaderPrimitive.rawArray.type = shared.shader.ShaderPrimitive.rawArray
 
+type rawJSArray = shared.shader.ShaderPrimitive.rawJSArray
+val rawJSArray: shared.shader.ShaderPrimitive.rawJSArray.type = shared.shader.ShaderPrimitive.rawJSArray
+
 val StandardShaders: shared.shader.StandardShaders.type = shared.shader.StandardShaders
 
 type Outcome[T] = shared.Outcome[T]
