@@ -6,7 +6,7 @@ final case class UniformBlock(blockName: UniformBlockName, uniforms: Batch[(Unif
     derives CanEqual:
 
   lazy val uniformHash: String =
-    uniforms.toList.map(p => p._1.toString + p._2.hash).mkString
+    blockName.toString + uniforms.map(_._2.hash).mkString
 
   def withUniformBlockName(newBlockName: UniformBlockName): UniformBlock =
     this.copy(blockName = newBlockName)
