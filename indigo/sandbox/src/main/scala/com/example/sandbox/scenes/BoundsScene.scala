@@ -5,8 +5,9 @@ import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
 import com.example.sandbox.SandboxViewModel
-import indigo._
-import indigo.scenes._
+import indigo.*
+import indigo.scenes.*
+import indigo.syntax.*
 
 object BoundsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
 
@@ -94,6 +95,7 @@ object BoundsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
         .scaleBy(2, 2)
         .moveTo(50, 120)
         .rotateTo(Radians.fromSeconds(context.running * speed))
+        .withBindingKey("Sprite bounds anim".bindingKey)
 
     val group: Group =
       Group(
