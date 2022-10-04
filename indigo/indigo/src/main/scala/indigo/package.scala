@@ -1,5 +1,7 @@
 package indigo
 
+import scala.annotation.targetName
+
 object syntax:
 
   extension (d: Double)
@@ -112,6 +114,44 @@ object syntax:
     export SignalFunction.smoothPulse
     export SignalFunction.multiply
   end animations
+
+  // Shaders
+  object shaders:
+
+    extension (c: RGBA) def asVec4: vec4 = vec4.fromRGBA(c)
+    extension (c: RGB)
+      def asVec4: vec4 = vec4.fromRGB(c)
+      def asVec3: vec3 = vec3.fromRGB(c)
+    extension (p: Point) def asVec2: vec2     = vec2.fromPoint(p)
+    extension (s: Size) def asVec2: vec2      = vec2.fromSize(s)
+    extension (v: Vector2) def asVec2: vec2   = vec2.fromVector2(v)
+    extension (v: Vector3) def asVec3: vec3   = vec3.fromVector3(v)
+    extension (v: Vector4) def asVec4: vec4   = vec4.fromVector4(v)
+    extension (r: Rectangle) def asVec4: vec4 = vec4.fromRectangle(r)
+    extension (m: Matrix4) def asMat4: mat4   = mat4.fromMatrix4(m)
+    extension (d: Depth) def asFloat: float   = float.fromDepth(d)
+    extension (m: Millis) def asFloat: float  = float.fromMillis(m)
+    extension (r: Radians) def asFloat: float = float.fromRadians(r)
+    extension (s: Seconds)
+      @targetName("ext_Seconds_asFloat")
+      def asFloat: float = float.fromSeconds(s)
+    extension (d: Double)
+      @targetName("ext_Double_asFloat")
+      def asFloat: float = float(d)
+    extension (i: Int)
+      @targetName("ext_Int_asFloat")
+      def asFloat: float = float(i)
+    extension (l: Long)
+      @targetName("ext_Long_asFloat")
+      def asFloat: float = float(l)
+    extension (a: Array[Float])
+      def asMat4: mat4         = mat4(a)
+      def asRawArray: rawArray = rawArray(a)
+    extension (a: scalajs.js.Array[Float])
+      def asMat4: mat4           = mat4(a.toArray)
+      def asRawArray: rawJSArray = rawJSArray(a)
+
+  end shaders
 
 end syntax
 
