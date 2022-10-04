@@ -143,10 +143,8 @@ object Archetype:
     Batch(
       UniformBlock(
         "MutantData".uniformBlockName,
-        Batch(
-          "MOVE_TO".uniform  -> position.asVec2,
-          "SCALE_TO".uniform -> scale.asVec2,
-          "ALPHA".uniform    -> alpha.asFloat
-        )
+        position.asVec2,
+        scale.asVec2,
+        alpha.asFloat
       )
     )

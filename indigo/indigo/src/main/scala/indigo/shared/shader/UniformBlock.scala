@@ -2,6 +2,8 @@ package indigo.shared.shader
 
 import indigo.shared.collections.Batch
 
+import scala.annotation.targetName
+
 final case class UniformBlock(blockName: UniformBlockName, uniforms: Batch[(Uniform, ShaderPrimitive)])
     derives CanEqual:
 
@@ -20,6 +22,15 @@ final case class UniformBlock(blockName: UniformBlockName, uniforms: Batch[(Unif
     this.copy(uniforms = uniforms ++ newUniforms)
   def addUniforms(newUniforms: (Uniform, ShaderPrimitive)*): UniformBlock =
     addUniforms(Batch.fromSeq(newUniforms))
+
+object UniformBlock:
+
+  def apply(blockName: UniformBlockName, uniforms: (Uniform, ShaderPrimitive)*): UniformBlock =
+    UniformBlock(blockName, Batch.fromSeq(uniforms))
+
+  @targetName("UniformBlock_ValueOnly_apply")
+  def apply(blockName: UniformBlockName, uniformValues: ShaderPrimitive*): UniformBlock =
+    UniformBlock(blockName, Batch.fromSeq(uniformValues).map(v => Uniform("") -> v))
 
 opaque type UniformBlockName = String
 object UniformBlockName:
