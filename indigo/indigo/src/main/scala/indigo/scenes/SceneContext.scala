@@ -17,14 +17,14 @@ import indigo.shared.time.Seconds
   *
   * @param sceneName
   *   The name of the current scene.
-  * @param sceneTime
-  *   The running time of the current scene calculated as the time the scene was entered minus game running time.
+  * @param sceneStartTime
+  *   The time that the current scene was entered.
   * @param frameContext
   *   The normal frame context object that all other fields delegate to.
   */
 final class SceneContext[StartUpData](
     val sceneName: SceneName,
-    val sceneTime: Seconds,
+    val sceneStartTime: Seconds,
     val frameContext: FrameContext[StartUpData]
 ):
   export frameContext.gameTime
@@ -39,3 +39,9 @@ final class SceneContext[StartUpData](
   export frameContext.inputState.gamepad
   export frameContext.findBounds
   export frameContext.bounds
+
+  /** The running time of the current scene calculated as the game's total running time minus time the scene was
+    * entered.
+    */
+  lazy val sceneRunning: Seconds =
+    frameContext.gameTime.running - sceneStartTime
