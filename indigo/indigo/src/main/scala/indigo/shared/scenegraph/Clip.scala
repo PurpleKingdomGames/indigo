@@ -16,6 +16,7 @@ import indigo.shared.shader.ShaderPrimitive.float
 import indigo.shared.shader.StandardShaders
 import indigo.shared.shader.Uniform
 import indigo.shared.shader.UniformBlock
+import indigo.shared.shader.UniformBlockName
 import indigo.shared.time.FPS
 import indigo.shared.time.Seconds
 
@@ -158,7 +159,7 @@ final case class Clip[M <: Material](
       .withShaderId(StandardShaders.shaderIdToClipShaderId(data.shaderId))
       .addUniformBlock(
         UniformBlock(
-          "IndigoClipData",
+          UniformBlockName("IndigoClipData"),
           Batch(
             Uniform("CLIP_SHEET_FRAME_COUNT")    -> float(sheet.frameCount),
             Uniform("CLIP_SHEET_FRAME_DURATION") -> float.fromSeconds(sheet.frameDuration),

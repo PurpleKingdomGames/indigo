@@ -18,6 +18,7 @@ import indigo.shared.shader.ShaderPrimitive.float
 import indigo.shared.shader.UltravioletShader
 import indigo.shared.shader.Uniform
 import indigo.shared.shader.UniformBlock
+import indigo.shared.shader.UniformBlockName
 import indigo.shared.shader.library.NoOp
 import indigoextras.effectmaterials.shaders.RefractionShaders
 
@@ -82,7 +83,7 @@ final case class RefractionEntity(diffuse: AssetName, fillType: FillType) extend
 
     val uniformBlock: UniformBlock =
       UniformBlock(
-        "IndigoBitmapData",
+        UniformBlockName("IndigoBitmapData"),
         Batch(
           Uniform("FILLTYPE") -> float(imageFillType)
         )
@@ -108,7 +109,7 @@ final case class RefractionBlend(multiplier: Double) extends BlendMaterial deriv
       Refraction.blendShader.id,
       Batch(
         UniformBlock(
-          "IndigoRefractionBlendData",
+          UniformBlockName("IndigoRefractionBlendData"),
           Batch(
             Uniform("REFRACTION_AMOUNT") -> float(multiplier)
           )

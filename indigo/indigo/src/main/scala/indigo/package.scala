@@ -19,18 +19,19 @@ object syntax:
   extension (l: Long) def millis: Millis = Millis(l)
 
   extension (s: String)
-    def animationKey: AnimationKey = AnimationKey(s)
-    def assetName: AssetName       = AssetName(s)
-    def assetPath: AssetPath       = AssetPath(s)
-    def assetTag: AssetTag         = AssetTag(s)
-    def cloneId: CloneId           = CloneId(s)
-    def cycleLabel: CycleLabel     = CycleLabel(s)
-    def fontKey: FontKey           = FontKey(s)
-    def fontFamily: FontFamily     = FontFamily(s)
-    def bindingKey: BindingKey     = BindingKey(s)
-    def scene: scenes.SceneName    = scenes.SceneName(s)
-    def shaderId: ShaderId         = ShaderId(s)
-    def uniform: Uniform           = Uniform(s)
+    def animationKey: AnimationKey         = AnimationKey(s)
+    def assetName: AssetName               = AssetName(s)
+    def assetPath: AssetPath               = AssetPath(s)
+    def assetTag: AssetTag                 = AssetTag(s)
+    def cloneId: CloneId                   = CloneId(s)
+    def cycleLabel: CycleLabel             = CycleLabel(s)
+    def fontKey: FontKey                   = FontKey(s)
+    def fontFamily: FontFamily             = FontFamily(s)
+    def bindingKey: BindingKey             = BindingKey(s)
+    def scene: scenes.SceneName            = scenes.SceneName(s)
+    def shaderId: ShaderId                 = ShaderId(s)
+    def uniform: Uniform                   = Uniform(s)
+    def uniformBlockName: UniformBlockName = UniformBlockName(s)
 
   extension (t: (Double, Double)) def vector2: Vector2 = Vector2(t._1, t._2)
 
@@ -235,6 +236,9 @@ val ShaderId: shared.shader.ShaderId.type = shared.shader.ShaderId
 
 type Uniform = shared.shader.Uniform
 val Uniform: shared.shader.Uniform.type = shared.shader.Uniform
+
+type UniformBlockName = shared.shader.UniformBlockName
+val UniformBlockName: shared.shader.UniformBlockName.type = shared.shader.UniformBlockName
 
 type UniformBlock = shared.shader.UniformBlock
 val UniformBlock: shared.shader.UniformBlock.type = shared.shader.UniformBlock

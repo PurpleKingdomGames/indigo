@@ -9,6 +9,8 @@ import com.example.sandbox.SandboxViewModel
 import indigo.*
 import indigo.scenes.*
 import indigo.syntax.shaders.*
+import indigo.syntax.uniform
+import indigo.syntax.uniformBlockName
 import indigoextras.geometry.Polygon
 import indigoextras.geometry.Vertex
 import indigoextras.ui.HitArea
@@ -140,11 +142,11 @@ object Archetype:
   def makeUniformBlock(position: Point, scale: Vector2, alpha: Double): Batch[UniformBlock] =
     Batch(
       UniformBlock(
-        "MutantData",
+        "MutantData".uniformBlockName,
         Batch(
-          Uniform("MOVE_TO")  -> position.asVec2,
-          Uniform("SCALE_TO") -> scale.asVec2,
-          Uniform("ALPHA")    -> alpha.asFloat
+          "MOVE_TO".uniform  -> position.asVec2,
+          "SCALE_TO".uniform -> scale.asVec2,
+          "ALPHA".uniform    -> alpha.asFloat
         )
       )
     )

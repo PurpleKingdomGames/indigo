@@ -312,7 +312,7 @@ object SceneProcessor {
     shaderData.uniformBlocks.toJSArray.map { ub =>
       DisplayObjectUniformData(
         uniformHash = ub.uniformHash,
-        blockName = ub.blockName,
+        blockName = ub.blockName.toString,
         data = DisplayObjectConversions.packUBO(ub.uniforms, ub.uniformHash, false)
       )
     }
