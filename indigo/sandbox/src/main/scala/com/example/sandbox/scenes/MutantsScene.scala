@@ -6,8 +6,9 @@ import com.example.sandbox.SandboxGame
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
 import com.example.sandbox.SandboxViewModel
-import indigo._
-import indigo.scenes._
+import indigo.*
+import indigo.scenes.*
+import indigo.syntax.shaders.*
 import indigoextras.geometry.Polygon
 import indigoextras.geometry.Vertex
 import indigoextras.ui.HitArea
@@ -141,9 +142,9 @@ object Archetype:
       UniformBlock(
         "MutantData",
         Batch(
-          Uniform("MOVE_TO")  -> vec2.fromPoint(position),
-          Uniform("SCALE_TO") -> vec2.fromVector2(scale),
-          Uniform("ALPHA")    -> float(alpha)
+          Uniform("MOVE_TO")  -> position.asVec2,
+          Uniform("SCALE_TO") -> scale.asVec2,
+          Uniform("ALPHA")    -> alpha.asFloat
         )
       )
     )
