@@ -22,6 +22,7 @@ import indigo.shared.shader.ShaderPrimitive._
 import indigo.shared.shader.StandardShaders
 import indigo.shared.shader.Uniform
 import indigo.shared.shader.UniformBlock
+import indigo.shared.shader.UniformBlockName
 
 /** Parent type for all Shapes, which are visible elements draw mathematically that require no textures. Shapes are
   * quite versitile and support different fills and stroke effects, even lighting. Due to the way strokes around shapes
@@ -684,7 +685,7 @@ object Shape:
 
         val shapeUniformBlock =
           UniformBlock(
-            "IndigoShapeData",
+            UniformBlockName("IndigoShapeData"),
             // ASPECT_RATIO (vec2), STROKE_WIDTH (float), FILL_TYPE (float), STROKE_COLOR (vec4)
             Batch(
               Uniform("Shape_DATA") -> rawJSArray(
@@ -716,7 +717,7 @@ object Shape:
       case s: Shape.Circle =>
         val shapeUniformBlock =
           UniformBlock(
-            "IndigoShapeData",
+            UniformBlockName("IndigoShapeData"),
             // STROKE_WIDTH (float), FILL_TYPE (float), STROKE_COLOR (vec4)
             Batch(
               Uniform("Shape_DATA") -> rawJSArray(
@@ -758,7 +759,7 @@ object Shape:
 
         val shapeUniformBlock =
           UniformBlock(
-            "IndigoShapeData",
+            UniformBlockName("IndigoShapeData"),
             // STROKE_WIDTH (float), STROKE_COLOR (vec4), START (vec2), END (vec2)
             Batch(
               Uniform("Shape_DATA") -> rawJSArray(
@@ -808,7 +809,7 @@ object Shape:
 
         val shapeUniformBlock =
           UniformBlock(
-            "IndigoShapeData",
+            UniformBlockName("IndigoShapeData"),
             // STROKE_WIDTH (float), FILL_TYPE (float), COUNT (float), STROKE_COLOR (vec4)
             Batch(
               Uniform("Shape_DATA") -> rawJSArray(

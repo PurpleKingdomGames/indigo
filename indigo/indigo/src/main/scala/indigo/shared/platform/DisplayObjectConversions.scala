@@ -142,7 +142,7 @@ final class DisplayObjectConversions(
       uniformBlocks.toJSArray.map { ub =>
         DisplayObjectUniformData(
           uniformHash = ub.uniformHash,
-          blockName = ub.blockName,
+          blockName = ub.blockName.toString,
           data = DisplayObjectConversions.packUBO(ub.uniforms, ub.uniformHash, false)
         )
       }
@@ -440,7 +440,7 @@ final class DisplayObjectConversions(
       shader.uniformBlocks.toJSArray.map { ub =>
         DisplayObjectUniformData(
           uniformHash = ub.uniformHash,
-          blockName = ub.blockName,
+          blockName = ub.blockName.toString,
           data = DisplayObjectConversions.packUBO(ub.uniforms, ub.uniformHash, false)
         )
       }
@@ -508,7 +508,7 @@ final class DisplayObjectConversions(
       shader.uniformBlocks.toJSArray.map { ub =>
         DisplayObjectUniformData(
           uniformHash = ub.uniformHash,
-          blockName = ub.blockName,
+          blockName = ub.blockName.toString,
           data = DisplayObjectConversions.packUBO(ub.uniforms, ub.uniformHash, false)
         )
       }
@@ -583,7 +583,7 @@ final class DisplayObjectConversions(
       shaderData.uniformBlocks.toJSArray.map { ub =>
         DisplayObjectUniformData(
           uniformHash = ub.uniformHash,
-          blockName = ub.blockName,
+          blockName = ub.blockName.toString,
           data = DisplayObjectConversions.packUBO(ub.uniforms, ub.uniformHash, false)
         )
       }
@@ -648,7 +648,7 @@ final class DisplayObjectConversions(
       shaderData.uniformBlocks.toJSArray.map { ub =>
         DisplayObjectUniformData(
           uniformHash = ub.uniformHash,
-          blockName = ub.blockName,
+          blockName = ub.blockName.toString,
           data = DisplayObjectConversions.packUBO(ub.uniforms, ub.uniformHash, false)
         )
       }
@@ -716,7 +716,7 @@ final class DisplayObjectConversions(
         shaderData.uniformBlocks.toJSArray.map { ub =>
           DisplayObjectUniformData(
             uniformHash = ub.uniformHash,
-            blockName = ub.blockName,
+            blockName = ub.blockName.toString,
             data = DisplayObjectConversions.packUBO(ub.uniforms, ub.uniformHash, false)
           )
         }
@@ -795,7 +795,7 @@ final class DisplayObjectConversions(
           shaderData.uniformBlocks.toJSArray.map { ub =>
             DisplayObjectUniformData(
               uniformHash = ub.uniformHash,
-              blockName = ub.blockName,
+              blockName = ub.blockName.toString,
               data = DisplayObjectConversions.packUBO(ub.uniforms, ub.uniformHash, false)
             )
           }

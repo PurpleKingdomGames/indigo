@@ -15,6 +15,7 @@ import indigo.shared.shader.ShaderPrimitive.rawJSArray
 import indigo.shared.shader.UltravioletShader
 import indigo.shared.shader.Uniform
 import indigo.shared.shader.UniformBlock
+import indigo.shared.shader.UniformBlockName
 import indigo.shared.shader.library.IndigoUV.VertexEnv
 import indigo.shared.shader.library.NoOp
 import indigoextras.effectmaterials.shaders.LegacyEffectsShaders
@@ -78,7 +79,7 @@ final case class LegacyEffects(
       LegacyEffects.entityShader.id,
       Batch(
         UniformBlock(
-          "IndigoLegacyEffectsData",
+          UniformBlockName("IndigoLegacyEffectsData"),
           Batch(
             // ALPHA_SATURATION_OVERLAYTYPE_FILLTYPE (vec4), TINT (vec4)
             Uniform("LegacyEffects_DATA") -> rawJSArray(

@@ -6,6 +6,7 @@ import indigo.shared.shader.ShaderId
 import indigo.shared.shader.ShaderPrimitive.vec2
 import indigo.shared.shader.Uniform
 import indigo.shared.shader.UniformBlock
+import indigo.shared.shader.UniformBlockName
 
 sealed trait LightingModel:
   def enableLighting: LightingModel
@@ -71,7 +72,7 @@ object LightingModel {
         shaderId,
         Batch(
           UniformBlock(
-            "IndigoMaterialLightingData",
+            UniformBlockName("IndigoMaterialLightingData"),
             Batch(
               Uniform("LIGHT_EMISSIVE") -> vec2(
                 emissive.map(_ => 1.0).getOrElse(-1.0),

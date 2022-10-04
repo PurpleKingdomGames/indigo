@@ -13,6 +13,7 @@ import indigo.shared.shader.ShaderPrimitive.rawJSArray
 import indigo.shared.shader.StandardShaders
 import indigo.shared.shader.Uniform
 import indigo.shared.shader.UniformBlock
+import indigo.shared.shader.UniformBlockName
 
 trait Material {
   def toShaderData: ShaderData
@@ -70,7 +71,7 @@ object Material {
 
       val uniformBlock: UniformBlock =
         UniformBlock(
-          "IndigoBitmapData",
+          UniformBlockName("IndigoBitmapData"),
           Batch(
             Uniform("Bitmap_FILLTYPE") -> rawJSArray(scalajs.js.Array(imageFillType))
           )
@@ -172,7 +173,7 @@ object Material {
       // ALPHA_SATURATION_OVERLAYTYPE_FILLTYPE (vec4), TINT (vec4)
       val effectsUniformBlock: UniformBlock =
         UniformBlock(
-          "IndigoImageEffectsData",
+          UniformBlockName("IndigoImageEffectsData"),
           Batch(
             Uniform("ImageEffects_DATA") -> rawJSArray(
               scalajs.js.Array(

@@ -9,6 +9,7 @@ import indigo.shared.shader.ShaderPrimitive.rawJSArray
 import indigo.shared.shader.StandardShaders
 import indigo.shared.shader.Uniform
 import indigo.shared.shader.UniformBlock
+import indigo.shared.shader.UniformBlockName
 
 trait BlendMaterial:
   def toShaderData: BlendShaderData
@@ -29,7 +30,7 @@ object BlendMaterial {
         StandardShaders.LightingBlend.id,
         Batch(
           UniformBlock(
-            "IndigoLightingBlendData",
+            UniformBlockName("IndigoLightingBlendData"),
             Batch(
               Uniform("AMBIENT_LIGHT_COLOR") -> rawJSArray(
                 ambient.r.toFloat,
@@ -85,7 +86,7 @@ object BlendMaterial {
         StandardShaders.BlendEffects.id,
         Batch(
           UniformBlock(
-            "IndigoBlendEffectsData",
+            UniformBlockName("IndigoBlendEffectsData"),
             Batch(
               // ALPHA_SATURATION_OVERLAYTYPE_BG (vec4), TINT (vec4)
               Uniform("BlendEffects_DATA") -> rawJSArray(
