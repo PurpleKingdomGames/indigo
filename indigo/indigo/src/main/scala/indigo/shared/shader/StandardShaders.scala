@@ -14,6 +14,10 @@ object StandardShaders {
       LitBitmapClip,
       ImageEffectsClip,
       LitImageEffectsClip,
+      BitmapNineSlice,
+      LitBitmapNineSlice,
+      ImageEffectsNineSlice,
+      LitImageEffectsNineSlice,
       ShapeBox,
       LitShapeBox,
       ShapeCircle,
@@ -84,6 +88,22 @@ object StandardShaders {
   val LitBitmapClip: EntityShader.Source       = makeClipShader(LitBitmap)
   val ImageEffectsClip: EntityShader.Source    = makeClipShader(ImageEffects)
   val LitImageEffectsClip: EntityShader.Source = makeClipShader(LitImageEffects)
+
+  // 9-Slice
+
+  def shaderIdToNineSliceShaderId(id: ShaderId): ShaderId =
+    ShaderId(id.toString + "[9-slice]")
+
+  def makeNineSliceShader(shader: EntityShader.Source): EntityShader.Source =
+    shader.copy(
+      id = shaderIdToNineSliceShaderId(shader.id),
+      vertex = ShaderLibrary.NineSliceVertex
+    )
+
+  val BitmapNineSlice: EntityShader.Source          = makeNineSliceShader(Bitmap)
+  val LitBitmapNineSlice: EntityShader.Source       = makeNineSliceShader(LitBitmap)
+  val ImageEffectsNineSlice: EntityShader.Source    = makeNineSliceShader(ImageEffects)
+  val LitImageEffectsNineSlice: EntityShader.Source = makeNineSliceShader(LitImageEffects)
 
   // Shapes
 

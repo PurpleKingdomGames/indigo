@@ -630,6 +630,9 @@ val ClipPlayDirection: shared.scenegraph.ClipPlayDirection.type = shared.scenegr
 type ClipPlayMode = shared.scenegraph.ClipPlayMode
 val ClipPlayMode: shared.scenegraph.ClipPlayMode.type = shared.scenegraph.ClipPlayMode
 
+type NineSlice[M <: Material] = shared.scenegraph.NineSlice[M]
+val NineSlice: shared.scenegraph.NineSlice.type = shared.scenegraph.NineSlice
+
 // TextStyle
 
 type TextStyle = shared.datatypes.TextStyle

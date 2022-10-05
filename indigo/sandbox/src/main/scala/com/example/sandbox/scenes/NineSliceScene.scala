@@ -49,7 +49,8 @@ object NineSliceScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbo
     Outcome(
       SceneUpdateFragment(
         Layer(
-          SandboxAssets.pictureFrame
+          SandboxAssets.pictureFrame.moveBy(200, 0),
+          NineSlice(SandboxAssets.pictureFrameMaterial)
         )
       )
     )
