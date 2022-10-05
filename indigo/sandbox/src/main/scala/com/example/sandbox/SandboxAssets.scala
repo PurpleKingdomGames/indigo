@@ -9,14 +9,21 @@ object SandboxAssets {
   val captainName: AssetName           = AssetName("captain clown nose")
   val captainMaterial: Material.Bitmap = Material.Bitmap(captainName)
 
-  val smallFontName: AssetName = AssetName("smallFontName")
-  val dudeName: AssetName      = AssetName("base_charactor")
-  val light: AssetName         = AssetName("light")
-  val dots: AssetName          = AssetName("dots")
+  val smallFontName: AssetName    = AssetName("smallFontName")
+  val dudeName: AssetName         = AssetName("base_charactor")
+  val light: AssetName            = AssetName("light")
+  val dots: AssetName             = AssetName("dots")
+  val pictureFrameName: AssetName = AssetName("pictureframe")
 
   val fontMaterial: Material.ImageEffects  = Material.ImageEffects(smallFontName)
   val lightMaterial: Material.ImageEffects = Material.ImageEffects(light)
   val dudeMaterial: Material.ImageEffects  = Material.ImageEffects(dudeName)
+
+  val pictureFrameMaterial: Material.Bitmap =
+    Material.Bitmap(pictureFrameName)
+
+  val pictureFrame: Graphic[Material.Bitmap] =
+    Graphic(64, 64, pictureFrameMaterial)
 
   val dotsMaterial: Material =
     Material
@@ -77,6 +84,7 @@ object SandboxAssets {
       AssetType.Text(AssetName(dudeName.toString + "-json"), AssetPath("assets/" + dudeName + ".json")),
       AssetType.Image(dudeName, AssetPath("assets/" + dudeName + ".png")),
       AssetType.Image(dots, AssetPath("assets/" + dots + ".png")),
+      AssetType.Image(pictureFrameName, AssetPath("assets/" + pictureFrameName + ".png")),
       AssetType.Image(captainName, AssetPath("assets/Captain Clown Nose.png")),
       AssetType.Tagged("atlas1")(
         AssetType.Image(junctionBoxAlbedo, AssetPath("assets/" + junctionBoxAlbedo + ".png")),
