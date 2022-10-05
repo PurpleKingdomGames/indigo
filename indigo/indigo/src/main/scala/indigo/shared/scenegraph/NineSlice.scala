@@ -33,16 +33,9 @@ final case class NineSlice[M <: Material](material: M) extends EntityNode[NineSl
       .withShaderId(StandardShaders.shaderIdToNineSliceShaderId(data.shaderId))
       .addUniformBlock(
         UniformBlock(
-          "IndigoClipData",
+          "IndigoNineSliceData",
           Batch(
-            Uniform("CLIP_SHEET_FRAME_COUNT")    -> float(1.0),
-            Uniform("CLIP_SHEET_FRAME_DURATION") -> float(1.0),
-            Uniform("CLIP_SHEET_WRAP_AT")        -> float(1.0),
-            Uniform("CLIP_SHEET_ARRANGEMENT")    -> float(1.0),
-            Uniform("CLIP_SHEET_START_OFFSET")   -> float(1.0),
-            Uniform("CLIP_PLAY_DIRECTION")       -> float(1.0),
-            Uniform("CLIP_PLAYMODE_START_TIME")  -> float(1.0),
-            Uniform("CLIP_PLAYMODE_TIMES")       -> float(1.0)
+            Uniform("SOME_VALUE") -> float(1.0)
           )
         )
       )
