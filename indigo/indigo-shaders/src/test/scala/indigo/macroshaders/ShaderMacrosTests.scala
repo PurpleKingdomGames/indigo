@@ -3,7 +3,6 @@ package indigo.macroshaders
 class ShaderMacrosTests extends munit.FunSuite {
 
   test("Convert Float => Float to GLSL") {
-
     val actual =
       ShaderMacros.toGLSL("addOne", (x: Float) => x + 1.0f)
 
@@ -15,6 +14,25 @@ class ShaderMacrosTests extends munit.FunSuite {
       |""".stripMargin
 
     assertEquals(actual, expected)
+  }
+
+  test("Make a fragment shader") {
+    import ShaderDSL.*
+
+    val f: Function1[Unit, rgba] = _ => rgba(1.0, 0.0, 0.0, 1.0)
+
+    val actual =
+      ShaderMacros.toFrag(() => rgba(1.0, 0.0, 0.0, 1.0))
+
+    val expected =
+      s"""
+      |void fragment() {
+      |  COLOR = vec4(1.0, 0.0, 0.0, 1.0);
+      |}
+      |""".stripMargin
+
+    assertEquals(actual, expected)
+
   }
 
 }
