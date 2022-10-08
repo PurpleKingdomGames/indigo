@@ -2,43 +2,19 @@ package indigo.macroshaders
 
 class ShaderMacrosTests extends munit.FunSuite {
 
-  test("glsl") {
+  test("Convert Float => Float to GLSL") {
 
-    val out = ShaderMacros.toGLSL((x: Float) => x + 1.0f)
+    val actual =
+      ShaderMacros.toGLSL("addOne", (x: Float) => x + 1.0f)
 
-    println("here")
-    println(out)
-    println("here...")
+    val expected =
+      s"""
+      |float addOne(float x) {
+      |  return x + 1.0;
+      |}
+      |""".stripMargin
 
-    assert(1 == 1)
+    assertEquals(actual, expected)
   }
-
-  // test("blah") {
-
-  //   val x = 0
-  //   val y = 1
-  //   val z = 2
-
-  //   println("--")
-
-  //   ShaderMacros.debugSingle(x)
-  //   ShaderMacros.debugSingle(x + y)
-
-  //   println("--")
-
-  //   ShaderMacros.debug(x)
-  //   ShaderMacros.debug(x, y)
-  //   ShaderMacros.debug(x + y)
-  //   ShaderMacros.debug(x, x + y)
-  //   ShaderMacros.debug("A", x, x + y)
-  //   ShaderMacros.debug("A", x, "B", y)
-  //   ShaderMacros.debug(x, y, z)
-
-  //   println("--")
-
-  //   ShaderMacros.debug((x: Int) => x * 10)
-
-  //   assert(1 == 1)
-  // }
 
 }
