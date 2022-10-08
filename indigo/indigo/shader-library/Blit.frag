@@ -57,5 +57,6 @@ void fragment(){
   }
 
   COLOR = CHANNEL_0;
+  COLOR = vec4(UV, 0.0, 1.0);
 }
 //</indigo-fragment>
