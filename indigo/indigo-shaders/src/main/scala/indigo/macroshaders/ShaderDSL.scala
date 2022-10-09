@@ -2,75 +2,96 @@ package indigo.macroshaders
 
 object ShaderDSL:
 
-  final class vec2(val x: Float, val y: Float)
-  object vec2:
-    def apply(x: Float, y: Float): vec2 =
-      new vec2(x, y)
+  import glsl.*
 
-    def apply(xy: Float): vec2 =
-      new vec2(xy, xy)
+  // Structure
+  final case class Uniform[T](name: String)
+  final case class UniformBlock(uniforms: List[Uniform[_]])
 
-  final class vec3(val x: Float, val y: Float, val z: Float)
-  object vec3:
-    def apply(x: Float, y: Float, z: Float): vec3 =
-      new vec3(x, y, z)
+  final case class ShaderEnv(uniformBlocks: List[UniformBlock])
 
-    def apply(xyz: Float): vec3 =
-      new vec3(xyz, xyz, xyz)
+  opaque type IndigoFrag = Function1[ShaderEnv, rgba]
+  object IndigoFrag:
+    inline def apply(f: ShaderEnv => rgba): IndigoFrag = f
 
-    def apply(x: Float, yz: vec2): vec3 =
-      new vec3(x, yz.x, yz.y)
+  // Operations
 
-    def apply(xy: vec2, z: Float): vec3 =
-      new vec3(xy.x, xy.y, z)
+  // Primitives
 
-  final class vec4(val x: Float, val y: Float, val z: Float, val w: Float)
-  object vec4:
-    def apply(x: Float, y: Float, z: Float, w: Float): vec4 =
-      new vec4(x, y, z, w)
+  extension (f: Float) def toGLSL: String = s"""float(${f.toString})"""
 
-    def apply(xyz: Float): vec4 =
-      new vec4(xyz, xyz, xyz, xyz)
+  sealed trait glsl
+  object glsl:
+    final case class vec2(x: Float, y: Float)
+    object vec2:
+      inline def apply(x: Float, y: Float): glsl.vec2 =
+        glsl.vec2(x, y)
+      inline def apply(xy: Float): vec2 =
+        glsl.vec2(xy, xy)
 
-    def apply(xy: vec2, zw: vec2): vec4 =
-      new vec4(xy.x, xy.y, zw.x, zw.y)
+      extension (v: vec2) def toGLSL: String = s"""vec2(${v.x}, ${v.y})"""
 
-    def apply(x: Float, y: Float, zw: vec2): vec4 =
-      new vec4(x, y, zw.x, zw.y)
+    final case class vec3(x: Float, y: Float, z: Float)
+    object vec3:
 
-    def apply(xy: vec2, z: Float, w: Float): vec4 =
-      new vec4(xy.x, xy.y, z, w)
+      inline def apply(xyz: Float): glsl.vec3 =
+        glsl.vec3(xyz, xyz, xyz)
 
-    def apply(x: Float, yzw: vec3): vec4 =
-      new vec4(x, yzw.x, yzw.y, yzw.z)
+      inline def apply(x: Float, yz: vec2): glsl.vec3 =
+        glsl.vec3(x, yz.x, yz.y)
 
-    def apply(xyz: vec3, w: Float): vec4 =
-      new vec4(xyz.x, xyz.y, xyz.z, w)
+      inline def apply(xy: vec2, z: Float): glsl.vec3 =
+        glsl.vec3(xy.x, xy.y, z)
 
-  final class rgba(val r: Float, val g: Float, val b: Float, val a: Float)
-  object rgba:
-    def apply(r: Float, g: Float, b: Float, a: Float): rgba =
-      new rgba(r, g, b, a)
+      extension (v: vec3) def toGLSL: String = s"""vec3(${v.x}, ${v.y}, ${v.z})"""
 
-    def apply(rgb: Float): rgba =
-      new rgba(rgb, rgb, rgb, rgb)
+    final case class vec4(x: Float, y: Float, z: Float, w: Float)
+    object vec4:
 
-    def apply(rg: vec2, ba: vec2): rgba =
-      new rgba(rg.x, rg.y, ba.x, ba.y)
+      inline def apply(xyz: Float): glsl.vec4 =
+        glsl.vec4(xyz, xyz, xyz, xyz)
 
-    def apply(r: Float, g: Float, ba: vec2): rgba =
-      new rgba(r, g, ba.x, ba.y)
+      inline def apply(xy: vec2, zw: vec2): glsl.vec4 =
+        glsl.vec4(xy.x, xy.y, zw.x, zw.y)
 
-    def apply(rg: vec2, b: Float, a: Float): rgba =
-      new rgba(rg.x, rg.y, b, a)
+      inline def apply(x: Float, y: Float, zw: vec2): glsl.vec4 =
+        glsl.vec4(x, y, zw.x, zw.y)
 
-    def apply(r: Float, gba: vec3): rgba =
-      new rgba(r, gba.x, gba.y, gba.z)
+      inline def apply(xy: vec2, z: Float, w: Float): glsl.vec4 =
+        glsl.vec4(xy.x, xy.y, z, w)
 
-    def apply(rgb: vec3, a: Float): rgba =
-      new rgba(rgb.x, rgb.y, rgb.z, a)
+      inline def apply(x: Float, yzw: vec3): glsl.vec4 =
+        glsl.vec4(x, yzw.x, yzw.y, yzw.z)
 
-    def apply(v4: vec4): rgba =
-      new rgba(v4.x, v4.y, v4.z, v4.y)
+      inline def apply(xyz: vec3, w: Float): glsl.vec4 =
+        glsl.vec4(xyz.x, xyz.y, xyz.z, w)
+
+      extension (v: vec4) def toGLSL: String = s"""vec4(${v.x}, ${v.y}, ${v.z}, ${v.w})"""
+
+    final case class rgba(r: Float, g: Float, b: Float, a: Float)
+    object rgba:
+
+      inline def apply(rgb: Float): glsl.rgba =
+        glsl.rgba(rgb, rgb, rgb, rgb)
+
+      inline def apply(rg: vec2, ba: vec2): glsl.rgba =
+        glsl.rgba(rg.x, rg.y, ba.x, ba.y)
+
+      inline def apply(r: Float, g: Float, ba: vec2): glsl.rgba =
+        glsl.rgba(r, g, ba.x, ba.y)
+
+      inline def apply(rg: vec2, b: Float, a: Float): glsl.rgba =
+        glsl.rgba(rg.x, rg.y, b, a)
+
+      inline def apply(r: Float, gba: vec3): glsl.rgba =
+        glsl.rgba(r, gba.x, gba.y, gba.z)
+
+      inline def apply(rgb: vec3, a: Float): glsl.rgba =
+        glsl.rgba(rgb.x, rgb.y, rgb.z, a)
+
+      inline def apply(v4: vec4): glsl.rgba =
+        glsl.rgba(v4.x, v4.y, v4.z, v4.y)
+
+      extension (c: rgba) def toGLSL: String = s"""vec4(${c.r}, ${c.g}, ${c.b}, ${c.a})"""
 
 end ShaderDSL

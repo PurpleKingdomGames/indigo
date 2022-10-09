@@ -1,8 +1,11 @@
 package indigo.macroshaders
 
+import scala.annotation.tailrec
+import scala.collection.mutable.ListBuffer
 import scala.quoted.*
 
-import ShaderDSL._
+import ShaderDSL.*
+import ShaderDSL.glsl
 
 object ShaderMacros:
 
@@ -12,10 +15,15 @@ object ShaderMacros:
       case (acc, _) => acc + "  "
     }
 
-  inline def toGLSL(name: String, inline expr: Function1[Float, Float]): String = ${ toGLSLImpl('name, 'expr) }
+  // ---
+  // Float => Float
+
+  inline def toGLSLString(name: String, inline expr: Function1[Float, Float]): String = ${
+    toGLSLStringImpl('name, 'expr)
+  }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  private def toGLSLImpl(name: Expr[String], expr: Expr[Function1[Float, Float]])(using Quotes): Expr[String] = {
+  private def toGLSLStringImpl(name: Expr[String], expr: Expr[Function1[Float, Float]])(using Quotes): Expr[String] = {
 
     import quotes.reflect.*
 
@@ -59,17 +67,100 @@ object ShaderMacros:
           |""".stripMargin
 
         case _ =>
-          val msg: String = Printer.TreeStructure.show(expr.asTerm)
+          val msg: String = Printer.TreeCode.show(expr.asTerm)
           throw new Exception("Failed to match this: " + msg)
       }
 
     Expr(fieldName)
   }
 
-  inline def toFrag(inline expr: Function0[rgba]): String = ${ toFragImpl('expr) }
+  // ---
+  // IndigoFrag
+
+  inline def toGLSL(inline expr: IndigoFrag): String = ${ toGLSLImpl('{ expr }) }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  private def toFragImpl(expr: Expr[Function0[rgba]])(using Quotes): Expr[String] = {
+  private def toGLSLImpl(expr: Expr[IndigoFrag])(using Quotes): Expr[String] = {
+
+    val traceLog: ListBuffer[String] = new ListBuffer()
+
+    def log(msg: String): Unit = traceLog += msg
+
+    def makeExceptionLog(typ: String, msg: String): String =
+      "Failed to match " + typ + ":\n" + msg + "\n\n Trace log:\n" + traceLog.zipWithIndex
+        .map(l => s"  ${l._2}) ${l._1}")
+        .mkString("\n") + "\n\n"
+
+    import quotes.reflect.*
+
+    def walkStatement(s: Statement): String =
+      s match
+        case DefDef("$anonfun", List(TermParamClause(List(ValDef("_$1", _, _)))), _, Some(term)) =>
+          // anonymous function
+          log(Printer.TreeStructure.show(s))
+          walkTerm(term)
+
+        case _ =>
+          val msg: String = Printer.TreeStructure.show(s)
+          throw new Exception(makeExceptionLog("statement", msg))
+
+    def walkTerm(t: Term): String =
+      t match
+        case Inlined(None, _, term) =>
+          log(Printer.TreeStructure.show(t))
+          walkTerm(term)
+
+        case Inlined(Some(Ident(_)), _, term) =>
+          log(Printer.TreeStructure.show(t))
+          walkTerm(term)
+
+        case Inlined(Some(Apply(Select(Ident("IndigoFrag"), "apply"), terms)), _, _) =>
+          log(Printer.TreeStructure.show(t))
+          s"""//<indigo-fragment>
+          |void fragment() {
+          |  ${terms.map(walkTerm).mkString("\n")}
+          |}
+          |//</indigo-fragment>
+          |""".stripMargin
+
+        case TypeApply(term, _) =>
+          log(Printer.TreeStructure.show(t))
+          walkTerm(term)
+
+        case Typed(term, _) =>
+          log(Printer.TreeStructure.show(t))
+          walkTerm(term)
+
+        case Select(term, _) =>
+          log(Printer.TreeStructure.show(t))
+          walkTerm(term)
+
+        case Block(statements, _) =>
+          log(Printer.TreeStructure.show(t))
+          statements.map(walkStatement).mkString("\n")
+
+        case Apply(Select(Ident("rgba"), "apply"), args) =>
+          log(Printer.TreeStructure.show(t))
+          s"""vec4(${args.map(walkTerm).mkString(", ")})"""
+
+        case Literal(FloatConstant(v)) =>
+          log(Printer.TreeStructure.show(t))
+          s"""${v.toString()}f"""
+
+        case _ =>
+          val msg: String = Printer.TreeStructure.show(t)
+          throw new Exception(makeExceptionLog("term", msg))
+
+    Expr(walkTerm(expr.asTerm))
+  }
+
+  // ---
+  // Unit => rgba
+
+  inline def toFrag(inline expr: Function0[glsl.rgba]): String = ${ toFragImpl('expr) }
+
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
+  private def toFragImpl(expr: Expr[Function0[glsl.rgba]])(using Quotes): Expr[String] = {
 
     import quotes.reflect.*
 
@@ -92,8 +183,8 @@ object ShaderMacros:
     val fieldName =
       expr.asTerm match {
         case Inlined(
-              None,
-              List(),
+              _,
+              _,
               Block(
                 List(
                   DefDef(

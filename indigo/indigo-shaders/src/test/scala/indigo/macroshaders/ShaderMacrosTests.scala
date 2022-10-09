@@ -1,10 +1,13 @@
 package indigo.macroshaders
 
+import ShaderDSL.*
+import ShaderDSL.glsl.*
+
 class ShaderMacrosTests extends munit.FunSuite {
 
   test("Convert Float => Float to GLSL") {
     val actual =
-      ShaderMacros.toGLSL("addOne", (x: Float) => x + 1.0f)
+      ShaderMacros.toGLSLString("addOne", (x: Float) => x + 1.0f)
 
     val expected =
       s"""
