@@ -4,7 +4,7 @@ import scala.annotation.tailrec
 import scala.collection.mutable.ListBuffer
 import scala.quoted.*
 
-import ShaderDSL.*
+import ShaderDSL.IndigoFrag
 import ShaderDSL.glsl
 
 object ShaderMacros:
@@ -14,6 +14,16 @@ object ShaderMacros:
       case (acc, 0) => acc
       case (acc, _) => acc + "  "
     }
+
+  // Debugging
+
+  inline def showASTExpr(inline expr: ShaderAST): String = 
+    ${ showASTExprImpl('expr) }
+
+  private def showASTExprImpl(expr: Expr[ShaderAST])(using Quotes): Expr[String] = {
+    import quotes.reflect.*
+    Expr(Printer.TreeCode.show(expr.asTerm))
+  }
 
   // ---
   // Float => Float
@@ -77,10 +87,12 @@ object ShaderMacros:
   // ---
   // IndigoFrag
 
-  inline def toGLSL(inline expr: IndigoFrag): String = ${ toGLSLImpl('{ expr }) }
+  inline def toAST(inline expr: IndigoFrag): ShaderAST = ${ toASTImpl('{ expr }) }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  private def toGLSLImpl(expr: Expr[IndigoFrag])(using Quotes): Expr[String] = {
+  private def toASTImpl(expr: Expr[IndigoFrag])(using Quotes): Expr[ShaderAST] = {
+
+    import quotes.reflect.*
 
     val traceLog: ListBuffer[String] = new ListBuffer()
 
@@ -91,9 +103,7 @@ object ShaderMacros:
         .map(l => s"  ${l._2}) ${l._1}")
         .mkString("\n") + "\n\n"
 
-    import quotes.reflect.*
-
-    def walkStatement(s: Statement): String =
+    def walkStatement(s: Statement): ShaderAST =
       s match
         case DefDef("$anonfun", List(TermParamClause(List(ValDef("_$1", _, _)))), _, Some(term)) =>
           // anonymous function
@@ -104,7 +114,7 @@ object ShaderMacros:
           val msg: String = Printer.TreeStructure.show(s)
           throw new Exception(makeExceptionLog("statement", msg))
 
-    def walkTerm(t: Term): String =
+    def walkTerm(t: Term): ShaderAST =
       t match
         case Inlined(None, _, term) =>
           log(Printer.TreeStructure.show(t))
@@ -116,12 +126,7 @@ object ShaderMacros:
 
         case Inlined(Some(Apply(Select(Ident("IndigoFrag"), "apply"), terms)), _, _) =>
           log(Printer.TreeStructure.show(t))
-          s"""//<indigo-fragment>
-          |void fragment() {
-          |  ${terms.map(walkTerm).mkString("\n")}
-          |}
-          |//</indigo-fragment>
-          |""".stripMargin
+          ShaderAST.FragmentProgram(terms.map(walkTerm))
 
         case TypeApply(term, _) =>
           log(Printer.TreeStructure.show(t))
@@ -137,15 +142,26 @@ object ShaderMacros:
 
         case Block(statements, _) =>
           log(Printer.TreeStructure.show(t))
-          statements.map(walkStatement).mkString("\n")
+          ShaderAST.Block(statements.map(walkStatement))
 
         case Apply(Select(Ident("rgba"), "apply"), args) =>
-          log(Printer.TreeStructure.show(t))
-          s"""vec4(${args.map(walkTerm).mkString(", ")})"""
+          args match
+            case List(
+                  Literal(FloatConstant(r)),
+                  Literal(FloatConstant(g)),
+                  Literal(FloatConstant(b)),
+                  Literal(FloatConstant(a))
+                ) =>
+              log(Printer.TreeStructure.show(t))
+              ShaderAST.DataTypes.rgba(r, g, b, a)
+
+            case _ =>
+              val msg: String = args.map(Printer.TreeStructure.show).mkString(", ")
+              throw new Exception(makeExceptionLog("'rgba args'", msg))
 
         case Literal(FloatConstant(v)) =>
           log(Printer.TreeStructure.show(t))
-          s"""${v.toString()}f"""
+          ShaderAST.DataTypes.float(v)
 
         case _ =>
           val msg: String = Printer.TreeStructure.show(t)
