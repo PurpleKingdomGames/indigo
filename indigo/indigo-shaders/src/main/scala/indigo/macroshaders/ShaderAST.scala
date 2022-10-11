@@ -6,17 +6,22 @@ sealed trait ShaderAST
 object ShaderAST:
 
   given ToExpr[ShaderAST] with {
+    @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
     def apply(x: ShaderAST)(using Quotes): Expr[ShaderAST] =
-      '{ ShaderASTSample.sample } // TODO: How do I make a real instance?
-  }
+      x match
+        case f: FragmentProgram =>
+          Expr(f)
 
-  given ToExpr[Boolean] with {
-    def apply(x: Boolean)(using Quotes) =
-      if x then '{ true }
-      else '{ false }
+        case v =>
+          throw new Exception("Fragment programs must be a 'FragmentProgram', got: " + v)
   }
 
   final case class FragmentProgram(statements: List[ShaderAST]) extends ShaderAST
+  object FragmentProgram:
+    given ToExpr[FragmentProgram] with {
+      def apply(x: FragmentProgram)(using Quotes): Expr[FragmentProgram] =
+        '{ FragmentProgram(${ Expr(x.statements) }) }
+    }
 
   final case class Block(statements: List[ShaderAST]) extends ShaderAST
 
