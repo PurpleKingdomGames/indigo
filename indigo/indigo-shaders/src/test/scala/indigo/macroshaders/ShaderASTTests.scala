@@ -29,7 +29,7 @@ class ShaderASTTests extends munit.FunSuite {
     val expected: String =
       s"""//<indigo-fragment>
       |void fragment() {
-      |  COLOR = rgba(1.0f, 1.0f, 0.0f, 1.0f);
+      |  COLOR = rgba(1.0, 1.0, 0.0, 1.0);
       |}
       |//</indigo-fragment>
       |""".stripMargin

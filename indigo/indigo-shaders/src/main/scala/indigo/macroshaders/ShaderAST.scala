@@ -75,7 +75,7 @@ object ShaderAST:
     def render: String =
       def rf(f: Float): String =
         val s = f.toString
-        if s.contains(".") then s + "f" else s + ".0f"
+        if s.contains(".") then s else s + ".0"
 
       ast match
         case FragmentProgram(statements) =>
