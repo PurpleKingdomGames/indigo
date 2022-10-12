@@ -17,7 +17,7 @@ object ShaderMacros:
 
   // Debugging
 
-  inline def showASTExpr(inline expr: ShaderAST): String = 
+  inline def showASTExpr(inline expr: ShaderAST): String =
     ${ showASTExprImpl('expr) }
 
   private def showASTExprImpl(expr: Expr[ShaderAST])(using Quotes): Expr[String] = {
@@ -105,7 +105,7 @@ object ShaderMacros:
 
     def walkStatement(s: Statement): ShaderAST =
       s match
-        case DefDef("$anonfun", List(TermParamClause(List(ValDef("_$1", _, _)))), _, Some(term)) =>
+        case DefDef("$anonfun", List(TermParamClause(List(ValDef(_, _, _)))), _, Some(term)) =>
           // anonymous function
           log(Printer.TreeStructure.show(s))
           walkTerm(term)
@@ -119,6 +119,12 @@ object ShaderMacros:
         case Inlined(None, _, term) =>
           log(Printer.TreeStructure.show(t))
           walkTerm(term)
+
+        case Ident(name) =>
+          val msg: String = Printer.TreeStructure.show(t)
+          throw new Exception(
+            "Shader programs must be self contained, inlining might help.\n" + makeExceptionLog("term", msg)
+          )
 
         case Inlined(Some(Ident(_)), _, term) =>
           log(Printer.TreeStructure.show(t))
