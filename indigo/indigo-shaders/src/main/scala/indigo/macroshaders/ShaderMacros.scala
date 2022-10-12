@@ -4,8 +4,7 @@ import scala.annotation.tailrec
 import scala.collection.mutable.ListBuffer
 import scala.quoted.*
 
-import ShaderDSL.IndigoFrag
-import ShaderDSL.glsl
+import ShaderDSL.*
 
 object ShaderMacros:
 
@@ -179,10 +178,10 @@ object ShaderMacros:
   // ---
   // Unit => rgba
 
-  inline def toFrag(inline expr: Function0[glsl.rgba]): String = ${ toFragImpl('expr) }
+  inline def toFrag(inline expr: Function0[rgba]): String = ${ toFragImpl('expr) }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  private def toFragImpl(expr: Expr[Function0[glsl.rgba]])(using Quotes): Expr[String] = {
+  private def toFragImpl(expr: Expr[Function0[rgba]])(using Quotes): Expr[String] = {
 
     import quotes.reflect.*
 

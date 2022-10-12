@@ -1,7 +1,6 @@
 package indigo.macroshaders
 
 import ShaderDSL.*
-import ShaderDSL.glsl.*
 
 class ShaderMacrosTests extends munit.FunSuite {
 
