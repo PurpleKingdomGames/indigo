@@ -16,6 +16,26 @@ object ShaderDSL:
       inline def toGLSL: String =
         ShaderMacros.toAST(frag).render
 
+  // TODO: This is the same as Reader. Make Reader a type class and borrow the implementation?
+  opaque type Fragment[Env, A] = Env => A
+  object Fragment:
+    def apply[Env, A](f: Env => A): Fragment[Env, A] = f
+    def pure[Env, A](value: A): Fragment[Env, A]     = _ => value
+
+    def join[Env, A](frag: Fragment[Env, Fragment[Env, A]]): Fragment[Env, A] =
+      (env: Env) => frag(env)(env)
+
+    extension [Env, A](frag: Fragment[Env, A])
+      def map[B](f: A => B): Fragment[Env, B]                            = (e: Env) => f(run(e))
+      def ap[B](f: Fragment[Env, A => B]): Fragment[Env, B]              = (e: Env) => f(e)(run(e))
+      def flatten[B](using ev: A <:< Fragment[Env, B]): Fragment[Env, B] = join((env: Env) => ev(run(env)))
+      def flatMap[B](f: A => Fragment[Env, B]): Fragment[Env, B]         = join(map(f))
+      def ask: Fragment[Env, Env]                                        = identity
+      def asks(f: Env => A): Fragment[Env, A]                            = f
+      def run(env: Env): A                                               = frag(env)
+
+  val a: List[Int] = List(List(1)).flatten
+
   // Operations
 
   // Primitives
