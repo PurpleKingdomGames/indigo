@@ -1,6 +1,6 @@
 package indigo.macroshaders
 
-object ShaderDSL:
+object ShaderDSL extends ShaderDSLTypes:
 
   // Structure
   final case class Uniform[T](name: String)
@@ -37,7 +37,6 @@ object ShaderDSL:
   final case class vec3(x: Float, y: Float, z: Float):
     def *(f: Float): vec3 = vec3(x * f, y * f, z * f)
   object vec3:
-
     inline def apply(xyz: Float): vec3 =
       vec3(xyz, xyz, xyz)
 
@@ -49,7 +48,6 @@ object ShaderDSL:
 
   final case class vec4(x: Float, y: Float, z: Float, w: Float)
   object vec4:
-
     inline def apply(xyz: Float): vec4 =
       vec4(xyz, xyz, xyz, xyz)
 
@@ -71,7 +69,6 @@ object ShaderDSL:
   final case class rgba(r: Float, g: Float, b: Float, a: Float):
     def rgb: vec3 = vec3(r, g, b)
   object rgba:
-
     inline def apply(rgb: Float): rgba =
       rgba(rgb, rgb, rgb, rgb)
 

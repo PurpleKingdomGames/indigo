@@ -160,7 +160,8 @@ lazy val shaders =
     .settings(
       neverPublish,
       name := "indigo-shaders",
-      commonSettings
+      commonSettings,
+      Compile / sourceGenerators += shaderDSLGen.taskValue,
     )
 
 // Circe
@@ -247,4 +248,8 @@ def shadersCodeGen(dir: String, makeFiles: Set[File] => File => Seq[File]) = Def
     makeFiles(files)((Compile / sourceManaged).value).toSet
   }
   cachedFun(IO.listFiles(baseDirectory.value / dir).toSet).toSeq
+}
+
+def shaderDSLGen = Def.task {
+  ShaderDSLGen.makeShaderDSL((Compile / sourceManaged).value)
 }
