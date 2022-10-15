@@ -21,6 +21,7 @@ object ShaderDSL:
   object Fragment:
     def apply[Env, A](f: Env => A): Fragment[Env, A] = f
     def pure[Env, A](value: A): Fragment[Env, A]     = _ => value
+    def ask[Env]: Fragment[Env, Env]                 = identity
 
     def join[Env, A](frag: Fragment[Env, Fragment[Env, A]]): Fragment[Env, A] =
       (env: Env) => frag(env)(env)
@@ -33,19 +34,72 @@ object ShaderDSL:
       def ask: Fragment[Env, Env]                                        = identity
       def asks(f: Env => A): Fragment[Env, A]                            = f
       def run(env: Env): A                                               = frag(env)
+      def |*|[B](other: Fragment[Env, B]): Fragment[Env, (A, B)]         = combine(other)
+      def combine[B](other: Fragment[Env, B]): Fragment[Env, (A, B)]     = (e: Env) => (frag.run(e), other.run(e))
+      def merge[B, C](other: Fragment[Env, B])(f: ((A, B)) => C): Fragment[Env, C] = combine(other).map(f)
+      def |>[B](ff: FragmentFunction[Env, A, B]): Fragment[Env, B]                 = pipe(ff)
+      def pipe[B](ff: FragmentFunction[Env, A, B]): Fragment[Env, B]               = ff.run(frag)
+
+  opaque type FragmentFunction[Env, A, B] = Fragment[Env, A] => Fragment[Env, B]
+  object FragmentFunction:
+
+    import Fragment.*
+
+    inline def apply[Env, A, B](f: A => B): FragmentFunction[Env, A, B] =
+      lift(f)
+
+    extension [Env, A, B](sf: FragmentFunction[Env, A, B])
+      def run: Fragment[Env, A] => Fragment[Env, B] = sf
+
+      def >>>[C](other: FragmentFunction[Env, B, C]): FragmentFunction[Env, A, C] =
+        andThen(other)
+
+      def andThen[C](other: FragmentFunction[Env, B, C]): FragmentFunction[Env, A, C] =
+        sf andThen other
+
+      def &&&[C](other: FragmentFunction[Env, A, C]): FragmentFunction[Env, A, (B, C)] =
+        and(other)
+
+      def and[C](other: FragmentFunction[Env, A, C]): FragmentFunction[Env, A, (B, C)] =
+        FragmentFunction.parallel(sf, other)
+
+    /** Equvilent to `pure` but for SignalFunctions
+      */
+    def arr[Env, A, B](f: A => B): FragmentFunction[Env, A, B] =
+      lift[Env, A, B](f)
+
+    def lift[Env, A, B](f: A => B): FragmentFunction[Env, A, B] =
+      (fa: Fragment[Env, A]) => fa.map(f)
+
+    def flatLift[Env, A, B](f: A => Fragment[Env, B]): FragmentFunction[Env, A, B] =
+      (fa: Fragment[Env, A]) => fa.flatMap(f)
+
+    def parallel[Env, A, B, C](
+        fa: FragmentFunction[Env, A, B],
+        fb: FragmentFunction[Env, A, C]
+    ): FragmentFunction[Env, A, (B, C)] =
+      (s: Fragment[Env, A]) => fa.run(s) |*| fb.run(s)
 
   // Operations
 
+  inline def length(genType: vec2): Float =
+    Math.sqrt(Math.pow(genType.x, 2.0f) + Math.pow(genType.y, 2.0f)).toFloat
+
+  inline def step(edge: Float, x: Float): Float =
+    if x < edge then 0.0f else 1.0f
+
   // Primitives
 
-  final case class vec2(x: Float, y: Float)
+  // TODO: Generate primitives with swizzle ops and all operator permutations
+
+  final case class vec2(x: Float, y: Float):
+    def -(f: Float): vec2 = vec2(x - f, y - f)
   object vec2:
-    inline def apply(x: Float, y: Float): vec2 =
-      vec2(x, y)
     inline def apply(xy: Float): vec2 =
       vec2(xy, xy)
 
-  final case class vec3(x: Float, y: Float, z: Float)
+  final case class vec3(x: Float, y: Float, z: Float):
+    def *(f: Float): vec3 = vec3(x * f, y * f, z * f)
   object vec3:
 
     inline def apply(xyz: Float): vec3 =
@@ -78,7 +132,8 @@ object ShaderDSL:
     inline def apply(xyz: vec3, w: Float): vec4 =
       vec4(xyz.x, xyz.y, xyz.z, w)
 
-  final case class rgba(r: Float, g: Float, b: Float, a: Float)
+  final case class rgba(r: Float, g: Float, b: Float, a: Float):
+    def rgb: vec3 = vec3(r, g, b)
   object rgba:
 
     inline def apply(rgb: Float): rgba =
