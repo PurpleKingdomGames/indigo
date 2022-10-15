@@ -29,7 +29,7 @@ inline def calculateColour(uv: vec2, sdf: Float): Program[rgba] =
 val frag: ShaderContext[FragEnv, Program[rgba]] =
   ShaderContext { env =>
     for {
-      sdf    <- circleSdf(env.UV - 0.5, 0.5)
+      sdf    <- circleSdf(env.UV - 0.5f, 0.5f)
       colour <- calculateColour(env.UV, sdf)
     } yield colour
   }
