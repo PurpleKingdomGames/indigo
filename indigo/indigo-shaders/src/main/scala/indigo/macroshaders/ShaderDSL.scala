@@ -38,17 +38,12 @@ object ShaderDSL:
 
   // Primitives
 
-  extension (f: Float) def toGLSL: String = s"""float(${f.toString})"""
-
-  sealed trait glsl
   final case class vec2(x: Float, y: Float)
   object vec2:
     inline def apply(x: Float, y: Float): vec2 =
       vec2(x, y)
     inline def apply(xy: Float): vec2 =
       vec2(xy, xy)
-
-    extension (v: vec2) def toGLSL: String = s"""vec2(${v.x}, ${v.y})"""
 
   final case class vec3(x: Float, y: Float, z: Float)
   object vec3:
@@ -61,8 +56,6 @@ object ShaderDSL:
 
     inline def apply(xy: vec2, z: Float): vec3 =
       vec3(xy.x, xy.y, z)
-
-    extension (v: vec3) def toGLSL: String = s"""vec3(${v.x}, ${v.y}, ${v.z})"""
 
   final case class vec4(x: Float, y: Float, z: Float, w: Float)
   object vec4:
@@ -84,8 +77,6 @@ object ShaderDSL:
 
     inline def apply(xyz: vec3, w: Float): vec4 =
       vec4(xyz.x, xyz.y, xyz.z, w)
-
-    extension (v: vec4) def toGLSL: String = s"""vec4(${v.x}, ${v.y}, ${v.z}, ${v.w})"""
 
   final case class rgba(r: Float, g: Float, b: Float, a: Float)
   object rgba:
@@ -110,7 +101,5 @@ object ShaderDSL:
 
     inline def apply(v4: vec4): rgba =
       rgba(v4.x, v4.y, v4.z, v4.y)
-
-    extension (c: rgba) def toGLSL: String = s"""vec4(${c.r}, ${c.g}, ${c.b}, ${c.a})"""
 
 end ShaderDSL
