@@ -34,8 +34,6 @@ object ShaderDSL:
       def asks(f: Env => A): Fragment[Env, A]                            = f
       def run(env: Env): A                                               = frag(env)
 
-  val a: List[Int] = List(List(1)).flatten
-
   // Operations
 
   // Primitives
