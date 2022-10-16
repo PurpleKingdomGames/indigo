@@ -86,10 +86,11 @@ object ShaderMacros:
   // ---
   // IndigoFrag
 
-  inline def toAST(inline expr: IndigoFrag): ShaderAST = ${ toASTImpl('{ expr }) }
+  // inline def toAST(inline expr: IndigoFrag): ShaderAST = ${ toASTImpl('{ expr }) }
+  inline def toAST[Env, A](inline expr: ShaderContext[Env, A]): ShaderAST = ${ toASTImpl('{ expr }) }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  private def toASTImpl(expr: Expr[IndigoFrag])(using Quotes): Expr[ShaderAST] = {
+  private def toASTImpl[Env, A](expr: Expr[ShaderContext[Env, A]])(using Quotes): Expr[ShaderAST] = {
 
     import quotes.reflect.*
 
@@ -98,40 +99,99 @@ object ShaderMacros:
     def log(msg: String): Unit = traceLog += msg
 
     def makeExceptionLog(typ: String, msg: String): String =
-      "Failed to match " + typ + ":\n" + msg + "\n\n Trace log:\n" + traceLog.zipWithIndex
+      val toLog = traceLog.zipWithIndex
+      "Failed to match " + typ + ":\n" + msg + "\n\n Trace log (last 3):\n" + toLog.dropInPlace(Math.max(0, toLog.length - 3))
         .map(l => s"  ${l._2}) ${l._1}")
         .mkString("\n") + "\n\n"
 
     def walkStatement(s: Statement): ShaderAST =
       s match
-        case DefDef("$anonfun", List(TermParamClause(List(ValDef(_, _, _)))), _, Some(term)) =>
+        case DefDef("$anonfun", List(TermParamClause(List(ValDef(argName, _, _)))), _, Some(term)) =>
           // anonymous function
           log(Printer.TreeStructure.show(s))
-          walkTerm(term)
+          ShaderAST.Function(argName, walkTerm(term))
 
         case _ =>
           val msg: String = Printer.TreeStructure.show(s)
           throw new Exception(makeExceptionLog("statement", msg))
 
+    def walkTree(t: Tree): ShaderAST =
+      t match
+        case Apply(TypeApply(Select(Ident(id), "apply"), _), List(x)) =>
+          log(Printer.TreeStructure.show(t))
+          ShaderAST.Function(id, walkTerm(x))
+
+        case Apply(Select(Ident(id), "apply"), List(x))=>
+          log(Printer.TreeStructure.show(t))
+          ShaderAST.Function(id, walkTerm(x))
+
+        case Apply(Select(Ident("rgba"), "apply"), args) =>
+          log(Printer.TreeStructure.show(t))
+          ShaderAST.DataTypes.vec4(args.map(p => walkTerm(p)))
+
+        case _ =>
+          val msg: String = Printer.TreeStructure.show(t)
+          throw new Exception(makeExceptionLog("tree", msg))
+
     def walkTerm(t: Term): ShaderAST =
       t match
+
+        // Specific hooks we care about
+
+        case Apply(TypeApply(Select(Ident(id), "apply"), _), List(x)) =>
+          log(Printer.TreeStructure.show(t))
+          ShaderAST.Function(id, walkTerm(x))
+
+        case Apply(TypeApply(Select(Ident(namespace), name), _), List(x)) =>
+          log(Printer.TreeStructure.show(t))
+          ShaderAST.Function(s"$namespace.$name", walkTerm(x))
+
+        // Data type primitives
+
+        // case Apply(Select(Ident("rgba"), "apply"), args) =>
+        //   args match
+        //     case List(
+        //           Literal(FloatConstant(r)),
+        //           Literal(FloatConstant(g)),
+        //           Literal(FloatConstant(b)),
+        //           Literal(FloatConstant(a))
+        //         ) =>
+        //       log(Printer.TreeStructure.show(t))
+        //       ShaderAST.DataTypes.rgba(r, g, b, a)
+
+        //     case _ =>
+        //       val msg: String = args.map(Printer.TreeStructure.show).mkString(", ")
+        //       throw new Exception(makeExceptionLog("'rgba args'", msg))
+
+        case Literal(FloatConstant(v)) =>
+          log(Printer.TreeStructure.show(t))
+          ShaderAST.DataTypes.float(v)
+
+        case Select(Ident(namespace), name) =>
+          log(Printer.TreeStructure.show(t))
+          ShaderAST.DataTypes.ident(s"$namespace.$name")
+
+        case Ident(name) =>
+          log(Printer.TreeStructure.show(t))
+          ShaderAST.DataTypes.ident(name)
+
+        // Generally walking the tree
+
+        // case Apply(TypeApply(Select(Ident(id), "apply"), _), List(Block(statements, _))) =>
+        //   log(Printer.TreeStructure.show(t))
+        //   ShaderAST.Block(id, statements.map(walkStatement))
+
         case Inlined(None, _, term) =>
           log(Printer.TreeStructure.show(t))
           walkTerm(term)
-
-        case Ident(name) =>
-          val msg: String = Printer.TreeStructure.show(t)
-          throw new Exception(
-            "Shader programs must be self contained, inlining might help.\n" + makeExceptionLog("term", msg)
-          )
 
         case Inlined(Some(Ident(_)), _, term) =>
           log(Printer.TreeStructure.show(t))
           walkTerm(term)
 
-        case Inlined(Some(Apply(Select(Ident("IndigoFrag"), "apply"), terms)), _, _) =>
+        case Inlined(Some(tree: Tree), _, _) =>
           log(Printer.TreeStructure.show(t))
-          ShaderAST.FragmentProgram(terms.map(walkTerm))
+          walkTree(tree)
 
         case TypeApply(term, _) =>
           log(Printer.TreeStructure.show(t))
@@ -149,24 +209,7 @@ object ShaderMacros:
           log(Printer.TreeStructure.show(t))
           ShaderAST.Block(statements.map(walkStatement))
 
-        case Apply(Select(Ident("rgba"), "apply"), args) =>
-          args match
-            case List(
-                  Literal(FloatConstant(r)),
-                  Literal(FloatConstant(g)),
-                  Literal(FloatConstant(b)),
-                  Literal(FloatConstant(a))
-                ) =>
-              log(Printer.TreeStructure.show(t))
-              ShaderAST.DataTypes.rgba(r, g, b, a)
-
-            case _ =>
-              val msg: String = args.map(Printer.TreeStructure.show).mkString(", ")
-              throw new Exception(makeExceptionLog("'rgba args'", msg))
-
-        case Literal(FloatConstant(v)) =>
-          log(Printer.TreeStructure.show(t))
-          ShaderAST.DataTypes.float(v)
+        // Catch all for values we don't understand
 
         case _ =>
           val msg: String = Printer.TreeStructure.show(t)

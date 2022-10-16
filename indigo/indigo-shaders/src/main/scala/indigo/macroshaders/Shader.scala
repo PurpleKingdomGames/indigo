@@ -4,6 +4,6 @@ import ShaderDSL.*
 
 final case class Shader[VertEnv, FragEnv](
     id: ShaderId,
-    vertex: ShaderContext[VertEnv, Program[vec4]],
-    fragment: ShaderContext[FragEnv, Program[rgba]]
+    vertex: ShaderContext[VertEnv, vec4],
+    fragment: ShaderContext[FragEnv, rgba]
 )

@@ -4,15 +4,16 @@ import indigo.macroshaders.Shader
 import indigo.macroshaders.Program
 import indigo.macroshaders.Pipeline
 import indigo.macroshaders.ShaderId
-
-IndigoFrag(_ => rgba(1.0f, 1.0f, 0.0f, 1.0f)).toGLSL
+import indigo.macroshaders.ShaderMacros
 
 trait VertEnv
 trait FragEnv:
   def UV: vec2
 
-val vertex: ShaderContext[VertEnv, Program[vec4]] =
+val vertex: ShaderContext[VertEnv, vec4] =
   ShaderContext(_ => Program(vec4(1.0)))
+
+// vertex.toGLSL
 
 //---
 
@@ -26,7 +27,7 @@ inline def calculateColour(uv: vec2, sdf: Float): Program[rgba] =
     rgba(fill.rgb * fillAmount, fillAmount)
   }
 
-val frag: ShaderContext[FragEnv, Program[rgba]] =
+val frag: ShaderContext[FragEnv, rgba] =
   ShaderContext { env =>
     for {
       sdf    <- circleSdf(env.UV - 0.5f, 0.5f)
@@ -51,7 +52,7 @@ inline def toOutColor(sdf: Float): Pipeline[vec2, rgba] =
     rgba(fill.rgb * fillAmount, fillAmount)
   }
 
-val altfrag: ShaderContext[FragEnv, Program[rgba]] =
+val altfrag: ShaderContext[FragEnv, rgba] =
   ShaderContext { env =>
     for {
       sdf    <- Program(env.UV) |> (shiftUV >>> toSdf(0.5))
@@ -60,3 +61,6 @@ val altfrag: ShaderContext[FragEnv, Program[rgba]] =
   }
 
 val shaderV2 = Shader(ShaderId("circle"), vertex, altfrag)
+
+// val scratch =
+//   Apply(Select(Ident("rgba"), "apply"), List(Select(Ident("env"), "UV"), Literal(FloatConstant(0.0f)), Literal(FloatConstant(1.0f))))
