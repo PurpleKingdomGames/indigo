@@ -13,14 +13,14 @@ object ShaderDSLGen {
     |
     |import indigo.macroshaders.ShaderDSL.*
     |
-    |trait ${name}:
+    |trait ${name} extends ShaderDSLTypes:
     |$contents
     |""".stripMargin
 
   def makeShaderDSL(sourceManagedDir: File): Seq[File] = {
     println("Generating Indigo Shader DSL...")
 
-    val name = "ShaderDSLTypes"
+    val name = "ShaderDSLTypeExtensions"
 
     val file: File =
       sourceManagedDir / "indigo" / "macroshaders" / (name + ".scala")
