@@ -156,13 +156,13 @@ object ShaderMacros:
 
         // Specific hooks we care about
 
-        case Apply(TypeApply(Select(Ident(id), "apply"), _), List(x)) =>
-          log(Printer.TreeStructure.show(t))
-          ShaderAST.Function(id, walkTerm(x))
+        case Apply(TypeApply(Select(Ident("ShaderContext"), "apply"), _), List(x)) =>
+          // println(">>> ShaderContext")
+          // println(Printer.TreeStructure.show(x))
+          // println("<<<")
 
-        case Apply(TypeApply(Select(Ident(namespace), name), _), List(x)) =>
           log(Printer.TreeStructure.show(t))
-          ShaderAST.Function(s"$namespace.$name", walkTerm(x))
+          ShaderAST.Function("ShaderContext", walkTerm(x))
 
         // Data type primitives
 
@@ -181,19 +181,27 @@ object ShaderMacros:
         //       val msg: String = args.map(Printer.TreeStructure.show).mkString(", ")
         //       throw new Exception(makeExceptionLog("'rgba args'", msg))
 
-        case Literal(FloatConstant(v)) =>
+        case Apply(Select(Ident(id), "apply"), List(x)) =>
           log(Printer.TreeStructure.show(t))
-          ShaderAST.DataTypes.float(v)
+          ShaderAST.Function(id, walkTerm(x))
+
+        case Apply(Select(Ident("rgba"), "apply"), args) =>
+          log(Printer.TreeStructure.show(t))
+          ShaderAST.DataTypes.vec4(args.map(p => walkTerm(p)))
 
         case Select(Ident(namespace), name) =>
           log(Printer.TreeStructure.show(t))
           ShaderAST.DataTypes.ident(s"$namespace.$name")
 
-        case Ident(name) =>
-          log(Printer.TreeStructure.show(t))
-          ShaderAST.DataTypes.ident(name)
-
         // Generally walking the tree
+
+        case Apply(TypeApply(Select(Ident(id), "apply"), _), List(x)) =>
+          log(Printer.TreeStructure.show(t))
+          ShaderAST.Function(id, walkTerm(x))
+
+        case Apply(TypeApply(Select(Ident(namespace), name), _), List(x)) =>
+          log(Printer.TreeStructure.show(t))
+          ShaderAST.Function(s"$namespace.$name", walkTerm(x))
 
         // case Apply(TypeApply(Select(Ident(id), "apply"), _), List(Block(statements, _))) =>
         //   log(Printer.TreeStructure.show(t))
@@ -219,13 +227,79 @@ object ShaderMacros:
           log(Printer.TreeStructure.show(t))
           walkTerm(term)
 
-        case Select(term, _) =>
+        case Block(Nil, term) =>
           log(Printer.TreeStructure.show(t))
           walkTerm(term)
 
         case Block(statements, _) =>
           log(Printer.TreeStructure.show(t))
           ShaderAST.Block(statements.map(walkStatement))
+
+        // Literals
+
+        case Literal(FloatConstant(f)) =>
+          log(Printer.TreeStructure.show(t))
+          ShaderAST.DataTypes.float(f)
+
+        case Literal(constant) =>
+          throw new Exception("Shaders do not support constant type: " + constant.show)
+
+        // Refs
+
+        case Ident(name) =>
+          log(Printer.TreeStructure.show(t))
+          ShaderAST.DataTypes.ident(name)
+
+        case Wildcard() =>
+          throw new Exception("Shaders do not support wildcards.")
+
+        case Select(term, _) => // term, name
+          log(Printer.TreeStructure.show(t))
+          walkTerm(term)
+
+        // Unsupported (yet?)
+
+        case This(_) =>
+          throw new Exception("Shaders do not support 'this'.")
+
+        case New(_) =>
+          throw new Exception("Shaders do not support 'new'.")
+
+        case NamedArg(_, _) =>
+          throw new Exception("Shaders do not support named args.")
+
+        case Super(_, _) =>
+          throw new Exception("Shaders do not support super.")
+
+        case Assign(_, _) =>
+          throw new Exception("Shaders do not support assign.")
+
+        case Closure(_, _) =>
+          throw new Exception("Shaders do not support closures.")
+
+        case If(_, _, _) =>
+          throw new Exception("Shaders do not support if statements.")
+
+        case Match(_, _) =>
+          throw new Exception("Shaders do not support pattern matching.")
+
+        case SummonFrom(_) =>
+          throw new Exception("Shaders do not support summoning.")
+
+        case Try(_, _, _) =>
+          throw new Exception("Shaders do not support try blocks.")
+
+        case Return(_, _) =>
+          throw new Exception("Shaders do not support return statements.")
+
+        case Repeated(_, _) =>
+          throw new Exception("Shaders do not support repeated arguments.")
+
+        case SelectOuter(_, _, _) =>
+          throw new Exception("Shaders do not support outer selectors.")
+
+        case While(_, _) =>
+          throw new Exception("Shaders do not support while loops.")
 
         // Catch all for values we don't understand
 
@@ -236,59 +310,59 @@ object ShaderMacros:
     Expr(walkTerm(expr.asTerm))
   }
 
-  // ---
-  // Unit => rgba
+// ---
+// Unit => rgba
 
-  // inline def toFrag(inline expr: Function0[rgba]): String = ${ toFragImpl('expr) }
+// inline def toFrag(inline expr: Function0[rgba]): String = ${ toFragImpl('expr) }
 
-  // @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  // private def toFragImpl(expr: Expr[Function0[rgba]])(using Quotes): Expr[String] = {
+// @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
+// private def toFragImpl(expr: Expr[Function0[rgba]])(using Quotes): Expr[String] = {
 
-  //   import quotes.reflect.*
+//   import quotes.reflect.*
 
-  //   def printTerm(indentAmount: Int): Term => String =
-  //     case Apply(
-  //           Select(Ident("rgba"), "apply"),
-  //           List(
-  //             Literal(FloatConstant(r)),
-  //             Literal(FloatConstant(g)),
-  //             Literal(FloatConstant(b)),
-  //             Literal(FloatConstant(a))
-  //           )
-  //         ) =>
-  //       s"${indent(indentAmount)}COLOR = vec4($r, $g, $b, $a);"
+//   def printTerm(indentAmount: Int): Term => String =
+//     case Apply(
+//           Select(Ident("rgba"), "apply"),
+//           List(
+//             Literal(FloatConstant(r)),
+//             Literal(FloatConstant(g)),
+//             Literal(FloatConstant(b)),
+//             Literal(FloatConstant(a))
+//           )
+//         ) =>
+//       s"${indent(indentAmount)}COLOR = vec4($r, $g, $b, $a);"
 
-  //     case term =>
-  //       val msg: String = Printer.TreeStructure.show(term)
-  //       throw new Exception("Failed to match term of this: " + msg)
+//     case term =>
+//       val msg: String = Printer.TreeStructure.show(term)
+//       throw new Exception("Failed to match term of this: " + msg)
 
-  //   val fieldName =
-  //     expr.asTerm match {
-  //       case Inlined(
-  //             _,
-  //             _,
-  //             Block(
-  //               List(
-  //                 DefDef(
-  //                   _,
-  //                   _,
-  //                   _,
-  //                   Some(functionTerm)
-  //                 )
-  //               ),
-  //               Closure(Ident(_), None)
-  //             )
-  //           ) =>
-  //         s"""
-  //         |void fragment() {
-  //         |${printTerm(1)(functionTerm)}
-  //         |}
-  //         |""".stripMargin
+//   val fieldName =
+//     expr.asTerm match {
+//       case Inlined(
+//             _,
+//             _,
+//             Block(
+//               List(
+//                 DefDef(
+//                   _,
+//                   _,
+//                   _,
+//                   Some(functionTerm)
+//                 )
+//               ),
+//               Closure(Ident(_), None)
+//             )
+//           ) =>
+//         s"""
+//         |void fragment() {
+//         |${printTerm(1)(functionTerm)}
+//         |}
+//         |""".stripMargin
 
-  //       case _ =>
-  //         val msg: String = Printer.TreeStructure.show(expr.asTerm)
-  //         throw new Exception("Failed to match this: " + msg)
-  //     }
+//       case _ =>
+//         val msg: String = Printer.TreeStructure.show(expr.asTerm)
+//         throw new Exception("Failed to match this: " + msg)
+//     }
 
-  //   Expr(fieldName)
-  // }
+//   Expr(fieldName)
+// }

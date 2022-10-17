@@ -63,4 +63,107 @@ val altfrag: ShaderContext[FragEnv, rgba] =
 val shaderV2 = Shader(ShaderId("circle"), vertex, altfrag)
 
 // val scratch =
-//   Apply(Select(Ident("rgba"), "apply"), List(Select(Ident("env"), "UV"), Literal(FloatConstant(0.0f)), Literal(FloatConstant(1.0f))))
+//   Block(
+//     Nil,
+//     Block(
+//       List(
+//         DefDef(
+//           "$anonfun",
+//           List(TermParamClause(List(ValDef("env", Inferred(), None)))),
+//           Inferred(),
+//           Some(
+//             Block(
+//               Nil,
+//               TypeApply(
+//                 Select(
+//                   Inlined(
+//                     Some(
+//                       Apply(
+//                         TypeApply(Select(Ident("Program"), "apply"), List(Inferred())),
+//                         List(
+//                           Inlined(
+//                             Some(
+//                               Apply(
+//                                 Select(Ident("rgba"), "apply"),
+//                                 List(
+//                                   Select(Ident("env"), "UV"),
+//                                   Literal(FloatConstant(0.0f)),
+//                                   Literal(FloatConstant(1.0f))
+//                                 )
+//                               )
+//                             ),
+//                             List(
+//                               ValDef("rgba$_this", Inferred(), Some(Ident("rgba"))),
+//                               ValDef("ShaderDSLTypes_this", Inferred(), Some(Ident("ShaderDSL")))
+//                             ),
+//                             Typed(
+//                               Apply(
+//                                 Select(Inlined(None, Nil, Ident("rgba$_this")), "apply"),
+//                                 List(
+//                                   Select(Inlined(None, Nil, Select(Ident("env"), "UV")), "x"),
+//                                   Select(Inlined(None, Nil, Select(Ident("env"), "UV")), "y"),
+//                                   Inlined(None, Nil, Literal(FloatConstant(0.0f))),
+//                                   Inlined(None, Nil, Literal(FloatConstant(1.0f)))
+//                                 )
+//                               ),
+//                               TypeIdent("rgba")
+//                             )
+//                           )
+//                         )
+//                       )
+//                     ),
+//                     List(
+//                       ValDef(
+//                         "$proxy1",
+//                         Inferred(),
+//                         Some(TypeApply(Select(Ident("Program$package"), "$asInstanceOf$"), List(Inferred())))
+//                       ),
+//                       ValDef("Program$package$_this", Inferred(), Some(Ident("Program$package"))),
+//                       ValDef(
+//                         "value$proxy1",
+//                         Inferred(),
+//                         Some(
+//                           Inlined(
+//                             Some(
+//                               Apply(
+//                                 Select(Ident("rgba"), "apply"),
+//                                 List(
+//                                   Select(Ident("env"), "UV"),
+//                                   Literal(FloatConstant(0.0f)),
+//                                   Literal(FloatConstant(1.0f))
+//                                 )
+//                               )
+//                             ),
+//                             List(
+//                               ValDef("rgba$_this", Inferred(), Some(Ident("rgba"))),
+//                               ValDef("ShaderDSLTypes_this", Inferred(), Some(Ident("ShaderDSL")))
+//                             ),
+//                             Typed(
+//                               Apply(
+//                                 Select(Inlined(None, Nil, Ident("rgba$_this")), "apply"),
+//                                 List(
+//                                   Select(Inlined(None, Nil, Select(Ident("env"), "UV")), "x"),
+//                                   Select(Inlined(None, Nil, Select(Ident("env"), "UV")), "y"),
+//                                   Inlined(None, Nil, Literal(FloatConstant(0.0f))),
+//                                   Inlined(None, Nil, Literal(FloatConstant(1.0f)))
+//                                 )
+//                               ),
+//                               TypeIdent("rgba")
+//                             )
+//                           )
+//                         )
+//                       )
+//                     ),
+//                     Typed(Inlined(None, Nil, Ident("value$proxy1")), Applied(TypeIdent("Program"), List(Inferred())))
+//                   ),
+//                   "$asInstanceOf$"
+//                 ),
+//                 List(Inferred())
+//               )
+//             )
+//           )
+//         )
+//       ),
+//       Closure(Ident("$anonfun"), None)
+//     )
+//   )
