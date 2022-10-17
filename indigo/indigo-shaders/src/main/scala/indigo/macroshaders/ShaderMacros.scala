@@ -245,56 +245,56 @@ object ShaderMacros:
   // ---
   // Unit => rgba
 
-  inline def toFrag(inline expr: Function0[rgba]): String = ${ toFragImpl('expr) }
+  // inline def toFrag(inline expr: Function0[rgba]): String = ${ toFragImpl('expr) }
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  private def toFragImpl(expr: Expr[Function0[rgba]])(using Quotes): Expr[String] = {
+  // @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
+  // private def toFragImpl(expr: Expr[Function0[rgba]])(using Quotes): Expr[String] = {
 
-    import quotes.reflect.*
+  //   import quotes.reflect.*
 
-    def printTerm(indentAmount: Int): Term => String =
-      case Apply(
-            Select(Ident("rgba"), "apply"),
-            List(
-              Literal(FloatConstant(r)),
-              Literal(FloatConstant(g)),
-              Literal(FloatConstant(b)),
-              Literal(FloatConstant(a))
-            )
-          ) =>
-        s"${indent(indentAmount)}COLOR = vec4($r, $g, $b, $a);"
+  //   def printTerm(indentAmount: Int): Term => String =
+  //     case Apply(
+  //           Select(Ident("rgba"), "apply"),
+  //           List(
+  //             Literal(FloatConstant(r)),
+  //             Literal(FloatConstant(g)),
+  //             Literal(FloatConstant(b)),
+  //             Literal(FloatConstant(a))
+  //           )
+  //         ) =>
+  //       s"${indent(indentAmount)}COLOR = vec4($r, $g, $b, $a);"
 
-      case term =>
-        val msg: String = Printer.TreeStructure.show(term)
-        throw new Exception("Failed to match term of this: " + msg)
+  //     case term =>
+  //       val msg: String = Printer.TreeStructure.show(term)
+  //       throw new Exception("Failed to match term of this: " + msg)
 
-    val fieldName =
-      expr.asTerm match {
-        case Inlined(
-              _,
-              _,
-              Block(
-                List(
-                  DefDef(
-                    _,
-                    _,
-                    _,
-                    Some(functionTerm)
-                  )
-                ),
-                Closure(Ident(_), None)
-              )
-            ) =>
-          s"""
-          |void fragment() {
-          |${printTerm(1)(functionTerm)}
-          |}
-          |""".stripMargin
+  //   val fieldName =
+  //     expr.asTerm match {
+  //       case Inlined(
+  //             _,
+  //             _,
+  //             Block(
+  //               List(
+  //                 DefDef(
+  //                   _,
+  //                   _,
+  //                   _,
+  //                   Some(functionTerm)
+  //                 )
+  //               ),
+  //               Closure(Ident(_), None)
+  //             )
+  //           ) =>
+  //         s"""
+  //         |void fragment() {
+  //         |${printTerm(1)(functionTerm)}
+  //         |}
+  //         |""".stripMargin
 
-        case _ =>
-          val msg: String = Printer.TreeStructure.show(expr.asTerm)
-          throw new Exception("Failed to match this: " + msg)
-      }
+  //       case _ =>
+  //         val msg: String = Printer.TreeStructure.show(expr.asTerm)
+  //         throw new Exception("Failed to match this: " + msg)
+  //     }
 
-    Expr(fieldName)
-  }
+  //   Expr(fieldName)
+  // }

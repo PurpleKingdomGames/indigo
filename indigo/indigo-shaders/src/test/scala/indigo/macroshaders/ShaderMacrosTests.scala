@@ -4,37 +4,37 @@ import ShaderDSL.*
 
 class ShaderMacrosTests extends munit.FunSuite {
 
-  test("Convert Float => Float to GLSL") {
-    val actual =
-      ShaderMacros.toGLSLString("addOne", (x: Float) => x + 1.0f)
+  // test("Convert Float => Float to GLSL") {
+  //   val actual =
+  //     ShaderMacros.toGLSLString("addOne", (x: Float) => x + 1.0f)
 
-    val expected =
-      s"""
-      |float addOne(float x) {
-      |  return x + 1.0;
-      |}
-      |""".stripMargin
+  //   val expected =
+  //     s"""
+  //     |float addOne(float x) {
+  //     |  return x + 1.0;
+  //     |}
+  //     |""".stripMargin
 
-    assertEquals(actual, expected)
-  }
+  //   assertEquals(actual, expected)
+  // }
 
-  test("Make a fragment shader") {
-    import ShaderDSL.*
+  // test("Make a fragment shader") {
+  //   import ShaderDSL.*
 
-    val f: Function1[Unit, rgba] = _ => rgba(1.0, 0.0, 0.0, 1.0)
+  //   val f: Function1[Unit, rgba] = _ => rgba(1.0, 0.0, 0.0, 1.0)
 
-    val actual =
-      ShaderMacros.toFrag(() => rgba(1.0, 0.0, 0.0, 1.0))
+  //   val actual =
+  //     ShaderMacros.toFrag(() => rgba(1.0, 0.0, 0.0, 1.0))
 
-    val expected =
-      s"""
-      |void fragment() {
-      |  COLOR = vec4(1.0, 0.0, 0.0, 1.0);
-      |}
-      |""".stripMargin
+  //   val expected =
+  //     s"""
+  //     |void fragment() {
+  //     |  COLOR = vec4(1.0, 0.0, 0.0, 1.0);
+  //     |}
+  //     |""".stripMargin
 
-    assertEquals(actual, expected)
+  //   assertEquals(actual, expected)
 
-  }
+  // }
 
 }
