@@ -107,10 +107,33 @@ object ShaderMacros:
 
     def walkStatement(s: Statement): ShaderAST =
       s match
+        case Import(_, _) =>
+          throw new Exception("Shaders do not support imports.")
+
+        case Export(_, _) =>
+          throw new Exception("Shaders do not support exports.")
+
+        case ClassDef(_, _, _, _, _) =>
+          throw new Exception("Shaders do not support classes.")
+
+        case TypeDef(_, _) =>
+          throw new Exception("Shaders do not support fancy types.")
+
+        case ValDef(_, _, _) =>
+          log(Printer.TreeStructure.show(s))
+          throw new Exception("Val support is not implemented")
+
         case DefDef("$anonfun", List(TermParamClause(List(ValDef(argName, _, _)))), _, Some(term)) =>
           // anonymous function
           log(Printer.TreeStructure.show(s))
           ShaderAST.Function(argName, walkTerm(term))
+
+        case DefDef(_, _, _, _) =>
+          log(Printer.TreeStructure.show(s))
+          throw new Exception("Unexpected def construction")
+
+        case t: Term =>
+          walkTerm(t)
 
         case _ =>
           val msg: String = Printer.TreeStructure.show(s)
