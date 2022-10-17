@@ -100,7 +100,8 @@ object ShaderMacros:
 
     def makeExceptionLog(typ: String, msg: String): String =
       val toLog = traceLog.zipWithIndex
-      "Failed to match " + typ + ":\n" + msg + "\n\n Trace log (last 3):\n" + toLog.dropInPlace(Math.max(0, toLog.length - 3))
+      "Failed to match " + typ + ":\n" + msg + "\n\n Trace log (last 3):\n" + toLog
+        .dropInPlace(Math.max(0, toLog.length - 3))
         .map(l => s"  ${l._2}) ${l._1}")
         .mkString("\n") + "\n\n"
 
@@ -121,7 +122,7 @@ object ShaderMacros:
           log(Printer.TreeStructure.show(t))
           ShaderAST.Function(id, walkTerm(x))
 
-        case Apply(Select(Ident(id), "apply"), List(x))=>
+        case Apply(Select(Ident(id), "apply"), List(x)) =>
           log(Printer.TreeStructure.show(t))
           ShaderAST.Function(id, walkTerm(x))
 
