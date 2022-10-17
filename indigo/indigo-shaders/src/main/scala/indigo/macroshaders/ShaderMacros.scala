@@ -141,17 +141,11 @@ object ShaderMacros:
 
     def walkTree(t: Tree): ShaderAST =
       t match
-        case Apply(TypeApply(Select(Ident(id), "apply"), _), List(x)) =>
-          log(Printer.TreeStructure.show(t))
-          ShaderAST.Function(id, walkTerm(x))
+        case PackageClause(_, _) =>
+          throw new Exception("Shaders do not support packages.")
 
-        case Apply(Select(Ident(id), "apply"), List(x)) =>
-          log(Printer.TreeStructure.show(t))
-          ShaderAST.Function(id, walkTerm(x))
-
-        case Apply(Select(Ident("rgba"), "apply"), args) =>
-          log(Printer.TreeStructure.show(t))
-          ShaderAST.DataTypes.vec4(args.map(p => walkTerm(p)))
+        case s: Statement =>
+          walkStatement(s)
 
         case _ =>
           val msg: String = Printer.TreeStructure.show(t)
