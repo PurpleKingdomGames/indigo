@@ -110,6 +110,10 @@ object ShaderMacros:
           log(Printer.TreeStructure.show(t))
           walkTerm(term)
 
+        case Inlined(Some(Select(This(_), _)), _, term) =>
+          log(Printer.TreeStructure.show(t))
+          walkTerm(term)
+
         case Inlined(Some(tree: Tree), _, _) =>
           log(Printer.TreeStructure.show(t))
           walkTree(tree)

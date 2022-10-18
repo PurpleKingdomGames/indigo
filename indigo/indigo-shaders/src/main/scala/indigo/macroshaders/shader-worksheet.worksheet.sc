@@ -17,6 +17,15 @@ val vertex: Shader[VertEnv, vec4] =
 
 //---
 
+inline def frag: Shader[FragEnv, rgba] =
+  Shader { env =>
+    val uv = env.UV
+    val alpha = 1.0f
+    Program(rgba(uv, 1.0f, alpha))
+  }
+
+ShaderMacros.toAST(frag).render
+
 inline def circleSdf(p: vec2, r: Float): Program[Float] =
   Program(length(p) - r)
 
@@ -27,7 +36,7 @@ inline def calculateColour(uv: vec2, sdf: Float): Program[rgba] =
     rgba(fill.rgb * fillAmount, fillAmount)
   }
 
-val frag: Shader[FragEnv, rgba] =
+val frag2: Shader[FragEnv, rgba] =
   Shader { env =>
     for {
       sdf    <- circleSdf(env.UV - 0.5f, 0.5f)
@@ -52,7 +61,7 @@ inline def toOutColor(sdf: Float): Pipeline[vec2, rgba] =
     rgba(fill.rgb * fillAmount, fillAmount)
   }
 
-val altfrag: Shader[FragEnv, rgba] =
+val frag3: Shader[FragEnv, rgba] =
   Shader { env =>
     for {
       sdf    <- Program(env.UV) |> (shiftUV >>> toSdf(0.5))
@@ -60,4 +69,5 @@ val altfrag: Shader[FragEnv, rgba] =
     } yield colour
   }
 
-val shaderV2 = ShaderGroup(ShaderId("circle"), vertex, altfrag)
+val shaderV2 = ShaderGroup(ShaderId("circle"), vertex, frag3)
+
