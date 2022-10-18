@@ -8,21 +8,20 @@ object ShaderAST:
   given ToExpr[ShaderAST] with {
     def apply(x: ShaderAST)(using Quotes): Expr[ShaderAST] =
       x match
-        case v: FragmentProgram => Expr(v)
-        case v: Block           => Expr(v)
-        case v: Function        => Expr(v)
-        case v: DataTypes       => Expr(v)
+        case v: Empty => Expr(v)
+        case v: Block      => Expr(v)
+        case v: NamedBlock => Expr(v)
+        case v: Function   => Expr(v)
+        case v: DataTypes  => Expr(v)
+        case v: Val        => Expr(v)
   }
 
-  final case class FragmentProgram(statements: List[ShaderAST]) extends ShaderAST
-  object FragmentProgram:
-    given ToExpr[FragmentProgram] with {
-      def apply(x: FragmentProgram)(using Quotes): Expr[FragmentProgram] =
-        '{ FragmentProgram(${ Expr(x.statements) }) }
+  final case class Empty() extends ShaderAST
+  object Empty:
+    given ToExpr[Empty] with {
+      def apply(x: Empty)(using Quotes): Expr[Empty] =
+        '{ Empty() }
     }
-
-    def apply(statements: ShaderAST*): FragmentProgram =
-      FragmentProgram(statements.toList)
 
   final case class Block(statements: List[ShaderAST]) extends ShaderAST
   object Block:
@@ -34,14 +33,32 @@ object ShaderAST:
     def apply(statements: ShaderAST*): Block =
       Block(statements.toList)
 
-  final case class Function(id: String, body: ShaderAST) extends ShaderAST
+  final case class NamedBlock(namespace: String, id: String, statements: List[ShaderAST]) extends ShaderAST
+  object NamedBlock:
+    given ToExpr[NamedBlock] with {
+      def apply(x: NamedBlock)(using Quotes): Expr[NamedBlock] =
+        '{ NamedBlock(${ Expr(x.namespace) }, ${ Expr(x.id) }, ${ Expr(x.statements) }) }
+    }
+
+    def apply(namespace: String, id: String, statements: ShaderAST*): NamedBlock =
+      NamedBlock(namespace, id, statements.toList)
+
+  final case class Function(id: String, args: List[String], body: ShaderAST) extends ShaderAST
   object Function:
     given ToExpr[Function] with {
       def apply(x: Function)(using Quotes): Expr[Function] =
-        '{ Function(${ Expr(x.id) }, ${ Expr(x.body) }) }
+        '{ Function(${ Expr(x.id) }, ${ Expr(x.args) }, ${ Expr(x.body) }) }
+    }
+
+  final case class Val(id: String, value: ShaderAST) extends ShaderAST
+  object Val:
+    given ToExpr[Val] with {
+      def apply(x: Val)(using Quotes): Expr[Val] =
+        '{ Val(${ Expr(x.id) }, ${ Expr(x.value) }) }
     }
 
   enum DataTypes extends ShaderAST:
+    case closure(body: ShaderAST, typeOf: Option[String])
     case ident(id: String)
     case float(v: Float)
     case vec2(args: List[ShaderAST])
@@ -52,15 +69,20 @@ object ShaderAST:
     given ToExpr[DataTypes] with {
       def apply(x: DataTypes)(using Quotes): Expr[DataTypes] =
         x match
-          case v: DataTypes.ident => Expr(v)
-          case v: DataTypes.float => Expr(v)
-          case v: DataTypes.vec2  => Expr(v)
-          case v: DataTypes.vec3  => Expr(v)
-          case v: DataTypes.vec4  => Expr(v)
+          case v: DataTypes.closure => Expr(v)
+          case v: DataTypes.ident   => Expr(v)
+          case v: DataTypes.float   => Expr(v)
+          case v: DataTypes.vec2    => Expr(v)
+          case v: DataTypes.vec3    => Expr(v)
+          case v: DataTypes.vec4    => Expr(v)
     }
     given ToExpr[ident] with {
       def apply(x: ident)(using Quotes): Expr[ident] =
         '{ ident(${ Expr(x.id) }) }
+    }
+    given ToExpr[closure] with {
+      def apply(x: closure)(using Quotes): Expr[closure] =
+        '{ closure(${ Expr(x.body) }, ${ Expr(x.typeOf) }) }
     }
     given ToExpr[float] with {
       def apply(x: float)(using Quotes): Expr[float] =
@@ -86,19 +108,20 @@ object ShaderAST:
         if s.contains(".") then s else s + ".0"
 
       ast match
-        case FragmentProgram(statements) =>
-          s"""//<indigo-fragment>
-          |void fragment() {
-          |  COLOR = ${statements.map(_.render).mkString}
-          |}
-          |//</indigo-fragment>
-          |""".stripMargin
+        case Empty() =>
+          ""
 
         case Block(statements) =>
           statements.map(s => s.render + ";").mkString("\n")
 
-        case Function(name, body) =>
-          s"""void $name(){${body.render}}"""
+        case NamedBlock(namespace, id, statements) =>
+          s"""$namespace$id {${statements.map(s => s.render + ";").mkString("\n")}}"""
+
+        case Function(id, args, body) =>
+          s"""void ${if id.isEmpty then "<anon>" else id}(${args.mkString(", ")}){${body.render}}"""
+
+        case DataTypes.closure(body, typeOf) =>
+          s"[closure $body $typeOf]"
 
         case DataTypes.ident(id) =>
           s"$id"
@@ -114,3 +137,6 @@ object ShaderAST:
 
         case DataTypes.vec4(args) =>
           s"vec4(${args.map(_.render).mkString(", ")})"
+
+        case Val(id, value) =>
+          s"""float $id=${value.render}"""
