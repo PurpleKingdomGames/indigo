@@ -13,7 +13,30 @@ object ProceduralShader:
 
   extension (p: ProceduralShader)
     def render: String =
+      import ShaderAST.*
+      def envName(ast: ShaderAST): Option[String] =
+        for {
+          b <- ast.find {
+            case NamedBlock(_, "Shader", _) => true
+            case _                          => false
+          }
+          f <- b.find {
+            case CallFunction(_, _) => true
+            case _                  => false
+          }
+          n <- f match {
+            case CallFunction(_, name :: _) => Option(name)
+            case _                          => None
+          }
+        } yield n
+
       val res = (p.defs ++ List(p.main)).map(_.render).mkString("\n")
+
+      val out =
+        envName(p.main) match
+          case None       => res
+          case Some(name) => res.replace(name + ".", "").replace(name, "")
+
       s"""//<indigo-fragment>
-      |$res
+      |$out
       |//</indigo-fragment>""".stripMargin

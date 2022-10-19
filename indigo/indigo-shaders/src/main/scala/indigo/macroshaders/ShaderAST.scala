@@ -110,6 +110,59 @@ object ShaderAST:
     }
 
   extension (ast: ShaderAST)
+    def isEmpty: Boolean =
+      ast match
+        case Empty() => true
+        case _       => false
+
+    def exists(p: ShaderAST => Boolean): Boolean =
+      find(p).isDefined
+
+    def find(p: ShaderAST => Boolean): Option[ShaderAST] =
+      @tailrec
+      def rec(remaining: List[ShaderAST]): Option[ShaderAST] =
+        remaining match
+          case Nil => None
+          case x :: xs =>
+            x match
+              case v if p(v)                 => Option(v)
+              case v @ Block(s)              => rec(s ++ xs)
+              case v @ NamedBlock(ns, id, s) => rec(s ++ xs)
+              case _                         => rec(xs)
+
+      rec(List(ast))
+
+    def prune: ShaderAST =
+      @tailrec
+      def crush(statements: ShaderAST): ShaderAST =
+        statements match
+          case Block(List(s))            => crush(s)
+          case b: Block                  => crush(b.copy(statements = b.statements.filterNot(_.isEmpty)))
+          case NamedBlock(_, _, List(s)) => crush(s)
+          case b: NamedBlock             => crush(b.copy(statements = b.statements.filterNot(_.isEmpty)))
+          case other                     => other
+
+      traverse {
+        case b: Block                  => crush(b)
+        case b: NamedBlock             => crush(b)
+        case other                     => other
+      }
+
+    def traverse(f: ShaderAST => ShaderAST): ShaderAST =
+      ast match
+        case v @ Empty()                         => f(v)
+        case v @ Block(s)                        => f(Block(s.map(f)))
+        case v @ NamedBlock(ns, id, s)           => f(NamedBlock(ns, id, s))
+        case v @ Function(id, args, body)        => f(Function(id, args, f(body)))
+        case v @ CallFunction(_, _)              => f(v)
+        case v @ Val(id, value)                  => f(Val(id, f(value)))
+        case v @ DataTypes.closure(body, typeOf) => f(DataTypes.closure(f(body), typeOf))
+        case v @ DataTypes.float(_)              => f(v)
+        case v @ DataTypes.ident(_)              => f(v)
+        case v @ DataTypes.vec2(vs)              => f(DataTypes.vec2(vs.map(f)))
+        case v @ DataTypes.vec3(vs)              => f(DataTypes.vec3(vs.map(f)))
+        case v @ DataTypes.vec4(vs)              => f(DataTypes.vec4(vs.map(f)))
+
     @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
     def render: String =
       def rf(f: Float): String =
@@ -124,92 +177,84 @@ object ShaderAST:
           case DataTypes.vec4(args) => Option("vec4")
           case _                    => None
 
-      @tailrec
-      def crush(statements: ShaderAST): ShaderAST =
-        statements match
-          case Block(List(s))            => crush(s)
-          case NamedBlock(_, _, List(s)) => crush(s)
-          case other                     => other
-
       def processStatements(statements: List[ShaderAST]): String =
-        statements.map(s => crush(s).render).filterNot(_.isEmpty).mkString("", ";", ";")
+        statements
+          .map(_.prune)
+          .filterNot(_.isEmpty) // Empty()
+          .map(_.render)
+          .filterNot(_.isEmpty) // empty String
+          .mkString("", ";", ";")
 
       def processFunctionStatements(statements: List[ShaderAST]): (String, String) =
-        val nonEmpty = statements.map(crush).filterNot {
-          case Empty() => true
-          case _       => false
-        }
+        val nonEmpty = statements
+          .map(_.prune)
+          .filterNot(_.isEmpty)
         val (init, last) =
           if nonEmpty.length > 1 then (nonEmpty.dropRight(1), nonEmpty.takeRight(1))
           else (Nil, nonEmpty)
-        println("ORIG: " + nonEmpty.toString())
-        println("FRST: " + init.headOption.toString())
-        println("LAST: " + last.toString())
         val returnType = last.headOption.flatMap(decideType).getOrElse("void")
         val body =
-          init.map(_.render).filterNot(_.isEmpty).mkString("", ";", ";") +
+          (if init.isEmpty then ""
+           else init.map(_.render).filterNot(_.isEmpty).mkString("", ";", ";")) +
             last.headOption
               .map(ss => (if returnType != "void" then "return " else "") + ss.render + ";")
               .getOrElse("")
         (body, returnType)
 
-      ast match
-        case Empty() =>
-          ""
+      val res =
+        ast match
+          case Empty() =>
+            ""
 
-        case Block(List(Block(statements))) =>
-          Block(statements).render
+          case Block(statements) =>
+            processStatements(statements)
 
-        case Block(statements) =>
-          processStatements(statements)
+          case NamedBlock(_, "Shader", statements) =>
+            val (body, returnType) = processFunctionStatements(statements)
+            s"""void fragment(){COLOR=$body}"""
 
-        case NamedBlock(_, "Shader", statements) =>
-          val (body, returnType) = processFunctionStatements(statements)
-          s"""void fragment(){$body}"""
+          case NamedBlock(_, "Program", statements) =>
+            processStatements(statements)
 
-        case NamedBlock(_, _, List(Block(statements))) =>
-          Block(statements).render
+          case NamedBlock(namespace, id, statements) =>
+            s"""$namespace$id {${processStatements(statements)}}"""
 
-        case NamedBlock(_, "Program", statements) =>
-          processStatements(statements)
+          case Function(id, args, body) if id.isEmpty =>
+            throw new Exception("Failed to render shader, unnamed function definition found.")
 
-        case NamedBlock(namespace, id, statements) =>
-          s"""$namespace$id {${processStatements(statements)}}"""
+          case Function(id, args, Block(statements)) =>
+            val (body, returnType) = processFunctionStatements(statements)
+            s"""$returnType $id(${args.mkString(",")}){$body}"""
 
-        case Function(id, args, body) if id.isEmpty =>
-          throw new Exception("Failed to render shader, unnamed function definition found.")
+          case Function(id, args, NamedBlock(_, _, statements)) =>
+            val (body, returnType) = processFunctionStatements(statements)
+            s"""$returnType $id(${args.mkString(",")}){$body}"""
 
-        case Function(id, args, Block(statements)) =>
-          val (body, returnType) = processFunctionStatements(statements)
-          s"""$returnType $id(${args.mkString(",")}){$body}"""
+          case Function(id, args, body) =>
+            s"""void $id(${args.mkString(",")}){${body.render}}"""
 
-        case Function(id, args, NamedBlock(_, _, statements)) =>
-          val (body, returnType) = processFunctionStatements(statements)
-          s"""$returnType $id(${args.mkString(",")}){$body}"""
+          case CallFunction(id, args) =>
+            s"""$id(${args.mkString(",")})"""
 
-        case Function(id, args, body) =>
-          s"""void $id(${args.mkString(",")}){${body.render}}"""
+          case DataTypes.closure(body, typeOf) =>
+            s"[closure $body $typeOf]"
 
-        case CallFunction(id, args) =>
-          s"""$id(${args.mkString(",")})"""
+          case DataTypes.ident(id) =>
+            s"$id"
 
-        case DataTypes.closure(body, typeOf) =>
-          s"[closure $body $typeOf]"
+          case DataTypes.float(v) =>
+            s"${rf(v)}"
 
-        case DataTypes.ident(id) =>
-          s"$id"
+          case DataTypes.vec2(args) =>
+            s"vec2(${args.map(_.render).mkString(",")})"
 
-        case DataTypes.float(v) =>
-          s"${rf(v)}"
+          case DataTypes.vec3(args) =>
+            s"vec3(${args.map(_.render).mkString(",")})"
 
-        case DataTypes.vec2(args) =>
-          s"vec2(${args.map(_.render).mkString(",")})"
+          case DataTypes.vec4(args) =>
+            s"vec4(${args.map(_.render).mkString(",")})"
 
-        case DataTypes.vec3(args) =>
-          s"vec3(${args.map(_.render).mkString(",")})"
+          case Val(id, value) =>
+            s"""${decideType(value).getOrElse("void")} $id=${value.render}"""
 
-        case DataTypes.vec4(args) =>
-          s"vec4(${args.map(_.render).mkString(",")})"
-
-        case Val(id, value) =>
-          s"""${decideType(value).getOrElse("void")} $id=${value.render}"""
+      res
