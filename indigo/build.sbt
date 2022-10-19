@@ -150,7 +150,7 @@ lazy val indigo =
       Compile / sourceGenerators += shadersGen.taskValue,
       Compile / sourceGenerators += shaderLibGen("ShaderLibrary", "indigo.shaders").taskValue,
       libraryDependencies ++= Dependencies.indigo.value
-    )
+    ).dependsOn(shaders)
 
 // Shader
 lazy val shaders =

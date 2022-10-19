@@ -7,6 +7,7 @@ import com.example.sandbox.scenes.CameraScene
 import com.example.sandbox.scenes.ClipScene
 import com.example.sandbox.scenes.ConfettiScene
 import com.example.sandbox.scenes.CratesScene
+import com.example.sandbox.scenes.CustomShader
 import com.example.sandbox.scenes.LegacyEffectsScene
 import com.example.sandbox.scenes.LightsScene
 import com.example.sandbox.scenes.ManyEventHandlers
@@ -14,6 +15,7 @@ import com.example.sandbox.scenes.MutantsScene
 import com.example.sandbox.scenes.OriginalScene
 import com.example.sandbox.scenes.RefractionScene
 import com.example.sandbox.scenes.Shaders
+import com.example.sandbox.scenes.ShadersScene
 import com.example.sandbox.scenes.ShapesScene
 import com.example.sandbox.scenes.TextBoxScene
 import com.example.sandbox.scenes.TextScene
@@ -43,7 +45,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
   val viewportHeight: Int     = gameHeight * magnificationLevel // 256
 
   def initialScene(bootData: SandboxBootData): Option[SceneName] =
-    Some(TimelineScene.name)
+    Some(ShadersScene.name)
 
   def scenes(bootData: SandboxBootData): NonEmptyList[Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]] =
     NonEmptyList(
@@ -64,7 +66,8 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
       TextScene,
       BoxesScene,
       ManyEventHandlers,
-      TimelineScene
+      TimelineScene,
+      ShadersScene
     )
 
   val eventFilters: EventFilters = EventFilters.Permissive
@@ -103,7 +106,8 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
           Shaders.external,
           Shaders.sea,
           LegacyEffects.entityShader,
-          Archetype.shader
+          Archetype.shader,
+          CustomShader.shader
         )
         .addShaders(Refraction.shaders)
     )
