@@ -1,27 +1,34 @@
 package indigo.macroshaders
 
-// opaque type Shader[A, B] = A => B
-// object Shader:
-//   def apply[A, B](f: A => B): Shader[A, B] = f
-//   def pure[A, B](value: B): Shader[A, B]   = _ => value
+import scala.annotation.targetName
 
-//   def join[A, B](ctx: Shader[A, Shader[A, B]]): Shader[A, B] =
-//     (env: A) => ctx(env)(env)
-
-//   extension [A, B](ctx: Shader[A, B])
-//     def map[C](f: B => C): Shader[A, C]                               = (e: A) => f(run(e))
-//     def ap[C](f: Shader[A, B => C]): Shader[A, C]              = (e: A) => f(e)(run(e))
-//     def flatten[C](using ev: B <:< Shader[A, C]): Shader[A, C] = join((env: A) => ev(run(env)))
-//     def flatMap[C](f: B => Shader[A, C]): Shader[A, C]         = join(map(f))
-//     def ask: Shader[A, A]                                             = identity
-//     def asks(f: A => B): Shader[A, B]                                 = f
-//     def run(env: A): B                                                       = ctx(env)
-
+/** A `Shader` is a program that can be run on a graphics card as part of the rendering pipeline. Indigo supports two
+  * kinds of shaders: Vertex and Fragment
+  *
+  * The Shader type is similar to a Reader monad (and so exposes `ask` and `asks`) that has some of the types fixed. The
+  * idea is that it provides the shader programs environment context, for example it allows access to a `UV` field for
+  * working with texture coordinates.
+  */
 opaque type Shader[Env, A] = Env => Program[A]
 object Shader:
-  def apply[Env, A](f: Env => Program[A]): Shader[Env, A] = f
-  // def pure[Env, A](value: A): Shader[A, A]                = _ => Program(value)
+  inline def apply[Env, A](f: Env => Program[A]): Shader[Env, A] = f
+  @targetName("Shader_apply_asks")
+  inline def apply[Env, A](f: Env => A): Shader[Env, A] = (e: Env) => Program(f(e))
+  inline def apply[Env, A](value: A): Shader[Env, A]    = _ => Program(value)
+  inline def pure[Env, A](value: A): Shader[Env, A]     = _ => Program(value)
+  inline def fixed[Env, A](value: A): Shader[Env, A]    = _ => Program(value)
+
+  inline def join[Env, B](ctx: Shader[Env, Shader[Env, B]]): Shader[Env, B] =
+    (env: Env) => ctx(env).run(env)
 
   extension [Env, A](inline ctx: Shader[Env, A])
     inline def toGLSL: String =
       ShaderMacros.toAST(ctx).render
+    inline def map[B](f: A => B): Shader[Env, B]                          = (e: Env) => program(e).map(f)
+    inline def ap[B](f: Shader[Env, A => B]): Shader[Env, B]              = (e: Env) => f(e).map(fn => fn(ctx.run(e)))
+    inline def flatten[B](using ev: A <:< Shader[Env, B]): Shader[Env, B] = join((env: Env) => program(env).map(ev))
+    inline def flatMap[B](f: A => Shader[Env, B]): Shader[Env, B]         = join(map(f))
+    inline def ask: Shader[Env, Env]                                      = (e: Env) => Program(e)
+    inline def asks(f: Env => A): Shader[Env, A]                          = (e: Env) => Program(f(e))
+    inline def program(env: Env): Program[A]                              = ctx(env)
+    inline def run(env: Env): A                                           = program(env).run

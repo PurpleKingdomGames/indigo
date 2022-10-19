@@ -6,14 +6,27 @@ import ShaderMacros.*
 class ShaderASTTests extends munit.FunSuite {
 
   import ShaderAST.*
+  import ShaderAST.DataTypes.*
 
   test("Build an Indigo compatible fragment shader AST") {
     val expected: ProceduralShader =
       ProceduralShader(
-        Nil,
-        Block(
-          DataTypes.vec4(
-            List(DataTypes.float(1.0f), DataTypes.float(1.0f), DataTypes.float(0.0f), DataTypes.float(1.0f))
+        List(
+          Function(
+            "fn0",
+            List("env"),
+            Block(
+              List(
+                NamedBlock("", "Program", List(vec4(List(float(1), float(1), float(0), float(1)))))
+              )
+            )
+          )
+        ),
+        NamedBlock(
+          "",
+          "Shader",
+          List(
+            Block(List(Block(List(CallFunction("fn0", List("env")), Empty()))))
           )
         )
       )
@@ -24,19 +37,11 @@ class ShaderASTTests extends munit.FunSuite {
 
     inline def fragment: Shader[FragEnv, rgba] =
       Shader { env =>
-        val zero  = 0.0f
-        val alpha = 1.0f
-        Program(rgba(env.UV, zero, alpha))
+        Program(rgba(1.0f, 1.0f, 0.0f, 1.0f))
       }
 
     val actual =
       ShaderMacros.toAST(fragment)
-
-    println(">>>>")
-    println(ShaderMacros.toAST(fragment).toString)
-    println("----")
-    println(ShaderMacros.toAST(fragment).render)
-    println("<<<<")
 
     assertEquals(actual, expected)
   }

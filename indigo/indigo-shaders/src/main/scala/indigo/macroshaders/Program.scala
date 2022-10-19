@@ -1,9 +1,12 @@
 package indigo.macroshaders
 
+/** The `Program` type is the return type of a `Shader` progam.
+  */
 opaque type Program[A] = A
 object Program:
   inline def apply[A](value: A): Program[A] = value
   inline def pure[A](value: A): Program[A]  = value
+  inline def fixed[A](value: A): Program[A] = value
 
   extension [Env, A](inline prog: Program[A])
     inline def map[B](f: A => B): Program[B]                                = f(run)
