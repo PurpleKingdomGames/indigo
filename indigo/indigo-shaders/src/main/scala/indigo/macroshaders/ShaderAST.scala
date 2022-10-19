@@ -1,5 +1,6 @@
 package indigo.macroshaders
 
+import scala.annotation.tailrec
 import scala.quoted.*
 
 sealed trait ShaderAST
@@ -8,12 +9,13 @@ object ShaderAST:
   given ToExpr[ShaderAST] with {
     def apply(x: ShaderAST)(using Quotes): Expr[ShaderAST] =
       x match
-        case v: Empty => Expr(v)
-        case v: Block      => Expr(v)
-        case v: NamedBlock => Expr(v)
-        case v: Function   => Expr(v)
-        case v: DataTypes  => Expr(v)
-        case v: Val        => Expr(v)
+        case v: Empty        => Expr(v)
+        case v: Block        => Expr(v)
+        case v: NamedBlock   => Expr(v)
+        case v: Function     => Expr(v)
+        case v: CallFunction => Expr(v)
+        case v: DataTypes    => Expr(v)
+        case v: Val          => Expr(v)
   }
 
   final case class Empty() extends ShaderAST
@@ -48,6 +50,12 @@ object ShaderAST:
     given ToExpr[Function] with {
       def apply(x: Function)(using Quotes): Expr[Function] =
         '{ Function(${ Expr(x.id) }, ${ Expr(x.args) }, ${ Expr(x.body) }) }
+    }
+  final case class CallFunction(id: String, args: List[String]) extends ShaderAST
+  object CallFunction:
+    given ToExpr[CallFunction] with {
+      def apply(x: CallFunction)(using Quotes): Expr[CallFunction] =
+        '{ CallFunction(${ Expr(x.id) }, ${ Expr(x.args) }) }
     }
 
   final case class Val(id: String, value: ShaderAST) extends ShaderAST
@@ -102,23 +110,88 @@ object ShaderAST:
     }
 
   extension (ast: ShaderAST)
+    @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
     def render: String =
       def rf(f: Float): String =
         val s = f.toString
         if s.contains(".") then s else s + ".0"
 
+      def decideType(a: ShaderAST): Option[String] =
+        a match
+          case DataTypes.float(v)   => Option("float")
+          case DataTypes.vec2(args) => Option("vec2")
+          case DataTypes.vec3(args) => Option("vec3")
+          case DataTypes.vec4(args) => Option("vec4")
+          case _                    => None
+
+      @tailrec
+      def crush(statements: ShaderAST): ShaderAST =
+        statements match
+          case Block(List(s))            => crush(s)
+          case NamedBlock(_, _, List(s)) => crush(s)
+          case other                     => other
+
+      def processStatements(statements: List[ShaderAST]): String =
+        statements.map(s => crush(s).render).filterNot(_.isEmpty).mkString("", ";", ";")
+
+      def processFunctionStatements(statements: List[ShaderAST]): (String, String) =
+        val nonEmpty = statements.map(crush).filterNot {
+          case Empty() => true
+          case _       => false
+        }
+        val (init, last) =
+          if nonEmpty.length > 1 then (nonEmpty.dropRight(1), nonEmpty.takeRight(1))
+          else (Nil, nonEmpty)
+        println("ORIG: " + nonEmpty.toString())
+        println("FRST: " + init.headOption.toString())
+        println("LAST: " + last.toString())
+        val returnType = last.headOption.flatMap(decideType).getOrElse("void")
+        val body =
+          init.map(_.render).filterNot(_.isEmpty).mkString("", ";", ";") +
+            last.headOption
+              .map(ss => (if returnType != "void" then "return " else "") + ss.render + ";")
+              .getOrElse("")
+        (body, returnType)
+
       ast match
         case Empty() =>
           ""
 
+        case Block(List(Block(statements))) =>
+          Block(statements).render
+
         case Block(statements) =>
-          statements.map(s => s.render + ";").mkString("\n")
+          processStatements(statements)
+
+        case NamedBlock(_, "Shader", statements) =>
+          val (body, returnType) = processFunctionStatements(statements)
+          s"""void fragment(){$body}"""
+
+        case NamedBlock(_, _, List(Block(statements))) =>
+          Block(statements).render
+
+        case NamedBlock(_, "Program", statements) =>
+          processStatements(statements)
 
         case NamedBlock(namespace, id, statements) =>
-          s"""$namespace$id {${statements.map(s => s.render + ";").mkString("\n")}}"""
+          s"""$namespace$id {${processStatements(statements)}}"""
+
+        case Function(id, args, body) if id.isEmpty =>
+          throw new Exception("Failed to render shader, unnamed function definition found.")
+
+        case Function(id, args, Block(statements)) =>
+          val (body, returnType) = processFunctionStatements(statements)
+          s"""$returnType $id(${args.mkString(",")}){$body}"""
+
+        case Function(id, args, NamedBlock(_, _, statements)) =>
+          val (body, returnType) = processFunctionStatements(statements)
+          s"""$returnType $id(${args.mkString(",")}){$body}"""
 
         case Function(id, args, body) =>
-          s"""void ${if id.isEmpty then "<anon>" else id}(${args.mkString(", ")}){${body.render}}"""
+          s"""void $id(${args.mkString(",")}){${body.render}}"""
+
+        case CallFunction(id, args) =>
+          s"""$id(${args.mkString(",")})"""
 
         case DataTypes.closure(body, typeOf) =>
           s"[closure $body $typeOf]"
@@ -130,13 +203,13 @@ object ShaderAST:
           s"${rf(v)}"
 
         case DataTypes.vec2(args) =>
-          s"vec2(${args.map(_.render).mkString(", ")})"
+          s"vec2(${args.map(_.render).mkString(",")})"
 
         case DataTypes.vec3(args) =>
-          s"vec3(${args.map(_.render).mkString(", ")})"
+          s"vec3(${args.map(_.render).mkString(",")})"
 
         case DataTypes.vec4(args) =>
-          s"vec4(${args.map(_.render).mkString(", ")})"
+          s"vec4(${args.map(_.render).mkString(",")})"
 
         case Val(id, value) =>
-          s"""float $id=${value.render}"""
+          s"""${decideType(value).getOrElse("void")} $id=${value.render}"""

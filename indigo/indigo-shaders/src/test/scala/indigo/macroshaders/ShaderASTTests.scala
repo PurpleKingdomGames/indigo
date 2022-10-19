@@ -8,10 +8,13 @@ class ShaderASTTests extends munit.FunSuite {
   import ShaderAST.*
 
   test("Build an Indigo compatible fragment shader AST") {
-    val expected: ShaderAST =
-      Block(
-        DataTypes.vec4(
-          List(DataTypes.float(1.0f), DataTypes.float(1.0f), DataTypes.float(0.0f), DataTypes.float(1.0f))
+    val expected: ProceduralShader =
+      ProceduralShader(
+        Nil,
+        Block(
+          DataTypes.vec4(
+            List(DataTypes.float(1.0f), DataTypes.float(1.0f), DataTypes.float(0.0f), DataTypes.float(1.0f))
+          )
         )
       )
 

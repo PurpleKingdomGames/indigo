@@ -8,12 +8,21 @@ import ShaderDSL.*
 
 object ShaderMacros:
 
-  inline def toAST[Env, A](inline expr: Shader[Env, A]): ShaderAST = ${ toASTImpl('{ expr }) }
+  inline def toAST[Env, A](inline expr: Shader[Env, A]): ProceduralShader = ${ toASTImpl('{ expr }) }
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  private def toASTImpl[Env, A](expr: Expr[Shader[Env, A]])(using Quotes): Expr[ShaderAST] = {
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw", "scalafix:DisableSyntax.var"))
+  private def toASTImpl[Env, A](expr: Expr[Shader[Env, A]])(using Quotes): Expr[ProceduralShader] = {
 
     import quotes.reflect.*
+
+    var fnCount: Int = 0
+
+    def nextFnName: String =
+      val res = "fn" + fnCount.toString
+      fnCount = fnCount + 1
+      res
+
+    val shaderDefs: ListBuffer[ShaderAST] = new ListBuffer()
 
     val traceLog: ListBuffer[String] = new ListBuffer()
 
@@ -50,7 +59,14 @@ object ShaderMacros:
         case DefDef("$anonfun", List(TermParamClause(List(ValDef(argName, typeTree, _)))), _, Some(term)) =>
           // anonymous function
           log(Printer.TreeStructure.show(s))
-          ShaderAST.Function("", List(argName), walkTerm(term))
+          println("--here--")
+          val fn = nextFnName
+          println(fn)
+          println(shaderDefs.length)
+          shaderDefs += ShaderAST.Function(fn, List(argName), walkTerm(term))
+          println(shaderDefs.length)
+          // println(shaderDefs.toList.mkString("\n"))
+          ShaderAST.CallFunction(fn, List(argName))
 
         case DefDef(_, _, _, _) =>
           log(Printer.TreeStructure.show(s))
@@ -210,6 +226,7 @@ object ShaderMacros:
     // println(">>> Everything")
     // println(Printer.TreeStructure.show(expr.asTerm))
     // println("<<<")
+    val res = walkTerm(expr.asTerm)
 
-    Expr(walkTerm(expr.asTerm))
+    Expr(ProceduralShader(shaderDefs.toList, res))
   }
