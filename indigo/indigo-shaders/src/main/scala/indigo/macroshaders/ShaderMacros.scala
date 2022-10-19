@@ -57,15 +57,9 @@ object ShaderMacros:
           throw new Exception("Shaders do not support val's with no values.")
 
         case DefDef("$anonfun", List(TermParamClause(List(ValDef(argName, typeTree, _)))), _, Some(term)) =>
-          // anonymous function
           log(Printer.TreeStructure.show(s))
-          println("--here--")
           val fn = nextFnName
-          println(fn)
-          println(shaderDefs.length)
           shaderDefs += ShaderAST.Function(fn, List(argName), walkTerm(term))
-          println(shaderDefs.length)
-          // println(shaderDefs.toList.mkString("\n"))
           ShaderAST.CallFunction(fn, List(argName))
 
         case DefDef(_, _, _, _) =>
