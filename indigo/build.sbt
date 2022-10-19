@@ -158,9 +158,8 @@ lazy val shaders =
     .in(file("indigo-shaders"))
     .enablePlugins(ScalaJSPlugin)
     .settings(
-      neverPublish,
       name := "indigo-shaders",
-      commonSettings,
+      commonSettings ++ publishSettings,
       Compile / sourceGenerators += shaderDSLGen.taskValue,
     )
 
