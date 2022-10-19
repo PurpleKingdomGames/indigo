@@ -23,5 +23,5 @@ object Shader:
   // def pure[Env, A](value: A): Shader[A, A]                = _ => Program(value)
 
   extension [Env, A](inline ctx: Shader[Env, A])
-    inline def toGLSL(): String =
+    inline def toGLSL: String =
       ShaderMacros.toAST(ctx).render
