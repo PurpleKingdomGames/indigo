@@ -3,7 +3,7 @@ package indigo.macroshaders
 import scala.annotation.tailrec
 import scala.quoted.*
 
-sealed trait ShaderAST
+sealed trait ShaderAST derives CanEqual
 object ShaderAST:
 
   given ToExpr[ShaderAST] with {
