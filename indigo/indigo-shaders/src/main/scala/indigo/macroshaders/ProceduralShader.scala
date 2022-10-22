@@ -40,3 +40,6 @@ object ProceduralShader:
       s"""//<indigo-fragment>
       |$out
       |//</indigo-fragment>""".stripMargin
+
+    def exists(q: ShaderAST => Boolean): Boolean =
+      p.main.exists(q) || p.defs.exists(_.exists(q))
