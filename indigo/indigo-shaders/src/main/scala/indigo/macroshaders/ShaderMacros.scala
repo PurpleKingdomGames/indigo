@@ -29,9 +29,10 @@ object ShaderMacros:
     def log(msg: String): Unit = traceLog += msg
 
     def makeExceptionLog(typ: String, msg: String): String =
+      val count = 3
       val toLog = traceLog.zipWithIndex
-      "Failed to match " + typ + ":\n" + msg + "\n\n Trace log (last 3):\n" + toLog
-        .dropInPlace(Math.max(0, toLog.length - 3))
+      "Failed to match " + typ + ":\n" + msg + "\n\n Trace log (last " + count.toString + "):\n" + toLog
+        .dropInPlace(Math.max(0, toLog.length - count))
         .map(l => s"  ${l._2}) ${l._1}")
         .mkString("\n") + "\n\n"
 
@@ -94,6 +95,18 @@ object ShaderMacros:
           log(Printer.TreeStructure.show(t))
           ShaderAST.NamedBlock(id, "", walkTerm(x))
 
+        case Apply(Select(Ident("vec2"), "apply"), args) =>
+          log(Printer.TreeStructure.show(t))
+          ShaderAST.DataTypes.vec2(args.map(p => walkTerm(p)))
+
+        case Apply(Select(Ident("vec3"), "apply"), args) =>
+          log(Printer.TreeStructure.show(t))
+          ShaderAST.DataTypes.vec3(args.map(p => walkTerm(p)))
+
+        case Apply(Select(Ident("vec4"), "apply"), args) =>
+          log(Printer.TreeStructure.show(t))
+          ShaderAST.DataTypes.vec4(args.map(p => walkTerm(p)))
+
         case Apply(Select(Ident("rgba"), "apply"), args) =>
           log(Printer.TreeStructure.show(t))
           ShaderAST.DataTypes.vec4(args.map(p => walkTerm(p)))
@@ -112,11 +125,23 @@ object ShaderMacros:
           log(Printer.TreeStructure.show(t))
           ShaderAST.NamedBlock(namespace, name, walkTerm(x))
 
+        case Apply(TypeApply(term, _), List(x)) =>
+          log(Printer.TreeStructure.show(t))
+          walkTerm(x)
+
+        case Apply(Select(term, _), List(x)) =>
+          log(Printer.TreeStructure.show(t))
+          walkTerm(x)
+
         case Inlined(None, _, term) =>
           log(Printer.TreeStructure.show(t))
           walkTerm(term)
 
         case Inlined(Some(Ident(_)), _, term) =>
+          log(Printer.TreeStructure.show(t))
+          walkTerm(term)
+
+        case Inlined(Some(Apply(Ident(_), _)), _, term) =>
           log(Printer.TreeStructure.show(t))
           walkTerm(term)
 
