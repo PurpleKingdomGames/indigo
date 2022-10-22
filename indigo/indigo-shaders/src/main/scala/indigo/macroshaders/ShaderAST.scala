@@ -125,10 +125,19 @@ object ShaderAST:
           case Nil => None
           case x :: xs =>
             x match
-              case v if p(v)                 => Option(v)
-              case v @ Block(s)              => rec(s ++ xs)
-              case v @ NamedBlock(ns, id, s) => rec(s ++ xs)
-              case _                         => rec(xs)
+              case v if p(v)            => Option(v)
+              case Empty()              => rec(xs)
+              case Block(s)             => rec(s ++ xs)
+              case NamedBlock(_, _, s)  => rec(s ++ xs)
+              case Function(_, _, body) => rec(body :: xs)
+              case CallFunction(_, _)   => rec(xs)
+              case Val(_, body)         => rec(body :: xs)
+              case v: DataTypes.closure => rec(v.body :: xs)
+              case v: DataTypes.ident   => rec(xs)
+              case v: DataTypes.float   => rec(xs)
+              case v: DataTypes.vec2    => rec(v.args ++ xs)
+              case v: DataTypes.vec3    => rec(v.args ++ xs)
+              case v: DataTypes.vec4    => rec(v.args ++ xs)
 
       rec(List(ast))
 
@@ -143,9 +152,9 @@ object ShaderAST:
           case other                     => other
 
       traverse {
-        case b: Block                  => crush(b)
-        case b: NamedBlock             => crush(b)
-        case other                     => other
+        case b: Block      => crush(b)
+        case b: NamedBlock => crush(b)
+        case other         => other
       }
 
     def traverse(f: ShaderAST => ShaderAST): ShaderAST =
