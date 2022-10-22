@@ -74,6 +74,17 @@ object ShaderAST:
     case vec4(args: List[ShaderAST])
 
   object DataTypes:
+
+    object vec2:
+      def apply(args: Float*): DataTypes.vec2 =
+        DataTypes.vec2(args.toList.map(DataTypes.float.apply))
+    object vec3:
+      def apply(args: Float*): DataTypes.vec3 =
+        DataTypes.vec3(args.toList.map(DataTypes.float.apply))
+    object vec4:
+      def apply(args: Float*): DataTypes.vec4 =
+        DataTypes.vec4(args.toList.map(DataTypes.float.apply))
+
     given ToExpr[DataTypes] with {
       def apply(x: DataTypes)(using Quotes): Expr[DataTypes] =
         x match
