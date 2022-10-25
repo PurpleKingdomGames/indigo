@@ -51,7 +51,7 @@ object ShaderAST:
       def apply(x: Function)(using Quotes): Expr[Function] =
         '{ Function(${ Expr(x.id) }, ${ Expr(x.args) }, ${ Expr(x.body) }) }
     }
-  final case class CallFunction(id: String, args: List[String]) extends ShaderAST
+  final case class CallFunction(id: String, args: List[ShaderAST]) extends ShaderAST
   object CallFunction:
     given ToExpr[CallFunction] with {
       def apply(x: CallFunction)(using Quotes): Expr[CallFunction] =
@@ -254,7 +254,7 @@ object ShaderAST:
             s"""void $id(${args.mkString(",")}){${body.render}}"""
 
           case CallFunction(id, args) =>
-            s"""$id(${args.mkString(",")})"""
+            s"""$id(${args.map(_.render).mkString(",")})"""
 
           case DataTypes.closure(body, typeOf) =>
             s"[closure $body $typeOf]"

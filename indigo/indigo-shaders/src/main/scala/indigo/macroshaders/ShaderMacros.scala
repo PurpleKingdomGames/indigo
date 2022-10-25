@@ -57,11 +57,11 @@ object ShaderMacros:
         case ValDef(name, _, None) =>
           throw new Exception("Shaders do not support val's with no values.")
 
-        case DefDef("$anonfun", List(TermParamClause(List(ValDef(argName, typeTree, _)))), _, Some(term)) =>
+        case DefDef("$anonfun", List(TermParamClause(List(ValDef(argName, _, _)))), _, Some(term)) =>
           log(Printer.TreeStructure.show(s))
           val fn = nextFnName
           shaderDefs += ShaderAST.Function(fn, List(argName), walkTerm(term))
-          ShaderAST.CallFunction(fn, List(argName))
+          ShaderAST.CallFunction(fn, Nil)
 
         case DefDef(_, _, _, _) =>
           log(Printer.TreeStructure.show(s))
@@ -91,10 +91,6 @@ object ShaderMacros:
 
         // Specific hooks we care about
 
-        case Apply(Select(Ident(id), "apply"), List(x)) =>
-          log(Printer.TreeStructure.show(t))
-          ShaderAST.NamedBlock(id, "", walkTerm(x))
-
         case Apply(Select(Ident("vec2"), "apply"), args) =>
           log(Printer.TreeStructure.show(t))
           ShaderAST.DataTypes.vec2(args.map(p => walkTerm(p)))
@@ -109,7 +105,15 @@ object ShaderMacros:
 
         case Apply(Select(Ident("rgba"), "apply"), args) =>
           log(Printer.TreeStructure.show(t))
+          println("rgba")
+          println(args.length)
+          // println(Printer.TreeStructure.show(args(0)))
+          println(Printer.TreeStructure.show(args(1)))
           ShaderAST.DataTypes.vec4(args.map(p => walkTerm(p)))
+
+        case Apply(Select(Ident(id), "apply"), List(x)) =>
+          log(Printer.TreeStructure.show(t))
+          ShaderAST.NamedBlock(id, "", walkTerm(x))
 
         case Select(Ident(namespace), name) =>
           log(Printer.TreeStructure.show(t))
@@ -131,7 +135,16 @@ object ShaderMacros:
 
         case Apply(Select(term, _), List(x)) =>
           log(Printer.TreeStructure.show(t))
-          walkTerm(x)
+
+          walkTerm(term).find {
+            case ShaderAST.CallFunction(id, args) => true
+            case _                                => false
+          } match
+            case Some(ShaderAST.CallFunction(id, args)) =>
+              ShaderAST.CallFunction(id, List(walkTerm(x)))
+
+            case _ =>
+              walkTerm(x)
 
         case Inlined(None, _, term) =>
           log(Printer.TreeStructure.show(t))
@@ -160,6 +173,10 @@ object ShaderMacros:
         case Typed(term, _) =>
           log(Printer.TreeStructure.show(t))
           walkTerm(term)
+
+        case Block(statements, Closure(Ident("$anonfun"), None)) =>
+          log(Printer.TreeStructure.show(t))
+          ShaderAST.Block(statements.map(walkStatement))
 
         case Block(statements, term) =>
           log(Printer.TreeStructure.show(t))

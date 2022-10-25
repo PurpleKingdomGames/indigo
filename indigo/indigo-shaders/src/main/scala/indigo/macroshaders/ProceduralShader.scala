@@ -28,7 +28,7 @@ object ProceduralShader:
             case CallFunction(_, name :: _) => Option(name)
             case _                          => None
           }
-        } yield n
+        } yield n.toString()
 
       val res = (p.defs ++ List(p.main)).map(_.render).mkString("\n")
 
