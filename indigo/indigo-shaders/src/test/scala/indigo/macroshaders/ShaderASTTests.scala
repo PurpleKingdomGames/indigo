@@ -22,7 +22,8 @@ class ShaderASTTests extends munit.FunSuite {
               List(
                 NamedBlock("", "Program", List(vec4(List(float(1), float(1), float(0), float(1)))))
               )
-            )
+            ),
+            None
           )
         ),
         NamedBlock(
@@ -42,11 +43,11 @@ class ShaderASTTests extends munit.FunSuite {
     val actual =
       ShaderMacros.toAST(fragment)
 
-    println(">>>>>>")
+    // println(">>>>>>")
     // println(actual)
     // println("----")
-    println(fragment.toGLSL)
-    println("<<<<<<")
+    // println(fragment.toGLSL)
+    // println("<<<<<<")
 
     assertEquals(actual, expected)
   }
@@ -63,11 +64,11 @@ class ShaderASTTests extends munit.FunSuite {
     val actual =
       ShaderMacros.toAST(fragment)
 
-    println(">>>>>>")
+    // println(">>>>>>")
     // println(actual)
     // println("----")
-    println(fragment.toGLSL)
-    println("<<<<<<")
+    // println(fragment.toGLSL)
+    // println("<<<<<<")
 
     val p: Boolean = {
       import ShaderAST.*
@@ -91,11 +92,11 @@ class ShaderASTTests extends munit.FunSuite {
     val actual =
       ShaderMacros.toAST(fragment)
 
-    println(">>>>>>")
+    // println(">>>>>>")
     // println(actual)
     // println("----")
-    println(fragment.toGLSL)
-    println("<<<<<<")
+    // println(fragment.toGLSL)
+    // println("<<<<<<")
 
     val p: Boolean = {
       import ShaderAST.*
@@ -123,18 +124,18 @@ class ShaderASTTests extends munit.FunSuite {
     val actual =
       ShaderMacros.toAST(fragment)
 
-    println(">>>>>>")
-    println(actual)
-    println("----")
-    println(fragment.toGLSL)
-    println("<<<<<<")
+    // println(">>>>>>")
+    // println(actual)
+    // println("----")
+    // println(fragment.toGLSL)
+    // println("<<<<<<")
 
     val p: Boolean = {
       import ShaderAST.*
       import ShaderAST.DataTypes.*
 
       val expected =
-        vec4(List(float(1), float(1), vec2(0.0f, 1.0f)))
+        Function("fn1", List("float alpha"), Block(List(vec2(List(float(0), ident("alpha"))))), Some("vec2"))
 
       actual.exists(_ == expected)
     }

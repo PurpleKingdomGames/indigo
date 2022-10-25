@@ -45,11 +45,12 @@ object ShaderAST:
     def apply(namespace: String, id: String, statements: ShaderAST*): NamedBlock =
       NamedBlock(namespace, id, statements.toList)
 
-  final case class Function(id: String, args: List[String], body: ShaderAST) extends ShaderAST
+  final case class Function(id: String, args: List[String], body: ShaderAST, returnType: Option[String])
+      extends ShaderAST
   object Function:
     given ToExpr[Function] with {
       def apply(x: Function)(using Quotes): Expr[Function] =
-        '{ Function(${ Expr(x.id) }, ${ Expr(x.args) }, ${ Expr(x.body) }) }
+        '{ Function(${ Expr(x.id) }, ${ Expr(x.args) }, ${ Expr(x.body) }, ${ Expr(x.returnType) }) }
     }
   final case class CallFunction(id: String, args: List[ShaderAST]) extends ShaderAST
   object CallFunction:
@@ -136,19 +137,19 @@ object ShaderAST:
           case Nil => None
           case x :: xs =>
             x match
-              case v if p(v)            => Option(v)
-              case Empty()              => rec(xs)
-              case Block(s)             => rec(s ++ xs)
-              case NamedBlock(_, _, s)  => rec(s ++ xs)
-              case Function(_, _, body) => rec(body :: xs)
-              case CallFunction(_, _)   => rec(xs)
-              case Val(_, body)         => rec(body :: xs)
-              case v: DataTypes.closure => rec(v.body :: xs)
-              case v: DataTypes.ident   => rec(xs)
-              case v: DataTypes.float   => rec(xs)
-              case v: DataTypes.vec2    => rec(v.args ++ xs)
-              case v: DataTypes.vec3    => rec(v.args ++ xs)
-              case v: DataTypes.vec4    => rec(v.args ++ xs)
+              case v if p(v)               => Option(v)
+              case Empty()                 => rec(xs)
+              case Block(s)                => rec(s ++ xs)
+              case NamedBlock(_, _, s)     => rec(s ++ xs)
+              case Function(_, _, body, _) => rec(body :: xs)
+              case CallFunction(_, _)      => rec(xs)
+              case Val(_, body)            => rec(body :: xs)
+              case v: DataTypes.closure    => rec(v.body :: xs)
+              case v: DataTypes.ident      => rec(xs)
+              case v: DataTypes.float      => rec(xs)
+              case v: DataTypes.vec2       => rec(v.args ++ xs)
+              case v: DataTypes.vec3       => rec(v.args ++ xs)
+              case v: DataTypes.vec4       => rec(v.args ++ xs)
 
       rec(List(ast))
 
@@ -170,18 +171,18 @@ object ShaderAST:
 
     def traverse(f: ShaderAST => ShaderAST): ShaderAST =
       ast match
-        case v @ Empty()                         => f(v)
-        case v @ Block(s)                        => f(Block(s.map(f)))
-        case v @ NamedBlock(ns, id, s)           => f(NamedBlock(ns, id, s))
-        case v @ Function(id, args, body)        => f(Function(id, args, f(body)))
-        case v @ CallFunction(_, _)              => f(v)
-        case v @ Val(id, value)                  => f(Val(id, f(value)))
-        case v @ DataTypes.closure(body, typeOf) => f(DataTypes.closure(f(body), typeOf))
-        case v @ DataTypes.float(_)              => f(v)
-        case v @ DataTypes.ident(_)              => f(v)
-        case v @ DataTypes.vec2(vs)              => f(DataTypes.vec2(vs.map(f)))
-        case v @ DataTypes.vec3(vs)              => f(DataTypes.vec3(vs.map(f)))
-        case v @ DataTypes.vec4(vs)              => f(DataTypes.vec4(vs.map(f)))
+        case v @ Empty()                              => f(v)
+        case v @ Block(s)                             => f(Block(s.map(f)))
+        case v @ NamedBlock(ns, id, s)                => f(NamedBlock(ns, id, s))
+        case v @ Function(id, args, body, returnType) => f(Function(id, args, f(body), returnType))
+        case v @ CallFunction(_, _)                   => f(v)
+        case v @ Val(id, value)                       => f(Val(id, f(value)))
+        case v @ DataTypes.closure(body, typeOf)      => f(DataTypes.closure(f(body), typeOf))
+        case v @ DataTypes.float(_)                   => f(v)
+        case v @ DataTypes.ident(_)                   => f(v)
+        case v @ DataTypes.vec2(vs)                   => f(DataTypes.vec2(vs.map(f)))
+        case v @ DataTypes.vec3(vs)                   => f(DataTypes.vec3(vs.map(f)))
+        case v @ DataTypes.vec4(vs)                   => f(DataTypes.vec4(vs.map(f)))
 
     @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
     def render: String =
@@ -205,14 +206,20 @@ object ShaderAST:
           .filterNot(_.isEmpty) // empty String
           .mkString("", ";", ";")
 
-      def processFunctionStatements(statements: List[ShaderAST]): (String, String) =
+      def processFunctionStatements(statements: List[ShaderAST], maybeReturnType: Option[String]): (String, String) =
         val nonEmpty = statements
           .map(_.prune)
           .filterNot(_.isEmpty)
+
         val (init, last) =
           if nonEmpty.length > 1 then (nonEmpty.dropRight(1), nonEmpty.takeRight(1))
           else (Nil, nonEmpty)
-        val returnType = last.headOption.flatMap(decideType).getOrElse("void")
+
+        val returnType =
+          maybeReturnType match
+            case None        => last.headOption.flatMap(decideType).getOrElse("void")
+            case Some(value) => value
+
         val body =
           (if init.isEmpty then ""
            else init.map(_.render).filterNot(_.isEmpty).mkString("", ";", ";")) +
@@ -230,7 +237,7 @@ object ShaderAST:
             processStatements(statements)
 
           case NamedBlock(_, "Shader", statements) =>
-            val (body, returnType) = processFunctionStatements(statements)
+            val (body, rt) = processFunctionStatements(statements, None)
             s"""void fragment(){COLOR=$body}"""
 
           case NamedBlock(_, "Program", statements) =>
@@ -239,18 +246,18 @@ object ShaderAST:
           case NamedBlock(namespace, id, statements) =>
             s"""$namespace$id {${processStatements(statements)}}"""
 
-          case Function(id, args, body) if id.isEmpty =>
+          case Function(id, args, body, returnType) if id.isEmpty =>
             throw new Exception("Failed to render shader, unnamed function definition found.")
 
-          case Function(id, args, Block(statements)) =>
-            val (body, returnType) = processFunctionStatements(statements)
-            s"""$returnType $id(${args.mkString(",")}){$body}"""
+          case Function(id, args, Block(statements), returnType) =>
+            val (body, rt) = processFunctionStatements(statements, returnType)
+            s"""$rt $id(${args.mkString(",")}){$body}"""
 
-          case Function(id, args, NamedBlock(_, _, statements)) =>
-            val (body, returnType) = processFunctionStatements(statements)
-            s"""$returnType $id(${args.mkString(",")}){$body}"""
+          case Function(id, args, NamedBlock(_, _, statements), returnType) =>
+            val (body, rt) = processFunctionStatements(statements, returnType)
+            s"""$rt $id(${args.mkString(",")}){$body}"""
 
-          case Function(id, args, body) =>
+          case Function(id, args, body, returnType) =>
             s"""void $id(${args.mkString(",")}){${body.render}}"""
 
           case CallFunction(id, args) =>

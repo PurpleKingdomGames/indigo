@@ -46,7 +46,8 @@ object ProceduralShaderSamples:
         Function(
           "fn0",
           List("env"),
-          Block(List(NamedBlock("", "Program", List(vec4(List(float(1), float(1), float(0), float(1)))))))
+          Block(List(NamedBlock("", "Program", List(vec4(List(float(1), float(1), float(0), float(1))))))),
+          None
         )
       ),
       NamedBlock("", "Shader", List(Block(List(Block(List(CallFunction("fn0", Nil), Empty()))))))

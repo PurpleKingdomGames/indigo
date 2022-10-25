@@ -60,7 +60,7 @@ object ShaderMacros:
         case DefDef("$anonfun", List(TermParamClause(List(ValDef(argName, _, _)))), _, Some(term)) =>
           log(Printer.TreeStructure.show(s))
           val fn = nextFnName
-          shaderDefs += ShaderAST.Function(fn, List(argName), walkTerm(term))
+          shaderDefs += ShaderAST.Function(fn, List(argName), walkTerm(term), None)
           ShaderAST.CallFunction(fn, Nil)
 
         case DefDef(_, _, _, _) =>
@@ -76,6 +76,27 @@ object ShaderMacros:
 
     def walkTree(t: Tree): ShaderAST =
       t match
+        case TypeIdent("Unit") =>
+          ShaderAST.DataTypes.ident("void")
+
+        case TypeIdent("Float") =>
+          ShaderAST.DataTypes.ident("float")
+
+        case TypeIdent("Int") =>
+          ShaderAST.DataTypes.ident("int")
+
+        case TypeIdent("vec2") =>
+          ShaderAST.DataTypes.ident("vec2")
+
+        case TypeIdent("vec3") =>
+          ShaderAST.DataTypes.ident("vec3")
+
+        case TypeIdent("vec4") =>
+          ShaderAST.DataTypes.ident("vec4")
+
+        case TypeIdent("rgba") =>
+          ShaderAST.DataTypes.ident("vec4")
+
         case PackageClause(_, _) =>
           throw new Exception("Shaders do not support packages.")
 
@@ -105,10 +126,6 @@ object ShaderMacros:
 
         case Apply(Select(Ident("rgba"), "apply"), args) =>
           log(Printer.TreeStructure.show(t))
-          println("rgba")
-          println(args.length)
-          // println(Printer.TreeStructure.show(args(0)))
-          println(Printer.TreeStructure.show(args(1)))
           ShaderAST.DataTypes.vec4(args.map(p => walkTerm(p)))
 
         case Apply(Select(Ident(id), "apply"), List(x)) =>
@@ -169,6 +186,26 @@ object ShaderMacros:
         case TypeApply(term, _) =>
           log(Printer.TreeStructure.show(t))
           walkTerm(term)
+
+        case Typed(Block(List(DefDef(_, args, _, Some(term))), Closure(Ident("$anonfun"), None)), Applied(_, types)) =>
+          log(Printer.TreeStructure.show(t))
+
+          val typesRendered = types.map(walkTree).map(_.render)
+
+          val returnType: String =
+            typesRendered.reverse.headOption.getOrElse("")
+
+          val argNames =
+            args.collect { case TermParamClause(List(ValDef(name, _, _))) => name }
+
+          val arguments = typesRendered
+            .dropRight(1)
+            .zip(argNames)
+            .map { case (typ, nme) => s"""$typ $nme""" }
+
+          val fn = nextFnName
+          shaderDefs += ShaderAST.Function(fn, arguments, walkTerm(term), Option(returnType))
+          ShaderAST.CallFunction(fn, Nil)
 
         case Typed(term, _) =>
           log(Printer.TreeStructure.show(t))
