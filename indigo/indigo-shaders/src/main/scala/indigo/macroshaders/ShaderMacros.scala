@@ -57,10 +57,17 @@ object ShaderMacros:
         case ValDef(name, _, None) =>
           throw new Exception("Shaders do not support val's with no values.")
 
-        case DefDef("$anonfun", List(TermParamClause(List(ValDef(argName, _, _)))), _, Some(term)) =>
+        case DefDef("$anonfun", args, _, Some(term)) =>
           log(Printer.TreeStructure.show(s))
+
+          val argNames =
+            args
+              .collect { case TermParamClause(ps) => ps }
+              .flatten
+              .collect { case ValDef(name, _, _) => name }
+
           val fn = nextFnName
-          shaderDefs += ShaderAST.Function(fn, List(argName), walkTerm(term), None)
+          shaderDefs += ShaderAST.Function(fn, argNames, walkTerm(term), None)
           ShaderAST.CallFunction(fn, Nil)
 
         case DefDef(_, _, _, _) =>
@@ -96,6 +103,9 @@ object ShaderMacros:
 
         case TypeIdent("rgba") =>
           ShaderAST.DataTypes.ident("vec4")
+
+        case TypeIdent(name) =>
+          throw new Exception(s"Could not identify type: $name")
 
         case PackageClause(_, _) =>
           throw new Exception("Shaders do not support packages.")
@@ -150,7 +160,7 @@ object ShaderMacros:
           log(Printer.TreeStructure.show(t))
           walkTerm(x)
 
-        case Apply(Select(term, _), List(x)) =>
+        case Apply(Select(term, _), xs) =>
           log(Printer.TreeStructure.show(t))
 
           walkTerm(term).find {
@@ -158,10 +168,10 @@ object ShaderMacros:
             case _                                => false
           } match
             case Some(ShaderAST.CallFunction(id, args)) =>
-              ShaderAST.CallFunction(id, List(walkTerm(x)))
+              ShaderAST.CallFunction(id, xs.map(walkTerm))
 
             case _ =>
-              walkTerm(x)
+              ShaderAST.Block(xs.map(walkTerm))
 
         case Inlined(None, _, term) =>
           log(Printer.TreeStructure.show(t))
@@ -187,7 +197,10 @@ object ShaderMacros:
           log(Printer.TreeStructure.show(t))
           walkTerm(term)
 
-        case Typed(Block(List(DefDef(_, args, _, Some(term))), Closure(Ident("$anonfun"), None)), Applied(_, types)) =>
+        case Typed(
+              Block(List(DefDef(_, args, _, Some(term))), Closure(Ident("$anonfun"), None)),
+              Applied(_, types)
+            ) =>
           log(Printer.TreeStructure.show(t))
 
           val typesRendered = types.map(walkTree).map(_.render)
@@ -196,7 +209,10 @@ object ShaderMacros:
             typesRendered.reverse.headOption.getOrElse("")
 
           val argNames =
-            args.collect { case TermParamClause(List(ValDef(name, _, _))) => name }
+            args
+              .collect { case TermParamClause(ps) => ps }
+              .flatten
+              .collect { case ValDef(name, _, _) => name }
 
           val arguments = typesRendered
             .dropRight(1)

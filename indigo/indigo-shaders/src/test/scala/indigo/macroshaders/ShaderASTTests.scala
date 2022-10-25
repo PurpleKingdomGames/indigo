@@ -143,6 +143,51 @@ class ShaderASTTests extends munit.FunSuite {
     assert(clue(p))
   }
 
+  test("Inlined external function N args") {
+
+    // Is inlined, which might not be what we want?
+    inline def xy(red: Float, green: Float): vec2 =
+      vec2(red, green)
+
+    // Is treated like a function
+    inline def zw: (Float, Float) => vec2 =
+      (blue, alpha) => vec2(blue, alpha)
+
+    inline def fragment: Shader[FragEnv, rgba] =
+      Shader { env =>
+        Program(rgba(xy(1.0f, 0.25f), zw(0.5f, 1.0f)))
+      }
+
+    val actual =
+      ShaderMacros.toAST(fragment)
+
+    // println(">>>>>>")
+    // println(actual)
+    // println("----")
+    // println(fragment.toGLSL)
+    // println("<<<<<<")
+
+    val p: Boolean = {
+      import ShaderAST.*
+      import ShaderAST.DataTypes.*
+
+      val expected1 =
+        Function(
+          "fn1",
+          List("float blue", "float alpha"),
+          Block(List(vec2(List(ident("blue"), ident("alpha"))))),
+          Some("vec2")
+        )
+
+      val expected2 =
+        vec2(1.0f, 0.25f)
+
+      actual.exists(_ == expected1) && actual.exists(_ == expected2)
+    }
+
+    assert(p)
+  }
+
   // test("flatMapped Program") {
 
   //   inline def zw: vec2 = vec2(0.0f, 1.0f)
