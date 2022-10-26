@@ -12,6 +12,8 @@ object ShaderAST:
         case v: Empty        => Expr(v)
         case v: Block        => Expr(v)
         case v: NamedBlock   => Expr(v)
+        case v: ShaderBlock  => Expr(v)
+        case v: ProgramBlock => Expr(v)
         case v: Function     => Expr(v)
         case v: CallFunction => Expr(v)
         case v: DataTypes    => Expr(v)
@@ -45,6 +47,28 @@ object ShaderAST:
     def apply(namespace: String, id: String, statements: ShaderAST*): NamedBlock =
       NamedBlock(namespace, id, statements.toList)
 
+  // Specifically handles our 'Shader' type
+  final case class ShaderBlock(statements: List[ShaderAST]) extends ShaderAST
+  object ShaderBlock:
+    given ToExpr[ShaderBlock] with {
+      def apply(x: ShaderBlock)(using Quotes): Expr[ShaderBlock] =
+        '{ ShaderBlock(${ Expr(x.statements) }) }
+    }
+
+    def apply(envVarName: String, statements: ShaderAST*): ShaderBlock =
+      ShaderBlock(statements.toList)
+
+  // Specifically handles our 'Program' type
+  final case class ProgramBlock(statements: List[ShaderAST]) extends ShaderAST
+  object ProgramBlock:
+    given ToExpr[ProgramBlock] with {
+      def apply(x: ProgramBlock)(using Quotes): Expr[ProgramBlock] =
+        '{ ProgramBlock(${ Expr(x.statements) }) }
+    }
+
+    def apply(statements: ShaderAST*): ProgramBlock =
+      ProgramBlock(statements.toList)
+
   final case class Function(id: String, args: List[String], body: ShaderAST, returnType: Option[String])
       extends ShaderAST
   object Function:
@@ -52,11 +76,11 @@ object ShaderAST:
       def apply(x: Function)(using Quotes): Expr[Function] =
         '{ Function(${ Expr(x.id) }, ${ Expr(x.args) }, ${ Expr(x.body) }, ${ Expr(x.returnType) }) }
     }
-  final case class CallFunction(id: String, args: List[ShaderAST]) extends ShaderAST
+  final case class CallFunction(id: String, args: List[ShaderAST], argNames: List[String]) extends ShaderAST
   object CallFunction:
     given ToExpr[CallFunction] with {
       def apply(x: CallFunction)(using Quotes): Expr[CallFunction] =
-        '{ CallFunction(${ Expr(x.id) }, ${ Expr(x.args) }) }
+        '{ CallFunction(${ Expr(x.id) }, ${ Expr(x.args) }, ${ Expr(x.argNames) }) }
     }
 
   final case class Val(id: String, value: ShaderAST) extends ShaderAST
@@ -141,8 +165,10 @@ object ShaderAST:
               case Empty()                 => rec(xs)
               case Block(s)                => rec(s ++ xs)
               case NamedBlock(_, _, s)     => rec(s ++ xs)
+              case ShaderBlock(s)          => rec(s ++ xs)
+              case ProgramBlock(s)         => rec(s ++ xs)
               case Function(_, _, body, _) => rec(body :: xs)
-              case CallFunction(_, _)      => rec(xs)
+              case CallFunction(_, _, _)   => rec(xs)
               case Val(_, body)            => rec(body :: xs)
               case v: DataTypes.closure    => rec(v.body :: xs)
               case v: DataTypes.ident      => rec(xs)
@@ -174,8 +200,10 @@ object ShaderAST:
         case v @ Empty()                              => f(v)
         case v @ Block(s)                             => f(Block(s.map(f)))
         case v @ NamedBlock(ns, id, s)                => f(NamedBlock(ns, id, s))
+        case v @ ShaderBlock(s)                       => f(ShaderBlock(s))
+        case v @ ProgramBlock(s)                      => f(ProgramBlock(s))
         case v @ Function(id, args, body, returnType) => f(Function(id, args, f(body), returnType))
-        case v @ CallFunction(_, _)                   => f(v)
+        case v @ CallFunction(_, _, _)                => f(v)
         case v @ Val(id, value)                       => f(Val(id, f(value)))
         case v @ DataTypes.closure(body, typeOf)      => f(DataTypes.closure(f(body), typeOf))
         case v @ DataTypes.float(_)                   => f(v)
@@ -220,13 +248,19 @@ object ShaderAST:
             case None        => last.headOption.flatMap(decideType).getOrElse("void")
             case Some(value) => value
 
-        val body =
-          (if init.isEmpty then ""
-           else init.map(_.render).filterNot(_.isEmpty).mkString("", ";", ";")) +
-            last.headOption
-              .map(ss => (if returnType != "void" then "return " else "") + ss.render + ";")
-              .getOrElse("")
-        (body, returnType)
+        val body = {
+          if init.isEmpty then ""
+          else init.map(_.render).filterNot(_.isEmpty).mkString("", ";", ";")
+        } +
+          last.headOption
+            .map(ss => (if returnType != "void" then "return " else "") + ss.render + ";")
+            .getOrElse("")
+            .replace(";;", ";") // Some Scala elements are removed completely, but still are a statement techincally.
+
+        (
+          body,
+          returnType
+        )
 
       val res =
         ast match
@@ -236,11 +270,11 @@ object ShaderAST:
           case Block(statements) =>
             processStatements(statements)
 
-          case NamedBlock(_, "Shader", statements) =>
+          case ShaderBlock(statements) =>
             val (body, rt) = processFunctionStatements(statements, None)
             s"""void fragment(){COLOR=$body}"""
 
-          case NamedBlock(_, "Program", statements) =>
+          case ProgramBlock(statements) =>
             processStatements(statements)
 
           case NamedBlock(namespace, id, statements) =>
@@ -260,7 +294,7 @@ object ShaderAST:
           case Function(id, args, body, returnType) =>
             s"""void $id(${args.mkString(",")}){${body.render}}"""
 
-          case CallFunction(id, args) =>
+          case CallFunction(id, args, _) =>
             s"""$id(${args.map(_.render).mkString(",")})"""
 
           case DataTypes.closure(body, typeOf) =>

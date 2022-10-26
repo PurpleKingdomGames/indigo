@@ -50,5 +50,5 @@ object ProceduralShaderSamples:
           None
         )
       ),
-      NamedBlock("", "Shader", List(Block(List(Block(List(CallFunction("fn0", Nil), Empty()))))))
+      NamedBlock("", "Shader", List(Block(List(Block(List(CallFunction("fn0", Nil, List("env")), Empty()))))))
     )

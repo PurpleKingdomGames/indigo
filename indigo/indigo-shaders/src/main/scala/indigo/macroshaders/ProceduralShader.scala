@@ -17,16 +17,16 @@ object ProceduralShader:
       def envName(ast: ShaderAST): Option[String] =
         for {
           b <- ast.find {
-            case NamedBlock(_, "Shader", _) => true
-            case _                          => false
+            case ShaderBlock(_) => true
+            case _              => false
           }
           f <- b.find {
-            case CallFunction(_, _) => true
-            case _                  => false
+            case CallFunction(_, _, _) => true
+            case _                     => false
           }
           n <- f match {
-            case CallFunction(_, name :: _) => Option(name)
-            case _                          => None
+            case CallFunction(_, _, name :: _) => Option(name)
+            case _                             => None
           }
         } yield n.toString()
 

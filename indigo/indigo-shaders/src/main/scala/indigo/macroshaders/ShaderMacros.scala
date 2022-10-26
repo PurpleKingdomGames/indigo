@@ -68,7 +68,7 @@ object ShaderMacros:
 
           val fn = nextFnName
           shaderDefs += ShaderAST.Function(fn, argNames, walkTerm(term), None)
-          ShaderAST.CallFunction(fn, Nil)
+          ShaderAST.CallFunction(fn, Nil, argNames)
 
         case DefDef(_, _, _, _) =>
           log(Printer.TreeStructure.show(s))
@@ -122,6 +122,14 @@ object ShaderMacros:
 
         // Specific hooks we care about
 
+        case Apply(TypeApply(Select(Ident("Shader"), "apply"), _), body) =>
+          log(Printer.TreeStructure.show(t))
+          ShaderAST.ShaderBlock(body.map(p => walkTerm(p)))
+
+        case Apply(TypeApply(Select(Ident("Program"), "apply"), _), body) =>
+          log(Printer.TreeStructure.show(t))
+          ShaderAST.ProgramBlock(body.map(p => walkTerm(p)))
+
         case Apply(Select(Ident("vec2"), "apply"), args) =>
           log(Printer.TreeStructure.show(t))
           ShaderAST.DataTypes.vec2(args.map(p => walkTerm(p)))
@@ -164,11 +172,11 @@ object ShaderMacros:
           log(Printer.TreeStructure.show(t))
 
           walkTerm(term).find {
-            case ShaderAST.CallFunction(id, args) => true
+            case ShaderAST.CallFunction(_, _, _) => true
             case _                                => false
           } match
-            case Some(ShaderAST.CallFunction(id, args)) =>
-              ShaderAST.CallFunction(id, xs.map(walkTerm))
+            case Some(ShaderAST.CallFunction(id, args, argNames)) =>
+              ShaderAST.CallFunction(id, xs.map(walkTerm), argNames)
 
             case _ =>
               ShaderAST.Block(xs.map(walkTerm))
@@ -221,7 +229,7 @@ object ShaderMacros:
 
           val fn = nextFnName
           shaderDefs += ShaderAST.Function(fn, arguments, walkTerm(term), Option(returnType))
-          ShaderAST.CallFunction(fn, Nil)
+          ShaderAST.CallFunction(fn, Nil, argNames)
 
         case Typed(term, _) =>
           log(Printer.TreeStructure.show(t))

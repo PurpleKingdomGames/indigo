@@ -20,17 +20,15 @@ class ShaderASTTests extends munit.FunSuite {
             List("env"),
             Block(
               List(
-                NamedBlock("", "Program", List(vec4(List(float(1), float(1), float(0), float(1)))))
+                ProgramBlock(List(vec4(List(float(1), float(1), float(0), float(1)))))
               )
             ),
             None
           )
         ),
-        NamedBlock(
-          "",
-          "Shader",
+        ShaderBlock(
           List(
-            Block(List(Block(List(CallFunction("fn0", Nil)))))
+            Block(List(Block(List(CallFunction("fn0", Nil, List("env"))))))
           )
         )
       )
@@ -188,35 +186,25 @@ class ShaderASTTests extends munit.FunSuite {
     assert(p)
   }
 
+  test("Programs can use an env value like env.UV as UV") {
+    inline def fragment: Shader[FragEnv, rgba] =
+      Shader { env =>
+        Program(rgba(env.UV, 0.0f, 1.0f))
+      }
+
+    val actual =
+      ShaderMacros.toAST(fragment)
+
+    // println(">>>>>>")
+    // println(actual)
+    // println("----")
+    // println(fragment.toGLSL)
+    // println("<<<<<<")
+
+    assert(clue(actual.render).contains("vec4(UV,0.0,1.0)"))
+  }
+
   // test("flatMapped Program") {
-
-  //   inline def zw: vec2 = vec2(0.0f, 1.0f)
-
-  //   inline def fragment: Shader[FragEnv, rgba] =
-  //     Shader { env =>
-  //       Program(rgba(1.0f, 1.0f, zw))
-  //     }
-
-  //   val actual =
-  //     ShaderMacros.toAST(fragment)
-
-  //   // println(">>>>>>")
-  //   // println(actual)
-  //   // println("----")
-  //   // println(fragment.toGLSL)
-  //   // println("<<<<<<")
-
-  //   val p: Boolean = {
-  //     import ShaderAST.*
-  //     import ShaderAST.DataTypes.*
-
-  //     actual.exists(_ == vec4(List(float(1), float(1), vec2(0.0f, 1.0f))))
-  //   }
-
-  //   assert(clue(p))
-  // }
-
-  // test("Programs can use an env value like env.UV") {
 
   //   inline def zw: vec2 = vec2(0.0f, 1.0f)
 
