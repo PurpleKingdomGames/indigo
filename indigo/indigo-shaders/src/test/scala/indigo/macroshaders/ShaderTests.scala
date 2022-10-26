@@ -45,4 +45,25 @@ class ShaderTests extends munit.FunSuite {
     assert(f.asks((str: String) => str.length()).run("hello") == 5)
   }
 
+  test("combine") {
+    val f = Shader.pure[String, Int](10) |*| Shader(20)
+    assert(f.run("") == (10, 20))
+  }
+
+  test("merge") {
+    val f = (Shader.pure[String, Int](10) merge Shader(20))(_ + _)
+    assert(f.run("") == 30)
+  }
+
+  test("pipe") {
+    val f = Shader.pure[String, Int](10) |> Pipeline(_ + 20)
+    assert(f.run("") == 30)
+  }
+
+  test("Can read environment") {
+    val f = Shader[String, List[String]](word => List.fill(3)(word))
+    assert(f("foo").length == 3)
+    assert(f("foo").forall(_ == "foo"))
+  }
+
 }

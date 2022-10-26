@@ -126,10 +126,6 @@ object ShaderMacros:
           log(Printer.TreeStructure.show(t))
           ShaderAST.ShaderBlock(body.map(p => walkTerm(p)))
 
-        case Apply(TypeApply(Select(Ident("Program"), "apply"), _), body) =>
-          log(Printer.TreeStructure.show(t))
-          ShaderAST.ProgramBlock(body.map(p => walkTerm(p)))
-
         case Apply(Select(Ident("vec2"), "apply"), args) =>
           log(Printer.TreeStructure.show(t))
           ShaderAST.DataTypes.vec2(args.map(p => walkTerm(p)))

@@ -13,7 +13,6 @@ object ShaderAST:
         case v: Block        => Expr(v)
         case v: NamedBlock   => Expr(v)
         case v: ShaderBlock  => Expr(v)
-        case v: ProgramBlock => Expr(v)
         case v: Function     => Expr(v)
         case v: CallFunction => Expr(v)
         case v: DataTypes    => Expr(v)
@@ -57,17 +56,6 @@ object ShaderAST:
 
     def apply(envVarName: String, statements: ShaderAST*): ShaderBlock =
       ShaderBlock(statements.toList)
-
-  // Specifically handles our 'Program' type
-  final case class ProgramBlock(statements: List[ShaderAST]) extends ShaderAST
-  object ProgramBlock:
-    given ToExpr[ProgramBlock] with {
-      def apply(x: ProgramBlock)(using Quotes): Expr[ProgramBlock] =
-        '{ ProgramBlock(${ Expr(x.statements) }) }
-    }
-
-    def apply(statements: ShaderAST*): ProgramBlock =
-      ProgramBlock(statements.toList)
 
   final case class Function(id: String, args: List[String], body: ShaderAST, returnType: Option[String])
       extends ShaderAST
@@ -166,7 +154,6 @@ object ShaderAST:
               case Block(s)                => rec(s ++ xs)
               case NamedBlock(_, _, s)     => rec(s ++ xs)
               case ShaderBlock(s)          => rec(s ++ xs)
-              case ProgramBlock(s)         => rec(s ++ xs)
               case Function(_, _, body, _) => rec(body :: xs)
               case CallFunction(_, _, _)   => rec(xs)
               case Val(_, body)            => rec(body :: xs)
@@ -201,7 +188,6 @@ object ShaderAST:
         case v @ Block(s)                             => f(Block(s.map(f)))
         case v @ NamedBlock(ns, id, s)                => f(NamedBlock(ns, id, s))
         case v @ ShaderBlock(s)                       => f(ShaderBlock(s))
-        case v @ ProgramBlock(s)                      => f(ProgramBlock(s))
         case v @ Function(id, args, body, returnType) => f(Function(id, args, f(body), returnType))
         case v @ CallFunction(_, _, _)                => f(v)
         case v @ Val(id, value)                       => f(Val(id, f(value)))
@@ -273,9 +259,6 @@ object ShaderAST:
           case ShaderBlock(statements) =>
             val (body, rt) = processFunctionStatements(statements, None)
             s"""void fragment(){COLOR=$body}"""
-
-          case ProgramBlock(statements) =>
-            processStatements(statements)
 
           case NamedBlock(namespace, id, statements) =>
             s"""$namespace$id {${processStatements(statements)}}"""

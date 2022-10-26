@@ -82,7 +82,6 @@ final case class CustomShader(x: Int, y: Int, width: Int, height: Int, depth: De
 
 object CustomShader:
   import indigo.macroshaders.Shader
-  import indigo.macroshaders.Program
   import indigo.macroshaders.IndigoEntityFragment as FragEnv
   import indigo.macroshaders.ShaderDSL.*
 
@@ -93,21 +92,21 @@ object CustomShader:
     Shader { env =>
       val zero  = 0.0f
       val alpha = 1.0f
-      Program(rgba(env.UV, zero, alpha))
+      rgba(env.UV, zero, alpha)
     }
 
-  inline def circleSdf(p: vec2, r: Float): Program[Float] =
-    Program(length(p) - r)
+  inline def circleSdf(p: vec2, r: Float): Shader[FragEnv, Float] =
+    Shader(length(p) - r)
 
-  inline def calculateColour(uv: vec2, sdf: Float): Program[rgba] =
-    Program {
+  inline def calculateColour(uv: vec2, sdf: Float): Shader[FragEnv, rgba] =
+    Shader {
       val fill       = rgba(uv, 0.0f, 1.0f)
       val fillAmount = (1.0f - step(0.0f, sdf)) * fill.a
       rgba(fill.rgb * fillAmount, fillAmount)
     }
 
   inline def fragment2: Shader[FragEnv, rgba] =
-    Shader { env =>
+    Shader.ask[FragEnv].flatMap { env =>
       for {
         sdf    <- circleSdf(env.UV - 0.5f, 0.5f)
         colour <- calculateColour(env.UV, sdf)

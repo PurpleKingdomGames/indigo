@@ -20,7 +20,7 @@ class ShaderASTTests extends munit.FunSuite {
             List("env"),
             Block(
               List(
-                ProgramBlock(List(vec4(List(float(1), float(1), float(0), float(1)))))
+                vec4(List(float(1), float(1), float(0), float(1)))
               )
             ),
             None
@@ -35,7 +35,7 @@ class ShaderASTTests extends munit.FunSuite {
 
     inline def fragment: Shader[FragEnv, rgba] =
       Shader { env =>
-        Program(rgba(1.0f, 1.0f, 0.0f, 1.0f))
+        rgba(1.0f, 1.0f, 0.0f, 1.0f)
       }
 
     val actual =
@@ -56,7 +56,7 @@ class ShaderASTTests extends munit.FunSuite {
 
     inline def fragment: Shader[FragEnv, rgba] =
       Shader { env =>
-        Program(rgba(1.0f, 1.0f, 0.0f, alpha))
+        rgba(1.0f, 1.0f, 0.0f, alpha)
       }
 
     val actual =
@@ -84,7 +84,7 @@ class ShaderASTTests extends munit.FunSuite {
 
     inline def fragment: Shader[FragEnv, rgba] =
       Shader { env =>
-        Program(rgba(1.0f, 1.0f, zw))
+        rgba(1.0f, 1.0f, zw)
       }
 
     val actual =
@@ -116,7 +116,7 @@ class ShaderASTTests extends munit.FunSuite {
 
     inline def fragment: Shader[FragEnv, rgba] =
       Shader { env =>
-        Program(rgba(xy(1.0f), zw(1.0f)))
+        rgba(xy(1.0f), zw(1.0f))
       }
 
     val actual =
@@ -153,7 +153,7 @@ class ShaderASTTests extends munit.FunSuite {
 
     inline def fragment: Shader[FragEnv, rgba] =
       Shader { env =>
-        Program(rgba(xy(1.0f, 0.25f), zw(0.5f, 1.0f)))
+        rgba(xy(1.0f, 0.25f), zw(0.5f, 1.0f))
       }
 
     val actual =
@@ -189,7 +189,7 @@ class ShaderASTTests extends munit.FunSuite {
   test("Programs can use an env value like env.UV as UV") {
     inline def fragment: Shader[FragEnv, rgba] =
       Shader { env =>
-        Program(rgba(env.UV, 0.0f, 1.0f))
+        rgba(env.UV, 0.0f, 1.0f)
       }
 
     val actual =
