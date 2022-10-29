@@ -196,6 +196,11 @@ object ShaderMacros:
           log(Printer.TreeStructure.show(t))
           ShaderAST.DataTypes.vec4(args.map(p => walkTerm(p, defs, proxyLookUp)))
 
+        // Read a field
+
+        case Select(Inlined(None, Nil, Ident(obj)), fieldName) =>
+          ShaderAST.DataTypes.ident(s"$obj.$fieldName")
+
         // Native method call.
         case Apply(Ident(name), List(Inlined(None, Nil, Ident(defRef)))) =>
           val args = List(ShaderAST.DataTypes.ident(proxyLookUp.get(defRef).getOrElse(defRef)))
@@ -251,7 +256,6 @@ object ShaderMacros:
               val typ = p._1.typeIdent.map(_.render).getOrElse("void")
               s"$typ ${p._2}"
             }
-          // callArgs.map(_.typeIdent.map(_.render).getOrElse("void")).zip(argNames).map(p => s"${p._1} ${p._2}")
           val nextDefs = ds.map(walkStatement)
           val proxies = nextDefs.flatMap {
             case ShaderAST.Val(proxy, value) =>
