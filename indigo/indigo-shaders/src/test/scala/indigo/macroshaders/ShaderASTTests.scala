@@ -164,11 +164,11 @@ class ShaderASTTests extends munit.FunSuite {
     val actual =
       ShaderMacros.toAST(fragment)
 
-    println(">>>>>>")
-    println(actual)
-    println("----")
-    println(actual.render)
-    println("<<<<<<")
+    // println(">>>>>>")
+    // println(actual)
+    // println("----")
+    // println(actual.render)
+    // println("<<<<<<")
 
     val p: Boolean = {
       import ShaderAST.*
@@ -176,7 +176,7 @@ class ShaderASTTests extends munit.FunSuite {
 
       val expected1 =
         Function(
-          "fn2",
+          "fn1",
           List("float blue", "float alpha"),
           Block(List(vec2(List(ident("blue"), ident("alpha"))))),
           Some(ShaderAST.DataTypes.ident("vec2"))
@@ -229,7 +229,6 @@ class ShaderASTTests extends munit.FunSuite {
 
   test("can call a native function") {
 
-    // Part 1
     inline def circleSdf(p: vec2, r: Float): Float =
       length(p) - r
 

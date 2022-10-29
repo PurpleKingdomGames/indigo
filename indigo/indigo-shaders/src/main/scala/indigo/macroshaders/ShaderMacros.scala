@@ -198,7 +198,6 @@ object ShaderMacros:
 
         // Native method call.
         case Apply(Ident(name), List(Inlined(None, Nil, Ident(defRef)))) =>
-          println("-----" + name)
           val args = List(ShaderAST.DataTypes.ident(proxyLookUp.get(defRef).getOrElse(defRef)))
           ShaderAST.CallFunction(name, args, args.map(_.render), None)
 
@@ -216,19 +215,16 @@ object ShaderMacros:
 
             case Some(ShaderAST.CallFunction(id, args, argNames, rt)) =>
               op match
-                case "-" =>
+                case "+" | "-" | "*" | "/" =>
                   ShaderAST.Infix(
                     op,
                     ShaderAST.CallFunction(id, args, argNames, rt),
-                    ShaderAST.Block(xs.map(tt => walkTerm(tt, defs, proxyLookUp))),
+                    xs.headOption.map(tt => walkTerm(tt, defs, proxyLookUp)).getOrElse(ShaderAST.Empty()),
                     rt
                   )
 
                 case _ =>
-                  ShaderAST.Block(
-                    ShaderAST.CallFunction(id, args, argNames, rt) ::
-                      xs.map(tt => walkTerm(tt, defs, proxyLookUp))
-                  )
+                  ShaderAST.CallFunction(id, xs.map(tt => walkTerm(tt, defs, proxyLookUp)), argNames, rt)
 
             case _ =>
               ShaderAST.Block(xs.map(tt => walkTerm(tt, defs, proxyLookUp)))
@@ -246,11 +242,6 @@ object ShaderMacros:
 
         case Inlined(Some(Apply(Ident(name), args)), ds, Typed(term, typeTree)) =>
           log(Printer.TreeStructure.show(t))
-
-          if (name == "circleSdf") {
-            println("---------" + name)
-            println("defs      : " + ds.map(walkStatement).map(_.render))
-          }
 
           val argNames   = args.map(_ => nextVarName)
           val callArgs   = args.map(tt => walkTerm(tt, defs, proxyLookUp))
@@ -274,22 +265,8 @@ object ShaderMacros:
           val body       = walkTerm(term, nextDefs, proxies.toMap)
           val returnType = findReturnType(walkTree(typeTree))
 
-          if (name == "circleSdf") {
-            println("body      : " + body.render)
-            println("returnType: " + returnType.map(_.render).getOrElse("uh oh"))
-          }
-
           shaderDefs += ShaderAST.Function(name, fnArgs, body, returnType)
           ShaderAST.CallFunction(name, callArgs, argNames, returnType)
-
-        // case Inlined(Some(Apply(Ident(_), args)), _, term) =>
-        //   log(Printer.TreeStructure.show(t))
-
-        //   val body       = walkTerm(term, defs, proxyLookUp)
-        //   val returnType = findReturnType(body)
-        //   val fn         = nextFnName
-        //   shaderDefs += ShaderAST.Function(fn, Nil, body, returnType)
-        //   ShaderAST.CallFunction(fn, Nil, Nil, returnType)
 
         case Inlined(Some(Select(This(_), _)), _, term) =>
           log(Printer.TreeStructure.show(t))
