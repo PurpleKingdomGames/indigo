@@ -2,7 +2,7 @@ package indigo.macroshaders
 
 trait ShaderDSLOps extends ShaderDSLTypeExtensions:
 
-  def length(genType: Float | vec2 | vec3 | vec4 | rgba): Float =
+  def length(genType: Float | vec2 | vec3 | vec4): Float =
     genType match
       case f: Float =>
         Math.sqrt(Math.pow(f, 2.0f)).toFloat
@@ -22,8 +22,6 @@ trait ShaderDSLOps extends ShaderDSLTypeExtensions:
               Math.pow(w, 2.0f)
           )
           .toFloat
-      case c: rgba =>
-        length(c.toVec4)
 
   def step(edge: Float, x: Float): Float =
     if x < edge then 0.0f else 1.0f

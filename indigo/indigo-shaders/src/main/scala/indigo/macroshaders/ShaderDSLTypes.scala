@@ -1,7 +1,7 @@
 package indigo.macroshaders
 
 trait ShaderDSLTypes:
-  
+
   final case class vec2(x: Float, y: Float):
     def +(f: Float): vec2 = vec2(x + f, y + f)
     def -(f: Float): vec2 = vec2(x - f, y - f)
@@ -47,7 +47,6 @@ trait ShaderDSLTypes:
     def *(v: vec4): vec4 = vec4(x * v.x, y * v.y, z * v.z, w * v.w)
     def /(v: vec4): vec4 = vec4(x / v.x, y / v.y, z / v.z, w / v.w)
 
-    def toRGBA: rgba = rgba(x, y, z, w)
   object vec4:
     inline def apply(xy: vec2, z: Float, w: Float): vec4 =
       vec4(xy.x, xy.y, z, w)
@@ -69,32 +68,3 @@ trait ShaderDSLTypes:
 
     inline def apply(xyz: Float): vec4 =
       vec4(xyz, xyz, xyz, xyz)
-
-  final case class rgba(r: Float, g: Float, b: Float, a: Float):
-    def +(f: Float): rgba = rgba(r + f, g + f, b + f, a + f)
-    def -(f: Float): rgba = rgba(r - f, g - f, b - f, a - f)
-    def *(f: Float): rgba = rgba(r * f, g * f, b * f, a * f)
-    def /(f: Float): rgba = rgba(r / f, g / f, b / f, a / f)
-
-    def toVec4: vec4 = vec4(r, g, b, a)
-  object rgba:
-    inline def apply(rg: vec2, b: Float, a: Float): rgba =
-      rgba(rg.x, rg.y, b, a)
-
-    inline def apply(r: Float, gb: vec2, a: Float): rgba =
-      rgba(r, gb.x, gb.y, a)
-
-    inline def apply(r: Float, g: Float, ba: vec2): rgba =
-      rgba(r, g, ba.x, ba.y)
-
-    inline def apply(rg: vec2, ba: vec2): rgba =
-      rgba(rg.x, rg.y, ba.x, ba.y)
-
-    inline def apply(rgb: vec3, a: Float): rgba =
-      rgba(rgb.x, rgb.y, rgb.z, a)
-
-    inline def apply(r: Float, gba: vec3): rgba =
-      rgba(r, gba.x, gba.y, gba.z)
-
-    inline def apply(rgb: Float): rgba =
-      rgba(rgb, rgb, rgb, rgb)

@@ -44,7 +44,6 @@ object ShaderDSLGen {
     val vec2 = List("x", "y")
     val vec3 = List("x", "y", "z")
     val vec4 = List("x", "y", "z", "w")
-    val rgba = List("r", "g", "b", "a")
 
     def swizzles1(input: List[String]): List[List[String]] =
       input.map(c => List(c))
@@ -120,27 +119,6 @@ object ShaderDSLGen {
           "y" -> "y",
           "z" -> "z",
           "w" -> "w"
-        )
-      ),
-      extensionContent(
-        "rgba",
-        swizzles1(rgba) ++
-          swizzles2(rgba) ++
-          swizzles3(rgba) ++
-          swizzles4(rgba) ++
-          swizzles1(vec4) ++
-          swizzles2(vec4) ++
-          swizzles3(vec4) ++
-          swizzles4(vec4),
-        Map(
-          "r" -> "r",
-          "g" -> "g",
-          "b" -> "b",
-          "a" -> "a",
-          "x" -> "r",
-          "y" -> "g",
-          "z" -> "b",
-          "w" -> "a"
         )
       )
     ).mkString("\n")
