@@ -23,12 +23,12 @@ class ShaderASTTests extends munit.FunSuite {
                 vec4(List(float(1), float(1), float(0), float(1)))
               )
             ),
-            None
+            Some(ident("vec4"))
           )
         ),
         ShaderBlock(
           List(
-            Block(List(Block(List(CallFunction("fn0", Nil, List("env"))))))
+            Block(List(Block(List(CallFunction("fn0", Nil, List("env"), Some(ident("vec4")))))))
           )
         )
       )
@@ -133,7 +133,12 @@ class ShaderASTTests extends munit.FunSuite {
       import ShaderAST.DataTypes.*
 
       val expected =
-        Function("fn1", List("float alpha"), Block(List(vec2(List(float(0), ident("alpha"))))), Some("vec2"))
+        Function(
+          "fn2",
+          List("float alpha"),
+          Block(List(vec2(List(float(0), ident("alpha"))))),
+          Some(ShaderAST.DataTypes.ident("vec2"))
+        )
 
       actual.exists(_ == expected)
     }
@@ -171,10 +176,10 @@ class ShaderASTTests extends munit.FunSuite {
 
       val expected1 =
         Function(
-          "fn1",
+          "fn2",
           List("float blue", "float alpha"),
           Block(List(vec2(List(ident("blue"), ident("alpha"))))),
-          Some("vec2")
+          Some(ShaderAST.DataTypes.ident("vec2"))
         )
 
       val expected2 =
@@ -204,32 +209,63 @@ class ShaderASTTests extends munit.FunSuite {
     assert(clue(actual.render).contains("vec4(UV,0.0,1.0)"))
   }
 
-  // test("flatMapped Program") {
+  test("swizzling") {
+    inline def fragment: Shader[FragEnv, vec4] =
+      Shader { env =>
+        rgba(1.0f, 2.0f, 3.0f, 4.0f).abgr
+      }
 
-  //   inline def zw: vec2 = vec2(0.0f, 1.0f)
+    val actual =
+      ShaderMacros.toAST(fragment)
 
-  //   inline def fragment: Shader[FragEnv, rgba] =
-  //     Shader { env =>
-  //       Program(rgba(1.0f, 1.0f, zw))
-  //     }
+    // println(">>>>>>")
+    // println(actual)
+    // println("----")
+    // println(fragment.toGLSL)
+    // println("<<<<<<")
 
-  //   val actual =
-  //     ShaderMacros.toAST(fragment)
+    assert(clue(actual.render).contains("vec4(4.0,3.0,2.0,1.0)"))
+  }
 
-  //   // println(">>>>>>")
-  //   // println(actual)
-  //   // println("----")
-  //   // println(fragment.toGLSL)
-  //   // println("<<<<<<")
+//   test("Small procedural shader") {
 
-  //   val p: Boolean = {
-  //     import ShaderAST.*
-  //     import ShaderAST.DataTypes.*
+//     inline def circleSdf(p: vec2, r: Float): Float =
+//       length(p) - r
 
-  //     actual.exists(_ == vec4(List(float(1), float(1), vec2(0.0f, 1.0f))))
-  //   }
+//     inline def calculateColour(uv: vec2, sdf: Float): rgba =
+//       val fill       = rgba(uv, 0.0f, 1.0f)
+//       val fillAmount = (1.0f - step(0.0f, sdf)) * fill.a
+//       rgba(fill.rgb * fillAmount, fillAmount)
 
-  //   assert(clue(p))
-  // }
+//     inline def fragment: Shader[FragEnv, rgba] =
+//       Shader { env =>
+//         val sdf = circleSdf(env.UV - 0.5f, 0.5f)
+//         calculateColour(env.UV, sdf)
+//       }
+// /*
+// void circleSdf(){length(0.5)}
+// vec3 rgb(){fill;fill;return fill;}
+// vec4 calculateColour(){vec4 fill=vec4(UV,0.0,1.0);void fillAmount=step(fill.a);return vec4(rgb(fillAmount),fillAmount);}
+// void fn0(){void sdf=circleSdf();calculateColour();}
+// void fragment(){COLOR=fn0();}
+// */
+//     val actual =
+//       ShaderMacros.toAST(fragment)
+
+//     println(">>>>>>")
+//     println(actual)
+//     println("----")
+//     println(fragment.toGLSL)
+//     println("<<<<<<")
+
+//     val p: Boolean = {
+//       import ShaderAST.*
+//       import ShaderAST.DataTypes.*
+
+//       actual.exists(_ == vec4(List(float(1), float(1), vec2(0.0f, 1.0f))))
+//     }
+
+//     assert(clue(p))
+//   }
 
 }

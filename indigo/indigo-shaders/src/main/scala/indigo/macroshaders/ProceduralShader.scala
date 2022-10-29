@@ -21,11 +21,11 @@ object ProceduralShader:
             case _              => false
           }
           f <- b.find {
-            case CallFunction(_, _, _) => true
+            case CallFunction(_, _, _, _) => true
             case _                     => false
           }
           n <- f match {
-            case CallFunction(_, _, name :: _) => Option(name)
+            case CallFunction(_, _, name :: _, _) => Option(name)
             case _                             => None
           }
         } yield n.toString()

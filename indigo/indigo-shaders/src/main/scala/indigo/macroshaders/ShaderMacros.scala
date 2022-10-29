@@ -16,10 +16,15 @@ object ShaderMacros:
     import quotes.reflect.*
 
     var fnCount: Int = 0
-
     def nextFnName: String =
       val res = "fn" + fnCount.toString
       fnCount = fnCount + 1
+      res
+
+    var varCount: Int = 0
+    def nextVarName: String =
+      val res = "v" + varCount.toString
+      varCount = varCount + 1
       res
 
     val shaderDefs: ListBuffer[ShaderAST] = new ListBuffer()
@@ -35,6 +40,21 @@ object ShaderMacros:
         .dropInPlace(Math.max(0, toLog.length - count))
         .map(l => s"  ${l._2}) ${l._1}")
         .mkString("\n") + "\n\n"
+
+    def findReturnType: ShaderAST => Option[ShaderAST] =
+      case v: ShaderAST.Empty             => None
+      case v: ShaderAST.Block             => v.statements.reverse.headOption.flatMap(findReturnType)
+      case v: ShaderAST.NamedBlock        => v.statements.reverse.headOption.flatMap(findReturnType)
+      case v: ShaderAST.ShaderBlock       => v.statements.reverse.headOption.flatMap(findReturnType)
+      case v: ShaderAST.Function          => v.returnType
+      case v: ShaderAST.CallFunction      => v.returnType
+      case v: ShaderAST.Val               => findReturnType(v.value)
+      case v: ShaderAST.DataTypes.closure => v.typeIdent
+      case v: ShaderAST.DataTypes.ident   => v.typeIdent
+      case v: ShaderAST.DataTypes.float   => v.typeIdent
+      case v: ShaderAST.DataTypes.vec2    => v.typeIdent
+      case v: ShaderAST.DataTypes.vec3    => v.typeIdent
+      case v: ShaderAST.DataTypes.vec4    => v.typeIdent
 
     def walkStatement(s: Statement): ShaderAST =
       s match
@@ -66,9 +86,11 @@ object ShaderMacros:
               .flatten
               .collect { case ValDef(name, _, _) => name }
 
-          val fn = nextFnName
-          shaderDefs += ShaderAST.Function(fn, argNames, walkTerm(term), None)
-          ShaderAST.CallFunction(fn, Nil, argNames)
+          val fn         = nextFnName
+          val body       = walkTerm(term)
+          val returnType = findReturnType(body)
+          shaderDefs += ShaderAST.Function(fn, argNames, body, returnType)
+          ShaderAST.CallFunction(fn, Nil, argNames, returnType)
 
         case DefDef(_, _, _, _) =>
           log(Printer.TreeStructure.show(s))
@@ -164,18 +186,39 @@ object ShaderMacros:
           log(Printer.TreeStructure.show(t))
           walkTerm(x)
 
-        case Apply(Select(term, _), xs) =>
+        // Extension method applies...
+        case Apply(Select(Select(Inlined(_, _, _), "vec2"), "apply"), args) =>
+          log(Printer.TreeStructure.show(t))
+          ShaderAST.DataTypes.vec2(args.map(p => walkTerm(p)))
+
+        case Apply(Select(Select(Inlined(_, _, _), "vec3"), "apply"), args) =>
+          log(Printer.TreeStructure.show(t))
+          ShaderAST.DataTypes.vec3(args.map(p => walkTerm(p)))
+
+        case Apply(Select(Select(Inlined(_, _, _), "vec4"), "apply"), args) =>
+          log(Printer.TreeStructure.show(t))
+          ShaderAST.DataTypes.vec4(args.map(p => walkTerm(p)))
+
+        case Apply(Select(Select(Inlined(_, _, _), "rgba"), "apply"), args) =>
+          log(Printer.TreeStructure.show(t))
+          ShaderAST.DataTypes.vec4(args.map(p => walkTerm(p)))
+        //
+
+        case Apply(Select(term, _), xs) => // Losing the operator, e.g. '+' by using _?
           log(Printer.TreeStructure.show(t))
 
           walkTerm(term).find {
-            case ShaderAST.CallFunction(_, _, _) => true
-            case _                                => false
+            case ShaderAST.CallFunction(_, _, _, _) => true
+            case _                                  => false
           } match
-            case Some(ShaderAST.CallFunction(id, args, argNames)) =>
-              ShaderAST.CallFunction(id, xs.map(walkTerm), argNames)
+            case Some(ShaderAST.CallFunction(id, args, argNames, rt)) =>
+              ShaderAST.CallFunction(id, xs.map(walkTerm), argNames, rt)
 
             case _ =>
               ShaderAST.Block(xs.map(walkTerm))
+
+        case Apply(Ident(name), terms) =>
+          ShaderAST.CallFunction(name, terms.map(walkTerm), Nil, None)
 
         case Inlined(None, _, term) =>
           log(Printer.TreeStructure.show(t))
@@ -185,9 +228,14 @@ object ShaderMacros:
           log(Printer.TreeStructure.show(t))
           walkTerm(term)
 
-        case Inlined(Some(Apply(Ident(_), _)), _, term) =>
+        case Inlined(Some(Apply(Ident(name), args)), _, term) =>
           log(Printer.TreeStructure.show(t))
-          walkTerm(term)
+          
+          val body = walkTerm(term)
+          val returnType = findReturnType(body)
+          val fn         = nextFnName
+          shaderDefs += ShaderAST.Function(fn, Nil, body, returnType)
+          ShaderAST.CallFunction(fn, Nil, Nil, returnType)
 
         case Inlined(Some(Select(This(_), _)), _, term) =>
           log(Printer.TreeStructure.show(t))
@@ -207,10 +255,10 @@ object ShaderMacros:
             ) =>
           log(Printer.TreeStructure.show(t))
 
-          val typesRendered = types.map(walkTree).map(_.render)
+          val typesRendered: List[ShaderAST] = types.map(walkTree)
 
-          val returnType: String =
-            typesRendered.reverse.headOption.getOrElse("")
+          val returnType: Option[ShaderAST] =
+            typesRendered.reverse.headOption
 
           val argNames =
             args
@@ -221,11 +269,11 @@ object ShaderMacros:
           val arguments = typesRendered
             .dropRight(1)
             .zip(argNames)
-            .map { case (typ, nme) => s"""$typ $nme""" }
+            .map { case (typ, nme) => s"""${typ.render} $nme""" }
 
           val fn = nextFnName
-          shaderDefs += ShaderAST.Function(fn, arguments, walkTerm(term), Option(returnType))
-          ShaderAST.CallFunction(fn, Nil, argNames)
+          shaderDefs += ShaderAST.Function(fn, arguments, walkTerm(term), returnType)
+          ShaderAST.CallFunction(fn, Nil, argNames, returnType)
 
         case Typed(term, _) =>
           log(Printer.TreeStructure.show(t))

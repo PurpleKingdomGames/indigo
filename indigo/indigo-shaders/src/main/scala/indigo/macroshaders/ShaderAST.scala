@@ -57,18 +57,23 @@ object ShaderAST:
     def apply(envVarName: String, statements: ShaderAST*): ShaderBlock =
       ShaderBlock(statements.toList)
 
-  final case class Function(id: String, args: List[String], body: ShaderAST, returnType: Option[String])
+  final case class Function(id: String, args: List[String], body: ShaderAST, returnType: Option[ShaderAST])
       extends ShaderAST
   object Function:
     given ToExpr[Function] with {
       def apply(x: Function)(using Quotes): Expr[Function] =
         '{ Function(${ Expr(x.id) }, ${ Expr(x.args) }, ${ Expr(x.body) }, ${ Expr(x.returnType) }) }
     }
-  final case class CallFunction(id: String, args: List[ShaderAST], argNames: List[String]) extends ShaderAST
+  final case class CallFunction(
+      id: String,
+      args: List[ShaderAST],
+      argNames: List[String],
+      returnType: Option[ShaderAST]
+  ) extends ShaderAST
   object CallFunction:
     given ToExpr[CallFunction] with {
       def apply(x: CallFunction)(using Quotes): Expr[CallFunction] =
-        '{ CallFunction(${ Expr(x.id) }, ${ Expr(x.args) }, ${ Expr(x.argNames) }) }
+        '{ CallFunction(${ Expr(x.id) }, ${ Expr(x.args) }, ${ Expr(x.argNames) }, ${ Expr(x.returnType) }) }
     }
 
   final case class Val(id: String, value: ShaderAST) extends ShaderAST
@@ -149,20 +154,20 @@ object ShaderAST:
           case Nil => None
           case x :: xs =>
             x match
-              case v if p(v)               => Option(v)
-              case Empty()                 => rec(xs)
-              case Block(s)                => rec(s ++ xs)
-              case NamedBlock(_, _, s)     => rec(s ++ xs)
-              case ShaderBlock(s)          => rec(s ++ xs)
-              case Function(_, _, body, _) => rec(body :: xs)
-              case CallFunction(_, _, _)   => rec(xs)
-              case Val(_, body)            => rec(body :: xs)
-              case v: DataTypes.closure    => rec(v.body :: xs)
-              case v: DataTypes.ident      => rec(xs)
-              case v: DataTypes.float      => rec(xs)
-              case v: DataTypes.vec2       => rec(v.args ++ xs)
-              case v: DataTypes.vec3       => rec(v.args ++ xs)
-              case v: DataTypes.vec4       => rec(v.args ++ xs)
+              case v if p(v)                => Option(v)
+              case Empty()                  => rec(xs)
+              case Block(s)                 => rec(s ++ xs)
+              case NamedBlock(_, _, s)      => rec(s ++ xs)
+              case ShaderBlock(s)           => rec(s ++ xs)
+              case Function(_, _, body, _)  => rec(body :: xs)
+              case CallFunction(_, _, _, _) => rec(xs)
+              case Val(_, body)             => rec(body :: xs)
+              case v: DataTypes.closure     => rec(v.body :: xs)
+              case v: DataTypes.ident       => rec(xs)
+              case v: DataTypes.float       => rec(xs)
+              case v: DataTypes.vec2        => rec(v.args ++ xs)
+              case v: DataTypes.vec3        => rec(v.args ++ xs)
+              case v: DataTypes.vec4        => rec(v.args ++ xs)
 
       rec(List(ast))
 
@@ -189,7 +194,7 @@ object ShaderAST:
         case v @ NamedBlock(ns, id, s)                => f(NamedBlock(ns, id, s))
         case v @ ShaderBlock(s)                       => f(ShaderBlock(s))
         case v @ Function(id, args, body, returnType) => f(Function(id, args, f(body), returnType))
-        case v @ CallFunction(_, _, _)                => f(v)
+        case v @ CallFunction(_, _, _, _)             => f(v)
         case v @ Val(id, value)                       => f(Val(id, f(value)))
         case v @ DataTypes.closure(body, typeOf)      => f(DataTypes.closure(f(body), typeOf))
         case v @ DataTypes.float(_)                   => f(v)
@@ -197,6 +202,22 @@ object ShaderAST:
         case v @ DataTypes.vec2(vs)                   => f(DataTypes.vec2(vs.map(f)))
         case v @ DataTypes.vec3(vs)                   => f(DataTypes.vec3(vs.map(f)))
         case v @ DataTypes.vec4(vs)                   => f(DataTypes.vec4(vs.map(f)))
+
+    def typeIdent: Option[ShaderAST.DataTypes.ident] =
+      ast match
+        case Empty()                      => None
+        case Block(_)                     => None
+        case NamedBlock(_, _, _)          => None
+        case ShaderBlock(_)               => None
+        case Function(_, _, _, rt)        => rt.flatMap(_.typeIdent)
+        case CallFunction(_, _, _, rt)    => rt.flatMap(_.typeIdent)
+        case Val(id, value)               => value.typeIdent
+        case n @ DataTypes.ident(_)       => Option(n)
+        case DataTypes.closure(_, typeOf) => typeOf.map(t => ShaderAST.DataTypes.ident(t))
+        case DataTypes.float(_)           => Option(ShaderAST.DataTypes.ident("float"))
+        case DataTypes.vec2(_)            => Option(ShaderAST.DataTypes.ident("vec2"))
+        case DataTypes.vec3(_)            => Option(ShaderAST.DataTypes.ident("vec3"))
+        case DataTypes.vec4(_)            => Option(ShaderAST.DataTypes.ident("vec4"))
 
     @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
     def render: String =
@@ -267,17 +288,18 @@ object ShaderAST:
             throw new Exception("Failed to render shader, unnamed function definition found.")
 
           case Function(id, args, Block(statements), returnType) =>
-            val (body, rt) = processFunctionStatements(statements, returnType)
+            val (body, rt) = processFunctionStatements(statements, returnType.map(_.render))
             s"""$rt $id(${args.mkString(",")}){$body}"""
 
           case Function(id, args, NamedBlock(_, _, statements), returnType) =>
-            val (body, rt) = processFunctionStatements(statements, returnType)
+            val (body, rt) = processFunctionStatements(statements, returnType.map(_.render))
             s"""$rt $id(${args.mkString(",")}){$body}"""
 
-          case Function(id, args, body, returnType) =>
-            s"""void $id(${args.mkString(",")}){${body.render}}"""
+          case Function(id, args, statement, returnType) =>
+            val (body, rt) = processFunctionStatements(List(statement), returnType.map(_.render))
+            s"""$rt $id(${args.mkString(",")}){$body}"""
 
-          case CallFunction(id, args, _) =>
+          case CallFunction(id, args, _, _) =>
             s"""$id(${args.map(_.render).mkString(",")})"""
 
           case DataTypes.closure(body, typeOf) =>
