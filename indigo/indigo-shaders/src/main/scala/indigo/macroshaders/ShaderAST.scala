@@ -15,6 +15,7 @@ object ShaderAST:
         case v: ShaderBlock  => Expr(v)
         case v: Function     => Expr(v)
         case v: CallFunction => Expr(v)
+        case v: Infix        => Expr(v)
         case v: DataTypes    => Expr(v)
         case v: Val          => Expr(v)
   }
@@ -74,6 +75,17 @@ object ShaderAST:
     given ToExpr[CallFunction] with {
       def apply(x: CallFunction)(using Quotes): Expr[CallFunction] =
         '{ CallFunction(${ Expr(x.id) }, ${ Expr(x.args) }, ${ Expr(x.argNames) }, ${ Expr(x.returnType) }) }
+    }
+  final case class Infix(
+      op: String,
+      left: ShaderAST,
+      right: ShaderAST,
+      returnType: Option[ShaderAST]
+  ) extends ShaderAST
+  object Infix:
+    given ToExpr[Infix] with {
+      def apply(x: Infix)(using Quotes): Expr[Infix] =
+        '{ Infix(${ Expr(x.op) }, ${ Expr(x.left) }, ${ Expr(x.right) }, ${ Expr(x.returnType) }) }
     }
 
   final case class Val(id: String, value: ShaderAST) extends ShaderAST
@@ -161,6 +173,7 @@ object ShaderAST:
               case ShaderBlock(s)           => rec(s ++ xs)
               case Function(_, _, body, _)  => rec(body :: xs)
               case CallFunction(_, _, _, _) => rec(xs)
+              case Infix(_, l, r, _)        => rec(l :: r :: xs)
               case Val(_, body)             => rec(body :: xs)
               case v: DataTypes.closure     => rec(v.body :: xs)
               case v: DataTypes.ident       => rec(xs)
@@ -172,20 +185,20 @@ object ShaderAST:
       rec(List(ast))
 
     def prune: ShaderAST =
-      @tailrec
       def crush(statements: ShaderAST): ShaderAST =
         statements match
-          case Block(List(s))            => crush(s)
-          case b: Block                  => crush(b.copy(statements = b.statements.filterNot(_.isEmpty)))
-          case NamedBlock(_, _, List(s)) => crush(s)
-          case b: NamedBlock             => crush(b.copy(statements = b.statements.filterNot(_.isEmpty)))
+          // case Block(List(s))            => crush(s)
+          case b: Block                  => b.copy(statements = b.statements.filterNot(_.isEmpty).map(crush))
+          // case NamedBlock(_, _, List(s)) => crush(s)
+          case b: NamedBlock             => b.copy(statements = b.statements.filterNot(_.isEmpty).map(crush))
           case other                     => other
 
-      traverse {
-        case b: Block      => crush(b)
-        case b: NamedBlock => crush(b)
-        case other         => other
-      }
+      // traverse {
+      //   case b: Block      => crush(b)
+      //   case b: NamedBlock => crush(b)
+      //   case other         => other
+      // }
+      crush(ast)
 
     def traverse(f: ShaderAST => ShaderAST): ShaderAST =
       ast match
@@ -195,6 +208,7 @@ object ShaderAST:
         case v @ ShaderBlock(s)                       => f(ShaderBlock(s))
         case v @ Function(id, args, body, returnType) => f(Function(id, args, f(body), returnType))
         case v @ CallFunction(_, _, _, _)             => f(v)
+        case v @ Infix(op, l, r, returnType)          => f(Infix(op, f(l), f(r), returnType))
         case v @ Val(id, value)                       => f(Val(id, f(value)))
         case v @ DataTypes.closure(body, typeOf)      => f(DataTypes.closure(f(body), typeOf))
         case v @ DataTypes.float(_)                   => f(v)
@@ -211,6 +225,7 @@ object ShaderAST:
         case ShaderBlock(_)               => None
         case Function(_, _, _, rt)        => rt.flatMap(_.typeIdent)
         case CallFunction(_, _, _, rt)    => rt.flatMap(_.typeIdent)
+        case Infix(_, _, _, rt)           => rt.flatMap(_.typeIdent)
         case Val(id, value)               => value.typeIdent
         case n @ DataTypes.ident(_)       => Option(n)
         case DataTypes.closure(_, typeOf) => typeOf.map(t => ShaderAST.DataTypes.ident(t))
@@ -240,6 +255,7 @@ object ShaderAST:
           .map(_.render)
           .filterNot(_.isEmpty) // empty String
           .mkString("", ";", ";")
+          .replace(";;", ";")
 
       def processFunctionStatements(statements: List[ShaderAST], maybeReturnType: Option[String]): (String, String) =
         val nonEmpty = statements
@@ -302,6 +318,9 @@ object ShaderAST:
           case CallFunction(id, args, _, _) =>
             s"""$id(${args.map(_.render).mkString(",")})"""
 
+          case Infix(op, left, right, returnType) =>
+            s"""${left.render}$op(${right.render})"""
+
           case DataTypes.closure(body, typeOf) =>
             s"[closure $body $typeOf]"
 
@@ -322,5 +341,8 @@ object ShaderAST:
 
           case Val(id, value) =>
             s"""${decideType(value).getOrElse("void")} $id=${value.render}"""
+
+          // case _ =>
+          //   ""
 
       res

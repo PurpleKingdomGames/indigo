@@ -48,6 +48,7 @@ object ShaderMacros:
       case v: ShaderAST.ShaderBlock       => v.statements.reverse.headOption.flatMap(findReturnType)
       case v: ShaderAST.Function          => v.returnType
       case v: ShaderAST.CallFunction      => v.returnType
+      case v: ShaderAST.Infix             => v.returnType
       case v: ShaderAST.Val               => findReturnType(v.value)
       case v: ShaderAST.DataTypes.closure => v.typeIdent
       case v: ShaderAST.DataTypes.ident   => v.typeIdent
@@ -72,7 +73,7 @@ object ShaderMacros:
 
         case ValDef(name, _, Some(term)) =>
           log(Printer.TreeStructure.show(s))
-          ShaderAST.Val(name, walkTerm(term))
+          ShaderAST.Val(name, walkTerm(term, Nil, Map()))
 
         case ValDef(name, _, None) =>
           throw new Exception("Shaders do not support val's with no values.")
@@ -87,7 +88,7 @@ object ShaderMacros:
               .collect { case ValDef(name, _, _) => name }
 
           val fn         = nextFnName
-          val body       = walkTerm(term)
+          val body       = walkTerm(term, Nil, Map())
           val returnType = findReturnType(body)
           shaderDefs += ShaderAST.Function(fn, argNames, body, returnType)
           ShaderAST.CallFunction(fn, Nil, argNames, returnType)
@@ -97,7 +98,7 @@ object ShaderMacros:
           throw new Exception("Unexpected def construction")
 
         case t: Term =>
-          walkTerm(t)
+          walkTerm(t, Nil, Map())
 
     def walkTree(t: Tree): ShaderAST =
       t match
@@ -131,34 +132,34 @@ object ShaderMacros:
         case s: Statement =>
           walkStatement(s)
 
-    def walkTerm(t: Term): ShaderAST =
+    def walkTerm(t: Term, defs: List[ShaderAST], proxyLookUp: Map[String, String]): ShaderAST =
       t match
 
         // Specific hooks we care about
 
         case Apply(TypeApply(Select(Ident("Shader"), "apply"), _), body) =>
           log(Printer.TreeStructure.show(t))
-          ShaderAST.ShaderBlock(body.map(p => walkTerm(p)))
+          ShaderAST.ShaderBlock(body.map(p => walkTerm(p, defs, proxyLookUp)))
 
         case Apply(Select(Ident("vec2"), "apply"), args) =>
           log(Printer.TreeStructure.show(t))
-          ShaderAST.DataTypes.vec2(args.map(p => walkTerm(p)))
+          ShaderAST.DataTypes.vec2(args.map(p => walkTerm(p, defs, proxyLookUp)))
 
         case Apply(Select(Ident("vec3"), "apply"), args) =>
           log(Printer.TreeStructure.show(t))
-          ShaderAST.DataTypes.vec3(args.map(p => walkTerm(p)))
+          ShaderAST.DataTypes.vec3(args.map(p => walkTerm(p, defs, proxyLookUp)))
 
         case Apply(Select(Ident("vec4"), "apply"), args) =>
           log(Printer.TreeStructure.show(t))
-          ShaderAST.DataTypes.vec4(args.map(p => walkTerm(p)))
+          ShaderAST.DataTypes.vec4(args.map(p => walkTerm(p, defs, proxyLookUp)))
 
         case Apply(Select(Ident("rgba"), "apply"), args) =>
           log(Printer.TreeStructure.show(t))
-          ShaderAST.DataTypes.vec4(args.map(p => walkTerm(p)))
+          ShaderAST.DataTypes.vec4(args.map(p => walkTerm(p, defs, proxyLookUp)))
 
         case Apply(Select(Ident(id), "apply"), List(x)) =>
           log(Printer.TreeStructure.show(t))
-          ShaderAST.NamedBlock(id, "", walkTerm(x))
+          ShaderAST.NamedBlock(id, "", walkTerm(x, defs, proxyLookUp))
 
         case Select(Ident(namespace), name) =>
           log(Printer.TreeStructure.show(t))
@@ -168,70 +169,131 @@ object ShaderMacros:
 
         case Apply(TypeApply(Select(Ident(id), "apply"), _), List(x)) =>
           log(Printer.TreeStructure.show(t))
-          ShaderAST.NamedBlock("", id, walkTerm(x))
+          ShaderAST.NamedBlock("", id, walkTerm(x, defs, proxyLookUp))
 
         case Apply(TypeApply(Select(Ident(namespace), name), _), List(x)) =>
           log(Printer.TreeStructure.show(t))
-          ShaderAST.NamedBlock(namespace, name, walkTerm(x))
+          ShaderAST.NamedBlock(namespace, name, walkTerm(x, defs, proxyLookUp))
 
         case Apply(TypeApply(term, _), List(x)) =>
           log(Printer.TreeStructure.show(t))
-          walkTerm(x)
+          walkTerm(x, defs, proxyLookUp)
 
         // Extension method applies...
         case Apply(Select(Select(Inlined(_, _, _), "vec2"), "apply"), args) =>
           log(Printer.TreeStructure.show(t))
-          ShaderAST.DataTypes.vec2(args.map(p => walkTerm(p)))
+          ShaderAST.DataTypes.vec2(args.map(p => walkTerm(p, defs, proxyLookUp)))
 
         case Apply(Select(Select(Inlined(_, _, _), "vec3"), "apply"), args) =>
           log(Printer.TreeStructure.show(t))
-          ShaderAST.DataTypes.vec3(args.map(p => walkTerm(p)))
+          ShaderAST.DataTypes.vec3(args.map(p => walkTerm(p, defs, proxyLookUp)))
 
         case Apply(Select(Select(Inlined(_, _, _), "vec4"), "apply"), args) =>
           log(Printer.TreeStructure.show(t))
-          ShaderAST.DataTypes.vec4(args.map(p => walkTerm(p)))
+          ShaderAST.DataTypes.vec4(args.map(p => walkTerm(p, defs, proxyLookUp)))
 
         case Apply(Select(Select(Inlined(_, _, _), "rgba"), "apply"), args) =>
           log(Printer.TreeStructure.show(t))
-          ShaderAST.DataTypes.vec4(args.map(p => walkTerm(p)))
+          ShaderAST.DataTypes.vec4(args.map(p => walkTerm(p, defs, proxyLookUp)))
+
+        // Native method call.
+        case Apply(Ident(name), List(Inlined(None, Nil, Ident(defRef)))) =>
+          println("-----" + name)
+          val args = List(ShaderAST.DataTypes.ident(proxyLookUp.get(defRef).getOrElse(defRef)))
+          ShaderAST.CallFunction(name, args, args.map(_.render), None)
+
         //
 
-        case Apply(Select(term, _), xs) => // Losing the operator, e.g. '+' by using _?
+        case Apply(Select(term, op), xs) =>
           log(Printer.TreeStructure.show(t))
 
-          walkTerm(term).find {
+          walkTerm(term, defs, proxyLookUp).find {
             case ShaderAST.CallFunction(_, _, _, _) => true
             case _                                  => false
           } match
+            case Some(ShaderAST.CallFunction(id, Nil, Nil, rt)) =>
+              ShaderAST.CallFunction(id, xs.map(tt => walkTerm(tt, defs, proxyLookUp)), Nil, rt)
+
             case Some(ShaderAST.CallFunction(id, args, argNames, rt)) =>
-              ShaderAST.CallFunction(id, xs.map(walkTerm), argNames, rt)
+              op match
+                case "-" =>
+                  ShaderAST.Infix(
+                    op,
+                    ShaderAST.CallFunction(id, args, argNames, rt),
+                    ShaderAST.Block(xs.map(tt => walkTerm(tt, defs, proxyLookUp))),
+                    rt
+                  )
+
+                case _ =>
+                  ShaderAST.Block(
+                    ShaderAST.CallFunction(id, args, argNames, rt) ::
+                      xs.map(tt => walkTerm(tt, defs, proxyLookUp))
+                  )
 
             case _ =>
-              ShaderAST.Block(xs.map(walkTerm))
+              ShaderAST.Block(xs.map(tt => walkTerm(tt, defs, proxyLookUp)))
 
         case Apply(Ident(name), terms) =>
-          ShaderAST.CallFunction(name, terms.map(walkTerm), Nil, None)
+          ShaderAST.CallFunction(name, terms.map(tt => walkTerm(tt, defs, proxyLookUp)), Nil, None)
 
         case Inlined(None, _, term) =>
           log(Printer.TreeStructure.show(t))
-          walkTerm(term)
+          walkTerm(term, defs, proxyLookUp)
 
         case Inlined(Some(Ident(_)), _, term) =>
           log(Printer.TreeStructure.show(t))
-          walkTerm(term)
+          walkTerm(term, defs, proxyLookUp)
 
-        case Inlined(Some(Apply(Ident(name), args)), _, term) =>
+        case Inlined(Some(Apply(Ident(name), args)), ds, Typed(term, typeTree)) =>
           log(Printer.TreeStructure.show(t))
-          
-          val body = walkTerm(term)
-          val returnType = findReturnType(body)
-          val fn         = nextFnName
-          shaderDefs += ShaderAST.Function(fn, Nil, body, returnType)
-          ShaderAST.CallFunction(fn, Nil, Nil, returnType)
+
+          if (name == "circleSdf") {
+            println("---------" + name)
+            println("defs      : " + ds.map(walkStatement).map(_.render))
+          }
+
+          val argNames   = args.map(_ => nextVarName)
+          val callArgs   = args.map(tt => walkTerm(tt, defs, proxyLookUp))
+          val pairedArgs = callArgs.zip(argNames)
+          val fnArgs =
+            pairedArgs.map { p =>
+              val typ = p._1.typeIdent.map(_.render).getOrElse("void")
+              s"$typ ${p._2}"
+            }
+          // callArgs.map(_.typeIdent.map(_.render).getOrElse("void")).zip(argNames).map(p => s"${p._1} ${p._2}")
+          val nextDefs = ds.map(walkStatement)
+          val proxies = nextDefs.flatMap {
+            case ShaderAST.Val(proxy, value) =>
+              pairedArgs.find(p => p._1 == value) match
+                case None    => Nil
+                case Some(v) => List(proxy -> v._2)
+
+            case _ =>
+              Nil
+          }
+          val body       = walkTerm(term, nextDefs, proxies.toMap)
+          val returnType = findReturnType(walkTree(typeTree))
+
+          if (name == "circleSdf") {
+            println("body      : " + body.render)
+            println("returnType: " + returnType.map(_.render).getOrElse("uh oh"))
+          }
+
+          shaderDefs += ShaderAST.Function(name, fnArgs, body, returnType)
+          ShaderAST.CallFunction(name, callArgs, argNames, returnType)
+
+        // case Inlined(Some(Apply(Ident(_), args)), _, term) =>
+        //   log(Printer.TreeStructure.show(t))
+
+        //   val body       = walkTerm(term, defs, proxyLookUp)
+        //   val returnType = findReturnType(body)
+        //   val fn         = nextFnName
+        //   shaderDefs += ShaderAST.Function(fn, Nil, body, returnType)
+        //   ShaderAST.CallFunction(fn, Nil, Nil, returnType)
 
         case Inlined(Some(Select(This(_), _)), _, term) =>
           log(Printer.TreeStructure.show(t))
-          walkTerm(term)
+          walkTerm(term, defs, proxyLookUp)
 
         case Inlined(Some(tree: Tree), _, _) =>
           log(Printer.TreeStructure.show(t))
@@ -239,7 +301,7 @@ object ShaderMacros:
 
         case TypeApply(term, _) =>
           log(Printer.TreeStructure.show(t))
-          walkTerm(term)
+          walkTerm(term, defs, proxyLookUp)
 
         case Typed(
               Block(List(DefDef(_, args, _, Some(term))), Closure(Ident("$anonfun"), None)),
@@ -264,12 +326,12 @@ object ShaderMacros:
             .map { case (typ, nme) => s"""${typ.render} $nme""" }
 
           val fn = nextFnName
-          shaderDefs += ShaderAST.Function(fn, arguments, walkTerm(term), returnType)
+          shaderDefs += ShaderAST.Function(fn, arguments, walkTerm(term, defs, proxyLookUp), returnType)
           ShaderAST.CallFunction(fn, Nil, argNames, returnType)
 
         case Typed(term, _) =>
           log(Printer.TreeStructure.show(t))
-          walkTerm(term)
+          walkTerm(term, defs, proxyLookUp)
 
         case Block(statements, Closure(Ident("$anonfun"), None)) =>
           log(Printer.TreeStructure.show(t))
@@ -277,7 +339,7 @@ object ShaderMacros:
 
         case Block(statements, term) =>
           log(Printer.TreeStructure.show(t))
-          ShaderAST.Block(statements.map(walkStatement) :+ walkTerm(term))
+          ShaderAST.Block(statements.map(walkStatement) :+ walkTerm(term, defs, proxyLookUp))
 
         // Literals
 
@@ -300,14 +362,14 @@ object ShaderMacros:
 
         case Closure(term, typeRepr) =>
           log(Printer.TreeStructure.show(t))
-          ShaderAST.DataTypes.closure(walkTerm(term), typeRepr.map(_.toString))
+          ShaderAST.DataTypes.closure(walkTerm(term, defs, proxyLookUp), typeRepr.map(_.toString))
 
         case Wildcard() =>
           throw new Exception("Shaders do not support wildcards.")
 
         case Select(term, _) => // term, name
           log(Printer.TreeStructure.show(t))
-          walkTerm(term)
+          walkTerm(term, defs, proxyLookUp)
 
         // Unsupported (yet?)
 
@@ -353,7 +415,7 @@ object ShaderMacros:
     // println(">>> Everything")
     // println(Printer.TreeStructure.show(expr.asTerm))
     // println("<<<")
-    val res = walkTerm(expr.asTerm)
+    val res = walkTerm(expr.asTerm, Nil, Map())
 
     Expr(ProceduralShader(shaderDefs.toList, res))
   }
