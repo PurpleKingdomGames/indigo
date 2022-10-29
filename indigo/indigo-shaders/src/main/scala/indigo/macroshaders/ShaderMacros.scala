@@ -99,10 +99,6 @@ object ShaderMacros:
         case t: Term =>
           walkTerm(t)
 
-        case _ =>
-          val msg: String = Printer.TreeStructure.show(s)
-          throw new Exception(makeExceptionLog("statement", msg))
-
     def walkTree(t: Tree): ShaderAST =
       t match
         case TypeIdent("Unit") =>
@@ -134,10 +130,6 @@ object ShaderMacros:
 
         case s: Statement =>
           walkStatement(s)
-
-        case _ =>
-          val msg: String = Printer.TreeStructure.show(t)
-          throw new Exception(makeExceptionLog("tree", msg))
 
     def walkTerm(t: Term): ShaderAST =
       t match
@@ -357,12 +349,6 @@ object ShaderMacros:
 
         case While(_, _) =>
           throw new Exception("Shaders do not support while loops.")
-
-        // Catch all for values we don't understand
-
-        case _ =>
-          val msg: String = Printer.TreeStructure.show(t)
-          throw new Exception(makeExceptionLog("term", msg))
 
     // println(">>> Everything")
     // println(Printer.TreeStructure.show(expr.asTerm))
