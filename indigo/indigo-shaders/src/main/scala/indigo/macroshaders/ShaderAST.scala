@@ -102,7 +102,7 @@ object ShaderAST:
     case vec2(args: List[ShaderAST])
     case vec3(args: List[ShaderAST])
     case vec4(args: List[ShaderAST])
-    case swizzle(genType: ShaderAST, swizzle: String)
+    case swizzle(genType: ShaderAST, swizzle: String, returnType: Option[ShaderAST])
 
   object DataTypes:
 
@@ -153,7 +153,7 @@ object ShaderAST:
     }
     given ToExpr[swizzle] with {
       def apply(x: swizzle)(using Quotes): Expr[swizzle] =
-        '{ swizzle(${ Expr(x.genType) }, ${ Expr(x.swizzle) }) }
+        '{ swizzle(${ Expr(x.genType) }, ${ Expr(x.swizzle) }, ${ Expr(x.returnType) }) }
     }
 
   extension (ast: ShaderAST)
@@ -223,7 +223,7 @@ object ShaderAST:
         case v @ DataTypes.vec2(vs)                   => f(DataTypes.vec2(vs.map(f)))
         case v @ DataTypes.vec3(vs)                   => f(DataTypes.vec3(vs.map(f)))
         case v @ DataTypes.vec4(vs)                   => f(DataTypes.vec4(vs.map(f)))
-        case v @ DataTypes.swizzle(_, _)              => f(v)
+        case v @ DataTypes.swizzle(_, _, _)           => f(v)
 
     def typeIdent: Option[ShaderAST.DataTypes.ident] =
       ast match
@@ -241,7 +241,7 @@ object ShaderAST:
         case DataTypes.vec2(_)            => Option(ShaderAST.DataTypes.ident("vec2"))
         case DataTypes.vec3(_)            => Option(ShaderAST.DataTypes.ident("vec3"))
         case DataTypes.vec4(_)            => Option(ShaderAST.DataTypes.ident("vec4"))
-        case DataTypes.swizzle(v, _)      => v.typeIdent
+        case DataTypes.swizzle(v, _, _)   => v.typeIdent
 
     @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
     def render: String =
@@ -251,11 +251,21 @@ object ShaderAST:
 
       def decideType(a: ShaderAST): Option[String] =
         a match
-          case DataTypes.float(v)   => Option("float")
-          case DataTypes.vec2(args) => Option("vec2")
-          case DataTypes.vec3(args) => Option("vec3")
-          case DataTypes.vec4(args) => Option("vec4")
-          case _                    => None
+          case Empty()                      => None
+          case Block(_)                     => None
+          case NamedBlock(_, _, _)          => None
+          case ShaderBlock(_)               => None
+          case Function(_, _, _, rt)        => rt.map(_.render)
+          case CallFunction(_, _, _, rt)    => rt.map(_.render)
+          case Infix(_, _, _, rt)           => rt.map(_.render)
+          case Val(id, value)               => value.typeIdent.map(_.render)
+          case n @ DataTypes.ident(_)       => None
+          case DataTypes.closure(_, typeOf) => typeOf
+          case DataTypes.float(v)           => Option("float")
+          case DataTypes.vec2(args)         => Option("vec2")
+          case DataTypes.vec3(args)         => Option("vec3")
+          case DataTypes.vec4(args)         => Option("vec4")
+          case DataTypes.swizzle(v, _, rt)  => rt.map(_.render)
 
       def processStatements(statements: List[ShaderAST]): String =
         statements
@@ -328,7 +338,7 @@ object ShaderAST:
             s"""$id(${args.map(_.render).mkString(",")})"""
 
           case Infix(op, left, right, returnType) =>
-            s"""${left.render}$op(${right.render})"""
+            s"""(${left.render})$op(${right.render})"""
 
           case DataTypes.closure(body, typeOf) =>
             s"[closure $body $typeOf]"
@@ -348,7 +358,7 @@ object ShaderAST:
           case DataTypes.vec4(args) =>
             s"vec4(${args.map(_.render).mkString(",")})"
 
-          case DataTypes.swizzle(genType, swizzle) =>
+          case DataTypes.swizzle(genType, swizzle, returnType) =>
             s"${genType.render}.$swizzle"
 
           case Val(id, value) =>

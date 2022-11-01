@@ -279,43 +279,41 @@ class ShaderASTTests extends munit.FunSuite {
     // println(circleShader.toGLSL)
     // println("<<<<<<")
 
-    assert(clue(actual1.render).contains("float circleSdf(vec2 v0,float v1){return length(v0)-(3.0);}"))
+    assert(clue(actual1.render).contains("float circleSdf(vec2 v0,float v1){return (length(v0))-(3.0);}"))
   }
 
-//   test("can build a multi-statement function") {
+  test("can build a multi-statement function") {
 
-//     inline def calculateColour(uv: vec2, sdf: Float): vec4 =
-//       val fill       = vec4(uv, 0.0f, 1.0f)
-//       val fillAmount = (1.0f - step(0.0f, sdf)) * fill.w
-//       vec4(fill.xyz * fillAmount, fillAmount)
+    inline def calculateColour(uv: vec2, sdf: Float): vec4 =
+      val fill       = vec4(uv, 0.0f, 1.0f)
+      val fillAmount = (1.0f - step(0.0f, sdf)) * fill.w
+      vec4(fill.xyz * fillAmount, fillAmount)
 
-//     inline def shader =
-//       Shader { env =>
-//         calculateColour(vec2(1.0, 2.0), 3.0)
-//       }
+    inline def shader =
+      Shader { env =>
+        calculateColour(vec2(1.0, 2.0), 3.0)
+      }
 
-//     val actual1 =
-//       ShaderMacros.toAST(shader)
+    val actual =
+      ShaderMacros.toAST(shader)
 
-//     // println(">>>>>>")
-//     // println(actual1)
-//     // println("----")
-//     // println(circleShader.toGLSL)
-//     // println("<<<<<<")
+    // println(">>>>>>")
+    // println(actual)
+    // println("----")
+    // println(shader.toGLSL)
+    // println("<<<<<<")
 
-//     /*
-// vec3 rgb(fill v2){return vec3(fill,fill,fill);}
-// vec4 calculateColour(vec2 v0, float v1){
-//   vec4 fill=vec4(uv$proxy2,0.0,1.0);
-//   void fillAmount=step(0.0,3.0)*(fill.a);
-//   return vec4(rgb(fill)*(fillAmount),fillAmount);
-// }
-// vec4 fn0(){return calculateColour(vec2(1.0,2.0),3.0);}
-// void fragment(){COLOR=fn0();}
-//      */
+    val line1 =
+      "vec4 calculateColour(vec2 v0,float v1){vec4 fill=vec4(v0,0.0,1.0);float fillAmount=((1.0)-(step(0.0,3.0)))*(fill.w);return vec4((fill.xyz)*(fillAmount),fillAmount);}"
+    val line2 = "vec4 fn0(){return calculateColour(vec2(1.0,2.0),3.0);}"
+    val line3 = "void fragment(){COLOR=fn0();}"
 
-//     assert(clue(actual1.render).contains("float circleSdf"))
-//   }
+    val rendered = actual.render
+
+    assert(clue(rendered).contains(clue(line1)))
+    assert(clue(rendered).contains(clue(line2)))
+    assert(clue(rendered).contains(clue(line3)))
+  }
 
 //   test("Small procedural shader") {
 

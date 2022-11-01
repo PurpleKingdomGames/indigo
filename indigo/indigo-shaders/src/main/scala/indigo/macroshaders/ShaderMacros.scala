@@ -213,7 +213,7 @@ object ShaderMacros:
 
         //
 
-        case Apply(Select(term, op), xs) =>
+        case Apply(Select(term, "apply"), xs) =>
           log(Printer.TreeStructure.show(t))
 
           walkTerm(term, defs, proxyLookUp).find {
@@ -224,20 +224,22 @@ object ShaderMacros:
               ShaderAST.CallFunction(id, xs.map(tt => walkTerm(tt, defs, proxyLookUp)), Nil, rt)
 
             case Some(ShaderAST.CallFunction(id, args, argNames, rt)) =>
-              op match
-                case "+" | "-" | "*" | "/" =>
-                  ShaderAST.Infix(
-                    op,
-                    ShaderAST.CallFunction(id, args, argNames, rt),
-                    xs.headOption.map(tt => walkTerm(tt, defs, proxyLookUp)).getOrElse(ShaderAST.Empty()),
-                    rt
-                  )
-
-                case _ =>
-                  ShaderAST.CallFunction(id, xs.map(tt => walkTerm(tt, defs, proxyLookUp)), argNames, rt)
+              ShaderAST.CallFunction(id, xs.map(tt => walkTerm(tt, defs, proxyLookUp)), argNames, rt)
 
             case _ =>
               ShaderAST.Block(xs.map(tt => walkTerm(tt, defs, proxyLookUp)))
+
+        case Apply(Select(term, op), xs) =>
+          log(Printer.TreeStructure.show(t))
+          op match
+            case "+" | "-" | "*" | "/" =>
+              val lhs = walkTerm(term, defs, proxyLookUp)
+              val rhs = xs.headOption.map(tt => walkTerm(tt, defs, proxyLookUp)).getOrElse(ShaderAST.Empty())
+              val rt  = findReturnType(lhs)
+              ShaderAST.Infix(op, lhs, rhs, rt)
+
+            case _ =>
+              throw new Exception("Shaders do not support infix operator: " + op)
 
         case Apply(Ident(name), terms) =>
           ShaderAST.CallFunction(name, terms.map(tt => walkTerm(tt, defs, proxyLookUp)), Nil, None)
@@ -254,11 +256,19 @@ object ShaderMacros:
         case Inlined(Some(Apply(Ident(name), List(gt @ Apply(Select(Ident(genType), "apply"), args)))), _, _)
             if isSwizzle.matches(name) && isSwizzleable.matches(genType) =>
           log(Printer.TreeStructure.show(t))
-          ShaderAST.DataTypes.swizzle(walkTerm(gt, defs, proxyLookUp), name)
+          ShaderAST.DataTypes.swizzle(
+            walkTerm(gt, defs, proxyLookUp),
+            name,
+            Option(ShaderAST.DataTypes.ident(genType))
+          )
 
         case Inlined(Some(Apply(Ident(name), List(Ident(id)))), _, _) if isSwizzle.matches(name) =>
           log(Printer.TreeStructure.show(t))
-          ShaderAST.DataTypes.swizzle(ShaderAST.DataTypes.ident(id), name)
+          ShaderAST.DataTypes.swizzle(
+            ShaderAST.DataTypes.ident(id),
+            name,
+            None
+          )
         //
 
         case Inlined(Some(Apply(Ident(name), args)), ds, Typed(term, typeTree)) =>
