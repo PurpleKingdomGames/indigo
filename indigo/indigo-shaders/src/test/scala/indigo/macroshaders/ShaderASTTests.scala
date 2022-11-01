@@ -241,6 +241,23 @@ class ShaderASTTests extends munit.FunSuite {
     // println("<<<<<<")
 
     assert(clue(actual2.render).contains("vec3(1.0,2.0,3.0).xxy"))
+
+    inline def fragment3: Shader[FragEnv, vec3] =
+      Shader { env =>
+        val fill = vec3(1.0f, 2.0f, 3.0f)
+        fill.xyz
+      }
+
+    val actual3 =
+      ShaderMacros.toAST(fragment3)
+
+    // println(">>>>>>")
+    // println(actual3)
+    // println("----")
+    // println(actual3.render)
+    // println("<<<<<<")
+
+    assert(clue(actual3.render).contains("fill.xyz"))
   }
 
   test("can call a native function") {

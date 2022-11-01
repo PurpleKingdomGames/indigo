@@ -256,6 +256,11 @@ object ShaderMacros:
           log(Printer.TreeStructure.show(t))
           ShaderAST.DataTypes.swizzle(walkTerm(gt, defs, proxyLookUp), name)
 
+        case Inlined(Some(Apply(Ident(name), List(Ident(id)))), _, _) if isSwizzle.matches(name) =>
+          log(Printer.TreeStructure.show(t))
+          ShaderAST.DataTypes.swizzle(ShaderAST.DataTypes.ident(id), name)
+        //
+
         case Inlined(Some(Apply(Ident(name), args)), ds, Typed(term, typeTree)) =>
           log(Printer.TreeStructure.show(t))
 
