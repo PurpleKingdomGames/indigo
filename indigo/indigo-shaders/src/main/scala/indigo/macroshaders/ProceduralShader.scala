@@ -15,31 +15,21 @@ object ProceduralShader:
     def render: String =
       import ShaderAST.*
       def envName(ast: ShaderAST): Option[String] =
-        for {
-          b <- ast.find {
-            case ShaderBlock(_) => true
-            case _              => false
+        ast
+          .find {
+            case ShaderBlock(_, _) => true
+            case _                 => false
           }
-          f <- b.find {
-            case CallFunction(_, _, _, _) => true
-            case _                     => false
+          .flatMap {
+            case ShaderBlock(name, _) => name
+            case _                    => None
           }
-          n <- f match {
-            case CallFunction(_, _, name :: _, _) => Option(name)
-            case _                             => None
-          }
-        } yield n.toString()
 
       val res = (p.defs ++ List(p.main)).map(_.render).mkString("\n")
 
-      val out =
-        envName(p.main) match
-          case None       => res
-          case Some(name) => res.replace(name + ".", "").replace(name, "")
-
-      s"""//<indigo-fragment>
-      |$out
-      |//</indigo-fragment>""".stripMargin
+      envName(p.main) match
+        case None       => res
+        case Some(name) => res.replace(name + ".", "").replace(name, "")
 
     def exists(q: ShaderAST => Boolean): Boolean =
       p.main.exists(q) || p.defs.exists(_.exists(q))

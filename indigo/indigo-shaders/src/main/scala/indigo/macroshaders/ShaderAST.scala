@@ -48,15 +48,15 @@ object ShaderAST:
       NamedBlock(namespace, id, statements.toList)
 
   // Specifically handles our 'Shader' type
-  final case class ShaderBlock(statements: List[ShaderAST]) extends ShaderAST
+  final case class ShaderBlock(envVarName: Option[String], statements: List[ShaderAST]) extends ShaderAST
   object ShaderBlock:
     given ToExpr[ShaderBlock] with {
       def apply(x: ShaderBlock)(using Quotes): Expr[ShaderBlock] =
-        '{ ShaderBlock(${ Expr(x.statements) }) }
+        '{ ShaderBlock(${ Expr(x.envVarName) }, ${ Expr(x.statements) }) }
     }
 
     def apply(envVarName: String, statements: ShaderAST*): ShaderBlock =
-      ShaderBlock(statements.toList)
+      ShaderBlock(Option(envVarName), statements.toList)
 
   final case class Function(id: String, args: List[String], body: ShaderAST, returnType: Option[ShaderAST])
       extends ShaderAST
@@ -176,7 +176,7 @@ object ShaderAST:
               case Empty()                  => rec(xs)
               case Block(s)                 => rec(s ++ xs)
               case NamedBlock(_, _, s)      => rec(s ++ xs)
-              case ShaderBlock(s)           => rec(s ++ xs)
+              case ShaderBlock(_, s)        => rec(s ++ xs)
               case Function(_, _, body, _)  => rec(body :: xs)
               case CallFunction(_, _, _, _) => rec(xs)
               case Infix(_, l, r, _)        => rec(l :: r :: xs)
@@ -194,17 +194,10 @@ object ShaderAST:
     def prune: ShaderAST =
       def crush(statements: ShaderAST): ShaderAST =
         statements match
-          // case Block(List(s))            => crush(s)
           case b: Block => b.copy(statements = b.statements.filterNot(_.isEmpty).map(crush))
-          // case NamedBlock(_, _, List(s)) => crush(s)
           case b: NamedBlock => b.copy(statements = b.statements.filterNot(_.isEmpty).map(crush))
           case other         => other
 
-      // traverse {
-      //   case b: Block      => crush(b)
-      //   case b: NamedBlock => crush(b)
-      //   case other         => other
-      // }
       crush(ast)
 
     def traverse(f: ShaderAST => ShaderAST): ShaderAST =
@@ -212,7 +205,7 @@ object ShaderAST:
         case v @ Empty()                              => f(v)
         case v @ Block(s)                             => f(Block(s.map(f)))
         case v @ NamedBlock(ns, id, s)                => f(NamedBlock(ns, id, s))
-        case v @ ShaderBlock(s)                       => f(ShaderBlock(s))
+        case v @ ShaderBlock(n, s)                    => f(ShaderBlock(n, s))
         case v @ Function(id, args, body, returnType) => f(Function(id, args, f(body), returnType))
         case v @ CallFunction(_, _, _, _)             => f(v)
         case v @ Infix(op, l, r, returnType)          => f(Infix(op, f(l), f(r), returnType))
@@ -230,7 +223,7 @@ object ShaderAST:
         case Empty()                      => None
         case Block(_)                     => None
         case NamedBlock(_, _, _)          => None
-        case ShaderBlock(_)               => None
+        case ShaderBlock(_, _)            => None
         case Function(_, _, _, rt)        => rt.flatMap(_.typeIdent)
         case CallFunction(_, _, _, rt)    => rt.flatMap(_.typeIdent)
         case Infix(_, _, _, rt)           => rt.flatMap(_.typeIdent)
@@ -254,7 +247,7 @@ object ShaderAST:
           case Empty()                      => None
           case Block(_)                     => None
           case NamedBlock(_, _, _)          => None
-          case ShaderBlock(_)               => None
+          case ShaderBlock(_, _)            => None
           case Function(_, _, _, rt)        => rt.map(_.render)
           case CallFunction(_, _, _, rt)    => rt.map(_.render)
           case Infix(_, _, _, rt)           => rt.map(_.render)
@@ -312,9 +305,9 @@ object ShaderAST:
           case Block(statements) =>
             processStatements(statements)
 
-          case ShaderBlock(statements) =>
-            val (body, rt) = processFunctionStatements(statements, None)
-            s"""void fragment(){COLOR=$body}"""
+          case ShaderBlock(envVarName, statements) =>
+            val (body, _) = processFunctionStatements(statements, None)
+            body // s"""void fragment(){COLOR=$body}"""
 
           case NamedBlock(namespace, id, statements) =>
             s"""$namespace$id {${processStatements(statements)}}"""

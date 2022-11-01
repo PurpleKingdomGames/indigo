@@ -82,20 +82,28 @@ object ShaderMacros:
         case ValDef(name, _, None) =>
           throw new Exception("Shaders do not support val's with no values.")
 
-        case DefDef("$anonfun", args, _, Some(term)) =>
+        case DefDef(fnName, args, rt, Some(term)) =>
           log(Printer.TreeStructure.show(s))
 
-          val argNames =
+          val argNamesTypes =
             args
               .collect { case TermParamClause(ps) => ps }
               .flatten
-              .collect { case ValDef(name, _, _) => name }
+              .collect { case ValDef(name, typ @ TypeIdent(_), _) => (walkTree(typ, defs, proxyLookUp).render, name) }
 
-          val fn         = nextFnName
-          val body       = walkTerm(term, defs, proxyLookUp)
-          val returnType = findReturnType(body)
-          shaderDefs += ShaderAST.Function(fn, argNames, body, returnType)
-          ShaderAST.CallFunction(fn, Nil, argNames, returnType)
+          val fn   = if fnName == "$anonfun" then nextFnName else fnName
+          val body = walkTerm(term, defs, proxyLookUp)
+
+          val returnType =
+            rt match
+              case rtt @ TypeIdent(_) =>
+                Option(walkTree(rtt, defs, proxyLookUp))
+
+              case _ =>
+                findReturnType(body)
+
+          shaderDefs += ShaderAST.Function(fn, argNamesTypes.map(p => p._1 + " " + p._2), body, returnType)
+          ShaderAST.Empty()
 
         case DefDef(_, _, _, _) =>
           log(Printer.TreeStructure.show(s))
@@ -138,9 +146,28 @@ object ShaderMacros:
 
         // Specific hooks we care about
 
-        case Apply(TypeApply(Select(Ident("Shader"), "apply"), _), body) =>
+        // Entry point
+        case Apply(
+              TypeApply(Select(Ident("Shader"), "apply"), List(Inferred(), Inferred())),
+              List(
+                Block(
+                  Nil,
+                  Block(
+                    List(
+                      DefDef(
+                        "$anonfun",
+                        List(TermParamClause(List(ValDef(envVarName, Inferred(), None)))),
+                        Inferred(),
+                        Some(term)
+                      )
+                    ),
+                    Closure(Ident("$anonfun"), None)
+                  )
+                )
+              )
+            ) =>
           log(Printer.TreeStructure.show(t))
-          ShaderAST.ShaderBlock(body.map(p => walkTerm(p, defs, proxyLookUp)))
+          ShaderAST.ShaderBlock(envVarName, walkTerm(term, defs, proxyLookUp))
 
         case Apply(Select(Ident("vec2"), "apply"), args) =>
           log(Printer.TreeStructure.show(t))
@@ -354,6 +381,10 @@ object ShaderMacros:
           log(Printer.TreeStructure.show(t))
           ShaderAST.DataTypes.float(f)
 
+        case Literal(UnitConstant()) =>
+          log(Printer.TreeStructure.show(t))
+          ShaderAST.Empty()
+
         case Literal(constant) =>
           throw new Exception("Shaders do not support constant type: " + constant.show)
 
@@ -422,7 +453,8 @@ object ShaderMacros:
     // println(">>> Everything")
     // println(Printer.TreeStructure.show(expr.asTerm))
     // println("<<<")
-    val res = walkTerm(expr.asTerm, Nil, Map())
+    val res           = walkTerm(expr.asTerm, Nil, Map())
+    val shaderDefList = shaderDefs.toList
 
-    Expr(ProceduralShader(shaderDefs.toList, res))
+    Expr(ProceduralShader(shaderDefList, res))
   }
