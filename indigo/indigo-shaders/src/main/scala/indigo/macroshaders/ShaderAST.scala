@@ -102,6 +102,7 @@ object ShaderAST:
     case vec2(args: List[ShaderAST])
     case vec3(args: List[ShaderAST])
     case vec4(args: List[ShaderAST])
+    case swizzle(genType: ShaderAST, swizzle: String)
 
   object DataTypes:
 
@@ -124,6 +125,7 @@ object ShaderAST:
           case v: DataTypes.vec2    => Expr(v)
           case v: DataTypes.vec3    => Expr(v)
           case v: DataTypes.vec4    => Expr(v)
+          case v: DataTypes.swizzle => Expr(v)
     }
     given ToExpr[ident] with {
       def apply(x: ident)(using Quotes): Expr[ident] =
@@ -148,6 +150,10 @@ object ShaderAST:
     given ToExpr[vec4] with {
       def apply(x: vec4)(using Quotes): Expr[vec4] =
         '{ vec4(${ Expr(x.args) }) }
+    }
+    given ToExpr[swizzle] with {
+      def apply(x: swizzle)(using Quotes): Expr[swizzle] =
+        '{ swizzle(${ Expr(x.genType) }, ${ Expr(x.swizzle) }) }
     }
 
   extension (ast: ShaderAST)
@@ -181,6 +187,7 @@ object ShaderAST:
               case v: DataTypes.vec2        => rec(v.args ++ xs)
               case v: DataTypes.vec3        => rec(v.args ++ xs)
               case v: DataTypes.vec4        => rec(v.args ++ xs)
+              case v: DataTypes.swizzle     => rec(v.genType :: xs)
 
       rec(List(ast))
 
@@ -188,10 +195,10 @@ object ShaderAST:
       def crush(statements: ShaderAST): ShaderAST =
         statements match
           // case Block(List(s))            => crush(s)
-          case b: Block                  => b.copy(statements = b.statements.filterNot(_.isEmpty).map(crush))
+          case b: Block => b.copy(statements = b.statements.filterNot(_.isEmpty).map(crush))
           // case NamedBlock(_, _, List(s)) => crush(s)
-          case b: NamedBlock             => b.copy(statements = b.statements.filterNot(_.isEmpty).map(crush))
-          case other                     => other
+          case b: NamedBlock => b.copy(statements = b.statements.filterNot(_.isEmpty).map(crush))
+          case other         => other
 
       // traverse {
       //   case b: Block      => crush(b)
@@ -216,6 +223,7 @@ object ShaderAST:
         case v @ DataTypes.vec2(vs)                   => f(DataTypes.vec2(vs.map(f)))
         case v @ DataTypes.vec3(vs)                   => f(DataTypes.vec3(vs.map(f)))
         case v @ DataTypes.vec4(vs)                   => f(DataTypes.vec4(vs.map(f)))
+        case v @ DataTypes.swizzle(_, _)              => f(v)
 
     def typeIdent: Option[ShaderAST.DataTypes.ident] =
       ast match
@@ -233,6 +241,7 @@ object ShaderAST:
         case DataTypes.vec2(_)            => Option(ShaderAST.DataTypes.ident("vec2"))
         case DataTypes.vec3(_)            => Option(ShaderAST.DataTypes.ident("vec3"))
         case DataTypes.vec4(_)            => Option(ShaderAST.DataTypes.ident("vec4"))
+        case DataTypes.swizzle(v, _)      => v.typeIdent
 
     @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
     def render: String =
@@ -339,10 +348,10 @@ object ShaderAST:
           case DataTypes.vec4(args) =>
             s"vec4(${args.map(_.render).mkString(",")})"
 
+          case DataTypes.swizzle(genType, swizzle) =>
+            s"${genType.render}.$swizzle"
+
           case Val(id, value) =>
             s"""${decideType(value).getOrElse("void")} $id=${value.render}"""
-
-          // case _ =>
-          //   ""
 
       res

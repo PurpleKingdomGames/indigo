@@ -41,6 +41,9 @@ object ShaderMacros:
         .map(l => s"  ${l._2}) ${l._1}")
         .mkString("\n") + "\n\n"
 
+    val isSwizzle     = "^([xyzw]+)$".r
+    val isSwizzleable = "^(vec2|vec3|vec4)$".r
+
     def findReturnType: ShaderAST => Option[ShaderAST] =
       case v: ShaderAST.Empty             => None
       case v: ShaderAST.Block             => v.statements.reverse.headOption.flatMap(findReturnType)
@@ -56,6 +59,7 @@ object ShaderMacros:
       case v: ShaderAST.DataTypes.vec2    => v.typeIdent
       case v: ShaderAST.DataTypes.vec3    => v.typeIdent
       case v: ShaderAST.DataTypes.vec4    => v.typeIdent
+      case v: ShaderAST.DataTypes.swizzle => v.typeIdent
 
     def walkStatement(s: Statement): ShaderAST =
       s match
@@ -120,9 +124,6 @@ object ShaderMacros:
         case TypeIdent("vec4") =>
           ShaderAST.DataTypes.ident("vec4")
 
-        case TypeIdent("rgba") =>
-          ShaderAST.DataTypes.ident("vec4")
-
         case TypeIdent(name) =>
           throw new Exception(s"Could not identify type: $name")
 
@@ -143,19 +144,27 @@ object ShaderMacros:
 
         case Apply(Select(Ident("vec2"), "apply"), args) =>
           log(Printer.TreeStructure.show(t))
-          ShaderAST.DataTypes.vec2(args.map(p => walkTerm(p, defs, proxyLookUp)))
+          args match
+            case List(Typed(Repeated(args2, _), _)) =>
+              ShaderAST.DataTypes.vec2(args2.map(p => walkTerm(p, defs, proxyLookUp)))
+            case _ =>
+              ShaderAST.DataTypes.vec2(args.map(p => walkTerm(p, defs, proxyLookUp)))
 
         case Apply(Select(Ident("vec3"), "apply"), args) =>
           log(Printer.TreeStructure.show(t))
-          ShaderAST.DataTypes.vec3(args.map(p => walkTerm(p, defs, proxyLookUp)))
+          args match
+            case List(Typed(Repeated(args2, _), _)) =>
+              ShaderAST.DataTypes.vec3(args2.map(p => walkTerm(p, defs, proxyLookUp)))
+            case _ =>
+              ShaderAST.DataTypes.vec3(args.map(p => walkTerm(p, defs, proxyLookUp)))
 
         case Apply(Select(Ident("vec4"), "apply"), args) =>
           log(Printer.TreeStructure.show(t))
-          ShaderAST.DataTypes.vec4(args.map(p => walkTerm(p, defs, proxyLookUp)))
-
-        case Apply(Select(Ident("rgba"), "apply"), args) =>
-          log(Printer.TreeStructure.show(t))
-          ShaderAST.DataTypes.vec4(args.map(p => walkTerm(p, defs, proxyLookUp)))
+          args match
+            case List(Typed(Repeated(args2, _), _)) =>
+              ShaderAST.DataTypes.vec4(args2.map(p => walkTerm(p, defs, proxyLookUp)))
+            case _ =>
+              ShaderAST.DataTypes.vec4(args.map(p => walkTerm(p, defs, proxyLookUp)))
 
         case Apply(Select(Ident(id), "apply"), List(x)) =>
           log(Printer.TreeStructure.show(t))
@@ -189,10 +198,6 @@ object ShaderMacros:
           ShaderAST.DataTypes.vec3(args.map(p => walkTerm(p, defs, proxyLookUp)))
 
         case Apply(Select(Select(Inlined(_, _, _), "vec4"), "apply"), args) =>
-          log(Printer.TreeStructure.show(t))
-          ShaderAST.DataTypes.vec4(args.map(p => walkTerm(p, defs, proxyLookUp)))
-
-        case Apply(Select(Select(Inlined(_, _, _), "rgba"), "apply"), args) =>
           log(Printer.TreeStructure.show(t))
           ShaderAST.DataTypes.vec4(args.map(p => walkTerm(p, defs, proxyLookUp)))
 
@@ -244,6 +249,12 @@ object ShaderMacros:
         case Inlined(Some(Ident(_)), _, term) =>
           log(Printer.TreeStructure.show(t))
           walkTerm(term, defs, proxyLookUp)
+
+        // Swizzle
+        case Inlined(Some(Apply(Ident(name), List(gt @ Apply(Select(Ident(genType), "apply"), args)))), _, _)
+            if isSwizzle.matches(name) && isSwizzleable.matches(genType) =>
+          log(Printer.TreeStructure.show(t))
+          ShaderAST.DataTypes.swizzle(walkTerm(gt, defs, proxyLookUp), name)
 
         case Inlined(Some(Apply(Ident(name), args)), ds, Typed(term, typeTree)) =>
           log(Printer.TreeStructure.show(t))
