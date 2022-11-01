@@ -61,7 +61,7 @@ object ShaderMacros:
       case v: ShaderAST.DataTypes.vec4    => v.typeIdent
       case v: ShaderAST.DataTypes.swizzle => v.typeIdent
 
-    def walkStatement(s: Statement): ShaderAST =
+    def walkStatement(s: Statement, defs: List[ShaderAST], proxyLookUp: Map[String, String]): ShaderAST =
       s match
         case Import(_, _) =>
           throw new Exception("Shaders do not support imports.")
@@ -77,7 +77,7 @@ object ShaderMacros:
 
         case ValDef(name, _, Some(term)) =>
           log(Printer.TreeStructure.show(s))
-          ShaderAST.Val(name, walkTerm(term, Nil, Map()))
+          ShaderAST.Val(name, walkTerm(term, defs, proxyLookUp))
 
         case ValDef(name, _, None) =>
           throw new Exception("Shaders do not support val's with no values.")
@@ -92,7 +92,7 @@ object ShaderMacros:
               .collect { case ValDef(name, _, _) => name }
 
           val fn         = nextFnName
-          val body       = walkTerm(term, Nil, Map())
+          val body       = walkTerm(term, defs, proxyLookUp)
           val returnType = findReturnType(body)
           shaderDefs += ShaderAST.Function(fn, argNames, body, returnType)
           ShaderAST.CallFunction(fn, Nil, argNames, returnType)
@@ -102,9 +102,9 @@ object ShaderMacros:
           throw new Exception("Unexpected def construction")
 
         case t: Term =>
-          walkTerm(t, Nil, Map())
+          walkTerm(t, defs, proxyLookUp)
 
-    def walkTree(t: Tree): ShaderAST =
+    def walkTree(t: Tree, defs: List[ShaderAST], proxyLookUp: Map[String, String]): ShaderAST =
       t match
         case TypeIdent("Unit") =>
           ShaderAST.DataTypes.ident("void")
@@ -131,7 +131,7 @@ object ShaderMacros:
           throw new Exception("Shaders do not support packages.")
 
         case s: Statement =>
-          walkStatement(s)
+          walkStatement(s, defs, proxyLookUp)
 
     def walkTerm(t: Term, defs: List[ShaderAST], proxyLookUp: Map[String, String]): ShaderAST =
       t match
@@ -272,7 +272,7 @@ object ShaderMacros:
               val typ = p._1.typeIdent.map(_.render).getOrElse("void")
               s"$typ ${p._2}"
             }
-          val nextDefs = ds.map(walkStatement)
+          val nextDefs = ds.map(s => walkStatement(s, defs, proxyLookUp))
           val proxies = nextDefs.flatMap {
             case ShaderAST.Val(proxy, value) =>
               pairedArgs.find(p => p._1 == value) match
@@ -282,8 +282,8 @@ object ShaderMacros:
             case _ =>
               Nil
           }
-          val body       = walkTerm(term, nextDefs, proxies.toMap)
-          val returnType = findReturnType(walkTree(typeTree))
+          val body       = walkTerm(term, nextDefs, proxies.toMap ++ proxyLookUp)
+          val returnType = findReturnType(walkTree(typeTree, defs, proxyLookUp))
 
           shaderDefs += ShaderAST.Function(name, fnArgs, body, returnType)
           ShaderAST.CallFunction(name, callArgs, argNames, returnType)
@@ -294,7 +294,7 @@ object ShaderMacros:
 
         case Inlined(Some(tree: Tree), _, _) =>
           log(Printer.TreeStructure.show(t))
-          walkTree(tree)
+          walkTree(tree, defs, proxyLookUp)
 
         case TypeApply(term, _) =>
           log(Printer.TreeStructure.show(t))
@@ -306,7 +306,7 @@ object ShaderMacros:
             ) =>
           log(Printer.TreeStructure.show(t))
 
-          val typesRendered: List[ShaderAST] = types.map(walkTree)
+          val typesRendered: List[ShaderAST] = types.map(p => walkTree(p, defs, proxyLookUp))
 
           val returnType: Option[ShaderAST] =
             typesRendered.reverse.headOption
@@ -332,11 +332,11 @@ object ShaderMacros:
 
         case Block(statements, Closure(Ident("$anonfun"), None)) =>
           log(Printer.TreeStructure.show(t))
-          ShaderAST.Block(statements.map(walkStatement))
+          ShaderAST.Block(statements.map(s => walkStatement(s, defs, proxyLookUp)))
 
         case Block(statements, term) =>
           log(Printer.TreeStructure.show(t))
-          ShaderAST.Block(statements.map(walkStatement) :+ walkTerm(term, defs, proxyLookUp))
+          ShaderAST.Block(statements.map(s => walkStatement(s, defs, proxyLookUp)) :+ walkTerm(term, defs, proxyLookUp))
 
         // Literals
 
@@ -351,7 +351,7 @@ object ShaderMacros:
 
         case Ident(name) =>
           log(Printer.TreeStructure.show(t))
-          ShaderAST.DataTypes.ident(name)
+          ShaderAST.DataTypes.ident(proxyLookUp.get(name).getOrElse(name))
 
         case Closure(Ident("$anonfun"), None) =>
           log(Printer.TreeStructure.show(t))
