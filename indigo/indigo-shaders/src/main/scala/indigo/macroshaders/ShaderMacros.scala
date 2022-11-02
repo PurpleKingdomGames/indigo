@@ -393,22 +393,14 @@ object ShaderMacros:
           log(Printer.TreeStructure.show(t))
           val ss = statements
             .map(s => walkStatement(s, defs, proxyLookUp))
-          //   .filterNot {
-          //     case ShaderAST.Empty() => true
-          //     case _                 => false
-          //   }
-          // println("Block anon: " + ss)
+
           ShaderAST.Block(ss)
 
         case Block(statements, term) =>
           log(Printer.TreeStructure.show(t))
           val ss =
             (statements.map(s => walkStatement(s, defs, proxyLookUp)) :+ walkTerm(term, defs, proxyLookUp))
-              // .filterNot {
-              //   case ShaderAST.Empty() => true
-              //   case _                 => false
-              // }
-          // println("Block not-anon: " + ss)
+            
           ShaderAST.Block(ss)
 
         // Literals
