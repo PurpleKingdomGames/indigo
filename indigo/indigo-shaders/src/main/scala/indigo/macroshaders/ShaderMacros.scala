@@ -60,6 +60,7 @@ object ShaderMacros:
       case v: ShaderAST.DataTypes.closure => v.typeIdent
       case v: ShaderAST.DataTypes.ident   => v.typeIdent
       case v: ShaderAST.DataTypes.float   => v.typeIdent
+      case v: ShaderAST.DataTypes.int     => v.typeIdent
       case v: ShaderAST.DataTypes.vec2    => v.typeIdent
       case v: ShaderAST.DataTypes.vec3    => v.typeIdent
       case v: ShaderAST.DataTypes.vec4    => v.typeIdent
@@ -399,8 +400,8 @@ object ShaderMacros:
         case Block(statements, term) =>
           log(Printer.TreeStructure.show(t))
           val ss =
-            (statements.map(s => walkStatement(s, defs, proxyLookUp)) :+ walkTerm(term, defs, proxyLookUp))
-            
+            statements.map(s => walkStatement(s, defs, proxyLookUp)) :+ walkTerm(term, defs, proxyLookUp)
+
           ShaderAST.Block(ss)
 
         // Literals
@@ -408,6 +409,10 @@ object ShaderMacros:
         case Literal(FloatConstant(f)) =>
           log(Printer.TreeStructure.show(t))
           ShaderAST.DataTypes.float(f)
+
+        case Literal(IntConstant(i)) =>
+          log(Printer.TreeStructure.show(t))
+          ShaderAST.DataTypes.int(i)
 
         case Literal(UnitConstant()) =>
           log(Printer.TreeStructure.show(t))

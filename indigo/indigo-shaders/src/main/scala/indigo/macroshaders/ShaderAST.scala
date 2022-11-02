@@ -112,6 +112,7 @@ object ShaderAST:
     case closure(body: ShaderAST, typeOf: Option[String])
     case ident(id: String)
     case float(v: Float)
+    case int(v: Int)
     case vec2(args: List[ShaderAST])
     case vec3(args: List[ShaderAST])
     case vec4(args: List[ShaderAST])
@@ -135,6 +136,7 @@ object ShaderAST:
           case v: DataTypes.closure => Expr(v)
           case v: DataTypes.ident   => Expr(v)
           case v: DataTypes.float   => Expr(v)
+          case v: DataTypes.int     => Expr(v)
           case v: DataTypes.vec2    => Expr(v)
           case v: DataTypes.vec3    => Expr(v)
           case v: DataTypes.vec4    => Expr(v)
@@ -151,6 +153,10 @@ object ShaderAST:
     given ToExpr[float] with {
       def apply(x: float)(using Quotes): Expr[float] =
         '{ float(${ Expr(x.v) }) }
+    }
+    given ToExpr[int] with {
+      def apply(x: int)(using Quotes): Expr[int] =
+        '{ int(${ Expr(x.v) }) }
     }
     given ToExpr[vec2] with {
       def apply(x: vec2)(using Quotes): Expr[vec2] =
@@ -198,6 +204,7 @@ object ShaderAST:
               case v: DataTypes.closure     => rec(v.body :: xs)
               case v: DataTypes.ident       => rec(xs)
               case v: DataTypes.float       => rec(xs)
+              case v: DataTypes.int         => rec(xs)
               case v: DataTypes.vec2        => rec(v.args ++ xs)
               case v: DataTypes.vec3        => rec(v.args ++ xs)
               case v: DataTypes.vec4        => rec(v.args ++ xs)
@@ -227,6 +234,7 @@ object ShaderAST:
         case v @ Val(id, value, typeOf)               => f(Val(id, f(value), typeOf))
         case v @ DataTypes.closure(body, typeOf)      => f(DataTypes.closure(f(body), typeOf))
         case v @ DataTypes.float(_)                   => f(v)
+        case v @ DataTypes.int(_)                     => f(v)
         case v @ DataTypes.ident(_)                   => f(v)
         case v @ DataTypes.vec2(vs)                   => f(DataTypes.vec2(vs.map(f)))
         case v @ DataTypes.vec3(vs)                   => f(DataTypes.vec3(vs.map(f)))
@@ -247,6 +255,7 @@ object ShaderAST:
         case n @ DataTypes.ident(_)       => Option(n)
         case DataTypes.closure(_, typeOf) => typeOf.map(t => ShaderAST.DataTypes.ident(t))
         case DataTypes.float(_)           => Option(ShaderAST.DataTypes.ident("float"))
+        case DataTypes.int(_)             => Option(ShaderAST.DataTypes.ident("int"))
         case DataTypes.vec2(_)            => Option(ShaderAST.DataTypes.ident("vec2"))
         case DataTypes.vec3(_)            => Option(ShaderAST.DataTypes.ident("vec3"))
         case DataTypes.vec4(_)            => Option(ShaderAST.DataTypes.ident("vec4"))
@@ -267,11 +276,12 @@ object ShaderAST:
           case Function(_, _, _, rt)        => rt.map(_.render)
           case CallFunction(_, _, _, rt)    => rt.map(_.render)
           case Infix(_, _, _, rt)           => rt.map(_.render)
-          case Assign(_, _)           => None
+          case Assign(_, _)                 => None
           case Val(id, value, typeOf)       => typeOf
           case n @ DataTypes.ident(_)       => None
           case DataTypes.closure(_, typeOf) => typeOf
           case DataTypes.float(v)           => Option("float")
+          case DataTypes.int(v)             => Option("int")
           case DataTypes.vec2(args)         => Option("vec2")
           case DataTypes.vec3(args)         => Option("vec3")
           case DataTypes.vec4(args)         => Option("vec4")
@@ -368,6 +378,9 @@ object ShaderAST:
 
           case DataTypes.float(v) =>
             s"${rf(v)}"
+
+          case DataTypes.int(v) =>
+            s"${v.toString}"
 
           case DataTypes.vec2(args) =>
             s"vec2(${args.map(_.render).mkString(",")})"
