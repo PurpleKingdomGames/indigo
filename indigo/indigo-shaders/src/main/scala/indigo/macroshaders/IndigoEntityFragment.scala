@@ -2,6 +2,7 @@ package indigo.macroshaders
 
 import ShaderDSL.*
 
+@SuppressWarnings(Array("scalafix:DisableSyntax.var"))
 trait IndigoEntityFragment:
 
   // Variables
@@ -52,4 +53,4 @@ trait IndigoEntityFragment:
   def TAU_8: Float
 
   // Outputs
-  def COLOR: vec4
+  var COLOR: vec4

@@ -4,8 +4,10 @@ import ShaderDSL.*
 
 class ShaderASTTests extends munit.FunSuite {
 
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   trait FragEnv {
     val UV: vec2
+    var COLOR: vec4
   }
 
   test("Simple conversion to GLSL") {
@@ -261,6 +263,57 @@ class ShaderASTTests extends munit.FunSuite {
       |vec4 calculateColour(vec2 uv,float sdf){vec4 fill=vec4(uv,0.0,1.0);float fillAmount=((1.0)-(step(0.0,sdf)))*(fill.w);return vec4((fill.xyz)*(fillAmount),fillAmount);}
       |float sdf=circleSdf((UV)-(0.5),0.5);calculateColour(UV,sdf);
       |""".stripMargin.trim
+    )
+  }
+
+  test("Output a color / Assign") {
+
+    inline def fragment: Shader[FragEnv, Unit] =
+      Shader { env =>
+        env.COLOR = vec4(1.0f, 0.0f, 0.0f, 1.0f)
+      }
+
+    val actual =
+      ShaderMacros.toAST(fragment)
+
+    assertEquals(
+      actual.render,
+      s"""
+      |COLOR=vec4(1.0,0.0,0.0,1.0);
+      |""".stripMargin.trim
+    )
+  }
+
+  test("Small procedural shader with fragment function") {
+
+    inline def fragment: Shader[FragEnv, Unit] =
+      Shader { env =>
+        def circleSdf(p: vec2, r: Float): Float =
+          length(p) - r
+
+        def calculateColour(uv: vec2, sdf: Float): vec4 =
+          val fill       = vec4(uv, 0.0f, 1.0f)
+          val fillAmount = (1.0f - step(0.0f, sdf)) * fill.w
+          vec4(fill.xyz * fillAmount, fillAmount)
+
+        def fragment: Unit =
+          val sdf = circleSdf(env.UV - 0.5f, 0.5f)
+          env.COLOR = calculateColour(env.UV, sdf)
+      }
+
+    val actual =
+      ShaderMacros.toAST(fragment)
+
+    val expected =
+      s"""
+      |float circleSdf(vec2 p,float r){return (length(p))-(r);}
+      |vec4 calculateColour(vec2 uv,float sdf){vec4 fill=vec4(uv,0.0,1.0);float fillAmount=((1.0)-(step(0.0,sdf)))*(fill.w);return vec4((fill.xyz)*(fillAmount),fillAmount);}
+      |void fragment(){float sdf=circleSdf((UV)-(0.5),0.5);COLOR=calculateColour(UV,sdf);}
+      |""".stripMargin.trim
+
+    assertEquals(
+      actual.render,
+      expected
     )
   }
 

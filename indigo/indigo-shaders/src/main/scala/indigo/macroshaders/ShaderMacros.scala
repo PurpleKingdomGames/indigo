@@ -55,6 +55,7 @@ object ShaderMacros:
       case v: ShaderAST.Function          => v.returnType
       case v: ShaderAST.CallFunction      => v.returnType
       case v: ShaderAST.Infix             => v.returnType
+      case v: ShaderAST.Assign            => findReturnType(v.right)
       case v: ShaderAST.Val               => findReturnType(v.value)
       case v: ShaderAST.DataTypes.closure => v.typeIdent
       case v: ShaderAST.DataTypes.ident   => v.typeIdent
@@ -390,11 +391,25 @@ object ShaderMacros:
 
         case Block(statements, Closure(Ident("$anonfun"), None)) =>
           log(Printer.TreeStructure.show(t))
-          ShaderAST.Block(statements.map(s => walkStatement(s, defs, proxyLookUp)))
+          val ss = statements
+            .map(s => walkStatement(s, defs, proxyLookUp))
+          //   .filterNot {
+          //     case ShaderAST.Empty() => true
+          //     case _                 => false
+          //   }
+          // println("Block anon: " + ss)
+          ShaderAST.Block(ss)
 
         case Block(statements, term) =>
           log(Printer.TreeStructure.show(t))
-          ShaderAST.Block(statements.map(s => walkStatement(s, defs, proxyLookUp)) :+ walkTerm(term, defs, proxyLookUp))
+          val ss =
+            (statements.map(s => walkStatement(s, defs, proxyLookUp)) :+ walkTerm(term, defs, proxyLookUp))
+              // .filterNot {
+              //   case ShaderAST.Empty() => true
+              //   case _                 => false
+              // }
+          // println("Block not-anon: " + ss)
+          ShaderAST.Block(ss)
 
         // Literals
 
@@ -444,8 +459,12 @@ object ShaderMacros:
         case Super(_, _) =>
           throw new Exception("Shaders do not support super.")
 
-        case Assign(_, _) =>
-          throw new Exception("Shaders do not support assign.")
+        case Assign(lhs, rhs) =>
+          log(Printer.TreeStructure.show(t))
+          ShaderAST.Assign(
+            walkTerm(lhs, defs, proxyLookUp),
+            walkTerm(rhs, defs, proxyLookUp)
+          )
 
         case If(_, _, _) =>
           throw new Exception("Shaders do not support if statements.")

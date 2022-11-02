@@ -95,23 +95,24 @@ object CustomShader:
       vec4(env.UV, zero, alpha)
     }
 
-  inline def circleSdf(p: vec2, r: Float): Float =
-    length(p) - r
-
-  inline def calculateColour(uv: vec2, sdf: Float): vec4 =
-    val fill       = vec4(uv, 0.0f, 1.0f)
-    val fillAmount = (1.0f - step(0.0f, sdf)) * fill.w
-    vec4(fill.xyz * fillAmount, fillAmount)
-
-  inline def fragment2: Shader[FragEnv, vec4] =
+  inline def fragment2: Shader[FragEnv, Unit] =
     Shader { env =>
-      val sdf = circleSdf(env.UV - 0.5f, 0.5f)
-      calculateColour(env.UV, sdf)
+      def circleSdf(p: vec2, r: Float): Float =
+        length(p) - r
+
+      def calculateColour(uv: vec2, sdf: Float): vec4 =
+        val fill       = vec4(uv, 0.0f, 1.0f)
+        val fillAmount = (1.0f - step(0.0f, sdf)) * fill.w
+        vec4(fill.xyz * fillAmount, fillAmount)
+
+      def fragment: Unit =
+        val sdf = circleSdf(env.UV - 0.5f, 0.5f)
+        env.COLOR = calculateColour(env.UV, sdf)
     }
 
-  println(fragment2.toGLSL)
+  // println(fragment2.toGLSL)
 
   val shader: EntityShader.Source =
     EntityShader
       .Source(shaderId)
-      .withFragmentProgram(fragment1.toGLSL)
+      .withFragmentProgram(fragment2.toGLSL)

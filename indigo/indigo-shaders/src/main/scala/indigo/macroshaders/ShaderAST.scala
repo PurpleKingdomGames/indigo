@@ -16,6 +16,7 @@ object ShaderAST:
         case v: Function     => Expr(v)
         case v: CallFunction => Expr(v)
         case v: Infix        => Expr(v)
+        case v: Assign       => Expr(v)
         case v: DataTypes    => Expr(v)
         case v: Val          => Expr(v)
   }
@@ -65,6 +66,7 @@ object ShaderAST:
       def apply(x: Function)(using Quotes): Expr[Function] =
         '{ Function(${ Expr(x.id) }, ${ Expr(x.args) }, ${ Expr(x.body) }, ${ Expr(x.returnType) }) }
     }
+
   final case class CallFunction(
       id: String,
       args: List[ShaderAST],
@@ -76,6 +78,7 @@ object ShaderAST:
       def apply(x: CallFunction)(using Quotes): Expr[CallFunction] =
         '{ CallFunction(${ Expr(x.id) }, ${ Expr(x.args) }, ${ Expr(x.argNames) }, ${ Expr(x.returnType) }) }
     }
+
   final case class Infix(
       op: String,
       left: ShaderAST,
@@ -86,6 +89,16 @@ object ShaderAST:
     given ToExpr[Infix] with {
       def apply(x: Infix)(using Quotes): Expr[Infix] =
         '{ Infix(${ Expr(x.op) }, ${ Expr(x.left) }, ${ Expr(x.right) }, ${ Expr(x.returnType) }) }
+    }
+
+  final case class Assign(
+      left: ShaderAST,
+      right: ShaderAST
+  ) extends ShaderAST
+  object Assign:
+    given ToExpr[Assign] with {
+      def apply(x: Assign)(using Quotes): Expr[Assign] =
+        '{ Assign(${ Expr(x.left) }, ${ Expr(x.right) }) }
     }
 
   final case class Val(id: String, value: ShaderAST, typeOf: Option[String]) extends ShaderAST
@@ -180,6 +193,7 @@ object ShaderAST:
               case Function(_, _, body, _)  => rec(body :: xs)
               case CallFunction(_, _, _, _) => rec(xs)
               case Infix(_, l, r, _)        => rec(l :: r :: xs)
+              case Assign(l, r)             => rec(l :: r :: xs)
               case Val(_, body, _)          => rec(body :: xs)
               case v: DataTypes.closure     => rec(v.body :: xs)
               case v: DataTypes.ident       => rec(xs)
@@ -209,6 +223,7 @@ object ShaderAST:
         case v @ Function(id, args, body, returnType) => f(Function(id, args, f(body), returnType))
         case v @ CallFunction(_, _, _, _)             => f(v)
         case v @ Infix(op, l, r, returnType)          => f(Infix(op, f(l), f(r), returnType))
+        case v @ Assign(l, r)                         => f(Assign(f(l), f(r)))
         case v @ Val(id, value, typeOf)               => f(Val(id, f(value), typeOf))
         case v @ DataTypes.closure(body, typeOf)      => f(DataTypes.closure(f(body), typeOf))
         case v @ DataTypes.float(_)                   => f(v)
@@ -227,6 +242,7 @@ object ShaderAST:
         case Function(_, _, _, rt)        => rt.flatMap(_.typeIdent)
         case CallFunction(_, _, _, rt)    => rt.flatMap(_.typeIdent)
         case Infix(_, _, _, rt)           => rt.flatMap(_.typeIdent)
+        case Assign(_, _)                 => None
         case Val(id, value, typeOf)       => typeOf.map(t => ShaderAST.DataTypes.ident(t))
         case n @ DataTypes.ident(_)       => Option(n)
         case DataTypes.closure(_, typeOf) => typeOf.map(t => ShaderAST.DataTypes.ident(t))
@@ -251,6 +267,7 @@ object ShaderAST:
           case Function(_, _, _, rt)        => rt.map(_.render)
           case CallFunction(_, _, _, rt)    => rt.map(_.render)
           case Infix(_, _, _, rt)           => rt.map(_.render)
+          case Assign(_, _)           => None
           case Val(id, value, typeOf)       => typeOf
           case n @ DataTypes.ident(_)       => None
           case DataTypes.closure(_, typeOf) => typeOf
@@ -261,13 +278,15 @@ object ShaderAST:
           case DataTypes.swizzle(v, _, rt)  => rt.map(_.render)
 
       def processStatements(statements: List[ShaderAST]): String =
-        statements
+        val out = statements
           .map(_.prune)
           .filterNot(_.isEmpty) // Empty()
           .map(_.render)
           .filterNot(_.isEmpty) // empty String
-          .mkString("", ";", ";")
+          .mkString(";")
           .replace(";;", ";")
+
+        if out.trim.isEmpty then out else out + ";"
 
       def processFunctionStatements(statements: List[ShaderAST], maybeReturnType: Option[String]): (String, String) =
         val nonEmpty = statements
@@ -284,11 +303,16 @@ object ShaderAST:
             case Some(value) => value
 
         val body = {
-          if init.isEmpty then ""
-          else init.map(_.render).filterNot(_.isEmpty).mkString("", ";", ";")
+          val out =
+            if init.isEmpty then ""
+            else init.map(_.render).filterNot(_.isEmpty).mkString(";")
+          if out.trim.isEmpty then out else out + ";"
         } +
           last.headOption
-            .map(ss => (if returnType != "void" then "return " else "") + ss.render + ";")
+            .map { ss =>
+              val out = (if returnType != "void" then "return " else "") + ss.render
+              if out.trim.isEmpty then out else out + ";"
+            }
             .getOrElse("")
             .replace(";;", ";") // Some Scala elements are removed completely, but still are a statement techincally.
 
@@ -332,6 +356,9 @@ object ShaderAST:
 
           case Infix(op, left, right, returnType) =>
             s"""(${left.render})$op(${right.render})"""
+
+          case Assign(left, right) =>
+            s"""${left.render}=${right.render}"""
 
           case DataTypes.closure(body, typeOf) =>
             s"[closure $body $typeOf]"

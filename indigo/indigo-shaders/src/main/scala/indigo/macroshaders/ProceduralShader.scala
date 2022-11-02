@@ -25,7 +25,7 @@ object ProceduralShader:
             case _                    => None
           }
 
-      val res = (p.defs ++ List(p.main)).map(_.render).mkString("\n")
+      val res = (p.defs ++ List(p.main)).map(_.render).mkString("\n").trim
 
       envName(p.main) match
         case None       => res
