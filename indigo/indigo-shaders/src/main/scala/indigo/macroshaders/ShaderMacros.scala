@@ -56,6 +56,7 @@ object ShaderMacros:
       case v: ShaderAST.CallFunction      => v.returnType
       case v: ShaderAST.Infix             => v.returnType
       case v: ShaderAST.Assign            => findReturnType(v.right)
+      case v: ShaderAST.If                => findReturnType(v.thenTerm)
       case v: ShaderAST.Val               => findReturnType(v.value)
       case v: ShaderAST.DataTypes.closure => v.typeIdent
       case v: ShaderAST.DataTypes.ident   => v.typeIdent
@@ -282,7 +283,7 @@ object ShaderMacros:
         case Apply(Select(term, op), xs) =>
           log(Printer.TreeStructure.show(t))
           op match
-            case "+" | "-" | "*" | "/" =>
+            case "+" | "-" | "*" | "/" | "<" | ">" | "==" | "<=" | ">=" =>
               val lhs = walkTerm(term, defs, proxyLookUp)
               val rhs = xs.headOption.map(tt => walkTerm(tt, defs, proxyLookUp)).getOrElse(ShaderAST.Empty())
               val rt  = findReturnType(lhs)
@@ -463,8 +464,13 @@ object ShaderMacros:
             walkTerm(rhs, defs, proxyLookUp)
           )
 
-        case If(_, _, _) =>
-          throw new Exception("Shaders do not support if statements.")
+        case If(condTerm, thenTerm, elseTerm) =>
+          log(Printer.TreeStructure.show(t))
+          ShaderAST.If(
+            walkTerm(condTerm, defs, proxyLookUp),
+            walkTerm(thenTerm, defs, proxyLookUp),
+            walkTerm(elseTerm, defs, proxyLookUp)
+          )
 
         case Match(_, _) =>
           throw new Exception("Shaders do not support pattern matching.")

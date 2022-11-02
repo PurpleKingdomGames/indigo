@@ -317,4 +317,44 @@ class ShaderASTTests extends munit.FunSuite {
     )
   }
 
+  test("if statements") {
+    inline def fragment: Shader[FragEnv, vec4] =
+      Shader { _ =>
+        val red    = vec4(1.0, 0.0, 0.0, 1.0)
+        val green  = vec4(0.0, 1.0, 0.0, 1.0)
+        val blue   = vec4(0.0, 0.0, 1.0, 1.0)
+        val x: Int = 1
+
+        if x <= 0 then red
+        else if x == 1 then blue
+        else green
+      }
+
+    val actual =
+      fragment.toGLSL
+
+    assertEquals(
+      actual,
+      s"""
+      |vec4 red=vec4(1.0,0.0,0.0,1.0);vec4 green=vec4(0.0,1.0,0.0,1.0);vec4 blue=vec4(0.0,0.0,1.0,1.0);int x=1;if((x)<=(0)){red}else{if((x)==(1)){blue}else{green}};
+      |""".stripMargin.trim
+    )
+  }
+
+  // test("switch statements") {
+  //   //
+  // }
+
+  // test("casting") {
+  //   //
+  // }
+
+  // test("for loops") {
+  //   //
+  // }
+
+  // test("while loops") {
+  //   //
+  // }
+
 }

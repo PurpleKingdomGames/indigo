@@ -17,6 +17,7 @@ object ShaderAST:
         case v: CallFunction => Expr(v)
         case v: Infix        => Expr(v)
         case v: Assign       => Expr(v)
+        case v: If           => Expr(v)
         case v: DataTypes    => Expr(v)
         case v: Val          => Expr(v)
   }
@@ -99,6 +100,17 @@ object ShaderAST:
     given ToExpr[Assign] with {
       def apply(x: Assign)(using Quotes): Expr[Assign] =
         '{ Assign(${ Expr(x.left) }, ${ Expr(x.right) }) }
+    }
+
+  final case class If(
+      condition: ShaderAST,
+      thenTerm: ShaderAST,
+      elseTerm: ShaderAST
+  ) extends ShaderAST
+  object If:
+    given ToExpr[If] with {
+      def apply(x: If)(using Quotes): Expr[If] =
+        '{ If(${ Expr(x.condition) }, ${ Expr(x.thenTerm) }, ${ Expr(x.elseTerm) }) }
     }
 
   final case class Val(id: String, value: ShaderAST, typeOf: Option[String]) extends ShaderAST
@@ -200,6 +212,7 @@ object ShaderAST:
               case CallFunction(_, _, _, _) => rec(xs)
               case Infix(_, l, r, _)        => rec(l :: r :: xs)
               case Assign(l, r)             => rec(l :: r :: xs)
+              case If(c, t, e)              => rec(t :: e :: xs)
               case Val(_, body, _)          => rec(body :: xs)
               case v: DataTypes.closure     => rec(v.body :: xs)
               case v: DataTypes.ident       => rec(xs)
@@ -231,6 +244,7 @@ object ShaderAST:
         case v @ CallFunction(_, _, _, _)             => f(v)
         case v @ Infix(op, l, r, returnType)          => f(Infix(op, f(l), f(r), returnType))
         case v @ Assign(l, r)                         => f(Assign(f(l), f(r)))
+        case v @ If(c, t, e)                          => f(If(c, f(t), f(e)))
         case v @ Val(id, value, typeOf)               => f(Val(id, f(value), typeOf))
         case v @ DataTypes.closure(body, typeOf)      => f(DataTypes.closure(f(body), typeOf))
         case v @ DataTypes.float(_)                   => f(v)
@@ -251,6 +265,7 @@ object ShaderAST:
         case CallFunction(_, _, _, rt)    => rt.flatMap(_.typeIdent)
         case Infix(_, _, _, rt)           => rt.flatMap(_.typeIdent)
         case Assign(_, _)                 => None
+        case If(_, t, _)                  => t.typeIdent
         case Val(id, value, typeOf)       => typeOf.map(t => ShaderAST.DataTypes.ident(t))
         case n @ DataTypes.ident(_)       => Option(n)
         case DataTypes.closure(_, typeOf) => typeOf.map(t => ShaderAST.DataTypes.ident(t))
@@ -277,6 +292,7 @@ object ShaderAST:
           case CallFunction(_, _, _, rt)    => rt.map(_.render)
           case Infix(_, _, _, rt)           => rt.map(_.render)
           case Assign(_, _)                 => None
+          case If(_, t, _)                  => None
           case Val(id, value, typeOf)       => typeOf
           case n @ DataTypes.ident(_)       => None
           case DataTypes.closure(_, typeOf) => typeOf
@@ -369,6 +385,9 @@ object ShaderAST:
 
           case Assign(left, right) =>
             s"""${left.render}=${right.render}"""
+
+          case If(cond, thenTerm, elseTerm) =>
+            s"""if(${cond.render}){${thenTerm.render}}else{${elseTerm.render}}"""
 
           case DataTypes.closure(body, typeOf) =>
             s"[closure $body $typeOf]"
