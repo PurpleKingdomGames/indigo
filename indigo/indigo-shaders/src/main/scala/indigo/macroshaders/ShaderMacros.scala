@@ -8,10 +8,10 @@ import ShaderDSL.*
 
 object ShaderMacros:
 
-  inline def toAST[Env, A](inline expr: Shader[Env, A]): ProceduralShader = ${ toASTImpl('{ expr }) }
+  inline def toAST[In, Out](inline expr: Shader[In, Out]): ProceduralShader = ${ toASTImpl('{ expr }) }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw", "scalafix:DisableSyntax.var"))
-  private def toASTImpl[Env, A](expr: Expr[Shader[Env, A]])(using Quotes): Expr[ProceduralShader] = {
+  private def toASTImpl[In, Out: Type](expr: Expr[Shader[In, Out]])(using Quotes): Expr[ProceduralShader] = {
 
     import quotes.reflect.*
 
@@ -30,6 +30,9 @@ object ShaderMacros:
     val shaderDefs: ListBuffer[ShaderAST] = new ListBuffer()
 
     val traceLog: ListBuffer[String] = new ListBuffer()
+
+    var inputClassType: Option[String]  = None
+    var outputClassType: Option[String] = None
 
     def log(msg: String): Unit = traceLog += msg
 
@@ -162,7 +165,7 @@ object ShaderMacros:
 
         // Entry point
         case Apply(
-              TypeApply(Select(Ident("Shader"), "apply"), List(Inferred(), Inferred())),
+              TypeApply(Select(Ident("Shader"), "apply"), List(inType, outType)),
               List(
                 Block(
                   Nil,
@@ -181,6 +184,10 @@ object ShaderMacros:
               )
             ) =>
           log(Printer.TreeStructure.show(t))
+
+          inputClassType = inType.tpe.classSymbol.map(_.name)
+          outputClassType = outType.tpe.classSymbol.map(_.name)
+
           ShaderAST.ShaderBlock(envVarName, walkTerm(term, defs, proxyLookUp))
 
         case Apply(Select(Ident("vec2"), "apply"), args) =>
