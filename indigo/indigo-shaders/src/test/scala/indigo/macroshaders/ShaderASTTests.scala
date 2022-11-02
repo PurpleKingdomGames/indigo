@@ -357,4 +357,12 @@ class ShaderASTTests extends munit.FunSuite {
   //   //
   // }
 
+  // test("compose (Function1)") {
+  //   //
+  // }
+
+  // test("andThen (Function1)") {
+  //   //
+  // }
+
 }
