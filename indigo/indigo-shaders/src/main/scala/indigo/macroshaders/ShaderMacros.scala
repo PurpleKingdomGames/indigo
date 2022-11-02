@@ -75,9 +75,23 @@ object ShaderMacros:
         case TypeDef(_, _) =>
           throw new Exception("Shaders do not support fancy types.")
 
-        case ValDef(name, _, Some(term)) =>
+        case ValDef(name, typ, Some(term)) =>
           log(Printer.TreeStructure.show(s))
-          ShaderAST.Val(name, walkTerm(term, defs, proxyLookUp))
+
+          val typeOf =
+            typ.tpe.classSymbol
+              .map(_.name)
+              .map {
+                case "Float" => "float"
+                case "Int"   => "int"
+                case n       => n
+              }
+              .filter {
+                case "float" | "int" | "vec2" | "vec3" | "vec4" => true
+                case _                                          => false
+              }
+
+          ShaderAST.Val(name, walkTerm(term, defs, proxyLookUp), typeOf)
 
         case ValDef(name, _, None) =>
           throw new Exception("Shaders do not support val's with no values.")
@@ -311,7 +325,7 @@ object ShaderMacros:
             }
           val nextDefs = ds.map(s => walkStatement(s, defs, proxyLookUp))
           val proxies = nextDefs.flatMap {
-            case ShaderAST.Val(proxy, value) =>
+            case ShaderAST.Val(proxy, value, _) =>
               pairedArgs.find(p => p._1 == value) match
                 case None    => Nil
                 case Some(v) => List(proxy -> v._2)

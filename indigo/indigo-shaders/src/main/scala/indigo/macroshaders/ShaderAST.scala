@@ -88,11 +88,11 @@ object ShaderAST:
         '{ Infix(${ Expr(x.op) }, ${ Expr(x.left) }, ${ Expr(x.right) }, ${ Expr(x.returnType) }) }
     }
 
-  final case class Val(id: String, value: ShaderAST) extends ShaderAST
+  final case class Val(id: String, value: ShaderAST, typeOf: Option[String]) extends ShaderAST
   object Val:
     given ToExpr[Val] with {
       def apply(x: Val)(using Quotes): Expr[Val] =
-        '{ Val(${ Expr(x.id) }, ${ Expr(x.value) }) }
+        '{ Val(${ Expr(x.id) }, ${ Expr(x.value) }, ${ Expr(x.typeOf) }) }
     }
 
   enum DataTypes extends ShaderAST:
@@ -180,7 +180,7 @@ object ShaderAST:
               case Function(_, _, body, _)  => rec(body :: xs)
               case CallFunction(_, _, _, _) => rec(xs)
               case Infix(_, l, r, _)        => rec(l :: r :: xs)
-              case Val(_, body)             => rec(body :: xs)
+              case Val(_, body, _)          => rec(body :: xs)
               case v: DataTypes.closure     => rec(v.body :: xs)
               case v: DataTypes.ident       => rec(xs)
               case v: DataTypes.float       => rec(xs)
@@ -194,7 +194,7 @@ object ShaderAST:
     def prune: ShaderAST =
       def crush(statements: ShaderAST): ShaderAST =
         statements match
-          case b: Block => b.copy(statements = b.statements.filterNot(_.isEmpty).map(crush))
+          case b: Block      => b.copy(statements = b.statements.filterNot(_.isEmpty).map(crush))
           case b: NamedBlock => b.copy(statements = b.statements.filterNot(_.isEmpty).map(crush))
           case other         => other
 
@@ -209,7 +209,7 @@ object ShaderAST:
         case v @ Function(id, args, body, returnType) => f(Function(id, args, f(body), returnType))
         case v @ CallFunction(_, _, _, _)             => f(v)
         case v @ Infix(op, l, r, returnType)          => f(Infix(op, f(l), f(r), returnType))
-        case v @ Val(id, value)                       => f(Val(id, f(value)))
+        case v @ Val(id, value, typeOf)               => f(Val(id, f(value), typeOf))
         case v @ DataTypes.closure(body, typeOf)      => f(DataTypes.closure(f(body), typeOf))
         case v @ DataTypes.float(_)                   => f(v)
         case v @ DataTypes.ident(_)                   => f(v)
@@ -227,7 +227,7 @@ object ShaderAST:
         case Function(_, _, _, rt)        => rt.flatMap(_.typeIdent)
         case CallFunction(_, _, _, rt)    => rt.flatMap(_.typeIdent)
         case Infix(_, _, _, rt)           => rt.flatMap(_.typeIdent)
-        case Val(id, value)               => value.typeIdent
+        case Val(id, value, typeOf)       => typeOf.map(t => ShaderAST.DataTypes.ident(t))
         case n @ DataTypes.ident(_)       => Option(n)
         case DataTypes.closure(_, typeOf) => typeOf.map(t => ShaderAST.DataTypes.ident(t))
         case DataTypes.float(_)           => Option(ShaderAST.DataTypes.ident("float"))
@@ -251,7 +251,7 @@ object ShaderAST:
           case Function(_, _, _, rt)        => rt.map(_.render)
           case CallFunction(_, _, _, rt)    => rt.map(_.render)
           case Infix(_, _, _, rt)           => rt.map(_.render)
-          case Val(id, value)               => value.typeIdent.map(_.render)
+          case Val(id, value, typeOf)       => typeOf
           case n @ DataTypes.ident(_)       => None
           case DataTypes.closure(_, typeOf) => typeOf
           case DataTypes.float(v)           => Option("float")
@@ -354,7 +354,7 @@ object ShaderAST:
           case DataTypes.swizzle(genType, swizzle, returnType) =>
             s"${genType.render}.$swizzle"
 
-          case Val(id, value) =>
-            s"""${decideType(value).getOrElse("void")} $id=${value.render}"""
+          case Val(id, value, typeOf) =>
+            s"""${typeOf.getOrElse("void")} $id=${value.render}"""
 
       res
