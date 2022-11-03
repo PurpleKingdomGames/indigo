@@ -504,9 +504,6 @@ object ShaderMacros:
         case While(_, _) =>
           throw new Exception("Shaders do not support while loops.")
 
-    // println(">>> Everything")
-    // println(Printer.TreeStructure.show(expr.asTerm))
-    // println("<<<")
     val res           = walkTerm(expr.asTerm, Nil, Map())
     val shaderDefList = shaderDefs.toList
 
