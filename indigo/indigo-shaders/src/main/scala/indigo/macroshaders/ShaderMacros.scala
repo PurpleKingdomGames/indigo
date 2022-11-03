@@ -54,6 +54,7 @@ object ShaderMacros:
       case v: ShaderAST.ShaderBlock       => v.statements.reverse.headOption.flatMap(findReturnType)
       case v: ShaderAST.Function          => v.returnType
       case v: ShaderAST.CallFunction      => v.returnType
+      case v: ShaderAST.Cast              => v.typeIdent
       case v: ShaderAST.Infix             => v.returnType
       case v: ShaderAST.Assign            => findReturnType(v.right)
       case v: ShaderAST.If                => findReturnType(v.thenTerm)
@@ -221,10 +222,6 @@ object ShaderMacros:
           log(Printer.TreeStructure.show(t))
           ShaderAST.NamedBlock(id, "", walkTerm(x, defs, proxyLookUp))
 
-        case Select(Ident(namespace), name) =>
-          log(Printer.TreeStructure.show(t))
-          ShaderAST.DataTypes.ident(s"$namespace.$name")
-
         // Generally walking the tree
 
         case Apply(TypeApply(Select(Ident(id), "apply"), _), List(x)) =>
@@ -252,10 +249,24 @@ object ShaderMacros:
           log(Printer.TreeStructure.show(t))
           ShaderAST.DataTypes.vec4(args.map(p => walkTerm(p, defs, proxyLookUp)))
 
+        // Casting
+
+        case Select(term, "toInt") =>
+          log(Printer.TreeStructure.show(t))
+          ShaderAST.Cast(walkTerm(term, defs, proxyLookUp), "int")
+
+        case Select(term, "toFloat") =>
+          log(Printer.TreeStructure.show(t))
+          ShaderAST.Cast(walkTerm(term, defs, proxyLookUp), "float")
+
         // Read a field
 
         case Select(Inlined(None, Nil, Ident(obj)), fieldName) =>
           ShaderAST.DataTypes.ident(s"$obj.$fieldName")
+
+        case Select(Ident(namespace), name) =>
+          log(Printer.TreeStructure.show(t))
+          ShaderAST.DataTypes.ident(s"$namespace.$name")
 
         // Native method call.
         case Apply(Ident(name), List(Inlined(None, Nil, Ident(defRef)))) =>
