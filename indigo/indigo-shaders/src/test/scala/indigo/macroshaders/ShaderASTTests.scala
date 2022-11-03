@@ -341,10 +341,6 @@ class ShaderASTTests extends munit.FunSuite {
     )
   }
 
-  // test("switch statements") {
-  //   //
-  // }
-
   test("casting") {
     inline def fragment: Shader[FragEnv, Float] =
       Shader { _ =>
@@ -367,11 +363,19 @@ class ShaderASTTests extends munit.FunSuite {
     )
   }
 
+  // test("switch statements") {
+  //   //
+  // }
+
   // test("for loops") {
   //   //
   // }
 
   // test("while loops") {
+  //   //
+  // }
+
+  // test("imports") {
   //   //
   // }
 
