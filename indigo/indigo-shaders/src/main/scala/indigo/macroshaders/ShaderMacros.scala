@@ -139,8 +139,14 @@ object ShaderMacros:
               case _ =>
                 findReturnType(body)
 
-          shaderDefs += ShaderAST.Function(fn, argNamesTypes.map(p => p._1 + " " + p._2), body, returnType)
-          ShaderAST.FunctionRef(fn, returnType)
+          body match
+            case ShaderAST.Block(List(ShaderAST.FunctionRef(id, rt))) =>
+              proxyLookUp += (fn -> (id, rt))
+              ShaderAST.Empty()
+
+            case _ =>
+              shaderDefs += ShaderAST.Function(fn, argNamesTypes.map(p => p._1 + " " + p._2), body, returnType)
+              ShaderAST.FunctionRef(fn, returnType)
 
         case DefDef(_, _, _, _) =>
           log(Printer.TreeStructure.show(s))

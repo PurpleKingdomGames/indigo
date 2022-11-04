@@ -403,27 +403,29 @@ class ShaderASTTests extends munit.FunSuite {
     )
   }
 
-  // test("local unary lambda function (def)") {
-  //   inline def fragment: Shader[FragEnv, vec3] =
-  //     Shader { _ =>
-  //       def f: Float => vec3 = r => vec3(r, 0.0f, 0.0f)
-  //       def g = (b: Float) => vec3(0.0f, 0.0f, b)
-  //       f(1.0f) + g(2.0)
-  //     }
+  test("local unary lambda function (def)") {
+    inline def fragment: Shader[FragEnv, vec3] =
+      Shader { _ =>
+        def f: Float => vec3 = r => vec3(r, 0.0f, 0.0f)
+        def g                = (b: Float) => vec3(0.0f, 0.0f, b)
+        f(1.0f) + g(2.0)
+      }
 
-  //   val actual =
-  //     fragment.toGLSL
+    val actual =
+      fragment.toGLSL
 
-  //   DebugAST.toAST(fragment)
-  //   println(actual)
+    // DebugAST.toAST(fragment)
+    // println(actual)
 
-  //   assertEquals(
-  //     actual,
-  //     s"""
-  //     |
-  //     |""".stripMargin.trim
-  //   )
-  // }
+    assertEquals(
+      actual,
+      s"""
+      |vec3 fn0(float r){return vec3(r,0.0,0.0);}
+      |vec3 fn1(float b){return vec3(0.0,0.0,b);}
+      |(fn0(1.0))+(fn1(2.0));
+      |""".stripMargin.trim
+    )
+  }
 
   // test("compose (Function1)") {
   //   inline def fragment: Shader[FragEnv, vec4] =
