@@ -15,6 +15,7 @@ object ShaderAST:
         case v: ShaderBlock  => Expr(v)
         case v: Function     => Expr(v)
         case v: CallFunction => Expr(v)
+        case v: FunctionRef  => Expr(v)
         case v: Cast         => Expr(v)
         case v: Infix        => Expr(v)
         case v: Assign       => Expr(v)
@@ -79,6 +80,14 @@ object ShaderAST:
     given ToExpr[CallFunction] with {
       def apply(x: CallFunction)(using Quotes): Expr[CallFunction] =
         '{ CallFunction(${ Expr(x.id) }, ${ Expr(x.args) }, ${ Expr(x.argNames) }, ${ Expr(x.returnType) }) }
+    }
+
+  // Allows things high up the tree to gain a reference to created functions.
+  final case class FunctionRef(id: String, returnType: Option[ShaderAST]) extends ShaderAST
+  object FunctionRef:
+    given ToExpr[FunctionRef] with {
+      def apply(x: FunctionRef)(using Quotes): Expr[FunctionRef] =
+        '{ FunctionRef(${ Expr(x.id) }, ${ Expr(x.returnType) }) }
     }
 
   final case class Cast(
@@ -221,6 +230,7 @@ object ShaderAST:
               case ShaderBlock(_, s)        => rec(s ++ xs)
               case Function(_, _, body, _)  => rec(body :: xs)
               case CallFunction(_, _, _, _) => rec(xs)
+              case FunctionRef(_, _)        => rec(xs)
               case Cast(v, _)               => rec(v :: xs)
               case Infix(_, l, r, _)        => rec(l :: r :: xs)
               case Assign(l, r)             => rec(l :: r :: xs)
@@ -254,6 +264,7 @@ object ShaderAST:
         case v @ ShaderBlock(n, s)                    => f(ShaderBlock(n, s))
         case v @ Function(id, args, body, returnType) => f(Function(id, args, f(body), returnType))
         case v @ CallFunction(_, _, _, _)             => f(v)
+        case v @ FunctionRef(_, _)                    => f(v)
         case v @ Cast(value, as)                      => f(Cast(f(value), as))
         case v @ Infix(op, l, r, returnType)          => f(Infix(op, f(l), f(r), returnType))
         case v @ Assign(l, r)                         => f(Assign(f(l), f(r)))
@@ -276,6 +287,7 @@ object ShaderAST:
         case ShaderBlock(_, _)            => None
         case Function(_, _, _, rt)        => rt.flatMap(_.typeIdent)
         case CallFunction(_, _, _, rt)    => rt.flatMap(_.typeIdent)
+        case FunctionRef(_, rt)           => rt.flatMap(_.typeIdent)
         case Cast(_, as)                  => Option(ShaderAST.DataTypes.ident(as))
         case Infix(_, _, _, rt)           => rt.flatMap(_.typeIdent)
         case Assign(_, _)                 => None
@@ -304,6 +316,7 @@ object ShaderAST:
           case ShaderBlock(_, _)            => None
           case Function(_, _, _, rt)        => rt.map(_.render)
           case CallFunction(_, _, _, rt)    => rt.map(_.render)
+          case FunctionRef(_, rt)           => rt.map(_.render)
           case Cast(_, as)                  => Option(as)
           case Infix(_, _, _, rt)           => rt.map(_.render)
           case Assign(_, _)                 => None
@@ -394,6 +407,9 @@ object ShaderAST:
 
           case CallFunction(id, args, _, _) =>
             s"""$id(${args.map(_.render).mkString(",")})"""
+
+          case FunctionRef(_, _) =>
+            ""
 
           case Cast(value, as) =>
             s"""$as(${value.render})"""

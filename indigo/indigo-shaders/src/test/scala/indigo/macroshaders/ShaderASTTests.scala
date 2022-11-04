@@ -344,9 +344,9 @@ class ShaderASTTests extends munit.FunSuite {
   test("casting") {
     inline def fragment: Shader[FragEnv, Float] =
       Shader { _ =>
-        val x = 1.0f.toInt
-        val y = 1.toFloat
-        val z = y.toInt
+        val x  = 1.0f.toInt
+        val y  = 1.toFloat
+        val z  = y.toInt
         val w1 = 2
         val w2 = (1 + w1).toFloat
         x + y
@@ -379,8 +379,74 @@ class ShaderASTTests extends munit.FunSuite {
   //   //
   // }
 
+  test("local unary lambda function (val)") {
+    inline def fragment: Shader[FragEnv, vec3] =
+      Shader { _ =>
+        val f: Float => vec3 = r => vec3(r, 0.0f, 0.0f)
+        val g                = (b: Float) => vec3(0.0f, 0.0f, b)
+        f(1.0f) + g(2.0)
+      }
+
+    val actual =
+      fragment.toGLSL
+
+    // DebugAST.toAST(fragment)
+    // println(actual)
+
+    assertEquals(
+      actual,
+      s"""
+      |vec3 fn0(float r){return vec3(r,0.0,0.0);}
+      |vec3 fn1(float b){return vec3(0.0,0.0,b);}
+      |(fn0(1.0))+(fn1(2.0));
+      |""".stripMargin.trim
+    )
+  }
+
+  // test("local unary lambda function (def)") {
+  //   inline def fragment: Shader[FragEnv, vec3] =
+  //     Shader { _ =>
+  //       def f: Float => vec3 = r => vec3(r, 0.0f, 0.0f)
+  //       def g = (b: Float) => vec3(0.0f, 0.0f, b)
+  //       f(1.0f) + g(2.0)
+  //     }
+
+  //   val actual =
+  //     fragment.toGLSL
+
+  //   DebugAST.toAST(fragment)
+  //   println(actual)
+
+  //   assertEquals(
+  //     actual,
+  //     s"""
+  //     |
+  //     |""".stripMargin.trim
+  //   )
+  // }
+
   // test("compose (Function1)") {
-  //   //
+  //   inline def fragment: Shader[FragEnv, vec4] =
+  //     Shader { _ =>
+  //       val f: Float => vec3 = r => vec3(r, 0.0f, 0.0f)
+  //       val g: vec3 => vec4  = v3 => vec4(v3, 0.5f)
+  //       val h: Float => vec4 = g compose f
+
+  //       h(1.0f)
+  //     }
+
+  //   val actual =
+  //     fragment.toGLSL
+
+  //   // DebugAST.toAST(fragment)
+  //   // println(actual)
+
+  //   assertEquals(
+  //     actual,
+  //     s"""
+  //     |
+  //     |""".stripMargin.trim
+  //   )
   // }
 
   // test("andThen (Function1)") {
