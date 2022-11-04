@@ -481,7 +481,7 @@ class ShaderASTTests extends munit.FunSuite {
       |vec3 foo(){return fn0(1.0);}
       |vec3 fn1(vec2 rg){return vec3(rg,0.0);}
       |vec3 bar(){return fn1(vec2(0.5));}
-      |(foo)+(bar);
+      |(foo())+(bar());
       |""".stripMargin.trim
     )
   }
