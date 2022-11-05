@@ -573,6 +573,14 @@ class ShaderASTTests extends munit.FunSuite {
     )
   }
 
+  // test("arrays?") {
+  //   //
+  // }
+
+  // test("UBO structs?") {
+  //   //
+  // }
+
 }
 
 object Importable:
