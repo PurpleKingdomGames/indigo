@@ -71,8 +71,8 @@ class ShaderASTTests extends munit.FunSuite {
     assertEquals(
       actual.render,
       s"""
-      |vec2 xy(float val0){return vec2(1.0);}
-      |vec2 def0(float alpha){return vec2(0.0,alpha);}
+      |vec2 xy(in float val0){return vec2(1.0);}
+      |vec2 def0(in float alpha){return vec2(0.0,alpha);}
       |vec4(xy(1.0),def0(1.0));
       |""".stripMargin.trim
     )
@@ -99,8 +99,8 @@ class ShaderASTTests extends munit.FunSuite {
     assertEquals(
       actual.render,
       s"""
-      |vec2 xy(float val0,float val1){return vec2(1.0,0.25);}
-      |vec2 def0(float blue,float alpha){return vec2(blue,alpha);}
+      |vec2 xy(in float val0,in float val1){return vec2(1.0,0.25);}
+      |vec2 def0(in float blue,in float alpha){return vec2(blue,alpha);}
       |vec4(xy(1.0,0.25),def0(0.5,1.0));
       |""".stripMargin.trim
     )
@@ -187,7 +187,7 @@ class ShaderASTTests extends munit.FunSuite {
     assertEquals(
       actual1.render,
       s"""
-      |float circleSdf(vec2 val0,float val1){return (length(val0))-(3.0);}
+      |float circleSdf(in vec2 val0,in float val1){return (length(val0))-(3.0);}
       |circleSdf(vec2(1.0,2.0),3.0);
       |""".stripMargin.trim
     )
@@ -206,7 +206,7 @@ class ShaderASTTests extends munit.FunSuite {
     assertEquals(
       actual2.render,
       s"""
-      |float circleSdf(vec2 p,float r){return (length(p))-(r);}
+      |float circleSdf(in vec2 p,in float r){return (length(p))-(r);}
       |circleSdf(UV,3.0);
       |""".stripMargin.trim
     )
@@ -230,7 +230,7 @@ class ShaderASTTests extends munit.FunSuite {
     assertEquals(
       actual.render,
       s"""
-      |vec4 calculateColour(vec2 uv,float sdf){vec4 fill=vec4(uv,0.0,1.0);float fillAmount=((1.0)-(step(0.0,sdf)))*(fill.w);return vec4((fill.xyz)*(fillAmount),fillAmount);}
+      |vec4 calculateColour(in vec2 uv,in float sdf){vec4 fill=vec4(uv,0.0,1.0);float fillAmount=((1.0)-(step(0.0,sdf)))*(fill.w);return vec4((fill.xyz)*(fillAmount),fillAmount);}
       |calculateColour(UV,3.0);
       |""".stripMargin.trim
     )
@@ -259,8 +259,8 @@ class ShaderASTTests extends munit.FunSuite {
     assertEquals(
       actual.render,
       s"""
-      |float circleSdf(vec2 p,float r){return (length(p))-(r);}
-      |vec4 calculateColour(vec2 uv,float sdf){vec4 fill=vec4(uv,0.0,1.0);float fillAmount=((1.0)-(step(0.0,sdf)))*(fill.w);return vec4((fill.xyz)*(fillAmount),fillAmount);}
+      |float circleSdf(in vec2 p,in float r){return (length(p))-(r);}
+      |vec4 calculateColour(in vec2 uv,in float sdf){vec4 fill=vec4(uv,0.0,1.0);float fillAmount=((1.0)-(step(0.0,sdf)))*(fill.w);return vec4((fill.xyz)*(fillAmount),fillAmount);}
       |float sdf=circleSdf((UV)-(0.5),0.5);calculateColour(UV,sdf);
       |""".stripMargin.trim
     )
@@ -306,8 +306,8 @@ class ShaderASTTests extends munit.FunSuite {
 
     val expected =
       s"""
-      |float circleSdf(vec2 p,float r){return (length(p))-(r);}
-      |vec4 calculateColour(vec2 uv,float sdf){vec4 fill=vec4(uv,0.0,1.0);float fillAmount=((1.0)-(step(0.0,sdf)))*(fill.w);return vec4((fill.xyz)*(fillAmount),fillAmount);}
+      |float circleSdf(in vec2 p,in float r){return (length(p))-(r);}
+      |vec4 calculateColour(in vec2 uv,in float sdf){vec4 fill=vec4(uv,0.0,1.0);float fillAmount=((1.0)-(step(0.0,sdf)))*(fill.w);return vec4((fill.xyz)*(fillAmount),fillAmount);}
       |void fragment(){float sdf=circleSdf((UV)-(0.5),0.5);COLOR=calculateColour(UV,sdf);}
       |""".stripMargin.trim
 
@@ -434,7 +434,7 @@ class ShaderASTTests extends munit.FunSuite {
     assertEquals(
       actual,
       s"""
-      |int addOne(int val0){return 11;}
+      |int addOne(in int val0){return 11;}
       |addOne(10);
       |""".stripMargin.trim
     )
@@ -457,8 +457,8 @@ class ShaderASTTests extends munit.FunSuite {
     assertEquals(
       actual,
       s"""
-      |vec3 def0(float r){return vec3(r,0.0,0.0);}
-      |vec3 def1(float b){return vec3(0.0,0.0,b);}
+      |vec3 def0(in float r){return vec3(r,0.0,0.0);}
+      |vec3 def1(in float b){return vec3(0.0,0.0,b);}
       |(def0(1.0))+(def1(2.0));
       |""".stripMargin.trim
     )
@@ -481,8 +481,8 @@ class ShaderASTTests extends munit.FunSuite {
     assertEquals(
       actual,
       s"""
-      |vec3 def0(float r){return vec3(r,0.0,0.0);}
-      |vec3 def1(float b){return vec3(0.0,0.0,b);}
+      |vec3 def0(in float r){return vec3(r,0.0,0.0);}
+      |vec3 def1(in float b){return vec3(0.0,0.0,b);}
       |(def0(1.0))+(def1(2.0));
       |""".stripMargin.trim
     )
@@ -507,9 +507,9 @@ class ShaderASTTests extends munit.FunSuite {
     assertEquals(
       actual,
       s"""
-      |vec3 def0(float r){return vec3(r,0.0,0.0);}
-      |vec4 def1(vec3 val3){return vec4(val3,0.5);}
-      |vec4 def2(float val0){return def1(def0(val0));}
+      |vec3 def0(in float r){return vec3(r,0.0,0.0);}
+      |vec4 def1(in vec3 val3){return vec4(val3,0.5);}
+      |vec4 def2(in float val0){return def1(def0(val0));}
       |def2(1.0);
       |""".stripMargin.trim
     )
@@ -534,9 +534,9 @@ class ShaderASTTests extends munit.FunSuite {
     assertEquals(
       actual,
       s"""
-      |vec3 def0(float r){return vec3(r,0.0,0.0);}
-      |vec4 def1(vec3 val3){return vec4(val3,0.5);}
-      |vec4 def2(float val0){return def1(def0(val0));}
+      |vec3 def0(in float r){return vec3(r,0.0,0.0);}
+      |vec4 def1(in vec3 val3){return vec4(val3,0.5);}
+      |vec4 def2(in float val0){return def1(def0(val0));}
       |def2(1.0);
       |""".stripMargin.trim
     )
@@ -564,9 +564,9 @@ class ShaderASTTests extends munit.FunSuite {
     assertEquals(
       actual,
       s"""
-      |vec3 def0(float r){return vec3(r,0.0,0.0);}
+      |vec3 def0(in float r){return vec3(r,0.0,0.0);}
       |vec3 foo(){return def0(1.0);}
-      |vec3 def1(vec2 rg){return vec3(rg,0.0);}
+      |vec3 def1(in vec2 rg){return vec3(rg,0.0);}
       |vec3 bar(){return def1(vec2(0.5));}
       |(foo())+(bar());
       |""".stripMargin.trim

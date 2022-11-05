@@ -410,15 +410,15 @@ object ShaderAST:
 
           case Function(id, args, Block(statements), returnType) =>
             val (body, rt) = processFunctionStatements(statements, returnType.map(_.render))
-            s"""$rt $id(${args.mkString(",")}){$body}"""
+            s"""$rt $id(${args.map(s => s"in $s").mkString(",")}){$body}"""
 
           case Function(id, args, NamedBlock(_, _, statements), returnType) =>
             val (body, rt) = processFunctionStatements(statements, returnType.map(_.render))
-            s"""$rt $id(${args.mkString(",")}){$body}"""
+            s"""$rt $id(${args.map(s => s"in $s").mkString(",")}){$body}"""
 
           case Function(id, args, statement, returnType) =>
             val (body, rt) = processFunctionStatements(List(statement), returnType.map(_.render))
-            s"""$rt $id(${args.mkString(",")}){$body}"""
+            s"""$rt $id(${args.map(s => s"in $s").mkString(",")}){$body}"""
 
           case CallFunction(id, args, _, _) =>
             s"""$id(${args.map(_.render).mkString(",")})"""
