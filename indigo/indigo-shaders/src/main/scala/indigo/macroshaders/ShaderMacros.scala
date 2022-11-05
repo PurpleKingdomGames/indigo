@@ -65,7 +65,7 @@ object ShaderMacros:
     def walkStatement(s: Statement): ShaderAST =
       s match
         case Import(_, _) =>
-          throw new Exception("Shaders do not support imports.")
+          ShaderAST.Empty()
 
         case Export(_, _) =>
           throw new Exception("Shaders do not support exports.")

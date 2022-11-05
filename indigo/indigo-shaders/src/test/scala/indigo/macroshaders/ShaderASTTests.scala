@@ -417,9 +417,28 @@ class ShaderASTTests extends munit.FunSuite {
     )
   }
 
-  // test("imports") {
-  //   //
-  // }
+  test("imports") {
+    import Importable.*
+
+    inline def fragment: Shader[FragEnv, Int] =
+      Shader { _ =>
+        addOne(10)
+      }
+
+    val actual =
+      fragment.toGLSL
+
+    // DebugAST.toAST(fragment)
+    // println(actual)
+
+    assertEquals(
+      actual,
+      s"""
+      |int addOne(int val0){return 11;}
+      |addOne(10);
+      |""".stripMargin.trim
+    )
+  }
 
   test("local unary lambda function (val)") {
     inline def fragment: Shader[FragEnv, vec3] =
@@ -555,3 +574,7 @@ class ShaderASTTests extends munit.FunSuite {
   }
 
 }
+
+object Importable:
+
+  inline def addOne(i: Int): Int = i + 1
