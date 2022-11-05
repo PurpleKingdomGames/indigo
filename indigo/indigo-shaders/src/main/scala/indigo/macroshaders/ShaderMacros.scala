@@ -30,7 +30,7 @@ object ShaderMacros:
 
     val proxyLookUp: HashMap[String, (String, Option[ShaderAST])] = new HashMap()
 
-    val shaderDefs: ListBuffer[ShaderAST] = new ListBuffer()
+    val shaderDefs: ListBuffer[ShaderAST.Function] = new ListBuffer()
 
     val traceLog: ListBuffer[String] = new ListBuffer()
 
@@ -462,7 +462,12 @@ object ShaderMacros:
 
         case Ident(name) =>
           log(Printer.TreeStructure.show(t))
-          ShaderAST.DataTypes.ident(proxyLookUp.get(name).getOrElse((name -> None))._1)
+          val resolvedName = proxyLookUp.get(name).getOrElse((name -> None))._1
+
+          shaderDefs.toList.find(_.id == resolvedName) match
+            case None => ShaderAST.DataTypes.ident(resolvedName)
+            case Some(ShaderAST.Function(_, _, _, rt)) =>
+              ShaderAST.CallFunction(resolvedName, Nil, Nil, rt)
 
         case Closure(Ident("$anonfun"), None) =>
           log(Printer.TreeStructure.show(t))
