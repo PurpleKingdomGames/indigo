@@ -393,10 +393,6 @@ class ShaderASTTests extends munit.FunSuite {
   //   //
   // }
 
-  // test("for loops") {
-  //   //
-  // }
-
   test("while loops") {
 
     @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while"))
