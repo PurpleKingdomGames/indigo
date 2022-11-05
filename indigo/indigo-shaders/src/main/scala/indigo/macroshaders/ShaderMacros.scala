@@ -32,20 +32,8 @@ object ShaderMacros:
 
     val shaderDefs: ListBuffer[ShaderAST.Function] = new ListBuffer()
 
-    val traceLog: ListBuffer[String] = new ListBuffer()
-
     var inputClassType: Option[String]  = None
     var outputClassType: Option[String] = None
-
-    def log(msg: String): Unit = traceLog += msg
-
-    def makeExceptionLog(typ: String, msg: String): String =
-      val count = 3
-      val toLog = traceLog.zipWithIndex
-      "Failed to match " + typ + ":\n" + msg + "\n\n Trace log (last " + count.toString + "):\n" + toLog
-        .dropInPlace(Math.max(0, toLog.length - count))
-        .map(l => s"  ${l._2}) ${l._1}")
-        .mkString("\n") + "\n\n"
 
     val isSwizzle     = "^([xyzw]+)$".r
     val isSwizzleable = "^(vec2|vec3|vec4)$".r
@@ -100,8 +88,6 @@ object ShaderMacros:
           throw new Exception("Shaders do not support fancy types.")
 
         case ValDef(name, typ, Some(term)) =>
-          log(Printer.TreeStructure.show(s))
-
           val typeOf = extractInferredType(typ)
           val body   = walkTerm(term, defs)
 
@@ -117,8 +103,6 @@ object ShaderMacros:
           throw new Exception("Shaders do not support val's with no values.")
 
         case DefDef(fnName, args, rt, Some(term)) =>
-          log(Printer.TreeStructure.show(s))
-
           val argNamesTypes =
             args
               .collect { case TermParamClause(ps) => ps }
@@ -149,7 +133,6 @@ object ShaderMacros:
               ShaderAST.FunctionRef(fn, returnType)
 
         case DefDef(_, _, _, _) =>
-          log(Printer.TreeStructure.show(s))
           throw new Exception("Unexpected def construction")
 
         case t: Term =>
@@ -209,15 +192,12 @@ object ShaderMacros:
                 )
               )
             ) =>
-          log(Printer.TreeStructure.show(t))
-
           inputClassType = inType.tpe.classSymbol.map(_.name)
           outputClassType = outType.tpe.classSymbol.map(_.name)
 
           ShaderAST.ShaderBlock(envVarName, walkTerm(term, defs))
 
         case Apply(Select(Ident("vec2"), "apply"), args) =>
-          log(Printer.TreeStructure.show(t))
           args match
             case List(Typed(Repeated(args2, _), _)) =>
               ShaderAST.DataTypes.vec2(args2.map(p => walkTerm(p, defs)))
@@ -225,7 +205,6 @@ object ShaderMacros:
               ShaderAST.DataTypes.vec2(args.map(p => walkTerm(p, defs)))
 
         case Apply(Select(Ident("vec3"), "apply"), args) =>
-          log(Printer.TreeStructure.show(t))
           args match
             case List(Typed(Repeated(args2, _), _)) =>
               ShaderAST.DataTypes.vec3(args2.map(p => walkTerm(p, defs)))
@@ -233,7 +212,6 @@ object ShaderMacros:
               ShaderAST.DataTypes.vec3(args.map(p => walkTerm(p, defs)))
 
         case Apply(Select(Ident("vec4"), "apply"), args) =>
-          log(Printer.TreeStructure.show(t))
           args match
             case List(Typed(Repeated(args2, _), _)) =>
               ShaderAST.DataTypes.vec4(args2.map(p => walkTerm(p, defs)))
@@ -241,45 +219,36 @@ object ShaderMacros:
               ShaderAST.DataTypes.vec4(args.map(p => walkTerm(p, defs)))
 
         case Apply(Select(Ident(id), "apply"), args) =>
-          log(Printer.TreeStructure.show(t))
           val (fnName, rt) = proxyLookUp.get(id).getOrElse((id -> Option(ShaderAST.DataTypes.ident("void"))))
           ShaderAST.CallFunction(fnName, args.map(x => walkTerm(x, defs)), Nil, rt)
 
         // Generally walking the tree
 
         case Apply(TypeApply(Select(Ident(id), "apply"), _), List(x)) =>
-          log(Printer.TreeStructure.show(t))
           ShaderAST.NamedBlock("", id, walkTerm(x, defs))
 
         case Apply(TypeApply(Select(Ident(namespace), name), _), List(x)) =>
-          log(Printer.TreeStructure.show(t))
           ShaderAST.NamedBlock(namespace, name, walkTerm(x, defs))
 
         case Apply(TypeApply(term, _), List(x)) =>
-          log(Printer.TreeStructure.show(t))
           walkTerm(x, defs)
 
         // Extension method applies...
         case Apply(Select(Select(Inlined(_, _, _), "vec2"), "apply"), args) =>
-          log(Printer.TreeStructure.show(t))
           ShaderAST.DataTypes.vec2(args.map(p => walkTerm(p, defs)))
 
         case Apply(Select(Select(Inlined(_, _, _), "vec3"), "apply"), args) =>
-          log(Printer.TreeStructure.show(t))
           ShaderAST.DataTypes.vec3(args.map(p => walkTerm(p, defs)))
 
         case Apply(Select(Select(Inlined(_, _, _), "vec4"), "apply"), args) =>
-          log(Printer.TreeStructure.show(t))
           ShaderAST.DataTypes.vec4(args.map(p => walkTerm(p, defs)))
 
         // Casting
 
         case Select(term, "toInt") =>
-          log(Printer.TreeStructure.show(t))
           ShaderAST.Cast(walkTerm(term, defs), "int")
 
         case Select(term, "toFloat") =>
-          log(Printer.TreeStructure.show(t))
           ShaderAST.Cast(walkTerm(term, defs), "float")
 
         // Read a field
@@ -288,7 +257,6 @@ object ShaderMacros:
           ShaderAST.DataTypes.ident(s"$obj.$fieldName")
 
         case Select(Ident(namespace), name) =>
-          log(Printer.TreeStructure.show(t))
           ShaderAST.DataTypes.ident(s"$namespace.$name")
 
         // Native method call.
@@ -300,8 +268,6 @@ object ShaderMacros:
         //
 
         case Apply(Select(term, "apply"), xs) =>
-          log(Printer.TreeStructure.show(t))
-
           walkTerm(term, defs).find {
             case ShaderAST.CallFunction(_, _, _, _) => true
             case _                                  => false
@@ -316,7 +282,6 @@ object ShaderMacros:
               ShaderAST.Block(xs.map(tt => walkTerm(tt, defs)))
 
         case Apply(Select(term, op), xs) =>
-          log(Printer.TreeStructure.show(t))
           op match
             case "+" | "-" | "*" | "/" | "<" | ">" | "==" | "<=" | ">=" =>
               val lhs = walkTerm(term, defs)
@@ -331,17 +296,14 @@ object ShaderMacros:
           ShaderAST.CallFunction(name, terms.map(tt => walkTerm(tt, defs)), Nil, None)
 
         case Inlined(None, _, term) =>
-          log(Printer.TreeStructure.show(t))
           walkTerm(term, defs)
 
         case Inlined(Some(Ident(_)), _, term) =>
-          log(Printer.TreeStructure.show(t))
           walkTerm(term, defs)
 
         // Swizzle
         case Inlined(Some(Apply(Ident(name), List(gt @ Apply(Select(Ident(genType), "apply"), args)))), _, _)
             if isSwizzle.matches(name) && isSwizzleable.matches(genType) =>
-          log(Printer.TreeStructure.show(t))
           ShaderAST.DataTypes.swizzle(
             walkTerm(gt, defs),
             name,
@@ -349,7 +311,6 @@ object ShaderMacros:
           )
 
         case Inlined(Some(Apply(Ident(name), List(Ident(id)))), _, _) if isSwizzle.matches(name) =>
-          log(Printer.TreeStructure.show(t))
           ShaderAST.DataTypes.swizzle(
             ShaderAST.DataTypes.ident(id),
             name,
@@ -358,8 +319,6 @@ object ShaderMacros:
         //
 
         case Inlined(Some(Apply(Ident(name), args)), ds, Typed(term, typeTree)) =>
-          log(Printer.TreeStructure.show(t))
-
           val argNames   = args.map(_ => nextVarName)
           val callArgs   = args.map(tt => walkTerm(tt, defs))
           val pairedArgs = callArgs.zip(argNames)
@@ -386,23 +345,18 @@ object ShaderMacros:
           ShaderAST.CallFunction(name, callArgs, argNames, returnType)
 
         case Inlined(Some(Select(This(_), _)), _, term) =>
-          log(Printer.TreeStructure.show(t))
           walkTerm(term, defs)
 
         case Inlined(Some(tree: Tree), _, _) =>
-          log(Printer.TreeStructure.show(t))
           walkTree(tree, defs)
 
         case TypeApply(term, _) =>
-          log(Printer.TreeStructure.show(t))
           walkTerm(term, defs)
 
         case Typed(
               Block(List(DefDef(_, args, _, Some(term))), Closure(Ident("$anonfun"), None)),
               Applied(_, types)
             ) =>
-          log(Printer.TreeStructure.show(t))
-
           val typesRendered: List[ShaderAST] = types.map(p => walkTree(p, defs))
 
           val returnType: Option[ShaderAST] =
@@ -424,18 +378,15 @@ object ShaderMacros:
           ShaderAST.CallFunction(fn, Nil, argNames, returnType)
 
         case Typed(term, _) =>
-          log(Printer.TreeStructure.show(t))
           walkTerm(term, defs)
 
         case Block(statements, Closure(Ident("$anonfun"), None)) =>
-          log(Printer.TreeStructure.show(t))
           val ss = statements
             .map(s => walkStatement(s, defs))
 
           ShaderAST.Block(ss)
 
         case Block(statements, term) =>
-          log(Printer.TreeStructure.show(t))
           val ss =
             statements.map(s => walkStatement(s, defs)) :+ walkTerm(term, defs)
 
@@ -444,15 +395,12 @@ object ShaderMacros:
         // Literals
 
         case Literal(FloatConstant(f)) =>
-          log(Printer.TreeStructure.show(t))
           ShaderAST.DataTypes.float(f)
 
         case Literal(IntConstant(i)) =>
-          log(Printer.TreeStructure.show(t))
           ShaderAST.DataTypes.int(i)
 
         case Literal(UnitConstant()) =>
-          log(Printer.TreeStructure.show(t))
           ShaderAST.Empty()
 
         case Literal(constant) =>
@@ -461,7 +409,6 @@ object ShaderMacros:
         // Refs
 
         case Ident(name) =>
-          log(Printer.TreeStructure.show(t))
           val resolvedName = proxyLookUp.get(name).getOrElse((name -> None))._1
 
           shaderDefs.toList.find(_.id == resolvedName) match
@@ -470,18 +417,15 @@ object ShaderMacros:
               ShaderAST.CallFunction(resolvedName, Nil, Nil, rt)
 
         case Closure(Ident("$anonfun"), None) =>
-          log(Printer.TreeStructure.show(t))
           ShaderAST.Empty()
 
         case Closure(term, typeRepr) =>
-          log(Printer.TreeStructure.show(t))
           ShaderAST.DataTypes.closure(walkTerm(term, defs), typeRepr.map(_.toString))
 
         case Wildcard() =>
           throw new Exception("Shaders do not support wildcards.")
 
         case Select(term, _) => // term, name
-          log(Printer.TreeStructure.show(t))
           walkTerm(term, defs)
 
         // Unsupported (yet?)
@@ -499,14 +443,12 @@ object ShaderMacros:
           throw new Exception("Shaders do not support super.")
 
         case Assign(lhs, rhs) =>
-          log(Printer.TreeStructure.show(t))
           ShaderAST.Assign(
             walkTerm(lhs, defs),
             walkTerm(rhs, defs)
           )
 
         case If(condTerm, thenTerm, elseTerm) =>
-          log(Printer.TreeStructure.show(t))
           ShaderAST.If(
             walkTerm(condTerm, defs),
             walkTerm(thenTerm, defs),
