@@ -87,6 +87,44 @@ object ShaderMacros:
         case TypeDef(_, _) =>
           throw new Exception("Shaders do not support fancy types.")
 
+        // Compose
+        case ValDef(
+              name,
+              Applied(_, List(argType, returnType)),
+              Some(
+                Apply(TypeApply(Select(Ident(g), op), List(Inferred())), List(Ident(f)))
+              )
+            ) if op == "compose" || op == "andThen" =>
+          val fnInType  = walkTree(argType, defs)
+          val fnOutType = Option(walkTree(returnType, defs))
+          val fnName    = nextFnName
+          val vName     = nextVarName
+
+          val ff = if op == "compose" then f else g
+          val gg = if op == "compose" then g else f
+
+          val fProxy    = proxyLookUp.get(ff).getOrElse((ff -> None))
+          val gProxy    = proxyLookUp.get(gg).getOrElse((gg -> None))
+
+          val body =
+            ShaderAST.CallFunction(
+              gProxy._1,
+              List(
+                ShaderAST.CallFunction(
+                  fProxy._1,
+                  List(ShaderAST.DataTypes.ident(vName)),
+                  Nil,
+                  fProxy._2
+                )
+              ),
+              List(fProxy._1),
+              gProxy._2
+            )
+
+          shaderDefs += ShaderAST.Function(fnName, List(fnInType.render + " " + vName), body, fnOutType)
+          proxyLookUp += (name -> (fnName, fnOutType))
+          ShaderAST.Empty()
+
         case ValDef(name, typ, Some(term)) =>
           val typeOf = extractInferredType(typ)
           val body   = walkTerm(term, defs)

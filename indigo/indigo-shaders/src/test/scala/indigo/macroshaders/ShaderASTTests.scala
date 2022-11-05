@@ -427,33 +427,59 @@ class ShaderASTTests extends munit.FunSuite {
     )
   }
 
-  // test("compose (Function1)") {
-  //   inline def fragment: Shader[FragEnv, vec4] =
-  //     Shader { _ =>
-  //       val f: Float => vec3 = r => vec3(r, 0.0f, 0.0f)
-  //       val g: vec3 => vec4  = v3 => vec4(v3, 0.5f)
-  //       val h: Float => vec4 = g compose f
+  test("compose (Function1)") {
+    inline def fragment: Shader[FragEnv, vec4] =
+      Shader { _ =>
+        val f: Float => vec3 = r => vec3(r, 0.0f, 0.0f)
+        val g: vec3 => vec4  = v3 => vec4(v3, 0.5f)
+        val h: Float => vec4 = g compose f
 
-  //       h(1.0f)
-  //     }
+        h(1.0f)
+      }
 
-  //   val actual =
-  //     fragment.toGLSL
+    val actual =
+      fragment.toGLSL
 
-  //   // DebugAST.toAST(fragment)
-  //   // println(actual)
+    // DebugAST.toAST(fragment)
+    // println(actual)
 
-  //   assertEquals(
-  //     actual,
-  //     s"""
-  //     |
-  //     |""".stripMargin.trim
-  //   )
-  // }
+    assertEquals(
+      actual,
+      s"""
+      |vec3 fn0(float r){return vec3(r,0.0,0.0);}
+      |vec4 fn1(vec3 v3){return vec4(v3,0.5);}
+      |vec4 fn2(float v0){return fn1(fn0(v0));}
+      |fn2(1.0);
+      |""".stripMargin.trim
+    )
+  }
 
-  // test("andThen (Function1)") {
-  //   //
-  // }
+  test("andThen (Function1)") {
+    inline def fragment: Shader[FragEnv, vec4] =
+      Shader { _ =>
+        val f: Float => vec3 = r => vec3(r, 0.0f, 0.0f)
+        val g: vec3 => vec4  = v3 => vec4(v3, 0.5f)
+        val h: Float => vec4 = f andThen g
+
+        h(1.0f)
+      }
+
+    val actual =
+      fragment.toGLSL
+
+    // DebugAST.toAST(fragment)
+    // println(actual)
+
+    assertEquals(
+      actual,
+      s"""
+      |vec3 fn0(float r){return vec3(r,0.0,0.0);}
+      |vec4 fn1(vec3 v3){return vec4(v3,0.5);}
+      |vec4 fn2(float v0){return fn1(fn0(v0));}
+      |fn2(1.0);
+      |""".stripMargin.trim
+    )
+  }
 
   test("scoping is respected") {
     inline def fragment: Shader[FragEnv, vec3] =
