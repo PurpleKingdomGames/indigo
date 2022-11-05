@@ -389,9 +389,37 @@ class ShaderASTTests extends munit.FunSuite {
     )
   }
 
-  // test("switch statements") {
-  //   //
-  // }
+  test("switch statements / pattern matching") {
+
+    @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+    inline def fragment: Shader[FragEnv, Unit] =
+      Shader { _ =>
+        val flag: Int = 2
+
+        var res: Int = -1
+
+        flag match
+          case 0 => res = 10
+          case 1 => res = 20
+          case 2 => res = 30
+          case _ => res = -100
+
+        res
+      }
+
+    val actual =
+      fragment.toGLSL
+
+    // DebugAST.toAST(fragment)
+    // println(actual)
+
+    assertEquals(
+      actual,
+      s"""
+      |int flag=2;int res=-1;switch(flag){case 0:res=10;break;case 1:res=20;break;case 2:res=30;break;default:res=-100;break;};res;
+      |""".stripMargin.trim
+    )
+  }
 
   test("while loops") {
 

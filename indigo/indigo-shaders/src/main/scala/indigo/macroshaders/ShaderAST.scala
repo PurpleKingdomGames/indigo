@@ -21,6 +21,7 @@ object ShaderAST:
         case v: Assign       => Expr(v)
         case v: If           => Expr(v)
         case v: While        => Expr(v)
+        case v: Switch       => Expr(v)
         case v: DataTypes    => Expr(v)
         case v: Val          => Expr(v)
   }
@@ -144,6 +145,16 @@ object ShaderAST:
         '{ While(${ Expr(x.condition) }, ${ Expr(x.body) }) }
     }
 
+  final case class Switch(
+      on: ShaderAST,
+      cases: List[(Option[Int], ShaderAST)]
+  ) extends ShaderAST
+  object Switch:
+    given ToExpr[Switch] with {
+      def apply(x: Switch)(using Quotes): Expr[Switch] =
+        '{ Switch(${ Expr(x.on) }, ${ Expr(x.cases) }) }
+    }
+
   final case class Val(id: String, value: ShaderAST, typeOf: Option[String]) extends ShaderAST
   object Val:
     given ToExpr[Val] with {
@@ -245,8 +256,9 @@ object ShaderAST:
               case Cast(v, _)               => rec(v :: xs)
               case Infix(_, l, r, _)        => rec(l :: r :: xs)
               case Assign(l, r)             => rec(l :: r :: xs)
-              case If(c, t, e)              => rec(t :: (e.toList ++ xs))
-              case While(c, b)              => rec(b :: xs)
+              case If(_, t, e)              => rec(t :: (e.toList ++ xs))
+              case While(_, b)              => rec(b :: xs)
+              case Switch(_, cs)            => rec(cs.map(_._2) ++ xs)
               case Val(_, body, _)          => rec(body :: xs)
               case v: DataTypes.closure     => rec(v.body :: xs)
               case v: DataTypes.ident       => rec(xs)
@@ -282,6 +294,7 @@ object ShaderAST:
         case v @ Assign(l, r)                         => f(Assign(f(l), f(r)))
         case v @ If(c, t, e)                          => f(If(c, f(t), e.map(f)))
         case v @ While(c, b)                          => f(While(c, f(b)))
+        case v @ Switch(c, cs)                        => f(Switch(c, cs.map(p => p._1 -> f(p._2))))
         case v @ Val(id, value, typeOf)               => f(Val(id, f(value), typeOf))
         case v @ DataTypes.closure(body, typeOf)      => f(DataTypes.closure(f(body), typeOf))
         case v @ DataTypes.float(_)                   => f(v)
@@ -306,6 +319,7 @@ object ShaderAST:
         case Assign(_, _)                 => None
         case If(_, _, _)                  => None
         case While(_, _)                  => None
+        case Switch(_, _)                 => None
         case Val(id, value, typeOf)       => typeOf.map(t => ShaderAST.DataTypes.ident(t))
         case n @ DataTypes.ident(_)       => Option(n)
         case DataTypes.closure(_, typeOf) => typeOf.map(t => ShaderAST.DataTypes.ident(t))
@@ -336,6 +350,7 @@ object ShaderAST:
           case Assign(_, _)                 => None
           case If(_, _, _)                  => None
           case While(_, _)                  => None
+          case Switch(_, _)                 => None
           case Val(id, value, typeOf)       => typeOf
           case n @ DataTypes.ident(_)       => None
           case DataTypes.closure(_, typeOf) => typeOf
@@ -445,6 +460,18 @@ object ShaderAST:
 
           case While(cond, body) =>
             s"""while(${cond.render}){${body.render}}"""
+
+          case Switch(on, cases) =>
+            val cs =
+              cases.map {
+                case (Some(i), body) =>
+                  s"case $i:${body.render};break;"
+
+                case (None, body) =>
+                  s"default:${body.render};break;"
+              }
+
+            s"""switch(${on.render}){${cs.mkString}}"""
 
           case DataTypes.closure(body, typeOf) =>
             s"[closure $body $typeOf]"

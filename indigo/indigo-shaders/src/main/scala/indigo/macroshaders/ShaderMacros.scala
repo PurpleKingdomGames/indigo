@@ -39,6 +39,7 @@ object ShaderMacros:
       case v: ShaderAST.Assign            => findReturnType(v.right)
       case v: ShaderAST.If                => None
       case v: ShaderAST.While             => None
+      case v: ShaderAST.Switch            => None
       case v: ShaderAST.Val               => findReturnType(v.value)
       case v: ShaderAST.DataTypes.closure => v.typeIdent
       case v: ShaderAST.DataTypes.ident   => v.typeIdent
@@ -495,8 +496,20 @@ object ShaderMacros:
                 Option(e)
               )
 
-        case Match(_, _) =>
-          throw new Exception("Shaders do not support pattern matching.")
+        case Match(term, cases) =>
+          val cs =
+            cases.map {
+              case CaseDef(Literal(IntConstant(i)), None, caseTerm) =>
+                (Option(i), walkTerm(caseTerm))
+
+              case CaseDef(Wildcard(), None, caseTerm) =>
+                (None, walkTerm(caseTerm))
+
+              case _ =>
+                throw new Exception("Shaders only support pattern matching on `Int` values or `_` wildcards.")
+            }
+
+          ShaderAST.Switch(walkTerm(term), cs)
 
         case SummonFrom(_) =>
           throw new Exception("Shaders do not support summoning.")
