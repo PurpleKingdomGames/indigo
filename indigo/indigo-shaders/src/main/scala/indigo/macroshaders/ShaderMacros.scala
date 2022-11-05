@@ -16,19 +16,7 @@ object ShaderMacros:
 
     import quotes.reflect.*
 
-    var fnCount: Int = 0
-    def nextFnName: String =
-      val res = "fn" + fnCount.toString
-      fnCount = fnCount + 1
-      res
-
-    var varCount: Int = 0
-    def nextVarName: String =
-      val res = "v" + varCount.toString
-      varCount = varCount + 1
-      res
-
-    val proxyLookUp: HashMap[String, (String, Option[ShaderAST])] = new HashMap()
+    val proxies = new ProxyManager
 
     val shaderDefs: ListBuffer[ShaderAST.Function] = new ListBuffer()
 
@@ -97,14 +85,14 @@ object ShaderMacros:
             ) if op == "compose" || op == "andThen" =>
           val fnInType  = walkTree(argType, defs)
           val fnOutType = Option(walkTree(returnType, defs))
-          val fnName    = nextFnName
-          val vName     = nextVarName
+          val fnName    = proxies.makeDefName
+          val vName     = proxies.makeVarName
 
           val ff = if op == "compose" then f else g
           val gg = if op == "compose" then g else f
 
-          val fProxy    = proxyLookUp.get(ff).getOrElse((ff -> None))
-          val gProxy    = proxyLookUp.get(gg).getOrElse((gg -> None))
+          val fProxy = proxies.lookUp(ff)
+          val gProxy = proxies.lookUp(gg)
 
           val body =
             ShaderAST.CallFunction(
@@ -122,7 +110,7 @@ object ShaderMacros:
             )
 
           shaderDefs += ShaderAST.Function(fnName, List(fnInType.render + " " + vName), body, fnOutType)
-          proxyLookUp += (name -> (fnName, fnOutType))
+          proxies.add(name, fnName, fnOutType)
           ShaderAST.Empty()
 
         case ValDef(name, typ, Some(term)) =>
@@ -131,7 +119,7 @@ object ShaderMacros:
 
           body match
             case ShaderAST.Block(List(ShaderAST.FunctionRef(id, rt))) =>
-              proxyLookUp += (name -> (id, rt))
+              proxies.add(name, id, rt)
               ShaderAST.Empty()
 
             case _ =>
@@ -150,7 +138,7 @@ object ShaderMacros:
                 (typeOf.getOrElse("void"), name)
               }
 
-          val fn   = if fnName == "$anonfun" then nextFnName else fnName
+          val fn   = if fnName == "$anonfun" then proxies.makeDefName else fnName
           val body = walkTerm(term, defs)
 
           val returnType =
@@ -163,7 +151,7 @@ object ShaderMacros:
 
           body match
             case ShaderAST.Block(List(ShaderAST.FunctionRef(id, rt))) =>
-              proxyLookUp += (fn -> (id, rt))
+              proxies.add(fn, id, rt)
               ShaderAST.Empty()
 
             case _ =>
@@ -257,7 +245,7 @@ object ShaderMacros:
               ShaderAST.DataTypes.vec4(args.map(p => walkTerm(p, defs)))
 
         case Apply(Select(Ident(id), "apply"), args) =>
-          val (fnName, rt) = proxyLookUp.get(id).getOrElse((id -> Option(ShaderAST.DataTypes.ident("void"))))
+          val (fnName, rt) = proxies.lookUp(id, id -> Option(ShaderAST.DataTypes.ident("void")))
           ShaderAST.CallFunction(fnName, args.map(x => walkTerm(x, defs)), Nil, rt)
 
         // Generally walking the tree
@@ -299,7 +287,7 @@ object ShaderMacros:
 
         // Native method call.
         case Apply(Ident(name), List(Inlined(None, Nil, Ident(defRef)))) =>
-          val (fnName, _) = proxyLookUp.get(defRef).getOrElse((defRef -> None))
+          val (fnName, _) = proxies.lookUp(defRef)
           val args        = List(ShaderAST.DataTypes.ident(fnName))
           ShaderAST.CallFunction(name, args, args.map(_.render), None)
 
@@ -357,7 +345,7 @@ object ShaderMacros:
         //
 
         case Inlined(Some(Apply(Ident(name), args)), ds, Typed(term, typeTree)) =>
-          val argNames   = args.map(_ => nextVarName)
+          val argNames   = args.map(_ => proxies.makeVarName)
           val callArgs   = args.map(tt => walkTerm(tt, defs))
           val pairedArgs = callArgs.zip(argNames)
           val fnArgs =
@@ -366,16 +354,21 @@ object ShaderMacros:
               s"$typ ${p._2}"
             }
           val nextDefs = ds.map(s => walkStatement(s, defs))
-          val proxies = nextDefs.flatMap {
-            case ShaderAST.Val(proxy, value, _) =>
-              pairedArgs.find(p => p._1 == value) match
-                case None    => Nil
-                case Some(v) => List(proxy -> (v._2 -> None)) // Is None good enough?
 
-            case _ =>
-              Nil
-          }
-          proxyLookUp ++= proxies
+          nextDefs
+            .flatMap {
+              case ShaderAST.Val(proxy, value, _) =>
+                pairedArgs.find(p => p._1 == value) match
+                  case None    => Nil
+                  case Some(v) => List(proxy -> v._2)
+
+              case _ =>
+                Nil
+            }
+            .foreach { case (originalName, refName) =>
+              proxies.add(originalName, refName)
+            }
+
           val body       = walkTerm(term, nextDefs)
           val returnType = findReturnType(walkTree(typeTree, defs))
 
@@ -411,7 +404,7 @@ object ShaderMacros:
             .zip(argNames)
             .map { case (typ, nme) => s"""${typ.render} $nme""" }
 
-          val fn = nextFnName
+          val fn = proxies.makeDefName
           shaderDefs += ShaderAST.Function(fn, arguments, walkTerm(term, defs), returnType)
           ShaderAST.CallFunction(fn, Nil, argNames, returnType)
 
@@ -447,7 +440,7 @@ object ShaderMacros:
         // Refs
 
         case Ident(name) =>
-          val resolvedName = proxyLookUp.get(name).getOrElse((name -> None))._1
+          val resolvedName = proxies.lookUp(name)._1 // proxyLookUp.get(name).getOrElse((name -> None))._1
 
           shaderDefs.toList.find(_.id == resolvedName) match
             case None => ShaderAST.DataTypes.ident(resolvedName)
@@ -516,6 +509,41 @@ object ShaderMacros:
 
     val res           = walkTerm(expr.asTerm, Nil)
     val shaderDefList = shaderDefs.toList
-
     Expr(ProceduralShader(shaderDefList, res))
   }
+
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  private class ProxyManager:
+    private var fnCount: Int = 0
+    private def nextFnName: String =
+      // using 'def' as it's a Scala keyword - hopefully will minimise user collisions
+      val res = "def" + fnCount.toString
+      fnCount = fnCount + 1
+      res
+    def makeDefName: String = nextFnName
+
+    private var varCount: Int = 0
+    private def nextVarName: String =
+      // using 'val' as it's a Scala keyword - hopefully will minimise user collisions
+      val res = "val" + varCount.toString
+      varCount = varCount + 1
+      res
+    def makeVarName: String = nextVarName
+
+    private val proxyLookUp: HashMap[String, (String, Option[ShaderAST])] = new HashMap()
+
+    def lookUp(name: String, fallback: (String, Option[ShaderAST])): (String, Option[ShaderAST]) =
+      proxyLookUp.get(name).getOrElse(fallback)
+    def lookUp(name: String, fallback: String): (String, Option[ShaderAST]) =
+      lookUp(name, fallback -> None)
+    def lookUp(name: String): (String, Option[ShaderAST]) =
+      lookUp(name, name)
+
+    def add(originalName: String, newName: String, returnType: Option[ShaderAST]): Unit =
+      proxyLookUp += originalName -> (newName -> returnType)
+    def add(originalName: String, newName: String): Unit =
+      add(originalName, newName, None)
+
+  end ProxyManager
+
+end ShaderMacros

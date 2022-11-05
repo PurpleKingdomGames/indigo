@@ -71,9 +71,9 @@ class ShaderASTTests extends munit.FunSuite {
     assertEquals(
       actual.render,
       s"""
-      |vec2 xy(float v0){return vec2(1.0);}
-      |vec2 fn0(float alpha){return vec2(0.0,alpha);}
-      |vec4(xy(1.0),fn0(1.0));
+      |vec2 xy(float val0){return vec2(1.0);}
+      |vec2 def0(float alpha){return vec2(0.0,alpha);}
+      |vec4(xy(1.0),def0(1.0));
       |""".stripMargin.trim
     )
   }
@@ -99,9 +99,9 @@ class ShaderASTTests extends munit.FunSuite {
     assertEquals(
       actual.render,
       s"""
-      |vec2 xy(float v0,float v1){return vec2(1.0,0.25);}
-      |vec2 fn0(float blue,float alpha){return vec2(blue,alpha);}
-      |vec4(xy(1.0,0.25),fn0(0.5,1.0));
+      |vec2 xy(float val0,float val1){return vec2(1.0,0.25);}
+      |vec2 def0(float blue,float alpha){return vec2(blue,alpha);}
+      |vec4(xy(1.0,0.25),def0(0.5,1.0));
       |""".stripMargin.trim
     )
   }
@@ -187,7 +187,7 @@ class ShaderASTTests extends munit.FunSuite {
     assertEquals(
       actual1.render,
       s"""
-      |float circleSdf(vec2 v0,float v1){return (length(v0))-(3.0);}
+      |float circleSdf(vec2 val0,float val1){return (length(val0))-(3.0);}
       |circleSdf(vec2(1.0,2.0),3.0);
       |""".stripMargin.trim
     )
@@ -396,9 +396,9 @@ class ShaderASTTests extends munit.FunSuite {
     assertEquals(
       actual,
       s"""
-      |vec3 fn0(float r){return vec3(r,0.0,0.0);}
-      |vec3 fn1(float b){return vec3(0.0,0.0,b);}
-      |(fn0(1.0))+(fn1(2.0));
+      |vec3 def0(float r){return vec3(r,0.0,0.0);}
+      |vec3 def1(float b){return vec3(0.0,0.0,b);}
+      |(def0(1.0))+(def1(2.0));
       |""".stripMargin.trim
     )
   }
@@ -420,9 +420,9 @@ class ShaderASTTests extends munit.FunSuite {
     assertEquals(
       actual,
       s"""
-      |vec3 fn0(float r){return vec3(r,0.0,0.0);}
-      |vec3 fn1(float b){return vec3(0.0,0.0,b);}
-      |(fn0(1.0))+(fn1(2.0));
+      |vec3 def0(float r){return vec3(r,0.0,0.0);}
+      |vec3 def1(float b){return vec3(0.0,0.0,b);}
+      |(def0(1.0))+(def1(2.0));
       |""".stripMargin.trim
     )
   }
@@ -431,7 +431,7 @@ class ShaderASTTests extends munit.FunSuite {
     inline def fragment: Shader[FragEnv, vec4] =
       Shader { _ =>
         val f: Float => vec3 = r => vec3(r, 0.0f, 0.0f)
-        val g: vec3 => vec4  = v3 => vec4(v3, 0.5f)
+        val g: vec3 => vec4  = val3 => vec4(val3, 0.5f)
         val h: Float => vec4 = g compose f
 
         h(1.0f)
@@ -446,10 +446,10 @@ class ShaderASTTests extends munit.FunSuite {
     assertEquals(
       actual,
       s"""
-      |vec3 fn0(float r){return vec3(r,0.0,0.0);}
-      |vec4 fn1(vec3 v3){return vec4(v3,0.5);}
-      |vec4 fn2(float v0){return fn1(fn0(v0));}
-      |fn2(1.0);
+      |vec3 def0(float r){return vec3(r,0.0,0.0);}
+      |vec4 def1(vec3 val3){return vec4(val3,0.5);}
+      |vec4 def2(float val0){return def1(def0(val0));}
+      |def2(1.0);
       |""".stripMargin.trim
     )
   }
@@ -458,7 +458,7 @@ class ShaderASTTests extends munit.FunSuite {
     inline def fragment: Shader[FragEnv, vec4] =
       Shader { _ =>
         val f: Float => vec3 = r => vec3(r, 0.0f, 0.0f)
-        val g: vec3 => vec4  = v3 => vec4(v3, 0.5f)
+        val g: vec3 => vec4  = val3 => vec4(val3, 0.5f)
         val h: Float => vec4 = f andThen g
 
         h(1.0f)
@@ -473,10 +473,10 @@ class ShaderASTTests extends munit.FunSuite {
     assertEquals(
       actual,
       s"""
-      |vec3 fn0(float r){return vec3(r,0.0,0.0);}
-      |vec4 fn1(vec3 v3){return vec4(v3,0.5);}
-      |vec4 fn2(float v0){return fn1(fn0(v0));}
-      |fn2(1.0);
+      |vec3 def0(float r){return vec3(r,0.0,0.0);}
+      |vec4 def1(vec3 val3){return vec4(val3,0.5);}
+      |vec4 def2(float val0){return def1(def0(val0));}
+      |def2(1.0);
       |""".stripMargin.trim
     )
   }
@@ -503,10 +503,10 @@ class ShaderASTTests extends munit.FunSuite {
     assertEquals(
       actual,
       s"""
-      |vec3 fn0(float r){return vec3(r,0.0,0.0);}
-      |vec3 foo(){return fn0(1.0);}
-      |vec3 fn1(vec2 rg){return vec3(rg,0.0);}
-      |vec3 bar(){return fn1(vec2(0.5));}
+      |vec3 def0(float r){return vec3(r,0.0,0.0);}
+      |vec3 foo(){return def0(1.0);}
+      |vec3 def1(vec2 rg){return vec3(rg,0.0);}
+      |vec3 bar(){return def1(vec2(0.5));}
       |(foo())+(bar());
       |""".stripMargin.trim
     )
