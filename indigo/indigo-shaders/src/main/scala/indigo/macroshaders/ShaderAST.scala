@@ -20,6 +20,7 @@ object ShaderAST:
         case v: Infix        => Expr(v)
         case v: Assign       => Expr(v)
         case v: If           => Expr(v)
+        case v: While        => Expr(v)
         case v: DataTypes    => Expr(v)
         case v: Val          => Expr(v)
   }
@@ -125,12 +126,22 @@ object ShaderAST:
   final case class If(
       condition: ShaderAST,
       thenTerm: ShaderAST,
-      elseTerm: ShaderAST
+      elseTerm: Option[ShaderAST]
   ) extends ShaderAST
   object If:
     given ToExpr[If] with {
       def apply(x: If)(using Quotes): Expr[If] =
         '{ If(${ Expr(x.condition) }, ${ Expr(x.thenTerm) }, ${ Expr(x.elseTerm) }) }
+    }
+
+  final case class While(
+      condition: ShaderAST,
+      body: ShaderAST
+  ) extends ShaderAST
+  object While:
+    given ToExpr[While] with {
+      def apply(x: While)(using Quotes): Expr[While] =
+        '{ While(${ Expr(x.condition) }, ${ Expr(x.body) }) }
     }
 
   final case class Val(id: String, value: ShaderAST, typeOf: Option[String]) extends ShaderAST
@@ -234,7 +245,8 @@ object ShaderAST:
               case Cast(v, _)               => rec(v :: xs)
               case Infix(_, l, r, _)        => rec(l :: r :: xs)
               case Assign(l, r)             => rec(l :: r :: xs)
-              case If(c, t, e)              => rec(t :: e :: xs)
+              case If(c, t, e)              => rec(t :: (e.toList ++ xs))
+              case While(c, b)              => rec(b :: xs)
               case Val(_, body, _)          => rec(body :: xs)
               case v: DataTypes.closure     => rec(v.body :: xs)
               case v: DataTypes.ident       => rec(xs)
@@ -268,7 +280,8 @@ object ShaderAST:
         case v @ Cast(value, as)                      => f(Cast(f(value), as))
         case v @ Infix(op, l, r, returnType)          => f(Infix(op, f(l), f(r), returnType))
         case v @ Assign(l, r)                         => f(Assign(f(l), f(r)))
-        case v @ If(c, t, e)                          => f(If(c, f(t), f(e)))
+        case v @ If(c, t, e)                          => f(If(c, f(t), e.map(f)))
+        case v @ While(c, b)                          => f(While(c, f(b)))
         case v @ Val(id, value, typeOf)               => f(Val(id, f(value), typeOf))
         case v @ DataTypes.closure(body, typeOf)      => f(DataTypes.closure(f(body), typeOf))
         case v @ DataTypes.float(_)                   => f(v)
@@ -291,7 +304,8 @@ object ShaderAST:
         case Cast(_, as)                  => Option(ShaderAST.DataTypes.ident(as))
         case Infix(_, _, _, rt)           => rt.flatMap(_.typeIdent)
         case Assign(_, _)                 => None
-        case If(_, t, _)                  => t.typeIdent
+        case If(_, _, _)                  => None
+        case While(_, _)                  => None
         case Val(id, value, typeOf)       => typeOf.map(t => ShaderAST.DataTypes.ident(t))
         case n @ DataTypes.ident(_)       => Option(n)
         case DataTypes.closure(_, typeOf) => typeOf.map(t => ShaderAST.DataTypes.ident(t))
@@ -320,7 +334,8 @@ object ShaderAST:
           case Cast(_, as)                  => Option(as)
           case Infix(_, _, _, rt)           => rt.map(_.render)
           case Assign(_, _)                 => None
-          case If(_, t, _)                  => None
+          case If(_, _, _)                  => None
+          case While(_, _)                  => None
           case Val(id, value, typeOf)       => typeOf
           case n @ DataTypes.ident(_)       => None
           case DataTypes.closure(_, typeOf) => typeOf
@@ -338,9 +353,9 @@ object ShaderAST:
           .map(_.render)
           .filterNot(_.isEmpty) // empty String
           .mkString(";")
-          .replace(";;", ";")
 
-        if out.trim.isEmpty then out else out + ";"
+        if out.trim.isEmpty then out.replace(";;", ";")
+        else (out + ";").replace(";;", ";")
 
       def processFunctionStatements(statements: List[ShaderAST], maybeReturnType: Option[String]): (String, String) =
         val nonEmpty = statements
@@ -421,7 +436,15 @@ object ShaderAST:
             s"""${left.render}=${right.render}"""
 
           case If(cond, thenTerm, elseTerm) =>
-            s"""if(${cond.render}){${thenTerm.render}}else{${elseTerm.render}}"""
+            elseTerm match
+              case None =>
+                s"""if(${cond.render}){${thenTerm.render};}"""
+
+              case Some(els) =>
+                s"""if(${cond.render}){${thenTerm.render};}else{${els.render};}"""
+
+          case While(cond, body) =>
+            s"""while(${cond.render}){${body.render}}"""
 
           case DataTypes.closure(body, typeOf) =>
             s"[closure $body $typeOf]"

@@ -317,7 +317,7 @@ class ShaderASTTests extends munit.FunSuite {
     )
   }
 
-  test("if statements") {
+  test("if else statements") {
     inline def fragment: Shader[FragEnv, vec4] =
       Shader { _ =>
         val red    = vec4(1.0, 0.0, 0.0, 1.0)
@@ -333,10 +333,36 @@ class ShaderASTTests extends munit.FunSuite {
     val actual =
       fragment.toGLSL
 
+    // DebugAST.toAST(fragment)
+    // println(actual)
+
     assertEquals(
       actual,
       s"""
-      |vec4 red=vec4(1.0,0.0,0.0,1.0);vec4 green=vec4(0.0,1.0,0.0,1.0);vec4 blue=vec4(0.0,0.0,1.0,1.0);int x=1;if((x)<=(0)){red}else{if((x)==(1)){blue}else{green}};
+      |vec4 red=vec4(1.0,0.0,0.0,1.0);vec4 green=vec4(0.0,1.0,0.0,1.0);vec4 blue=vec4(0.0,0.0,1.0,1.0);int x=1;if((x)<=(0)){red;}else{if((x)==(1)){blue;}else{green;};};
+      |""".stripMargin.trim
+    )
+  }
+
+  test("if (no else) statements") {
+    @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+    inline def fragment: Shader[FragEnv, Unit] =
+      Shader { _ =>
+        var x: Int = 1
+        if x <= 10 then x = 15
+        x
+      }
+
+    val actual =
+      fragment.toGLSL
+
+    // DebugAST.toAST(fragment)
+    // println(actual)
+
+    assertEquals(
+      actual,
+      s"""
+      |int x=1;if((x)<=(10)){x=15;};x;
       |""".stripMargin.trim
     )
   }
@@ -371,9 +397,29 @@ class ShaderASTTests extends munit.FunSuite {
   //   //
   // }
 
-  // test("while loops") {
-  //   //
-  // }
+  test("while loops") {
+
+    @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while"))
+    inline def fragment: Shader[FragEnv, Float] =
+      Shader { _ =>
+        var i = 0.0f
+        while i < 4.0f do i += 1.0f
+        i
+      }
+
+    val actual =
+      fragment.toGLSL
+
+    // DebugAST.toAST(fragment)
+    // println(actual)
+
+    assertEquals(
+      actual,
+      s"""
+      |float i=0.0;while((i)<(4.0)){i=(i)+(1.0)};i;
+      |""".stripMargin.trim
+    )
+  }
 
   // test("imports") {
   //   //

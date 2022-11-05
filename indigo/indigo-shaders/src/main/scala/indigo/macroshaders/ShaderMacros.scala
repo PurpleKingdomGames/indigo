@@ -37,7 +37,8 @@ object ShaderMacros:
       case v: ShaderAST.Cast              => v.typeIdent
       case v: ShaderAST.Infix             => v.returnType
       case v: ShaderAST.Assign            => findReturnType(v.right)
-      case v: ShaderAST.If                => findReturnType(v.thenTerm)
+      case v: ShaderAST.If                => None
+      case v: ShaderAST.While             => None
       case v: ShaderAST.Val               => findReturnType(v.value)
       case v: ShaderAST.DataTypes.closure => v.typeIdent
       case v: ShaderAST.DataTypes.ident   => v.typeIdent
@@ -479,11 +480,20 @@ object ShaderMacros:
           )
 
         case If(condTerm, thenTerm, elseTerm) =>
-          ShaderAST.If(
-            walkTerm(condTerm),
-            walkTerm(thenTerm),
-            walkTerm(elseTerm)
-          )
+          walkTerm(elseTerm) match
+            case ShaderAST.Empty() =>
+              ShaderAST.If(
+                walkTerm(condTerm),
+                walkTerm(thenTerm),
+                None
+              )
+
+            case e =>
+              ShaderAST.If(
+                walkTerm(condTerm),
+                walkTerm(thenTerm),
+                Option(e)
+              )
 
         case Match(_, _) =>
           throw new Exception("Shaders do not support pattern matching.")
@@ -503,8 +513,8 @@ object ShaderMacros:
         case SelectOuter(_, _, _) =>
           throw new Exception("Shaders do not support outer selectors.")
 
-        case While(_, _) =>
-          throw new Exception("Shaders do not support while loops.")
+        case While(cond, body) =>
+          ShaderAST.While(walkTerm(cond), walkTerm(body))
 
     val res           = walkTerm(expr.asTerm)
     val shaderDefList = shaderDefs.toList
