@@ -512,8 +512,4 @@ class ShaderASTTests extends munit.FunSuite {
     )
   }
 
-  // test("functions can return multiple arguments") {
-  //   //
-  // }
-
 }
