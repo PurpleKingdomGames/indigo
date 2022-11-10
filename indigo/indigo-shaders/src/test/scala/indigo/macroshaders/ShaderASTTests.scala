@@ -605,9 +605,29 @@ class ShaderASTTests extends munit.FunSuite {
   //   //
   // }
 
-  // test("UBO structs?") {
-  //   //
-  // }
+  test("UBO structs as case class intersections") {
+    case class Env1(UV: vec2)
+    @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+    case class Env2(var COLOR: vec4)
+
+    inline def fragment: Shader[Env1 & Env2, Unit] =
+      Shader { env =>
+        env.COLOR = vec4(env.UV, 0.0f, 1.0f)
+      }
+
+    val actual =
+      fragment.toGLSL
+
+    // DebugAST.toAST(fragment)
+    // println(actual)
+
+    assertEquals(
+      actual,
+      s"""
+      |COLOR=vec4(UV,0.0,1.0);
+      |""".stripMargin.trim
+    )
+  }
 
 }
 
