@@ -54,7 +54,7 @@ final class RendererWebGL1(
 
   private val gl: WebGLRenderingContext = cNc.context
   private val vertexBuffer: WebGLBuffer = gl.createBuffer()
-  private val standardShaderProgram     = WebGLHelper.shaderProgramSetup(gl, "Pixel", indigo.shaders.WebGL1)
+  private val standardShaderProgram = WebGLHelper.shaderProgramSetup(gl, "Pixel", indigo.shared.shader.library.WebGL1)
 
   private val textureLocations: scalajs.js.Array[TextureLookupResult] =
     gl.pixelStorei(UNPACK_PREMULTIPLY_ALPHA_WEBGL, 1);
