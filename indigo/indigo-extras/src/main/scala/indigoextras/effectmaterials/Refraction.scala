@@ -18,6 +18,7 @@ import indigo.shared.shader.ShaderId
 import indigo.shared.shader.ShaderPrimitive.float
 import indigo.shared.shader.Uniform
 import indigo.shared.shader.UniformBlock
+import indigo.shared.shader.library.NoOp
 import indigoextras.shaders.ExtrasShaderLibrary
 
 object Refraction {
@@ -25,17 +26,17 @@ object Refraction {
   val entityShader: EntityShader.Source =
     EntityShader.Source(
       id = ShaderId("[indigoextras_engine_normal_minus_blue]"),
-      vertex = ShaderLibrary.NoOpVertex,
+      vertex = NoOp.vertex.output.code,
       fragment = ExtrasShaderLibrary.NormalMinusBlueFragment,
-      prepare = ShaderLibrary.NoOpPrepare,
-      light = ShaderLibrary.NoOpLight,
-      composite = ShaderLibrary.NoOpComposite
+      prepare = NoOp.prepare.output.code,
+      light = NoOp.light.output.code,
+      composite = NoOp.composite.output.code
     )
 
   val blendShader: BlendShader.Source =
     BlendShader.Source(
       id = ShaderId("[indigoextras_engine_blend_refraction]"),
-      vertex = ShaderLibrary.NoOpVertex,
+      vertex = NoOp.vertex.output.code,
       fragment = ExtrasShaderLibrary.RefractionBlendFragment
     )
 
