@@ -96,7 +96,7 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
         WebGLHelper.bindUBO(
           gl2,
           activeShader,
-          RendererWebGL2Constants.blendDataBlockOffsetPointer + i,
+          RendererWebGL2Constants.customDataBlockOffsetPointer + i,
           buff,
           gl2.getUniformBlockIndex(activeShader, ud.blockName)
         )
