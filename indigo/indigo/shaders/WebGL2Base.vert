@@ -76,7 +76,6 @@ vec2 SCALE;
 vec2 REF;
 vec2 FLIP;
 float ROTATION;
-vec2 TEXTURE_COORDS; // Redundant, equal to UV
 int INSTANCE_ID;
 
 mat4 translate2d(vec2 t){
@@ -121,7 +120,6 @@ void main(void) {
     ROTATION = a_rotation;
     POSITION = a_translateScale.xy;
     SCALE = a_translateScale.zw;
-    TEXTURE_COORDS = UV; // Deprecated
 
     // 0 = normal, 1 = clone batch, 2 = clone tiles
     switch(u_mode) {
