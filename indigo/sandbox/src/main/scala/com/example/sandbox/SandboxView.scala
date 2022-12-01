@@ -23,7 +23,7 @@ object SandboxView:
           gameLayer(model, viewModel) ++ uiLayer(bl)
         )
           .withDepth(Depth(300))
-        // .withBlend(Blend.Alpha)
+          // .withBlendMaterial(BlendMaterial.BlendEffects.None.withSaturation(0.1))
       )
       .addLayer(
         if (viewModel.useLightingLayer)
@@ -35,10 +35,6 @@ object SandboxView:
       )
       // .addLayer(Layer(uiLayer(mouse)))
       .addCloneBlanks(CloneBlank(dudeCloneId, model.dude.dude.sprite))
-    // .withSaturationLevel(0.5)
-    // .withTint(RGBA.Cyan.withAmount(0.25))
-    // .withUiColorOverlay(RGBA.Black.withAmount(0.5))
-    // .withGameColorOverlay(RGBA.Red.withAmount(0.5))
   }
 
   def gameLayer(currentState: SandboxGameModel, viewModel: SandboxViewModel): Batch[SceneNode] =
