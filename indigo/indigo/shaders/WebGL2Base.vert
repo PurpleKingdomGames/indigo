@@ -167,6 +167,8 @@ void main(void) {
         break;
     }
 
+  vertex();
+
   CHANNEL_0_TEXTURE_COORDS = scaleCoordsWithOffset(UV, CHANNEL_0_ATLAS_OFFSET);
   CHANNEL_1_TEXTURE_COORDS = scaleCoordsWithOffset(UV, CHANNEL_1_ATLAS_OFFSET);
   CHANNEL_2_TEXTURE_COORDS = scaleCoordsWithOffset(UV, CHANNEL_2_ATLAS_OFFSET);
@@ -176,8 +178,6 @@ void main(void) {
   CHANNEL_2_POSITION = scaleCoordsWithOffset(vec2(0.0), CHANNEL_2_ATLAS_OFFSET);
   CHANNEL_3_POSITION = scaleCoordsWithOffset(vec2(0.0), CHANNEL_3_ATLAS_OFFSET);
   CHANNEL_0_SIZE = TEXTURE_SIZE / ATLAS_SIZE;
-
-  vertex();
 
   mat4 transform = 
     translate2d(POSITION) *

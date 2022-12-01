@@ -8,14 +8,7 @@ precision mediump float;
 vec2 UV;
 vec2 SIZE;
 vec2 CHANNEL_0_ATLAS_OFFSET;
-
-mat4 scale2d(vec2 s){
-    return mat4(0); // placeholder
-}
-
-vec2 scaleCoordsWithOffset(vec2 texcoord, vec2 offset){
-  return vec2(0.0); // placeholder
-}
+vec2 FRAME_SIZE;
 
 //<indigo-vertex>
 out vec2 v_offsetTL;
@@ -42,32 +35,32 @@ const vec2[9] gridOffsets = vec2[9](
   vec2(1.0, 1.0)
 );
 
-vec2[9] generateTexCoords3x3(vec2 texcoords, vec2 onePixel) {
+vec2[9] generateTexCoords3x3() {
+  vec2 onePixel = 1.0 / SIZE;
   return vec2[9](
-    scaleCoordsWithOffset(texcoords + (onePixel * gridOffsets[0]), CHANNEL_0_ATLAS_OFFSET),
-    scaleCoordsWithOffset(texcoords + (onePixel * gridOffsets[1]), CHANNEL_0_ATLAS_OFFSET),
-    scaleCoordsWithOffset(texcoords + (onePixel * gridOffsets[2]), CHANNEL_0_ATLAS_OFFSET),
-    scaleCoordsWithOffset(texcoords + (onePixel * gridOffsets[3]), CHANNEL_0_ATLAS_OFFSET),
-    scaleCoordsWithOffset(texcoords + (onePixel * gridOffsets[4]), CHANNEL_0_ATLAS_OFFSET),
-    scaleCoordsWithOffset(texcoords + (onePixel * gridOffsets[5]), CHANNEL_0_ATLAS_OFFSET),
-    scaleCoordsWithOffset(texcoords + (onePixel * gridOffsets[6]), CHANNEL_0_ATLAS_OFFSET),
-    scaleCoordsWithOffset(texcoords + (onePixel * gridOffsets[7]), CHANNEL_0_ATLAS_OFFSET),
-    scaleCoordsWithOffset(texcoords + (onePixel * gridOffsets[8]), CHANNEL_0_ATLAS_OFFSET)
+    UV + (onePixel * gridOffsets[0]),
+    UV + (onePixel * gridOffsets[1]),
+    UV + (onePixel * gridOffsets[2]),
+    UV + (onePixel * gridOffsets[3]),
+    UV + (onePixel * gridOffsets[4]),
+    UV + (onePixel * gridOffsets[5]),
+    UV + (onePixel * gridOffsets[6]),
+    UV + (onePixel * gridOffsets[7]),
+    UV + (onePixel * gridOffsets[8])
   );
 }
 
 void vertex(){
-  vec2 onePixel = (scale2d(1.0 / SIZE) * vec4(1.0)).xy;
-  vec2 offsets[9] = generateTexCoords3x3(UV, onePixel);
+  vec2 offsets[9] = generateTexCoords3x3();
 
-  v_offsetTL = offsets[0];
-  v_offsetTC = offsets[1];
-  v_offsetTR = offsets[2];
-  v_offsetML = offsets[3];
-  v_offsetMC = offsets[4];
-  v_offsetMR = offsets[5];
-  v_offsetBL = offsets[6];
-  v_offsetBC = offsets[7];
-  v_offsetBR = offsets[8];
+  v_offsetTL = (offsets[0] * FRAME_SIZE) + CHANNEL_0_ATLAS_OFFSET;
+  v_offsetTC = (offsets[1] * FRAME_SIZE) + CHANNEL_0_ATLAS_OFFSET;
+  v_offsetTR = (offsets[2] * FRAME_SIZE) + CHANNEL_0_ATLAS_OFFSET;
+  v_offsetML = (offsets[3] * FRAME_SIZE) + CHANNEL_0_ATLAS_OFFSET;
+  v_offsetMC = (offsets[4] * FRAME_SIZE) + CHANNEL_0_ATLAS_OFFSET;
+  v_offsetMR = (offsets[5] * FRAME_SIZE) + CHANNEL_0_ATLAS_OFFSET;
+  v_offsetBL = (offsets[6] * FRAME_SIZE) + CHANNEL_0_ATLAS_OFFSET;
+  v_offsetBC = (offsets[7] * FRAME_SIZE) + CHANNEL_0_ATLAS_OFFSET;
+  v_offsetBR = (offsets[8] * FRAME_SIZE) + CHANNEL_0_ATLAS_OFFSET;
 }
 //</indigo-vertex>

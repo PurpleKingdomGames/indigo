@@ -2,15 +2,10 @@
 
 precision mediump float;
 
-vec2 CHANNEL_0_TEXTURE_COORDS;
-vec2 CHANNEL_0_ATLAS_OFFSET;
 vec2 UV;
 
 highp float TIME;
 
-vec2 scaleCoordsWithOffset(vec2 a, vec2 b){
-  return vec2(0.0);
-}
 
 //<indigo-vertex>
 layout (std140) uniform IndigoClipData {
@@ -107,6 +102,7 @@ void vertex(){
       break;
   }
 
-  CHANNEL_0_TEXTURE_COORDS = scaleCoordsWithOffset(UV + vec2(x, y), CHANNEL_0_ATLAS_OFFSET);
+  UV = UV + vec2(x, y);
+
 }
 //</indigo-vertex>
