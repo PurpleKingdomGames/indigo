@@ -7,6 +7,7 @@ import ultraviolet.syntax.*
 
 object IndigoUV:
 
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   final case class IndigoVertexEnv(
       TIME: Float,         // Running time
       VIEWPORT_SIZE: vec2, // Size of the viewport in pixels
@@ -15,7 +16,7 @@ object IndigoUV:
       ATLAS_SIZE: vec2,
       VERTEX: vec4,
       TEXTURE_SIZE: vec2,
-      UV: vec2,
+      var UV: vec2,
       SIZE: vec2,
       FRAME_SIZE: vec2,
       CHANNEL_0_ATLAS_OFFSET: vec2,
