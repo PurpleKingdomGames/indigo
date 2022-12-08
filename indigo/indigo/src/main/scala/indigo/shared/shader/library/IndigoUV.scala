@@ -104,6 +104,28 @@ object IndigoUV:
       TAU_8: Float
   )
 
+  final case class IndigoBlendFragmentEnv(
+      SRC_CHANNEL: sampler2D.type,
+      DST_CHANNEL: sampler2D.type,
+      TIME: Float,         // Running time
+      VIEWPORT_SIZE: vec2, // Size of the viewport in pixels
+
+      // Variables
+      UV: vec2,   // Unscaled texture coordinates
+      SIZE: vec2, // Width / height of the objects
+      SRC: vec4,  // Pixel value from SRC texture
+      DST: vec4,  // Pixel value from DST texture
+
+      // Constants
+      PI: Float,
+      PI_2: Float,
+      PI_4: Float,
+      TAU: Float,
+      TAU_2: Float,
+      TAU_4: Float,
+      TAU_8: Float
+  )
+
   sealed trait Indigo
 
   given ShaderPrinter[Indigo] = new ShaderPrinter {
