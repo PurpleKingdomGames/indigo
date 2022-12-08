@@ -2,6 +2,7 @@ package indigo.shared.shader
 
 import indigo.shaders.ShaderLibrary
 import indigo.shared.shader.library.Blit
+import indigo.shared.shader.library.Clip
 import indigo.shared.shader.library.NoOp
 
 object StandardShaders {
@@ -79,7 +80,7 @@ object StandardShaders {
   def makeClipShader(shader: EntityShader.Source): EntityShader.Source =
     shader.copy(
       id = shaderIdToClipShaderId(shader.id),
-      vertex = ShaderLibrary.ClipVertex
+      vertex = Clip.vertex.output.code
     )
 
   val BitmapClip: EntityShader.Source          = makeClipShader(Bitmap)
