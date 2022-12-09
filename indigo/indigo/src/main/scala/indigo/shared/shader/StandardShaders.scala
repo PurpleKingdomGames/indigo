@@ -2,6 +2,7 @@ package indigo.shared.shader
 
 import indigo.shaders.ShaderLibrary
 import indigo.shared.shader.library
+import indigo.shared.shader.library.Blit
 
 object StandardShaders {
 
@@ -54,7 +55,7 @@ object StandardShaders {
     EntityShader.Source(
       id = ShaderId("[indigo_engine_image_effects]"),
       vertex = library.NoOp.vertex.output.code,
-      fragment = ShaderLibrary.ImageEffectsFragment,
+      fragment = library.ImageEffects.fragment.output.code,
       prepare = library.NoOp.prepare.output.code,
       light = library.NoOp.light.output.code,
       composite = library.NoOp.composite.output.code
@@ -64,7 +65,7 @@ object StandardShaders {
     EntityShader.Source(
       id = ShaderId("[indigo_engine_lit_image_effects]"),
       vertex = library.NoOp.vertex.output.code,
-      fragment = ShaderLibrary.ImageEffectsFragment,
+      fragment = library.ImageEffects.fragment.output.code,
       prepare = ShaderLibrary.LightingPrepare,
       light = ShaderLibrary.LightingLight,
       composite = ShaderLibrary.LightingComposite
