@@ -16,51 +16,9 @@ object ImageEffects:
   object fragment:
     inline def shader =
       Shader[IndigoFragmentEnv & IndigoImageEffectsData] { env =>
+        import ImageEffectFunctions.*
+
         ubo[IndigoImageEffectsData]
-
-        def applyBasicEffects(textureColor: vec4): vec4 =
-          val alpha: Float        = env.ALPHA_SATURATION_OVERLAYTYPE_FILLTYPE.x
-          val withAlpha: vec4     = vec4(textureColor.xyz * alpha, textureColor.w * alpha)
-          val tintedVersion: vec4 = vec4(withAlpha.xyz * env.TINT.xyz, withAlpha.w)
-
-          tintedVersion
-
-        def calculateColorOverlay(color: vec4): vec4 =
-          mix(color, vec4(env.GRADIENT_FROM_COLOR.xyz * color.w, color.w), env.GRADIENT_FROM_COLOR.w)
-
-        def calculateLinearGradientOverlay(color: vec4): vec4 =
-          val pointA: vec2 = env.GRADIENT_FROM_TO.xy
-          val pointB: vec2 = env.GRADIENT_FROM_TO.zw
-          val pointP: vec2 = env.UV * env.SIZE
-
-          // `h` is the distance along the gradient 0 at A, 1 at B
-          val h: Float =
-            min(1.0f, max(0.0f, dot(pointP - pointA, pointB - pointA) / dot(pointB - pointA, pointB - pointA)))
-
-          val gradient: vec4 = mix(env.GRADIENT_FROM_COLOR, env.GRADIENT_TO_COLOR, h)
-
-          mix(color, vec4(gradient.xyz * color.w, color.w), gradient.w)
-
-        def calculateRadialGradientOverlay(color: vec4): vec4 =
-          val pointA: vec2 = env.GRADIENT_FROM_TO.xy
-          val pointB: vec2 = env.GRADIENT_FROM_TO.zw
-          val pointP: vec2 = env.UV * env.SIZE
-
-          val radius: Float      = length(pointB - pointA)
-          val distanceToP: Float = length(pointP - pointA)
-
-          val sdf: Float = clamp(-((distanceToP - radius) / radius), 0.0f, 1.0f)
-
-          val gradient: vec4 = mix(env.GRADIENT_TO_COLOR, env.GRADIENT_FROM_COLOR, sdf)
-
-          mix(color, vec4(gradient.xyz * color.w, color.w), gradient.w)
-
-        def calculateSaturation(color: vec4): vec4 =
-          val saturation: Float = env.ALPHA_SATURATION_OVERLAYTYPE_FILLTYPE.y
-          val average: Float    = (color.x + color.y + color.z) / 3.0f
-          val grayscale: vec4   = vec4(average, average, average, color.w)
-
-          mix(grayscale, color, max(0.0f, min(1.0f, saturation)))
 
         def stretchedUVs(pos: vec2, size: vec2): vec2 =
           pos + env.UV * size
@@ -87,27 +45,76 @@ object ImageEffects:
               env.CHANNEL_2 = texture2D(env.SRC_CHANNEL, tiledUVs(env.CHANNEL_2_POSITION, env.CHANNEL_0_SIZE))
               env.CHANNEL_3 = texture2D(env.SRC_CHANNEL, tiledUVs(env.CHANNEL_3_POSITION, env.CHANNEL_0_SIZE))
 
-          val baseColor: vec4 = applyBasicEffects(env.CHANNEL_0)
+          val alpha: Float    = env.ALPHA_SATURATION_OVERLAYTYPE_FILLTYPE.x
+          val baseColor: vec4 = applyBasicEffects(env.CHANNEL_0, alpha, env.TINT.xyz)
 
           // 0 = color 1 = linear gradient 2 = radial gradient
           val overlayType: Int = round(env.ALPHA_SATURATION_OVERLAYTYPE_FILLTYPE.z).toInt
           val overlay: vec4 =
             overlayType match
               case 0 =>
-                calculateColorOverlay(baseColor)
+                calculateColorOverlay(baseColor, env.GRADIENT_FROM_COLOR)
 
               case 1 =>
-                calculateLinearGradientOverlay(baseColor)
+                calculateLinearGradientOverlay(
+                  baseColor,
+                  env.GRADIENT_FROM_TO.xy,
+                  env.GRADIENT_FROM_TO.zw,
+                  env.UV * env.SIZE,
+                  env.GRADIENT_FROM_COLOR,
+                  env.GRADIENT_TO_COLOR
+                )
 
               case 2 =>
-                calculateRadialGradientOverlay(baseColor)
+                calculateRadialGradientOverlay(
+                  baseColor,
+                  env.GRADIENT_FROM_TO.xy,
+                  env.GRADIENT_FROM_TO.zw,
+                  env.UV * env.SIZE,
+                  env.GRADIENT_FROM_COLOR,
+                  env.GRADIENT_TO_COLOR
+                )
 
               case _ =>
-                calculateColorOverlay(baseColor)
+                calculateColorOverlay(baseColor, env.GRADIENT_FROM_COLOR)
 
-          val saturation: vec4 = calculateSaturation(overlay)
-
-          saturation
+          calculateSaturation(overlay, env.ALPHA_SATURATION_OVERLAYTYPE_FILLTYPE.y)
       }
 
     val output = shader.toGLSL[Indigo]
+
+
+object ImageEffectFunctions:
+
+  /** Applies alpha and tint
+    */
+  inline def applyBasicEffects = (textureColor: vec4, alpha: Float, tint: vec3) =>
+    val withAlpha: vec4 = vec4(textureColor.xyz * alpha, textureColor.w * alpha)
+    vec4(withAlpha.xyz * tint, withAlpha.w)
+
+  inline def calculateColorOverlay = (baseColor: vec4, overlayColor: vec4) =>
+    mix(baseColor, vec4(overlayColor.xyz * baseColor.w, baseColor.w), overlayColor.w)
+
+  inline def calculateLinearGradientOverlay =
+    (baseColor: vec4, pointA: vec2, pointB: vec2, pointP: vec2, fromColor: vec4, toColor: vec4) =>
+      // `h` is the distance along the gradient 0 at A, 1 at B
+      val h: Float =
+        min(1.0f, max(0.0f, dot(pointP - pointA, pointB - pointA) / dot(pointB - pointA, pointB - pointA)))
+      val gradient: vec4 = mix(fromColor, toColor, h)
+
+      mix(baseColor, vec4(gradient.xyz * baseColor.w, baseColor.w), gradient.w)
+
+  inline def calculateRadialGradientOverlay =
+    (baseColor: vec4, pointA: vec2, pointB: vec2, pointP: vec2, fromColor: vec4, toColor: vec4) =>
+      val radius: Float      = length(pointB - pointA)
+      val distanceToP: Float = length(pointP - pointA)
+      val sdf: Float         = clamp(-((distanceToP - radius) / radius), 0.0f, 1.0f)
+      val gradient: vec4     = mix(toColor, fromColor, sdf)
+
+      mix(baseColor, vec4(gradient.xyz * baseColor.w, baseColor.w), gradient.w)
+
+  inline def calculateSaturation = (color: vec4, saturation: Float) =>
+    val average: Float  = (color.x + color.y + color.z) / 3.0f
+    val grayscale: vec4 = vec4(average, average, average, color.w)
+
+    mix(grayscale, color, max(0.0f, min(1.0f, saturation)))
