@@ -45,9 +45,9 @@ object StandardShaders {
       id = ShaderId("[indigo_engine_lit_bitmap]"),
       vertex = library.NoOp.vertex.output.code,
       fragment = library.Blit.fragment.output.code,
-      prepare = ShaderLibrary.LightingPrepare,
-      light = ShaderLibrary.LightingLight,
-      composite = ShaderLibrary.LightingComposite
+      prepare = library.Lighting.prepare.output.code,
+      light = library.Lighting.light.output.code,
+      composite = library.Lighting.composite.output.code
     )
 
   val ImageEffects: EntityShader.Source =
@@ -65,9 +65,9 @@ object StandardShaders {
       id = ShaderId("[indigo_engine_lit_image_effects]"),
       vertex = library.NoOp.vertex.output.code,
       fragment = library.ImageEffects.fragment.output.code,
-      prepare = ShaderLibrary.LightingPrepare,
-      light = ShaderLibrary.LightingLight,
-      composite = ShaderLibrary.LightingComposite
+      prepare = library.Lighting.prepare.output.code,
+      light = library.Lighting.light.output.code,
+      composite = library.Lighting.composite.output.code
     )
 
   // Clips
@@ -103,9 +103,9 @@ object StandardShaders {
       id = ShaderId("[indigo_engine_lit_shape_box]"),
       vertex = library.NoOp.vertex.output.code,
       fragment = ShaderLibrary.ShapeBoxFragment,
-      prepare = ShaderLibrary.LightingPrepare,
-      light = ShaderLibrary.LightingLight,
-      composite = ShaderLibrary.LightingComposite
+      prepare = library.Lighting.prepare.output.code,
+      light = library.Lighting.light.output.code,
+      composite = library.Lighting.composite.output.code
     )
 
   val ShapeCircle: EntityShader.Source =
@@ -123,9 +123,9 @@ object StandardShaders {
       id = ShaderId("[indigo_engine_lit_shape_circle]"),
       vertex = library.NoOp.vertex.output.code,
       fragment = ShaderLibrary.ShapeCircleFragment,
-      prepare = ShaderLibrary.LightingPrepare,
-      light = ShaderLibrary.LightingLight,
-      composite = ShaderLibrary.LightingComposite
+      prepare = library.Lighting.prepare.output.code,
+      light = library.Lighting.light.output.code,
+      composite = library.Lighting.composite.output.code
     )
 
   val ShapeLine: EntityShader.Source =
@@ -143,9 +143,9 @@ object StandardShaders {
       id = ShaderId("[indigo_engine_lit_shape_line]"),
       vertex = library.NoOp.vertex.output.code,
       fragment = ShaderLibrary.ShapeLineFragment,
-      prepare = ShaderLibrary.LightingPrepare,
-      light = ShaderLibrary.LightingLight,
-      composite = ShaderLibrary.LightingComposite
+      prepare = library.Lighting.prepare.output.code,
+      light = library.Lighting.light.output.code,
+      composite = library.Lighting.composite.output.code
     )
 
   val ShapePolygon: EntityShader.Source =
@@ -163,9 +163,9 @@ object StandardShaders {
       id = ShaderId("[indigo_engine_lit_shape_polygon]"),
       vertex = library.NoOp.vertex.output.code,
       fragment = ShaderLibrary.ShapePolygonFragment,
-      prepare = ShaderLibrary.LightingPrepare,
-      light = ShaderLibrary.LightingLight,
-      composite = ShaderLibrary.LightingComposite
+      prepare = library.Lighting.prepare.output.code,
+      light = library.Lighting.light.output.code,
+      composite = library.Lighting.composite.output.code
     )
 
   // Blend Shaders
