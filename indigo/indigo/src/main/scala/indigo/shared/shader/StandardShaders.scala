@@ -2,7 +2,6 @@ package indigo.shared.shader
 
 import indigo.shaders.ShaderLibrary
 import indigo.shared.shader.library
-import indigo.shared.shader.library.Blit
 
 object StandardShaders {
 
@@ -189,7 +188,7 @@ object StandardShaders {
     BlendShader.Source(
       id = ShaderId("[indigo_engine_blend_effects]"),
       vertex = library.NoOp.vertex.output.code,
-      fragment = ShaderLibrary.BlendEffectsFragment
+      fragment = library.BlendEffects.fragment.output.code
     )
 
 }
