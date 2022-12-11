@@ -19,15 +19,16 @@ import indigo.shared.shader.ShaderPrimitive.float
 import indigo.shared.shader.Uniform
 import indigo.shared.shader.UniformBlock
 import indigo.shared.shader.library.NoOp
+import indigoextras.effectmaterials.shaders.RefractionShaders
 import indigoextras.shaders.ExtrasShaderLibrary
 
-object Refraction {
+object Refraction:
 
   val entityShader: EntityShader.Source =
     EntityShader.Source(
       id = ShaderId("[indigoextras_engine_normal_minus_blue]"),
       vertex = NoOp.vertex.output.code,
-      fragment = ExtrasShaderLibrary.NormalMinusBlueFragment,
+      fragment = RefractionShaders.normalMinusBlue.output.code,
       prepare = NoOp.prepare.output.code,
       light = NoOp.light.output.code,
       composite = NoOp.composite.output.code
@@ -37,7 +38,7 @@ object Refraction {
     BlendShader.Source(
       id = ShaderId("[indigoextras_engine_blend_refraction]"),
       vertex = NoOp.vertex.output.code,
-      fragment = ExtrasShaderLibrary.RefractionBlendFragment
+      fragment = RefractionShaders.refractionFragment.output.code
     )
 
   val shaders: Set[Shader] =
@@ -55,9 +56,7 @@ object Refraction {
   def blending(distance: Double): Blending =
     Blending(Blend.Normal, Blend.Normal, RefractionBlend(distance), Option(RGBA.Zero))
 
-}
-
-final case class RefractionEntity(diffuse: AssetName, fillType: FillType) extends Material derives CanEqual {
+final case class RefractionEntity(diffuse: AssetName, fillType: FillType) extends Material derives CanEqual:
 
   def withDiffuse(newDiffuse: AssetName): RefractionEntity =
     this.copy(diffuse = newDiffuse)
@@ -96,12 +95,12 @@ final case class RefractionEntity(diffuse: AssetName, fillType: FillType) extend
       None
     )
   }
-}
+
 object RefractionEntity:
   def apply(diffuse: AssetName): RefractionEntity =
     RefractionEntity(diffuse, FillType.Normal)
 
-final case class RefractionBlend(multiplier: Double) extends BlendMaterial derives CanEqual {
+final case class RefractionBlend(multiplier: Double) extends BlendMaterial derives CanEqual:
   lazy val toShaderData: BlendShaderData =
     BlendShaderData(
       Refraction.blendShader.id,
@@ -114,4 +113,3 @@ final case class RefractionBlend(multiplier: Double) extends BlendMaterial deriv
         )
       )
     )
-}
