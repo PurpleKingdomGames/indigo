@@ -2,7 +2,7 @@ package indigo.shared.shader
 
 import indigo.shaders.ShaderLibrary
 import indigo.shared.shader.library
-
+import indigo.shared.shader.library.Blit
 object StandardShaders {
 
   def all: Set[Shader] =
@@ -132,7 +132,7 @@ object StandardShaders {
     EntityShader.Source(
       id = ShaderId("[indigo_engine_shape_line]"),
       vertex = library.NoOp.vertex.output.code,
-      fragment = ShaderLibrary.ShapeLineFragment,
+      fragment = library.ShapeLine.fragment.output.code,
       prepare = library.NoOp.prepare.output.code,
       light = library.NoOp.light.output.code,
       composite = library.NoOp.composite.output.code
@@ -142,7 +142,7 @@ object StandardShaders {
     EntityShader.Source(
       id = ShaderId("[indigo_engine_lit_shape_line]"),
       vertex = library.NoOp.vertex.output.code,
-      fragment = ShaderLibrary.ShapeLineFragment,
+      fragment = library.ShapeLine.fragment.output.code,
       prepare = library.Lighting.prepare.output.code,
       light = library.Lighting.light.output.code,
       composite = library.Lighting.composite.output.code
