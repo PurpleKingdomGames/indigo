@@ -15,6 +15,7 @@ import indigo.shared.shader.ShaderPrimitive.rawJSArray
 import indigo.shared.shader.Uniform
 import indigo.shared.shader.UniformBlock
 import indigo.shared.shader.library.NoOp
+import indigoextras.effectmaterials.shaders.LegacyEffectsShaders
 import indigoextras.shaders.ExtrasShaderLibrary
 
 final case class LegacyEffects(
@@ -107,8 +108,8 @@ object LegacyEffects:
   val entityShader: EntityShader.Source =
     EntityShader.Source(
       id = ShaderId("[indigoextras_engine_legacy_effects]"),
-      vertex = ExtrasShaderLibrary.LegacyEffectsVertex,
-      fragment = ExtrasShaderLibrary.LegacyEffectsFragment,
+      vertex = LegacyEffectsShaders.vertex.output.code,
+      fragment = LegacyEffectsShaders.fragment.output.code,
       prepare = NoOp.prepare.output.code,
       light = NoOp.light.output.code,
       composite = NoOp.composite.output.code
