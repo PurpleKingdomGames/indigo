@@ -1,6 +1,8 @@
 package indigoextras.effectmaterials.shaders
 
+import indigo.shared.shader.library.ImageEffectFunctions
 import indigo.shared.shader.library.IndigoUV.*
+import indigo.shared.shader.library.TileAndStretch
 import ultraviolet.syntax.*
 
 object LegacyEffectsShaders:
@@ -64,7 +66,7 @@ object LegacyEffectsShaders:
   object fragment:
 
     final case class IndigoLegacyEffectsData(
-        ALPHA_SATURATION_OVERLAYTYPE: highp[vec3],
+        ALPHA_SATURATION_OVERLAYTYPE_FILLTYPE: highp[vec4],
         TINT: vec4,
         GRADIENT_FROM_TO: vec4,
         GRADIENT_FROM_COLOR: vec4,
@@ -74,13 +76,100 @@ object LegacyEffectsShaders:
         EFFECT_AMOUNTS: vec4
     )
 
-    @SuppressWarnings(Array("scalafix:DisableSyntax.null", "scalafix:DisableSyntax.var"))
     inline def shader =
-      Shader[IndigoFragmentEnv] { env =>
+      Shader[IndigoFragmentEnv & IndigoLegacyEffectsData] { env =>
+        import ImageEffectFunctions.*
+        import TileAndStretch.*
+
         ubo[IndigoLegacyEffectsData]
 
         def fragment: vec4 =
-          vec4(1.0)
+
+          // ----------------------------------
+          // Identical to ImageEffects (start)
+
+          // 0 = normal 1 = stretch 2 = tile
+          val fillType: Int =
+            round(env.ALPHA_SATURATION_OVERLAYTYPE_FILLTYPE.w).toInt
+
+          env.CHANNEL_0 = tileAndStretchChannel(
+            fillType,
+            env.CHANNEL_0,
+            env.SRC_CHANNEL,
+            env.CHANNEL_0_POSITION,
+            env.CHANNEL_0_SIZE,
+            env.UV,
+            env.SIZE,
+            env.TEXTURE_SIZE
+          )
+          env.CHANNEL_1 = tileAndStretchChannel(
+            fillType,
+            env.CHANNEL_1,
+            env.SRC_CHANNEL,
+            env.CHANNEL_1_POSITION,
+            env.CHANNEL_0_SIZE,
+            env.UV,
+            env.SIZE,
+            env.TEXTURE_SIZE
+          )
+          env.CHANNEL_2 = tileAndStretchChannel(
+            fillType,
+            env.CHANNEL_2,
+            env.SRC_CHANNEL,
+            env.CHANNEL_2_POSITION,
+            env.CHANNEL_0_SIZE,
+            env.UV,
+            env.SIZE,
+            env.TEXTURE_SIZE
+          )
+          env.CHANNEL_3 = tileAndStretchChannel(
+            fillType,
+            env.CHANNEL_3,
+            env.SRC_CHANNEL,
+            env.CHANNEL_3_POSITION,
+            env.CHANNEL_0_SIZE,
+            env.UV,
+            env.SIZE,
+            env.TEXTURE_SIZE
+          )
+
+          val alpha: Float    = env.ALPHA_SATURATION_OVERLAYTYPE_FILLTYPE.x
+          val baseColor: vec4 = applyBasicEffects(env.CHANNEL_0, alpha, env.TINT.xyz)
+
+          // 0 = color 1 = linear gradient 2 = radial gradient
+          val overlayType: Int = round(env.ALPHA_SATURATION_OVERLAYTYPE_FILLTYPE.z).toInt
+          val overlay: vec4 =
+            overlayType match
+              case 0 =>
+                calculateColorOverlay(baseColor, env.GRADIENT_FROM_COLOR)
+
+              case 1 =>
+                calculateLinearGradientOverlay(
+                  baseColor,
+                  env.GRADIENT_FROM_TO.xy,
+                  env.GRADIENT_FROM_TO.zw,
+                  env.UV * env.SIZE,
+                  env.GRADIENT_FROM_COLOR,
+                  env.GRADIENT_TO_COLOR
+                )
+
+              case 2 =>
+                calculateRadialGradientOverlay(
+                  baseColor,
+                  env.GRADIENT_FROM_TO.xy,
+                  env.GRADIENT_FROM_TO.zw,
+                  env.UV * env.SIZE,
+                  env.GRADIENT_FROM_COLOR,
+                  env.GRADIENT_TO_COLOR
+                )
+
+              case _ =>
+                calculateColorOverlay(baseColor, env.GRADIENT_FROM_COLOR)
+
+          calculateSaturation(overlay, env.ALPHA_SATURATION_OVERLAYTYPE_FILLTYPE.y)
+
+      // Identical to ImageEffects (end)
+      // --------------------------------
       }
 
     val output = shader.toGLSL[Indigo]
