@@ -17,14 +17,9 @@ object ImageEffects:
     inline def shader =
       Shader[IndigoFragmentEnv & IndigoImageEffectsData] { env =>
         import ImageEffectFunctions.*
+        import TileAndStretch.*
 
         ubo[IndigoImageEffectsData]
-
-        def stretchedUVs(pos: vec2, size: vec2): vec2 =
-          pos + env.UV * size
-
-        def tiledUVs(pos: vec2, size: vec2): vec2 =
-          pos + (fract(env.UV * (env.SIZE / env.TEXTURE_SIZE)) * size)
 
         def fragment: vec4 =
 
@@ -32,18 +27,46 @@ object ImageEffects:
           val fillType: Int =
             round(env.ALPHA_SATURATION_OVERLAYTYPE_FILLTYPE.w).toInt
 
-          fillType match
-            case 1 =>
-              env.CHANNEL_0 = texture2D(env.SRC_CHANNEL, stretchedUVs(env.CHANNEL_0_POSITION, env.CHANNEL_0_SIZE))
-              env.CHANNEL_1 = texture2D(env.SRC_CHANNEL, stretchedUVs(env.CHANNEL_1_POSITION, env.CHANNEL_0_SIZE))
-              env.CHANNEL_2 = texture2D(env.SRC_CHANNEL, stretchedUVs(env.CHANNEL_2_POSITION, env.CHANNEL_0_SIZE))
-              env.CHANNEL_3 = texture2D(env.SRC_CHANNEL, stretchedUVs(env.CHANNEL_3_POSITION, env.CHANNEL_0_SIZE))
-
-            case 2 =>
-              env.CHANNEL_0 = texture2D(env.SRC_CHANNEL, tiledUVs(env.CHANNEL_0_POSITION, env.CHANNEL_0_SIZE))
-              env.CHANNEL_1 = texture2D(env.SRC_CHANNEL, tiledUVs(env.CHANNEL_1_POSITION, env.CHANNEL_0_SIZE))
-              env.CHANNEL_2 = texture2D(env.SRC_CHANNEL, tiledUVs(env.CHANNEL_2_POSITION, env.CHANNEL_0_SIZE))
-              env.CHANNEL_3 = texture2D(env.SRC_CHANNEL, tiledUVs(env.CHANNEL_3_POSITION, env.CHANNEL_0_SIZE))
+          env.CHANNEL_0 = tileAndStretchChannel(
+            fillType,
+            env.CHANNEL_0,
+            env.SRC_CHANNEL,
+            env.CHANNEL_0_POSITION,
+            env.CHANNEL_0_SIZE,
+            env.UV,
+            env.SIZE,
+            env.TEXTURE_SIZE
+          )
+          env.CHANNEL_1 = tileAndStretchChannel(
+            fillType,
+            env.CHANNEL_1,
+            env.SRC_CHANNEL,
+            env.CHANNEL_1_POSITION,
+            env.CHANNEL_0_SIZE,
+            env.UV,
+            env.SIZE,
+            env.TEXTURE_SIZE
+          )
+          env.CHANNEL_2 = tileAndStretchChannel(
+            fillType,
+            env.CHANNEL_2,
+            env.SRC_CHANNEL,
+            env.CHANNEL_2_POSITION,
+            env.CHANNEL_0_SIZE,
+            env.UV,
+            env.SIZE,
+            env.TEXTURE_SIZE
+          )
+          env.CHANNEL_3 = tileAndStretchChannel(
+            fillType,
+            env.CHANNEL_3,
+            env.SRC_CHANNEL,
+            env.CHANNEL_3_POSITION,
+            env.CHANNEL_0_SIZE,
+            env.UV,
+            env.SIZE,
+            env.TEXTURE_SIZE
+          )
 
           val alpha: Float    = env.ALPHA_SATURATION_OVERLAYTYPE_FILLTYPE.x
           val baseColor: vec4 = applyBasicEffects(env.CHANNEL_0, alpha, env.TINT.xyz)
