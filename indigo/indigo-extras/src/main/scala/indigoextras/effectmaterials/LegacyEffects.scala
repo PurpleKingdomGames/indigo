@@ -6,6 +6,7 @@ import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Fill
 import indigo.shared.datatypes.RGB
 import indigo.shared.datatypes.RGBA
+import indigo.shared.materials.FillType
 import indigo.shared.materials.Material
 import indigo.shared.materials.ShaderData
 import indigo.shared.shader.EntityShader
@@ -25,7 +26,8 @@ final case class LegacyEffects(
     overlay: Fill,
     saturation: Double,
     border: Border,
-    glow: Glow
+    glow: Glow,
+    fillType: FillType
 ) extends Material
     derives CanEqual:
 
@@ -49,6 +51,15 @@ final case class LegacyEffects(
   def withGlow(newGlow: Glow): LegacyEffects =
     this.copy(glow = newGlow)
 
+  def withFillType(newFillType: FillType): LegacyEffects =
+    this.copy(fillType = newFillType)
+  def normal: LegacyEffects =
+    withFillType(FillType.Normal)
+  def stretch: LegacyEffects =
+    withFillType(FillType.Stretch)
+  def tile: LegacyEffects =
+    withFillType(FillType.Tile)
+
   lazy val toShaderData: ShaderData =
     val overlayType: Float =
       overlay match
@@ -56,19 +67,26 @@ final case class LegacyEffects(
         case _: Fill.LinearGradient => 1.0
         case _: Fill.RadialGradient => 2.0
 
+    val imageFillType: Float =
+      fillType match {
+        case FillType.Normal  => 0.0
+        case FillType.Stretch => 1.0
+        case FillType.Tile    => 2.0
+      }
+
     ShaderData(
       LegacyEffects.entityShader.id,
       Batch(
         UniformBlock(
           "IndigoLegacyEffectsData",
           Batch(
-            // ALPHA_SATURATION_OVERLAYTYPE (vec3), TINT (vec4)
+            // ALPHA_SATURATION_OVERLAYTYPE_FILLTYPE (vec4), TINT (vec4)
             Uniform("LegacyEffects_DATA") -> rawJSArray(
               scalajs.js.Array(
                 alpha.toFloat,
                 saturation.toFloat,
                 overlayType,
-                0.0f,
+                imageFillType,
                 tint.r.toFloat,
                 tint.g.toFloat,
                 tint.b.toFloat,
@@ -116,10 +134,10 @@ object LegacyEffects:
     )
 
   def apply(diffuse: AssetName): LegacyEffects =
-    LegacyEffects(diffuse, 1.0, RGBA.None, Fill.Color.default, 1.0, Border.default, Glow.default)
+    LegacyEffects(diffuse, 1.0, RGBA.None, Fill.Color.default, 1.0, Border.default, Glow.default, FillType.Normal)
 
   def apply(diffuse: AssetName, alpha: Double): LegacyEffects =
-    LegacyEffects(diffuse, alpha, RGBA.None, Fill.Color.default, 1.0, Border.default, Glow.default)
+    LegacyEffects(diffuse, alpha, RGBA.None, Fill.Color.default, 1.0, Border.default, Glow.default, FillType.Normal)
 
 final case class Border(color: RGBA, innerThickness: Thickness, outerThickness: Thickness) derives CanEqual:
 
