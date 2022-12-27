@@ -17,7 +17,6 @@ import indigo.shared.shader.Uniform
 import indigo.shared.shader.UniformBlock
 import indigo.shared.shader.library.NoOp
 import indigoextras.effectmaterials.shaders.LegacyEffectsShaders
-import indigoextras.shaders.ExtrasShaderLibrary
 
 final case class LegacyEffects(
     diffuse: AssetName,

@@ -20,7 +20,6 @@ import indigo.shared.shader.Uniform
 import indigo.shared.shader.UniformBlock
 import indigo.shared.shader.library.NoOp
 import indigoextras.effectmaterials.shaders.RefractionShaders
-import indigoextras.shaders.ExtrasShaderLibrary
 
 object Refraction:
 

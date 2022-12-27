@@ -135,8 +135,7 @@ lazy val indigoExtras =
     .settings(
       name := "indigo-extras",
       libraryDependencies ++= Dependencies.indigoExtras.value,
-      commonSettings ++ publishSettings,
-      Compile / sourceGenerators += shaderLibGen("ExtrasShaderLibrary", "indigoextras.shaders").taskValue
+      commonSettings ++ publishSettings
     )
 
 // Indigo

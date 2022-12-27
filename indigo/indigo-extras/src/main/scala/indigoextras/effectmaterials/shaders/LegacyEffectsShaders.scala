@@ -22,15 +22,15 @@ object LegacyEffectsShaders:
         @out var v_offsetBR: vec2 = null
 
         @const val gridOffsets = array[9, vec2](
-          vec2(-1.0, -1.0),
-          vec2(0.0, -1.0),
-          vec2(1.0, -1.0),
-          vec2(-1.0, 0.0),
-          vec2(0.0, 0.0),
-          vec2(1.0, 0.0),
-          vec2(-1.0, 1.0),
-          vec2(0.0, 1.0),
-          vec2(1.0, 1.0)
+          vec2(-1.0f, -1.0f),
+          vec2(0.0f, -1.0f),
+          vec2(1.0f, -1.0f),
+          vec2(-1.0f, 0.0f),
+          vec2(0.0f, 0.0f),
+          vec2(1.0f, 0.0f),
+          vec2(-1.0f, 1.0f),
+          vec2(0.0f, 1.0f),
+          vec2(1.0f, 1.0f)
         )
 
         def generateTexCoords3x3: array[9, vec2] =
@@ -76,12 +76,160 @@ object LegacyEffectsShaders:
         EFFECT_AMOUNTS: vec4
     )
 
+    @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
     inline def shader =
       Shader[IndigoFragmentEnv & IndigoLegacyEffectsData] { env =>
         import ImageEffectFunctions.*
         import TileAndStretch.*
 
+        @in val v_offsetTL: vec2 = null
+        @in val v_offsetTC: vec2 = null
+        @in val v_offsetTR: vec2 = null
+        @in val v_offsetML: vec2 = null
+        @in val v_offsetMC: vec2 = null
+        @in val v_offsetMR: vec2 = null
+        @in val v_offsetBL: vec2 = null
+        @in val v_offsetBC: vec2 = null
+        @in val v_offsetBR: vec2 = null
+
         ubo[IndigoLegacyEffectsData]
+
+        // format: off
+        @const val border1px = array[9, Float](
+          0.0f, 1.0f, 0.0f,
+          1.0f, 0.0f, 1.0f,
+          0.0f, 1.0f, 0.0f
+        )
+
+        // format: off
+        @const val border2px = array[9, Float](
+          1.0f, 1.0f, 1.0f,
+          1.0f, 0.0f, 1.0f,
+          1.0f, 1.0f, 1.0f
+        )
+
+        def calculateOuterBorder(baseAlpha: Float, alphas: array[9, Float], amount: Float): vec4 = {
+          val checkedAmount = clamp(amount, 0.0f, 2.0f)
+
+          val borderAmount: Int =
+            if abs(checkedAmount) >= 0.99f && abs(checkedAmount) < 1.01f then
+              1
+            else if abs(checkedAmount) >= 1.99f && abs(checkedAmount) < 2.01f then
+              2
+            else
+              0
+
+          if borderAmount == 0 || baseAlpha > 0.001f then
+            vec4(0.0f)
+          else
+            val kernel: array[9, Float] =
+              borderAmount match
+                case 2 => border2px
+                case _ => border1px // 0 has been ruled out
+
+            // format: off
+            val alphaSum: Float =
+              alphas(0) * kernel(0) +
+              alphas(1) * kernel(1) +
+              alphas(2) * kernel(2) +
+              alphas(3) * kernel(3) +
+              alphas(4) * kernel(4) +
+              alphas(5) * kernel(5) +
+              alphas(6) * kernel(6) +
+              alphas(7) * kernel(7) +
+              alphas(8) * kernel(8)
+
+            if alphaSum > 0.0f then env.BORDER_COLOR
+            else vec4(0.0f)
+        }
+
+        def calculateInnerBorder(baseAlpha: Float, alphas: array[9, Float], amount: Float): vec4 = {
+          val checkedAmount = clamp(amount, 0.0f, 2.0f)
+
+          val borderAmount: Int =
+            if abs(checkedAmount) >= 0.99f && abs(checkedAmount) < 1.01f then
+              1
+            else if abs(checkedAmount) >= 1.99f && abs(checkedAmount) < 2.01f then
+              2
+            else
+              0
+
+          if borderAmount == 0 || baseAlpha < 0.001f then
+            vec4(0.0f)
+          else
+            val kernel: array[9, Float] =
+              borderAmount match
+                case 2 => border2px
+                case _ => border1px // 0 has been ruled out
+
+            // format: off
+            val alphaSum: Float =
+              alphas(0) * kernel(0) +
+              alphas(1) * kernel(1) +
+              alphas(2) * kernel(2) +
+              alphas(3) * kernel(3) +
+              alphas(4) * kernel(4) +
+              alphas(5) * kernel(5) +
+              alphas(6) * kernel(6) +
+              alphas(7) * kernel(7) +
+              alphas(8) * kernel(8)
+
+            if alphaSum > 0.0f then env.BORDER_COLOR
+            else vec4(0.0f)
+        }
+
+        // format: off
+        @const val glowKernel: array[9, Float] = array[9, Float](
+          1.0f, 0.5f, 1.0f,
+          0.5f, 0.0f, 0.5f,
+          1.0f, 0.5f, 1.0f
+        )
+        // glowKernel values summed up.
+        @const val glowKernelWeight: Float = 6.0f
+
+        def calculateOuterGlow(baseAlpha: Float, alphas: array[9, Float], amount: Float): vec4 =
+          if baseAlpha > 0.01f then
+            vec4(0.0f)
+          else
+            // format: off
+            val alphaSum: Float =
+              alphas(0) * glowKernel(0) +
+              alphas(1) * glowKernel(1) +
+              alphas(2) * glowKernel(2) +
+              alphas(3) * glowKernel(3) +
+              alphas(4) * glowKernel(4) +
+              alphas(5) * glowKernel(5) +
+              alphas(6) * glowKernel(6) +
+              alphas(7) * glowKernel(7) +
+              alphas(8) * glowKernel(8)
+
+            if alphaSum > 0.0f then
+              val checkedAmount: Float = max(0.0f, amount)
+              val glowAmount: Float = (alphaSum / glowKernelWeight) * checkedAmount
+              vec4(env.GLOW_COLOR.xyz, env.GLOW_COLOR.w * glowAmount)
+            else vec4(0.0f)
+
+        def calculateInnerGlow(baseAlpha: Float, alphas: array[9, Float], amount: Float): vec4 =
+          if baseAlpha < 0.01f then
+            vec4(0.0f)
+          else
+            // format: off
+            val alphaSum: Float =
+              floor(alphas(0)) * glowKernel(0) +
+              floor(alphas(1)) * glowKernel(1) +
+              floor(alphas(2)) * glowKernel(2) +
+              floor(alphas(3)) * glowKernel(3) +
+              floor(alphas(4)) * glowKernel(4) +
+              floor(alphas(5)) * glowKernel(5) +
+              floor(alphas(6)) * glowKernel(6) +
+              floor(alphas(7)) * glowKernel(7) +
+              floor(alphas(8)) * glowKernel(8)
+
+            if alphaSum > 0.0f then
+              val checkedAmount = max(0.0f, amount)
+              val glowAmount = (alphaSum / glowKernelWeight) * checkedAmount
+              vec4(env.GLOW_COLOR.xyz, env.GLOW_COLOR.w * glowAmount)
+            else vec4(0.0f)
 
         def fragment: vec4 =
 
@@ -166,10 +314,51 @@ object LegacyEffectsShaders:
               case _ =>
                 calculateColorOverlay(baseColor, env.GRADIENT_FROM_COLOR)
 
-          calculateSaturation(overlay, env.ALPHA_SATURATION_OVERLAYTYPE_FILLTYPE.y)
+          // Identical to ImageEffects (end)
+          // --------------------------------
 
-      // Identical to ImageEffects (end)
-      // --------------------------------
+          val saturatedColor = calculateSaturation(overlay, env.ALPHA_SATURATION_OVERLAYTYPE_FILLTYPE.y)
+
+          val sampledRegionAlphas = array[9, Float](
+            texture2D(env.SRC_CHANNEL, v_offsetTL).w,
+            texture2D(env.SRC_CHANNEL, v_offsetTC).w,
+            texture2D(env.SRC_CHANNEL, v_offsetTR).w,
+            texture2D(env.SRC_CHANNEL, v_offsetML).w,
+            texture2D(env.SRC_CHANNEL, v_offsetMC).w,
+            texture2D(env.SRC_CHANNEL, v_offsetMR).w,
+            texture2D(env.SRC_CHANNEL, v_offsetBL).w,
+            texture2D(env.SRC_CHANNEL, v_offsetBC).w,
+            texture2D(env.SRC_CHANNEL, v_offsetBR).w
+          )
+
+          val sampledRegionAlphasInverse = array[9, Float](
+            (1.0f - sampledRegionAlphas(0)),
+            (1.0f - sampledRegionAlphas(1)),
+            (1.0f - sampledRegionAlphas(2)),
+            (1.0f - sampledRegionAlphas(3)),
+            (1.0f - sampledRegionAlphas(4)),
+            (1.0f - sampledRegionAlphas(5)),
+            (1.0f - sampledRegionAlphas(6)),
+            (1.0f - sampledRegionAlphas(7)),
+            (1.0f - sampledRegionAlphas(8))
+          )
+
+          val outerBorderAmount = env.EFFECT_AMOUNTS.x
+          val innerBorderAmount = env.EFFECT_AMOUNTS.y
+          val outerGlowAmount = env.EFFECT_AMOUNTS.z
+          val innerGlowAmount = env.EFFECT_AMOUNTS.w
+
+          val innerGlow = calculateInnerGlow(saturatedColor.w, sampledRegionAlphasInverse, innerGlowAmount)
+          val outerGlow = calculateOuterGlow(saturatedColor.w, sampledRegionAlphas, outerGlowAmount)
+          val innerBorder = calculateInnerBorder(saturatedColor.w, sampledRegionAlphasInverse, innerBorderAmount)
+          val outerBorder = calculateOuterBorder(saturatedColor.w, sampledRegionAlphas, outerBorderAmount)
+
+          val withInnerGlow = vec4(mix(saturatedColor.xyz, innerGlow.xyz, innerGlow.w), saturatedColor.w)
+          val withOuterGlow = mix(withInnerGlow, outerGlow, outerGlow.w)
+          val withInnerBorder = mix(withOuterGlow, innerBorder, innerBorder.w)
+          val withOuterBorder = mix(withInnerBorder, outerBorder, outerBorder.w)
+
+          withOuterBorder
       }
 
     val output = shader.toGLSL[Indigo]
