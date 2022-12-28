@@ -112,7 +112,7 @@ object StandardShaders {
     EntityShader.Source(
       id = ShaderId("[indigo_engine_shape_circle]"),
       vertex = library.NoOp.vertex.output.code,
-      fragment = ShaderLibrary.ShapeCircleFragment,
+      fragment = library.ShapeCircle.fragment.output.code,
       prepare = library.NoOp.prepare.output.code,
       light = library.NoOp.light.output.code,
       composite = library.NoOp.composite.output.code
@@ -122,7 +122,7 @@ object StandardShaders {
     EntityShader.Source(
       id = ShaderId("[indigo_engine_lit_shape_circle]"),
       vertex = library.NoOp.vertex.output.code,
-      fragment = ShaderLibrary.ShapeCircleFragment,
+      fragment = library.ShapeCircle.fragment.output.code,
       prepare = library.Lighting.prepare.output.code,
       light = library.Lighting.light.output.code,
       composite = library.Lighting.composite.output.code
