@@ -1,6 +1,5 @@
 package indigoextras.effectmaterials
 
-import indigo.shaders.ShaderLibrary
 import indigo.shared.assets.AssetName
 import indigo.shared.collections.Batch
 import indigo.shared.datatypes.RGBA

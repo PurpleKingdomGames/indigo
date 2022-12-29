@@ -26,8 +26,8 @@ object ShapeLine:
         def fragment: vec4 =
           val strokeWidthHalf = max(0.0f, env.STROKE_WIDTH / env.SIZE.x / 2.0f)
           val sdf             = sdfCalc(env.UV, env.START / env.SIZE, env.END / env.SIZE)
-          val strokeSdf       = sdf - strokeWidthHalf
-          val strokeAmount    = (1.0f - step(0.0f, strokeSdf)) * env.STROKE_COLOR.w
+          val annularSdf      = sdf - strokeWidthHalf
+          val strokeAmount    = (1.0f - step(0.0f, annularSdf)) * env.STROKE_COLOR.w
           vec4(env.STROKE_COLOR.xyz * strokeAmount, strokeAmount)
       }
 

@@ -3,26 +3,56 @@ package indigo.shared.shader.library
 import indigo.shared.shader.library.IndigoUV.*
 import ultraviolet.syntax.*
 
-object ShapeCircle:
+object ShapePolygon:
 
   case class IndigoShapeData(
       STROKE_WIDTH: Float,
       FILL_TYPE: Float,
+      COUNT: Float,
       STROKE_COLOR: vec4,
       GRADIENT_FROM_TO: vec4,
       GRADIENT_FROM_COLOR: vec4,
-      GRADIENT_TO_COLOR: vec4
+      GRADIENT_TO_COLOR: vec4,
+      VERTICES: array[16, vec2]
   )
 
   object fragment:
+    @SuppressWarnings(
+      Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null", "scalafix:DisableSyntax.while")
+    )
     inline def shader =
       Shader[IndigoFragmentEnv & IndigoShapeData] { env =>
         import ShapeShaderFunctions.*
 
         ubo[IndigoShapeData]
 
-        def sdfCalc(p: vec2, r: Float): Float =
-          length(p) - r
+        // Borrowed with thanks! https://www.iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm
+        def sdfCalc(p: vec2, count: Int, v: array[16, vec2]): Float =
+          var d      = dot(p - v(0), p - v(0))
+          var s      = 1.0f
+          var i: Int = 0
+          var j: Int = count - 1
+
+          while i < count do
+            j = i
+            i = i + 1
+            val e = v(j) - v(i)
+            val w = p - v(i)
+            val b = w - e * clamp(dot(w, e) / dot(e, e), 0.0f, 1.0f)
+            d = min(d, dot(b, b))
+            val c = bvec3(p.y >= v(i).y, p.y < v(j).y, e.x * w.y > e.y * w.x)
+            if (all(c) || all(not(c))) s = s * -1.0f
+
+          s * sqrt(d)
+
+        def toUvSpace(count: Int, v: array[16, vec2]): array[16, vec2] =
+          val polygon: array[16, vec2] = null
+
+          _for(0, _ < count, _ + 1) { i =>
+            polygon(i) = v(i) / env.SIZE
+          }
+
+          polygon
 
         def fragment: vec4 =
           val strokeWidthHalf = max(0.0f, env.STROKE_WIDTH / env.SIZE.x / 2.0f)
@@ -51,7 +81,11 @@ object ShapeCircle:
               case _ =>
                 env.GRADIENT_FROM_COLOR
 
-          val sdf        = sdfCalc(env.UV - 0.5f, 0.5f - strokeWidthHalf)
+          val iCount = env.COUNT.toInt
+
+          val polygon = toUvSpace(iCount, env.VERTICES)
+
+          val sdf        = sdfCalc(env.UV, iCount, polygon)
           val annularSdf = abs(sdf) - strokeWidthHalf
 
           val fillAmount   = (1.0f - step(0.0f, sdf)) * fill.a
@@ -61,25 +95,6 @@ object ShapeCircle:
           val strokeColor = vec4(env.STROKE_COLOR.rgb * strokeAmount, strokeAmount)
 
           mix(fillColor, strokeColor, strokeAmount)
-
       }
 
     val output = shader.toGLSL[Indigo]
-
-object ShapeShaderFunctions:
-
-  inline def calculateLinearGradient =
-    (pointA: vec2, pointB: vec2, pointP: vec2, fromColor: vec4, toColor: vec4) =>
-      // `h` is the distance along the gradient 0 at A, 1 at B
-      val h: Float =
-        min(1.0f, max(0.0f, dot(pointP - pointA, pointB - pointA) / dot(pointB - pointA, pointB - pointA)))
-
-      mix(fromColor, toColor, h)
-
-  inline def calculateRadialGradient =
-    (pointA: vec2, pointB: vec2, pointP: vec2, fromColor: vec4, toColor: vec4) =>
-      val radius      = length(pointB - pointA)
-      val distanceToP = length(pointP - pointA)
-      val sdf         = clamp(-((distanceToP - radius) / radius), 0.0f, 1.0f)
-
-      mix(toColor, fromColor, sdf)

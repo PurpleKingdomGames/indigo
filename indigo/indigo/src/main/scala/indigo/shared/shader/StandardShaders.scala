@@ -1,6 +1,5 @@
 package indigo.shared.shader
 
-import indigo.shaders.ShaderLibrary
 import indigo.shared.shader.library
 import indigo.shared.shader.library.Blit
 object StandardShaders {
@@ -92,7 +91,7 @@ object StandardShaders {
     EntityShader.Source(
       id = ShaderId("[indigo_engine_shape_box]"),
       vertex = library.NoOp.vertex.output.code,
-      fragment = ShaderLibrary.ShapeBoxFragment,
+      fragment = library.ShapeBox.fragment.output.code,
       prepare = library.NoOp.prepare.output.code,
       light = library.NoOp.light.output.code,
       composite = library.NoOp.composite.output.code
@@ -102,7 +101,7 @@ object StandardShaders {
     EntityShader.Source(
       id = ShaderId("[indigo_engine_lit_shape_box]"),
       vertex = library.NoOp.vertex.output.code,
-      fragment = ShaderLibrary.ShapeBoxFragment,
+      fragment = library.ShapeBox.fragment.output.code,
       prepare = library.Lighting.prepare.output.code,
       light = library.Lighting.light.output.code,
       composite = library.Lighting.composite.output.code
@@ -152,7 +151,7 @@ object StandardShaders {
     EntityShader.Source(
       id = ShaderId("[indigo_engine_shape_polygon]"),
       vertex = library.NoOp.vertex.output.code,
-      fragment = ShaderLibrary.ShapePolygonFragment,
+      fragment = library.ShapePolygon.fragment.output.code,
       prepare = library.NoOp.prepare.output.code,
       light = library.NoOp.light.output.code,
       composite = library.NoOp.composite.output.code
@@ -162,7 +161,7 @@ object StandardShaders {
     EntityShader.Source(
       id = ShaderId("[indigo_engine_lit_shape_polygon]"),
       vertex = library.NoOp.vertex.output.code,
-      fragment = ShaderLibrary.ShapePolygonFragment,
+      fragment = library.ShapePolygon.fragment.output.code,
       prepare = library.Lighting.prepare.output.code,
       light = library.Lighting.light.output.code,
       composite = library.Lighting.composite.output.code

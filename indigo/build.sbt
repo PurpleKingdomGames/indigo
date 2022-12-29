@@ -147,7 +147,6 @@ lazy val indigo =
       name := "indigo",
       commonSettings ++ publishSettings,
       Compile / sourceGenerators += shadersGen.taskValue,
-      Compile / sourceGenerators += shaderLibGen("ShaderLibrary", "indigo.shaders").taskValue,
       libraryDependencies ++= Dependencies.indigo.value
     )
 
@@ -226,9 +225,6 @@ addCommandAlias(
 
 def shadersGen =
   shadersCodeGen("shaders", files => ShaderGen.makeShader(files, _))
-
-def shaderLibGen(module: String, path: String) =
-  shadersCodeGen("shader-library", files => ShaderLibraryGen.makeShaderLibrary(module, path, files, _))
 
 def shadersCodeGen(dir: String, makeFiles: Set[File] => File => Seq[File]) = Def.task {
   val cachedFun = FileFunction.cached(streams.value.cacheDirectory / dir) { (files: Set[File]) =>
