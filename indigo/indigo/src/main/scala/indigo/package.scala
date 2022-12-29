@@ -172,8 +172,6 @@ type Shader = shared.shader.Shader
 type BlendShader = shared.shader.BlendShader
 val BlendShader: shared.shader.BlendShader.type = shared.shader.BlendShader
 
-val ShaderLibrary: indigo.shaders.ShaderLibrary.type = indigo.shaders.ShaderLibrary
-
 type EntityShader = shared.shader.EntityShader
 val EntityShader: shared.shader.EntityShader.type = shared.shader.EntityShader
 
