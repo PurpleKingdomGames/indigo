@@ -26,7 +26,7 @@ class TileAndStretchTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     // println(actual)
 
@@ -62,7 +62,7 @@ class TileAndStretchTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     // println(actual)
 
@@ -106,7 +106,7 @@ class TileAndStretchTests extends munit.FunSuite {
       }
 
     val actual =
-      fragment.toGLSL[WebGL2].code
+      fragment.toGLSL[WebGL2].toOutput.code
 
     // println(actual)
 

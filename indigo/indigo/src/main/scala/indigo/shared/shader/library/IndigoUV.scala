@@ -77,7 +77,7 @@ object IndigoUV:
       TEXTURE_SIZE: vec2, // Size of the texture in pixels
       ATLAS_SIZE: vec2,   // Size of the atlas this texture is on, in pixels
       INSTANCE_ID: Int,   // The current instance id
-      COLOR: vec4,   // The fragment color accumulated so far
+      COLOR: vec4,        // The fragment color accumulated so far
 
       // Light information
       LIGHT_INDEX: Int,
@@ -132,14 +132,16 @@ object IndigoUV:
   given ShaderPrinter[Indigo] = new ShaderPrinter {
     val webGL2Printer = summon[ShaderPrinter[WebGL2]]
 
+    val defaultConfig: ShaderPrinterConfig =
+      webGL2Printer.defaultConfig
+
     def isValid(
         inType: Option[String],
         outType: Option[String],
-        headers: List[ShaderAST],
         functions: List[ShaderAST],
         body: ShaderAST
     ): ShaderValid =
-      webGL2Printer.isValid(inType, outType, headers, functions, body)
+      webGL2Printer.isValid(inType, outType, functions, body)
 
     def transformer: PartialFunction[ShaderAST, ShaderAST] =
       val pf: PartialFunction[ShaderAST, ShaderAST] = {
@@ -147,7 +149,7 @@ object IndigoUV:
               "fragment",
               Nil,
               ShaderAST.Block(statements),
-              Some(ShaderAST.DataTypes.ident("vec4"))
+              ShaderAST.DataTypes.ident("vec4")
             ) =>
           val nonEmpty = statements
             .filterNot(_.isEmpty)
@@ -165,27 +167,27 @@ object IndigoUV:
                   ShaderAST.Assign(ShaderAST.DataTypes.ident("COLOR"), last.headOption.getOrElse(ShaderAST.Empty()))
                 )
             ),
-            None
+            ShaderAST.unknownType
           )
 
         case ShaderAST.Function(
               "fragment",
               Nil,
               body,
-              Some(ShaderAST.DataTypes.ident("vec4"))
+              ShaderAST.DataTypes.ident("vec4")
             ) =>
           ShaderAST.Function(
             "fragment",
             Nil,
             ShaderAST.Assign(ShaderAST.DataTypes.ident("COLOR"), body),
-            None
+            ShaderAST.unknownType
           )
 
         case ShaderAST.Function(
               "composite",
               Nil,
               ShaderAST.Block(statements),
-              Some(ShaderAST.DataTypes.ident("vec4"))
+              ShaderAST.DataTypes.ident("vec4")
             ) =>
           val nonEmpty = statements
             .filterNot(_.isEmpty)
@@ -203,28 +205,24 @@ object IndigoUV:
                   ShaderAST.Assign(ShaderAST.DataTypes.ident("COLOR"), last.headOption.getOrElse(ShaderAST.Empty()))
                 )
             ),
-            None
+            ShaderAST.unknownType
           )
 
         case ShaderAST.Function(
               "composite",
               Nil,
               body,
-              Some(ShaderAST.DataTypes.ident("vec4"))
+              ShaderAST.DataTypes.ident("vec4")
             ) =>
           ShaderAST.Function(
             "composite",
             Nil,
             ShaderAST.Assign(ShaderAST.DataTypes.ident("COLOR"), body),
-            None
+            ShaderAST.unknownType
           )
       }
 
       pf.orElse(webGL2Printer.transformer)
-
-    def ubos(ast: ShaderAST): List[UBODef]          = ShaderPrinter.extractUbos(ast)
-    def uniforms(ast: ShaderAST): List[ShaderField] = ShaderPrinter.extractUniforms(ast)
-    def varyings(ast: ShaderAST): List[ShaderField] = ShaderPrinter.extractVaryings(ast)
 
     def printer: PartialFunction[ShaderAST, List[String]] = webGL2Printer.printer
   }

@@ -10,16 +10,16 @@ class LightingTests extends munit.FunSuite {
   test("Lighting prepare") {
 
     val actual =
-      Lighting.prepare.output.code
+      Lighting.prepare.output.toOutput.code
 
     val expected: String =
       """
-      |const float SCREEN_GAMMA=2.200000047683716;
       |layout (std140) uniform IndigoMaterialLightingData {
       |  highp vec2 LIGHT_EMISSIVE;
       |  highp vec2 LIGHT_NORMAL;
       |  highp vec2 LIGHT_ROUGHNESS;
       |};
+      |const float SCREEN_GAMMA=2.200000047683716;
       |vec4 normalColor;
       |vec4 roughnessColor;
       |vec4 emissiveColor;
@@ -67,7 +67,7 @@ class LightingTests extends munit.FunSuite {
   test("Lighting light") {
 
     val actual =
-      Lighting.light.output.code
+      Lighting.light.output.toOutput.code
 
     val expected: String =
       """
@@ -158,7 +158,7 @@ class LightingTests extends munit.FunSuite {
   test("Lighting composite") {
 
     val actual =
-      Lighting.composite.output.code
+      Lighting.composite.output.toOutput.code
 
     val expected: String =
       """

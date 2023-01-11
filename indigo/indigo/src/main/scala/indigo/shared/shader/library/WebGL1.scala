@@ -10,10 +10,10 @@ object WebGL1 extends RawShaderCode:
   val id: ShaderId = ShaderId("indigo_default_WebGL1")
 
   val vertex: String =
-    WebGL1BaseShaders.vertex.output.code
+    WebGL1BaseShaders.vertex.output.toOutput.code
 
   val fragment: String =
-    WebGL1BaseShaders.fragment.output.code
+    WebGL1BaseShaders.fragment.output.toOutput.code
 
 object WebGL1BaseShaders:
 
@@ -77,9 +77,7 @@ object WebGL1BaseShaders:
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   object fragment:
     inline def shader =
-      Shader[WebGL1Env, Unit](
-        GLSLHeader.PrecisionMediumPFloat
-      ) { env =>
+      Shader[WebGL1Env, Unit] { env =>
         @uniform val u_texture: sampler2D.type = sampler2D
         @in val v_texcoord: vec2               = null
 
@@ -87,4 +85,4 @@ object WebGL1BaseShaders:
           env.gl_FragColor = texture2D(u_texture, v_texcoord)
       }
 
-    val output = shader.toGLSL[WebGL1]
+    val output = shader.toGLSL[WebGL1](PrinterHeader.PrecisionMediumPFloat)

@@ -91,12 +91,10 @@ object Lighting:
         var specularAcc: vec4,
         normalColor: vec4,
         roughnessColor: vec4
-    )
-
-    // Stub methods
-    def calculateLightColor(lightAmount: Float): vec4 = vec4(0.0f)
-
-    def calculateLightSpecular(lightAmount: Float,
+    ):
+      // Stub methods
+      def calculateLightColor(lightAmount: Float): vec4 = vec4(0.0f)
+      def calculateLightSpecular(lightAmount: Float,
                         lightDir: vec3,
                         normalTexture: vec4,
                         specularTexture: vec4): vec4 = vec4(0.0f)
@@ -118,8 +116,8 @@ object Lighting:
 
               case 1 =>
                 val lightDir = normalize(vec3(sin(env.LIGHT_ROTATION), cos(env.LIGHT_ROTATION), 0.0f))
-                lightResult = calculateLightColor(1.0f)
-                specularResult = calculateLightSpecular(1.0f, lightDir, env.normalColor, env.roughnessColor)
+                lightResult = env.calculateLightColor(1.0f)
+                specularResult = env.calculateLightSpecular(1.0f, lightDir, env.normalColor, env.roughnessColor)
 
               case _ =>
                 lightResult = vec4(0.0f)
@@ -171,8 +169,8 @@ object Lighting:
                 if distanceToLight > env.LIGHT_NEAR && (env.LIGHT_FAR_CUT_OFF == 0 || distanceToLight < env.LIGHT_FAR) then {
                   // Point light
                   if env.LIGHT_TYPE == 2 then
-                    lightResult = calculateLightColor(lightAmount)
-                    specularResult = calculateLightSpecular(lightAmount, lightDir2, env.normalColor, env.roughnessColor)
+                    lightResult = env.calculateLightColor(lightAmount)
+                    specularResult = env.calculateLightSpecular(lightAmount, lightDir2, env.normalColor, env.roughnessColor)
 
                   // Spot light
                   if env.LIGHT_TYPE == 2 then
@@ -187,12 +185,12 @@ object Lighting:
                     val angleToPixel = atan(pixelRelativeToLight.y, pixelRelativeToLight.x) + env.PI
 
                     if anglePlus < angleMinus && (angleToPixel < anglePlus || angleToPixel > angleMinus) then
-                      lightResult = calculateLightColor(lightAmount)
-                      specularResult = calculateLightSpecular(lightAmount, lightDir2, env.normalColor, env.roughnessColor)
+                      lightResult = env.calculateLightColor(lightAmount)
+                      specularResult = env.calculateLightSpecular(lightAmount, lightDir2, env.normalColor, env.roughnessColor)
 
                     if anglePlus > angleMinus && (angleToPixel < anglePlus && angleToPixel > angleMinus) then
-                      lightResult = calculateLightColor(lightAmount)
-                      specularResult = calculateLightSpecular(lightAmount, lightDir2, env.normalColor, env.roughnessColor)
+                      lightResult = env.calculateLightColor(lightAmount)
+                      specularResult = env.calculateLightSpecular(lightAmount, lightDir2, env.normalColor, env.roughnessColor)
                 }
 
             env.specularAcc = env.specularAcc + specularResult
