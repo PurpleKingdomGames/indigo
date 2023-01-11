@@ -7,7 +7,7 @@ class LegacyEffectsShadersTests extends munit.FunSuite {
   test("Legacy effects vertex shader") {
 
     val actual =
-      LegacyEffectsShaders.vertex.output.code
+      LegacyEffectsShaders.vertex.output.toOutput.code
 
     val expected: String =
       """
@@ -26,7 +26,7 @@ class LegacyEffectsShadersTests extends munit.FunSuite {
       |  return vec2[9](UV+(onePixel*gridOffsets[0]),UV+(onePixel*gridOffsets[1]),UV+(onePixel*gridOffsets[2]),UV+(onePixel*gridOffsets[3]),UV+(onePixel*gridOffsets[4]),UV+(onePixel*gridOffsets[5]),UV+(onePixel*gridOffsets[6]),UV+(onePixel*gridOffsets[7]),UV+(onePixel*gridOffsets[8]));
       |}
       |void vertex(){
-      |  vec2[9] offsets=generateTexCoords3x3();
+      |  vec2 offsets[9]=generateTexCoords3x3();
       |  v_offsetTL=(offsets[0]*FRAME_SIZE)+CHANNEL_0_ATLAS_OFFSET;
       |  v_offsetTC=(offsets[1]*FRAME_SIZE)+CHANNEL_0_ATLAS_OFFSET;
       |  v_offsetTR=(offsets[2]*FRAME_SIZE)+CHANNEL_0_ATLAS_OFFSET;

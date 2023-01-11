@@ -124,11 +124,11 @@ object LegacyEffects:
   val entityShader: EntityShader.Source =
     EntityShader.Source(
       id = ShaderId("[indigoextras_engine_legacy_effects]"),
-      vertex = LegacyEffectsShaders.vertex.output.code,
-      fragment = LegacyEffectsShaders.fragment.output.code,
-      prepare = NoOp.prepare.output.code,
-      light = NoOp.light.output.code,
-      composite = NoOp.composite.output.code
+      vertex = LegacyEffectsShaders.vertex.output.toOutput.code,
+      fragment = LegacyEffectsShaders.fragment.output.toOutput.code,
+      prepare = NoOp.prepare.output.toOutput.code,
+      light = NoOp.light.output.toOutput.code,
+      composite = NoOp.composite.output.toOutput.code
     )
 
   def apply(diffuse: AssetName): LegacyEffects =

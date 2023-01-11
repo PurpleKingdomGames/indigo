@@ -25,18 +25,18 @@ object Refraction:
   val entityShader: EntityShader.Source =
     EntityShader.Source(
       id = ShaderId("[indigoextras_engine_normal_minus_blue]"),
-      vertex = NoOp.vertex.output.code,
-      fragment = RefractionShaders.normalMinusBlue.output.code,
-      prepare = NoOp.prepare.output.code,
-      light = NoOp.light.output.code,
-      composite = NoOp.composite.output.code
+      vertex = NoOp.vertex.output.toOutput.code,
+      fragment = RefractionShaders.normalMinusBlue.output.toOutput.code,
+      prepare = NoOp.prepare.output.toOutput.code,
+      light = NoOp.light.output.toOutput.code,
+      composite = NoOp.composite.output.toOutput.code
     )
 
   val blendShader: BlendShader.Source =
     BlendShader.Source(
       id = ShaderId("[indigoextras_engine_blend_refraction]"),
-      vertex = NoOp.vertex.output.code,
-      fragment = RefractionShaders.refractionFragment.output.code
+      vertex = NoOp.vertex.output.toOutput.code,
+      fragment = RefractionShaders.refractionFragment.output.toOutput.code
     )
 
   val shaders: Set[Shader] =

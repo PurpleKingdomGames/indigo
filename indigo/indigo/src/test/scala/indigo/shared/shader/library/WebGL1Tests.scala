@@ -7,7 +7,7 @@ class WebGL1Tests extends munit.FunSuite {
   test("Base WebGL 1.0 vertex shader") {
 
     val actual =
-      WebGL1BaseShaders.vertex.output.code
+      WebGL1BaseShaders.vertex.output.toOutput.code
 
     val expected: String =
       """
@@ -57,7 +57,7 @@ class WebGL1Tests extends munit.FunSuite {
   test("Base WebGL 1.0 fragment shader") {
 
     val actual =
-      WebGL1BaseShaders.fragment.output.code
+      WebGL1BaseShaders.fragment.output.toOutput.code
 
     val expected: String =
       """
