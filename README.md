@@ -15,7 +15,7 @@ Documentation can be found on [indigoengine.io](https://indigoengine.io).
 
 ### Using Nix
 
-The root of the project contains a very very simple `shell.nix` file that, if you have nix installed, will give you all the tools you need to build Indigo by running `nix-shell`.
+The root of the project contains a very very simple `flake.nix` file that, if you have nix installed and flakes enabled, will give you all the tools you need to build Indigo by running `nix develop` in the root directory.
 
 ### Build requirements
 
@@ -23,7 +23,7 @@ You will need:
 
 - Mill
 - SBT
-- JDK (Update: 1.8 works, 11 is used in Indigo's development)
+- JDK (Update: 8 works, 17 is used in Indigo's development)
 - [glslang validator](https://github.com/KhronosGroup/glslang) - can be installed with your favorite package manager.
 
 ### Running the build

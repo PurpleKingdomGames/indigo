@@ -42,3 +42,7 @@ metals.sbt
 
 indigo/site/public/
 website/build/
+
+# Direnv
+.direnv
+.envrc
