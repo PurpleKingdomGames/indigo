@@ -4,24 +4,33 @@ import ultraviolet.syntax.*
 
 class WebGL2BaseTests extends munit.FunSuite {
 
-  test("Base WebGL 1.0 vertex shader") {
+  test("Base WebGL 2.0 vertex shader") {
 
-    inline def modifyVertex: Shader[WebGL2Base.EnvIn, vec4] =
-      Shader[WebGL2Base.EnvIn, vec4] { env =>
-        env.VERTEX + vec4(1.0f)
-      }
+    inline def modifyVertex: vec4 => Shader[Unit, vec4] =
+      (input: vec4) =>
+        Shader[Unit, vec4] { _ =>
+          input + vec4(1.0f)
+        }
 
     val actual =
-      WebGL2Base.vertex(modifyVertex)
+      WebGL2Base.vertex(modifyVertex).toOutput.code
 
-    val expected: String =
+    val expected1: String =
       """
-      |void vertex(){
-      |  VERTEX=VERTEX+vec4(1.0);
+      |vec4 def0(in vec4 input){
+      |  return input+vec4(1.0);
       |}
       |""".stripMargin.trim
 
-    assertEquals(actual, expected)
+    val expected2: String =
+      """
+      |void vertex(){
+      |  VERTEX=def0(VERTEX);
+      |}
+      |""".stripMargin.trim
+
+    assert(clue(actual).contains(clue(expected1)))
+    assert(clue(actual).contains(clue(expected2)))
   }
 
 }
