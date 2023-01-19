@@ -4,17 +4,25 @@ import indigo.shared.shader.RawShaderCode
 import indigo.shared.shader.ShaderId
 import ultraviolet.syntax.*
 
-object WebGL2Base extends RawShaderCode:
+// inline def v: Shader[EnvIn, vec4] =
+//   Shader { env =>
+//     env.VERTEX + 1.0f
+//   }
+
+object WebGL2Base /*extends RawShaderCode*/:
+
+  case class EnvIn(VERTEX: vec4)
 
   val id: ShaderId = ShaderId("indigo_webgl2_base")
 
-  val vertex: String =
-    WebGL2BaseShaders.vertex.output.toOutput.code
+  inline def vertex(inline modifyVertex: Shader[EnvIn, vec4]): String =
+    vertexShader(modifyVertex).toGLSLDefaultHeaders[WebGL2].toOutput.code
+  // WebGL2BaseShaders.vertex.output.toOutput.code
 
-  val fragment: String =
-    WebGL2BaseShaders.fragment.output.toOutput.code
+  // val fragment: String =
+  //   WebGL2BaseShaders.fragment.output.toOutput.code
 
-object WebGL2BaseShaders:
+// object WebGL2BaseShaders:
 
   case class IndigoProjectionData(u_projection: mat4)
   case class IndigoFrameData(
@@ -43,192 +51,194 @@ object WebGL2BaseShaders:
   )
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  object vertex:
-    inline def shader =
-      Shader[GLEnv & VertEnv & IndigoFrameData & IndigoProjectionData & IndigoCloneReferenceData] { env =>
-        @layout(0) @in val a_verticesAndCoords: vec4    = null
-        @layout(1) @in val a_translateScale: vec4       = null
-        @layout(2) @in val a_refFlip: vec4              = null
-        @layout(3) @in val a_sizeAndFrameScale: vec4    = null
-        @layout(4) @in val a_channelOffsets01: vec4     = null
-        @layout(5) @in val a_channelOffsets23: vec4     = null
-        @layout(6) @in val a_textureSizeAtlasSize: vec4 = null
-        @layout(7) @in val a_rotation: Float            = 0.0f
+  // object vertex:
+  inline def vertexShader(inline f: Shader[EnvIn, vec4]) =
+    Shader[GLEnv & VertEnv & IndigoFrameData & IndigoProjectionData & IndigoCloneReferenceData] { env =>
+      @layout(0) @in val a_verticesAndCoords: vec4    = null
+      @layout(1) @in val a_translateScale: vec4       = null
+      @layout(2) @in val a_refFlip: vec4              = null
+      @layout(3) @in val a_sizeAndFrameScale: vec4    = null
+      @layout(4) @in val a_channelOffsets01: vec4     = null
+      @layout(5) @in val a_channelOffsets23: vec4     = null
+      @layout(6) @in val a_textureSizeAtlasSize: vec4 = null
+      @layout(7) @in val a_rotation: Float            = 0.0f
 
-        ubo[IndigoProjectionData]
-        ubo[IndigoFrameData]
-        ubo[IndigoCloneReferenceData]
+      ubo[IndigoProjectionData]
+      ubo[IndigoFrameData]
+      ubo[IndigoCloneReferenceData]
 
-        @uniform val u_baseTransform: mat4 = null
-        @uniform val u_mode: Int           = 0
+      @uniform val u_baseTransform: mat4 = null
+      @uniform val u_mode: Int           = 0
 
-        @out var v_channel_coords_01: vec4    = null // Scaled to position on texture atlas
-        @out var v_channel_coords_23: vec4    = null // Scaled to position on texture atlas
-        @out var v_uv_size: vec4              = null // Unscaled texture coordinates + Width / height of the objects
-        @out var v_screenCoordsRotation: vec3 = null // Where is this pixel on the screen? How much is it rotated by
-        @out var v_textureSize: vec2          = null // Actual size of the texture in pixels.
-        @out var v_atlasSizeAsUV: vec4 =
-          null // Actual size of the atlas in pixels, and it's relative size in UV coords.
-        @out var v_channel_pos_01: vec4  = null // Position on the atlas of channels 0 and 1.
-        @out var v_channel_pos_23: vec4  = null // Position on the atlas of channels 2 and 3.
-        @flat @out var v_instanceId: Int = 0    // The current instance id
-        // flat out int v_instanceId // The current instance id
+      @out var v_channel_coords_01: vec4    = null // Scaled to position on texture atlas
+      @out var v_channel_coords_23: vec4    = null // Scaled to position on texture atlas
+      @out var v_uv_size: vec4              = null // Unscaled texture coordinates + Width / height of the objects
+      @out var v_screenCoordsRotation: vec3 = null // Where is this pixel on the screen? How much is it rotated by
+      @out var v_textureSize: vec2          = null // Actual size of the texture in pixels.
+      @out var v_atlasSizeAsUV: vec4 =
+        null // Actual size of the atlas in pixels, and it's relative size in UV coords.
+      @out var v_channel_pos_01: vec4  = null // Position on the atlas of channels 0 and 1.
+      @out var v_channel_pos_23: vec4  = null // Position on the atlas of channels 2 and 3.
+      @flat @out var v_instanceId: Int = 0    // The current instance id
+      // flat out int v_instanceId // The current instance id
 
-        // Constants
-        @const val PI: Float    = 3.141592653589793f
-        @const val PI_2: Float  = PI * 0.5f
-        @const val PI_4: Float  = PI * 0.25f
-        @const val TAU: Float   = 2.0f * PI
-        @const val TAU_2: Float = PI
-        @const val TAU_4: Float = PI_2
-        @const val TAU_8: Float = PI_4
+      // Constants
+      @const val PI: Float    = 3.141592653589793f
+      @const val PI_2: Float  = PI * 0.5f
+      @const val PI_4: Float  = PI * 0.25f
+      @const val TAU: Float   = 2.0f * PI
+      @const val TAU_2: Float = PI
+      @const val TAU_4: Float = PI_2
+      @const val TAU_8: Float = PI_4
 
-        // Variables
-        var ATLAS_SIZE: vec2               = null
-        var VERTEX: vec4                   = null
-        var TEXTURE_SIZE: vec2             = null
-        var UV: vec2                       = null
-        var SIZE: vec2                     = null
-        var FRAME_SIZE: vec2               = null
-        var CHANNEL_0_ATLAS_OFFSET: vec2   = null
-        var CHANNEL_1_ATLAS_OFFSET: vec2   = null
-        var CHANNEL_2_ATLAS_OFFSET: vec2   = null
-        var CHANNEL_3_ATLAS_OFFSET: vec2   = null
-        var CHANNEL_0_TEXTURE_COORDS: vec2 = null
-        var CHANNEL_1_TEXTURE_COORDS: vec2 = null
-        var CHANNEL_2_TEXTURE_COORDS: vec2 = null
-        var CHANNEL_3_TEXTURE_COORDS: vec2 = null
-        var CHANNEL_0_POSITION: vec2       = null
-        var CHANNEL_1_POSITION: vec2       = null
-        var CHANNEL_2_POSITION: vec2       = null
-        var CHANNEL_3_POSITION: vec2       = null
-        var CHANNEL_0_SIZE: vec2           = null
-        var POSITION: vec2                 = null
-        var SCALE: vec2                    = null
-        var REF: vec2                      = null
-        var FLIP: vec2                     = null
-        var ROTATION: Float                = 0.0f
-        var INSTANCE_ID: Int               = 0
+      // Variables
+      var ATLAS_SIZE: vec2               = null
+      var VERTEX: vec4                   = null
+      var TEXTURE_SIZE: vec2             = null
+      var UV: vec2                       = null
+      var SIZE: vec2                     = null
+      var FRAME_SIZE: vec2               = null
+      var CHANNEL_0_ATLAS_OFFSET: vec2   = null
+      var CHANNEL_1_ATLAS_OFFSET: vec2   = null
+      var CHANNEL_2_ATLAS_OFFSET: vec2   = null
+      var CHANNEL_3_ATLAS_OFFSET: vec2   = null
+      var CHANNEL_0_TEXTURE_COORDS: vec2 = null
+      var CHANNEL_1_TEXTURE_COORDS: vec2 = null
+      var CHANNEL_2_TEXTURE_COORDS: vec2 = null
+      var CHANNEL_3_TEXTURE_COORDS: vec2 = null
+      var CHANNEL_0_POSITION: vec2       = null
+      var CHANNEL_1_POSITION: vec2       = null
+      var CHANNEL_2_POSITION: vec2       = null
+      var CHANNEL_3_POSITION: vec2       = null
+      var CHANNEL_0_SIZE: vec2           = null
+      var POSITION: vec2                 = null
+      var SCALE: vec2                    = null
+      var REF: vec2                      = null
+      var FLIP: vec2                     = null
+      var ROTATION: Float                = 0.0f
+      var INSTANCE_ID: Int               = 0
 
-        // format: off
-        def translate2d(t: vec2): mat4 =
-          mat4(1.0f, 0.0f, 0.0f, 0.0f,
-               0.0f, 1.0f, 0.0f, 0.0f,
-               0.0f, 0.0f, 1.0f, 0.0f,
-               t.x,  t.y,  0.0f, 1.0f
-          )
+      // format: off
+      def translate2d(t: vec2): mat4 =
+        mat4(1.0f, 0.0f, 0.0f, 0.0f,
+             0.0f, 1.0f, 0.0f, 0.0f,
+             0.0f, 0.0f, 1.0f, 0.0f,
+             t.x,  t.y,  0.0f, 1.0f
+        )
 
-        // format: off
-        def scale2d(s: vec2): mat4 =
-          mat4(s.x,  0.0f, 0.0f, 0.0f,
-               0.0f, s.y,  0.0f, 0.0f,
-               0.0f, 0.0f, 1.0f, 0.0f,
-               0.0f, 0.0f, 0.0f, 1.0f
-          )
+      // format: off
+      def scale2d(s: vec2): mat4 =
+        mat4(s.x,  0.0f, 0.0f, 0.0f,
+             0.0f, s.y,  0.0f, 0.0f,
+             0.0f, 0.0f, 1.0f, 0.0f,
+             0.0f, 0.0f, 0.0f, 1.0f
+        )
 
-        // format: off
-        def rotate2d(angle: Float): mat4 =
-          mat4(cos(angle), -sin(angle), 0.0f, 0.0f,
-               sin(angle), cos(angle),  0.0f, 0.0f,
-               0.0f,       0.0f,        1.0f, 0.0f,
-               0.0f,       0.0f,        0.0f, 1.0f
-          )
-        
-        def scaleCoordsWithOffset(texcoord: vec2, offset: vec2): vec2 =
-          val transform: mat4 = translate2d(offset) * scale2d(FRAME_SIZE)
-          (transform * vec4(texcoord, 1.0f, 1.0f)).xy
-        
-        //#vertex_start
-        def vertex(): Unit = ()
-        //#vertex_end
+      // format: off
+      def rotate2d(angle: Float): mat4 =
+        mat4(cos(angle), -sin(angle), 0.0f, 0.0f,
+             sin(angle), cos(angle),  0.0f, 0.0f,
+             0.0f,       0.0f,        1.0f, 0.0f,
+             0.0f,       0.0f,        0.0f, 1.0f
+        )
+      
+      def scaleCoordsWithOffset(texcoord: vec2, offset: vec2): vec2 =
+        val transform: mat4 = translate2d(offset) * scale2d(FRAME_SIZE)
+        (transform * vec4(texcoord, 1.0f, 1.0f)).xy
+      
+      //#vertex_start
+      def vertex(): Unit =
+        VERTEX = f.run(EnvIn(VERTEX))
+        ()
+      //#vertex_end
 
-        def main: Unit =
-          INSTANCE_ID = env.gl_InstanceID
+      def main: Unit =
+        INSTANCE_ID = env.gl_InstanceID
 
-          VERTEX = vec4(a_verticesAndCoords.xy, 1.0f, 1.0f)
-          UV = a_verticesAndCoords.zw
-          ROTATION = a_rotation
-          POSITION = a_translateScale.xy
-          SCALE = a_translateScale.zw
+        VERTEX = vec4(a_verticesAndCoords.xy, 1.0f, 1.0f)
+        UV = a_verticesAndCoords.zw
+        ROTATION = a_rotation
+        POSITION = a_translateScale.xy
+        SCALE = a_translateScale.zw
 
-          // 0 = normal, 1 = clone batch, 2 = clone tiles
-          u_mode match
-            case 0 =>
-              ATLAS_SIZE = a_textureSizeAtlasSize.zw
-              TEXTURE_SIZE = a_textureSizeAtlasSize.xy
-              SIZE = a_sizeAndFrameScale.xy
-              FRAME_SIZE = a_sizeAndFrameScale.zw
-              REF = a_refFlip.xy
-              FLIP = a_refFlip.zw
-              CHANNEL_0_ATLAS_OFFSET = a_channelOffsets01.xy
-              CHANNEL_1_ATLAS_OFFSET = a_channelOffsets01.zw
-              CHANNEL_2_ATLAS_OFFSET = a_channelOffsets23.xy
-              CHANNEL_3_ATLAS_OFFSET = a_channelOffsets23.zw
+        // 0 = normal, 1 = clone batch, 2 = clone tiles
+        u_mode match
+          case 0 =>
+            ATLAS_SIZE = a_textureSizeAtlasSize.zw
+            TEXTURE_SIZE = a_textureSizeAtlasSize.xy
+            SIZE = a_sizeAndFrameScale.xy
+            FRAME_SIZE = a_sizeAndFrameScale.zw
+            REF = a_refFlip.xy
+            FLIP = a_refFlip.zw
+            CHANNEL_0_ATLAS_OFFSET = a_channelOffsets01.xy
+            CHANNEL_1_ATLAS_OFFSET = a_channelOffsets01.zw
+            CHANNEL_2_ATLAS_OFFSET = a_channelOffsets23.xy
+            CHANNEL_3_ATLAS_OFFSET = a_channelOffsets23.zw
 
-            case 1 =>
-              ATLAS_SIZE = env.u_ref_textureSizeAtlasSize.zw
-              TEXTURE_SIZE = env.u_ref_textureSizeAtlasSize.xy
-              SIZE = env.u_ref_sizeAndFrameScale.xy
-              FRAME_SIZE = env.u_ref_sizeAndFrameScale.zw
-              REF = env.u_ref_refFlip.xy
-              FLIP = env.u_ref_refFlip.zw
-              CHANNEL_0_ATLAS_OFFSET = env.u_ref_channelOffsets01.xy
-              CHANNEL_1_ATLAS_OFFSET = env.u_ref_channelOffsets01.zw
-              CHANNEL_2_ATLAS_OFFSET = env.u_ref_channelOffsets23.xy
-              CHANNEL_3_ATLAS_OFFSET = env.u_ref_channelOffsets23.zw
+          case 1 =>
+            ATLAS_SIZE = env.u_ref_textureSizeAtlasSize.zw
+            TEXTURE_SIZE = env.u_ref_textureSizeAtlasSize.xy
+            SIZE = env.u_ref_sizeAndFrameScale.xy
+            FRAME_SIZE = env.u_ref_sizeAndFrameScale.zw
+            REF = env.u_ref_refFlip.xy
+            FLIP = env.u_ref_refFlip.zw
+            CHANNEL_0_ATLAS_OFFSET = env.u_ref_channelOffsets01.xy
+            CHANNEL_1_ATLAS_OFFSET = env.u_ref_channelOffsets01.zw
+            CHANNEL_2_ATLAS_OFFSET = env.u_ref_channelOffsets23.xy
+            CHANNEL_3_ATLAS_OFFSET = env.u_ref_channelOffsets23.zw
 
-            case 2 =>
-              ATLAS_SIZE = env.u_ref_textureSizeAtlasSize.zw
-              TEXTURE_SIZE = env.u_ref_textureSizeAtlasSize.xy
-              SIZE = a_sizeAndFrameScale.xy
-              FRAME_SIZE = a_sizeAndFrameScale.zw
-              REF = env.u_ref_refFlip.xy
-              FLIP = env.u_ref_refFlip.zw
-              CHANNEL_0_ATLAS_OFFSET = a_channelOffsets01.xy
-              CHANNEL_1_ATLAS_OFFSET = a_channelOffsets01.zw
-              CHANNEL_2_ATLAS_OFFSET = a_channelOffsets23.xy
-              CHANNEL_3_ATLAS_OFFSET = a_channelOffsets23.zw
+          case 2 =>
+            ATLAS_SIZE = env.u_ref_textureSizeAtlasSize.zw
+            TEXTURE_SIZE = env.u_ref_textureSizeAtlasSize.xy
+            SIZE = a_sizeAndFrameScale.xy
+            FRAME_SIZE = a_sizeAndFrameScale.zw
+            REF = env.u_ref_refFlip.xy
+            FLIP = env.u_ref_refFlip.zw
+            CHANNEL_0_ATLAS_OFFSET = a_channelOffsets01.xy
+            CHANNEL_1_ATLAS_OFFSET = a_channelOffsets01.zw
+            CHANNEL_2_ATLAS_OFFSET = a_channelOffsets23.xy
+            CHANNEL_3_ATLAS_OFFSET = a_channelOffsets23.zw
 
-            case _ =>
-              ()
-            
+          case _ =>
+            ()
+          
 
-          vertex()
+        vertex()
 
-          CHANNEL_0_TEXTURE_COORDS = scaleCoordsWithOffset(UV, CHANNEL_0_ATLAS_OFFSET)
-          CHANNEL_1_TEXTURE_COORDS = scaleCoordsWithOffset(UV, CHANNEL_1_ATLAS_OFFSET)
-          CHANNEL_2_TEXTURE_COORDS = scaleCoordsWithOffset(UV, CHANNEL_2_ATLAS_OFFSET)
-          CHANNEL_3_TEXTURE_COORDS = scaleCoordsWithOffset(UV, CHANNEL_3_ATLAS_OFFSET)
-          CHANNEL_0_POSITION = scaleCoordsWithOffset(vec2(0.0f), CHANNEL_0_ATLAS_OFFSET)
-          CHANNEL_1_POSITION = scaleCoordsWithOffset(vec2(0.0f), CHANNEL_1_ATLAS_OFFSET)
-          CHANNEL_2_POSITION = scaleCoordsWithOffset(vec2(0.0f), CHANNEL_2_ATLAS_OFFSET)
-          CHANNEL_3_POSITION = scaleCoordsWithOffset(vec2(0.0f), CHANNEL_3_ATLAS_OFFSET)
-          CHANNEL_0_SIZE = TEXTURE_SIZE / ATLAS_SIZE
+        CHANNEL_0_TEXTURE_COORDS = scaleCoordsWithOffset(UV, CHANNEL_0_ATLAS_OFFSET)
+        CHANNEL_1_TEXTURE_COORDS = scaleCoordsWithOffset(UV, CHANNEL_1_ATLAS_OFFSET)
+        CHANNEL_2_TEXTURE_COORDS = scaleCoordsWithOffset(UV, CHANNEL_2_ATLAS_OFFSET)
+        CHANNEL_3_TEXTURE_COORDS = scaleCoordsWithOffset(UV, CHANNEL_3_ATLAS_OFFSET)
+        CHANNEL_0_POSITION = scaleCoordsWithOffset(vec2(0.0f), CHANNEL_0_ATLAS_OFFSET)
+        CHANNEL_1_POSITION = scaleCoordsWithOffset(vec2(0.0f), CHANNEL_1_ATLAS_OFFSET)
+        CHANNEL_2_POSITION = scaleCoordsWithOffset(vec2(0.0f), CHANNEL_2_ATLAS_OFFSET)
+        CHANNEL_3_POSITION = scaleCoordsWithOffset(vec2(0.0f), CHANNEL_3_ATLAS_OFFSET)
+        CHANNEL_0_SIZE = TEXTURE_SIZE / ATLAS_SIZE
 
-          val transform: mat4 = 
-            translate2d(POSITION) *
-            rotate2d(-1.0f * ROTATION) *
-            scale2d(SIZE * SCALE) *
-            translate2d(-(REF / SIZE) + 0.5f) *
-            scale2d(vec2(1.0f, -1.0f) * FLIP)
+        val transform: mat4 = 
+          translate2d(POSITION) *
+          rotate2d(-1.0f * ROTATION) *
+          scale2d(SIZE * SCALE) *
+          translate2d(-(REF / SIZE) + 0.5f) *
+          scale2d(vec2(1.0f, -1.0f) * FLIP)
 
-          env.gl_Position = env.u_projection * u_baseTransform * transform * VERTEX
+        env.gl_Position = env.u_projection * u_baseTransform * transform * VERTEX
 
-          val screenCoords: vec2 = env.gl_Position.xy * 0.5f + 0.5f
-          v_screenCoordsRotation = vec3(vec2(screenCoords.x, 1.0f - screenCoords.y) * env.VIEWPORT_SIZE, ROTATION)
+        val screenCoords: vec2 = env.gl_Position.xy * 0.5f + 0.5f
+        v_screenCoordsRotation = vec3(vec2(screenCoords.x, 1.0f - screenCoords.y) * env.VIEWPORT_SIZE, ROTATION)
 
-          v_uv_size = vec4(UV, SIZE)
-          v_channel_coords_01 = vec4(CHANNEL_0_TEXTURE_COORDS, CHANNEL_1_TEXTURE_COORDS)
-          v_channel_coords_23 = vec4(CHANNEL_2_TEXTURE_COORDS, CHANNEL_3_TEXTURE_COORDS)
-          v_textureSize = TEXTURE_SIZE
-          v_atlasSizeAsUV = vec4(ATLAS_SIZE, CHANNEL_0_SIZE)
-          v_channel_pos_01 = vec4(CHANNEL_0_POSITION, CHANNEL_1_POSITION)
-          v_channel_pos_23 = vec4(CHANNEL_2_POSITION, CHANNEL_3_POSITION)
-          v_instanceId = INSTANCE_ID
-        
-      }
+        v_uv_size = vec4(UV, SIZE)
+        v_channel_coords_01 = vec4(CHANNEL_0_TEXTURE_COORDS, CHANNEL_1_TEXTURE_COORDS)
+        v_channel_coords_23 = vec4(CHANNEL_2_TEXTURE_COORDS, CHANNEL_3_TEXTURE_COORDS)
+        v_textureSize = TEXTURE_SIZE
+        v_atlasSizeAsUV = vec4(ATLAS_SIZE, CHANNEL_0_SIZE)
+        v_channel_pos_01 = vec4(CHANNEL_0_POSITION, CHANNEL_1_POSITION)
+        v_channel_pos_23 = vec4(CHANNEL_2_POSITION, CHANNEL_3_POSITION)
+        v_instanceId = INSTANCE_ID
+      
+    }
 
-    val output = shader.toGLSLDefaultHeaders[WebGL2]
+    // val output = shader.toGLSLDefaultHeaders[WebGL2]
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
   object fragment:
