@@ -2,9 +2,9 @@ package indigo.shared.shader.library
 
 import ultraviolet.syntax.*
 
-class WebGL2BaseTests extends munit.FunSuite {
+class WebGL2MergeTests extends munit.FunSuite {
 
-  test("Base WebGL 2.0 vertex shader") {
+  test("Merge WebGL 2.0 vertex shader") {
 
     inline def modifyVertex: vec4 => Shader[Unit, vec4] =
       (input: vec4) =>
@@ -13,7 +13,7 @@ class WebGL2BaseTests extends munit.FunSuite {
         }
 
     val actual =
-      WebGL2Base.vertex(modifyVertex).toOutput.code
+      WebGL2Merge.vertex(modifyVertex).toOutput.code
 
     val expected1: String =
       """
@@ -33,7 +33,7 @@ class WebGL2BaseTests extends munit.FunSuite {
     assert(clue(actual).contains(clue(expected2)))
   }
 
-  test("Base WebGL 2.0 fragment shader") {
+  test("Merge WebGL 2.0 fragment shader") {
 
     inline def modifyColor: vec4 => Shader[Unit, vec4] =
       (input: vec4) =>
@@ -42,7 +42,7 @@ class WebGL2BaseTests extends munit.FunSuite {
         }
 
     val actual =
-      WebGL2Base.fragment(modifyColor).toOutput.code
+      WebGL2Merge.fragment(modifyColor).toOutput.code
 
     val expected1: String =
       """

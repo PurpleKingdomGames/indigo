@@ -34,7 +34,7 @@ object WebGL2Base:
   )
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  inline def vertex(inline modifyVertex: vec4 => Shader[Unit, vec4]) =
+  inline def vertex(inline modifyVertex: vec4 => Shader[Unit, vec4]): ShaderResult =
     Shader[GLEnv & VertEnv & IndigoFrameData & IndigoProjectionData & IndigoCloneReferenceData] { env =>
       @layout(0) @in val a_verticesAndCoords: vec4    = null
       @layout(1) @in val a_translateScale: vec4       = null
@@ -217,7 +217,7 @@ object WebGL2Base:
     }.toGLSLDefaultHeaders[WebGL2]
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  inline def fragmentShader =
+  inline def fragment(inline modifyColor: vec4 => Shader[Unit, vec4]): ShaderResult =
     Shader[IndigoDynamicLightingData] { env =>
       @layout(0) @out var fragColor: vec4 = null
 
@@ -292,9 +292,8 @@ object WebGL2Base:
       // Outputs
       var COLOR: vec4 = null
 
-      //#fragment_start
-      def fragment(): Unit = ()
-      //#fragment_end
+      def fragment(): Unit =
+        COLOR = modifyColor(COLOR).run(())
 
       //#prepare_start
       def prepare(): Unit = ()
@@ -366,4 +365,4 @@ object WebGL2Base:
         composite()
         
         fragColor = COLOR
-      }
+      }.toGLSLDefaultHeaders[WebGL2]
