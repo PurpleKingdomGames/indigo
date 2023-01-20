@@ -2,21 +2,24 @@ package indigo.shared.shader
 
 import indigo.shared.assets.AssetName
 
-sealed trait Shader derives CanEqual {
+sealed trait Shader derives CanEqual:
   def id: ShaderId
-}
-object Shader {
 
-  val defaultVertexProgram: String   = "void vertex(){}"
-  val defaultFragmentProgram: String = "void fragment(){}"
-  val defaultPrepareProgram: String    = "void prepare(){}"
-  val defaultLightProgram: String    = "void light(){}"
-  val defaultCompositeProgram: String    = "void composite(){}"
+object Shader:
+  val defaultVertexProgram: String    = "void vertex(){}"
+  val defaultFragmentProgram: String  = "void fragment(){}"
+  val defaultPrepareProgram: String   = "void prepare(){}"
+  val defaultLightProgram: String     = "void light(){}"
+  val defaultCompositeProgram: String = "void composite(){}"
 
-}
+trait UltravioletShader extends Shader:
+  import ultraviolet.syntax.*
+  def id: ShaderId
+  inline def modifyVertex: vec4 => ultraviolet.syntax.Shader[Unit, vec4]
+  inline def modifyColor: vec4 => ultraviolet.syntax.Shader[Unit, vec4]
 
 sealed trait EntityShader extends Shader
-object EntityShader {
+object EntityShader:
 
   final case class Source(
       id: ShaderId,
@@ -25,7 +28,7 @@ object EntityShader {
       prepare: String,
       light: String,
       composite: String
-  ) extends EntityShader {
+  ) extends EntityShader:
     def withShaderId(newId: ShaderId): Source =
       this.copy(id = newId)
 
@@ -44,8 +47,7 @@ object EntityShader {
     def withCompositeProgram(program: String): Source =
       this.copy(composite = program)
 
-  }
-  object Source {
+  object Source:
 
     def apply(id: ShaderId): Source =
       Source(
@@ -57,8 +59,6 @@ object EntityShader {
         Shader.defaultCompositeProgram
       )
 
-  }
-
   final case class External(
       id: ShaderId,
       vertex: Option[AssetName],
@@ -66,8 +66,7 @@ object EntityShader {
       prepare: Option[AssetName],
       light: Option[AssetName],
       composite: Option[AssetName]
-  ) extends EntityShader {
-
+  ) extends EntityShader:
     def withShaderId(newId: ShaderId): External =
       this.copy(id = newId)
 
@@ -85,8 +84,8 @@ object EntityShader {
 
     def withCompositeProgram(program: AssetName): External =
       this.copy(composite = Option(program))
-  }
-  object External {
+
+  object External:
 
     def apply(id: ShaderId): External =
       External(
@@ -98,18 +97,14 @@ object EntityShader {
         None
       )
 
-  }
-
-}
-
 sealed trait BlendShader extends Shader
-object BlendShader {
+object BlendShader:
 
   final case class Source(
       id: ShaderId,
       vertex: String,
       fragment: String
-  ) extends EntityShader {
+  ) extends BlendShader:
     def withShaderId(newId: ShaderId): Source =
       this.copy(id = newId)
 
@@ -119,8 +114,7 @@ object BlendShader {
     def withFragmentProgram(program: String): Source =
       this.copy(fragment = program)
 
-  }
-  object Source {
+  object Source:
 
     def apply(id: ShaderId): Source =
       Source(
@@ -129,14 +123,11 @@ object BlendShader {
         Shader.defaultFragmentProgram
       )
 
-  }
-
   final case class External(
       id: ShaderId,
       vertex: Option[AssetName],
       fragment: Option[AssetName]
-  ) extends EntityShader {
-
+  ) extends BlendShader:
     def withShaderId(newId: ShaderId): External =
       this.copy(id = newId)
 
@@ -146,16 +137,10 @@ object BlendShader {
     def withFragmentProgram(program: AssetName): External =
       this.copy(fragment = Option(program))
 
-  }
-  object External {
-
+  object External:
     def apply(id: ShaderId): External =
       External(
         id,
         None,
         None
       )
-
-  }
-
-}

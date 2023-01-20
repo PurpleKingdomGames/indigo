@@ -34,7 +34,7 @@ object WebGL2Base:
   )
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  inline def vertex(inline modifyVertex: vec4 => Shader[Unit, vec4]): ShaderResult =
+  inline def vertex(inline modifyVertex: vec4 => Shader[IndigoUV.IndigoVertexEnv, vec4]): ShaderResult =
     Shader[GLEnv & VertEnv & IndigoFrameData & IndigoProjectionData & IndigoCloneReferenceData] { env =>
       @layout(0) @in val a_verticesAndCoords: vec4    = null
       @layout(1) @in val a_translateScale: vec4       = null
@@ -129,7 +129,7 @@ object WebGL2Base:
         (transform * vec4(texcoord, 1.0f, 1.0f)).xy
       
       def vertex(): Unit =
-        VERTEX = modifyVertex(VERTEX).run(())
+        VERTEX = modifyVertex(VERTEX).run(env)
 
       def main: Unit =
         INSTANCE_ID = env.gl_InstanceID
