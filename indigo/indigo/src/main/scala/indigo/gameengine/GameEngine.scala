@@ -30,6 +30,7 @@ import indigo.shared.shader.EntityShader
 import indigo.shared.shader.Shader
 import indigo.shared.shader.ShaderRegister
 import indigo.shared.shader.StandardShaders
+import indigo.shared.shader.UltravioletShader
 import org.scalajs.dom.Element
 import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits._
 
@@ -277,6 +278,10 @@ object GameEngine {
       case s: BlendShader.External =>
         shaderRegister.remove(s.id)
         shaderRegister.registerBlendShader(externalBlendShaderToSource(s, assetCollection))
+
+      case s: UltravioletShader =>
+        shaderRegister.remove(s.id)
+        shaderRegister.registerUVShader(s)
     }
 
   def externalEntityShaderToSource(

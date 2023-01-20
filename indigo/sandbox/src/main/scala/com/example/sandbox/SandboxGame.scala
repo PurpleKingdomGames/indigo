@@ -20,6 +20,7 @@ import com.example.sandbox.scenes.TextScene
 import com.example.sandbox.scenes.TextureTileScene
 import com.example.sandbox.scenes.TimelineScene
 import com.example.sandbox.scenes.UiScene
+import com.example.sandbox.scenes.UltravioletScene
 import indigo.*
 import indigo.json.Json
 import indigo.scenes._
@@ -32,6 +33,7 @@ import indigoextras.subsystems.FPSCounter
 import indigoextras.ui.*
 
 import scala.scalajs.js.annotation.*
+import com.example.sandbox.scenes.UVShaders
 
 @JSExportTopLevel("IndigoGame")
 object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, SandboxGameModel, SandboxViewModel]:
@@ -43,7 +45,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
   val viewportHeight: Int     = gameHeight * magnificationLevel // 256
 
   def initialScene(bootData: SandboxBootData): Option[SceneName] =
-    Some(ShapesScene.name)
+    Some(UltravioletScene.name)
 
   def scenes(bootData: SandboxBootData): NonEmptyList[Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]] =
     NonEmptyList(
@@ -64,7 +66,8 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
       TextScene,
       BoxesScene,
       ManyEventHandlers,
-      TimelineScene
+      TimelineScene,
+      UltravioletScene
     )
 
   val eventFilters: EventFilters = EventFilters.Permissive
@@ -103,7 +106,8 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
           Shaders.external,
           Shaders.sea,
           LegacyEffects.entityShader,
-          Archetype.shader
+          Archetype.shader,
+          UVShaders.circle
         )
         .addShaders(Refraction.shaders)
     )

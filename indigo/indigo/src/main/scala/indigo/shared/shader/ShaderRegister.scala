@@ -3,15 +3,16 @@ package indigo.shared.shader
 import indigo.shared.CacheKey
 import indigo.shared.QuickCache
 
-final class ShaderRegister {
+final class ShaderRegister:
 
-  implicit private val cache: QuickCache[RawShaderCode] = QuickCache.empty
+  private given cache: QuickCache[RawShaderCode]       = QuickCache.empty
+  private given uvCache: QuickCache[UltravioletShader] = QuickCache.empty
 
   def kill(): Unit =
     clearRegister()
 
   def register(shader: Shader): Unit =
-    shader match {
+    shader match
       case s: EntityShader.Source =>
         registerEntityShader(s)
 
@@ -23,31 +24,35 @@ final class ShaderRegister {
 
       case _: BlendShader.External =>
         ()
-    }
+
+      case s: UltravioletShader =>
+        registerUVShader(s)
 
   def remove(id: ShaderId): Unit =
     cache.purge(CacheKey(id.toString))
+    uvCache.purge(CacheKey(id.toString))
 
-  def registerEntityShader(shader: EntityShader.Source): Unit = {
+  def registerEntityShader(shader: EntityShader.Source): Unit =
     QuickCache(shader.id.toString) {
       RawShaderCode.fromEntityShader(shader)
     }
     ()
-  }
 
-  def registerBlendShader(shader: BlendShader.Source): Unit = {
+  def registerBlendShader(shader: BlendShader.Source): Unit =
     QuickCache(shader.id.toString) {
       RawShaderCode.fromBlendShader(shader)
     }
     ()
-  }
+
+  def registerUVShader(shader: UltravioletShader): Unit =
+    QuickCache(shader.id.toString) {
+      shader
+    }
+    ()
 
   def toSet: Set[RawShaderCode] =
     cache.all.map(_._2).toSet
 
-  def clearRegister(): Unit = {
+  def clearRegister(): Unit =
     cache.purgeAll()
     ()
-  }
-
-}

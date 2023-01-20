@@ -49,6 +49,11 @@ object IndigoUV:
       TAU_4: Float,
       TAU_8: Float
   )
+  object IndigoVertexEnv:
+    def reference: IndigoVertexEnv =
+      IndigoVertexEnv(
+        
+      )
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   final case class IndigoFragmentEnv(
