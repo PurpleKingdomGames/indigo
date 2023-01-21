@@ -85,13 +85,13 @@ object WebGL2Merge:
       ubo[IndigoFrameData]
 
       // Constants
-      @const val PI: Float    = 3.141592653589793f;
-      @const val PI_2: Float  = PI * 0.5f;
-      @const val PI_4: Float  = PI * 0.25f;
-      @const val TAU: Float   = 2.0f * PI;
-      @const val TAU_2: Float = PI;
-      @const val TAU_4: Float = PI_2;
-      @const val TAU_8: Float = PI_4;
+      @const val PI: Float    = 3.141592653589793f
+      @const val PI_2: Float  = PI * 0.5f
+      @const val PI_4: Float  = PI * 0.25f
+      @const val TAU: Float   = 2.0f * PI
+      @const val TAU_2: Float = PI
+      @const val TAU_4: Float = PI_2
+      @const val TAU_8: Float = PI_4
 
       var SRC: vec4 = null // Pixel value from SRC texture
       var DST: vec4 = null // Pixel value from DST texture
@@ -105,7 +105,7 @@ object WebGL2Merge:
       def main: Unit =
         SRC = texture2D(SRC_CHANNEL, UV)
         DST = texture2D(DST_CHANNEL, UV)
-        COLOR = vec4(0.0f);
+        COLOR = vec4(0.0f)
 
         // Colour
         fragment()
