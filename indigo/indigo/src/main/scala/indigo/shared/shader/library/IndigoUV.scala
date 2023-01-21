@@ -7,6 +7,14 @@ import ultraviolet.syntax.*
 
 object IndigoUV:
 
+  private val PI: Float    = 3.141592653589793f
+  private val PI_2: Float  = PI * 0.5f
+  private val PI_4: Float  = PI * 0.25f
+  private val TAU: Float   = 2.0f * PI
+  private val TAU_2: Float = PI
+  private val TAU_4: Float = PI_2
+  private val TAU_8: Float = PI_4
+
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   final case class IndigoVertexEnv(
       TIME: Float,         // Running time
@@ -47,12 +55,46 @@ object IndigoUV:
       TAU: Float,
       TAU_2: Float,
       TAU_4: Float,
-      TAU_8: Float
+      TAU_8: Float,
   )
   object IndigoVertexEnv:
     def reference: IndigoVertexEnv =
       IndigoVertexEnv(
-        
+        TIME = 0.0f,
+        VIEWPORT_SIZE = vec2(0.0f),
+        ATLAS_SIZE = vec2(0.0f),
+        VERTEX = vec4(0.0f),
+        TEXTURE_SIZE = vec2(0.0f),
+        UV = vec2(0.0f),
+        SIZE = vec2(0.0f),
+        FRAME_SIZE = vec2(0.0f),
+        CHANNEL_0_ATLAS_OFFSET = vec2(0.0f),
+        CHANNEL_1_ATLAS_OFFSET = vec2(0.0f),
+        CHANNEL_2_ATLAS_OFFSET = vec2(0.0f),
+        CHANNEL_3_ATLAS_OFFSET = vec2(0.0f),
+        CHANNEL_0_TEXTURE_COORDS = vec2(0.0f),
+        CHANNEL_1_TEXTURE_COORDS = vec2(0.0f),
+        CHANNEL_2_TEXTURE_COORDS = vec2(0.0f),
+        CHANNEL_3_TEXTURE_COORDS = vec2(0.0f),
+        CHANNEL_0_POSITION = vec2(0.0f),
+        CHANNEL_1_POSITION = vec2(0.0f),
+        CHANNEL_2_POSITION = vec2(0.0f),
+        CHANNEL_3_POSITION = vec2(0.0f),
+        CHANNEL_0_SIZE = vec2(0.0f),
+        POSITION = vec2(0.0f),
+        SCALE = vec2(0.0f),
+        REF = vec2(0.0f),
+        FLIP = vec2(0.0f),
+        ROTATION = 0.0f,
+        TEXTURE_COORDS = vec2(0.0f),
+        INSTANCE_ID = 0,
+        PI = PI,
+        PI_2 = PI_2,
+        PI_4 = PI_4,
+        TAU = TAU,
+        TAU_2 = TAU_2,
+        TAU_4 = TAU_4,
+        TAU_8 = TAU_8
       )
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
@@ -109,6 +151,55 @@ object IndigoUV:
       TAU_4: Float,
       TAU_8: Float
   )
+  object IndigoFragmentEnv:
+    def reference: IndigoFragmentEnv =
+      IndigoFragmentEnv(
+        SRC_CHANNEL = sampler2D,
+        TIME = 0.0f,
+        VIEWPORT_SIZE = vec2(0.0f),
+        UV = vec2(0.0f),
+        SIZE = vec2(0.0f),
+        CHANNEL_0 = vec4(0.0f),
+        CHANNEL_1 = vec4(0.0f),
+        CHANNEL_2 = vec4(0.0f),
+        CHANNEL_3 = vec4(0.0f),
+        CHANNEL_0_TEXTURE_COORDS = vec2(0.0f),
+        CHANNEL_1_TEXTURE_COORDS = vec2(0.0f),
+        CHANNEL_2_TEXTURE_COORDS = vec2(0.0f),
+        CHANNEL_3_TEXTURE_COORDS = vec2(0.0f),
+        CHANNEL_0_POSITION = vec2(0.0f),
+        CHANNEL_1_POSITION = vec2(0.0f),
+        CHANNEL_2_POSITION = vec2(0.0f),
+        CHANNEL_3_POSITION = vec2(0.0f),
+        CHANNEL_0_SIZE = vec2(0.0f),
+        SCREEN_COORDS = vec2(0.0f),
+        ROTATION = 0.0f,
+        TEXTURE_SIZE = vec2(0.0f),
+        ATLAS_SIZE = vec2(0.0f),
+        INSTANCE_ID = 0,
+        COLOR = vec4(0.0f),
+        LIGHT_INDEX = 0,
+        LIGHT_COUNT = 0,
+        LIGHT_ACTIVE = 0,
+        LIGHT_TYPE = 0,
+        LIGHT_FAR_CUT_OFF = 0,
+        LIGHT_FALLOFF_TYPE = 0,
+        LIGHT_COLOR = vec4(0.0f),
+        LIGHT_SPECULAR = vec4(0.0f),
+        LIGHT_POSITION = vec2(0.0f),
+        LIGHT_ROTATION = 0.0f,
+        LIGHT_NEAR = 0.0f,
+        LIGHT_FAR = 0.0f,
+        LIGHT_ANGLE = 0.0f,
+        LIGHT_INTENSITY = 0.0f,
+        PI = PI,
+        PI_2 = PI_2,
+        PI_4 = PI_4,
+        TAU = TAU,
+        TAU_2 = TAU_2,
+        TAU_4 = TAU_4,
+        TAU_8 = TAU_8
+      )
 
   final case class IndigoBlendFragmentEnv(
       SRC_CHANNEL: sampler2D.type,
@@ -131,6 +222,25 @@ object IndigoUV:
       TAU_4: Float,
       TAU_8: Float
   )
+  object IndigoBlendFragmentEnv:
+    def reference: IndigoBlendFragmentEnv =
+      IndigoBlendFragmentEnv(
+        SRC_CHANNEL = sampler2D,
+        DST_CHANNEL = sampler2D,
+        TIME = 0.0f,
+        VIEWPORT_SIZE = vec2(0.0f),
+        UV = vec2(0.0f),
+        SIZE = vec2(0.0f),
+        SRC = vec4(0.0f),
+        DST = vec4(0.0f),
+        PI = PI,
+        PI_2 = PI_2,
+        PI_4 = PI_4,
+        TAU = TAU,
+        TAU_2 = TAU_2,
+        TAU_4 = TAU_4,
+        TAU_8 = TAU_8
+      )
 
   sealed trait Indigo
 
