@@ -55,6 +55,7 @@ object UltravioletScene extends Scene[SandboxStartupData, SandboxGameModel, Sand
       SceneUpdateFragment.empty
         .addLayer(
           Layer(
+            UVEntity(10, 10, 150, 150, Depth.zero, ShaderData(UVShaders.voronoiId)),
             UVEntity(140, 50, 32, 32, Depth.zero, ShaderData(UVShaders.circleId))
           )
         )
@@ -113,3 +114,52 @@ object UVShaders:
       val fragment: ShaderResult =
         WebGL2Base.fragment(modifyColor)
     }
+
+  val voronoiId = ShaderId("uv voronoi")
+
+  val voronoi: UltravioletShader =
+    // Ported from: https://www.youtube.com/watch?v=l-07BXzNdPw&feature=youtu.be
+    new UltravioletShader:
+      val id: ShaderId = voronoiId
+
+      inline def modifyVertex: vec4 => Shader[IndigoUV.IndigoVertexEnv, vec4] =
+        (vertex: vec4) => Shader[IndigoUV.IndigoVertexEnv, vec4](_ => vertex)
+
+      @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+      inline def N22 = (p: vec2) =>
+        var a: vec3 = fract(p.xyx * vec3(123.34f, 234.34f, 345.65f))
+        a = a + dot(a, a + 34.45f)
+        fract(vec2(a.x * a.y, a.y * a.z))
+
+      @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+      inline def modifyColor: vec4 => ultraviolet.syntax.Shader[IndigoUV.IndigoFragmentEnv, vec4] =
+        _ =>
+          Shader[IndigoUV.IndigoFragmentEnv, vec4] { env =>
+            val uv: vec2 = (2.0f * env.SCREEN_COORDS - env.SIZE) / env.SIZE.y
+
+            var m: Float       = 0.0f
+            val t: Float       = env.TIME
+            var minDist: Float = 100.0f
+
+            _for(0.0f, _ < 50.0f, _ + 1.0f) { i =>
+              val n: vec2 = N22(vec2(i))
+              val p: vec2 = sin(n * t)
+
+              val d = length(uv - p)
+              m = m + smoothstep(0.02f, 0.01f, d)
+
+              if d < minDist then minDist = d
+            }
+
+            // val col: vec3 = vec3(m) // circles
+            // val col: vec3 = vec3(minDist) // simple voronoi
+            val col: vec3 = vec3(minDist) + vec3(m) // simple voronoi + circle
+
+            vec4(col, 1.0f)
+          }
+
+      val vertex: ShaderResult =
+        WebGL2Base.vertex(modifyVertex)
+
+      val fragment: ShaderResult =
+        WebGL2Base.fragment(modifyColor)
