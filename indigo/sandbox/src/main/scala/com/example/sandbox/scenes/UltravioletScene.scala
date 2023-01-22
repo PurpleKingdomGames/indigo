@@ -111,7 +111,5 @@ object UVShaders:
         WebGL2Base.vertex(modifyVertex)
 
       val fragment: ShaderResult =
-        val res = WebGL2Base.fragment(modifyColor)
-        println(res.toOutput.code)
-        res
+        WebGL2Base.fragment(modifyColor)
     }

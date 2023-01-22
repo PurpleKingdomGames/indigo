@@ -78,31 +78,31 @@ object WebGL2Base:
       @const val TAU_8: Float = PI_4
 
       // Variables
-      var ATLAS_SIZE: vec2               = null
-      var VERTEX: vec4                   = null
-      var TEXTURE_SIZE: vec2             = null
-      var UV: vec2                       = null
-      var SIZE: vec2                     = null
-      var FRAME_SIZE: vec2               = null
-      var CHANNEL_0_ATLAS_OFFSET: vec2   = null
-      var CHANNEL_1_ATLAS_OFFSET: vec2   = null
-      var CHANNEL_2_ATLAS_OFFSET: vec2   = null
-      var CHANNEL_3_ATLAS_OFFSET: vec2   = null
-      var CHANNEL_0_TEXTURE_COORDS: vec2 = null
-      var CHANNEL_1_TEXTURE_COORDS: vec2 = null
-      var CHANNEL_2_TEXTURE_COORDS: vec2 = null
-      var CHANNEL_3_TEXTURE_COORDS: vec2 = null
-      var CHANNEL_0_POSITION: vec2       = null
-      var CHANNEL_1_POSITION: vec2       = null
-      var CHANNEL_2_POSITION: vec2       = null
-      var CHANNEL_3_POSITION: vec2       = null
-      var CHANNEL_0_SIZE: vec2           = null
-      var POSITION: vec2                 = null
-      var SCALE: vec2                    = null
-      var REF: vec2                      = null
-      var FLIP: vec2                     = null
-      var ROTATION: Float                = 0.0f
-      var INSTANCE_ID: Int               = 0
+      @global var ATLAS_SIZE: vec2               = null
+      @global var VERTEX: vec4                   = null
+      @global var TEXTURE_SIZE: vec2             = null
+      @global var UV: vec2                       = null
+      @global var SIZE: vec2                     = null
+      @global var FRAME_SIZE: vec2               = null
+      @global var CHANNEL_0_ATLAS_OFFSET: vec2   = null
+      @global var CHANNEL_1_ATLAS_OFFSET: vec2   = null
+      @global var CHANNEL_2_ATLAS_OFFSET: vec2   = null
+      @global var CHANNEL_3_ATLAS_OFFSET: vec2   = null
+      @global var CHANNEL_0_TEXTURE_COORDS: vec2 = null
+      @global var CHANNEL_1_TEXTURE_COORDS: vec2 = null
+      @global var CHANNEL_2_TEXTURE_COORDS: vec2 = null
+      @global var CHANNEL_3_TEXTURE_COORDS: vec2 = null
+      @global var CHANNEL_0_POSITION: vec2       = null
+      @global var CHANNEL_1_POSITION: vec2       = null
+      @global var CHANNEL_2_POSITION: vec2       = null
+      @global var CHANNEL_3_POSITION: vec2       = null
+      @global var CHANNEL_0_SIZE: vec2           = null
+      @global var POSITION: vec2                 = null
+      @global var SCALE: vec2                    = null
+      @global var REF: vec2                      = null
+      @global var FLIP: vec2                     = null
+      @global var ROTATION: Float                = 0.0f
+      @global var INSTANCE_ID: Int               = 0
 
       // format: off
       def translate2d(t: vec2): mat4 =
@@ -253,41 +253,41 @@ object WebGL2Base:
       @flat @in var v_instanceId: Int = 0 // The current instance id
 
       // Variables
-      var UV: vec2 = null // Unscaled texture coordinates
-      var SIZE: vec2 = null // Width / height of the objects
-      var CHANNEL_0: vec4 = null // Pixel value from texture channel 0
-      var CHANNEL_1: vec4 = null // Pixel value from texture channel 1
-      var CHANNEL_2: vec4 = null // Pixel value from texture channel 2
-      var CHANNEL_3: vec4 = null // Pixel value from texture channel 3
-      var CHANNEL_0_TEXTURE_COORDS: vec2 = null // Scaled texture coordinates
-      var CHANNEL_1_TEXTURE_COORDS: vec2 = null // Scaled texture coordinates
-      var CHANNEL_2_TEXTURE_COORDS: vec2 = null // Scaled texture coordinates
-      var CHANNEL_3_TEXTURE_COORDS: vec2 = null // Scaled texture coordinates
-      var CHANNEL_0_POSITION: vec2 = null // top left position of this texture on the atlas in UV coords
-      var CHANNEL_1_POSITION: vec2 = null // top left position of this texture on the atlas in UV coords
-      var CHANNEL_2_POSITION: vec2 = null // top left position of this texture on the atlas in UV coords
-      var CHANNEL_3_POSITION: vec2 = null // top left position of this texture on the atlas in UV coords
-      var CHANNEL_0_SIZE: vec2 = null // size of this texture on the atlas in UV coords
-      var SCREEN_COORDS: vec2 = null
-      var ROTATION: Float = 0.0f
-      var TEXTURE_SIZE: vec2 = null // Size of the texture in pixels
-      var ATLAS_SIZE: vec2 = null // Size of the atlas this texture is on, in pixels
-      var INSTANCE_ID: Int = 0 // The current instance id
+      @global var UV: vec2 = null // Unscaled texture coordinates
+      @global var SIZE: vec2 = null // Width / height of the objects
+      @global var CHANNEL_0: vec4 = null // Pixel value from texture channel 0
+      @global var CHANNEL_1: vec4 = null // Pixel value from texture channel 1
+      @global var CHANNEL_2: vec4 = null // Pixel value from texture channel 2
+      @global var CHANNEL_3: vec4 = null // Pixel value from texture channel 3
+      @global var CHANNEL_0_TEXTURE_COORDS: vec2 = null // Scaled texture coordinates
+      @global var CHANNEL_1_TEXTURE_COORDS: vec2 = null // Scaled texture coordinates
+      @global var CHANNEL_2_TEXTURE_COORDS: vec2 = null // Scaled texture coordinates
+      @global var CHANNEL_3_TEXTURE_COORDS: vec2 = null // Scaled texture coordinates
+      @global var CHANNEL_0_POSITION: vec2 = null // top left position of this texture on the atlas in UV coords
+      @global var CHANNEL_1_POSITION: vec2 = null // top left position of this texture on the atlas in UV coords
+      @global var CHANNEL_2_POSITION: vec2 = null // top left position of this texture on the atlas in UV coords
+      @global var CHANNEL_3_POSITION: vec2 = null // top left position of this texture on the atlas in UV coords
+      @global var CHANNEL_0_SIZE: vec2 = null // size of this texture on the atlas in UV coords
+      @global var SCREEN_COORDS: vec2 = null
+      @global var ROTATION: Float = 0.0f
+      @global var TEXTURE_SIZE: vec2 = null // Size of the texture in pixels
+      @global var ATLAS_SIZE: vec2 = null // Size of the atlas this texture is on, in pixels
+      @global var INSTANCE_ID: Int = 0 // The current instance id
 
-      var LIGHT_INDEX: Int = 0
-      var LIGHT_COUNT: Int = 0
-      var LIGHT_ACTIVE: Int = 0
-      var LIGHT_TYPE: Int = 0
-      var LIGHT_FAR_CUT_OFF: Int = 0
-      var LIGHT_FALLOFF_TYPE: Int = 0
-      var LIGHT_COLOR: vec4 = null
-      var LIGHT_SPECULAR: vec4 = null
-      var LIGHT_POSITION: vec2 = null
-      var LIGHT_ROTATION: Float = 0.0f
-      var LIGHT_NEAR: Float = 0.0f
-      var LIGHT_FAR: Float = 0.0f
-      var LIGHT_ANGLE: Float = 0.0f
-      var LIGHT_INTENSITY: Float = 0.0f
+      @global var LIGHT_INDEX: Int = 0
+      @global var LIGHT_COUNT: Int = 0
+      @global var LIGHT_ACTIVE: Int = 0
+      @global var LIGHT_TYPE: Int = 0
+      @global var LIGHT_FAR_CUT_OFF: Int = 0
+      @global var LIGHT_FALLOFF_TYPE: Int = 0
+      @global var LIGHT_COLOR: vec4 = null
+      @global var LIGHT_SPECULAR: vec4 = null
+      @global var LIGHT_POSITION: vec2 = null
+      @global var LIGHT_ROTATION: Float = 0.0f
+      @global var LIGHT_NEAR: Float = 0.0f
+      @global var LIGHT_FAR: Float = 0.0f
+      @global var LIGHT_ANGLE: Float = 0.0f
+      @global var LIGHT_INTENSITY: Float = 0.0f
 
       // Constants
       @const val PI: Float    = 3.141592653589793f
@@ -299,7 +299,7 @@ object WebGL2Base:
       @const val TAU_8: Float = PI_4
 
       // Outputs
-      var COLOR: vec4 = null
+      @global var COLOR: vec4 = null
 
       def fragment(): Unit =
         COLOR = modifyColor(COLOR).run(IndigoUV.IndigoFragmentEnv.reference)

@@ -52,7 +52,7 @@ object WebGL2Merge:
              0.0f, 0.0f, 0.0f, 1.0f
         )
 
-      var VERTEX: vec4 = null
+      @global var VERTEX: vec4 = null
 
       def vertex(): Unit =
         VERTEX = modifyVertex(VERTEX).run(())
@@ -96,11 +96,11 @@ object WebGL2Merge:
       @const val TAU_4: Float = PI_2
       @const val TAU_8: Float = PI_4
 
-      var SRC: vec4 = null // Pixel value from SRC texture
-      var DST: vec4 = null // Pixel value from DST texture
+      @global var SRC: vec4 = null // Pixel value from SRC texture
+      @global var DST: vec4 = null // Pixel value from DST texture
 
       // Output
-      var COLOR: vec4 = null
+      @global var COLOR: vec4 = null
 
       def fragment(): Unit =
         COLOR = modifyColor(COLOR).run(())
