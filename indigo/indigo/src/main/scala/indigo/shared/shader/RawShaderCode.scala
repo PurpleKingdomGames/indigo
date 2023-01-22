@@ -2,6 +2,7 @@ package indigo.shared.shader
 
 import indigo.shaders.WebGL2Base
 import indigo.shaders.WebGL2Merge
+import ultraviolet.datatypes.ShaderResult
 
 trait RawShaderCode {
   val id: ShaderId
@@ -10,6 +11,25 @@ trait RawShaderCode {
 }
 
 object RawShaderCode {
+  
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
+  def fromUltravioletShader(customShader: UltravioletShader): RawShaderCode =
+    new RawShaderCode {
+      val id: ShaderId = customShader.id
+      val vertex: String = customShader.vertex match
+        case ShaderResult.Error(reason) =>
+          throw new Exception("Invalid Ultraviolet vertex shader: " + reason)
+
+        case ShaderResult.Output(code, metadata) =>
+          code
+
+      val fragment: String = customShader.fragment match
+        case ShaderResult.Error(reason) =>
+          throw new Exception("Invalid Ultraviolet fragment shader: " + reason)
+
+        case ShaderResult.Output(code, metadata) =>
+          code
+    }
 
   def fromEntityShader(customShader: EntityShader.Source): RawShaderCode =
     new RawShaderCode {

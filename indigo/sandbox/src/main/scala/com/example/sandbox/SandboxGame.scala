@@ -19,6 +19,7 @@ import com.example.sandbox.scenes.TextBoxScene
 import com.example.sandbox.scenes.TextScene
 import com.example.sandbox.scenes.TextureTileScene
 import com.example.sandbox.scenes.TimelineScene
+import com.example.sandbox.scenes.UVShaders
 import com.example.sandbox.scenes.UiScene
 import com.example.sandbox.scenes.UltravioletScene
 import indigo.*
@@ -33,7 +34,6 @@ import indigoextras.subsystems.FPSCounter
 import indigoextras.ui.*
 
 import scala.scalajs.js.annotation.*
-import com.example.sandbox.scenes.UVShaders
 
 @JSExportTopLevel("IndigoGame")
 object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, SandboxGameModel, SandboxViewModel]:

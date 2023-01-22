@@ -68,7 +68,10 @@ object WebGL2Merge:
         val transform: mat4 = translate2d(moveToTopLeft) * scale2d(SIZE)
 
         env.gl_Position = env.u_projection * transform * VERTEX
-    }.toGLSLDefaultHeaders[WebGL2]
+    }.toGLSL[WebGL2](
+      ShaderHeader.Version300ES,
+      ShaderHeader.PrecisionMediumPFloat
+    )
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
   inline def fragment(inline modifyColor: vec4 => Shader[Unit, vec4]): ShaderResult =
@@ -112,4 +115,7 @@ object WebGL2Merge:
 
         fragColor = COLOR
       
-    }.toGLSLDefaultHeaders[WebGL2]
+    }.toGLSL[WebGL2](
+      ShaderHeader.Version300ES,
+      ShaderHeader.PrecisionMediumPFloat
+    )

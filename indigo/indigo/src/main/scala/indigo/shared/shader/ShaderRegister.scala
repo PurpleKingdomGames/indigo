@@ -5,8 +5,7 @@ import indigo.shared.QuickCache
 
 final class ShaderRegister:
 
-  private given cache: QuickCache[RawShaderCode]       = QuickCache.empty
-  private given uvCache: QuickCache[UltravioletShader] = QuickCache.empty
+  private given cache: QuickCache[RawShaderCode] = QuickCache.empty
 
   def kill(): Unit =
     clearRegister()
@@ -30,7 +29,6 @@ final class ShaderRegister:
 
   def remove(id: ShaderId): Unit =
     cache.purge(CacheKey(id.toString))
-    uvCache.purge(CacheKey(id.toString))
 
   def registerEntityShader(shader: EntityShader.Source): Unit =
     QuickCache(shader.id.toString) {
@@ -46,7 +44,7 @@ final class ShaderRegister:
 
   def registerUVShader(shader: UltravioletShader): Unit =
     QuickCache(shader.id.toString) {
-      shader
+      RawShaderCode.fromUltravioletShader(shader)
     }
     ()
 

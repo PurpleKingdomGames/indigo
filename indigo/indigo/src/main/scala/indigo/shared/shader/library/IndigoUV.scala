@@ -247,9 +247,6 @@ object IndigoUV:
   given ShaderPrinter[Indigo] = new ShaderPrinter {
     val webGL2Printer = summon[ShaderPrinter[WebGL2]]
 
-    val defaultConfig: ShaderPrinterConfig =
-      webGL2Printer.defaultConfig
-
     def isValid(
         inType: Option[String],
         outType: Option[String],

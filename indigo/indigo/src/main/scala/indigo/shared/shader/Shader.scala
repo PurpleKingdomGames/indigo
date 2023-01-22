@@ -1,6 +1,7 @@
 package indigo.shared.shader
 
 import indigo.shared.assets.AssetName
+import ultraviolet.datatypes.ShaderResult
 
 sealed trait Shader derives CanEqual:
   def id: ShaderId
@@ -15,8 +16,8 @@ object Shader:
 trait UltravioletShader extends Shader:
   import ultraviolet.syntax.*
   def id: ShaderId
-  inline def modifyVertex: vec4 => ultraviolet.syntax.Shader[Unit, vec4]
-  inline def modifyColor: vec4 => ultraviolet.syntax.Shader[Unit, vec4]
+  def vertex: ShaderResult
+  def fragment: ShaderResult
 
 sealed trait EntityShader extends Shader
 object EntityShader:

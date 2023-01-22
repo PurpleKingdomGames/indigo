@@ -85,4 +85,4 @@ object WebGL1BaseShaders:
           env.gl_FragColor = texture2D(u_texture, v_texcoord)
       }
 
-    val output = shader.toGLSL[WebGL1](PrinterHeader.PrecisionMediumPFloat)
+    val output = shader.toGLSL[WebGL1](ShaderHeader.PrecisionMediumPFloat)
