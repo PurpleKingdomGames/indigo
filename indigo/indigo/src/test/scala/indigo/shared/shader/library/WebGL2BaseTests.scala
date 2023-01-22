@@ -6,9 +6,9 @@ class WebGL2BaseTests extends munit.FunSuite {
 
   test("Base WebGL 2.0 vertex shader") {
 
-    inline def modifyVertex: vec4 => Shader[Unit, vec4] =
+    inline def modifyVertex: vec4 => Shader[IndigoUV.IndigoVertexEnv, vec4] =
       (input: vec4) =>
-        Shader[Unit, vec4] { _ =>
+        Shader[IndigoUV.IndigoVertexEnv, vec4] { _ =>
           input + vec4(1.0f)
         }
 
@@ -35,9 +35,9 @@ class WebGL2BaseTests extends munit.FunSuite {
 
   test("Base WebGL 2.0 fragment shader") {
 
-    inline def modifyColor: vec4 => Shader[Unit, vec4] =
+    inline def modifyColor: vec4 => Shader[IndigoUV.IndigoFragmentEnv, vec4] =
       (input: vec4) =>
-        Shader[Unit, vec4] { _ =>
+        Shader[IndigoUV.IndigoFragmentEnv, vec4] { _ =>
           input + vec4(1.0f)
         }
 

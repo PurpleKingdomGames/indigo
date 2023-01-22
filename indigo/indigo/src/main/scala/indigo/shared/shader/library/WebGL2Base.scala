@@ -8,10 +8,12 @@ import ultraviolet.syntax.*
 object WebGL2Base:
 
   case class IndigoProjectionData(u_projection: mat4)
+
   case class IndigoFrameData(
       TIME: highp[Float], // Running time
       VIEWPORT_SIZE: vec2 // Size of the viewport in pixels
   )
+
   case class IndigoCloneReferenceData( // Used during cloning.
       u_ref_refFlip: vec4,
       u_ref_sizeAndFrameScale: vec4,
@@ -19,10 +21,6 @@ object WebGL2Base:
       u_ref_channelOffsets23: vec4,
       u_ref_textureSizeAtlasSize: vec4
   )
-
-  case class GLEnv(gl_InstanceID: Int)
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  case class VertEnv(var gl_Position: vec4)
 
   case class IndigoDynamicLightingData(
       numOfLights: Float,
@@ -33,9 +31,15 @@ object WebGL2Base:
       lightNearFarAngleIntensity: array[8, vec4] // vec4(near, far, angle, intensity)
   )
 
+  case class GLEnv(gl_InstanceID: Int)
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  case class VertEnv(var gl_Position: vec4)
+
+  type VertexEnv = GLEnv & VertEnv & IndigoFrameData & IndigoProjectionData & IndigoCloneReferenceData
+
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
   inline def vertex(inline modifyVertex: vec4 => Shader[IndigoUV.IndigoVertexEnv, vec4]): ShaderResult =
-    Shader[GLEnv & VertEnv & IndigoFrameData & IndigoProjectionData & IndigoCloneReferenceData] { env =>
+    Shader[VertexEnv] { env =>
       @layout(0) @in val a_verticesAndCoords: vec4    = null
       @layout(1) @in val a_translateScale: vec4       = null
       @layout(2) @in val a_refFlip: vec4              = null
@@ -129,7 +133,7 @@ object WebGL2Base:
         (transform * vec4(texcoord, 1.0f, 1.0f)).xy
       
       def vertex(): Unit =
-        VERTEX = modifyVertex(VERTEX).run(env)
+        VERTEX = modifyVertex(VERTEX).run(IndigoUV.IndigoVertexEnv.reference)
 
       def main: Unit =
         INSTANCE_ID = env.gl_InstanceID
@@ -214,11 +218,16 @@ object WebGL2Base:
         v_channel_pos_23 = vec4(CHANNEL_2_POSITION, CHANNEL_3_POSITION)
         v_instanceId = INSTANCE_ID
       
-    }.toGLSLDefaultHeaders[WebGL2]
+    }.toGLSL[WebGL2](
+      ShaderHeader.Version300ES,
+      ShaderHeader.PrecisionMediumPFloat
+    )
+
+  type FragmentEnv = IndigoDynamicLightingData
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  inline def fragment(inline modifyColor: vec4 => Shader[Unit, vec4]): ShaderResult =
-    Shader[IndigoDynamicLightingData] { env =>
+  inline def fragment(inline modifyColor: vec4 => Shader[IndigoUV.IndigoFragmentEnv, vec4]): ShaderResult =
+    Shader[FragmentEnv] { env =>
       @layout(0) @out var fragColor: vec4 = null
 
       // ** Uniforms **
@@ -293,7 +302,7 @@ object WebGL2Base:
       var COLOR: vec4 = null
 
       def fragment(): Unit =
-        COLOR = modifyColor(COLOR).run(())
+        COLOR = modifyColor(COLOR).run(IndigoUV.IndigoFragmentEnv.reference)
 
       //#prepare_start
       def prepare(): Unit = ()
@@ -365,4 +374,7 @@ object WebGL2Base:
         composite()
         
         fragColor = COLOR
-      }.toGLSLDefaultHeaders[WebGL2]
+      }.toGLSL[WebGL2](
+        ShaderHeader.Version300ES,
+        ShaderHeader.PrecisionMediumPFloat
+      )

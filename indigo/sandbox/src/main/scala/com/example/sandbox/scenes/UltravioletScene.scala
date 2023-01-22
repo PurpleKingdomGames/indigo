@@ -9,6 +9,9 @@ import indigo.ShaderPrimitive._
 import indigo._
 import indigo.scenes._
 import indigo.shared.shader.UltravioletShader
+import indigo.shared.shader.library.IndigoUV
+import indigo.shared.shader.library.WebGL2Base
+import ultraviolet.datatypes.ShaderResult
 
 object UltravioletScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel] {
 
@@ -52,7 +55,7 @@ object UltravioletScene extends Scene[SandboxStartupData, SandboxGameModel, Sand
       SceneUpdateFragment.empty
         .addLayer(
           Layer(
-            UVEntity(140, 50, 32, 32, Depth.zero, ShaderData(Shaders.circleId))
+            UVEntity(140, 50, 32, 32, Depth.zero, ShaderData(UVShaders.circleId))
           )
         )
     )
@@ -84,23 +87,31 @@ object UVShaders:
 
   val circle: UltravioletShader =
     new UltravioletShader {
+
       val id: ShaderId = circleId
 
-      inline def modifyVertex: vec4 => ultraviolet.syntax.Shader[Unit, vec4] =
-        input => Shader[Unit, vec4](_ => input)
+      inline def modifyVertex: vec4 => Shader[IndigoUV.IndigoVertexEnv, vec4] =
+        (vertex: vec4) => Shader[IndigoUV.IndigoVertexEnv, vec4](_ => vertex)
 
-      inline def modifyColor: vec4 => ultraviolet.syntax.Shader[Unit, vec4] =
+      inline def circleSdf = (p: vec2, r: Float) => length(p) - r
+
+      inline def calculateColour = (uv: vec2, sdf: Float) =>
+        val fill       = vec4(uv, 0.0f, 1.0f)
+        val fillAmount = (1.0f - step(0.0f, sdf)) * fill.w
+        vec4(fill.xyz * fillAmount, fillAmount)
+
+      inline def modifyColor: vec4 => ultraviolet.syntax.Shader[IndigoUV.IndigoFragmentEnv, vec4] =
         _ =>
-          Shader[Unit, vec4] { env =>
-            def circleSdf(p: vec2, r: Float): Float =
-              length(p) - r
-
-            def calculateColour(uv: vec2, sdf: Float): vec4 =
-              val fill       = vec4(uv, 0.0f, 1.0f)
-              val fillAmount = (1.0f - step(0.0f, sdf)) * fill.w
-              vec4(fill.xyz * fillAmount, fillAmount)
-
+          Shader[IndigoUV.IndigoFragmentEnv, vec4] { env =>
             val sdf = circleSdf(env.UV - 0.5f, 0.5f)
             calculateColour(env.UV, sdf)
           }
+
+      val vertex: ShaderResult =
+        WebGL2Base.vertex(modifyVertex)
+
+      val fragment: ShaderResult =
+        val res = WebGL2Base.fragment(modifyColor)
+        println(res.toOutput.code)
+        res
     }
