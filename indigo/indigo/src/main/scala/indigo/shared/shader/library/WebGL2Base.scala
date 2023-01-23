@@ -7,14 +7,14 @@ import ultraviolet.syntax.*
 
 object WebGL2Base:
 
-  case class IndigoProjectionData(u_projection: mat4)
+  private case class IndigoProjectionData(u_projection: mat4)
 
-  case class IndigoFrameData(
+  private case class IndigoFrameData(
       TIME: highp[Float], // Running time
       VIEWPORT_SIZE: vec2 // Size of the viewport in pixels
   )
 
-  case class IndigoCloneReferenceData( // Used during cloning.
+  private case class IndigoCloneReferenceData( // Used during cloning.
       u_ref_refFlip: vec4,
       u_ref_sizeAndFrameScale: vec4,
       u_ref_channelOffsets01: vec4,
@@ -22,7 +22,7 @@ object WebGL2Base:
       u_ref_textureSizeAtlasSize: vec4
   )
 
-  case class IndigoDynamicLightingData(
+  private case class IndigoDynamicLightingData(
       numOfLights: Float,
       lightFlags: highp[array[8, vec4]], // vec4(active, type, far cut off, falloff type)
       lightColor: array[8, vec4],
@@ -31,11 +31,11 @@ object WebGL2Base:
       lightNearFarAngleIntensity: array[8, vec4] // vec4(near, far, angle, intensity)
   )
 
-  case class GLEnv(gl_InstanceID: Int)
+  private case class GLEnv(gl_InstanceID: Int)
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  case class VertEnv(var gl_Position: vec4)
+  private case class VertEnv(var gl_Position: vec4)
 
-  type VertexEnv = GLEnv & VertEnv & IndigoFrameData & IndigoProjectionData & IndigoCloneReferenceData
+  private type VertexEnv = GLEnv & VertEnv & IndigoFrameData & IndigoProjectionData & IndigoCloneReferenceData
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
   inline def vertex(inline modifyVertex: vec4 => Shader[IndigoUV.IndigoVertexEnv, vec4]): ShaderResult =
@@ -223,7 +223,7 @@ object WebGL2Base:
       ShaderHeader.PrecisionMediumPFloat
     )
 
-  type FragmentEnv = IndigoDynamicLightingData
+  private type FragmentEnv = IndigoDynamicLightingData
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
   inline def fragment(inline modifyColor: vec4 => Shader[IndigoUV.IndigoFragmentEnv, vec4]): ShaderResult =

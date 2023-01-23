@@ -7,14 +7,14 @@ import ultraviolet.syntax.*
 
 object WebGL2Merge:
 
-  case class IndigoMergeData(u_projection: mat4, u_scale: vec2)
-  case class IndigoFrameData(
+  private case class IndigoMergeData(u_projection: mat4, u_scale: vec2)
+  private case class IndigoFrameData(
       TIME: highp[Float], // Running time
       VIEWPORT_SIZE: vec2 // Size of the viewport in pixels
   )
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  case class VertexEnv(var gl_Position: vec4)
+  private case class VertexEnv(var gl_Position: vec4)
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
   inline def vertex(inline modifyVertex: vec4 => Shader[Unit, vec4]): ShaderResult =
