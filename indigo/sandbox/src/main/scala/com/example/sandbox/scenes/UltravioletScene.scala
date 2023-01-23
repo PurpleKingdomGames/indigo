@@ -107,10 +107,10 @@ object UVShaders:
           }
 
       val vertex: ShaderResult =
-        WebGL2Base.vertex(modifyVertex)
+        BaseEntityShader.vertex(modifyVertex)
 
       val fragment: ShaderResult =
-        WebGL2Base.fragment(modifyColor)
+        BaseEntityShader.fragment(modifyColor)
     }
 
   val voronoiId = ShaderId("uv voronoi")
@@ -157,7 +157,7 @@ object UVShaders:
           }
 
       val vertex: ShaderResult =
-        WebGL2Base.vertex(modifyVertex)
+        BaseEntityShader.vertex(modifyVertex)
 
       val fragment: ShaderResult =
-        WebGL2Base.fragment(modifyColor)
+        BaseEntityShader.fragment(modifyColor)

@@ -5,7 +5,7 @@ import indigo.shared.shader.ShaderId
 import ultraviolet.datatypes.ShaderResult
 import ultraviolet.syntax.*
 
-object WebGL2Base:
+object BaseEntityShader:
 
   private case class IndigoProjectionData(u_projection: mat4)
 
