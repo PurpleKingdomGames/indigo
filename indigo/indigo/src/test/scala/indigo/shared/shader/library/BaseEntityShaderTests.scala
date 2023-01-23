@@ -2,7 +2,7 @@ package indigo.shared.shader.library
 
 import ultraviolet.syntax.*
 
-class WebGL2BaseTests extends munit.FunSuite {
+class BaseEntityShaderTests extends munit.FunSuite {
 
   test("Base WebGL 2.0 vertex shader") {
 
