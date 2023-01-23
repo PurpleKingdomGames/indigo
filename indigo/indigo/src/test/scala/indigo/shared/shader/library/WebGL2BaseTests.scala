@@ -13,7 +13,7 @@ class WebGL2BaseTests extends munit.FunSuite {
         }
 
     val actual =
-      WebGL2Base.vertex(modifyVertex).toOutput.code
+      BaseEntityShader.vertex(modifyVertex).toOutput.code
 
     val expected1: String =
       """
@@ -42,7 +42,7 @@ class WebGL2BaseTests extends munit.FunSuite {
         }
 
     val actual =
-      WebGL2Base.fragment(modifyColor).toOutput.code
+      BaseEntityShader.fragment(modifyColor).toOutput.code
 
     val expected1: String =
       """
