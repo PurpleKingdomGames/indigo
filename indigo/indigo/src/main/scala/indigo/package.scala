@@ -175,6 +175,24 @@ val BlendShader: shared.shader.BlendShader.type = shared.shader.BlendShader
 type EntityShader = shared.shader.EntityShader
 val EntityShader: shared.shader.EntityShader.type = shared.shader.EntityShader
 
+val WebGL2Base: indigo.shared.shader.library.WebGL2Base.type = indigo.shared.shader.library.WebGL2Base
+
+val WebGL2Merge: indigo.shared.shader.library.WebGL2Merge.type = indigo.shared.shader.library.WebGL2Merge
+
+val IndigoUV: shared.shader.library.IndigoUV.type = shared.shader.library.IndigoUV
+
+type IndigoVertexEnv = shared.shader.library.IndigoUV.IndigoVertexEnv
+val IndigoVertexEnv: shared.shader.library.IndigoUV.IndigoVertexEnv.type =
+  shared.shader.library.IndigoUV.IndigoVertexEnv
+
+type IndigoFragmentEnv = shared.shader.library.IndigoUV.IndigoFragmentEnv
+val IndigoFragmentEnv: shared.shader.library.IndigoUV.IndigoFragmentEnv.type =
+  shared.shader.library.IndigoUV.IndigoFragmentEnv
+
+type IndigoBlendFragmentEnv = shared.shader.library.IndigoUV.IndigoBlendFragmentEnv
+val IndigoBlendFragmentEnv: shared.shader.library.IndigoUV.IndigoBlendFragmentEnv.type =
+  shared.shader.library.IndigoUV.IndigoBlendFragmentEnv
+
 type ShaderId = shared.shader.ShaderId
 val ShaderId: shared.shader.ShaderId.type = shared.shader.ShaderId
 

@@ -9,8 +9,6 @@ import indigo.ShaderPrimitive._
 import indigo._
 import indigo.scenes._
 import indigo.shared.shader.UltravioletShader
-import indigo.shared.shader.library.IndigoUV
-import indigo.shared.shader.library.WebGL2Base
 import ultraviolet.datatypes.ShaderResult
 
 object UltravioletScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel] {
@@ -122,8 +120,8 @@ object UVShaders:
     new UltravioletShader:
       val id: ShaderId = voronoiId
 
-      inline def modifyVertex: vec4 => Shader[IndigoUV.IndigoVertexEnv, vec4] =
-        (vertex: vec4) => Shader[IndigoUV.IndigoVertexEnv, vec4](_ => vertex)
+      inline def modifyVertex: vec4 => Shader[IndigoVertexEnv, vec4] =
+        (vertex: vec4) => Shader[IndigoVertexEnv, vec4](_ => vertex)
 
       @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
       inline def N22 = (p: vec2) =>
@@ -132,9 +130,9 @@ object UVShaders:
         fract(vec2(a.x * a.y, a.y * a.z))
 
       @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-      inline def modifyColor: vec4 => ultraviolet.syntax.Shader[IndigoUV.IndigoFragmentEnv, vec4] =
+      inline def modifyColor: vec4 => ultraviolet.syntax.Shader[IndigoFragmentEnv, vec4] =
         _ =>
-          Shader[IndigoUV.IndigoFragmentEnv, vec4] { env =>
+          Shader[IndigoFragmentEnv, vec4] { env =>
             val uv: vec2 = (2.0f * env.SCREEN_COORDS - env.SIZE) / env.SIZE.y
 
             var m: Float       = 0.0f
