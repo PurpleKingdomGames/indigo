@@ -5,7 +5,7 @@ import indigo.shared.shader.ShaderId
 import ultraviolet.datatypes.ShaderResult
 import ultraviolet.syntax.*
 
-object BaseMergeShader:
+object BaseBlendShader:
 
   private case class IndigoMergeData(u_projection: mat4, u_scale: vec2)
   private case class IndigoFrameData(

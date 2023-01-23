@@ -2,7 +2,7 @@ package indigo.shared.shader.library
 
 import ultraviolet.syntax.*
 
-class BaseMergeShaderTests extends munit.FunSuite {
+class BaseBlendShaderTests extends munit.FunSuite {
 
   test("Merge WebGL 2.0 vertex shader") {
 
@@ -13,7 +13,7 @@ class BaseMergeShaderTests extends munit.FunSuite {
         }
 
     val actual =
-      BaseMergeShader.vertex(modifyVertex).toOutput.code
+      BaseBlendShader.vertex(modifyVertex).toOutput.code
 
     val expected1: String =
       """
@@ -42,7 +42,7 @@ class BaseMergeShaderTests extends munit.FunSuite {
         }
 
     val actual =
-      BaseMergeShader.fragment(modifyColor).toOutput.code
+      BaseBlendShader.fragment(modifyColor).toOutput.code
 
     val expected1: String =
       """
