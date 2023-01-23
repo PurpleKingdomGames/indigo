@@ -177,7 +177,7 @@ val EntityShader: shared.shader.EntityShader.type = shared.shader.EntityShader
 
 val BaseEntityShader: indigo.shared.shader.library.BaseEntityShader.type = indigo.shared.shader.library.BaseEntityShader
 
-val WebGL2Merge: indigo.shared.shader.library.WebGL2Merge.type = indigo.shared.shader.library.WebGL2Merge
+val BaseMergeShader: indigo.shared.shader.library.BaseMergeShader.type = indigo.shared.shader.library.BaseMergeShader
 
 val IndigoUV: shared.shader.library.IndigoUV.type = shared.shader.library.IndigoUV
 
