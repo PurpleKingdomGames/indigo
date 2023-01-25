@@ -13,11 +13,7 @@ object Shader:
   val defaultLightProgram: String     = "void light(){}"
   val defaultCompositeProgram: String = "void composite(){}"
 
-trait UltravioletShader extends Shader:
-  import ultraviolet.syntax.*
-  def id: ShaderId
-  def vertex: ShaderResult
-  def fragment: ShaderResult
+final case class UltravioletShader(id: ShaderId, vertex: ShaderResult, fragment: ShaderResult) extends Shader
 
 sealed trait EntityShader extends Shader
 object EntityShader:
