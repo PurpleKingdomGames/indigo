@@ -81,83 +81,72 @@ object UVShaders:
 
   import ultraviolet.syntax.*
 
+  inline def modifyVertex: vec4 => Shader[IndigoVertexEnv, vec4] =
+    (vertex: vec4) => Shader[IndigoVertexEnv, vec4](_ => vertex)
+
+  inline def circleSdf = (p: vec2, r: Float) => length(p) - r
+
+  inline def calculateColour = (uv: vec2, sdf: Float) =>
+    val fill       = vec4(uv, 0.0f, 1.0f)
+    val fillAmount = (1.0f - step(0.0f, sdf)) * fill.w
+    vec4(fill.xyz * fillAmount, fillAmount)
+
+  inline def modifyCircleColor: vec4 => Shader[IndigoFragmentEnv, vec4] =
+    _ =>
+      Shader[IndigoFragmentEnv, vec4] { env =>
+        val sdf = circleSdf(env.UV - 0.5f, 0.5f)
+        calculateColour(env.UV, sdf)
+      }
+
   val circleId: ShaderId =
     ShaderId("uv circle")
 
   val circle: UltravioletShader =
-    new UltravioletShader {
-
-      val id: ShaderId = circleId
-
-      inline def modifyVertex: vec4 => Shader[IndigoUV.IndigoVertexEnv, vec4] =
-        (vertex: vec4) => Shader[IndigoUV.IndigoVertexEnv, vec4](_ => vertex)
-
-      inline def circleSdf = (p: vec2, r: Float) => length(p) - r
-
-      inline def calculateColour = (uv: vec2, sdf: Float) =>
-        val fill       = vec4(uv, 0.0f, 1.0f)
-        val fillAmount = (1.0f - step(0.0f, sdf)) * fill.w
-        vec4(fill.xyz * fillAmount, fillAmount)
-
-      inline def modifyColor: vec4 => ultraviolet.syntax.Shader[IndigoUV.IndigoFragmentEnv, vec4] =
-        _ =>
-          Shader[IndigoUV.IndigoFragmentEnv, vec4] { env =>
-            val sdf = circleSdf(env.UV - 0.5f, 0.5f)
-            calculateColour(env.UV, sdf)
-          }
-
-      val vertex: ShaderResult =
-        BaseEntityShader.vertex(modifyVertex)
-
-      val fragment: ShaderResult =
-        BaseEntityShader.fragment(modifyColor)
-    }
+    UltravioletShader(
+      circleId,
+      BaseEntityShader.vertex(modifyVertex),
+      BaseEntityShader.fragment(modifyCircleColor)
+    )
 
   val voronoiId = ShaderId("uv voronoi")
 
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  inline def N22 = (p: vec2) =>
+    var a: vec3 = fract(p.xyx * vec3(123.34f, 234.34f, 345.65f))
+    a = a + dot(a, a + 34.45f)
+    fract(vec2(a.x * a.y, a.y * a.z))
+
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  inline def modifyColor: vec4 => Shader[IndigoFragmentEnv, vec4] =
+    _ =>
+      Shader[IndigoFragmentEnv, vec4] { env =>
+        val uv: vec2 = (2.0f * env.SCREEN_COORDS - env.SIZE) / env.SIZE.y
+
+        var m: Float       = 0.0f
+        val t: Float       = env.TIME
+        var minDist: Float = 100.0f
+
+        _for(0.0f, _ < 50.0f, _ + 1.0f) { i =>
+          val n: vec2 = N22(vec2(i))
+          val p: vec2 = sin(n * t)
+
+          val d = length(uv - p)
+          m = m + smoothstep(0.02f, 0.01f, d)
+
+          if d < minDist then minDist = d
+        }
+
+        // val col: vec3 = vec3(m) // circles
+        // val col: vec3 = vec3(minDist) // simple voronoi
+        val col: vec3 = vec3(minDist) + vec3(m) // simple voronoi + circle
+
+        vec4(col, 1.0f)
+      }
+
   val voronoi: UltravioletShader =
     // Ported from: https://www.youtube.com/watch?v=l-07BXzNdPw&feature=youtu.be
-    new UltravioletShader:
-      val id: ShaderId = voronoiId
-
-      inline def modifyVertex: vec4 => Shader[IndigoVertexEnv, vec4] =
-        (vertex: vec4) => Shader[IndigoVertexEnv, vec4](_ => vertex)
-
-      @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-      inline def N22 = (p: vec2) =>
-        var a: vec3 = fract(p.xyx * vec3(123.34f, 234.34f, 345.65f))
-        a = a + dot(a, a + 34.45f)
-        fract(vec2(a.x * a.y, a.y * a.z))
-
-      @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-      inline def modifyColor: vec4 => ultraviolet.syntax.Shader[IndigoFragmentEnv, vec4] =
-        _ =>
-          Shader[IndigoFragmentEnv, vec4] { env =>
-            val uv: vec2 = (2.0f * env.SCREEN_COORDS - env.SIZE) / env.SIZE.y
-
-            var m: Float       = 0.0f
-            val t: Float       = env.TIME
-            var minDist: Float = 100.0f
-
-            _for(0.0f, _ < 50.0f, _ + 1.0f) { i =>
-              val n: vec2 = N22(vec2(i))
-              val p: vec2 = sin(n * t)
-
-              val d = length(uv - p)
-              m = m + smoothstep(0.02f, 0.01f, d)
-
-              if d < minDist then minDist = d
-            }
-
-            // val col: vec3 = vec3(m) // circles
-            // val col: vec3 = vec3(minDist) // simple voronoi
-            val col: vec3 = vec3(minDist) + vec3(m) // simple voronoi + circle
-
-            vec4(col, 1.0f)
-          }
-
-      val vertex: ShaderResult =
-        BaseEntityShader.vertex(modifyVertex)
-
-      val fragment: ShaderResult =
-        BaseEntityShader.fragment(modifyColor)
+    UltravioletShader(
+      voronoiId,
+      BaseEntityShader.vertex(modifyVertex),
+      BaseEntityShader.fragment(modifyColor)
+    )
