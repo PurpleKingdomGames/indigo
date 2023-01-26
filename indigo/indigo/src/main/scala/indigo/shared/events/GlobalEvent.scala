@@ -108,37 +108,29 @@ object MouseButton:
   */
 sealed trait MouseEvent extends InputEvent:
   val position: Point
-  val x: Int
-  val y: Int
+  val x: Int = position.x
+  val y: Int = position.y
 
 object MouseEvent:
 
   /** The mouse has been clicked.
     *
-    * @param x
-    *   X coord relative to magnification level
-    * @param y
-    *   Y coord relative to magnification level
+    * @param position 
+    *   mouse position relative to magnification level
     */
-  final case class Click(position: Point) extends MouseEvent:
-    val x: Int = position.x
-    val y: Int = position.y
+  final case class Click(position: Point) extends MouseEvent
   object Click:
     def apply(x: Int, y: Int): Click =
       Click(Point(x, y))
 
   /** The left mouse button was released.
     *
-    * @param x
-    *   X coord relative to magnification level
-    * @param y
-    *   Y coord relative to magnification level
+    * @param position 
+    *   mouse position relative to magnification level
     * @param button
     *   Button that triggered this event
     */
-  final case class MouseUp(position: Point, button: MouseButton) extends MouseEvent:
-    val x: Int = position.x
-    val y: Int = position.y
+  final case class MouseUp(position: Point, button: MouseButton) extends MouseEvent
   object MouseUp:
     def apply(position: Point): MouseUp =
       MouseUp(position, MouseButton.LeftMouseButton)
@@ -149,16 +141,12 @@ object MouseEvent:
 
   /** The left mouse button was pressed down.
     *
-    * @param x
-    *   X coord relative to magnification level
-    * @param y
-    *   Y coord relative to magnification level
+    * @param position 
+    *   mouse position relative to magnification level
     * @param button
     *   Button that triggered this event
     */
-  final case class MouseDown(position: Point, button: MouseButton) extends MouseEvent:
-    val x: Int = position.x
-    val y: Int = position.y
+  final case class MouseDown(position: Point, button: MouseButton) extends MouseEvent
   object MouseDown:
     def apply(position: Point): MouseDown =
       MouseDown(position, MouseButton.LeftMouseButton)
@@ -169,14 +157,10 @@ object MouseEvent:
 
   /** The mouse was moved to a new position.
     *
-    * @param x
-    *   X coord relative to magnification level
-    * @param y
-    *   Y coord relative to magnification level
+    * @param position 
+    *   mouse position relative to magnification level
     */
-  final case class Move(position: Point) extends MouseEvent:
-    val x: Int = position.x
-    val y: Int = position.y
+  final case class Move(position: Point) extends MouseEvent
 
   object Move:
     def apply(x: Int, y: Int): Move =
@@ -189,15 +173,23 @@ object MouseEvent:
     * @param amount
     *   vertical amount of pixels, pages or other unit, depending on delta mode, the Y axis was scrolled
     */
-  final case class Wheel(position: Point, amount: Double) extends MouseEvent:
-    val x: Int = position.x
-    val y: Int = position.y
+  final case class Wheel(position: Point, amount: Double) extends MouseEvent
 
   object Wheel:
     def apply(x: Int, y: Int, amount: Double): Wheel =
       Wheel(Point(x, y), amount)
 
 end MouseEvent
+
+/** Represents all mouse, pen and touch events
+ */
+sealed trait PointerEvent extends InputEvent:
+  def position: Point
+object PointerEvent:
+  case class PointerDown(position: Point) extends PointerEvent
+  case class PointerUp(position: Point) extends PointerEvent
+  case class PointerMove(position: Point) extends PointerEvent
+  case class PointerCancel(position: Point) extends PointerEvent
 
 /** Represents all keyboard events
   */

@@ -5,6 +5,7 @@ import indigo.shared.datatypes.Point
 import indigo.shared.events.KeyboardEvent
 import indigo.shared.events.MouseButton
 import indigo.shared.events.MouseEvent
+import indigo.shared.events.PointerEvent
 import org.scalajs.dom
 import org.scalajs.dom.document
 import org.scalajs.dom.html
@@ -34,33 +35,44 @@ final class WorldEvents:
 
   final case class Handlers(
       canvas: html.Canvas,
-      onclick: dom.MouseEvent => Unit,
-      onwheel: dom.WheelEvent => Unit,
-      onmousemove: dom.MouseEvent => Unit,
-      onmousedown: dom.MouseEvent => Unit,
-      onmouseup: dom.MouseEvent => Unit,
-      onkeydown: dom.KeyboardEvent => Unit,
-      onkeyup: dom.KeyboardEvent => Unit,
-      oncontextmenu: Option[dom.MouseEvent => Unit]
+      onClick: dom.MouseEvent => Unit,
+      onWheel: dom.WheelEvent => Unit,
+      onMouseMove: dom.MouseEvent => Unit,
+      onMouseDown: dom.MouseEvent => Unit,
+      onMouseUp: dom.MouseEvent => Unit,
+      onKeyDown: dom.KeyboardEvent => Unit,
+      onKeyUp: dom.KeyboardEvent => Unit,
+      onContextMenu: Option[dom.MouseEvent => Unit],
+      onPointerDown: dom.PointerEvent => Unit,
+      onPointerUp: dom.PointerEvent => Unit,
+      onPointerMove: dom.PointerEvent => Unit,
+      onPointerCancel: dom.PointerEvent => Unit
   ) {
-    canvas.onclick = onclick
-    canvas.onwheel = onwheel
-    canvas.onmousemove = onmousemove
-    canvas.onmousedown = onmousedown
-    canvas.onmouseup = onmouseup
-    oncontextmenu.foreach(x => canvas.oncontextmenu = x)
-    document.onkeydown = onkeydown
-    document.onkeyup = onkeyup
+    canvas.addEventListener("click", onClick)
+    canvas.addEventListener("wheel", onWheel)
+    canvas.addEventListener("mousemove", onMouseMove)
+    canvas.addEventListener("mousedown", onMouseDown)
+    canvas.addEventListener("mouseup", onMouseUp)
+
+    canvas.addEventListener("pointerdown", onPointerDown)
+    canvas.addEventListener("pointerup", onPointerUp)
+    canvas.addEventListener("pointermove", onPointerMove)
+    canvas.addEventListener("pointercancel", onPointerCancel)
+
+    onContextMenu.foreach(handler => canvas.addEventListener("contextmenu", handler))
+
+    document.addEventListener("keydown", onKeyDown)
+    document.addEventListener("keyup", onKeyUp)
 
     def unbind(): Unit = {
-      canvas.removeEventListener("click", onclick)
-      canvas.removeEventListener("wheel", onwheel)
-      canvas.removeEventListener("mousemove", onmousemove)
-      canvas.removeEventListener("mousedown", onmousedown)
-      canvas.removeEventListener("mouseup", onmouseup)
-      oncontextmenu.foreach(x => canvas.removeEventListener("contextmenu", x))
-      document.removeEventListener("keydown", onkeydown)
-      document.removeEventListener("keyup", onkeyup)
+      canvas.removeEventListener("click", onClick)
+      canvas.removeEventListener("wheel", onWheel)
+      canvas.removeEventListener("mousemove", onMouseMove)
+      canvas.removeEventListener("mousedown", onMouseDown)
+      canvas.removeEventListener("mouseup", onMouseUp)
+      onContextMenu.foreach(x => canvas.removeEventListener("contextmenu", x))
+      document.removeEventListener("keydown", onKeyDown)
+      document.removeEventListener("keyup", onKeyUp)
     }
   }
 
@@ -73,14 +85,9 @@ final class WorldEvents:
     ): Handlers = Handlers(
       canvas = canvas,
       // Onclick only supports the left mouse button
-      onclick = { (e: dom.MouseEvent) =>
-        val rect = canvas.getBoundingClientRect()
-
+      onClick = { (e: dom.MouseEvent) =>
         globalEventStream.pushGlobalEvent(
-          MouseEvent.Click(
-            absoluteCoordsX(e.pageX.toInt - rect.left.toInt) / magnification,
-            absoluteCoordsY(e.pageY.toInt - rect.top.toInt) / magnification
-          )
+          MouseEvent.Click(e.position(magnification, canvas))
         )
       },
       /*
@@ -91,62 +98,67 @@ final class WorldEvents:
 
           More info: https://developer.mozilla.org/en-US/docs/Web/API/WheelEvent
        */
-      onwheel = { (e: dom.WheelEvent) =>
-        val rect = canvas.getBoundingClientRect()
+      onWheel = { (e: dom.WheelEvent) =>
         val wheel = MouseEvent.Wheel(
-          Point(
-            absoluteCoordsX(e.pageX.toInt - rect.left.toInt) / magnification,
-            absoluteCoordsY(e.pageY.toInt - rect.top.toInt) / magnification
-          ),
+          e.position(magnification, canvas),
           e.deltaY
         )
 
         globalEventStream.pushGlobalEvent(wheel)
       },
-      onmousemove = { (e: dom.MouseEvent) =>
-        val rect = canvas.getBoundingClientRect()
-
+      onMouseMove = { (e: dom.MouseEvent) =>
         globalEventStream.pushGlobalEvent(
-          MouseEvent.Move(
-            absoluteCoordsX(e.pageX.toInt - rect.left.toInt) / magnification,
-            absoluteCoordsY(e.pageY.toInt - rect.top.toInt) / magnification
-          )
+          MouseEvent.Move(e.position(magnification, canvas))
         )
       },
-      onmousedown = { (e: dom.MouseEvent) =>
-        val rect = canvas.getBoundingClientRect()
-
+      onMouseDown = { (e: dom.MouseEvent) =>
         MouseButton.fromOrdinalOpt(e.button).foreach { mouseButton =>
           globalEventStream.pushGlobalEvent(
             MouseEvent.MouseDown(
-              absoluteCoordsX(e.pageX.toInt - rect.left.toInt) / magnification,
-              absoluteCoordsY(e.pageY.toInt - rect.top.toInt) / magnification,
+              e.position(magnification, canvas),
               mouseButton
             )
           )
         }
       },
-      onmouseup = { (e: dom.MouseEvent) =>
-        val rect = canvas.getBoundingClientRect()
-
+      onMouseUp = { (e: dom.MouseEvent) =>
         MouseButton.fromOrdinalOpt(e.button).foreach { mouseButton =>
           globalEventStream.pushGlobalEvent(
             MouseEvent.MouseUp(
-              absoluteCoordsX(e.pageX.toInt - rect.left.toInt) / magnification,
-              absoluteCoordsY(e.pageY.toInt - rect.top.toInt) / magnification,
+              e.position(magnification, canvas),
               mouseButton
             )
           )
         }
       },
-      onkeydown = { (e: dom.KeyboardEvent) =>
+      onKeyDown = { (e: dom.KeyboardEvent) =>
         globalEventStream.pushGlobalEvent(KeyboardEvent.KeyDown(Key(e.keyCode, e.key)))
       },
-      onkeyup = { (e: dom.KeyboardEvent) =>
+      onKeyUp = { (e: dom.KeyboardEvent) =>
         globalEventStream.pushGlobalEvent(KeyboardEvent.KeyUp(Key(e.keyCode, e.key)))
       },
       // Prevent right mouse button from popping up the context menu
-      oncontextmenu = if disableContextMenu then Some((e: dom.MouseEvent) => e.preventDefault()) else None
+      onContextMenu = if disableContextMenu then Some((e: dom.MouseEvent) => e.preventDefault()) else None,
+      onPointerDown = { (e: dom.PointerEvent) =>
+        globalEventStream.pushGlobalEvent(
+          PointerEvent.PointerDown(e.position(magnification, canvas))
+        )
+      },
+      onPointerUp = { (e: dom.PointerEvent) =>
+        globalEventStream.pushGlobalEvent(
+          PointerEvent.PointerUp(e.position(magnification, canvas))
+        )
+      },
+      onPointerMove = { (e: dom.PointerEvent) =>
+        globalEventStream.pushGlobalEvent(
+          PointerEvent.PointerMove(e.position(magnification, canvas))
+        )
+      },
+      onPointerCancel = { (e: dom.PointerEvent) =>
+        globalEventStream.pushGlobalEvent(
+          PointerEvent.PointerCancel(e.position(magnification, canvas))
+        )
+      }
     )
   }
 
@@ -165,5 +177,17 @@ final class WorldEvents:
     x.unbind()
     _handlers = None
   }
+
+  extension (e: dom.MouseEvent)
+    /** @return
+      *   position relative to magnification level
+      */
+    def position(magnification: Int, canvas: html.Canvas): Point =
+      val rect = canvas.getBoundingClientRect()
+
+      Point(
+        absoluteCoordsX(e.pageX.toInt - rect.left.toInt) / magnification,
+        absoluteCoordsY(e.pageY.toInt - rect.top.toInt) / magnification
+      )
 
 end WorldEvents
