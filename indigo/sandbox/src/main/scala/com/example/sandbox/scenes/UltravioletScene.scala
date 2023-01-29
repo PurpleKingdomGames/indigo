@@ -5,11 +5,8 @@ import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
 import com.example.sandbox.SandboxView
 import com.example.sandbox.SandboxViewModel
-import indigo.ShaderPrimitive.*
 import indigo.*
 import indigo.scenes.*
-import indigo.shared.shader.UltravioletShader
-import ultraviolet.datatypes.ShaderResult
 
 object UltravioletScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel] {
 
