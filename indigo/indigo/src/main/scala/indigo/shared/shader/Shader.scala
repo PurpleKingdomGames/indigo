@@ -3,7 +3,10 @@ package indigo.shared.shader
 import indigo.shared.assets.AssetName
 import indigo.shared.shader.library.BaseBlendShader
 import indigo.shared.shader.library.BaseEntityShader
+import indigo.shared.shader.library.IndigoUV
 import ultraviolet.datatypes.ShaderResult
+import ultraviolet.syntax.vec4
+import ultraviolet.syntax.Shader as UVShader
 
 sealed trait Shader derives CanEqual:
   def id: ShaderId
@@ -16,6 +19,24 @@ object Shader:
   val defaultCompositeProgram: String = "void composite(){}"
 
 final case class UltravioletShader(id: ShaderId, vertex: ShaderResult, fragment: ShaderResult) extends Shader
+object UltravioletShader:
+
+  inline def noopVertex: vec4 => UVShader[IndigoUV.VertexEnv, vec4] =
+    (vertex: vec4) => UVShader[IndigoUV.VertexEnv, vec4](_ => vertex)
+
+  inline def entityFragment(id: ShaderId, fragment: ShaderResult): UltravioletShader =
+    UltravioletShader(
+      id,
+      EntityShader.vertex(noopVertex),
+      fragment
+    )
+
+  inline def blendFragment(id: ShaderId, fragment: ShaderResult): UltravioletShader =
+    UltravioletShader(
+      id,
+      BlendShader.vertex(noopVertex),
+      fragment
+    )
 
 sealed trait EntityShader extends Shader
 object EntityShader extends BaseEntityShader:

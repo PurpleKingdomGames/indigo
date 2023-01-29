@@ -90,10 +90,6 @@ object UVShaders:
 
   import ultraviolet.syntax.*
 
-  // Noop vertex
-  inline def modifyVertex: vec4 => Shader[VertexEnv, vec4] =
-    (vertex: vec4) => Shader[VertexEnv, vec4](_ => vertex)
-
   // Blend
 
   inline def makeRedder: vec4 => Shader[BlendFragmentEnv, vec4] =
@@ -107,9 +103,8 @@ object UVShaders:
     ShaderId("red blend")
 
   val redBlend: UltravioletShader =
-    UltravioletShader(
+    UltravioletShader.blendFragment(
       redBlendId,
-      BlendShader.vertex(modifyVertex),
       BlendShader.fragment(makeRedder)
     )
 
@@ -184,8 +179,7 @@ object UVShaders:
 
   val voronoi: UltravioletShader =
     // Ported from: https://www.youtube.com/watch?v=l-07BXzNdPw&feature=youtu.be
-    UltravioletShader(
+    UltravioletShader.entityFragment(
       voronoiId,
-      EntityShader.vertex(modifyVertex),
       EntityShader.fragment(modifyColor)
     )
