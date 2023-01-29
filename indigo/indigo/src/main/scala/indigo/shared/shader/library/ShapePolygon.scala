@@ -21,7 +21,7 @@ object ShapePolygon:
       Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null", "scalafix:DisableSyntax.while")
     )
     inline def shader =
-      Shader[IndigoFragmentEnv & IndigoShapeData] { env =>
+      Shader[FragmentEnv & IndigoShapeData] { env =>
         import ShapeShaderFunctions.*
 
         ubo[IndigoShapeData]

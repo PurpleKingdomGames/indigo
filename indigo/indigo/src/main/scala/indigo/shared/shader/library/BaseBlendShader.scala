@@ -5,19 +5,19 @@ import indigo.shared.shader.ShaderId
 import ultraviolet.datatypes.ShaderResult
 import ultraviolet.syntax.*
 
-object BaseBlendShader:
+trait BaseBlendShader:
 
-  private case class IndigoMergeData(u_projection: mat4, u_scale: vec2)
-  private case class IndigoFrameData(
+  protected case class IndigoMergeData(u_projection: mat4, u_scale: vec2)
+  protected case class IndigoFrameData(
       TIME: highp[Float], // Running time
       VIEWPORT_SIZE: vec2 // Size of the viewport in pixels
   )
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  private case class VertexEnv(var gl_Position: vec4)
+  protected case class VertexEnv(var gl_Position: vec4)
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  inline def vertex(inline modifyVertex: vec4 => Shader[Unit, vec4]): ShaderResult =
+  inline def vertex(inline modifyVertex: vec4 => Shader[IndigoUV.VertexEnv, vec4]): ShaderResult =
     Shader[IndigoMergeData & VertexEnv] { env =>
 
       @layout(0) @in val a_verticesAndCoords: vec4 = null
@@ -55,7 +55,7 @@ object BaseBlendShader:
       @global var VERTEX: vec4 = null
 
       def vertex(): Unit =
-        VERTEX = modifyVertex(VERTEX).run(())
+        VERTEX = modifyVertex(VERTEX).run(IndigoUV.VertexEnv.reference)
 
       def main: Unit =
         UV = a_verticesAndCoords.zw
@@ -74,7 +74,7 @@ object BaseBlendShader:
     )
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  inline def fragment(inline modifyColor: vec4 => Shader[Unit, vec4]): ShaderResult =
+  inline def fragment(inline modifyColor: vec4 => Shader[IndigoUV.BlendFragmentEnv, vec4]): ShaderResult =
     Shader {
 
       @in val SIZE: vec2 = null // In this case, screen size.
@@ -103,12 +103,12 @@ object BaseBlendShader:
       @global var COLOR: vec4 = null
 
       def fragment(): Unit =
-        COLOR = modifyColor(COLOR).run(())
+        COLOR = modifyColor(COLOR).run(IndigoUV.BlendFragmentEnv.reference)
 
       def main: Unit =
         SRC = texture2D(SRC_CHANNEL, UV)
         DST = texture2D(DST_CHANNEL, UV)
-        COLOR = vec4(0.0f)
+        COLOR = SRC
 
         // Colour
         fragment()

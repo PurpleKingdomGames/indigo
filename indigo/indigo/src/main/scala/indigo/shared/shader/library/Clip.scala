@@ -19,7 +19,7 @@ object Clip:
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   object vertex:
     inline def shader =
-      Shader[IndigoVertexEnv & IndigoClipData] { env =>
+      Shader[VertexEnv & IndigoClipData] { env =>
         ubo[IndigoClipData]
 
         def calcCurrentFrame(clipTotalTime: Float): Float = {

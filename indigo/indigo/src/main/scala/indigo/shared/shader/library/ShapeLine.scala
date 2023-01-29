@@ -14,7 +14,7 @@ object ShapeLine:
 
   object fragment:
     inline def shader =
-      Shader[IndigoFragmentEnv & IndigoShapeData] { env =>
+      Shader[FragmentEnv & IndigoShapeData] { env =>
         ubo[IndigoShapeData]
 
         def sdfCalc(p: vec2, a: vec2, b: vec2): Float =

@@ -16,7 +16,7 @@ object IndigoUV:
   private val TAU_8: Float = PI_4
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  final case class IndigoVertexEnv(
+  final case class VertexEnv(
       TIME: Float,         // Running time
       VIEWPORT_SIZE: vec2, // Size of the viewport in pixels
 
@@ -57,9 +57,9 @@ object IndigoUV:
       TAU_4: Float,
       TAU_8: Float,
   )
-  object IndigoVertexEnv:
-    def reference: IndigoVertexEnv =
-      IndigoVertexEnv(
+  object VertexEnv:
+    def reference: VertexEnv =
+      VertexEnv(
         TIME = 0.0f,
         VIEWPORT_SIZE = vec2(0.0f),
         ATLAS_SIZE = vec2(0.0f),
@@ -98,7 +98,7 @@ object IndigoUV:
       )
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  final case class IndigoFragmentEnv(
+  final case class FragmentEnv(
       SRC_CHANNEL: sampler2D.type,
       TIME: Float,         // Running time
       VIEWPORT_SIZE: vec2, // Size of the viewport in pixels
@@ -151,9 +151,9 @@ object IndigoUV:
       TAU_4: Float,
       TAU_8: Float
   )
-  object IndigoFragmentEnv:
-    def reference: IndigoFragmentEnv =
-      IndigoFragmentEnv(
+  object FragmentEnv:
+    def reference: FragmentEnv =
+      FragmentEnv(
         SRC_CHANNEL = sampler2D,
         TIME = 0.0f,
         VIEWPORT_SIZE = vec2(0.0f),
@@ -201,7 +201,7 @@ object IndigoUV:
         TAU_8 = TAU_8
       )
 
-  final case class IndigoBlendFragmentEnv(
+  final case class BlendFragmentEnv(
       SRC_CHANNEL: sampler2D.type,
       DST_CHANNEL: sampler2D.type,
       TIME: Float,         // Running time
@@ -222,9 +222,9 @@ object IndigoUV:
       TAU_4: Float,
       TAU_8: Float
   )
-  object IndigoBlendFragmentEnv:
-    def reference: IndigoBlendFragmentEnv =
-      IndigoBlendFragmentEnv(
+  object BlendFragmentEnv:
+    def reference: BlendFragmentEnv =
+      BlendFragmentEnv(
         SRC_CHANNEL = sampler2D,
         DST_CHANNEL = sampler2D,
         TIME = 0.0f,

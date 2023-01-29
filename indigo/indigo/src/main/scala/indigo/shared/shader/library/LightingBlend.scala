@@ -9,7 +9,7 @@ object LightingBlend:
 
   object fragment:
     inline def shader =
-      Shader[IndigoBlendFragmentEnv & IndigoLightingBlendData, Unit] { env =>
+      Shader[BlendFragmentEnv & IndigoLightingBlendData, Unit] { env =>
         ubo[IndigoLightingBlendData]
 
         def fragment: vec4 =

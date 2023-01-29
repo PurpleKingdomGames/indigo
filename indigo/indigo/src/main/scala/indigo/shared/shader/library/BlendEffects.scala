@@ -15,7 +15,7 @@ object BlendEffects:
 
   object fragment:
     inline def shader =
-      Shader[IndigoBlendFragmentEnv & IndigoBlendEffectsData] { env =>
+      Shader[BlendFragmentEnv & IndigoBlendEffectsData] { env =>
         import ImageEffectFunctions.*
 
         ubo[IndigoBlendEffectsData]

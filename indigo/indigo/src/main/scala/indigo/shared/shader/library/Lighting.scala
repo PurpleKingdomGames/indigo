@@ -14,7 +14,7 @@ object Lighting:
   object prepare:
     @SuppressWarnings(Array("scalafix:DisableSyntax.null", "scalafix:DisableSyntax.var"))
     inline def shader =
-      Shader[IndigoFragmentEnv & IndigoMaterialLightingData] { env =>
+      Shader[FragmentEnv & IndigoMaterialLightingData] { env =>
 
         @const val SCREEN_GAMMA: Float = 2.2f
 
@@ -101,7 +101,7 @@ object Lighting:
 
     @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
     inline def shader =
-      Shader[IndigoFragmentEnv & LightEnv] { env =>
+      Shader[FragmentEnv & LightEnv] { env =>
         def light: Unit =
           if (env.LIGHT_ACTIVE == 1) { // light is active
 
@@ -204,7 +204,7 @@ object Lighting:
     final case class CompEnv(emissiveColor: vec4, lightAcc: vec4, specularAcc: vec4)
 
     inline def shader =
-      Shader[IndigoFragmentEnv & CompEnv] { env =>
+      Shader[FragmentEnv & CompEnv] { env =>
         def composite: vec4 =
           val emmisiveAlpha: Float = clamp(env.emissiveColor.x + env.emissiveColor.y + env.emissiveColor.z, 0.0f, 1.0f)
           val emissiveResult: vec4 = vec4(env.emissiveColor.xyz * emmisiveAlpha, emmisiveAlpha)

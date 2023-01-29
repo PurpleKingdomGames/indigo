@@ -1,6 +1,8 @@
 package indigo.shared.shader
 
 import indigo.shared.assets.AssetName
+import indigo.shared.shader.library.BaseBlendShader
+import indigo.shared.shader.library.BaseEntityShader
 import ultraviolet.datatypes.ShaderResult
 
 sealed trait Shader derives CanEqual:
@@ -16,7 +18,7 @@ object Shader:
 final case class UltravioletShader(id: ShaderId, vertex: ShaderResult, fragment: ShaderResult) extends Shader
 
 sealed trait EntityShader extends Shader
-object EntityShader:
+object EntityShader extends BaseEntityShader:
 
   final case class Source(
       id: ShaderId,
@@ -95,7 +97,7 @@ object EntityShader:
       )
 
 sealed trait BlendShader extends Shader
-object BlendShader:
+object BlendShader extends BaseBlendShader:
 
   final case class Source(
       id: ShaderId,
