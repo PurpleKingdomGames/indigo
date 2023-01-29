@@ -108,7 +108,8 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
           LegacyEffects.entityShader,
           Archetype.shader,
           UVShaders.circle,
-          UVShaders.voronoi
+          UVShaders.voronoi,
+          UVShaders.redBlend
         )
         .addShaders(Refraction.shaders)
     )

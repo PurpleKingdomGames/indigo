@@ -5,9 +5,9 @@ import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
 import com.example.sandbox.SandboxView
 import com.example.sandbox.SandboxViewModel
-import indigo.ShaderPrimitive._
-import indigo._
-import indigo.scenes._
+import indigo.ShaderPrimitive.*
+import indigo.*
+import indigo.scenes.*
 import indigo.shared.shader.UltravioletShader
 import ultraviolet.datatypes.ShaderResult
 
@@ -57,6 +57,7 @@ object UltravioletScene extends Scene[SandboxStartupData, SandboxGameModel, Sand
             UVEntity(140, 50, 32, 32, Depth.zero, ShaderData(UVShaders.circleId))
           )
         )
+        .withBlendMaterial(MakeRedBlend)
     )
 
 }
@@ -77,12 +78,48 @@ final case class UVEntity(x: Int, y: Int, width: Int, height: Int, depth: Depth,
   val eventHandlerEnabled: Boolean                                   = false
   def eventHandler: ((UVEntity, GlobalEvent)) => Option[GlobalEvent] = Function.const(None)
 
+case object MakeRedBlend extends BlendMaterial derives CanEqual {
+  lazy val toShaderData: BlendShaderData =
+    BlendShaderData(
+      UVShaders.redBlendId,
+      Batch.empty
+    )
+}
+
 object UVShaders:
 
   import ultraviolet.syntax.*
 
-  inline def modifyVertex: vec4 => Shader[IndigoVertexEnv, vec4] =
-    (vertex: vec4) => Shader[IndigoVertexEnv, vec4](_ => vertex)
+  // Noop vertex
+  inline def modifyVertex: vec4 => Shader[VertexEnv, vec4] =
+    (vertex: vec4) => Shader[VertexEnv, vec4](_ => vertex)
+
+  // Blend
+
+  inline def makeRedder: vec4 => Shader[BlendFragmentEnv, vec4] =
+    (color: vec4) =>
+      Shader { env =>
+        val amount = abs(sin(env.TIME))
+        vec4(color.rgb * vec3(1.0, amount, amount), color.a)
+      }
+
+  val redBlendId: ShaderId =
+    ShaderId("red blend")
+
+  val redBlend: UltravioletShader =
+    UltravioletShader(
+      redBlendId,
+      BlendShader.vertex(modifyVertex),
+      BlendShader.fragment(makeRedder)
+    )
+
+  // Circle - Entity
+
+  inline def orbitVertex: vec4 => Shader[VertexEnv, vec4] =
+    (v: vec4) =>
+      Shader[VertexEnv, vec4] { env =>
+        vec4(v.x + sin(env.TIME * 0.5f), v.y + cos(env.TIME * 0.5f), v.z, v.w)
+      }
 
   inline def circleSdf = (p: vec2, r: Float) => length(p) - r
 
@@ -91,9 +128,9 @@ object UVShaders:
     val fillAmount = (1.0f - step(0.0f, sdf)) * fill.w
     vec4(fill.xyz * fillAmount, fillAmount)
 
-  inline def modifyCircleColor: vec4 => Shader[IndigoFragmentEnv, vec4] =
+  inline def modifyCircleColor: vec4 => Shader[FragmentEnv, vec4] =
     _ =>
-      Shader[IndigoFragmentEnv, vec4] { env =>
+      Shader[FragmentEnv, vec4] { env =>
         val sdf = circleSdf(env.UV - 0.5f, 0.5f)
         calculateColour(env.UV, sdf)
       }
@@ -104,9 +141,11 @@ object UVShaders:
   val circle: UltravioletShader =
     UltravioletShader(
       circleId,
-      BaseEntityShader.vertex(modifyVertex),
-      BaseEntityShader.fragment(modifyCircleColor)
+      EntityShader.vertex(orbitVertex),
+      EntityShader.fragment(modifyCircleColor)
     )
+
+  // Voronoi - Entity
 
   val voronoiId = ShaderId("uv voronoi")
 
@@ -117,9 +156,9 @@ object UVShaders:
     fract(vec2(a.x * a.y, a.y * a.z))
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  inline def modifyColor: vec4 => Shader[IndigoFragmentEnv, vec4] =
+  inline def modifyColor: vec4 => Shader[FragmentEnv, vec4] =
     _ =>
-      Shader[IndigoFragmentEnv, vec4] { env =>
+      Shader[FragmentEnv, vec4] { env =>
         val uv: vec2 = (2.0f * env.SCREEN_COORDS - env.SIZE) / env.SIZE.y
 
         var m: Float       = 0.0f
@@ -147,6 +186,6 @@ object UVShaders:
     // Ported from: https://www.youtube.com/watch?v=l-07BXzNdPw&feature=youtu.be
     UltravioletShader(
       voronoiId,
-      BaseEntityShader.vertex(modifyVertex),
-      BaseEntityShader.fragment(modifyColor)
+      EntityShader.vertex(modifyVertex),
+      EntityShader.fragment(modifyColor)
     )
