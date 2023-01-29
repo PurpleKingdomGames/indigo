@@ -175,6 +175,9 @@ val BlendShader: shared.shader.BlendShader.type = shared.shader.BlendShader
 type EntityShader = shared.shader.EntityShader
 val EntityShader: shared.shader.EntityShader.type = shared.shader.EntityShader
 
+type UltravioletShader = shared.shader.UltravioletShader
+val UltravioletShader: shared.shader.UltravioletShader.type = shared.shader.UltravioletShader
+
 type VertexEnv = shared.shader.library.IndigoUV.VertexEnv
 val VertexEnv: shared.shader.library.IndigoUV.VertexEnv.type =
   shared.shader.library.IndigoUV.VertexEnv
