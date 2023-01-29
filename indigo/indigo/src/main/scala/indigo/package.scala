@@ -175,23 +175,17 @@ val BlendShader: shared.shader.BlendShader.type = shared.shader.BlendShader
 type EntityShader = shared.shader.EntityShader
 val EntityShader: shared.shader.EntityShader.type = shared.shader.EntityShader
 
-val BaseEntityShader: indigo.shared.shader.library.BaseEntityShader.type = indigo.shared.shader.library.BaseEntityShader
+type VertexEnv = shared.shader.library.IndigoUV.VertexEnv
+val VertexEnv: shared.shader.library.IndigoUV.VertexEnv.type =
+  shared.shader.library.IndigoUV.VertexEnv
 
-val BaseBlendShader: indigo.shared.shader.library.BaseBlendShader.type = indigo.shared.shader.library.BaseBlendShader
+type FragmentEnv = shared.shader.library.IndigoUV.FragmentEnv
+val FragmentEnv: shared.shader.library.IndigoUV.FragmentEnv.type =
+  shared.shader.library.IndigoUV.FragmentEnv
 
-val IndigoUV: shared.shader.library.IndigoUV.type = shared.shader.library.IndigoUV
-
-type IndigoVertexEnv = shared.shader.library.IndigoUV.IndigoVertexEnv
-val IndigoVertexEnv: shared.shader.library.IndigoUV.IndigoVertexEnv.type =
-  shared.shader.library.IndigoUV.IndigoVertexEnv
-
-type IndigoFragmentEnv = shared.shader.library.IndigoUV.IndigoFragmentEnv
-val IndigoFragmentEnv: shared.shader.library.IndigoUV.IndigoFragmentEnv.type =
-  shared.shader.library.IndigoUV.IndigoFragmentEnv
-
-type IndigoBlendFragmentEnv = shared.shader.library.IndigoUV.IndigoBlendFragmentEnv
-val IndigoBlendFragmentEnv: shared.shader.library.IndigoUV.IndigoBlendFragmentEnv.type =
-  shared.shader.library.IndigoUV.IndigoBlendFragmentEnv
+type BlendFragmentEnv = shared.shader.library.IndigoUV.BlendFragmentEnv
+val BlendFragmentEnv: shared.shader.library.IndigoUV.BlendFragmentEnv.type =
+  shared.shader.library.IndigoUV.BlendFragmentEnv
 
 type ShaderId = shared.shader.ShaderId
 val ShaderId: shared.shader.ShaderId.type = shared.shader.ShaderId

@@ -10,7 +10,7 @@ object LegacyEffectsShaders:
   object vertex:
     @SuppressWarnings(Array("scalafix:DisableSyntax.null", "scalafix:DisableSyntax.var"))
     inline def shader =
-      Shader[IndigoVertexEnv] { env =>
+      Shader[VertexEnv] { env =>
         @out var v_offsetTL: vec2 = null
         @out var v_offsetTC: vec2 = null
         @out var v_offsetTR: vec2 = null
@@ -78,7 +78,7 @@ object LegacyEffectsShaders:
 
     @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
     inline def shader =
-      Shader[IndigoFragmentEnv & IndigoLegacyEffectsData] { env =>
+      Shader[FragmentEnv & IndigoLegacyEffectsData] { env =>
         import ImageEffectFunctions.*
         import TileAndStretch.*
 

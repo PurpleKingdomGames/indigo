@@ -16,7 +16,7 @@ object ShapeCircle:
 
   object fragment:
     inline def shader =
-      Shader[IndigoFragmentEnv & IndigoShapeData] { env =>
+      Shader[FragmentEnv & IndigoShapeData] { env =>
         import ShapeShaderFunctions.*
 
         ubo[IndigoShapeData]

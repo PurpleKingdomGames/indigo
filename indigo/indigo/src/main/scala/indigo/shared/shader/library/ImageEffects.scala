@@ -15,7 +15,7 @@ object ImageEffects:
 
   object fragment:
     inline def shader =
-      Shader[IndigoFragmentEnv & IndigoImageEffectsData] { env =>
+      Shader[FragmentEnv & IndigoImageEffectsData] { env =>
         import ImageEffectFunctions.*
         import TileAndStretch.*
 

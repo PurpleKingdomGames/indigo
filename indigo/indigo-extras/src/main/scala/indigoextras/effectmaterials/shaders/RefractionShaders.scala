@@ -10,7 +10,7 @@ object RefractionShaders:
 
   object refractionFragment:
     inline def shader =
-      Shader[IndigoRefractionBlendData & IndigoBlendFragmentEnv] { env =>
+      Shader[IndigoRefractionBlendData & BlendFragmentEnv] { env =>
         ubo[IndigoRefractionBlendData]
 
         def fragment: vec4 =
@@ -26,7 +26,7 @@ object RefractionShaders:
 
   object normalMinusBlue:
     inline def shader =
-      Shader[IndigoBitmapData & IndigoFragmentEnv] { env =>
+      Shader[IndigoBitmapData & FragmentEnv] { env =>
         import TileAndStretch.*
 
         ubo[IndigoBitmapData]

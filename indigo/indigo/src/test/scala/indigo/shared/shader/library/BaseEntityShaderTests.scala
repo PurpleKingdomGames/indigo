@@ -1,19 +1,20 @@
 package indigo.shared.shader.library
 
+import indigo.shared.shader.EntityShader
 import ultraviolet.syntax.*
 
 class BaseEntityShaderTests extends munit.FunSuite {
 
   test("Base WebGL 2.0 vertex shader") {
 
-    inline def modifyVertex: vec4 => Shader[IndigoUV.IndigoVertexEnv, vec4] =
+    inline def modifyVertex: vec4 => Shader[IndigoUV.VertexEnv, vec4] =
       (input: vec4) =>
-        Shader[IndigoUV.IndigoVertexEnv, vec4] { _ =>
+        Shader[IndigoUV.VertexEnv, vec4] { _ =>
           input + vec4(1.0f)
         }
 
     val actual =
-      BaseEntityShader.vertex(modifyVertex).toOutput.code
+      EntityShader.vertex(modifyVertex).toOutput.code
 
     val expected1: String =
       """
@@ -35,14 +36,14 @@ class BaseEntityShaderTests extends munit.FunSuite {
 
   test("Base WebGL 2.0 fragment shader") {
 
-    inline def modifyColor: vec4 => Shader[IndigoUV.IndigoFragmentEnv, vec4] =
+    inline def modifyColor: vec4 => Shader[IndigoUV.FragmentEnv, vec4] =
       (input: vec4) =>
-        Shader[IndigoUV.IndigoFragmentEnv, vec4] { _ =>
+        Shader[IndigoUV.FragmentEnv, vec4] { _ =>
           input + vec4(1.0f)
         }
 
     val actual =
-      BaseEntityShader.fragment(modifyColor).toOutput.code
+      EntityShader.fragment(modifyColor).toOutput.code
 
     val expected1: String =
       """

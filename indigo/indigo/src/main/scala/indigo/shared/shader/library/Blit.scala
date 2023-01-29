@@ -9,7 +9,7 @@ object Blit:
 
   object fragment:
     inline def shader =
-      Shader[IndigoFragmentEnv & IndigoBitmapData, vec4] { env =>
+      Shader[FragmentEnv & IndigoBitmapData, vec4] { env =>
         import TileAndStretch.*
 
         ubo[IndigoBitmapData]
@@ -59,7 +59,7 @@ object Blit:
       }
 
     inline def asFragment =
-      Shader[IndigoFragmentEnv & IndigoBitmapData] { env =>
+      Shader[FragmentEnv & IndigoBitmapData] { env =>
         def fragment: vec4 =
           shader.run(env)
       }
