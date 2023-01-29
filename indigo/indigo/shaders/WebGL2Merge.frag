@@ -51,7 +51,7 @@ void main(void) {
 
   SRC = texture(SRC_CHANNEL, UV);
   DST = texture(DST_CHANNEL, UV);
-  COLOR = vec4(0.0);
+  COLOR = SRC;
 
   // Colour
   fragment();
