@@ -1,6 +1,7 @@
 package com.example.sandbox
 
 import com.example.sandbox.scenes.ConfettiModel
+import com.example.sandbox.scenes.PointersModel
 import indigo._
 import indigoextras.ui.InputFieldChange
 
@@ -13,7 +14,8 @@ object SandboxModel {
       DudeModel(startupData.dude, DudeIdle),
       SaveLoadPhases.NotStarted,
       None,
-      ConfettiModel.empty
+      ConfettiModel.empty,
+      PointersModel.empty
     )
 
   def updateModel(state: SandboxGameModel): GlobalEvent => Outcome[SandboxGameModel] = {
@@ -119,7 +121,8 @@ final case class SandboxGameModel(
     dude: DudeModel,
     saveLoadPhase: SaveLoadPhases,
     data: Option[String],
-    confetti: ConfettiModel
+    confetti: ConfettiModel,
+    pointers: PointersModel
 )
 
 final case class DudeModel(dude: Dude, walkDirection: DudeDirection) {

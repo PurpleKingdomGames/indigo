@@ -43,10 +43,11 @@ final class WorldEvents:
       onKeyDown: dom.KeyboardEvent => Unit,
       onKeyUp: dom.KeyboardEvent => Unit,
       onContextMenu: Option[dom.MouseEvent => Unit],
+
       onPointerDown: dom.PointerEvent => Unit,
       onPointerUp: dom.PointerEvent => Unit,
       onPointerMove: dom.PointerEvent => Unit,
-      onPointerCancel: dom.PointerEvent => Unit
+      onPointerCancel: dom.PointerEvent => Unit,
   ) {
     canvas.addEventListener("click", onClick)
     canvas.addEventListener("wheel", onWheel)
@@ -58,6 +59,17 @@ final class WorldEvents:
     canvas.addEventListener("pointerup", onPointerUp)
     canvas.addEventListener("pointermove", onPointerMove)
     canvas.addEventListener("pointercancel", onPointerCancel)
+
+    val tempHandler = { (e: dom.PointerEvent) =>
+      dom.console.log(e.`type`)
+    }
+
+    canvas.addEventListener("pointerover", tempHandler)
+    canvas.addEventListener("pointerenter", tempHandler)
+    canvas.addEventListener("pointerout", tempHandler)
+    canvas.addEventListener("pointerleave", tempHandler)
+    canvas.addEventListener("gotpointercapture", tempHandler)
+    canvas.addEventListener("lostpointercapture", tempHandler)
 
     onContextMenu.foreach(handler => canvas.addEventListener("contextmenu", handler))
 
@@ -143,21 +155,25 @@ final class WorldEvents:
         globalEventStream.pushGlobalEvent(
           PointerEvent.PointerDown(e.position(magnification, canvas))
         )
+        e.preventDefault()
       },
       onPointerUp = { (e: dom.PointerEvent) =>
         globalEventStream.pushGlobalEvent(
           PointerEvent.PointerUp(e.position(magnification, canvas))
         )
+        e.preventDefault()
       },
       onPointerMove = { (e: dom.PointerEvent) =>
         globalEventStream.pushGlobalEvent(
           PointerEvent.PointerMove(e.position(magnification, canvas))
         )
+        e.preventDefault()
       },
       onPointerCancel = { (e: dom.PointerEvent) =>
         globalEventStream.pushGlobalEvent(
           PointerEvent.PointerCancel(e.position(magnification, canvas))
         )
+        e.preventDefault()
       }
     )
   }

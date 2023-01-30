@@ -12,6 +12,7 @@ import com.example.sandbox.scenes.LightsScene
 import com.example.sandbox.scenes.ManyEventHandlers
 import com.example.sandbox.scenes.MutantsScene
 import com.example.sandbox.scenes.OriginalScene
+import com.example.sandbox.scenes.PointersScene
 import com.example.sandbox.scenes.RefractionScene
 import com.example.sandbox.scenes.Shaders
 import com.example.sandbox.scenes.ShapesScene
@@ -67,7 +68,8 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
       BoxesScene,
       ManyEventHandlers,
       TimelineScene,
-      UltravioletScene
+      UltravioletScene,
+      PointersScene
     )
 
   val eventFilters: EventFilters = EventFilters.Permissive
