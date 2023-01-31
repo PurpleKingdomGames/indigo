@@ -115,7 +115,7 @@ object MouseEvent:
 
   /** The mouse has been clicked.
     *
-    * @param position 
+    * @param position
     *   mouse position relative to magnification level
     */
   final case class Click(position: Point) extends MouseEvent
@@ -125,7 +125,7 @@ object MouseEvent:
 
   /** The left mouse button was released.
     *
-    * @param position 
+    * @param position
     *   mouse position relative to magnification level
     * @param button
     *   Button that triggered this event
@@ -141,7 +141,7 @@ object MouseEvent:
 
   /** The left mouse button was pressed down.
     *
-    * @param position 
+    * @param position
     *   mouse position relative to magnification level
     * @param button
     *   Button that triggered this event
@@ -157,7 +157,7 @@ object MouseEvent:
 
   /** The mouse was moved to a new position.
     *
-    * @param position 
+    * @param position
     *   mouse position relative to magnification level
     */
   final case class Move(position: Point) extends MouseEvent
@@ -182,14 +182,79 @@ object MouseEvent:
 end MouseEvent
 
 /** Represents all mouse, pen and touch events
- */
+  */
 sealed trait PointerEvent extends InputEvent:
+  import PointerEvent.*
+
+  /** Coordinates relative to the magnification level
+    */
   def position: Point
+
+  /** Unique pointer identifier
+    */
+  def pointerId: PointerId
+
+  /** Pressed buttons
+    */
+  def buttons: Buttons
+
+  /** Indicates whether buttons are in active state
+    */
+  def isActive: Boolean = buttons != Buttons(0)
+
+  /** Indicates whether the pointer is considered primary - like first finger during multi-touch gesture
+    */
+  def isPrimary: Boolean
+
 object PointerEvent:
-  case class PointerDown(position: Point) extends PointerEvent
-  case class PointerUp(position: Point) extends PointerEvent
-  case class PointerMove(position: Point) extends PointerEvent
-  case class PointerCancel(position: Point) extends PointerEvent
+  /** Unique pointer identifier. Could be used to distinguish between pointers in multi-touch interactions
+    */
+  opaque type PointerId = Double
+  object PointerId:
+    inline def apply(id: Double): PointerId = id
+
+    given CanEqual[PointerId, PointerId] = CanEqual.derived
+
+  /** A number representing one or more buttons: https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/buttons
+    */
+  opaque type Buttons = Int
+  object Buttons:
+    inline def apply(buttons: Int): Buttons = buttons
+
+    given CanEqual[Buttons, Buttons] = CanEqual.derived
+
+  /** Pointing device is moved into canvas hit test boundaries. It's counterpart is [[PointerLeave]].
+    */
+  case class PointerEnter(position: Point, pointerId: PointerId, buttons: Buttons, isPrimary: Boolean)
+      extends PointerEvent
+
+  /** Pointing device left canvas hit test boundaries. It's counterpart is [[PointerEnter]].
+    */
+  case class PointerLeave(position: Point, pointerId: PointerId, buttons: Buttons, isPrimary: Boolean)
+      extends PointerEvent
+
+  /** Pointing device is in active buttons state.
+    */
+  case class PointerDown(position: Point, pointerId: PointerId, buttons: Buttons, isPrimary: Boolean)
+      extends PointerEvent
+
+  /** Pointing device is no longer in active buttons state.
+    */
+  case class PointerUp(position: Point, pointerId: PointerId, buttons: Buttons, isPrimary: Boolean) extends PointerEvent
+
+  /** Pointing device changed coordinates.
+    */
+  case class PointerMove(position: Point, pointerId: PointerId, buttons: Buttons, isPrimary: Boolean)
+      extends PointerEvent
+
+  /** The ongoing interactions was cancelled due to:
+    *   - the pointer device being disconnected
+    *   - device orientation change
+    *   - palm rejection
+    *   - the browser taking over the manipulations like scroll, drag & drop, pinch & zoom or other
+    */
+  case class PointerCancel(position: Point, pointerId: PointerId, buttons: Buttons, isPrimary: Boolean)
+      extends PointerEvent
 
 /** Represents all keyboard events
   */
