@@ -1,6 +1,6 @@
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
-val scala3Version = "3.2.0"
+val scala3Version = "3.2.1"
 
 lazy val indigoSite =
   (project in file("."))
