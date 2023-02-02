@@ -13,7 +13,7 @@ lazy val indigoVersion = IndigoVersion.getVersion
 // For the docs site
 lazy val indigoDocsVersion  = "0.14.0"
 lazy val tyrianDocsVersion  = "0.6.0"
-lazy val scalaJsDocsVersion = "1.12.0"
+lazy val scalaJsDocsVersion = "1.13.0"
 lazy val scalaDocsVersion   = "3.2.1"
 lazy val sbtDocsVersion     = "1.7.1"
 lazy val millDocsVersion    = "0.10.7"
