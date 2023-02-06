@@ -8,8 +8,13 @@ import com.example.sandbox.SandboxViewModel
 import indigo.*
 import indigo.scenes.*
 import indigo.shared.events.PointerEvent
+import org.scalajs.dom
 
 object PointersScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
+  // disabling default browser touch actions
+  val style = dom.document.createElement("style")
+  style.innerHTML = "canvas { touch-action: none }"
+  dom.document.head.appendChild(style)
 
   type SceneModel     = PointersModel
   type SceneViewModel = Unit
@@ -35,6 +40,7 @@ object PointersScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
   ): GlobalEvent => Outcome[PointersModel] =
     case e: PointerEvent.PointerDown =>
       println(e)
+      val xd = context.frameContext
       Outcome(
         model.copy(isPainting = true).append(e.position)
       )
@@ -59,32 +65,29 @@ object PointersScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
 
   val textMaterial = SandboxAssets.fontMaterial.toBitmap
 
+  val globalMagnificationLevel = 2
+
   def present(
       context: SceneContext[SandboxStartupData],
       model: PointersModel,
       viewModel: Unit
   ): Outcome[SceneUpdateFragment] =
-
-    val paint = model.paint.map { point =>
-      Shape.Circle(
-        center = point,
-        radius = 20,
-        fill = Fill.Color(RGBA.Tomato),
-        stroke = Stroke.None
-      )
-    }
-
-    // println("paint" -> paint)
-
     Outcome(
       SceneUpdateFragment(
         Layer(
           Batch(
             Text("Touch the screen", Fonts.fontKey, textMaterial)
               .moveTo(10, 10)
-          ) ++ paint
-        )
-        // .withMagnification(1)
+          ) ++ model.paint.map { point =>
+            Shape.Circle(
+              // Related: https://github.com/PurpleKingdomGames/indigo/issues/113
+              center = point * globalMagnificationLevel,
+              radius = 20,
+              fill = Fill.Color(RGBA.Tomato),
+              stroke = Stroke.None
+            )
+          }
+        ).withMagnification(1)
       )
     )
 
