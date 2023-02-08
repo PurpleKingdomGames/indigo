@@ -24,10 +24,16 @@ object UltravioletShader:
   inline def noopVertex: vec4 => UVShader[IndigoUV.VertexEnv, vec4] =
     (vertex: vec4) => UVShader[IndigoUV.VertexEnv, vec4](_ => vertex)
 
+  inline def noop2: UVShader[IndigoUV.VertexEnv, Unit] =
+    UVShader[IndigoUV.VertexEnv] { _ =>
+      def vertex(v: vec4): vec4 =
+        v
+    }
+
   inline def entityFragment(id: ShaderId, fragment: ShaderResult): UltravioletShader =
     UltravioletShader(
       id,
-      EntityShader.vertex(noopVertex),
+      EntityShader.vertex(noop2),
       fragment
     )
 

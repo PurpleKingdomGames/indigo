@@ -35,10 +35,18 @@ trait BaseEntityShader:
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   protected case class VertEnv(var gl_Position: vec4)
 
-  protected type VertexEnv = GLEnv & VertEnv & IndigoFrameData & IndigoProjectionData & IndigoCloneReferenceData
+  protected case class UserDefined():
+    def vertex(v: vec4): vec4    = v
+    def fragment(v: vec4): vec4  = v
+    def prepare(v: vec4): vec4   = v
+    def light(v: vec4): vec4     = v
+    def composite(v: vec4): vec4 = v
+
+  protected type VertexEnv = GLEnv & VertEnv & IndigoFrameData & IndigoProjectionData & IndigoCloneReferenceData &
+    UserDefined
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  inline def vertex(inline modifyVertex: vec4 => Shader[IndigoUV.VertexEnv, vec4]): ShaderResult =
+  inline def vertex(inline userVertexFn: Shader[IndigoUV.VertexEnv, Unit]): ShaderResult =
     Shader[VertexEnv] { env =>
       @layout(0) @in val a_verticesAndCoords: vec4    = null
       @layout(1) @in val a_translateScale: vec4       = null
@@ -132,8 +140,7 @@ trait BaseEntityShader:
         val transform: mat4 = translate2d(offset) * scale2d(FRAME_SIZE)
         (transform * vec4(texcoord, 1.0f, 1.0f)).xy
       
-      def vertex(): Unit =
-        VERTEX = modifyVertex(VERTEX).run(IndigoUV.VertexEnv.reference)
+      userVertexFn.run(IndigoUV.VertexEnv.reference)
 
       def main: Unit =
         INSTANCE_ID = env.gl_InstanceID
@@ -185,7 +192,7 @@ trait BaseEntityShader:
           case _ =>
             ()
           
-        vertex()
+        VERTEX = env.vertex(VERTEX)
 
         CHANNEL_0_TEXTURE_COORDS = scaleCoordsWithOffset(UV, CHANNEL_0_ATLAS_OFFSET)
         CHANNEL_1_TEXTURE_COORDS = scaleCoordsWithOffset(UV, CHANNEL_1_ATLAS_OFFSET)
@@ -218,15 +225,15 @@ trait BaseEntityShader:
         v_channel_pos_23 = vec4(CHANNEL_2_POSITION, CHANNEL_3_POSITION)
         v_instanceId = INSTANCE_ID
       
-    }.toGLSL[WebGL2](
+    }.toGLSL[IndigoUV.IndigoVertexPrinter](
       ShaderHeader.Version300ES,
       ShaderHeader.PrecisionMediumPFloat
     )
 
-  protected type FragmentEnv = IndigoDynamicLightingData
+  protected type FragmentEnv = IndigoDynamicLightingData & UserDefined
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  inline def fragment(inline modifyColor: vec4 => Shader[IndigoUV.FragmentEnv, vec4]): ShaderResult =
+  inline def fragment(inline userFragmentFn: Shader[IndigoUV.FragmentEnv, Unit]): ShaderResult =
     Shader[FragmentEnv] { env =>
       @layout(0) @out var fragColor: vec4 = null
 
@@ -301,8 +308,9 @@ trait BaseEntityShader:
       // Outputs
       @global var COLOR: vec4 = null
 
-      def fragment(): Unit =
-        COLOR = modifyColor(COLOR).run(IndigoUV.FragmentEnv.reference)
+      userFragmentFn.run(IndigoUV.FragmentEnv.reference)
+      // def fragment(): Unit =
+      //   COLOR = modifyColor(COLOR).run(IndigoUV.FragmentEnv.reference)
 
       //#prepare_start
       def prepare(): Unit = ()
@@ -345,7 +353,7 @@ trait BaseEntityShader:
         CHANNEL_3 = texture2D(SRC_CHANNEL, CHANNEL_3_TEXTURE_COORDS)
 
         // Colour - build up the COLOR
-        fragment()
+        env.fragment(COLOR)
 
         // Lighting - prepare, light, composite
         prepare()

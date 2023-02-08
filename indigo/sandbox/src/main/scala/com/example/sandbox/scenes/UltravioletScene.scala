@@ -107,11 +107,11 @@ object UVShaders:
 
   // Circle - Entity
 
-  inline def orbitVertex: vec4 => Shader[VertexEnv, vec4] =
-    (v: vec4) =>
-      Shader[VertexEnv, vec4] { env =>
+  inline def orbitVertex: Shader[VertexEnv, Unit] =
+    Shader[VertexEnv] { env =>
+      def vertex(v: vec4): vec4 =
         vec4(v.x + sin(env.TIME * 0.5f), v.y + cos(env.TIME * 0.5f), v.z, v.w)
-      }
+    }
 
   inline def circleSdf = (p: vec2, r: Float) => length(p) - r
 
@@ -131,9 +131,12 @@ object UVShaders:
     ShaderId("uv circle")
 
   val circle: UltravioletShader =
+    val vert = EntityShader.vertex(orbitVertex)
+    println(vert.toOutput.code)
+
     UltravioletShader(
       circleId,
-      EntityShader.vertex(orbitVertex),
+      vert,
       EntityShader.fragment(modifyCircleColor)
     )
 
