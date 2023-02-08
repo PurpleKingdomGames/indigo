@@ -55,7 +55,7 @@ object IndigoUV:
       TAU: Float,
       TAU_2: Float,
       TAU_4: Float,
-      TAU_8: Float,
+      TAU_8: Float
   )
   object VertexEnv:
     def reference: VertexEnv =
@@ -243,6 +243,8 @@ object IndigoUV:
       )
 
   sealed trait Indigo
+  sealed trait IndigoVertexPrinter
+  sealed trait IndigoFragmentPrinter
 
   given ShaderPrinter[Indigo] = new ShaderPrinter {
     val webGL2Printer = summon[ShaderPrinter[WebGL2]]
@@ -337,4 +339,90 @@ object IndigoUV:
       pf.orElse(webGL2Printer.transformer)
 
     def printer: PartialFunction[ShaderAST, List[String]] = webGL2Printer.printer
+  }
+
+  given ShaderPrinter[IndigoVertexPrinter] = new ShaderPrinter {
+    val webGL2Printer = summon[ShaderPrinter[WebGL2]]
+
+    def isValid(
+        inType: Option[String],
+        outType: Option[String],
+        functions: List[ShaderAST],
+        body: ShaderAST
+    ): ShaderValid =
+      val hasVertexFunction: ShaderValid =
+        body.find {
+          case ShaderAST.Function(
+                "vertex",
+                List(
+                  (ShaderAST.DataTypes.ident("vec4") -> _)
+                ),
+                _,
+                ShaderAST.DataTypes.ident("vec4")
+              ) =>
+            true
+
+          case _ => false
+        } match
+          case Some(_) =>
+            ShaderValid.Valid
+
+          case None =>
+            ShaderValid.Invalid(
+              List(
+                "Indigo vertex shaders must declare a 'vertex' function, e.g. `def vertex(v: vec4): vec4 = v`"
+              )
+            )
+
+      webGL2Printer.isValid(inType, outType, functions, body) |+|
+        hasVertexFunction
+
+    def transformer: PartialFunction[ShaderAST, ShaderAST] =
+      webGL2Printer.transformer
+
+    def printer: PartialFunction[ShaderAST, List[String]] =
+      webGL2Printer.printer
+  }
+
+  given ShaderPrinter[IndigoFragmentPrinter] = new ShaderPrinter {
+    val webGL2Printer = summon[ShaderPrinter[WebGL2]]
+
+    def isValid(
+        inType: Option[String],
+        outType: Option[String],
+        functions: List[ShaderAST],
+        body: ShaderAST
+    ): ShaderValid =
+      def hasFragmentFunction: ShaderValid =
+        body.find {
+          case ShaderAST.Function(
+                "fragment",
+                List(
+                  (ShaderAST.DataTypes.ident("vec4") -> _)
+                ),
+                _,
+                ShaderAST.DataTypes.ident("vec4")
+              ) =>
+            true
+
+          case _ => false
+        } match
+          case Some(_) =>
+            ShaderValid.Valid
+
+          case None =>
+            ShaderValid.Invalid(
+              List(
+                "Indigo fragment shaders must declare a 'fragment' function, e.g. `def fragment(color: vec4): vec4 = color`"
+              )
+            )
+
+      webGL2Printer.isValid(inType, outType, functions, body) |+|
+        hasFragmentFunction
+
+    def transformer: PartialFunction[ShaderAST, ShaderAST] =
+      webGL2Printer.transformer
+
+    def printer: PartialFunction[ShaderAST, List[String]] =
+      webGL2Printer.printer
   }
