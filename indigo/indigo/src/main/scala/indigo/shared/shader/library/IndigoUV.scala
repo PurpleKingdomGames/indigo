@@ -245,6 +245,7 @@ object IndigoUV:
   sealed trait Indigo
   sealed trait IndigoVertexPrinter
   sealed trait IndigoFragmentPrinter
+  sealed trait IndigoBlendFragmentPrinter
 
   given ShaderPrinter[Indigo] = new ShaderPrinter {
     val webGL2Printer = summon[ShaderPrinter[WebGL2]]
@@ -385,6 +386,74 @@ object IndigoUV:
   }
 
   given ShaderPrinter[IndigoFragmentPrinter] = new ShaderPrinter {
+    val webGL2Printer = summon[ShaderPrinter[WebGL2]]
+
+    def isValid(
+        inType: Option[String],
+        outType: Option[String],
+        functions: List[ShaderAST],
+        body: ShaderAST
+    ): ShaderValid =
+      def hasFragmentFunction: ShaderValid =
+        body
+          .find {
+            case ShaderAST.Function(
+                  "fragment",
+                  List(
+                    (ShaderAST.DataTypes.ident("vec4") -> _)
+                  ),
+                  _,
+                  ShaderAST.DataTypes.ident("vec4")
+                ) =>
+              true
+
+            case _ => false
+          }
+          .map(_ => ShaderValid.Valid)
+          .getOrElse {
+            ShaderValid.Invalid(
+              List(
+                "Indigo fragment shaders must declare a 'fragment' function, e.g. `def fragment(color: vec4): vec4 = color`"
+              )
+            )
+          }
+
+      def hasUnitFunction(name: String): ShaderValid =
+        body
+          .find {
+            case ShaderAST.Function(
+                  fnName,
+                  Nil,
+                  _,
+                  ShaderAST.DataTypes.ident("void")
+                ) if fnName == name =>
+              true
+
+            case _ => false
+          }
+          .map(_ => ShaderValid.Valid)
+          .getOrElse {
+            ShaderValid.Invalid(
+              List(
+                s"Indigo fragment shaders must declare a '$name' function, e.g. `def $name(): Unit = ()`"
+              )
+            )
+          }
+
+      webGL2Printer.isValid(inType, outType, functions, body) |+|
+        hasFragmentFunction |+|
+        hasUnitFunction("prepare") |+|
+        hasUnitFunction("light") |+|
+        hasUnitFunction("composite")
+
+    def transformer: PartialFunction[ShaderAST, ShaderAST] =
+      webGL2Printer.transformer
+
+    def printer: PartialFunction[ShaderAST, List[String]] =
+      webGL2Printer.printer
+  }
+
+  given ShaderPrinter[IndigoBlendFragmentPrinter] = new ShaderPrinter {
     val webGL2Printer = summon[ShaderPrinter[WebGL2]]
 
     def isValid(

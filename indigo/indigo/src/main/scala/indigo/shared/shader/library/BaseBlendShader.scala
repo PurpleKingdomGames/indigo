@@ -131,7 +131,7 @@ trait BaseBlendShader:
     }
 
   inline def fragment(inline userFragmentFn: Shader[IndigoUV.BlendFragmentEnv, Unit]): ShaderResult =
-    fragmentShader(userFragmentFn).toGLSL[IndigoUV.IndigoFragmentPrinter](
+    fragmentShader(userFragmentFn).toGLSL[IndigoUV.IndigoBlendFragmentPrinter](
       ShaderHeader.Version300ES,
       ShaderHeader.PrecisionMediumPFloat
     )

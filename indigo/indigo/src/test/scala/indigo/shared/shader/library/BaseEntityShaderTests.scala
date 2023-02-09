@@ -78,7 +78,10 @@ vec4 vertex(vec4 v){
       }
 
     val actual =
-      EntityShader.fragment(modifyColor).toOutput.code
+      EntityShader
+        .fragment(modifyColor)
+        .toOutput
+        .code
 
     val expected1: String =
       """
@@ -92,8 +95,26 @@ vec4 vertex(vec4 v){
       |COLOR=fragment(COLOR);
       |""".stripMargin.trim
 
+    val expected3: String =
+      """
+      |void prepare(){}
+      |""".stripMargin.trim
+
+    val expected4: String =
+      """
+      |void light(){}
+      |""".stripMargin.trim
+
+    val expected5: String =
+      """
+      |void composite(){}
+      |""".stripMargin.trim
+
     assert(clue(actual).contains(clue(expected1)))
     assert(clue(actual).contains(clue(expected2)))
+    assert(clue(actual).contains(clue(expected3)))
+    assert(clue(actual).contains(clue(expected4)))
+    assert(clue(actual).contains(clue(expected5)))
   }
 
 }

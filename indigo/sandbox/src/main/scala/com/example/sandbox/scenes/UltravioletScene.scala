@@ -132,17 +132,29 @@ object UVShaders:
 
     }
 
+  inline def prepare: Shader[FragmentEnv, Unit] =
+    Shader[FragmentEnv] { _ =>
+      def prepare: Unit = ()
+    }
+
+  inline def light: Shader[FragmentEnv, Unit] =
+    Shader[FragmentEnv] { _ =>
+      def light: Unit = ()
+    }
+
+  inline def composite: Shader[FragmentEnv, Unit] =
+    Shader[FragmentEnv] { _ =>
+      def composite: Unit = ()
+    }
+
   val circleId: ShaderId =
     ShaderId("uv circle")
 
   val circle: UltravioletShader =
-    val vert = EntityShader.vertex(orbitVertex)
-    println(vert.toOutput.code)
-
     UltravioletShader(
       circleId,
-      vert,
-      EntityShader.fragment(modifyCircleColor)
+      EntityShader.vertex(orbitVertex),
+      EntityShader.fragment(modifyCircleColor, prepare, light, composite)
     )
 
   // Voronoi - Entity
