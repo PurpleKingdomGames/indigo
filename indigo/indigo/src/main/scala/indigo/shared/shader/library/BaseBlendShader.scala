@@ -16,9 +16,13 @@ trait BaseBlendShader:
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   protected case class VertexEnv(var gl_Position: vec4)
 
+  protected case class UserDefined():
+    def vertex(v: vec4): vec4   = v
+    def fragment(v: vec4): vec4 = v
+
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  inline def vertex(inline modifyVertex: vec4 => Shader[IndigoUV.VertexEnv, vec4]): ShaderResult =
-    Shader[IndigoMergeData & VertexEnv] { env =>
+  inline def vertex(inline userVertexFn: Shader[IndigoUV.VertexEnv, Unit]): ShaderResult =
+    Shader[IndigoMergeData & VertexEnv & UserDefined] { env =>
 
       @layout(0) @in val a_verticesAndCoords: vec4 = null
 
@@ -54,15 +58,14 @@ trait BaseBlendShader:
 
       @global var VERTEX: vec4 = null
 
-      def vertex(): Unit =
-        VERTEX = modifyVertex(VERTEX).run(IndigoUV.VertexEnv.reference)
+      userVertexFn.run(IndigoUV.VertexEnv.reference)
 
       def main: Unit =
         UV = a_verticesAndCoords.zw
         SIZE = env.u_scale
         VERTEX = vec4(a_verticesAndCoords.x, a_verticesAndCoords.y, 1.0f, 1.0f)
 
-        vertex()
+        VERTEX = env.vertex(VERTEX)
 
         val moveToTopLeft: vec2 = SIZE / 2.0f
         val transform: mat4 = translate2d(moveToTopLeft) * scale2d(SIZE)
@@ -74,8 +77,8 @@ trait BaseBlendShader:
     )
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  inline def fragment(inline modifyColor: vec4 => Shader[IndigoUV.BlendFragmentEnv, vec4]): ShaderResult =
-    Shader {
+  inline def fragment(inline userFragmentFn: Shader[IndigoUV.BlendFragmentEnv, Unit]): ShaderResult =
+    Shader[UserDefined] { env =>
 
       @in val SIZE: vec2 = null // In this case, screen size.
       @in val UV: vec2 = null // Unscaled texture coordinates
@@ -102,8 +105,7 @@ trait BaseBlendShader:
       // Output
       @global var COLOR: vec4 = null
 
-      def fragment(): Unit =
-        COLOR = modifyColor(COLOR).run(IndigoUV.BlendFragmentEnv.reference)
+      userFragmentFn.run(IndigoUV.BlendFragmentEnv.reference)
 
       def main: Unit =
         SRC = texture2D(SRC_CHANNEL, UV)
@@ -111,7 +113,7 @@ trait BaseBlendShader:
         COLOR = SRC
 
         // Colour
-        fragment()
+        COLOR = env.fragment(COLOR)
 
         fragColor = COLOR
       

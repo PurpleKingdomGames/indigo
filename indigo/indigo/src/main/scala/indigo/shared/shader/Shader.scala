@@ -21,10 +21,7 @@ object Shader:
 final case class UltravioletShader(id: ShaderId, vertex: ShaderResult, fragment: ShaderResult) extends Shader
 object UltravioletShader:
 
-  inline def noopVertex: vec4 => UVShader[IndigoUV.VertexEnv, vec4] =
-    (vertex: vec4) => UVShader[IndigoUV.VertexEnv, vec4](_ => vertex)
-
-  inline def noop2: UVShader[IndigoUV.VertexEnv, Unit] =
+  inline def noopVertex: UVShader[IndigoUV.VertexEnv, Unit] =
     UVShader[IndigoUV.VertexEnv] { _ =>
       def vertex(v: vec4): vec4 =
         v
@@ -33,7 +30,7 @@ object UltravioletShader:
   inline def entityFragment(id: ShaderId, fragment: ShaderResult): UltravioletShader =
     UltravioletShader(
       id,
-      EntityShader.vertex(noop2),
+      EntityShader.vertex(noopVertex),
       fragment
     )
 

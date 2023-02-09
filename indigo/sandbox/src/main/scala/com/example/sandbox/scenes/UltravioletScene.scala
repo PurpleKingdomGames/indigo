@@ -89,12 +89,12 @@ object UVShaders:
 
   // Blend
 
-  inline def makeRedder: vec4 => Shader[BlendFragmentEnv, vec4] =
-    (color: vec4) =>
-      Shader { env =>
+  inline def makeRedder: Shader[BlendFragmentEnv, Unit] =
+    Shader[BlendFragmentEnv] { env =>
+      def fragment(color: vec4): vec4 =
         val amount = abs(sin(env.TIME))
         vec4(color.rgb * vec3(1.0, amount, amount), color.a)
-      }
+    }
 
   val redBlendId: ShaderId =
     ShaderId("red blend")
@@ -109,23 +109,28 @@ object UVShaders:
 
   inline def orbitVertex: Shader[VertexEnv, Unit] =
     Shader[VertexEnv] { env =>
+
       def vertex(v: vec4): vec4 =
         vec4(v.x + sin(env.TIME * 0.5f), v.y + cos(env.TIME * 0.5f), v.z, v.w)
+
     }
 
-  inline def circleSdf = (p: vec2, r: Float) => length(p) - r
+  inline def modifyCircleColor: Shader[FragmentEnv, Unit] =
+    Shader[FragmentEnv] { env =>
 
-  inline def calculateColour = (uv: vec2, sdf: Float) =>
-    val fill       = vec4(uv, 0.0f, 1.0f)
-    val fillAmount = (1.0f - step(0.0f, sdf)) * fill.w
-    vec4(fill.xyz * fillAmount, fillAmount)
+      def circleSdf(p: vec2, r: Float): Float =
+        length(p) - r
 
-  inline def modifyCircleColor: vec4 => Shader[FragmentEnv, vec4] =
-    _ =>
-      Shader[FragmentEnv, vec4] { env =>
+      def calculateColour(uv: vec2, sdf: Float): vec4 =
+        val fill       = vec4(uv, 0.0f, 1.0f)
+        val fillAmount = (1.0f - step(0.0f, sdf)) * fill.w
+        vec4(fill.xyz * fillAmount, fillAmount)
+
+      def fragment(color: vec4): vec4 =
         val sdf = circleSdf(env.UV - 0.5f, 0.5f)
         calculateColour(env.UV, sdf)
-      }
+
+    }
 
   val circleId: ShaderId =
     ShaderId("uv circle")
@@ -145,15 +150,15 @@ object UVShaders:
   val voronoiId = ShaderId("uv voronoi")
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  inline def N22 = (p: vec2) =>
-    var a: vec3 = fract(p.xyx * vec3(123.34f, 234.34f, 345.65f))
-    a = a + dot(a, a + 34.45f)
-    fract(vec2(a.x * a.y, a.y * a.z))
+  inline def modifyColor: Shader[FragmentEnv, Unit] =
+    Shader[FragmentEnv] { env =>
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  inline def modifyColor: vec4 => Shader[FragmentEnv, vec4] =
-    _ =>
-      Shader[FragmentEnv, vec4] { env =>
+      def N22(p: vec2): vec2 =
+        var a: vec3 = fract(p.xyx * vec3(123.34f, 234.34f, 345.65f))
+        a = a + dot(a, a + 34.45f)
+        fract(vec2(a.x * a.y, a.y * a.z))
+
+      def fragment(color: vec4): vec4 =
         val uv: vec2 = (2.0f * env.SCREEN_COORDS - env.SIZE) / env.SIZE.y
 
         var m: Float       = 0.0f
@@ -175,7 +180,8 @@ object UVShaders:
         val col: vec3 = vec3(minDist) + vec3(m) // simple voronoi + circle
 
         vec4(col, 1.0f)
-      }
+
+    }
 
   val voronoi: UltravioletShader =
     // Ported from: https://www.youtube.com/watch?v=l-07BXzNdPw&feature=youtu.be
