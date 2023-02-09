@@ -353,7 +353,7 @@ trait BaseEntityShader:
         CHANNEL_3 = texture2D(SRC_CHANNEL, CHANNEL_3_TEXTURE_COORDS)
 
         // Colour - build up the COLOR
-        env.fragment(COLOR)
+        COLOR = env.fragment(COLOR)
 
         // Lighting - prepare, light, composite
         prepare()
