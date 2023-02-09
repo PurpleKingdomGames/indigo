@@ -36,11 +36,11 @@ trait BaseEntityShader:
   protected case class VertEnv(var gl_Position: vec4)
 
   protected case class UserDefined():
-    def vertex(v: vec4): vec4    = v
-    def fragment(v: vec4): vec4  = v
-    def prepare(v: vec4): vec4   = v
-    def light(v: vec4): vec4     = v
-    def composite(v: vec4): vec4 = v
+    def vertex(v: vec4): vec4   = v
+    def fragment(v: vec4): vec4 = v
+    def prepare(): Unit         = ()
+    def light(): Unit           = ()
+    def composite(): Unit       = ()
 
   protected type VertexEnv = GLEnv & VertEnv & IndigoFrameData & IndigoProjectionData & IndigoCloneReferenceData &
     UserDefined
@@ -242,7 +242,12 @@ trait BaseEntityShader:
   protected type FragmentEnv = IndigoDynamicLightingData & UserDefined
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  inline def fragmentShader(inline userFragmentFn: Shader[IndigoUV.FragmentEnv, Unit]): Shader[FragmentEnv, Unit] =
+  inline def fragmentShader(
+    inline userFragmentFn: Shader[IndigoUV.FragmentEnv, Unit],
+    inline userPrepareFn: Shader[IndigoUV.FragmentEnv, Unit],
+    inline userLightFn: Shader[IndigoUV.FragmentEnv, Unit],
+    inline userCompositeFn: Shader[IndigoUV.FragmentEnv, Unit]
+  ): Shader[FragmentEnv, Unit] =
     Shader[FragmentEnv] { env =>
       @layout(0) @out var fragColor: vec4 = null
 
@@ -318,20 +323,16 @@ trait BaseEntityShader:
       @global var COLOR: vec4 = null
 
       userFragmentFn.run(IndigoUV.FragmentEnv.reference)
-      // def fragment(): Unit =
-      //   COLOR = modifyColor(COLOR).run(IndigoUV.FragmentEnv.reference)
 
-      //#prepare_start
-      def prepare(): Unit = ()
-      //#prepare_end
+      userPrepareFn.run(IndigoUV.FragmentEnv.reference)
 
-      //#light_start
-      def light(): Unit = ()
-      //#light_end
+      userLightFn.run(IndigoUV.FragmentEnv.reference)
 
-      //#composite_start
-      def composite(): Unit = ()
-      //#composite_end
+      userCompositeFn.run(IndigoUV.FragmentEnv.reference)
+
+      // Prevents illegal forward reference warning from ultraviolet validater.
+      def _indigoProcessLight_(): Unit =
+        env.light()
 
       def main: Unit =
 
@@ -365,7 +366,7 @@ trait BaseEntityShader:
         COLOR = env.fragment(COLOR)
 
         // Lighting - prepare, light, composite
-        prepare()
+        env.prepare()
 
         LIGHT_COUNT = min(8, max(0, round(env.numOfLights).toInt))
         
@@ -384,23 +385,84 @@ trait BaseEntityShader:
           LIGHT_ANGLE = env.lightNearFarAngleIntensity(i).z
           LIGHT_INTENSITY = env.lightNearFarAngleIntensity(i).w
 
-          light()
+          _indigoProcessLight_()
         }
 
         // Composite - COMBINE COLOR + Lighting into final pixel color.
-        composite()
+        env.composite()
         
         fragColor = COLOR
       }
 
-  inline def fragment(inline userFragmentFn: Shader[IndigoUV.FragmentEnv, Unit]): ShaderResult =
-    fragmentShader(userFragmentFn).toGLSL[IndigoUV.IndigoFragmentPrinter](
+  inline def noopPrepare: Shader[IndigoUV.FragmentEnv, Unit] =
+    Shader[IndigoUV.FragmentEnv] { _ =>
+      def prepare: Unit = ()
+    }
+
+  inline def noopLight: Shader[IndigoUV.FragmentEnv, Unit] =
+    Shader[IndigoUV.FragmentEnv] { _ =>
+      def light: Unit = ()
+    }
+
+  inline def noopComposite: Shader[IndigoUV.FragmentEnv, Unit] =
+    Shader[IndigoUV.FragmentEnv] { _ =>
+      def composite: Unit = ()
+    }
+
+  inline def fragment(
+    inline userFragmentFn: Shader[IndigoUV.FragmentEnv, Unit],
+    inline userPrepareFn: Shader[IndigoUV.FragmentEnv, Unit],
+    inline userLightFn: Shader[IndigoUV.FragmentEnv, Unit],
+    inline userCompositeFn: Shader[IndigoUV.FragmentEnv, Unit]
+  ): ShaderResult =
+    fragmentShader(
+      userFragmentFn,
+      userPrepareFn,
+      userLightFn,
+      userCompositeFn
+    ).toGLSL[IndigoUV.IndigoFragmentPrinter](
       ShaderHeader.Version300ES,
       ShaderHeader.PrecisionMediumPFloat
     )
 
-  inline def fragmentRawBody(inline userFragmentFn: Shader[IndigoUV.FragmentEnv, Unit]): ShaderResult =
-    fragmentShader(userFragmentFn).toGLSL[WebGL2](
+  inline def fragment(
+    inline userFragmentFn: Shader[IndigoUV.FragmentEnv, Unit]
+  ): ShaderResult =
+    fragmentShader(
+      userFragmentFn,
+      noopPrepare,
+      noopLight,
+      noopComposite
+    ).toGLSL[IndigoUV.IndigoFragmentPrinter](
+      ShaderHeader.Version300ES,
+      ShaderHeader.PrecisionMediumPFloat
+    )
+
+  inline def fragmentRawBody(
+    inline userFragmentFn: Shader[IndigoUV.FragmentEnv, Unit],
+    inline userPrepareFn: Shader[IndigoUV.FragmentEnv, Unit],
+    inline userLightFn: Shader[IndigoUV.FragmentEnv, Unit],
+    inline userCompositeFn: Shader[IndigoUV.FragmentEnv, Unit]
+  ): ShaderResult =
+    fragmentShader(
+      userFragmentFn,
+      userPrepareFn,
+      userLightFn,
+      userCompositeFn
+    ).toGLSL[WebGL2](
+      ShaderHeader.Version300ES,
+      ShaderHeader.PrecisionMediumPFloat
+    )
+
+  inline def fragmentRawBody(
+    inline userFragmentFn: Shader[IndigoUV.FragmentEnv, Unit]
+  ): ShaderResult =
+    fragmentShader(
+      userFragmentFn,
+      noopPrepare,
+      noopLight,
+      noopComposite
+    ).toGLSL[WebGL2](
       ShaderHeader.Version300ES,
       ShaderHeader.PrecisionMediumPFloat
     )
