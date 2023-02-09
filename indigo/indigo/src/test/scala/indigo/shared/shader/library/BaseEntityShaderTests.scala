@@ -32,6 +32,43 @@ class BaseEntityShaderTests extends munit.FunSuite {
     assert(clue(actual).contains(clue(expected2)))
   }
 
+  test("Base WebGL 2.0 vertex shader (Raw)") {
+
+    inline def modifyVertex: Shader[IndigoUV.VertexEnv, Unit] =
+      Shader[IndigoUV.VertexEnv] { _ =>
+        RawGLSL(
+          """
+//#vertex_start
+vec4 vertex(vec4 v){
+  return v;
+}
+//#vertex_end"""
+        )
+      }
+
+    val actual =
+      EntityShader.vertexRawBody(modifyVertex).toOutput.code
+
+    // println(actual)
+
+    val expected1: String =
+      """
+      |//#vertex_start
+      |vec4 vertex(vec4 v){
+      |  return v;
+      |}
+      |//#vertex_end;
+      |""".stripMargin.trim
+
+    val expected2: String =
+      """
+      |VERTEX=vertex(VERTEX);
+      |""".stripMargin.trim
+
+    assert(clue(actual).contains(clue(expected1)))
+    assert(clue(actual).contains(clue(expected2)))
+  }
+
   test("Base WebGL 2.0 fragment shader") {
 
     inline def modifyColor: Shader[IndigoUV.FragmentEnv, Unit] =

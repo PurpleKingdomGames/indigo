@@ -46,7 +46,7 @@ trait BaseEntityShader:
     UserDefined
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  inline def vertex(inline userVertexFn: Shader[IndigoUV.VertexEnv, Unit]): ShaderResult =
+  inline def vertexShader(inline userVertexFn: Shader[IndigoUV.VertexEnv, Unit]): Shader[VertexEnv, Unit] =
     Shader[VertexEnv] { env =>
       @layout(0) @in val a_verticesAndCoords: vec4    = null
       @layout(1) @in val a_translateScale: vec4       = null
@@ -225,7 +225,16 @@ trait BaseEntityShader:
         v_channel_pos_23 = vec4(CHANNEL_2_POSITION, CHANNEL_3_POSITION)
         v_instanceId = INSTANCE_ID
       
-    }.toGLSL[IndigoUV.IndigoVertexPrinter](
+    }
+
+  inline def vertex(inline userVertexFn: Shader[IndigoUV.VertexEnv, Unit]): ShaderResult =
+    vertexShader(userVertexFn).toGLSL[IndigoUV.IndigoVertexPrinter](
+      ShaderHeader.Version300ES,
+      ShaderHeader.PrecisionMediumPFloat
+    )
+
+  inline def vertexRawBody(inline userVertexFn: Shader[IndigoUV.VertexEnv, Unit]): ShaderResult =
+    vertexShader(userVertexFn).toGLSL[WebGL2](
       ShaderHeader.Version300ES,
       ShaderHeader.PrecisionMediumPFloat
     )
@@ -233,7 +242,7 @@ trait BaseEntityShader:
   protected type FragmentEnv = IndigoDynamicLightingData & UserDefined
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  inline def fragment(inline userFragmentFn: Shader[IndigoUV.FragmentEnv, Unit]): ShaderResult =
+  inline def fragmentShader(inline userFragmentFn: Shader[IndigoUV.FragmentEnv, Unit]): Shader[FragmentEnv, Unit] =
     Shader[FragmentEnv] { env =>
       @layout(0) @out var fragColor: vec4 = null
 
@@ -382,7 +391,16 @@ trait BaseEntityShader:
         composite()
         
         fragColor = COLOR
-      }.toGLSL[WebGL2](
-        ShaderHeader.Version300ES,
-        ShaderHeader.PrecisionMediumPFloat
-      )
+      }
+
+  inline def fragment(inline userFragmentFn: Shader[IndigoUV.FragmentEnv, Unit]): ShaderResult =
+    fragmentShader(userFragmentFn).toGLSL[IndigoUV.IndigoFragmentPrinter](
+      ShaderHeader.Version300ES,
+      ShaderHeader.PrecisionMediumPFloat
+    )
+
+  inline def fragmentRawBody(inline userFragmentFn: Shader[IndigoUV.FragmentEnv, Unit]): ShaderResult =
+    fragmentShader(userFragmentFn).toGLSL[WebGL2](
+      ShaderHeader.Version300ES,
+      ShaderHeader.PrecisionMediumPFloat
+    )

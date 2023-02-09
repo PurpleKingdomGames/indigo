@@ -21,7 +21,9 @@ trait BaseBlendShader:
     def fragment(v: vec4): vec4 = v
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  inline def vertex(inline userVertexFn: Shader[IndigoUV.VertexEnv, Unit]): ShaderResult =
+  inline def vertexShader(
+      inline userVertexFn: Shader[IndigoUV.VertexEnv, Unit]
+  ): Shader[IndigoMergeData & VertexEnv & UserDefined, Unit] =
     Shader[IndigoMergeData & VertexEnv & UserDefined] { env =>
 
       @layout(0) @in val a_verticesAndCoords: vec4 = null
@@ -71,13 +73,22 @@ trait BaseBlendShader:
         val transform: mat4 = translate2d(moveToTopLeft) * scale2d(SIZE)
 
         env.gl_Position = env.u_projection * transform * VERTEX
-    }.toGLSL[WebGL2](
+    }
+
+  inline def vertex(inline userVertexFn: Shader[IndigoUV.VertexEnv, Unit]): ShaderResult =
+    vertexShader(userVertexFn).toGLSL[IndigoUV.IndigoVertexPrinter](
+      ShaderHeader.Version300ES,
+      ShaderHeader.PrecisionMediumPFloat
+    )
+
+  inline def vertexRawBody(inline userVertexFn: Shader[IndigoUV.VertexEnv, Unit]): ShaderResult =
+    vertexShader(userVertexFn).toGLSL[WebGL2](
       ShaderHeader.Version300ES,
       ShaderHeader.PrecisionMediumPFloat
     )
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  inline def fragment(inline userFragmentFn: Shader[IndigoUV.BlendFragmentEnv, Unit]): ShaderResult =
+  inline def fragmentShader(inline userFragmentFn: Shader[IndigoUV.BlendFragmentEnv, Unit]): Shader[UserDefined, Unit] =
     Shader[UserDefined] { env =>
 
       @in val SIZE: vec2 = null // In this case, screen size.
@@ -117,7 +128,16 @@ trait BaseBlendShader:
 
         fragColor = COLOR
       
-    }.toGLSL[WebGL2](
+    }
+
+  inline def fragment(inline userFragmentFn: Shader[IndigoUV.BlendFragmentEnv, Unit]): ShaderResult =
+    fragmentShader(userFragmentFn).toGLSL[IndigoUV.IndigoFragmentPrinter](
+      ShaderHeader.Version300ES,
+      ShaderHeader.PrecisionMediumPFloat
+    )
+
+  inline def fragmentRawBody(inline userFragmentFn: Shader[IndigoUV.BlendFragmentEnv, Unit]): ShaderResult =
+    fragmentShader(userFragmentFn).toGLSL[WebGL2](
       ShaderHeader.Version300ES,
       ShaderHeader.PrecisionMediumPFloat
     )
