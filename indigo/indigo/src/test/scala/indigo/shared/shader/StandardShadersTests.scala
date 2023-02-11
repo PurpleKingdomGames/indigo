@@ -1,7 +1,8 @@
 package indigo.shared.shader
 
-/** The point of these just is purely to exercise the process of compiling and validating the standard shaders. If we
-  * get no exceptions we're in good shape.
+/** The point of these tests is purely to exercise the process of compiling and validating the standard shaders. If we
+  * get no exceptions we're at least in basically good shape, i.e. They may not do as intended but there's nothing
+  * structurally wrong with them, like a stray forward reference for example.
   */
 class StandardShadersTests extends munit.FunSuite {
 
