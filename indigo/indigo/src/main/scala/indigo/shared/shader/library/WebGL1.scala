@@ -20,7 +20,7 @@ object WebGL1BaseShaders:
   @SuppressWarnings(Array("scalafix:DisableSyntax.null", "scalafix:DisableSyntax.var"))
   object vertex:
     inline def shader =
-      Shader[WebGL1Env, Unit] { env =>
+      Shader[WebGL1Env] { env =>
         @attribute val a_verticesAndCoords: vec4 = null
 
         @uniform val u_projection: mat4     = null
@@ -77,7 +77,7 @@ object WebGL1BaseShaders:
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   object fragment:
     inline def shader =
-      Shader[WebGL1Env, Unit] { env =>
+      Shader[WebGL1Env] { env =>
         @uniform val u_texture: sampler2D.type = sampler2D
         @in val v_texcoord: vec2               = null
 

@@ -5,6 +5,16 @@ import ultraviolet.syntax.*
 
 object ImageEffects:
 
+  trait Env extends Lighting.LightEnv {
+    val ALPHA_SATURATION_OVERLAYTYPE_FILLTYPE: highp[vec4] = vec4(0.0f)
+    val TINT: vec4                                         = vec4(0.0f)
+    val GRADIENT_FROM_TO: vec4                             = vec4(0.0f)
+    val GRADIENT_FROM_COLOR: vec4                          = vec4(0.0f)
+    val GRADIENT_TO_COLOR: vec4                            = vec4(0.0f)
+  }
+  object Env:
+    val reference: Env = new Env {}
+
   case class IndigoImageEffectsData(
       ALPHA_SATURATION_OVERLAYTYPE_FILLTYPE: highp[vec4],
       TINT: vec4,
@@ -13,99 +23,95 @@ object ImageEffects:
       GRADIENT_TO_COLOR: vec4
   )
 
-  object fragment:
-    inline def shader =
-      Shader[FragmentEnv & IndigoImageEffectsData] { env =>
-        import ImageEffectFunctions.*
-        import TileAndStretch.*
+  inline def fragment =
+    Shader[Env] { env =>
+      import ImageEffectFunctions.*
+      import TileAndStretch.*
 
-        ubo[IndigoImageEffectsData]
+      ubo[IndigoImageEffectsData]
 
-        def fragment: vec4 =
+      def fragment(color: vec4): vec4 =
 
-          // 0 = normal 1 = stretch 2 = tile
-          val fillType: Int =
-            round(env.ALPHA_SATURATION_OVERLAYTYPE_FILLTYPE.w).toInt
+        // 0 = normal 1 = stretch 2 = tile
+        val fillType: Int =
+          round(env.ALPHA_SATURATION_OVERLAYTYPE_FILLTYPE.w).toInt
 
-          env.CHANNEL_0 = tileAndStretchChannel(
-            fillType,
-            env.CHANNEL_0,
-            env.SRC_CHANNEL,
-            env.CHANNEL_0_POSITION,
-            env.CHANNEL_0_SIZE,
-            env.UV,
-            env.SIZE,
-            env.TEXTURE_SIZE
-          )
-          env.CHANNEL_1 = tileAndStretchChannel(
-            fillType,
-            env.CHANNEL_1,
-            env.SRC_CHANNEL,
-            env.CHANNEL_1_POSITION,
-            env.CHANNEL_0_SIZE,
-            env.UV,
-            env.SIZE,
-            env.TEXTURE_SIZE
-          )
-          env.CHANNEL_2 = tileAndStretchChannel(
-            fillType,
-            env.CHANNEL_2,
-            env.SRC_CHANNEL,
-            env.CHANNEL_2_POSITION,
-            env.CHANNEL_0_SIZE,
-            env.UV,
-            env.SIZE,
-            env.TEXTURE_SIZE
-          )
-          env.CHANNEL_3 = tileAndStretchChannel(
-            fillType,
-            env.CHANNEL_3,
-            env.SRC_CHANNEL,
-            env.CHANNEL_3_POSITION,
-            env.CHANNEL_0_SIZE,
-            env.UV,
-            env.SIZE,
-            env.TEXTURE_SIZE
-          )
+        env.CHANNEL_0 = tileAndStretchChannel(
+          fillType,
+          env.CHANNEL_0,
+          env.SRC_CHANNEL,
+          env.CHANNEL_0_POSITION,
+          env.CHANNEL_0_SIZE,
+          env.UV,
+          env.SIZE,
+          env.TEXTURE_SIZE
+        )
+        env.CHANNEL_1 = tileAndStretchChannel(
+          fillType,
+          env.CHANNEL_1,
+          env.SRC_CHANNEL,
+          env.CHANNEL_1_POSITION,
+          env.CHANNEL_0_SIZE,
+          env.UV,
+          env.SIZE,
+          env.TEXTURE_SIZE
+        )
+        env.CHANNEL_2 = tileAndStretchChannel(
+          fillType,
+          env.CHANNEL_2,
+          env.SRC_CHANNEL,
+          env.CHANNEL_2_POSITION,
+          env.CHANNEL_0_SIZE,
+          env.UV,
+          env.SIZE,
+          env.TEXTURE_SIZE
+        )
+        env.CHANNEL_3 = tileAndStretchChannel(
+          fillType,
+          env.CHANNEL_3,
+          env.SRC_CHANNEL,
+          env.CHANNEL_3_POSITION,
+          env.CHANNEL_0_SIZE,
+          env.UV,
+          env.SIZE,
+          env.TEXTURE_SIZE
+        )
 
-          val alpha: Float    = env.ALPHA_SATURATION_OVERLAYTYPE_FILLTYPE.x
-          val baseColor: vec4 = applyBasicEffects(env.CHANNEL_0, alpha, env.TINT.xyz)
+        val alpha: Float    = env.ALPHA_SATURATION_OVERLAYTYPE_FILLTYPE.x
+        val baseColor: vec4 = applyBasicEffects(env.CHANNEL_0, alpha, env.TINT.xyz)
 
-          // 0 = color 1 = linear gradient 2 = radial gradient
-          val overlayType: Int = round(env.ALPHA_SATURATION_OVERLAYTYPE_FILLTYPE.z).toInt
-          val overlay: vec4 =
-            overlayType match
-              case 0 =>
-                calculateColorOverlay(baseColor, env.GRADIENT_FROM_COLOR)
+        // 0 = color 1 = linear gradient 2 = radial gradient
+        val overlayType: Int = round(env.ALPHA_SATURATION_OVERLAYTYPE_FILLTYPE.z).toInt
+        val overlay: vec4 =
+          overlayType match
+            case 0 =>
+              calculateColorOverlay(baseColor, env.GRADIENT_FROM_COLOR)
 
-              case 1 =>
-                calculateLinearGradientOverlay(
-                  baseColor,
-                  env.GRADIENT_FROM_TO.xy,
-                  env.GRADIENT_FROM_TO.zw,
-                  env.UV * env.SIZE,
-                  env.GRADIENT_FROM_COLOR,
-                  env.GRADIENT_TO_COLOR
-                )
+            case 1 =>
+              calculateLinearGradientOverlay(
+                baseColor,
+                env.GRADIENT_FROM_TO.xy,
+                env.GRADIENT_FROM_TO.zw,
+                env.UV * env.SIZE,
+                env.GRADIENT_FROM_COLOR,
+                env.GRADIENT_TO_COLOR
+              )
 
-              case 2 =>
-                calculateRadialGradientOverlay(
-                  baseColor,
-                  env.GRADIENT_FROM_TO.xy,
-                  env.GRADIENT_FROM_TO.zw,
-                  env.UV * env.SIZE,
-                  env.GRADIENT_FROM_COLOR,
-                  env.GRADIENT_TO_COLOR
-                )
+            case 2 =>
+              calculateRadialGradientOverlay(
+                baseColor,
+                env.GRADIENT_FROM_TO.xy,
+                env.GRADIENT_FROM_TO.zw,
+                env.UV * env.SIZE,
+                env.GRADIENT_FROM_COLOR,
+                env.GRADIENT_TO_COLOR
+              )
 
-              case _ =>
-                calculateColorOverlay(baseColor, env.GRADIENT_FROM_COLOR)
+            case _ =>
+              calculateColorOverlay(baseColor, env.GRADIENT_FROM_COLOR)
 
-          calculateSaturation(overlay, env.ALPHA_SATURATION_OVERLAYTYPE_FILLTYPE.y)
-      }
-
-    val output = shader.toGLSL[Indigo]
-
+        calculateSaturation(overlay, env.ALPHA_SATURATION_OVERLAYTYPE_FILLTYPE.y)
+    }
 
 object ImageEffectFunctions:
 

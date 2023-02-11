@@ -5,11 +5,12 @@ import ultraviolet.syntax.*
 
 object NormalBlend:
 
-  object fragment:
-    inline def shader =
-      Shader[BlendFragmentEnv, Unit] { env =>
-        def fragment: vec4 =
-          env.SRC
-      }
+  trait Env extends BlendFragmentEnvReference
+  object Env:
+    val reference: Env = new Env {}
 
-    val output = shader.toGLSL[Indigo]
+  inline def fragment =
+    Shader[Env] { env =>
+      def fragment(color: vec4): vec4 =
+        env.SRC
+    }

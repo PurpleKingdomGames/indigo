@@ -5,15 +5,21 @@ import ultraviolet.syntax.*
 
 object Blit:
 
+  trait Env extends Lighting.LightEnv {
+    val FILLTYPE: highp[Float] = 0.0f
+  }
+  object Env:
+    val reference: Env = new Env {}
+
   case class IndigoBitmapData(FILLTYPE: highp[Float])
 
-  object fragment:
-    inline def shader =
-      Shader[FragmentEnv & IndigoBitmapData, vec4] { env =>
-        import TileAndStretch.*
+  inline def fragment =
+    Shader[Env] { env =>
+      import TileAndStretch.*
 
-        ubo[IndigoBitmapData]
+      ubo[IndigoBitmapData]
 
+      def fragment(color: vec4): vec4 =
         env.CHANNEL_0 = tileAndStretchChannel(
           env.FILLTYPE.toInt,
           env.CHANNEL_0,
@@ -55,13 +61,5 @@ object Blit:
           env.TEXTURE_SIZE
         )
 
-        env.CHANNEL_0;
-      }
-
-    inline def asFragment =
-      Shader[FragmentEnv & IndigoBitmapData] { env =>
-        def fragment: vec4 =
-          shader.run(env)
-      }
-
-    val output = asFragment.toGLSL[Indigo]
+        env.CHANNEL_0
+    }

@@ -15,6 +15,7 @@ import indigo.shared.shader.EntityShader
 import indigo.shared.shader.Shader
 import indigo.shared.shader.ShaderId
 import indigo.shared.shader.ShaderPrimitive.float
+import indigo.shared.shader.UltravioletShader
 import indigo.shared.shader.Uniform
 import indigo.shared.shader.UniformBlock
 import indigo.shared.shader.library.NoOp
@@ -22,21 +23,24 @@ import indigoextras.effectmaterials.shaders.RefractionShaders
 
 object Refraction:
 
-  val entityShader: EntityShader.Source =
-    EntityShader.Source(
-      id = ShaderId("[indigoextras_engine_normal_minus_blue]"),
-      vertex = NoOp.vertex.output.toOutput.code,
-      fragment = RefractionShaders.normalMinusBlue.output.toOutput.code,
-      prepare = NoOp.prepare.output.toOutput.code,
-      light = NoOp.light.output.toOutput.code,
-      composite = NoOp.composite.output.toOutput.code
+  val entityShader: UltravioletShader =
+    UltravioletShader(
+      ShaderId("[indigoextras_engine_normal_minus_blue]"),
+      EntityShader.vertex(NoOp.vertex, ()),
+      EntityShader.fragment(
+        RefractionShaders.normalMinusBlue,
+        RefractionShaders.FragEnv.reference
+      )
     )
 
-  val blendShader: BlendShader.Source =
-    BlendShader.Source(
-      id = ShaderId("[indigoextras_engine_blend_refraction]"),
-      vertex = NoOp.vertex.output.toOutput.code,
-      fragment = RefractionShaders.refractionFragment.output.toOutput.code
+  val blendShader: UltravioletShader =
+    UltravioletShader(
+      ShaderId("[indigoextras_engine_blend_refraction]"),
+      EntityShader.vertex(NoOp.vertex, ()),
+      EntityShader.fragment(
+        RefractionShaders.refractionFragment,
+        RefractionShaders.BlendEnv.reference
+      )
     )
 
   val shaders: Set[Shader] =

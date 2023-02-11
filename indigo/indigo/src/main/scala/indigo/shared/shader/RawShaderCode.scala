@@ -1,8 +1,11 @@
 package indigo.shared.shader
 
-import indigo.shaders.WebGL2Base
-import indigo.shaders.WebGL2Merge
+import indigo.shared.shader.BlendShader
+import indigo.shared.shader.EntityShader
+import indigo.shared.shader.library.IndigoUV
+import ultraviolet.datatypes.RawGLSL
 import ultraviolet.datatypes.ShaderResult
+import ultraviolet.syntax.Shader as UVShader
 
 trait RawShaderCode {
   val id: ShaderId
@@ -11,7 +14,7 @@ trait RawShaderCode {
 }
 
 object RawShaderCode {
-  
+
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def fromUltravioletShader(customShader: UltravioletShader): RawShaderCode =
     new RawShaderCode {
@@ -33,44 +36,36 @@ object RawShaderCode {
 
   def fromEntityShader(customShader: EntityShader.Source): RawShaderCode =
     new RawShaderCode {
-      val id: ShaderId   = customShader.id
-      val vertex: String = ShaderTemplates.webGL2EntityVertex(Option(customShader.vertex))
-      val fragment: String = ShaderTemplates.webGL2EntityFragment(
-        Option(customShader.fragment),
-        Option(customShader.prepare),
-        Option(customShader.light),
-        Option(customShader.composite)
-      )
+      val id: ShaderId =
+        customShader.id
+
+      val vertex: String =
+        EntityShader.vertexTemplate(customShader.vertex)
+
+      val fragment: String =
+        EntityShader.fragmentTemplate(
+          s"""
+          |${customShader.fragment}
+          |
+          |${customShader.prepare}
+          |
+          |${customShader.light}
+          |
+          |${customShader.composite}
+          |""".stripMargin.trim
+        )
     }
 
   def fromBlendShader(customShader: BlendShader.Source): RawShaderCode =
     new RawShaderCode {
-      val id: ShaderId     = customShader.id
-      val vertex: String   = ShaderTemplates.webGL2BlendVertex(Some(customShader.vertex))
-      val fragment: String = ShaderTemplates.webGL2BlendFragment(Some(customShader.fragment))
+      val id: ShaderId =
+        customShader.id
+
+      val vertex: String =
+        BlendShader.vertexTemplate(customShader.vertex)
+
+      val fragment: String =
+        BlendShader.fragmentTemplate(customShader.fragment)
     }
-
-  object ShaderTemplates {
-
-    def webGL2EntityVertex(vertexShader: Option[String]): String =
-      WebGL2Base.vertexShader(vertexShader)
-
-    def webGL2EntityFragment(
-        fragmentShader: Option[String],
-        prepareShader: Option[String],
-        lightShader: Option[String],
-        compositeShader: Option[String]
-    ): String =
-      WebGL2Base.fragmentShader(fragmentShader, prepareShader, lightShader, compositeShader)
-
-    def webGL2BlendVertex(vertexShader: Option[String]): String =
-      WebGL2Merge.vertexShader(vertexShader)
-
-    def webGL2BlendFragment(
-        fragmentShader: Option[String]
-    ): String =
-      WebGL2Merge.fragmentShader(fragmentShader, None, None, None)
-
-  }
 
 }

@@ -14,7 +14,7 @@ class BaseEntityShaderTests extends munit.FunSuite {
       }
 
     val actual =
-      EntityShader.vertex(modifyVertex).toOutput.code
+      EntityShader.vertex(modifyVertex, IndigoUV.VertexEnv.reference).toOutput.code
 
     val expected1: String =
       """
@@ -47,7 +47,7 @@ vec4 vertex(vec4 v){
       }
 
     val actual =
-      EntityShader.vertexRawBody(modifyVertex).toOutput.code
+      EntityShader.vertexRawBody(modifyVertex, IndigoUV.VertexEnv.reference).toOutput.code
 
     // println(actual)
 
@@ -79,7 +79,7 @@ vec4 vertex(vec4 v){
 
     val actual =
       EntityShader
-        .fragment(modifyColor)
+        .fragment(modifyColor, IndigoUV.FragmentEnv.reference)
         .toOutput
         .code
 

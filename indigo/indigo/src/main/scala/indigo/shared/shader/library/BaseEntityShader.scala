@@ -46,7 +46,7 @@ trait BaseEntityShader:
     UserDefined
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  inline def vertexShader(inline userVertexFn: Shader[IndigoUV.VertexEnv, Unit]): Shader[VertexEnv, Unit] =
+  inline def vertexShader[E](inline userVertexFn: Shader[E, Unit], reference: E): Shader[VertexEnv, Unit] =
     Shader[VertexEnv] { env =>
       @layout(0) @in val a_verticesAndCoords: vec4    = null
       @layout(1) @in val a_translateScale: vec4       = null
@@ -140,7 +140,7 @@ trait BaseEntityShader:
         val transform: mat4 = translate2d(offset) * scale2d(FRAME_SIZE)
         (transform * vec4(texcoord, 1.0f, 1.0f)).xy
       
-      userVertexFn.run(IndigoUV.VertexEnv.reference)
+      userVertexFn.run(reference)
 
       def main: Unit =
         INSTANCE_ID = env.gl_InstanceID
@@ -227,26 +227,42 @@ trait BaseEntityShader:
       
     }
 
-  inline def vertex(inline userVertexFn: Shader[IndigoUV.VertexEnv, Unit]): ShaderResult =
-    vertexShader(userVertexFn).toGLSL[IndigoUV.IndigoVertexPrinter](
+  inline def vertex[Env](inline userVertexFn: Shader[Env, Unit], env: Env): ShaderResult =
+    vertexShader[Env](userVertexFn, env).toGLSL[IndigoUV.IndigoVertexPrinter](
       ShaderHeader.Version300ES,
       ShaderHeader.PrecisionMediumPFloat
     )
 
-  inline def vertexRawBody(inline userVertexFn: Shader[IndigoUV.VertexEnv, Unit]): ShaderResult =
-    vertexShader(userVertexFn).toGLSL[WebGL2](
+  inline def vertexRawBody[Env](inline userVertexFn: Shader[Env, Unit], env: Env): ShaderResult =
+    vertexShader[Env](userVertexFn, env).toGLSL[WebGL2](
       ShaderHeader.Version300ES,
       ShaderHeader.PrecisionMediumPFloat
     )
+
+  val vertexTemplate: String => String =
+    inline def tag = "//vertex_placeholder"
+    inline def placeholder = Shader[IndigoUV.VertexEnv] {_ => RawGLSL(tag)}
+    val renderedCode =
+      vertexShader[IndigoUV.VertexEnv](placeholder, IndigoUV.VertexEnv.reference).toGLSL[WebGL2](
+        ShaderHeader.Version300ES,
+        ShaderHeader.PrecisionMediumPFloat
+      ).toOutput.code
+
+    val location = renderedCode.indexOf(tag)
+    val start = renderedCode.substring(0, location)
+    val end = renderedCode.substring(location + tag.length + 1)
+
+    (insert: String) => start + insert + end
 
   protected type FragmentEnv = IndigoDynamicLightingData & UserDefined
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  inline def fragmentShader(
-    inline userFragmentFn: Shader[IndigoUV.FragmentEnv, Unit],
-    inline userPrepareFn: Shader[IndigoUV.FragmentEnv, Unit],
-    inline userLightFn: Shader[IndigoUV.FragmentEnv, Unit],
-    inline userCompositeFn: Shader[IndigoUV.FragmentEnv, Unit]
+  inline def fragmentShader[E](
+    inline userFragmentFn: Shader[E, Unit],
+    inline userPrepareFn: Shader[E, Unit],
+    inline userLightFn: Shader[E, Unit],
+    inline userCompositeFn: Shader[E, Unit],
+    reference: E
   ): Shader[FragmentEnv, Unit] =
     Shader[FragmentEnv] { env =>
       @layout(0) @out var fragColor: vec4 = null
@@ -322,13 +338,13 @@ trait BaseEntityShader:
       // Outputs
       @global var COLOR: vec4 = null
 
-      userFragmentFn.run(IndigoUV.FragmentEnv.reference)
+      userFragmentFn.run(reference)
 
-      userPrepareFn.run(IndigoUV.FragmentEnv.reference)
+      userPrepareFn.run(reference)
 
-      userLightFn.run(IndigoUV.FragmentEnv.reference)
+      userLightFn.run(reference)
 
-      userCompositeFn.run(IndigoUV.FragmentEnv.reference)
+      userCompositeFn.run(reference)
 
       // Prevents illegal forward reference warning from ultraviolet validater.
       def _indigoProcessLight_(): Unit =
@@ -394,75 +410,96 @@ trait BaseEntityShader:
         fragColor = COLOR
       }
 
-  inline def noopPrepare: Shader[IndigoUV.FragmentEnv, Unit] =
-    Shader[IndigoUV.FragmentEnv] { _ =>
+  inline def noopPrepare[E]: Shader[E, Unit] =
+    Shader[E] { _ =>
       def prepare: Unit = ()
     }
 
-  inline def noopLight: Shader[IndigoUV.FragmentEnv, Unit] =
-    Shader[IndigoUV.FragmentEnv] { _ =>
+  inline def noopLight[E]: Shader[E, Unit] =
+    Shader[E] { _ =>
       def light: Unit = ()
     }
 
-  inline def noopComposite: Shader[IndigoUV.FragmentEnv, Unit] =
-    Shader[IndigoUV.FragmentEnv] { _ =>
+  inline def noopComposite[E]: Shader[E, Unit] =
+    Shader[E] { _ =>
       def composite: Unit = ()
     }
 
-  inline def fragment(
-    inline userFragmentFn: Shader[IndigoUV.FragmentEnv, Unit],
-    inline userPrepareFn: Shader[IndigoUV.FragmentEnv, Unit],
-    inline userLightFn: Shader[IndigoUV.FragmentEnv, Unit],
-    inline userCompositeFn: Shader[IndigoUV.FragmentEnv, Unit]
+  inline def fragment[Env](
+    inline userFragmentFn: Shader[Env, Unit],
+    inline userPrepareFn: Shader[Env, Unit],
+    inline userLightFn: Shader[Env, Unit],
+    inline userCompositeFn: Shader[Env, Unit],
+    env: Env
   ): ShaderResult =
-    fragmentShader(
+    fragmentShader[Env](
       userFragmentFn,
       userPrepareFn,
       userLightFn,
-      userCompositeFn
+      userCompositeFn,
+      env
     ).toGLSL[IndigoUV.IndigoFragmentPrinter](
       ShaderHeader.Version300ES,
       ShaderHeader.PrecisionMediumPFloat
     )
 
-  inline def fragment(
-    inline userFragmentFn: Shader[IndigoUV.FragmentEnv, Unit]
+  inline def fragment[Env](
+    inline userFragmentFn: Shader[Env, Unit],
+    env: Env
   ): ShaderResult =
     fragmentShader(
       userFragmentFn,
       noopPrepare,
       noopLight,
-      noopComposite
+      noopComposite,
+      env
     ).toGLSL[IndigoUV.IndigoFragmentPrinter](
       ShaderHeader.Version300ES,
       ShaderHeader.PrecisionMediumPFloat
     )
 
   inline def fragmentRawBody(
-    inline userFragmentFn: Shader[IndigoUV.FragmentEnv, Unit],
-    inline userPrepareFn: Shader[IndigoUV.FragmentEnv, Unit],
-    inline userLightFn: Shader[IndigoUV.FragmentEnv, Unit],
-    inline userCompositeFn: Shader[IndigoUV.FragmentEnv, Unit]
+    inline userFragmentFn: Shader[Unit, Unit],
+    inline userPrepareFn: Shader[Unit, Unit],
+    inline userLightFn: Shader[Unit, Unit],
+    inline userCompositeFn: Shader[Unit, Unit]
   ): ShaderResult =
     fragmentShader(
       userFragmentFn,
       userPrepareFn,
       userLightFn,
-      userCompositeFn
+      userCompositeFn,
+      ()
     ).toGLSL[WebGL2](
       ShaderHeader.Version300ES,
       ShaderHeader.PrecisionMediumPFloat
     )
 
   inline def fragmentRawBody(
-    inline userFragmentFn: Shader[IndigoUV.FragmentEnv, Unit]
+    inline userFragmentFn: Shader[Unit, Unit],
   ): ShaderResult =
     fragmentShader(
       userFragmentFn,
       noopPrepare,
       noopLight,
-      noopComposite
+      noopComposite,
+      ()
     ).toGLSL[WebGL2](
       ShaderHeader.Version300ES,
       ShaderHeader.PrecisionMediumPFloat
     )
+
+  val fragmentTemplate: String => String =
+    inline def tag = "//fragment_placeholder"
+    inline def placeholder = Shader[IndigoUV.FragmentEnv]{_ => RawGLSL(tag)}
+    inline def empty = Shader[IndigoUV.FragmentEnv]{_ => RawGLSL("//")}
+    val renderedCode = fragmentShader(placeholder, empty, empty, empty, IndigoUV.FragmentEnv.reference).toGLSL[WebGL2](
+      ShaderHeader.Version300ES,
+      ShaderHeader.PrecisionMediumPFloat
+    ).toOutput.code
+
+    val location = renderedCode.indexOf(tag)
+    val start = renderedCode.substring(0, location)
+    val end = renderedCode.substring(location + tag.length + 1)
+
+    (insert: String) => start + insert + end
