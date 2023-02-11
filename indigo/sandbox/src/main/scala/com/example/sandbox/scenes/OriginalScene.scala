@@ -141,11 +141,11 @@ object Shaders:
     |  return TAU * mod(t, 1.0);
     |}
     |
-    |void vertex() {
+    |vec4 vertex(vec4 v) {
     |  float x = sin(timeToRadians(TIME / 2.0)) * ${orbitDist.toString()} + VERTEX.x;
     |  float y = cos(timeToRadians(TIME / 2.0)) * ${orbitDist.toString()} + VERTEX.y;
     |  vec2 orbit = vec2(x, y);
-    |  VERTEX = vec4(orbit, VERTEX.zw);
+    |  return vec4(orbit, VERTEX.zw);
     |}
     |""".stripMargin
 
@@ -155,11 +155,11 @@ object Shaders:
     |  return TAU * mod(t, 1.0);
     |}
     |
-    |void fragment() {
+    |vec4 fragment(vec4 color) {
     |  float red = UV.x * (1.0 - ((cos(timeToRadians(TIME)) + 1.0) / 2.0));
     |  float alpha = 1.0 - step(0.0, length(UV - 0.5) - 0.5);
     |  vec4 circle = vec4(vec3(red, UV.y, 0.0) * alpha, alpha);
-    |  COLOR = circle;
+    |  return circle;
     |}
     |""".stripMargin
 

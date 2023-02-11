@@ -211,8 +211,8 @@ object StandardShaders {
   val NormalBlend: UltravioletShader =
     UltravioletShader(
       ShaderId("[indigo_engine_blend_normal]"),
-      EntityShader.vertex(library.NoOp.vertex, ()),
-      EntityShader.fragment(
+      BlendShader.vertex(library.NoOp.vertex, ()),
+      BlendShader.fragment(
         library.NormalBlend.fragment,
         library.NormalBlend.Env.reference
       )
@@ -221,8 +221,8 @@ object StandardShaders {
   val LightingBlend: UltravioletShader =
     UltravioletShader(
       ShaderId("[indigo_engine_blend_lighting]"),
-      EntityShader.vertex(library.NoOp.vertex, ()),
-      EntityShader.fragment(
+      BlendShader.vertex(library.NoOp.vertex, ()),
+      BlendShader.fragment(
         library.LightingBlend.fragment,
         library.LightingBlend.Env.reference
       )
@@ -231,8 +231,8 @@ object StandardShaders {
   val BlendEffects: UltravioletShader =
     UltravioletShader(
       ShaderId("[indigo_engine_blend_effects]"),
-      EntityShader.vertex(library.NoOp.vertex, ()),
-      EntityShader.fragment(
+      BlendShader.vertex(library.NoOp.vertex, ()),
+      BlendShader.fragment(
         library.BlendEffects.fragment,
         library.BlendEffects.Env.reference
       )

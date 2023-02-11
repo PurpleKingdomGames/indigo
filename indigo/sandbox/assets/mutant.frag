@@ -14,8 +14,8 @@ layout (std140) uniform MutantData {
   float ALPHA;
 };
 
-void fragment(){
+vec4 fragment(vec4 c){
   float a = CHANNEL_0.a * ALPHA;
-  COLOR = vec4(CHANNEL_0.rgb * a, a);
+  return vec4(CHANNEL_0.rgb * a, a);
 }
 //</indigo-fragment>
