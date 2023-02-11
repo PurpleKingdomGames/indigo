@@ -1,7 +1,6 @@
 package indigo.shared.shader
 
 import indigo.shared.shader.library
-import indigo.shared.shader.library.Blit
 object StandardShaders {
 
   def all: Set[Shader] =
@@ -38,7 +37,7 @@ object StandardShaders {
         library.NoOp.prepare,
         library.NoOp.light,
         library.NoOp.composite,
-        Blit.Env.reference
+        library.Blit.Env.reference
       )
     )
 

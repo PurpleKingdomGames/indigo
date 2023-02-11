@@ -1,6 +1,5 @@
 package indigoextras.effectmaterials
 
-import indigo.VertexEnv
 import indigo.shared.assets.AssetName
 import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Fill
@@ -16,6 +15,7 @@ import indigo.shared.shader.ShaderPrimitive.rawJSArray
 import indigo.shared.shader.UltravioletShader
 import indigo.shared.shader.Uniform
 import indigo.shared.shader.UniformBlock
+import indigo.shared.shader.library.IndigoUV.VertexEnv
 import indigo.shared.shader.library.NoOp
 import indigoextras.effectmaterials.shaders.LegacyEffectsShaders
 
