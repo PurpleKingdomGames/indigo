@@ -5,18 +5,21 @@ import ultraviolet.syntax.*
 
 object LightingBlend:
 
+  trait Env extends BlendFragmentEnvReference {
+    val AMBIENT_LIGHT_COLOR: vec4 = vec4(0.0f)
+  }
+  object Env:
+    val reference: Env = new Env {}
+
   case class IndigoLightingBlendData(AMBIENT_LIGHT_COLOR: vec4)
 
-  object fragment:
-    inline def shader =
-      Shader[BlendFragmentEnv & IndigoLightingBlendData, Unit] { env =>
-        ubo[IndigoLightingBlendData]
+  inline def fragment =
+    Shader[Env] { env =>
+      ubo[IndigoLightingBlendData]
 
-        def fragment: vec4 =
-          val ambient: vec4 =
-            vec4(env.AMBIENT_LIGHT_COLOR.xyz * env.AMBIENT_LIGHT_COLOR.w, 1.0f)
+      def fragment(color: vec4): vec4 =
+        val ambient: vec4 =
+          vec4(env.AMBIENT_LIGHT_COLOR.xyz * env.AMBIENT_LIGHT_COLOR.w, 1.0f)
 
-          (env.DST * ambient) + (env.DST * env.SRC)
-      }
-
-    val output = shader.toGLSL[Indigo]
+        (env.DST * ambient) + (env.DST * env.SRC)
+    }

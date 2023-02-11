@@ -12,11 +12,22 @@ sealed trait Shader derives CanEqual:
   def id: ShaderId
 
 object Shader:
-  val defaultVertexProgram: String    = "void vertex(){}"
-  val defaultFragmentProgram: String  = "void fragment(){}"
-  val defaultPrepareProgram: String   = "void prepare(){}"
-  val defaultLightProgram: String     = "void light(){}"
-  val defaultCompositeProgram: String = "void composite(){}"
+  val defaultVertexProgram: String =
+    """vec4 vertex(vec4 v){
+    |  return v;
+    |}
+    |""".stripMargin.trim
+  val defaultFragmentProgram: String =
+    """vec4 fragment(vec4 v){
+    |  return v;
+    |}
+    |""".stripMargin.trim
+  val defaultPrepareProgram: String =
+    """void prepare(){}"""
+  val defaultLightProgram: String =
+    """void light(){}"""
+  val defaultCompositeProgram: String =
+    """void composite(){}"""
 
 final case class UltravioletShader(id: ShaderId, vertex: ShaderResult, fragment: ShaderResult) extends Shader
 object UltravioletShader:
@@ -30,14 +41,14 @@ object UltravioletShader:
   inline def entityFragment(id: ShaderId, fragment: ShaderResult): UltravioletShader =
     UltravioletShader(
       id,
-      EntityShader.vertex(noopVertex),
+      EntityShader.vertex(noopVertex, IndigoUV.VertexEnv.reference),
       fragment
     )
 
   inline def blendFragment(id: ShaderId, fragment: ShaderResult): UltravioletShader =
     UltravioletShader(
       id,
-      BlendShader.vertex(noopVertex),
+      BlendShader.vertex(noopVertex, IndigoUV.VertexEnv.reference),
       fragment
     )
 

@@ -14,7 +14,7 @@ class BaseBlendShaderTests extends munit.FunSuite {
       }
 
     val actual =
-      BlendShader.vertex(modifyVertex).toOutput.code
+      BlendShader.vertex(modifyVertex, IndigoUV.VertexEnv.reference).toOutput.code
 
     val expected1: String =
       """
@@ -32,6 +32,21 @@ class BaseBlendShaderTests extends munit.FunSuite {
     assert(clue(actual).contains(clue(expected2)))
   }
 
+  test("Merge WebGL 2.0 vertex shader template") {
+
+    val noop = NoOp.vertex.toGLSL[WebGL2].toOutput.code
+
+    val actual =
+      BlendShader.vertexTemplate(noop)
+
+    val expected1: String =
+      """
+      |vec4 vertex(in vec4 v){
+      |""".stripMargin.trim
+
+    assert(clue(actual).contains(clue(expected1)))
+  }
+
   test("Merge WebGL 2.0 fragment shader") {
 
     inline def modifyColor: Shader[IndigoUV.BlendFragmentEnv, Unit] =
@@ -41,7 +56,7 @@ class BaseBlendShaderTests extends munit.FunSuite {
       }
 
     val actual =
-      BlendShader.fragment(modifyColor).toOutput.code
+      BlendShader.fragment(modifyColor, IndigoUV.BlendFragmentEnv.reference).toOutput.code
 
     val expected1: String =
       """

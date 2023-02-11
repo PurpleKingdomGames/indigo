@@ -21,8 +21,9 @@ trait BaseBlendShader:
     def fragment(v: vec4): vec4 = v
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  inline def vertexShader(
-      inline userVertexFn: Shader[IndigoUV.VertexEnv, Unit]
+  inline def vertexShader[E](
+      inline userVertexFn: Shader[E, Unit],
+      reference: E
   ): Shader[IndigoMergeData & VertexEnv & UserDefined, Unit] =
     Shader[IndigoMergeData & VertexEnv & UserDefined] { env =>
 
@@ -60,7 +61,7 @@ trait BaseBlendShader:
 
       @global var VERTEX: vec4 = null
 
-      userVertexFn.run(IndigoUV.VertexEnv.reference)
+      userVertexFn.run(reference)
 
       def main: Unit =
         UV = a_verticesAndCoords.zw
@@ -75,20 +76,34 @@ trait BaseBlendShader:
         env.gl_Position = env.u_projection * transform * VERTEX
     }
 
-  inline def vertex(inline userVertexFn: Shader[IndigoUV.VertexEnv, Unit]): ShaderResult =
-    vertexShader(userVertexFn).toGLSL[IndigoUV.IndigoVertexPrinter](
+  inline def vertex[Env](inline userVertexFn: Shader[Env, Unit], env: Env): ShaderResult =
+    vertexShader(userVertexFn, env).toGLSL[IndigoUV.IndigoVertexPrinter](
       ShaderHeader.Version300ES,
       ShaderHeader.PrecisionMediumPFloat
     )
 
-  inline def vertexRawBody(inline userVertexFn: Shader[IndigoUV.VertexEnv, Unit]): ShaderResult =
-    vertexShader(userVertexFn).toGLSL[WebGL2](
+  inline def vertexRawBody(inline userVertexFn: Shader[Unit, Unit]): ShaderResult =
+    vertexShader(userVertexFn, ()).toGLSL[WebGL2](
       ShaderHeader.Version300ES,
       ShaderHeader.PrecisionMediumPFloat
     )
+
+  val vertexTemplate: String => String =
+    inline def tag = "//vertex_placeholder"
+    inline def placeholder = Shader[IndigoUV.VertexEnv]{_ => RawGLSL(tag)}
+    val renderedCode = vertexShader(placeholder, IndigoUV.VertexEnv.reference).toGLSL[WebGL2](
+      ShaderHeader.Version300ES,
+      ShaderHeader.PrecisionMediumPFloat
+    ).toOutput.code
+
+    val location = renderedCode.indexOf(tag)
+    val start = renderedCode.substring(0, location)
+    val end = renderedCode.substring(location + tag.length + 1)
+
+    (insert: String) => start + insert + end
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  inline def fragmentShader(inline userFragmentFn: Shader[IndigoUV.BlendFragmentEnv, Unit]): Shader[UserDefined, Unit] =
+  inline def fragmentShader[E](inline userFragmentFn: Shader[E, Unit], reference: E): Shader[UserDefined, Unit] =
     Shader[UserDefined] { env =>
 
       @in val SIZE: vec2 = null // In this case, screen size.
@@ -116,7 +131,7 @@ trait BaseBlendShader:
       // Output
       @global var COLOR: vec4 = null
 
-      userFragmentFn.run(IndigoUV.BlendFragmentEnv.reference)
+      userFragmentFn.run(reference)
 
       def main: Unit =
         SRC = texture2D(SRC_CHANNEL, UV)
@@ -130,14 +145,28 @@ trait BaseBlendShader:
       
     }
 
-  inline def fragment(inline userFragmentFn: Shader[IndigoUV.BlendFragmentEnv, Unit]): ShaderResult =
-    fragmentShader(userFragmentFn).toGLSL[IndigoUV.IndigoBlendFragmentPrinter](
+  inline def fragment[Env](inline userFragmentFn: Shader[Env, Unit], env: Env): ShaderResult =
+    fragmentShader(userFragmentFn, env).toGLSL[IndigoUV.IndigoBlendFragmentPrinter](
       ShaderHeader.Version300ES,
       ShaderHeader.PrecisionMediumPFloat
     )
 
-  inline def fragmentRawBody(inline userFragmentFn: Shader[IndigoUV.BlendFragmentEnv, Unit]): ShaderResult =
-    fragmentShader(userFragmentFn).toGLSL[WebGL2](
+  inline def fragmentRawBody(inline userFragmentFn: Shader[Unit, Unit]): ShaderResult =
+    fragmentShader(userFragmentFn, ()).toGLSL[WebGL2](
       ShaderHeader.Version300ES,
       ShaderHeader.PrecisionMediumPFloat
     )
+
+  val fragmentTemplate: String => String =
+    inline def tag = "//fragment_placeholder"
+    inline def placeholder = Shader[IndigoUV.BlendFragmentEnv]{_ => RawGLSL(tag)}
+    val renderedCode = fragmentShader(placeholder, IndigoUV.BlendFragmentEnv.reference).toGLSL[WebGL2](
+      ShaderHeader.Version300ES,
+      ShaderHeader.PrecisionMediumPFloat
+    ).toOutput.code
+
+    val location = renderedCode.indexOf(tag)
+    val start = renderedCode.substring(0, location)
+    val end = renderedCode.substring(location + tag.length + 1)
+
+    (insert: String) => start + insert + end

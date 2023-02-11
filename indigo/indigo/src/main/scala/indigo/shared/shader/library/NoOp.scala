@@ -5,42 +5,27 @@ import ultraviolet.syntax.*
 
 object NoOp:
 
-  object vertex:
-    inline def shader =
-      Shader {
-        def vertex: Unit = {}
-      }
+  inline def vertex[E] =
+    Shader[E] { _ =>
+      def vertex(v: vec4): vec4 = v
+    }
 
-    val output = shader.toGLSL[Indigo]
+  inline def fragment[E] =
+    Shader[E] { _ =>
+      def fragment(v: vec4): vec4 = v
+    }
 
-  object fragment:
-    inline def shader =
-      Shader {
-        def fragment: Unit = {}
-      }
+  inline def prepare[E] =
+    Shader[E] { _ =>
+      def prepare: Unit = ()
+    }
 
-    val output = shader.toGLSL[Indigo]
+  inline def light[E] =
+    Shader[E] { _ =>
+      def light: Unit = ()
+    }
 
-  object prepare:
-    inline def shader =
-      Shader {
-        def prepare: Unit = {}
-      }
-
-    val output = shader.toGLSL[Indigo]
-
-  object light:
-    inline def shader =
-      Shader {
-        def light: Unit = {}
-      }
-
-    val output = shader.toGLSL[Indigo]
-
-  object composite:
-    inline def shader =
-      Shader {
-        def composite: Unit = {}
-      }
-
-    val output = shader.toGLSL[Indigo]
+  inline def composite[E] =
+    Shader[E] { _ =>
+      def composite: Unit = ()
+    }

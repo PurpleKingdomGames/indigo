@@ -29,44 +29,56 @@ object StandardShaders {
 
   // Entity Shaders
 
-  val Bitmap: EntityShader.Source =
-    EntityShader.Source(
-      id = ShaderId("[indigo_engine_bitmap]"),
-      vertex = library.NoOp.vertex.output.toOutput.code,
-      fragment = library.Blit.fragment.output.toOutput.code,
-      prepare = library.NoOp.prepare.output.toOutput.code,
-      light = library.NoOp.light.output.toOutput.code,
-      composite = library.NoOp.composite.output.toOutput.code
+  val Bitmap: UltravioletShader =
+    UltravioletShader(
+      ShaderId("[indigo_engine_bitmap]"),
+      EntityShader.vertex(library.NoOp.vertex, ()),
+      EntityShader.fragment(
+        library.Blit.fragment,
+        library.NoOp.prepare,
+        library.NoOp.light,
+        library.NoOp.composite,
+        Blit.Env.reference
+      )
     )
 
-  val LitBitmap: EntityShader.Source =
-    EntityShader.Source(
-      id = ShaderId("[indigo_engine_lit_bitmap]"),
-      vertex = library.NoOp.vertex.output.toOutput.code,
-      fragment = library.Blit.fragment.output.toOutput.code,
-      prepare = library.Lighting.prepare.output.toOutput.code,
-      light = library.Lighting.light.output.toOutput.code,
-      composite = library.Lighting.composite.output.toOutput.code
+  val LitBitmap: UltravioletShader =
+    UltravioletShader(
+      ShaderId("[indigo_engine_lit_bitmap]"),
+      EntityShader.vertex(library.NoOp.vertex, ()),
+      EntityShader.fragment(
+        library.Blit.fragment,
+        library.Lighting.prepare,
+        library.Lighting.light,
+        library.Lighting.composite,
+        library.Blit.Env.reference
+      )
     )
 
-  val ImageEffects: EntityShader.Source =
-    EntityShader.Source(
-      id = ShaderId("[indigo_engine_image_effects]"),
-      vertex = library.NoOp.vertex.output.toOutput.code,
-      fragment = library.ImageEffects.fragment.output.toOutput.code,
-      prepare = library.NoOp.prepare.output.toOutput.code,
-      light = library.NoOp.light.output.toOutput.code,
-      composite = library.NoOp.composite.output.toOutput.code
+  val ImageEffects: UltravioletShader =
+    UltravioletShader(
+      ShaderId("[indigo_engine_image_effects]"),
+      EntityShader.vertex(library.NoOp.vertex, ()),
+      EntityShader.fragment(
+        library.ImageEffects.fragment,
+        library.NoOp.prepare,
+        library.NoOp.light,
+        library.NoOp.composite,
+        library.ImageEffects.Env.reference
+      )
     )
 
-  val LitImageEffects: EntityShader.Source =
-    EntityShader.Source(
-      id = ShaderId("[indigo_engine_lit_image_effects]"),
-      vertex = library.NoOp.vertex.output.toOutput.code,
-      fragment = library.ImageEffects.fragment.output.toOutput.code,
-      prepare = library.Lighting.prepare.output.toOutput.code,
-      light = library.Lighting.light.output.toOutput.code,
-      composite = library.Lighting.composite.output.toOutput.code
+  val LitImageEffects: UltravioletShader =
+    UltravioletShader(
+      ShaderId("[indigo_engine_lit_image_effects]"),
+      EntityShader.vertex(library.NoOp.vertex, ()),
+      EntityShader.fragment(
+        library.ImageEffects.fragment,
+        library.Lighting.prepare,
+        library.Lighting.light,
+        library.Lighting.composite,
+        library.ImageEffects.Env.reference
+      )
     )
 
   // Clips
@@ -74,120 +86,156 @@ object StandardShaders {
   def shaderIdToClipShaderId(id: ShaderId): ShaderId =
     ShaderId(id.toString + "[clip]")
 
-  def makeClipShader(shader: EntityShader.Source): EntityShader.Source =
+  def makeClipShader(shader: UltravioletShader): UltravioletShader =
     shader.copy(
       id = shaderIdToClipShaderId(shader.id),
-      vertex = library.Clip.vertex.output.toOutput.code
+      vertex = EntityShader.vertex(
+        library.Clip.vertex,
+        library.Clip.Env.reference
+      )
     )
 
-  val BitmapClip: EntityShader.Source          = makeClipShader(Bitmap)
-  val LitBitmapClip: EntityShader.Source       = makeClipShader(LitBitmap)
-  val ImageEffectsClip: EntityShader.Source    = makeClipShader(ImageEffects)
-  val LitImageEffectsClip: EntityShader.Source = makeClipShader(LitImageEffects)
+  val BitmapClip: UltravioletShader          = makeClipShader(Bitmap)
+  val LitBitmapClip: UltravioletShader       = makeClipShader(LitBitmap)
+  val ImageEffectsClip: UltravioletShader    = makeClipShader(ImageEffects)
+  val LitImageEffectsClip: UltravioletShader = makeClipShader(LitImageEffects)
 
   // Shapes
 
-  val ShapeBox: EntityShader.Source =
-    EntityShader.Source(
-      id = ShaderId("[indigo_engine_shape_box]"),
-      vertex = library.NoOp.vertex.output.toOutput.code,
-      fragment = library.ShapeBox.fragment.output.toOutput.code,
-      prepare = library.NoOp.prepare.output.toOutput.code,
-      light = library.NoOp.light.output.toOutput.code,
-      composite = library.NoOp.composite.output.toOutput.code
+  val ShapeBox: UltravioletShader =
+    UltravioletShader(
+      ShaderId("[indigo_engine_shape_box]"),
+      EntityShader.vertex(library.NoOp.vertex, ()),
+      EntityShader.fragment(
+        library.ShapeBox.fragment,
+        library.NoOp.prepare,
+        library.NoOp.light,
+        library.NoOp.composite,
+        library.ShapeBox.Env.reference
+      )
     )
 
-  val LitShapeBox: EntityShader.Source =
-    EntityShader.Source(
-      id = ShaderId("[indigo_engine_lit_shape_box]"),
-      vertex = library.NoOp.vertex.output.toOutput.code,
-      fragment = library.ShapeBox.fragment.output.toOutput.code,
-      prepare = library.Lighting.prepare.output.toOutput.code,
-      light = library.Lighting.light.output.toOutput.code,
-      composite = library.Lighting.composite.output.toOutput.code
+  val LitShapeBox: UltravioletShader =
+    UltravioletShader(
+      ShaderId("[indigo_engine_lit_shape_box]"),
+      EntityShader.vertex(library.NoOp.vertex, ()),
+      EntityShader.fragment(
+        library.ShapeBox.fragment,
+        library.Lighting.prepare,
+        library.Lighting.light,
+        library.Lighting.composite,
+        library.ShapeBox.Env.reference
+      )
     )
 
-  val ShapeCircle: EntityShader.Source =
-    EntityShader.Source(
-      id = ShaderId("[indigo_engine_shape_circle]"),
-      vertex = library.NoOp.vertex.output.toOutput.code,
-      fragment = library.ShapeCircle.fragment.output.toOutput.code,
-      prepare = library.NoOp.prepare.output.toOutput.code,
-      light = library.NoOp.light.output.toOutput.code,
-      composite = library.NoOp.composite.output.toOutput.code
+  val ShapeCircle: UltravioletShader =
+    UltravioletShader(
+      ShaderId("[indigo_engine_shape_circle]"),
+      EntityShader.vertex(library.NoOp.vertex, ()),
+      EntityShader.fragment(
+        library.ShapeCircle.fragment,
+        library.NoOp.prepare,
+        library.NoOp.light,
+        library.NoOp.composite,
+        library.ShapeCircle.Env.reference
+      )
     )
 
-  val LitShapeCircle: EntityShader.Source =
-    EntityShader.Source(
-      id = ShaderId("[indigo_engine_lit_shape_circle]"),
-      vertex = library.NoOp.vertex.output.toOutput.code,
-      fragment = library.ShapeCircle.fragment.output.toOutput.code,
-      prepare = library.Lighting.prepare.output.toOutput.code,
-      light = library.Lighting.light.output.toOutput.code,
-      composite = library.Lighting.composite.output.toOutput.code
+  val LitShapeCircle: UltravioletShader =
+    UltravioletShader(
+      ShaderId("[indigo_engine_lit_shape_circle]"),
+      EntityShader.vertex(library.NoOp.vertex, ()),
+      EntityShader.fragment(
+        library.ShapeCircle.fragment,
+        library.Lighting.prepare,
+        library.Lighting.light,
+        library.Lighting.composite,
+        library.ShapeCircle.Env.reference
+      )
     )
 
-  val ShapeLine: EntityShader.Source =
-    EntityShader.Source(
-      id = ShaderId("[indigo_engine_shape_line]"),
-      vertex = library.NoOp.vertex.output.toOutput.code,
-      fragment = library.ShapeLine.fragment.output.toOutput.code,
-      prepare = library.NoOp.prepare.output.toOutput.code,
-      light = library.NoOp.light.output.toOutput.code,
-      composite = library.NoOp.composite.output.toOutput.code
+  val ShapeLine: UltravioletShader =
+    UltravioletShader(
+      ShaderId("[indigo_engine_shape_line]"),
+      EntityShader.vertex(library.NoOp.vertex, ()),
+      EntityShader.fragment(
+        library.ShapeLine.fragment,
+        library.NoOp.prepare,
+        library.NoOp.light,
+        library.NoOp.composite,
+        library.ShapeLine.Env.reference
+      )
     )
 
-  val LitShapeLine: EntityShader.Source =
-    EntityShader.Source(
-      id = ShaderId("[indigo_engine_lit_shape_line]"),
-      vertex = library.NoOp.vertex.output.toOutput.code,
-      fragment = library.ShapeLine.fragment.output.toOutput.code,
-      prepare = library.Lighting.prepare.output.toOutput.code,
-      light = library.Lighting.light.output.toOutput.code,
-      composite = library.Lighting.composite.output.toOutput.code
+  val LitShapeLine: UltravioletShader =
+    UltravioletShader(
+      ShaderId("[indigo_engine_lit_shape_line]"),
+      EntityShader.vertex(library.NoOp.vertex, ()),
+      EntityShader.fragment(
+        library.ShapeLine.fragment,
+        library.Lighting.prepare,
+        library.Lighting.light,
+        library.Lighting.composite,
+        library.ShapeLine.Env.reference
+      )
     )
 
-  val ShapePolygon: EntityShader.Source =
-    EntityShader.Source(
-      id = ShaderId("[indigo_engine_shape_polygon]"),
-      vertex = library.NoOp.vertex.output.toOutput.code,
-      fragment = library.ShapePolygon.fragment.output.toOutput.code,
-      prepare = library.NoOp.prepare.output.toOutput.code,
-      light = library.NoOp.light.output.toOutput.code,
-      composite = library.NoOp.composite.output.toOutput.code
+  val ShapePolygon: UltravioletShader =
+    UltravioletShader(
+      ShaderId("[indigo_engine_shape_polygon]"),
+      EntityShader.vertex(library.NoOp.vertex, ()),
+      EntityShader.fragment(
+        library.ShapePolygon.fragment,
+        library.NoOp.prepare,
+        library.NoOp.light,
+        library.NoOp.composite,
+        library.ShapePolygon.Env.reference
+      )
     )
 
-  val LitShapePolygon: EntityShader.Source =
-    EntityShader.Source(
-      id = ShaderId("[indigo_engine_lit_shape_polygon]"),
-      vertex = library.NoOp.vertex.output.toOutput.code,
-      fragment = library.ShapePolygon.fragment.output.toOutput.code,
-      prepare = library.Lighting.prepare.output.toOutput.code,
-      light = library.Lighting.light.output.toOutput.code,
-      composite = library.Lighting.composite.output.toOutput.code
+  val LitShapePolygon: UltravioletShader =
+    UltravioletShader(
+      ShaderId("[indigo_engine_lit_shape_polygon]"),
+      EntityShader.vertex(library.NoOp.vertex, ()),
+      EntityShader.fragment(
+        library.ShapePolygon.fragment,
+        library.Lighting.prepare,
+        library.Lighting.light,
+        library.Lighting.composite,
+        library.ShapePolygon.Env.reference
+      )
     )
 
   // Blend Shaders
 
-  val NormalBlend: BlendShader.Source =
-    BlendShader.Source(
-      id = ShaderId("[indigo_engine_blend_normal]"),
-      vertex = library.NoOp.vertex.output.toOutput.code,
-      fragment = library.NormalBlend.fragment.output.toOutput.code
+  val NormalBlend: UltravioletShader =
+    UltravioletShader(
+      ShaderId("[indigo_engine_blend_normal]"),
+      EntityShader.vertex(library.NoOp.vertex, ()),
+      EntityShader.fragment(
+        library.NormalBlend.fragment,
+        library.NormalBlend.Env.reference
+      )
     )
 
-  val LightingBlend: BlendShader.Source =
-    BlendShader.Source(
-      id = ShaderId("[indigo_engine_blend_lighting]"),
-      vertex = library.NoOp.vertex.output.toOutput.code,
-      fragment = library.LightingBlend.fragment.output.toOutput.code
+  val LightingBlend: UltravioletShader =
+    UltravioletShader(
+      ShaderId("[indigo_engine_blend_lighting]"),
+      EntityShader.vertex(library.NoOp.vertex, ()),
+      EntityShader.fragment(
+        library.LightingBlend.fragment,
+        library.LightingBlend.Env.reference
+      )
     )
 
-  val BlendEffects: BlendShader.Source =
-    BlendShader.Source(
-      id = ShaderId("[indigo_engine_blend_effects]"),
-      vertex = library.NoOp.vertex.output.toOutput.code,
-      fragment = library.BlendEffects.fragment.output.toOutput.code
+  val BlendEffects: UltravioletShader =
+    UltravioletShader(
+      ShaderId("[indigo_engine_blend_effects]"),
+      EntityShader.vertex(library.NoOp.vertex, ()),
+      EntityShader.fragment(
+        library.BlendEffects.fragment,
+        library.BlendEffects.Env.reference
+      )
     )
 
 }

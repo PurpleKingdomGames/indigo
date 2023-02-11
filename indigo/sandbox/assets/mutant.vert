@@ -12,8 +12,9 @@ layout (std140) uniform MutantData {
   float ALPHA;
 };
 
-void vertex(){
+vec4 vertex(vec4 v){
   POSITION = MOVE_TO;
   SCALE = SCALE_TO;
+  return v;
 }
 //</indigo-vertex>

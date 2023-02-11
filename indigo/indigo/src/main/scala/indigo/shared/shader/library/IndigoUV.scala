@@ -96,6 +96,43 @@ object IndigoUV:
         TAU_4 = TAU_4,
         TAU_8 = TAU_8
       )
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  trait VertexEnvReference:
+    val TIME: Float                    = 0.0f
+    val VIEWPORT_SIZE: vec2            = vec2(0.0f)
+    val ATLAS_SIZE: vec2               = vec2(0.0f)
+    val VERTEX: vec4                   = vec4(0.0f)
+    val TEXTURE_SIZE: vec2             = vec2(0.0f)
+    var UV: vec2                       = vec2(0.0f)
+    val SIZE: vec2                     = vec2(0.0f)
+    val FRAME_SIZE: vec2               = vec2(0.0f)
+    val CHANNEL_0_ATLAS_OFFSET: vec2   = vec2(0.0f)
+    val CHANNEL_1_ATLAS_OFFSET: vec2   = vec2(0.0f)
+    val CHANNEL_2_ATLAS_OFFSET: vec2   = vec2(0.0f)
+    val CHANNEL_3_ATLAS_OFFSET: vec2   = vec2(0.0f)
+    val CHANNEL_0_TEXTURE_COORDS: vec2 = vec2(0.0f)
+    val CHANNEL_1_TEXTURE_COORDS: vec2 = vec2(0.0f)
+    val CHANNEL_2_TEXTURE_COORDS: vec2 = vec2(0.0f)
+    val CHANNEL_3_TEXTURE_COORDS: vec2 = vec2(0.0f)
+    val CHANNEL_0_POSITION: vec2       = vec2(0.0f)
+    val CHANNEL_1_POSITION: vec2       = vec2(0.0f)
+    val CHANNEL_2_POSITION: vec2       = vec2(0.0f)
+    val CHANNEL_3_POSITION: vec2       = vec2(0.0f)
+    val CHANNEL_0_SIZE: vec2           = vec2(0.0f)
+    val POSITION: vec2                 = vec2(0.0f)
+    val SCALE: vec2                    = vec2(0.0f)
+    val REF: vec2                      = vec2(0.0f)
+    val FLIP: vec2                     = vec2(0.0f)
+    val ROTATION: Float                = 0.0f
+    val TEXTURE_COORDS: vec2           = vec2(0.0f)
+    val INSTANCE_ID: Int               = 0
+    val PI: Float                      = 0.0f
+    val PI_2: Float                    = 0.0f
+    val PI_4: Float                    = 0.0f
+    val TAU: Float                     = 0.0f
+    val TAU_2: Float                   = 0.0f
+    val TAU_4: Float                   = 0.0f
+    val TAU_8: Float                   = 0.0f
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   final case class FragmentEnv(
@@ -200,6 +237,53 @@ object IndigoUV:
         TAU_4 = TAU_4,
         TAU_8 = TAU_8
       )
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  trait FragmentEnvReference:
+    val SRC_CHANNEL: sampler2D.type    = sampler2D
+    val TIME: Float                    = 0.0f
+    val VIEWPORT_SIZE: vec2            = vec2(0.0f)
+    val UV: vec2                       = vec2(0.0f)
+    val SIZE: vec2                     = vec2(0.0f)
+    var CHANNEL_0: vec4                = vec4(0.0f)
+    var CHANNEL_1: vec4                = vec4(0.0f)
+    var CHANNEL_2: vec4                = vec4(0.0f)
+    var CHANNEL_3: vec4                = vec4(0.0f)
+    val CHANNEL_0_TEXTURE_COORDS: vec2 = vec2(0.0f)
+    val CHANNEL_1_TEXTURE_COORDS: vec2 = vec2(0.0f)
+    val CHANNEL_2_TEXTURE_COORDS: vec2 = vec2(0.0f)
+    val CHANNEL_3_TEXTURE_COORDS: vec2 = vec2(0.0f)
+    val CHANNEL_0_POSITION: vec2       = vec2(0.0f)
+    val CHANNEL_1_POSITION: vec2       = vec2(0.0f)
+    val CHANNEL_2_POSITION: vec2       = vec2(0.0f)
+    val CHANNEL_3_POSITION: vec2       = vec2(0.0f)
+    val CHANNEL_0_SIZE: vec2           = vec2(0.0f)
+    val SCREEN_COORDS: vec2            = vec2(0.0f)
+    val ROTATION: Float                = 0.0f
+    val TEXTURE_SIZE: vec2             = vec2(0.0f)
+    val ATLAS_SIZE: vec2               = vec2(0.0f)
+    val INSTANCE_ID: Int               = 0
+    var COLOR: vec4                    = vec4(0.0f)
+    val LIGHT_INDEX: Int               = 0
+    val LIGHT_COUNT: Int               = 0
+    val LIGHT_ACTIVE: Int              = 0
+    val LIGHT_TYPE: Int                = 0
+    val LIGHT_FAR_CUT_OFF: Int         = 0
+    val LIGHT_FALLOFF_TYPE: Int        = 0
+    val LIGHT_COLOR: vec4              = vec4(0.0f)
+    val LIGHT_SPECULAR: vec4           = vec4(0.0f)
+    val LIGHT_POSITION: vec2           = vec2(0.0f)
+    val LIGHT_ROTATION: Float          = 0.0f
+    val LIGHT_NEAR: Float              = 0.0f
+    val LIGHT_FAR: Float               = 0.0f
+    val LIGHT_ANGLE: Float             = 0.0f
+    val LIGHT_INTENSITY: Float         = 0.0f
+    val PI: Float                      = 0.0f
+    val PI_2: Float                    = 0.0f
+    val PI_4: Float                    = 0.0f
+    val TAU: Float                     = 0.0f
+    val TAU_2: Float                   = 0.0f
+    val TAU_4: Float                   = 0.0f
+    val TAU_8: Float                   = 0.0f
 
   final case class BlendFragmentEnv(
       SRC_CHANNEL: sampler2D.type,
@@ -241,106 +325,26 @@ object IndigoUV:
         TAU_4 = TAU_4,
         TAU_8 = TAU_8
       )
+  trait BlendFragmentEnvReference:
+    val SRC_CHANNEL: sampler2D.type = sampler2D
+    val DST_CHANNEL: sampler2D.type = sampler2D
+    val TIME: Float                 = 0.0f
+    val VIEWPORT_SIZE: vec2         = vec2(0.0f)
+    val UV: vec2                    = vec2(0.0f)
+    val SIZE: vec2                  = vec2(0.0f)
+    val SRC: vec4                   = vec4(0.0f)
+    val DST: vec4                   = vec4(0.0f)
+    val PI: Float                   = 0.0f
+    val PI_2: Float                 = 0.0f
+    val PI_4: Float                 = 0.0f
+    val TAU: Float                  = 0.0f
+    val TAU_2: Float                = 0.0f
+    val TAU_4: Float                = 0.0f
+    val TAU_8: Float                = 0.0f
 
-  sealed trait Indigo
   sealed trait IndigoVertexPrinter
   sealed trait IndigoFragmentPrinter
   sealed trait IndigoBlendFragmentPrinter
-
-  given ShaderPrinter[Indigo] = new ShaderPrinter {
-    val webGL2Printer = summon[ShaderPrinter[WebGL2]]
-
-    def isValid(
-        inType: Option[String],
-        outType: Option[String],
-        functions: List[ShaderAST],
-        body: ShaderAST
-    ): ShaderValid =
-      webGL2Printer.isValid(inType, outType, functions, body)
-
-    def transformer: PartialFunction[ShaderAST, ShaderAST] =
-      val pf: PartialFunction[ShaderAST, ShaderAST] = {
-        case ShaderAST.Function(
-              "fragment",
-              Nil,
-              ShaderAST.Block(statements),
-              ShaderAST.DataTypes.ident("vec4")
-            ) =>
-          val nonEmpty = statements
-            .filterNot(_.isEmpty)
-
-          val (init, last) =
-            if nonEmpty.length > 1 then (nonEmpty.dropRight(1), nonEmpty.takeRight(1))
-            else (Nil, nonEmpty)
-
-          ShaderAST.Function(
-            "fragment",
-            Nil,
-            ShaderAST.Block(
-              init ++
-                List(
-                  ShaderAST.Assign(ShaderAST.DataTypes.ident("COLOR"), last.headOption.getOrElse(ShaderAST.Empty()))
-                )
-            ),
-            ShaderAST.unknownType
-          )
-
-        case ShaderAST.Function(
-              "fragment",
-              Nil,
-              body,
-              ShaderAST.DataTypes.ident("vec4")
-            ) =>
-          ShaderAST.Function(
-            "fragment",
-            Nil,
-            ShaderAST.Assign(ShaderAST.DataTypes.ident("COLOR"), body),
-            ShaderAST.unknownType
-          )
-
-        case ShaderAST.Function(
-              "composite",
-              Nil,
-              ShaderAST.Block(statements),
-              ShaderAST.DataTypes.ident("vec4")
-            ) =>
-          val nonEmpty = statements
-            .filterNot(_.isEmpty)
-
-          val (init, last) =
-            if nonEmpty.length > 1 then (nonEmpty.dropRight(1), nonEmpty.takeRight(1))
-            else (Nil, nonEmpty)
-
-          ShaderAST.Function(
-            "composite",
-            Nil,
-            ShaderAST.Block(
-              init ++
-                List(
-                  ShaderAST.Assign(ShaderAST.DataTypes.ident("COLOR"), last.headOption.getOrElse(ShaderAST.Empty()))
-                )
-            ),
-            ShaderAST.unknownType
-          )
-
-        case ShaderAST.Function(
-              "composite",
-              Nil,
-              body,
-              ShaderAST.DataTypes.ident("vec4")
-            ) =>
-          ShaderAST.Function(
-            "composite",
-            Nil,
-            ShaderAST.Assign(ShaderAST.DataTypes.ident("COLOR"), body),
-            ShaderAST.unknownType
-          )
-      }
-
-      pf.orElse(webGL2Printer.transformer)
-
-    def printer: PartialFunction[ShaderAST, List[String]] = webGL2Printer.printer
-  }
 
   given ShaderPrinter[IndigoVertexPrinter] = new ShaderPrinter {
     val webGL2Printer = summon[ShaderPrinter[WebGL2]]

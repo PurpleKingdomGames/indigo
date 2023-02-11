@@ -146,7 +146,6 @@ lazy val indigo =
     .settings(
       name := "indigo",
       commonSettings ++ publishSettings,
-      Compile / sourceGenerators += shadersGen.taskValue,
       libraryDependencies ++= Dependencies.indigo.value
     )
 
@@ -222,13 +221,3 @@ addCommandAlias(
     "docs/mdoc" // Docs in ./indigo/indigo-docs/target/mdoc
   ).mkString(";", ";", "")
 )
-
-def shadersGen =
-  shadersCodeGen("shaders", files => ShaderGen.makeShader(files, _))
-
-def shadersCodeGen(dir: String, makeFiles: Set[File] => File => Seq[File]) = Def.task {
-  val cachedFun = FileFunction.cached(streams.value.cacheDirectory / dir) { (files: Set[File]) =>
-    makeFiles(files)((Compile / sourceManaged).value).toSet
-  }
-  cachedFun(IO.listFiles(baseDirectory.value / dir).toSet).toSeq
-}

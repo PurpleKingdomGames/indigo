@@ -85,7 +85,7 @@ class TileAndStretchTests extends munit.FunSuite {
         import TileAndStretch.*
 
         val fillType: Int              = 0
-        val fallback: vec4              = vec4(1.0)
+        val fallback: vec4             = vec4(1.0)
         val srcChannel: sampler2D.type = sampler2D
         val channelPos: vec2           = vec2(2.0)
         val channelSize: vec2          = vec2(3.0)
@@ -95,7 +95,7 @@ class TileAndStretchTests extends munit.FunSuite {
 
         tileAndStretchChannel(
           fillType,    // env.FILLTYPE.toInt,
-          fallback,     // env.CHANNEL_0,
+          fallback,    // env.CHANNEL_0,
           srcChannel,  // env.SRC_CHANNEL,
           channelPos,  // env.CHANNEL_0_POSITION,
           channelSize, // env.CHANNEL_0_SIZE,

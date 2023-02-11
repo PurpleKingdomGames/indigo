@@ -5,6 +5,17 @@ import ultraviolet.syntax.*
 
 object ShapeCircle:
 
+  trait Env extends Lighting.LightEnv {
+    val STROKE_WIDTH: Float       = 0.0f
+    val FILL_TYPE: Float          = 0.0f
+    val STROKE_COLOR: vec4        = vec4(0.0f)
+    val GRADIENT_FROM_TO: vec4    = vec4(0.0f)
+    val GRADIENT_FROM_COLOR: vec4 = vec4(0.0f)
+    val GRADIENT_TO_COLOR: vec4   = vec4(0.0f)
+  }
+  object Env:
+    val reference: Env = new Env {}
+
   case class IndigoShapeData(
       STROKE_WIDTH: Float,
       FILL_TYPE: Float,
@@ -14,57 +25,54 @@ object ShapeCircle:
       GRADIENT_TO_COLOR: vec4
   )
 
-  object fragment:
-    inline def shader =
-      Shader[FragmentEnv & IndigoShapeData] { env =>
-        import ShapeShaderFunctions.*
+  inline def fragment =
+    Shader[Env] { env =>
+      import ShapeShaderFunctions.*
 
-        ubo[IndigoShapeData]
+      ubo[IndigoShapeData]
 
-        def sdfCalc(p: vec2, r: Float): Float =
-          length(p) - r
+      def sdfCalc(p: vec2, r: Float): Float =
+        length(p) - r
 
-        def fragment: vec4 =
-          val strokeWidthHalf = max(0.0f, env.STROKE_WIDTH / env.SIZE.x / 2.0f)
+      def fragment(color: vec4): vec4 =
+        val strokeWidthHalf = max(0.0f, env.STROKE_WIDTH / env.SIZE.x / 2.0f)
 
-          val fillType = round(env.FILL_TYPE).toInt
-          val fill: vec4 =
-            fillType match
-              case 1 =>
-                calculateLinearGradient(
-                  env.GRADIENT_FROM_TO.xy,
-                  env.GRADIENT_FROM_TO.zw,
-                  env.UV * env.SIZE,
-                  env.GRADIENT_FROM_COLOR,
-                  env.GRADIENT_TO_COLOR
-                )
+        val fillType = round(env.FILL_TYPE).toInt
+        val fill: vec4 =
+          fillType match
+            case 1 =>
+              calculateLinearGradient(
+                env.GRADIENT_FROM_TO.xy,
+                env.GRADIENT_FROM_TO.zw,
+                env.UV * env.SIZE,
+                env.GRADIENT_FROM_COLOR,
+                env.GRADIENT_TO_COLOR
+              )
 
-              case 2 =>
-                calculateRadialGradient(
-                  env.GRADIENT_FROM_TO.xy,
-                  env.GRADIENT_FROM_TO.zw,
-                  env.UV * env.SIZE,
-                  env.GRADIENT_FROM_COLOR,
-                  env.GRADIENT_TO_COLOR
-                )
+            case 2 =>
+              calculateRadialGradient(
+                env.GRADIENT_FROM_TO.xy,
+                env.GRADIENT_FROM_TO.zw,
+                env.UV * env.SIZE,
+                env.GRADIENT_FROM_COLOR,
+                env.GRADIENT_TO_COLOR
+              )
 
-              case _ =>
-                env.GRADIENT_FROM_COLOR
+            case _ =>
+              env.GRADIENT_FROM_COLOR
 
-          val sdf        = sdfCalc(env.UV - 0.5f, 0.5f - strokeWidthHalf)
-          val annularSdf = abs(sdf) - strokeWidthHalf
+        val sdf        = sdfCalc(env.UV - 0.5f, 0.5f - strokeWidthHalf)
+        val annularSdf = abs(sdf) - strokeWidthHalf
 
-          val fillAmount   = (1.0f - step(0.0f, sdf)) * fill.a
-          val strokeAmount = (1.0f - step(0.0f, annularSdf)) * env.STROKE_COLOR.a
+        val fillAmount   = (1.0f - step(0.0f, sdf)) * fill.a
+        val strokeAmount = (1.0f - step(0.0f, annularSdf)) * env.STROKE_COLOR.a
 
-          val fillColor   = vec4(fill.rgb * fillAmount, fillAmount)
-          val strokeColor = vec4(env.STROKE_COLOR.rgb * strokeAmount, strokeAmount)
+        val fillColor   = vec4(fill.rgb * fillAmount, fillAmount)
+        val strokeColor = vec4(env.STROKE_COLOR.rgb * strokeAmount, strokeAmount)
 
-          mix(fillColor, strokeColor, strokeAmount)
+        mix(fillColor, strokeColor, strokeAmount)
 
-      }
-
-    val output = shader.toGLSL[Indigo]
+    }
 
 object ShapeShaderFunctions:
 

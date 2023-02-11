@@ -1,5 +1,6 @@
 package indigoextras.effectmaterials
 
+import indigo.VertexEnv
 import indigo.shared.assets.AssetName
 import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Fill
@@ -12,6 +13,7 @@ import indigo.shared.shader.EntityShader
 import indigo.shared.shader.ShaderId
 import indigo.shared.shader.ShaderPrimitive
 import indigo.shared.shader.ShaderPrimitive.rawJSArray
+import indigo.shared.shader.UltravioletShader
 import indigo.shared.shader.Uniform
 import indigo.shared.shader.UniformBlock
 import indigo.shared.shader.library.NoOp
@@ -121,14 +123,14 @@ final case class LegacyEffects(
 
 object LegacyEffects:
 
-  val entityShader: EntityShader.Source =
-    EntityShader.Source(
-      id = ShaderId("[indigoextras_engine_legacy_effects]"),
-      vertex = LegacyEffectsShaders.vertex.output.toOutput.code,
-      fragment = LegacyEffectsShaders.fragment.output.toOutput.code,
-      prepare = NoOp.prepare.output.toOutput.code,
-      light = NoOp.light.output.toOutput.code,
-      composite = NoOp.composite.output.toOutput.code
+  val entityShader: UltravioletShader =
+    UltravioletShader(
+      ShaderId("[indigoextras_engine_legacy_effects]"),
+      EntityShader.vertex(LegacyEffectsShaders.vertex, VertexEnv.reference),
+      EntityShader.fragment(
+        LegacyEffectsShaders.fragment,
+        LegacyEffectsShaders.Env.reference
+      )
     )
 
   def apply(diffuse: AssetName): LegacyEffects =
