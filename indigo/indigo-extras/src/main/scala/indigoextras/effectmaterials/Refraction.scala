@@ -36,8 +36,8 @@ object Refraction:
   val blendShader: UltravioletShader =
     UltravioletShader(
       ShaderId("[indigoextras_engine_blend_refraction]"),
-      EntityShader.vertex(NoOp.vertex, ()),
-      EntityShader.fragment(
+      BlendShader.vertex(NoOp.vertex, ()),
+      BlendShader.fragment(
         RefractionShaders.refractionFragment,
         RefractionShaders.BlendEnv.reference
       )

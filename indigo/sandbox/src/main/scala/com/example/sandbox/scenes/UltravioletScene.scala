@@ -102,7 +102,7 @@ object UVShaders:
   val redBlend: UltravioletShader =
     UltravioletShader.blendFragment(
       redBlendId,
-      BlendShader.fragment(makeRedder)
+      BlendShader.fragment(makeRedder, BlendFragmentEnv.reference)
     )
 
   // Circle - Entity
@@ -153,8 +153,8 @@ object UVShaders:
   val circle: UltravioletShader =
     UltravioletShader(
       circleId,
-      EntityShader.vertex(orbitVertex),
-      EntityShader.fragment(modifyCircleColor, prepare, light, composite)
+      EntityShader.vertex(orbitVertex, VertexEnv.reference),
+      EntityShader.fragment(modifyCircleColor, prepare, light, composite, FragmentEnv.reference)
     )
 
   // Voronoi - Entity
@@ -199,5 +199,5 @@ object UVShaders:
     // Ported from: https://www.youtube.com/watch?v=l-07BXzNdPw&feature=youtu.be
     UltravioletShader.entityFragment(
       voronoiId,
-      EntityShader.fragment(modifyColor)
+      EntityShader.fragment(modifyColor, FragmentEnv.reference)
     )

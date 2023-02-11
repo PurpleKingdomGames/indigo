@@ -195,7 +195,7 @@ vec3 getPixel(in vec2 coord, float time) {
 }
 
 // main
-void fragment(){
+vec4 fragment(vec4 c){
     iTime = TIME;
     iResolution = vec3(SIZE, 1.0);
     iMouse = vec2(50.0, 50.0);
@@ -207,6 +207,6 @@ void fragment(){
     vec3 color = getPixel(fragCoord, time);
     
     // post
-	COLOR = vec4(pow(color,vec3(0.65)), 1.0);
+    return vec4(pow(color,vec3(0.65)), 1.0);
 }
 //</indigo-fragment>
