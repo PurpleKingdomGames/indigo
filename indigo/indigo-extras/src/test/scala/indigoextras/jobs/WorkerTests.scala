@@ -84,7 +84,10 @@ class WorkerTests extends munit.FunSuite {
   }
 
   test("A Worker instance.should be able to perform an action when a job completes") {
-    assertEquals(worker.onJobComplete(workContext(0d, false))(Fishing(Fishing.totalWorkUnits)).unsafeGet._1.head, WanderTo(0))
+    assertEquals(
+      worker.onJobComplete(workContext(0d, false))(Fishing(Fishing.totalWorkUnits)).unsafeGet._1.head,
+      WanderTo(0)
+    )
   }
 
   test("A Worker instance.should be able to work on a job") {

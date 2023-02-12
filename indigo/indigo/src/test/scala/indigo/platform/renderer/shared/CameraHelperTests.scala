@@ -1,7 +1,7 @@
 package indigo.platform.renderer.shared
 
 class CameraHelperTests extends munit.FunSuite {
-  
+
   test("zoom 0.25") {
 
     val actual =
@@ -12,7 +12,7 @@ class CameraHelperTests extends munit.FunSuite {
 
     assertEquals(actual, expected)
   }
-  
+
   test("zoom 0.5") {
 
     val actual =
@@ -23,7 +23,7 @@ class CameraHelperTests extends munit.FunSuite {
 
     assertEquals(actual, expected)
   }
-  
+
   test("zoom x1") {
 
     val actual =
@@ -34,7 +34,7 @@ class CameraHelperTests extends munit.FunSuite {
 
     assertEquals(actual, expected)
   }
-  
+
   test("zoom x2") {
 
     val actual =
@@ -45,7 +45,7 @@ class CameraHelperTests extends munit.FunSuite {
 
     assertEquals(actual, expected)
   }
-  
+
   test("zoom x4") {
 
     val actual =
@@ -56,7 +56,7 @@ class CameraHelperTests extends munit.FunSuite {
 
     assertEquals(actual, expected)
   }
-  
+
   test("zoom x2 - off center") {
 
     val actual =

@@ -27,7 +27,7 @@ object PerfModel {
       Outcome(state.idle)
 
     case _ =>
-      //Logger.info(e)
+      // Logger.info(e)
       Outcome(state)
   }
 

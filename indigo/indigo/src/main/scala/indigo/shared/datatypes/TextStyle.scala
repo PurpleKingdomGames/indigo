@@ -153,7 +153,7 @@ object FontFamily:
 
 enum FontVariant(css: String) derives CanEqual:
   def toCSS: String = css
-  case Normal extends FontVariant("normal")
+  case Normal    extends FontVariant("normal")
   case SmallCaps extends FontVariant("small-caps")
 
 enum FontStyle(css: String) derives CanEqual:
@@ -163,10 +163,10 @@ enum FontStyle(css: String) derives CanEqual:
 
 enum FontWeight(css: String) derives CanEqual:
   def toCSS: String = css
-  case Normal extends FontWeight("normal")
-  case Bold extends FontWeight("bold")
+  case Normal  extends FontWeight("normal")
+  case Bold    extends FontWeight("bold")
   case Lighter extends FontWeight("lighter")
-  case Bolder extends FontWeight("bolder")
+  case Bolder  extends FontWeight("bolder")
 
 final case class TextStroke(color: RGBA, width: Pixels):
   def withColor(newColor: RGBA): TextStroke =
@@ -185,23 +185,23 @@ object Pixels:
 
 enum TextAlign(css: String) derives CanEqual:
   def toCSS: String = css
-  case Left extends TextAlign("left")
-  case Right extends TextAlign("right")
+  case Left   extends TextAlign("left")
+  case Right  extends TextAlign("right")
   case Center extends TextAlign("center")
-  case Start extends TextAlign("start")
-  case End extends TextAlign("end")
+  case Start  extends TextAlign("start")
+  case End    extends TextAlign("end")
 
 enum TextBaseLine(css: String) derives CanEqual:
   def toCSS: String = css
-  case Top extends TextBaseLine("top")
-  case Hanging extends TextBaseLine("hanging")
-  case Middle extends TextBaseLine("middle")
-  case Alphabetic extends TextBaseLine("alphabetic")
+  case Top         extends TextBaseLine("top")
+  case Hanging     extends TextBaseLine("hanging")
+  case Middle      extends TextBaseLine("middle")
+  case Alphabetic  extends TextBaseLine("alphabetic")
   case Ideographic extends TextBaseLine("ideographic")
-  case Bottom extends TextBaseLine("bottom")
+  case Bottom      extends TextBaseLine("bottom")
 
 enum TextDirection(css: String) derives CanEqual:
   def toCSS: String = css
   case LeftToRight extends TextDirection("ltr")
   case RightToLeft extends TextDirection("rtl")
-  case Inherit extends TextDirection("inherit")
+  case Inherit     extends TextDirection("inherit")

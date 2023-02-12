@@ -17,7 +17,7 @@ final case class HitArea(
     onHoverOver: () => Batch[GlobalEvent],
     onHoverOut: () => Batch[GlobalEvent],
     onClick: () => Batch[GlobalEvent],
-    onHoldDown: () => Batch[GlobalEvent],
+    onHoldDown: () => Batch[GlobalEvent]
 ) derives CanEqual:
 
   def update(mouse: Mouse): Outcome[HitArea] = {
@@ -84,7 +84,7 @@ final case class HitArea(
     this.copy(onClick = () => actions)
 
   def withHoldDownActions(actions: GlobalEvent*): HitArea =
-      withHoldDownActions(Batch.fromSeq(actions))
+    withHoldDownActions(Batch.fromSeq(actions))
   def withHoldDownActions(actions: => Batch[GlobalEvent]): HitArea =
     this.copy(onHoldDown = () => actions)
 
@@ -118,7 +118,7 @@ object HitArea:
       onHoverOver = () => Batch.empty,
       onHoverOut = () => Batch.empty,
       onClick = () => Batch.empty,
-      onHoldDown = () => Batch.empty,
+      onHoldDown = () => Batch.empty
     )
 
   def apply(area: Polygon.Closed): HitArea =
@@ -130,5 +130,5 @@ object HitArea:
       onHoverOver = () => Batch.empty,
       onHoverOut = () => Batch.empty,
       onClick = () => Batch.empty,
-      onHoldDown = () => Batch.empty,
+      onHoldDown = () => Batch.empty
     )

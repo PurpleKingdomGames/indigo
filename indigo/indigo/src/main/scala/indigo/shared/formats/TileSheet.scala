@@ -2,9 +2,8 @@ package indigo.shared.formats
 
 import indigo._
 
-/** Utility for working with generic sprite sheets. The sheet must be
-  * uniform, with each sprite having the same width and height, and a
-  * (possibly zero-pixel) inner margin.
+/** Utility for working with generic sprite sheets. The sheet must be uniform, with each sprite having the same width
+  * and height, and a (possibly zero-pixel) inner margin.
   */
 final case class TileSheet(
     assetName: AssetName,
@@ -35,9 +34,10 @@ final case class TileSheet(
       )
     }
 
-  /** @param index a zero-based index that begins at the upper right of the
-    *              sheet and increases as it goes right and down
-    * @return an optional Graphic, None if the given index is out of bounds
+  /** @param index
+    *   a zero-based index that begins at the upper right of the sheet and increases as it goes right and down
+    * @return
+    *   an optional Graphic, None if the given index is out of bounds
     */
   def fromIndex(index: Int): Option[Graphic[Material.Bitmap]] =
     graphicFromRectangle(rectangleForIndex(index))
@@ -45,10 +45,12 @@ final case class TileSheet(
   /** @see #fromIndex */
   def apply(index: Int): Option[Graphic[Material.Bitmap]] = fromIndex(index)
 
-  /** @param column zero-based
-    * @param row zero-based
-    * @return an optional Graphic, None if the given coordinates are out
-    *         of bounds
+  /** @param column
+    *   zero-based
+    * @param row
+    *   zero-based
+    * @return
+    *   an optional Graphic, None if the given coordinates are out of bounds
     */
   def fromCoords(column: Int, row: Int): Option[Graphic[Material.Bitmap]] =
     graphicFromRectangle(rectangleForCoords(column, row))
@@ -57,8 +59,10 @@ final case class TileSheet(
   def apply(column: Int, row: Int): Option[Graphic[Material.Bitmap]] =
     fromCoords(column, row)
 
-  /** @param pt zero-based x and y grid location of tile
-    * @return an optional Graphic, None if the given Point is out of bounds
+  /** @param pt
+    *   zero-based x and y grid location of tile
+    * @return
+    *   an optional Graphic, None if the given Point is out of bounds
     */
   def fromPoint(pt: Point): Option[Graphic[Material.Bitmap]] =
     fromCoords(pt.x, pt.y)
@@ -69,16 +73,16 @@ final case class TileSheet(
 
 object TileSheet:
   def apply(
-    assetName: AssetName,
-    width: Int,
-    height: Int,
-    tileWidth: Int,
-    tileHeight: Int,
-    margin: Int
+      assetName: AssetName,
+      width: Int,
+      height: Int,
+      tileWidth: Int,
+      tileHeight: Int,
+      margin: Int
   ): TileSheet =
     TileSheet(
       assetName = assetName,
       imageSize = Size(width, height),
-      tileSize  = Size(tileWidth, tileHeight),
-      margin    = margin
+      tileSize = Size(tileWidth, tileHeight),
+      margin = margin
     )

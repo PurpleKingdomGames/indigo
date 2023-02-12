@@ -188,7 +188,7 @@ class Vector4Tests extends munit.FunSuite {
       .translate(Vector3(-2, -2, 0))
       .rotate(Radians.TAUby4.negative)
 
-    assert(v.transform(m) ~==  Vector4.position(8, 0, 0))
+    assert(v.transform(m) ~== Vector4.position(8, 0, 0))
   }
 
   def to2dp(d: Double): Double =

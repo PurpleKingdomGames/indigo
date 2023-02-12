@@ -88,12 +88,12 @@ class AnimationRefTests extends munit.FunSuite {
 
   test("AnimationAction.JumpToFrame resets cycle timing") {
 
-    //convenience class to cut down on syntax noise
+    // convenience class to cut down on syntax noise
     final case class Tick(a: AnimationRef, t: GameTime):
       extension (g: GameTime) def in(d: Millis) = GameTime.withDelta(g.running + d.toSeconds, d.toSeconds)
-      def play(m: Millis) = Tick(a, t.in(m)).run(AnimationAction.Play)
-      def run(aa: AnimationAction) = Tick(a.runActions(Batch(aa), t), t)
-      val playhead = a.currentCycle.playheadPosition
+      def play(m: Millis)                       = Tick(a, t.in(m)).run(AnimationAction.Play)
+      def run(aa: AnimationAction)              = Tick(a.runActions(Batch(aa), t), t)
+      val playhead                              = a.currentCycle.playheadPosition
 
     val tick0 = Tick(animation, GameTime.zero)
 

@@ -117,7 +117,7 @@ object RGBA:
           Integer.parseInt(hex.substring(6, 8), 16)
         )
 
-      case h if h.startsWith("#") &&  h.length == 9 =>
+      case h if h.startsWith("#") && h.length == 9 =>
         fromColorInts(
           Integer.parseInt(hex.substring(1, 3), 16),
           Integer.parseInt(hex.substring(3, 5), 16),

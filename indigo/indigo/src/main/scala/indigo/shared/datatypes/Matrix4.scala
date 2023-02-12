@@ -18,9 +18,9 @@ object Matrix4:
     inline def col2: Array[Double] = Array(m(1), m(5), m(9), m(13))
     inline def col3: Array[Double] = Array(m(2), m(6), m(10), m(14))
     inline def col4: Array[Double] = Array(m(3), m(7), m(11), m(15))
-    inline def x: Double          = m(12)
-    inline def y: Double          = m(13)
-    inline def z: Double          = m(14)
+    inline def x: Double           = m(12)
+    inline def y: Double           = m(13)
+    inline def z: Double           = m(14)
     inline def data: (Array[Double], Array[Double]) =
       (Array(m(0), m(1), m(4), m(5)), Array(m(12), m(13), m(14)))
 

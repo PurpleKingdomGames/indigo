@@ -18,7 +18,7 @@ object LightingModel {
 
   case object Unlit extends LightingModel derives CanEqual:
     def enableLighting: LightingModel = Lit.flat
-    def disableLighting: Unlit.type = this
+    def disableLighting: Unlit.type   = this
 
   final case class Lit(
       emissive: Option[Texture],
@@ -28,7 +28,7 @@ object LightingModel {
       derives CanEqual {
 
     def enableLighting: LightingModel = this
-    def disableLighting: Unlit.type = Unlit
+    def disableLighting: Unlit.type   = Unlit
 
     def withEmissive(emissiveAssetName: AssetName, amount: Double): Lit =
       this.copy(emissive = Some(Texture(emissiveAssetName, amount)))

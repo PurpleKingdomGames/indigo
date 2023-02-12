@@ -3,7 +3,8 @@ package indigo.shared.animation
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.time.Millis
 
-final case class Cycle(label: CycleLabel, frames: NonEmptyList[Frame], playheadPosition: Int, lastFrameAdvance: Millis) derives CanEqual:
+final case class Cycle(label: CycleLabel, frames: NonEmptyList[Frame], playheadPosition: Int, lastFrameAdvance: Millis)
+    derives CanEqual:
   def addFrame(newFrame: Frame): Cycle =
     this.copy(frames = frames :+ newFrame)
 
@@ -17,6 +18,6 @@ object Cycle:
 opaque type CycleLabel = String
 object CycleLabel:
   inline def apply(value: String): CycleLabel = value
-  given CanEqual[CycleLabel, CycleLabel] = CanEqual.derived
+  given CanEqual[CycleLabel, CycleLabel]      = CanEqual.derived
 
 final case class CycleMemento(playheadPosition: Int, lastFrameAdvance: Millis) derives CanEqual

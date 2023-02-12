@@ -170,17 +170,19 @@ final class AudioPlayer(context: AudioContextProxy) {
             val nodes =
               findAudioDataByName(track.assetName)
                 .map(asset => setupNodes(asset, track.volume * next.masterVolume, loop = true))
-                .get //throws if no asset found
+                .get // throws if no asset found
 
             nodes.audioBufferSourceNode.start()
 
-            Some(new AudioSourceState(
-              bindingKey = next.bindingKey,
-              audioNodes = nodes
-            ))
+            Some(
+              new AudioSourceState(
+                bindingKey = next.bindingKey,
+                audioNodes = nodes
+              )
+            )
         }
       }
-    }
+  }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def kill(): Unit =

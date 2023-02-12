@@ -161,7 +161,10 @@ class RadioButtonGroupTests extends munit.FunSuite {
       )
 
     assertEquals(actual.unsafeGet.options.map(_.state), expected.options.map(_.state))
-    assertEquals(actual.unsafeGlobalEvents, Batch(RadioTestEvent("option 1 unselected"), RadioTestEvent("option 2 selected")))
+    assertEquals(
+      actual.unsafeGlobalEvents,
+      Batch(RadioTestEvent("option 1 unselected"), RadioTestEvent("option 2 selected"))
+    )
   }
 
 }

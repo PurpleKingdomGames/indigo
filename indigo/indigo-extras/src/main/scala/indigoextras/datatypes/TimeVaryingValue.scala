@@ -8,44 +8,52 @@ sealed trait TimeVaryingValue derives CanEqual {
 
   /** The current value
     *
-    * @return Double
+    * @return
+    *   Double
     */
   val value: Double
 
   /** The rate of change
     *
-    * @return Double
+    * @return
+    *   Double
     */
   val unitsPerSecond: Double
 
   /** Value as an Int
     *
-    * @return Int
+    * @return
+    *   Int
     */
   def toInt: Int = value.toInt
 
   /** Value as an Long
     *
-    * @return Long
+    * @return
+    *   Long
     */
   def toLong: Long = value.toLong
 
   /** Value as an Float
     *
-    * @return Float
+    * @return
+    *   Float
     */
   def toFloat: Float = value.toFloat
 
   /** Value as an Double
     *
-    * @return Double
+    * @return
+    *   Double
     */
   def toDouble: Double = value
 
   /** Update the time varying value based on a time delta
     *
-    * @param timeDelta the time delta typically supplied from GameTime(..).delta
-    * @return TimeVaryingValue
+    * @param timeDelta
+    *   the time delta typically supplied from GameTime(..).delta
+    * @return
+    *   TimeVaryingValue
     */
   def update(timeDelta: Seconds): TimeVaryingValue
 
@@ -53,8 +61,10 @@ sealed trait TimeVaryingValue derives CanEqual {
 
 /** A value that increases over time.
   *
-  * @param value The current value
-  * @param unitsPerSecond The rate of change
+  * @param value
+  *   The current value
+  * @param unitsPerSecond
+  *   The rate of change
   */
 final case class Increasing(value: Double, unitsPerSecond: Double) extends TimeVaryingValue {
   def update(timeDelta: Seconds): Increasing =
@@ -65,9 +75,12 @@ final case class Increasing(value: Double, unitsPerSecond: Double) extends TimeV
 
 /** A value that increases over time until it hits a limit.
   *
-  * @param value The current value
-  * @param unitsPerSecond The rate of change
-  * @param limit The upper limit
+  * @param value
+  *   The current value
+  * @param unitsPerSecond
+  *   The rate of change
+  * @param limit
+  *   The upper limit
   */
 final case class IncreaseTo(value: Double, unitsPerSecond: Double, limit: Double) extends TimeVaryingValue {
   def update(timeDelta: Seconds): IncreaseTo =
@@ -84,9 +97,12 @@ final case class IncreaseTo(value: Double, unitsPerSecond: Double, limit: Double
 
 /** A value that increases over time and wraps back to zero when it hits the limit
   *
-  * @param value The current/starting value
-  * @param unitsPerSecond The rate of change
-  * @param limit The upper limit
+  * @param value
+  *   The current/starting value
+  * @param unitsPerSecond
+  *   The rate of change
+  * @param limit
+  *   The upper limit
   */
 final case class IncreaseWrapAt(value: Double, unitsPerSecond: Double, limit: Double) extends TimeVaryingValue {
   def update(timeDelta: Seconds): IncreaseWrapAt =
@@ -96,12 +112,15 @@ final case class IncreaseWrapAt(value: Double, unitsPerSecond: Double, limit: Do
 }
 object IncreaseWrapAt {
 
-  /** Constructor for a value that increases over time and wraps back to zero when it hits the limit.
-    * This constructor assumes the start value is zero.
+  /** Constructor for a value that increases over time and wraps back to zero when it hits the limit. This constructor
+    * assumes the start value is zero.
     *
-    * @param unitsPerSecond The rate of change
-    * @param limit The upper limit
-    * @return IncreaseWrapAt
+    * @param unitsPerSecond
+    *   The rate of change
+    * @param limit
+    *   The upper limit
+    * @return
+    *   IncreaseWrapAt
     */
   def apply(unitsPerSecond: Double, limit: Double): IncreaseWrapAt =
     IncreaseWrapAt(0, unitsPerSecond, limit)
@@ -110,8 +129,10 @@ object IncreaseWrapAt {
 
 /** A value that decreases over time.
   *
-  * @param value The current value
-  * @param unitsPerSecond The rate of change
+  * @param value
+  *   The current value
+  * @param unitsPerSecond
+  *   The rate of change
   */
 final case class Decreasing(value: Double, unitsPerSecond: Double) extends TimeVaryingValue {
   def update(timeDelta: Seconds): Decreasing =
@@ -122,9 +143,12 @@ final case class Decreasing(value: Double, unitsPerSecond: Double) extends TimeV
 
 /** A value that decreases over time until it hits a limit.
   *
-  * @param value The current value
-  * @param unitsPerSecond The rate of change
-  * @param limit The lower limit
+  * @param value
+  *   The current value
+  * @param unitsPerSecond
+  *   The rate of change
+  * @param limit
+  *   The lower limit
   */
 final case class DecreaseTo(value: Double, unitsPerSecond: Double, limit: Double) extends TimeVaryingValue {
   def update(timeDelta: Seconds): DecreaseTo =
@@ -141,9 +165,12 @@ final case class DecreaseTo(value: Double, unitsPerSecond: Double, limit: Double
 
 /** A value that decreases over time and wraps back to zero when it hits the limit
   *
-  * @param value The current/starting value
-  * @param unitsPerSecond The rate of change
-  * @param limit The lower limit
+  * @param value
+  *   The current/starting value
+  * @param unitsPerSecond
+  *   The rate of change
+  * @param limit
+  *   The lower limit
   */
 final case class DecreaseWrapAt(value: Double, unitsPerSecond: Double, limit: Double) extends TimeVaryingValue {
   def update(timeDelta: Seconds): DecreaseWrapAt =
@@ -153,13 +180,17 @@ final case class DecreaseWrapAt(value: Double, unitsPerSecond: Double, limit: Do
 }
 object DecreaseWrapAt {
 
-  /** Constructor for a value that decreases over time and wraps back to zero when it hits the limit.
-    * This constructor assumes the start value is zero.
+  /** Constructor for a value that decreases over time and wraps back to zero when it hits the limit. This constructor
+    * assumes the start value is zero.
     *
-    * @param value The current value
-    * @param unitsPerSecond The rate of change
-    * @param limit The lower limit
-    * @return DecreaseWrapAt
+    * @param value
+    *   The current value
+    * @param unitsPerSecond
+    *   The rate of change
+    * @param limit
+    *   The lower limit
+    * @return
+    *   DecreaseWrapAt
     */
   def apply(unitsPerSecond: Double, limit: Double): DecreaseWrapAt =
     DecreaseWrapAt(0, unitsPerSecond, limit)

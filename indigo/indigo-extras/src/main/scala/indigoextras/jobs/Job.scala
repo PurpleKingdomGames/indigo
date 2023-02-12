@@ -1,7 +1,7 @@
 package indigoextras.jobs
 
-/** A trait that when extended represents a job that can be done.
-  * Jobs have names and can be local to the worker, or globalablly available
+/** A trait that when extended represents a job that can be done. Jobs have names and can be local to the worker, or
+  * globalablly available
   */
 trait Job extends Product with Serializable derives CanEqual {
   val jobName: JobName
@@ -11,7 +11,8 @@ trait Job extends Product with Serializable derives CanEqual {
 
 /** A simple type to distingush job names from other strings.
   *
-  * @param value the name of the job
+  * @param value
+  *   the name of the job
   */
 opaque type JobName = String
 object JobName:

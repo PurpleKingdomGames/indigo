@@ -6,7 +6,8 @@ import indigo.shared.datatypes.BindingKey
 /** Represents a single audio source, how it is being played, and at what volume. You could implement a cross fade
   * between two audio sources.
   */
-final case class SceneAudioSource(bindingKey: BindingKey, playbackPattern: PlaybackPattern, masterVolume: Volume) derives CanEqual
+final case class SceneAudioSource(bindingKey: BindingKey, playbackPattern: PlaybackPattern, masterVolume: Volume)
+    derives CanEqual
 
 object SceneAudioSource {
 

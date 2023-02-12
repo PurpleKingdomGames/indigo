@@ -43,7 +43,7 @@ final class GlobalEventStream(
     case webSocketEvent: WebSocketEvent with NetworkSendEvent =>
       WebSockets.processSendEvent(webSocketEvent, this)
 
-    //Audio
+    // Audio
     case PlaySound(assetName, volume) =>
       audioPlayer.playSound(assetName, volume)
 

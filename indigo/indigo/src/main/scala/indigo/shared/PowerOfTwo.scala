@@ -7,15 +7,15 @@ sealed trait PowerOfTwo derives CanEqual {
   val halved: PowerOfTwo
   val doubled: PowerOfTwo
 
-  def >(powerOfTwo: PowerOfTwo): Boolean   = value > powerOfTwo.value
-  def >=(powerOfTwo: PowerOfTwo): Boolean  = value >= powerOfTwo.value
-  def <(powerOfTwo: PowerOfTwo): Boolean   = value < powerOfTwo.value
-  def <=(powerOfTwo: PowerOfTwo): Boolean  = value <= powerOfTwo.value
+  def >(powerOfTwo: PowerOfTwo): Boolean  = value > powerOfTwo.value
+  def >=(powerOfTwo: PowerOfTwo): Boolean = value >= powerOfTwo.value
+  def <(powerOfTwo: PowerOfTwo): Boolean  = value < powerOfTwo.value
+  def <=(powerOfTwo: PowerOfTwo): Boolean = value <= powerOfTwo.value
 
-  def >(i: Int): Boolean   = value > i
-  def >=(i: Int): Boolean  = value >= i
-  def <(i: Int): Boolean   = value < i
-  def <=(i: Int): Boolean  = value <= i
+  def >(i: Int): Boolean  = value > i
+  def >=(i: Int): Boolean = value >= i
+  def <(i: Int): Boolean  = value < i
+  def <=(i: Int): Boolean = value <= i
 
   def toPoint: Point = Point(value, value)
 

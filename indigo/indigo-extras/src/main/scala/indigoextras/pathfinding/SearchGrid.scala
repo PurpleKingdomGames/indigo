@@ -8,7 +8,13 @@ import indigoextras.pathfinding.GridSquare.StartSquare
 
 import scala.annotation.tailrec
 
-final case class SearchGrid(validationWidth: Int, validationHeight: Int, start: Coords, end: Coords, grid: List[GridSquare]) derives CanEqual {
+final case class SearchGrid(
+    validationWidth: Int,
+    validationHeight: Int,
+    start: Coords,
+    end: Coords,
+    grid: List[GridSquare]
+) derives CanEqual {
 
   def isValid: Boolean =
     SearchGrid.isValid(this)
@@ -58,7 +64,13 @@ object SearchGrid {
 
   def scoreGridSquares(searchGrid: SearchGrid): List[GridSquare] = {
     @tailrec
-    def rec(target: Coords, unscored: List[GridSquare], scoreValue: Int, lastCoords: List[Coords], scored: List[GridSquare]): List[GridSquare] =
+    def rec(
+        target: Coords,
+        unscored: List[GridSquare],
+        scoreValue: Int,
+        lastCoords: List[Coords],
+        scored: List[GridSquare]
+    ): List[GridSquare] =
       (unscored, lastCoords) match {
         case (Nil, _) | (_, Nil) =>
           scored ++ unscored
@@ -102,7 +114,14 @@ object SearchGrid {
 
   def locatePath(dice: Dice, searchGrid: SearchGrid): List[Coords] = {
     @tailrec
-    def rec(currentPosition: Coords, currentScore: Int, target: Coords, grid: SearchGrid, width: Int, acc: List[Coords]): List[Coords] =
+    def rec(
+        currentPosition: Coords,
+        currentScore: Int,
+        target: Coords,
+        grid: SearchGrid,
+        width: Int,
+        acc: List[Coords]
+    ): List[Coords] =
       if (currentPosition == target) acc
       else
         sampleAt(grid, currentPosition, width).filter(c => c.score.getOrElse(GridSquare.max) < currentScore) match {
@@ -117,7 +136,14 @@ object SearchGrid {
             rec(next.coords, next.score.getOrElse(GridSquare.max), target, grid, width, acc ++ List(next.coords))
         }
 
-    rec(searchGrid.start, GridSquare.max, searchGrid.end, searchGrid, searchGrid.validationWidth, List(searchGrid.start))
+    rec(
+      searchGrid.start,
+      GridSquare.max,
+      searchGrid.end,
+      searchGrid,
+      searchGrid.validationWidth,
+      List(searchGrid.start)
+    )
   }
 
 }

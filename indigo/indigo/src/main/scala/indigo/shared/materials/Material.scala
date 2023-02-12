@@ -30,7 +30,7 @@ object Material {
       this.copy(lighting = newLighting)
     def modifyLighting(modifier: LightingModel => LightingModel): Bitmap =
       this.copy(lighting = modifier(lighting))
-      
+
     def enableLighting: Bitmap =
       withLighting(lighting.enableLighting)
     def disableLighting: Bitmap =
@@ -134,7 +134,7 @@ object Material {
       this.copy(lighting = newLighting)
     def modifyLighting(modifier: LightingModel => LightingModel): ImageEffects =
       this.copy(lighting = modifier(lighting))
-      
+
     def enableLighting: ImageEffects =
       withLighting(lighting.enableLighting)
     def disableLighting: ImageEffects =

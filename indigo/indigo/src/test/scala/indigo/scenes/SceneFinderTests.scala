@@ -25,7 +25,10 @@ class SceneFinderTests extends munit.FunSuite {
   }
 
   test("managing the scenes list.should be able to produce a list of ScenePositions") {
-    assertEquals(SceneFinder.fromScenes(scenes).toList == List(ScenePosition(0, sceneA.name), ScenePosition(1, sceneB.name)), true)
+    assertEquals(
+      SceneFinder.fromScenes(scenes).toList == List(ScenePosition(0, sceneA.name), ScenePosition(1, sceneB.name)),
+      true
+    )
   }
 
   test("managing the scenes list.should be able to produce a non-empty list of ScenePositions") {

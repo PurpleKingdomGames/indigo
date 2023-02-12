@@ -74,4 +74,3 @@ object BlendEffects:
 
         calculateSaturation(overlay, env.ALPHA_SATURATION_OVERLAYTYPE_BG.y)
     }
-

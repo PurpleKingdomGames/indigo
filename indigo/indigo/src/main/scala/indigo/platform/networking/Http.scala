@@ -28,19 +28,18 @@ object Http {
           xhr
             .getAllResponseHeaders()
             .split("\\r\\n")
-            .map(
-              p =>
-                p.split(':').map(_.trim).toList match {
-                  case Nil =>
-                    None
-                  case x :: y :: Nil =>
-                    Option((x, y))
+            .map(p =>
+              p.split(':').map(_.trim).toList match {
+                case Nil =>
+                  None
+                case x :: y :: Nil =>
+                  Option((x, y))
 
-                  case x :: Nil =>
-                    Option((x, ""))
+                case x :: Nil =>
+                  Option((x, ""))
 
-                  case _ =>
-                    None
+                case _ =>
+                  None
 
               }
             )

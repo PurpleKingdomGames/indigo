@@ -16,4 +16,3 @@ object SubSystemId:
 
   given CanEqual[SubSystemId, SubSystemId]                 = CanEqual.derived
   given CanEqual[Option[SubSystemId], Option[SubSystemId]] = CanEqual.derived
-

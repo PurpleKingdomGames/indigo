@@ -209,7 +209,16 @@ object RadioButton:
     *   on screen location of the radio button
     */
   def apply(position: Point): RadioButton =
-    RadioButton(position, () => Batch.empty, () => Batch.empty, () => Batch.empty, () => Batch.empty, None, None, RadioButtonState.Normal)
+    RadioButton(
+      position,
+      () => Batch.empty,
+      () => Batch.empty,
+      () => Batch.empty,
+      () => Batch.empty,
+      None,
+      None,
+      RadioButtonState.Normal
+    )
 
 /** A group of mutually exclusive radio buttons.
   *
