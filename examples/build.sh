@@ -2,4 +2,4 @@
 
 set -e
 
-sbt cleanAll scalafmtCheck testAllNoClean
+sbt cleanAll scalafmtCheckAll testAllNoClean

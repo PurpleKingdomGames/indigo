@@ -2,4 +2,4 @@
 
 set -e
 
-sbt clean scalafmtCheck sbtIndigo/publishLocal
+sbt clean scalafmtCheckAll sbtIndigo/publishLocal

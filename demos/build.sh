@@ -14,6 +14,6 @@ cd ..
 
 cd pirate
 
-sbt scalafmtCheck test buildGame
+sbt scalafmtCheckAll test buildGame
 
 cd ..
