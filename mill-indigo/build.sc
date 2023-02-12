@@ -14,7 +14,7 @@ class IndigoPluginModule(val crossScalaVersion: String) extends CrossScalaModule
       case _ => "2.13.10"
     }
 
-  def millLibVersion = "0.10.7"
+  def millLibVersion = "0.10.11"
 
   def indigoVersion = T.input { IndigoVersion.getVersion }
 

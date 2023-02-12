@@ -16,7 +16,7 @@ lazy val tyrianDocsVersion  = "0.6.0"
 lazy val scalaJsDocsVersion = "1.13.0"
 lazy val scalaDocsVersion   = "3.2.1"
 lazy val sbtDocsVersion     = "1.7.1"
-lazy val millDocsVersion    = "0.10.7"
+lazy val millDocsVersion    = "0.10.11"
 
 lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
   version            := indigoVersion,
