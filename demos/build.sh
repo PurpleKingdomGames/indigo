@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 cd snake
 
 mill clean

@@ -5,7 +5,7 @@ import mill._
 import mill.scalalib._
 import mill.scalajslib._
 import mill.scalajslib.api._
-import mill.scalafmt._
+import mill.scalalib.scalafmt._
 import coursier.maven.MavenRepository
 
 import $ivy.`io.indigoengine::mill-indigo:0.14.1-SNAPSHOT`, millindigo._
