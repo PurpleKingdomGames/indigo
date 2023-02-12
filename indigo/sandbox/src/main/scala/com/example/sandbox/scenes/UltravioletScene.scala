@@ -50,30 +50,14 @@ object UltravioletScene extends Scene[SandboxStartupData, SandboxGameModel, Sand
       SceneUpdateFragment.empty
         .addLayer(
           Layer(
-            UVEntity(10, 10, 150, 150, Depth.zero, ShaderData(UVShaders.voronoiId)),
-            UVEntity(140, 50, 32, 32, Depth.zero, ShaderData(UVShaders.circleId))
+            BlankEntity(10, 10, 150, 150, Depth.zero, ShaderData(UVShaders.voronoiId)),
+            BlankEntity(140, 50, 32, 32, Depth.zero, ShaderData(UVShaders.circleId))
           )
         )
         .withBlendMaterial(MakeRedBlend)
     )
 
 }
-
-final case class UVEntity(x: Int, y: Int, width: Int, height: Int, depth: Depth, shader: ShaderData)
-    extends EntityNode[UVEntity]:
-  val flip: Flip                    = Flip.default
-  val position: Point               = Point(x, y)
-  val size: Size                    = Size(width, height)
-  val ref: Point                    = Point.zero
-  val rotation: Radians             = Radians.zero
-  val scale: Vector2                = Vector2.one
-  lazy val toShaderData: ShaderData = shader
-
-  def withDepth(newDepth: Depth): UVEntity =
-    this.copy(depth = newDepth)
-
-  val eventHandlerEnabled: Boolean                                   = false
-  def eventHandler: ((UVEntity, GlobalEvent)) => Option[GlobalEvent] = Function.const(None)
 
 case object MakeRedBlend extends BlendMaterial derives CanEqual {
   lazy val toShaderData: BlendShaderData =

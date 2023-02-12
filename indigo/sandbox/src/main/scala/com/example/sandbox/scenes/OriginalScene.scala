@@ -66,19 +66,18 @@ object OriginalScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
         ) |+| scene
         .addLayer(
           Layer(
-            CustomShape(0, 0, 228 * 3, 140 * 3, Depth(10), ShaderData(Shaders.seaId))
+            BlankEntity(0, 0, 228 * 3, 140 * 3, Depth(10), ShaderData(Shaders.seaId))
           ).withKey(BindingKey("bg"))
         )
         .addLayer(
           Layer(
             Graphic(120, 10, 32, 32, 1, SandboxAssets.dotsMaterial),
-            CustomShape(140, 50, 32, 32, Depth.zero, ShaderData(Shaders.circleId)),
-            CustomShape(
+            BlankEntity(140, 50, 32, 32, ShaderData(Shaders.circleId)),
+            BlankEntity(
               140,
               50,
               32,
               32,
-              Depth.zero,
               ShaderData(
                 Shaders.externalId,
                 UniformBlock(
@@ -90,12 +89,11 @@ object OriginalScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
                 )
               )
             ),
-            CustomShape(
+            BlankEntity(
               150,
               60,
               32,
               32,
-              Depth.zero,
               ShaderData(
                 Shaders.externalId,
                 UniformBlock(
@@ -113,22 +111,6 @@ object OriginalScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
   }
 
 }
-
-final case class CustomShape(x: Int, y: Int, width: Int, height: Int, depth: Depth, shader: ShaderData)
-    extends EntityNode[CustomShape]:
-  val flip: Flip                    = Flip.default
-  val position: Point               = Point(x, y)
-  val size: Size                    = Size(width, height)
-  val ref: Point                    = Point.zero
-  val rotation: Radians             = Radians.zero
-  val scale: Vector2                = Vector2.one
-  lazy val toShaderData: ShaderData = shader
-
-  def withDepth(newDepth: Depth): CustomShape =
-    this.copy(depth = newDepth)
-
-  val eventHandlerEnabled: Boolean                                      = false
-  def eventHandler: ((CustomShape, GlobalEvent)) => Option[GlobalEvent] = Function.const(None)
 
 object Shaders:
 
