@@ -99,7 +99,8 @@ object LevelView {
     val respawnFlashSignal: Seconds => Signal[(Boolean, Boolean)] =
       lastRespawn => Signal(_ < lastRespawn + Seconds(1.2)) |*| Signal.Pulse(Seconds(0.1))
 
-    val captainWithAlpha: Sprite[Material.ImageEffects] => SignalFunction[(Boolean, Boolean), Sprite[Material.ImageEffects]] =
+    val captainWithAlpha
+        : Sprite[Material.ImageEffects] => SignalFunction[(Boolean, Boolean), Sprite[Material.ImageEffects]] =
       captain =>
         SignalFunction {
           case (false, _) =>
@@ -114,7 +115,11 @@ object LevelView {
               .modifyMaterial(_.withAlpha(0))
         }
 
-    def respawnEffect(gameTime: GameTime, lastRespawn: Seconds, captain: Sprite[Material.ImageEffects]): Sprite[Material.ImageEffects] =
+    def respawnEffect(
+        gameTime: GameTime,
+        lastRespawn: Seconds,
+        captain: Sprite[Material.ImageEffects]
+    ): Sprite[Material.ImageEffects] =
       (respawnFlashSignal(lastRespawn) |> captainWithAlpha(captain)).at(gameTime.running)
 
     def updatedCaptain(

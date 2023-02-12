@@ -104,7 +104,7 @@ object GameModel {
 
   def hitTest(gameMap: GameMap, body: List[Vertex]): Vertex => CollisionCheckOutcome =
     given CanEqual[Option[MapElement], Option[MapElement]] = CanEqual.derived
-    pt => {
+    pt =>
       if (body.contains(pt)) CollisionCheckOutcome.Crashed(pt)
       else
         gameMap.fetchElementAt(pt) match {
@@ -117,7 +117,6 @@ object GameModel {
           case None =>
             CollisionCheckOutcome.NoCollision(pt)
         }
-    }
 
   def updateBasedOnCollision(
       gameTime: GameTime,
@@ -175,7 +174,7 @@ object GameModel {
       crashDetails: GameState.Crashed
   ): GlobalEvent => Outcome[GameModel] = {
     case FrameTick if gameTime.running <= crashDetails.crashedAt + Seconds(0.75) =>
-      //Pause briefly on collision
+      // Pause briefly on collision
       Outcome(state)
 
     case FrameTick if state.snake.length > 1 =>

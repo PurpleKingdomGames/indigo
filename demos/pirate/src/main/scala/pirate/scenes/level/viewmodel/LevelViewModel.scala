@@ -9,7 +9,7 @@ The view model cannot be initialised at game start up, because we want to load
 some data during the loading screen, parse it, and use it to build the
 `worldToScreenSpace` function, which relies on knowing the size of the tiles
 which is stored in the Tiled data.
-*/
+ */
 sealed trait LevelViewModel derives CanEqual {
   val notReady: Boolean
 

@@ -35,17 +35,16 @@ object Score {
         }
 
     val signal: SignalReader[(AutomatonSeedValues, SceneNode), AutomatonUpdate] =
-      SignalReader {
-        case (seed, sceneGraphNode) =>
-          sceneGraphNode match {
-            case t: Text[_] =>
-              workOutPosition(seed).map { position =>
-                AutomatonUpdate(Batch(t.moveTo(position)), Batch.empty)
-              }
+      SignalReader { case (seed, sceneGraphNode) =>
+        sceneGraphNode match {
+          case t: Text[_] =>
+            workOutPosition(seed).map { position =>
+              AutomatonUpdate(Batch(t.moveTo(position)), Batch.empty)
+            }
 
-            case _ =>
-              Signal.fixed(AutomatonUpdate.empty)
-          }
+          case _ =>
+            Signal.fixed(AutomatonUpdate.empty)
+        }
       }
 
   }

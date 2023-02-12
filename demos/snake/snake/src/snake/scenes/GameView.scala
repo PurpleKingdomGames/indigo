@@ -33,7 +33,7 @@ object GameView {
   ): Batch[SceneNode] =
     walls ::
       drawApple(viewConfig, currentState.gameMap, staticAssets) ++
-        drawSnake(viewConfig, currentState, staticAssets.snake) ++
+      drawSnake(viewConfig, currentState, staticAssets.snake) ++
       drawScore(viewConfig, currentState.score)
 
   def drawApple(viewConfig: ViewConfig, gameMap: GameMap, staticAssets: StaticAssets): Batch[Graphic[_]] =

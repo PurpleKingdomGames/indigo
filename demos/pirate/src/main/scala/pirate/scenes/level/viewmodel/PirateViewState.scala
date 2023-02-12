@@ -11,7 +11,7 @@ boxes floating through space, and is very important to the games
 core mechanics.
 
 However, that data isn't enough to make the experience nice for
-the player. We need to store some transient state is important 
+the player. We need to store some transient state is important
 for the presentation, but meaningless in terms of the pure mechanics
 of the game.
 
@@ -22,7 +22,7 @@ don't play it too often.
 
 We could store these values in the model, but the model doesn't care
 and this way is a bit cleaner.
-*/
+ */
 final case class PirateViewState(
     facingRight: Boolean,
     soundLastPlayed: Seconds

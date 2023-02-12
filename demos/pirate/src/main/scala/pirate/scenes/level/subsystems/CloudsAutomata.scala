@@ -21,19 +21,18 @@ object CloudsAutomata {
   map the signal to our renderable cloud graphic.
    */
   val signal: SignalReader[(AutomatonSeedValues, SceneNode), AutomatonUpdate] =
-    SignalReader {
-      case (seed, node) =>
-        node match {
-          case cloud: Graphic[_] =>
-            Signal
-              .Lerp(seed.spawnedAt, Point(-150, seed.spawnedAt.y), seed.lifeSpan)
-              .map { position =>
-                AutomatonUpdate(cloud.moveTo(position))
-              }
+    SignalReader { case (seed, node) =>
+      node match {
+        case cloud: Graphic[_] =>
+          Signal
+            .Lerp(seed.spawnedAt, Point(-150, seed.spawnedAt.y), seed.lifeSpan)
+            .map { position =>
+              AutomatonUpdate(cloud.moveTo(position))
+            }
 
-          case _ =>
-            Signal.fixed(AutomatonUpdate.empty)
-        }
+        case _ =>
+          Signal.fixed(AutomatonUpdate.empty)
+      }
     }
 
   // One spawn, the automaton instance will choose "OneOf"
