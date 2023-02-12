@@ -116,7 +116,15 @@ trait MillIndigo extends mill.Module {
       val outputDir: Path = T.dest
       val buildDir: Path  = indigoBuild()()
 
-      IndigoRun.run(outputDir, buildDir, title, windowStartWidth, windowStartHeight, disableFrameRateLimit, electronInstall)
+      IndigoRun.run(
+        outputDir,
+        buildDir,
+        title,
+        windowStartWidth,
+        windowStartHeight,
+        disableFrameRateLimit,
+        electronInstall
+      )
     }
 
   def indigoRunFull(): Command[Unit] =
@@ -124,7 +132,15 @@ trait MillIndigo extends mill.Module {
       val outputDir: Path = T.dest
       val buildDir: Path  = indigoBuildFull()()
 
-      IndigoRun.run(outputDir, buildDir, title, windowStartWidth, windowStartHeight, disableFrameRateLimit, electronInstall)
+      IndigoRun.run(
+        outputDir,
+        buildDir,
+        title,
+        windowStartWidth,
+        windowStartHeight,
+        disableFrameRateLimit,
+        electronInstall
+      )
     }
 
   def indigoCordovaBuild(): Command[Unit] =
