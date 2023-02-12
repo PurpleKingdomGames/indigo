@@ -18,7 +18,6 @@
             millWithJRE
             pkgs.nodejs
             pkgs.yarn
-            pkgs.glslang
             pkgs.electron
           ];
         };

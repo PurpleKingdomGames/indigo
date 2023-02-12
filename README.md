@@ -24,7 +24,6 @@ You will need:
 - Mill
 - SBT
 - JDK (Update: 8 works, 17 is used in Indigo's development)
-- [glslang validator](https://github.com/KhronosGroup/glslang) - can be installed with your favorite package manager.
 
 ### Running the build
 
@@ -39,8 +38,6 @@ On Windows, open up powershell and run:
 ```powershell
 & build.ps1
 ```
-
-> **NOTE:** You may have trouble installing or running the glslangValidator. As long as you have installed it (e.g. `scoop install glslang`) the build will continue, it's just that the shaders may not be validated.
 
 There is also another script which is a bit faster since it doesn't build the examples or demos.
 
