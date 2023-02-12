@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-sbt cleanAll testAllNoClean
+sbt cleanAll scalafmtCheck testAllNoClean

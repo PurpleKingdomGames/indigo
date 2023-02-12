@@ -5,11 +5,12 @@ import mill._
 import mill.scalalib._
 import mill.scalajslib._
 import mill.scalajslib.api._
+import mill.scalafmt._
 import coursier.maven.MavenRepository
 
 import $ivy.`io.indigoengine::mill-indigo:0.14.1-SNAPSHOT`, millindigo._
 
-object snake extends ScalaJSModule with MillIndigo {
+object snake extends ScalaJSModule with MillIndigo with ScalafmtModule {
   def scalaVersion   = "3.2.1"
   def scalaJSVersion = "1.13.0"
 

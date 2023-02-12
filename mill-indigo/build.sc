@@ -2,11 +2,12 @@ import $ivy.`com.lihaoyi::mill-contrib-bloop:$MILL_VERSION`
 import mill._
 import mill.scalalib._
 import mill.scalajslib._
+import mill.scalafmt._
 import publish._
 import coursier.maven.MavenRepository
 
 object `mill-indigo` extends Cross[IndigoPluginModule]("2.13")
-class IndigoPluginModule(val crossScalaVersion: String) extends CrossScalaModule with PublishModule {
+class IndigoPluginModule(val crossScalaVersion: String) extends CrossScalaModule with PublishModule with ScalafmtModule {
 
   def scalaVersion =
     crossScalaVersion match {
