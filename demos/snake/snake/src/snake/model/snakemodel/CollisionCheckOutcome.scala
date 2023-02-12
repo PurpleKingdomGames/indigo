@@ -2,7 +2,6 @@ package snake.model.snakemodel
 
 import indigoextras.geometry.Vertex
 
-
 sealed trait CollisionCheckOutcome {
   val gridPoint: Vertex
 }

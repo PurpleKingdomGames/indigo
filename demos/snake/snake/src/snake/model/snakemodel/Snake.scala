@@ -103,7 +103,7 @@ object Snake {
 
   def wrap(gridPoint: Vertex, gridSize: BoundingBox): Vertex =
     gridPoint.copy(
-      x = if (gridPoint.x < 0) gridSize.width else gridPoint.x  % gridSize.width,
+      x = if (gridPoint.x < 0) gridSize.width else gridPoint.x % gridSize.width,
       y = if (gridPoint.y < 0) gridSize.height else gridPoint.y % gridSize.height
     )
 
