@@ -27,7 +27,7 @@ object SupportScriptTemplate {
       |  c.width = window.innerWidth;
       |}
       |
-      |${if(autoSize) "" else "// "}window.onresize = debounce(resizeCanvas, 500);
+      |${if (autoSize) "" else "// "}window.onresize = debounce(resizeCanvas, 500);
       |
       |window.onload = function () {
       |    if (typeof history.pushState === "function") {

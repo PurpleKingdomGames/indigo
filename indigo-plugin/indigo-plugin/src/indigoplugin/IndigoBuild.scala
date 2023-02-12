@@ -36,7 +36,12 @@ object IndigoBuild {
     os.write(directoryStructure.base / "scripts" / "indigo-support.js", support)
 
     // Fill out html template
-    val html = HtmlTemplate.template(templateOptions.title, templateOptions.showCursor, scriptName, templateOptions.backgroundColor)
+    val html = HtmlTemplate.template(
+      templateOptions.title,
+      templateOptions.showCursor,
+      scriptName,
+      templateOptions.backgroundColor
+    )
 
     // Write out file
     val outputPath = IndigoBuild.writeHtml(directoryStructure, html)

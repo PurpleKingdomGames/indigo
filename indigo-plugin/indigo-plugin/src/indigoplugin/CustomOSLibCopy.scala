@@ -48,17 +48,23 @@ object CustomOSLibCopy {
     if (stat(from, followLinks = followLinks).isDir) walk(from).map(copyOne)
   }
 
-  def copyInto(from: Path,
-            to: Path,
-            followLinks: Boolean,
-            replaceExisting: Boolean,
-            copyAttributes: Boolean,
-            createFolders: Boolean,
-            mergeFolders: Boolean): Unit = {
+  def copyInto(
+      from: Path,
+      to: Path,
+      followLinks: Boolean,
+      replaceExisting: Boolean,
+      copyAttributes: Boolean,
+      createFolders: Boolean,
+      mergeFolders: Boolean
+  ): Unit =
     copy(
-      from, to/from.last,
-      followLinks, replaceExisting, copyAttributes, createFolders, mergeFolders
+      from,
+      to / from.last,
+      followLinks,
+      replaceExisting,
+      copyAttributes,
+      createFolders,
+      mergeFolders
     )
-  }
 
 }
