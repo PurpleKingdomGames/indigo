@@ -2,4 +2,4 @@
 
 # Run from root.
 
-sbt crossCleanAll crossTestAllNoClean crossLocalPublishNoClean
+sbt crossCleanAll scalafmtCheck crossTestAllNoClean crossLocalPublishNoClean
