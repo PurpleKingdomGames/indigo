@@ -125,11 +125,17 @@ final case class CycleRef(
           updatePlayheadAndLastAdvance(frameCount - 1, gameTime.running.toMillis)
 
         case JumpToFrame(number) =>
-          updatePlayheadAndLastAdvance(if (number > frameCount - 1) frameCount - 1 else number, gameTime.running.toMillis)
+          updatePlayheadAndLastAdvance(
+            if (number > frameCount - 1) frameCount - 1 else number,
+            gameTime.running.toMillis
+          )
 
         case ScrubTo(position) =>
           val number = (frameCount.toDouble * position).toInt
-          updatePlayheadAndLastAdvance(if (number > frameCount - 1) frameCount - 1 else number, gameTime.running.toMillis)
+          updatePlayheadAndLastAdvance(
+            if (number > frameCount - 1) frameCount - 1 else number,
+            gameTime.running.toMillis
+          )
 
       }
     }

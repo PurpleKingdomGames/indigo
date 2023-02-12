@@ -151,5 +151,5 @@ object LineIntersectionResult:
 
   case object NoIntersection extends LineIntersectionResult:
     def toOption: Option[Vertex] = None
-    def toBatch: Batch[Vertex]    = Batch.empty
+    def toBatch: Batch[Vertex]   = Batch.empty
     def hasIntersected: Boolean  = false

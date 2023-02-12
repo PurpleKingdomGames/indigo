@@ -2,7 +2,7 @@ package indigo.gameengine
 
 class AnimationStateTests extends munit.FunSuite {
 
-  //TODO: Needs to be update to test the AnimationsRegister
+  // TODO: Needs to be update to test the AnimationsRegister
 //  test("Using animation states") {
 //
 //    test("Should be able to extract animation states") {

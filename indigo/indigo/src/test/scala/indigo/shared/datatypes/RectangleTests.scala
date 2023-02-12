@@ -35,7 +35,7 @@ class RectangleTests extends munit.FunSuite {
   }
 
   test("should be able to construct a rectangle from a cloud of points") {
-    //left 0, right 6, top 7, bottom 13
+    // left 0, right 6, top 7, bottom 13
     val points: Batch[Point] =
       Batch(
         Point(4, 11),

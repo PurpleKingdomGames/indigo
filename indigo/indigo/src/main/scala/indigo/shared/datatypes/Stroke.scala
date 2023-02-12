@@ -12,7 +12,7 @@ final case class Stroke(width: Int, color: RGBA) derives CanEqual {
 object Stroke {
 
   val Black: Stroke =
-     Stroke(1, RGBA.Black)
+    Stroke(1, RGBA.Black)
 
   val None: Stroke =
     Stroke(0, RGBA.Zero)

@@ -428,7 +428,7 @@ class QuadTreeTests extends munit.FunSuite {
         "1,0",
         "1,1",
         "1,2",
-        //"1,3", // filtered out
+        // "1,3", // filtered out
         "2,0",
         "2,1",
         "2,2",

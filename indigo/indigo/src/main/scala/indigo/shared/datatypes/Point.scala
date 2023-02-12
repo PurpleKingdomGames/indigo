@@ -52,9 +52,8 @@ final case class Point(x: Int, y: Int) derives CanEqual {
       Math.round(this.x * s + this.y * c).toInt
     )
   }
-  def rotateBy(angle: Radians, origin: Point): Point = {
+  def rotateBy(angle: Radians, origin: Point): Point =
     (this - origin).rotateBy(angle) + origin
-  }
 
   def rotateTo(angle: Radians): Point = {
     val a = angle.wrap.toDouble

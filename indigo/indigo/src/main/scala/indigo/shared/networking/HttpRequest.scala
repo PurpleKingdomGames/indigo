@@ -24,13 +24,16 @@ object HttpRequest {
     val body: Option[String] = None
     val method: String       = HttpMethod.GET
   }
-  final case class POST(url: String, params: Map[String, String], headers: Map[String, String], body: Option[String]) extends HttpRequest {
+  final case class POST(url: String, params: Map[String, String], headers: Map[String, String], body: Option[String])
+      extends HttpRequest {
     val method: String = HttpMethod.POST
   }
-  final case class PUT(url: String, params: Map[String, String], headers: Map[String, String], body: Option[String]) extends HttpRequest {
+  final case class PUT(url: String, params: Map[String, String], headers: Map[String, String], body: Option[String])
+      extends HttpRequest {
     val method: String = HttpMethod.PUT
   }
-  final case class DELETE(url: String, params: Map[String, String], headers: Map[String, String], body: Option[String]) extends HttpRequest {
+  final case class DELETE(url: String, params: Map[String, String], headers: Map[String, String], body: Option[String])
+      extends HttpRequest {
     val method: String = HttpMethod.DELETE
   }
 
@@ -57,6 +60,7 @@ object HttpRequest {
 
 sealed trait HttpReceiveEvent extends NetworkReceiveEvent
 object HttpReceiveEvent {
-  case object HttpError                                                                          extends HttpReceiveEvent
-  final case class HttpResponse(status: Int, headers: Map[String, String], body: Option[String]) extends HttpReceiveEvent
+  case object HttpError extends HttpReceiveEvent
+  final case class HttpResponse(status: Int, headers: Map[String, String], body: Option[String])
+      extends HttpReceiveEvent
 }

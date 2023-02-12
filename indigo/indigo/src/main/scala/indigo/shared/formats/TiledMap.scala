@@ -24,7 +24,7 @@ final case class TiledMap(
     height: Int,
     infinite: Boolean,
     layers: List[TiledLayer],
-    nextobjectid: Int,   // Stores the next available ID for new objects. This number is stored to prevent reuse of the same ID after objects have been removed.
+    nextobjectid: Int, // Stores the next available ID for new objects. This number is stored to prevent reuse of the same ID after objects have been removed.
     orientation: String, // orthogonal, isometric, staggered and hexagonal
     renderorder: String, // right-down (the default), right-up, left-down and left-up. In all cases, the map is drawn row-by-row.
     tiledversion: String,
@@ -36,7 +36,7 @@ final case class TiledMap(
     staggeraxis: Option[String], // For staggered and hexagonal maps, determines which axis ("x" or "y") is staggered
     staggerindex: Option[
       String
-    ],                              // For staggered and hexagonal maps, determines whether the "even" or "odd" indexes along the staggered axis are shifted.
+    ], // For staggered and hexagonal maps, determines whether the "even" or "odd" indexes along the staggered axis are shifted.
     backgroundcolor: Option[String] // #AARRGGBB
 ) derives CanEqual {
 

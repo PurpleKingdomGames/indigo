@@ -81,12 +81,18 @@ class CycleRefTests extends munit.FunSuite {
   }
 
   test("Running actions.ChangeCycle") {
-    //no op
+    // no op
     assertEquals(cycle.runActions(GameTime.zero, Batch(ChangeCycle(CycleLabel("fish")))).currentFrame == frame1, true)
   }
 
   test("Running actions.JumpToFirstFrame") {
-    assertEquals(cycle.applyMemento(CycleMemento(2, Millis(0))).runActions(GameTime.zero, Batch(JumpToFirstFrame)).currentFrame == frame1, true)
+    assertEquals(
+      cycle
+        .applyMemento(CycleMemento(2, Millis(0)))
+        .runActions(GameTime.zero, Batch(JumpToFirstFrame))
+        .currentFrame == frame1,
+      true
+    )
   }
 
   test("Running actions.JumpToLastFrame") {

@@ -112,16 +112,16 @@ class VertexTests extends munit.FunSuite {
     assert(Vertex(1, 1).rotateBy(Radians.PIby2 * -1.0) ~== Vertex(1, -1))
 
     // 45
-    val v = Vertex(1, 2)
-    val expected = Vertex(-0.70710,2.12132)
+    val v        = Vertex(1, 2)
+    val expected = Vertex(-0.70710, 2.12132)
     assert(v.rotateBy(Radians.PIby2 / 2.0) ~== expected)
     // magnitude should remain the same
     assert(Math.abs(v.length - expected.length) <= 0.0001)
   }
 
   test("rotate around given point") {
-    assert(Vertex(3, 1).rotateBy(Radians.PIby2, Vertex(-2,-2)) ~== Vertex(-5, 3))
-    assert(Vertex(-3, 4).rotateBy(Radians.PIby2 * -1.0, Vertex(-1,2)) ~== Vertex(1, 4))
+    assert(Vertex(3, 1).rotateBy(Radians.PIby2, Vertex(-2, -2)) ~== Vertex(-5, 3))
+    assert(Vertex(-3, 4).rotateBy(Radians.PIby2 * -1.0, Vertex(-1, 2)) ~== Vertex(1, 4))
   }
 
   test("rotate to") {

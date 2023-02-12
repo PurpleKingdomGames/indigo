@@ -8,7 +8,7 @@ object Depth:
 
   val zero: Depth = Depth(0)
   val near: Depth = zero
-  val far: Depth = Depth(Int.MaxValue)
+  val far: Depth  = Depth(Int.MaxValue)
 
   extension (d: Depth)
     def +(other: Depth): Depth = Depth(d + other)

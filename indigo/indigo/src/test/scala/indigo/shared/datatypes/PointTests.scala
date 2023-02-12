@@ -41,14 +41,14 @@ class PointTests extends munit.FunSuite {
     assertEquals(Point(1, 1).rotateBy(Radians.PIby2 * -1.0), Point(1, -1))
 
     // 45
-    val v = Point(1, 2)
+    val v        = Point(1, 2)
     val expected = Point(-1, 2)
     assertEquals(v.rotateBy(Radians.PIby2 / 2.0), expected)
   }
 
   test("rotate around given point") {
-    assertEquals(Point(3, 1).rotateBy(Radians.PIby2, Point(-2,-2)), Point(-5, 3))
-    assertEquals(Point(-3, 4).rotateBy(Radians.PIby2 * -1.0, Point(-1,2)), Point(1, 4))
+    assertEquals(Point(3, 1).rotateBy(Radians.PIby2, Point(-2, -2)), Point(-5, 3))
+    assertEquals(Point(-3, 4).rotateBy(Radians.PIby2 * -1.0, Point(-1, 2)), Point(1, 4))
   }
 
   test("rotate to") {

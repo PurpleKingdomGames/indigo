@@ -12,7 +12,7 @@ import indigo.shared.time.Seconds
 
 object FakeSubSystemFrameContext {
 
-  def context(sides: Int): SubSystemFrameContext = 
+  def context(sides: Int): SubSystemFrameContext =
     new SubSystemFrameContext(
       GameTime.zero,
       Dice.loaded(sides),
@@ -20,7 +20,7 @@ object FakeSubSystemFrameContext {
       new BoundaryLocator(new AnimationsRegister, new FontRegister, new DynamicText)
     )
 
-  def context(sides: Int, time: Seconds): SubSystemFrameContext = 
+  def context(sides: Int, time: Seconds): SubSystemFrameContext =
     new SubSystemFrameContext(
       GameTime.is(time),
       Dice.loaded(sides),
@@ -28,7 +28,7 @@ object FakeSubSystemFrameContext {
       new BoundaryLocator(new AnimationsRegister, new FontRegister, new DynamicText)
     )
 
-  def context(sides: Int, time: Seconds, delta: Seconds): SubSystemFrameContext = 
+  def context(sides: Int, time: Seconds, delta: Seconds): SubSystemFrameContext =
     new SubSystemFrameContext(
       GameTime.withDelta(time, delta),
       Dice.loaded(sides),

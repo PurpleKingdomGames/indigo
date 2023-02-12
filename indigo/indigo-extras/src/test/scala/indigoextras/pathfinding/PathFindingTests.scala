@@ -65,7 +65,7 @@ class PathFindingTests extends munit.FunSuite {
       List(
         EmptySquare(2, Coords(2, 0), None),
         StartSquare(5, Coords(1, 1)),
-        //Sample point
+        // Sample point
         EmptySquare(7, Coords(3, 1), None),
         ImpassableSquare(10, Coords(2, 2))
       )
@@ -84,7 +84,7 @@ class PathFindingTests extends munit.FunSuite {
       List(
         EmptySquare(3, Coords(3, 0), None),
         EmptySquare(6, Coords(2, 1), None),
-        //Sample point
+        // Sample point
         EndSquare(11, Coords(3, 2))
       )
 
@@ -100,7 +100,7 @@ class PathFindingTests extends munit.FunSuite {
 
     val expected: List[GridSquare] =
       List(
-        //Sample point
+        // Sample point
         EmptySquare(1, Coords(1, 0), None),
         EmptySquare(4, Coords(0, 1), None)
       )
@@ -218,7 +218,7 @@ class PathFindingTests extends munit.FunSuite {
       EmptySquare(0, coords, None),
       EmptySquare(0, coords, None),
       EmptySquare(0, coords, None),
-      //EmptySquare(0, coords, None), //missing on purpose!
+      // EmptySquare(0, coords, None), //missing on purpose!
       EndSquare(0, end)
     )
 

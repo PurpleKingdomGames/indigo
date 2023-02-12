@@ -1,9 +1,13 @@
 package indigo.shared.scenegraph
 
-/** Describes what audio is currently being played by the scene as part of a `SceneUpdateFragment`. Can play up to three audio sources at once.
- */
-final case class SceneAudio(sourceA: Option[SceneAudioSource], sourceB: Option[SceneAudioSource], sourceC: Option[SceneAudioSource])
-    derives CanEqual {
+/** Describes what audio is currently being played by the scene as part of a `SceneUpdateFragment`. Can play up to three
+  * audio sources at once.
+  */
+final case class SceneAudio(
+    sourceA: Option[SceneAudioSource],
+    sourceB: Option[SceneAudioSource],
+    sourceC: Option[SceneAudioSource]
+) derives CanEqual {
   def |+|(other: SceneAudio): SceneAudio =
     SceneAudio.combine(this, other)
 }

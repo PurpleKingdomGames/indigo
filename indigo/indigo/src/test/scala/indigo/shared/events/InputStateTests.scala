@@ -132,16 +132,16 @@ class InputStateTests extends munit.FunSuite {
 
   test("Mouse state.isLeftDown") {
 
-    val state2 = InputState.calculateNext(state, Batch(MouseEvent.MouseDown(0, 0)), gamepadState1)     // true
-    val state3 = InputState.calculateNext(state2, Batch.empty, gamepadState1)                                 // still true
-    val state4 = InputState.calculateNext(state3, Batch(MouseEvent.MouseDown(20, 20)), gamepadState1)  // still true
-    val state5 = InputState.calculateNext(                                                            // Still true
+    val state2 = InputState.calculateNext(state, Batch(MouseEvent.MouseDown(0, 0)), gamepadState1)    // true
+    val state3 = InputState.calculateNext(state2, Batch.empty, gamepadState1)                         // still true
+    val state4 = InputState.calculateNext(state3, Batch(MouseEvent.MouseDown(20, 20)), gamepadState1) // still true
+    val state5 = InputState.calculateNext( // Still true
       state4,
       Batch(MouseEvent.MouseUp(20, 20), MouseEvent.MouseDown(20, 20)),
       gamepadState1
-    )                                                                                               
-    val state6 = InputState.calculateNext(state5, Batch(MouseEvent.MouseUp(20, 20)), gamepadState1)    // false
-    val state7 = InputState.calculateNext(                                                            // Still false
+    )
+    val state6 = InputState.calculateNext(state5, Batch(MouseEvent.MouseUp(20, 20)), gamepadState1) // false
+    val state7 = InputState.calculateNext( // Still false
       state6,
       Batch(MouseEvent.MouseDown(20, 20), MouseEvent.MouseUp(20, 20)),
       gamepadState1
@@ -160,21 +160,21 @@ class InputStateTests extends munit.FunSuite {
     import MouseButton._
 
     val state2 =
-      InputState.calculateNext(state, Batch(MouseEvent.MouseDown(0, 0, RightMouseButton)), gamepadState1)  // true
-    val state3 = InputState.calculateNext(state2, Batch.empty, gamepadState1)                                     // still true
-    val state4 = InputState.calculateNext(                                                                // still true
+      InputState.calculateNext(state, Batch(MouseEvent.MouseDown(0, 0, RightMouseButton)), gamepadState1) // true
+    val state3 = InputState.calculateNext(state2, Batch.empty, gamepadState1) // still true
+    val state4 = InputState.calculateNext( // still true
       state3,
       Batch(MouseEvent.MouseDown(20, 20, RightMouseButton)),
       gamepadState1
     )
-    val state5 = InputState.calculateNext(                                                                // Still true
+    val state5 = InputState.calculateNext( // Still true
       state4,
       Batch(MouseEvent.MouseUp(20, 20, RightMouseButton), MouseEvent.MouseDown(20, 20, RightMouseButton)),
       gamepadState1
     )
-    val state6 =                                                                                          // false
+    val state6 = // false
       InputState.calculateNext(state5, Batch(MouseEvent.MouseUp(20, 20, RightMouseButton)), gamepadState1)
-    val state7 = InputState.calculateNext(                                                                // Still false
+    val state7 = InputState.calculateNext( // Still false
       state6,
       Batch(MouseEvent.MouseDown(20, 20, RightMouseButton), MouseEvent.MouseUp(20, 20, RightMouseButton)),
       gamepadState1

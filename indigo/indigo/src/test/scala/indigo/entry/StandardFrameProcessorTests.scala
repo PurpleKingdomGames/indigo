@@ -84,17 +84,19 @@ object TestFixtures {
     }
 
   val viewModelUpdate: (FrameContext[Unit], GameModel, Int) => GlobalEvent => Outcome[Int] =
-    (_, _, vm) =>
-      _ => {
-        Outcome(vm + 10).addGlobalEvents(EventsOnlyEvent.Increment)
-      }
+    (_, _, vm) => _ => Outcome(vm + 10).addGlobalEvents(EventsOnlyEvent.Increment)
 
   val viewUpdate: (FrameContext[Unit], GameModel, Int) => Outcome[SceneUpdateFragment] =
     (_, _, _) => Outcome(SceneUpdateFragment.empty.withBlendMaterial(BlendMaterial.Lighting(RGBA.Red.withAlpha(0.5))))
 
-  val standardFrameProcessor: StandardFrameProcessor[Unit, GameModel, Int] = {
-    new StandardFrameProcessor(new SubSystemsRegister(), EventFilters.AllowAll, modelUpdate, viewModelUpdate, viewUpdate)
-  }
+  val standardFrameProcessor: StandardFrameProcessor[Unit, GameModel, Int] =
+    new StandardFrameProcessor(
+      new SubSystemsRegister(),
+      EventFilters.AllowAll,
+      modelUpdate,
+      viewModelUpdate,
+      viewUpdate
+    )
 
   final case class GameModel(count: Int)
 

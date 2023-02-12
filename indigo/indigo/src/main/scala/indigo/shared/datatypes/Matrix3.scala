@@ -64,8 +64,7 @@ final case class Matrix3(private val mat: Array[Double]) derives CanEqual {
         count = count - 1
       }
       same
-    } else
-      false
+    } else false
 
 }
 

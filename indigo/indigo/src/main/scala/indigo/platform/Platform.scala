@@ -109,13 +109,13 @@ class Platform(
   private given CanEqual[Option[Element], Option[Element]] = CanEqual.derived
 
   def createCanvas(parentElement: Element, gameConfig: GameConfig): Outcome[Canvas] =
-      Outcome(
-        rendererInit.createCanvas(
-          gameConfig.viewport.width,
-          gameConfig.viewport.height,
-          parentElement
-        )
+    Outcome(
+      rendererInit.createCanvas(
+        gameConfig.viewport.width,
+        gameConfig.viewport.height,
+        parentElement
       )
+    )
 
   def listenToWorldEvents(canvas: Canvas, gameConfig: GameConfig, globalEventStream: GlobalEventStream): Outcome[Unit] =
     Outcome {

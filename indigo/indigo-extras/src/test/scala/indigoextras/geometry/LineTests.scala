@@ -37,7 +37,7 @@ class LineTests extends munit.FunSuite {
   }
 
   test("calculating line components.should correctly identify a line parallel to the y-axis") {
-    //b = Infinity (or -Infinity)
+    // b = Infinity (or -Infinity)
     assertEquals(Line.fromLineSegment(LineSegment(Vertex(1, 2), Vertex(1, -3))), Line.ParallelToAxisY(1))
   }
 

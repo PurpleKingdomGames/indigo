@@ -219,7 +219,7 @@ object Falloff {
   /** A big smooth circle of light that falls to zero at the "far" distance.
     *
     * @param near
-    *   @param far
+    * @param far
     */
   final case class SmoothLinear(near: Int, far: Int) extends Falloff {
     def withRange(newNear: Int, newFar: Int): SmoothLinear =
@@ -242,7 +242,7 @@ object Falloff {
   /** A smooth circle of light that decays pleasingly to zero at the "far" distance.
     *
     * @param near
-    *   @param far
+    * @param far
     */
   final case class SmoothQuadratic(near: Int, far: Int) extends Falloff {
     def withRange(newNear: Int, newFar: Int): SmoothQuadratic =
@@ -266,7 +266,7 @@ object Falloff {
     * zero by the time it reaches the limit.
     *
     * @param near
-    *   @param far
+    * @param far
     */
   final case class Linear(near: Int, far: Option[Int]) extends Falloff {
     def withRange(newNear: Int, newFar: Int): Linear =
@@ -296,7 +296,7 @@ object Falloff {
     * artificially attenuated to zero by the time it reaches the limit.
     *
     * @param near
-    *   @param far
+    * @param far
     */
   final case class Quadratic(near: Int, far: Option[Int]) extends Falloff {
     def withRange(newNear: Int, newFar: Int): Quadratic =
