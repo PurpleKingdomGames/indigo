@@ -5,11 +5,12 @@ import mill._
 import mill.scalalib._
 import mill.scalajslib._
 import mill.scalajslib.api._
+import mill.scalalib.scalafmt._
 import coursier.maven.MavenRepository
 import publish._
 
 object `indigo-plugin` extends Cross[IndigoPluginModule]("2.12", "2.13")
-class IndigoPluginModule(val crossScalaVersion: String) extends CrossScalaModule with PublishModule {
+class IndigoPluginModule(val crossScalaVersion: String) extends CrossScalaModule with PublishModule with ScalafmtModule {
 
   def indigoVersion = T.input { IndigoVersion.getVersion }
 

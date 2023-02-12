@@ -2,7 +2,7 @@ import $ivy.`com.lihaoyi::mill-contrib-bloop:$MILL_VERSION`
 import mill._
 import mill.scalalib._
 import mill.scalajslib._
-import mill.scalafmt._
+import mill.scalalib.scalafmt._
 import publish._
 import coursier.maven.MavenRepository
 

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 rm -fr out/
 
 mill clean
