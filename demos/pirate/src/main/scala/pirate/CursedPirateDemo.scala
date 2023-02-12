@@ -53,6 +53,7 @@ object CursedPirateDemo extends IndigoGame[BootInformation, StartupData, Model, 
         GameConfig.default
           .withViewport(GameViewport.at720p)
           .withMagnification(2)
+          .withFrameRateLimit(60)
 
       BootResult(
         config,
