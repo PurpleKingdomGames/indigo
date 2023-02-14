@@ -11,7 +11,7 @@ import scala.concurrent.Future
 
 /** A trait representing a shader that fills the available window.
   */
-trait IndigoShader extends GameLauncher[Unit, Unit, Unit] {
+trait IndigoShader extends GameLauncher[IndigoShaderBootData, IndigoShaderModel, Unit] {
 
   /** Your shader's configuration settings.
     */
@@ -25,45 +25,71 @@ trait IndigoShader extends GameLauncher[Unit, Unit, Unit] {
     */
   val shader: Shader
 
-  // TODO: Accept size flags
   // TODO: start in fullscreen flag
   // TODO: Fullscreen key mapping flag
   // TODO: Accept asset path, shader details?
   // TODO: Optionally show FPS?
-  private def boot(flags: Map[String, String]): Outcome[BootResult[Unit]] =
+  private def boot(flags: Map[String, String]): Outcome[BootResult[IndigoShaderBootData]] =
+    val width  = flags.get("width").map(_.toInt).getOrElse(config.viewport.width)
+    val height = flags.get("height").map(_.toInt).getOrElse(config.viewport.height)
+
+    val configWithOverrides =
+      config.withViewport(width, height)
+
+    val bootData =
+      IndigoShaderBootData(Size(width, height))
+
     Outcome(
-      BootResult(config, ())
+      BootResult(
+        configWithOverrides,
+        bootData
+      )
         .withShaders(shader)
     )
 
-  private def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[Unit]] =
-    Outcome(Startup.Success(()))
-
-  // Store the viewpoint size
-  private def initialModel(startupData: Unit): Outcome[Unit] =
-    Outcome(())
-
-  private def updateModel(context: FrameContext[Unit], model: Unit): GlobalEvent => Outcome[Unit] =
-    // TODO: Intercept viewpoint resizes and update
-    _ => Outcome(model)
-
-  // TODO: Draw a BlankEntity that fills the screen and renders the shader
-  private def present(context: FrameContext[Unit], model: Unit): Outcome[SceneUpdateFragment] =
+  private def setup(
+      bootData: IndigoShaderBootData,
+      assetCollection: AssetCollection,
+      dice: Dice
+  ): Outcome[Startup[IndigoShaderBootData]] =
     Outcome(
-      SceneUpdateFragment(
-        BlankEntity(Size(550, 400), ShaderData(shader.id))
+      Startup.Success(
+        bootData
       )
     )
 
-  private def indigoGame(boot: BootResult[Unit]): GameEngine[Unit, Unit, Unit] = {
+  // Store the viewpoint size
+  private def initialModel(startupData: IndigoShaderBootData): Outcome[IndigoShaderModel] =
+    Outcome(IndigoShaderModel(startupData.viewport))
 
-    val updateViewModel: (FrameContext[Unit], Unit, Unit) => GlobalEvent => Outcome[Unit] =
+  private def updateModel(
+      context: FrameContext[IndigoShaderBootData],
+      model: IndigoShaderModel
+  ): GlobalEvent => Outcome[IndigoShaderModel] =
+    // TODO: Intercept viewpoint resizes and update
+    _ => Outcome(model)
+
+  private def present(
+      context: FrameContext[IndigoShaderBootData],
+      model: IndigoShaderModel
+  ): Outcome[SceneUpdateFragment] =
+    Outcome(
+      SceneUpdateFragment(
+        BlankEntity(model.viewport, ShaderData(shader.id))
+      )
+    )
+
+  private def indigoGame(
+      boot: BootResult[IndigoShaderBootData]
+  ): GameEngine[IndigoShaderBootData, IndigoShaderModel, Unit] = {
+
+    val updateViewModel: (FrameContext[IndigoShaderBootData], IndigoShaderModel, Unit) => GlobalEvent => Outcome[Unit] =
       (_, _, vm) => _ => Outcome(vm)
 
     val eventFilters: EventFilters =
       EventFilters.Permissive
 
-    val frameProcessor: StandardFrameProcessor[Unit, Unit, Unit] =
+    val frameProcessor: StandardFrameProcessor[IndigoShaderBootData, IndigoShaderModel, Unit] =
       new StandardFrameProcessor(
         new SubSystemsRegister(),
         eventFilters,
@@ -72,20 +98,22 @@ trait IndigoShader extends GameLauncher[Unit, Unit, Unit] {
         (ctx, m, _) => present(ctx, m)
       )
 
-    new GameEngine[Unit, Unit, Unit](
+    new GameEngine[IndigoShaderBootData, IndigoShaderModel, Unit](
       Set(),
       Set(),
       Set(shader),
       (ac: AssetCollection) => (d: Dice) => setup(boot.bootData, ac, d),
-      (sd: Unit) => initialModel(sd),
-      (_: Unit) => (_: Unit) => Outcome(()),
+      (sd: IndigoShaderBootData) => initialModel(sd),
+      (_: IndigoShaderBootData) => (_: IndigoShaderModel) => Outcome(()),
       frameProcessor,
       Batch.empty
     )
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  protected def ready(flags: Map[String, String]): Element => GameEngine[Unit, Unit, Unit] =
+  protected def ready(
+      flags: Map[String, String]
+  ): Element => GameEngine[IndigoShaderBootData, IndigoShaderModel, Unit] =
     parentElement =>
       boot(flags) match
         case oe @ Outcome.Error(e, _) =>
@@ -97,3 +125,6 @@ trait IndigoShader extends GameLauncher[Unit, Unit, Unit] {
           indigoGame(b).start(parentElement, b.gameConfig, Future(None), b.assets, Future(Set()), evts)
 
 }
+
+final case class IndigoShaderBootData(viewport: Size)
+final case class IndigoShaderModel(viewport: Size)
