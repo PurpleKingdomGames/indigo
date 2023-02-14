@@ -27,8 +27,6 @@ trait IndigoShader extends GameLauncher[IndigoShaderBootData, IndigoShaderModel,
     */
   val shader: Shader
 
-  // TODO: start in fullscreen flag
-  // TODO: Fullscreen key mapping flag
   // TODO: Accept asset path, shader details?
   // TODO: Optionally show FPS?
   private def boot(flags: Map[String, String]): Outcome[BootResult[IndigoShaderBootData]] =
@@ -78,6 +76,9 @@ trait IndigoShader extends GameLauncher[IndigoShaderBootData, IndigoShaderModel,
     case ViewportResize(vp) =>
       Outcome(model.copy(viewport = vp.size))
 
+    case KeyboardEvent.KeyUp(Key.KEY_F) =>
+      Outcome(model, Batch(ToggleFullScreen))
+
     case _ =>
       Outcome(model)
   }
@@ -107,6 +108,9 @@ trait IndigoShader extends GameLauncher[IndigoShaderBootData, IndigoShaderModel,
       EventFilters(
         modelFilter = {
           case e: ViewportResize =>
+            Some(e)
+
+          case e @ KeyboardEvent.KeyUp(Key.KEY_F) =>
             Some(e)
 
           case _ =>
