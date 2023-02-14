@@ -45,6 +45,7 @@ trait IndigoShader extends GameLauncher[IndigoShaderBootData, IndigoShaderModel,
         bootData
       )
         .withShaders(shader)
+        .withAssets(assets)
     )
 
   private def setup(
