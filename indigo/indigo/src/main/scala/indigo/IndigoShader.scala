@@ -1,6 +1,6 @@
 package indigo
 
-import indigo._
+import indigo.*
 import indigo.entry.StandardFrameProcessor
 import indigo.gameengine.GameEngine
 import indigo.shared.shader.library
@@ -13,7 +13,7 @@ import scala.concurrent.Future
 
 /** A trait representing a shader that fills the available window.
   */
-trait IndigoShader extends GameLauncher[IndigoShaderBootData, IndigoShaderModel, Unit] {
+trait IndigoShader extends GameLauncher[IndigoShaderModel, IndigoShaderModel, Unit] {
 
   /** Your shader's default configuration settings, values like the viewport size can be overriden with flags.
     */
@@ -22,16 +22,27 @@ trait IndigoShader extends GameLauncher[IndigoShaderBootData, IndigoShaderModel,
   /** A fixed set of assets that will be loaded before the game starts
     */
   val assets: Set[AssetType]
+  // TODO: What if they want to load images here?!?
 
   /** The shader you want to render
     */
   val shader: Shader
 
-  // TODO: Accept asset path, shader details?
-  // TODO: Optionally show FPS?
-  private def boot(flags: Map[String, String]): Outcome[BootResult[IndigoShaderBootData]] =
-    val width  = flags.get("width").map(_.toInt).getOrElse(config.viewport.width)
-    val height = flags.get("height").map(_.toInt).getOrElse(config.viewport.height)
+  private def boot(flags: Map[String, String]): Outcome[BootResult[IndigoShaderModel]] =
+    val width    = flags.get("width").map(_.toInt).getOrElse(config.viewport.width)
+    val height   = flags.get("height").map(_.toInt).getOrElse(config.viewport.height)
+    val channel0 = flags.get("channel0")
+    val channel1 = flags.get("channel1")
+    val channel2 = flags.get("channel2")
+    val channel3 = flags.get("channel3")
+
+    val channelAssets: Set[AssetType] =
+      (channel0.toSet.map("channel0"  -> _) ++
+        channel1.toSet.map("channel1" -> _) ++
+        channel2.toSet.map("channel2" -> _) ++
+        channel3.toSet.map("channel3" -> _)).map { case (channel, path) =>
+        AssetType.Image(AssetName(channel), AssetPath(path))
+      }
 
     val configWithOverrides =
       config
@@ -41,7 +52,13 @@ trait IndigoShader extends GameLauncher[IndigoShaderBootData, IndigoShaderModel,
         )
 
     val bootData =
-      IndigoShaderBootData(Size(width, height))
+      IndigoShaderModel(
+        Size(width, height),
+        channel0.map(_ => AssetName("channel0")),
+        channel1.map(_ => AssetName("channel1")),
+        channel2.map(_ => AssetName("channel2")),
+        channel3.map(_ => AssetName("channel3"))
+      )
 
     Outcome(
       BootResult(
@@ -52,25 +69,25 @@ trait IndigoShader extends GameLauncher[IndigoShaderBootData, IndigoShaderModel,
           shader,
           SceneBlendShader.shader
         )
-        .withAssets(assets)
+        .withAssets(assets ++ channelAssets)
     )
 
   private def setup(
-      bootData: IndigoShaderBootData,
+      bootData: IndigoShaderModel,
       assetCollection: AssetCollection,
       dice: Dice
-  ): Outcome[Startup[IndigoShaderBootData]] =
+  ): Outcome[Startup[IndigoShaderModel]] =
     Outcome(
       Startup.Success(
         bootData
       )
     )
 
-  private def initialModel(startupData: IndigoShaderBootData): Outcome[IndigoShaderModel] =
-    Outcome(IndigoShaderModel(startupData.viewport))
+  private def initialModel(startupData: IndigoShaderModel): Outcome[IndigoShaderModel] =
+    Outcome(startupData)
 
   private def updateModel(
-      context: FrameContext[IndigoShaderBootData],
+      context: FrameContext[IndigoShaderModel],
       model: IndigoShaderModel
   ): GlobalEvent => Outcome[IndigoShaderModel] = {
     case ViewportResize(vp) =>
@@ -83,25 +100,33 @@ trait IndigoShader extends GameLauncher[IndigoShaderBootData, IndigoShaderModel,
       Outcome(model)
   }
 
-  lazy val shaderData: ShaderData = ShaderData(shader.id)
-
   private def present(
-      context: FrameContext[IndigoShaderBootData],
+      context: FrameContext[IndigoShaderModel],
       model: IndigoShaderModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
         Layer(
-          BlankEntity(model.viewport, shaderData)
+          BlankEntity(
+            model.viewport,
+            ShaderData(
+              shader.id,
+              Batch.empty,
+              model.channel0,
+              model.channel1,
+              model.channel2,
+              model.channel3
+            )
+          )
         ).withBlendMaterial(SceneBlendShader.material)
       )
     )
 
   private def indigoGame(
-      boot: BootResult[IndigoShaderBootData]
-  ): GameEngine[IndigoShaderBootData, IndigoShaderModel, Unit] = {
+      boot: BootResult[IndigoShaderModel]
+  ): GameEngine[IndigoShaderModel, IndigoShaderModel, Unit] = {
 
-    val updateViewModel: (FrameContext[IndigoShaderBootData], IndigoShaderModel, Unit) => GlobalEvent => Outcome[Unit] =
+    val updateViewModel: (FrameContext[IndigoShaderModel], IndigoShaderModel, Unit) => GlobalEvent => Outcome[Unit] =
       (_, _, vm) => _ => Outcome(vm)
 
     val eventFilters: EventFilters =
@@ -121,7 +146,7 @@ trait IndigoShader extends GameLauncher[IndigoShaderBootData, IndigoShaderModel,
         }
       )
 
-    val frameProcessor: StandardFrameProcessor[IndigoShaderBootData, IndigoShaderModel, Unit] =
+    val frameProcessor: StandardFrameProcessor[IndigoShaderModel, IndigoShaderModel, Unit] =
       new StandardFrameProcessor(
         new SubSystemsRegister(),
         eventFilters,
@@ -130,13 +155,13 @@ trait IndigoShader extends GameLauncher[IndigoShaderBootData, IndigoShaderModel,
         (ctx, m, _) => present(ctx, m)
       )
 
-    new GameEngine[IndigoShaderBootData, IndigoShaderModel, Unit](
+    new GameEngine[IndigoShaderModel, IndigoShaderModel, Unit](
       Set(),
       Set(),
       boot.shaders,
       (ac: AssetCollection) => (d: Dice) => setup(boot.bootData, ac, d),
-      (sd: IndigoShaderBootData) => initialModel(sd),
-      (_: IndigoShaderBootData) => (_: IndigoShaderModel) => Outcome(()),
+      (sd: IndigoShaderModel) => initialModel(sd),
+      (_: IndigoShaderModel) => (_: IndigoShaderModel) => Outcome(()),
       frameProcessor,
       Batch.empty
     )
@@ -145,7 +170,7 @@ trait IndigoShader extends GameLauncher[IndigoShaderBootData, IndigoShaderModel,
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   protected def ready(
       flags: Map[String, String]
-  ): Element => GameEngine[IndigoShaderBootData, IndigoShaderModel, Unit] =
+  ): Element => GameEngine[IndigoShaderModel, IndigoShaderModel, Unit] =
     parentElement =>
       boot(flags) match
         case oe @ Outcome.Error(e, _) =>
@@ -158,8 +183,13 @@ trait IndigoShader extends GameLauncher[IndigoShaderBootData, IndigoShaderModel,
 
 }
 
-final case class IndigoShaderBootData(viewport: Size)
-final case class IndigoShaderModel(viewport: Size)
+final case class IndigoShaderModel(
+    viewport: Size,
+    channel0: Option[AssetName],
+    channel1: Option[AssetName],
+    channel2: Option[AssetName],
+    channel3: Option[AssetName]
+)
 
 object SceneBlendShader:
 
