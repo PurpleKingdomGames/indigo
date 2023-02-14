@@ -9,17 +9,33 @@ object ShaderGame extends IndigoShader:
     GameConfig.default
 
   val assets: Set[AssetType] =
-    Set()
+    SeascapeShader.assets
 
   val shader: Shader =
-    MyShader.shader
+    // VoronoiShader.shader
+    SeascapeShader.shader
 
-object MyShader:
+// Seascape by TDM - https://www.shadertoy.com/view/Ms2SD1
+object SeascapeShader:
+
+  private val seaAsset: AssetName = AssetName("sea")
+
+  val shader: EntityShader.External =
+    EntityShader
+      .External(ShaderId("sea"))
+      .withFragmentProgram(seaAsset)
+
+  def assets: Set[AssetType] =
+    Set(
+      AssetType.Text(seaAsset, AssetPath("assets/sea.frag"))
+    )
+
+object VoronoiShader:
 
   val shader: Shader =
     UltravioletShader.entityFragment(
       ShaderId("my shader"),
-      EntityShader.fragment[FragmentEnv](MyShader.voronoi, FragmentEnv.reference)
+      EntityShader.fragment[FragmentEnv](voronoi, FragmentEnv.reference)
     )
 
   import ultraviolet.syntax.*
