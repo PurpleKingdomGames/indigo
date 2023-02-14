@@ -13,7 +13,7 @@ import scala.concurrent.Future
   */
 trait IndigoShader extends GameLauncher[IndigoShaderBootData, IndigoShaderModel, Unit] {
 
-  /** Your shader's configuration settings.
+  /** Your shader's default configuration settings, values like the viewport size can be overriden with flags.
     */
   val config: GameConfig
 
@@ -21,7 +21,7 @@ trait IndigoShader extends GameLauncher[IndigoShaderBootData, IndigoShaderModel,
     */
   val assets: Set[AssetType]
 
-  /** A fixed set of custom shaders you will be able to render with
+  /** The shader you want to render
     */
   val shader: Shader
 
@@ -29,6 +29,7 @@ trait IndigoShader extends GameLauncher[IndigoShaderBootData, IndigoShaderModel,
   // TODO: Fullscreen key mapping flag
   // TODO: Accept asset path, shader details?
   // TODO: Optionally show FPS?
+  // TODO: Do not load all standard shaders - just normal blend?
   private def boot(flags: Map[String, String]): Outcome[BootResult[IndigoShaderBootData]] =
     val width  = flags.get("width").map(_.toInt).getOrElse(config.viewport.width)
     val height = flags.get("height").map(_.toInt).getOrElse(config.viewport.height)
@@ -59,7 +60,6 @@ trait IndigoShader extends GameLauncher[IndigoShaderBootData, IndigoShaderModel,
       )
     )
 
-  // Store the viewpoint size
   private def initialModel(startupData: IndigoShaderBootData): Outcome[IndigoShaderModel] =
     Outcome(IndigoShaderModel(startupData.viewport))
 
@@ -91,6 +91,8 @@ trait IndigoShader extends GameLauncher[IndigoShaderBootData, IndigoShaderModel,
     val updateViewModel: (FrameContext[IndigoShaderBootData], IndigoShaderModel, Unit) => GlobalEvent => Outcome[Unit] =
       (_, _, vm) => _ => Outcome(vm)
 
+
+    // TODO: Only accept the events we care about?
     val eventFilters: EventFilters =
       EventFilters.Permissive
 
