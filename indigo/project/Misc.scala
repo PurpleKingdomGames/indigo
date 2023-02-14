@@ -26,6 +26,7 @@ object Misc {
     UsefulTask("", "gendocs", "Rebuild the API and markdown docs"),
     UsefulTask("", "sandboxRun", "Run the sandbox game (fastOptJS + Electron)"),
     UsefulTask("", "perfRun", "Run the perf game (fastOptJS + Electron)"),
+    UsefulTask("", "shaderRun", "Run the shader game (fastOptJS + Electron)"),
     UsefulTask("", "code", "Launch VSCode")
   )
 
