@@ -9,6 +9,7 @@ lazy val coreProjects: List[String] =
   releaseProjects ++ List(
     "sandbox",
     "perf",
+    "shader",
   )
 
 val allProjects = List("indigoProject") // the aggregate
@@ -183,6 +184,33 @@ addCommandAlias(
     "buildAllNoClean",
     "perf/fullOptJS",
     "perf/indigoRunFull"
+  ).mkString(";", ";", "")
+)
+
+addCommandAlias(
+  "shaderBuild",
+  List(
+    "buildAllNoClean",
+    "shader/fastOptJS",
+    "shader/indigoBuild"
+  ).mkString(";", ";", "")
+)
+
+addCommandAlias(
+  "shaderRun",
+  List(
+    "buildAllNoClean",
+    "shader/fastOptJS",
+    "shader/indigoRun"
+  ).mkString(";", ";", "")
+)
+
+addCommandAlias(
+  "shaderRunFull",
+  List(
+    "buildAllNoClean",
+    "shader/fullOptJS",
+    "shader/indigoRunFull"
   ).mkString(";", ";", "")
 )
 

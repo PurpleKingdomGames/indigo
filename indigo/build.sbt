@@ -68,9 +68,9 @@ lazy val indigoProject =
       code        := codeTaskDefinition,
       usefulTasks := customTasksAliases,
       presentationSettings(version),
-      ScalaUnidoc / unidoc / unidocProjectFilter := inAnyProject -- inProjects(sandbox, perf, docs)
+      ScalaUnidoc / unidoc / unidocProjectFilter := inAnyProject -- inProjects(sandbox, perf, shader, docs)
     )
-    .aggregate(indigo, indigoExtras, indigoJsonCirce, sandbox, perf, docs, benchmarks)
+    .aggregate(indigo, indigoExtras, indigoJsonCirce, sandbox, perf, shader, docs, benchmarks)
 
 // Testing
 
@@ -95,7 +95,7 @@ lazy val sandbox =
           indigoplugin.ElectronInstall.Version("^18.0.0")
 
         case _ =>
-          indigoplugin.ElectronInstall.Global
+          indigoplugin.ElectronInstall.Latest
       })
     )
 
@@ -122,7 +122,35 @@ lazy val perf =
           indigoplugin.ElectronInstall.Version("^18.0.0")
 
         case _ =>
-          indigoplugin.ElectronInstall.Global
+          indigoplugin.ElectronInstall.Latest
+      })
+    )
+
+lazy val shader =
+  project
+    .enablePlugins(ScalaJSPlugin, SbtIndigo)
+    .dependsOn(indigoExtras)
+    .dependsOn(indigoJsonCirce)
+    .settings(
+      neverPublish,
+      commonSettings,
+      name                := "indigo-shader",
+      showCursor          := true,
+      title               := "Shader",
+      gameAssetsDirectory := "assets",
+      windowStartWidth    := 550,
+      windowStartHeight   := 400,
+      backgroundColor     := "black",
+      disableFrameRateLimit := (sys.props("os.name").toLowerCase match {
+        case x if x contains "windows" => false
+        case _                         => true
+      }),
+      electronInstall := (sys.props("os.name").toLowerCase match {
+        case x if x.contains("windows") || x.contains("linux") =>
+          indigoplugin.ElectronInstall.Version("^18.0.0")
+
+        case _ =>
+          indigoplugin.ElectronInstall.Latest
       })
     )
 

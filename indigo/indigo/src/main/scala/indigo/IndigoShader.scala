@@ -26,8 +26,15 @@ trait IndigoShader extends GameLauncher[Unit, Unit, Unit] {
   val shader: Shader
 
   // TODO: Accept size flags
+  // TODO: start in fullscreen flag
+  // TODO: Fullscreen key mapping flag
+  // TODO: Accept asset path, shader details?
+  // TODO: Optionally show FPS?
   private def boot(flags: Map[String, String]): Outcome[BootResult[Unit]] =
-    Outcome(BootResult(config, ()))
+    Outcome(
+      BootResult(config, ())
+        .withShaders(shader)
+    )
 
   private def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[Unit]] =
     Outcome(Startup.Success(()))
@@ -43,7 +50,9 @@ trait IndigoShader extends GameLauncher[Unit, Unit, Unit] {
   // TODO: Draw a BlankEntity that fills the screen and renders the shader
   private def present(context: FrameContext[Unit], model: Unit): Outcome[SceneUpdateFragment] =
     Outcome(
-      SceneUpdateFragment.empty
+      SceneUpdateFragment(
+        BlankEntity(Size(550, 400), ShaderData(shader.id))
+      )
     )
 
   private def indigoGame(boot: BootResult[Unit]): GameEngine[Unit, Unit, Unit] = {
@@ -52,10 +61,7 @@ trait IndigoShader extends GameLauncher[Unit, Unit, Unit] {
       (_, _, vm) => _ => Outcome(vm)
 
     val eventFilters: EventFilters =
-      EventFilters(
-        { case e => Some(e) },
-        { case _ => None }
-      )
+      EventFilters.Permissive
 
     val frameProcessor: StandardFrameProcessor[Unit, Unit, Unit] =
       new StandardFrameProcessor(
@@ -78,6 +84,7 @@ trait IndigoShader extends GameLauncher[Unit, Unit, Unit] {
     )
   }
 
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   protected def ready(flags: Map[String, String]): Element => GameEngine[Unit, Unit, Unit] =
     parentElement =>
       boot(flags) match
