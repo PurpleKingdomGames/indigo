@@ -134,6 +134,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
 
     if (config.advanced.autoLoadStandardShaders)
       StandardShaders.all.foreach(shaderRegister.register)
+    else shaderRegister.register(StandardShaders.NormalBlend)
 
     // Arrange config
     configAsync.map(_.getOrElse(config)).foreach { gc =>
