@@ -65,9 +65,13 @@ trait IndigoShader extends GameLauncher[IndigoShaderBootData, IndigoShaderModel,
   private def updateModel(
       context: FrameContext[IndigoShaderBootData],
       model: IndigoShaderModel
-  ): GlobalEvent => Outcome[IndigoShaderModel] =
-    // TODO: Intercept viewpoint resizes and update
-    _ => Outcome(model)
+  ): GlobalEvent => Outcome[IndigoShaderModel] = {
+    case ViewportResize(vp) =>
+      Outcome(model.copy(viewport = vp.size))
+
+    case _ =>
+      Outcome(model)
+  }
 
   private def present(
       context: FrameContext[IndigoShaderBootData],
