@@ -94,7 +94,18 @@ trait IndigoShader extends GameLauncher[IndigoShaderBootData, IndigoShaderModel,
 
     // TODO: Only accept the events we care about?
     val eventFilters: EventFilters =
-      EventFilters.Permissive
+      EventFilters(
+        modelFilter = {
+          case e: ViewportResize =>
+            Some(e)
+
+          case _ =>
+            None
+        },
+        viewModelFilter = { case _ =>
+          None
+        }
+      )
 
     val frameProcessor: StandardFrameProcessor[IndigoShaderBootData, IndigoShaderModel, Unit] =
       new StandardFrameProcessor(
