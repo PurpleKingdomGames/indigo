@@ -7,14 +7,30 @@ object ShaderGame extends IndigoShader:
 
   val config: GameConfig          = GameConfig.default
   val assets: Set[AssetType]      = SeascapeShader.assets
-  val channel0: Option[AssetPath] = None
+  val channel0: Option[AssetPath] = Option(AssetPath("assets/dots.png"))
   val channel1: Option[AssetPath] = None
   val channel2: Option[AssetPath] = None
   val channel3: Option[AssetPath] = None
 
   val shader: Shader =
-    VoronoiShader.shader
+    ShowImage.shader
 // SeascapeShader.shader
+
+object ShowImage:
+
+  val shader: UltravioletShader =
+    UltravioletShader.entityFragment(
+      ShaderId("image shader"),
+      EntityShader.fragment[FragmentEnv](showImage, FragmentEnv.reference)
+    )
+
+  import ultraviolet.syntax.*
+
+  inline def showImage: Shader[FragmentEnv, Unit] =
+    Shader[FragmentEnv] { env =>
+      def fragment(color: vec4): vec4 =
+        env.CHANNEL_0
+    }
 
 // Seascape by TDM - https://www.shadertoy.com/view/Ms2SD1
 object SeascapeShader:
