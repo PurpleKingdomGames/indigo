@@ -18,7 +18,7 @@ object IndigoCordova {
     }
 
     os.list(buildDir).foreach { file =>
-      CustomOSLibCopy.copyInto(file, outputDir / "www", true, true, true, true, false)
+      os.copy(file, outputDir / "www" / file.last, true, true, true, true, false)
     }
 
     // Write support js script
