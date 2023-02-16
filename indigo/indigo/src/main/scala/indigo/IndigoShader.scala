@@ -12,36 +12,65 @@ import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits._
 import scala.concurrent.Future
 
 /** A trait representing a shader that fills the available window.
+  *
+  * You can override a number of the details in this trait using launch flags, including:
+  *
+  *   - width - starting width of the shader
+  *   - height - starting height of the shader
+  *   - channel0 - path to an image
+  *   - channel1 - path to an image
+  *   - channel2 - path to an image
+  *   - channel3 - path to an image
   */
 trait IndigoShader extends GameLauncher[IndigoShaderModel, IndigoShaderModel, Unit] {
+
+  private val Channel0Name: String = "channel0"
+  private val Channel1Name: String = "channel1"
+  private val Channel2Name: String = "channel2"
+  private val Channel3Name: String = "channel3"
 
   /** Your shader's default configuration settings, values like the viewport size can be overriden with flags.
     */
   val config: GameConfig
 
-  /** A fixed set of assets that will be loaded before the game starts
+  /** A fixed set of assets that will be loaded before the game starts, typically for loading an external shader file.
     */
   val assets: Set[AssetType]
-  // TODO: What if they want to load images here?!?
+
+  /** An optional path to an image asset you would like to be mapped to channel 0 for your shader to use.
+    */
+  val channel0: Option[AssetPath]
+
+  /** An optional path to an image asset you would like to be mapped to channel 1 for your shader to use.
+    */
+  val channel1: Option[AssetPath]
+
+  /** An optional path to an image asset you would like to be mapped to channel 2 for your shader to use.
+    */
+  val channel2: Option[AssetPath]
+
+  /** An optional path to an image asset you would like to be mapped to channel 3 for your shader to use.
+    */
+  val channel3: Option[AssetPath]
 
   /** The shader you want to render
     */
   val shader: Shader
 
   private def boot(flags: Map[String, String]): Outcome[BootResult[IndigoShaderModel]] =
-    val width    = flags.get("width").map(_.toInt).getOrElse(config.viewport.width)
-    val height   = flags.get("height").map(_.toInt).getOrElse(config.viewport.height)
-    val channel0 = flags.get("channel0")
-    val channel1 = flags.get("channel1")
-    val channel2 = flags.get("channel2")
-    val channel3 = flags.get("channel3")
+    val width  = flags.get("width").map(_.toInt).getOrElse(config.viewport.width)
+    val height = flags.get("height").map(_.toInt).getOrElse(config.viewport.height)
+    val c0     = flags.get(Channel0Name).map(p => AssetPath(p)).orElse(channel0)
+    val c1     = flags.get(Channel1Name).map(p => AssetPath(p)).orElse(channel1)
+    val c2     = flags.get(Channel2Name).map(p => AssetPath(p)).orElse(channel2)
+    val c3     = flags.get(Channel3Name).map(p => AssetPath(p)).orElse(channel3)
 
     val channelAssets: Set[AssetType] =
-      (channel0.toSet.map("channel0"  -> _) ++
-        channel1.toSet.map("channel1" -> _) ++
-        channel2.toSet.map("channel2" -> _) ++
-        channel3.toSet.map("channel3" -> _)).map { case (channel, path) =>
-        AssetType.Image(AssetName(channel), AssetPath(path))
+      (c0.toSet.map(Channel0Name  -> _) ++
+        c1.toSet.map(Channel1Name -> _) ++
+        c2.toSet.map(Channel2Name -> _) ++
+        c3.toSet.map(Channel3Name -> _)).map { case (channel, path) =>
+        AssetType.Image(AssetName(channel), path)
       }
 
     val configWithOverrides =
@@ -54,10 +83,10 @@ trait IndigoShader extends GameLauncher[IndigoShaderModel, IndigoShaderModel, Un
     val bootData =
       IndigoShaderModel(
         Size(width, height),
-        channel0.map(_ => AssetName("channel0")),
-        channel1.map(_ => AssetName("channel1")),
-        channel2.map(_ => AssetName("channel2")),
-        channel3.map(_ => AssetName("channel3"))
+        c0.map(_ => AssetName(Channel0Name)),
+        c1.map(_ => AssetName(Channel1Name)),
+        c2.map(_ => AssetName(Channel2Name)),
+        c3.map(_ => AssetName(Channel3Name))
       )
 
     Outcome(
