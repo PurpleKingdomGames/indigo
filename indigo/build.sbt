@@ -90,13 +90,7 @@ lazy val sandbox =
         case x if x contains "windows" => false
         case _                         => true
       }),
-      electronInstall := (sys.props("os.name").toLowerCase match {
-        case x if x.contains("windows") || x.contains("linux") =>
-          indigoplugin.ElectronInstall.Version("^18.0.0")
-
-        case _ =>
-          indigoplugin.ElectronInstall.Latest
-      })
+      electronInstall := indigoplugin.ElectronInstall.Latest
     )
 
 lazy val perf =
@@ -117,13 +111,7 @@ lazy val perf =
         case x if x contains "windows" => false
         case _                         => true
       }),
-      electronInstall := (sys.props("os.name").toLowerCase match {
-        case x if x.contains("windows") || x.contains("linux") =>
-          indigoplugin.ElectronInstall.Version("^18.0.0")
-
-        case _ =>
-          indigoplugin.ElectronInstall.Latest
-      })
+      electronInstall := indigoplugin.ElectronInstall.Latest
     )
 
 lazy val shader =
@@ -145,13 +133,7 @@ lazy val shader =
         case x if x contains "windows" => false
         case _                         => true
       }),
-      electronInstall := (sys.props("os.name").toLowerCase match {
-        case x if x.contains("windows") || x.contains("linux") =>
-          indigoplugin.ElectronInstall.Version("^18.0.0")
-
-        case _ =>
-          indigoplugin.ElectronInstall.Latest
-      })
+      electronInstall := indigoplugin.ElectronInstall.Latest
     )
 
 // Indigo Extensions
