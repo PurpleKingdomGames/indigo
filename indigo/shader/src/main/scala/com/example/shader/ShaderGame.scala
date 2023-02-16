@@ -5,15 +5,16 @@ import scala.scalajs.js.annotation._
 @JSExportTopLevel("IndigoGame")
 object ShaderGame extends IndigoShader:
 
-  val config: GameConfig =
-    GameConfig.default
-
-  val assets: Set[AssetType] =
-    SeascapeShader.assets
+  val config: GameConfig          = GameConfig.default
+  val assets: Set[AssetType]      = SeascapeShader.assets
+  val channel0: Option[AssetPath] = None
+  val channel1: Option[AssetPath] = None
+  val channel2: Option[AssetPath] = None
+  val channel3: Option[AssetPath] = None
 
   val shader: Shader =
-    // VoronoiShader.shader
-    SeascapeShader.shader
+    VoronoiShader.shader
+// SeascapeShader.shader
 
 // Seascape by TDM - https://www.shadertoy.com/view/Ms2SD1
 object SeascapeShader:
