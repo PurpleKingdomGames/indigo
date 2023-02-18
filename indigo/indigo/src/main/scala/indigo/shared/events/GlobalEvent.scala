@@ -225,26 +225,27 @@ object PointerEvent:
 
   /** Pointing device is moved into canvas hit test boundaries. It's counterpart is [[PointerLeave]].
     */
-  case class PointerEnter(position: Point, pointerId: PointerId, buttons: Buttons, isPrimary: Boolean)
+  final case class PointerEnter(position: Point, pointerId: PointerId, buttons: Buttons, isPrimary: Boolean)
       extends PointerEvent
 
   /** Pointing device left canvas hit test boundaries. It's counterpart is [[PointerEnter]].
     */
-  case class PointerLeave(position: Point, pointerId: PointerId, buttons: Buttons, isPrimary: Boolean)
+  final case class PointerLeave(position: Point, pointerId: PointerId, buttons: Buttons, isPrimary: Boolean)
       extends PointerEvent
 
   /** Pointing device is in active buttons state.
     */
-  case class PointerDown(position: Point, pointerId: PointerId, buttons: Buttons, isPrimary: Boolean)
+  final case class PointerDown(position: Point, pointerId: PointerId, buttons: Buttons, isPrimary: Boolean)
       extends PointerEvent
 
   /** Pointing device is no longer in active buttons state.
     */
-  case class PointerUp(position: Point, pointerId: PointerId, buttons: Buttons, isPrimary: Boolean) extends PointerEvent
+  final case class PointerUp(position: Point, pointerId: PointerId, buttons: Buttons, isPrimary: Boolean)
+      extends PointerEvent
 
   /** Pointing device changed coordinates.
     */
-  case class PointerMove(position: Point, pointerId: PointerId, buttons: Buttons, isPrimary: Boolean)
+  final case class PointerMove(position: Point, pointerId: PointerId, buttons: Buttons, isPrimary: Boolean)
       extends PointerEvent
 
   /** The ongoing interactions was cancelled due to:
@@ -253,7 +254,7 @@ object PointerEvent:
     *   - palm rejection
     *   - the browser taking over the manipulations like scroll, drag & drop, pinch & zoom or other
     */
-  case class PointerCancel(position: Point, pointerId: PointerId, buttons: Buttons, isPrimary: Boolean)
+  final case class PointerCancel(position: Point, pointerId: PointerId, buttons: Buttons, isPrimary: Boolean)
       extends PointerEvent
 
 /** Represents all keyboard events

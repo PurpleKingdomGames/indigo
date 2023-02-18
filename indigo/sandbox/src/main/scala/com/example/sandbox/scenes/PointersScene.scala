@@ -7,7 +7,6 @@ import com.example.sandbox.SandboxStartupData
 import com.example.sandbox.SandboxViewModel
 import indigo.*
 import indigo.scenes.*
-import indigo.shared.events.PointerEvent
 import org.scalajs.dom
 
 object PointersScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
@@ -87,7 +86,7 @@ object PointersScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
       )
     )
 
-case class PointersModel(
+final case class PointersModel(
     paint: Batch[Point],
     isPainting: Boolean
 ):
