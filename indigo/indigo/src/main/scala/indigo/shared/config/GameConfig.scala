@@ -31,7 +31,7 @@ final case class GameConfig(
     transparentBackground: Boolean,
     advanced: AdvancedGameConfig
 ) derives CanEqual:
-  lazy val frameRateDeltaMillis: Int = 1000 / frameRateLimit.map(_.toInt).getOrElse(FPS.Default.toInt)
+  lazy val frameRateDeltaMillis: Double = 1000.0d / frameRateLimit.map(_.toDouble).getOrElse(FPS.Default.toDouble)
 
   def screenDimensions: Rectangle =
     viewport.giveDimensions(magnification)

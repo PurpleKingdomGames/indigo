@@ -61,10 +61,12 @@ class Platform(
       _ = _canvas = canvas
     } yield (renderer, assetMapping)
 
-  def tick(loop: Long => Unit): Unit = {
-    if _running then dom.window.requestAnimationFrame(t => loop(t.toLong))
+  def tick(loop: Double => Unit): Unit =
+    if _running then dom.window.requestAnimationFrame(loop)
     ()
-  }
+
+  def delay(amount: Double, thunk: () => Unit): Unit =
+    dom.window.setTimeout(thunk, amount)
 
   def kill(): Unit =
     _running = false

@@ -73,7 +73,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
   var gamepadInputCapture: GamepadInputCapture = null
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  var gameLoop: Long => Long => Unit = null
+  var gameLoop: Double => Double => Unit = null
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
   var gameLoopInstance: GameLoop[StartUpData, GameModel, ViewModel] = null
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
@@ -156,7 +156,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
         rebuildGameLoop(parentElement, true)(assetCollection)
 
         if (gameLoop != null)
-          platform.tick(gameLoop(0))
+          platform.tick(gameLoop(0.0d))
       }
 
     }
@@ -180,7 +180,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
 
       platform = new Platform(parentElement, gameConfig, accumulatedAssetCollection, globalEventStream, dynamicText)
 
-      initialise(accumulatedAssetCollection)(Dice.fromSeed(time)) match {
+      initialise(accumulatedAssetCollection)(Dice.fromSeed(time.toLong)) match {
         case oe @ Outcome.Error(error, _) =>
           IndigoLogger.error(
             if (firstRun) "Error during first initialisation - Halting."
@@ -209,7 +209,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
             if (firstRun) initialViewModel(startUpSuccessData)(m).map(vm => (_: GameModel) => vm)
             else Outcome((_: GameModel) => gameLoopInstance.viewModelState)
 
-          val loop: Outcome[Long => Long => Unit] =
+          val loop: Outcome[Double => Double => Unit] =
             for {
               rendererAndAssetMapping <- platform.initialise(shaderRegister.toSet)
               startUpSuccessData      <- GameEngine.initialisedGame(startupData)
