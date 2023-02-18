@@ -21,7 +21,6 @@ import indigo.shared.events.KeyboardEvent
 import indigo.shared.input.Gamepad
 import indigo.shared.input.Keyboard
 import indigo.shared.input.Mouse
-import indigo.shared.input.Pointers
 import indigo.shared.materials.Material
 import indigo.shared.scenegraph.Graphic
 import indigo.shared.scenegraph.Text
@@ -279,7 +278,7 @@ class InputFieldTests extends munit.FunSuite {
     new FrameContext[Unit](
       GameTime.zero,
       Dice.loaded(1),
-      new InputState(Mouse.default, new Keyboard(keysUp, Batch.empty, None), Gamepad.default, Pointers.default),
+      new InputState(Mouse.default, new Keyboard(keysUp, Batch.empty, None), Gamepad.default),
       new BoundaryLocator(new AnimationsRegister, new FontRegister, new DynamicText),
       ()
     )
