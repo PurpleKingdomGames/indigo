@@ -39,18 +39,14 @@ object PointersScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
       model: PointersModel
   ): GlobalEvent => Outcome[PointersModel] =
     case e: PointerEvent.PointerDown =>
-      println(e)
-      val xd = context.frameContext
       Outcome(
         model.copy(isPainting = true).append(e.position)
       )
     case e: (PointerEvent.PointerUp | PointerEvent.PointerCancel | PointerEvent.PointerLeave) =>
-      println(e)
       Outcome(
         model.copy(isPainting = false)
       )
     case e: PointerEvent.PointerMove =>
-      println(e)
       Outcome(
         if model.isPainting then model.append(e.position) else model
       )
