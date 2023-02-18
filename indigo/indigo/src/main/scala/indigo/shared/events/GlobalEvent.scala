@@ -108,37 +108,29 @@ object MouseButton:
   */
 sealed trait MouseEvent extends InputEvent:
   val position: Point
-  val x: Int
-  val y: Int
+  val x: Int = position.x
+  val y: Int = position.y
 
 object MouseEvent:
 
   /** The mouse has been clicked.
     *
-    * @param x
-    *   X coord relative to magnification level
-    * @param y
-    *   Y coord relative to magnification level
+    * @param position
+    *   mouse position relative to magnification level
     */
-  final case class Click(position: Point) extends MouseEvent:
-    val x: Int = position.x
-    val y: Int = position.y
+  final case class Click(position: Point) extends MouseEvent
   object Click:
     def apply(x: Int, y: Int): Click =
       Click(Point(x, y))
 
   /** The left mouse button was released.
     *
-    * @param x
-    *   X coord relative to magnification level
-    * @param y
-    *   Y coord relative to magnification level
+    * @param position
+    *   mouse position relative to magnification level
     * @param button
     *   Button that triggered this event
     */
-  final case class MouseUp(position: Point, button: MouseButton) extends MouseEvent:
-    val x: Int = position.x
-    val y: Int = position.y
+  final case class MouseUp(position: Point, button: MouseButton) extends MouseEvent
   object MouseUp:
     def apply(position: Point): MouseUp =
       MouseUp(position, MouseButton.LeftMouseButton)
@@ -149,16 +141,12 @@ object MouseEvent:
 
   /** The left mouse button was pressed down.
     *
-    * @param x
-    *   X coord relative to magnification level
-    * @param y
-    *   Y coord relative to magnification level
+    * @param position
+    *   mouse position relative to magnification level
     * @param button
     *   Button that triggered this event
     */
-  final case class MouseDown(position: Point, button: MouseButton) extends MouseEvent:
-    val x: Int = position.x
-    val y: Int = position.y
+  final case class MouseDown(position: Point, button: MouseButton) extends MouseEvent
   object MouseDown:
     def apply(position: Point): MouseDown =
       MouseDown(position, MouseButton.LeftMouseButton)
@@ -169,14 +157,10 @@ object MouseEvent:
 
   /** The mouse was moved to a new position.
     *
-    * @param x
-    *   X coord relative to magnification level
-    * @param y
-    *   Y coord relative to magnification level
+    * @param position
+    *   mouse position relative to magnification level
     */
-  final case class Move(position: Point) extends MouseEvent:
-    val x: Int = position.x
-    val y: Int = position.y
+  final case class Move(position: Point) extends MouseEvent
 
   object Move:
     def apply(x: Int, y: Int): Move =
@@ -189,15 +173,89 @@ object MouseEvent:
     * @param amount
     *   vertical amount of pixels, pages or other unit, depending on delta mode, the Y axis was scrolled
     */
-  final case class Wheel(position: Point, amount: Double) extends MouseEvent:
-    val x: Int = position.x
-    val y: Int = position.y
+  final case class Wheel(position: Point, amount: Double) extends MouseEvent
 
   object Wheel:
     def apply(x: Int, y: Int, amount: Double): Wheel =
       Wheel(Point(x, y), amount)
 
 end MouseEvent
+
+/** Represents all mouse, pen and touch events
+  */
+sealed trait PointerEvent extends InputEvent:
+  import PointerEvent.*
+
+  /** Coordinates relative to the magnification level
+    */
+  def position: Point
+
+  /** Unique pointer identifier
+    */
+  def pointerId: PointerId
+
+  /** Pressed buttons
+    */
+  def buttons: Buttons
+
+  /** Indicates whether buttons are in active state
+    */
+  def isActive: Boolean = buttons != Buttons(0)
+
+  /** Indicates whether the pointer is considered primary - like first finger during multi-touch gesture
+    */
+  def isPrimary: Boolean
+
+object PointerEvent:
+  /** Unique pointer identifier. Could be used to distinguish between pointers in multi-touch interactions
+    */
+  opaque type PointerId = Double
+  object PointerId:
+    inline def apply(id: Double): PointerId = id
+
+    given CanEqual[PointerId, PointerId] = CanEqual.derived
+
+  /** A number representing one or more buttons: https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/buttons
+    */
+  opaque type Buttons = Int
+  object Buttons:
+    inline def apply(buttons: Int): Buttons = buttons
+
+    given CanEqual[Buttons, Buttons] = CanEqual.derived
+
+  /** Pointing device is moved into canvas hit test boundaries. It's counterpart is [[PointerLeave]].
+    */
+  final case class PointerEnter(position: Point, pointerId: PointerId, buttons: Buttons, isPrimary: Boolean)
+      extends PointerEvent
+
+  /** Pointing device left canvas hit test boundaries. It's counterpart is [[PointerEnter]].
+    */
+  final case class PointerLeave(position: Point, pointerId: PointerId, buttons: Buttons, isPrimary: Boolean)
+      extends PointerEvent
+
+  /** Pointing device is in active buttons state.
+    */
+  final case class PointerDown(position: Point, pointerId: PointerId, buttons: Buttons, isPrimary: Boolean)
+      extends PointerEvent
+
+  /** Pointing device is no longer in active buttons state.
+    */
+  final case class PointerUp(position: Point, pointerId: PointerId, buttons: Buttons, isPrimary: Boolean)
+      extends PointerEvent
+
+  /** Pointing device changed coordinates.
+    */
+  final case class PointerMove(position: Point, pointerId: PointerId, buttons: Buttons, isPrimary: Boolean)
+      extends PointerEvent
+
+  /** The ongoing interactions was cancelled due to:
+    *   - the pointer device being disconnected
+    *   - device orientation change
+    *   - palm rejection
+    *   - the browser taking over the manipulations like scroll, drag & drop, pinch & zoom or other
+    */
+  final case class PointerCancel(position: Point, pointerId: PointerId, buttons: Buttons, isPrimary: Boolean)
+      extends PointerEvent
 
 /** Represents all keyboard events
   */

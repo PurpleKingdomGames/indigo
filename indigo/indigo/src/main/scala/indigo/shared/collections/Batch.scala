@@ -18,6 +18,7 @@ sealed trait Batch[+A]:
 
   def head: A
   def headOption: Option[A]
+  def lastOption: Option[A]
   def isEmpty: Boolean
   def size: Int
   def toJSArray[B >: A]: js.Array[B]
@@ -297,9 +298,11 @@ object Batch:
     batches.foldLeft(Batch.empty[A])(_ ++ _)
 
   private[collections] final case class Combine[A](batch1: Batch[A], batch2: Batch[A]) extends Batch[A]:
-    val isEmpty: Boolean      = batch1.isEmpty && batch2.isEmpty
-    def head: A               = batch1.head
-    def headOption: Option[A] = batch1.headOption
+    val isEmpty: Boolean = batch1.isEmpty && batch2.isEmpty
+
+    export batch1.head
+    export batch1.headOption
+    export batch1.lastOption
 
     @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while"))
     def toJSArray[B >: A]: js.Array[B] =
@@ -350,6 +353,7 @@ object Batch:
     val isEmpty: Boolean               = values.isEmpty
     def head: A                        = values.head
     def headOption: Option[A]          = values.headOption
+    def lastOption: Option[A]          = values.lastOption
     def toJSArray[B >: A]: js.Array[B] = values.asInstanceOf[js.Array[B]]
 
     lazy val size: Int = values.length

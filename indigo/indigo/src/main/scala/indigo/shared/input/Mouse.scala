@@ -132,11 +132,11 @@ final class Mouse(
 }
 object Mouse:
   val default: Mouse =
-    new Mouse(Batch.empty, Point.zero, false)
+    Mouse(Batch.empty, Point.zero, false)
 
   def calculateNext(previous: Mouse, events: Batch[MouseEvent]): Mouse =
     val newButtonsDown = calculateButtonsDown(events, previous.buttonsDown)
-    new Mouse(
+    Mouse(
       events,
       lastMousePosition(previous.position, events),
       newButtonsDown.contains(MouseButton.LeftMouseButton),
@@ -144,10 +144,7 @@ object Mouse:
     )
 
   private def lastMousePosition(previous: Point, events: Batch[MouseEvent]): Point =
-    events.collect { case mp: MouseEvent.Move => mp.position }.reverse.headOption match {
-      case None           => previous
-      case Some(position) => position
-    }
+    events.collect { case mp: MouseEvent.Move => mp.position }.lastOption.fold(previous)(identity)
 
   private given CanEqual[Batch[MouseEvent], Batch[MouseEvent]] = CanEqual.derived
 

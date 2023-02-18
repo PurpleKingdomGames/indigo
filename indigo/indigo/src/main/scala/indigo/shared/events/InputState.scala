@@ -30,10 +30,14 @@ final class InputState(val mouse: Mouse, val keyboard: Keyboard, val gamepad: Ga
 
 object InputState {
   val default: InputState =
-    new InputState(Mouse.default, Keyboard.default, Gamepad.default)
+    InputState(Mouse.default, Keyboard.default, Gamepad.default)
 
-  def calculateNext(previous: InputState, events: Batch[InputEvent], gamepadState: Gamepad): InputState =
-    new InputState(
+  def calculateNext(
+      previous: InputState,
+      events: Batch[InputEvent],
+      gamepadState: Gamepad
+  ): InputState =
+    InputState(
       Mouse.calculateNext(previous.mouse, events.collect { case e: MouseEvent => e }),
       Keyboard.calculateNext(previous.keyboard, events.collect { case e: KeyboardEvent => e }),
       gamepadState
