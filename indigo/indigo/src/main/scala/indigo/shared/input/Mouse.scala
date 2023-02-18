@@ -146,7 +146,6 @@ object Mouse:
   private def lastMousePosition(previous: Point, events: Batch[MouseEvent]): Point =
     events.collect { case mp: MouseEvent.Move => mp.position }.lastOption.fold(previous)(identity)
 
-
   private given CanEqual[Batch[MouseEvent], Batch[MouseEvent]] = CanEqual.derived
 
   // Similar strategy as followed for `Keyboard`, this one uses Set (no button order preserved)

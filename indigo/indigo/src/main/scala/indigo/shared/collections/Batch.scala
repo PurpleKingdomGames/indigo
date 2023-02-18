@@ -298,7 +298,7 @@ object Batch:
     batches.foldLeft(Batch.empty[A])(_ ++ _)
 
   private[collections] final case class Combine[A](batch1: Batch[A], batch2: Batch[A]) extends Batch[A]:
-    val isEmpty: Boolean      = batch1.isEmpty && batch2.isEmpty
+    val isEmpty: Boolean = batch1.isEmpty && batch2.isEmpty
 
     export batch1.head
     export batch1.headOption

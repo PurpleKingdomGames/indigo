@@ -40,6 +40,6 @@ object InputState {
     InputState(
       Mouse.calculateNext(previous.mouse, events.collect { case e: MouseEvent => e }),
       Keyboard.calculateNext(previous.keyboard, events.collect { case e: KeyboardEvent => e }),
-      gamepadState,
+      gamepadState
     )
 }
