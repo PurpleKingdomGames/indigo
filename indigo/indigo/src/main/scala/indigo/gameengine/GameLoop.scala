@@ -53,19 +53,17 @@ final class GameLoop[StartUpData, GameModel, ViewModel](
 
       case Some(fps) =>
         (time, timeDelta, lastUpdateTime) =>
-          val d = timeDelta
-
           frameDeltaRecord.shift()
-          frameDeltaRecord.push(d)
+          frameDeltaRecord.push(timeDelta)
 
-          val mean   = frameDeltaRecord.sum / 5.0d // Same as number of inital entries
-          val target = gameConfig.frameRateDeltaMillis.toDouble
+          val meanDelta = frameDeltaRecord.sum / 5.0d     // Same as number of inital entries
+          val target    = gameConfig.frameRateDeltaMillis // E.g. 16.7ms for 60fps
 
-          if d >= target then
+          if timeDelta >= target then
             runFrame(time, timeDelta)
             gameEngine.platform.tick(gameEngine.gameLoop(time))
-          else if d + mean >= target then
-            val diff = d + mean - target
+          else if timeDelta + meanDelta >= target then
+            val diff = target - timeDelta
             val t    = time + diff
 
             gameEngine.platform.delay(
