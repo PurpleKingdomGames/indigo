@@ -82,15 +82,12 @@ lazy val sandbox =
     .settings(
       neverPublish,
       commonSettings,
-      name                := "sandbox",
-      showCursor          := true,
-      title               := "Sandbox",
-      gameAssetsDirectory := "assets",
-      disableFrameRateLimit := (sys.props("os.name").toLowerCase match {
-        case x if x contains "windows" => false
-        case _                         => true
-      }),
-      electronInstall := indigoplugin.ElectronInstall.Latest
+      name                  := "sandbox",
+      showCursor            := true,
+      title                 := "Sandbox",
+      gameAssetsDirectory   := "assets",
+      disableFrameRateLimit := false,
+      electronInstall       := indigoplugin.ElectronInstall.Latest
     )
 
 lazy val perf =
