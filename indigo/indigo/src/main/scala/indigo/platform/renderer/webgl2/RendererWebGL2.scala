@@ -141,7 +141,7 @@ final class RendererWebGL2(
   private var currentBlendFactors: (BlendFactor, BlendFactor) = (Blend.Normal.src, Blend.Normal.dst)
 
   private val transparentBlack: RGBA = RGBA.Black.makeTransparent
-  private val clearColor: RGBA = if config.transparentBackground then transparentBlack else config.clearColor
+  private val clearColor: RGBA       = if config.transparentBackground then transparentBlack else config.clearColor
 
   private given CanEqual[(BlendFactor, BlendFactor), (BlendFactor, BlendFactor)] = CanEqual.derived
 
