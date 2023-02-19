@@ -140,6 +140,9 @@ final class RendererWebGL2(
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var currentBlendFactors: (BlendFactor, BlendFactor) = (Blend.Normal.src, Blend.Normal.dst)
 
+  private val transparentBlack: RGBA = RGBA.Black.makeTransparent
+  private val clearColor: RGBA = if config.transparentBackground then transparentBlack else config.clearColor
+
   private given CanEqual[(BlendFactor, BlendFactor), (BlendFactor, BlendFactor)] = CanEqual.derived
 
   def init(shaders: Set[RawShaderCode]): Unit = {
@@ -308,7 +311,7 @@ final class RendererWebGL2(
         Some(scalingFrameBuffer),
         lastWidth,
         lastHeight,
-        RGBA.Black.makeTransparent,
+        transparentBlack,
         false,
         customShaders,
         StandardShaders.NormalBlend.id,
@@ -339,7 +342,7 @@ final class RendererWebGL2(
         None,
         lastWidth,
         lastHeight,
-        RGBA.Black.makeTransparent,
+        transparentBlack,
         false,
         customShaders,
         layer.shaderId,
@@ -356,7 +359,7 @@ final class RendererWebGL2(
       None,
       lastWidth,
       lastHeight,
-      config.clearColor,
+      clearColor,
       true,
       customShaders,
       sceneData.shaderId,

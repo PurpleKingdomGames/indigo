@@ -87,6 +87,7 @@ lazy val sandbox =
       title                 := "Sandbox",
       gameAssetsDirectory   := "assets",
       disableFrameRateLimit := false,
+      backgroundColor       := "black",
       electronInstall       := indigoplugin.ElectronInstall.Latest
     )
 
