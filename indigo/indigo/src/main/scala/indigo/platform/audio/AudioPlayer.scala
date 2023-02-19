@@ -150,39 +150,44 @@ final class AudioPlayer(context: AudioContextProxy) {
     }
   }
 
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   private def updateSource(
       sceneAudioSource: Option[SceneAudioSource],
       currentSource: Option[AudioSourceState]
-  ): Option[Option[AudioSourceState]] = (currentSource, sceneAudioSource) match {
-    case (None, None) =>
-      None
-    case (Some(playing), Some(next)) if playing.bindingKey == next.bindingKey =>
-      None
-    case (Some(playing), None) =>
-      playing.audioNodes.audioBufferSourceNode.stop()
-      Some(None)
-    case (_, Some(next)) =>
-      Option {
-        currentSource.foreach(_.audioNodes.audioBufferSourceNode.stop())
+  ): Option[Option[AudioSourceState]] = 
+    (currentSource, sceneAudioSource) match
+      case (None, None) =>
+        None
+        
+      case (Some(playing), Some(next)) if playing.bindingKey == next.bindingKey =>
+        None
 
-        next.playbackPattern match {
-          case PlaybackPattern.SingleTrackLoop(track) =>
-            val nodes =
-              findAudioDataByName(track.assetName)
-                .map(asset => setupNodes(asset, track.volume * next.masterVolume, loop = true))
-                .get // throws if no asset found
+      case (Some(playing), None) =>
+        playing.audioNodes.audioBufferSourceNode.stop()
+        Some(None)
 
-            nodes.audioBufferSourceNode.start()
+      case (_, Some(next)) =>
+        Option {
+          currentSource.foreach(_.audioNodes.audioBufferSourceNode.stop())
 
-            Some(
-              new AudioSourceState(
-                bindingKey = next.bindingKey,
-                audioNodes = nodes
+          next.playbackPattern match 
+            case PlaybackPattern.SingleTrackLoop(track) =>
+              val nodes =
+                findAudioDataByName(track.assetName)
+                  .map(asset => setupNodes(asset, track.volume * next.masterVolume, loop = true))
+                  .getOrElse {
+                    throw new Exception("Failed to find audio for track with name: " + track.assetName)
+                  }
+
+              nodes.audioBufferSourceNode.start()
+
+              Some(
+                new AudioSourceState(
+                  bindingKey = next.bindingKey,
+                  audioNodes = nodes
+                )
               )
-            )
         }
-      }
-  }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def kill(): Unit =
