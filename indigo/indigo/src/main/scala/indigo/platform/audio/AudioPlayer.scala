@@ -154,11 +154,11 @@ final class AudioPlayer(context: AudioContextProxy) {
   private def updateSource(
       sceneAudioSource: Option[SceneAudioSource],
       currentSource: Option[AudioSourceState]
-  ): Option[Option[AudioSourceState]] = 
+  ): Option[Option[AudioSourceState]] =
     (currentSource, sceneAudioSource) match
       case (None, None) =>
         None
-        
+
       case (Some(playing), Some(next)) if playing.bindingKey == next.bindingKey =>
         None
 
@@ -170,7 +170,7 @@ final class AudioPlayer(context: AudioContextProxy) {
         Option {
           currentSource.foreach(_.audioNodes.audioBufferSourceNode.stop())
 
-          next.playbackPattern match 
+          next.playbackPattern match
             case PlaybackPattern.SingleTrackLoop(track) =>
               val nodes =
                 findAudioDataByName(track.assetName)
