@@ -6,6 +6,9 @@
 # Windows specific
 null/
 
+# Scala-cli specific
+.scala-build
+
 # mill specific
 out
 publish.sh
