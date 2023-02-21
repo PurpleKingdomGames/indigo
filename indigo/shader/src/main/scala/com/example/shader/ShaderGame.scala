@@ -5,7 +5,7 @@ import scala.scalajs.js.annotation._
 @JSExportTopLevel("IndigoGame")
 object ShaderGame extends IndigoShader:
 
-  val config: GameConfig          = GameConfig.default
+  val config: GameConfig          = GameConfig.default.withFrameRateLimit(FPS.`60`)
   val assets: Set[AssetType]      = SeascapeShader.assets
   val channel0: Option[AssetPath] = Option(AssetPath("assets/dots.png"))
   val channel1: Option[AssetPath] = None
@@ -13,8 +13,8 @@ object ShaderGame extends IndigoShader:
   val channel3: Option[AssetPath] = None
 
   val shader: Shader =
-    ShowImage.shader
-// SeascapeShader.shader
+    // ShowImage.shader
+    SeascapeShader.shader
 
 object ShowImage:
 
