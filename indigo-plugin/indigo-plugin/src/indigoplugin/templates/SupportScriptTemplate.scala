@@ -4,19 +4,18 @@ object SupportScriptTemplate {
 
   def template(autoSize: Boolean): String =
     s"""
-      |// Shamelessly borrowed from: https://davidwalsh.name/javascript-debounce-function
-      |function debounce(func, wait, immediate) {
+      |// Shamelessly borrowed/modified from: https://davidwalsh.name/javascript-debounce-function
+      |function debounce(func, wait) {
       |  var timeout;
       |  return function() {
-      |    var context = this, args = arguments;
+      |    var context = this
+      |    var args = arguments;
       |    var later = function() {
       |      timeout = null;
-      |      if (!immediate) func.apply(context, args);
+      |      func.apply(context, args);
       |    };
-      |    var callNow = immediate && !timeout;
       |    clearTimeout(timeout);
       |    timeout = setTimeout(later, wait);
-      |    if (callNow) func.apply(context, args);
       |  };
       |};
       |
@@ -27,7 +26,7 @@ object SupportScriptTemplate {
       |  c.width = window.innerWidth;
       |}
       |
-      |${if (autoSize) "" else "// "}window.onresize = debounce(resizeCanvas, 500);
+      |${if (autoSize) "" else "// "}window.onresize = debounce(resizeCanvas, 1000);
       |
       |window.onload = function () {
       |    if (typeof history.pushState === "function") {
