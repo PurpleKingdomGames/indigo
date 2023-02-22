@@ -22,7 +22,7 @@ object IndigoUV:
 
       // Variables
       ATLAS_SIZE: vec2,
-      VERTEX: vec4,
+      var VERTEX: vec4,
       TEXTURE_SIZE: vec2,
       var UV: vec2,
       SIZE: vec2,
@@ -101,7 +101,7 @@ object IndigoUV:
     val TIME: Float                    = 0.0f
     val VIEWPORT_SIZE: vec2            = vec2(0.0f)
     val ATLAS_SIZE: vec2               = vec2(0.0f)
-    val VERTEX: vec4                   = vec4(0.0f)
+    var VERTEX: vec4                   = vec4(0.0f)
     val TEXTURE_SIZE: vec2             = vec2(0.0f)
     var UV: vec2                       = vec2(0.0f)
     val SIZE: vec2                     = vec2(0.0f)
@@ -161,7 +161,7 @@ object IndigoUV:
       TEXTURE_SIZE: vec2, // Size of the texture in pixels
       ATLAS_SIZE: vec2,   // Size of the atlas this texture is on, in pixels
       INSTANCE_ID: Int,   // The current instance id
-      COLOR: vec4,        // The fragment color accumulated so far
+      var COLOR: vec4,        // The fragment color accumulated so far
 
       // Light information
       LIGHT_INDEX: Int,
