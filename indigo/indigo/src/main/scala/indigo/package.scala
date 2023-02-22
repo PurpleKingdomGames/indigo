@@ -223,13 +223,19 @@ type VertexEnv = shared.shader.library.IndigoUV.VertexEnv
 val VertexEnv: shared.shader.library.IndigoUV.VertexEnv.type =
   shared.shader.library.IndigoUV.VertexEnv
 
+type VertexEnvReference = shared.shader.library.IndigoUV.VertexEnvReference
+
 type FragmentEnv = shared.shader.library.IndigoUV.FragmentEnv
 val FragmentEnv: shared.shader.library.IndigoUV.FragmentEnv.type =
   shared.shader.library.IndigoUV.FragmentEnv
 
+type FragmentEnvReference = shared.shader.library.IndigoUV.FragmentEnvReference
+
 type BlendFragmentEnv = shared.shader.library.IndigoUV.BlendFragmentEnv
 val BlendFragmentEnv: shared.shader.library.IndigoUV.BlendFragmentEnv.type =
   shared.shader.library.IndigoUV.BlendFragmentEnv
+
+type BlendFragmentEnvReference = shared.shader.library.IndigoUV.BlendFragmentEnvReference
 
 type ShaderId = shared.shader.ShaderId
 val ShaderId: shared.shader.ShaderId.type = shared.shader.ShaderId
