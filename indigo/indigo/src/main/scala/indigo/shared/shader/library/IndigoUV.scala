@@ -161,7 +161,7 @@ object IndigoUV:
       TEXTURE_SIZE: vec2, // Size of the texture in pixels
       ATLAS_SIZE: vec2,   // Size of the atlas this texture is on, in pixels
       INSTANCE_ID: Int,   // The current instance id
-      var COLOR: vec4,        // The fragment color accumulated so far
+      var COLOR: vec4,    // The fragment color accumulated so far
 
       // Light information
       LIGHT_INDEX: Int,
