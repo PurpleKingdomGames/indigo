@@ -13,36 +13,36 @@ trait MillIndigo extends mill.Module {
 
   /** Title of your game.
     */
-  val title: String
+  def title: String
 
   /** Show the cursor?
     */
-  val showCursor: Boolean
+  def showCursor: Boolean
 
   /** HTML page background color
     */
-  val backgroundColor: String
+  def backgroundColor: String
 
   /** Project relative path to a directory that contains all of the assets the game needs to load.
     */
-  val gameAssetsDirectory: Path
+  def gameAssetsDirectory: Path
 
   /** Initial window width.
     */
-  val windowStartWidth: Int
+  def windowStartWidth: Int
 
   /** Initial window height.
     */
-  val windowStartHeight: Int
+  def windowStartHeight: Int
 
   /** If possible, disables the runtime's frame rate limit, recommended to be `false`.
     */
-  val disableFrameRateLimit: Boolean
+  def disableFrameRateLimit: Boolean
 
   /** How should electron be run? ElectronInstall.Global | ElectronInstall.Version(version: String) |
     * ElectronInstall.Latest | ElectronInstall.PathToExecutable(path: String)
     */
-  val electronInstall: ElectronInstall
+  def electronInstall: ElectronInstall
 
   def indigoBuild(): Command[Path] =
     T.command {
