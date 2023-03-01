@@ -4,6 +4,9 @@ import org.scalajs.dom
 
 final class Storage {
 
+  def key(index: Int): Option[String] =
+    Option(dom.window.localStorage.key(index))
+
   def save(key: String, data: String): Unit =
     dom.window.localStorage.setItem(key, data)
 

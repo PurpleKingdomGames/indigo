@@ -301,6 +301,36 @@ trait NetworkReceiveEvent extends GlobalEvent
 sealed trait StorageEvent extends GlobalEvent
 object StorageEvent {
 
+  /** Return the name of the key at the given index
+    *
+    * @param index
+    *   the index to check
+    */
+  final case class FetchKeyAt(index: Int) extends StorageEvent
+
+  /** Key check response.
+    *
+    * @param index
+    *   the index checked
+    * @param key
+    *   the unique key name found at the index position.
+    */
+  final case class KeyFoundAt(index: Int, key: Option[String]) extends StorageEvent
+
+  /** Return the name of the key at the given index
+    *
+    * @param index
+    *   the index to check
+    */
+  final case class FetchKeys(from: Int, to: Int) extends StorageEvent
+
+  /** Key check response.
+    *
+    * @param found
+    *   list of (index -> maybe key)
+    */
+  final case class KeysFound(found: List[(Int, Option[String])]) extends StorageEvent
+
   /** Save data locally, referenced by a key.
     *
     * @param key
@@ -328,14 +358,14 @@ object StorageEvent {
     */
   case object DeleteAll extends StorageEvent
 
-  /** Data load response,
+  /** Successful data load response.
     *
     * @param key
     *   the unique key of the data that was loaded.
     * @param data
-    *   the data retreived from local storage.
+    *   the data retreived from local storage, if it exists.
     */
-  final case class Loaded(key: String, data: String) extends StorageEvent
+  final case class Loaded(key: String, data: Option[String]) extends StorageEvent
 }
 
 /** Events relating to dynamically loading assets after the game has started.

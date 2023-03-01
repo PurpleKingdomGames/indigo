@@ -38,12 +38,18 @@ object SandboxModel {
           // Then we save some data
           println("Saving data")
           Outcome(state.copy(saveLoadPhase = SaveLoadPhases.SaveIt))
-            .addGlobalEvents(Save("my-save-game", "Important save data."))
+            .addGlobalEvents(
+              Save("my-save-game", "Important save data."),
+              FetchKeys(0, 3)
+            )
 
         case SaveLoadPhases.SaveIt =>
           // Then we load it back (see the loaded event capture below!)
           Outcome(state.copy(saveLoadPhase = SaveLoadPhases.LoadIt))
-            .addGlobalEvents(Load("my-save-game"))
+            .addGlobalEvents(
+              Load("my-save-game"),
+              Load("missing")
+            )
 
         case SaveLoadPhases.LoadIt =>
           state.data match {
@@ -108,8 +114,16 @@ object SandboxModel {
         )
       )
 
-    case Loaded(_, loadedData) =>
-      Outcome(state.copy(data = Some(loadedData)))
+    case Loaded("my-save-game", loadedData) =>
+      Outcome(state.copy(data = loadedData))
+
+    case Loaded(key, loadedData) =>
+      println(s"Other data load attempted: $key, $loadedData")
+      Outcome(state)
+
+    case KeysFound(found) =>
+      println("Keys found: " + found)
+      Outcome(state)
 
     case _ =>
       Outcome(state)

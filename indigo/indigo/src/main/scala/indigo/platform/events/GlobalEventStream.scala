@@ -48,22 +48,24 @@ final class GlobalEventStream(
       audioPlayer.playSound(assetName, volume)
 
     // Storage
+    case StorageEvent.FetchKeyAt(index) =>
+      eventQueue.enqueue(StorageEvent.KeyFoundAt(index, storage.key(index)))
+
+    case StorageEvent.FetchKeys(f, t) =>
+      val keys = (f to t).toList.map(i => i -> storage.key(i))
+      eventQueue.enqueue(StorageEvent.KeysFound(keys))
+
     case StorageEvent.Save(key, data) =>
       storage.save(key, data)
 
     case StorageEvent.Load(key) =>
-      storage.load(key).foreach { data =>
-        eventQueue.enqueue(StorageEvent.Loaded(key, data))
-      }
+      eventQueue.enqueue(StorageEvent.Loaded(key, storage.load(key)))
 
     case StorageEvent.Delete(key) =>
       storage.delete(key)
 
     case StorageEvent.DeleteAll =>
       storage.deleteAll()
-
-    case e @ StorageEvent.Loaded(_, _) =>
-      eventQueue.enqueue(e)
 
     // Assets
     case AssetEvent.LoadAssetBatch(batch, key, makeAvailable) =>

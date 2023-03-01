@@ -405,6 +405,18 @@ type NetworkReceiveEvent = shared.events.NetworkReceiveEvent
 type StorageEvent = shared.events.StorageEvent
 val StorageEvent: shared.events.StorageEvent.type = shared.events.StorageEvent
 
+type FetchKeyAt = shared.events.StorageEvent.FetchKeyAt
+val FetchKeyAt: shared.events.StorageEvent.FetchKeyAt.type = shared.events.StorageEvent.FetchKeyAt
+
+type KeyFoundAt = shared.events.StorageEvent.KeyFoundAt
+val KeyFoundAt: shared.events.StorageEvent.KeyFoundAt.type = shared.events.StorageEvent.KeyFoundAt
+
+type FetchKeys = shared.events.StorageEvent.FetchKeys
+val FetchKeys: shared.events.StorageEvent.FetchKeys.type = shared.events.StorageEvent.FetchKeys
+
+type KeysFound = shared.events.StorageEvent.KeysFound
+val KeysFound: shared.events.StorageEvent.KeysFound.type = shared.events.StorageEvent.KeysFound
+
 type Save = shared.events.StorageEvent.Save
 val Save: shared.events.StorageEvent.Save.type = shared.events.StorageEvent.Save
 
