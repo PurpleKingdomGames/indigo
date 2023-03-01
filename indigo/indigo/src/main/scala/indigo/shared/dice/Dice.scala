@@ -38,6 +38,10 @@ trait Dice:
     */
   def rollFromZero(sides: Int): Int
 
+  /** Roll an Int from the range provided (inclusive), using this dice instance as the seed.
+    */
+  def rollRange(from: Int, to: Int): Int
+
   /** Produces a random Float from 0.0f to 1.0f
     */
   def rollFloat: Float
@@ -133,6 +137,9 @@ object Dice:
       def rollFromZero(sides: Int): Int =
         fixedTo
 
+      def rollRange(from: Int, to: Int): Int =
+        fixedTo
+
       def rollFloat: Float =
         if (fixedTo == 0) 0 else 1
 
@@ -168,6 +175,11 @@ object Dice:
 
       def rollFromZero(sides: Int): Int =
         roll(sides) - 1
+
+      def rollRange(from: Int, to: Int): Int =
+        val f = Math.min(from, to)
+        val t = Math.max(from, to)
+        roll(t - f + 1) + f - 1
 
       def rollFloat: Float =
         r.nextFloat()

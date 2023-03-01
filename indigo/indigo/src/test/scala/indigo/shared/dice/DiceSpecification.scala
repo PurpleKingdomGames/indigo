@@ -28,4 +28,11 @@ class DiceSpecification extends Properties("Dice") {
     value >= 0 && value <= noOfSides - 1
   }
 
+  property("all dice rollRange throws are in the range given") = Prop.forAll(Gen.choose(1, 20), Gen.choose(21, 40)) {
+    (from, to) =>
+      val value = Dice.diceSidesN(16, 0).rollRange(from, to)
+
+      from <= value && value <= to
+  }
+
 }
