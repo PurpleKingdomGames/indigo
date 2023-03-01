@@ -44,5 +44,7 @@ lazy val pirate =
       )
     )
 
-addCommandAlias("buildGame", ";compile;fastOptJS;indigoBuild")
-addCommandAlias("runGame", ";compile;fastOptJS;indigoRun")
+addCommandAlias("buildGame", ";compile;fastLinkJS;indigoBuild")
+addCommandAlias("buildGameFull", ";compile;fullLinkJS;indigoBuildFull")
+addCommandAlias("runGame", ";compile;fastLinkJS;indigoRun")
+addCommandAlias("runGameFull", ";compile;fullLinkJS;indigoRunFull")

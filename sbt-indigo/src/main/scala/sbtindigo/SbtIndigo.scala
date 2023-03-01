@@ -53,11 +53,21 @@ object SbtIndigo extends sbt.AutoPlugin {
     electronInstall        := indigoplugin.ElectronInstall.Global
   )
 
-  def giveScriptBasePath(baseDir: String, scalaVersion: String): String =
-    if (scalaVersion.startsWith("2"))
-      s"$baseDir/target/scala-${scalaVersion.split('.').init.mkString(".")}"
-    else
-      s"$baseDir/target/scala-${scalaVersion}"
+  def giveScriptBasePath(baseDir: String, scalaVersion: String, projectName: String): String = {
+    val base =
+      if (scalaVersion.startsWith("2"))
+        s"$baseDir/target/scala-${scalaVersion.split('.').init.mkString(".")}"
+      else
+        s"$baseDir/target/scala-${scalaVersion}"
+
+    val subDir = "/" + projectName + "-fastopt"
+
+    if (new sbt.File(base + subDir).isDirectory) {
+      base + subDir
+    } else {
+      base
+    }
+  }
 
   lazy val indigoBuildTask: Def.Initialize[Task[String]] =
     Def.task {
@@ -67,7 +77,8 @@ object SbtIndigo extends sbt.AutoPlugin {
       val scriptPathBase =
         giveScriptBasePath(
           baseDir = baseDir,
-          scalaVersion = Keys.scalaVersion.value
+          scalaVersion = Keys.scalaVersion.value,
+          projectName = Keys.projectID.value.name
         )
 
       println(scriptPathBase)
@@ -86,7 +97,10 @@ object SbtIndigo extends sbt.AutoPlugin {
           backgroundColor = backgroundColor.value
         ),
         outputDir,
-        Keys.projectID.value.name + "-fastopt.js"
+        List(
+          "main.js",
+          Keys.projectID.value.name + "-fastopt.js"
+        )
       )
 
       baseDir + "/target/" + outputDir
@@ -100,7 +114,8 @@ object SbtIndigo extends sbt.AutoPlugin {
       val scriptPathBase =
         giveScriptBasePath(
           baseDir = baseDir,
-          scalaVersion = Keys.scalaVersion.value
+          scalaVersion = Keys.scalaVersion.value,
+          projectName = Keys.projectID.value.name
         )
 
       println(scriptPathBase)
@@ -119,7 +134,10 @@ object SbtIndigo extends sbt.AutoPlugin {
           backgroundColor = backgroundColor.value
         ),
         outputDir,
-        Keys.projectID.value.name + "-opt.js"
+        List(
+          "main.js",
+          Keys.projectID.value.name + "-opt.js"
+        )
       )
 
       baseDir + "/target/" + outputDir

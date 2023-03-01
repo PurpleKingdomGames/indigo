@@ -49,6 +49,7 @@ trait MillIndigo extends mill.Module {
       val scriptPathBase: Path = {
         val paths =
           List(
+            T.dest / os.up / "fastLinkJS.dest",
             T.dest / os.up / "fastOpt.dest",
             T.dest / os.up / "fastOpt" / "dest"
           )
@@ -57,7 +58,7 @@ trait MillIndigo extends mill.Module {
           case Some(p) => p
           case None =>
             throw new Exception(
-              "Could not find fastOpt dir, did you compile to JS? Tried: " +
+              "Could not find fastOpt / fastLinkJS dir, did you compile to JS? Tried: " +
                 paths.map(_.toString).mkString("[", ", ", "]")
             )
         }
@@ -83,6 +84,7 @@ trait MillIndigo extends mill.Module {
       val scriptPathBase: Path = {
         val paths =
           List(
+            T.dest / os.up / "fullLinkJS.dest",
             T.dest / os.up / "fullOpt.dest",
             T.dest / os.up / "fullOpt" / "dest"
           )
@@ -91,7 +93,7 @@ trait MillIndigo extends mill.Module {
           case Some(p) => p
           case None =>
             throw new Exception(
-              "Could not find fullOpt dir, did you compile to JS? Tried: " +
+              "Could not find fullOpt / fullLinkJS dir, did you compile to JS? Tried: " +
                 paths.map(_.toString).mkString("[", ", ", "]")
             )
         }

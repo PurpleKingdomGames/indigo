@@ -26,16 +26,32 @@ def scalaVersion   = "3.2.1"
   def buildGame() = T.command {
     T {
       compile()
-      fastOpt()
+      fastLinkJS()
       indigoBuild()()
+    }
+  }
+
+  def buildGameFull() = T.command {
+    T {
+      compile()
+      fullLinkJS()
+      indigoBuildFull()()
     }
   }
 
   def runGame() = T.command {
     T {
       compile()
-      fastOpt()
+      fastLinkJS()
       indigoRun()()
+    }
+  }
+
+  def runGameFull() = T.command {
+    T {
+      compile()
+      fullLinkJS()
+      indigoRunFull()()
     }
   }
 
