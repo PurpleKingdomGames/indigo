@@ -247,6 +247,11 @@ object Outcome:
         Some((s, es))
     }
 
+  def fromOption[A](opt: Option[A], error: => Throwable): Outcome[A] =
+    opt match
+      case None        => Outcome.raiseError(error)
+      case Some(value) => Outcome(value)
+
   def raiseError(throwable: Throwable): Outcome.Error =
     Outcome.Error(throwable)
 

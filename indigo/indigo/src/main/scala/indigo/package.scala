@@ -55,8 +55,11 @@ object syntax:
   extension [A](values: IndexedSeq[A]) def toBatch: Batch[A]       = Batch.fromIndexedSeq(values)
   extension [A](values: Iterator[A]) def toBatch: Batch[A]         = Batch.fromIterator(values)
   extension [K, V](values: Map[K, V]) def toBatch: Batch[(K, V)]   = Batch.fromMap(values)
-  extension [A](values: Option[A]) def toBatch: Batch[A]           = Batch.fromOption(values)
   extension (values: Range) def toBatch: Batch[Int]                = Batch.fromRange(values)
+
+  extension [A](values: Option[A])
+    def toBatch: Batch[A]                          = Batch.fromOption(values)
+    def toOutcome(error: => Throwable): Outcome[A] = Outcome.fromOption(values, error)
 
   val ==: = shared.collections.Batch.==:
   val :== = shared.collections.Batch.:==

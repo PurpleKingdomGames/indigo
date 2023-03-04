@@ -3,7 +3,7 @@ package indigo.shared
 import indigo.shared.collections.Batch
 import indigo.shared.events.GlobalEvent
 
-import Outcome._
+import Outcome.*
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
 class OutcomeTests extends munit.FunSuite {
@@ -416,6 +416,34 @@ class OutcomeTests extends munit.FunSuite {
         fail("Failed...")
     }
 
+  }
+
+  test("Convert Option[A] to Outcome[A]") {
+    import indigo.syntax.*
+
+    val e = new Exception("Boom!")
+
+    val actual =
+      Option(123).toOutcome(e)
+
+    val expected =
+      Outcome(123)
+
+    assertEquals(actual, expected)
+  }
+
+  test("Convert Option[A] to Outcome[A] (error case)") {
+    import indigo.syntax.*
+
+    val e = new Exception("Boom!")
+
+    val actual =
+      Option.empty[Int].toOutcome(e)
+
+    val expected =
+      Outcome.Error(e)
+
+    assert(errorsMatch(actual, expected))
   }
 
 }
