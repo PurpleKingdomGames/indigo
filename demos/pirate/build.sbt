@@ -6,7 +6,7 @@ Global / onChangedBuildSource := ReloadOnSourceChanges
 // The essentials.
 //-----------------------------------
 
-val scala3Version = "3.2.1"
+val scala3Version = "3.2.2"
 
 lazy val pirate =
   (project in file("."))

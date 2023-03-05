@@ -3,7 +3,7 @@ import scala.language.postfixOps
 
 import sbtwelcome._
 
-val scala3Version = "3.2.1"
+val scala3Version = "3.2.2"
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
