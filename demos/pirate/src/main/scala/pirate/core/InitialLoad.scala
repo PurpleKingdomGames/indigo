@@ -169,5 +169,5 @@ final case class LevelDataStore(
       .withBindingKey(BindingKey("Back Tall Palm"))
       .withDepth(Depth(10))
 
-enum TileType derives CanEqual:
+enum TileType:
   case Empty, Solid

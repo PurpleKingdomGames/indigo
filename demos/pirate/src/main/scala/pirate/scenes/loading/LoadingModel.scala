@@ -6,7 +6,7 @@ object LoadingModel:
     LoadingModel(LoadingState.NotStarted)
 
 // An ADT representing the states we can be in during loading.
-enum LoadingState derives CanEqual:
+enum LoadingState:
   case NotStarted               extends LoadingState
   case InProgress(percent: Int) extends LoadingState
   case Complete                 extends LoadingState

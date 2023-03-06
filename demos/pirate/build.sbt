@@ -23,7 +23,6 @@ lazy val pirate =
         "org.scalameta"  %%% "munit"      % "0.7.29" % Test,
         "org.scalacheck" %%% "scalacheck" % "1.15.3" % "test"
       ),
-      scalacOptions ++= Seq("-language:strictEquality"),
       Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
     )
     .settings( // Indigo specific settings
