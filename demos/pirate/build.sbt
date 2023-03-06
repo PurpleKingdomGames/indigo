@@ -24,8 +24,6 @@ lazy val pirate =
         "org.scalacheck" %%% "scalacheck" % "1.15.3" % "test"
       ),
       scalacOptions ++= Seq("-language:strictEquality"),
-      testFrameworks += new TestFramework("munit.Framework"),
-      // wartremoverWarnings in (Compile, compile) ++= Warts.unsafe,
       Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
     )
     .settings( // Indigo specific settings
@@ -35,7 +33,7 @@ lazy val pirate =
       windowStartWidth      := 1280,
       windowStartHeight     := 720,
       disableFrameRateLimit := false,
-      electronInstall       := ElectronInstall.Version("^18.0.0"),
+      electronInstall       := ElectronInstall.Latest,
       backgroundColor       := "black",
       libraryDependencies ++= Seq(
         "io.indigoengine" %%% "indigo-json-circe" % IndigoVersion.getVersion, // Needed for Aseprite & Tiled support
