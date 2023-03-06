@@ -1,7 +1,7 @@
 package pirate.scenes.level.subsystems
 
-import org.scalacheck._
-import org.scalacheck.Prop._
+import org.scalacheck.*
+import org.scalacheck.Prop.*
 
 import indigo.Dice
 import indigo.Seconds

@@ -1,6 +1,6 @@
 package pirate.core
 
-import indigo._
+import indigo.*
 import indigo.json.Json
 import indigo.shared.formats.TiledGridMap
 
@@ -21,7 +21,7 @@ progress of which on the loading screen. This can theoretically happen as many t
 as you decide to load assets. So it's only on the second run that we do all the work
 in `makeAdditionalAssets`.
  */
-object InitialLoad {
+object InitialLoad:
 
   def setup(
       screenDimensions: Rectangle,
@@ -151,8 +151,6 @@ object InitialLoad {
       .addAnimations(captain.animations)
       .addAnimations(levelDataStore.map(_._2).getOrElse(Nil))
 
-}
-
 final case class StartupData(
     captain: Sprite[Material.ImageEffects],
     levelDataStore: Option[LevelDataStore]
@@ -165,12 +163,11 @@ final case class LevelDataStore(
     tileSize: Point,
     terrainMap: TiledGridMap[TileType],
     terrain: Group
-) {
+):
   val backTallPalm: Sprite[Material.Bitmap] =
     palm
       .withBindingKey(BindingKey("Back Tall Palm"))
       .withDepth(Depth(10))
-}
 
 enum TileType derives CanEqual:
   case Empty, Solid

@@ -1,6 +1,6 @@
 package pirate.scenes.level.model
 
-import indigo._
+import indigo.*
 import indigoextras.geometry.BoundingBox
 import indigoextras.geometry.Vertex
 import pirate.core.Assets
@@ -10,12 +10,12 @@ final case class Pirate(
     state: PirateState,
     lastRespawn: Seconds,
     ySpeed: Double
-) {
+):
 
   val position: Vertex =
     Vertex(boundingBox.horizontalCenter, boundingBox.bottom)
 
-  def update(gameTime: GameTime, inputState: InputState, platform: Platform): Outcome[Pirate] = {
+  def update(gameTime: GameTime, inputState: InputState, platform: Platform): Outcome[Pirate] =
 
     val inputForce =
       inputState.mapInputs(Pirate.inputMappings(state.isFalling), Vector2.zero)
@@ -40,10 +40,10 @@ final case class Pirate(
       )
 
     // Respawn if the pirate is below the bottom of the map.
-    if (nextBounds.y > platform.rowCount.toDouble + 1)
+    if nextBounds.y > platform.rowCount.toDouble + 1 then
       Outcome(Pirate(nextBounds.moveTo(Pirate.RespawnPoint), nextState, gameTime.running, ySpeedNext))
         .addGlobalEvents(PlaySound(Assets.Sounds.respawnSound, Volume.Max))
-    else {
+    else
       val maybeJumpSound =
         if (!state.inMidAir && nextState.isJumping)
           Batch(PlaySound(Assets.Sounds.jumpSound, Volume.Max))
@@ -51,18 +51,15 @@ final case class Pirate(
 
       Outcome(Pirate(nextBounds, nextState, lastRespawn, ySpeedNext))
         .addGlobalEvents(maybeJumpSound)
-    }
-  }
-}
 
-object Pirate {
+object Pirate:
 
   // Where does the captain start in model terms?
   // Right in the middle, and off the top of the screen
   // by 2 units (tiles).
   val RespawnPoint = Vertex(9.5, -2)
 
-  def initial: Pirate = {
+  def initial: Pirate =
 
     val startPosition = Vertex(9.5, 6)
 
@@ -80,7 +77,6 @@ object Pirate {
       Seconds.zero,
       0
     )
-  }
 
   val inputMappings: Boolean => InputMapping[Vector2] = isFalling => {
     val xSpeed: Double = if (isFalling) 2.0d else 3.0d
@@ -112,7 +108,7 @@ object Pirate {
   given CanEqual[Option[BoundingBox], Option[BoundingBox]] = CanEqual.derived
 
   def adjustOnCollision(platform: Platform, proposedBounds: BoundingBox): (BoundingBox, Boolean) =
-    platform.hitTest(proposedBounds) match {
+    platform.hitTest(proposedBounds) match
       case Some(value) =>
         (
           proposedBounds
@@ -122,7 +118,6 @@ object Pirate {
 
       case None =>
         (proposedBounds, false)
-    }
 
   val gravityIncrement: Double = 0.4d
 
@@ -133,29 +128,21 @@ object Pirate {
       ySpeed: Double,
       inputY: Double
   ): Double =
-    if (Math.abs(nextY - previousY) < 0.0001 && !inMidAir)
-      gravityIncrement + inputY
-    else if (ySpeed + gravityIncrement <= 8.0d)
-      ySpeed + gravityIncrement
-    else
-      8.0d
+    if Math.abs(nextY - previousY) < 0.0001 && !inMidAir then gravityIncrement + inputY
+    else if ySpeed + gravityIncrement <= 8.0d then ySpeed + gravityIncrement
+    else 8.0d
 
   def nextStateFromForceDiff(
       previousState: PirateState,
       collisionOccurred: Boolean,
       oldForce: Vector2,
       newForce: Vector2
-  ): PirateState = {
+  ): PirateState =
     val forceDiff = newForce - oldForce
 
-    if (forceDiff.y > -0.001 && forceDiff.y < 0.001 && collisionOccurred)
-      nextStanding(forceDiff.x)
-    else if (newForce.y > oldForce.y)
-      nextFalling(previousState)(forceDiff.x)
-    else
-      nextJumping(previousState)(forceDiff.x)
-
-  }
+    if forceDiff.y > -0.001 && forceDiff.y < 0.001 && collisionOccurred then nextStanding(forceDiff.x)
+    else if newForce.y > oldForce.y then nextFalling(previousState)(forceDiff.x)
+    else nextJumping(previousState)(forceDiff.x)
 
   private def nextStateFromDiffX(
       movingLeft: PirateState,
@@ -163,8 +150,8 @@ object Pirate {
       otherwise: PirateState
   ): Double => PirateState =
     xDiff =>
-      if (xDiff < -0.01) movingLeft
-      else if (xDiff > 0.01) movingRight
+      if xDiff < -0.01 then movingLeft
+      else if xDiff > 0.01 then movingRight
       else otherwise
 
   lazy val nextStanding: Double => PirateState =
@@ -178,7 +165,7 @@ object Pirate {
     nextStateFromDiffX(
       PirateState.FallingLeft,
       PirateState.FallingRight,
-      previousState match {
+      previousState match
         case PirateState.FallingLeft | PirateState.JumpingLeft =>
           PirateState.FallingLeft
 
@@ -187,18 +174,14 @@ object Pirate {
 
         case _ =>
           PirateState.FallingRight
-      }
     )
 
   def nextJumping(previousState: PirateState): Double => PirateState =
     nextStateFromDiffX(
       PirateState.JumpingLeft,
       PirateState.JumpingRight,
-      previousState match {
+      previousState match
         case l @ PirateState.JumpingLeft  => l
         case r @ PirateState.JumpingRight => r
         case _                            => PirateState.JumpingRight
-      }
     )
-
-}

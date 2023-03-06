@@ -3,7 +3,7 @@ package pirate.scenes.level.model
 /*
 An ADT of all the states the pirate can find himself in.
  */
-sealed trait PirateState derives CanEqual {
+sealed trait PirateState derives CanEqual:
 
   val isFalling: Boolean =
     this match {
@@ -22,8 +22,7 @@ sealed trait PirateState derives CanEqual {
   val inMidAir: Boolean =
     isFalling || isJumping
 
-}
-object PirateState {
+object PirateState:
   case object Idle         extends PirateState
   case object MoveLeft     extends PirateState
   case object MoveRight    extends PirateState
@@ -31,4 +30,3 @@ object PirateState {
   case object FallingRight extends PirateState
   case object JumpingLeft  extends PirateState
   case object JumpingRight extends PirateState
-}

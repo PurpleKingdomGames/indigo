@@ -1,6 +1,6 @@
 package pirate.scenes.level.viewmodel
 
-import indigo._
+import indigo.*
 import pirate.scenes.level.model.Pirate
 import pirate.core.Assets
 import pirate.scenes.level.model.PirateState
@@ -26,10 +26,10 @@ and this way is a bit cleaner.
 final case class PirateViewState(
     facingRight: Boolean,
     soundLastPlayed: Seconds
-) {
+):
 
   def update(gameTime: GameTime, pirate: Pirate): Outcome[PirateViewState] =
-    pirate.state match {
+    pirate.state match
       case PirateState.Idle =>
         Outcome(this)
 
@@ -65,17 +65,12 @@ final case class PirateViewState(
       case PirateState.JumpingRight =>
         Outcome(this.copy(facingRight = true))
 
-    }
-
   def updateWalkSound(gameTime: GameTime, soundLastPlayed: Seconds): (Batch[GlobalEvent], Seconds) =
-    if (gameTime.running > soundLastPlayed + Seconds(0.25))
+    if gameTime.running > soundLastPlayed + Seconds(0.25) then
       (Batch(PlaySound(Assets.Sounds.walkSound, Volume(0.5d))), gameTime.running)
     else (Batch.empty, soundLastPlayed)
 
-}
-object PirateViewState {
+object PirateViewState:
 
   val initial: PirateViewState =
     PirateViewState(true, Seconds.zero)
-
-}

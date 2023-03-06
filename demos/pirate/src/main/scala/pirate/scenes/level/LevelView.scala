@@ -1,6 +1,6 @@
 package pirate.scenes.level
 
-import indigo._
+import indigo.*
 
 import pirate.core.Assets
 import pirate.core.LevelDataStore
@@ -11,7 +11,7 @@ import pirate.scenes.level.model.LevelModel
 import pirate.scenes.level.viewmodel.LevelViewModel
 import pirate.scenes.level.viewmodel.PirateViewState
 
-object LevelView {
+object LevelView:
 
   def draw(
       gameTime: GameTime,
@@ -23,7 +23,7 @@ object LevelView {
     Level.draw(levelDataStore) |+|
       PirateCaptain.draw(gameTime, model.pirate, viewModel.pirateViewState, captain, viewModel.worldToScreenSpace)
 
-  object Level {
+  object Level:
 
     def draw(levelDataStore: Option[LevelDataStore]): SceneUpdateFragment =
       levelDataStore
@@ -73,9 +73,8 @@ object LevelView {
         Assets.Static.chestGraphic.moveTo(380, 288),
         assets.terrain
       )
-  }
 
-  object PirateCaptain {
+  object PirateCaptain:
 
     def draw(
         gameTime: GameTime,
@@ -128,7 +127,7 @@ object LevelView {
         captain: Sprite[Material.ImageEffects],
         toScreenSpace: Vertex => Point
     ): Sprite[Material.ImageEffects] =
-      pirate.state match {
+      pirate.state match
         case PirateState.Idle if pirateViewState.facingRight =>
           captain
             .moveTo(toScreenSpace(pirate.position))
@@ -184,6 +183,3 @@ object LevelView {
             .moveBy(-20, 0)
             .changeCycle(CycleLabel("Jump"))
             .play()
-      }
-  }
-}

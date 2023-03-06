@@ -1,10 +1,9 @@
 package pirate.scenes.loading
 
 final case class LoadingModel(loadingState: LoadingState)
-object LoadingModel {
+object LoadingModel:
   val initial: LoadingModel =
     LoadingModel(LoadingState.NotStarted)
-}
 
 // An ADT representing the states we can be in during loading.
 enum LoadingState derives CanEqual:

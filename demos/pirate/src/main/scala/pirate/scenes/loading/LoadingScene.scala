@@ -1,8 +1,8 @@
 package pirate.scenes.loading
 
-import indigo._
-import indigo.scenes._
-import indigoextras.subsystems._
+import indigo.*
+import indigo.scenes.*
+import indigoextras.subsystems.*
 
 import pirate.core.Assets
 import pirate.core.StartupData
@@ -21,7 +21,7 @@ As progress events come in, they are translated into some visual feedback
 for the player.
  */
 final case class LoadingScene(assetPath: String, screenDimensions: Rectangle)
-    extends Scene[StartupData, Model, ViewModel] {
+    extends Scene[StartupData, Model, ViewModel]:
   // We only care about the `LoadingState` which is actually a
   // sub-object of an otherwise pointless (but readable) `LoadingModel`
   // class. However! Here we use lenses to ignore the intermediary entirely
@@ -50,9 +50,9 @@ final case class LoadingScene(assetPath: String, screenDimensions: Rectangle)
   def updateModel(
       context: SceneContext[StartupData],
       loadingState: LoadingState
-  ): GlobalEvent => Outcome[LoadingState] = {
+  ): GlobalEvent => Outcome[LoadingState] =
     case FrameTick =>
-      loadingState match {
+      loadingState match
         case LoadingState.NotStarted =>
           Outcome(LoadingState.InProgress(0))
             .addGlobalEvents(
@@ -61,7 +61,6 @@ final case class LoadingScene(assetPath: String, screenDimensions: Rectangle)
 
         case _ =>
           Outcome(loadingState)
-      }
 
     case AssetBundleLoaderEvent.LoadProgress(_, percent, _, _) =>
       Outcome(LoadingState.InProgress(percent))
@@ -75,7 +74,6 @@ final case class LoadingScene(assetPath: String, screenDimensions: Rectangle)
 
     case _ =>
       Outcome(loadingState)
-  }
 
   def updateViewModel(
       context: SceneContext[StartupData],
@@ -96,5 +94,3 @@ final case class LoadingScene(assetPath: String, screenDimensions: Rectangle)
         loadingState
       )
     )
-
-}

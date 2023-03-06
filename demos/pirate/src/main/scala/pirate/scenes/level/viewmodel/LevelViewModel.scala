@@ -1,6 +1,6 @@
 package pirate.scenes.level.viewmodel
 
-import indigo._
+import indigo.*
 import indigoextras.geometry.Vertex
 import pirate.scenes.level.model.Pirate
 
@@ -10,23 +10,22 @@ some data during the loading screen, parse it, and use it to build the
 `worldToScreenSpace` function, which relies on knowing the size of the tiles
 which is stored in the Tiled data.
  */
-sealed trait LevelViewModel derives CanEqual {
+sealed trait LevelViewModel derives CanEqual:
   val notReady: Boolean
 
   def update(gameTime: GameTime, pirate: Pirate): Outcome[LevelViewModel]
-}
-object LevelViewModel {
+
+object LevelViewModel:
 
   // The uninitialised ViewModel
-  case object NotReady extends LevelViewModel {
+  case object NotReady extends LevelViewModel:
     val notReady: Boolean = true
 
     def update(gameTime: GameTime, pirate: Pirate): Outcome[LevelViewModel] =
       Outcome(this)
-  }
 
   // The initialised / useable ViewModel
-  final case class Ready(worldToScreenSpace: Vertex => Point, pirateViewState: PirateViewState) extends LevelViewModel {
+  final case class Ready(worldToScreenSpace: Vertex => Point, pirateViewState: PirateViewState) extends LevelViewModel:
     val notReady: Boolean = false
 
     def update(gameTime: GameTime, pirate: Pirate): Outcome[LevelViewModel] =
@@ -37,6 +36,3 @@ object LevelViewModel {
             pirateViewState = ps
           )
         )
-  }
-
-}

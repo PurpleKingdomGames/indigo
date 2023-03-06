@@ -1,7 +1,7 @@
 package pirate.scenes.level.subsystems
 
-import indigo._
-import indigoextras.subsystems._
+import indigo.*
+import indigoextras.subsystems.*
 import pirate.core.Assets
 
 /*
@@ -10,7 +10,7 @@ The `CloudsSubSystem` does two things:
 2. Emits periodic events telling the cloud automata system to spawn
    a new small cloud.
  */
-object CloudsSubSystem {
+object CloudsSubSystem:
 
   val verticalCenter: Int = 181
   val scrollSpeed: Double = 3.0d
@@ -95,15 +95,10 @@ object CloudsSubSystem {
     Some(Millis(((dice.roll(10) + 10) * 1000).toLong).toSeconds)
 
   def nextBigCloudPosition(gameTime: GameTime, bigCloudPosition: Double, assetWidth: Int): Double =
-    if (bigCloudPosition <= 0.0d)
-      assetWidth.toDouble
-    else
-      bigCloudPosition - (scrollSpeed * gameTime.delta.toDouble)
-
-}
+    if bigCloudPosition <= 0.0d then assetWidth.toDouble
+    else bigCloudPosition - (scrollSpeed * gameTime.delta.toDouble)
 
 final case class CloudsState(bigCloudPosition: Double, lastSpawn: Seconds)
-object CloudsState {
+object CloudsState:
   val initial: CloudsState =
     CloudsState(0, Seconds.zero)
-}

@@ -11,7 +11,7 @@ final case class Model(
     loadingScene: LoadingModel,
     gameScene: LevelModel
 )
-object Model {
+object Model:
 
   // It's a good idea to have as far requirements as possible on the
   // initial versions of the model and view model.
@@ -20,5 +20,3 @@ object Model {
       LoadingModel.initial,
       LevelModel.NotReady
     )
-
-}

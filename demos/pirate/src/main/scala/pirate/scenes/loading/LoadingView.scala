@@ -1,6 +1,6 @@
 package pirate.scenes.loading
 
-import indigo._
+import indigo.*
 import pirate.core.Assets
 
 // Handles the rendering of the loading screen.
@@ -8,18 +8,18 @@ import pirate.core.Assets
 // game was allowed to start, so the aim is to only load what
 // you must up front, and then load the rest when you can give
 // your players feedback, as we do below.
-object LoadingView {
+object LoadingView:
 
   def draw(
       screenDimensions: Rectangle,
       captain: Sprite[Material.ImageEffects],
       loadingState: LoadingState
-  ): SceneUpdateFragment = {
+  ): SceneUpdateFragment =
     val x = screenDimensions.horizontalCenter
     val y = screenDimensions.verticalCenter
 
     val message: String =
-      loadingState match {
+      loadingState match
         case LoadingState.NotStarted =>
           "Loading..."
 
@@ -31,7 +31,6 @@ object LoadingView {
 
         case LoadingState.Error =>
           "Uh oh, loading failed..."
-      }
 
     SceneUpdateFragment(
       Text(
@@ -48,6 +47,3 @@ object LoadingView {
         .changeCycle(CycleLabel("Run"))
         .play()
     )
-  }
-
-}

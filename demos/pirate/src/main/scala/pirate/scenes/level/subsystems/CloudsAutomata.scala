@@ -1,14 +1,14 @@
 package pirate.scenes.level.subsystems
 
-import indigo._
-import indigoextras.subsystems._
+import indigo.*
+import indigoextras.subsystems.*
 import pirate.core.Assets
 
 /*
 An instance of a standard Automata SubSystem, you can think of this
 one as a little cloud factory, puffing out new clouds on demand.
  */
-object CloudsAutomata {
+object CloudsAutomata:
 
   /*
   The Signal controls the clouds movement over time, the "over time" part is critical.
@@ -22,7 +22,7 @@ object CloudsAutomata {
    */
   val signal: SignalReader[(AutomatonSeedValues, SceneNode), AutomatonUpdate] =
     SignalReader { case (seed, node) =>
-      node match {
+      node match
         case cloud: Graphic[_] =>
           Signal
             .Lerp(seed.spawnedAt, Point(-150, seed.spawnedAt.y), seed.lifeSpan)
@@ -32,7 +32,7 @@ object CloudsAutomata {
 
         case _ =>
           Signal.fixed(AutomatonUpdate.empty)
-      }
+
     }
 
   // One spawn, the automaton instance will choose "OneOf"
@@ -57,5 +57,3 @@ object CloudsAutomata {
       automaton,
       BindingKey("small clouds")
     ).withMaxPoolSize(15)
-
-}

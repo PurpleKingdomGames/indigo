@@ -1,6 +1,6 @@
 package pirate.core
 
-import indigo._
+import indigo.*
 
 /*
 This object declares all of the assets we want to load statically.
@@ -10,9 +10,9 @@ that lists the assets to be loaded. No need in this case.
 We also declare information about fonts, graphics, and animations here.
 It doesn't matter that none of their assets have loaded yet.
  */
-object Assets {
+object Assets:
 
-  object Static {
+  object Static:
     val backgroundRef: AssetName = AssetName("background")
 
     val terrainJsonRef: AssetName = AssetName("terrainJson")
@@ -29,9 +29,8 @@ object Assets {
         AssetType.Image(Static.terrainRef, AssetPath(baseUrl + "assets/terrain.png")),
         AssetType.Text(Static.terrainJsonRef, AssetPath(baseUrl + "assets/terrain.json"))
       )
-  }
 
-  object Sounds {
+  object Sounds:
     val shanty: AssetName       = AssetName("shanty")
     val walkSound: AssetName    = AssetName("walk")
     val respawnSound: AssetName = AssetName("respawn")
@@ -44,9 +43,8 @@ object Assets {
         AssetType.Audio(Sounds.jumpSound, AssetPath(baseUrl + "assets/jump.mp3")),
         AssetType.Audio(Sounds.respawnSound, AssetPath(baseUrl + "assets/respawn.mp3"))
       )
-  }
 
-  object Clouds {
+  object Clouds:
 
     val bigCloudsRef: AssetName   = AssetName("Big Clouds")
     val smallCloudsRef: AssetName = AssetName("small_clouds")
@@ -65,9 +63,7 @@ object Assets {
         AssetType.Image(Clouds.smallCloudsRef, AssetPath(baseUrl + "assets/" + Clouds.smallCloudsRef + ".png"))
       )
 
-  }
-
-  object Water {
+  object Water:
     val ref: AssetName     = AssetName("Water Reflect")
     val jsonRef: AssetName = AssetName("Water Reflect JSON")
 
@@ -76,9 +72,8 @@ object Assets {
         AssetType.Image(Water.ref, AssetPath(baseUrl + "assets/" + Water.ref + ".png")),
         AssetType.Text(Water.jsonRef, AssetPath(baseUrl + "assets/" + Water.ref + ".json"))
       )
-  }
 
-  object Flag {
+  object Flag:
     val ref: AssetName     = AssetName("Flag")
     val jsonRef: AssetName = AssetName("Flag JSON")
 
@@ -87,9 +82,8 @@ object Assets {
         AssetType.Image(Flag.ref, AssetPath(baseUrl + "assets/" + Flag.ref + ".png")),
         AssetType.Text(Flag.jsonRef, AssetPath(baseUrl + "assets/" + Flag.ref + ".json"))
       )
-  }
 
-  object Captain {
+  object Captain:
     val ref: AssetName     = AssetName("Captain Clown Nose")
     val jsonRef: AssetName = AssetName("Captain Clown Nose JSON")
 
@@ -98,9 +92,8 @@ object Assets {
         AssetType.Image(Captain.ref, AssetPath(baseUrl + "assets/" + Captain.ref + ".png")),
         AssetType.Text(Captain.jsonRef, AssetPath(baseUrl + "assets/" + Captain.ref + ".json"))
       )
-  }
 
-  object Trees {
+  object Trees:
     val ref: AssetName     = AssetName("Palm Tree")
     val jsonRef: AssetName = AssetName("Palm Tree JSON")
 
@@ -124,9 +117,8 @@ object Assets {
         AssetType.Image(Trees.ref, AssetPath(baseUrl + "assets/" + Trees.ref + ".png")),
         AssetType.Text(Trees.jsonRef, AssetPath(baseUrl + "assets/" + Trees.ref + ".json"))
       )
-  }
 
-  object Helm {
+  object Helm:
     val ref: AssetName     = AssetName("Ship Helm")
     val jsonRef: AssetName = AssetName("Ship Helm JSON")
 
@@ -135,9 +127,8 @@ object Assets {
         AssetType.Image(Helm.ref, AssetPath(baseUrl + "assets/" + Helm.ref + ".png")),
         AssetType.Text(Helm.jsonRef, AssetPath(baseUrl + "assets/" + Helm.ref + ".json"))
       )
-  }
 
-  object Fonts {
+  object Fonts:
     val smallFontName: AssetName            = AssetName("smallFontName")
     val fontKey: FontKey                    = FontKey("boxy font")
     val fontMaterial: Material.ImageEffects = Material.ImageEffects(smallFontName)
@@ -201,7 +192,6 @@ object Assets {
       Set(
         AssetType.Image(Fonts.smallFontName, AssetPath(baseUrl + "assets/boxy_font_small.png"))
       )
-  }
 
   def initialAssets(baseUrl: String): Set[AssetType] =
     Fonts.assets(baseUrl) ++
@@ -215,4 +205,3 @@ object Assets {
       Flag.assets(baseUrl) ++
       Trees.assets(baseUrl) ++
       Helm.assets(baseUrl)
-}
