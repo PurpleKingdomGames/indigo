@@ -8,22 +8,19 @@ some data during the loading screen, parse it, and use it to generate part
 of the model. We _could_ represent that with an Option, but that could get
 messy.
  */
-sealed trait LevelModel:
-  val notReady: Boolean
-
-  def update(gameTime: GameTime, inputState: InputState): Outcome[LevelModel]
+enum LevelModel(val notReady: Boolean):
+  case NotReady                                  extends LevelModel(true)
+  case Ready(pirate: Pirate, platform: Platform) extends LevelModel(false)
 
 object LevelModel:
-  case object NotReady extends LevelModel:
-    val notReady: Boolean = true
 
-    def update(gameTime: GameTime, inputState: InputState): Outcome[NotReady.type] =
-      Outcome(this)
+  extension (lm: LevelModel)
+    def update(gameTime: GameTime, inputState: InputState): Outcome[LevelModel] =
+      lm match
+        case NotReady =>
+          Outcome(lm)
 
-  final case class Ready(pirate: Pirate, platform: Platform) extends LevelModel:
-    val notReady: Boolean = false
-
-    def update(gameTime: GameTime, inputState: InputState): Outcome[Ready] =
-      pirate.update(gameTime, inputState, platform).map { p =>
-        this.copy(pirate = p)
-      }
+        case Ready(pirate, platform) =>
+          pirate.update(gameTime, inputState, platform).map { p =>
+            Ready(p, platform)
+          }
