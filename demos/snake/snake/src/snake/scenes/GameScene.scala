@@ -1,13 +1,13 @@
 package snake.scenes
 
-import indigo._
-import indigo.scenes._
+import indigo.*
+import indigo.scenes.*
 
 import snake.model.{GameModel, ViewModel}
 import snake.Score
 import snake.init.{GameAssets, StartupData}
 
-object GameScene extends Scene[StartupData, GameModel, ViewModel] {
+object GameScene extends Scene[StartupData, GameModel, ViewModel]:
   type SceneModel     = GameModel
   type SceneViewModel = Group
 
@@ -43,4 +43,3 @@ object GameScene extends Scene[StartupData, GameModel, ViewModel] {
       walls: Group
   ): Outcome[SceneUpdateFragment] =
     GameView.update(context.startUpData.viewConfig, gameModel, walls, context.startUpData.staticAssets)
-}

@@ -1,7 +1,7 @@
 package snake
 
-import indigo._
-import indigo.scenes._
+import indigo.*
+import indigo.scenes.*
 import indigoextras.subsystems.FPSCounter
 
 import snake.model.{ControlScheme, GameModel, ViewModel}
@@ -34,7 +34,7 @@ object SnakeGame extends IndigoGame[ViewConfig, StartupData, GameModel, ViewMode
           viewport = viewConfig.viewport,
           clearColor = RGBA.Black,
           magnification = viewConfig.magnificationLevel
-        )
+        ).withFrameRateLimit(60)
 
       BootResult(config, viewConfig)
         .withAssets(GameAssets.assets(assetPath))

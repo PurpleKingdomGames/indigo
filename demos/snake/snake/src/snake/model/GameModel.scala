@@ -1,6 +1,6 @@
 package snake.model
 
-import indigo._
+import indigo.*
 import snake.model.GameMap
 import snake.model.snakemodel.{CollisionCheckOutcome, Snake}
 import indigoextras.geometry.Vertex
@@ -20,9 +20,9 @@ final case class GameModel(
     tickDelay: Seconds,
     controlScheme: ControlScheme,
     lastUpdated: Seconds
-) {
+):
 
-  def update(gameTime: GameTime, dice: Dice, gridSquareSize: Int): GlobalEvent => Outcome[GameModel] = {
+  def update(gameTime: GameTime, dice: Dice, gridSquareSize: Int): GlobalEvent => Outcome[GameModel] =
     case FrameTick if gameTime.running < lastUpdated + tickDelay =>
       Outcome(this)
 
@@ -53,11 +53,8 @@ final case class GameModel(
         case s @ GameState.Crashed(_, _, _, _) =>
           GameModel.updateCrashed(gameTime, this, s)(e)
       }
-  }
 
-}
-
-object GameModel {
+object GameModel:
 
   val ScoreIncrement: Int = 100
 
@@ -81,7 +78,7 @@ object GameModel {
       state: GameModel,
       runningDetails: GameState.Running,
       gridSquareSize: Int
-  ): GlobalEvent => Outcome[GameModel] = {
+  ): GlobalEvent => Outcome[GameModel] =
     case FrameTick =>
       val (updatedModel, collisionResult) =
         state.snake.update(state.gameMap.gridSize, hitTest(state.gameMap, state.snake.givePath)) match {
@@ -100,7 +97,6 @@ object GameModel {
 
     case _ =>
       Outcome(state)
-  }
 
   def hitTest(gameMap: GameMap, body: List[Vertex]): Vertex => CollisionCheckOutcome =
     given CanEqual[Option[MapElement], Option[MapElement]] = CanEqual.derived
@@ -125,7 +121,7 @@ object GameModel {
       gameModel: GameModel,
       collisionResult: CollisionCheckOutcome
   ): Outcome[GameModel] =
-    collisionResult match {
+    collisionResult match
       case CollisionCheckOutcome.Crashed(_) =>
         Outcome(
           gameModel.copy(
@@ -166,13 +162,12 @@ object GameModel {
 
       case CollisionCheckOutcome.NoCollision(_) =>
         Outcome(gameModel)
-    }
 
   def updateCrashed(
       gameTime: GameTime,
       state: GameModel,
       crashDetails: GameState.Crashed
-  ): GlobalEvent => Outcome[GameModel] = {
+  ): GlobalEvent => Outcome[GameModel] =
     case FrameTick if gameTime.running <= crashDetails.crashedAt + Seconds(0.75) =>
       // Pause briefly on collision
       Outcome(state)
@@ -191,6 +186,3 @@ object GameModel {
 
     case _ =>
       Outcome(state)
-  }
-
-}

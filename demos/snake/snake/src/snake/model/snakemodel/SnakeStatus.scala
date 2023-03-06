@@ -6,7 +6,6 @@ enum SnakeStatus derives CanEqual:
 object SnakeStatus:
   extension (ss: SnakeStatus)
     def isDead: Boolean =
-      ss match {
+      ss match
         case SnakeStatus.Alive => false
         case SnakeStatus.Dead  => true
-      }

@@ -1,12 +1,12 @@
 package snake.scenes
 
-import indigo._
-import indigo.scenes._
+import indigo.*
+import indigo.scenes.*
 import snake.model.{ControlScheme, ViewModel}
 import snake.init.{GameAssets, StartupData}
 import snake.model.GameModel
 
-object ControlsScene extends Scene[StartupData, GameModel, ViewModel] {
+object ControlsScene extends Scene[StartupData, GameModel, ViewModel]:
   type SceneModel     = ControlScheme
   type SceneViewModel = Unit
 
@@ -29,7 +29,7 @@ object ControlsScene extends Scene[StartupData, GameModel, ViewModel] {
   def updateModel(
       context: SceneContext[StartupData],
       controlScheme: ControlScheme
-  ): GlobalEvent => Outcome[ControlScheme] = {
+  ): GlobalEvent => Outcome[ControlScheme] =
     case KeyboardEvent.KeyUp(Key.SPACE) =>
       Outcome(controlScheme)
         .addGlobalEvents(SceneEvent.JumpTo(GameScene.name))
@@ -39,7 +39,6 @@ object ControlsScene extends Scene[StartupData, GameModel, ViewModel] {
 
     case _ =>
       Outcome(controlScheme)
-  }
 
   def updateViewModel(
       context: SceneContext[StartupData],
@@ -72,7 +71,7 @@ object ControlsScene extends Scene[StartupData, GameModel, ViewModel] {
     Batch(
       Text("select controls", center, middle - 20, 1, GameAssets.fontKey, GameAssets.fontMaterial).alignLeft
     ) ++ {
-      controlScheme match {
+      controlScheme match
         case ControlScheme.Turning(_, _) =>
           Batch(
             Text("[_] direction (all arrow keys)", center, middle - 5, 1, GameAssets.fontKey, GameAssets.fontMaterial).alignLeft,
@@ -98,10 +97,8 @@ object ControlsScene extends Scene[StartupData, GameModel, ViewModel] {
               GameAssets.fontMaterial
             ).alignLeft
           )
-      }
+
     }
 
   def drawSelectText(center: Int): SceneNode =
     Text("Up / Down arrows to select.", center, 205, 1, GameAssets.fontKey, GameAssets.fontMaterial).alignCenter
-
-}

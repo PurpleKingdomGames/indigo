@@ -3,7 +3,7 @@ package snake.model.snakemodel
 import indigoextras.geometry.BoundingBox
 import indigoextras.geometry.Vertex
 
-final case class Snake(start: Vertex, body: List[Vertex], direction: SnakeDirection, status: SnakeStatus) {
+final case class Snake(start: Vertex, body: List[Vertex], direction: SnakeDirection, status: SnakeStatus):
 
   def goUp: Snake =
     Snake.goUp(this)
@@ -47,8 +47,7 @@ final case class Snake(start: Vertex, body: List[Vertex], direction: SnakeDirect
   def givePathList: List[(Int, Int)] =
     (start :: body).map(p => (p.x.toInt, p.y.toInt))
 
-}
-object Snake {
+object Snake:
 
   def apply(start: Vertex): Snake =
     Snake(start, Nil, SnakeDirection.Up, SnakeStatus.Alive)
@@ -107,7 +106,7 @@ object Snake {
       y = if (gridPoint.y < 0) gridSize.height else gridPoint.y % gridSize.height
     )
 
-  def snakeUpdate(snake: Snake): CollisionCheckOutcome => (Snake, CollisionCheckOutcome) = {
+  def snakeUpdate(snake: Snake): CollisionCheckOutcome => (Snake, CollisionCheckOutcome) =
     case oc @ CollisionCheckOutcome.NoCollision(pt) =>
       (moveToPosition(snake, pt), oc)
 
@@ -116,15 +115,11 @@ object Snake {
 
     case oc @ CollisionCheckOutcome.Crashed(_) =>
       (snake.crash, oc)
-  }
 
   def moveToPosition(snake: Snake, snakePoint: Vertex): Snake =
-    snake match {
+    snake match
       case Snake(_, Nil, d, s) =>
         Snake(snakePoint, Nil, d, s)
 
       case Snake(h, l, d, s) =>
         Snake(snakePoint, h :: l.reverse.drop(1).reverse, d, s)
-    }
-
-}

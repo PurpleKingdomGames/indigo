@@ -1,7 +1,7 @@
 package snake.scenes
 
-import indigo._
-import indigo.scenes._
+import indigo.*
+import indigo.scenes.*
 
 import snake.init.GameAssets
 import snake.model.ViewModel
@@ -9,7 +9,7 @@ import snake.init.StartupData
 import snake.GameReset
 import snake.model.GameModel
 
-object StartScene extends Scene[StartupData, GameModel, ViewModel] {
+object StartScene extends Scene[StartupData, GameModel, ViewModel]:
   type SceneModel     = Unit
   type SceneViewModel = Unit
 
@@ -93,4 +93,3 @@ object StartScene extends Scene[StartupData, GameModel, ViewModel] {
       ).alignCenter,
       Text("Made by Dave", center, middle + 10, 1, GameAssets.fontKey, GameAssets.fontMaterial).alignCenter
     )
-}

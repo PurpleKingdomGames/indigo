@@ -1,12 +1,12 @@
 package snake.scenes
 
-import indigo._
-import indigo.scenes._
+import indigo.*
+import indigo.scenes.*
 import snake.model.ViewModel
 import snake.init.{GameAssets, StartupData}
 import snake.model.GameModel
 
-object GameOverScene extends Scene[StartupData, GameModel, ViewModel] {
+object GameOverScene extends Scene[StartupData, GameModel, ViewModel]:
   type SceneModel     = Int
   type SceneViewModel = Unit
 
@@ -68,4 +68,3 @@ object GameOverScene extends Scene[StartupData, GameModel, ViewModel] {
           )
         )
     }
-}

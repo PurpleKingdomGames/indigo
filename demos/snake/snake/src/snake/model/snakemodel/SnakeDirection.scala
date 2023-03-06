@@ -11,7 +11,7 @@ enum SnakeDirection derives CanEqual:
 object SnakeDirection:
   extension (sd: SnakeDirection)
     def makeLegalTurn(snake: Snake): Option[Snake] =
-      (sd, snake.direction) match {
+      (sd, snake.direction) match
         case (SnakeDirection.Up, SnakeDirection.Up)       => Some(snake)
         case (SnakeDirection.Up, SnakeDirection.Left)     => Some(snake)
         case (SnakeDirection.Up, SnakeDirection.Right)    => Some(snake)
@@ -25,7 +25,6 @@ object SnakeDirection:
         case (SnakeDirection.Right, SnakeDirection.Up)    => Some(snake)
         case (SnakeDirection.Right, SnakeDirection.Down)  => Some(snake)
         case _                                            => None
-      }
 
     def turnLeft: SnakeDirection =
       SnakeDirection.turn(sd, TurnDirection.Left)
@@ -49,7 +48,7 @@ object SnakeDirection:
       SnakeDirection.moveOneSquareForward(sd, current)
 
   def go(snakeDirection: SnakeDirection, goDirection: SnakeDirection): SnakeDirection =
-    (snakeDirection, goDirection) match {
+    (snakeDirection, goDirection) match
       case (Up, Left) =>
         Left
 
@@ -76,10 +75,9 @@ object SnakeDirection:
 
       case (current, _) =>
         current
-    }
 
   def turn(snakeDirection: SnakeDirection, turnDirection: TurnDirection): SnakeDirection =
-    (snakeDirection, turnDirection) match {
+    (snakeDirection, turnDirection) match
       case (Up, TurnDirection.Left) =>
         Left
 
@@ -103,10 +101,9 @@ object SnakeDirection:
 
       case (Right, TurnDirection.Right) =>
         Down
-    }
 
   def moveOneSquareForward(snakeDirection: SnakeDirection, current: Vertex): Vertex =
-    snakeDirection match {
+    snakeDirection match
       case Up =>
         current + MoveUp
 
@@ -118,7 +115,6 @@ object SnakeDirection:
 
       case Right =>
         current + MoveRight
-    }
 
   val MoveUp: Vertex    = Vertex(0, 1)
   val MoveDown: Vertex  = Vertex(0, -1)

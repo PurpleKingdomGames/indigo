@@ -1,10 +1,10 @@
 package snake.scenes
 
-import indigo._
+import indigo.*
 
 import snake.init.GameAssets
 
-object SharedElements {
+object SharedElements:
 
   def drawHitSpaceToStart(center: Int, blinkDelay: Seconds, gameTime: GameTime): Batch[SceneNode] =
     Signal
@@ -15,5 +15,3 @@ object SharedElements {
         else Batch.empty
       }
       .at(gameTime.running)
-
-}

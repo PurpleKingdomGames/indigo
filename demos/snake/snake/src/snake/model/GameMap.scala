@@ -7,7 +7,7 @@ import indigoextras.trees.QuadTree
 import indigoextras.geometry.Vertex
 import scala.annotation.tailrec
 
-final case class GameMap(quadTree: QuadTree[MapElement], gridSize: BoundingBox) {
+final case class GameMap(quadTree: QuadTree[MapElement], gridSize: BoundingBox):
 
   def fetchElementAt(gridPoint: Vertex): Option[MapElement] =
     quadTree.fetchElementAt(gridPoint)
@@ -47,16 +47,14 @@ final case class GameMap(quadTree: QuadTree[MapElement], gridSize: BoundingBox) 
         Nil
     }
 
-}
-
-object GameMap {
+object GameMap:
 
   def apply(gridSize: BoundingBox): GameMap =
     GameMap(QuadTree.empty[MapElement](gridSize.size), gridSize)
 
   def findEmptySpace[T](quadTree: QuadTree[T], dice: Dice, gridSize: BoundingBox, not: List[Vertex])(using
       CanEqual[T, T]
-  ): Vertex = {
+  ): Vertex =
 
     given CanEqual[Option[T], Option[T]] = CanEqual.derived
 
@@ -83,9 +81,8 @@ object GameMap {
       }
 
     rec(makeRandom())
-  }
 
-  def genLevel(gridSize: BoundingBox): GameMap = {
+  def genLevel(gridSize: BoundingBox): GameMap =
     val adjustedGridSize = gridSize.resize(gridSize.size - Vertex(1, 1))
 
     GameMap(gridSize)
@@ -94,7 +91,6 @@ object GameMap {
       .insertElements(rightEdgeWall(adjustedGridSize))
       .insertElements(bottomEdgeWall(adjustedGridSize))
       .insertElements(leftEdgeWall(adjustedGridSize))
-  }
 
   private def topEdgeWall(gridSize: BoundingBox): List[MapElement.Wall] =
     fillIncrementally(gridSize.topLeft, gridSize.topRight).map(MapElement.Wall.apply)
@@ -108,7 +104,7 @@ object GameMap {
   private def leftEdgeWall(gridSize: BoundingBox): List[MapElement.Wall] =
     fillIncrementally(gridSize.topLeft, gridSize.bottomLeft).map(MapElement.Wall.apply)
 
-  private def fillIncrementally(start: Vertex, end: Vertex): List[Vertex] = {
+  private def fillIncrementally(start: Vertex, end: Vertex): List[Vertex] =
     @tailrec
     def rec(last: Vertex, dest: Vertex, p: Vertex => Boolean, acc: List[Vertex]): List[Vertex] =
       if (p(last)) acc
@@ -121,11 +117,9 @@ object GameMap {
 
     if (lessThanOrEqual(start, end)) rec(start, end, (gp: Vertex) => gp == end, List(start))
     else rec(end, start, (gp: Vertex) => gp == start, List(end))
-  }
 
   private def lessThanOrEqual(a: Vertex, b: Vertex): Boolean =
     a.x <= b.x && a.y <= b.y
-}
 
 enum MapElement derives CanEqual:
   case Wall(gridPoint: Vertex)  extends MapElement

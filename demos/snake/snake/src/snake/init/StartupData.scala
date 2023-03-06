@@ -1,9 +1,9 @@
 package snake.init
 
-import indigo._
+import indigo.*
 import indigoextras.geometry.BoundingBox
 
-object StartupData {
+object StartupData:
 
   def initialise(
       viewConfig: ViewConfig
@@ -12,7 +12,7 @@ object StartupData {
       Startup.Success(createStartupData(viewConfig))
     )
 
-  def createStartupData(viewConfig: ViewConfig): StartupData = {
+  def createStartupData(viewConfig: ViewConfig): StartupData =
     val blockSize = viewConfig.gridSquareSize
 
     StartupData(
@@ -23,9 +23,6 @@ object StartupData {
         wall = GameAssets.wall(blockSize)
       )
     )
-  }
-
-}
 
 final case class StartupData(viewConfig: ViewConfig, staticAssets: StaticAssets)
 
@@ -37,13 +34,13 @@ final case class ViewConfig(
     footerHeight: Int,
     magnificationLevel: Int,
     viewport: GameViewport
-) {
+):
   val horizontalCenter: Int = (viewport.width / magnificationLevel) / 2
   val verticalMiddle: Int   = (viewport.height / magnificationLevel) / 2
-}
-object ViewConfig {
 
-  val default: ViewConfig = {
+object ViewConfig:
+
+  val default: ViewConfig =
     val gridSquareSize = 12
     val gridSize = BoundingBox(
       x = 0,
@@ -64,6 +61,3 @@ object ViewConfig {
         ((gridSquareSize * gridSize.height.toInt) * magnificationLevel) + footerHeight
       )
     )
-  }
-
-}

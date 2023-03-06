@@ -1,13 +1,13 @@
 package snake.scenes
 
-import indigo._
+import indigo.*
 import snake.init.{GameAssets, StaticAssets, ViewConfig}
 import snake.model.GameMap
 import snake.model.GameModel
 import indigoextras.geometry.Vertex
 import indigoextras.geometry.BoundingBox
 
-object GameView {
+object GameView:
 
   def update(viewConfig: ViewConfig, model: GameModel, walls: Group, staticAssets: StaticAssets): Outcome[SceneUpdateFragment] =
     Outcome(
@@ -61,5 +61,3 @@ object GameView {
 
   def gridPointToPoint(gridPoint: Vertex, gridSize: BoundingBox, gridSquareSize: Int): Point =
     Point((gridPoint.x * gridSquareSize).toInt, (((gridSize.height - 1) - gridPoint.y) * gridSquareSize).toInt)
-
-}

@@ -1,8 +1,8 @@
 package snake.init
 
-import indigo._
+import indigo.*
 
-object GameAssets {
+object GameAssets:
 
   val smallFontName: AssetName = AssetName("smallFontName")
   val snakeTexture: AssetName  = AssetName("snakeTexture")
@@ -89,5 +89,3 @@ object GameAssets {
       .addChar(FontChar("/", 150, 0, 9, 12))
       .addChar(FontChar(":", 2, 26, 5, 12))
       .addChar(FontChar("_", 42, 65, 9, 12))
-
-}

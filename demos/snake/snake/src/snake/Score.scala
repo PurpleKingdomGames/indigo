@@ -1,10 +1,10 @@
 package snake
 
-import indigo._
-import indigoextras.subsystems._
+import indigo.*
+import indigoextras.subsystems.*
 import snake.init.GameAssets
 
-object Score {
+object Score:
 
   val poolKey: AutomataPoolKey =
     AutomataPoolKey("points")
@@ -22,7 +22,7 @@ object Score {
   val spawnEvent: Point => AutomataEvent =
     position => AutomataEvent.Spawn(poolKey, position, None, None)
 
-  object ModiferFunctions {
+  object ModiferFunctions:
 
     val workOutPosition: AutomatonSeedValues => Signal[Point] =
       seed =>
@@ -36,7 +36,7 @@ object Score {
 
     val signal: SignalReader[(AutomatonSeedValues, SceneNode), AutomatonUpdate] =
       SignalReader { case (seed, sceneGraphNode) =>
-        sceneGraphNode match {
+        sceneGraphNode match
           case t: Text[_] =>
             workOutPosition(seed).map { position =>
               AutomatonUpdate(Batch(t.moveTo(position)), Batch.empty)
@@ -44,9 +44,5 @@ object Score {
 
           case _ =>
             Signal.fixed(AutomatonUpdate.empty)
-        }
+
       }
-
-  }
-
-}
