@@ -10,8 +10,12 @@ import coursier.maven.MavenRepository
 
 import $ivy.`io.indigoengine::mill-indigo:0.14.1-SNAPSHOT`, millindigo._
 
-object snake extends ScalaJSModule with MillIndigo with ScalafmtModule {
-def scalaVersion   = "3.2.2"
+import $ivy.`io.github.davidgregory084::mill-tpolecat::0.3.2`
+
+import io.github.davidgregory084.TpolecatModule
+
+object snake extends ScalaJSModule with MillIndigo with ScalafmtModule with TpolecatModule {
+  def scalaVersion   = "3.2.2"
   def scalaJSVersion = "1.13.0"
 
   val gameAssetsDirectory: os.Path     = os.pwd / "assets"
@@ -63,9 +67,8 @@ def scalaVersion   = "3.2.2"
     ivy"io.indigoengine::indigo-extras::$indigoVersion"
   )
 
-  def scalacOptions = super.scalacOptions() ++ ScalacOptions.compile
-
   object test extends Tests {
+
     def ivyDeps = Agg(
       ivy"org.scalameta::munit::0.7.29"
     )
@@ -74,39 +77,6 @@ def scalaVersion   = "3.2.2"
 
     override def moduleKind = T(mill.scalajslib.api.ModuleKind.CommonJSModule)
 
-    def scalacOptions = super.scalacOptions() ++ ScalacOptions.test
   }
-
-}
-
-object ScalacOptions {
-
-  lazy val compile: Seq[String] =
-    Seq(
-      "-deprecation", // Emit warning and location for usages of deprecated APIs.
-      "-encoding",
-      "utf-8",                         // Specify character encoding used by source files.
-      "-feature",                      // Emit warning and location for usages of features that should be imported explicitly.
-      "-language:existentials",        // Existential types (besides wildcard types) can be written and inferred
-      "-language:experimental.macros", // Allow macro definition (besides implementation and application)
-      "-language:higherKinds",         // Allow higher-kinded types
-      "-language:implicitConversions", // Allow definition of implicit functions called views
-      "-unchecked",                    // Enable additional warnings where generated code depends on assumptions.
-      "-Xfatal-warnings",              // Fail the compilation if there are any warnings.
-      "-language:strictEquality"       // Scala 3 - Multiversal Equality
-    )
-
-  lazy val test: Seq[String] =
-    Seq(
-      "-deprecation", // Emit warning and location for usages of deprecated APIs.
-      "-encoding",
-      "utf-8",                         // Specify character encoding used by source files.
-      "-feature",                      // Emit warning and location for usages of features that should be imported explicitly.
-      "-language:existentials",        // Existential types (besides wildcard types) can be written and inferred
-      "-language:experimental.macros", // Allow macro definition (besides implementation and application)
-      "-language:higherKinds",         // Allow higher-kinded types
-      "-language:implicitConversions", // Allow definition of implicit functions called views
-      "-unchecked"                     // Enable additional warnings where generated code depends on assumptions.
-    )
 
 }
