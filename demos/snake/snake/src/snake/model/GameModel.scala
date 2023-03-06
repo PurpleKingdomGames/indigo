@@ -64,7 +64,7 @@ object GameModel:
         gridSize.center.x.toInt,
         gridSize.center.y.toInt - (gridSize.center.y / 2).toInt
       ).grow.grow,
-      gameState = GameState.Running.start,
+      gameState = GameState.start,
       gameMap = GameMap.genLevel(gridSize),
       score = 0,
       tickDelay = Seconds(0.1),
