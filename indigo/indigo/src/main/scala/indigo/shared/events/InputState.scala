@@ -4,6 +4,7 @@ import indigo.shared.collections.Batch
 import indigo.shared.input.Gamepad
 import indigo.shared.input.Keyboard
 import indigo.shared.input.Mouse
+import indigo.shared.input.Pointers
 
 /** Holds a snapshot of the states of the various input types as they were entering this frame.
   *
@@ -14,7 +15,7 @@ import indigo.shared.input.Mouse
   * @param gamepad
   *   Current state of the gamepad
   */
-final class InputState(val mouse: Mouse, val keyboard: Keyboard, val gamepad: Gamepad) {
+final class InputState(val mouse: Mouse, val keyboard: Keyboard, val gamepad: Gamepad, val pointers: Pointers) {
 
   /** Given some input mappings, produce a guaranteed value A based on the current InputState.
     */
@@ -30,7 +31,7 @@ final class InputState(val mouse: Mouse, val keyboard: Keyboard, val gamepad: Ga
 
 object InputState {
   val default: InputState =
-    InputState(Mouse.default, Keyboard.default, Gamepad.default)
+    InputState(Mouse.default, Keyboard.default, Gamepad.default, Pointers.default)
 
   def calculateNext(
       previous: InputState,
@@ -40,6 +41,7 @@ object InputState {
     InputState(
       Mouse.calculateNext(previous.mouse, events.collect { case e: MouseEvent => e }),
       Keyboard.calculateNext(previous.keyboard, events.collect { case e: KeyboardEvent => e }),
-      gamepadState
+      gamepadState,
+      Pointers.calculateNext(previous.pointers, events.collect { case e: PointerEvent => e })
     )
 }
