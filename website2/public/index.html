@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en" class="js csstransforms3d">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="Hugo 0.110.0">
+    <meta name="description" content="Elm inspired Scala Web Framework">
+<meta name="author" content="Dave Smith">
+
+    <link rel="icon" href="/images/favicon.png" type="image/png">
+
+    <title>Tyrian - Tyrian</title>
+
+    
+    <link href="/css/nucleus.css?1675541392" rel="stylesheet">
+    <link href="/css/fontawesome-all.min.css?1675541392" rel="stylesheet">
+    <link href="/css/hybrid.css?1675541392" rel="stylesheet">
+    <link href="/css/featherlight.min.css?1675541392" rel="stylesheet">
+    <link href="/css/perfect-scrollbar.min.css?1675541392" rel="stylesheet">
+    <link href="/css/auto-complete.css?1675541392" rel="stylesheet">
+    <link href="/css/atom-one-dark-reasonable.css?1675541392" rel="stylesheet">
+    <link href="/css/theme.css?1675541392" rel="stylesheet">
+    <link href="/css/tabs.css?1675541392" rel="stylesheet">
+    <link href="/css/hugo-theme.css?1675541392" rel="stylesheet">
+    
+    <link href="/css/theme-tyrian.css?1675541392" rel="stylesheet">
+    
+    <link href="/css/foo.css?1675541392" rel="stylesheet"><link href="/css/bar.css?1675541392" rel="stylesheet">
+
+    <script src="/js/jquery-3.3.1.min.js?1675541392"></script>
+
+    <style>
+      :root #header + #content > #left > #rlblock_left{
+          display:none !important;
+      }
+      
+        :not(pre) > code + span.copy-to-clipboard {
+            display: none;
+        }
+      
+    </style>
+    
+  </head>
+  <body class="" data-url="/">
+    <nav id="sidebar" class="">
+
+
+
+  <div id="header-wrapper">
+    <div id="header">
+      <img src='/images/tyrian-menu-logo.svg' style="width:75%" alt="Tyrian logo">
+
+    </div>
+    
+        <div class="searchbox">
+    <label for="search-by"><i class="fas fa-search"></i></label>
+    <input data-search-input id="search-by" type="search" placeholder="Search...">
+    <span data-search-clear=""><i class="fas fa-times"></i></span>
+</div>
+
+<script type="text/javascript" src="/js/lunr.min.js?1675541392"></script>
+<script type="text/javascript" src="/js/auto-complete.js?1675541392"></script>
+<script type="text/javascript">
+    
+        var baseurl = "https:\/\/tyrian.indigoengine.io\/";
+    
+</script>
+<script type="text/javascript" src="/js/search.js?1675541392"></script>
+
+    
+  </div>
+  
+
+    <div class="highlightable">
+    <ul class="topics">
+
+        
+          
+          
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/installation/" title="Setup &amp; Configuration" class="dd-item
+        
+        
+        
+        ">
+      <a href="/installation/">
+          Installation
+          
+      </a>
+      
+      
+    </li>
+  
+ 
+
+          
+          
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/architecture/" title="Architecture &amp; Patterns" class="dd-item
+        
+        
+        
+        ">
+      <a href="/architecture/">
+          Architecture
+          
+      </a>
+      
+      
+    </li>
+  
+ 
+
+          
+          
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/concepts/" title="Core Concepts" class="dd-item
+        
+        
+        
+        ">
+      <a href="/concepts/">
+          Core Concepts
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+
+        
+          
+            
+            
+
+
+
+
+ 
+  
+    
+      <li data-nav-id="/concepts/guided-tour/" title="A Guided Example" class="dd-item ">
+        <a href="/concepts/guided-tour/">
+        Guided Example
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+
+
+ 
+  
+    
+      <li data-nav-id="/concepts/bundling/" title="Building &amp; Bundling" class="dd-item ">
+        <a href="/concepts/bundling/">
+        Bundling
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+
+
+ 
+  
+    
+      <li data-nav-id="/concepts/goodies/" title="Built-in Goodies" class="dd-item ">
+        <a href="/concepts/goodies/">
+        Goodies
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+
+
+ 
+  
+    
+      <li data-nav-id="/concepts/cmd/" title="Commands &amp; Effects" class="dd-item ">
+        <a href="/concepts/cmd/">
+        Commands
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+
+
+ 
+  
+    
+      <li data-nav-id="/concepts/networking/" title="Networking" class="dd-item ">
+        <a href="/concepts/networking/">
+        Networking
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+
+
+ 
+  
+    
+      <li data-nav-id="/concepts/html/" title="Rendering HTML" class="dd-item ">
+        <a href="/concepts/html/">
+        Rendering HTML
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+
+
+ 
+  
+    
+      <li data-nav-id="/concepts/ssr/" title="Server-side Rendering (SSR)" class="dd-item ">
+        <a href="/concepts/ssr/">
+        Server-side Rendering
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+
+
+ 
+  
+    
+      <li data-nav-id="/concepts/subs/" title="Subscriptions" class="dd-item ">
+        <a href="/concepts/subs/">
+        Subscriptions
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+
+
+ 
+  
+    
+      <li data-nav-id="/concepts/tyrian-indigo-bridge/" title="Tyrian-Indigo Bridge" class="dd-item ">
+        <a href="/concepts/tyrian-indigo-bridge/">
+        Tyrian &#43; Indigo 
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+      
+    </li>
+  
+ 
+
+          
+          
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/examples/" title="Examples" class="dd-item
+        
+        
+        
+        ">
+      <a href="/examples/">
+          Examples
+          
+      </a>
+      
+      
+    </li>
+  
+ 
+
+          
+          
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/information/" title="Information &amp; Trivia" class="dd-item
+        
+        
+        
+        ">
+      <a href="/information/">
+          Information
+          
+      </a>
+      
+      
+    </li>
+  
+ 
+
+          
+        
+    </ul>
+
+    
+    
+      <section id="shortcuts">
+        <h3>More</h3>
+        <ul>
+          
+              <li>
+                  <a class="padding" href="https://github.com/PurpleKingdomGames/tyrian"><i class='fab fa-github'></i> Github</a>
+              </li>
+          
+              <li>
+                  <a class="padding" href="https://tyrian.indigoengine.io/api/"><i class='fas fa-bookmark'></i> Tyrian API Docs</a>
+              </li>
+          
+              <li>
+                  <a class="padding" href="https://github.com/sponsors/PurpleKingdomGames"><i class='fas fa-bullhorn'></i> GitHub Sponsors</a>
+              </li>
+          
+        </ul>
+      </section>
+    
+
+    
+    <section id="footer">
+      <p>Built with <a href="https://github.com/matcornic/hugo-theme-learn"><i class="fas fa-heart"></i></a> from <a href="https://getgrav.org">Grav</a> and <a href="https://gohugo.io/">Hugo</a></p>
+
+    </section>
+  </div>
+</nav>
+
+
+
+
+        <section id="body">
+        <div id="overlay"></div>
+        <div class="padding highlightable">
+              
+        <div id="head-tags">
+        
+        </div>
+        
+        <div id="body-inner">
+          
+
+        
+
+<span id="sidebar-toggle-span">
+<a href="#" id="sidebar-toggle" data-sidebar-toggle=""><i class="fas fa-bars"></i> navigation</a>
+</span>
+
+ 
+<h2 id="tyrian">Tyrian</h2>
+<p>Tyrian is an Elm-inspired, purely functional UI library for Scala 3.</p>
+<p>Its purpose is to make building interactive websites in Scala 3 fun! Tyrian allows you to describe web pages and complex interactions in a way that is elegant, easy to read and easy to reason about.</p>
+<p>Tyrian is not designed to work alone, the intention is that you will use it alongside a web bundler to look after things like your media assets and stylesheets. (All our examples use <a href="https://parceljs.org/">Parcel</a>.)</p>
+<h3 id="tyrian-s-indigo">Tyrian 💜&rsquo;s Indigo</h3>
+<p>Tyrian is by the maintainers of <a href="https://indigoengine.io/">Indigo</a>, a Scala 3 game engine. As such, Indigo web games are first class citizens in Tyrian, allowing easy embedding and seamless communication between their respective event/messaging systems.</p>
+<h3 id="when-should-i-consider-using-tyrian">When should I consider using Tyrian?</h3>
+<p>Tyrian is designed for building SPAs (Single Page Applications): Web pages with lots of interactive elements.</p>
+<p>One use case we&rsquo;re particularly excited about is augmenting Indigo games with rich HTML UI elements.</p>
+<p>You can also use Tyrian to do Server-side Rendering (SSR) in conjunction with your favorite Scala HTTP framework in place of, say, a templating library.</p>
+<h3 id="what-should-i-avoid-using-tyrian-for">What should I avoid using Tyrian for?</h3>
+<p>Tyrian is not a great candidate for static websites - like this one! - where the content is there to be read, not interacted / played / engaged with.</p>
+<h3 id="why-shouldnt-i-just-use-some-scalajs-react-based-thingy-instead">Why shouldn&rsquo;t I just use some Scala.js-React-based-thingy instead?</h3>
+<p>You can! Quite frankly, you probably should!</p>
+<p>In fact there are a good number of Scala.js alternatives to Tyrian, such as <a href="https://github.com/outwatch/outwatch">Outwatch</a>, <a href="https://github.com/japgolly/scalajs-react">scalajs-react</a>, <a href="https://slinky.dev/">Slinky</a>, and <a href="https://laminar.dev/">Laminar</a> to name a few.</p>
+<p>React in particular is an industry standard framework these days, and so there are lots and lots of resources out there to help you use it. In that regard at least, React (via Slinky or scalajs-react) is probably a good choice for beginners.</p>
+<p>Functional programmers may be more into something like Laminar, which is based on Functional Reactive Programming (FRP). Laminar looks to be well made and well maintained, and there are some great talks out there about it.</p>
+<p>Tyrian works fundamentally differently to those other frameworks. In the authors very opinionated opinion: The Elm Architecture upon which it is based, is the most productive, fun, and <em>sane</em> frontend architectural approach there is.</p>
+<p>This library exists because we don&rsquo;t want to work any other way. We encourage you to try a few different approaches and decide what works best for you. 😊</p>
+	
+  
+        
+        </div>
+        
+
+      </div>
+
+    <div id="navigation">
+        
+        
+
+        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+
+        
+
+
+	 
+	 
+    </div>
+
+    </section>
+
+    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div>
+    <script src="/js/clipboard.min.js?1675541392"></script>
+    <script src="/js/perfect-scrollbar.min.js?1675541392"></script>
+    <script src="/js/perfect-scrollbar.jquery.min.js?1675541392"></script>
+    <script src="/js/jquery.sticky.js?1675541392"></script>
+    <script src="/js/featherlight.min.js?1675541392"></script>
+    <script src="/js/highlight.pack.js?1675541392"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="/js/modernizr.custom-3.6.0.js?1675541392"></script>
+    <script src="/js/learn.js?1675541392"></script>
+    <script src="/js/hugo-learn.js?1675541392"></script>
+    
+    
+
+  </body>
+</html>
+
