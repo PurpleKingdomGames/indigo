@@ -2,7 +2,7 @@ baseURL = 'https://indigoengine.io/'
 languageCode = 'en-gb'
 title = 'Indigo'
 
-contentDir = '../indigo-docs/target/mdoc/'
+contentDir = '../indigo/indigo-docs/target/mdoc/'
 
 staticDir = ['static', '../target/scala-3.2.2/site-docs']
 

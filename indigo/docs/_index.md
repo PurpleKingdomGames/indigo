@@ -1,7 +1,9 @@
----
-id: development-status
-title: Indigo's Development Status
----
++++
+id = "development-status"
+title = "Indigo's Development Status"
+menuTitle = "Development Status"
+weight = 1
++++
 
 ## Indigo's Status is Alpha
 
