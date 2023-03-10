@@ -1,10 +1,47 @@
 package indigo.shared.scenegraph
 
+import indigo.shared.collections.Batch
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.datatypes.RGBA
 import indigo.shared.materials.BlendMaterial
 
 class SceneUpdateFragmentTests extends munit.FunSuite {
+
+  test("Able to add a batch of layers from a constructor") {
+
+    val actual =
+      SceneUpdateFragment(Batch(Layer(BindingKey("key A")), Layer(BindingKey("key B"))))
+
+    val expected =
+      SceneUpdateFragment.empty.addLayers(Batch(Layer(BindingKey("key A")), Layer(BindingKey("key B"))))
+
+    assertEquals(actual, expected)
+
+  }
+
+  test("Able to add an optional layer from a constructor (Some)") {
+
+    val actual =
+      SceneUpdateFragment(Option(Layer(BindingKey("key A"))))
+
+    val expected =
+      SceneUpdateFragment.empty.addLayers(Batch(Layer(BindingKey("key A"))))
+
+    assertEquals(actual, expected)
+
+  }
+
+  test("Able to add an optional layer from a constructor (None)") {
+
+    val actual =
+      SceneUpdateFragment(Option.empty[Layer])
+
+    val expected =
+      SceneUpdateFragment.empty
+
+    assertEquals(actual, expected)
+
+  }
 
   test("Adding a layer with an existing key merges magnification down (none, none)") {
 

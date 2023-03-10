@@ -108,6 +108,15 @@ object SceneUpdateFragment:
   def apply(layer: Layer): SceneUpdateFragment =
     SceneUpdateFragment(Batch(layer), Batch.empty, None, None, Batch.empty, None)
 
+  @targetName("suf-maybe-layer")
+  def apply(maybeLayer: Option[Layer]): SceneUpdateFragment =
+    val layers = maybeLayer.map(l => Batch(l)).getOrElse(Batch.empty)
+    SceneUpdateFragment(layers, Batch.empty, None, None, Batch.empty, None)
+
+  @targetName("suf-batch-layers")
+  def apply(layers: Batch[Layer]): SceneUpdateFragment =
+    SceneUpdateFragment(layers, Batch.empty, None, None, Batch.empty, None)
+
   @targetName("suf-apply-many-layers")
   def apply(layers: Layer*): SceneUpdateFragment =
     SceneUpdateFragment(layers.toBatch, Batch.empty, None, None, Batch.empty, None)

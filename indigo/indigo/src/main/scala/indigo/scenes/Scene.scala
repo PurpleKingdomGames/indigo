@@ -69,7 +69,7 @@ object Scene {
       type SceneViewModel = Unit
 
       val sceneFragment =
-        Outcome(SceneUpdateFragment(Batch.empty))
+        Outcome(SceneUpdateFragment(Batch.empty[Layer]))
 
       val modelOutcome = Outcome(())
 
