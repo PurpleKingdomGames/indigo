@@ -8,7 +8,7 @@ class GameStateTests extends munit.FunSuite {
 
   test("GameState should do a simple update") {
 
-    val actual   = GameState.Running.start.updateNow(Seconds(0.1), SnakeDirection.Up)
+    val actual   = GameState.start.updateNow(Seconds(0.1), SnakeDirection.Up)
     val expected = GameState.Running(Seconds(0.1), SnakeDirection.Up)
 
     assertEquals(actual, expected)
