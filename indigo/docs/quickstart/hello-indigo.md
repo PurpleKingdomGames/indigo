@@ -27,11 +27,11 @@ We'll skip over the initial project set up and assume that you followed the [set
 
 Here is our starting point:
 
-```scala mdoc:js:shared
+```scala mdoc:js
 import indigo.*
 import scala.scalajs.js.annotation.JSExportTopLevel
 
-@JSExportTopLevel("IndigoGame")
+// @JSExportTopLevel("IndigoGame") // <-- Uncomment! MDoc limitation
 object HelloIndigo extends IndigoSandbox[Unit, Unit] {
 
   val config: GameConfig =
@@ -73,6 +73,10 @@ object HelloIndigo extends IndigoSandbox[Unit, Unit] {
     )
 
 }
+```
+
+```scala mdoc:js:shared:invisible
+import indigo.*
 ```
 
 A lot of this is self explanatory hopefully, but let's go through a couple of the more note worthy points.
