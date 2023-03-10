@@ -196,7 +196,12 @@ lazy val jsdocs = project
       "io.indigoengine" %%% "indigo-extras"        % indigoDocsVersion,
       "io.indigoengine" %%% "tyrian-io"            % tyrianDocsVersion,
       "io.indigoengine" %%% "tyrian-indigo-bridge" % tyrianDocsVersion
-    )
+    ),
+    tpolecatCiModeOptions ~= { opts =>
+      opts.filterNot(
+        Set(ScalacOptions.fatalWarnings)
+      )
+    }
   )
   .enablePlugins(ScalaJSPlugin)
 
