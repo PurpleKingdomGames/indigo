@@ -81,4 +81,22 @@ class TimelineTests extends munit.FunSuite {
     assertEquals(Timeline(tw).at(3.seconds)(Outcome(2)), Some(Outcome(2, Batch(MyTestEvent))))
   }
 
+  test("Query animation for its duration / length") {
+
+    val f = (a: Int) => SignalFunction((t: Seconds) => a * t.toInt)
+
+    val windows = Batch(
+      TimeWindow(1.seconds, 3.seconds, f),
+      TimeWindow(4.seconds, 7.seconds, f),
+      TimeWindow(5.seconds, 6.seconds, f)
+    )
+
+    val tl = Timeline(windows)
+
+    val expected = 7.seconds
+
+    assertEquals(tl.duration, expected)
+    assertEquals(tl.length, expected)
+  }
+
 }

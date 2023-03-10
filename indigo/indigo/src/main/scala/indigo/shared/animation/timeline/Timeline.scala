@@ -53,3 +53,12 @@ object Timeline:
           else rec(xs, acc)
 
       rec(tl, None)
+
+    def toWindows: Batch[TimeWindow[A]] =
+      tl
+
+    def duration: Seconds =
+      tl.map(_.end).sortWith(_ > _).headOption.getOrElse(Seconds.zero)
+
+    def length: Seconds =
+      duration
