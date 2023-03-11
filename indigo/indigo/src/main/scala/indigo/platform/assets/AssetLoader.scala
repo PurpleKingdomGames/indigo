@@ -63,7 +63,7 @@ object AssetLoader {
       i <- loadImageAssets(filterOutImageAssets(assetList))
       a <- loadAudioAssets(filterOutAudioAssets(assetList))
       f <- loadFontAssets(filterOutFontAssets(assetList))
-    } yield new AssetCollection(i, t, a, f)
+    } yield new AssetCollection(i.toSet, t.toSet, a.toSet, f.toSet)
   }
 
   def filterOutTextAssets(l: List[AssetType]): List[AssetType.Text] =

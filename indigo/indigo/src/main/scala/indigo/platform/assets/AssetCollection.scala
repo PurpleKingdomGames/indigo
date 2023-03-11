@@ -6,14 +6,14 @@ import org.scalajs.dom
 import org.scalajs.dom.html
 
 final class AssetCollection(
-    val images: List[LoadedImageAsset],
-    val texts: List[LoadedTextAsset],
-    val sounds: List[LoadedAudioAsset],
-    val fonts: List[LoadedFontAsset]
+    val images: Set[LoadedImageAsset],
+    val texts: Set[LoadedTextAsset],
+    val sounds: Set[LoadedAudioAsset],
+    val fonts: Set[LoadedFontAsset]
 ) {
 
   val count: Int =
-    images.length + texts.length + sounds.length
+    images.size + texts.size + sounds.size
 
   def |+|(other: AssetCollection): AssetCollection =
     new AssetCollection(
@@ -45,7 +45,7 @@ final class AssetCollection(
 
 object AssetCollection {
   def empty: AssetCollection =
-    new AssetCollection(Nil, Nil, Nil, Nil)
+    new AssetCollection(Set(), Set(), Set(), Set())
 }
 
 final case class LoadedAudioAsset(val name: AssetName, val data: dom.AudioBuffer)
