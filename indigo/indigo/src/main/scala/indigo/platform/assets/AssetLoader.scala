@@ -8,6 +8,7 @@ import indigo.shared.assets.AssetName
 import indigo.shared.assets.AssetType
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.events.AssetEvent
+import indigo.shared.events.IndigoSystemEvent
 import org.scalajs.dom
 import org.scalajs.dom.HTMLImageElement
 import org.scalajs.dom._
@@ -25,7 +26,6 @@ import scala.util.Success
 object AssetLoader {
 
   def backgroundLoadAssets(
-      rebuildGameLoop: AssetCollection => Unit,
       globalEventStream: GlobalEventStream,
       assets: Set[AssetType],
       key: BindingKey,
@@ -39,8 +39,8 @@ object AssetLoader {
     loadAssets(assets)
       .onComplete {
         case Success(ac) if makeAvailable =>
-          rebuildGameLoop(ac)
           globalEventStream.pushGlobalEvent(AssetEvent.AssetBatchLoaded(key, true))
+          globalEventStream.pushGlobalEvent(IndigoSystemEvent.Rebuild(ac))
 
         case Success(_) =>
           globalEventStream.pushGlobalEvent(AssetEvent.AssetBatchLoaded(key, false))

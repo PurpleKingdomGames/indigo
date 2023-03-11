@@ -125,7 +125,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
     IndigoLogger.info("Starting Indigo")
 
     storage = Storage.default
-    globalEventStream = new GlobalEventStream(rebuildGameLoop(parentElement, false), audioPlayer, storage, platform)
+    globalEventStream = new GlobalEventStream(audioPlayer, storage, platform)
     gamepadInputCapture = GamepadInputCaptureImpl()
 
     // Intialisation / Boot events
@@ -216,6 +216,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
               m                       <- modelToUse(startUpSuccessData)
               vm                      <- viewModelToUse(startUpSuccessData, m)
               initialisedGameLoop <- GameEngine.initialiseGameLoop(
+                parentElement,
                 this,
                 boundaryLocator,
                 sceneProcessor,
@@ -349,6 +350,7 @@ object GameEngine {
     }
 
   def initialiseGameLoop[StartUpData, GameModel, ViewModel](
+      parentElement: Element,
       gameEngine: GameEngine[StartUpData, GameModel, ViewModel],
       boundaryLocator: BoundaryLocator,
       sceneProcessor: SceneProcessor,
@@ -359,6 +361,7 @@ object GameEngine {
   ): Outcome[GameLoop[StartUpData, GameModel, ViewModel]] =
     Outcome(
       new GameLoop[StartUpData, GameModel, ViewModel](
+        gameEngine.rebuildGameLoop(parentElement, false),
         boundaryLocator,
         sceneProcessor,
         gameEngine,

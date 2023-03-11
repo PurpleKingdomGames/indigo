@@ -22,7 +22,6 @@ import indigo.shared.networking.WebSocketEvent
 import scala.collection.mutable
 
 final class GlobalEventStream(
-    rebuildGameLoop: AssetCollection => Unit,
     audioPlayer: AudioPlayer,
     storage: Storage,
     platform: => PlatformFullScreen
@@ -69,10 +68,10 @@ final class GlobalEventStream(
 
     // Assets
     case AssetEvent.LoadAssetBatch(batch, key, makeAvailable) =>
-      AssetLoader.backgroundLoadAssets(rebuildGameLoop, this, batch, key, makeAvailable)
+      AssetLoader.backgroundLoadAssets(this, batch, key, makeAvailable)
 
     case AssetEvent.LoadAsset(asset, key, makeAvailable) =>
-      AssetLoader.backgroundLoadAssets(rebuildGameLoop, this, Set(asset), key, makeAvailable)
+      AssetLoader.backgroundLoadAssets(this, Set(asset), key, makeAvailable)
 
     // Fullscreen
     case ToggleFullScreen =>

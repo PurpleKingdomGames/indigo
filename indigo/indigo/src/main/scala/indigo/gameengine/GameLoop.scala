@@ -1,5 +1,6 @@
 package indigo.gameengine
 
+import indigo.platform.assets.AssetCollection
 import indigo.shared.BoundaryLocator
 import indigo.shared.IndigoLogger
 import indigo.shared.Outcome
@@ -7,6 +8,8 @@ import indigo.shared.collections.Batch
 import indigo.shared.config.GameConfig
 import indigo.shared.dice.Dice
 import indigo.shared.events.FrameTick
+import indigo.shared.events.GlobalEvent
+import indigo.shared.events.IndigoSystemEvent
 import indigo.shared.events.InputEvent
 import indigo.shared.events.InputState
 import indigo.shared.platform.SceneProcessor
@@ -18,6 +21,7 @@ import indigo.shared.time.Seconds
 import scala.scalajs.js.JSConverters._
 
 final class GameLoop[StartUpData, GameModel, ViewModel](
+    rebuildGameLoop: AssetCollection => Unit,
     boundaryLocator: BoundaryLocator,
     sceneProcessor: SceneProcessor,
     gameEngine: GameEngine[StartUpData, GameModel, ViewModel],
@@ -126,7 +130,9 @@ final class GameLoop[StartUpData, GameModel, ViewModel](
         case Outcome.Result((gameModel, viewModel, sceneUpdateFragment), globalEvents) =>
           _gameModelState = gameModel
           _viewModelState = viewModel
+
           globalEvents.foreach(e => gameEngine.globalEventStream.pushGlobalEvent(e))
+
           sceneUpdateFragment
 
     // Play audio
@@ -145,3 +151,14 @@ final class GameLoop[StartUpData, GameModel, ViewModel](
 
     // Render scene
     gameEngine.renderer.drawScene(sceneData, gameTime.running)
+
+    // Process system events
+    val systemEvents: Batch[IndigoSystemEvent] =
+      events.collect { case e: IndigoSystemEvent => e }
+
+    if systemEvents.length > 0 then println(systemEvents.mkString(", "))
+
+    systemEvents.foreach { case IndigoSystemEvent.Rebuild(assetCollection) =>
+      IndigoLogger.info("Rebuilding game loop from new asset collection.")
+      rebuildGameLoop(assetCollection)
+    }
