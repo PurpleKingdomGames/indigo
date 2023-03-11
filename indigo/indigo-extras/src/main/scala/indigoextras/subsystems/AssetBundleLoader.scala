@@ -15,7 +15,7 @@ import indigo.shared.subsystems.SubSystemFrameContext
 import indigo.shared.subsystems.SubSystemId
 
 // Provides "at least once" message delivery for updates on a bundle's loading status.
-object AssetBundleLoader extends SubSystem {
+object AssetBundleLoader extends SubSystem:
   type EventType      = GlobalEvent
   type SubSystemModel = AssetBundleTracker
 
@@ -35,7 +35,7 @@ object AssetBundleLoader extends SubSystem {
   def update(
       frameContext: SubSystemFrameContext,
       tracker: AssetBundleTracker
-  ): GlobalEvent => Outcome[AssetBundleTracker] = {
+  ): GlobalEvent => Outcome[AssetBundleTracker] =
     // Asset Bundle Loader Commands
     case AssetBundleLoaderEvent.Load(key, assets) =>
       createBeginLoadingOutcome(key, assets, tracker)
@@ -70,7 +70,6 @@ object AssetBundleLoader extends SubSystem {
     // Everything else.
     case _ =>
       Outcome(tracker)
-  }
 
   def present(frameContext: SubSystemFrameContext, model: AssetBundleTracker): Outcome[SceneUpdateFragment] =
     Outcome(SceneUpdateFragment.empty)
@@ -79,7 +78,7 @@ object AssetBundleLoader extends SubSystem {
       key: BindingKey,
       assets: Set[AssetType],
       tracker: AssetBundleTracker
-  ): Outcome[AssetBundleTracker] = {
+  ): Outcome[AssetBundleTracker] =
     val assetPrimitives = AssetType.flattenAssetList(assets.toList)
 
     val events: Batch[GlobalEvent] =
@@ -91,13 +90,12 @@ object AssetBundleLoader extends SubSystem {
     Outcome(
       tracker.addBundle(key, assetPrimitives)
     ).addGlobalEvents(AssetBundleLoaderEvent.Started(key) :: events)
-  }
 
   private def processAssetUpdateEvent(
       path: AssetPath,
       completedSuccessfully: Boolean,
       tracker: AssetBundleTracker
-  ): Outcome[AssetBundleTracker] = {
+  ): Outcome[AssetBundleTracker] =
     val updatedTracker =
       tracker.assetLoadComplete(path, completedSuccessfully)
 
@@ -105,63 +103,56 @@ object AssetBundleLoader extends SubSystem {
       updatedTracker.register
         .filter(_.containsAsset(path))
         .flatMap { bundle =>
-          bundle.status match {
+          bundle.status match
             case AssetBundleStatus.LoadComplete(completed, count) =>
-              List[GlobalEvent](
+              List(
                 AssetBundleLoaderEvent.LoadProgress(bundle.key, 100, completed, count),
                 AssetEvent.LoadAssetBatch(bundle.giveAssetSet, bundle.key, true)
               )
 
             case AssetBundleStatus.LoadFailed(percent, completed, count, _) =>
-              List[GlobalEvent](
+              List(
                 AssetBundleLoaderEvent.LoadProgress(bundle.key, percent, completed, count),
                 AssetEvent
                   .AssetBatchLoadError(bundle.key, s"Asset batch with key '${bundle.key.toString}' failed to load")
               )
 
             case AssetBundleStatus.LoadInProgress(percent, completed, count) =>
-              List[GlobalEvent](
+              List(
                 AssetBundleLoaderEvent.LoadProgress(bundle.key, percent, completed, count)
               )
-          }
         }
 
     Outcome(updatedTracker, Batch.fromList(statusBasedEvents))
-  }
-}
 
-sealed trait AssetBundleLoaderEvent extends GlobalEvent derives CanEqual
-object AssetBundleLoaderEvent {
+enum AssetBundleLoaderEvent extends GlobalEvent derives CanEqual:
   // commands
-  final case class Load(key: BindingKey, assets: Set[AssetType]) extends AssetBundleLoaderEvent with SubSystemEvent
-  final case class Retry(key: BindingKey)                        extends AssetBundleLoaderEvent with SubSystemEvent
+  case Load(key: BindingKey, assets: Set[AssetType]) extends AssetBundleLoaderEvent with SubSystemEvent
+  case Retry(key: BindingKey)                        extends AssetBundleLoaderEvent with SubSystemEvent
 
   // result events
-  final case class Started(key: BindingKey) extends AssetBundleLoaderEvent
-  final case class LoadProgress(key: BindingKey, percent: Int, completed: Int, total: Int)
-      extends AssetBundleLoaderEvent
-  final case class Success(key: BindingKey)                  extends AssetBundleLoaderEvent
-  final case class Failure(key: BindingKey, message: String) extends AssetBundleLoaderEvent
-}
+  case Started(key: BindingKey)                                                extends AssetBundleLoaderEvent
+  case LoadProgress(key: BindingKey, percent: Int, completed: Int, total: Int) extends AssetBundleLoaderEvent
+  case Success(key: BindingKey)                                                extends AssetBundleLoaderEvent
+  case Failure(key: BindingKey, message: String)                               extends AssetBundleLoaderEvent
 
-final case class AssetBundleTracker(val register: List[AssetBundle]) {
+final case class AssetBundleTracker(val register: List[AssetBundle]):
   val bundleCount: Int =
     register.length
 
   def addBundle(key: BindingKey, assets: List[AssetTypePrimitive]): AssetBundleTracker =
-    if (assets.isEmpty || findBundleByKey(key).isDefined) this
-    else {
+    if assets.isEmpty || findBundleByKey(key).isDefined then this
+    else
       val newBundle =
-        new AssetBundle(
+        AssetBundle(
           key,
           assets.size,
           assets.map { assetType =>
-            (assetType.path -> new AssetToLoad(assetType, false, false))
+            (assetType.path -> AssetToLoad(assetType, false, false))
           }.toMap
         )
 
       AssetBundleTracker(register ++ List(newBundle))
-    }
 
   def findBundleByKey(key: BindingKey): Option[AssetBundle] =
     register.find(_.key == key)
@@ -183,12 +174,12 @@ final case class AssetBundleTracker(val register: List[AssetBundle]) {
 
   def checkBundleStatus(key: BindingKey): Option[AssetBundleStatus] =
     findBundleByKey(key).map(_.status)
-}
-object AssetBundleTracker {
+
+object AssetBundleTracker:
   val empty: AssetBundleTracker =
-    new AssetBundleTracker(Nil)
-}
-final case class AssetBundle(key: BindingKey, assetCount: Int, assets: Map[AssetPath, AssetToLoad]) {
+    AssetBundleTracker(Nil)
+
+final case class AssetBundle(key: BindingKey, assetCount: Int, assets: Map[AssetPath, AssetToLoad]):
   private given CanEqual[Option[AssetToLoad], Option[AssetToLoad]] = CanEqual.derived
 
   def assetLoadComplete(assetPath: AssetPath, loaded: Boolean): AssetBundle =
@@ -197,11 +188,11 @@ final case class AssetBundle(key: BindingKey, assetCount: Int, assets: Map[Asset
       assetCount,
       assets.updatedWith(assetPath) {
         case None    => None
-        case Some(v) => Some(new AssetToLoad(v.asset, true, loaded))
+        case Some(v) => Some(AssetToLoad(v.asset, true, loaded))
       }
     )
 
-  def status: AssetBundleStatus = {
+  def status: AssetBundleStatus =
     val assetList         = assets.toList
     val count             = assetList.length
     val errors            = assetList.filter(p => p._2.complete && !p._2.loaded).map(_._1)
@@ -212,13 +203,9 @@ final case class AssetBundle(key: BindingKey, assetCount: Int, assets: Map[Asset
     val percentage        = Math.round(100.0d * combined.toDouble / count.toDouble).toInt
     val clampedPercentage = Math.min(100, Math.max(0, percentage))
 
-    if (errorCount + successCount < count)
-      AssetBundleStatus.LoadInProgress(clampedPercentage, combined, count)
-    else if (errorCount > 0)
-      AssetBundleStatus.LoadFailed(clampedPercentage, combined, count, errors)
-    else
-      AssetBundleStatus.LoadComplete(combined, count)
-  }
+    if errorCount + successCount < count then AssetBundleStatus.LoadInProgress(clampedPercentage, combined, count)
+    else if errorCount > 0 then AssetBundleStatus.LoadFailed(clampedPercentage, combined, count, errors)
+    else AssetBundleStatus.LoadComplete(combined, count)
 
   def giveAssetLoadState(path: AssetPath): Option[AssetToLoad] =
     assets.get(path)
@@ -228,19 +215,14 @@ final case class AssetBundle(key: BindingKey, assetCount: Int, assets: Map[Asset
 
   def containsAsset(path: AssetPath): Boolean =
     assets.contains(path)
-}
+
 final case class AssetToLoad(asset: AssetTypePrimitive, complete: Boolean, loaded: Boolean) derives CanEqual
 
-sealed trait AssetBundleStatus {
-  val percent: Int
-  val completed: Int
-  val count: Int
-}
-object AssetBundleStatus {
-  final case class LoadComplete(completed: Int, count: Int) extends AssetBundleStatus {
-    val percent: Int = 100
-  }
-  final case class LoadFailed(percent: Int, completed: Int, count: Int, failures: List[AssetPath])
-      extends AssetBundleStatus
-  final case class LoadInProgress(percent: Int, completed: Int, count: Int) extends AssetBundleStatus
-}
+enum AssetBundleStatus(val percent: Int, val completed: Int, val count: Int) derives CanEqual:
+  case LoadComplete(completedLoading: Int, loadCount: Int) extends AssetBundleStatus(100, completedLoading, loadCount)
+
+  case LoadFailed(percentLoaded: Int, completedLoading: Int, loadCount: Int, failures: List[AssetPath])
+      extends AssetBundleStatus(percentLoaded, completedLoading, loadCount)
+
+  case LoadInProgress(percentLoaded: Int, completedLoading: Int, loadCount: Int)
+      extends AssetBundleStatus(percentLoaded: Int, completedLoading: Int, loadCount: Int)
