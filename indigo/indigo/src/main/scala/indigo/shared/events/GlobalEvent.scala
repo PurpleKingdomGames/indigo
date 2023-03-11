@@ -1,5 +1,6 @@
 package indigo.shared.events
 
+import indigo.AssetCollection
 import indigo.shared.assets.AssetName
 import indigo.shared.assets.AssetType
 import indigo.shared.audio.Volume
@@ -428,3 +429,6 @@ object AssetEvent {
     */
   final case class AssetBatchLoadError(key: BindingKey, message: String) extends AssetEvent
 }
+
+enum IndigoSystemEvent extends GlobalEvent:
+  case Rebuild(assetCollection: AssetCollection)
