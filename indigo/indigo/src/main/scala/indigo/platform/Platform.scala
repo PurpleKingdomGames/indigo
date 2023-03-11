@@ -76,7 +76,7 @@ class Platform(
   def createTextureAtlas(assetCollection: AssetCollection): Outcome[TextureAtlas] =
     Outcome(
       TextureAtlas.create(
-        assetCollection.images.map(i => ImageRef(i.name, i.data.width, i.data.height, i.tag)),
+        assetCollection.images.map(i => ImageRef(i.name, i.data.width, i.data.height, i.tag)).toList,
         (name: AssetName) => assetCollection.images.find(_.name == name),
         TextureAtlasFunctions.createAtlasData
       )
