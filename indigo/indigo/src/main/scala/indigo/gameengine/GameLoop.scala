@@ -18,6 +18,7 @@ import indigo.shared.time.GameTime
 import indigo.shared.time.Millis
 import indigo.shared.time.Seconds
 
+import scala.collection.mutable
 import scala.scalajs.js.JSConverters._
 
 final class GameLoop[StartUpData, GameModel, ViewModel](
@@ -28,7 +29,8 @@ final class GameLoop[StartUpData, GameModel, ViewModel](
     gameConfig: GameConfig,
     initialModel: GameModel,
     initialViewModel: ViewModel,
-    frameProcessor: FrameProcessor[StartUpData, GameModel, ViewModel]
+    frameProcessor: FrameProcessor[StartUpData, GameModel, ViewModel],
+    startFrameLocked: Boolean
 ):
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
@@ -41,12 +43,19 @@ final class GameLoop[StartUpData, GameModel, ViewModel](
   private var _inputState: InputState = InputState.default
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var _running: Boolean = true
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  private var _frameLocked: Boolean = startFrameLocked
+
+  private val systemActions: mutable.Queue[IndigoSystemEvent] =
+    new mutable.Queue[IndigoSystemEvent]()
 
   private val frameDeltaRecord: scala.scalajs.js.Array[Double] = scala.scalajs.js.Array(0.0d, 0.0d, 0.0d, 0.0d, 0.0d)
 
   def gameModelState: GameModel    = _gameModelState
   def viewModelState: ViewModel    = _viewModelState
   def runningTimeReference: Double = _runningTimeReference
+  def lock(): Unit                 = _frameLocked = true
+  def unlock(): Unit               = _frameLocked = false
 
   private val runner: (Double, Double, Double) => Unit =
     gameConfig.frameRateLimit match
@@ -92,9 +101,13 @@ final class GameLoop[StartUpData, GameModel, ViewModel](
     if _running then runner(time, timeDelta, lastUpdateTime)
   }
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   private def runFrame(time: Double, timeDelta: Double): Unit =
+    if _frameLocked then ()
+    else if systemActions.size > 0 then performSystemActions(systemActions.dequeueAll(_ => true).toList)
+    else runFrameNormal(time, timeDelta)
 
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
+  private def runFrameNormal(time: Double, timeDelta: Double): Unit =
     val gameTime =
       new GameTime(Millis(time.toLong).toSeconds, Millis(timeDelta.toLong).toSeconds, gameConfig.frameRateLimit)
     val events = gameEngine.globalEventStream.collect ++ Batch(FrameTick)
@@ -153,11 +166,11 @@ final class GameLoop[StartUpData, GameModel, ViewModel](
     gameEngine.renderer.drawScene(sceneData, gameTime.running)
 
     // Process system events
-    val systemEvents: Batch[IndigoSystemEvent] =
-      events.collect { case e: IndigoSystemEvent => e }
+    events
+      .collect { case e: IndigoSystemEvent => e }
+      .foreach(systemActions.enqueue)
 
-    if systemEvents.length > 0 then println(systemEvents.mkString(", "))
-
+  def performSystemActions(systemEvents: List[IndigoSystemEvent]): Unit =
     systemEvents.foreach { case IndigoSystemEvent.Rebuild(assetCollection) =>
       IndigoLogger.info("Rebuilding game loop from new asset collection.")
       rebuildGameLoop(assetCollection)
