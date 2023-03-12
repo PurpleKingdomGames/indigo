@@ -167,6 +167,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def rebuildGameLoop(parentElement: Element, firstRun: Boolean): AssetCollection => Unit =
     ac => {
+      if (!firstRun) gameLoopInstance.lock()
 
       fontRegister.clearRegister()
       boundaryLocator.purgeCache()
@@ -223,7 +224,8 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
                 gameConfig,
                 m,
                 vm,
-                frameProccessor
+                frameProccessor,
+                !firstRun // If this isn't the first run, start with it frame locked.
               )
             } yield {
               renderer = rendererAndAssetMapping._1
@@ -242,6 +244,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
 
               gameLoop = firstTick
 
+              gameLoopInstance.unlock()
               ()
 
             case oe @ Outcome.Error(e, _) =>
@@ -357,7 +360,8 @@ object GameEngine {
       gameConfig: GameConfig,
       initialModel: GameModel,
       initialViewModel: GameModel => ViewModel,
-      frameProccessor: FrameProcessor[StartUpData, GameModel, ViewModel]
+      frameProccessor: FrameProcessor[StartUpData, GameModel, ViewModel],
+      startFrameLocked: Boolean
   ): Outcome[GameLoop[StartUpData, GameModel, ViewModel]] =
     Outcome(
       new GameLoop[StartUpData, GameModel, ViewModel](
@@ -368,7 +372,8 @@ object GameEngine {
         gameConfig,
         initialModel,
         initialViewModel(initialModel),
-        frameProccessor
+        frameProccessor,
+        startFrameLocked
       )
     )
 
