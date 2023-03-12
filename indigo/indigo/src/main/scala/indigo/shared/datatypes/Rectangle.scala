@@ -42,12 +42,23 @@ final case class Rectangle(position: Point, size: Size) derives CanEqual:
 
   def +(rect: Rectangle): Rectangle = Rectangle(x + rect.x, y + rect.y, width + rect.width, height + rect.height)
   def +(i: Int): Rectangle          = Rectangle(x + i, y + i, width + i, height + i)
+  def +(d: Double): Rectangle =
+    Rectangle((x.toDouble + d).toInt, (y.toDouble + d).toInt, (width.toDouble + d).toInt, (height.toDouble + d).toInt)
+
   def -(rect: Rectangle): Rectangle = Rectangle(x - rect.x, y - rect.y, width - rect.width, height - rect.height)
   def -(i: Int): Rectangle          = Rectangle(x - i, y - i, width - i, height - i)
+  def -(d: Double): Rectangle =
+    Rectangle((x.toDouble - d).toInt, (y.toDouble - d).toInt, (width.toDouble - d).toInt, (height.toDouble - d).toInt)
+
   def *(rect: Rectangle): Rectangle = Rectangle(x * rect.x, y * rect.y, width * rect.width, height * rect.height)
   def *(i: Int): Rectangle          = Rectangle(x * i, y * i, width * i, height * i)
+  def *(d: Double): Rectangle =
+    Rectangle((x.toDouble * d).toInt, (y.toDouble * d).toInt, (width.toDouble * d).toInt, (height.toDouble * d).toInt)
+
   def /(rect: Rectangle): Rectangle = Rectangle(x / rect.x, y / rect.y, width / rect.width, height / rect.height)
   def /(i: Int): Rectangle          = Rectangle(x / i, y / i, width / i, height / i)
+  def /(d: Double): Rectangle =
+    Rectangle((x.toDouble / d).toInt, (y.toDouble / d).toInt, (width.toDouble / d).toInt, (height.toDouble / d).toInt)
 
   def expand(amount: Int): Rectangle =
     Rectangle.expand(this, amount)
