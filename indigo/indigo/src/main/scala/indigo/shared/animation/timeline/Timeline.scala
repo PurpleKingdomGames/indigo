@@ -109,6 +109,19 @@ object Timeline:
     def atOrElse(time: Seconds, default: A): A => A =
       subject => at(time)(subject).getOrElse(default)
 
+    /** Clamps the time to be within the animation's duration, ensuring that the last frame is present even when over
+      * the time windows. Still produces an optional value because you may have a delay at the beginning of you
+      * animation, for example.
+      *
+      * @param time
+      *   the current running time in `Second`s to sample the animation at.
+      * @return
+      *   `Option[A]`
+      */
+    def atOrLast(time: Seconds): A => Option[A] =
+      val d = duration
+      subject => at(if time < d then time else d)(subject)
+
     /** Give the time windows as a Batch.
       *
       * @return

@@ -107,7 +107,7 @@ object TimelineScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
 
     Outcome(
       SceneUpdateFragment(
-        tl(2.seconds).at(context.running)(crate).toBatch ++
+        tl(2.seconds).atOrLast(context.running)(crate).toBatch ++
           spriteTimeline
             .at(context.running)(dude)
             .toBatch ++
