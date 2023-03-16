@@ -99,4 +99,25 @@ class TimelineTests extends munit.FunSuite {
     assertEquals(tl.length, expected)
   }
 
+  test("Returning a default via atOrElse") {
+
+    val f = (a: Int) => SignalFunction { (t: Seconds) =>
+      a * t.toInt
+    }
+
+    val windows = Batch(
+      TimeWindow(2.seconds, 3.seconds, f)
+    )
+
+    val actual = Timeline(windows)
+
+    assertEquals(actual.at(Seconds.zero)(10), None)
+    assertEquals(actual.atOrElse(Seconds.zero)(10), 10)
+    assertEquals(actual.atOrElse(Seconds.zero, 11)(10), 11)
+    assertEquals(actual.at(Seconds(3))(25), Some(25))
+    assertEquals(actual.at(Seconds(5))(10), None)
+    assertEquals(actual.atOrElse(Seconds(5))(10), 10)
+    assertEquals(actual.atOrElse(Seconds(5), 11)(10), 11)
+  }
+
 }

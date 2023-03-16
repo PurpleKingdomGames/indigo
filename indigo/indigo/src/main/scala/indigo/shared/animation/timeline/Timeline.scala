@@ -54,6 +54,12 @@ object Timeline:
 
       rec(tl, None)
 
+    def atOrElse(time: Seconds): A => A =
+      subject => at(time)(subject).getOrElse(subject)
+
+    def atOrElse(time: Seconds, default: A): A => A =
+      subject => at(time)(subject).getOrElse(default)
+
     def toWindows: Batch[TimeWindow[A]] =
       tl
 
