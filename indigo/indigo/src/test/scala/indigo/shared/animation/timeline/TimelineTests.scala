@@ -101,9 +101,10 @@ class TimelineTests extends munit.FunSuite {
 
   test("Returning a default via atOrElse") {
 
-    val f = (a: Int) => SignalFunction { (t: Seconds) =>
-      a * t.toInt
-    }
+    val f = (a: Int) =>
+      SignalFunction { (t: Seconds) =>
+        a * t.toInt
+      }
 
     val windows = Batch(
       TimeWindow(2.seconds, 3.seconds, f)
@@ -118,6 +119,28 @@ class TimelineTests extends munit.FunSuite {
     assertEquals(actual.at(Seconds(5))(10), None)
     assertEquals(actual.atOrElse(Seconds(5))(10), 10)
     assertEquals(actual.atOrElse(Seconds(5), 11)(10), 11)
+  }
+
+  test("Always return the last frame with atOrLast") {
+
+    val f = (a: Int) =>
+      SignalFunction { (t: Seconds) =>
+        a * t.toInt
+      }
+
+    val windows = Batch(
+      TimeWindow(2.seconds, 3.seconds, f)
+    )
+
+    val actual = Timeline(windows)
+
+    assertEquals(actual.at(Seconds(0))(10), None)
+    assertEquals(actual.at(Seconds(1))(10), None)
+    assertEquals(actual.atOrLast(Seconds(2))(10), Some(0))
+    assertEquals(actual.atOrLast(Seconds(3))(10), Some(10))
+    assertEquals(actual.atOrLast(Seconds(4))(10), Some(10))
+    assertEquals(actual.atOrLast(Seconds(5))(10), Some(10))
+    assertEquals(actual.atOrLast(Seconds(50))(10), Some(10))
   }
 
 }
