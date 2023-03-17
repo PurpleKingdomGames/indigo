@@ -7,11 +7,11 @@ import indigo.shared.datatypes.BindingKey
   * between two audio sources.
   */
 final case class SceneAudioSource(bindingKey: BindingKey, playbackPattern: PlaybackPattern, masterVolume: Volume)
-    derives CanEqual
+    derives CanEqual:
+  val volume: Volume =
+    playbackPattern match
+      case PlaybackPattern.SingleTrackLoop(track) => track.volume
 
-object SceneAudioSource {
-
+object SceneAudioSource:
   def apply(bindingKey: BindingKey, playbackPattern: PlaybackPattern): SceneAudioSource =
     SceneAudioSource(bindingKey, playbackPattern, Volume.Max)
-
-}
