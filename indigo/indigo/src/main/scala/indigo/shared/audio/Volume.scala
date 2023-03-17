@@ -29,4 +29,7 @@ object Volume:
     @targetName("/_Double")
     def /(other: Double): Volume = Volume(v / other)
 
+    def ~==(other: Volume): Boolean =
+      Math.abs(v.toDouble - other.toDouble) < 0.001
+
     def toDouble: Double = v

@@ -7,11 +7,11 @@ final case class SceneAudio(
     sourceA: Option[SceneAudioSource],
     sourceB: Option[SceneAudioSource],
     sourceC: Option[SceneAudioSource]
-) derives CanEqual {
+) derives CanEqual:
   def |+|(other: SceneAudio): SceneAudio =
     SceneAudio.combine(this, other)
-}
-object SceneAudio {
+
+object SceneAudio:
 
   val Mute = SceneAudio(None, None, None)
 
@@ -23,5 +23,3 @@ object SceneAudio {
 
   def combine(a: SceneAudio, b: SceneAudio): SceneAudio =
     SceneAudio(b.sourceA.orElse(a.sourceA), b.sourceB.orElse(a.sourceB), b.sourceC.orElse(a.sourceC))
-
-}
