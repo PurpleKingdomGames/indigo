@@ -387,6 +387,9 @@ val MouseButton: shared.events.MouseButton.type = shared.events.MouseButton
 type MouseWheel = shared.events.MouseWheel
 val MouseWheel: shared.events.MouseWheel.type = shared.events.MouseWheel
 
+type Pointers = shared.input.Pointers
+val Pointers: shared.input.Pointers.type = shared.input.Pointers
+
 type PointerEvent = shared.events.PointerEvent
 val PointerEvent: shared.events.PointerEvent.type = shared.events.PointerEvent
 
