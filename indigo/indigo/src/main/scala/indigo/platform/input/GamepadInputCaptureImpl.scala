@@ -86,19 +86,17 @@ object GamepadInputCaptureImpl {
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   var gamepads: scalajs.js.Array[GamepadJS] = new scalajs.js.Array()
 
-  // @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
-  def init(): Unit = {
-    window.addEventListener(
-      "gamepadconnected",
-      (_: Any) => gamepads = window.navigator.asInstanceOf[Navigator].getGamepads(),
-      false
-    )
+  private val handler =
+    (_: Any) => gamepads = window.navigator.asInstanceOf[Navigator].getGamepads()
 
-    window.addEventListener(
-      "gamepaddisconnected",
-      (_: Any) => gamepads = window.navigator.asInstanceOf[Navigator].getGamepads(),
-      false
-    )
+  def init(): Unit = {
+    window.addEventListener("gamepadconnected", handler, false)
+    window.addEventListener("gamepaddisconnected", handler, false)
+  }
+
+  def kill(): Unit = {
+    window.removeEventListener("gamepadconnected", handler, false)
+    window.removeEventListener("gamepaddisconnected", handler, false)
   }
 
 }

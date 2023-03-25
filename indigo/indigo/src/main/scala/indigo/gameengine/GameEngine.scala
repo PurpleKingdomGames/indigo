@@ -179,7 +179,8 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
 
       val time = if (firstRun) 0 else gameLoopInstance.runningTimeReference
 
-      platform = new Platform(parentElement, gameConfig, accumulatedAssetCollection, globalEventStream, dynamicText)
+      if (firstRun)
+        platform = new Platform(parentElement, gameConfig, globalEventStream, dynamicText)
 
       initialise(accumulatedAssetCollection)(Dice.fromSeed(time.toLong)) match {
         case oe @ Outcome.Error(error, _) =>
@@ -212,7 +213,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
 
           val loop: Outcome[Double => Double => Unit] =
             for {
-              rendererAndAssetMapping <- platform.initialise(shaderRegister.toSet)
+              rendererAndAssetMapping <- platform.initialise(firstRun, shaderRegister.toSet, accumulatedAssetCollection)
               startUpSuccessData      <- GameEngine.initialisedGame(startupData)
               m                       <- modelToUse(startUpSuccessData)
               vm                      <- viewModelToUse(startUpSuccessData, m)
