@@ -1,3 +1,5 @@
+resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
+
 addSbtPlugin("org.scala-js"             %% "sbt-scalajs"        % "1.13.0")
 addSbtPlugin("io.indigoengine"          %% "sbt-indigo"         % SbtIndigoVersion.getVersion)
 addSbtPlugin("org.xerial.sbt"           %% "sbt-sonatype"       % "3.9.7")
