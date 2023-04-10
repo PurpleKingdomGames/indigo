@@ -16,7 +16,7 @@ import io.github.davidgregory084.TpolecatModule
 
 object snake extends ScalaJSModule with MillIndigo with ScalafmtModule with TpolecatModule {
   def scalaVersion   = "3.2.2"
-  def scalaJSVersion = "1.13.0"
+  def scalaJSVersion = "1.13.1"
 
   val gameAssetsDirectory: os.Path     = os.pwd / "assets"
   val showCursor: Boolean              = true
