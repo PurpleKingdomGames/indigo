@@ -26,6 +26,5 @@ lazy val sbtIndigo =
           email = "indigo@purplekingdomgames.com",
           url = url("https://github.com/davesmith00000")
         )
-      ),
-      resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
+      )
     )

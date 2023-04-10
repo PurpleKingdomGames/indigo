@@ -28,8 +28,7 @@ class IndigoPluginModule(val crossScalaVersion: String) extends CrossScalaModule
   )
 
   def repositories = super.repositories ++ Seq(
-    MavenRepository("https://oss.sonatype.org/content/repositories/releases"),
-    MavenRepository("https://oss.sonatype.org/content/repositories/snapshots")
+    MavenRepository("https://oss.sonatype.org/content/repositories/releases")
   )
 
   object test extends Tests {
