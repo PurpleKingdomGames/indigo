@@ -92,7 +92,7 @@ object GameConfig:
   val default: GameConfig =
     GameConfig(
       viewport = GameViewport(550, 400),
-      frameRateLimit = None,
+      frameRateLimit = Option(FPS.`60`),
       clearColor = RGBA.Black,
       magnification = 1,
       transparentBackground = false,
@@ -102,7 +102,7 @@ object GameConfig:
   def apply(width: Int, height: Int): GameConfig =
     GameConfig(
       viewport = GameViewport(width, height),
-      frameRateLimit = None,
+      frameRateLimit = Option(FPS.`60`),
       clearColor = RGBA.Black,
       magnification = 1,
       transparentBackground = false,
@@ -112,7 +112,7 @@ object GameConfig:
   def apply(viewport: GameViewport, clearColor: RGBA, magnification: Int): GameConfig =
     GameConfig(
       viewport = viewport,
-      frameRateLimit = None,
+      frameRateLimit = Option(FPS.`60`),
       clearColor = clearColor,
       magnification = magnification,
       transparentBackground = false,
@@ -122,7 +122,7 @@ object GameConfig:
   def apply(width: Int, height: Int, clearColor: RGBA, magnification: Int): GameConfig =
     GameConfig(
       viewport = GameViewport(width, height),
-      frameRateLimit = None,
+      frameRateLimit = Option(FPS.`60`),
       clearColor = clearColor,
       magnification = magnification,
       transparentBackground = false,

@@ -46,7 +46,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
   val viewportHeight: Int     = gameHeight * magnificationLevel // 256
 
   def initialScene(bootData: SandboxBootData): Option[SceneName] =
-    Some(TimelineScene.name)
+    Some(OriginalScene.name)
 
   def scenes(bootData: SandboxBootData): NonEmptyList[Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]] =
     NonEmptyList(
@@ -90,7 +90,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
           viewport = gameViewport,
           clearColor = RGBA(0.4, 0.2, 0.5, 1),
           magnification = magnificationLevel
-        ).withFrameRateLimit(FPS.`60`),
+        ),
         SandboxBootData(flags.getOrElse("key", "No entry for 'key'."), gameViewport)
       ).withAssets(
         SandboxAssets.assets ++
