@@ -19,16 +19,16 @@ object Misc {
   }
 
   lazy val customTasksAliases = Seq(
-    UsefulTask("", "cleanAll", "Clean all the projects"),
-    UsefulTask("", "buildAllNoClean", "Rebuild without cleaning"),
-    UsefulTask("", "testAllNoClean", "Test all without cleaning"),
-    UsefulTask("", "crossLocalPublishNoClean", "Locally publish the core modules"),
-    UsefulTask("", "gendocs", "Rebuild the API and markdown docs"),
-    UsefulTask("", "sandboxRun", "Run the sandbox game (fastOptJS + Electron)"),
-    UsefulTask("", "perfRun", "Run the perf game (fastOptJS + Electron)"),
-    UsefulTask("", "shaderRun", "Run the shader game (fastOptJS + Electron)"),
-    UsefulTask("", "scalafmtCheckAll", "Check formatting"),
-    UsefulTask("", "code", "Launch VSCode")
+    UsefulTask("cleanAll", "Clean all the projects"),
+    UsefulTask("buildAllNoClean", "Rebuild without cleaning"),
+    UsefulTask("testAllNoClean", "Test all without cleaning"),
+    UsefulTask("crossLocalPublishNoClean", "Locally publish the core modules"),
+    UsefulTask("gendocs", "Rebuild the API and markdown docs"),
+    UsefulTask("sandboxRun", "Run the sandbox game (fastOptJS + Electron)"),
+    UsefulTask("perfRun", "Run the perf game (fastOptJS + Electron)"),
+    UsefulTask("shaderRun", "Run the shader game (fastOptJS + Electron)"),
+    UsefulTask("scalafmtCheckAll", "Check formatting"),
+    UsefulTask("code", "Launch VSCode")
   )
 
   def presentationSettings(version: SettingKey[String]): Seq[Def.Setting[String]] = {
