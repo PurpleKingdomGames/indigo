@@ -19,16 +19,16 @@ object Misc {
   }
 
   lazy val customTasksAliases = Seq(
-    UsefulTask("cleanAll", "Clean all the projects"),
-    UsefulTask("buildAllNoClean", "Rebuild without cleaning"),
-    UsefulTask("testAllNoClean", "Test all without cleaning"),
-    UsefulTask("crossLocalPublishNoClean", "Locally publish the core modules"),
-    UsefulTask("gendocs", "Rebuild the API and markdown docs"),
-    UsefulTask("sandboxRun", "Run the sandbox game (fastOptJS + Electron)"),
-    UsefulTask("perfRun", "Run the perf game (fastOptJS + Electron)"),
-    UsefulTask("shaderRun", "Run the shader game (fastOptJS + Electron)"),
-    UsefulTask("scalafmtCheckAll", "Check formatting"),
-    UsefulTask("code", "Launch VSCode")
+    UsefulTask("cleanAll", "Clean all the projects").noAlias,
+    UsefulTask("buildAllNoClean", "Rebuild without cleaning").noAlias,
+    UsefulTask("testAllNoClean", "Test all without cleaning").noAlias,
+    UsefulTask("crossLocalPublishNoClean", "Locally publish the core modules").noAlias,
+    UsefulTask("gendocs", "Rebuild the API and markdown docs").noAlias,
+    UsefulTask("sandboxRun", "Run the sandbox game (fastOptJS + Electron)").noAlias,
+    UsefulTask("perfRun", "Run the perf game (fastOptJS + Electron)").noAlias,
+    UsefulTask("shaderRun", "Run the shader game (fastOptJS + Electron)").noAlias,
+    UsefulTask("scalafmtCheckAll", "Check formatting").noAlias,
+    UsefulTask("code", "Launch VSCode").noAlias
   )
 
   def presentationSettings(version: SettingKey[String]): Seq[Def.Setting[String]] = {
