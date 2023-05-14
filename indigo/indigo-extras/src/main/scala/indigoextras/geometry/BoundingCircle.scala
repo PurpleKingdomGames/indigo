@@ -2,6 +2,7 @@ package indigoextras.geometry
 
 import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Vector2
+import indigo.shared.datatypes.Circle
 
 final case class BoundingCircle(position: Vertex, radius: Double) derives CanEqual:
   lazy val x: Double        = position.x
@@ -64,6 +65,9 @@ final case class BoundingCircle(position: Vertex, radius: Double) derives CanEqu
   def resize(newRadius: Double): BoundingCircle =
     this.copy(radius = newRadius)
 
+  def toCircle: Circle =
+    Circle(position.toPoint, radius.toInt)
+
   def lineIntersects(line: LineSegment): Boolean =
     BoundingCircle.lineIntersects(this, line)
 
@@ -87,6 +91,12 @@ object BoundingCircle:
 
   def fromVertexCloud(vertices: Batch[Vertex]): BoundingCircle =
     fromVertices(vertices)
+
+  def fromCircle(circle: Circle): BoundingCircle =
+    BoundingCircle(
+      Vertex.fromPoint(circle.position),
+      circle.radius.toDouble
+    )
 
   def fromBoundingBox(boundingBox: BoundingBox): BoundingCircle =
     BoundingCircle(boundingBox.center, Math.max(boundingBox.halfSize.x, boundingBox.halfSize.y))
