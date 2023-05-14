@@ -470,6 +470,9 @@ val TextAlignment: shared.datatypes.TextAlignment.type = shared.datatypes.TextAl
 type Rectangle = shared.datatypes.Rectangle
 val Rectangle: shared.datatypes.Rectangle.type = shared.datatypes.Rectangle
 
+type Circle = shared.datatypes.Circle
+val Circle: shared.datatypes.Circle.type = shared.datatypes.Circle
+
 type Point = shared.datatypes.Point
 val Point: shared.datatypes.Point.type = shared.datatypes.Point
 
