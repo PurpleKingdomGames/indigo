@@ -14,6 +14,8 @@ final case class BoundingCircle(position: Vertex, radius: Double) derives CanEqu
   lazy val top: Double    = y - radius
   lazy val bottom: Double = y + radius
 
+  lazy val center: Vertex = position
+
   def toBoundingBox: BoundingBox =
     BoundingBox(Vertex(left, top), Vertex(diameter, diameter))
 
