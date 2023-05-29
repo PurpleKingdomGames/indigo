@@ -5,10 +5,8 @@ import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
 import com.example.sandbox.SandboxViewModel
-import indigo._
-import indigo.scenes._
-import indigo.shared.geometry.Polygon
-import indigo.shared.geometry.Vertex
+import indigo.*
+import indigo.scenes.*
 import indigoextras.ui.HitArea
 
 import scala.annotation.tailrec

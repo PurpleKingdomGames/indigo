@@ -802,3 +802,26 @@ val Falloff: shared.scenegraph.Falloff.type = shared.scenegraph.Falloff
 
 type Lens[A, B] = shared.utils.Lens[A, B]
 val Lens: shared.utils.Lens.type = shared.utils.Lens
+
+// Geometry
+
+type Bezier = shared.geometry.Bezier
+val Bezier: shared.geometry.Bezier.type = shared.geometry.Bezier
+
+type BoundingBox = shared.geometry.BoundingBox
+val BoundingBox: shared.geometry.BoundingBox.type = shared.geometry.BoundingBox
+
+type BoundingCircle = shared.geometry.BoundingCircle
+val BoundingCircle: shared.geometry.BoundingCircle.type = shared.geometry.BoundingCircle
+
+type Line = shared.geometry.Line
+val Line: shared.geometry.Line.type = shared.geometry.Line
+
+type LineSegment = shared.geometry.LineSegment
+val LineSegment: shared.geometry.LineSegment.type = shared.geometry.LineSegment
+
+type Polygon = shared.geometry.Polygon
+val Polygon: shared.geometry.Polygon.type = shared.geometry.Polygon
+
+type Vertex = shared.geometry.Vertex
+val Vertex: shared.geometry.Vertex.type = shared.geometry.Vertex

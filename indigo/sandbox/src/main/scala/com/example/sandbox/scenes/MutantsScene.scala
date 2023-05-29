@@ -8,8 +8,6 @@ import com.example.sandbox.SandboxStartupData
 import com.example.sandbox.SandboxViewModel
 import indigo.*
 import indigo.scenes.*
-import indigo.shared.geometry.Polygon
-import indigo.shared.geometry.Vertex
 import indigo.syntax.shaders.*
 import indigo.syntax.uniform
 import indigo.syntax.uniformBlockName
