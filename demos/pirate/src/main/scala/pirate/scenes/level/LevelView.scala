@@ -4,7 +4,6 @@ import indigo.*
 
 import pirate.core.Assets
 import pirate.core.LevelDataStore
-import indigoextras.geometry.Vertex
 import pirate.scenes.level.model.PirateState
 import pirate.scenes.level.model.Pirate
 import pirate.scenes.level.model.LevelModel

@@ -1,14 +1,14 @@
 package indigoexamples.model
 
+import indigo.Bezier
+import indigo.BoundingBox
+import indigo.Vertex
 import indigo.shared.collections.NonEmptyBatch
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.dice.Dice
 import indigo.shared.temporal.Signal
 import indigo.shared.time.Seconds
-import indigoextras.geometry.Bezier
-import indigoextras.geometry.BoundingBox
-import indigoextras.geometry.Vertex
 import org.scalacheck.Prop._
 import org.scalacheck._
 

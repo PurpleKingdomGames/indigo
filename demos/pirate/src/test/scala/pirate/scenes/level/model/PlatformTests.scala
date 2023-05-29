@@ -2,8 +2,8 @@ package pirate.scenes.level.model
 
 import indigo.shared.formats.TiledGridCell
 import pirate.core.TileType
-import indigoextras.geometry.BoundingBox
-import indigoextras.geometry.Vertex
+import indigo.shared.geometry.BoundingBox
+import indigo.shared.geometry.Vertex
 
 class PlatformTests extends munit.FunSuite {
 

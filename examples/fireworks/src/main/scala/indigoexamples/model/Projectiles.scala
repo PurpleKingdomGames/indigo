@@ -1,9 +1,7 @@
 package indigoexamples.model
 
-import indigo._
+import indigo.*
 import indigoexamples.automata.TrailAutomata
-import indigoextras.geometry.Bezier
-import indigoextras.geometry.Vertex
 import indigoextras.subsystems.AutomataEvent
 import indigoextras.subsystems.AutomatonPayload
 

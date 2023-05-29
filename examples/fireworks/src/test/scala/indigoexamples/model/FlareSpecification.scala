@@ -1,10 +1,10 @@
 package indigoexamples.model
 
+import indigo.Vertex
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Radians
 import indigo.shared.dice.Dice
 import indigo.shared.time.Millis
-import indigoextras.geometry.Vertex
 import org.scalacheck.Prop._
 import org.scalacheck._
 

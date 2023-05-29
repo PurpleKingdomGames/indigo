@@ -1,7 +1,6 @@
 package pirate.scenes.level.viewmodel
 
 import indigo.*
-import indigoextras.geometry.Vertex
 import pirate.scenes.level.model.Pirate
 
 /*

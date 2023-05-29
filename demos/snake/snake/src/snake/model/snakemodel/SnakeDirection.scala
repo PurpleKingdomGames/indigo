@@ -1,6 +1,6 @@
 package snake.model.snakemodel
 
-import indigoextras.geometry.Vertex
+import indigo.Vertex
 
 enum SnakeDirection derives CanEqual:
   case Up    extends SnakeDirection

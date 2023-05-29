@@ -2,9 +2,9 @@ package snake.model
 
 import indigo.Dice
 import indigo.Batch
-import indigoextras.geometry.BoundingBox
+import indigo.BoundingBox
 import indigoextras.trees.QuadTree
-import indigoextras.geometry.Vertex
+import indigo.Vertex
 import scala.annotation.tailrec
 
 final case class GameMap(quadTree: QuadTree[MapElement], gridSize: BoundingBox):

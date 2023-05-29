@@ -3,8 +3,6 @@ package snake.model
 import indigo.*
 import snake.model.GameMap
 import snake.model.snakemodel.{CollisionCheckOutcome, Snake}
-import indigoextras.geometry.Vertex
-import indigoextras.geometry.BoundingBox
 import snake.model.MapElement
 import snake.init.GameAssets
 import snake.scenes.GameView

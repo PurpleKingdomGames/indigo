@@ -4,8 +4,6 @@ import indigo.*
 import snake.init.{GameAssets, StaticAssets, ViewConfig}
 import snake.model.GameMap
 import snake.model.GameModel
-import indigoextras.geometry.Vertex
-import indigoextras.geometry.BoundingBox
 
 object GameView:
 

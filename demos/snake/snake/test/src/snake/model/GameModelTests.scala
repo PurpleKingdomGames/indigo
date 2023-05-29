@@ -7,8 +7,8 @@ import snake.model.{ControlScheme, GameModel, GameState}
 import snake.model.snakemodel.Snake
 
 import indigo.shared.dice.Dice
-import indigoextras.geometry.BoundingBox
-import indigoextras.geometry.Vertex
+import indigo.BoundingBox
+import indigo.Vertex
 
 class GameModelTests extends munit.FunSuite {
 

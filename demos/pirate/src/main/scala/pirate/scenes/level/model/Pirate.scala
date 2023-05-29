@@ -1,8 +1,6 @@
 package pirate.scenes.level.model
 
 import indigo.*
-import indigoextras.geometry.BoundingBox
-import indigoextras.geometry.Vertex
 import pirate.core.Assets
 
 final case class Pirate(
