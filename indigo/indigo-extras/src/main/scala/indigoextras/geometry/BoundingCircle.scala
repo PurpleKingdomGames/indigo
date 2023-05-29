@@ -66,6 +66,16 @@ final case class BoundingCircle(position: Vertex, radius: Double) derives CanEqu
 
   def resize(newRadius: Double): BoundingCircle =
     this.copy(radius = newRadius)
+  def resizeTo(newRadius: Double): BoundingCircle =
+    resize(newRadius)
+  def resizeBy(amount: Double): BoundingCircle =
+    expand(amount)
+  def withRadius(newRadius: Double): BoundingCircle =
+    resize(newRadius)
+  def expand(by: Double): BoundingCircle =
+    resize(radius + by)
+  def contract(by: Double): BoundingCircle =
+    resize(radius - by)
 
   def toCircle: Circle =
     Circle(position.toPoint, radius.toInt)
