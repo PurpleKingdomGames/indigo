@@ -1,6 +1,7 @@
 package indigo.shared.datatypes
 
 import indigo.shared.collections.Batch
+import indigo.shared.geometry.Vertex
 
 final case class Vector2(x: Double, y: Double) derives CanEqual:
 
@@ -116,6 +117,9 @@ final case class Vector2(x: Double, y: Double) derives CanEqual:
   def toSize: Size =
     Size(x.toInt, y.toInt)
 
+  def toVertex: Vertex =
+    Vertex(x, y)
+
   def transform(matrix3: Matrix3): Vector2 =
     matrix3.transform(this)
 
@@ -149,6 +153,9 @@ object Vector2:
 
   def fromSize(size: Size): Vector2 =
     Vector2(size.width.toDouble, size.height.toDouble)
+
+  def fromVertex(vertex: Vertex): Vector2 =
+    Vector2(vertex.x, vertex.y)
 
   inline def add(vec1: Vector2, vec2: Vector2): Vector2 =
     Vector2(vec1.x + vec2.x, vec1.y + vec2.y)

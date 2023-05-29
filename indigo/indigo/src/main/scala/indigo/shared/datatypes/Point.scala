@@ -1,6 +1,8 @@
 package indigo.shared.datatypes
 
-final case class Point(x: Int, y: Int) derives CanEqual {
+import indigo.shared.geometry.Vertex
+
+final case class Point(x: Int, y: Int) derives CanEqual:
   def +(pt: Point): Point = Point(x + pt.x, y + pt.y)
   def +(i: Int): Point    = Point(x + i, y + i)
   def +(d: Double): Point = Point((x.toDouble + d).toInt, (y.toDouble + d).toInt)
@@ -78,9 +80,11 @@ final case class Point(x: Int, y: Int) derives CanEqual {
 
   def toSize: Size =
     Size(x, y)
-}
 
-object Point {
+  def toVertex: Vertex =
+    Vertex(x.toDouble, y.toDouble)
+
+object Point:
 
   given CanEqual[Option[Point], Option[Point]] = CanEqual.derived
 
@@ -108,4 +112,12 @@ object Point {
 
         Math.sqrt(Math.abs((aa * aa) + (bb * bb)))
     }
-}
+
+  def fromSize(size: Size): Point =
+    Point(size.width, size.height)
+
+  def fromVector2(vector2: Vector2): Point =
+    Point(vector2.x.toInt, vector2.y.toInt)
+
+  def fromVertex(vertex: Vertex): Point =
+    Point(vertex.x.toInt, vertex.y.toInt)
