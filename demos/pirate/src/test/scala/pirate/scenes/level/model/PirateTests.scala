@@ -6,8 +6,8 @@ import indigo.shared.input.Gamepad
 import indigo.shared.datatypes.Vector2
 import indigo.shared.constants.Key
 import indigo.shared.events.KeyboardEvent.KeyDown
-import indigoextras.geometry.BoundingBox
-import indigoextras.geometry.Vertex
+import indigo.shared.geometry.BoundingBox
+import indigo.shared.geometry.Vertex
 import indigo.shared.collections.Batch
 
 class PirateTests extends munit.FunSuite {

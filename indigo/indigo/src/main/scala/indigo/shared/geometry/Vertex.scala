@@ -5,6 +5,8 @@ import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.Size
 import indigo.shared.datatypes.Vector2
 
+/** A `Vertex` is another co-ordinate-like type that specifically represents a point on a graph.
+  */
 final case class Vertex(x: Double, y: Double) derives CanEqual:
 
   def withX(newX: Double): Vertex =

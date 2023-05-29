@@ -1,7 +1,7 @@
 package snake.model.snakemodel
 
-import indigoextras.geometry.BoundingBox
-import indigoextras.geometry.Vertex
+import indigo.BoundingBox
+import indigo.Vertex
 
 final case class Snake(start: Vertex, body: List[Vertex], direction: SnakeDirection, status: SnakeStatus):
 

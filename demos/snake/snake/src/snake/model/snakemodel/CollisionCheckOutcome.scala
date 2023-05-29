@@ -1,6 +1,6 @@
 package snake.model.snakemodel
 
-import indigoextras.geometry.Vertex
+import indigo.Vertex
 
 enum CollisionCheckOutcome(val gridPoint: Vertex):
   case NoCollision(gridPosition: Vertex) extends CollisionCheckOutcome(gridPosition)

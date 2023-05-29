@@ -1,7 +1,6 @@
 package snake.init
 
 import indigo.*
-import indigoextras.geometry.BoundingBox
 
 object StartupData:
 

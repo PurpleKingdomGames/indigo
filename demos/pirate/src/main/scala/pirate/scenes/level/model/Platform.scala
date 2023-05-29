@@ -4,7 +4,6 @@ import indigo.*
 import pirate.core.TileType
 import scala.annotation.tailrec
 import scala.collection.immutable.Nil
-import indigoextras.geometry.BoundingBox
 
 /*
 Most games where you wander around operate on the idea of a

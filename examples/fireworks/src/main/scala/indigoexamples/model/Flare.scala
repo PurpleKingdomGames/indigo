@@ -1,12 +1,12 @@
 package indigoexamples.model
 
+import indigo.Vertex
 import indigo.shared.collections.NonEmptyBatch
 import indigo.shared.datatypes.RGBA
 import indigo.shared.datatypes.Radians
 import indigo.shared.dice.Dice
 import indigo.shared.temporal.Signal
 import indigo.shared.time.Seconds
-import indigoextras.geometry.Vertex
 
 final case class Flare(flightTime: Seconds, movementSignal: Signal[Vertex], tint: RGBA) extends Projectile
 

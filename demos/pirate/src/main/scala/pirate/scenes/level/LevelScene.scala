@@ -12,7 +12,6 @@ import pirate.scenes.level.model.LevelModel
 import pirate.scenes.level.viewmodel.LevelViewModel
 import pirate.scenes.level.viewmodel.PirateViewState
 import pirate.scenes.level.model.Pirate
-import indigoextras.geometry.Vertex
 
 final case class LevelScene(screenWidth: Int) extends Scene[StartupData, Model, ViewModel]:
   type SceneModel     = LevelModel

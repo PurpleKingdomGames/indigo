@@ -1,7 +1,6 @@
 package com.example.jobs
 
-import indigo._
-import indigoextras.geometry.Vertex
+import indigo.*
 import indigoextras.jobs.JobMarket
 import indigoextras.jobs.JobMarketEvent
 

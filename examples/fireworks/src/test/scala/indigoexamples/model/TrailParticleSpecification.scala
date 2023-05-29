@@ -1,8 +1,8 @@
 package indigoexamples.model
 
+import indigo.Vertex
 import indigo.shared.temporal.Signal
 import indigo.shared.time.Seconds
-import indigoextras.geometry.Vertex
 import org.scalacheck.Prop._
 import org.scalacheck._
 

@@ -1,13 +1,12 @@
 package indigoexamples
 
-import indigo._
+import indigo.*
 import indigoexamples.automata.FlareAutomata
 import indigoexamples.automata.LaunchPadAutomata
 import indigoexamples.automata.RocketAutomata
 import indigoexamples.automata.TrailAutomata
 import indigoexamples.model.LaunchPad
 import indigoexamples.model.Projectiles
-import indigoextras.geometry.Vertex
 import indigoextras.subsystems.AutomataEvent
 import indigoextras.subsystems.FPSCounter
 
