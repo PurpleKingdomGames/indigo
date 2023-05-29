@@ -2,7 +2,7 @@ package indigo.shared.datatypes
 
 import util.control.Breaks._
 
-final case class Matrix3(private val mat: Array[Double]) derives CanEqual {
+final case class Matrix3(private val mat: Array[Double]) derives CanEqual:
 
   lazy val row1: Array[Double] = Array(mat(0), mat(1), mat(2))
   lazy val row2: Array[Double] = Array(mat(3), mat(4), mat(5))
@@ -66,9 +66,7 @@ final case class Matrix3(private val mat: Array[Double]) derives CanEqual {
       same
     } else false
 
-}
-
-object Matrix3 {
+object Matrix3:
 
   val identity: Matrix3 =
     Matrix3(
@@ -257,5 +255,3 @@ object Matrix3 {
         c3
       )
     )
-
-}
