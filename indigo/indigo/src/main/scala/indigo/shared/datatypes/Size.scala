@@ -1,5 +1,7 @@
 package indigo.shared.datatypes
 
+import indigo.shared.geometry.Vertex
+
 final case class Size(width: Int, height: Int) derives CanEqual:
   def +(size: Size): Size = Size(width + size.width, height + size.height)
   def +(i: Int): Size     = Size(width + i, height + i)
@@ -47,6 +49,9 @@ final case class Size(width: Int, height: Int) derives CanEqual:
   def toPoint: Point =
     Point(width, height)
 
+  def toVertex: Vertex =
+    Vertex(width.toDouble, height.toDouble)
+
 object Size:
 
   given CanEqual[Option[Size], Option[Size]] = CanEqual.derived
@@ -57,3 +62,12 @@ object Size:
   val zero: Size = Size(0, 0)
 
   def tuple2ToSize(t: (Int, Int)): Size = Size(t._1, t._2)
+
+  def fromPoint(point: Point): Size =
+    Size(point.x, point.y)
+
+  def fromVector2(vector2: Vector2): Size =
+    Size(vector2.x.toInt, vector2.y.toInt)
+
+  def fromVertex(vertex: Vertex): Size =
+    Size(vertex.x.toInt, vertex.y.toInt)
