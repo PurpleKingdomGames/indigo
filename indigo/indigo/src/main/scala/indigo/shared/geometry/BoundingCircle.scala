@@ -1,4 +1,4 @@
-package indigoextras.geometry
+package indigo.shared.geometry
 
 import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Circle
