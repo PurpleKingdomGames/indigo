@@ -6,6 +6,7 @@ import indigo.shared.datatypes.Size
 import indigo.shared.datatypes.Vector2
 
 import scala.annotation.tailrec
+import indigo.shared.datatypes.Circle
 
 final case class BoundingBox(position: Vertex, size: Vertex) derives CanEqual:
   lazy val x: Double      = position.x
@@ -92,6 +93,9 @@ final case class BoundingBox(position: Vertex, size: Vertex) derives CanEqual:
     this.copy(size = newSize)
   def resize(newSize: Vector2): BoundingBox =
     resize(Vertex.fromVector2(newSize))
+
+  def toCircle: Circle =
+    Circle.fromRectangle(this.toRectangle)
 
   def toRectangle: Rectangle =
     Rectangle(position.toPoint, Size(size.x.toInt, size.y.toInt))

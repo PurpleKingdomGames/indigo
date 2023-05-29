@@ -3,6 +3,8 @@ package indigo.shared.datatypes
 import indigo.shared.collections.Batch
 
 import scala.annotation.tailrec
+import indigo.shared.geometry.BoundingBox
+import indigo.shared.geometry.BoundingCircle
 
 final case class Rectangle(position: Point, size: Size) derives CanEqual:
   lazy val x: Int      = position.x
@@ -102,6 +104,15 @@ final case class Rectangle(position: Point, size: Size) derives CanEqual:
 
   def toSquare: Rectangle =
     this.copy(size = Size(Math.max(size.width, size.height)))
+
+  def toCircle: Circle =
+    Circle.fromRectangle(this)
+
+  def toBoundingBox: BoundingBox =
+    BoundingBox.fromRectangle(this)
+
+  def toBoundingCircle: BoundingCircle =
+    BoundingBox.fromRectangle(this).toBoundingCircle
 
 object Rectangle:
 

@@ -3,6 +3,9 @@ package indigo.shared.geometry
 import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Circle
 import indigo.shared.datatypes.Vector2
+import indigo.shared.datatypes.Rectangle
+import indigo.shared.datatypes.Point
+import indigo.shared.datatypes.Size
 
 final case class BoundingCircle(position: Vertex, radius: Double) derives CanEqual:
   lazy val x: Double        = position.x
@@ -15,9 +18,6 @@ final case class BoundingCircle(position: Vertex, radius: Double) derives CanEqu
   lazy val bottom: Double = y + radius
 
   lazy val center: Vertex = position
-
-  def toBoundingBox: BoundingBox =
-    BoundingBox(Vertex(left, top), Vertex(diameter, diameter))
 
   def contains(vertex: Vertex): Boolean =
     vertex.distanceTo(position) <= radius
@@ -79,6 +79,12 @@ final case class BoundingCircle(position: Vertex, radius: Double) derives CanEqu
 
   def toCircle: Circle =
     Circle(position.toPoint, radius.toInt)
+
+  def toRectangle: Rectangle =
+    Rectangle(Point(left.toInt, top.toInt), Size(diameter.toInt, diameter.toInt))
+
+  def toBoundingBox: BoundingBox =
+    BoundingBox(Vertex(left, top), Vertex(diameter, diameter))
 
   def lineIntersects(line: LineSegment): Boolean =
     BoundingCircle.lineIntersects(this, line)
