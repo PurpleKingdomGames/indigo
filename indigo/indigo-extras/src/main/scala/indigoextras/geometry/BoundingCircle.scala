@@ -1,8 +1,8 @@
 package indigoextras.geometry
 
 import indigo.shared.collections.Batch
-import indigo.shared.datatypes.Vector2
 import indigo.shared.datatypes.Circle
+import indigo.shared.datatypes.Vector2
 
 final case class BoundingCircle(position: Vertex, radius: Double) derives CanEqual:
   lazy val x: Double        = position.x
