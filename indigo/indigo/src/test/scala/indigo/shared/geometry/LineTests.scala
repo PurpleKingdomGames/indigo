@@ -1,7 +1,7 @@
-package indigoextras.geometry
+package indigo.shared.geometry
 
-import indigoextras.geometry.LineIntersectionResult._
-import indigoextras.geometry.LineSegment
+import indigo.shared.geometry.LineIntersectionResult._
+import indigo.shared.geometry.LineSegment
 
 class LineTests extends munit.FunSuite {
 
