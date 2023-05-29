@@ -13,6 +13,8 @@ final case class Circle(position: Point, radius: Int) derives CanEqual:
   lazy val top: Int    = y - radius
   lazy val bottom: Int = y + radius
 
+  lazy val center: Point = position
+
   def toRectangle: Rectangle =
     Rectangle(Point(left, top), Size(diameter, diameter))
 
@@ -63,6 +65,16 @@ final case class Circle(position: Point, radius: Int) derives CanEqual:
 
   def resize(newRadius: Int): Circle =
     this.copy(radius = newRadius)
+  def resizeTo(newRadius: Int): Circle =
+    resize(newRadius)
+  def resizeBy(amount: Int): Circle =
+    expand(amount)
+  def withRadius(newRadius: Int): Circle =
+    resize(newRadius)
+  def expand(by: Int): Circle =
+    resize(radius + by)
+  def contract(by: Int): Circle =
+    resize(radius - by)
 
 object Circle:
 
