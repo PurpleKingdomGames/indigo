@@ -227,7 +227,7 @@ object BoundaryLocator:
       case s: Shape.Circle =>
         Rectangle(
           s.position,
-          Size(s.radius * 2) + s.stroke.width
+          Size(s.circle.radius * 2) + s.stroke.width
         )
 
       case s: Shape.Line =>

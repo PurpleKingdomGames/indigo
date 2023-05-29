@@ -12,6 +12,7 @@ import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Size
 import indigo.shared.datatypes.Stroke
 import indigo.shared.datatypes.Vector2
+import indigo.shared.datatypes.Circle as C
 import indigo.shared.events.GlobalEvent
 import indigo.shared.materials.LightingModel
 import indigo.shared.materials.LightingModel.Lit
@@ -205,8 +206,7 @@ object Shape:
   /** Draws a coloured circle from it's center outwards.
     */
   final case class Circle(
-      center: Point,
-      radius: Int,
+      circle: C,
       fill: Fill,
       stroke: Stroke,
       lighting: LightingModel,
@@ -221,9 +221,9 @@ object Shape:
   ) extends Shape[Circle] {
 
     lazy val position: Point =
-      center - radius - (stroke.width / 2)
+      circle.center - circle.radius - (stroke.width / 2)
     lazy val size: Size =
-      Size(radius * 2) + stroke.width
+      Size(circle.radius * 2) + stroke.width
 
     @deprecated("Use `withFill` instead")
     def withFillColor(newFill: Fill): Circle =
@@ -245,11 +245,11 @@ object Shape:
       this.copy(stroke = stroke.withWidth(newWidth))
 
     def withRadius(newRadius: Int): Circle =
-      this.copy(radius = newRadius)
+      this.copy(circle = circle.withRadius(newRadius))
     def resizeTo(newRadius: Int): Circle =
       withRadius(newRadius)
     def resizeBy(amount: Int): Circle =
-      withRadius(radius + amount)
+      withRadius(circle.radius + amount)
 
     def withLighting(newLighting: LightingModel): Circle =
       this.copy(lighting = newLighting)
@@ -257,14 +257,14 @@ object Shape:
       this.copy(lighting = modifier(lighting))
 
     def moveTo(pt: Point): Circle =
-      this.copy(center = pt)
+      this.copy(circle = circle.moveTo(pt))
     def moveTo(x: Int, y: Int): Circle =
       moveTo(Point(x, y))
     def withPosition(newPosition: Point): Circle =
       moveTo(newPosition)
 
     def moveBy(pt: Point): Circle =
-      this.copy(center = center + pt)
+      this.copy(circle = circle.moveBy(pt))
     def moveBy(x: Int, y: Int): Circle =
       moveBy(Point(x, y))
 
@@ -283,7 +283,7 @@ object Shape:
       this.copy(scale = newScale)
 
     def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): Circle =
-      this.copy(center = newPosition, rotation = newRotation, scale = newScale)
+      this.copy(circle = circle.moveTo(newPosition), rotation = newRotation, scale = newScale)
 
     def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): Circle =
       transformTo(position + positionDiff, rotation + rotationDiff, scale * scaleDiff)
@@ -320,8 +320,7 @@ object Shape:
 
     def apply(center: Point, radius: Int, fill: Fill): Circle =
       Circle(
-        center,
-        radius,
+        C(center, radius),
         fill,
         Stroke.None,
         LightingModel.Unlit,
@@ -337,8 +336,7 @@ object Shape:
 
     def apply(center: Point, radius: Int, fill: Fill, stroke: Stroke): Circle =
       Circle(
-        center,
-        radius,
+        C(center, radius),
         fill,
         stroke,
         LightingModel.Unlit,
