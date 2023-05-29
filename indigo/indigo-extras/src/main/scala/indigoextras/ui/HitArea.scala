@@ -5,9 +5,9 @@ import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.events.GlobalEvent
+import indigo.shared.geometry.Polygon
+import indigo.shared.geometry.Vertex
 import indigo.shared.input.Mouse
-import indigoextras.geometry.Polygon
-import indigoextras.geometry.Vertex
 
 final case class HitArea(
     area: Polygon.Closed,

@@ -1,6 +1,6 @@
 package indigoextras.trees
 
-import indigoextras.geometry.BoundingBox
+import indigo.shared.geometry.BoundingBox
 import org.scalacheck.Prop.propBoolean
 import org.scalacheck._
 

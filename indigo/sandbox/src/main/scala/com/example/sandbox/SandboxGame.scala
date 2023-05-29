@@ -26,11 +26,11 @@ import com.example.sandbox.scenes.UltravioletScene
 import indigo.*
 import indigo.json.Json
 import indigo.scenes._
+import indigo.shared.geometry.Polygon
+import indigo.shared.geometry.Vertex
 import indigo.syntax.*
 import indigoextras.effectmaterials.LegacyEffects
 import indigoextras.effectmaterials.Refraction
-import indigoextras.geometry.Polygon
-import indigoextras.geometry.Vertex
 import indigoextras.subsystems.FPSCounter
 import indigoextras.ui.*
 

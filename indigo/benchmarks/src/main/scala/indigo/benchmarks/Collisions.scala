@@ -4,7 +4,7 @@ import indigo.*
 
 import japgolly.scalajs.benchmark._
 import japgolly.scalajs.benchmark.gui._
-import indigoextras.geometry.*
+import indigo.shared.geometry.*
 
 object Collisions:
 
