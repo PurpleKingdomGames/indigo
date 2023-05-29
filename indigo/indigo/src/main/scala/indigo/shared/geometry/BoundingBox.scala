@@ -1,12 +1,12 @@
 package indigo.shared.geometry
 
 import indigo.shared.collections.Batch
+import indigo.shared.datatypes.Circle
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Size
 import indigo.shared.datatypes.Vector2
 
 import scala.annotation.tailrec
-import indigo.shared.datatypes.Circle
 
 final case class BoundingBox(position: Vertex, size: Vertex) derives CanEqual:
   lazy val x: Double      = position.x

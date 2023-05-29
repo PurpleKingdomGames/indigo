@@ -1,10 +1,10 @@
 package indigo.shared.datatypes
 
 import indigo.shared.collections.Batch
-
-import scala.annotation.tailrec
 import indigo.shared.geometry.BoundingBox
 import indigo.shared.geometry.BoundingCircle
+
+import scala.annotation.tailrec
 
 final case class Rectangle(position: Point, size: Size) derives CanEqual:
   lazy val x: Int      = position.x
