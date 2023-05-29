@@ -1,8 +1,8 @@
 package indigoextras.trees
 
 import indigo.shared.collections.Batch
-import indigoextras.geometry.BoundingBox
-import indigoextras.geometry.Vertex
+import indigo.shared.geometry.BoundingBox
+import indigo.shared.geometry.Vertex
 import indigoextras.trees.QuadTree.QuadBranch
 import indigoextras.trees.QuadTree.QuadEmpty
 import indigoextras.trees.QuadTree.QuadLeaf

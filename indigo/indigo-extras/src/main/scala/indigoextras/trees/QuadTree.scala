@@ -1,9 +1,9 @@
 package indigoextras.trees
 
 import indigo.shared.collections.Batch
-import indigoextras.geometry.BoundingBox
-import indigoextras.geometry.LineSegment
-import indigoextras.geometry.Vertex
+import indigo.shared.geometry.BoundingBox
+import indigo.shared.geometry.LineSegment
+import indigo.shared.geometry.Vertex
 
 import scala.annotation.tailrec
 
