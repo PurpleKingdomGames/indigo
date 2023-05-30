@@ -100,13 +100,24 @@ object BoundingCircle:
   def apply(x: Double, y: Double, radius: Double): BoundingCircle =
     BoundingCircle(Vertex(x, y), radius)
 
+  /** Creates a `BoundingCircle` from two vertices where the first represents the center of the circle and the second is
+    * used to calculate the radius by measuring the distance to the center.
+    */
   def fromTwoVertices(center: Vertex, boundary: Vertex): BoundingCircle =
     BoundingCircle(center, center.distanceTo(boundary))
 
+  /** Creates a `BoundingCircle` from three vertices such that all of the vertices lie on the circles circumference.
+    */
+  def fromThreeVertices(a: Vertex, b: Vertex, c: Vertex): BoundingCircle =
+    BoundingCircle(a, 1.0)
+
+  /** Creates a `BoundingCircle` that contains all of the points provided.
+    */
   def fromVertices(vertices: Batch[Vertex]): BoundingCircle =
     val bb = BoundingBox.fromVertices(vertices)
     BoundingCircle(bb.center, bb.center.distanceTo(bb.topLeft))
 
+  @deprecated("Please use `fromVertices` which is functionally the same as `fromVertexCloud`.")
   def fromVertexCloud(vertices: Batch[Vertex]): BoundingCircle =
     fromVertices(vertices)
 
