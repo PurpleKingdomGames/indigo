@@ -34,4 +34,14 @@ class RadiansTests extends munit.FunSuite {
     assert((Radians.TAU - Radians.TAUby4).wrap ~== Radians.TAUby4 * Radians(3))
   }
 
+  test("convert to degrees") {
+    assert(doubleCloseEnough(Radians.zero.toDegrees, 0.0d))
+    assert(doubleCloseEnough(Radians.PI.toDegrees, 180.0d))
+    assert(doubleCloseEnough(Radians.TAU.toDegrees, 360.0d))
+    assert(doubleCloseEnough(clue(Radians(0.25).toDegrees), clue(14.32d)))
+  }
+
+  def doubleCloseEnough(r1: Double, r2: Double): Boolean =
+    r1 - 0.01 < r2 && r1 + 0.01 > r2
+
 }

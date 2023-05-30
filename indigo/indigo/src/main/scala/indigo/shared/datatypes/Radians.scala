@@ -69,3 +69,6 @@ object Radians:
 
     def toFloat: Float =
       r.toFloat
+
+    def toDegrees: Double =
+      (360 / pi2) * r.toDouble 
