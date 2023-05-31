@@ -92,6 +92,9 @@ final case class BoundingCircle(position: Vertex, radius: Double) derives CanEqu
   def lineIntersectsAt(line: LineSegment): BoundingCircleLineIntersect =
     BoundingCircle.lineIntersectsAt(this, line)
 
+  def ~==(other: BoundingCircle): Boolean =
+    (position ~== other.position) && Math.abs(radius - other.radius) < 0.0001
+
 object BoundingCircle:
 
   val zero: BoundingCircle =
