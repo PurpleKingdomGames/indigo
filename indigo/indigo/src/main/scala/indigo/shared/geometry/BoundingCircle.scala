@@ -111,8 +111,35 @@ object BoundingCircle:
 
   /** Creates a `BoundingCircle` from three vertices such that all of the vertices lie on the circles circumference.
     */
-  def fromThreeVertices(a: Vertex, b: Vertex, c: Vertex): BoundingCircle =
-    BoundingCircle(a, 1.0)
+  def fromThreeVertices(a: Vertex, b: Vertex, c: Vertex): Option[BoundingCircle] =
+    // Sides
+    val sideA = a.distanceTo(b)
+    val sideB = b.distanceTo(c)
+    val sideC = c.distanceTo(a)
+
+    // Find the three angles from the sides using the law of cosine
+    val angleA = Math.acos((Math.pow(sideB, 2) + Math.pow(sideC, 2) - Math.pow(sideA, 2)) / (2 * sideB * sideC))
+    val angleB = Math.acos((Math.pow(sideC, 2) + Math.pow(sideA, 2) - Math.pow(sideB, 2)) / (2 * sideC * sideA))
+    val angleC = Math.acos((Math.pow(sideA, 2) + Math.pow(sideB, 2) - Math.pow(sideC, 2)) / (2 * sideA * sideB))
+
+    // Then find the widest angle, the point there connects to the other two
+    List(angleA -> c, angleB -> a, angleC -> b).sortBy(_._1).map(_._2) match
+      case vtxC :: vtxB :: vtxA :: Nil =>
+        // To form two `LineSegments`
+        val lsA = LineSegment(vtxA, vtxB)
+        val lsB = LineSegment(vtxA, vtxC)
+
+        // We then take a normal from the center of the line segment
+        val lineA = LineSegment(lsA.center, lsA.center + lsA.normal).toLine
+        val lineB = LineSegment(lsB.center, lsB.center + lsB.normal).toLine
+
+        // Where the two normal `Line`'s meet is our circle center
+        lineA.intersectsAt(lineB).map { center =>
+          BoundingCircle(center, center.distanceTo(vtxA))
+        }
+
+      case _ =>
+        None
 
   /** Creates a `BoundingCircle` that contains all of the points provided.
     */

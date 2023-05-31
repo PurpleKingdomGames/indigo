@@ -170,42 +170,13 @@ class BoundingCircleTests extends munit.FunSuite {
     val b: Vertex = Vertex(2, 3)
     val c: Vertex = Vertex(2, -1)
 
-    /*
-cos(A) = (b^2 + c^2 - a^2) / (2 * b * c)
-cos(B) = (c^2 + a^2 - b^2) / (2 * c * a)
-cos(C) = (a^2 + b^2 - c^2) / (2 * a * b)
-     */
+    val actual =
+      BoundingCircle.fromThreeVertices(a, b, c)
 
-    // Sides
-    val sideA = 4
-    val sideB = 5
-    val sideC = 6
+    val expected =
+      BoundingCircle(Vertex(3.5, 1.0), 2.5)
 
-    // Find the three angles.
-    val angleA = Math.acos((Math.pow(sideB, 2) + Math.pow(sideC, 2) - Math.pow(sideA, 2)) / (2 * sideB * sideC))
-    val angleB = Math.acos((Math.pow(sideC, 2) + Math.pow(sideA, 2) - Math.pow(sideB, 2)) / (2 * sideC * sideA))
-    val angleC = Math.acos((Math.pow(sideA, 2) + Math.pow(sideB, 2) - Math.pow(sideC, 2)) / (2 * sideA * sideB))
-
-    println(Radians(angleA))
-    println(Radians(angleB))
-    println(Radians(angleC))
-
-    println(Radians(angleA).toDegrees)
-    println(Radians(angleB).toDegrees)
-    println(Radians(angleC).toDegrees)
-
-    // Then find the widest angle, the point there connects to the other two
-
-    // To form two `LineSegments`
-
-    // We then take a normal from the center of the line segment
-
-    // Where the two normal `Line`'s meet is our circle center
-    
-    // The radius is the distance from the center to any point
-
-    assert(1 == 2)
-
+    assert(actual.get ~== expected)
   }
 
   def doubleCloseEnough(r1: Double, r2: Double): Boolean =
