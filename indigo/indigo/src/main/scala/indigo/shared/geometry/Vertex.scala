@@ -111,6 +111,11 @@ final case class Vertex(x: Double, y: Double) derives CanEqual:
   def *(other: Vertex): Vertex = Vertex(x * other.x, y * other.y)
   def /(other: Vertex): Vertex = Vertex(x / other.x, y / other.y)
 
+  def +(other: Vector2): Vertex = Vertex(x + other.x, y + other.y)
+  def -(other: Vector2): Vertex = Vertex(x - other.x, y - other.y)
+  def *(other: Vector2): Vertex = Vertex(x * other.x, y * other.y)
+  def /(other: Vector2): Vertex = Vertex(x / other.x, y / other.y)
+
   def +(value: Double): Vertex = this + Vertex(value, value)
   def -(value: Double): Vertex = this - Vertex(value, value)
   def *(value: Double): Vertex = this * Vertex(value, value)
