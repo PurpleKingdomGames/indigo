@@ -84,6 +84,10 @@ class TileAndStretchTests extends munit.FunSuite {
       Shader {
         import TileAndStretch.*
 
+        // Delegates
+        val _tileAndStretchChannel: (Int, vec4, sampler2D.type, vec2, vec2, vec2, vec2, vec2) => vec4 =
+          tileAndStretchChannel
+
         val fillType: Int              = 0
         val fallback: vec4             = vec4(1.0)
         val srcChannel: sampler2D.type = sampler2D
@@ -93,7 +97,7 @@ class TileAndStretchTests extends munit.FunSuite {
         val entitySize: vec2           = vec2(5.0)
         val textureSize: vec2          = vec2(6.0)
 
-        tileAndStretchChannel(
+        _tileAndStretchChannel(
           fillType,    // env.FILLTYPE.toInt,
           fallback,    // env.CHANNEL_0,
           srcChannel,  // env.SRC_CHANNEL,

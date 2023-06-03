@@ -93,6 +93,20 @@ object LegacyEffectsShaders:
       import ImageEffectFunctions.*
       import TileAndStretch.*
 
+      // Delegates
+      val _applyBasicEffects: (vec4, Float, vec3) => vec4 =
+        applyBasicEffects
+      val _calculateColorOverlay: (vec4, vec4) => vec4 =
+        calculateColorOverlay
+      val _calculateLinearGradientOverlay: (vec4, vec2, vec2, vec2, vec4, vec4) => vec4 =
+        calculateLinearGradientOverlay
+      val _calculateRadialGradientOverlay: (vec4, vec2, vec2, vec2, vec4, vec4) => vec4 =
+        calculateRadialGradientOverlay
+      val _calculateSaturation: (vec4, Float) => vec4 =
+        calculateSaturation
+      val _tileAndStretchChannel: (Int, vec4, sampler2D.type, vec2, vec2, vec2, vec2, vec2) => vec4 =
+        tileAndStretchChannel
+
       @in val v_offsetTL: vec2 = null
       @in val v_offsetTC: vec2 = null
       @in val v_offsetTR: vec2 = null
@@ -251,7 +265,7 @@ object LegacyEffectsShaders:
         val fillType: Int =
           round(env.ALPHA_SATURATION_OVERLAYTYPE_FILLTYPE.w).toInt
 
-        env.CHANNEL_0 = tileAndStretchChannel(
+        env.CHANNEL_0 = _tileAndStretchChannel(
           fillType,
           env.CHANNEL_0,
           env.SRC_CHANNEL,
@@ -261,7 +275,7 @@ object LegacyEffectsShaders:
           env.SIZE,
           env.TEXTURE_SIZE
         )
-        env.CHANNEL_1 = tileAndStretchChannel(
+        env.CHANNEL_1 = _tileAndStretchChannel(
           fillType,
           env.CHANNEL_1,
           env.SRC_CHANNEL,
@@ -271,7 +285,7 @@ object LegacyEffectsShaders:
           env.SIZE,
           env.TEXTURE_SIZE
         )
-        env.CHANNEL_2 = tileAndStretchChannel(
+        env.CHANNEL_2 = _tileAndStretchChannel(
           fillType,
           env.CHANNEL_2,
           env.SRC_CHANNEL,
@@ -281,7 +295,7 @@ object LegacyEffectsShaders:
           env.SIZE,
           env.TEXTURE_SIZE
         )
-        env.CHANNEL_3 = tileAndStretchChannel(
+        env.CHANNEL_3 = _tileAndStretchChannel(
           fillType,
           env.CHANNEL_3,
           env.SRC_CHANNEL,
@@ -293,17 +307,17 @@ object LegacyEffectsShaders:
         )
 
         val alpha: Float    = env.ALPHA_SATURATION_OVERLAYTYPE_FILLTYPE.x
-        val baseColor: vec4 = applyBasicEffects(env.CHANNEL_0, alpha, env.TINT.xyz)
+        val baseColor: vec4 = _applyBasicEffects(env.CHANNEL_0, alpha, env.TINT.xyz)
 
         // 0 = color 1 = linear gradient 2 = radial gradient
         val overlayType: Int = round(env.ALPHA_SATURATION_OVERLAYTYPE_FILLTYPE.z).toInt
         val overlay: vec4 =
           overlayType match
             case 0 =>
-              calculateColorOverlay(baseColor, env.GRADIENT_FROM_COLOR)
+              _calculateColorOverlay(baseColor, env.GRADIENT_FROM_COLOR)
 
             case 1 =>
-              calculateLinearGradientOverlay(
+              _calculateLinearGradientOverlay(
                 baseColor,
                 env.GRADIENT_FROM_TO.xy,
                 env.GRADIENT_FROM_TO.zw,
@@ -313,7 +327,7 @@ object LegacyEffectsShaders:
               )
 
             case 2 =>
-              calculateRadialGradientOverlay(
+              _calculateRadialGradientOverlay(
                 baseColor,
                 env.GRADIENT_FROM_TO.xy,
                 env.GRADIENT_FROM_TO.zw,
@@ -323,12 +337,12 @@ object LegacyEffectsShaders:
               )
 
             case _ =>
-              calculateColorOverlay(baseColor, env.GRADIENT_FROM_COLOR)
+              _calculateColorOverlay(baseColor, env.GRADIENT_FROM_COLOR)
 
         // Identical to ImageEffects (end)
         // --------------------------------
 
-        val saturatedColor = calculateSaturation(overlay, env.ALPHA_SATURATION_OVERLAYTYPE_FILLTYPE.y)
+        val saturatedColor = _calculateSaturation(overlay, env.ALPHA_SATURATION_OVERLAYTYPE_FILLTYPE.y)
 
         val sampledRegionAlphas = array[9, Float](
           texture2D(env.SRC_CHANNEL, v_offsetTL).w,

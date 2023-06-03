@@ -31,6 +31,18 @@ object BlendEffects:
 
       def fragment(color: vec4): vec4 =
 
+        // Delegates
+        val _applyBasicEffects: (vec4, Float, vec3) => vec4 =
+          applyBasicEffects
+        val _calculateColorOverlay: (vec4, vec4) => vec4 =
+          calculateColorOverlay
+        val _calculateLinearGradientOverlay: (vec4, vec2, vec2, vec2, vec4, vec4) => vec4 =
+          calculateLinearGradientOverlay
+        val _calculateRadialGradientOverlay: (vec4, vec2, vec2, vec2, vec4, vec4) => vec4 =
+          calculateRadialGradientOverlay
+        val _calculateSaturation: (vec4, Float) => vec4 =
+          calculateSaturation
+
         val effectsBg: Int = round(env.ALPHA_SATURATION_OVERLAYTYPE_BG.w).toInt
 
         val effects: vec4 =
@@ -40,17 +52,17 @@ object BlendEffects:
             case _ => env.SRC
 
         val alpha: Float    = env.ALPHA_SATURATION_OVERLAYTYPE_BG.x
-        val baseColor: vec4 = applyBasicEffects(effects, alpha, env.TINT.xyz)
+        val baseColor: vec4 = _applyBasicEffects(effects, alpha, env.TINT.xyz)
 
         // 0 = color 1 = linear gradient 2 = radial gradient
         val overlayType: Int = round(env.ALPHA_SATURATION_OVERLAYTYPE_BG.z).toInt
         val overlay: vec4 =
           overlayType match
             case 0 =>
-              calculateColorOverlay(baseColor, env.GRADIENT_FROM_COLOR)
+              _calculateColorOverlay(baseColor, env.GRADIENT_FROM_COLOR)
 
             case 1 =>
-              calculateLinearGradientOverlay(
+              _calculateLinearGradientOverlay(
                 baseColor,
                 vec2(env.GRADIENT_FROM_TO.x, env.SIZE.y - env.GRADIENT_FROM_TO.y),
                 vec2(env.GRADIENT_FROM_TO.z, env.SIZE.y - env.GRADIENT_FROM_TO.w),
@@ -60,7 +72,7 @@ object BlendEffects:
               )
 
             case 2 =>
-              calculateRadialGradientOverlay(
+              _calculateRadialGradientOverlay(
                 baseColor,
                 vec2(env.GRADIENT_FROM_TO.x, env.SIZE.y - env.GRADIENT_FROM_TO.y),
                 vec2(env.GRADIENT_FROM_TO.z, env.SIZE.y - env.GRADIENT_FROM_TO.w),
@@ -70,7 +82,7 @@ object BlendEffects:
               )
 
             case _ =>
-              calculateColorOverlay(baseColor, env.GRADIENT_FROM_COLOR)
+              _calculateColorOverlay(baseColor, env.GRADIENT_FROM_COLOR)
 
-        calculateSaturation(overlay, env.ALPHA_SATURATION_OVERLAYTYPE_BG.y)
+        _calculateSaturation(overlay, env.ALPHA_SATURATION_OVERLAYTYPE_BG.y)
     }
