@@ -29,6 +29,12 @@ object ShapeCircle:
     Shader[Env] { env =>
       import ShapeShaderFunctions.*
 
+      // Delegates
+      val _calculateLinearGradient: (vec2, vec2, vec2, vec4, vec4) => vec4 =
+        calculateLinearGradient
+      val _calculateRadialGradient: (vec2, vec2, vec2, vec4, vec4) => vec4 =
+        calculateRadialGradient
+
       ubo[IndigoShapeData]
 
       def sdfCalc(p: vec2, r: Float): Float =
@@ -41,7 +47,7 @@ object ShapeCircle:
         val fill: vec4 =
           fillType match
             case 1 =>
-              calculateLinearGradient(
+              _calculateLinearGradient(
                 env.GRADIENT_FROM_TO.xy,
                 env.GRADIENT_FROM_TO.zw,
                 env.UV * env.SIZE,
@@ -50,7 +56,7 @@ object ShapeCircle:
               )
 
             case 2 =>
-              calculateRadialGradient(
+              _calculateRadialGradient(
                 env.GRADIENT_FROM_TO.xy,
                 env.GRADIENT_FROM_TO.zw,
                 env.UV * env.SIZE,
@@ -76,7 +82,7 @@ object ShapeCircle:
 
 object ShapeShaderFunctions:
 
-  inline def calculateLinearGradient =
+  inline def calculateLinearGradient: (vec2, vec2, vec2, vec4, vec4) => vec4 =
     (pointA: vec2, pointB: vec2, pointP: vec2, fromColor: vec4, toColor: vec4) =>
       // `h` is the distance along the gradient 0 at A, 1 at B
       val h: Float =
@@ -84,7 +90,7 @@ object ShapeShaderFunctions:
 
       mix(fromColor, toColor, h)
 
-  inline def calculateRadialGradient =
+  inline def calculateRadialGradient: (vec2, vec2, vec2, vec4, vec4) => vec4 =
     (pointA: vec2, pointB: vec2, pointP: vec2, fromColor: vec4, toColor: vec4) =>
       val radius      = length(pointB - pointA)
       val distanceToP = length(pointP - pointA)

@@ -15,7 +15,7 @@ import $ivy.`io.github.davidgregory084::mill-tpolecat::0.3.2`
 import io.github.davidgregory084.TpolecatModule
 
 object snake extends ScalaJSModule with MillIndigo with ScalafmtModule with TpolecatModule {
-  def scalaVersion   = "3.2.2"
+  def scalaVersion   = "3.3.0"
   def scalaJSVersion = "1.13.1"
 
   val gameAssetsDirectory: os.Path     = os.pwd / "assets"

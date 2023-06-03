@@ -36,6 +36,12 @@ object ShapePolygon:
     Shader[Env] { env =>
       import ShapeShaderFunctions.*
 
+      // Delegates
+      val _calculateLinearGradient: (vec2, vec2, vec2, vec4, vec4) => vec4 =
+        calculateLinearGradient
+      val _calculateRadialGradient: (vec2, vec2, vec2, vec4, vec4) => vec4 =
+        calculateRadialGradient
+
       ubo[IndigoShapeData]
 
       // Borrowed with thanks! https://www.iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm
@@ -73,7 +79,7 @@ object ShapePolygon:
         val fill: vec4 =
           fillType match
             case 1 =>
-              calculateLinearGradient(
+              _calculateLinearGradient(
                 env.GRADIENT_FROM_TO.xy,
                 env.GRADIENT_FROM_TO.zw,
                 env.UV * env.SIZE,
@@ -82,7 +88,7 @@ object ShapePolygon:
               )
 
             case 2 =>
-              calculateRadialGradient(
+              _calculateRadialGradient(
                 env.GRADIENT_FROM_TO.xy,
                 env.GRADIENT_FROM_TO.zw,
                 env.UV * env.SIZE,

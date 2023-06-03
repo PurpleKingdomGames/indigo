@@ -38,11 +38,15 @@ object RefractionShaders:
     Shader[FragEnv] { env =>
       import TileAndStretch.*
 
+      // Delegates
+      val _tileAndStretchChannel: (Int, vec4, sampler2D.type, vec2, vec2, vec2, vec2, vec2) => vec4 =
+        tileAndStretchChannel
+
       ubo[IndigoBitmapData]
 
       def fragment(color: vec4): vec4 =
 
-        env.CHANNEL_0 = tileAndStretchChannel(
+        env.CHANNEL_0 = _tileAndStretchChannel(
           env.FILLTYPE.toInt,
           env.CHANNEL_0,
           env.SRC_CHANNEL,
@@ -52,7 +56,7 @@ object RefractionShaders:
           env.SIZE,
           env.TEXTURE_SIZE
         )
-        env.CHANNEL_1 = tileAndStretchChannel(
+        env.CHANNEL_1 = _tileAndStretchChannel(
           env.FILLTYPE.toInt,
           env.CHANNEL_1,
           env.SRC_CHANNEL,
@@ -62,7 +66,7 @@ object RefractionShaders:
           env.SIZE,
           env.TEXTURE_SIZE
         )
-        env.CHANNEL_2 = tileAndStretchChannel(
+        env.CHANNEL_2 = _tileAndStretchChannel(
           env.FILLTYPE.toInt,
           env.CHANNEL_2,
           env.SRC_CHANNEL,
@@ -72,7 +76,7 @@ object RefractionShaders:
           env.SIZE,
           env.TEXTURE_SIZE
         )
-        env.CHANNEL_3 = tileAndStretchChannel(
+        env.CHANNEL_3 = _tileAndStretchChannel(
           env.FILLTYPE.toInt,
           env.CHANNEL_3,
           env.SRC_CHANNEL,

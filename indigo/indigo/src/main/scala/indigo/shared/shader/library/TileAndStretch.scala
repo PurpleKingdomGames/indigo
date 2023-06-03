@@ -10,7 +10,7 @@ object TileAndStretch:
   inline def tiledUVs(uv: vec2, channelPos: vec2, channelSize: vec2, entitySize: vec2, textureSize: vec2): vec2 =
     channelPos + (fract(uv * (entitySize / textureSize)) * channelSize)
 
-  inline def tileAndStretchChannel =
+  inline def tileAndStretchChannel: (Int, vec4, sampler2D.type, vec2, vec2, vec2, vec2, vec2) => vec4 =
     (
         fillType: Int,
         fallback: vec4,
