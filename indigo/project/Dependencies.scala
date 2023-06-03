@@ -12,7 +12,7 @@ object Dependencies {
     val scalajsBenchmark = "0.10.0"
     val chartjs          = "1.0.2"
     val munit            = "0.7.29"
-    val ultraviolet      = "0.1.1"
+    val ultraviolet      = "0.1.2"
   }
 
   object Shared {
