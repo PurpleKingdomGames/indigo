@@ -49,6 +49,8 @@ final case class BoundingCircle(position: Vertex, radius: Double) derives CanEqu
 
   def overlaps(other: BoundingCircle): Boolean =
     BoundingCircle.overlapping(this, other)
+  def overlaps(other: BoundingBox): Boolean =
+    BoundingCircle.overlapping(this, other)
 
   def moveBy(amount: Vertex): BoundingCircle =
     this.copy(position = position + amount)
@@ -168,6 +170,9 @@ object BoundingCircle:
 
   def overlapping(a: BoundingCircle, b: BoundingCircle): Boolean =
     a.position.distanceTo(b.position) < Math.abs(a.radius) + Math.abs(b.radius)
+
+  def overlapping(a: BoundingCircle, b: BoundingBox): Boolean =
+    Math.abs(b.sdf(a.position)) <= Math.abs(a.radius)
 
   def lineIntersects(boundingCircle: BoundingCircle, line: LineSegment): Boolean =
     Math.abs(line.sdf(boundingCircle.position)) <= boundingCircle.radius

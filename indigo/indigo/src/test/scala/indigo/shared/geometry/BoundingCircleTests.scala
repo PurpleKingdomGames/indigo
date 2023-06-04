@@ -39,6 +39,21 @@ class BoundingCircleTests extends munit.FunSuite {
     assert(!(c1 overlaps c3))
   }
 
+  test("overlaps BoundingBox") {
+    
+    // A static box at (20, 0) of size 20.
+    val b = BoundingBox(Vertex(20, 0), Vertex(20))
+
+    // A circle we will move along the x axis
+    val c = BoundingCircle(Vertex(0, 10), 10)
+
+    assert(c.moveTo(0, 10).overlaps(b) == false) // well away to the left
+    assert(c.moveTo(11, 10).overlaps(b) == true) // just overlapping
+    assert(c.moveTo(30, 10).overlaps(b) == true) // dead center
+    assert(c.moveTo(40, 10).overlaps(b) == true) // overlaps on the border
+    assert(c.moveTo(51, 10).overlaps(b) == false) // Just past.
+  }
+
   test("moveBy | moveTo") {
     val c = BoundingCircle(Vertex(20, 20), 10)
 
