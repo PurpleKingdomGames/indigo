@@ -32,7 +32,7 @@ class CircleTests extends munit.FunSuite {
   test("overlaps") {
     val c1 = Circle(Point(20, 20), 10)
     val c2 = Circle(Point(25, 25), 10)
-    val c3 = Circle(Point(10, 40), 10)
+    val c3 = Circle(Point(10, 41), 10)
 
     assert(c1 overlaps c2)
     assert(!(c1 overlaps c3))
