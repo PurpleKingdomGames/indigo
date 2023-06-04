@@ -76,6 +76,8 @@ final case class Rectangle(position: Point, size: Size) derives CanEqual:
 
   def overlaps(other: Rectangle): Boolean =
     Rectangle.overlapping(this, other)
+  def overlaps(other: Circle): Boolean =
+    Rectangle.overlapping(this, other)
 
   def moveBy(point: Point): Rectangle =
     this.copy(position = position + point)
@@ -205,5 +207,6 @@ object Rectangle:
     b.x >= a.x && b.y >= a.y && (b.width + (b.x - a.x)) <= a.width && (b.height + (b.y - a.y)) <= a.height
 
   def overlapping(a: Rectangle, b: Rectangle): Boolean =
-    Math.abs(a.center.x - b.center.x) < a.halfWidth + b.halfWidth &&
-      Math.abs(a.center.y - b.center.y) < a.halfHeight + b.halfHeight
+    a.toBoundingBox.overlaps(b.toBoundingBox)
+  def overlapping(a: Rectangle, b: Circle): Boolean =
+    a.toBoundingBox.overlaps(b.toBoundingCircle)

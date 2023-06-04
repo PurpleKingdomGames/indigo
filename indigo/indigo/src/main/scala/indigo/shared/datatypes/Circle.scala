@@ -48,6 +48,8 @@ final case class Circle(position: Point, radius: Int) derives CanEqual:
 
   def overlaps(other: Circle): Boolean =
     Circle.overlapping(this, other)
+  def overlaps(other: Rectangle): Boolean =
+    Circle.overlapping(this, other)
 
   def moveBy(amount: Point): Circle =
     this.copy(position = position + amount)
@@ -113,7 +115,9 @@ object Circle:
     a.position.distanceTo(b.position) <= Math.abs(a.radius) - Math.abs(b.radius)
 
   def overlapping(a: Circle, b: Circle): Boolean =
-    a.position.distanceTo(b.position) < Math.abs(a.radius) + Math.abs(b.radius)
+    a.toBoundingCircle.overlaps(b.toBoundingBox)
+  def overlapping(a: Circle, b: Rectangle): Boolean =
+    a.toBoundingCircle.overlaps(b.toBoundingBox)
 
   // Centered at the origin
   def signedDistanceFunction(point: Point, radius: Int): Int =
