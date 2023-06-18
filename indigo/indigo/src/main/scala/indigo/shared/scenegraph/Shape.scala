@@ -334,9 +334,41 @@ object Shape:
         None
       )
 
+    def apply(circle: C, fill: Fill): Circle =
+      Circle(
+        circle,
+        fill,
+        Stroke.None,
+        LightingModel.Unlit,
+        false,
+        Function.const(None),
+        Radians.zero,
+        Vector2.one,
+        Depth.zero,
+        Point.zero,
+        Flip.default,
+        None
+      )
+
     def apply(center: Point, radius: Int, fill: Fill, stroke: Stroke): Circle =
       Circle(
         C(center, radius),
+        fill,
+        stroke,
+        LightingModel.Unlit,
+        false,
+        Function.const(None),
+        Radians.zero,
+        Vector2.one,
+        Depth.zero,
+        Point.zero,
+        Flip.default,
+        None
+      )
+
+    def apply(circle: C, fill: Fill, stroke: Stroke): Circle =
+      Circle(
+        circle,
         fill,
         stroke,
         LightingModel.Unlit,
