@@ -164,6 +164,9 @@ sealed trait Batch[+A]:
   def sortBy[B](f: A => B)(implicit ord: Ordering[B]): Batch[A] =
     Batch.Wrapped(_jsArray.sortBy(f))
 
+  def sorted[B >: A](implicit ord: Ordering[B]): Batch[A] =
+    Batch.Wrapped(_jsArray.sorted)
+
   def sortWith(f: (A, A) => Boolean): Batch[A] =
     Batch.Wrapped(_jsArray.sortWith(f))
 
