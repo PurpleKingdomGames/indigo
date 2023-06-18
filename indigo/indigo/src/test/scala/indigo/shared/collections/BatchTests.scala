@@ -453,4 +453,17 @@ class BatchTests extends munit.FunSuite {
     assertEquals(actual.sequence, expected)
   }
 
+  test("sorted") {
+    assertEquals(Batch(3, 5, 2, 4, 1).sorted, Batch(1, 2, 3, 4, 5))
+  }
+
+  test("sortBy") {
+    assertEquals(Batch(3, 5, 2, 4, 1).sortBy(identity), Batch(1, 2, 3, 4, 5))
+    assertEquals(Batch(3, 5, 2, 4, 1).sortBy(i => List.fill(5 - i)("a").mkString), Batch(5, 4, 3, 2, 1))
+  }
+
+  test("sortWith") {
+    assertEquals(Batch(3, 5, 2, 4, 1).sortWith(_ > _), Batch(5, 4, 3, 2, 1))
+  }
+
 }
