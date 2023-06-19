@@ -11,10 +11,12 @@ sealed trait Line derives CanEqual:
 object Line:
   final case class Components(m: Double, b: Double) extends Line:
 
+    /** This is a slope comparison function. Any point on the line should have the same slope as the line, however, this
+      * fails in the case where the x position of the vertex is 0.
+      */
     def slopeComparison(vertex: Vertex, tolerance: Double): Boolean =
-      // This is a slope comparison.. Any point on the line should have the same slope as the line.
       val m2: Double =
-        if (vertex.x == 0) 0
+        if vertex.x == 0 then 0
         else (b - vertex.y) / (0 - vertex.x)
 
       val mDelta: Double =

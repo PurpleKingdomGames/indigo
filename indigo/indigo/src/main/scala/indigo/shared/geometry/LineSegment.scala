@@ -84,36 +84,18 @@ final case class LineSegment(start: Vertex, end: Vertex) derives CanEqual:
 
   def intersectsAt(other: LineSegment): Option[Vertex] =
     toLine.intersectsAt(other.toLine).flatMap { pt =>
-      if (contains(pt) && other.contains(pt)) Some(pt)
+      if contains(pt) && other.contains(pt) then Some(pt)
       else None
     }
 
   def intersectsWith(other: LineSegment): Boolean =
-    toLine
-      .intersectsAt(other.toLine)
-      .map(pt => contains(pt) && other.contains(pt))
-      .getOrElse(false)
-
-  @deprecated("use `intersectsWith` instead.")
-  def intersectsWithLine(other: LineSegment): Boolean =
-    intersectsWith(other)
+    intersectsAt(other).isDefined
 
   def contains(vertex: Vertex, tolerance: Double): Boolean =
-    if (vertex.x >= left && vertex.x <= right && vertex.y >= top && vertex.y <= bottom)
-      toLine match {
-        case Line.InvalidLine =>
-          false
-
-        case _: Line.ParallelToAxisY =>
-          true
-
-        case l: Line.Components =>
-          l.slopeComparison(vertex, tolerance)
-      }
-    else false
+    sdf(vertex) <= tolerance
 
   def contains(vertex: Vertex): Boolean =
-    contains(vertex, 0.5d)
+    contains(vertex, 0.001)
   def contains(vector: Vector2): Boolean =
     contains(Vertex.fromVector2(vector))
 

@@ -222,16 +222,15 @@ object BoundingBox:
   def lineIntersects(boundingBox: BoundingBox, line: LineSegment): Boolean =
     @tailrec
     def rec(remaining: List[LineSegment]): Boolean =
-      remaining match {
+      remaining match
         case Nil =>
           false
 
-        case x :: _ if x.intersectsAt(line).isDefined =>
+        case x :: _ if x.intersectsWith(line) =>
           true
 
         case _ :: xs =>
           rec(xs)
-      }
 
     val containsStart = boundingBox.contains(line.start)
     val containsEnd   = boundingBox.contains(line.end)
