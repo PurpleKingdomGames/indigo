@@ -38,7 +38,9 @@ final case class Vector4(x: Double, y: Double, z: Double, w: Double) derives Can
     )
 
   def length: Double =
-    distanceTo(Vector4.zero)
+    Math.sqrt(x * x + y * y + z * z + w * w)
+  def magnitude: Double =
+    length
 
   def invert: Vector4 =
     Vector4(-x, -y, -z, -w)

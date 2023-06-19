@@ -28,7 +28,9 @@ final case class Vector2(x: Double, y: Double) derives CanEqual:
     Vector2(Math.min(max, Math.max(min, x)), Math.min(max, Math.max(min, y)))
 
   def length: Double =
-    distanceTo(Vector2.zero)
+    Math.sqrt(x * x + y * y)
+  def magnitude: Double =
+    length
 
   def invert: Vector2 =
     Vector2(-x, -y)
@@ -100,7 +102,6 @@ final case class Vector2(x: Double, y: Double) derives CanEqual:
     Vector2.dotProduct(this, other)
 
   def normalise: Vector2 =
-    val magnitude = length
     if magnitude == 0 then Vector2.zero
     else
       Vector2(
