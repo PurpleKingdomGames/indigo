@@ -47,7 +47,7 @@ final case class Vertex(x: Double, y: Double) derives CanEqual:
     clamp(Vertex.fromVector2(v1), Vertex.fromVector2(v1))
 
   def length: Double =
-    distanceTo(Vertex.zero)
+    Math.sqrt(x * x + y * y)
 
   def invert: Vertex =
     Vertex(-x, -y)
