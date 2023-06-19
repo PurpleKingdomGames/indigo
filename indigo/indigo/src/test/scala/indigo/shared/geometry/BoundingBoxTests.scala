@@ -169,6 +169,21 @@ class BoundingBoxTests extends munit.FunSuite {
     assert(!BoundingBox(5, 5, 4, 4).lineIntersects(LineSegment((0d, 0d), (3d, 3d))))
   }
 
+  test("intersecting lines.detecting a hit through zero coord") {
+
+    val l = LineSegment(Vertex(1), Vertex(-1))
+
+    // In the original test case,
+    // This worked...
+    assert(BoundingBox(Vertex(0.1), Vertex(2)).lineIntersects(l))
+    assertEquals(BoundingBox(Vertex(0.1), Vertex(2)).lineIntersectsAt(l), Some(Vertex(0.1)))
+
+    // But this didn't...
+    assert(BoundingBox(Vertex(0), Vertex(2)).lineIntersects(l))
+    assertEquals(BoundingBox(Vertex(0), Vertex(2)).lineIntersectsAt(l), Some(Vertex(0)))
+
+  }
+
   test("encompasing bounding box.should return true when A encompases B") {
     val a = BoundingBox(10, 10, 110, 110)
     val b = BoundingBox(20, 20, 10, 10)
