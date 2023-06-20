@@ -203,7 +203,7 @@ class LineSegmentTests extends munit.FunSuite {
 
     assert(clue(actual.at) ~== clue(Vertex(3.0, 4.0)))
     assert(clue(actual.normal) ~== clue(Vector2(0.7071, 0.7071)))
-    assert(clue(actual.incident) ~== clue(Vector2(0, -1)))
+    assert(clue(actual.incident) ~== clue(Vector2(0, 1)))
     assert(clue(actual.reflected) ~== clue(Vector2(-1, 0)))
     assert(clue(actual.toLineSegment) ~== clue(LineSegment((3.0, 4.0), (2.0, 4.0))))
     assert(clue(actual.toLineSegment(10)) ~== clue(LineSegment((3.0, 4.0), (-7.0, 4.0))))
@@ -220,10 +220,10 @@ class LineSegmentTests extends munit.FunSuite {
 
     assert(clue(actual.at) ~== clue(Vertex(10, 0)))
     assert(clue(actual.normal) ~== clue(Vector2(0, 1)))
-    assert(clue(actual.incident) ~== clue(Vector2(-0.7071, 0.7071)))
+    assert(clue(actual.incident) ~== clue(Vector2(0.7071, -0.7071)))
     assert(clue(actual.reflected) ~== clue(Vector2(0.7071, 0.7071)))
-    assert(clue(actual.toLineSegment) ~== clue(LineSegment((10.0, 10.0), (11.0, 9.0))))
-    assert(clue(actual.toLineSegment(10)) ~== clue(LineSegment((10.0, 10.0), (20.0, 0.0))))
+    assert(clue(actual.toLineSegment) ~== clue(LineSegment((10.0, 0.0), (10.7071, 0.7071))))
+    assert(clue(actual.toLineSegment(10)) ~== clue(LineSegment((10.0, 0.0), (17.07106, 7.07106))))
 
   }
 

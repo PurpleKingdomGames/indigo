@@ -96,7 +96,7 @@ final case class LineSegment(start: Vertex, end: Vertex) derives CanEqual:
   def reflect(ray: LineSegment): Option[ReflectionData] =
     intersectsAt(ray).map { at =>
       val nrml     = normal
-      val incident = (ray.start - at).toVector2.normalise
+      val incident = (at - ray.start).toVector2.normalise
 
       val dotProduct       = incident.dot(nrml)
       val magnitudeProduct = incident.magnitude * nrml.magnitude
@@ -110,11 +110,13 @@ final case class LineSegment(start: Vertex, end: Vertex) derives CanEqual:
         incident.x * sinTheta + incident.y * cosTheta
       ).normalise
 
+      val flipIfFacing = if dotProduct < 0 then reflected.invert else reflected
+
       ReflectionData(
         at,
         nrml,
         incident,
-        reflected
+        flipIfFacing
       )
     }
 
