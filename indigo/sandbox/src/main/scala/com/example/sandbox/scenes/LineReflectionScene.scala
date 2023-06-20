@@ -60,10 +60,9 @@ object LineReflectionScene extends Scene[SandboxStartupData, SandboxGameModel, S
         Math.cos(Radians.fromSeconds((context.sceneRunning * timeMultiplier) + timeOffset).toDouble) * radius
       )
 
-    val vtxA = context.startUpData.viewportCenter.toVertex + makeVertex(0.2, 0.0, 50.0)
-    val vtxB = context.startUpData.viewportCenter.toVertex + makeVertex(0.2, 0.5, 50.0)
+    val vtxA = context.startUpData.viewportCenter.toVertex + makeVertex(0.1, 0.0, 50.0)
+    val vtxB = context.startUpData.viewportCenter.toVertex + makeVertex(0.1, 0.5, 50.0)
 
-    // val circle = BoundingCircle.fromThreeVertices(vtxA, vtxB, vtxC).getOrElse(BoundingCircle(0, 0, 10))
     val surface = LineSegment(vtxA, vtxB)
 
     val incident = LineSegment(Vertex(10), Vertex(400))
@@ -73,23 +72,26 @@ object LineReflectionScene extends Scene[SandboxStartupData, SandboxGameModel, S
         .reflect(incident)
         .toBatch
         .flatMap { rd =>
-          val ref  = rd.toLineSegment(200)
-          val nrml = LineSegment(surface.center, rd.normal.normalise.toVertex * 30)
+          val normalAtIntersect = LineSegment(rd.at, rd.at + (rd.normal.toVertex * 30))
+          val reflection        = LineSegment(rd.at, rd.at + (rd.reflected.toVertex * 200))
+
           Batch(
-            // Refected
+            // Normal at intersection point
             Shape.Line(
-              nrml.start.toPoint,
-              nrml.end.toPoint,
-              Stroke(1, RGBA.Magenta)
-            ),
-            // Refected
-            Shape.Line(
-              ref.start.toPoint,
-              ref.end.toPoint,
+              normalAtIntersect.start.toPoint,
+              normalAtIntersect.end.toPoint,
               Stroke(1, RGBA.Yellow)
+            ),
+            // Reflection
+            Shape.Line(
+              reflection.start.toPoint,
+              reflection.end.toPoint,
+              Stroke(1, RGBA.Magenta)
             )
           )
         }
+
+    val nrml = LineSegment(surface.center, surface.center + (surface.normal.toVertex * 30))
 
     Outcome(
       SceneUpdateFragment.empty
@@ -101,6 +103,12 @@ object LineReflectionScene extends Scene[SandboxStartupData, SandboxGameModel, S
               surface.end.toPoint,
               Stroke(1, RGBA.White)
             ),
+            // Normal
+            Shape.Line(
+              nrml.start.toPoint,
+              nrml.end.toPoint,
+              Stroke(1, RGBA.Green)
+            ),
             // Incident
             Shape.Line(
               incident.start.toPoint,
@@ -108,10 +116,6 @@ object LineReflectionScene extends Scene[SandboxStartupData, SandboxGameModel, S
               Stroke(1, RGBA.Cyan)
             )
           ) ++
-            reflection ++
-            Batch(
-              vertexCirce.moveTo(vtxA.toPoint),
-              vertexCirce.moveTo(vtxB.toPoint)
-            )
+            reflection
         )
     )
