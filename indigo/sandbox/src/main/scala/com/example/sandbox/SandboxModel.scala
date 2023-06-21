@@ -15,7 +15,8 @@ object SandboxModel {
       SaveLoadPhases.NotStarted,
       None,
       ConfettiModel.empty,
-      PointersModel.empty
+      PointersModel.empty,
+      Radians.zero
     )
 
   def updateModel(state: SandboxGameModel): GlobalEvent => Outcome[SandboxGameModel] = {
@@ -136,7 +137,8 @@ final case class SandboxGameModel(
     saveLoadPhase: SaveLoadPhases,
     data: Option[String],
     confetti: ConfettiModel,
-    pointers: PointersModel
+    pointers: PointersModel,
+    rotation: Radians
 )
 
 final case class DudeModel(dude: Dude, walkDirection: DudeDirection) {
