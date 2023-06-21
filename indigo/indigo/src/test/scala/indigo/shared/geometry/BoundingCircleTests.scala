@@ -157,7 +157,7 @@ class BoundingCircleTests extends munit.FunSuite {
 
   test("LineSegment reflecton") {
 
-    val ray = LineSegment((1.0, 6.0), (6.0, 1.0))
+    val ray    = LineSegment((1.0, 6.0), (6.0, 1.0))
     val circle = BoundingCircle(4, 4, 1)
 
     val actual =
