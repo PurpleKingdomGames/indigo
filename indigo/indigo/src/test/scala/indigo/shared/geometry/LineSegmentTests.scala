@@ -193,7 +193,7 @@ class LineSegmentTests extends munit.FunSuite {
     assert(clue(LineSegment(zero_one, one_zero).closestPointOnLine(testPoint).get) ~== testPoint)
   }
 
-  test("LineSegment reflecton (1)".only) {
+  test("LineSegment reflecton (1)") {
 
     val lineA = LineSegment((1.0, 6.0), (6.0, 1.0))
     val lineB = LineSegment((3.0, 0.0), (3.0, 6.0))
@@ -210,7 +210,7 @@ class LineSegmentTests extends munit.FunSuite {
 
   }
 
-  test("LineSegment reflecton (2)".only) {
+  test("LineSegment reflecton (2)") {
 
     val lineA = LineSegment((0.0, 0.0), (20.0, 0.0))
     val lineB = LineSegment((0.0, 10.0), (10.0, 0.0))

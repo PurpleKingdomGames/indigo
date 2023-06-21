@@ -114,6 +114,13 @@ final case class BoundingBox(position: Vertex, size: Vertex) derives CanEqual:
   def lineIntersectsAt(line: LineSegment): Option[Vertex] =
     BoundingBox.lineIntersectsAt(this, line)
 
+  /** Reflects the incoming 'ray' off of the BoundingBox
+    */
+  def reflect(ray: LineSegment): Option[ReflectionData] =
+    BoundingBox.lineIntersectsWithEdge(this, ray).flatMap { case (_, line) =>
+      line.reflect(ray)
+    }
+
   def ~==(other: BoundingBox): Boolean =
     (position ~== other.position) && (size ~== other.size)
 
@@ -240,6 +247,9 @@ object BoundingBox:
     else rec(boundingBox.toLineSegments.toList)
 
   def lineIntersectsAt(boundingBox: BoundingBox, line: LineSegment): Option[Vertex] =
+    lineIntersectsWithEdge(boundingBox, line).map(_._1)
+
+  def lineIntersectsWithEdge(boundingBox: BoundingBox, line: LineSegment): Option[(Vertex, LineSegment)] =
     val containsStart = boundingBox.contains(line.start)
     val containsEnd   = boundingBox.contains(line.end)
 
@@ -255,8 +265,8 @@ object BoundingBox:
         .flatMap { ln =>
           if ln.isFacingVertex(outside) then
             val at = ln.intersectsAt(line)
-            if at.isDefined then Batch(at.get) else Batch.empty
+            if at.isDefined then Batch(at.get -> ln) else Batch.empty
           else Batch.empty
         }
-        .sortWith((a, b) => a.distanceTo(outside) < b.distanceTo(outside))
+        .sortWith((a, b) => a._1.distanceTo(outside) < b._1.distanceTo(outside))
         .headOption

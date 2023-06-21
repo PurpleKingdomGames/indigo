@@ -1,5 +1,6 @@
 package indigo.shared.geometry
 
+import indigo.Vector2
 import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
@@ -313,6 +314,23 @@ class BoundingBoxTests extends munit.FunSuite {
     assert(a.right == 10)
     assert(a.top == -20)
     assert(a.bottom == 20)
+  }
+
+  test("LineSegment reflecton") {
+
+    val ray = LineSegment((6.0, 1.0), (1.0, 6.0))
+    val box = BoundingBox(3, 3, 2, 2)
+
+    val actual =
+      box.reflect(ray).get
+
+    assert(clue(actual.at) ~== clue(Vertex(4.0, 3.0)))
+    assert(clue(actual.normal) ~== clue(Vector2(0, -1)))
+    assert(clue(actual.incident) ~== clue(Vector2(-0.7071, 0.7071)))
+    assert(clue(actual.reflected) ~== clue(Vector2(-0.7071, -0.7071)))
+    assert(clue(actual.toLineSegment) ~== clue(LineSegment((4.0, 3.0), (3.2928, 2.2928))))
+    assert(clue(actual.toLineSegment(10)) ~== clue(LineSegment((4.0, 3.0), (-3.07106, -4.07106))))
+
   }
 
 }
