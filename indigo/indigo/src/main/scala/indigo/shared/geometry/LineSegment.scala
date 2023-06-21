@@ -91,6 +91,22 @@ final case class LineSegment(start: Vertex, end: Vertex) derives CanEqual:
   def intersectsWith(other: LineSegment): Boolean =
     intersectsAt(other).isDefined
 
+  /** Reflects the incoming 'ray' off of this line segment as if it were a surface.
+    */
+  def reflect(ray: LineSegment): Option[ReflectionData] =
+    intersectsAt(ray).map { at =>
+      val nrml      = normal
+      val incident  = (at - ray.start).toVector2.normalise
+      val reflected = (incident - nrml * (2.0 * incident.dot(nrml))).normalise
+
+      ReflectionData(
+        at,
+        nrml,
+        incident,
+        reflected
+      )
+    }
+
   def contains(vertex: Vertex, tolerance: Double): Boolean =
     sdf(vertex) <= tolerance
 
@@ -140,3 +156,14 @@ object LineSegment:
 
   def apply(start: (Double, Double), end: (Double, Double)): LineSegment =
     LineSegment(Vertex.tuple2ToVertex(start), Vertex.tuple2ToVertex(end))
+
+final case class ReflectionData(
+    at: Vertex,
+    normal: Vector2,
+    incident: Vector2,
+    reflected: Vector2
+):
+  def toLineSegment: LineSegment =
+    LineSegment(at, at + reflected)
+  def toLineSegment(length: Double): LineSegment =
+    LineSegment(at, at + (reflected * length))

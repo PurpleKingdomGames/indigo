@@ -1,6 +1,7 @@
 package indigo.shared.geometry
 
 import indigo.Radians
+import indigo.Vector2
 import indigo.shared.collections.Batch
 
 class BoundingCircleTests extends munit.FunSuite {
@@ -152,6 +153,23 @@ class BoundingCircleTests extends munit.FunSuite {
         .map(_.map(_.round))
 
     assertEquals(actual, expected)
+  }
+
+  test("LineSegment reflecton") {
+
+    val ray    = LineSegment((1.0, 6.0), (6.0, 1.0))
+    val circle = BoundingCircle(4, 4, 1)
+
+    val actual =
+      circle.reflect(ray).get
+
+    assert(clue(actual.at) ~== clue(Vertex(3.0, 4.0)))
+    assert(clue(actual.normal) ~== clue(Vector2(-1, 0)))
+    assert(clue(actual.incident) ~== clue(Vector2(0.7071, -0.7071)))
+    assert(clue(actual.reflected) ~== clue(Vector2(-0.7071, -0.7071)))
+    assert(clue(actual.toLineSegment) ~== clue(LineSegment((3.0, 4.0), (2.29289, 3.29289))))
+    assert(clue(actual.toLineSegment(10)) ~== clue(LineSegment((3.0, 4.0), (-4.07106, -3.07106))))
+
   }
 
   test("signed distance function") {

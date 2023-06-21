@@ -94,6 +94,22 @@ final case class BoundingCircle(position: Vertex, radius: Double) derives CanEqu
   def lineIntersectsAt(line: LineSegment): BoundingCircleLineIntersect =
     BoundingCircle.lineIntersectsAt(this, line)
 
+  /** Reflects the incoming 'ray' off of the BoundingCircle.
+    */
+  def reflect(ray: LineSegment): Option[ReflectionData] =
+    lineIntersectsAt(ray).nearest.map { at =>
+      val nrml      = (at - center).toVector2.normalise
+      val incident  = (at - ray.start).toVector2.normalise
+      val reflected = (incident - nrml * (2.0 * incident.dot(nrml))).normalise
+
+      ReflectionData(
+        at,
+        nrml,
+        incident,
+        reflected
+      )
+    }
+
   def ~==(other: BoundingCircle): Boolean =
     (position ~== other.position) && Math.abs(radius - other.radius) < 0.0001
 

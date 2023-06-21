@@ -30,7 +30,9 @@ final case class Vector3(x: Double, y: Double, z: Double) derives CanEqual:
     Vector3(Math.min(max, Math.max(min, x)), Math.min(max, Math.max(min, y)), Math.min(max, Math.max(min, z)))
 
   def length: Double =
-    distanceTo(Vector3.zero)
+    Math.sqrt(x * x + y * y + z * z)
+  def magnitude: Double =
+    length
 
   def invert: Vector3 =
     Vector3(-x, -y, -z)
