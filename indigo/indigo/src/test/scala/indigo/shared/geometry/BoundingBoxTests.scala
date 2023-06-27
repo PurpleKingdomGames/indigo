@@ -333,4 +333,19 @@ class BoundingBoxTests extends munit.FunSuite {
 
   }
 
+  test("LineSegment reflecton - along x-axis") {
+
+    val ray = LineSegment((0.0, 2.0), (4.0, 2.0))
+    val box = BoundingBox(3, 1, 3, 3)
+
+    val actual =
+      box.reflect(ray).get
+
+    assert(clue(actual.at) ~== clue(Vertex(3.0, 2.0)))
+    assert(clue(actual.normal) ~== clue(Vector2(-1, 0)))
+    assert(clue(actual.incident) ~== clue(Vector2(1, 0)))
+    assert(clue(actual.reflected) ~== clue(Vector2(-1, 0)))
+
+  }
+
 }

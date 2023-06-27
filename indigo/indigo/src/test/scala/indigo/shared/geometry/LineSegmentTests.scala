@@ -227,4 +227,43 @@ class LineSegmentTests extends munit.FunSuite {
 
   }
 
+  test("LineSegment reflecton - horizontal") {
+
+    val ray = LineSegment((0.0, 2.0), (4.0, 2.0))
+    val surface = LineSegment((2.0, 0.0), (2.0, 4.0))
+
+    val actual =
+      surface.reflect(ray).get
+
+    assert(clue(actual.at) ~== clue(Vertex(2.0, 2.0)))
+    assert(clue(actual.normal) ~== clue(Vector2(-1, 0)))
+    assert(clue(actual.incident) ~== clue(Vector2(1, 0)))
+    assert(clue(actual.reflected) ~== clue(Vector2(-1, 0)))
+
+    val actual2 =
+      surface.invert.reflect(ray).get
+
+    assert(clue(actual2.at) ~== clue(Vertex(2.0, 2.0)))
+    assert(clue(actual2.normal) ~== clue(Vector2(1, 0)))
+    assert(clue(actual2.incident) ~== clue(Vector2(1, 0)))
+    assert(clue(actual2.reflected) ~== clue(Vector2(-1, 0)))
+
+    val actual3 =
+      surface.invert.reflect(ray.invert).get
+
+    assert(clue(actual3.at) ~== clue(Vertex(2.0, 2.0)))
+    assert(clue(actual3.normal) ~== clue(Vector2(1, 0)))
+    assert(clue(actual3.incident) ~== clue(Vector2(-1, 0)))
+    assert(clue(actual3.reflected) ~== clue(Vector2(1, 0)))
+
+    val actual4 =
+      surface.reflect(ray.invert).get
+
+    assert(clue(actual4.at) ~== clue(Vertex(2.0, 2.0)))
+    assert(clue(actual4.normal) ~== clue(Vector2(-1, 0)))
+    assert(clue(actual4.incident) ~== clue(Vector2(-1, 0)))
+    assert(clue(actual4.reflected) ~== clue(Vector2(1, 0)))
+
+  }
+
 }
