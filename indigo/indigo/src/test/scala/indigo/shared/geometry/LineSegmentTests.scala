@@ -229,7 +229,7 @@ class LineSegmentTests extends munit.FunSuite {
 
   test("LineSegment reflecton - horizontal") {
 
-    val ray = LineSegment((0.0, 2.0), (4.0, 2.0))
+    val ray     = LineSegment((0.0, 2.0), (4.0, 2.0))
     val surface = LineSegment((2.0, 0.0), (2.0, 4.0))
 
     val actual =
