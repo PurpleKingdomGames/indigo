@@ -114,7 +114,7 @@ Used to load and save data from local storage.
 - `Load(key)` - Load the data stored with the given key
 - `Delete(key)` - Delete the data stored against the given key
 - `DeleteAll` - Delete all stored data
-- `Loaded(data)` - Response event when data has been loaded
+- `Loaded(key, data)` - Response event when data has been loaded
 
 ### `AssetEvent`s
 
