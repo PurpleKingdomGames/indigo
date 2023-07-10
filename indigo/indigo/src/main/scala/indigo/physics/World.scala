@@ -5,8 +5,6 @@ import indigo.physics.Collider
 import indigo.physics.Resistance
 import indigo.syntax.*
 
-import scala.annotation.targetName
-
 final case class World[A](colliders: Batch[Collider[A]], forces: Batch[Vector2], resistance: Resistance):
 
   def combinedForce: Vector2 =
