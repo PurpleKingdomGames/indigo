@@ -4,6 +4,7 @@ import indigo.*
 import indigo.physics.Collider
 import indigo.physics.Resistance
 import indigo.syntax.*
+
 import scala.annotation.targetName
 
 final case class World[A](colliders: Batch[Collider[A]], forces: Batch[Vector2], resistance: Resistance):
@@ -99,17 +100,9 @@ final case class World[A](colliders: Batch[Collider[A]], forces: Batch[Vector2],
   def present(render: Collider[A] => SceneNode): Batch[SceneNode] =
     colliders.map(render)
 
-  def present(filter: A => Boolean)(render: Collider[A] => SceneNode): Batch[SceneNode] =
-    colliders.filter(c => filter(c.tag)).map(render)
-
-  def presentNot(filterNot: A => Boolean)(render: Collider[A] => SceneNode): Batch[SceneNode] =
-    colliders.filterNot(c => filterNot(c.tag)).map(render)
-
-  @targetName("present_filter_whole_collider")
   def present(filter: Collider[A] => Boolean)(render: Collider[A] => SceneNode): Batch[SceneNode] =
     colliders.filter(filter).map(render)
 
-  @targetName("present_filter_not_whole_collider")
   def presentNot(filterNot: Collider[A] => Boolean)(render: Collider[A] => SceneNode): Batch[SceneNode] =
     colliders.filterNot(filterNot).map(render)
 
