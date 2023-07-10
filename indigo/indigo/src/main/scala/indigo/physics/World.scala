@@ -99,7 +99,7 @@ final case class World[A](colliders: Batch[Collider[A]], forces: Batch[Vector2],
     colliders.map(render)
 
   def present(filter: A => Boolean)(render: Collider[A] => SceneNode): Batch[SceneNode] =
-    colliders.map(render)
+    colliders.filter(c => filter(c.tag)).map(render)
 
   def update(timeDelta: Seconds): Outcome[World[A]] =
     Physics.update(timeDelta, this)
