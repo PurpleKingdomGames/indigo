@@ -1,6 +1,8 @@
 package pirate.scenes.level.model
 
 import indigo.*
+import indigo.syntax.*
+import indigo.physics.*
 import pirate.core.TileType
 import scala.annotation.tailrec
 import scala.collection.immutable.Nil
@@ -31,10 +33,10 @@ Almost the same, but a different level of explicit precision.
 So in this case, the nav mesh is a bunch of bounding boxes that
 we can perform collision checks against.
  */
-final case class Platform(navMesh: List[BoundingBox], rowCount: Int):
+final case class Platform(navMesh: Batch[Collider[String]], rowCount: Int) //:
 
-  def hitTest(bounds: BoundingBox): Option[BoundingBox] =
-    navMesh.find(_.overlaps(bounds))
+// def hitTest(bounds: BoundingBox): Option[BoundingBox] =
+//   navMesh.find(_.overlaps(bounds))
 
 object Platform:
 
@@ -49,7 +51,7 @@ object Platform:
         weldBoundingBoxes
 
     Platform(
-      toNavMesh(layer),
+      toNavMesh(layer).toBatch.map(b => Collider.Box("platform", b).makeStatic.withFriction(Friction(0.5))),
       terrainMap.layers.head.rowCount
     )
 

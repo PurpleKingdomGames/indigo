@@ -1,6 +1,7 @@
 package pirate.scenes.level
 
 import indigo.*
+import indigo.physics.*
 
 import pirate.core.Assets
 import pirate.core.LevelDataStore
@@ -19,8 +20,22 @@ object LevelView:
       captain: Sprite[Material.ImageEffects],
       levelDataStore: Option[LevelDataStore]
   ): SceneUpdateFragment =
-    Level.draw(levelDataStore) |+|
-      PirateCaptain.draw(gameTime, model.pirate, viewModel.pirateViewState, captain, viewModel.worldToScreenSpace)
+    Level.draw(levelDataStore) |+| {
+      model.world.findByTag("pirate").headOption match
+        case None =>
+          // Shouldn't happen.
+          SceneUpdateFragment.empty
+
+        case Some(collider) =>
+          PirateCaptain.draw(
+            gameTime,
+            model.pirate,
+            collider,
+            viewModel.pirateViewState,
+            captain,
+            viewModel.worldToScreenSpace
+          )
+    }
 
   object Level:
 
@@ -78,6 +93,7 @@ object LevelView:
     def draw(
         gameTime: GameTime,
         pirate: Pirate,
+        collider: Collider[String],
         pirateViewState: PirateViewState,
         captain: Sprite[Material.ImageEffects],
         toScreenSpace: Vertex => Point
@@ -89,7 +105,7 @@ object LevelView:
             respawnEffect(
               gameTime,
               pirate.lastRespawn,
-              updatedCaptain(pirate, pirateViewState, captain, toScreenSpace)
+              updatedCaptain(pirate, collider, pirateViewState, captain, toScreenSpace)
             )
           )
         )
@@ -122,6 +138,7 @@ object LevelView:
 
     def updatedCaptain(
         pirate: Pirate,
+        collider: Collider[String],
         pirateViewState: PirateViewState,
         captain: Sprite[Material.ImageEffects],
         toScreenSpace: Vertex => Point
@@ -129,13 +146,13 @@ object LevelView:
       pirate.state match
         case PirateState.Idle if pirateViewState.facingRight =>
           captain
-            .moveTo(toScreenSpace(pirate.position))
+            .moveTo(toScreenSpace(collider.position))
             .changeCycle(CycleLabel("Idle"))
             .play()
 
         case PirateState.Idle =>
           captain
-            .moveTo(toScreenSpace(pirate.position))
+            .moveTo(toScreenSpace(collider.position))
             .flipHorizontal(true)
             .moveBy(-20, 0)
             .changeCycle(CycleLabel("Idle"))
@@ -143,7 +160,7 @@ object LevelView:
 
         case PirateState.MoveLeft =>
           captain
-            .moveTo(toScreenSpace(pirate.position))
+            .moveTo(toScreenSpace(collider.position))
             .flipHorizontal(true)
             .moveBy(-20, 0)
             .changeCycle(CycleLabel("Run"))
@@ -151,19 +168,19 @@ object LevelView:
 
         case PirateState.MoveRight =>
           captain
-            .moveTo(toScreenSpace(pirate.position))
+            .moveTo(toScreenSpace(collider.position))
             .changeCycle(CycleLabel("Run"))
             .play()
 
         case PirateState.FallingRight =>
           captain
-            .moveTo(toScreenSpace(pirate.position))
+            .moveTo(toScreenSpace(collider.position))
             .changeCycle(CycleLabel("Fall"))
             .play()
 
         case PirateState.FallingLeft =>
           captain
-            .moveTo(toScreenSpace(pirate.position))
+            .moveTo(toScreenSpace(collider.position))
             .flipHorizontal(true)
             .moveBy(-20, 0)
             .changeCycle(CycleLabel("Fall"))
@@ -171,13 +188,13 @@ object LevelView:
 
         case PirateState.JumpingRight =>
           captain
-            .moveTo(toScreenSpace(pirate.position))
+            .moveTo(toScreenSpace(collider.position))
             .changeCycle(CycleLabel("Jump"))
             .play()
 
         case PirateState.JumpingLeft =>
           captain
-            .moveTo(toScreenSpace(pirate.position))
+            .moveTo(toScreenSpace(collider.position))
             .flipHorizontal(true)
             .moveBy(-20, 0)
             .changeCycle(CycleLabel("Jump"))
