@@ -11,7 +11,7 @@ which is stored in the Tiled data.
  */
 enum LevelViewModel(val notReady: Boolean):
   case NotReady                                                                     extends LevelViewModel(true)
-  case Ready(worldToScreenSpace: Vertex => Point, pirateViewState: PirateViewState) extends LevelViewModel(false)
+  case Ready(worldToScreenSpace: Vertex => Vertex, pirateViewState: PirateViewState) extends LevelViewModel(false)
 
 object LevelViewModel:
 

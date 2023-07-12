@@ -23,6 +23,15 @@ object LevelModel:
           Outcome(lm)
 
         case Ready(pirate, platform, world) =>
-          world.update(gameTime.delta).merge(pirate.update(gameTime, inputState, platform)) { case (w, p) =>
-            Ready(p, platform, w)
-          }
+          val inputForce =
+            inputState.mapInputs(Pirate.inputMappings(false /*pirate.state.isFalling*/ ), Vector2.zero)
+
+          world
+            .modifyByTag("pirate") { p =>
+              p.withVelocity(Vector2(inputForce.x, p.velocity.y + inputForce.y))
+            }
+            .update(gameTime.delta)
+            .map { w =>
+              // .merge(pirate.update(gameTime, inputState, platform)) { case (w, p) =>
+              Ready(pirate, platform, w)
+            }

@@ -80,8 +80,8 @@ final case class LevelScene(screenWidth: Int) extends Scene[StartupData, Model, 
     case FrameTick if viewModel.notReady =>
       (viewModel, context.startUpData.levelDataStore) match
         case (LevelViewModel.NotReady, Some(levelDataStore)) =>
-          val changeSpace: Vertex => Point =
-            v => (v * levelDataStore.tileSize.toVertex).toPoint
+          val changeSpace: Vertex => Vertex =
+            _ * levelDataStore.tileSize.toVertex
 
           Outcome(LevelViewModel.Ready(changeSpace, PirateViewState.initial))
 

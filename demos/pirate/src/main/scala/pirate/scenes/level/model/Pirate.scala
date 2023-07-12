@@ -8,47 +8,47 @@ final case class Pirate(
     state: PirateState,
     lastRespawn: Seconds,
     ySpeed: Double
-):
+)//:
 
-  val position: Vertex =
-    Vertex(boundingBox.horizontalCenter, boundingBox.bottom)
+  // val position: Vertex =
+  //   Vertex(boundingBox.horizontalCenter, boundingBox.bottom)
 
-  def update(gameTime: GameTime, inputState: InputState, platform: Platform): Outcome[Pirate] =
-    Outcome(this)
+  // def update(gameTime: GameTime, inputState: InputState, platform: Platform): Outcome[Pirate] =
+  //   Outcome(this)
 
-    // val inputForce =
-    //   inputState.mapInputs(Pirate.inputMappings(state.isFalling), Vector2.zero)
+  //   // val inputForce =
+  //   //   inputState.mapInputs(Pirate.inputMappings(state.isFalling), Vector2.zero)
 
-    // val (nextBounds, collision) =
-    //   Pirate.adjustOnCollision(
-    //     platform,
-    //     boundingBox.moveBy(
-    //       Vertex(inputForce.x, ySpeed) * gameTime.delta.toDouble
-    //     )
-    //   )
+  //   // val (nextBounds, collision) =
+  //   //   Pirate.adjustOnCollision(
+  //   //     platform,
+  //   //     boundingBox.moveBy(
+  //   //       Vertex(inputForce.x, ySpeed) * gameTime.delta.toDouble
+  //   //     )
+  //   //   )
 
-    // val ySpeedNext: Double =
-    //   Pirate.decideNextSpeedY(state.inMidAir, boundingBox.y, nextBounds.y, ySpeed, inputForce.y)
+  //   // val ySpeedNext: Double =
+  //   //   Pirate.decideNextSpeedY(state.inMidAir, boundingBox.y, nextBounds.y, ySpeed, inputForce.y)
 
-    // val nextState =
-    //   Pirate.nextStateFromForceDiff(
-    //     state,
-    //     collision,
-    //     boundingBox.position.toVector2,
-    //     nextBounds.position.toVector2
-    //   )
+  //   // val nextState =
+  //   //   Pirate.nextStateFromForceDiff(
+  //   //     state,
+  //   //     collision,
+  //   //     boundingBox.position.toVector2,
+  //   //     nextBounds.position.toVector2
+  //   //   )
 
-    // // Respawn if the pirate is below the bottom of the map.
-    // if nextBounds.y > platform.rowCount.toDouble + 1 then
-    //   Outcome(Pirate(nextBounds.moveTo(Pirate.RespawnPoint), nextState, gameTime.running, ySpeedNext))
-    //     .addGlobalEvents(PlaySound(Assets.Sounds.respawnSound, Volume.Max))
-    // else
-    //   val maybeJumpSound =
-    //     if (!state.inMidAir && nextState.isJumping)
-    //       Batch(PlaySound(Assets.Sounds.jumpSound, Volume.Max))
-    //     else Batch.empty
+  //   // // Respawn if the pirate is below the bottom of the map.
+  //   // if nextBounds.y > platform.rowCount.toDouble + 1 then
+  //   //   Outcome(Pirate(nextBounds.moveTo(Pirate.RespawnPoint), nextState, gameTime.running, ySpeedNext))
+  //   //     .addGlobalEvents(PlaySound(Assets.Sounds.respawnSound, Volume.Max))
+  //   // else
+  //   //   val maybeJumpSound =
+  //   //     if (!state.inMidAir && nextState.isJumping)
+  //   //       Batch(PlaySound(Assets.Sounds.jumpSound, Volume.Max))
+  //   //     else Batch.empty
 
-    Outcome(Pirate(boundingBox, state, lastRespawn, ySpeed))
+  //   Outcome(Pirate(boundingBox, state, lastRespawn, ySpeed))
 // .addGlobalEvents(maybeJumpSound)
 
 object Pirate:
@@ -67,7 +67,9 @@ object Pirate:
     // slides of the edges of platforms), by his standing height.
     // 32 = 1 so 15/32 x 28/32 is a bounding box of
     // (0.46875, 0.875)
-    val size = Vertex(15 / 32, 28 / 32)
+    val size = Vertex(15.0 / 32.0, 28.0 / 32.0)
+
+    println(BoundingBox(startPosition, size))
 
     Pirate(
       BoundingBox(startPosition, size),
@@ -78,7 +80,7 @@ object Pirate:
 
   val inputMappings: Boolean => InputMapping[Vector2] = isFalling => {
     val xSpeed: Double = if (isFalling) 2.0d else 3.0d
-    val ySpeed: Double = if (isFalling) 0.0d else -8.0d
+    val ySpeed: Double = if (isFalling) 0.0d else -2.0d
 
     InputMapping(
       Combo.withKeyInputs(Key.LEFT_ARROW, Key.UP_ARROW)  -> Vector2(-xSpeed, ySpeed),
