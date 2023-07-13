@@ -55,6 +55,11 @@ You can create your own events by simply extending `GlobalEvent`.
 - `FullScreenExited` - The game exited full screen mode
 - `FullScreenExitError` - A problem occurred trying to exit full screen
 
+### Focus
+
+- `GainedFocus` - The game has received focus
+- `LostFocus` - The game has lost focus
+
 ### `InputEvent`s
 
 Handling `InputEvent`s can be a bit tricky in some situations, so Indigo includes `Mouse` and `Keyboard` classes that can be accessed from the [frame context](gameloop/frame-context.md), providing a rich interface to gather more complex information from those input devices.

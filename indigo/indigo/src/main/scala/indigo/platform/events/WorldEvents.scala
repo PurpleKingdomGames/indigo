@@ -46,6 +46,9 @@ final class WorldEvents:
       onPointerDown: dom.PointerEvent => Unit,
       onPointerUp: dom.PointerEvent => Unit,
       onPointerMove: dom.PointerEvent => Unit,
+      onPointerCancel: dom.PointerEvent => Unit,
+      onBlur: dom.FocusEvent => Unit,
+      onFocus: dom.FocusEvent => Unit,
       onPointerCancel: dom.PointerEvent => Unit
   ) {
     canvas.addEventListener("click", onClick)
@@ -56,6 +59,8 @@ final class WorldEvents:
     canvas.addEventListener("pointerup", onPointerUp)
     canvas.addEventListener("pointermove", onPointerMove)
     canvas.addEventListener("pointercancel", onPointerCancel)
+    canvas.addEventListener("focus", onFocus)
+    canvas.addEventListener("blur", onBlur)
     onContextMenu.foreach(canvas.addEventListener("contextmenu", _))
     document.addEventListener("keydown", onKeyDown)
     document.addEventListener("keyup", onKeyUp)
@@ -69,6 +74,8 @@ final class WorldEvents:
       canvas.removeEventListener("pointerup", onPointerUp)
       canvas.removeEventListener("pointermove", onPointerMove)
       canvas.removeEventListener("pointercancel", onPointerCancel)
+      canvas.removeEventListener("focus", onFocus)
+      canvas.removeEventListener("blur", onBlur)
       onContextMenu.foreach(canvas.removeEventListener("contextmenu", _))
       document.removeEventListener("keydown", onKeyDown)
       document.removeEventListener("keyup", onKeyUp)
@@ -160,6 +167,18 @@ final class WorldEvents:
 
         globalEventStream.pushGlobalEvent(
           PointerCancel(position, PointerId(e.pointerId), Buttons(e.buttons), e.isPrimary)
+        )
+        e.preventDefault()
+      },
+      onFocus = { e=>
+        globalEventStream.pushGlobalEvent(
+          GainedFocus
+        )
+        e.preventDefault()
+      },
+      onBlur = { e=>
+        globalEventStream.pushGlobalEvent(
+          LostFocus
         )
         e.preventDefault()
       }
