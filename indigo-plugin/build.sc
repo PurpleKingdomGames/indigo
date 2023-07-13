@@ -10,8 +10,7 @@ import coursier.maven.MavenRepository
 import publish._
 
 object `indigo-plugin` extends Cross[IndigoPluginModule]("2.12", "2.13")
-class IndigoPluginModule(val crossScalaVersion: String) extends CrossScalaModule with PublishModule with ScalafmtModule {
-
+trait IndigoPluginModule extends CrossScalaModule with PublishModule with ScalafmtModule {
   def indigoVersion = T.input { IndigoVersion.getVersion }
 
   def scalaVersion =
@@ -26,15 +25,16 @@ class IndigoPluginModule(val crossScalaVersion: String) extends CrossScalaModule
   def ivyDeps =
     Agg(ivy"com.lihaoyi::os-lib:0.8.0")
 
-  def repositories =
-    super.repositories ++ Seq(
+  def repositoriesTask = T.task {
+    super.repositoriesTask() ++ Seq(
       MavenRepository("https://oss.sonatype.org/content/repositories/releases")
     )
+  }
 
   def scalacOptions =
-    ScalacOptions.scala213Compile 
+    ScalacOptions.scala213Compile
 
-  object test extends Tests {
+  object test extends ScalaTests {
     def ivyDeps =
       Agg(
         ivy"org.scalameta::munit:0.7.29"
@@ -72,7 +72,7 @@ object IndigoVersion {
 
         case None if levels < 3 =>
           try {
-            val v = scala.io.Source.fromFile(path).getLines.toList.head
+            val v = scala.io.Source.fromFile(path).getLines().toList.head
             rec(path, levels, Some(v))
           } catch {
             case _: Throwable =>

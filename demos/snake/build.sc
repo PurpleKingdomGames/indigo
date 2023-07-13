@@ -67,7 +67,7 @@ object snake extends ScalaJSModule with MillIndigo with ScalafmtModule with Tpol
     ivy"io.indigoengine::indigo-extras::$indigoVersion"
   )
 
-  object test extends Tests {
+  object test extends ScalaTests {
 
     def ivyDeps = Agg(
       ivy"org.scalameta::munit::0.7.29"
