@@ -10,39 +10,40 @@ some data during the loading screen, parse it, and use it to generate part
 of the model. We _could_ represent that with an Option, but that could get
 messy.
  */
-enum LevelModel(val notReady: Boolean):
-  case NotReady                                                        extends LevelModel(true)
-  case Ready(pirate: Pirate, platform: Platform, world: World[String]) extends LevelModel(false)
+enum LevelModel:
+  case NotReady
+  case Ready(pirate: Pirate, platform: Platform, world: World[String])
 
-object LevelModel:
+  def notReady: Boolean =
+    this match
+      case NotReady                       => true
+      case Ready(pirate, platform, world) => false
 
-  extension (lm: LevelModel)
-    def update(gameTime: GameTime, inputState: InputState): Outcome[LevelModel] =
-      lm match
-        case NotReady =>
-          Outcome(lm)
+  def update(gameTime: GameTime, inputState: InputState): Outcome[LevelModel] =
+    this match
+      case NotReady =>
+        Outcome(this)
 
-        case Ready(pirate, platform, world) =>
-          val inputForce =
-            inputState.mapInputs(Pirate.inputMappings(pirate.state.isFalling || pirate.state.inMidAir), Vector2.zero)
+      case Ready(pirate, platform, world) =>
+        val inputForce =
+          inputState.mapInputs(Pirate.inputMappings(pirate.state.inMidAir), Vector2.zero)
 
-          world
-            .modifyByTag("pirate") { p =>
-              p.withVelocity(Vector2(inputForce.x, p.velocity.y + inputForce.y))
-            }
-            .update(gameTime.delta)
-            .map { w =>
-              // .merge(pirate.update(gameTime, inputState, platform)) { case (w, p) =>
-              w.findByTag("pirate").headOption match
-                case None =>
-                  Ready(pirate, platform, w)
+        world
+          .modifyByTag("pirate") { p =>
+            p.withVelocity(Vector2(inputForce.x, p.velocity.y + inputForce.y))
+          }
+          .update(gameTime.delta)
+          .map { w =>
+            w.findByTag("pirate").headOption match
+              case None =>
+                Ready(pirate, platform, w)
 
-                case Some(p) =>
-                  val nextPirate =
-                    pirate.copy(
-                      state = Pirate.decideNextState(pirate.state, p.velocity, inputForce)
-                    )
+              case Some(p) =>
+                val nextPirate =
+                  pirate.copy(
+                    state = Pirate.decideNextState(pirate.state, p.velocity, inputForce)
+                  )
 
-                  Ready(nextPirate, platform, w)
+                Ready(nextPirate, platform, w)
 
-            }
+          }

@@ -76,9 +76,9 @@ object Pirate:
       0
     )
 
-  val inputMappings: Boolean => InputMapping[Vector2] = isFalling => {
-    val xSpeed: Double = if (isFalling) 2.0d else 3.0d
-    val ySpeed: Double = if (isFalling) 0.0d else -12.0d
+  val inputMappings: Boolean => InputMapping[Vector2] = inMidAir => {
+    val xSpeed: Double = if inMidAir then 3.5d else 4.0d
+    val ySpeed: Double = if inMidAir then 0.0d else -10.0d
 
     InputMapping(
       Combo.withKeyInputs(Key.LEFT_ARROW, Key.UP_ARROW)  -> Vector2(-xSpeed, ySpeed),
@@ -104,7 +104,9 @@ object Pirate:
   }
 
   def decideNextState(state: PirateState, velocity: Vector2, appliedForce: Vector2): PirateState =
-    if velocity.y > -0.01 && velocity.y < 0.01 then nextStanding(appliedForce.x)
+    val stateAcceptable = state.isFalling || state.isGrounded
+
+    if velocity.y > -0.01 && velocity.y < 0.01 && stateAcceptable then nextStanding(appliedForce.x)
     else if velocity.y > 0.001 then nextFalling(state)(velocity.x)
     else nextJumping(state)(velocity.x)
 
