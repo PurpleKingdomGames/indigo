@@ -3,6 +3,7 @@ package pirate.scenes.level.model
 import indigo.*
 import indigo.syntax.*
 import indigo.physics.World
+import pirate.core.Assets
 
 /*
 The model cannot be initialised at game start up, because we want to load
@@ -33,17 +34,31 @@ enum LevelModel:
             p.withVelocity(Vector2(inputForce.x, p.velocity.y + inputForce.y))
           }
           .update(gameTime.delta)
-          .map { w =>
+          .flatMap { w =>
             w.findByTag("pirate").headOption match
               case None =>
-                Ready(pirate, platform, w)
+                Outcome(Ready(pirate, platform, w))
 
               case Some(p) =>
+                val nextState =
+                  Pirate.decideNextState(pirate.state, p.velocity, inputForce)
+
+                // Respawn if the pirate is below the bottom of the map.
                 val nextPirate =
-                  pirate.copy(
-                    state = Pirate.decideNextState(pirate.state, p.velocity, inputForce)
-                  )
+                  if p.position.y > platform.rowCount.toDouble + 1 then
+                    Outcome(Pirate(pirate.boundingBox, nextState, gameTime.running, pirate.ySpeed))
+                      .addGlobalEvents(
+                        PlaySound(Assets.Sounds.respawnSound, Volume.Max),
+                        PirateRespawn(Pirate.RespawnPoint)
+                      )
+                  else
+                    val maybeJumpSound =
+                      if (!pirate.state.inMidAir && nextState.isJumping)
+                        Batch(PlaySound(Assets.Sounds.jumpSound, Volume.Max))
+                      else Batch.empty
 
-                Ready(nextPirate, platform, w)
+                    Outcome(Pirate(pirate.boundingBox, nextState, pirate.lastRespawn, pirate.ySpeed))
+                      .addGlobalEvents(maybeJumpSound)
 
+                nextPirate.map(p => Ready(p, platform, w))
           }

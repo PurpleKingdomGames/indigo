@@ -13,6 +13,7 @@ import pirate.scenes.level.model.LevelModel
 import pirate.scenes.level.viewmodel.LevelViewModel
 import pirate.scenes.level.viewmodel.PirateViewState
 import pirate.scenes.level.model.Pirate
+import pirate.scenes.level.model.PirateRespawn
 
 final case class LevelScene(screenWidth: Int) extends Scene[StartupData, Model, ViewModel]:
   type SceneModel     = LevelModel
@@ -44,6 +45,20 @@ final case class LevelScene(screenWidth: Int) extends Scene[StartupData, Model, 
       context: SceneContext[StartupData],
       model: LevelModel
   ): GlobalEvent => Outcome[LevelModel] =
+    case PirateRespawn(at) =>
+      model match
+        case LevelModel.NotReady =>
+          Outcome(model)
+
+        case LevelModel.Ready(pirate, platform, world) =>
+          Outcome(
+            LevelModel.Ready(
+              pirate,
+              platform,
+              world.modifyByTag("pirate")(_.moveTo(at).withVelocity(Vector2.zero))
+            )
+          )
+
     case FrameTick if model.notReady =>
       (model, context.startUpData.levelDataStore) match
         case (LevelModel.NotReady, Some(levelDataStore)) =>
