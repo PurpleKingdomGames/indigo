@@ -24,7 +24,7 @@ object LevelModel:
 
         case Ready(pirate, platform, world) =>
           val inputForce =
-            inputState.mapInputs(Pirate.inputMappings(false /*pirate.state.isFalling*/ ), Vector2.zero)
+            inputState.mapInputs(Pirate.inputMappings(pirate.state.isFalling || pirate.state.inMidAir), Vector2.zero)
 
           world
             .modifyByTag("pirate") { p =>
@@ -33,5 +33,16 @@ object LevelModel:
             .update(gameTime.delta)
             .map { w =>
               // .merge(pirate.update(gameTime, inputState, platform)) { case (w, p) =>
-              Ready(pirate, platform, w)
+              w.findByTag("pirate").headOption match
+                case None =>
+                  Ready(pirate, platform, w)
+
+                case Some(p) =>
+                  val nextPirate =
+                    pirate.copy(
+                      state = Pirate.decideNextState(pirate.state, p.velocity, inputForce)
+                    )
+
+                  Ready(nextPirate, platform, w)
+
             }

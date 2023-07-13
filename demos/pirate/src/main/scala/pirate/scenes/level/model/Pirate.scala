@@ -8,47 +8,47 @@ final case class Pirate(
     state: PirateState,
     lastRespawn: Seconds,
     ySpeed: Double
-)//:
+) //:
 
-  // val position: Vertex =
-  //   Vertex(boundingBox.horizontalCenter, boundingBox.bottom)
+// val position: Vertex =
+//   Vertex(boundingBox.horizontalCenter, boundingBox.bottom)
 
-  // def update(gameTime: GameTime, inputState: InputState, platform: Platform): Outcome[Pirate] =
-  //   Outcome(this)
+// def update(gameTime: GameTime, inputState: InputState, platform: Platform): Outcome[Pirate] =
+//   Outcome(this)
 
-  //   // val inputForce =
-  //   //   inputState.mapInputs(Pirate.inputMappings(state.isFalling), Vector2.zero)
+//   // val inputForce =
+//   //   inputState.mapInputs(Pirate.inputMappings(state.isFalling), Vector2.zero)
 
-  //   // val (nextBounds, collision) =
-  //   //   Pirate.adjustOnCollision(
-  //   //     platform,
-  //   //     boundingBox.moveBy(
-  //   //       Vertex(inputForce.x, ySpeed) * gameTime.delta.toDouble
-  //   //     )
-  //   //   )
+//   // val (nextBounds, collision) =
+//   //   Pirate.adjustOnCollision(
+//   //     platform,
+//   //     boundingBox.moveBy(
+//   //       Vertex(inputForce.x, ySpeed) * gameTime.delta.toDouble
+//   //     )
+//   //   )
 
-  //   // val ySpeedNext: Double =
-  //   //   Pirate.decideNextSpeedY(state.inMidAir, boundingBox.y, nextBounds.y, ySpeed, inputForce.y)
+//   // val ySpeedNext: Double =
+//   //   Pirate.decideNextSpeedY(state.inMidAir, boundingBox.y, nextBounds.y, ySpeed, inputForce.y)
 
-  //   // val nextState =
-  //   //   Pirate.nextStateFromForceDiff(
-  //   //     state,
-  //   //     collision,
-  //   //     boundingBox.position.toVector2,
-  //   //     nextBounds.position.toVector2
-  //   //   )
+//   // val nextState =
+//   //   Pirate.nextStateFromForceDiff(
+//   //     state,
+//   //     collision,
+//   //     boundingBox.position.toVector2,
+//   //     nextBounds.position.toVector2
+//   //   )
 
-  //   // // Respawn if the pirate is below the bottom of the map.
-  //   // if nextBounds.y > platform.rowCount.toDouble + 1 then
-  //   //   Outcome(Pirate(nextBounds.moveTo(Pirate.RespawnPoint), nextState, gameTime.running, ySpeedNext))
-  //   //     .addGlobalEvents(PlaySound(Assets.Sounds.respawnSound, Volume.Max))
-  //   // else
-  //   //   val maybeJumpSound =
-  //   //     if (!state.inMidAir && nextState.isJumping)
-  //   //       Batch(PlaySound(Assets.Sounds.jumpSound, Volume.Max))
-  //   //     else Batch.empty
+//   // // Respawn if the pirate is below the bottom of the map.
+//   // if nextBounds.y > platform.rowCount.toDouble + 1 then
+//   //   Outcome(Pirate(nextBounds.moveTo(Pirate.RespawnPoint), nextState, gameTime.running, ySpeedNext))
+//   //     .addGlobalEvents(PlaySound(Assets.Sounds.respawnSound, Volume.Max))
+//   // else
+//   //   val maybeJumpSound =
+//   //     if (!state.inMidAir && nextState.isJumping)
+//   //       Batch(PlaySound(Assets.Sounds.jumpSound, Volume.Max))
+//   //     else Batch.empty
 
-  //   Outcome(Pirate(boundingBox, state, lastRespawn, ySpeed))
+//   Outcome(Pirate(boundingBox, state, lastRespawn, ySpeed))
 // .addGlobalEvents(maybeJumpSound)
 
 object Pirate:
@@ -69,8 +69,6 @@ object Pirate:
     // (0.46875, 0.875)
     val size = Vertex(15.0 / 32.0, 28.0 / 32.0)
 
-    println(BoundingBox(startPosition, size))
-
     Pirate(
       BoundingBox(startPosition, size),
       PirateState.FallingRight,
@@ -80,7 +78,7 @@ object Pirate:
 
   val inputMappings: Boolean => InputMapping[Vector2] = isFalling => {
     val xSpeed: Double = if (isFalling) 2.0d else 3.0d
-    val ySpeed: Double = if (isFalling) 0.0d else -2.0d
+    val ySpeed: Double = if (isFalling) 0.0d else -12.0d
 
     InputMapping(
       Combo.withKeyInputs(Key.LEFT_ARROW, Key.UP_ARROW)  -> Vector2(-xSpeed, ySpeed),
@@ -105,83 +103,49 @@ object Pirate:
     )
   }
 
-  given CanEqual[Option[BoundingBox], Option[BoundingBox]] = CanEqual.derived
+  def decideNextState(state: PirateState, velocity: Vector2, appliedForce: Vector2): PirateState =
+    if velocity.y > -0.01 && velocity.y < 0.01 then nextStanding(appliedForce.x)
+    else if velocity.y > 0.001 then nextFalling(state)(velocity.x)
+    else nextJumping(state)(velocity.x)
 
-// def adjustOnCollision(platform: Platform, proposedBounds: BoundingBox): (BoundingBox, Boolean) =
-//   platform.hitTest(proposedBounds) match
-//     case Some(value) =>
-//       (
-//         proposedBounds
-//           .moveTo(proposedBounds.position.withY(value.y - proposedBounds.height)),
-//         true
-//       )
+  private def nextStateFromDiffX(
+      movingLeft: PirateState,
+      movingRight: PirateState,
+      otherwise: PirateState
+  ): Double => PirateState =
+    xDiff =>
+      if xDiff < -0.01 then movingLeft
+      else if xDiff > 0.01 then movingRight
+      else otherwise
 
-//     case None =>
-//       (proposedBounds, false)
+  lazy val nextStanding: Double => PirateState =
+    nextStateFromDiffX(
+      PirateState.MoveLeft,
+      PirateState.MoveRight,
+      PirateState.Idle
+    )
 
-// val gravityIncrement: Double = 0.4d
+  def nextFalling(state: PirateState): Double => PirateState =
+    nextStateFromDiffX(
+      PirateState.FallingLeft,
+      PirateState.FallingRight,
+      state match
+        case PirateState.FallingLeft | PirateState.JumpingLeft =>
+          PirateState.FallingLeft
 
-// def decideNextSpeedY(
-//     inMidAir: Boolean,
-//     previousY: Double,
-//     nextY: Double,
-//     ySpeed: Double,
-//     inputY: Double
-// ): Double =
-//   if Math.abs(nextY - previousY) < 0.0001 && !inMidAir then gravityIncrement + inputY
-//   else if ySpeed + gravityIncrement <= 8.0d then ySpeed + gravityIncrement
-//   else 8.0d
+        case PirateState.FallingRight | PirateState.JumpingRight =>
+          PirateState.FallingRight
 
-// def nextStateFromForceDiff(
-//     previousState: PirateState,
-//     collisionOccurred: Boolean,
-//     oldForce: Vector2,
-//     newForce: Vector2
-// ): PirateState =
-//   val forceDiff = newForce - oldForce
+        case _ =>
+          PirateState.FallingRight
+    )
 
-//   if forceDiff.y > -0.001 && forceDiff.y < 0.001 && collisionOccurred then nextStanding(forceDiff.x)
-//   else if newForce.y > oldForce.y then nextFalling(previousState)(forceDiff.x)
-//   else nextJumping(previousState)(forceDiff.x)
-
-// private def nextStateFromDiffX(
-//     movingLeft: PirateState,
-//     movingRight: PirateState,
-//     otherwise: PirateState
-// ): Double => PirateState =
-//   xDiff =>
-//     if xDiff < -0.01 then movingLeft
-//     else if xDiff > 0.01 then movingRight
-//     else otherwise
-
-// lazy val nextStanding: Double => PirateState =
-//   nextStateFromDiffX(
-//     PirateState.MoveLeft,
-//     PirateState.MoveRight,
-//     PirateState.Idle
-//   )
-
-// def nextFalling(previousState: PirateState): Double => PirateState =
-//   nextStateFromDiffX(
-//     PirateState.FallingLeft,
-//     PirateState.FallingRight,
-//     previousState match
-//       case PirateState.FallingLeft | PirateState.JumpingLeft =>
-//         PirateState.FallingLeft
-
-//       case PirateState.FallingRight | PirateState.JumpingRight =>
-//         PirateState.FallingRight
-
-//       case _ =>
-//         PirateState.FallingRight
-//   )
-
-// def nextJumping(previousState: PirateState): Double => PirateState =
-//   nextStateFromDiffX(
-//     PirateState.JumpingLeft,
-//     PirateState.JumpingRight,
-//     previousState match
-//       case l @ PirateState.JumpingLeft  => l
-//       case r @ PirateState.JumpingRight => r
-//       case _                            => PirateState.JumpingRight
-//   )
+  def nextJumping(state: PirateState): Double => PirateState =
+    nextStateFromDiffX(
+      PirateState.JumpingLeft,
+      PirateState.JumpingRight,
+      state match
+        case l @ PirateState.JumpingLeft  => l
+        case r @ PirateState.JumpingRight => r
+        case _                            => PirateState.JumpingRight
+    )
