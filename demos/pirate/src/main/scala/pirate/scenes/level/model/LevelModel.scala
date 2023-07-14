@@ -29,6 +29,8 @@ enum LevelModel:
         val inputForce =
           inputState.mapInputs(Pirate.inputMappings(pirate.state.inMidAir), Vector2.zero)
 
+        val currentY = world.findByTag("pirate").map(_.position.y)
+
         world
           .modifyByTag("pirate") { p =>
             p.withVelocity(Vector2(inputForce.x, p.velocity.y + inputForce.y))
@@ -40,8 +42,10 @@ enum LevelModel:
                 Outcome(Ready(pirate, platform, w))
 
               case Some(p) =>
+                val yDiff =
+                  Math.abs(p.position.y - currentY.headOption.getOrElse(0.0))
                 val nextState =
-                  Pirate.decideNextState(pirate.state, p.velocity, inputForce)
+                  Pirate.decideNextState(pirate.state, p.velocity, inputForce, yDiff)
 
                 // Respawn if the pirate is below the bottom of the map.
                 val nextPirate =

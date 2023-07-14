@@ -59,10 +59,10 @@ object Pirate:
     )
   }
 
-  def decideNextState(state: PirateState, velocity: Vector2, appliedForce: Vector2): PirateState =
+  def decideNextState(state: PirateState, velocity: Vector2, appliedForce: Vector2, yDiff: Double): PirateState =
     val stateAcceptable = state.isFalling || state.isGrounded
 
-    if velocity.y > -0.01 && velocity.y < 0.01 && stateAcceptable then nextStanding(appliedForce.x)
+    if (velocity.y > -0.01 && velocity.y < 0.01 && stateAcceptable) || yDiff < 0.00001 then nextStanding(appliedForce.x)
     else if velocity.y > 0.001 then nextFalling(state)(velocity.x)
     else nextJumping(state)(velocity.x)
 
