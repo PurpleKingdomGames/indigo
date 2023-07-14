@@ -121,13 +121,58 @@ object MouseButton:
       Some(MouseButton.fromOrdinal(ordinal))
     else Option.empty[MouseButton]
 
+trait MouseOrPointerEvent:
+  /** Coordinates relative to the magnification level
+    */
+  def position: Point
+
+  /** The X position relative to the magnification level
+    */
+  def x: Int = position.x
+
+  /** The Y position relative to the magnification level
+    */
+  def y: Int = position.y
+
+  /** Pressed buttons
+    */
+  def buttons: Buttons
+
+  /** Indicates whether buttons are in active state
+    */
+  def isActive: Boolean = buttons.isEmpty == false
+
+  /** Whether the `alt` key was pressed when the event was fired
+    */
+  def isAltKeyDown: Boolean
+
+  /** Whether the `ctrl` key was pressed when the event was fired
+    */
+  def isCtrlKeyDown: Boolean
+
+  /** Whether the meta button (Windows key, or Cmd Key) key was pressed when the event was fired
+    */
+  def isMetaKeyDown: Boolean
+
+  /** Whether the `shift` key was pressed when the event was fired
+    */
+  def isShiftKeyDown: Boolean
+
+  /** The delta position between this event and the last event
+    */
+  def deltaPosition: Point
+
+  /** The delta X position between this event and the last event
+    */
+  def deltaX: Point = deltaPosition.x
+
+  /** The delta Y position between this event and the last event
+    */
+  def deltaY: Point = deltaPosition.y
+
 /** Represents all mouse events
   */
-sealed trait MouseEvent extends InputEvent:
-  val position: Point
-  val x: Int = position.x
-  val y: Int = position.y
-
+sealed trait MouseEvent extends InputEvent with MouseOrPointerEvent
 object MouseEvent:
 
   /** The mouse has been clicked.
@@ -208,26 +253,49 @@ object MouseEvent:
 
 end MouseEvent
 
+enum PointerType:
+  case Mouse, Pen, Touch, Unknown
+
 /** Represents all mouse, pen and touch events
   */
-sealed trait PointerEvent extends InputEvent:
+sealed trait PointerEvent extends InputEvent with MouseOrPointerEvent:
   import PointerEvent.*
-
-  /** Coordinates relative to the magnification level
-    */
-  def position: Point
 
   /** Unique pointer identifier
     */
   def pointerId: PointerId
 
-  /** Pressed buttons
+  /** The width (magnitude on the X axis), of the contact geometry of the pointer relative to the magnification level
     */
-  def buttons: Buttons
+  def width: Int
 
-  /** Indicates whether buttons are in active state
+  /** The height (magnitude on the Y axis), of the contact geometry of the pointer relative to the magnification level
     */
-  def isActive: Boolean = buttons != Buttons(0)
+  def height: Int
+
+  /** The normalized pressure of the pointer input in the range 0 to 1, where 0 and 1 represent the minimum and maximum pressure the hardware is capable of detecting, respectively.
+    */
+  def pressure: Double
+
+  /** The normalized tangential pressure of the pointer input (also known as barrel pressure or cylinder stress) in the range -1 to 1, where 0 is the neutral position of the control.
+    */
+  def tangentialPressure: Double
+
+  /** The plane angle (in radians, in the range of -1.570796 to 1.570796 (-90 - 90 degrees)) between the Y–Z plane and the plane containing both the pointer (e.g. pen stylus) axis and the Y axis.
+    */
+  def tiltX: Radians
+
+  /** The plane angle (in radians, in the range of -1.570796 to 1.570796 (-90 - 90 degrees)) between the X–Z plane and the plane containing both the pointer (e.g. pen stylus) axis and the X axis.
+    */
+  def tiltY: Radians
+
+  /** The clockwise rotation of the pointer (e.g. pen stylus) around its major axis in degrees, with a value in the range 0 to 6.265732 (0 to 359 degrees)
+    */
+  def twist: Radians
+
+  /** Indicates the device type that caused the event (mouse, pen, touch, etc.)
+    */
+  def pointerType: PointerType
 
   /** Indicates whether the pointer is considered primary - like first finger during multi-touch gesture
     */
@@ -241,14 +309,6 @@ object PointerEvent:
     inline def apply(id: Double): PointerId = id
 
     given CanEqual[PointerId, PointerId] = CanEqual.derived
-
-  /** A number representing one or more buttons: https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/buttons
-    */
-  opaque type Buttons = Int
-  object Buttons:
-    inline def apply(buttons: Int): Buttons = buttons
-
-    given CanEqual[Buttons, Buttons] = CanEqual.derived
 
   /** Pointing device is moved into canvas hit test boundaries. It's counterpart is [[PointerLeave]].
     */
