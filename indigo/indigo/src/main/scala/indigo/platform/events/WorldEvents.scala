@@ -138,6 +138,7 @@ final class WorldEvents:
         globalEventStream.pushGlobalEvent(
           PointerEnter(position, PointerId(e.pointerId), Buttons(e.buttons), e.isPrimary)
         )
+        globalEventStream.pushGlobalEvent(MouseEvent.Enter(position))
       },
       onPointerLeave = { e =>
         val position = e.position(magnification, canvas)
@@ -145,6 +146,7 @@ final class WorldEvents:
         globalEventStream.pushGlobalEvent(
           PointerLeave(position, PointerId(e.pointerId), Buttons(e.buttons), e.isPrimary)
         )
+        globalEventStream.pushGlobalEvent(MouseEvent.Leave(position))
       },
       onPointerDown = { e =>
         val position = e.position(magnification, canvas)

@@ -183,6 +183,16 @@ object MouseEvent:
     def apply(x: Int, y: Int): Move =
       Move(Point(x, y))
 
+  /** Mouse has moved into canvas hit test boundaries. It's counterpart is [[Leave]].
+    */
+  final case class Enter(position: Point)
+      extends MouseEvent
+
+  /** Mouse has left canvas hit test boundaries. It's counterpart is [[Enter]].
+    */
+  final case class Leave(position: Point)
+      extends MouseEvent
+
   /** The mouse wheel was rotated a certain amount into the Y axis.
     *
     * @param position
