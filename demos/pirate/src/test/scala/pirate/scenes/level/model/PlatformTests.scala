@@ -4,6 +4,7 @@ import indigo.shared.formats.TiledGridCell
 import pirate.core.TileType
 import indigo.shared.geometry.BoundingBox
 import indigo.shared.geometry.Vertex
+import indigo.shared.collections.Batch
 
 class PlatformTests extends munit.FunSuite {
 
@@ -119,7 +120,7 @@ class PlatformTests extends munit.FunSuite {
       Platform.weldBoundingBoxes(boxes)
 
     val expected =
-      List(
+      Batch(
         BoundingBox(0, 1, 1, 1),
         BoundingBox(1, 2, 2, 1),
         BoundingBox(4, 3, 1, 1)

@@ -29,7 +29,7 @@ class PirateTests extends munit.FunSuite {
         )
 
     val expected: Option[Vector2] =
-      Some(Vector2(-3.0d, -8.0d))
+      Some(Vector2(-4.0d, -10.0d))
 
     assertEquals(actual, expected)
   }
@@ -51,7 +51,7 @@ class PirateTests extends munit.FunSuite {
         )
 
     val expected: Option[Vector2] =
-      Some(Vector2(3.0d, 0.0d))
+      Some(Vector2(4.0d, 0.0d))
 
     assertEquals(actual, expected)
   }
@@ -73,98 +73,9 @@ class PirateTests extends munit.FunSuite {
         )
 
     val expected: Option[Vector2] =
-      Some(Vector2(0.0d, -8.0d))
+      Some(Vector2(0.0d, -10.0d))
 
     assertEquals(actual, expected)
-  }
-
-  test("The Pirate.Adjust position on collision.no collision") {
-
-    val platform =
-      Platform(List(BoundingBox(2, 8, 2, 1)), 10)
-
-    val bounds =
-      BoundingBox(0, 0, 1, 1)
-
-    val actual =
-      Pirate.adjustOnCollision(platform, bounds)
-
-    val expected =
-      bounds
-
-    assertEquals(actual._1, expected)
-    assertEquals(actual._2, false)
-
-  }
-
-  test("The Pirate.Adjust position on collision.collision") {
-
-    val platform =
-      Platform(List(BoundingBox(2, 8, 2, 1)), 10)
-
-    val bounds =
-      BoundingBox(0, 0, 1, 1).moveTo(Vertex(3.5, 7.5))
-
-    val actual =
-      Pirate.adjustOnCollision(platform, bounds)
-
-    val expected =
-      bounds.moveTo(Vertex(3.5, 7.0))
-
-    assertEquals(actual._1, expected)
-    assertEquals(actual._2, true)
-
-  }
-
-  val platformY: Double = 10.0d
-
-  test("The Pirate.Decide next Y speed.on a platform (idle)") {
-    assertEquals(Pirate.decideNextSpeedY(false, platformY, platformY, 0, 0), Pirate.gravityIncrement)
-  }
-
-  test("The Pirate.Decide next Y speed.on a platform (jump pressed)") {
-    val inputY = -8.0d
-
-    assertEquals(
-      Pirate.decideNextSpeedY(
-        false,
-        platformY,
-        platformY,
-        0,
-        inputY
-      ),
-      Pirate.gravityIncrement + inputY
-    )
-  }
-
-  test("The Pirate.Decide next Y speed.accelerating during fall") {
-    val ySpeed = 5.0d
-
-    assertEquals(
-      Pirate.decideNextSpeedY(
-        true,
-        platformY,
-        platformY + ySpeed,
-        ySpeed,
-        0
-      ),
-      ySpeed + Pirate.gravityIncrement
-    )
-  }
-
-  test("The Pirate.Decide next Y speed.terminal velocity") {
-    val ySpeed = 8.0d
-
-    assertEquals(
-      Pirate.decideNextSpeedY(
-        true,
-        platformY,
-        platformY + ySpeed,
-        ySpeed,
-        0
-      ),
-      ySpeed
-    )
   }
 
 }
