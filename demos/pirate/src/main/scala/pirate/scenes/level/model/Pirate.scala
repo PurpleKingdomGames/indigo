@@ -4,10 +4,8 @@ import indigo.*
 import pirate.core.Assets
 
 final case class Pirate(
-    boundingBox: BoundingBox,
     state: PirateState,
-    lastRespawn: Seconds,
-    ySpeed: Double
+    lastRespawn: Seconds
 )
 
 object Pirate:
@@ -15,24 +13,23 @@ object Pirate:
   // Where does the captain start in model terms?
   // Right in the middle, and off the top of the screen
   // by 2 units (tiles).
-  val RespawnPoint = Vertex(9.5, -2)
+  val respawnPoint = Vertex(9.5, -2)
+
+  // The model space is 1 unit per tile, a tile is 32 x 32.
+  // The captain does not take up a whole block. His bounding
+  // box is the width of his body (not extremities so that he
+  // slides of the edges of platforms), by his standing height.
+  // 32 = 1 so 15/32 x 28/32 is a bounding box of
+  // (0.46875, 0.875)
+  val initialBounds: BoundingBox =
+    val startPosition = Vertex(9.5, 6)
+    val size          = Vertex(15.0 / 32.0, 28.0 / 32.0)
+    BoundingBox(startPosition, size)
 
   val initial: Pirate =
-    val startPosition = Vertex(9.5, 6)
-
-    // The model space is 1 unit per tile, a tile is 32 x 32.
-    // The captain does not take up a whole block. His bounding
-    // box is the width of his body (not extremities so that he
-    // slides of the edges of platforms), by his standing height.
-    // 32 = 1 so 15/32 x 28/32 is a bounding box of
-    // (0.46875, 0.875)
-    val size = Vertex(15.0 / 32.0, 28.0 / 32.0)
-
     Pirate(
-      BoundingBox(startPosition, size),
       PirateState.FallingRight,
-      Seconds.zero,
-      0
+      Seconds.zero
     )
 
   val inputMappings: Boolean => InputMapping[Vector2] = inMidAir => {

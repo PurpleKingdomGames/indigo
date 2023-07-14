@@ -46,10 +46,10 @@ enum LevelModel:
                 // Respawn if the pirate is below the bottom of the map.
                 val nextPirate =
                   if p.position.y > platform.rowCount.toDouble + 1 then
-                    Outcome(Pirate(pirate.boundingBox, nextState, gameTime.running, pirate.ySpeed))
+                    Outcome(Pirate(nextState, gameTime.running))
                       .addGlobalEvents(
                         PlaySound(Assets.Sounds.respawnSound, Volume.Max),
-                        PirateRespawn(Pirate.RespawnPoint)
+                        PirateRespawn(Pirate.respawnPoint)
                       )
                   else
                     val maybeJumpSound =
@@ -57,7 +57,7 @@ enum LevelModel:
                         Batch(PlaySound(Assets.Sounds.jumpSound, Volume.Max))
                       else Batch.empty
 
-                    Outcome(Pirate(pirate.boundingBox, nextState, pirate.lastRespawn, pirate.ySpeed))
+                    Outcome(Pirate(nextState, pirate.lastRespawn))
                       .addGlobalEvents(maybeJumpSound)
 
                 nextPirate.map(p => Ready(p, platform, w))

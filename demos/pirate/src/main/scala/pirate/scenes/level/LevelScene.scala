@@ -74,7 +74,7 @@ final case class LevelScene(screenWidth: Int) extends Scene[StartupData, Model, 
                 .withResistance(Resistance(0.01))
                 .withForces(Vector2(0, 30))
                 .withColliders(platform.navMesh)
-                .addColliders(Collider.Box("pirate", pirate.boundingBox).withRestitution(Restitution(0)))
+                .addColliders(Collider.Box("pirate", Pirate.initialBounds).withRestitution(Restitution(0)))
             )
           )
 
