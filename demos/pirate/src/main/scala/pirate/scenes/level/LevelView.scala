@@ -35,7 +35,7 @@ object LevelView:
         case _ =>
           // Shouldn't happen.
           SceneUpdateFragment.empty
-    } |+| showColliderDebug(model.world, viewModel.worldToScreenSpace)
+    } // |+| showColliderDebug(model.world, viewModel.worldToScreenSpace)
 
   def showColliderDebug(world: World[String], toScreenSpace: Vertex => Vertex): SceneUpdateFragment =
     SceneUpdateFragment(
