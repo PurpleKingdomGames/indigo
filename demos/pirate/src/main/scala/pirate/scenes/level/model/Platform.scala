@@ -1,9 +1,10 @@
 package pirate.scenes.level.model
 
 import indigo.*
+import indigo.syntax.*
+import indigo.physics.*
 import pirate.core.TileType
 import scala.annotation.tailrec
-import scala.collection.immutable.Nil
 
 /*
 Most games where you wander around operate on the idea of a
@@ -18,7 +19,7 @@ Indigo has two sorts of primitives, illustrated by `Rectangle` &
 `BoundingBox`. Primitives used for rendering all operate on whole
 pixels, hence Rectangle is really:
 
-Rectangle(position: Point(x: Int, y: Int), size: Point(width: Int, height: Int))
+Rectangle(position: Point(x: Int, y: Int), size: Size(width: Int, height: Int))
 
 That makes rendering nice and easy, but whole pixels are terrible
 for abstract representations and for smoothly graphing movement.
@@ -28,32 +29,28 @@ BoundingBox(position: Vertex(x: Double, y: Double), size: Vertex(width: Double, 
 
 Almost the same, but a different level of explicit precision.
 
-So in this case, the nav mesh is a bunch of bounding boxes that
-we can perform collision checks against.
+So in this case, the nav mesh is a bunch of bounding boxes that Indigo's physics
+model can perform collision checks against.
  */
-final case class Platform(navMesh: List[BoundingBox], rowCount: Int):
-
-  def hitTest(bounds: BoundingBox): Option[BoundingBox] =
-    navMesh.find(_.overlaps(bounds))
+final case class Platform(navMesh: Batch[Collider[String]], rowCount: Int)
 
 object Platform:
 
   given CanEqual[Option[BoundingBox], Option[BoundingBox]] = CanEqual.derived
 
   def fromTerrainMap(terrainMap: TiledGridMap[TileType]): Platform =
-    val layer = terrainMap.toListPerLayer.head
+    val layer = terrainMap.toListPerLayer.head.toBatch
 
-    def toNavMesh: List[TiledGridCell[TileType]] => List[BoundingBox] =
+    def toNavMesh: Batch[TiledGridCell[TileType]] => Batch[BoundingBox] =
       filterPlatformTiles andThen
-        convertCellsToBoundingBoxes andThen
-        weldBoundingBoxes
+        convertCellsToBoundingBoxes
 
     Platform(
-      toNavMesh(layer),
+      toNavMesh(layer).map(b => Collider.Box("platform", b).makeStatic.withFriction(Friction(0.5))),
       terrainMap.layers.head.rowCount
     )
 
-  val filterPlatformTiles: List[TiledGridCell[TileType]] => List[TiledGridCell[TileType]] =
+  val filterPlatformTiles: Batch[TiledGridCell[TileType]] => Batch[TiledGridCell[TileType]] =
     tiles =>
       tiles
         .filter { cell =>
@@ -72,34 +69,13 @@ object Platform:
 
         }
 
-  val convertCellsToBoundingBoxes: List[TiledGridCell[TileType]] => List[BoundingBox] =
+  val convertCellsToBoundingBoxes: Batch[TiledGridCell[TileType]] => Batch[BoundingBox] =
     _.flatMap { t =>
       t.tile match
         case TileType.Empty =>
-          Nil
+          Batch.empty
+
         case TileType.Solid =>
-          List(BoundingBox(t.column.toDouble, t.row.toDouble, 1, 1))
+          Batch(BoundingBox(t.column.toDouble, t.row.toDouble, 1, 1))
 
     }
-
-  val weldBoundingBoxes: List[BoundingBox] => List[BoundingBox] =
-    rectangles =>
-      @tailrec
-      def rec(remaining: List[BoundingBox], acc: List[BoundingBox]): List[BoundingBox] =
-        remaining match
-          case Nil =>
-            acc
-
-          case head :: next =>
-            next.find(r => head.y == r.y && (r.x + r.width == head.x || r.x == head.x + head.width)) match
-              case Some(r) =>
-                if r.x + r.width == head.x then
-                  rec(BoundingBox(r.x, r.y, r.width + head.width, 1) :: next.filterNot(_ == r), acc)
-                else if r.x == head.x + head.width then
-                  rec(BoundingBox(head.x, head.y, head.width + r.width, 1) :: next.filterNot(_ == r), acc)
-                else rec(next, head :: acc) // Shouldn't get here.
-
-              case None =>
-                rec(next, head :: acc)
-
-      rec(rectangles, Nil)

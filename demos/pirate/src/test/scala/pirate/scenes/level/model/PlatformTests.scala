@@ -4,6 +4,8 @@ import indigo.shared.formats.TiledGridCell
 import pirate.core.TileType
 import indigo.shared.geometry.BoundingBox
 import indigo.shared.geometry.Vertex
+import indigo.shared.collections.Batch
+import indigo.syntax.*
 
 class PlatformTests extends munit.FunSuite {
 
@@ -53,11 +55,11 @@ class PlatformTests extends munit.FunSuite {
           TiledGridCell(4, 4, TileType.Empty)
         )
 
-    val actual: List[indigo.TiledGridCell[TileType]] =
-      Platform.filterPlatformTiles(map)
+    val actual: Batch[indigo.TiledGridCell[TileType]] =
+      Platform.filterPlatformTiles(map.toBatch)
 
-    val expected: List[indigo.TiledGridCell[TileType]] =
-      List(
+    val expected: Batch[indigo.TiledGridCell[TileType]] =
+      Batch(
         TiledGridCell(0, 1, TileType.Solid),
         TiledGridCell(1, 2, TileType.Solid),
         TiledGridCell(2, 2, TileType.Solid),
@@ -93,10 +95,10 @@ class PlatformTests extends munit.FunSuite {
       )
 
     val actual =
-      Platform.convertCellsToBoundingBoxes(cells)
+      Platform.convertCellsToBoundingBoxes(cells.toBatch)
 
-    val expected: List[BoundingBox] =
-      List(
+    val expected: Batch[BoundingBox] =
+      Batch(
         BoundingBox(0, 1, 1, 1),
         BoundingBox(1, 2, 1, 1),
         BoundingBox(2, 2, 1, 1),
@@ -104,67 +106,6 @@ class PlatformTests extends munit.FunSuite {
       )
 
     assertEquals(actual, expected)
-  }
-
-  test("weld bounding boxes together.simple example") {
-    val boxes: List[BoundingBox] =
-      List(
-        BoundingBox(0, 1, 1, 1),
-        BoundingBox(1, 2, 1, 1),
-        BoundingBox(2, 2, 1, 1),
-        BoundingBox(4, 3, 1, 1)
-      )
-
-    val actual =
-      Platform.weldBoundingBoxes(boxes)
-
-    val expected =
-      List(
-        BoundingBox(0, 1, 1, 1),
-        BoundingBox(1, 2, 2, 1),
-        BoundingBox(4, 3, 1, 1)
-      ).reverse
-
-    assertEquals(actual, expected)
-  }
-
-  test("weld bounding boxes together.full example") {
-    val boxes: List[BoundingBox] =
-      List(
-        BoundingBox(Vertex(0, 3), Vertex(1, 1)),
-        BoundingBox(Vertex(1, 3), Vertex(1, 1)),
-        BoundingBox(Vertex(17, 5), Vertex(1, 1)),
-        BoundingBox(Vertex(18, 5), Vertex(1, 1)),
-        BoundingBox(Vertex(19, 5), Vertex(1, 1)),
-        BoundingBox(Vertex(4, 9), Vertex(1, 1)),
-        BoundingBox(Vertex(5, 9), Vertex(1, 1)),
-        BoundingBox(Vertex(6, 9), Vertex(1, 1)),
-        BoundingBox(Vertex(7, 9), Vertex(1, 1)),
-        BoundingBox(Vertex(8, 9), Vertex(1, 1)),
-        BoundingBox(Vertex(9, 9), Vertex(1, 1)),
-        BoundingBox(Vertex(10, 9), Vertex(1, 1)),
-        BoundingBox(Vertex(11, 9), Vertex(1, 1)),
-        BoundingBox(Vertex(12, 9), Vertex(1, 1)),
-        BoundingBox(Vertex(13, 9), Vertex(1, 1)),
-        BoundingBox(Vertex(14, 9), Vertex(1, 1)),
-        BoundingBox(Vertex(18, 9), Vertex(1, 1)),
-        BoundingBox(Vertex(19, 9), Vertex(1, 1))
-      )
-
-    val actual =
-      Platform.weldBoundingBoxes(boxes)
-
-    val expected =
-      List(
-        BoundingBox(Vertex(18, 9), Vertex(2, 1)),
-        BoundingBox(Vertex(4, 9), Vertex(11, 1)),
-        BoundingBox(Vertex(17, 5), Vertex(3, 1)),
-        BoundingBox(Vertex(0, 3), Vertex(2, 1))
-      )
-
-    assertEquals(actual.length, expected.length)
-    assertEquals(actual.forall(expected.contains), true)
-    assertEquals(expected.forall(actual.contains), true)
   }
 
 }

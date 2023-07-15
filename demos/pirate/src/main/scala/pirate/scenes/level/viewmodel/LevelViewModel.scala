@@ -10,8 +10,8 @@ some data during the loading screen, parse it, and use it to build the
 which is stored in the Tiled data.
  */
 enum LevelViewModel(val notReady: Boolean):
-  case NotReady                                                                     extends LevelViewModel(true)
-  case Ready(worldToScreenSpace: Vertex => Point, pirateViewState: PirateViewState) extends LevelViewModel(false)
+  case NotReady                                                                      extends LevelViewModel(true)
+  case Ready(worldToScreenSpace: Vertex => Vertex, pirateViewState: PirateViewState) extends LevelViewModel(false)
 
 object LevelViewModel:
 

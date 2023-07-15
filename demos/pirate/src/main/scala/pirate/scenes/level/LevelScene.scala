@@ -2,6 +2,7 @@ package pirate.scenes.level
 
 import indigo.*
 import indigo.scenes.*
+import indigo.physics.*
 
 import pirate.scenes.level.subsystems.CloudsAutomata
 import pirate.scenes.level.subsystems.CloudsSubSystem
@@ -12,6 +13,7 @@ import pirate.scenes.level.model.LevelModel
 import pirate.scenes.level.viewmodel.LevelViewModel
 import pirate.scenes.level.viewmodel.PirateViewState
 import pirate.scenes.level.model.Pirate
+import pirate.scenes.level.model.PirateRespawn
 
 final case class LevelScene(screenWidth: Int) extends Scene[StartupData, Model, ViewModel]:
   type SceneModel     = LevelModel
@@ -43,13 +45,36 @@ final case class LevelScene(screenWidth: Int) extends Scene[StartupData, Model, 
       context: SceneContext[StartupData],
       model: LevelModel
   ): GlobalEvent => Outcome[LevelModel] =
+    case PirateRespawn(at) =>
+      model match
+        case LevelModel.NotReady =>
+          Outcome(model)
+
+        case LevelModel.Ready(pirate, platform, world) =>
+          Outcome(
+            LevelModel.Ready(
+              pirate,
+              platform,
+              world.modifyByTag("pirate")(_.moveTo(at).withVelocity(Vector2.zero))
+            )
+          )
+
     case FrameTick if model.notReady =>
       (model, context.startUpData.levelDataStore) match
         case (LevelModel.NotReady, Some(levelDataStore)) =>
+          val pirate   = Pirate.initial
+          val platform = Platform.fromTerrainMap(levelDataStore.terrainMap)
+
           Outcome(
             LevelModel.Ready(
-              Pirate.initial,
-              Platform.fromTerrainMap(levelDataStore.terrainMap)
+              pirate,
+              platform,
+              World
+                .empty[String]
+                .withResistance(Resistance(0.01))
+                .withForces(Vector2(0, 30))
+                .withColliders(platform.navMesh)
+                .addColliders(Collider.Box("pirate", Pirate.initialBounds).withRestitution(Restitution(0)))
             )
           )
 
@@ -70,8 +95,8 @@ final case class LevelScene(screenWidth: Int) extends Scene[StartupData, Model, 
     case FrameTick if viewModel.notReady =>
       (viewModel, context.startUpData.levelDataStore) match
         case (LevelViewModel.NotReady, Some(levelDataStore)) =>
-          val changeSpace: Vertex => Point =
-            v => (v * Vertex.fromPoint(levelDataStore.tileSize)).toPoint
+          val changeSpace: Vertex => Vertex =
+            _ * levelDataStore.tileSize.toVertex
 
           Outcome(LevelViewModel.Ready(changeSpace, PirateViewState.initial))
 
@@ -83,7 +108,7 @@ final case class LevelScene(screenWidth: Int) extends Scene[StartupData, Model, 
         case LevelModel.NotReady =>
           Outcome(viewModel)
 
-        case LevelModel.Ready(pirate, _) =>
+        case LevelModel.Ready(pirate, _, _) =>
           viewModel.update(context.gameTime, pirate)
 
     case _ =>
@@ -96,7 +121,7 @@ final case class LevelScene(screenWidth: Int) extends Scene[StartupData, Model, 
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       (model, viewModel) match
-        case (m @ LevelModel.Ready(_, _), vm @ LevelViewModel.Ready(_, _)) =>
+        case (m @ LevelModel.Ready(_, _, _), vm @ LevelViewModel.Ready(_, _)) =>
           LevelView.draw(context.gameTime, m, vm, context.startUpData.captain, context.startUpData.levelDataStore)
 
         case _ =>
@@ -104,4 +129,5 @@ final case class LevelScene(screenWidth: Int) extends Scene[StartupData, Model, 
     )
 
 object LevelScene:
-  val name: SceneName = SceneName("demo")
+  val name: SceneName =
+    SceneName("demo")
