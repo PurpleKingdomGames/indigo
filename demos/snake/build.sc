@@ -10,11 +10,7 @@ import coursier.maven.MavenRepository
 
 import $ivy.`io.indigoengine::mill-indigo:0.15.0-RC3`, millindigo._
 
-import $ivy.`io.github.davidgregory084::mill-tpolecat::0.3.2`
-
-import io.github.davidgregory084.TpolecatModule
-
-object snake extends ScalaJSModule with MillIndigo with ScalafmtModule with TpolecatModule {
+object snake extends ScalaJSModule with MillIndigo with ScalafmtModule {
   def scalaVersion   = "3.3.0"
   def scalaJSVersion = "1.13.1"
 
@@ -67,7 +63,7 @@ object snake extends ScalaJSModule with MillIndigo with ScalafmtModule with Tpol
     ivy"io.indigoengine::indigo-extras::$indigoVersion"
   )
 
-  object test extends ScalaTests {
+  object test extends ScalaJSTests {
 
     def ivyDeps = Agg(
       ivy"org.scalameta::munit::0.7.29"
