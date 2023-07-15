@@ -4,11 +4,11 @@ set -e
 
 cd snake
 
-mill clean
-mill snake.checkFormat
-mill snake.test
-mill snake.fastOpt
-mill snake.indigoBuild
+./mill clean
+./mill snake.checkFormat
+./mill snake.test
+./mill snake.fastOpt
+./mill snake.indigoBuild
 
 cd ..
 
