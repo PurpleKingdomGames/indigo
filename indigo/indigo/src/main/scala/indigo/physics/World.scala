@@ -23,6 +23,9 @@ final case class World[A](colliders: Batch[Collider[A]], forces: Batch[Vector2],
   def withResistance(newResistance: Resistance): World[A] =
     this.copy(resistance = newResistance)
 
+  def findFirstByTag(tag: A)(using CanEqual[A, A]): Option[Collider[A]] =
+    findByTag(tag).headOption
+
   def findByTag(tag: A)(using CanEqual[A, A]): Batch[Collider[A]] =
     colliders.filter(_.tag == tag)
 
@@ -31,6 +34,9 @@ final case class World[A](colliders: Batch[Collider[A]], forces: Batch[Vector2],
 
   def modifyByTag(tag: A)(f: Collider[A] => Collider[A])(using CanEqual[A, A]) =
     this.copy(colliders = colliders.map(c => if c.tag == tag then f(c) else c))
+
+  def findFirstAt(position: Vertex): Option[Collider[A]] =
+    findAt(position).headOption
 
   def findAt(position: Vertex): Batch[Collider[A]] =
     colliders.filter {
@@ -57,6 +63,9 @@ final case class World[A](colliders: Batch[Collider[A]], forces: Batch[Vector2],
       }
     )
 
+  def findFirstOn(line: LineSegment): Option[Collider[A]] =
+    findOn(line).headOption
+
   def findOn(line: LineSegment): Batch[Collider[A]] =
     colliders.filter {
       case c: Collider.Circle[_] if c.bounds.lineIntersects(line) => true
@@ -79,6 +88,58 @@ final case class World[A](colliders: Batch[Collider[A]], forces: Batch[Vector2],
         case c: Collider.Circle[_] if c.bounds.lineIntersects(line) => f(c)
         case c: Collider.Box[_] if c.bounds.lineIntersects(line)    => f(c)
         case c                                                      => c
+      }
+    )
+
+  def findFirstByHitTest(box: BoundingBox): Option[Collider[A]] =
+    findByHitTest(box).headOption
+  def findFirstByHitTest(circle: BoundingCircle): Option[Collider[A]] =
+    findByHitTest(circle).headOption
+
+  def findByHitTest(box: BoundingBox): Batch[Collider[A]] =
+    colliders.filter {
+      case c: Collider.Circle[_] if c.bounds.overlaps(box) => true
+      case c: Collider.Box[_] if c.bounds.overlaps(box)    => true
+      case _                                               => false
+    }
+  def findByHitTest(circle: BoundingCircle): Batch[Collider[A]] =
+    colliders.filter {
+      case c: Collider.Circle[_] if c.bounds.overlaps(circle) => true
+      case c: Collider.Box[_] if c.bounds.overlaps(circle)    => true
+      case _                                                  => false
+    }
+
+  def removeByHitTest(box: BoundingBox): World[A] =
+    this.copy(
+      colliders = colliders.filterNot {
+        case c: Collider.Circle[_] if c.bounds.overlaps(box) => true
+        case c: Collider.Box[_] if c.bounds.overlaps(box)    => true
+        case _                                               => false
+      }
+    )
+  def removeByHitTest(circle: BoundingCircle): World[A] =
+    this.copy(
+      colliders = colliders.filterNot {
+        case c: Collider.Circle[_] if c.bounds.overlaps(circle) => true
+        case c: Collider.Box[_] if c.bounds.overlaps(circle)    => true
+        case _                                                  => false
+      }
+    )
+
+  def modifyByHitTest(box: BoundingBox)(f: Collider[A] => Collider[A]): World[A] =
+    this.copy(
+      colliders = colliders.map {
+        case c: Collider.Circle[_] if c.bounds.overlaps(box) => f(c)
+        case c: Collider.Box[_] if c.bounds.overlaps(box)    => f(c)
+        case c                                               => c
+      }
+    )
+  def modifyByHitTest(circle: BoundingCircle)(f: Collider[A] => Collider[A]): World[A] =
+    this.copy(
+      colliders = colliders.map {
+        case c: Collider.Circle[_] if c.bounds.overlaps(circle) => f(c)
+        case c: Collider.Box[_] if c.bounds.overlaps(circle)    => f(c)
+        case c                                                  => c
       }
     )
 
