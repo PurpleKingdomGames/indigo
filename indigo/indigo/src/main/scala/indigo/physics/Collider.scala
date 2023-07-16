@@ -54,7 +54,7 @@ object Collider:
         Mass.default,
         Vector2.zero,
         Restitution.default,
-        Friction(0.005),
+        Friction.zero,
         false,
         _ => true,
         _ => Batch.empty
@@ -68,7 +68,7 @@ object Collider:
         Mass.default,
         Vector2.zero,
         Restitution.default,
-        Friction(0.05),
+        Friction.zero,
         false,
         _ => true,
         _ => Batch.empty
