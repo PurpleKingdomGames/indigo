@@ -13,12 +13,12 @@ import scala.annotation.tailrec
 
 object Physics:
 
-  def update[A](timeDelta: Seconds, world: World[A]): Outcome[World[A]] =
+  def update[A](timeDelta: Seconds, world: World[A], transient: Batch[Collider[A]]): Outcome[World[A]] =
     val moved: Batch[Internal.IndexedCollider[A]] =
       Internal.moveColliders(timeDelta, world)
 
     val collisions: Batch[(Collider[A], Batch[Collider[A]])] =
-      Internal.findCollisionGroups(moved)
+      Internal.findCollisionGroups(moved, transient)
 
     val collisionEvents: Batch[GlobalEvent] =
       collisions.flatMap { case (c, cs) =>
@@ -88,11 +88,14 @@ object Physics:
             c.copy(bounds = c.bounds.moveTo(p), velocity = v)
           )
 
-    def findCollisionGroups[A](indexedColliders: Batch[IndexedCollider[A]]): Batch[(Collider[A], Batch[Collider[A]])] =
+    def findCollisionGroups[A](
+        indexedColliders: Batch[IndexedCollider[A]],
+        transient: Batch[Collider[A]]
+    ): Batch[(Collider[A], Batch[Collider[A]])] =
       indexedColliders.map(c =>
         if c.collider.isStatic then c.collider -> Batch()
         else
-          c.collider ->
+          val worldCollisions =
             indexedColliders
               .filter { i =>
                 i.index != c.index &&
@@ -100,6 +103,15 @@ object Physics:
                 c.collider.hitTest(i.collider)
               }
               .map(_.collider)
+
+          val tempCollisions =
+            transient
+              .filter { tmp =>
+                c.collider.canCollideWith(tmp.tag) &&
+                c.collider.hitTest(tmp)
+              }
+
+          c.collider -> (worldCollisions ++ tempCollisions)
       )
 
     def solveAllCollisions[A](

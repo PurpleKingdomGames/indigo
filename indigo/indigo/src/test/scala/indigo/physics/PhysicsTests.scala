@@ -58,7 +58,7 @@ class PhysicsTests extends munit.FunSuite:
       )
 
     val actual =
-      Physics.Internal.findCollisionGroups(indexed)
+      Physics.Internal.findCollisionGroups(indexed, Batch.empty)
 
     val expected =
       Batch(
@@ -67,6 +67,37 @@ class PhysicsTests extends munit.FunSuite:
         c3 -> Batch(c1, c5),
         c4 -> Batch(),
         c5 -> Batch(c3)
+      )
+
+    assertEquals(actual, expected)
+  }
+
+  test("findCollisionGroups, with transient") {
+    val c1 = Collider.Circle(tag, BoundingCircle(3, 2, 2)).withFriction(Friction.zero)   // overlaps c2 and c3
+    val c2 = Collider.Circle(tag, BoundingCircle(1, 4, 2)).withFriction(Friction.zero)   // overlaps c1
+    val c3 = Collider.Circle(tag, BoundingCircle(5, 4, 2)).withFriction(Friction.zero)   // overlaps c1
+    val c4 = Collider.Circle(tag, BoundingCircle(10, 20, 2)).withFriction(Friction.zero) // not touching
+    val c5 = Collider.Circle(tag, BoundingCircle(8, 4, 2)).withFriction(Friction.zero)   // overlaps c3
+
+    val idx1 = Physics.Internal.IndexedCollider(0, c1)
+    val idx2 = Physics.Internal.IndexedCollider(1, c2)
+    val idx3 = Physics.Internal.IndexedCollider(2, c3)
+
+    val indexed =
+      Batch(
+        idx1,
+        idx2,
+        idx3
+      )
+
+    val actual =
+      Physics.Internal.findCollisionGroups(indexed, Batch(c4, c5))
+
+    val expected =
+      Batch(
+        c1 -> Batch(c2, c3),
+        c2 -> Batch(c1),
+        c3 -> Batch(c1, c5)
       )
 
     assertEquals(actual, expected)
@@ -421,4 +452,69 @@ class PhysicsTests extends munit.FunSuite:
       )
 
     assert(clue(actual(0)) ~== clue(expected(0)))
+  }
+
+  test("Physics.update should update the world") {
+    val c1 = Collider.Circle(tag, BoundingCircle(2, 0, 2)).withVelocity(Vector2(1, 0)).withFriction(Friction.zero)
+    val c2 = Collider.Circle(tag, BoundingCircle(7, 0, 2)).withVelocity(Vector2(-1, 0)).withFriction(Friction.zero)
+
+    val world = World.empty[String].withColliders(c1, c2)
+
+    val actual =
+      Physics.update(Seconds(1), world, Batch.empty)
+
+    val expected =
+      World
+        .empty[String]
+        .withColliders(
+          c1.withPosition(2, 0).withVelocity(0, 0),
+          c2.withPosition(7, 0).withVelocity(0, 0)
+        )
+
+    assert(clue(actual.unsafeGet.colliders(0)) ~== clue(expected.colliders(0)))
+    assert(clue(actual.unsafeGet.colliders(1)) ~== clue(expected.colliders(1)))
+  }
+
+  test("Physics.update should update the world - solved collision") {
+    val c1 = Collider.Circle(tag, BoundingCircle(3, 0, 2)).withVelocity(Vector2(1, 0)).withFriction(Friction.zero)
+    val c2 = Collider.Circle(tag, BoundingCircle(6, 0, 2)).withVelocity(Vector2(-1, 0)).withFriction(Friction.zero)
+
+    val collisions =
+      Batch(
+        c1 -> Batch(c2),
+        c2 -> Batch(c1)
+      )
+
+    val actual =
+      Physics.Internal.solveAllCollisions(collisions)
+
+    val expected =
+      Batch(
+        c1.withPosition(2, 0).withVelocity(0, 0),
+        c2.withPosition(7, 0).withVelocity(0, 0)
+      )
+
+    assert(clue(actual(0)) ~== clue(expected(0)))
+    assert(clue(actual(1)) ~== clue(expected(1)))
+  }
+
+  test("Physics.update should consider, but not return transient colliders") {
+    val c1 = Collider.Circle(tag, BoundingCircle(0, 0, 2)).withVelocity(Vector2(1, 0)).withFriction(Friction.zero)
+    val c2 =
+      Collider.Circle(tag, BoundingCircle(4, 0, 2)).withFriction(Friction.zero).makeStatic
+
+    val world = World.empty[String].withColliders(c1)
+
+    val actual =
+      Physics.update(Seconds(1), world, Batch(c2))
+
+    val expected =
+      World
+        .empty[String]
+        .withColliders(
+          c1.withPosition(-1, 0).withVelocity(-1, 0)
+        )
+
+    assert(clue(actual.unsafeGet.colliders.length) == clue(1))
+    assert(clue(actual.unsafeGet.colliders(0)) ~== clue(expected.colliders(0)))
   }

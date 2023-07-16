@@ -165,8 +165,26 @@ final case class World[A](colliders: Batch[Collider[A]], forces: Batch[Vector2],
   def presentNot(filterNot: Collider[A] => Boolean)(render: Collider[A] => SceneNode): Batch[SceneNode] =
     colliders.filterNot(filterNot).map(render)
 
+  def present(transient: Batch[Collider[A]])(render: Collider[A] => SceneNode): Batch[SceneNode] =
+    (colliders ++ transient).map(render)
+
+  def present(filter: Collider[A] => Boolean, transient: Batch[Collider[A]])(
+      render: Collider[A] => SceneNode
+  ): Batch[SceneNode] =
+    (colliders ++ transient).filter(filter).map(render)
+
+  def presentNot(filterNot: Collider[A] => Boolean, transient: Batch[Collider[A]])(
+      render: Collider[A] => SceneNode
+  ): Batch[SceneNode] =
+    (colliders ++ transient).filterNot(filterNot).map(render)
+
   def update(timeDelta: Seconds): Outcome[World[A]] =
-    Physics.update(timeDelta, this)
+    Physics.update(timeDelta, this, Batch.empty)
+
+  def update(timeDelta: Seconds)(transient: Batch[Collider[A]]): Outcome[World[A]] =
+    Physics.update(timeDelta, this, transient)
+  def update(timeDelta: Seconds)(transient: Collider[A]*): Outcome[World[A]] =
+    Physics.update(timeDelta, this, transient.toBatch)
 
 object World:
 
