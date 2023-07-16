@@ -8,23 +8,23 @@ source ../credentials.sh
 
 rm -fr out/
 
-mill clean
-mill clean indigo-plugin[2.12]
-mill clean indigo-plugin[2.13]
+./mill clean
+./mill clean indigo-plugin[2.12]
+./mill clean indigo-plugin[2.13]
 
-mill indigo-plugin[2.12].compile
-mill indigo-plugin[2.13].compile
+./mill indigo-plugin[2.12].compile
+./mill indigo-plugin[2.13].compile
 
-mill indigo-plugin[2.12].test
-mill indigo-plugin[2.13].test
+./mill indigo-plugin[2.12].test
+./mill indigo-plugin[2.13].test
 
-mill mill.scalalib.PublishModule/publishAll \
+./mill mill.scalalib.PublishModule/publishAll \
         indigo-plugin[2.12].publishArtifacts \
         $SONATYPE_USERNAME:$SONATYPE_PASSWORD \
         --gpgArgs --passphrase=$PGP_PASSPHRASE,--batch,--yes,-a,-b \
         --release true
 
-mill mill.scalalib.PublishModule/publishAll \
+./mill mill.scalalib.PublishModule/publishAll \
         indigo-plugin[2.13].publishArtifacts \
         $SONATYPE_USERNAME:$SONATYPE_PASSWORD \
         --gpgArgs --passphrase=$PGP_PASSPHRASE,--batch,--yes,-a,-b \
