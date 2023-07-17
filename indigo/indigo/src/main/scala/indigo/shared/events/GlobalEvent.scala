@@ -4,12 +4,14 @@ import indigo.AssetCollection
 import indigo.shared.assets.AssetName
 import indigo.shared.assets.AssetType
 import indigo.shared.audio.Volume
+import indigo.shared.collections.Batch
 import indigo.shared.config.GameViewport
 import indigo.shared.config.RenderingTechnology
 import indigo.shared.constants.Key
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.RGBA
+import indigo.shared.datatypes.Radians
 
 /** A trait that tells Indigo to allow this instance into the event loop for the duration of one frame.
   */
@@ -110,6 +112,9 @@ case object CanvasLostFocus extends GlobalEvent
 enum MouseButton derives CanEqual:
   case LeftMouseButton, MiddleMouseButton, RightMouseButton, BrowserBackButton, BrowserForwardButton
 
+enum PointerType derives CanEqual:
+  case Mouse, Pen, Touch, Unknown
+
 /** Represents in which direction the mouse wheel was rotated
   */
 enum MouseWheel derives CanEqual:
@@ -136,7 +141,7 @@ trait MouseOrPointerEvent:
 
   /** Pressed buttons
     */
-  def buttons: Buttons
+  def buttons: Batch[MouseButton]
 
   /** Indicates whether buttons are in active state
     */
@@ -158,17 +163,17 @@ trait MouseOrPointerEvent:
     */
   def isShiftKeyDown: Boolean
 
-  /** The delta position between this event and the last event
+  /** The delta position between this event and the last event relative to the magnification level
     */
-  def deltaPosition: Point
+  def movementPosition: Point
 
-  /** The delta X position between this event and the last event
+  /** The delta X position between this event and the last event relative to the magnification level
     */
-  def deltaX: Point = deltaPosition.x
+  def movementX: Int = movementPosition.x
 
-  /** The delta Y position between this event and the last event
+  /** The delta Y position between this event and the last event relative to the magnification level
     */
-  def deltaY: Point = deltaPosition.y
+  def movementY: Int = movementPosition.y
 
 /** Represents all mouse events
   */
@@ -177,84 +182,103 @@ object MouseEvent:
 
   /** The mouse has been clicked.
     *
-    * @param position
-    *   mouse position relative to magnification level
-    */
-  final case class Click(position: Point) extends MouseEvent
-  object Click:
-    def apply(x: Int, y: Int): Click =
-      Click(Point(x, y))
-
-  /** The left mouse button was released.
-    *
-    * @param position
-    *   mouse position relative to magnification level
     * @param button
-    *   Button that triggered this event
+    *   The button that was used for the click
     */
-  final case class MouseUp(position: Point, button: MouseButton) extends MouseEvent
-  object MouseUp:
-    def apply(position: Point): MouseUp =
-      MouseUp(position, MouseButton.LeftMouseButton)
-    def apply(x: Int, y: Int): MouseUp =
-      MouseUp(Point(x, y), MouseButton.LeftMouseButton)
-    def apply(x: Int, y: Int, button: MouseButton): MouseUp =
-      MouseUp(Point(x, y), button)
+  final case class Click(
+      position: Point,
+      buttons: Batch[MouseButton],
+      isAltKeyDown: Boolean,
+      isCtrlKeyDown: Boolean,
+      isMetaKeyDown: Boolean,
+      isShiftKeyDown: Boolean,
+      movementPosition: Point,
+      button: MouseButton
+  ) extends MouseEvent
 
-  /** The left mouse button was pressed down.
-    *
-    * @param position
-    *   mouse position relative to magnification level
+  /** The mouse button was released.
     * @param button
-    *   Button that triggered this event
+    *   The button that was released
     */
-  final case class MouseDown(position: Point, button: MouseButton) extends MouseEvent
-  object MouseDown:
-    def apply(position: Point): MouseDown =
-      MouseDown(position, MouseButton.LeftMouseButton)
-    def apply(x: Int, y: Int): MouseDown =
-      MouseDown(Point(x, y), MouseButton.LeftMouseButton)
-    def apply(x: Int, y: Int, button: MouseButton): MouseDown =
-      MouseDown(Point(x, y), button)
+  final case class MouseUp(
+      position: Point,
+      buttons: Batch[MouseButton],
+      isAltKeyDown: Boolean,
+      isCtrlKeyDown: Boolean,
+      isMetaKeyDown: Boolean,
+      isShiftKeyDown: Boolean,
+      movementPosition: Point,
+      button: MouseButton
+  ) extends MouseEvent
+
+  /** The mouse button was pressed down.
+    * @param button
+    *   The button that was pressed down
+    */
+  final case class MouseDown(
+      position: Point,
+      buttons: Batch[MouseButton],
+      isAltKeyDown: Boolean,
+      isCtrlKeyDown: Boolean,
+      isMetaKeyDown: Boolean,
+      isShiftKeyDown: Boolean,
+      movementPosition: Point,
+      button: MouseButton
+  ) extends MouseEvent
 
   /** The mouse was moved to a new position.
-    *
-    * @param position
-    *   mouse position relative to magnification level
     */
-  final case class Move(position: Point) extends MouseEvent
-
-  object Move:
-    def apply(x: Int, y: Int): Move =
-      Move(Point(x, y))
+  final case class Move(
+      position: Point,
+      buttons: Batch[MouseButton],
+      isAltKeyDown: Boolean,
+      isCtrlKeyDown: Boolean,
+      isMetaKeyDown: Boolean,
+      isShiftKeyDown: Boolean,
+      movementPosition: Point
+  ) extends MouseEvent
 
   /** Mouse has moved into canvas hit test boundaries. It's counterpart is [[Leave]].
     */
-  final case class Enter(position: Point)
-      extends MouseEvent
+  final case class Enter(
+      position: Point,
+      buttons: Batch[MouseButton],
+      isAltKeyDown: Boolean,
+      isCtrlKeyDown: Boolean,
+      isMetaKeyDown: Boolean,
+      isShiftKeyDown: Boolean,
+      movementPosition: Point
+  ) extends MouseEvent
 
   /** Mouse has left canvas hit test boundaries. It's counterpart is [[Enter]].
     */
-  final case class Leave(position: Point)
-      extends MouseEvent
+  final case class Leave(
+      position: Point,
+      buttons: Batch[MouseButton],
+      isAltKeyDown: Boolean,
+      isCtrlKeyDown: Boolean,
+      isMetaKeyDown: Boolean,
+      isShiftKeyDown: Boolean,
+      movementPosition: Point
+  ) extends MouseEvent
 
   /** The mouse wheel was rotated a certain amount into the Y axis.
     *
-    * @param position
-    *   mouse position at where the wheel was actioned
     * @param amount
     *   vertical amount of pixels, pages or other unit, depending on delta mode, the Y axis was scrolled
     */
-  final case class Wheel(position: Point, amount: Double) extends MouseEvent
-
-  object Wheel:
-    def apply(x: Int, y: Int, amount: Double): Wheel =
-      Wheel(Point(x, y), amount)
+  final case class Wheel(
+      position: Point,
+      buttons: Batch[MouseButton],
+      isAltKeyDown: Boolean,
+      isCtrlKeyDown: Boolean,
+      isMetaKeyDown: Boolean,
+      isShiftKeyDown: Boolean,
+      movementPosition: Point,
+      amount: Double
+  ) extends MouseEvent
 
 end MouseEvent
-
-enum PointerType:
-  case Mouse, Pen, Touch, Unknown
 
 /** Represents all mouse, pen and touch events
   */
@@ -273,23 +297,28 @@ sealed trait PointerEvent extends InputEvent with MouseOrPointerEvent:
     */
   def height: Int
 
-  /** The normalized pressure of the pointer input in the range 0 to 1, where 0 and 1 represent the minimum and maximum pressure the hardware is capable of detecting, respectively.
+  /** The normalized pressure of the pointer input in the range 0 to 1, where 0 and 1 represent the minimum and maximum
+    * pressure the hardware is capable of detecting, respectively.
     */
   def pressure: Double
 
-  /** The normalized tangential pressure of the pointer input (also known as barrel pressure or cylinder stress) in the range -1 to 1, where 0 is the neutral position of the control.
+  /** The normalized tangential pressure of the pointer input (also known as barrel pressure or cylinder stress) in the
+    * range -1 to 1, where 0 is the neutral position of the control.
     */
   def tangentialPressure: Double
 
-  /** The plane angle (in radians, in the range of -1.570796 to 1.570796 (-90 - 90 degrees)) between the Y–Z plane and the plane containing both the pointer (e.g. pen stylus) axis and the Y axis.
+  /** The plane angle (in radians, in the range of -1.570796 to 1.570796 (-90 - 90 degrees)) between the Y–Z plane and
+    * the plane containing both the pointer (e.g. pen stylus) axis and the Y axis.
     */
   def tiltX: Radians
 
-  /** The plane angle (in radians, in the range of -1.570796 to 1.570796 (-90 - 90 degrees)) between the X–Z plane and the plane containing both the pointer (e.g. pen stylus) axis and the X axis.
+  /** The plane angle (in radians, in the range of -1.570796 to 1.570796 (-90 - 90 degrees)) between the X–Z plane and
+    * the plane containing both the pointer (e.g. pen stylus) axis and the X axis.
     */
   def tiltY: Radians
 
-  /** The clockwise rotation of the pointer (e.g. pen stylus) around its major axis in degrees, with a value in the range 0 to 6.265732 (0 to 359 degrees)
+  /** The clockwise rotation of the pointer (e.g. pen stylus) around its major axis in degrees, with a value in the
+    * range 0 to 6.265732 (0 to 359 degrees)
     */
   def twist: Radians
 
@@ -312,28 +341,115 @@ object PointerEvent:
 
   /** Pointing device is moved into canvas hit test boundaries. It's counterpart is [[PointerLeave]].
     */
-  final case class PointerEnter(position: Point, pointerId: PointerId, buttons: Buttons, isPrimary: Boolean)
-      extends PointerEvent
+  final case class PointerEnter(
+      position: Point,
+      buttons: Batch[MouseButton],
+      isAltKeyDown: Boolean,
+      isCtrlKeyDown: Boolean,
+      isMetaKeyDown: Boolean,
+      isShiftKeyDown: Boolean,
+      movementPosition: Point,
+      pointerId: PointerId,
+      width: Int,
+      height: Int,
+      pressure: Double,
+      tangentialPressure: Double,
+      tiltX: Radians,
+      tiltY: Radians,
+      twist: Radians,
+      pointerType: PointerType,
+      isPrimary: Boolean
+  ) extends PointerEvent
 
   /** Pointing device left canvas hit test boundaries. It's counterpart is [[PointerEnter]].
     */
-  final case class PointerLeave(position: Point, pointerId: PointerId, buttons: Buttons, isPrimary: Boolean)
-      extends PointerEvent
+  final case class PointerLeave(
+      position: Point,
+      buttons: Batch[MouseButton],
+      isAltKeyDown: Boolean,
+      isCtrlKeyDown: Boolean,
+      isMetaKeyDown: Boolean,
+      isShiftKeyDown: Boolean,
+      movementPosition: Point,
+      pointerId: PointerId,
+      width: Int,
+      height: Int,
+      pressure: Double,
+      tangentialPressure: Double,
+      tiltX: Radians,
+      tiltY: Radians,
+      twist: Radians,
+      pointerType: PointerType,
+      isPrimary: Boolean
+  ) extends PointerEvent
 
   /** Pointing device is in active buttons state.
     */
-  final case class PointerDown(position: Point, pointerId: PointerId, buttons: Buttons, isPrimary: Boolean)
-      extends PointerEvent
+  final case class PointerDown(
+      position: Point,
+      buttons: Batch[MouseButton],
+      isAltKeyDown: Boolean,
+      isCtrlKeyDown: Boolean,
+      isMetaKeyDown: Boolean,
+      isShiftKeyDown: Boolean,
+      movementPosition: Point,
+      pointerId: PointerId,
+      width: Int,
+      height: Int,
+      pressure: Double,
+      tangentialPressure: Double,
+      tiltX: Radians,
+      tiltY: Radians,
+      twist: Radians,
+      pointerType: PointerType,
+      isPrimary: Boolean,
+      button: Option[MouseButton]
+  ) extends PointerEvent
 
   /** Pointing device is no longer in active buttons state.
     */
-  final case class PointerUp(position: Point, pointerId: PointerId, buttons: Buttons, isPrimary: Boolean)
-      extends PointerEvent
+  final case class PointerUp(
+      position: Point,
+      buttons: Batch[MouseButton],
+      isAltKeyDown: Boolean,
+      isCtrlKeyDown: Boolean,
+      isMetaKeyDown: Boolean,
+      isShiftKeyDown: Boolean,
+      movementPosition: Point,
+      pointerId: PointerId,
+      width: Int,
+      height: Int,
+      pressure: Double,
+      tangentialPressure: Double,
+      tiltX: Radians,
+      tiltY: Radians,
+      twist: Radians,
+      pointerType: PointerType,
+      isPrimary: Boolean,
+      button: Option[MouseButton]
+  ) extends PointerEvent
 
   /** Pointing device changed coordinates.
     */
-  final case class PointerMove(position: Point, pointerId: PointerId, buttons: Buttons, isPrimary: Boolean)
-      extends PointerEvent
+  final case class PointerMove(
+      position: Point,
+      buttons: Batch[MouseButton],
+      isAltKeyDown: Boolean,
+      isCtrlKeyDown: Boolean,
+      isMetaKeyDown: Boolean,
+      isShiftKeyDown: Boolean,
+      movementPosition: Point,
+      pointerId: PointerId,
+      width: Int,
+      height: Int,
+      pressure: Double,
+      tangentialPressure: Double,
+      tiltX: Radians,
+      tiltY: Radians,
+      twist: Radians,
+      pointerType: PointerType,
+      isPrimary: Boolean
+  ) extends PointerEvent
 
   /** The ongoing interactions was cancelled due to:
     *   - the pointer device being disconnected
@@ -341,8 +457,25 @@ object PointerEvent:
     *   - palm rejection
     *   - the browser taking over the manipulations like scroll, drag & drop, pinch & zoom or other
     */
-  final case class PointerCancel(position: Point, pointerId: PointerId, buttons: Buttons, isPrimary: Boolean)
-      extends PointerEvent
+  final case class PointerCancel(
+      position: Point,
+      buttons: Batch[MouseButton],
+      isAltKeyDown: Boolean,
+      isCtrlKeyDown: Boolean,
+      isMetaKeyDown: Boolean,
+      isShiftKeyDown: Boolean,
+      movementPosition: Point,
+      pointerId: PointerId,
+      width: Int,
+      height: Int,
+      pressure: Double,
+      tangentialPressure: Double,
+      tiltX: Radians,
+      tiltY: Radians,
+      twist: Radians,
+      pointerType: PointerType,
+      isPrimary: Boolean
+  ) extends PointerEvent
 
 /** Represents all keyboard events
   */
