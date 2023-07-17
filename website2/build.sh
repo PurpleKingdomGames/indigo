@@ -18,4 +18,4 @@ hugo --cleanDestinationDir
 
 # -----
 # Publish
-sbt clean makeSite ghpagesPushSite
+sbt clean publishIndigoSite

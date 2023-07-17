@@ -57,7 +57,7 @@ follow [this guide](howto-indigo-game.md)
 or replace `HelloIndigo.scala` with
 [this](https://gist.github.com/hobnob/c24f00936e91a7b7e5d644d19e4f1b32)
 
-```scala mdoc:js:shared
+```scala
 import indigo.*
 import indigo.scenes.*
 import tyrian.TyrianSubSystem
@@ -373,7 +373,7 @@ Create a new file called `HelloTyrian.scala` inside the `helloindigo/src` folder
 and add the following contents found below, or
 [here](https://gist.github.com/hobnob/436318b3ae5eed5891ba2b18bb8c264b).
 
-```scala mdoc:js
+```scala
 import cats.effect.IO
 import tyrian.*
 import tyrian.Html.*

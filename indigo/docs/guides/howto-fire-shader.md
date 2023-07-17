@@ -48,7 +48,7 @@ final case class Fire(
     ShaderData(
       Fire.shaderId,
       UniformBlock(
-        "FireData",
+        UniformBlockName("FireData"),
         Batch(
           Uniform("OFFSET")       -> float(offset),
           Uniform("COLOR_OUTER")  -> vec3(outer.r, outer.g, outer.b),
@@ -172,7 +172,7 @@ def toShaderData: ShaderData =
   ShaderData(
     Fire.shaderId,
     UniformBlock(
-      "FireData",
+      UniformBlockName("FireData"),
       Batch(
         Uniform("OFFSET")       -> float(offset),
         Uniform("COLOR_OUTER")  -> vec3(outer.r, outer.g, outer.b),

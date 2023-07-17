@@ -145,7 +145,7 @@ Used to load and save data from local storage.
 - `Load(key)` - Load the data stored with the given key
 - `Delete(key)` - Delete the data stored against the given key
 - `DeleteAll` - Delete all stored data
-- `Loaded(key, data)` - Response event when data has been loaded
+- `Loaded(data)` - Response event when data has been loaded
 
 Should any of the above fail one of the following `StorageEventError` types will
 be raised as a separate event.

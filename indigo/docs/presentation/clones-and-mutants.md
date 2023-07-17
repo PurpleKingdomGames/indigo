@@ -127,7 +127,7 @@ Mutants(
   Array(
     Batch(
       UniformBlock(
-        "MutantData",
+        UniformBlockName("MutantData"),
         Batch(
           Uniform("MOVE_TO")  -> vec2(10.0, 10.0),
           Uniform("SCALE_TO") -> vec2(2.0, 2.0),

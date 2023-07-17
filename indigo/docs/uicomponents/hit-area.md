@@ -18,7 +18,6 @@ Here is an example:
 ```scala mdoc:js:shared
 import indigo.*
 import indigoextras.ui.*
-import indigo.shared.geometry.*
 
 final case class Log(message: String) extends GlobalEvent
 final case class ViewModel(hitArea: HitArea):

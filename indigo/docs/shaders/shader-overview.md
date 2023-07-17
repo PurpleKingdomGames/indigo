@@ -230,7 +230,7 @@ final case class MyColoredEntity(position: Point, depth: Depth, color: RGBA) ext
     ShaderData(
       MyColoredEntity.shader.id,
       UniformBlock(
-        "MyCustomData",
+        UniformBlockName("MyCustomData"),
         Batch(Uniform("MY_COLOR") -> vec4(color.r, color.g, color.b, color.a))
       )
     )
