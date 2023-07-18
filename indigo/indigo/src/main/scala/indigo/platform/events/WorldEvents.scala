@@ -3,14 +3,11 @@ package indigo.platform.events
 import indigo.shared.collections.Batch
 import indigo.shared.constants.Key
 import indigo.shared.datatypes.Point
-<<<<<<< HEAD
+import indigo.shared.datatypes.Radians
 import indigo.shared.events.ApplicationGainedFocus
 import indigo.shared.events.ApplicationLostFocus
 import indigo.shared.events.CanvasGainedFocus
 import indigo.shared.events.CanvasLostFocus
-=======
-import indigo.shared.datatypes.Radians
->>>>>>> fe2d8f565 (Mouse and Pointer events now contain a more props)
 import indigo.shared.events.KeyboardEvent
 import indigo.shared.events.MouseButton
 import indigo.shared.events.MouseEvent

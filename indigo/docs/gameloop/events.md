@@ -77,17 +77,27 @@ Handling `InputEvent`s can be a bit tricky in some situations, so Indigo include
 
 What did the mouse do and at what location?
 
+A Mouse event consists of the following properties:
+
+- `position` - The location of the mouse
+- `buttons` - The buttons that were down at the time of the event
+- `isAltKeyDown` - Whether the `alt` key is held down
+- `isCtrlKeyDown` - Whether the `ctrl` key is held down
+- `isMetaKeyDown` - Whether the `windows` or `cmd` key was held down
+- `isShiftKeyDown` - Whether the `shift` key was held down
+- `movementPosition` - The difference between the position of this event, and the last mouse event
+
+For events (such as `Click`) where a button is pressed, an additional `button` property is provided.
+
 Up to five mouse buttons are supported, including the most common left, middle and right buttons.
 
-Convenience functions are provided for the left mouse button.
+The following events are available:
 
-- `Click(x, y)`
-- `MouseUp(x, y, button)`
-- `MouseDown(x, y, button)`
-- `Move(x, y)`
-- `Wheel(x, y, amount)`
-
-Notice however that the `Click` event is restricted to the left mouse button, and `Move` is independent of any button.
+- `Click(position, buttons, isAltKeyDown, isCtrlKeyDown, isMetaKeyDown, isShiftKeyDown, movementPosition, button)`
+- `MouseUp(position, buttons, isAltKeyDown, isCtrlKeyDown, isMetaKeyDown, isShiftKeyDown, movementPosition, button)`
+- `MouseDown(position, buttons, isAltKeyDown, isCtrlKeyDown, isMetaKeyDown, isShiftKeyDown, movementPosition, button)`
+- `Move(position, buttons, isAltKeyDown, isCtrlKeyDown, isMetaKeyDown, isShiftKeyDown, movementPosition)`
+- `Wheel(position, buttons, isAltKeyDown, isCtrlKeyDown, isMetaKeyDown, isShiftKeyDown, movementPosition, amount)`
 
 #### `KeyboardEvent`s
 
