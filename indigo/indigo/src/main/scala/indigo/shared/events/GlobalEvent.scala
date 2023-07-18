@@ -195,6 +195,18 @@ object MouseEvent:
       movementPosition: Point,
       button: MouseButton
   ) extends MouseEvent
+  object Click:
+    def apply(x: Int, y: Int): Click =
+      Click(
+        position = Point(x, y),
+        buttons = Batch.empty,
+        isAltKeyDown = false,
+        isCtrlKeyDown = false,
+        isMetaKeyDown = false,
+        isShiftKeyDown = false,
+        movementPosition = Point.zero,
+        button = MouseButton.LeftMouseButton
+      )
 
   /** The mouse button was released.
     * @param button
@@ -210,6 +222,40 @@ object MouseEvent:
       movementPosition: Point,
       button: MouseButton
   ) extends MouseEvent
+  object MouseUp:
+    def apply(position: Point): MouseUp =
+      MouseUp(
+        position = position,
+        buttons = Batch.empty,
+        isAltKeyDown = false,
+        isCtrlKeyDown = false,
+        isMetaKeyDown = false,
+        isShiftKeyDown = false,
+        movementPosition = Point.zero,
+        button = MouseButton.LeftMouseButton
+      )
+    def apply(x: Int, y: Int): MouseUp =
+      MouseUp(
+        position = Point(x, y),
+        buttons = Batch.empty,
+        isAltKeyDown = false,
+        isCtrlKeyDown = false,
+        isMetaKeyDown = false,
+        isShiftKeyDown = false,
+        movementPosition = Point.zero,
+        button = MouseButton.LeftMouseButton
+      )
+    def apply(x: Int, y: Int, button: MouseButton): MouseUp =
+      MouseUp(
+        position = Point(x, y),
+        buttons = Batch.empty,
+        isAltKeyDown = false,
+        isCtrlKeyDown = false,
+        isMetaKeyDown = false,
+        isShiftKeyDown = false,
+        movementPosition = Point.zero,
+        button = button
+      )
 
   /** The mouse button was pressed down.
     * @param button
@@ -225,6 +271,40 @@ object MouseEvent:
       movementPosition: Point,
       button: MouseButton
   ) extends MouseEvent
+  object MouseDown:
+    def apply(position: Point): MouseDown =
+      MouseDown(
+        position = position,
+        buttons = Batch.empty,
+        isAltKeyDown = false,
+        isCtrlKeyDown = false,
+        isMetaKeyDown = false,
+        isShiftKeyDown = false,
+        movementPosition = Point.zero,
+        button = MouseButton.LeftMouseButton
+      )
+    def apply(x: Int, y: Int): MouseDown =
+      MouseDown(
+        position = Point(x, y),
+        buttons = Batch.empty,
+        isAltKeyDown = false,
+        isCtrlKeyDown = false,
+        isMetaKeyDown = false,
+        isShiftKeyDown = false,
+        movementPosition = Point.zero,
+        button = MouseButton.LeftMouseButton
+      )
+    def apply(x: Int, y: Int, button: MouseButton): MouseDown =
+      MouseDown(
+        position = Point(x, y),
+        buttons = Batch.empty,
+        isAltKeyDown = false,
+        isCtrlKeyDown = false,
+        isMetaKeyDown = false,
+        isShiftKeyDown = false,
+        movementPosition = Point.zero,
+        button = button
+      )
 
   /** The mouse was moved to a new position.
     */
@@ -237,6 +317,17 @@ object MouseEvent:
       isShiftKeyDown: Boolean,
       movementPosition: Point
   ) extends MouseEvent
+  object Move:
+    def apply(x: Int, y: Int): Move =
+      Move(
+        position = Point(x, y),
+        buttons = Batch.empty,
+        isAltKeyDown = false,
+        isCtrlKeyDown = false,
+        isMetaKeyDown = false,
+        isShiftKeyDown = false,
+        movementPosition = Point.zero
+      )
 
   /** Mouse has moved into canvas hit test boundaries. It's counterpart is [[Leave]].
     */
@@ -277,6 +368,18 @@ object MouseEvent:
       movementPosition: Point,
       amount: Double
   ) extends MouseEvent
+  object Wheel:
+    def apply(x: Int, y: Int, amount: Double): Wheel =
+      Wheel(
+        position = Point(x, y),
+        buttons = Batch.empty,
+        isAltKeyDown = false,
+        isCtrlKeyDown = false,
+        isMetaKeyDown = false,
+        isShiftKeyDown = false,
+        movementPosition = Point.zero,
+        amount = amount
+      )
 
 end MouseEvent
 
