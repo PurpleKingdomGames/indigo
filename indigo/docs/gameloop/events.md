@@ -57,8 +57,17 @@ You can create your own events by simply extending `GlobalEvent`.
 
 ### Focus
 
-- `GainedFocus` - The game has received focus
-- `LostFocus` - The game has lost focus
+- `ApplicationGainedFocus` - The application is in focus
+- `ApplicationLostFocus` - The application has lost focus
+- `CanvasGainedFocus` - The game canvas is in focus
+- `CanvasLostFocus` - The game canvas has lost focus
+
+The `CanvasGainedFocus` and `CanvasLostFocus` are very similar to their `Application*`
+counterparts. The main difference is that the game canvas can lose focus independently
+of the application if the game is being run from inside a web application (such as
+a Tyrian App or game site). In this scenario the `Canvas*` events will fire whenever
+the canvas loses or gains focus from the user clicking around the external parts
+of the site, and will also fire when the application loses or gains focus.
 
 ### `InputEvent`s
 
