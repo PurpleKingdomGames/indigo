@@ -182,16 +182,12 @@ final class WorldEvents:
           if e.isWindowTarget then ApplicationGainedFocus
           else CanvasGainedFocus
         )
-
-        e.preventDefault()
       },
       onBlur = { e =>
         globalEventStream.pushGlobalEvent(
           if e.isWindowTarget then ApplicationLostFocus
           else CanvasLostFocus
         )
-
-        e.preventDefault()
       }
     )
   }
