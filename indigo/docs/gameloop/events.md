@@ -102,6 +102,13 @@ There is only one audio event used to play one off sound effects, since backgrou
 
 ### Network events
 
+- `Online`
+- `Offline`
+
+It's important to be aware that a network is considered online if there is access
+to the local network only. As such, an online network is not a guarantee that
+the internet or indeed a single resource on the internet is available.
+
 #### Web socket events
 
 - `ConnectOnly(webSocketConfig)`
