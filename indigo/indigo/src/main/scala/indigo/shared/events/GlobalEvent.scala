@@ -355,6 +355,7 @@ object StorageEventError {
     *   The message of the error that was experienced
     */
   final case class Unspecified(id: String | Int, actionType: StorageActionType, message: String)
+      extends StorageEventError
 }
 
 sealed trait StorageEvent extends GlobalEvent
