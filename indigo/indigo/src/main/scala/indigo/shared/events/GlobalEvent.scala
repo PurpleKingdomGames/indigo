@@ -207,6 +207,17 @@ object MouseEvent:
         movementPosition = Point.zero,
         button = MouseButton.LeftMouseButton
       )
+    def apply(position: Point): Click =
+      Click(
+        position = position,
+        buttons = Batch.empty,
+        isAltKeyDown = false,
+        isCtrlKeyDown = false,
+        isMetaKeyDown = false,
+        isShiftKeyDown = false,
+        movementPosition = Point.zero,
+        button = MouseButton.LeftMouseButton
+      )
 
   /** The mouse button was released.
     * @param button
