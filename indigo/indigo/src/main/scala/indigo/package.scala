@@ -411,6 +411,9 @@ type NetworkReceiveEvent = shared.events.NetworkReceiveEvent
 type StorageEvent = shared.events.StorageEvent
 val StorageEvent: shared.events.StorageEvent.type = shared.events.StorageEvent
 
+type StorageEventError = shared.events.StorageEventError
+val StorageEventError: shared.events.StorageEventError.type = shared.events.StorageEventError
+
 type FetchKeyAt = shared.events.StorageEvent.FetchKeyAt
 val FetchKeyAt: shared.events.StorageEvent.FetchKeyAt.type = shared.events.StorageEvent.FetchKeyAt
 
