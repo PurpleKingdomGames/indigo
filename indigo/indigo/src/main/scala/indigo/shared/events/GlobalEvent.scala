@@ -423,7 +423,7 @@ object StorageEvent {
     * @param key
     *   the unique key of the data that was loaded.
     * @param data
-    *   the data retreived from local storage, if it exists.
+    *   the data retrieved from local storage, if it exists.
     */
   final case class Loaded(key: String, data: Option[String]) extends StorageEvent
 }
@@ -431,7 +431,7 @@ object StorageEvent {
 /** Events relating to dynamically loading assets after the game has started.
   *
   * These events are the underlying events used by the `AssetBundleLoader` `SubSystem`, which makes loading assets a
-  * slightly more plesant experience.
+  * slightly more pleasant experience.
   */
 sealed trait AssetEvent extends GlobalEvent
 object AssetEvent {
