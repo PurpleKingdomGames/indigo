@@ -377,7 +377,8 @@ def updateModel(
     context: FrameContext[Unit],
     model: Model
 ): GlobalEvent => Outcome[Model] = {
-  case MouseEvent.Click(clickPoint, _, _, _, _, _, _, _) =>
+  case e: MouseEvent.Click =>
+    val clickPoint       = e.position
     val adjustedPosition = clickPoint - model.center
 
     Outcome(
