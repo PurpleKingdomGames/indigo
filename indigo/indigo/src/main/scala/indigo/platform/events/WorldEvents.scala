@@ -9,8 +9,8 @@ import indigo.shared.events.CanvasLostFocus
 import indigo.shared.events.KeyboardEvent
 import indigo.shared.events.MouseButton
 import indigo.shared.events.MouseEvent
-import indigo.shared.events.Offline
-import indigo.shared.events.Online
+import indigo.shared.events.NetworkEvent
+import indigo.shared.events.NetworkEvent.*
 import indigo.shared.events.PointerEvent
 import indigo.shared.events.PointerEvent.*
 import org.scalajs.dom
@@ -198,10 +198,10 @@ final class WorldEvents:
         )
       },
       onOnline = { e =>
-        globalEventStream.pushGlobalEvent(Online)
+        globalEventStream.pushGlobalEvent(NetworkEvent.Online)
       },
       onOffline = { e =>
-        globalEventStream.pushGlobalEvent(Offline)
+        globalEventStream.pushGlobalEvent(NetworkEvent.Offline)
       }
     )
   }
