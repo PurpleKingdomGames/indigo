@@ -310,7 +310,7 @@ enum StorageActionType:
 sealed trait StorageEventError extends GlobalEventError:
   /** The identifier of the storage item accessed. Either the index (an Int), or the key (a String)
     */
-  val id: String | Int
+  val key: String | Int
 
   /** The way the storage was being accessed when the error occurred
     */
@@ -319,42 +319,42 @@ sealed trait StorageEventError extends GlobalEventError:
 object StorageEventError {
 
   /** An error was experienced denoting that there is not enough room on the device
-    * @param id
+    * @param key
     *   The identifier of the storage item accessed. Either the index (an Int), or the key (a String)
     * @param actionType
     *   The way the storage was being accessed when the error occurred
     */
-  final case class QuotaExceeded(id: String | Int, actionType: StorageActionType) extends StorageEventError
+  final case class QuotaExceeded(key: String | Int, actionType: StorageActionType) extends StorageEventError
 
   /** An error was experienced denoting that there were not enough permissions granted by the user that allows access to
     * the storage
     *
-    * @param id
+    * @param key
     *   The identifier of the storage item accessed. Either the index (an Int), or the key (a String)
     * @param actionType
     *   The way the storage was being accessed when the error occurred
     */
-  final case class InvalidPermissions(id: String | Int, actionType: StorageActionType) extends StorageEventError
+  final case class InvalidPermissions(key: String | Int, actionType: StorageActionType) extends StorageEventError
 
   /** An error was experienced denoting that the particular storage feature is not available
     *
-    * @param id
+    * @param key
     *   The identifier of the storage item accessed. Either the index (an Int), or the key (a String)
     * @param actionType
     *   The way the storage was being accessed when the error occurred
     */
-  final case class FeatureNotAvailable(id: String | Int, actionType: StorageActionType) extends StorageEventError
+  final case class FeatureNotAvailable(key: String | Int, actionType: StorageActionType) extends StorageEventError
 
   /** An error was experienced that did not fall into one of the predefined categories
     *
-    * @param id
+    * @param key
     *   The identifier of the storage item accessed. Either the index (an Int), or the key (a String)
     * @param actionType
     *   The way the storage was being accessed when the error occurred
     * @param message
     *   The message of the error that was experienced
     */
-  final case class Unspecified(id: String | Int, actionType: StorageActionType, message: String)
+  final case class Unspecified(key: String | Int, actionType: StorageActionType, message: String)
       extends StorageEventError
 }
 
