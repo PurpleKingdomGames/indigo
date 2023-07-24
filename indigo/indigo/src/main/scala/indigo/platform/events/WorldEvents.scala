@@ -165,7 +165,7 @@ final class WorldEvents:
         val position         = e.position(magnification, canvas)
         val buttons          = e.indigoButtons
         val movementPosition = e.movementPosition(magnification)
-        val pointerType      = e.indigoPointerType
+        val pointerType      = e.toPointerType
 
         globalEventStream.pushGlobalEvent(
           PointerEnter(
@@ -207,7 +207,7 @@ final class WorldEvents:
         val position         = e.position(magnification, canvas)
         val buttons          = e.indigoButtons
         val movementPosition = e.movementPosition(magnification)
-        val pointerType      = e.indigoPointerType
+        val pointerType      = e.toPointerType
 
         globalEventStream.pushGlobalEvent(
           PointerLeave(
@@ -249,7 +249,7 @@ final class WorldEvents:
         val position         = e.position(magnification, canvas)
         val buttons          = e.indigoButtons
         val movementPosition = e.movementPosition(magnification)
-        val pointerType      = e.indigoPointerType
+        val pointerType      = e.toPointerType
 
         globalEventStream.pushGlobalEvent(
           PointerDown(
@@ -296,7 +296,7 @@ final class WorldEvents:
         val position         = e.position(magnification, canvas)
         val buttons          = e.indigoButtons
         val movementPosition = e.movementPosition(magnification)
-        val pointerType      = e.indigoPointerType
+        val pointerType      = e.toPointerType
 
         globalEventStream.pushGlobalEvent(
           PointerUp(
@@ -343,7 +343,7 @@ final class WorldEvents:
         val position         = e.position(magnification, canvas)
         val buttons          = e.indigoButtons
         val movementPosition = e.movementPosition(magnification)
-        val pointerType      = e.indigoPointerType
+        val pointerType      = e.toPointerType
 
         globalEventStream.pushGlobalEvent(
           PointerMove(
@@ -386,7 +386,7 @@ final class WorldEvents:
         val position         = e.position(magnification, canvas)
         val buttons          = e.indigoButtons
         val movementPosition = e.movementPosition(magnification)
-        val pointerType      = e.indigoPointerType
+        val pointerType      = e.toPointerType
 
         globalEventStream.pushGlobalEvent(
           PointerCancel(
@@ -481,7 +481,7 @@ final class WorldEvents:
     def height(magnification: Int): Int =
       (e.height / magnification).toInt
 
-    def indigoPointerType =
+    def toPointerType =
       e.pointerType match {
         case "mouse" => PointerType.Mouse
         case "pen"   => PointerType.Pen
