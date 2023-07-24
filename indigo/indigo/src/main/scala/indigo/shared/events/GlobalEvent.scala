@@ -17,6 +17,10 @@ trait GlobalEvent
 object GlobalEvent:
   given CanEqual[GlobalEvent, GlobalEvent] = CanEqual.derived
 
+/** A trait that tells Indigo that an error has occurred
+  */
+trait GlobalEventError extends GlobalEvent
+
 /** A trait whose presence signals that this event should only be routed to subsystems, not the main game.
   */
 trait SubSystemEvent extends GlobalEvent
@@ -78,7 +82,7 @@ case object FullScreenEntered extends ViewEvent
 
 /** A problem occurred trying to enter full screen
   */
-case object FullScreenEnterError extends ViewEvent
+case object FullScreenEnterError extends ViewEvent with GlobalEventError
 
 /** The game exited full screen mode
   */
@@ -86,7 +90,7 @@ case object FullScreenExited extends ViewEvent
 
 /** A problem occurred trying to exit full screen
   */
-case object FullScreenExitError extends ViewEvent
+case object FullScreenExitError extends ViewEvent with GlobalEventError
 
 /** Follows the MDN spec values https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/button Relies on the ordinal
   * behavior of Scala 3 enums to match the button number
@@ -299,6 +303,60 @@ trait NetworkReceiveEvent extends GlobalEvent
 
 /** Events relating to manipulating locally stored data
   */
+
+enum StorageActionType:
+  case Save, Load, Delete, Find
+
+sealed trait StorageEventError extends GlobalEventError:
+  /** The identifier of the storage item accessed. Either the index (an Int), or the key (a String)
+    */
+  val id: String | Int
+
+  /** The way the storage was being accessed when the error occurred
+    */
+  val actionType: StorageActionType
+
+object StorageEventError {
+
+  /** An error was experienced denoting that there is not enough room on the device
+    * @param id
+    *   The identifier of the storage item accessed. Either the index (an Int), or the key (a String)
+    * @param actionType
+    *   The way the storage was being accessed when the error occurred
+    */
+  final case class QuotaExceeded(id: String | Int, actionType: StorageActionType) extends StorageEventError
+
+  /** An error was experienced denoting that there were not enough permissions granted by the user that allows access to
+    * the storage
+    *
+    * @param id
+    *   The identifier of the storage item accessed. Either the index (an Int), or the key (a String)
+    * @param actionType
+    *   The way the storage was being accessed when the error occurred
+    */
+  final case class InvalidPermissions(id: String | Int, actionType: StorageActionType) extends StorageEventError
+
+  /** An error was experienced denoting that the particular storage feature is not available
+    *
+    * @param id
+    *   The identifier of the storage item accessed. Either the index (an Int), or the key (a String)
+    * @param actionType
+    *   The way the storage was being accessed when the error occurred
+    */
+  final case class FeatureNotAvailable(id: String | Int, actionType: StorageActionType) extends StorageEventError
+
+  /** An error was experienced that did not fall into one of the predefined categories
+    *
+    * @param id
+    *   The identifier of the storage item accessed. Either the index (an Int), or the key (a String)
+    * @param actionType
+    *   The way the storage was being accessed when the error occurred
+    * @param message
+    *   The message of the error that was experienced
+    */
+  final case class Unspecified(id: String | Int, actionType: StorageActionType, message: String)
+}
+
 sealed trait StorageEvent extends GlobalEvent
 object StorageEvent {
 
