@@ -4,6 +4,8 @@ import indigo.shared.collections.Batch
 import indigo.shared.constants.Key
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Radians
+import indigo.shared.datatypes.Size
+import indigo.shared.events.ApplicationResize
 import indigo.shared.events.ApplicationGainedFocus
 import indigo.shared.events.ApplicationLostFocus
 import indigo.shared.events.CanvasGainedFocus
@@ -20,6 +22,7 @@ import org.scalajs.dom
 import org.scalajs.dom.document
 import org.scalajs.dom.html
 import org.scalajs.dom.window
+import indigo.shared.config.ResizePolicy
 
 final class WorldEvents:
 
@@ -45,6 +48,7 @@ final class WorldEvents:
 
   final case class Handlers(
       canvas: html.Canvas,
+      resizePolicy: ResizePolicy,
       onClick: dom.MouseEvent => Unit,
       onWheel: dom.WheelEvent => Unit,
       onKeyDown: dom.KeyboardEvent => Unit,
@@ -59,7 +63,8 @@ final class WorldEvents:
       onBlur: dom.FocusEvent => Unit,
       onFocus: dom.FocusEvent => Unit,
       onOnline: dom.Event => Unit,
-      onOffline: dom.Event => Unit
+      onOffline: dom.Event => Unit,
+      resizeObserver: dom.ResizeObserver
   ) {
     canvas.addEventListener("click", onClick)
     canvas.addEventListener("wheel", onWheel)
@@ -78,6 +83,7 @@ final class WorldEvents:
     document.addEventListener("keyup", onKeyUp)
     window.addEventListener("online", onOnline)
     window.addEventListener("offline", onOffline)
+    resizeObserver.observe(canvas.parentElement)
 
     def unbind(): Unit = {
       canvas.removeEventListener("click", onClick)
@@ -97,17 +103,20 @@ final class WorldEvents:
       document.removeEventListener("keyup", onKeyUp)
       window.removeEventListener("online", onOnline)
       window.removeEventListener("offline", onOffline)
+      resizeObserver.disconnect()
     }
   }
 
   object Handlers {
     def apply(
         canvas: html.Canvas,
+        resizePolicy: ResizePolicy,
         magnification: Int,
         disableContextMenu: Boolean,
         globalEventStream: GlobalEventStream
     ): Handlers = Handlers(
       canvas = canvas,
+      resizePolicy,
       // onClick only supports the left mouse button
       onClick = { e =>
         MouseButton.fromOrdinalOpt(e.button).foreach { button =>
@@ -428,7 +437,36 @@ final class WorldEvents:
       },
       onOffline = { e =>
         globalEventStream.pushGlobalEvent(NetworkEvent.Offline)
-      }
+      },
+      resizeObserver = new dom.ResizeObserver((entries, _) =>
+        entries.foreach { entry =>
+          entry.target.childNodes.foreach { child =>
+            if child.attributes.getNamedItem("id").value == canvas.attributes.getNamedItem("id").value then
+              val containerSize = new Size(entry.contentRect.width.toInt, entry.contentRect.height.toInt)
+              val canvasSize    = new Size(canvas.width, canvas.height)
+              globalEventStream.pushGlobalEvent(ApplicationResize(containerSize))
+
+              if resizePolicy != ResizePolicy.NoResize then
+                val newSize = resizePolicy match {
+                  case ResizePolicy.Resize => containerSize
+                  case ResizePolicy.ResizePreserveAspect =>
+                    val width       = canvas.width.toDouble
+                    val height      = canvas.height.toDouble
+                    val aspectRatio = Math.max(width, height) / Math.min(width, height)
+                    Size(
+                      (containerSize.width.toDouble * aspectRatio).toInt,
+                      (containerSize.height.toDouble * aspectRatio).toInt
+                    )
+                  case _ => canvasSize
+                }
+
+                if (newSize != canvasSize) {
+                  canvas.width = newSize.width
+                  canvas.height = newSize.height
+                }
+          }
+        }
+      )
     )
   }
 
@@ -437,11 +475,13 @@ final class WorldEvents:
 
   def init(
       canvas: html.Canvas,
+      resizePolicy: ResizePolicy,
       magnification: Int,
       disableContextMenu: Boolean,
       globalEventStream: GlobalEventStream
   ): Unit =
-    if (_handlers.isEmpty) _handlers = Some(Handlers(canvas, magnification, disableContextMenu, globalEventStream))
+    if (_handlers.isEmpty)
+      _handlers = Some(Handlers(canvas, resizePolicy, magnification, disableContextMenu, globalEventStream))
 
   def kill(): Unit = _handlers.foreach { x =>
     x.unbind()

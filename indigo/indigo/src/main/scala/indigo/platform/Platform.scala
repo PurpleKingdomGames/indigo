@@ -134,7 +134,13 @@ class Platform(
     Outcome {
       if firstRun then
         IndigoLogger.info("Starting world events")
-        _worldEvents.init(canvas, gameConfig.magnification, gameConfig.advanced.disableContextMenu, globalEventStream)
+        _worldEvents.init(
+          canvas,
+          gameConfig.resizePolicy,
+          gameConfig.magnification,
+          gameConfig.advanced.disableContextMenu,
+          globalEventStream
+        )
         GamepadInputCaptureImpl.init()
       else IndigoLogger.info("Re-using existing world events")
     }

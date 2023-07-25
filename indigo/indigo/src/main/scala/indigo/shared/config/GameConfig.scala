@@ -7,7 +7,7 @@ import indigo.shared.time.FPS
 
 import scala.annotation.targetName
 
-enum ResizePolicy:
+enum ResizePolicy derives CanEqual:
   case NoResize, Resize, ResizePreserveAspect
 
 /** All the base settings needed to get a game up and running.
@@ -97,7 +97,7 @@ final case class GameConfig(
   def noResize: GameConfig =
     withResizePolicy(ResizePolicy.NoResize)
   def autoResize: GameConfig =
-    withResizePolicy(ResizePolicy.AutoResize)
+    withResizePolicy(ResizePolicy.Resize)
   def autoResizePreserveAspect: GameConfig =
     withResizePolicy(ResizePolicy.ResizePreserveAspect)
 
@@ -121,6 +121,7 @@ object GameConfig:
       clearColor = RGBA.Black,
       magnification = 1,
       transparentBackground = false,
+      resizePolicy = ResizePolicy.Resize,
       advanced = AdvancedGameConfig.default
     )
 
@@ -131,6 +132,7 @@ object GameConfig:
       clearColor = clearColor,
       magnification = magnification,
       transparentBackground = false,
+      resizePolicy = ResizePolicy.Resize,
       advanced = AdvancedGameConfig.default
     )
 
@@ -141,5 +143,6 @@ object GameConfig:
       clearColor = clearColor,
       magnification = magnification,
       transparentBackground = false,
+      resizePolicy = ResizePolicy.Resize,
       advanced = AdvancedGameConfig.default
     )
