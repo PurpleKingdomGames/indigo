@@ -408,6 +408,9 @@ val PlaySound: shared.events.PlaySound.type = shared.events.PlaySound
 type NetworkSendEvent    = shared.events.NetworkSendEvent
 type NetworkReceiveEvent = shared.events.NetworkReceiveEvent
 
+type StorageActionType = shared.events.StorageActionType
+val StorageActionType: shared.events.StorageActionType.type = shared.events.StorageActionType
+
 type StorageEvent = shared.events.StorageEvent
 val StorageEvent: shared.events.StorageEvent.type = shared.events.StorageEvent
 
