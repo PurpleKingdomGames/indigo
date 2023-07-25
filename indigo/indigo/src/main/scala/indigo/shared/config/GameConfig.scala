@@ -7,6 +7,9 @@ import indigo.shared.time.FPS
 
 import scala.annotation.targetName
 
+enum ResizePolicy:
+  case NoResize, Resize, ResizePreserveAspect
+
 /** All the base settings needed to get a game up and running.
   *
   * @param viewport
@@ -28,6 +31,7 @@ final case class GameConfig(
     frameRateLimit: Option[FPS],
     clearColor: RGBA,
     magnification: Int,
+    resizePolicy: ResizePolicy,
     transparentBackground: Boolean,
     advanced: AdvancedGameConfig
 ) derives CanEqual:
@@ -45,6 +49,7 @@ final case class GameConfig(
        |- Clear color:     {red: ${clearColor.r.toString()}, green: ${clearColor.g.toString()}, blue: ${clearColor.b
       .toString()}, alpha: ${clearColor.a.toString()}}
        |- Magnification:   ${magnification.toString()}
+       |- Resize Policy:   ${resizePolicy.toString()}
        |${advanced.asString}
        |""".stripMargin
 
@@ -87,6 +92,15 @@ final case class GameConfig(
   def noTransparentBackground: GameConfig =
     withTransparentBackground(false)
 
+  def withResizePolicy(resizePolicy: ResizePolicy): GameConfig =
+    this.copy(resizePolicy = resizePolicy)
+  def noResize: GameConfig =
+    withResizePolicy(ResizePolicy.NoResize)
+  def autoResize: GameConfig =
+    withResizePolicy(ResizePolicy.AutoResize)
+  def autoResizePreserveAspect: GameConfig =
+    withResizePolicy(ResizePolicy.ResizePreserveAspect)
+
 object GameConfig:
 
   val default: GameConfig =
@@ -96,6 +110,7 @@ object GameConfig:
       clearColor = RGBA.Black,
       magnification = 1,
       transparentBackground = false,
+      resizePolicy = ResizePolicy.Resize,
       advanced = AdvancedGameConfig.default
     )
 

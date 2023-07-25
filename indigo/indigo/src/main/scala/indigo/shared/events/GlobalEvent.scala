@@ -12,6 +12,7 @@ import indigo.shared.datatypes.BindingKey
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.RGBA
 import indigo.shared.datatypes.Radians
+import indigo.shared.datatypes.Size
 
 /** A trait that tells Indigo to allow this instance into the event loop for the duration of one frame.
   */
@@ -65,6 +66,13 @@ case object FrameTick extends GlobalEvent
   *   The actual size in pixels, you can ask it to apply magnification.
   */
 final case class ViewportResize(gameViewPort: GameViewport) extends ViewEvent
+
+/** Fired whenever the container of the game window changes size, so that the game can respond.
+  *
+  * @param containerSize
+  *   The actual size in pixels of the container.
+  */
+final case class ContainerResize(containerSize: Size) extends ViewEvent
 
 /** Attempt to enter or exit full screen mode
   */
