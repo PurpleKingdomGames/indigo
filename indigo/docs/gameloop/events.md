@@ -55,6 +55,20 @@ You can create your own events by simply extending `GlobalEvent`.
 - `FullScreenExited` - The game exited full screen mode
 - `FullScreenExitError` - A problem occurred trying to exit full screen
 
+### Focus
+
+- `ApplicationGainedFocus` - The application is in focus
+- `ApplicationLostFocus` - The application has lost focus
+- `CanvasGainedFocus` - The game canvas is in focus
+- `CanvasLostFocus` - The game canvas has lost focus
+
+The `CanvasGainedFocus` and `CanvasLostFocus` are very similar to their `Application*`
+counterparts. The main difference is that the game canvas can lose focus independently
+of the application if the game is being run from inside a web application (such as
+a Tyrian App or game site). In this scenario the `Canvas*` events will fire whenever
+the canvas loses or gains focus from the user clicking around the external parts
+of the site, and will also fire when the application loses or gains focus.
+
 ### `InputEvent`s
 
 Handling `InputEvent`s can be a bit tricky in some situations, so Indigo includes `Mouse` and `Keyboard` classes that can be accessed from the [frame context](gameloop/frame-context.md), providing a rich interface to gather more complex information from those input devices.

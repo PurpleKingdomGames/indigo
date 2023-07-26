@@ -2,6 +2,10 @@ package indigo.platform.events
 
 import indigo.shared.constants.Key
 import indigo.shared.datatypes.Point
+import indigo.shared.events.ApplicationGainedFocus
+import indigo.shared.events.ApplicationLostFocus
+import indigo.shared.events.CanvasGainedFocus
+import indigo.shared.events.CanvasLostFocus
 import indigo.shared.events.KeyboardEvent
 import indigo.shared.events.MouseButton
 import indigo.shared.events.MouseEvent
@@ -46,7 +50,9 @@ final class WorldEvents:
       onPointerDown: dom.PointerEvent => Unit,
       onPointerUp: dom.PointerEvent => Unit,
       onPointerMove: dom.PointerEvent => Unit,
-      onPointerCancel: dom.PointerEvent => Unit
+      onPointerCancel: dom.PointerEvent => Unit,
+      onBlur: dom.FocusEvent => Unit,
+      onFocus: dom.FocusEvent => Unit
   ) {
     canvas.addEventListener("click", onClick)
     canvas.addEventListener("wheel", onWheel)
@@ -56,6 +62,10 @@ final class WorldEvents:
     canvas.addEventListener("pointerup", onPointerUp)
     canvas.addEventListener("pointermove", onPointerMove)
     canvas.addEventListener("pointercancel", onPointerCancel)
+    canvas.addEventListener("focus", onFocus)
+    canvas.addEventListener("blur", onBlur)
+    window.addEventListener("focus", onFocus)
+    window.addEventListener("blur", onBlur)
     onContextMenu.foreach(canvas.addEventListener("contextmenu", _))
     document.addEventListener("keydown", onKeyDown)
     document.addEventListener("keyup", onKeyUp)
@@ -69,6 +79,10 @@ final class WorldEvents:
       canvas.removeEventListener("pointerup", onPointerUp)
       canvas.removeEventListener("pointermove", onPointerMove)
       canvas.removeEventListener("pointercancel", onPointerCancel)
+      canvas.removeEventListener("focus", onFocus)
+      canvas.removeEventListener("blur", onBlur)
+      window.removeEventListener("focus", onFocus)
+      window.removeEventListener("blur", onBlur)
       onContextMenu.foreach(canvas.removeEventListener("contextmenu", _))
       document.removeEventListener("keydown", onKeyDown)
       document.removeEventListener("keyup", onKeyUp)
@@ -162,6 +176,18 @@ final class WorldEvents:
           PointerCancel(position, PointerId(e.pointerId), Buttons(e.buttons), e.isPrimary)
         )
         e.preventDefault()
+      },
+      onFocus = { e =>
+        globalEventStream.pushGlobalEvent(
+          if e.isWindowTarget then ApplicationGainedFocus
+          else CanvasGainedFocus
+        )
+      },
+      onBlur = { e =>
+        globalEventStream.pushGlobalEvent(
+          if e.isWindowTarget then ApplicationLostFocus
+          else CanvasLostFocus
+        )
       }
     )
   }
@@ -193,5 +219,13 @@ final class WorldEvents:
         absoluteCoordsX(e.pageX.toInt - rect.left.toInt) / magnification,
         absoluteCoordsY(e.pageY.toInt - rect.top.toInt) / magnification
       )
+
+  extension (e: dom.FocusEvent)
+    def isWindowTarget: Boolean =
+      val target = e.target
+      target match {
+        case e: dom.Element if e.tagName == "WINDOW" => true
+        case _                                       => false
+      }
 
 end WorldEvents

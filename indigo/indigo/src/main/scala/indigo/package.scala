@@ -352,13 +352,17 @@ val RendererDetails: shared.events.RendererDetails.type = shared.events.Renderer
 type ViewportResize = shared.events.ViewportResize
 val ViewportResize: shared.events.ViewportResize.type = shared.events.ViewportResize
 
-val ToggleFullScreen: shared.events.ToggleFullScreen.type         = shared.events.ToggleFullScreen
-val EnterFullScreen: shared.events.EnterFullScreen.type           = shared.events.EnterFullScreen
-val ExitFullScreen: shared.events.ExitFullScreen.type             = shared.events.ExitFullScreen
-val FullScreenEntered: shared.events.FullScreenEntered.type       = shared.events.FullScreenEntered
-val FullScreenEnterError: shared.events.FullScreenEnterError.type = shared.events.FullScreenEnterError
-val FullScreenExited: shared.events.FullScreenExited.type         = shared.events.FullScreenExited
-val FullScreenExitError: shared.events.FullScreenExitError.type   = shared.events.FullScreenExitError
+val ToggleFullScreen: shared.events.ToggleFullScreen.type             = shared.events.ToggleFullScreen
+val EnterFullScreen: shared.events.EnterFullScreen.type               = shared.events.EnterFullScreen
+val ExitFullScreen: shared.events.ExitFullScreen.type                 = shared.events.ExitFullScreen
+val FullScreenEntered: shared.events.FullScreenEntered.type           = shared.events.FullScreenEntered
+val FullScreenEnterError: shared.events.FullScreenEnterError.type     = shared.events.FullScreenEnterError
+val FullScreenExited: shared.events.FullScreenExited.type             = shared.events.FullScreenExited
+val FullScreenExitError: shared.events.FullScreenExitError.type       = shared.events.FullScreenExitError
+val ApplicationGainedFocus: shared.events.ApplicationGainedFocus.type = shared.events.ApplicationGainedFocus
+val CanvasGainedFocus: shared.events.CanvasGainedFocus.type           = shared.events.CanvasGainedFocus
+val ApplicationLostFocus: shared.events.ApplicationLostFocus.type     = shared.events.ApplicationLostFocus
+val CanvasLostFocus: shared.events.CanvasLostFocus.type               = shared.events.CanvasLostFocus
 
 type InputState = shared.events.InputState
 val InputState: shared.events.InputState.type = shared.events.InputState

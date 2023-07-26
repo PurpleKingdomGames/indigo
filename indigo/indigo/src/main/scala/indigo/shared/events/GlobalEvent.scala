@@ -88,6 +88,22 @@ case object FullScreenExited extends ViewEvent
   */
 case object FullScreenExitError extends ViewEvent
 
+/** The application has received focus
+  */
+case object ApplicationGainedFocus extends GlobalEvent
+
+/** The game canvas has received focus
+  */
+case object CanvasGainedFocus extends GlobalEvent
+
+/** The application has lost focus
+  */
+case object ApplicationLostFocus extends GlobalEvent
+
+/** The game canvas has lost focus
+  */
+case object CanvasLostFocus extends GlobalEvent
+
 /** Follows the MDN spec values https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/button Relies on the ordinal
   * behavior of Scala 3 enums to match the button number
   */
