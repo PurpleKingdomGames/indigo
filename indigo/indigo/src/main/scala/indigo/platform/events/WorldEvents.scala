@@ -1,6 +1,7 @@
 package indigo.platform.events
 
 import indigo.shared.collections.Batch
+import indigo.shared.config.ResizePolicy
 import indigo.shared.constants.Key
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Radians
@@ -22,7 +23,6 @@ import org.scalajs.dom
 import org.scalajs.dom.document
 import org.scalajs.dom.html
 import org.scalajs.dom.window
-import indigo.shared.config.ResizePolicy
 
 final class WorldEvents:
 
