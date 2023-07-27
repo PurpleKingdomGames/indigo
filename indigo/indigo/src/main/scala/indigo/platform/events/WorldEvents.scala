@@ -452,11 +452,32 @@ final class WorldEvents:
                   case ResizePolicy.ResizePreserveAspect =>
                     val width       = canvas.width.toDouble
                     val height      = canvas.height.toDouble
-                    val aspectRatio = Math.max(width, height) / Math.min(width, height)
-                    Size(
-                      (containerSize.width.toDouble * aspectRatio).toInt,
-                      (containerSize.height.toDouble * aspectRatio).toInt
-                    )
+                    val aspectRatio = Math.min(width, height) / Math.max(width, height)
+
+                    if width > height then
+                      val newHeight = containerSize.width.toDouble * aspectRatio
+                      if newHeight > containerSize.height then
+                        Size(
+                          (containerSize.height / aspectRatio).toInt,
+                          containerSize.height
+                        )
+                      else
+                        Size(
+                          containerSize.width,
+                          newHeight.toInt
+                        )
+                    else
+                      val newWidth = containerSize.height.toDouble * aspectRatio
+                      if newWidth > containerSize.width then
+                        Size(
+                          containerSize.width,
+                          (containerSize.width / aspectRatio).toInt
+                        )
+                      else
+                        Size(
+                          newWidth.toInt,
+                          containerSize.height
+                        )
                   case _ => canvasSize
                 }
 
