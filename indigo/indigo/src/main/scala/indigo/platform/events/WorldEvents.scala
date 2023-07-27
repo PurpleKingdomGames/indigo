@@ -448,6 +448,14 @@ final class WorldEvents:
     _handlers = None
   }
 
+  extension (e: dom.FocusEvent)
+    def isWindowTarget: Boolean =
+      val target = e.target
+      target match {
+        case e: dom.Element if e.tagName == "WINDOW" => true
+        case _                                       => false
+      }
+
   extension (e: dom.MouseEvent)
     /** @return
       *   position relative to magnification level
