@@ -305,6 +305,18 @@ object KeyboardEvent {
   */
 final case class PlaySound(assetName: AssetName, volume: Volume) extends GlobalEvent
 
+/** A class of events representing general networking events
+  */
+sealed trait NetworkEvent extends GlobalEvent
+object NetworkEvent:
+  /** The network has come online and is now available
+    */
+  case object Online extends NetworkEvent
+
+  /** The network has gone offline and is now unavailable
+    */
+  case object Offline extends NetworkEvent
+
 /** A class of events representing outbound communication over a network protocol
   */
 trait NetworkSendEvent extends GlobalEvent

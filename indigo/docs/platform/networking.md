@@ -3,7 +3,12 @@ id: networking
 title: Networking
 ---
 
-Indigo supports basic networking via HTTP or WebSockets.
+Indigo supports basic networking via HTTP or WebSockets. You can also get a
+rudimentary indication as to whether the local machine has an active network
+connection using `indigo.platform.networking.Network.isOnline`. Note, however,
+that this will only indicate the presence of a local network and is not
+necessarily an indication of internet connectivity, or the availability of an
+internet resource.
 
 ## Network calls and the game loop
 

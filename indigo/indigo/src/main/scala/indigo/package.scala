@@ -409,6 +409,9 @@ val FrameTick: shared.events.FrameTick.type = shared.events.FrameTick
 type PlaySound = shared.events.PlaySound
 val PlaySound: shared.events.PlaySound.type = shared.events.PlaySound
 
+type NetworkEvent = shared.events.NetworkEvent
+val NetworkEvent: shared.events.NetworkEvent.type = shared.events.NetworkEvent
+
 type NetworkSendEvent    = shared.events.NetworkSendEvent
 type NetworkReceiveEvent = shared.events.NetworkReceiveEvent
 

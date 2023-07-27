@@ -9,6 +9,8 @@ import indigo.shared.events.CanvasLostFocus
 import indigo.shared.events.KeyboardEvent
 import indigo.shared.events.MouseButton
 import indigo.shared.events.MouseEvent
+import indigo.shared.events.NetworkEvent
+import indigo.shared.events.NetworkEvent.*
 import indigo.shared.events.PointerEvent
 import indigo.shared.events.PointerEvent.*
 import org.scalajs.dom
@@ -52,7 +54,9 @@ final class WorldEvents:
       onPointerMove: dom.PointerEvent => Unit,
       onPointerCancel: dom.PointerEvent => Unit,
       onBlur: dom.FocusEvent => Unit,
-      onFocus: dom.FocusEvent => Unit
+      onFocus: dom.FocusEvent => Unit,
+      onOnline: dom.Event => Unit,
+      onOffline: dom.Event => Unit
   ) {
     canvas.addEventListener("click", onClick)
     canvas.addEventListener("wheel", onWheel)
@@ -69,6 +73,8 @@ final class WorldEvents:
     onContextMenu.foreach(canvas.addEventListener("contextmenu", _))
     document.addEventListener("keydown", onKeyDown)
     document.addEventListener("keyup", onKeyUp)
+    window.addEventListener("online", onOnline)
+    window.addEventListener("offline", onOffline)
 
     def unbind(): Unit = {
       canvas.removeEventListener("click", onClick)
@@ -86,6 +92,8 @@ final class WorldEvents:
       onContextMenu.foreach(canvas.removeEventListener("contextmenu", _))
       document.removeEventListener("keydown", onKeyDown)
       document.removeEventListener("keyup", onKeyUp)
+      window.removeEventListener("online", onOnline)
+      window.removeEventListener("offline", onOffline)
     }
   }
 
@@ -188,6 +196,12 @@ final class WorldEvents:
           if e.isWindowTarget then ApplicationLostFocus
           else CanvasLostFocus
         )
+      },
+      onOnline = { e =>
+        globalEventStream.pushGlobalEvent(NetworkEvent.Online)
+      },
+      onOffline = { e =>
+        globalEventStream.pushGlobalEvent(NetworkEvent.Offline)
       }
     )
   }
