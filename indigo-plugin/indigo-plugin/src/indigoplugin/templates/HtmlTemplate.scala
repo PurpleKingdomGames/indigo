@@ -18,8 +18,13 @@ object HtmlTemplate {
       |        background-color: $backgroundColor;
       |      }
       |      #indigo-container {
+      |        display: flex;
+      |        align-items: center;
+      |        justify-content: center;
       |        padding:0px;
       |        margin:0px;
+      |        width: 100vw;
+      |        height: 100vh;
       |      }
       |
       |      ${if (!showCursor) "canvas { cursor: none }" else ""}

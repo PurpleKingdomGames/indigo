@@ -36,7 +36,7 @@ object IndigoRun {
 
     // Write support js script
     val supportFile = outputDir / "scripts" / "indigo-support.js"
-    val support     = SupportScriptTemplate.template(true)
+    val support     = SupportScriptTemplate.template()
     os.remove(supportFile)
     os.write(supportFile, support)
 
