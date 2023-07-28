@@ -6,6 +6,7 @@ import indigo.shared.events.StorageEventError.FeatureNotAvailable
 import indigo.shared.events.StorageEventError.InvalidPermissions
 import indigo.shared.events.StorageEventError.QuotaExceeded
 import indigo.shared.events.StorageEventError.Unspecified
+import indigo.shared.events.StorageKey
 import org.scalajs.dom
 
 import scala.scalajs.js
@@ -54,22 +55,34 @@ final class Storage {
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def deleteAll(): Either[StorageEventError, Unit] =
     try
-      if dom.window.localStorage == null then Left(FeatureNotAvailable("", StorageActionType.Delete))
+      if dom.window.localStorage == null then Left(FeatureNotAvailable(None, StorageActionType.Delete))
       else Right(dom.window.localStorage.clear())
     catch {
       case e: js.JavaScriptException =>
-        Left(errToEvent(e, "", StorageActionType.Delete))
+        Left(errToEvent(e, None, StorageActionType.Delete))
     }
 
   private def errToEvent(
       e: js.JavaScriptException,
-      id: String | Int,
+      id: Option[StorageKey],
       actionType: StorageActionType
   ): StorageEventError =
     val lowerMsg = e.getMessage().toLowerCase
     if lowerMsg.contains("quota") then QuotaExceeded(id, actionType)
     else if lowerMsg.contains("security") || lowerMsg.contains("permission") then InvalidPermissions(id, actionType)
     else Unspecified(id, actionType, e.getMessage())
+
+  private def errToEvent(
+      e: js.JavaScriptException,
+      id: Int,
+      actionType: StorageActionType
+  ): StorageEventError = errToEvent(e, Some(StorageKey.Index(id)), actionType)
+
+  private def errToEvent(
+      e: js.JavaScriptException,
+      key: String,
+      actionType: StorageActionType
+  ): StorageEventError = errToEvent(e, Some(StorageKey.Key(key)), actionType)
 }
 
 object Storage {

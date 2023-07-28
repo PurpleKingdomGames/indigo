@@ -411,6 +411,9 @@ type NetworkReceiveEvent = shared.events.NetworkReceiveEvent
 type StorageActionType = shared.events.StorageActionType
 val StorageActionType: shared.events.StorageActionType.type = shared.events.StorageActionType
 
+type StorageKey = shared.events.StorageKey
+val StorageKey: shared.events.StorageKey.type = shared.events.StorageKey
+
 type StorageEvent = shared.events.StorageEvent
 val StorageEvent: shared.events.StorageEvent.type = shared.events.StorageEvent
 

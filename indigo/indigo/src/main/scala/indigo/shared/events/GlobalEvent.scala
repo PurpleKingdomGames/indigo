@@ -307,10 +307,14 @@ trait NetworkReceiveEvent extends GlobalEvent
 enum StorageActionType:
   case Save, Load, Delete, Find
 
+enum StorageKey:
+  case Index(value: Int)
+  case Key(value: String)
+
 sealed trait StorageEventError extends GlobalEventError:
   /** The identifier of the storage item accessed. Either the index (an Int), or the key (a String)
     */
-  val key: String | Int
+  val key: Option[StorageKey]
 
   /** The way the storage was being accessed when the error occurred
     */
@@ -324,7 +328,7 @@ object StorageEventError {
     * @param actionType
     *   The way the storage was being accessed when the error occurred
     */
-  final case class QuotaExceeded(key: String | Int, actionType: StorageActionType) extends StorageEventError
+  final case class QuotaExceeded(key: Option[StorageKey], actionType: StorageActionType) extends StorageEventError
 
   /** An error was experienced denoting that there were not enough permissions granted by the user that allows access to
     * the storage
@@ -334,7 +338,7 @@ object StorageEventError {
     * @param actionType
     *   The way the storage was being accessed when the error occurred
     */
-  final case class InvalidPermissions(key: String | Int, actionType: StorageActionType) extends StorageEventError
+  final case class InvalidPermissions(key: Option[StorageKey], actionType: StorageActionType) extends StorageEventError
 
   /** An error was experienced denoting that the particular storage feature is not available
     *
@@ -343,7 +347,14 @@ object StorageEventError {
     * @param actionType
     *   The way the storage was being accessed when the error occurred
     */
-  final case class FeatureNotAvailable(key: String | Int, actionType: StorageActionType) extends StorageEventError
+  final case class FeatureNotAvailable(key: Option[StorageKey], actionType: StorageActionType) extends StorageEventError
+
+  object FeatureNotAvailable:
+    def apply(key: String | Int, actionType: StorageActionType): FeatureNotAvailable =
+      key match {
+        case i: Int    => FeatureNotAvailable(Some(StorageKey.Index(i)), actionType)
+        case s: String => FeatureNotAvailable(Some(StorageKey.Key(s)), actionType)
+      }
 
   /** An error was experienced that did not fall into one of the predefined categories
     *
@@ -354,7 +365,7 @@ object StorageEventError {
     * @param message
     *   The message of the error that was experienced
     */
-  final case class Unspecified(key: String | Int, actionType: StorageActionType, message: String)
+  final case class Unspecified(key: Option[StorageKey], actionType: StorageActionType, message: String)
       extends StorageEventError
 }
 
