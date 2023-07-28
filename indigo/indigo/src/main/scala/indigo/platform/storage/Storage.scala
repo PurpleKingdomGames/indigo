@@ -12,53 +12,53 @@ import scala.scalajs.js
 
 final class Storage {
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
-  def key(index: Int): Either[Option[String], StorageEventError] =
+  def key(index: Int): Either[StorageEventError, Option[String]] =
     try
-      if dom.window.localStorage == null then Right(FeatureNotAvailable(index, StorageActionType.Find))
-      else Left(Option(dom.window.localStorage.key(index)))
+      if dom.window.localStorage == null then Left(FeatureNotAvailable(index, StorageActionType.Find))
+      else Right(Option(dom.window.localStorage.key(index)))
     catch {
       case e: js.JavaScriptException =>
-        Right(errToEvent(e, index, StorageActionType.Find))
+        Left(errToEvent(e, index, StorageActionType.Find))
     }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
-  def save(key: String, data: String): Either[Unit, StorageEventError] =
+  def save(key: String, data: String): Either[StorageEventError, Unit] =
     try
-      if dom.window.localStorage == null then Right(FeatureNotAvailable(key, StorageActionType.Save))
-      else Left(dom.window.localStorage.setItem(key, data))
+      if dom.window.localStorage == null then Left(FeatureNotAvailable(key, StorageActionType.Save))
+      else Right(dom.window.localStorage.setItem(key, data))
     catch {
       case e: js.JavaScriptException =>
-        Right(errToEvent(e, key, StorageActionType.Save))
+        Left(errToEvent(e, key, StorageActionType.Save))
     }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
-  def load(key: String): Either[Option[String], StorageEventError] =
+  def load(key: String): Either[StorageEventError, Option[String]] =
     try
-      if dom.window.localStorage == null then Right(FeatureNotAvailable(key, StorageActionType.Load))
-      else Left(Option(dom.window.localStorage.getItem(key)))
+      if dom.window.localStorage == null then Left(FeatureNotAvailable(key, StorageActionType.Load))
+      else Right(Option(dom.window.localStorage.getItem(key)))
     catch {
       case e: js.JavaScriptException =>
-        Right(errToEvent(e, key, StorageActionType.Load))
+        Left(errToEvent(e, key, StorageActionType.Load))
     }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
-  def delete(key: String): Either[Unit, StorageEventError] =
+  def delete(key: String): Either[StorageEventError, Unit] =
     try
-      if dom.window.localStorage == null then Right(FeatureNotAvailable(key, StorageActionType.Delete))
-      else Left(dom.window.localStorage.removeItem(key))
+      if dom.window.localStorage == null then Left(FeatureNotAvailable(key, StorageActionType.Delete))
+      else Right(dom.window.localStorage.removeItem(key))
     catch {
       case e: js.JavaScriptException =>
-        Right(errToEvent(e, key, StorageActionType.Delete))
+        Left(errToEvent(e, key, StorageActionType.Delete))
     }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
-  def deleteAll(): Either[Unit, StorageEventError] =
+  def deleteAll(): Either[StorageEventError, Unit] =
     try
-      if dom.window.localStorage == null then Right(FeatureNotAvailable("", StorageActionType.Delete))
-      else Left(dom.window.localStorage.clear())
+      if dom.window.localStorage == null then Left(FeatureNotAvailable("", StorageActionType.Delete))
+      else Right(dom.window.localStorage.clear())
     catch {
       case e: js.JavaScriptException =>
-        Right(errToEvent(e, "", StorageActionType.Delete))
+        Left(errToEvent(e, "", StorageActionType.Delete))
     }
 
   private def errToEvent(

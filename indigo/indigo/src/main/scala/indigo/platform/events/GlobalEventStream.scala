@@ -49,16 +49,16 @@ final class GlobalEventStream(
     // Storage
     case StorageEvent.FetchKeyAt(index) =>
       storage.key(index) match {
-        case Right(err) => eventQueue.enqueue(err)
-        case Left(str)  => eventQueue.enqueue(StorageEvent.KeyFoundAt(index, str))
+        case Left(err)  => eventQueue.enqueue(err)
+        case Right(str) => eventQueue.enqueue(StorageEvent.KeyFoundAt(index, str))
       }
 
     case StorageEvent.FetchKeys(f, t) =>
       val keys = (f to t).toList.map(i => i -> storage.key(i))
       val errors = keys.flatMap {
         _ match {
-          case (_, Right(err)) => Some(err)
-          case _               => None
+          case (_, Left(err)) => Some(err)
+          case _              => None
         }
       }
 
@@ -66,33 +66,33 @@ final class GlobalEventStream(
       else
         eventQueue.enqueue(StorageEvent.KeysFound(keys.flatMap {
           _ match {
-            case (i, Left(str)) => Some((i, str))
-            case _              => None
+            case (i, Right(str)) => Some((i, str))
+            case _               => None
           }
         }))
 
     case StorageEvent.Save(key, data) =>
       storage.save(key, data) match {
-        case Right(err) => eventQueue.enqueue(err)
-        case _          => ()
+        case Left(err) => eventQueue.enqueue(err)
+        case _         => ()
       }
 
     case StorageEvent.Load(key) =>
       storage.load(key) match {
-        case Right(err) => eventQueue.enqueue(err)
-        case Left(str)  => eventQueue.enqueue(StorageEvent.Loaded(key, str))
+        case Left(err)  => eventQueue.enqueue(err)
+        case Right(str) => eventQueue.enqueue(StorageEvent.Loaded(key, str))
       }
 
     case StorageEvent.Delete(key) =>
       storage.delete(key) match {
-        case Right(err) => eventQueue.enqueue(err)
-        case _          => ()
+        case Left(err) => eventQueue.enqueue(err)
+        case _         => ()
       }
 
     case StorageEvent.DeleteAll =>
       storage.deleteAll() match {
-        case Right(err) => eventQueue.enqueue(err)
-        case _          => ()
+        case Left(err) => eventQueue.enqueue(err)
+        case _         => ()
       }
 
     // Assets
