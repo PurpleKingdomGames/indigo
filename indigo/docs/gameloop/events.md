@@ -137,6 +137,14 @@ Used to load and save data from local storage.
 - `DeleteAll` - Delete all stored data
 - `Loaded(key, data)` - Response event when data has been loaded
 
+Should any of the above fail one of the following `StorageEventError` types will
+be raised as a separate event.
+
+- `QuotaExceeded(key, actionType)` - There is not enough room on the device
+- `InvalidPermissions(key, actionType)` - There were not enough permissions granted to access storage
+- `FeatureNotAvailable(key, actionType)` - The storage feature is not available
+- `Unspecified(key, actionType, message)` - An unknown error
+
 ### `AssetEvent`s
 
 These are the low level events used to load additional assets at runtime. If you want a slightly more sophisticated loading experience, please look at the asset bundle loader sub system.

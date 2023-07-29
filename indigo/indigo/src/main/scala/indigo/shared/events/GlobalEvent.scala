@@ -17,6 +17,10 @@ trait GlobalEvent
 object GlobalEvent:
   given CanEqual[GlobalEvent, GlobalEvent] = CanEqual.derived
 
+/** A trait that tells Indigo that an error has occurred
+  */
+trait GlobalEventError extends GlobalEvent
+
 /** A trait whose presence signals that this event should only be routed to subsystems, not the main game.
   */
 trait SubSystemEvent extends GlobalEvent
@@ -78,7 +82,7 @@ case object FullScreenEntered extends ViewEvent
 
 /** A problem occurred trying to enter full screen
   */
-case object FullScreenEnterError extends ViewEvent
+case object FullScreenEnterError extends ViewEvent with GlobalEventError
 
 /** The game exited full screen mode
   */
@@ -86,7 +90,7 @@ case object FullScreenExited extends ViewEvent
 
 /** A problem occurred trying to exit full screen
   */
-case object FullScreenExitError extends ViewEvent
+case object FullScreenExitError extends ViewEvent with GlobalEventError
 
 /** The application has received focus
   */
@@ -327,6 +331,72 @@ trait NetworkReceiveEvent extends GlobalEvent
 
 /** Events relating to manipulating locally stored data
   */
+
+enum StorageActionType:
+  case Save, Load, Delete, Find
+
+enum StorageKey:
+  case Index(value: Int)
+  case Key(value: String)
+
+sealed trait StorageEventError extends GlobalEventError:
+  /** The identifier of the storage item accessed. Either the index (an Int), or the key (a String)
+    */
+  val key: Option[StorageKey]
+
+  /** The way the storage was being accessed when the error occurred
+    */
+  val actionType: StorageActionType
+
+object StorageEventError {
+
+  /** An error was experienced denoting that there is not enough room on the device
+    * @param key
+    *   The identifier of the storage item accessed. Either the index (an Int), or the key (a String)
+    * @param actionType
+    *   The way the storage was being accessed when the error occurred
+    */
+  final case class QuotaExceeded(key: Option[StorageKey], actionType: StorageActionType) extends StorageEventError
+
+  /** An error was experienced denoting that there were not enough permissions granted by the user that allows access to
+    * the storage
+    *
+    * @param key
+    *   The identifier of the storage item accessed. Either the index (an Int), or the key (a String)
+    * @param actionType
+    *   The way the storage was being accessed when the error occurred
+    */
+  final case class InvalidPermissions(key: Option[StorageKey], actionType: StorageActionType) extends StorageEventError
+
+  /** An error was experienced denoting that the particular storage feature is not available
+    *
+    * @param key
+    *   The identifier of the storage item accessed. Either the index (an Int), or the key (a String)
+    * @param actionType
+    *   The way the storage was being accessed when the error occurred
+    */
+  final case class FeatureNotAvailable(key: Option[StorageKey], actionType: StorageActionType) extends StorageEventError
+
+  object FeatureNotAvailable:
+    def apply(key: String | Int, actionType: StorageActionType): FeatureNotAvailable =
+      key match {
+        case i: Int    => FeatureNotAvailable(Some(StorageKey.Index(i)), actionType)
+        case s: String => FeatureNotAvailable(Some(StorageKey.Key(s)), actionType)
+      }
+
+  /** An error was experienced that did not fall into one of the predefined categories
+    *
+    * @param key
+    *   The identifier of the storage item accessed. Either the index (an Int), or the key (a String)
+    * @param actionType
+    *   The way the storage was being accessed when the error occurred
+    * @param message
+    *   The message of the error that was experienced
+    */
+  final case class Unspecified(key: Option[StorageKey], actionType: StorageActionType, message: String)
+      extends StorageEventError
+}
+
 sealed trait StorageEvent extends GlobalEvent
 object StorageEvent {
 
@@ -392,7 +462,7 @@ object StorageEvent {
     * @param key
     *   the unique key of the data that was loaded.
     * @param data
-    *   the data retreived from local storage, if it exists.
+    *   the data retrieved from local storage, if it exists.
     */
   final case class Loaded(key: String, data: Option[String]) extends StorageEvent
 }
@@ -400,7 +470,7 @@ object StorageEvent {
 /** Events relating to dynamically loading assets after the game has started.
   *
   * These events are the underlying events used by the `AssetBundleLoader` `SubSystem`, which makes loading assets a
-  * slightly more plesant experience.
+  * slightly more pleasant experience.
   */
 sealed trait AssetEvent extends GlobalEvent
 object AssetEvent {

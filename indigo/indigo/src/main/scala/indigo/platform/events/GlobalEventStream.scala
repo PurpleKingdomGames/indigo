@@ -48,23 +48,52 @@ final class GlobalEventStream(
 
     // Storage
     case StorageEvent.FetchKeyAt(index) =>
-      eventQueue.enqueue(StorageEvent.KeyFoundAt(index, storage.key(index)))
+      storage.key(index) match {
+        case Left(err)  => eventQueue.enqueue(err)
+        case Right(str) => eventQueue.enqueue(StorageEvent.KeyFoundAt(index, str))
+      }
 
     case StorageEvent.FetchKeys(f, t) =>
       val keys = (f to t).toList.map(i => i -> storage.key(i))
-      eventQueue.enqueue(StorageEvent.KeysFound(keys))
+      val errors = keys.flatMap {
+        _ match {
+          case (_, Left(err)) => Some(err)
+          case _              => None
+        }
+      }
+
+      if errors.length > 0 then errors foreach (e => eventQueue.enqueue(e))
+      else
+        eventQueue.enqueue(StorageEvent.KeysFound(keys.flatMap {
+          _ match {
+            case (i, Right(str)) => Some((i, str))
+            case _               => None
+          }
+        }))
 
     case StorageEvent.Save(key, data) =>
-      storage.save(key, data)
+      storage.save(key, data) match {
+        case Left(err) => eventQueue.enqueue(err)
+        case _         => ()
+      }
 
     case StorageEvent.Load(key) =>
-      eventQueue.enqueue(StorageEvent.Loaded(key, storage.load(key)))
+      storage.load(key) match {
+        case Left(err)  => eventQueue.enqueue(err)
+        case Right(str) => eventQueue.enqueue(StorageEvent.Loaded(key, str))
+      }
 
     case StorageEvent.Delete(key) =>
-      storage.delete(key)
+      storage.delete(key) match {
+        case Left(err) => eventQueue.enqueue(err)
+        case _         => ()
+      }
 
     case StorageEvent.DeleteAll =>
-      storage.deleteAll()
+      storage.deleteAll() match {
+        case Left(err) => eventQueue.enqueue(err)
+        case _         => ()
+      }
 
     // Assets
     case AssetEvent.LoadAssetBatch(batch, key, makeAvailable) =>
