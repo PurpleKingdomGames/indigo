@@ -8,7 +8,6 @@ import indigo.platform.networking.Http
 import indigo.platform.networking.WebSockets
 import indigo.platform.storage.Storage
 import indigo.shared.collections.Batch
-import indigo.shared.events.ApplicationResize
 import indigo.shared.events.AssetEvent
 import indigo.shared.events.EnterFullScreen
 import indigo.shared.events.ExitFullScreen

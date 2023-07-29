@@ -44,9 +44,6 @@ You can create your own events by simply extending `GlobalEvent`.
 
 - `FrameTick` - the last event on a frame, used to update anything that must be updated every frame.
 - `ViewportResize(viewport)` - emitted when the game is resized so that your game layout can adapt.
-- `ApplicationResize(applicationSize)` - emitted when the game window is resized so that your game layout can adapt.
-
-The `ApplicationResize` size may be different to the `ViewportResize` as the application may be a web application (in which case the size is the size of the container), or a desktop application (in which case the size is that of the window).
 
 #### Full Screen
 

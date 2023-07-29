@@ -6,7 +6,6 @@ import indigo.shared.constants.Key
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.Size
-import indigo.shared.events.ApplicationResize
 import indigo.shared.events.ApplicationGainedFocus
 import indigo.shared.events.ApplicationLostFocus
 import indigo.shared.events.CanvasGainedFocus
@@ -444,8 +443,6 @@ final class WorldEvents:
             if child.attributes.getNamedItem("id").value == canvas.attributes.getNamedItem("id").value then
               val containerSize = new Size(entry.contentRect.width.toInt, entry.contentRect.height.toInt)
               val canvasSize    = new Size(canvas.width, canvas.height)
-              globalEventStream.pushGlobalEvent(ApplicationResize(containerSize))
-
               if resizePolicy != ResizePolicy.NoResize then
                 val newSize = resizePolicy match {
                   case ResizePolicy.Resize => containerSize

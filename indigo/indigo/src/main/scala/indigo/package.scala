@@ -352,9 +352,6 @@ val RendererDetails: shared.events.RendererDetails.type = shared.events.Renderer
 type ViewportResize = shared.events.ViewportResize
 val ViewportResize: shared.events.ViewportResize.type = shared.events.ViewportResize
 
-type ApplicationResize = shared.events.ApplicationResize
-val ApplicationResize: shared.events.ApplicationResize.type = shared.events.ApplicationResize
-
 val ToggleFullScreen: shared.events.ToggleFullScreen.type             = shared.events.ToggleFullScreen
 val EnterFullScreen: shared.events.EnterFullScreen.type               = shared.events.EnterFullScreen
 val ExitFullScreen: shared.events.ExitFullScreen.type                 = shared.events.ExitFullScreen
