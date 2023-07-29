@@ -79,13 +79,32 @@ object SearchGrid {
           scored ++ unscored
 
         case (remainingSquares, lastScoredLocations) =>
+          // Calculating bounds coords of checked locations
+          val minMax: (Coords, Coords) = minMaxCoords(lastScoredLocations)
+          val maxCoords                = minMax._2
+          val minCoords                = minMax._1
+
+          // Filtering only those coords which are in bounds of checked coords
+          // It will let us to minimize check locations later
+          val filteredRemaining = remainingSquares.filter(gs =>
+            gs.coords.x >= minCoords.x - 1
+              && gs.coords.x <= maxCoords.x + 1
+              && gs.coords.y >= minCoords.y - 1
+              && gs.coords.y <= maxCoords.y + 1
+          )
+
           // Find the squares from the remaining pile that the previous scores squares touched.
           val roughEdges: List[List[GridSquare]] =
             lastScoredLocations.map(c => sampleAt(searchGrid, c, searchGrid.validationWidth))
 
           // Filter out any squares that aren't in the remainingSquares list
+          // we should remove impassable squares to prevent incorrect path calculations
           val edges: List[GridSquare] =
-            roughEdges.flatMap(_.filter(c => remainingSquares.contains(c)))
+            roughEdges
+              .flatMap(_.filter(c => filteredRemaining.contains(c))) // using filtered remaining coords
+              .filter(gs =>
+                !gs.score.contains(GridSquare.max) || gs.isStart
+              ) // or we can filter by name =! "impassable"
 
           // Deduplicate and score
           val next: List[GridSquare] =
@@ -107,6 +126,18 @@ object SearchGrid {
     val (done, todo) = searchGrid.grid.partition(_.isEnd)
 
     rec(searchGrid.start, todo, 1, List(searchGrid.end), done).sortBy(_.index)
+  }
+
+  private def minMaxCoords(lastScoredLocations: List[Coords]) = {
+    val initialValue = (lastScoredLocations.head, lastScoredLocations.head)
+
+    lastScoredLocations.foldLeft(initialValue) { (result, coords) =>
+      if (coords.x < result._1.x || coords.y < result._1.y)
+        (Coords(coords.x.min(result._1.x), coords.y.min(result._1.y)), result._2)
+      else if (coords.x > result._2.x || coords.y > result._2.y)
+        (result._1, Coords(coords.x.max(result._2.x), coords.y.max(result._2.y)))
+      else result
+    }
   }
 
   def score(searchGrid: SearchGrid): SearchGrid =

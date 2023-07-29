@@ -30,6 +30,94 @@ class PathFindingTests extends munit.FunSuite {
 
   }
 
+  test("Finding a path with start near impassable horizontal.should be able to find a route") {
+    /*
+    | | | |   =   |*|*|*| or | | | |
+    |?|X|!|   =   |*|X|*|    |*|X|*|
+    | | | |   =   | | | |    |*|*|*|
+     */
+    val start: Coords      = Coords(0, 1)
+    val end: Coords        = Coords(2, 1)
+    val impassable: Coords = Coords(1, 1)
+
+    val searchGrid = SearchGrid.generate(start, end, List(impassable), 3, 3)
+
+    val path: List[Coords] = searchGrid.locatePath(Dice.fromSeed(0))
+
+    val possiblePaths: List[List[Coords]] = List(
+      List(start, Coords(0, 2), Coords(1, 2), Coords(2, 2), end),
+      List(start, Coords(0, 0), Coords(1, 0), Coords(2, 0), end)
+    )
+
+    assertEquals(possiblePaths.contains(path), true)
+  }
+
+  test("Finding a path with start near impassable vertical.should be able to find a route") {
+    /*
+    | |?| |   =   | |*|*| or |*|*| |
+    | |X| |   =   | |X|*|    |*|X| |
+    | |!| |   =   | |*|*|    |*|*| |
+     */
+    val start: Coords      = Coords(1, 0)
+    val end: Coords        = Coords(1, 2)
+    val impassable: Coords = Coords(1, 1)
+
+    val searchGrid = SearchGrid.generate(start, end, List(impassable), 3, 3)
+
+    val path: List[Coords] = searchGrid.locatePath(Dice.fromSeed(0))
+
+    val possiblePaths: List[List[Coords]] = List(
+      List(start, Coords(2, 0), Coords(2, 1), Coords(2, 2), end),
+      List(start, Coords(0, 0), Coords(0, 1), Coords(0, 2), end)
+    )
+
+    assertEquals(possiblePaths.contains(path), true)
+  }
+
+  test("Finding a path with start near impassable vertical reversed.should be able to find a route") {
+    /*
+    | |!| |   =   | |*|*| or |*|*| |
+    | |X| |   =   | |X|*|    |*|X| |
+    | |?| |   =   | |*|*|    |*|*| |
+     */
+    val start: Coords      = Coords(1, 2)
+    val end: Coords        = Coords(1, 0)
+    val impassable: Coords = Coords(1, 1)
+
+    val searchGrid = SearchGrid.generate(start, end, List(impassable), 3, 3)
+
+    val path: List[Coords] = searchGrid.locatePath(Dice.fromSeed(0))
+
+    val possiblePaths: List[List[Coords]] = List(
+      List(start, Coords(2, 2), Coords(2, 1), Coords(2, 0), end),
+      List(start, Coords(0, 2), Coords(0, 1), Coords(0, 0), end)
+    )
+
+    assertEquals(possiblePaths.contains(path), true)
+  }
+
+  test("Finding a path with start near impassable horizontal reversed.should be able to find a route") {
+    /*
+    | | | |   =   |*|*|*| or | | | |
+    |!|X|?|   =   |*|X|*|    |*|X|*|
+    | | | |   =   | | | |    |*|*|*|
+     */
+    val start: Coords      = Coords(2, 1)
+    val end: Coords        = Coords(0, 1)
+    val impassable: Coords = Coords(1, 1)
+
+    val searchGrid = SearchGrid.generate(start, end, List(impassable), 3, 3)
+
+    val path: List[Coords] = searchGrid.locatePath(Dice.fromSeed(0))
+
+    val possiblePaths: List[List[Coords]] = List(
+      List(start, Coords(2, 2), Coords(1, 2), Coords(0, 2), end),
+      List(start, Coords(2, 0), Coords(1, 0), Coords(0, 0), end)
+    )
+
+    assertEquals(possiblePaths.contains(path), true)
+  }
+
   test("Scoring the grid.should be able to score a grid") {
     val start: Coords      = Coords(2, 1)
     val end: Coords        = Coords(0, 2)
