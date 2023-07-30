@@ -441,8 +441,11 @@ final class WorldEvents:
         entries.foreach { entry =>
           entry.target.childNodes.foreach { child =>
             if child.attributes.getNamedItem("id").value == canvas.attributes.getNamedItem("id").value then
-              val containerSize = new Size(entry.contentRect.width.toInt, entry.contentRect.height.toInt)
-              val canvasSize    = new Size(canvas.width, canvas.height)
+              val containerSize = new Size(
+                Math.floor(entry.contentRect.width).toInt,
+                Math.floor(entry.contentRect.height).toInt
+              )
+              val canvasSize = new Size(canvas.width, canvas.height)
               if resizePolicy != ResizePolicy.NoResize then
                 val newSize = resizePolicy match {
                   case ResizePolicy.Resize => containerSize
@@ -479,8 +482,8 @@ final class WorldEvents:
                 }
 
                 if (newSize != canvasSize) {
-                  canvas.width = newSize.width
-                  canvas.height = newSize.height
+                  canvas.width = Math.min(newSize.width, containerSize.width)
+                  canvas.height = Math.min(newSize.height, containerSize.height)
                 }
           }
         }

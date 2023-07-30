@@ -67,13 +67,6 @@ case object FrameTick extends GlobalEvent
   */
 final case class ViewportResize(gameViewPort: GameViewport) extends ViewEvent
 
-/** Fired whenever the application containing the game window changes size, so that the game can respond.
-  *
-  * @param applicationSize
-  *   The actual size in pixels of the application.
-  */
-final case class ApplicationResize(applicationSize: Size) extends ViewEvent
-
 /** Attempt to enter or exit full screen mode
   */
 case object ToggleFullScreen extends GlobalEvent
