@@ -50,8 +50,8 @@ final class Mouse(
 
   lazy val scrolled: Option[MouseWheel] =
     val amount = mouseEvents.foldLeft(0d) {
-      case (acc, MouseEvent.Wheel(_, deltaY)) => acc + deltaY
-      case (acc, _)                           => acc
+      case (acc, MouseEvent.Wheel(_, _, _, _, _, _, _, deltaY)) => acc + deltaY
+      case (acc, _)                                             => acc
     }
 
     if amount == 0 then Option.empty[MouseWheel]
@@ -158,9 +158,9 @@ object Mouse:
       remaining match
         case Nil =>
           buttonsDownAcc
-        case MouseEvent.MouseDown(_, button) :: moreEvents =>
+        case MouseEvent.MouseDown(_, _, _, _, _, _, _, button) :: moreEvents =>
           rec(moreEvents, buttonsDownAcc + button)
-        case MouseEvent.MouseUp(_, button) :: moreEvents =>
+        case MouseEvent.MouseUp(_, _, _, _, _, _, _, button) :: moreEvents =>
           rec(moreEvents, buttonsDownAcc - button)
         case _ :: moreEvents =>
           rec(moreEvents, buttonsDownAcc)

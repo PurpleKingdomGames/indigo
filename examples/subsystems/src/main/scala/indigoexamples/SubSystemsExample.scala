@@ -33,7 +33,7 @@ object SubSystemsExample extends IndigoDemo[Unit, Unit, Unit, Unit] {
     Outcome(())
 
   def updateModel(context: FrameContext[Unit], model: Unit): GlobalEvent => Outcome[Unit] = {
-    case e @ MouseEvent.Click(_) =>
+    case e: MouseEvent.Click =>
       Outcome(())
         .addGlobalEvents(
           PointsTrackerEvent.Add(10),

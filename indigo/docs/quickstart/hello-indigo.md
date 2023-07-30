@@ -86,7 +86,7 @@ import scala.scalajs.js.annotation.JSExportTopLevel
 @JSExportTopLevel("IndigoGame")
 ```
 
-Indigo games are Scala.js projects. We've worked hard to make Indigo feel as much like a normal Scala project as possible, however, we do need a hook for the page. If you're using the standard Indigo Mill or SBT plugins, you ***must name your game "IndigoGame" or it won't work***. Once you move to your own page embed you can call it whatever you like!
+Indigo games are Scala.js projects. We've worked hard to make Indigo feel as much like a normal Scala project as possible, however, we do need a hook for the page. If you're using the standard Indigo Mill or SBT plugins, you _**must name your game "IndigoGame" or it won't work**_. Once you move to your own page embed you can call it whatever you like!
 
 `IndigoSandbox` takes two type parameters that define your start up data type, and the type of your model. Later on we'll introduce a real model, but for now we're just using `Unit` to say "I'm not using these".
 
@@ -263,7 +263,7 @@ graphic.moveBy((d * 600).toInt, 0)
 
 That is, we say that we want a velocity of 600 pixels per second, but multiply that 600 by the fraction of a second since the last frame update. At 60 FPS, `600 * 0.01666 = 9.996` i.e near as makes no odds the 10 pixel movement we wanted, while at a dip to 55 FPS we get `600 * 0.01818 = 10.908`, meaning that you move a little further to make up for lost time.
 
-> This is known as ***frame independent movement***.
+> This is known as _**frame independent movement**_.
 
 ## It isn't a game, if you can't play with it
 
@@ -377,7 +377,8 @@ def updateModel(
     context: FrameContext[Unit],
     model: Model
 ): GlobalEvent => Outcome[Model] = {
-  case MouseEvent.Click(clickPoint) =>
+  case e: MouseEvent.Click =>
+    val clickPoint       = e.position
     val adjustedPosition = clickPoint - model.center
 
     Outcome(
@@ -450,7 +451,7 @@ def drawDots(
   }
 
 SceneUpdateFragment(
-  Graphic(Rectangle(0, 0, 32, 32), 1, Material.Bitmap(assetName)) :: 
+  Graphic(Rectangle(0, 0, 32, 32), 1, Material.Bitmap(assetName)) ::
     drawDots(model.center, model.dots)
 )
 ```

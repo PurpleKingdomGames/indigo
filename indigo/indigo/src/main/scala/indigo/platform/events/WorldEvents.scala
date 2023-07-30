@@ -1,7 +1,9 @@
 package indigo.platform.events
 
+import indigo.shared.collections.Batch
 import indigo.shared.constants.Key
 import indigo.shared.datatypes.Point
+import indigo.shared.datatypes.Radians
 import indigo.shared.events.ApplicationGainedFocus
 import indigo.shared.events.ApplicationLostFocus
 import indigo.shared.events.CanvasGainedFocus
@@ -13,6 +15,7 @@ import indigo.shared.events.NetworkEvent
 import indigo.shared.events.NetworkEvent.*
 import indigo.shared.events.PointerEvent
 import indigo.shared.events.PointerEvent.*
+import indigo.shared.events.PointerType
 import org.scalajs.dom
 import org.scalajs.dom.document
 import org.scalajs.dom.html
@@ -107,9 +110,23 @@ final class WorldEvents:
       canvas = canvas,
       // onClick only supports the left mouse button
       onClick = { e =>
-        globalEventStream.pushGlobalEvent(
-          MouseEvent.Click(e.position(magnification, canvas))
-        )
+        MouseButton.fromOrdinalOpt(e.button).foreach { button =>
+          val position         = e.position(magnification, canvas)
+          val buttons          = e.indigoButtons
+          val movementPosition = e.movementPosition(magnification)
+          globalEventStream.pushGlobalEvent(
+            MouseEvent.Click(
+              position,
+              buttons,
+              e.altKey,
+              e.ctrlKey,
+              e.metaKey,
+              e.shiftKey,
+              movementPosition,
+              button
+            )
+          )
+        }
       },
       /*
           Follows the most conventional, basic definition of wheel.
@@ -120,7 +137,19 @@ final class WorldEvents:
           More info: https://developer.mozilla.org/en-US/docs/Web/API/WheelEvent
        */
       onWheel = { e =>
-        val wheel = MouseEvent.Wheel(e.position(magnification, canvas), e.deltaY)
+        val position         = e.position(magnification, canvas)
+        val buttons          = e.indigoButtons
+        val movementPosition = e.movementPosition(magnification)
+        val wheel = MouseEvent.Wheel(
+          position,
+          buttons,
+          e.altKey,
+          e.ctrlKey,
+          e.metaKey,
+          e.shiftKey,
+          movementPosition,
+          e.deltaY
+        )
 
         globalEventStream.pushGlobalEvent(wheel)
       },
@@ -133,55 +162,252 @@ final class WorldEvents:
       // Prevent right mouse button from popping up the context menu
       onContextMenu = if disableContextMenu then Some((e: dom.MouseEvent) => e.preventDefault()) else None,
       onPointerEnter = { e =>
-        val position = e.position(magnification, canvas)
+        val position         = e.position(magnification, canvas)
+        val buttons          = e.indigoButtons
+        val movementPosition = e.movementPosition(magnification)
+        val pointerType      = e.toPointerType
 
         globalEventStream.pushGlobalEvent(
-          PointerEnter(position, PointerId(e.pointerId), Buttons(e.buttons), e.isPrimary)
+          PointerEnter(
+            position,
+            buttons,
+            e.altKey,
+            e.ctrlKey,
+            e.metaKey,
+            e.shiftKey,
+            movementPosition,
+            PointerId(e.pointerId),
+            e.width(magnification),
+            e.height(magnification),
+            e.pressure,
+            e.tangentialPressure,
+            Radians.fromDegrees(e.tiltX),
+            Radians.fromDegrees(e.tiltY),
+            Radians.fromDegrees(e.twist),
+            pointerType,
+            e.isPrimary
+          )
         )
+
+        if pointerType == PointerType.Mouse then {
+          globalEventStream.pushGlobalEvent(
+            MouseEvent.Enter(
+              position,
+              buttons,
+              e.altKey,
+              e.ctrlKey,
+              e.metaKey,
+              e.shiftKey,
+              movementPosition
+            )
+          )
+        }
       },
       onPointerLeave = { e =>
-        val position = e.position(magnification, canvas)
+        val position         = e.position(magnification, canvas)
+        val buttons          = e.indigoButtons
+        val movementPosition = e.movementPosition(magnification)
+        val pointerType      = e.toPointerType
 
         globalEventStream.pushGlobalEvent(
-          PointerLeave(position, PointerId(e.pointerId), Buttons(e.buttons), e.isPrimary)
+          PointerLeave(
+            position,
+            buttons,
+            e.altKey,
+            e.ctrlKey,
+            e.metaKey,
+            e.shiftKey,
+            movementPosition,
+            PointerId(e.pointerId),
+            e.width(magnification),
+            e.height(magnification),
+            e.pressure,
+            e.tangentialPressure,
+            Radians.fromDegrees(e.tiltX),
+            Radians.fromDegrees(e.tiltY),
+            Radians.fromDegrees(e.twist),
+            pointerType,
+            e.isPrimary
+          )
         )
+
+        if pointerType == PointerType.Mouse then {
+          globalEventStream.pushGlobalEvent(
+            MouseEvent.Leave(
+              position,
+              buttons,
+              e.altKey,
+              e.ctrlKey,
+              e.metaKey,
+              e.shiftKey,
+              movementPosition
+            )
+          )
+        }
       },
       onPointerDown = { e =>
-        val position = e.position(magnification, canvas)
+        val position         = e.position(magnification, canvas)
+        val buttons          = e.indigoButtons
+        val movementPosition = e.movementPosition(magnification)
+        val pointerType      = e.toPointerType
 
         globalEventStream.pushGlobalEvent(
-          PointerDown(position, PointerId(e.pointerId), Buttons(e.buttons), e.isPrimary)
+          PointerDown(
+            position,
+            buttons,
+            e.altKey,
+            e.ctrlKey,
+            e.metaKey,
+            e.shiftKey,
+            movementPosition,
+            PointerId(e.pointerId),
+            e.width(magnification),
+            e.height(magnification),
+            e.pressure,
+            e.tangentialPressure,
+            Radians.fromDegrees(e.tiltX),
+            Radians.fromDegrees(e.tiltY),
+            Radians.fromDegrees(e.twist),
+            pointerType,
+            e.isPrimary,
+            MouseButton.fromOrdinalOpt(e.button)
+          )
         )
-        MouseButton.fromOrdinalOpt(e.button).foreach { button =>
-          globalEventStream.pushGlobalEvent(MouseEvent.MouseDown(position, button))
+
+        if pointerType == PointerType.Mouse then {
+          MouseButton.fromOrdinalOpt(e.button).foreach { button =>
+            globalEventStream.pushGlobalEvent(
+              MouseEvent.MouseDown(
+                position,
+                buttons,
+                e.altKey,
+                e.ctrlKey,
+                e.metaKey,
+                e.shiftKey,
+                movementPosition,
+                button
+              )
+            )
+          }
         }
         e.preventDefault()
       },
       onPointerUp = { e =>
-        val position = e.position(magnification, canvas)
+        val position         = e.position(magnification, canvas)
+        val buttons          = e.indigoButtons
+        val movementPosition = e.movementPosition(magnification)
+        val pointerType      = e.toPointerType
 
         globalEventStream.pushGlobalEvent(
-          PointerUp(position, PointerId(e.pointerId), Buttons(e.buttons), e.isPrimary)
+          PointerUp(
+            position,
+            buttons,
+            e.altKey,
+            e.ctrlKey,
+            e.metaKey,
+            e.shiftKey,
+            movementPosition,
+            PointerId(e.pointerId),
+            e.width(magnification),
+            e.height(magnification),
+            e.pressure,
+            e.tangentialPressure,
+            Radians.fromDegrees(e.tiltX),
+            Radians.fromDegrees(e.tiltY),
+            Radians.fromDegrees(e.twist),
+            pointerType,
+            e.isPrimary,
+            MouseButton.fromOrdinalOpt(e.button)
+          )
         )
-        MouseButton.fromOrdinalOpt(e.button).foreach { button =>
-          globalEventStream.pushGlobalEvent(MouseEvent.MouseUp(position, button))
+
+        if pointerType == PointerType.Mouse then {
+          MouseButton.fromOrdinalOpt(e.button).foreach { button =>
+            globalEventStream.pushGlobalEvent(
+              MouseEvent.MouseUp(
+                position,
+                buttons,
+                e.altKey,
+                e.ctrlKey,
+                e.metaKey,
+                e.shiftKey,
+                movementPosition,
+                button
+              )
+            )
+          }
         }
         e.preventDefault()
       },
       onPointerMove = { e =>
-        val position = e.position(magnification, canvas)
+        val position         = e.position(magnification, canvas)
+        val buttons          = e.indigoButtons
+        val movementPosition = e.movementPosition(magnification)
+        val pointerType      = e.toPointerType
 
         globalEventStream.pushGlobalEvent(
-          PointerMove(position, PointerId(e.pointerId), Buttons(e.buttons), e.isPrimary)
+          PointerMove(
+            position,
+            buttons,
+            e.altKey,
+            e.ctrlKey,
+            e.metaKey,
+            e.shiftKey,
+            movementPosition,
+            PointerId(e.pointerId),
+            e.width(magnification),
+            e.height(magnification),
+            e.pressure,
+            e.tangentialPressure,
+            Radians.fromDegrees(e.tiltX),
+            Radians.fromDegrees(e.tiltY),
+            Radians.fromDegrees(e.twist),
+            pointerType,
+            e.isPrimary
+          )
         )
-        globalEventStream.pushGlobalEvent(MouseEvent.Move(position))
+
+        if pointerType == PointerType.Mouse then {
+          globalEventStream.pushGlobalEvent(
+            MouseEvent.Move(
+              position,
+              buttons,
+              e.altKey,
+              e.ctrlKey,
+              e.metaKey,
+              e.shiftKey,
+              movementPosition
+            )
+          )
+        }
         e.preventDefault()
       },
       onPointerCancel = { e =>
-        val position = e.position(magnification, canvas)
+        val position         = e.position(magnification, canvas)
+        val buttons          = e.indigoButtons
+        val movementPosition = e.movementPosition(magnification)
+        val pointerType      = e.toPointerType
 
         globalEventStream.pushGlobalEvent(
-          PointerCancel(position, PointerId(e.pointerId), Buttons(e.buttons), e.isPrimary)
+          PointerCancel(
+            position,
+            buttons,
+            e.altKey,
+            e.ctrlKey,
+            e.metaKey,
+            e.shiftKey,
+            movementPosition,
+            PointerId(e.pointerId),
+            e.width(magnification),
+            e.height(magnification),
+            e.pressure,
+            e.tangentialPressure,
+            Radians.fromDegrees(e.tiltX),
+            Radians.fromDegrees(e.tiltY),
+            Radians.fromDegrees(e.twist),
+            pointerType,
+            e.isPrimary
+          )
         )
         e.preventDefault()
       },
@@ -222,6 +448,14 @@ final class WorldEvents:
     _handlers = None
   }
 
+  extension (e: dom.FocusEvent)
+    def isWindowTarget: Boolean =
+      val target = e.target
+      target match {
+        case e: dom.Element if e.tagName == "WINDOW" => true
+        case _                                       => false
+      }
+
   extension (e: dom.MouseEvent)
     /** @return
       *   position relative to magnification level
@@ -234,12 +468,33 @@ final class WorldEvents:
         absoluteCoordsY(e.pageY.toInt - rect.top.toInt) / magnification
       )
 
-  extension (e: dom.FocusEvent)
-    def isWindowTarget: Boolean =
-      val target = e.target
-      target match {
-        case e: dom.Element if e.tagName == "WINDOW" => true
-        case _                                       => false
+    def movementPosition(magnification: Int): Point =
+      Point(
+        (e.movementX / magnification).toInt,
+        (e.movementY / magnification).toInt
+      )
+
+    def indigoButtons =
+      Batch.fromArray(
+        (0 to 5)
+          .filter(i => ((e.buttons >> i) & 1) == 0)
+          .flatMap(MouseButton.fromOrdinalOpt)
+          .toArray
+      )
+
+  extension (e: dom.PointerEvent)
+    def width(magnification: Int): Int =
+      (e.width / magnification).toInt
+
+    def height(magnification: Int): Int =
+      (e.height / magnification).toInt
+
+    def toPointerType =
+      e.pointerType match {
+        case "mouse" => PointerType.Mouse
+        case "pen"   => PointerType.Pen
+        case "touch" => PointerType.Touch
+        case _       => PointerType.Unknown
       }
 
 end WorldEvents
