@@ -539,6 +539,9 @@ val Flip: shared.datatypes.Flip.type = shared.datatypes.Flip
 type AssetType = shared.assets.AssetType
 val AssetType: shared.assets.AssetType.type = shared.assets.AssetType
 
+type ResizePolicy = shared.config.ResizePolicy
+val ResizePolicy: shared.config.ResizePolicy.type = shared.config.ResizePolicy
+
 type GameConfig = shared.config.GameConfig
 val GameConfig: shared.config.GameConfig.type = shared.config.GameConfig
 

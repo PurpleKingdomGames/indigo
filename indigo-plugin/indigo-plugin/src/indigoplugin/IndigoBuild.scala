@@ -32,7 +32,7 @@ object IndigoBuild {
     os.write(directoryStructure.base / "cordova.js", "")
 
     // Write support js script
-    val support = SupportScriptTemplate.template(false)
+    val support = SupportScriptTemplate.template()
     os.write(directoryStructure.base / "scripts" / "indigo-support.js", support)
 
     // Fill out html template

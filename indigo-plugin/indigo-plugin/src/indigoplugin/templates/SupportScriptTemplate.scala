@@ -2,32 +2,8 @@ package indigoplugin.templates
 
 object SupportScriptTemplate {
 
-  def template(autoSize: Boolean): String =
+  def template(): String =
     s"""
-      |// Shamelessly borrowed/modified from: https://davidwalsh.name/javascript-debounce-function
-      |function debounce(func, wait) {
-      |  var timeout;
-      |  return function() {
-      |    var context = this
-      |    var args = arguments;
-      |    var later = function() {
-      |      timeout = null;
-      |      func.apply(context, args);
-      |    };
-      |    clearTimeout(timeout);
-      |    timeout = setTimeout(later, wait);
-      |  };
-      |};
-      |
-      |
-      |function resizeCanvas() {
-      |  var c = document.getElementById("indigo-container-[indigo-canvas]");
-      |  c.height = window.innerHeight;
-      |  c.width = window.innerWidth;
-      |}
-      |
-      |${if (autoSize) "" else "// "}window.onresize = debounce(resizeCanvas, 1000);
-      |
       |window.onload = function () {
       |    if (typeof history.pushState === "function") {
       |        history.pushState("jibberish", null, null);
