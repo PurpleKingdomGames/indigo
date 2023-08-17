@@ -10,7 +10,7 @@ In order to get your game up and running, it needs to go through an initializati
 1. Boot - which only ever happens once;
 2. Start up - which occurs on first run, and then whenever new assets are loaded dynamically.
 
-A lot of what this process relates to is the loading and processing of assets, so it's worth [reading up on that too](platform/assets.md).
+A lot of what this process relates to is the loading and processing of assets, so it's worth [reading up on that too](/platform/assets.md).
 
 ## Booting your game
 
@@ -83,7 +83,7 @@ IndigoGame.halt();
 
 Calling `halt` does not clean up your page in any way, the assumption is that you will remove the relevant HTML dom nodes.
 
-#### BootResult[_]
+#### BootResult
 
 In a simple game, all of your animations, fonts, subsystems, shaders, and assets can be declared during the boot stage. For more complex games, such as ones that have a pre-loader, you should only include the elements you need for the preloader scene here.
 

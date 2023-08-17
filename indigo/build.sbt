@@ -11,12 +11,12 @@ ThisBuild / scalaVersion                                   := scala3Version
 
 lazy val indigoVersion = IndigoVersion.getVersion
 // For the docs site
-lazy val indigoDocsVersion  = "0.14.0"
-lazy val tyrianDocsVersion  = "0.6.0"
+lazy val indigoDocsVersion  = "0.15.0-RC3"
+lazy val tyrianDocsVersion  = "0.7.1"
 lazy val scalaJsDocsVersion = "1.13.1"
 lazy val scalaDocsVersion   = "3.3.0"
-lazy val sbtDocsVersion     = "1.9.0"
-lazy val millDocsVersion    = "0.10.12"
+lazy val sbtDocsVersion     = "1.9.2"
+lazy val millDocsVersion    = "0.11.0"
 
 lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
   version            := indigoVersion,
@@ -194,8 +194,8 @@ lazy val jsdocs = project
       "io.indigoengine" %%% "indigo-json-circe"    % indigoDocsVersion,
       "io.indigoengine" %%% "indigo"               % indigoDocsVersion,
       "io.indigoengine" %%% "indigo-extras"        % indigoDocsVersion,
-      "io.indigoengine" %%% "tyrian-io"            % tyrianDocsVersion,
-      "io.indigoengine" %%% "tyrian-indigo-bridge" % tyrianDocsVersion
+      "io.indigoengine" %%% "tyrian-io"            % tyrianDocsVersion//,
+      // "io.indigoengine" %%% "tyrian-indigo-bridge" % tyrianDocsVersion
     )
   )
   .enablePlugins(ScalaJSPlugin)

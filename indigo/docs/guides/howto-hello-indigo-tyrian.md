@@ -36,7 +36,7 @@ These are the steps we're going to take:
 * [Set up the environment](#setting-up-the-environment) - e.g. clone `hello-indigo` and set up ParcelJS
 * [Modify our build files](#setting-up-the-build) - e.g. update our `build.sbt` or `build.sc` files
 * [Create our static files](#setting-up-the-html-and-parceljs) - e.ge create our html, js, css and other static content
-* [Update Indigo with a new subsystem](#update-helloindigoscala) and [Initialise our Tyrian app](#create-a-tyrian-app)
+* [Update Indigo with a new subsystem](#update-helloindigo-scala) and [Initialise our Tyrian app](#create-a-tyrian-app)
 * [Get Tyrian publishing messages to Indigo](#tyrian-to-indigo-communication) (and Indigo to subscribe to them)
 * [Get Indigo publishing messages to Tyrian](#indigo-to-tyrian-communication) (and Tyrian to subscribe to them)
 * And finally [creating a responsive UI in CSS](#responsive-ui)
@@ -57,7 +57,7 @@ follow [this guide](howto-indigo-game.md)
 or replace `HelloIndigo.scala` with
 [this](https://gist.github.com/hobnob/c24f00936e91a7b7e5d644d19e4f1b32)
 
-```scala mdoc:js:shared:invisible
+```scala
 import indigo.*
 import indigo.scenes.*
 import tyrian.TyrianSubSystem
@@ -373,7 +373,7 @@ Create a new file called `HelloTyrian.scala` inside the `helloindigo/src` folder
 and add the following contents found below, or
 [here](https://gist.github.com/hobnob/436318b3ae5eed5891ba2b18bb8c264b).
 
-```scala mdoc:js
+```scala
 import cats.effect.IO
 import tyrian.*
 import tyrian.Html.*

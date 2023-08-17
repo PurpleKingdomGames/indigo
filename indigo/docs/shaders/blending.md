@@ -20,7 +20,7 @@ The two main building blocks of the blending process are:
 
 Blend modes are hardware level functions with limited but important options. They instruct the graphics card on fundamentally how to combine two pixels together.
 
-Explaining blend modes is beyond the scope of this guide, and there are many tutorials available, but as an example, we can compare Indigo's standard entity blend mode with it's entity lighting blend mode (used in image based [lighting](presentation/lighting.md)):
+Explaining blend modes is beyond the scope of this guide, and there are many tutorials available, but as an example, we can compare Indigo's standard entity blend mode with it's entity lighting blend mode (used in image based [lighting](/presentation/lighting.md)):
 
 ```scala mdoc:js:shared
 import indigo.*
@@ -67,7 +67,7 @@ Blending the final scene is less fine grained, and a `SceneUpdateFragment` can o
 
 ## Example: Lighting
 
-Here is the `Blending` description for Indigo's image based [lighting](presentation/lighting.md).
+Here is the `Blending` description for Indigo's image based [lighting](/presentation/lighting.md).
 
 ```scala mdoc:js
 val ambientLightColor = RGBA.White.withAlpha(0.25)

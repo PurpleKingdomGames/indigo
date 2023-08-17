@@ -39,7 +39,7 @@ The problem is that `Random` goes against our referential transparency principle
 
 > Side note: Testing this kind of behavior with property based testing techniques works very well and often neatly side steps the issue of unknown values.
 
-Similar problems occur if you attempt to implement [frame independence](/docs/information/glossary#frame-independence) based on the elapsed time. You could add a last updated field to Bob's model and use `System.currentTimeMillis` to get the delta, but again, how would you write a test for that.
+Similar problems occur if you attempt to implement [frame independence](/information/glossary.md) based on the elapsed time. You could add a last updated field to Bob's model and use `System.currentTimeMillis` to get the delta, but again, how would you write a test for that.
 
 The problem is that `Random` and `System.currentTimeMillis` are side effecting and that makes them hard to test.
 

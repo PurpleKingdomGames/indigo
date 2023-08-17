@@ -9,7 +9,7 @@ Sooner or later, you're probably going to need to load data into your game or sa
 
 When you think of loading and saving, probably the first thing that comes to mind is save games.
 
-Currently Indigo's local storage options are a bit limited, but what you can do is [storage events](/docs/gameloop/events#storageevents).
+Currently Indigo's local storage options are a bit limited, but what you can do is [storage events](/gameloop/events.md#storageevents).
 
 Storage events use your browsers local storage, which you can think of like a key value store. You process might be:
 
@@ -22,11 +22,11 @@ Storage events use your browsers local storage, which you can think of like a ke
 
 ### Loading local data
 
-You can always load data in plain text format (that could be JSON or CSV for example), by using making use of the [asset loading](/docs/platform/assets#asset-loading) functionality. This allows you to dynamically load a data file at any time, process it, and apply it to you model.
+You can always load data in plain text format (that could be JSON or CSV for example), by using making use of the [asset loading](/platform/assets.md#asset-loading) functionality. This allows you to dynamically load a data file at any time, process it, and apply it to you model.
 
 ### Loading and saving over a network
 
-The other way to load and save data might be over a network, please see the [networking page for details](platform/networking.md).
+The other way to load and save data might be over a network, please see the [networking page for details](/platform/networking.md).
 
 Similar to the save game flow, you might do something like:
 

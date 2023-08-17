@@ -23,8 +23,8 @@ final case class PointsTrackerExample(startingPoints: Int) extends SubSystem:
   val id: SubSystemId = SubSystemId("points tracker")
 
   val eventFilter: GlobalEvent => Option[PointsTrackerEvent] = {
-    case e: PointsTrackerEvent => Option(e)
-    case _                     => None
+    case e: PointsTrackerEvent @unchecked => Option(e)
+    case _                                => None
   }
 
   def initialModel: Outcome[Int] =

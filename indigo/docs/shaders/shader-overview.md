@@ -15,15 +15,15 @@ Shaders are a big subject and beyond the scope of this documentation site, the a
 
 ## How to get started with Shaders
 
-There is a brief introduction to using shaders in your project as part of the ["how to create a custom entity"](guides/howto-custom-entity.md) guide that we recommend you read first, which also has an accompanying [example repo](https://github.com/PurpleKingdomGames/indigo-examples/tree/master/howto/custom-entity).
+There is a brief introduction to using shaders in your project as part of the ["how to create a custom entity"](/guides/howto-custom-entity.md) guide that we recommend you read first, which also has an accompanying [example repo](https://github.com/PurpleKingdomGames/indigo-examples/tree/master/howto/custom-entity).
 
-There is a follow on tutorial to the one above than explains [how to make a fire shader](guides/howto-fire-shader.md) that you may also find useful.
+There is a follow on tutorial to the one above than explains [how to make a fire shader](/guides/howto-fire-shader.md) that you may also find useful.
 
 ## Entity vs Blend Shaders
 
 Indigo has two distinct flavours of shader.
 
-1. [Entity shaders](entity-shaders.md) are used to draw individual items / entities on the screen.
+1. `Entity shaders` are used to draw individual items / entities on the screen.
 2. Blend shaders are used in the [blending process](blending.md) to tell Indigo how to merge layers together.
 
 They both work in a similar way, but there are differences.
@@ -53,13 +53,13 @@ void fragment(){}
 
 **Function uses**
 
-Name|Sequential order|description
----|---|---
-`vertex`|1|Used to modify the space on the screen the entity occupies, and to pass data to the fragment shader.
-`fragment`|2|Tells Indigo what color each pixel needs to be.
-`prepare`|3|Called before `light`, prepare gives you an opportunity to set up any data or functions needed for the lighting process.
-`light`|4..4n|Called before `composite`, `light` is called once per light in the scene, and is used to build up per pixel lighting data separate from the colour data that results from `fragment`.
-`composite`|5|Called last, `composite` is used to override how lighting information is combined with unlit pixel color data.
+| Name        | Sequential order | description                                                                                                                                                                           |
+| ----------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `vertex`    | 1                | Used to modify the space on the screen the entity occupies, and to pass data to the fragment shader.                                                                                  |
+| `fragment`  | 2                | Tells Indigo what color each pixel needs to be.                                                                                                                                       |
+| `prepare`   | 3                | Called before `light`, prepare gives you an opportunity to set up any data or functions needed for the lighting process.                                                              |
+| `light`     | 4..4n            | Called before `composite`, `light` is called once per light in the scene, and is used to build up per pixel lighting data separate from the colour data that results from `fragment`. |
+| `composite` | 5                | Called last, `composite` is used to override how lighting information is combined with unlit pixel color data.                                                                        |
 
 To override a function you simply need to declare it. In an `Source` shader type, this could be done as follows:
 
@@ -168,7 +168,7 @@ Finally we need to tell Indigo about these shaders, or we won't be able to use t
 
 ## Using shaders in your scene
 
-Custom shaders are generally expected to be used in conjunction with custom entities, please see the [guide](guides/howto-custom-entity.md) for examples.
+Custom shaders are generally expected to be used in conjunction with custom entities, please see the [guide](/guides/howto-custom-entity.md) for examples.
 
 You can also use custom shaders to override the behavior of built-in materials. Technically this is as easy as replacing the `shaderId: Option[ShaderId]` field on the material with the id of your own shader, but you will need to look into the source code to determine data that material provides to the shader.
 
@@ -176,7 +176,7 @@ You can also use custom shaders to override the behavior of built-in materials. 
 
 Shaders without any data can still be useful if you have a known effect, and not sending data is less costly than sending it! However, sometimes you need to tell your shader about what you need it to do, and for that we use `UniformBlock`s (know as UBO's technically, Uniform Buffer Objects).
 
-In the [guide](guides/howto-custom-entity.md), we create a custom entity that fills it's self with a solid color:
+In the [guide](/guides/howto-custom-entity.md), we create a custom entity that fills it's self with a solid color:
 
 ```scala mdoc:js
 final case class MyColoredEntity(position: Point, depth: Depth) extends EntityNode[MyColoredEntity]:
@@ -230,7 +230,7 @@ final case class MyColoredEntity(position: Point, depth: Depth, color: RGBA) ext
     ShaderData(
       MyColoredEntity.shader.id,
       UniformBlock(
-        "MyCustomData",
+        UniformBlockName("MyCustomData"),
         Batch(Uniform("MY_COLOR") -> vec4(color.r, color.g, color.b, color.a))
       )
     )

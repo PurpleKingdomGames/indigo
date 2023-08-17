@@ -20,7 +20,7 @@ There are input actions that are best represented as events, a mouse click for e
 
 Input events only (currently) cover Mouse and Keyboard events, _not gamepads_, and can be detected during the model or view model update functions as you would any other event.
 
-For more information, please see the [events](gameloop/events.md) page.
+For more information, please see the [events](/gameloop/events.md) page.
 
 ## InputState (Continuous signals)
 
@@ -28,7 +28,7 @@ There are other types of input that don't make as much sense as events.
 
 It is possible in Indigo to listen to every distinct mouse move event for example, but that is almost certainly not what you actually want to do. Most likely, what you really want is the cumulative position at the point that this frame is being processed.
 
-Indigo does this by sampling the input states of the mouse, keyboard and gamepad and allowing you to access it through the [frame context](gameloop/frame-context.md).
+Indigo does this by sampling the input states of the mouse, keyboard and gamepad and allowing you to access it through the [frame context](/gameloop/frame-context.md).
 
 > Note that this is how gamepads are usually modeled and at the moment Indigo is no exception. Adding discrete events for specific button presses to emulate mouse-like behavior is under consideration.
 

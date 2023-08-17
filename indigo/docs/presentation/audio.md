@@ -14,7 +14,7 @@ There are two kinds of audio support in Indigo:
 
 Indigo uses web technologies, so you should refer to current recommended practices for audio formats. That being said, anything a browser will play Indigo will play, and most of the existing demos and examples just use MP3 files, but that is a fairly dated format these days.
 
-Please refer to the assets documentation for information on [how to load audio files](platform/assets.md).
+Please refer to the assets documentation for information on [how to load audio files](/platform/assets.md).
 
 ## Sound effects
 

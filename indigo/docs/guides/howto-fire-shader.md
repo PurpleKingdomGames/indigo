@@ -48,7 +48,7 @@ final case class Fire(
     ShaderData(
       Fire.shaderId,
       UniformBlock(
-        "FireData",
+        UniformBlockName("FireData"),
         Batch(
           Uniform("OFFSET")       -> float(offset),
           Uniform("COLOR_OUTER")  -> vec3(outer.r, outer.g, outer.b),
@@ -172,7 +172,7 @@ def toShaderData: ShaderData =
   ShaderData(
     Fire.shaderId,
     UniformBlock(
-      "FireData",
+      UniformBlockName("FireData"),
       Batch(
         Uniform("OFFSET")       -> float(offset),
         Uniform("COLOR_OUTER")  -> vec3(outer.r, outer.g, outer.b),
@@ -194,7 +194,7 @@ layout (std140) uniform FireData {
 };
 ```
 
-At some point in the future it would be good to improve the type safety around the relationship across this interface, but for now, please take care. More information on how this works including the **all important packing rules** can be found in the [Shaders Overview](shaders/shader-overview.md).
+At some point in the future it would be good to improve the type safety around the relationship across this interface, but for now, please take care. More information on how this works including the **all important packing rules** can be found in the [Shaders Overview](/shaders/shader-overview.md).
 
 ### UVs
 

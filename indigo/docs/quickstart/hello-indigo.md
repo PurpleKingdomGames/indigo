@@ -31,7 +31,7 @@ Here is our starting point:
 import indigo.*
 import scala.scalajs.js.annotation.JSExportTopLevel
 
-@JSExportTopLevel("IndigoGame")
+// @JSExportTopLevel("IndigoGame") // Pandering to mdoc
 object HelloIndigo extends IndigoSandbox[Unit, Unit] {
 
   val config: GameConfig =

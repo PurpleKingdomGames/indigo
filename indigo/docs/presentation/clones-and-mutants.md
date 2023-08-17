@@ -127,7 +127,7 @@ Mutants(
   Array(
     Batch(
       UniformBlock(
-        "MutantData",
+        UniformBlockName("MutantData"),
         Batch(
           Uniform("MOVE_TO")  -> vec2(10.0, 10.0),
           Uniform("SCALE_TO") -> vec2(2.0, 2.0),
@@ -139,7 +139,7 @@ Mutants(
 )
 ```
 
-The idea here is that you have [created a custom entity](guides/howto-custom-entity.md) and for each instance, you want to set it's UBO data, which here contains a position, a scale and an alpha value.
+The idea here is that you have [created a custom entity](/guides/howto-custom-entity.md) and for each instance, you want to set it's UBO data, which here contains a position, a scale and an alpha value.
 
 In many ways the important part of this example is the alpha. If you only wanted to position the entities you be far better off with one of the clone types. The whole point is that you also plan to programmatically influence the visual rendering of the entity in some way.
 
@@ -197,4 +197,4 @@ void fragment(){
 //</indigo-fragment>
 ```
 
-The fragment shader takes the default texture channel and applies the supplied alpha to it. Note the use of [premultiplied alpha](shaders/premultiplied-alpha.md).
+The fragment shader takes the default texture channel and applies the supplied alpha to it. Note the use of [premultiplied alpha](/shaders/premultiplied-alpha.md).
