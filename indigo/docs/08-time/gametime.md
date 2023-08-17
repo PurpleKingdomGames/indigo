@@ -1,8 +1,4 @@
-# Time
-
-Time and the manipulation of time are very important considerations in game development.
-
-## GameTime
+# GameTime
 
 The most important thing to know is what time it is now! This can by found on the [frame context](/03-gameloop/frame-context.md), which provides two important different time representations:
 

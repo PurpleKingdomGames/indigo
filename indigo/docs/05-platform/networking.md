@@ -17,4 +17,4 @@ For a complete list of network events, please head over the the [events document
 
 We have examples of networking in our indigo-examples repo, of both [HTTP](https://github.com/PurpleKingdomGames/indigo-examples/blob/master/examples/http/src/main/scala/indigoexamples/HttpExample.scala) and [WebSockets](https://github.com/PurpleKingdomGames/indigo-examples/blob/master/examples/websocket/src/main/scala/indigoexamples/WebSocketExample.scala).
 
-The examples make use of buttons which you can find out about on the [UI Components](/09-uicomponents/README.md) page.
+The examples make use of buttons which you can find out about on the [UI Components](/09-uicomponents/ui-components.md) page.
