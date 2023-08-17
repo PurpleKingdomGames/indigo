@@ -68,7 +68,7 @@ of the site, and will also fire when the application loses or gains focus.
 
 ### `InputEvent`s
 
-Handling `InputEvent`s can be a bit tricky in some situations, so Indigo includes `Mouse` and `Keyboard` classes that can be accessed from the [frame context](/gameloop/frame-context.md), providing a rich interface to gather more complex information from those input devices.
+Handling `InputEvent`s can be a bit tricky in some situations, so Indigo includes `Mouse` and `Keyboard` classes that can be accessed from the [frame context](/03-gameloop/frame-context.md), providing a rich interface to gather more complex information from those input devices.
 
 #### `MouseEvent`s
 

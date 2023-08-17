@@ -7,7 +7,7 @@ In order to get your game up and running, it needs to go through an initializati
 1. Boot - which only ever happens once;
 2. Start up - which occurs on first run, and then whenever new assets are loaded dynamically.
 
-A lot of what this process relates to is the loading and processing of assets, so it's worth [reading up on that too](/platform/assets.md).
+A lot of what this process relates to is the loading and processing of assets, so it's worth [reading up on that too](/05-platform/assets.md).
 
 ## Booting your game
 

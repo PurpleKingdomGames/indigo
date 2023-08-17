@@ -87,6 +87,6 @@ The `SceneUpdateFragment` has a fairly rich API that you can explore, but at a h
 - **Layers**: A list of [layers](layers.md) to help structure your visuals and how they are presented.
 - **Lights**: A list of dynamic [lights](lighting.md) that affect nodes with the right materials.
 - **Audio**: Background [audio](audio.md) tracks and volume mixing.
-- **A scene blend material**: Used in [blending](/shaders/blending.md), unlike layers you cannot change the blend mode, only the blend material.
+- **A scene blend material**: Used in [blending](/07-shaders/blending.md), unlike layers you cannot change the blend mode, only the blend material.
 - **Clone blanks**: A list of nodes used as look up reference for Cloning.
 - **Scene Camera**: A default [camera](cameras.md).

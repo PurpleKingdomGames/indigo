@@ -13,8 +13,8 @@ JavaScript handles network calls via callbacks and promises, but that doesn't fi
 
 Therefore, what we have is a side-effecting networking system inside Indigo which you communicate with via the normal event loop. If you want to send an HTTP request you emit a `GET(url, params, headers)` event, and at the beginning of some future frame, hopefully you'll get an `HttpResponse(status, headers, body)`. WebSockets work in a similar way but are complicated by having more states.
 
-For a complete list of network events, please head over the the [events documentation](/gameloop/events.md).
+For a complete list of network events, please head over the the [events documentation](/03-gameloop/events.md).
 
 We have examples of networking in our indigo-examples repo, of both [HTTP](https://github.com/PurpleKingdomGames/indigo-examples/blob/master/examples/http/src/main/scala/indigoexamples/HttpExample.scala) and [WebSockets](https://github.com/PurpleKingdomGames/indigo-examples/blob/master/examples/websocket/src/main/scala/indigoexamples/WebSocketExample.scala).
 
-The examples make use of buttons which you can find out about on the [UI Components](/uicomponents/README.md) page.
+The examples make use of buttons which you can find out about on the [UI Components](/09-uicomponents/README.md) page.

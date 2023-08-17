@@ -14,9 +14,9 @@ Shaders are a big subject and beyond the scope of this documentation site, the a
 
 ## How to get started with Shaders
 
-There is a brief introduction to using shaders in your project as part of the ["how to create a custom entity"](/guides/howto-custom-entity.md) guide that we recommend you read first, which also has an accompanying [example repo](https://github.com/PurpleKingdomGames/indigo-examples/tree/master/howto/custom-entity).
+There is a brief introduction to using shaders in your project as part of the ["how to create a custom entity"](/02-guides/howto-custom-entity.md) guide that we recommend you read first, which also has an accompanying [example repo](https://github.com/PurpleKingdomGames/indigo-examples/tree/master/howto/custom-entity).
 
-There is a follow on tutorial to the one above than explains [how to make a fire shader](/guides/howto-fire-shader.md) that you may also find useful.
+There is a follow on tutorial to the one above than explains [how to make a fire shader](/02-guides/howto-fire-shader.md) that you may also find useful.
 
 ## Entity vs Blend Shaders
 
@@ -167,7 +167,7 @@ Finally we need to tell Indigo about these shaders, or we won't be able to use t
 
 ## Using shaders in your scene
 
-Custom shaders are generally expected to be used in conjunction with custom entities, please see the [guide](/guides/howto-custom-entity.md) for examples.
+Custom shaders are generally expected to be used in conjunction with custom entities, please see the [guide](/02-guides/howto-custom-entity.md) for examples.
 
 You can also use custom shaders to override the behavior of built-in materials. Technically this is as easy as replacing the `shaderId: Option[ShaderId]` field on the material with the id of your own shader, but you will need to look into the source code to determine data that material provides to the shader.
 
@@ -175,7 +175,7 @@ You can also use custom shaders to override the behavior of built-in materials. 
 
 Shaders without any data can still be useful if you have a known effect, and not sending data is less costly than sending it! However, sometimes you need to tell your shader about what you need it to do, and for that we use `UniformBlock`s (know as UBO's technically, Uniform Buffer Objects).
 
-In the [guide](/guides/howto-custom-entity.md), we create a custom entity that fills it's self with a solid color:
+In the [guide](/02-guides/howto-custom-entity.md), we create a custom entity that fills it's self with a solid color:
 
 ```scala mdoc:js
 final case class MyColoredEntity(position: Point, depth: Depth) extends EntityNode[MyColoredEntity]:

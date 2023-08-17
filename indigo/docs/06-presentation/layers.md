@@ -129,7 +129,7 @@ There are some properties that layers have that can be used to override game or 
 
 If you've ever used a photo editing software you're probably aware that layers can be used to alter the appearance of the image, say by sucking the colour out and turning it black and white. Indigo layers can do the same sorts of thing, however there are only a few built in Blending options currently, and for anything more advanced you'll need to roll up your sleeves and write your own blending functions!
 
-You can read more about this subject in the [blending section of the docs](/shaders/blending.md), but in a nutshell a `Blending` instance is comprised of two things:
+You can read more about this subject in the [blending section of the docs](/07-shaders/blending.md), but in a nutshell a `Blending` instance is comprised of two things:
 
 1. `BlendMode` - this is the hardware blend function
 2. `BlendMaterial` - which is a material backed by a special shader specifically for blending.

@@ -27,7 +27,7 @@ This sort of effect is very useful for drawing things like the light from a stre
 
 Indigo comes bundled with shaders you can use to produce image based lighting. These shaders do not make use of any special machinery, and so you can always write your own versions if you like!
 
-Imaged based lighting in Indigo is all about the [blending](/shaders/blending.md).
+Imaged based lighting in Indigo is all about the [blending](/07-shaders/blending.md).
 
 There are two blending jobs to do:
 
@@ -106,7 +106,7 @@ AmbientLight(RGBA.White.withAlpha(0.2))
 
 ### Materials for Dynamic Lighting
 
-Dynamic lighting only affects [materials](/presentation/materials.md) that can be lit, i.e. have a lighting model, and the material properties affect what happens when the light hits them.
+Dynamic lighting only affects [materials](/06-presentation/materials.md) that can be lit, i.e. have a lighting model, and the material properties affect what happens when the light hits them.
 
 Lighting models are either: `Unlit` or `Lit`, and if they are either textured or 'flat'. For example a `Shape` can be lit, but is always flat since there are no textures.
 
@@ -124,4 +124,4 @@ A note on emissive materials:
 1. In a real 3D engine, an emissive material might also affect the colors of surrounding surfaces. Indigo does not do that.
 2. Emissive materials are ignored by image based lighting.
 
-More information on the main [materials](/presentation/materials.md) page.
+More information on the main [materials](/06-presentation/materials.md) page.

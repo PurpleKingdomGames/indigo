@@ -18,7 +18,7 @@ We'd love you to try building your game in Indigo and let us know how you get on
 
 What we know that we don't know yet, are Indigo's limits.
 
-We have a fair idea about things like general graphics [performance and how to squeeze more rendering juice out of it](information/performance.md), but we don't yet have a full view on what issues will emerge on titles that aren't necessarily graphically complex, but include a serious amount of gameplay logic or content.
+We have a fair idea about things like general graphics [performance and how to squeeze more rendering juice out of it](10-information/performance.md), but we don't yet have a full view on what issues will emerge on titles that aren't necessarily graphically complex, but include a serious amount of gameplay logic or content.
 
 A gentle word of caution then: We expect that things will need to change as people start to use it in anger. No doubt we've missed things, and the APIs are not as clear or consistent as we'd like them to be. Certainly the documentation needs expansion. There's bound to be the odd quirk we haven't noticed yet, or performance issues in scenarios we haven't considered.
 

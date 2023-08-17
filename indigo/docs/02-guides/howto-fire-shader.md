@@ -191,7 +191,7 @@ layout (std140) uniform FireData {
 };
 ```
 
-At some point in the future it would be good to improve the type safety around the relationship across this interface, but for now, please take care. More information on how this works including the **all important packing rules** can be found in the [Shaders Overview](/shaders/README.md).
+At some point in the future it would be good to improve the type safety around the relationship across this interface, but for now, please take care. More information on how this works including the **all important packing rules** can be found in the [Shaders Overview](/07-shaders/README.md).
 
 ### UVs
 

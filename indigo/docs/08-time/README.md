@@ -4,7 +4,7 @@ Time and the manipulation of time are very important considerations in game deve
 
 ## GameTime
 
-The most important thing to know is what time it is now! This can by found on the [frame context](/gameloop/frame-context.md), which provides two important different time representations:
+The most important thing to know is what time it is now! This can by found on the [frame context](/03-gameloop/frame-context.md), which provides two important different time representations:
 
 1. `running` - which is the time the game has been running for in total.
 2. `delta` - which is how long has passed since the last update, which is important for smooth updates and animations.

@@ -69,7 +69,7 @@ for {
 } yield updatedViewModel
 ```
 
-First we have to update the button, which is done by calling the buttons's built in update method and supplying the current state of the mouse on this frame. The button update returns an [`Outcome`](/gameloop/outcome.md) because as well as containing a freshly updated button, it can also return events that will need to be collected at the end of the frame. Since we need to return an outcome containing an updated view model at the end of the frame, we then need to map over the outcome, and insert the button in the view model.
+First we have to update the button, which is done by calling the buttons's built in update method and supplying the current state of the mouse on this frame. The button update returns an [`Outcome`](/03-gameloop/outcome.md) because as well as containing a freshly updated button, it can also return events that will need to be collected at the end of the frame. Since we need to return an outcome containing an updated view model at the end of the frame, we then need to map over the outcome, and insert the button in the view model.
 
 ***A word of caution***, you might be tempted to do this instead, which appears to work and compiles just fine:
 
