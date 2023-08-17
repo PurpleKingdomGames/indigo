@@ -1,7 +1,4 @@
----
-id: alternatives
-title: Alternatives to Indigo
----
+# Alternatives to Indigo
 
 If Indigo isn't quite working out for you - we quite understand! Here are some possible alternatives to help you get your game dev fix. Each of these suggestions has something in common with Indigo, there are of course lots of other engines out there!
 

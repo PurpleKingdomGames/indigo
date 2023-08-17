@@ -1,7 +1,4 @@
----
-id: ui-components
-title: Overview
----
+# UI Components
 
 > UI Components live in the "Indigo Extras" library, since they are built on top of Indigo itself and require no special machinery to work.
 

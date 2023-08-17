@@ -1,12 +1,9 @@
----
-id: text-and-fonts
-title: Text & Fonts
----
+# Text & Fonts
 
 There are two way to add text in Indigo, each with their own set of trade offs.
 
 1. `TextBox` - is text as you'd expect it, easy to use and with full font support, but is generally lower quality.
-1. `Text` - is a graphical primitive that gives high rendering fidelity but requires a lot of set up.
+2. `Text` - is a graphical primitive that gives high rendering fidelity but requires a lot of set up.
 
 If you're new to Indigo and just want to get some text on the screen quickly, you are strongly advised to use a `TextBox`.
 

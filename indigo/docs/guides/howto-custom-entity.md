@@ -1,7 +1,4 @@
----
-id: howto-custom-entity
-title: How to make a custom entity
----
+# How to make a custom entity
 
 ## What are custom entities?
 

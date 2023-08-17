@@ -1,7 +1,4 @@
----
-id: hit-area
-title: Hit Area
----
+# Hit Areas
 
 Hit areas are different to the other UI components.
 

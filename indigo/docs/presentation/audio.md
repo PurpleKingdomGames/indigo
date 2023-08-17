@@ -1,7 +1,4 @@
----
-id: audio
-title: Audio
----
+# Audio
 
 Indigo's audio support is fairly unsophisticated, but probably good enough for the kind of games Indigo was designed for. The authors are not audio experts, please feel free to raise issues if you have any suggestions for improvements.
 

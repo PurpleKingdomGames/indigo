@@ -1,7 +1,4 @@
----
-id: howto-fire-shader
-title: How to write a fire shader
----
+# How to write a fire shader
 
 In this how-to guide, we're going to look at one approach to writing a little shader that produces procedural flames. Here's one I made earlier:
 
@@ -194,7 +191,7 @@ layout (std140) uniform FireData {
 };
 ```
 
-At some point in the future it would be good to improve the type safety around the relationship across this interface, but for now, please take care. More information on how this works including the **all important packing rules** can be found in the [Shaders Overview](/shaders/shader-overview.md).
+At some point in the future it would be good to improve the type safety around the relationship across this interface, but for now, please take care. More information on how this works including the **all important packing rules** can be found in the [Shaders Overview](/shaders/README.md).
 
 ### UVs
 

@@ -1,7 +1,4 @@
----
-id: examples
-title: Examples
----
+# Examples
 
 At various points in Indigo's development, little games and examples have been made. These help drive out requirements, test the feel of the engine against real examples and help ensure the build is stable.
 

@@ -1,7 +1,4 @@
----
-id: layers
-title: Layers
----
+# Layers
 
 Layers are used to help "layer up" and group the visual elements of your scene.
 

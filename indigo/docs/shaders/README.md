@@ -1,7 +1,6 @@
----
-id: shader-overview
-title: Shaders Overview
----
+# Shaders
+
+> Please be aware that these docs are out of date, as they do not yet include information about Ultraviolet, our shader library.
 
 ## What is a shader?
 
@@ -290,3 +289,4 @@ You also can't straddle byte boundries. So if you're trying to pack this: Float-
 This is valid: F0VV
 But this isn't: FVV0
 ```
+

@@ -1,7 +1,4 @@
----
-id: performance
-title: Performance
----
+# Performance
 
 ## What is performance?
 

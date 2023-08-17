@@ -1,7 +1,4 @@
----
-id: cross-platform-publishing
-title: Cross Platform Publishing
----
+# Cross Platform Publishing
 
 Indigo supports basic publishing to/building for the following platforms:
 

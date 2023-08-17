@@ -1,11 +1,6 @@
----
-id: depth
-title: Depth
----
+# Depth
 
 One thing you will need to consider when building your game, is the order that visual elements are drawn in.
-
-## Depth
 
 Depth is quite straight forward. All visual elements can be given a `Depth`, which is just a number.
 

@@ -1,7 +1,4 @@
----
-id: primitives
-title: Primitives & Building Blocks
----
+# Primitives & Building Blocks
 
 Indigo is made of several projects, but two of particular note are Indigo itself, and "Indigo Extras".
 

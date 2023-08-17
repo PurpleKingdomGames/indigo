@@ -1,7 +1,4 @@
----
-id: antipatterns
-title: Anti-Patterns
----
+# Anti-Patterns
 
 This page is an attempt to flag any anti-patterns, bad practices or traps that the authors have seen in the wild or have themselves fallen into! The hope is that but not repeating these mistakes your game dev'ving will be more fun and fruitful.
 

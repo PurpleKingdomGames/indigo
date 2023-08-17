@@ -1,7 +1,4 @@
----
-id: logging
-title: Logging
----
+# Logging
 
 Sometimes you need a log message to help you debug something, and to help you do that Indigo comes with a very simple / border-line dumb logger.
 

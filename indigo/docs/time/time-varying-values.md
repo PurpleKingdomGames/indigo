@@ -1,7 +1,4 @@
----
-id: time-varying-values
-title: Time Varying Values
----
+# Time Varying Values
 
 Time varying values describe numeric values (`Double`s) that will change over time. They are supposed to live in your game model to help you do simple time based updates.
 

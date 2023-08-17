@@ -1,7 +1,4 @@
----
-id: key-concepts
-title: Key Concepts
----
+# Key Concepts
 
 ## Making a game testable
 

@@ -1,7 +1,4 @@
----
-id: scene-update-fragment
-title: SceneUpdateFragment
----
+# SceneUpdateFragment
 
 The `SceneUpdateFragment` is one of the most important types in Indigo, as it is the type that describes everything you want your player to experience.
 

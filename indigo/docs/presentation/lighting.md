@@ -1,7 +1,4 @@
----
-id: lighting
-title: Lighting
----
+# Lighting
 
 Lighting in Indigo is in every sense of the word, fake. It was not designed to try and mimic real light, but to be useful and understandable to 2D game builders who were trying to add some interest to their games through lighting.
 

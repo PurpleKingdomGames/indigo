@@ -1,7 +1,4 @@
----
-id: blending
-title: Blending
----
+# Blending
 
 Once you've told Indigo what you'd like your entity to look like, perhaps with a standard material or a custom shader, you then need to tell Indigo how to blend it into you game's scene. This allows you to describe scene level effects.
 

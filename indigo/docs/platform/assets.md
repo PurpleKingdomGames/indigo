@@ -1,7 +1,4 @@
----
-id: assets
-title: Assets & Asset Loading
----
+# Assets & Asset Loading
 
 ## Asset Types
 

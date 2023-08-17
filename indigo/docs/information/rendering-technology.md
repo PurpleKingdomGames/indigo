@@ -1,7 +1,4 @@
----
-id: rendering-technology
-title: Rendering Technology
----
+# Rendering Technology
 
 At the time of writing, there are five options for rendering 2D graphics into a browser page, if you are so inclined:
 

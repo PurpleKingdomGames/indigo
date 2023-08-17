@@ -1,7 +1,4 @@
----
-id: model-viewmodel-view
-title: Model, ViewModel, & View
----
+# Model, ViewModel, & View
 
 The standard entry point traits define functions that talk about a `Model`, a `ViewModel`, and a "view" (in the form of a `present` function that returns a `SceneUpdateFragment`).
 

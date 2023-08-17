@@ -1,7 +1,4 @@
----
-id: input-handling
-title: User Input Handling
----
+# Input Handling
 
 At the time of writing, Indigo understands three input device types: Mouse, Keyboard, and Gamepad.
 

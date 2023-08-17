@@ -1,7 +1,4 @@
----
-id: radio-button
-title: Radio Button
----
+# Radio Buttons
 
 Radio buttons are a collection of buttons where only one of them can be in a selected state at any given time, and one must always be selected once an initial selection has been made. No doubt you've seen them on multiple choice forms.
 

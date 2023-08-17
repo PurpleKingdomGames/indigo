@@ -1,7 +1,4 @@
----
-id: signals
-title: Signals & Signal Functions
----
+# Signals & Signal Functions
 
 ## Motivation
 

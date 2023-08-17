@@ -1,11 +1,10 @@
----
-id: development-status
-title: Indigo's Development Status
----
+# Indigo
 
-## Indigo's Status is Alpha
+Indigo is a pixel art Scala 2D game engine that encourages functional programming, and broadly follows the Elm architecture.
 
-Indigo will be consider in an alpha release state until a game of any significant depth is shown to have been built using it. The implication being that by successfully building at releasing a game - web or desktop - enough features and structure must have been written in order to have made that happen.
+## Indigo's Development Status
+
+Indigo is pretty stable, but will be consider in an alpha release state until a game of any significant depth is shown to have been built using it. The implication being that by successfully building and releasing a game - web or desktop - enough features and structure must have been written in order to have made that happen.
 
 If you have a game you are building and plan to release, or are building for a game jam or something, get in touch on Discord or Gitter and we _will_ help you with any technical problems if we possibly can!
 

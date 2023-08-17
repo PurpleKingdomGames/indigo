@@ -1,7 +1,4 @@
----
-id: hello-indigo
-title: Hello, Indigo!
----
+# Hello, Indigo!
 
 This is a quick start tutorial to help you build something with Indigo.
 
@@ -23,7 +20,7 @@ In this guide, we'll be using `IndigoSandbox` for brevity and our "game" will be
 
 ## "Hello, Indigo!"
 
-We'll skip over the initial project set up and assume that you followed the [set up guide](setup-and-configuration.md), or have [checked out the repo](https://github.com/PurpleKingdomGames/hello-indigo) for reference.
+We'll skip over the initial project set up and assume that you followed the [set up guide](README.md), or have [checked out the repo](https://github.com/PurpleKingdomGames/hello-indigo) for reference.
 
 Here is our starting point:
 

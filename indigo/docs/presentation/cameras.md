@@ -1,7 +1,4 @@
----
-id: cameras
-title: Cameras
----
+# Cameras
 
 When you look at a scene rendered by Indigo, you are looking through a default camera.
 

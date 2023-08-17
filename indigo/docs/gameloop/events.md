@@ -1,7 +1,4 @@
----
-id: events
-title: Events
----
+# Events
 
 ## The event loop
 

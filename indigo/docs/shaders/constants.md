@@ -1,7 +1,4 @@
----
-id: constants
-title: Shader Constants, Variables, and Outputs
----
+# Shader Constants, Variables, and Outputs
 
 Below are tables of shader constants and variables that are available to you, provided by Indigo, when writing shaders for the WebGL 2.0 renderer.
 

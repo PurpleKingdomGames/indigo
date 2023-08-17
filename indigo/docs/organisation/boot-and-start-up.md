@@ -1,7 +1,4 @@
----
-id: boot-and-start-up
-title: Boot & Start Up
----
+# Boot & Start Up
 
 > Please note that the terms "start up" and "setup" are used interchangeably here. "Startup" is the name of the data type, while "setup" is the name of the method. This naming should probably be revisited...
 

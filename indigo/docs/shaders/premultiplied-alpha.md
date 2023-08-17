@@ -1,7 +1,4 @@
----
-id: premultiplied-alpha
-title: Premultiplied Alpha
----
+# Premultiplied Alpha
 
 A small but essential piece of information to know when writing shaders in Indigo, is that Indigo uses premultiplied alpha almost everywhere, with the notable exception of Shapes.
 

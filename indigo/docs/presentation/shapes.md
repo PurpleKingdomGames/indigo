@@ -1,16 +1,13 @@
----
-id: shapes
-title: Shapes
----
+# Shapes
 
 Shapes allow you to draw simple graphics without needing images.
 
 There are four `Shape` types that come shipped with Indigo at the time of writing, although we may add more in the future:
 
 1. `Shape.Box` - Any rectangle
-1. `Shape.Circle` - A circle centered around a point
-1. `Shape.Line` - A straight line made of two points
-1. `Shape.Polygon` - An arbitrary shape with up to 16 vertices.
+2. `Shape.Circle` - A circle centered around a point
+3. `Shape.Line` - A straight line made of two points
+4. `Shape.Polygon` - An arbitrary shape with up to 16 vertices.
 
 They all share similar properties:
 

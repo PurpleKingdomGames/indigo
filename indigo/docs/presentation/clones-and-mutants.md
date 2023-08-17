@@ -1,9 +1,4 @@
----
-id: clones-and-mutants
-title: Clones & Mutants
----
-
-> Available in the forthcoming Indigo 0.10.0 only. There were earlier versions of Clones but they were never documented properly and they've all been superseded.
+# Clones & Mutants
 
 Sometimes you really need to draw a lot of things. Thousands and thousands of things.
 

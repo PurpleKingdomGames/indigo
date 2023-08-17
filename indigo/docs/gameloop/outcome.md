@@ -1,7 +1,4 @@
----
-id: outcome
-title: Outcome Type
----
+# Outcome Type
 
 ## What is an Outcome?
 

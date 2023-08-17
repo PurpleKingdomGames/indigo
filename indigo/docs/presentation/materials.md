@@ -1,7 +1,4 @@
----
-id: materials
-title: Materials
----
+# Materials
 
 Indigo is intended to be a pixel art based game engine, and that means drawing pixels!
 

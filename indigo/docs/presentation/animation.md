@@ -1,7 +1,4 @@
----
-id: animation
-title: Animation
----
+# Animation
 
 There are two types of animations found in Indigo.
 

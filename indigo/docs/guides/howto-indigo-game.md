@@ -1,7 +1,4 @@
----
-id: howto-indigo-game
-title: Converting `IndigoSandbox` to `IndigoGame`
----
+# Converting `IndigoSandbox` to `IndigoGame`
 
 ## Basic Concepts
 

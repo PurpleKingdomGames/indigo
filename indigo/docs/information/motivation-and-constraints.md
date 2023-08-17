@@ -1,7 +1,4 @@
----
-id: motivation-and-constraints
-title: Motivation & Constraints
----
+# Motivation & Constraints
 
 ## Motivation
 

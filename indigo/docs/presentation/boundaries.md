@@ -1,7 +1,4 @@
----
-id: boundaries
-title: Boundaries
----
+# Boundaries
 
 A curious quirk of the way Indigo works is that it seems unusual to need to find the boundary / bounding box of a rendered element. Usually you are telling something how big it needs to be rather than asking it how big or small it actually is.
 

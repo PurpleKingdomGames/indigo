@@ -1,7 +1,4 @@
----
-id: networking
-title: Networking
----
+# Networking
 
 Indigo supports basic networking via HTTP or WebSockets. You can also get a
 rudimentary indication as to whether the local machine has an active network
@@ -20,4 +17,4 @@ For a complete list of network events, please head over the the [events document
 
 We have examples of networking in our indigo-examples repo, of both [HTTP](https://github.com/PurpleKingdomGames/indigo-examples/blob/master/examples/http/src/main/scala/indigoexamples/HttpExample.scala) and [WebSockets](https://github.com/PurpleKingdomGames/indigo-examples/blob/master/examples/websocket/src/main/scala/indigoexamples/WebSocketExample.scala).
 
-The examples make use of buttons which you can find out about on the [UI Components](/uicomponents/ui-components.md) page.
+The examples make use of buttons which you can find out about on the [UI Components](/uicomponents/README.md) page.

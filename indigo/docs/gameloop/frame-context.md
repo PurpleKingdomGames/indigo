@@ -1,7 +1,4 @@
----
-id: frame-context
-title: Frame context
----
+# Frame context
 
 Updating a frame in Indigo is principally about doing two things:
 

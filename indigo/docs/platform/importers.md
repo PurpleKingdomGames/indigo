@@ -1,7 +1,4 @@
----
-id: importers
-title: File Format Importers
----
+# File Importers
 
 At the time of writing, Indigo has limited support for importing data from Aseprite and Tiled. The support that has been added was built on an "as needed" basis, and is far from complete.
 

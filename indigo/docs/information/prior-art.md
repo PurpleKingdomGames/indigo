@@ -1,7 +1,4 @@
----
-id: prior-art
-title: Prior Art
----
+# Prior Art
 
 Indigo was not built in a vacuum, it's the conflation of lots of different borrowed ideas, mostly from the places listed below. There are lots of good references on each of these subjects, but here they are briefly enumerated as areas you can dig into if you're interested.
 

@@ -1,7 +1,4 @@
----
-id: project-templates
-title: Mill & SBT Game Templates
----
+# Mill & SBT Templates
 
 To help you get started quickly, we've put together a minimal project template for both [Mill](http://www.lihaoyi.com/mill/) and [SBT](https://www.scala-sbt.org/).
 
