@@ -25,9 +25,11 @@ laikaExtensions := Seq(GitHubFlavor, SyntaxHighlighting, PrettyURLs)
 
 /*
 Dark purple - #29016a
-hot pink - #ae2be2
+hot pink - #ae2be2 / less hot: 9003c8
 light pink - #efc6ff
-Purpleish
+Purpleish - 6237a7
+Light grey - e4e4e4
+Light purple - a888db
  */
 
 laikaTheme :=
@@ -38,10 +40,10 @@ laikaTheme :=
     )
     .all
     .themeColors(
-      primary = Color.hex("ffffff"),
-      secondary = Color.hex("ae2be2"),
-      primaryMedium = Color.hex("6237a7"),
-      primaryLight = Color.hex("29016a"),
+      primary = Color.hex("29016a"),
+      secondary = Color.hex("9003c8"),
+      primaryMedium = Color.hex("a888db"),
+      primaryLight = Color.hex("e4e4e4"),
       text = Color.hex("5f5f5f"),
       background = Color.hex("ffffff"),
       bgGradient = (Color.hex("095269"), Color.hex("007c99"))
@@ -49,10 +51,10 @@ laikaTheme :=
     .site
     .darkMode
     .themeColors(
-      primary = Color.hex("ffffff"),
-      secondary = Color.hex("ae2be2"),
-      primaryMedium = Color.hex("6237a7"),
-      primaryLight = Color.hex("29016a"),
+      primary = Color.hex("29016a"),
+      secondary = Color.hex("9003c8"),
+      primaryMedium = Color.hex("a888db"),
+      primaryLight = Color.hex("e4e4e4"),
       text = Color.hex("5f5f5f"),
       background = Color.hex("ffffff"),
       bgGradient = (Color.hex("29016a"), Color.hex("ffffff"))
@@ -83,23 +85,21 @@ laikaTheme :=
           alt = Some("Homepage"),
           title = Some("Indigo"),
           width = Some(Length(150.0, LengthUnit.px)),
-          height = Some(Length(50.0, LengthUnit.px)),
+          height = Some(Length(50.0, LengthUnit.px))
         )
       ),
       navLinks = Seq(
-        TextLink.external("http://somewhere.com/", "Text Link"),
-        ButtonLink.external("http://somewhere.com/", "Button Link")
+        ButtonLink.external("https://discord.gg/b5CD47g", "Discord"),
+        ButtonLink.external(
+          "https://github.com/PurpleKingdomGames/indigo",
+          "Github"
+        )
       )
     )
     .site
     .tableOfContent(title = "Contents", depth = 2)
-    // .site.downloadPage(
-    //   title = "Documentation Download",
-    //   description = Some("Optional Text Below Title"),
-    //   downloadPath = Root / "downloads",
-    //   includeEPUB = true,
-    //   includePDF = true
-    // )
+    .site
+    .autoLinkCSS(Root / "css" / "custom.css")
     .build
 
 // Helium.defaults
