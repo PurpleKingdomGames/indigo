@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>Materials</title>
+  
+  
+  <meta name="description" content="website2"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="../../helium/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../helium/laika-helium.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/custom.css" />
+  <script src="../../helium/laika-helium.js"></script>
+    <script src="../../01-quickstart/hello-indigo.md.js"></script>
+    <script src="../../01-quickstart/mdoc.js"></script>
+    <script src="../../03-gameloop/frame-context.md.js"></script>
+    <script src="../../03-gameloop/mdoc.js"></script>
+    <script src="../../03-gameloop/outcome.md.js"></script>
+    <script src="../materials.md.js"></script>
+    <script src="../cameras.md.js"></script>
+    <script src="../lighting.md.js"></script>
+    <script src="../depth.md.js"></script>
+    <script src="../clones-and-mutants.md.js"></script>
+    <script src="../animation.md.js"></script>
+    <script src="../layers.md.js"></script>
+    <script src="../audio.md.js"></script>
+    <script src="../scene-update-fragment.md.js"></script>
+    <script src="../boundaries.md.js"></script>
+    <script src="../shapes.md.js"></script>
+    <script src="../text-and-fonts.md.js"></script>
+    <script src="../mdoc.js"></script>
+    <script src="../../08-time/signals.md.js"></script>
+    <script src="../../08-time/mdoc.js"></script>
+    <script src="../../08-time/time-varying-values.md.js"></script>
+    <script src="../../07-shaders/blending.md.js"></script>
+    <script src="../../07-shaders/mdoc.js"></script>
+    <script src="../../07-shaders/shaders-overview.md.js"></script>
+    <script src="../../09-uicomponents/button.md.js"></script>
+    <script src="../../09-uicomponents/input-field.md.js"></script>
+    <script src="../../09-uicomponents/hit-area.md.js"></script>
+    <script src="../../09-uicomponents/radio-button.md.js"></script>
+    <script src="../../09-uicomponents/mdoc.js"></script>
+    <script src="../../04-organisation/scene-management.md.js"></script>
+    <script src="../../04-organisation/boot-and-start-up.md.js"></script>
+    <script src="../../04-organisation/subsystems.md.js"></script>
+    <script src="../../04-organisation/mdoc.js"></script>
+    <script src="../../02-guides/mdoc.js"></script>
+    <script src="../../02-guides/howto-fire-shader.md.js"></script>
+    <script src="../../02-guides/howto-custom-entity.md.js"></script>
+    <script src="../../05-platform/assets.md.js"></script>
+    <script src="../../05-platform/logging.md.js"></script>
+    <script src="../../05-platform/mdoc.js"></script>
+    <script src="../../05-platform/input-handling.md.js"></script>
+    <script src="../../10-information/key-concepts.md.js"></script>
+    <script src="../../10-information/antipatterns.md.js"></script>
+    <script src="../../10-information/mdoc.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar" class="light-default dark-default">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="image-link" href="../../"><img src="../../img/indigo_logo_solid_text.svg" alt="Homepage" title="Indigo" width="150" height="50"></a>
+
+  <div class="row links">
+    
+    <a class="button-link" href="https://discord.gg/b5CD47g">Discord</a>
+    
+    <a class="button-link" href="/api">API</a>
+    
+    <a class="button-link" href="https://github.com/PurpleKingdomGames/indigo">Github</a>
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+    <a class="button-link" href="https://discord.gg/b5CD47g">Discord</a>
+    
+    <a class="button-link" href="/api">API</a>
+    
+    <a class="button-link" href="https://github.com/PurpleKingdomGames/indigo">Github</a>
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../../table-of-content/">Contents</a></li>
+    <li class="level1 nav-header">Setup &amp; Configuration</li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/examples/">Examples</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/hello-indigo/">Hello, Indigo!</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/project-templates/">Mill &amp; SBT Templates</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/quickstart/">Quick start</a></li>
+    <li class="level1 nav-header">Guides</li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-custom-entity/">How to make a custom entity</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-fire-shader/">How to write a fire shader</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-hello-indigo-tyrian/">How to make a responsive UI using Tyrian</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-indigo-game/">Converting <code>IndigoSandbox</code> to <code>IndigoGame</code></a></li>
+    <li class="level1 nav-header">Gameloop</li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/events/">Events</a></li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/frame-context/">Frame context</a></li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/outcome/">Outcome Type</a></li>
+    <li class="level1 nav-header">Organisation</li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/boot-and-start-up/">Boot &amp; Start Up</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/game-entry-points/">Game Entry Points</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/scene-management/">What are Scenes?</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/subsystems/">What SubSystems are</a></li>
+    <li class="level1 nav-header">Platform &amp; IO</li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/assets/">Assets &amp; Asset Loading</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/cross-platform-publishing/">Cross Platform Publishing</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/importers/">File Importers</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/input-handling/">Input Handling</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/loading-and-saving-data/">Loading &amp; Saving Data</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/logging/">Logging</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/networking/">Networking</a></li>
+    <li class="level1 nav-header">Presentation</li>
+    <li class="level2 nav-leaf"><a href="../animation/">Animation</a></li>
+    <li class="level2 nav-leaf"><a href="../audio/">Audio</a></li>
+    <li class="level2 nav-leaf"><a href="../boundaries/">Boundaries</a></li>
+    <li class="level2 nav-leaf"><a href="../cameras/">Cameras</a></li>
+    <li class="level2 nav-leaf"><a href="../clones-and-mutants/">Clones &amp; Mutants</a></li>
+    <li class="level2 nav-leaf"><a href="../depth/">Depth</a></li>
+    <li class="level2 nav-leaf"><a href="../layers/">Layers</a></li>
+    <li class="level2 nav-leaf"><a href="../lighting/">Lighting</a></li>
+    <li class="level2 active nav-leaf"><a href="#">Materials</a></li>
+    <li class="level2 nav-leaf"><a href="../primitives/">Primitives &amp; Building Blocks</a></li>
+    <li class="level2 nav-leaf"><a href="../scene-update-fragment/">SceneUpdateFragment</a></li>
+    <li class="level2 nav-leaf"><a href="../shapes/">Shapes</a></li>
+    <li class="level2 nav-leaf"><a href="../text-and-fonts/">Text &amp; Fonts</a></li>
+    <li class="level1 nav-header">Shaders</li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/blending/">Blending</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/constants/">Shader Constants, Variables, and Outputs</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/premultiplied-alpha/">Premultiplied Alpha</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/shaders-overview/">Shaders Overview</a></li>
+    <li class="level1 nav-header">Time</li>
+    <li class="level2 nav-leaf"><a href="../../08-time/gametime/">GameTime</a></li>
+    <li class="level2 nav-leaf"><a href="../../08-time/signals/">Signals &amp; Signal Functions</a></li>
+    <li class="level2 nav-leaf"><a href="../../08-time/time-varying-values/">Time Varying Values</a></li>
+    <li class="level1 nav-header">UI Components</li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/button/">Buttons</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/hit-area/">Hit Areas</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/input-field/">Input Fields</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/radio-button/">Radio Buttons</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/ui-components/">UI Components</a></li>
+    <li class="level1 nav-header">Misc</li>
+    <li class="level2 nav-leaf"><a href="../../10-information/alternatives/">Alternatives to Indigo</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/antipatterns/">Anti-Patterns</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/glossary/">Glossary</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/key-concepts/">Key Concepts</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/model-viewmodel-view/">Model, ViewModel, &amp; View</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/motivation-and-constraints/">Motivation &amp; Constraints</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/performance/">Performance</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/prior-art/">Prior Art</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/rendering-technology/">Rendering Technology</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Materials</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-node"><a href="#painting-a-picture">Painting a picture</a></li>
+    <li class="level2 nav-leaf"><a href="#material-bitmap"><code>Material.Bitmap</code></a></li>
+    <li class="level2 nav-leaf"><a href="#material-imageeffects"><code>Material.ImageEffects</code></a></li>
+    <li class="level1 nav-node"><a href="#common-material-properties">Common material properties</a></li>
+    <li class="level2 nav-leaf"><a href="#swapping-shaders">Swapping shaders</a></li>
+    <li class="level2 nav-leaf"><a href="#filling-in-the-space">Filling in the space</a></li>
+    <li class="level2 nav-leaf"><a href="#lighting-model">Lighting Model</a></li>
+    <li class="level1 nav-node"><a href="#making-textures-for-lighting">Making textures for lighting</a></li>
+    <li class="level2 nav-leaf"><a href="#normal-mapping">Normal mapping</a></li>
+    <li class="level2 nav-leaf"><a href="#height-bump-maps">Height / Bump maps</a></li>
+    <li class="level2 nav-leaf"><a href="#normal-maps">Normal maps</a></li>
+    <li class="level2 nav-leaf"><a href="#making-normal-maps">Making normal maps</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="materials" class="title">Materials</h1>
+        <p>Indigo is intended to be a pixel art based game engine, and that means drawing pixels!</p>
+        
+        <h2 id="painting-a-picture" class="section"><a class="anchor-link left" href="#painting-a-picture"><i class="icofont-laika link">&#xef71;</i></a>Painting a picture</h2>
+        <p>Indigo takes a very simple approach to building up a rendered frame: It uses a Painters Algorithm (also called &#39;Back-to-Front Rendering&#39;) to draw all the images one at a time, ordered from most distant from the camera, to nearest.</p>
+        <p>The main reason for this is that <a href="https://developer.nvidia.com/content/transparency-or-translucency-rendering">Rendering transparency on 3D hardware is complicated</a>, and for all intents and purposes, everything in 2D graphics is transparent.</p>
+        <p>To tell Indigo what to draw we need to point it at an image asset using a <code>Material</code>. There are two standard material types, <code>Bitmap</code> and <code>ImageEffects</code>.</p>
+        <p>You can create your own materials, and Indigo comes with two other materials in the &quot;extras&quot; library (that we won&#39;t cover here): <code>LegacyEffects</code> that mimic older version of Indigo, and a pair of materials for rendering refraction effects.</p>
+        
+        <h3 id="material-bitmap" class="section"><a class="anchor-link left" href="#material-bitmap"><i class="icofont-laika link">&#xef71;</i></a><code>Material.Bitmap</code></h3>
+        <p>This is the <code>Bitmap</code> material:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">indigo</span><span>.*
+
+</span><span class="type-name">Material</span><span>.</span><span class="type-name">Bitmap</span><span>(</span><span class="type-name">AssetName</span><span>(</span><span class="string-literal">&quot;funny cat&quot;</span><span>))</span></code></pre>
+        <p><code>Bitmap</code> is a simple flat texture that does nothing more than take the texture and render it as-is. It can be used in a <code>Graphic</code> like this:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">SceneUpdateFragment</span><span>(
+  </span><span class="type-name">Graphic</span><span>(</span><span class="number-literal">32</span><span>, </span><span class="number-literal">32</span><span>, </span><span class="type-name">Material</span><span>.</span><span class="type-name">Bitmap</span><span>(</span><span class="type-name">AssetName</span><span>(</span><span class="string-literal">&quot;funny cat&quot;</span><span>)))
+)</span></code></pre>
+        <p>&lt;div id=&quot;mdoc-html-run1&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <p>The relationship between <code>Graphic</code>s and <code>Material</code>s is nice and simple to understand because they use materials directly. Materials also turn up in <code>Text</code> and <code>Sprite</code> primitives too, but indirectly inside their <code>FontInfo</code> and <code>Animation</code> classes respectively.</p>
+        
+        <h3 id="material-imageeffects" class="section"><a class="anchor-link left" href="#material-imageeffects"><i class="icofont-laika link">&#xef71;</i></a><code>Material.ImageEffects</code></h3>
+        <p>The other standard material is called <code>ImageEffects</code>. In essence it does the same thing that <code>Bitmap</code> does, i.e. copy pixels from the texture and render them in your primitive. However it comes with more properties you can change to alter how the texture is drawn:</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Property</th>
+              <th>Type</th>
+              <th>Details</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>alpha</td>
+              <td><code>Double</code></td>
+              <td>Set the transparency, clamped from <code>0.0</code> to <code>1.0</code>.</td>
+            </tr>
+            <tr>
+              <td>tint</td>
+              <td><code>RGBA</code></td>
+              <td>Like looking through colored glass, keeps the color specified. For example, <code>RGBA.Red</code> would <em>remove</em> the green and blue from the texture.</td>
+            </tr>
+            <tr>
+              <td>overlay</td>
+              <td><code>Fill.None</code>, <code>Fill.Color</code>, <code>Fill.LinearGradient</code>, <code>Fill.RadialGradient</code></td>
+              <td>Draws a pixel from the texture, and then overdraws it with a color specified by the type of fill.</td>
+            </tr>
+            <tr>
+              <td>saturation</td>
+              <td><code>Double</code></td>
+              <td><code>0.0</code> gray scale to <code>1.0</code> full color.</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>The cost of these additional properties is that the <code>ImageEffect</code> material is a <em>little</em> bit more expensive to use than <code>Bitmap</code>. Not expensive enough to worry about for a few hundred elements, but might make a difference in sufficient volume.</p>
+        
+        <h2 id="common-material-properties" class="section"><a class="anchor-link left" href="#common-material-properties"><i class="icofont-laika link">&#xef71;</i></a>Common material properties</h2>
+        <p>There are some properties that are common to both standard materials.</p>
+        
+        <h3 id="swapping-shaders" class="section"><a class="anchor-link left" href="#swapping-shaders"><i class="icofont-laika link">&#xef71;</i></a>Swapping shaders</h3>
+        <p>If you would like to take the basic form of one of the standard shaders (i.e. and the data they provide) and write your own shader, you can swap the shader id like this:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">Material</span><span>.</span><span class="type-name">Bitmap</span><span>(</span><span class="type-name">AssetName</span><span>(</span><span class="string-literal">&quot;funny cat&quot;</span><span>))
+  .</span><span class="identifier">withShaderId</span><span>(</span><span class="type-name">ShaderId</span><span>(</span><span class="string-literal">&quot;my bitmap shader&quot;</span><span>))</span></code></pre>
+        <p>&lt;div id=&quot;mdoc-html-run2&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <p>Arguably you would usually be better off just writing your own Material + Shader, but this is an option if you find it useful.</p>
+        
+        <h3 id="filling-in-the-space" class="section"><a class="anchor-link left" href="#filling-in-the-space"><i class="icofont-laika link">&#xef71;</i></a>Filling in the space</h3>
+        <p>The standard materials support options for telling Indigo how to fill the space with the material.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">material</span><span> = </span><span class="type-name">Material</span><span>.</span><span class="type-name">Bitmap</span><span>(</span><span class="type-name">AssetName</span><span>(</span><span class="string-literal">&quot;funny cat&quot;</span><span>))
+
+</span><span class="identifier">material</span><span>.</span><span class="identifier">normal</span><span>
+</span><span class="identifier">material</span><span>.</span><span class="identifier">stretch</span><span>
+</span><span class="identifier">material</span><span>.</span><span class="identifier">tile</span><span>
+
+</span><span class="comment">// The above methods are aliases for:
+</span><span class="identifier">material</span><span>.</span><span class="identifier">withFillType</span><span>(</span><span class="type-name">FillType</span><span>.</span><span class="type-name">Tile</span><span>)</span></code></pre>
+        <p>&lt;div id=&quot;mdoc-html-run3&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <p>When you describe a primitive like a <code>Graphic</code>, you have to give it a size. However, that size does not have any direct relationship with the dimensions of the texture being used in the material. For example, you could have a graphic with a width and height of 100 x 100, and add a material with a texture that is only 50 x 50. What happens to all the extra space?</p>
+        <ul>
+          <li>In &quot;normal&quot; mode, the space is left empty.</li>
+          <li>In &quot;stretch&quot; mode, the texture is stretched (deformed) to fill the available space.</li>
+          <li>In &quot;tile&quot; mode, the texture is repeated to fill the space available.</li>
+        </ul>
+        
+        <h3 id="lighting-model" class="section"><a class="anchor-link left" href="#lighting-model"><i class="icofont-laika link">&#xef71;</i></a>Lighting Model</h3>
+        <p>Indigo might be a pixel art engine, but modern pixel art sometimes takes advantage of the underlying 3D hardware to create dynamic lighting effects in order to affect the mood of the game.</p>
+        <p>The standard materials come with a built in <code>LightingModel</code>, which by default are set to <code>LightingModel.Unlit</code>, meaning that scene lights will be ignored.</p>
+        <p>If you want to use lighting in your scene, then you&#39;ll need to enable lighting on your materials using <code>LightingModel.Lit</code>.</p>
+        
+        <h2 id="making-textures-for-lighting" class="section"><a class="anchor-link left" href="#making-textures-for-lighting"><i class="icofont-laika link">&#xef71;</i></a>Making textures for lighting</h2>
+        <p>What we want to do, is take a completely flat texture and make it look as if it is in relief (has depth), with corners and curves and angles that catch the light.</p>
+        <p>To do that we need to give some details to the lighting model, each parameter represents a different aspect of how the texture is lit.</p>
+        <p>Briefly they are:</p>
+        <ol class="arabic">
+          <li>Albedo - the flat color of a texture, typically with all baked in shadows and highlights removed. (Full color - taken from the main material)</li>
+          <li>Emissive - the parts of a texture that glows in the dark. (Full color)</li>
+          <li>Normal - describes the bumpiness of a texture (see below)</li>
+          <li>Specular - describes how shiny different parts of the texture are. Polished metal vs. cloth. (Gray scale)</li>
+        </ol>
+        <p>Emissive textures are ordinary RGB images that are used to describe areas that are self-illuminating / glow in the dark and are unaffected by lighting.</p>
+        <p>Similarly the specular is nothing more than a gray scale image that describes the roughness of the various parts of a texture.</p>
+        <p>So far so good, but normal maps are more complicated and require some explanation...</p>
+        
+        <h3 id="normal-mapping" class="section"><a class="anchor-link left" href="#normal-mapping"><i class="icofont-laika link">&#xef71;</i></a>Normal mapping</h3>
+        <p>To light a pixel on a surface we need to know it&#39;s <a href="https://en.wikipedia.org/wiki/Normal_(geometry">normal</a>). A normal is just an arrow (vector) that points away from a surface at a tangent to the plane. Imagine a table with an arrow pointing at the ceiling.</p>
+        <p>The normal is used to work out how much light from a light source makes it to the camera / eye and therefore allows us (as people) to interpret what angle the surface was at.</p>
+        <p>Consider a sphere - which is a single surface. The angle of the normal of a sphere&#39;s surface rotates around depending on which point of the sphere you&#39;re looking at. This change in normal is what gives the appearance of a smooth spherical surface, as opposed to a flat circle.</p>
+        <p>Knowing that, we can take a completely flat image and <em>pretend</em> it&#39;s bumpy or textured by <em>bending</em> the real normal to a new angle at different co-ordinates on the texture.</p>
+        
+        <h3 id="height-bump-maps" class="section"><a class="anchor-link left" href="#height-bump-maps"><i class="icofont-laika link">&#xef71;</i></a>Height / Bump maps</h3>
+        <p>If you want to describe bumpiness (i.e. the height) of a mountain range, on a 2D top down image, then a good way to do that is the simply draw a gray scale image where black is sea level and white is the maximum height of the mountains.</p>
+        <p>This is called a <a href="https://en.wikipedia.org/wiki/Heightmap">height or bump map</a>.</p>
+        <p>The great thing about height / bump maps is that they&#39;re really easy for humans to understand, and even to have some intuition about how to draw by hand. But they are really inefficient in two very specific ways:</p>
+        <ol class="arabic">
+          <li>
+            <p>They&#39;re a very poor use of data. You&#39;ve probably drawn your gray scale image and saved it as a full RGBA PNG, even though you could pack all of the data into a single channel. Weird to think about, maybe, but R and G and B and A are really gray scale i.e. values from 0 to 1 or 0 to 255, meaning you can have 4 gray scale images in one!</p>
+          </li>
+          <li>
+            <p>To calculate a normal from a bump map, the graphics engine has to process the image by looking at any given pixel and calculating the rate of change between it and it&#39;s neighbors. Either as a pre-processing step or on the fly.</p>
+          </li>
+        </ol>
+        
+        <h3 id="normal-maps" class="section"><a class="anchor-link left" href="#normal-maps"><i class="icofont-laika link">&#xef71;</i></a>Normal maps</h3>
+        <p>Normal maps solve both those problems at once. A normal is a 3 part vector that describes angle and magnitude with a single co-ordinate. For example a vector <code>(2, 5, 1)</code> describes a point in space, relative to the origin <code>(0, 0, 0)</code> and from the point we can determine amount / distance and angle.</p>
+        <p>What you can do then, is encode the deformed normal at any given pixel into an RGB image where red is the X, green is a Y, and blue is the Z. Now we have nicely pre-packed data that requires no processing.</p>
+        
+        <h3 id="making-normal-maps" class="section"><a class="anchor-link left" href="#making-normal-maps"><i class="icofont-laika link">&#xef71;</i></a>Making normal maps</h3>
+        <p>Normal maps are complicated and are usually generated by a computer from very high resolution 3D models and then applied to lower resolution models to give the appearance of there being more complexity than is really present.</p>
+        <p>However, given that Indigo is going to be used for 2D graphics and probably pixel art, chances are that you don&#39;t have any high res 3D models of your artwork. So how will you make your normal maps?</p>
+        <p>As stated earlier:</p>
+        <ul>
+          <li>Humans are good at making height maps.</li>
+          <li>Equally, humans are generally <em>not</em> good at hand crafting normal maps.</li>
+        </ul>
+        <p>But, both formats encode normals in either an unprocessed or pre-processed way.</p>
+        <p><a href="https://indigoengine.io/tools/">Wouldn&#39;t it be nice if someone had made a tool that converted bump maps to normal maps for you?</a>
+        &lt;script type=&quot;text/javascript&quot; src=&quot;materials.md.js&quot; defer&gt;&lt;/script&gt;
+        &lt;script type=&quot;text/javascript&quot; src=&quot;mdoc.js&quot; defer&gt;&lt;/script&gt;</p>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://typelevel.org/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

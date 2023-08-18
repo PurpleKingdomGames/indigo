@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>Hello, Indigo!</title>
+  
+  
+  <meta name="description" content="website2"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="../../helium/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../helium/laika-helium.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/custom.css" />
+  <script src="../../helium/laika-helium.js"></script>
+    <script src="../hello-indigo.md.js"></script>
+    <script src="../mdoc.js"></script>
+    <script src="../../03-gameloop/frame-context.md.js"></script>
+    <script src="../../03-gameloop/mdoc.js"></script>
+    <script src="../../03-gameloop/outcome.md.js"></script>
+    <script src="../../06-presentation/materials.md.js"></script>
+    <script src="../../06-presentation/cameras.md.js"></script>
+    <script src="../../06-presentation/lighting.md.js"></script>
+    <script src="../../06-presentation/depth.md.js"></script>
+    <script src="../../06-presentation/clones-and-mutants.md.js"></script>
+    <script src="../../06-presentation/animation.md.js"></script>
+    <script src="../../06-presentation/layers.md.js"></script>
+    <script src="../../06-presentation/audio.md.js"></script>
+    <script src="../../06-presentation/scene-update-fragment.md.js"></script>
+    <script src="../../06-presentation/boundaries.md.js"></script>
+    <script src="../../06-presentation/shapes.md.js"></script>
+    <script src="../../06-presentation/text-and-fonts.md.js"></script>
+    <script src="../../06-presentation/mdoc.js"></script>
+    <script src="../../08-time/signals.md.js"></script>
+    <script src="../../08-time/mdoc.js"></script>
+    <script src="../../08-time/time-varying-values.md.js"></script>
+    <script src="../../07-shaders/blending.md.js"></script>
+    <script src="../../07-shaders/mdoc.js"></script>
+    <script src="../../07-shaders/shaders-overview.md.js"></script>
+    <script src="../../09-uicomponents/button.md.js"></script>
+    <script src="../../09-uicomponents/input-field.md.js"></script>
+    <script src="../../09-uicomponents/hit-area.md.js"></script>
+    <script src="../../09-uicomponents/radio-button.md.js"></script>
+    <script src="../../09-uicomponents/mdoc.js"></script>
+    <script src="../../04-organisation/scene-management.md.js"></script>
+    <script src="../../04-organisation/boot-and-start-up.md.js"></script>
+    <script src="../../04-organisation/subsystems.md.js"></script>
+    <script src="../../04-organisation/mdoc.js"></script>
+    <script src="../../02-guides/mdoc.js"></script>
+    <script src="../../02-guides/howto-fire-shader.md.js"></script>
+    <script src="../../02-guides/howto-custom-entity.md.js"></script>
+    <script src="../../05-platform/assets.md.js"></script>
+    <script src="../../05-platform/logging.md.js"></script>
+    <script src="../../05-platform/mdoc.js"></script>
+    <script src="../../05-platform/input-handling.md.js"></script>
+    <script src="../../10-information/key-concepts.md.js"></script>
+    <script src="../../10-information/antipatterns.md.js"></script>
+    <script src="../../10-information/mdoc.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar" class="light-default dark-default">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="image-link" href="../../"><img src="../../img/indigo_logo_solid_text.svg" alt="Homepage" title="Indigo" width="150" height="50"></a>
+
+  <div class="row links">
+    
+    <a class="button-link" href="https://discord.gg/b5CD47g">Discord</a>
+    
+    <a class="button-link" href="/api">API</a>
+    
+    <a class="button-link" href="https://github.com/PurpleKingdomGames/indigo">Github</a>
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+    <a class="button-link" href="https://discord.gg/b5CD47g">Discord</a>
+    
+    <a class="button-link" href="/api">API</a>
+    
+    <a class="button-link" href="https://github.com/PurpleKingdomGames/indigo">Github</a>
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../../table-of-content/">Contents</a></li>
+    <li class="level1 nav-header">Setup &amp; Configuration</li>
+    <li class="level2 nav-leaf"><a href="../examples/">Examples</a></li>
+    <li class="level2 active nav-leaf"><a href="#">Hello, Indigo!</a></li>
+    <li class="level2 nav-leaf"><a href="../project-templates/">Mill &amp; SBT Templates</a></li>
+    <li class="level2 nav-leaf"><a href="../quickstart/">Quick start</a></li>
+    <li class="level1 nav-header">Guides</li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-custom-entity/">How to make a custom entity</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-fire-shader/">How to write a fire shader</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-hello-indigo-tyrian/">How to make a responsive UI using Tyrian</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-indigo-game/">Converting <code>IndigoSandbox</code> to <code>IndigoGame</code></a></li>
+    <li class="level1 nav-header">Gameloop</li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/events/">Events</a></li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/frame-context/">Frame context</a></li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/outcome/">Outcome Type</a></li>
+    <li class="level1 nav-header">Organisation</li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/boot-and-start-up/">Boot &amp; Start Up</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/game-entry-points/">Game Entry Points</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/scene-management/">What are Scenes?</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/subsystems/">What SubSystems are</a></li>
+    <li class="level1 nav-header">Platform &amp; IO</li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/assets/">Assets &amp; Asset Loading</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/cross-platform-publishing/">Cross Platform Publishing</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/importers/">File Importers</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/input-handling/">Input Handling</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/loading-and-saving-data/">Loading &amp; Saving Data</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/logging/">Logging</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/networking/">Networking</a></li>
+    <li class="level1 nav-header">Presentation</li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/animation/">Animation</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/audio/">Audio</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/boundaries/">Boundaries</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/cameras/">Cameras</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/clones-and-mutants/">Clones &amp; Mutants</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/depth/">Depth</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/layers/">Layers</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/lighting/">Lighting</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/materials/">Materials</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/primitives/">Primitives &amp; Building Blocks</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/scene-update-fragment/">SceneUpdateFragment</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/shapes/">Shapes</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/text-and-fonts/">Text &amp; Fonts</a></li>
+    <li class="level1 nav-header">Shaders</li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/blending/">Blending</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/constants/">Shader Constants, Variables, and Outputs</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/premultiplied-alpha/">Premultiplied Alpha</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/shaders-overview/">Shaders Overview</a></li>
+    <li class="level1 nav-header">Time</li>
+    <li class="level2 nav-leaf"><a href="../../08-time/gametime/">GameTime</a></li>
+    <li class="level2 nav-leaf"><a href="../../08-time/signals/">Signals &amp; Signal Functions</a></li>
+    <li class="level2 nav-leaf"><a href="../../08-time/time-varying-values/">Time Varying Values</a></li>
+    <li class="level1 nav-header">UI Components</li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/button/">Buttons</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/hit-area/">Hit Areas</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/input-field/">Input Fields</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/radio-button/">Radio Buttons</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/ui-components/">UI Components</a></li>
+    <li class="level1 nav-header">Misc</li>
+    <li class="level2 nav-leaf"><a href="../../10-information/alternatives/">Alternatives to Indigo</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/antipatterns/">Anti-Patterns</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/glossary/">Glossary</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/key-concepts/">Key Concepts</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/model-viewmodel-view/">Model, ViewModel, &amp; View</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/motivation-and-constraints/">Motivation &amp; Constraints</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/performance/">Performance</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/prior-art/">Prior Art</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/rendering-technology/">Rendering Technology</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Hello, Indigo!</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#choose-your-game-api-style">Choose your game API style</a></li>
+    <li class="level1 nav-node"><a href="#hello-indigo-2">&quot;Hello, Indigo!&quot;</a></li>
+    <li class="level2 nav-leaf"><a href="#running-the-demo-a-blank-screen">Running the demo - a blank screen</a></li>
+    <li class="level1 nav-leaf"><a href="#putting-something-on-the-screen">Putting something on the screen</a></li>
+    <li class="level1 nav-leaf"><a href="#what-else-can-graphics-do">What else can <code>Graphic</code>s do?</a></li>
+    <li class="level1 nav-leaf"><a href="#let-s-make-the-dot-move">Let&#39;s make the dot move</a></li>
+    <li class="level1 nav-leaf"><a href="#time-matters">Time matters</a></li>
+    <li class="level1 nav-node"><a href="#it-isn-t-a-game-if-you-can-t-play-with-it">It isn&#39;t a game, if you can&#39;t play with it</a></li>
+    <li class="level2 nav-leaf"><a href="#remembering-things">Remembering things</a></li>
+    <li class="level2 nav-leaf"><a href="#adding-interaction">Adding interaction</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="hello-indigo-1" class="title">Hello, Indigo!</h1>
+        <p>This is a quick start tutorial to help you build something with Indigo.</p>
+        <p>There are <a href="https://github.com/PurpleKingdomGames/hello-indigo">Mill</a> and <a href="https://github.com/PurpleKingdomGames/hello-indigo-sbt">SBT</a> repositories that go with this guide, please note that you can follow the games original development progression by looking through the commits on the <em>Mill</em> version.</p>
+        
+        <h2 id="choose-your-game-api-style" class="section"><a class="anchor-link left" href="#choose-your-game-api-style"><i class="icofont-laika link">&#xef71;</i></a>Choose your game API style</h2>
+        <p>Indigo comes with three game templates. Called entry points, they are just traits you extend that help give your game some shape, and can be described as:</p>
+        <ol class="arabic">
+          <li><code>IndigoSandbox</code> - The smallest API interface, great for trying things out but doesn&#39;t scale as well, and is missing some functionality.</li>
+          <li><code>IndigoDemo</code> - Technically gives you access to everything, but doesn&#39;t provide Scene management (you&#39;d have to roll your own).</li>
+          <li><code>IndigoGame</code> - Like <code>IndigoDemo</code>, but with Scene management built it.</li>
+        </ol>
+        <blockquote>You can also write your own entry point, take a look at the code for <code>IndigoSandbox</code> in the repo.</blockquote>
+        <p>In this guide, we&#39;ll be using <code>IndigoSandbox</code> for brevity and our &quot;game&quot; will be called <code>helloindigo</code>.</p>
+        <blockquote>Reminder: The sandbox is limited in what it can do, and it geared towards briefly trying things out without the clutter of the two larger interfaces.</blockquote>
+        
+        <h2 id="hello-indigo-2" class="section"><a class="anchor-link left" href="#hello-indigo-2"><i class="icofont-laika link">&#xef71;</i></a>&quot;Hello, Indigo!&quot;</h2>
+        <p>We&#39;ll skip over the initial project set up and assume that you followed the <a href="../quickstart/">set up guide</a>, or have <a href="https://github.com/PurpleKingdomGames/hello-indigo">checked out the repo</a> for reference.</p>
+        <p>Here is our starting point:</p>
+        <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">indigo</span><span>.*
+</span><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">scalajs</span><span>.</span><span class="identifier">js</span><span>.</span><span class="identifier">annotation</span><span>.</span><span class="type-name">JSExportTopLevel</span><span>
+
+</span><span class="comment">// @JSExportTopLevel(&quot;IndigoGame&quot;) // Pandering to mdoc
+</span><span class="keyword">object</span><span> </span><span class="type-name">HelloIndigo</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">IndigoSandbox</span><span>[</span><span class="type-name">Unit</span><span>, </span><span class="type-name">Unit</span><span>] {
+
+  </span><span class="keyword">val</span><span> </span><span class="identifier">config</span><span>: </span><span class="type-name">GameConfig</span><span> =
+    </span><span class="type-name">GameConfig</span><span>.</span><span class="keyword">default</span><span>
+
+  </span><span class="keyword">val</span><span> </span><span class="identifier">animations</span><span>: </span><span class="type-name">Set</span><span>[</span><span class="type-name">Animation</span><span>] =
+    </span><span class="type-name">Set</span><span>()
+
+  </span><span class="keyword">val</span><span> </span><span class="identifier">assets</span><span>: </span><span class="type-name">Set</span><span>[</span><span class="type-name">AssetType</span><span>] =
+    </span><span class="type-name">Set</span><span>()
+
+  </span><span class="keyword">val</span><span> </span><span class="identifier">fonts</span><span>: </span><span class="type-name">Set</span><span>[</span><span class="type-name">FontInfo</span><span>] =
+    </span><span class="type-name">Set</span><span>()
+
+  </span><span class="keyword">val</span><span> </span><span class="identifier">shaders</span><span>: </span><span class="type-name">Set</span><span>[</span><span class="type-name">Shader</span><span>] =
+    </span><span class="type-name">Set</span><span>()
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">setup</span><span>(
+      </span><span class="identifier">assetCollection</span><span>: </span><span class="type-name">AssetCollection</span><span>,
+      </span><span class="identifier">dice</span><span>: </span><span class="type-name">Dice</span><span>
+  ): </span><span class="type-name">Outcome</span><span>[</span><span class="type-name">Startup</span><span>[</span><span class="type-name">Unit</span><span>]] =
+    </span><span class="type-name">Outcome</span><span>(</span><span class="type-name">Startup</span><span>.</span><span class="type-name">Success</span><span>(()))
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">initialModel</span><span>(</span><span class="identifier">startupData</span><span>: </span><span class="type-name">Unit</span><span>): </span><span class="type-name">Outcome</span><span>[</span><span class="type-name">Unit</span><span>] =
+    </span><span class="type-name">Outcome</span><span>(())
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">updateModel</span><span>(
+      </span><span class="identifier">context</span><span>: </span><span class="type-name">FrameContext</span><span>[</span><span class="type-name">Unit</span><span>],
+      </span><span class="identifier">model</span><span>: </span><span class="type-name">Unit</span><span>
+  ): </span><span class="type-name">GlobalEvent</span><span> =&gt; </span><span class="type-name">Outcome</span><span>[</span><span class="type-name">Unit</span><span>] =
+    </span><span class="identifier">_</span><span> =&gt; </span><span class="type-name">Outcome</span><span>(())
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">present</span><span>(
+      </span><span class="identifier">context</span><span>: </span><span class="type-name">FrameContext</span><span>[</span><span class="type-name">Unit</span><span>],
+      </span><span class="identifier">model</span><span>: </span><span class="type-name">Unit</span><span>
+  ): </span><span class="type-name">Outcome</span><span>[</span><span class="type-name">SceneUpdateFragment</span><span>] =
+    </span><span class="type-name">Outcome</span><span>(
+      </span><span class="type-name">SceneUpdateFragment</span><span>.</span><span class="identifier">empty</span><span>
+    )
+
+}</span></code></pre>
+        <p>A lot of this is self explanatory hopefully, but let&#39;s go through a couple of the more note worthy points.</p>
+        <p>The <code>indigo._</code> import is optional, but conveniently brings in all of the basic syntax so that you don&#39;t need to worry about finding things.</p>
+        <p>Next up are the only two lines of Scala.js you have to know:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">scalajs</span><span>.</span><span class="identifier">js</span><span>.</span><span class="identifier">annotation</span><span>.</span><span class="type-name">JSExportTopLevel</span><span>
+</span><span class="annotation">@JSExportTopLevel</span><span>(</span><span class="string-literal">&quot;IndigoGame&quot;</span><span>)</span></code></pre>
+        <p>Indigo games are Scala.js projects. We&#39;ve worked hard to make Indigo feel as much like a normal Scala project as possible, however, we do need a hook for the page. If you&#39;re using the standard Indigo Mill or SBT plugins, you <em><strong>must name your game &quot;IndigoGame&quot; or it won&#39;t work</strong></em>. Once you move to your own page embed you can call it whatever you like!</p>
+        <p><code>IndigoSandbox</code> takes two type parameters that define your start up data type, and the type of your model. Later on we&#39;ll introduce a real model, but for now we&#39;re just using <code>Unit</code> to say &quot;I&#39;m not using these&quot;.</p>
+        <p>The other entry points mentioned earlier require you to declare more type parameters to cover: Boot data, start up data, model, and view model.</p>
+        <p>Everything else is just filling in the blanks to make it compile.</p>
+        <p>One small thing to note is that most types in Indigo try to provide sensible defaults such as <code>GameConfig.default</code> and <code>SceneUpdateFragment.empty</code>, so it&#39;s always worth checking the companion object.</p>
+        
+        <h3 id="running-the-demo-a-blank-screen" class="section"><a class="anchor-link left" href="#running-the-demo-a-blank-screen"><i class="icofont-laika link">&#xef71;</i></a>Running the demo - a blank screen</h3>
+        <p>We&#39;re going to follow the Mill version of the project below, but the SBT version is almost identical, substituting <code>sbt runGame</code> in place of <code>mill helloindigo.runGame</code>.</p>
+        <p>So assuming you have followed the <a href="../quickstart/">set up guide</a>, to run the demo enter the following from your command line:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>mill helloindigo.runGame</span></code></pre>
+        
+        <h2 id="putting-something-on-the-screen" class="section"><a class="anchor-link left" href="#putting-something-on-the-screen"><i class="icofont-laika link">&#xef71;</i></a>Putting something on the screen</h2>
+        <p>On the assumption that you have the same assets as the demo repo (note that you can change the asset source folder in the build settings!):</p>
+        <p>Replace:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">assets</span><span>: </span><span class="type-name">Set</span><span>[</span><span class="type-name">AssetType</span><span>] =
+  </span><span class="type-name">Set</span><span>()</span></code></pre>
+        <p>&lt;div id=&quot;mdoc-html-run1&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <p>with:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">assetName</span><span> = </span><span class="type-name">AssetName</span><span>(</span><span class="string-literal">&quot;dots&quot;</span><span>)
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">assets</span><span>: </span><span class="type-name">Set</span><span>[</span><span class="identifier">indigo</span><span>.</span><span class="type-name">AssetType</span><span>] = </span><span class="type-name">Set</span><span>(
+  </span><span class="type-name">AssetType</span><span>.</span><span class="type-name">Image</span><span>(</span><span class="identifier">assetName</span><span>, </span><span class="type-name">AssetPath</span><span>(</span><span class="string-literal">&quot;assets/dots.png&quot;</span><span>))
+)</span></code></pre>
+        <p>This tells indigo to load your image asset and file it away for future reference. To recall it when needed, you give it an <code>AssetName</code> as an identifier.</p>
+        <p>Next replace:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">SceneUpdateFragment</span><span>.</span><span class="identifier">empty</span></code></pre>
+        <p>with:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">SceneUpdateFragment</span><span>(
+  </span><span class="type-name">Graphic</span><span>(</span><span class="type-name">Rectangle</span><span>(</span><span class="number-literal">0</span><span>, </span><span class="number-literal">0</span><span>, </span><span class="number-literal">32</span><span>, </span><span class="number-literal">32</span><span>), </span><span class="number-literal">1</span><span>, </span><span class="type-name">Material</span><span>.</span><span class="type-name">Bitmap</span><span>(</span><span class="identifier">assetName</span><span>))
+)</span></code></pre>
+        <p>&lt;div id=&quot;mdoc-html-run3&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <p>Note the use of <code>assetName</code> again to identify which image you want to use.</p>
+        <p><code>Graphic</code> is a member of the <code>SceneNode</code> types, which also include things like <code>Sprite</code>, <code>Text</code>, <code>Group</code>, and <code>Clone</code>. Please note that most of these have a range of constructors to try and make using them easier, and all of them follow a fluent API design to modify their parameters.</p>
+        <p>Run the demo again and you should see a graphic in the top left corner at position <code>(0,0)</code>!</p>
+        <p>It&#39;s quite small though... so come back to your code and replace <code>GameConfig.default</code> with:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">magnification</span><span> = </span><span class="number-literal">3</span><span>
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">config</span><span>: </span><span class="identifier">indigo</span><span>.</span><span class="type-name">GameConfig</span><span> =
+  </span><span class="type-name">GameConfig</span><span>.</span><span class="keyword">default</span><span>.</span><span class="identifier">withMagnification</span><span>(</span><span class="identifier">magnification</span><span>)</span></code></pre>
+        <p>Indigo is built for pixel art, and will automatically scale up not just your graphics, but also things like mouse positions. You just have to build your game as if the game was running at a 1:1 pixel ratio and Indigo will do the rest.</p>
+        
+        <h2 id="what-else-can-graphics-do" class="section"><a class="anchor-link left" href="#what-else-can-graphics-do"><i class="icofont-laika link">&#xef71;</i></a>What else can <code>Graphic</code>s do?</h2>
+        <p><code>Graphic</code>s are relatively cheap on-screen objects, in terms of performance, but their unique party trick is being able to crop their contents. Update this:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">SceneUpdateFragment</span><span>(
+  </span><span class="type-name">Graphic</span><span>(</span><span class="type-name">Rectangle</span><span>(</span><span class="number-literal">0</span><span>, </span><span class="number-literal">0</span><span>, </span><span class="number-literal">32</span><span>, </span><span class="number-literal">32</span><span>), </span><span class="number-literal">1</span><span>, </span><span class="type-name">Material</span><span>.</span><span class="type-name">Bitmap</span><span>(</span><span class="identifier">assetName</span><span>))
+)</span></code></pre>
+        <p>&lt;div id=&quot;mdoc-html-run5&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <p>to:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">SceneUpdateFragment</span><span>(
+  </span><span class="type-name">Graphic</span><span>(</span><span class="type-name">Rectangle</span><span>(</span><span class="number-literal">0</span><span>, </span><span class="number-literal">0</span><span>, </span><span class="number-literal">32</span><span>, </span><span class="number-literal">32</span><span>), </span><span class="number-literal">1</span><span>, </span><span class="type-name">Material</span><span>.</span><span class="type-name">Bitmap</span><span>(</span><span class="identifier">assetName</span><span>)),
+  </span><span class="type-name">Graphic</span><span>(</span><span class="type-name">Rectangle</span><span>(</span><span class="number-literal">0</span><span>, </span><span class="number-literal">0</span><span>, </span><span class="number-literal">32</span><span>, </span><span class="number-literal">32</span><span>), </span><span class="number-literal">1</span><span>, </span><span class="type-name">Material</span><span>.</span><span class="type-name">Bitmap</span><span>(</span><span class="identifier">assetName</span><span>))
+    .</span><span class="identifier">withCrop</span><span>(</span><span class="type-name">Rectangle</span><span>(</span><span class="number-literal">16</span><span>, </span><span class="number-literal">16</span><span>, </span><span class="number-literal">16</span><span>, </span><span class="number-literal">16</span><span>))
+    .</span><span class="identifier">withRef</span><span>(</span><span class="number-literal">8</span><span>, </span><span class="number-literal">8</span><span>)
+    .</span><span class="identifier">moveTo</span><span>(</span><span class="identifier">config</span><span>.</span><span class="identifier">viewport</span><span>.</span><span class="identifier">giveDimensions</span><span>(</span><span class="identifier">magnification</span><span>).</span><span class="identifier">center</span><span>)
+)</span></code></pre>
+        <p>&lt;div id=&quot;mdoc-html-run6&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <p>Run it again and you should now have just the yellow circle right in the middle of the screen. The image is 32x32, and we&#39;ve cropped down to the bottom right corner which is at location 16x16 and is 16x16 pixels in size. We&#39;ve then moved the &quot;reference point&quot; which is the point Indigo uses to position, scale, and rotate things to being in the middle of the new graphic, i.e. 8x8. Finally we moved it to the middle of the screen. Normally the top left of the image would now be at the screen&#39;s center, but because we moved the reference point, the graphic is placed evenly over the mid point.</p>
+        <blockquote>An important but subtle thing has happened here, that if you&#39;re used to conventional game engines might surprise you. Normally to add an entity to the screen you have to explicitly add it (perhaps after a callback or event), and then later, explicitly remove or delete it by location in the tree or by id. This is because usually scene graphs are mutable trees of some kind, and each leaf carries state and so on. In Indigo, the view is stateless and simply draws whatever is currently returned by the <code>present</code> function. So &quot;deleting&quot; something from the view is just the same as omitting it from the returned <code>SceneUpdateFragment</code> on this frame.</blockquote>
+        
+        <h2 id="let-s-make-the-dot-move" class="section"><a class="anchor-link left" href="#let-s-make-the-dot-move"><i class="icofont-laika link">&#xef71;</i></a>Let&#39;s make the dot move</h2>
+        <p>We&#39;re going to make the dot move using a <code>Signal</code>. Signals are powerful but a bit complicated, so we&#39;re going to use it here just to show you them in action and get rid of it again in the next step.</p>
+        <p>You can get the running time of the game from the <code>FrameContext</code> provided in all update functions:</p>
+        <p>Replace:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">Graphic</span><span>(</span><span class="type-name">Rectangle</span><span>(</span><span class="number-literal">0</span><span>, </span><span class="number-literal">0</span><span>, </span><span class="number-literal">32</span><span>, </span><span class="number-literal">32</span><span>), </span><span class="number-literal">1</span><span>, </span><span class="type-name">Material</span><span>.</span><span class="type-name">Bitmap</span><span>(</span><span class="identifier">assetName</span><span>))
+  .</span><span class="identifier">withCrop</span><span>(</span><span class="type-name">Rectangle</span><span>(</span><span class="number-literal">16</span><span>, </span><span class="number-literal">16</span><span>, </span><span class="number-literal">16</span><span>, </span><span class="number-literal">16</span><span>))
+  .</span><span class="identifier">withRef</span><span>(</span><span class="number-literal">8</span><span>, </span><span class="number-literal">8</span><span>)
+  .</span><span class="identifier">moveTo</span><span>(</span><span class="identifier">config</span><span>.</span><span class="identifier">viewport</span><span>.</span><span class="identifier">giveDimensions</span><span>(</span><span class="identifier">magnification</span><span>).</span><span class="identifier">center</span><span>)</span></code></pre>
+        <p>&lt;div id=&quot;mdoc-html-run8&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <p>with:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">Graphic</span><span>(</span><span class="type-name">Rectangle</span><span>(</span><span class="number-literal">0</span><span>, </span><span class="number-literal">0</span><span>, </span><span class="number-literal">32</span><span>, </span><span class="number-literal">32</span><span>), </span><span class="number-literal">1</span><span>, </span><span class="type-name">Material</span><span>.</span><span class="type-name">Bitmap</span><span>(</span><span class="identifier">assetName</span><span>))
+  .</span><span class="identifier">withCrop</span><span>(</span><span class="type-name">Rectangle</span><span>(</span><span class="number-literal">16</span><span>, </span><span class="number-literal">16</span><span>, </span><span class="number-literal">16</span><span>, </span><span class="number-literal">16</span><span>))
+  .</span><span class="identifier">withRef</span><span>(</span><span class="number-literal">8</span><span>, </span><span class="number-literal">8</span><span>)
+  .</span><span class="identifier">moveTo</span><span>(
+    </span><span class="type-name">Signal</span><span>
+      .</span><span class="type-name">Orbit</span><span>(</span><span class="identifier">config</span><span>.</span><span class="identifier">viewport</span><span>.</span><span class="identifier">giveDimensions</span><span>(</span><span class="identifier">magnification</span><span>).</span><span class="identifier">center</span><span>, </span><span class="number-literal">30</span><span>)
+      .</span><span class="identifier">map</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">toPoint</span><span>)
+      .</span><span class="identifier">at</span><span>(</span><span class="identifier">context</span><span>.</span><span class="identifier">running</span><span>)
+  )</span></code></pre>
+        <p>&lt;div id=&quot;mdoc-html-run9&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <p>Signals are just a function from <code>time: Seconds =&gt; A</code>. This code uses an inbuilt Signal called Orbit that rotates around a point at a fixed distance based on the current time.</p>
+        <pre class="keep-together pdf epub"><code class="text">Question: Orbit looks a bit simple, what if you wanted it to rotate slower or faster?
+
+Answer: Slow down or speed up time! (There is an `affectTime` function for this.)</code></pre>
+        <p>Stepping through the code, we request an Orbit signal that rotates around the center of the screen at a distance of 30 pixels. The signal produces a <code>Vector2</code> so we have to convert that to a <code>Point</code> because Indigo insists that everything is drawn on a whole pixel. Finally we tell the signal what time it is, and it produces the value we want: A point to move our dot to.</p>
+        
+        <h2 id="time-matters" class="section"><a class="anchor-link left" href="#time-matters"><i class="icofont-laika link">&#xef71;</i></a>Time matters</h2>
+        <p>Before we move on, if you&#39;re new to game development, it&#39;s worth noting the importance of that last bit. All movement in your real game should be based on time, one way or another.</p>
+        <p>Consider how we might move something along the x-axis:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">graphic</span><span> = </span><span class="type-name">Graphic</span><span>(</span><span class="number-literal">10</span><span>, </span><span class="number-literal">10</span><span>, </span><span class="type-name">Material</span><span>.</span><span class="type-name">Bitmap</span><span>(</span><span class="type-name">AssetName</span><span>(</span><span class="string-literal">&quot;graphic&quot;</span><span>)))</span></code></pre>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">graphic</span><span>.</span><span class="identifier">moveBy</span><span>(</span><span class="number-literal">10</span><span>, </span><span class="number-literal">0</span><span>)</span></code></pre>
+        <p>&lt;div id=&quot;mdoc-html-run11&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <p>Every time that code is run, it will increment the graphic&#39;s x position by 10. Great! Our games runs at 60 frames per second (FPS) so we&#39;re going to move at a velocity of 600 pixels per second. Or are we?</p>
+        <p>The problem is the frame processing times vary, meaning that at <em>best</em> you&#39;ll get 60 FPS / 600 pixels movement, but more likely your frame rate will fluctuate, peaking at 60 and occasionally dropping lower, maybe for a minor GC pause, maybe because you suddenly had a massive bit of processing to do for your game or just started drawing more stuff on the screen.</p>
+        <p>Either way the result is that your x-axis movement is no longer smooth.</p>
+        <p>The solution is to do this:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="comment">// time delta in seconds - 16.7ms is the delta for 60 frames per second
+</span><span class="keyword">val</span><span> </span><span class="identifier">d</span><span> = </span><span class="type-name">Seconds</span><span>(</span><span class="number-literal">0.01666</span><span>)
+</span><span class="identifier">graphic</span><span>.</span><span class="identifier">moveBy</span><span>((</span><span class="identifier">d</span><span> * </span><span class="number-literal">600</span><span>).</span><span class="identifier">toInt</span><span>, </span><span class="number-literal">0</span><span>)</span></code></pre>
+        <p>That is, we say that we want a velocity of 600 pixels per second, but multiply that 600 by the fraction of a second since the last frame update. At 60 FPS, <code>600 * 0.01666 = 9.996</code> i.e near as makes no odds the 10 pixel movement we wanted, while at a dip to 55 FPS we get <code>600 * 0.01818 = 10.908</code>, meaning that you move a little further to make up for lost time.</p>
+        <blockquote>This is known as <em><strong>frame independent movement</strong></em>.</blockquote>
+        
+        <h2 id="it-isn-t-a-game-if-you-can-t-play-with-it" class="section"><a class="anchor-link left" href="#it-isn-t-a-game-if-you-can-t-play-with-it"><i class="icofont-laika link">&#xef71;</i></a>It isn&#39;t a game, if you can&#39;t play with it</h2>
+        <p>Time to turn our animation into something you can fiddle with, if not exactly &quot;play&quot;.</p>
+        <p>Please note that you can see the <a href="https://github.com/PurpleKingdomGames/hello-indigo/commit/ca6f16c09c0d1be29da960dc26a9b7b5e8198bab">real diff here</a>.</p>
+        
+        <h3 id="remembering-things" class="section"><a class="anchor-link left" href="#remembering-things"><i class="icofont-laika link">&#xef71;</i></a>Remembering things</h3>
+        <p>So far, we&#39;ve just been drawing things, and we haven&#39;t needed to remember anything in order to decide what to draw or where it should go on the screen, and that&#39;s been fine.</p>
+        <p>As soon as you need to start remembering things, you need to use a <code>Model</code> or a <code>ViewModel</code>.</p>
+        <p>The idea of the <code>Model</code> is that it should be about storing the <em>abstract version of your game</em> meaning that it has no concept of pixels or screen dimensions of or anything like that. The <code>Model</code> should normally be decoupled from the view and all view logic (other than the view reading the model). Normally a save game would be generated from the model only.</p>
+        <p>Sometimes though, you need to remember things in screen space, concrete details about positions and animation states, and in those cases you would use a <code>ViewModel</code>. Conversely, a <code>ViewModel</code> should not hold any data you wouldn&#39;t mind losing, i.e. presentation data only, no game data.</p>
+        <p><strong>One limitation of the Sandbox is that in the spirit of minimalism, it has no <code>ViewModel</code>! So we&#39;re going to have to immediately break our rule a bit.</strong></p>
+        
+        <h3 id="adding-interaction" class="section"><a class="anchor-link left" href="#adding-interaction"><i class="icofont-laika link">&#xef71;</i></a>Adding interaction</h3>
+        <p>What we&#39;re going to do is make it so that the screen starts empty (apart from our graphic in the corner), and when you click the screen, a yellow dot is put into orbit around the center of the screen, at the distance you clicked.</p>
+        <p>To do that we&#39;re going to need a simple model, so let us define some case classes to hold our data.</p>
+        <p>Add this to the bottom of your file:</p>
+        <pre><code class="nohighlight"><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Model</span><span>(</span><span class="identifier">center</span><span>: </span><span class="type-name">Point</span><span>, </span><span class="identifier">dots</span><span>: </span><span class="type-name">Batch</span><span>[</span><span class="type-name">Dot</span><span>]) {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">addDot</span><span>(</span><span class="identifier">dot</span><span>: </span><span class="type-name">Dot</span><span>): </span><span class="type-name">Model</span><span> =
+    </span><span class="keyword">this</span><span>.</span><span class="identifier">copy</span><span>(</span><span class="identifier">dots</span><span> = </span><span class="identifier">dot</span><span> :: </span><span class="identifier">dots</span><span>)
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">update</span><span>(</span><span class="identifier">timeDelta</span><span>: </span><span class="type-name">Seconds</span><span>): </span><span class="type-name">Model</span><span> =
+    </span><span class="keyword">this</span><span>.</span><span class="identifier">copy</span><span>(</span><span class="identifier">dots</span><span> = </span><span class="identifier">dots</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">update</span><span>(</span><span class="identifier">timeDelta</span><span>)))
+}
+</span><span class="keyword">object</span><span> </span><span class="type-name">Model</span><span> {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">initial</span><span>(</span><span class="identifier">center</span><span>: </span><span class="type-name">Point</span><span>): </span><span class="type-name">Model</span><span> = </span><span class="type-name">Model</span><span>(</span><span class="identifier">center</span><span>, </span><span class="type-name">Batch</span><span>.</span><span class="identifier">empty</span><span>)
+}
+
+</span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Dot</span><span>(</span><span class="identifier">orbitDistance</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">angle</span><span>: </span><span class="type-name">Radians</span><span>) {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">update</span><span>(</span><span class="identifier">timeDelta</span><span>: </span><span class="type-name">Seconds</span><span>): </span><span class="type-name">Dot</span><span> =
+    </span><span class="keyword">this</span><span>.</span><span class="identifier">copy</span><span>(</span><span class="identifier">angle</span><span> = </span><span class="identifier">angle</span><span> + </span><span class="type-name">Radians</span><span>.</span><span class="identifier">fromSeconds</span><span>(</span><span class="identifier">timeDelta</span><span>))
+}</span></code></pre>
+        <p>Notes:</p>
+        <ol class="arabic">
+          <li>We&#39;ve got an <code>initial</code> model definition - got to start somewhere!</li>
+          <li>For convenience we&#39;ve got an <code>addDot</code> method on the model</li>
+          <li>We&#39;ve also got a simple <code>update</code> function that cascades through our model objects propagating the time delta we talked about earlier.</li>
+        </ol>
+        <p>Angles are measured in Radians, if you&#39;re not used to Radians then the <code>Radian</code> class has a <code>fromDegrees</code> function ...but you&#39;re a game developer now! Learn about radians!</p>
+        <p>Crash course:</p>
+        <pre class="keep-together pdf epub"><code class="text">360 degress = TAU
+TAU = 2 * PI
+PI = 3.1415926536
+
+So, 360 degrees in radians is 6.2831853072.
+
+A lot of game engines still talk about radians in terms of PI, but it&#39;s far more convenient to use TAU, and the Radians class has TAU based constants (as well as PI based ones).</code></pre>
+        <p>For Maths magic, you can&#39;t do better than <a href="https://twitter.com/FreyaHolmer">Freya Holmér&#39;s twitter feed</a>, <a href="https://twitter.com/FreyaHolmer/status/1202648662049996801">here</a> and <a href="https://twitter.com/FreyaHolmer/status/1173752820954214400?s=20">especially here</a> is how Radians work, for example.</p>
+        <p>I digress: Let&#39;s set up our model.</p>
+        <p>First you need to tell Indigo what class you&#39;re using for your Model, like so:</p>
+        <pre class="keep-together pdf epub"><code class="diff">- object HelloIndigo extends IndigoSandbox[Unit, Unit]
++ object HelloIndigo extends IndigoSandbox[Unit, Model]</code></pre>
+        <p>Then we need to give Indigo the empty or first version of our model.</p>
+        <p>Replace:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">initialModel</span><span>(</span><span class="identifier">startupData</span><span>: </span><span class="type-name">Unit</span><span>): </span><span class="type-name">Outcome</span><span>[</span><span class="type-name">Unit</span><span>] =
+  </span><span class="type-name">Outcome</span><span>(())</span></code></pre>
+        <p>&lt;div id=&quot;mdoc-html-run13&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <p>with:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">initialModel</span><span>(</span><span class="identifier">startupData</span><span>: </span><span class="type-name">Unit</span><span>): </span><span class="type-name">Outcome</span><span>[</span><span class="type-name">Model</span><span>] =
+  </span><span class="type-name">Outcome</span><span>(
+    </span><span class="type-name">Model</span><span>.</span><span class="identifier">initial</span><span>(
+      </span><span class="identifier">config</span><span>.</span><span class="identifier">viewport</span><span>.</span><span class="identifier">giveDimensions</span><span>(</span><span class="identifier">magnification</span><span>).</span><span class="identifier">center</span><span>
+    )
+  )</span></code></pre>
+        <p>&lt;div id=&quot;mdoc-html-run14&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <p>And then we need to update it, replace:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">updateModel</span><span>(
+    </span><span class="identifier">context</span><span>: </span><span class="type-name">FrameContext</span><span>[</span><span class="type-name">Unit</span><span>],
+    </span><span class="identifier">model</span><span>: </span><span class="type-name">Unit</span><span>
+): </span><span class="type-name">GlobalEvent</span><span> =&gt; </span><span class="type-name">Outcome</span><span>[</span><span class="type-name">Unit</span><span>] =
+  </span><span class="identifier">_</span><span> =&gt; </span><span class="type-name">Outcome</span><span>(())</span></code></pre>
+        <p>&lt;div id=&quot;mdoc-html-run15&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <p>with</p>
+        <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">updateModel</span><span>(
+    </span><span class="identifier">context</span><span>: </span><span class="type-name">FrameContext</span><span>[</span><span class="type-name">Unit</span><span>],
+    </span><span class="identifier">model</span><span>: </span><span class="type-name">Model</span><span>
+): </span><span class="type-name">GlobalEvent</span><span> =&gt; </span><span class="type-name">Outcome</span><span>[</span><span class="type-name">Model</span><span>] = {
+  </span><span class="keyword">case</span><span> </span><span class="identifier">e</span><span>: </span><span class="type-name">MouseEvent</span><span>.</span><span class="type-name">Click</span><span> =&gt;
+    </span><span class="keyword">val</span><span> </span><span class="identifier">clickPoint</span><span>       = </span><span class="identifier">e</span><span>.</span><span class="identifier">position</span><span>
+    </span><span class="keyword">val</span><span> </span><span class="identifier">adjustedPosition</span><span> = </span><span class="identifier">clickPoint</span><span> - </span><span class="identifier">model</span><span>.</span><span class="identifier">center</span><span>
+
+    </span><span class="type-name">Outcome</span><span>(
+      </span><span class="identifier">model</span><span>.</span><span class="identifier">addDot</span><span>(
+        </span><span class="type-name">Dot</span><span>(
+          </span><span class="type-name">Point</span><span>.</span><span class="identifier">distanceBetween</span><span>(</span><span class="identifier">model</span><span>.</span><span class="identifier">center</span><span>, </span><span class="identifier">clickPoint</span><span>).</span><span class="identifier">toInt</span><span>,
+          </span><span class="type-name">Radians</span><span>(
+            </span><span class="type-name">Math</span><span>.</span><span class="identifier">atan2</span><span>(
+              </span><span class="identifier">adjustedPosition</span><span>.</span><span class="identifier">x</span><span>.</span><span class="identifier">toDouble</span><span>,
+              </span><span class="identifier">adjustedPosition</span><span>.</span><span class="identifier">y</span><span>.</span><span class="identifier">toDouble</span><span>
+            )
+          )
+        )
+      )
+    )
+
+  </span><span class="keyword">case</span><span> </span><span class="type-name">FrameTick</span><span> =&gt;
+    </span><span class="type-name">Outcome</span><span>(</span><span class="identifier">model</span><span>.</span><span class="identifier">update</span><span>(</span><span class="identifier">context</span><span>.</span><span class="identifier">delta</span><span>))
+
+  </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span> =&gt;
+    </span><span class="type-name">Outcome</span><span>(</span><span class="identifier">model</span><span>)
+}</span></code></pre>
+        <p>&lt;div id=&quot;mdoc-html-run16&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <p>The model update function is just a function that has been partially applied with the context of this frame, and then a big pattern match on the event types.</p>
+        <blockquote><code>GlobalEvent</code> is a trait used to tag things as events. The largest source of errors / surprises in Indigo - in the authors experience so far - is from the fact that we can&#39;t enforce exhaustively checks on these events. In other words, you forgot to catch an event case somewhere.</blockquote>
+        <p>In this case, we&#39;re interested in two events. A <code>MouseEvent.Click(x, y)</code> so that we can add a new dot, and a <code>FrameTick</code>. FrameTick is a bit special because it always happens last... and it always happens!</p>
+        <p>When a mouse click is noticed, we call our <code>addDot</code> method with a new Dot, providing the orbital distance and the angle from the center of the screen to the point where we clicked the mouse using <code>Math.atan2(y, x)</code>.</p>
+        <p>Keep in mind that multiple events can and often do happen between frame ticks, which should only lead to model updates related to each specific event. In particular, changes that are intended to occur at a constant rate, like motion, should only be applied on frame ticks. Otherwise funny time-dilating side effects can occur.</p>
+        <p>Notice that everything is wrapped in an <code>Outcome</code>. An <code>Outcome[A]</code> is a Monad that holds a new state <code>A</code> and can also capture any events that are the ...outcome... of processing part of a frame. Outcome&#39;s can also be used to handle, recover from and report on errors. <code>Outcome</code>s can be composed together in lots of useful ways, much like the standard <code>Option</code> type.</p>
+        <p>Finally we need to draw something, replace:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>    </span><span class="type-name">SceneUpdateFragment</span><span>(
+      </span><span class="type-name">Graphic</span><span>(</span><span class="type-name">Rectangle</span><span>(</span><span class="number-literal">0</span><span>, </span><span class="number-literal">0</span><span>, </span><span class="number-literal">32</span><span>, </span><span class="number-literal">32</span><span>), </span><span class="number-literal">1</span><span>, </span><span class="type-name">Material</span><span>.</span><span class="type-name">Bitmap</span><span>(</span><span class="identifier">assetName</span><span>)),
+      </span><span class="type-name">Graphic</span><span>(</span><span class="type-name">Rectangle</span><span>(</span><span class="number-literal">0</span><span>, </span><span class="number-literal">0</span><span>, </span><span class="number-literal">32</span><span>, </span><span class="number-literal">32</span><span>), </span><span class="number-literal">1</span><span>, </span><span class="type-name">Material</span><span>.</span><span class="type-name">Bitmap</span><span>(</span><span class="identifier">assetName</span><span>))
+        .</span><span class="identifier">withCrop</span><span>(</span><span class="type-name">Rectangle</span><span>(</span><span class="number-literal">16</span><span>, </span><span class="number-literal">16</span><span>, </span><span class="number-literal">16</span><span>, </span><span class="number-literal">16</span><span>))
+        .</span><span class="identifier">withRef</span><span>(</span><span class="number-literal">8</span><span>, </span><span class="number-literal">8</span><span>)
+        .</span><span class="identifier">moveTo</span><span>(</span><span class="identifier">config</span><span>.</span><span class="identifier">viewport</span><span>.</span><span class="identifier">giveDimensions</span><span>(</span><span class="identifier">magnification</span><span>).</span><span class="identifier">center</span><span>)
+    )</span></code></pre>
+        <p>with:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">model</span><span> = </span><span class="type-name">Model</span><span>.</span><span class="identifier">initial</span><span>(</span><span class="type-name">Point</span><span>.</span><span class="identifier">zero</span><span>)</span></code></pre>
+        <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">drawDots</span><span>(
+    </span><span class="identifier">center</span><span>: </span><span class="type-name">Point</span><span>,
+    </span><span class="identifier">dots</span><span>: </span><span class="type-name">Batch</span><span>[</span><span class="type-name">Dot</span><span>]
+): </span><span class="type-name">Batch</span><span>[</span><span class="type-name">Graphic</span><span>[</span><span class="identifier">_</span><span>]] =
+  </span><span class="identifier">dots</span><span>.</span><span class="identifier">map</span><span> { </span><span class="identifier">dot</span><span> =&gt;
+    </span><span class="keyword">val</span><span> </span><span class="identifier">position</span><span> = </span><span class="type-name">Point</span><span>(
+      </span><span class="identifier">x</span><span> = (</span><span class="type-name">Math</span><span>.</span><span class="identifier">sin</span><span>(</span><span class="identifier">dot</span><span>.</span><span class="identifier">angle</span><span>.</span><span class="identifier">toDouble</span><span>) * </span><span class="identifier">dot</span><span>.</span><span class="identifier">orbitDistance</span><span> + </span><span class="identifier">center</span><span>.</span><span class="identifier">x</span><span>).</span><span class="identifier">toInt</span><span>,
+      </span><span class="identifier">y</span><span> = (</span><span class="type-name">Math</span><span>.</span><span class="identifier">cos</span><span>(</span><span class="identifier">dot</span><span>.</span><span class="identifier">angle</span><span>.</span><span class="identifier">toDouble</span><span>) * </span><span class="identifier">dot</span><span>.</span><span class="identifier">orbitDistance</span><span> + </span><span class="identifier">center</span><span>.</span><span class="identifier">y</span><span>).</span><span class="identifier">toInt</span><span>
+    )
+
+    </span><span class="type-name">Graphic</span><span>(</span><span class="type-name">Rectangle</span><span>(</span><span class="number-literal">0</span><span>, </span><span class="number-literal">0</span><span>, </span><span class="number-literal">32</span><span>, </span><span class="number-literal">32</span><span>), </span><span class="number-literal">1</span><span>, </span><span class="type-name">Material</span><span>.</span><span class="type-name">Bitmap</span><span>(</span><span class="identifier">assetName</span><span>))
+      .</span><span class="identifier">withCrop</span><span>(</span><span class="type-name">Rectangle</span><span>(</span><span class="number-literal">16</span><span>, </span><span class="number-literal">16</span><span>, </span><span class="number-literal">16</span><span>, </span><span class="number-literal">16</span><span>))
+      .</span><span class="identifier">withRef</span><span>(</span><span class="number-literal">8</span><span>, </span><span class="number-literal">8</span><span>)
+      .</span><span class="identifier">moveTo</span><span>(</span><span class="identifier">position</span><span>)
+  }
+
+</span><span class="type-name">SceneUpdateFragment</span><span>(
+  </span><span class="type-name">Graphic</span><span>(</span><span class="type-name">Rectangle</span><span>(</span><span class="number-literal">0</span><span>, </span><span class="number-literal">0</span><span>, </span><span class="number-literal">32</span><span>, </span><span class="number-literal">32</span><span>), </span><span class="number-literal">1</span><span>, </span><span class="type-name">Material</span><span>.</span><span class="type-name">Bitmap</span><span>(</span><span class="identifier">assetName</span><span>)) ::
+    </span><span class="identifier">drawDots</span><span>(</span><span class="identifier">model</span><span>.</span><span class="identifier">center</span><span>, </span><span class="identifier">model</span><span>.</span><span class="identifier">dots</span><span>)
+)</span></code></pre>
+        <p>&lt;div id=&quot;mdoc-html-run18&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <p>Run it, and hopefully clicking on the screen will add yellow dots!</p>
+        <p>If it doesn&#39;t work, remember you can always <a href="https://github.com/PurpleKingdomGames/hello-indigo">compare with the repo</a>!</p>
+        <p>Hopefully this has given you a little taste of how Indigo works. Next you could try:</p>
+        <ol class="arabic">
+          <li>Modifying this demo to choose a random coloured circle using the <code>Dice</code> instance in the <code>FrameContext</code>.</li>
+          <li>Sticking with the sandbox and trying out other features - perhaps take a look at the <a href="https://github.com/PurpleKingdomGames/indigo-examples/tree/master/examples">examples</a> for ideas?</li>
+          <li>Switch to a different entry point (<code>IndigoDemo</code> or <code>IndigoGame</code>), and see if you can modify the example above to fit. Could you make use of the view model? You&#39;d probably only need one scene, but how would it be set up?</li>
+          <li>Try porting the code above to a <code>SubSystem</code> - what will the relationship between the main game and the subsystem be?</li>
+        </ol>
+        <p>We hope you enjoyed creating something - however simple - that was visual, interactive and fun in Scala, and we look forward to seeing what you create next!
+        &lt;script type=&quot;text/javascript&quot; src=&quot;hello-indigo.md.js&quot; defer&gt;&lt;/script&gt;
+        &lt;script type=&quot;text/javascript&quot; src=&quot;mdoc.js&quot; defer&gt;&lt;/script&gt;</p>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://typelevel.org/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

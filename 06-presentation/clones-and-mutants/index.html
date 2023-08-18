@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>Clones &amp; Mutants</title>
+  
+  
+  <meta name="description" content="website2"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="../../helium/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../helium/laika-helium.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/custom.css" />
+  <script src="../../helium/laika-helium.js"></script>
+    <script src="../../01-quickstart/hello-indigo.md.js"></script>
+    <script src="../../01-quickstart/mdoc.js"></script>
+    <script src="../../03-gameloop/frame-context.md.js"></script>
+    <script src="../../03-gameloop/mdoc.js"></script>
+    <script src="../../03-gameloop/outcome.md.js"></script>
+    <script src="../materials.md.js"></script>
+    <script src="../cameras.md.js"></script>
+    <script src="../lighting.md.js"></script>
+    <script src="../depth.md.js"></script>
+    <script src="../clones-and-mutants.md.js"></script>
+    <script src="../animation.md.js"></script>
+    <script src="../layers.md.js"></script>
+    <script src="../audio.md.js"></script>
+    <script src="../scene-update-fragment.md.js"></script>
+    <script src="../boundaries.md.js"></script>
+    <script src="../shapes.md.js"></script>
+    <script src="../text-and-fonts.md.js"></script>
+    <script src="../mdoc.js"></script>
+    <script src="../../08-time/signals.md.js"></script>
+    <script src="../../08-time/mdoc.js"></script>
+    <script src="../../08-time/time-varying-values.md.js"></script>
+    <script src="../../07-shaders/blending.md.js"></script>
+    <script src="../../07-shaders/mdoc.js"></script>
+    <script src="../../07-shaders/shaders-overview.md.js"></script>
+    <script src="../../09-uicomponents/button.md.js"></script>
+    <script src="../../09-uicomponents/input-field.md.js"></script>
+    <script src="../../09-uicomponents/hit-area.md.js"></script>
+    <script src="../../09-uicomponents/radio-button.md.js"></script>
+    <script src="../../09-uicomponents/mdoc.js"></script>
+    <script src="../../04-organisation/scene-management.md.js"></script>
+    <script src="../../04-organisation/boot-and-start-up.md.js"></script>
+    <script src="../../04-organisation/subsystems.md.js"></script>
+    <script src="../../04-organisation/mdoc.js"></script>
+    <script src="../../02-guides/mdoc.js"></script>
+    <script src="../../02-guides/howto-fire-shader.md.js"></script>
+    <script src="../../02-guides/howto-custom-entity.md.js"></script>
+    <script src="../../05-platform/assets.md.js"></script>
+    <script src="../../05-platform/logging.md.js"></script>
+    <script src="../../05-platform/mdoc.js"></script>
+    <script src="../../05-platform/input-handling.md.js"></script>
+    <script src="../../10-information/key-concepts.md.js"></script>
+    <script src="../../10-information/antipatterns.md.js"></script>
+    <script src="../../10-information/mdoc.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar" class="light-default dark-default">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="image-link" href="../../"><img src="../../img/indigo_logo_solid_text.svg" alt="Homepage" title="Indigo" width="150" height="50"></a>
+
+  <div class="row links">
+    
+    <a class="button-link" href="https://discord.gg/b5CD47g">Discord</a>
+    
+    <a class="button-link" href="/api">API</a>
+    
+    <a class="button-link" href="https://github.com/PurpleKingdomGames/indigo">Github</a>
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+    <a class="button-link" href="https://discord.gg/b5CD47g">Discord</a>
+    
+    <a class="button-link" href="/api">API</a>
+    
+    <a class="button-link" href="https://github.com/PurpleKingdomGames/indigo">Github</a>
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../../table-of-content/">Contents</a></li>
+    <li class="level1 nav-header">Setup &amp; Configuration</li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/examples/">Examples</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/hello-indigo/">Hello, Indigo!</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/project-templates/">Mill &amp; SBT Templates</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/quickstart/">Quick start</a></li>
+    <li class="level1 nav-header">Guides</li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-custom-entity/">How to make a custom entity</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-fire-shader/">How to write a fire shader</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-hello-indigo-tyrian/">How to make a responsive UI using Tyrian</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-indigo-game/">Converting <code>IndigoSandbox</code> to <code>IndigoGame</code></a></li>
+    <li class="level1 nav-header">Gameloop</li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/events/">Events</a></li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/frame-context/">Frame context</a></li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/outcome/">Outcome Type</a></li>
+    <li class="level1 nav-header">Organisation</li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/boot-and-start-up/">Boot &amp; Start Up</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/game-entry-points/">Game Entry Points</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/scene-management/">What are Scenes?</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/subsystems/">What SubSystems are</a></li>
+    <li class="level1 nav-header">Platform &amp; IO</li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/assets/">Assets &amp; Asset Loading</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/cross-platform-publishing/">Cross Platform Publishing</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/importers/">File Importers</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/input-handling/">Input Handling</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/loading-and-saving-data/">Loading &amp; Saving Data</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/logging/">Logging</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/networking/">Networking</a></li>
+    <li class="level1 nav-header">Presentation</li>
+    <li class="level2 nav-leaf"><a href="../animation/">Animation</a></li>
+    <li class="level2 nav-leaf"><a href="../audio/">Audio</a></li>
+    <li class="level2 nav-leaf"><a href="../boundaries/">Boundaries</a></li>
+    <li class="level2 nav-leaf"><a href="../cameras/">Cameras</a></li>
+    <li class="level2 active nav-leaf"><a href="#">Clones &amp; Mutants</a></li>
+    <li class="level2 nav-leaf"><a href="../depth/">Depth</a></li>
+    <li class="level2 nav-leaf"><a href="../layers/">Layers</a></li>
+    <li class="level2 nav-leaf"><a href="../lighting/">Lighting</a></li>
+    <li class="level2 nav-leaf"><a href="../materials/">Materials</a></li>
+    <li class="level2 nav-leaf"><a href="../primitives/">Primitives &amp; Building Blocks</a></li>
+    <li class="level2 nav-leaf"><a href="../scene-update-fragment/">SceneUpdateFragment</a></li>
+    <li class="level2 nav-leaf"><a href="../shapes/">Shapes</a></li>
+    <li class="level2 nav-leaf"><a href="../text-and-fonts/">Text &amp; Fonts</a></li>
+    <li class="level1 nav-header">Shaders</li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/blending/">Blending</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/constants/">Shader Constants, Variables, and Outputs</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/premultiplied-alpha/">Premultiplied Alpha</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/shaders-overview/">Shaders Overview</a></li>
+    <li class="level1 nav-header">Time</li>
+    <li class="level2 nav-leaf"><a href="../../08-time/gametime/">GameTime</a></li>
+    <li class="level2 nav-leaf"><a href="../../08-time/signals/">Signals &amp; Signal Functions</a></li>
+    <li class="level2 nav-leaf"><a href="../../08-time/time-varying-values/">Time Varying Values</a></li>
+    <li class="level1 nav-header">UI Components</li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/button/">Buttons</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/hit-area/">Hit Areas</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/input-field/">Input Fields</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/radio-button/">Radio Buttons</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/ui-components/">UI Components</a></li>
+    <li class="level1 nav-header">Misc</li>
+    <li class="level2 nav-leaf"><a href="../../10-information/alternatives/">Alternatives to Indigo</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/antipatterns/">Anti-Patterns</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/glossary/">Glossary</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/key-concepts/">Key Concepts</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/model-viewmodel-view/">Model, ViewModel, &amp; View</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/motivation-and-constraints/">Motivation &amp; Constraints</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/performance/">Performance</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/prior-art/">Prior Art</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/rendering-technology/">Rendering Technology</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Clones &amp; Mutants</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#clones-vs-mutants">Clones vs Mutants</a></li>
+    <li class="level1 nav-leaf"><a href="#trading-off-convenience-for-speed">Trading off convenience for speed</a></li>
+    <li class="level1 nav-leaf"><a href="#performance-considerations">Performance considerations</a></li>
+    <li class="level1 nav-node"><a href="#using-clones-and-mutants">Using Clones and Mutants</a></li>
+    <li class="level2 nav-leaf"><a href="#clone-blanks">Clone blanks</a></li>
+    <li class="level2 nav-leaf"><a href="#clone-batch">Clone batch</a></li>
+    <li class="level2 nav-leaf"><a href="#clone-tiles">Clone tiles</a></li>
+    <li class="level2 nav-leaf"><a href="#mutants">Mutants</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="clones-mutants" class="title">Clones &amp; Mutants</h1>
+        <p>Sometimes you really need to draw a lot of things. Thousands and thousands of things.</p>
+        <p>If you try and do that with standard primitives you&#39;ll be disappointed to find that you quickly hit a ceiling somewhere in the hundreds. To be clear, hundreds of things is probably ample for most 2D games, but sometimes you need more.</p>
+        <p>The reason you&#39;ll cap out at perhaps 400 to 600 primitives is that each one carries an overhead through the rendering pipeline. Each one has to be processed, events collected, actions performed, animations updated, and finally rendered. This pipeline allows each element to be unique and easy to use.</p>
+        <p>If you want to go faster, what you need to do is trade off uniqueness and convenience for sheer quantity, and you do that by skipping some part of the rendering pipeline.</p>
+        <p>This is what clones and mutants do, the take an archetypal primitive, process it once, and then skip huge sections of the rendering pipeline for all the copies of that thing.</p>
+        <p>You lose some aspect of control, but you gain volume.</p>
+        
+        <h2 id="clones-vs-mutants" class="section"><a class="anchor-link left" href="#clones-vs-mutants"><i class="icofont-laika link">&#xef71;</i></a>Clones vs Mutants</h2>
+        <p>While clones are mutants are based on the same basic idea, they work very differently. Both allow you to increase the number of things you can render, but they make different trade offs.</p>
+        <ul>
+          <li>
+            <p><strong>Clones</strong> make many copies of the original utilising hardware instancing, but only allow you to modify a few basic pieces of transformation information per instance.*</p>
+          </li>
+          <li>
+            <p><strong>Mutants</strong> allow you to do whatever you want, but the catch is that all changes - even basic transformations like position - must be done within the shader.</p>
+          </li>
+        </ul>
+        <p>Clones are designed to reduce graphics card context switches to practically nothing. Mutants still need to set shader data per object and so are significantly faster than normal primitives, but can&#39;t get close to the volume of rendered items that clones can.</p>
+        <p>For sheer volume, you want clones. For maximum visual uniqueness, it&#39;s mutants.</p>
+        <p>(* Strictly speaking, you can make each instance pretty unique with custom entities and clever shaders. A common technique is to make use of the <code>INSTANCE_ID</code> to provide uniqueness, for example by modulo&#39;ing it to get a fixed number range and then using that to set, say, transparency.)</p>
+        
+        <h2 id="trading-off-convenience-for-speed" class="section"><a class="anchor-link left" href="#trading-off-convenience-for-speed"><i class="icofont-laika link">&#xef71;</i></a>Trading off convenience for speed</h2>
+        <p>Most of Indigo&#39;s APIs and primitives are written to be ergonomic, but this is not true of Clones and Mutants, which have far fewer convenience methods.</p>
+        <p>Why should that be the case?</p>
+        <p>Indigo&#39;s primitives and APIs are designed to be friendly and aren&#39;t too concerned about the performance implications of that choice because in general, it&#39;s fast enough.</p>
+        <p>The point of clones and mutants is speed and volume. The easiest way to lose speed in Scala.js/JavaScript is to do many object/memory allocations or use poor data structures for large volumes of entities.</p>
+        <p>If you allocate a lot, the result is garbage collection pressure, which means GC pauses and poor frame rates.</p>
+        <p>If you use a <code>List</code> rather than an <code>Array</code>, you end up with <a href="https://docs.scala-lang.org/overviews/collections-2.13/performance-characteristics.html">linear rather than constant speed</a> for the kind of operations we care about.</p>
+        
+        <h2 id="performance-considerations" class="section"><a class="anchor-link left" href="#performance-considerations"><i class="icofont-laika link">&#xef71;</i></a>Performance considerations</h2>
+        <p>Using Clones and Mutants is faster than using standard primitives, however, if for instance you construct a <code>CloneBatch</code> of 10,000 elements you might be saddened not to get the performance you were expecting.</p>
+        <p>The issue is that moving large arrays the various pipeline stages is just expensive, but there are two things you can do to improve performance:</p>
+        <ol class="arabic">
+          <li>
+            <p>Make use of static keys to cache data where possible, e.g. <code>CloneBatch().withStaticBatchKey(BindingKey(&quot;my clone data&quot;))</code></p>
+          </li>
+          <li>
+            <p>Divide up your data. Instead of one <code>CloneBatch</code> of 10,000 things, try 20 <code>CloneBatch</code>s of 500 things.</p>
+          </li>
+        </ol>
+        
+        <h2 id="using-clones-and-mutants" class="section"><a class="anchor-link left" href="#using-clones-and-mutants"><i class="icofont-laika link">&#xef71;</i></a>Using Clones and Mutants</h2>
+        
+        <h3 id="clone-blanks" class="section"><a class="anchor-link left" href="#clone-blanks"><i class="icofont-laika link">&#xef71;</i></a>Clone blanks</h3>
+        <p>Whether you&#39;re using clones or mutants, you will need an archetypal entity that your clone/mutant is going to be based on. These are called &quot;clone blanks&quot;.</p>
+        <p>A clone blank can be any primitive that extends the <code>Cloneable</code> trait, which includes custom entity nodes. Groups and other compound entities cannot be used as clone blanks.</p>
+        <p>Clone blanks are processed once per frame, and you can add them to your scene as follows:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">indigo</span><span>.*
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">graphic</span><span> = </span><span class="type-name">Graphic</span><span>(</span><span class="number-literal">32</span><span>, </span><span class="number-literal">32</span><span>, </span><span class="type-name">Material</span><span>.</span><span class="type-name">Bitmap</span><span>(</span><span class="type-name">AssetName</span><span>(</span><span class="string-literal">&quot;bob texture&quot;</span><span>)))
+</span><span class="keyword">val</span><span> </span><span class="identifier">cloneId</span><span> = </span><span class="type-name">CloneId</span><span>(</span><span class="string-literal">&quot;bob&quot;</span><span>)
+</span><span class="keyword">val</span><span> </span><span class="identifier">cloneBlank</span><span> = </span><span class="type-name">CloneBlank</span><span>(</span><span class="type-name">CloneId</span><span>(</span><span class="string-literal">&quot;bob&quot;</span><span>), </span><span class="identifier">graphic</span><span>)
+
+</span><span class="type-name">SceneUpdateFragment</span><span>.</span><span class="identifier">empty</span><span>.</span><span class="identifier">addCloneBlanks</span><span>(</span><span class="identifier">cloneBlank</span><span>)</span></code></pre>
+        <p>The clone ID is used to reference the blank at render time. If the ID isn&#39;t found, the clone or mutant instances are skipped.</p>
+        
+        <h3 id="clone-batch" class="section"><a class="anchor-link left" href="#clone-batch"><i class="icofont-laika link">&#xef71;</i></a>Clone batch</h3>
+        <p>The simplest and most high volume type of clone is the <code>CloneBatch</code>.</p>
+        <p><code>CloneBatch</code> entities allow you to change only basic transform properties of your entity. Your clone blank will be copied once for every instance of the <code>CloneBatchData</code> you provide, which sets the x, y, rotation, scale x and scale y properties of your clone blank entity.</p>
+        <p>This example will render three instances of the clone blank in different positions on the screen.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">particles</span><span> = </span><span class="type-name">Batch</span><span>(</span><span class="type-name">Point</span><span>(</span><span class="number-literal">10</span><span>), </span><span class="type-name">Point</span><span>(</span><span class="number-literal">20</span><span>), </span><span class="type-name">Point</span><span>(</span><span class="number-literal">30</span><span>))
+
+</span><span class="type-name">CloneBatch</span><span>(
+  </span><span class="identifier">cloneId</span><span>,
+  </span><span class="identifier">particles</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">pt</span><span> =&gt; </span><span class="type-name">CloneBatchData</span><span>(</span><span class="identifier">pt</span><span>.</span><span class="identifier">x</span><span>, </span><span class="identifier">pt</span><span>.</span><span class="identifier">y</span><span>))
+)</span></code></pre>
+        
+        <h3 id="clone-tiles" class="section"><a class="anchor-link left" href="#clone-tiles"><i class="icofont-laika link">&#xef71;</i></a>Clone tiles</h3>
+        <p>The problem with <code>CloneBatch</code> is that the copies are pretty much identical - particularly when using Indigo&#39;s standard primitives. Meaning you could render 10,000 red dots, but not 10,000 red, green and blue dots (unless you use a custom entity).</p>
+        <p><code>CloneTiles</code> are almost identical to <code>CloneBatch</code> except that they also allow you to choose a texture crop on a per instance basis. As such they are only really useful with custom entities or <code>Graphic</code>s, but they are very useful nonetheless. For example, one might use them to render large tile based level maps.</p>
+        <p>This example renders our three instances again but this time crops the texture in three different places.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">crops</span><span> = </span><span class="type-name">Batch</span><span>(</span><span class="type-name">Rectangle</span><span>(</span><span class="number-literal">0</span><span>, </span><span class="number-literal">0</span><span>, </span><span class="number-literal">10</span><span>, </span><span class="number-literal">10</span><span>), </span><span class="type-name">Rectangle</span><span>(</span><span class="number-literal">10</span><span>, </span><span class="number-literal">0</span><span>, </span><span class="number-literal">10</span><span>, </span><span class="number-literal">10</span><span>), </span><span class="type-name">Rectangle</span><span>(</span><span class="number-literal">0</span><span>, </span><span class="number-literal">10</span><span>, </span><span class="number-literal">10</span><span>, </span><span class="number-literal">10</span><span>))
+
+</span><span class="type-name">CloneTiles</span><span>(
+  </span><span class="identifier">cloneId</span><span>,
+  </span><span class="identifier">particles</span><span>.</span><span class="identifier">zip</span><span>(</span><span class="identifier">crops</span><span>).</span><span class="identifier">map</span><span> { </span><span class="keyword">case</span><span> (</span><span class="identifier">p</span><span>, </span><span class="identifier">c</span><span>) =&gt;
+    </span><span class="type-name">CloneTileData</span><span>(</span><span class="identifier">p</span><span>.</span><span class="identifier">x</span><span>, </span><span class="identifier">p</span><span>.</span><span class="identifier">y</span><span>, </span><span class="type-name">Radians</span><span>.</span><span class="identifier">zero</span><span>, </span><span class="number-literal">1</span><span>, </span><span class="number-literal">1</span><span>, </span><span class="identifier">c</span><span>.</span><span class="identifier">x</span><span>, </span><span class="identifier">c</span><span>.</span><span class="identifier">y</span><span>, </span><span class="identifier">c</span><span>.</span><span class="identifier">width</span><span>, </span><span class="identifier">c</span><span>.</span><span class="identifier">height</span><span>)
+  }
+)</span></code></pre>
+        <p>&lt;div id=&quot;mdoc-html-run2&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        
+        <h3 id="mutants" class="section"><a class="anchor-link left" href="#mutants"><i class="icofont-laika link">&#xef71;</i></a>Mutants</h3>
+        <p>The idea of mutants is to take a clone blank and &#39;mutate&#39; it per instance by providing different data to it&#39;s shader program. In theory this makes mutants extremely powerful, as you can render pretty much anything, but this also makes them quite complicated.</p>
+        <p><code>Mutants</code> are considered an advanced feature, as they are really only useful with custom entities.</p>
+        <p>From a usage perspective, <code>Mutants</code> are no more difficult to use than <code>CloneBatch</code>s or <code>CloneTiles</code>, here is a simple example that renders a single copy of a clone blank:</p>
+        <pre><code class="nohighlight"><span class="type-name">Mutants</span><span>(
+  </span><span class="identifier">cloneId</span><span>,
+  </span><span class="type-name">Array</span><span>(
+    </span><span class="type-name">Batch</span><span>(
+      </span><span class="type-name">UniformBlock</span><span>(
+        </span><span class="type-name">UniformBlockName</span><span>(</span><span class="string-literal">&quot;MutantData&quot;</span><span>),
+        </span><span class="type-name">Batch</span><span>(
+          </span><span class="type-name">Uniform</span><span>(</span><span class="string-literal">&quot;MOVE_TO&quot;</span><span>)  -&gt; </span><span class="identifier">vec2</span><span>(</span><span class="number-literal">10.0</span><span>, </span><span class="number-literal">10.0</span><span>),
+          </span><span class="type-name">Uniform</span><span>(</span><span class="string-literal">&quot;SCALE_TO&quot;</span><span>) -&gt; </span><span class="identifier">vec2</span><span>(</span><span class="number-literal">2.0</span><span>, </span><span class="number-literal">2.0</span><span>),
+          </span><span class="type-name">Uniform</span><span>(</span><span class="string-literal">&quot;ALPHA&quot;</span><span>)    -&gt; </span><span class="identifier">float</span><span>(</span><span class="number-literal">0.75</span><span>)
+        )
+      )
+    )
+  )
+)</span></code></pre>
+        <p>&lt;div id=&quot;mdoc-html-run3&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <p>The idea here is that you have <a href="../../02-guides/howto-custom-entity/">created a custom entity</a> and for each instance, you want to set it&#39;s UBO data, which here contains a position, a scale and an alpha value.</p>
+        <p>In many ways the important part of this example is the alpha. If you only wanted to position the entities you be far better off with one of the clone types. The whole point is that you also plan to programmatically influence the visual rendering of the entity in some way.</p>
+        <p>You will then need a pair of shaders to go with that data.</p>
+        <p><strong>Vertex:</strong></p>
+        <pre><code class="glsl">#version 300 es
+
+precision mediump float;
+
+vec2 POSITION;
+vec2 SCALE;
+
+//&lt;indigo-vertex&gt;
+layout (std140) uniform MutantData {
+  vec2 MOVE_TO;
+  vec2 SCALE_TO;
+  float ALPHA;
+};
+
+void vertex(){
+  POSITION = MOVE_TO;
+  SCALE = SCALE_TO;
+}
+//&lt;/indigo-vertex&gt;</code></pre>
+        <p>This vertex shader takes the position and scale variables and overrides them based on the UBO &#39;MutantData&#39; provided.</p>
+        <p><strong>Fragment:</strong></p>
+        <pre><code class="glsl">#version 300 es
+
+precision mediump float;
+
+uniform sampler2D SRC_CHANNEL;
+
+vec4 CHANNEL_0;
+vec4 COLOR;
+
+//&lt;indigo-fragment&gt;
+layout (std140) uniform MutantData {
+  vec2 MOVE_TO;
+  vec2 SCALE_TO;
+  float ALPHA;
+};
+
+void fragment(){
+  float a = CHANNEL_0.a * ALPHA;
+  COLOR = vec4(CHANNEL_0.rgb * a, a);
+}
+//&lt;/indigo-fragment&gt;</code></pre>
+        <p>The fragment shader takes the default texture channel and applies the supplied alpha to it. Note the use of <a href="../../07-shaders/premultiplied-alpha/">premultiplied alpha</a>.
+        &lt;script type=&quot;text/javascript&quot; src=&quot;clones-and-mutants.md.js&quot; defer&gt;&lt;/script&gt;
+        &lt;script type=&quot;text/javascript&quot; src=&quot;mdoc.js&quot; defer&gt;&lt;/script&gt;</p>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://typelevel.org/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

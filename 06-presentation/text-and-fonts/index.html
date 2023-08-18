@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>Text &amp; Fonts</title>
+  
+  
+  <meta name="description" content="website2"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="../../helium/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../helium/laika-helium.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/custom.css" />
+  <script src="../../helium/laika-helium.js"></script>
+    <script src="../../01-quickstart/hello-indigo.md.js"></script>
+    <script src="../../01-quickstart/mdoc.js"></script>
+    <script src="../../03-gameloop/frame-context.md.js"></script>
+    <script src="../../03-gameloop/mdoc.js"></script>
+    <script src="../../03-gameloop/outcome.md.js"></script>
+    <script src="../materials.md.js"></script>
+    <script src="../cameras.md.js"></script>
+    <script src="../lighting.md.js"></script>
+    <script src="../depth.md.js"></script>
+    <script src="../clones-and-mutants.md.js"></script>
+    <script src="../animation.md.js"></script>
+    <script src="../layers.md.js"></script>
+    <script src="../audio.md.js"></script>
+    <script src="../scene-update-fragment.md.js"></script>
+    <script src="../boundaries.md.js"></script>
+    <script src="../shapes.md.js"></script>
+    <script src="../text-and-fonts.md.js"></script>
+    <script src="../mdoc.js"></script>
+    <script src="../../08-time/signals.md.js"></script>
+    <script src="../../08-time/mdoc.js"></script>
+    <script src="../../08-time/time-varying-values.md.js"></script>
+    <script src="../../07-shaders/blending.md.js"></script>
+    <script src="../../07-shaders/mdoc.js"></script>
+    <script src="../../07-shaders/shaders-overview.md.js"></script>
+    <script src="../../09-uicomponents/button.md.js"></script>
+    <script src="../../09-uicomponents/input-field.md.js"></script>
+    <script src="../../09-uicomponents/hit-area.md.js"></script>
+    <script src="../../09-uicomponents/radio-button.md.js"></script>
+    <script src="../../09-uicomponents/mdoc.js"></script>
+    <script src="../../04-organisation/scene-management.md.js"></script>
+    <script src="../../04-organisation/boot-and-start-up.md.js"></script>
+    <script src="../../04-organisation/subsystems.md.js"></script>
+    <script src="../../04-organisation/mdoc.js"></script>
+    <script src="../../02-guides/mdoc.js"></script>
+    <script src="../../02-guides/howto-fire-shader.md.js"></script>
+    <script src="../../02-guides/howto-custom-entity.md.js"></script>
+    <script src="../../05-platform/assets.md.js"></script>
+    <script src="../../05-platform/logging.md.js"></script>
+    <script src="../../05-platform/mdoc.js"></script>
+    <script src="../../05-platform/input-handling.md.js"></script>
+    <script src="../../10-information/key-concepts.md.js"></script>
+    <script src="../../10-information/antipatterns.md.js"></script>
+    <script src="../../10-information/mdoc.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar" class="light-default dark-default">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="image-link" href="../../"><img src="../../img/indigo_logo_solid_text.svg" alt="Homepage" title="Indigo" width="150" height="50"></a>
+
+  <div class="row links">
+    
+    <a class="button-link" href="https://discord.gg/b5CD47g">Discord</a>
+    
+    <a class="button-link" href="/api">API</a>
+    
+    <a class="button-link" href="https://github.com/PurpleKingdomGames/indigo">Github</a>
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+    <a class="button-link" href="https://discord.gg/b5CD47g">Discord</a>
+    
+    <a class="button-link" href="/api">API</a>
+    
+    <a class="button-link" href="https://github.com/PurpleKingdomGames/indigo">Github</a>
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../../table-of-content/">Contents</a></li>
+    <li class="level1 nav-header">Setup &amp; Configuration</li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/examples/">Examples</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/hello-indigo/">Hello, Indigo!</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/project-templates/">Mill &amp; SBT Templates</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/quickstart/">Quick start</a></li>
+    <li class="level1 nav-header">Guides</li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-custom-entity/">How to make a custom entity</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-fire-shader/">How to write a fire shader</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-hello-indigo-tyrian/">How to make a responsive UI using Tyrian</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-indigo-game/">Converting <code>IndigoSandbox</code> to <code>IndigoGame</code></a></li>
+    <li class="level1 nav-header">Gameloop</li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/events/">Events</a></li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/frame-context/">Frame context</a></li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/outcome/">Outcome Type</a></li>
+    <li class="level1 nav-header">Organisation</li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/boot-and-start-up/">Boot &amp; Start Up</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/game-entry-points/">Game Entry Points</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/scene-management/">What are Scenes?</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/subsystems/">What SubSystems are</a></li>
+    <li class="level1 nav-header">Platform &amp; IO</li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/assets/">Assets &amp; Asset Loading</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/cross-platform-publishing/">Cross Platform Publishing</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/importers/">File Importers</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/input-handling/">Input Handling</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/loading-and-saving-data/">Loading &amp; Saving Data</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/logging/">Logging</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/networking/">Networking</a></li>
+    <li class="level1 nav-header">Presentation</li>
+    <li class="level2 nav-leaf"><a href="../animation/">Animation</a></li>
+    <li class="level2 nav-leaf"><a href="../audio/">Audio</a></li>
+    <li class="level2 nav-leaf"><a href="../boundaries/">Boundaries</a></li>
+    <li class="level2 nav-leaf"><a href="../cameras/">Cameras</a></li>
+    <li class="level2 nav-leaf"><a href="../clones-and-mutants/">Clones &amp; Mutants</a></li>
+    <li class="level2 nav-leaf"><a href="../depth/">Depth</a></li>
+    <li class="level2 nav-leaf"><a href="../layers/">Layers</a></li>
+    <li class="level2 nav-leaf"><a href="../lighting/">Lighting</a></li>
+    <li class="level2 nav-leaf"><a href="../materials/">Materials</a></li>
+    <li class="level2 nav-leaf"><a href="../primitives/">Primitives &amp; Building Blocks</a></li>
+    <li class="level2 nav-leaf"><a href="../scene-update-fragment/">SceneUpdateFragment</a></li>
+    <li class="level2 nav-leaf"><a href="../shapes/">Shapes</a></li>
+    <li class="level2 active nav-leaf"><a href="#">Text &amp; Fonts</a></li>
+    <li class="level1 nav-header">Shaders</li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/blending/">Blending</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/constants/">Shader Constants, Variables, and Outputs</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/premultiplied-alpha/">Premultiplied Alpha</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/shaders-overview/">Shaders Overview</a></li>
+    <li class="level1 nav-header">Time</li>
+    <li class="level2 nav-leaf"><a href="../../08-time/gametime/">GameTime</a></li>
+    <li class="level2 nav-leaf"><a href="../../08-time/signals/">Signals &amp; Signal Functions</a></li>
+    <li class="level2 nav-leaf"><a href="../../08-time/time-varying-values/">Time Varying Values</a></li>
+    <li class="level1 nav-header">UI Components</li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/button/">Buttons</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/hit-area/">Hit Areas</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/input-field/">Input Fields</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/radio-button/">Radio Buttons</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/ui-components/">UI Components</a></li>
+    <li class="level1 nav-header">Misc</li>
+    <li class="level2 nav-leaf"><a href="../../10-information/alternatives/">Alternatives to Indigo</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/antipatterns/">Anti-Patterns</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/glossary/">Glossary</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/key-concepts/">Key Concepts</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/model-viewmodel-view/">Model, ViewModel, &amp; View</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/motivation-and-constraints/">Motivation &amp; Constraints</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/performance/">Performance</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/prior-art/">Prior Art</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/rendering-technology/">Rendering Technology</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Text &amp; Fonts</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-node"><a href="#textbox"><code>TextBox</code></a></li>
+    <li class="level2 nav-leaf"><a href="#loading-a-font">Loading a font</a></li>
+    <li class="level2 nav-leaf"><a href="#using-a-textbox">Using a <code>TextBox</code></a></li>
+    <li class="level1 nav-node"><a href="#the-text-primitive">The Text Primitive</a></li>
+    <li class="level2 nav-leaf"><a href="#allowing-fonts-without-supporting-fonts">Allowing fonts without supporting fonts</a></li>
+    <li class="level2 nav-leaf"><a href="#setting-up-fonts-manually">Setting up fonts manually</a></li>
+    <li class="level2 nav-leaf"><a href="#getting-a-computer-to-do-it-for-you">Getting a computer to do it for you</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="text-fonts" class="title">Text &amp; Fonts</h1>
+        <p>There are two way to add text in Indigo, each with their own set of trade offs.</p>
+        <ol class="arabic">
+          <li><code>TextBox</code> - is text as you&#39;d expect it, easy to use and with full font support, but is generally lower quality.</li>
+          <li><code>Text</code> - is a graphical primitive that gives high rendering fidelity but requires a lot of set up.</li>
+        </ol>
+        <p>If you&#39;re new to Indigo and just want to get some text on the screen quickly, you are strongly advised to use a <code>TextBox</code>.</p>
+        
+        <h2 id="textbox" class="section"><a class="anchor-link left" href="#textbox"><i class="icofont-laika link">&#xef71;</i></a><code>TextBox</code></h2>
+        <blockquote>This is a new feature and there are bound to be issues with it. Please report any problems you find.</blockquote>
+        <p>The <code>TextBox</code> primitive works by utilising the browsers ability to render fonts. This provides a huge amount of power and flexibility, but it also inherits the shortcomings of that process, which chiefly are:</p>
+        <ol class="arabic">
+          <li>There is no way to disable anti-aliasing, which means that text being shown on a magnified pixelated layer is likely to look poor. (On the other hand, on a nice HD UI layer your text will look crisp!)</li>
+          <li>There is no inbuilt support for multi-line text, and measuring text has some cost associated with it. We may try to add wrapping in the future, but for now if you want to wrap text you&#39;ll need to do measure the text using the <code>BoundaryLocator</code>, and insert line breaks manually.</li>
+        </ol>
+        <p><strong>However</strong> by comparison to the <code>Text</code> primitive, getting up and running with <code>TextBox</code> is far quicker and easier because there is no set up to do.</p>
+        
+        <h3 id="loading-a-font" class="section"><a class="anchor-link left" href="#loading-a-font"><i class="icofont-laika link">&#xef71;</i></a>Loading a font</h3>
+        <p>You can use system fonts, but if you&#39;re keen on using something specific then there is a new <code>Font</code> <code>AssetType</code>, which works the same as loading any other kind of asset:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">indigo</span><span>.*
+
+</span><span class="type-name">AssetType</span><span>.</span><span class="type-name">Font</span><span>(</span><span class="type-name">AssetName</span><span>(</span><span class="string-literal">&quot;My Font&quot;</span><span>), </span><span class="type-name">AssetPath</span><span>(</span><span class="string-literal">&quot;assets/my-favourite-font.woff2&quot;</span><span>))</span></code></pre>
+        <p>And is used as follows:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="comment">// FontFamily(&quot;My Font&quot;) aligns to the loaded asset name AssetName(&quot;My Font&quot;)
+</span><span class="type-name">TextBox</span><span>(</span><span class="string-literal">&quot;Indigo... with fonts?&quot;</span><span>, </span><span class="number-literal">200</span><span>, </span><span class="number-literal">30</span><span>).</span><span class="identifier">withFontFamily</span><span>(</span><span class="type-name">FontFamily</span><span>(</span><span class="string-literal">&quot;My Font&quot;</span><span>))</span></code></pre>
+        <p>There are things to be aware of with fonts, but the rules for fonts in Indigo are identical to the rules for loading fonts into browsers generally.</p>
+        
+        <h3 id="using-a-textbox" class="section"><a class="anchor-link left" href="#using-a-textbox"><i class="icofont-laika link">&#xef71;</i></a>Using a <code>TextBox</code></h3>
+        <p>As with all the APIs in Indigo, the available features of the <code>TextBox</code> type are all easily discoverable via your favorite IDE, but here is an example to get you started:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">TextBox</span><span>(</span><span class="string-literal">&quot;Hello, World!&quot;</span><span>, </span><span class="number-literal">200</span><span>, </span><span class="number-literal">30</span><span>)
+  .</span><span class="identifier">withFontFamily</span><span>(</span><span class="type-name">FontFamily</span><span>.</span><span class="identifier">cursive</span><span>)
+  .</span><span class="identifier">withColor</span><span>(</span><span class="type-name">RGBA</span><span>.</span><span class="type-name">White</span><span>)
+  .</span><span class="identifier">withFontSize</span><span>(</span><span class="type-name">Pixels</span><span>(</span><span class="number-literal">16</span><span>))
+  .</span><span class="identifier">withStroke</span><span>(</span><span class="type-name">TextStroke</span><span>(</span><span class="type-name">RGBA</span><span>.</span><span class="type-name">Red</span><span>, </span><span class="type-name">Pixels</span><span>(</span><span class="number-literal">1</span><span>)))
+  .</span><span class="identifier">italic</span><span>
+  .</span><span class="identifier">alignRight</span></code></pre>
+        <p>&lt;div id=&quot;mdoc-html-run1&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        
+        <h2 id="the-text-primitive" class="section"><a class="anchor-link left" href="#the-text-primitive"><i class="icofont-laika link">&#xef71;</i></a>The Text Primitive</h2>
+        <p>The alternative to <code>TextBox</code> is the <code>Text</code> primitive, which renders text using what are known as bitmap fonts, i.e, an image containing all the characters and data structure explaining where they are.</p>
+        <p>You can create a Text node using one of it&#39;s constructors and manipulate its properties with fluent API methods like this:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">Text</span><span>(</span><span class="string-literal">&quot;Hello, world!</span><span class="escape-sequence">\n</span><span class="string-literal">This is some text!&quot;</span><span>, </span><span class="type-name">FontKey</span><span>(</span><span class="string-literal">&quot;my font&quot;</span><span>), </span><span class="type-name">Material</span><span>.</span><span class="type-name">Bitmap</span><span>(</span><span class="type-name">AssetName</span><span>(</span><span class="string-literal">&quot;my font sheet&quot;</span><span>))).</span><span class="identifier">alignRight</span></code></pre>
+        <p>&lt;div id=&quot;mdoc-html-run2&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <p>Easy enough, and note that you can use newlines ...but if indigo doesn&#39;t support fonts for <code>Text</code>, what is the <code>fontKey</code> in reference to?</p>
+        
+        <h3 id="allowing-fonts-without-supporting-fonts" class="section"><a class="anchor-link left" href="#allowing-fonts-without-supporting-fonts"><i class="icofont-laika link">&#xef71;</i></a>Allowing fonts without supporting fonts</h3>
+        <p>A very early design decision from back when Indigo was ruthlessly focused on the pixel art market, was that we didn&#39;t need real font support. Pixel art fonts tend to be blocky and mono-space.</p>
+        <p>Inspiration came from early versions of Flash where selected font glyphs were rendered into images at specific sizes during the Flash build. We went one step further and decided, in the name of <em>not</em> getting bogged down in the world of font rendering, that you&#39;d have to provide your font glyph images - not unlike an animation sprite sheet - pre-rendered and then tell us where all the characters were.</p>
+        <p>It&#39;s inconvenient and a bit simplistic, but it works, and the results look good even when magnified for pixel art! And we have a <a href="https://indigoengine.io/tools/">tool to help you</a>, more on that further down.</p>
+        
+        <h3 id="setting-up-fonts-manually" class="section"><a class="anchor-link left" href="#setting-up-fonts-manually"><i class="icofont-laika link">&#xef71;</i></a>Setting up fonts manually</h3>
+        <p>At the beginning of your (<code>IndigoSandbox</code>) game definition, you were given a couple of blanks to fill in that looked like this:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">fonts</span><span>: </span><span class="type-name">Set</span><span>[</span><span class="type-name">FontInfo</span><span>] =
+  </span><span class="type-name">Set</span><span>()
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">assets</span><span>: </span><span class="type-name">Set</span><span>[</span><span class="type-name">AssetType</span><span>] =
+  </span><span class="type-name">Set</span><span>()</span></code></pre>
+        <p>&lt;div id=&quot;mdoc-html-run3&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <p>What you need to do, one way or another, is provide an image that represents your font characters, and the <code>FontInfo</code> that tells indigo how to render each character.</p>
+        <p>The image might look like this:</p>
+        <p><img src="../../img/font-example.png" alt="Font sheet example"></p>
+        <p>Which you would load in the usual way:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">indigo</span><span>.*
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">imageAsset</span><span> = </span><span class="type-name">AssetName</span><span>(</span><span class="string-literal">&quot;my font image&quot;</span><span>)
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">assets</span><span>: </span><span class="type-name">Set</span><span>[</span><span class="type-name">AssetType</span><span>] =
+  </span><span class="type-name">Set</span><span>(</span><span class="type-name">AssetType</span><span>.</span><span class="type-name">Image</span><span>(</span><span class="identifier">imageAsset</span><span>, </span><span class="type-name">AssetPath</span><span>(</span><span class="string-literal">&quot;assets/my-font.png&quot;</span><span>)))</span></code></pre>
+        <p>&lt;div id=&quot;mdoc-html-run4&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <p>And the associated <code>FontInfo</code> definition would be as follows, where the <code>FontChar</code> contains the character to match, and an image crop rectangle:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">fontKey</span><span>: </span><span class="type-name">FontKey</span><span> = </span><span class="type-name">FontKey</span><span>(</span><span class="string-literal">&quot;my font&quot;</span><span>)
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">fontInfo</span><span>: </span><span class="type-name">FontInfo</span><span> =
+  </span><span class="type-name">FontInfo</span><span>(</span><span class="identifier">fontKey</span><span>, </span><span class="number-literal">320</span><span>, </span><span class="number-literal">230</span><span>, </span><span class="type-name">FontChar</span><span>(</span><span class="string-literal">&quot;?&quot;</span><span>, </span><span class="number-literal">47</span><span>, </span><span class="number-literal">26</span><span>, </span><span class="number-literal">11</span><span>, </span><span class="number-literal">12</span><span>))
+    .</span><span class="identifier">addChar</span><span>(</span><span class="type-name">FontChar</span><span>(</span><span class="string-literal">&quot;A&quot;</span><span>, </span><span class="number-literal">2</span><span>, </span><span class="number-literal">39</span><span>, </span><span class="number-literal">10</span><span>, </span><span class="number-literal">12</span><span>))
+    .</span><span class="identifier">addChar</span><span>(</span><span class="type-name">FontChar</span><span>(</span><span class="string-literal">&quot;B&quot;</span><span>, </span><span class="number-literal">14</span><span>, </span><span class="number-literal">39</span><span>, </span><span class="number-literal">9</span><span>, </span><span class="number-literal">12</span><span>))
+    .</span><span class="identifier">addChar</span><span>(</span><span class="type-name">FontChar</span><span>(</span><span class="string-literal">&quot;C&quot;</span><span>, </span><span class="number-literal">25</span><span>, </span><span class="number-literal">39</span><span>, </span><span class="number-literal">10</span><span>, </span><span class="number-literal">12</span><span>))
+    .</span><span class="identifier">addChar</span><span>(</span><span class="type-name">FontChar</span><span>(</span><span class="string-literal">&quot;D&quot;</span><span>, </span><span class="number-literal">37</span><span>, </span><span class="number-literal">39</span><span>, </span><span class="number-literal">9</span><span>, </span><span class="number-literal">12</span><span>))
+    .</span><span class="identifier">addChar</span><span>(</span><span class="type-name">FontChar</span><span>(</span><span class="string-literal">&quot;E&quot;</span><span>, </span><span class="number-literal">49</span><span>, </span><span class="number-literal">39</span><span>, </span><span class="number-literal">9</span><span>, </span><span class="number-literal">12</span><span>))
+    </span><span class="comment">// etc.</span></code></pre>
+        <p>&lt;div id=&quot;mdoc-html-run5&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <p>The eagle eyed among you may have noticed two things:</p>
+        <ol class="arabic">
+          <li>That our <code>fontKey</code> has appeared, and it ties the <code>Text</code> primitive to a specific <code>FontInfo</code> instance.</li>
+          <li>The &quot;character&quot; to match is represented by a <code>String</code> rather than a <code>Char</code>... this is because of the way JavaScript represents it, an implementation leak if you will.</li>
+        </ol>
+        <p>That all works fine, it&#39;s just a very boring job.</p>
+        
+        <h3 id="getting-a-computer-to-do-it-for-you" class="section"><a class="anchor-link left" href="#getting-a-computer-to-do-it-for-you"><i class="icofont-laika link">&#xef71;</i></a>Getting a computer to do it for you</h3>
+        <p>How to avoid doing all the manual labor of painstaking setting up the font info, and getting a font rendered to an image for you in the first place?</p>
+        <p>Well you still need the asset and the <code>FontInfo</code>, but we have a process to make generating it easier.</p>
+        <ol class="arabic">
+          <li>Head over to our <a href="https://indigoengine.io/tools/">tools site</a> and use the Font Sheet generator to produce an image containing the exact glyphs you want and an associated JSON blob representing the glyph information.</li>
+          <li>Ensure you have added an Indigo JSON dependency to your games build definition, either <code>indigo-json-circe</code>.</li>
+        </ol>
+        <p>Then load both assets:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">indigo</span><span>.*
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">imageAsset</span><span> = </span><span class="string-literal">&quot;my font image&quot;</span><span>
+</span><span class="keyword">val</span><span> </span><span class="identifier">jsonAsset</span><span> = </span><span class="string-literal">&quot;my font json&quot;</span><span>
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">assets</span><span>: </span><span class="type-name">Set</span><span>[</span><span class="type-name">AssetType</span><span>] =
+  </span><span class="type-name">Set</span><span>(
+    </span><span class="type-name">AssetType</span><span>.</span><span class="type-name">Image</span><span>(</span><span class="type-name">AssetName</span><span>(</span><span class="identifier">imageAsset</span><span>), </span><span class="type-name">AssetPath</span><span>(</span><span class="string-literal">&quot;assets/my-font.png&quot;</span><span>)),
+    </span><span class="type-name">AssetType</span><span>.</span><span class="type-name">Text</span><span>(</span><span class="type-name">AssetName</span><span>(</span><span class="identifier">jsonAsset</span><span>), </span><span class="type-name">AssetPath</span><span>(</span><span class="string-literal">&quot;assets/my-font.json&quot;</span><span>))
+  )</span></code></pre>
+        <p>..and then during the <code>setup</code> function where you create the <code>Startup</code> data, you can do something like the following:</p>
+        <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">indigo</span><span>.</span><span class="identifier">json</span><span>.</span><span class="type-name">Json</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">indigo</span><span>.</span><span class="identifier">syntax</span><span>.*
+</span><span class="comment">//Placeholder: AssetCollection is one of the setup function arguments.
+</span><span class="keyword">import</span><span> </span><span class="identifier">indigo</span><span>.</span><span class="identifier">platform</span><span>.</span><span class="identifier">assets</span><span>.</span><span class="type-name">AssetCollection</span><span>
+</span><span class="keyword">val</span><span> </span><span class="identifier">assetCollection</span><span> = </span><span class="type-name">AssetCollection</span><span>.</span><span class="identifier">empty</span><span>
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">makeFontInfo</span><span>(</span><span class="identifier">unknownChar</span><span>: </span><span class="type-name">FontChar</span><span>, </span><span class="identifier">fontChars</span><span>: </span><span class="type-name">Batch</span><span>[</span><span class="type-name">FontChar</span><span>]): </span><span class="type-name">FontInfo</span><span> =
+  </span><span class="type-name">FontInfo</span><span>(
+    </span><span class="identifier">fontKey</span><span> = </span><span class="type-name">FontKey</span><span>(</span><span class="string-literal">&quot;my font key&quot;</span><span>),
+    </span><span class="identifier">fontSheetBounds</span><span> = </span><span class="type-name">Size</span><span>(</span><span class="number-literal">320</span><span>, </span><span class="number-literal">230</span><span>),
+    </span><span class="identifier">unknownChar</span><span> = </span><span class="identifier">unknownChar</span><span>,
+    </span><span class="identifier">fontChars</span><span> = </span><span class="identifier">fontChars</span><span>,
+    </span><span class="identifier">caseSensitive</span><span> = </span><span class="boolean-literal">true</span><span>
+  )
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">maybeFontInfo</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">FontInfo</span><span>] =
+  </span><span class="keyword">for</span><span> {
+    </span><span class="identifier">json</span><span>        &lt;- </span><span class="identifier">assetCollection</span><span>.</span><span class="identifier">findTextDataByName</span><span>(</span><span class="type-name">AssetName</span><span>(</span><span class="identifier">jsonAsset</span><span>))
+    </span><span class="identifier">chars</span><span>       &lt;- </span><span class="type-name">Json</span><span>.</span><span class="identifier">readFontToolJson</span><span>(</span><span class="identifier">json</span><span>)
+    </span><span class="identifier">unknownChar</span><span> &lt;- </span><span class="identifier">chars</span><span>.</span><span class="identifier">find</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">character</span><span> == </span><span class="string-literal">&quot;☐&quot;</span><span>)
+  } </span><span class="keyword">yield</span><span> </span><span class="identifier">makeFontInfo</span><span>(</span><span class="identifier">unknownChar</span><span>, </span><span class="identifier">chars</span><span>.</span><span class="identifier">toBatch</span><span>)
+
+</span><span class="identifier">maybeFontInfo</span><span> </span><span class="keyword">match</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="type-name">Some</span><span>(</span><span class="identifier">fontInfo</span><span>) =&gt;
+    </span><span class="type-name">Startup</span><span>.</span><span class="type-name">Success</span><span>(()).</span><span class="identifier">addFonts</span><span>(</span><span class="identifier">fontInfo</span><span>)
+
+  </span><span class="keyword">case</span><span> </span><span class="type-name">None</span><span> =&gt;
+    </span><span class="comment">// handle error case here.</span></code></pre>
+        <p>&lt;div id=&quot;mdoc-html-run7&quot; data-mdoc-js&gt;&lt;/div&gt;
+        &lt;script type=&quot;text/javascript&quot; src=&quot;text-and-fonts.md.js&quot; defer&gt;&lt;/script&gt;
+        &lt;script type=&quot;text/javascript&quot; src=&quot;mdoc.js&quot; defer&gt;&lt;/script&gt;</p>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://typelevel.org/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

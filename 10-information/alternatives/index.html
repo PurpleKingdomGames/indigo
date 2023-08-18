@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>Alternatives to Indigo</title>
+  
+  
+  <meta name="description" content="website2"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="../../helium/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../helium/laika-helium.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/custom.css" />
+  <script src="../../helium/laika-helium.js"></script>
+    <script src="../../01-quickstart/hello-indigo.md.js"></script>
+    <script src="../../01-quickstart/mdoc.js"></script>
+    <script src="../../03-gameloop/frame-context.md.js"></script>
+    <script src="../../03-gameloop/mdoc.js"></script>
+    <script src="../../03-gameloop/outcome.md.js"></script>
+    <script src="../../06-presentation/materials.md.js"></script>
+    <script src="../../06-presentation/cameras.md.js"></script>
+    <script src="../../06-presentation/lighting.md.js"></script>
+    <script src="../../06-presentation/depth.md.js"></script>
+    <script src="../../06-presentation/clones-and-mutants.md.js"></script>
+    <script src="../../06-presentation/animation.md.js"></script>
+    <script src="../../06-presentation/layers.md.js"></script>
+    <script src="../../06-presentation/audio.md.js"></script>
+    <script src="../../06-presentation/scene-update-fragment.md.js"></script>
+    <script src="../../06-presentation/boundaries.md.js"></script>
+    <script src="../../06-presentation/shapes.md.js"></script>
+    <script src="../../06-presentation/text-and-fonts.md.js"></script>
+    <script src="../../06-presentation/mdoc.js"></script>
+    <script src="../../08-time/signals.md.js"></script>
+    <script src="../../08-time/mdoc.js"></script>
+    <script src="../../08-time/time-varying-values.md.js"></script>
+    <script src="../../07-shaders/blending.md.js"></script>
+    <script src="../../07-shaders/mdoc.js"></script>
+    <script src="../../07-shaders/shaders-overview.md.js"></script>
+    <script src="../../09-uicomponents/button.md.js"></script>
+    <script src="../../09-uicomponents/input-field.md.js"></script>
+    <script src="../../09-uicomponents/hit-area.md.js"></script>
+    <script src="../../09-uicomponents/radio-button.md.js"></script>
+    <script src="../../09-uicomponents/mdoc.js"></script>
+    <script src="../../04-organisation/scene-management.md.js"></script>
+    <script src="../../04-organisation/boot-and-start-up.md.js"></script>
+    <script src="../../04-organisation/subsystems.md.js"></script>
+    <script src="../../04-organisation/mdoc.js"></script>
+    <script src="../../02-guides/mdoc.js"></script>
+    <script src="../../02-guides/howto-fire-shader.md.js"></script>
+    <script src="../../02-guides/howto-custom-entity.md.js"></script>
+    <script src="../../05-platform/assets.md.js"></script>
+    <script src="../../05-platform/logging.md.js"></script>
+    <script src="../../05-platform/mdoc.js"></script>
+    <script src="../../05-platform/input-handling.md.js"></script>
+    <script src="../key-concepts.md.js"></script>
+    <script src="../antipatterns.md.js"></script>
+    <script src="../mdoc.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar" class="light-default dark-default">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="image-link" href="../../"><img src="../../img/indigo_logo_solid_text.svg" alt="Homepage" title="Indigo" width="150" height="50"></a>
+
+  <div class="row links">
+    
+    <a class="button-link" href="https://discord.gg/b5CD47g">Discord</a>
+    
+    <a class="button-link" href="/api">API</a>
+    
+    <a class="button-link" href="https://github.com/PurpleKingdomGames/indigo">Github</a>
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+    <a class="button-link" href="https://discord.gg/b5CD47g">Discord</a>
+    
+    <a class="button-link" href="/api">API</a>
+    
+    <a class="button-link" href="https://github.com/PurpleKingdomGames/indigo">Github</a>
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../../table-of-content/">Contents</a></li>
+    <li class="level1 nav-header">Setup &amp; Configuration</li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/examples/">Examples</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/hello-indigo/">Hello, Indigo!</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/project-templates/">Mill &amp; SBT Templates</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/quickstart/">Quick start</a></li>
+    <li class="level1 nav-header">Guides</li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-custom-entity/">How to make a custom entity</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-fire-shader/">How to write a fire shader</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-hello-indigo-tyrian/">How to make a responsive UI using Tyrian</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-indigo-game/">Converting <code>IndigoSandbox</code> to <code>IndigoGame</code></a></li>
+    <li class="level1 nav-header">Gameloop</li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/events/">Events</a></li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/frame-context/">Frame context</a></li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/outcome/">Outcome Type</a></li>
+    <li class="level1 nav-header">Organisation</li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/boot-and-start-up/">Boot &amp; Start Up</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/game-entry-points/">Game Entry Points</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/scene-management/">What are Scenes?</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/subsystems/">What SubSystems are</a></li>
+    <li class="level1 nav-header">Platform &amp; IO</li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/assets/">Assets &amp; Asset Loading</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/cross-platform-publishing/">Cross Platform Publishing</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/importers/">File Importers</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/input-handling/">Input Handling</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/loading-and-saving-data/">Loading &amp; Saving Data</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/logging/">Logging</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/networking/">Networking</a></li>
+    <li class="level1 nav-header">Presentation</li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/animation/">Animation</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/audio/">Audio</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/boundaries/">Boundaries</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/cameras/">Cameras</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/clones-and-mutants/">Clones &amp; Mutants</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/depth/">Depth</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/layers/">Layers</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/lighting/">Lighting</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/materials/">Materials</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/primitives/">Primitives &amp; Building Blocks</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/scene-update-fragment/">SceneUpdateFragment</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/shapes/">Shapes</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/text-and-fonts/">Text &amp; Fonts</a></li>
+    <li class="level1 nav-header">Shaders</li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/blending/">Blending</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/constants/">Shader Constants, Variables, and Outputs</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/premultiplied-alpha/">Premultiplied Alpha</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/shaders-overview/">Shaders Overview</a></li>
+    <li class="level1 nav-header">Time</li>
+    <li class="level2 nav-leaf"><a href="../../08-time/gametime/">GameTime</a></li>
+    <li class="level2 nav-leaf"><a href="../../08-time/signals/">Signals &amp; Signal Functions</a></li>
+    <li class="level2 nav-leaf"><a href="../../08-time/time-varying-values/">Time Varying Values</a></li>
+    <li class="level1 nav-header">UI Components</li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/button/">Buttons</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/hit-area/">Hit Areas</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/input-field/">Input Fields</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/radio-button/">Radio Buttons</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/ui-components/">UI Components</a></li>
+    <li class="level1 nav-header">Misc</li>
+    <li class="level2 active nav-leaf"><a href="#">Alternatives to Indigo</a></li>
+    <li class="level2 nav-leaf"><a href="../antipatterns/">Anti-Patterns</a></li>
+    <li class="level2 nav-leaf"><a href="../glossary/">Glossary</a></li>
+    <li class="level2 nav-leaf"><a href="../key-concepts/">Key Concepts</a></li>
+    <li class="level2 nav-leaf"><a href="../model-viewmodel-view/">Model, ViewModel, &amp; View</a></li>
+    <li class="level2 nav-leaf"><a href="../motivation-and-constraints/">Motivation &amp; Constraints</a></li>
+    <li class="level2 nav-leaf"><a href="../performance/">Performance</a></li>
+    <li class="level2 nav-leaf"><a href="../prior-art/">Prior Art</a></li>
+    <li class="level2 nav-leaf"><a href="../rendering-technology/">Rendering Technology</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Alternatives to Indigo</a></p>
+
+  <ul class="nav-list">
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="alternatives-to-indigo" class="title">Alternatives to Indigo</h1>
+        <p>If Indigo isn&#39;t quite working out for you - we quite understand! Here are some possible alternatives to help you get your game dev fix. Each of these suggestions has something in common with Indigo, there are of course lots of other engines out there!</p>
+        <p><strong>Code-only!</strong> - If you&#39;re looking for a code only engine, try <a href="https://haxe.org/">Haxe</a> with <a href="https://heaps.io/">Heaps</a>. Battle hardened on commercially successful titles and increasingly incorporates functional programming ideas and syntax. Without going into the history, Haxe is a spin off from Flash (a notorious game dev platform itself, even today), but don&#39;t be put off by that; Haxe is very modern and does <em>not</em> require the infamous Flash Player to run.</p>
+        <p><strong>Scala!</strong> - The only alternative Scala game engine at the time of writing is <a href="https://github.com/regb/scala-game-library">SGL (Scala Game Library)</a>.</p>
+        <p><strong>Real FP!</strong> - If you&#39;re a determined and brave functional programmer that insists on all the typeclasses, it&#39;s <a href="https://github.com/ivanperez-keera/Yampa">Yampa</a>.</p>
+        <p><strong>Best in class opensource!</strong> - If you&#39;re looking for a more traditional game dev experience with an editor, aren&#39;t fussy about your language and want something opensource, you probably can&#39;t do better than <a href="https://godotengine.org/">Godot</a>.</p>
+        <p>Happy game building!</p>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://typelevel.org/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

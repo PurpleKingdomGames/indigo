@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>Blending</title>
+  
+  
+  <meta name="description" content="website2"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="../../helium/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../helium/laika-helium.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/custom.css" />
+  <script src="../../helium/laika-helium.js"></script>
+    <script src="../../01-quickstart/hello-indigo.md.js"></script>
+    <script src="../../01-quickstart/mdoc.js"></script>
+    <script src="../../03-gameloop/frame-context.md.js"></script>
+    <script src="../../03-gameloop/mdoc.js"></script>
+    <script src="../../03-gameloop/outcome.md.js"></script>
+    <script src="../../06-presentation/materials.md.js"></script>
+    <script src="../../06-presentation/cameras.md.js"></script>
+    <script src="../../06-presentation/lighting.md.js"></script>
+    <script src="../../06-presentation/depth.md.js"></script>
+    <script src="../../06-presentation/clones-and-mutants.md.js"></script>
+    <script src="../../06-presentation/animation.md.js"></script>
+    <script src="../../06-presentation/layers.md.js"></script>
+    <script src="../../06-presentation/audio.md.js"></script>
+    <script src="../../06-presentation/scene-update-fragment.md.js"></script>
+    <script src="../../06-presentation/boundaries.md.js"></script>
+    <script src="../../06-presentation/shapes.md.js"></script>
+    <script src="../../06-presentation/text-and-fonts.md.js"></script>
+    <script src="../../06-presentation/mdoc.js"></script>
+    <script src="../../08-time/signals.md.js"></script>
+    <script src="../../08-time/mdoc.js"></script>
+    <script src="../../08-time/time-varying-values.md.js"></script>
+    <script src="../blending.md.js"></script>
+    <script src="../mdoc.js"></script>
+    <script src="../shaders-overview.md.js"></script>
+    <script src="../../09-uicomponents/button.md.js"></script>
+    <script src="../../09-uicomponents/input-field.md.js"></script>
+    <script src="../../09-uicomponents/hit-area.md.js"></script>
+    <script src="../../09-uicomponents/radio-button.md.js"></script>
+    <script src="../../09-uicomponents/mdoc.js"></script>
+    <script src="../../04-organisation/scene-management.md.js"></script>
+    <script src="../../04-organisation/boot-and-start-up.md.js"></script>
+    <script src="../../04-organisation/subsystems.md.js"></script>
+    <script src="../../04-organisation/mdoc.js"></script>
+    <script src="../../02-guides/mdoc.js"></script>
+    <script src="../../02-guides/howto-fire-shader.md.js"></script>
+    <script src="../../02-guides/howto-custom-entity.md.js"></script>
+    <script src="../../05-platform/assets.md.js"></script>
+    <script src="../../05-platform/logging.md.js"></script>
+    <script src="../../05-platform/mdoc.js"></script>
+    <script src="../../05-platform/input-handling.md.js"></script>
+    <script src="../../10-information/key-concepts.md.js"></script>
+    <script src="../../10-information/antipatterns.md.js"></script>
+    <script src="../../10-information/mdoc.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar" class="light-default dark-default">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="image-link" href="../../"><img src="../../img/indigo_logo_solid_text.svg" alt="Homepage" title="Indigo" width="150" height="50"></a>
+
+  <div class="row links">
+    
+    <a class="button-link" href="https://discord.gg/b5CD47g">Discord</a>
+    
+    <a class="button-link" href="/api">API</a>
+    
+    <a class="button-link" href="https://github.com/PurpleKingdomGames/indigo">Github</a>
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+    <a class="button-link" href="https://discord.gg/b5CD47g">Discord</a>
+    
+    <a class="button-link" href="/api">API</a>
+    
+    <a class="button-link" href="https://github.com/PurpleKingdomGames/indigo">Github</a>
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../../table-of-content/">Contents</a></li>
+    <li class="level1 nav-header">Setup &amp; Configuration</li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/examples/">Examples</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/hello-indigo/">Hello, Indigo!</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/project-templates/">Mill &amp; SBT Templates</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/quickstart/">Quick start</a></li>
+    <li class="level1 nav-header">Guides</li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-custom-entity/">How to make a custom entity</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-fire-shader/">How to write a fire shader</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-hello-indigo-tyrian/">How to make a responsive UI using Tyrian</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-indigo-game/">Converting <code>IndigoSandbox</code> to <code>IndigoGame</code></a></li>
+    <li class="level1 nav-header">Gameloop</li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/events/">Events</a></li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/frame-context/">Frame context</a></li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/outcome/">Outcome Type</a></li>
+    <li class="level1 nav-header">Organisation</li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/boot-and-start-up/">Boot &amp; Start Up</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/game-entry-points/">Game Entry Points</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/scene-management/">What are Scenes?</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/subsystems/">What SubSystems are</a></li>
+    <li class="level1 nav-header">Platform &amp; IO</li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/assets/">Assets &amp; Asset Loading</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/cross-platform-publishing/">Cross Platform Publishing</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/importers/">File Importers</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/input-handling/">Input Handling</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/loading-and-saving-data/">Loading &amp; Saving Data</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/logging/">Logging</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/networking/">Networking</a></li>
+    <li class="level1 nav-header">Presentation</li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/animation/">Animation</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/audio/">Audio</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/boundaries/">Boundaries</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/cameras/">Cameras</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/clones-and-mutants/">Clones &amp; Mutants</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/depth/">Depth</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/layers/">Layers</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/lighting/">Lighting</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/materials/">Materials</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/primitives/">Primitives &amp; Building Blocks</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/scene-update-fragment/">SceneUpdateFragment</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/shapes/">Shapes</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/text-and-fonts/">Text &amp; Fonts</a></li>
+    <li class="level1 nav-header">Shaders</li>
+    <li class="level2 active nav-leaf"><a href="#">Blending</a></li>
+    <li class="level2 nav-leaf"><a href="../constants/">Shader Constants, Variables, and Outputs</a></li>
+    <li class="level2 nav-leaf"><a href="../premultiplied-alpha/">Premultiplied Alpha</a></li>
+    <li class="level2 nav-leaf"><a href="../shaders-overview/">Shaders Overview</a></li>
+    <li class="level1 nav-header">Time</li>
+    <li class="level2 nav-leaf"><a href="../../08-time/gametime/">GameTime</a></li>
+    <li class="level2 nav-leaf"><a href="../../08-time/signals/">Signals &amp; Signal Functions</a></li>
+    <li class="level2 nav-leaf"><a href="../../08-time/time-varying-values/">Time Varying Values</a></li>
+    <li class="level1 nav-header">UI Components</li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/button/">Buttons</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/hit-area/">Hit Areas</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/input-field/">Input Fields</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/radio-button/">Radio Buttons</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/ui-components/">UI Components</a></li>
+    <li class="level1 nav-header">Misc</li>
+    <li class="level2 nav-leaf"><a href="../../10-information/alternatives/">Alternatives to Indigo</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/antipatterns/">Anti-Patterns</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/glossary/">Glossary</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/key-concepts/">Key Concepts</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/model-viewmodel-view/">Model, ViewModel, &amp; View</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/motivation-and-constraints/">Motivation &amp; Constraints</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/performance/">Performance</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/prior-art/">Prior Art</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/rendering-technology/">Rendering Technology</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Blending</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#blend-modes">Blend modes</a></li>
+    <li class="level1 nav-node"><a href="#blend-materials">Blend materials</a></li>
+    <li class="level2 nav-leaf"><a href="#built-in-blend-materials">Built in blend materials</a></li>
+    <li class="level1 nav-leaf"><a href="#blending-layers-and-scenes">Blending Layers and Scenes</a></li>
+    <li class="level1 nav-leaf"><a href="#example-lighting">Example: Lighting</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="blending" class="title">Blending</h1>
+        <p>Once you&#39;ve told Indigo what you&#39;d like your entity to look like, perhaps with a standard material or a custom shader, you then need to tell Indigo how to blend it into you game&#39;s scene. This allows you to describe scene level effects.</p>
+        <p>The blending process goes through the following stages:</p>
+        <ol class="arabic">
+          <li>Blend your entity into the current layer, and all this previous elements of that layer.</li>
+          <li>Blend the current layer onto the previous layers.</li>
+          <li>Blend the whole scene onto the canvas.</li>
+        </ol>
+        <p>The two main building blocks of the blending process are:</p>
+        <ol class="arabic">
+          <li>Blend modes</li>
+          <li>Blend materials</li>
+        </ol>
+        
+        <h2 id="blend-modes" class="section"><a class="anchor-link left" href="#blend-modes"><i class="icofont-laika link">&#xef71;</i></a>Blend modes</h2>
+        <p>Blend modes are hardware level functions with limited but important options. They instruct the graphics card on fundamentally how to combine two pixels together.</p>
+        <p>Explaining blend modes is beyond the scope of this guide, and there are many tutorials available, but as an example, we can compare Indigo&#39;s standard entity blend mode with it&#39;s entity lighting blend mode (used in image based <a href="../../06-presentation/lighting/">lighting</a>):</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">indigo</span><span>.*
+
+</span><span class="comment">// Normal
+</span><span class="type-name">Blend</span><span>.</span><span class="type-name">Add</span><span>(</span><span class="type-name">BlendFactor</span><span>.</span><span class="type-name">One</span><span>, </span><span class="type-name">BlendFactor</span><span>.</span><span class="type-name">OneMinusSrcAlpha</span><span>)
+
+</span><span class="comment">// Lighting
+</span><span class="type-name">Blend</span><span>.</span><span class="type-name">Lighten</span><span>(</span><span class="type-name">BlendFactor</span><span>.</span><span class="type-name">SrcAlpha</span><span>, </span><span class="type-name">BlendFactor</span><span>.</span><span class="type-name">DstAlpha</span><span>)</span></code></pre>
+        <p>The normal mode (add source to destination) simple adds (using the add operation) the source to the destination accounting for the alpha.</p>
+        <p>The lighting version &quot;lightens&quot; the destination pixel with the source pixel.</p>
+        
+        <h2 id="blend-materials" class="section"><a class="anchor-link left" href="#blend-materials"><i class="icofont-laika link">&#xef71;</i></a>Blend materials</h2>
+        <p>For more control over blending, we have blend materials - though you often need to use blend modes in concert with blend materials to get the right effects.</p>
+        <p>Blend materials work very much like normal materials, the main difference is that instead of reading textures and value to produce graphics, here you are taking a source pixel value, and a destination pixel value, and telling Indigo how to combine them.</p>
+        <p>Just like other shaders, you can write both vertex and fragment shaders for your blend material.</p>
+        
+        <h3 id="built-in-blend-materials" class="section"><a class="anchor-link left" href="#built-in-blend-materials"><i class="icofont-laika link">&#xef71;</i></a>Built in blend materials</h3>
+        <p>Indigo comes with three built in blend materials:</p>
+        <ol class="arabic">
+          <li><code>Normal</code> - the default</li>
+          <li><code>Lighting</code> - used with image based lighting</li>
+          <li><code>BlendEffects</code> - which allows you to set the alpha, tint, overlay/fill, and saturation.</li>
+        </ol>
+        <p>There is one additional blend material in the extras package that can be used to (roughly) describe refraction.</p>
+        
+        <h2 id="blending-layers-and-scenes" class="section"><a class="anchor-link left" href="#blending-layers-and-scenes"><i class="icofont-laika link">&#xef71;</i></a>Blending Layers and Scenes</h2>
+        <p><code>Layer</code>s optionally accept a <code>Blending</code> instance, which can be used to set:</p>
+        <ol class="arabic">
+          <li>The blend mode for the entities</li>
+          <li>The blend mode for the layer</li>
+          <li>The blend material for the layer</li>
+          <li>The layers clear color (background colour)</li>
+        </ol>
+        <p>Blending the final scene is less fine grained, and a <code>SceneUpdateFragment</code> can only accept a <code>BlendMaterial</code> not a full <code>Blending</code> instance.</p>
+        
+        <h2 id="example-lighting" class="section"><a class="anchor-link left" href="#example-lighting"><i class="icofont-laika link">&#xef71;</i></a>Example: Lighting</h2>
+        <p>Here is the <code>Blending</code> description for Indigo&#39;s image based <a href="../../06-presentation/lighting/">lighting</a>.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">ambientLightColor</span><span> = </span><span class="type-name">RGBA</span><span>.</span><span class="type-name">White</span><span>.</span><span class="identifier">withAlpha</span><span>(</span><span class="number-literal">0.25</span><span>)
+
+</span><span class="type-name">Blending</span><span>(
+  </span><span class="identifier">entity</span><span> = </span><span class="type-name">Blend</span><span>.</span><span class="type-name">LightingEntity</span><span>,
+  </span><span class="identifier">layer</span><span> = </span><span class="type-name">Blend</span><span>.</span><span class="type-name">Normal</span><span>,
+  </span><span class="identifier">blendMaterial</span><span> = </span><span class="type-name">BlendMaterial</span><span>.</span><span class="type-name">Lighting</span><span>(</span><span class="identifier">ambientLightColor</span><span>),
+  </span><span class="identifier">clearColor</span><span> = </span><span class="type-name">Option</span><span>(</span><span class="type-name">RGBA</span><span>.</span><span class="type-name">Black</span><span>)
+)</span></code></pre>
+        <p>&lt;div id=&quot;mdoc-html-run1&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <p>What is going on here?</p>
+        <p>Starting at the bottom, we&#39;re doing lighting! So the first thing we want to do is &quot;remove all light&quot; so we clear the screen to black.</p>
+        <p>Entities are then blended onto the layer using the mode we saw before, which multiplies the colors together such that putting a full red dot on a full green dot on a full blue dot would result in a white dot:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">Blend</span><span>.</span><span class="type-name">Lighten</span><span>(</span><span class="type-name">BlendFactor</span><span>.</span><span class="type-name">SrcAlpha</span><span>, </span><span class="type-name">BlendFactor</span><span>.</span><span class="type-name">DstAlpha</span><span>)</span></code></pre>
+        <p>&lt;div id=&quot;mdoc-html-run2&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <p>The layer then appears to be blended normally, simply adding this layer onto the layers below it. However this is misleading as the default behavior is overridden in the blend material.</p>
+        <p>The blend material actually takes the source and destination pixels and multiplies them together along with an ambient light value, to give the appearance that the scene is lit.
+        &lt;script type=&quot;text/javascript&quot; src=&quot;blending.md.js&quot; defer&gt;&lt;/script&gt;
+        &lt;script type=&quot;text/javascript&quot; src=&quot;mdoc.js&quot; defer&gt;&lt;/script&gt;</p>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://typelevel.org/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

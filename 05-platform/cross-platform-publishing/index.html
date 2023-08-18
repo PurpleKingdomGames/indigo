@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>Cross Platform Publishing</title>
+  
+  
+  <meta name="description" content="website2"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="../../helium/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../helium/laika-helium.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/custom.css" />
+  <script src="../../helium/laika-helium.js"></script>
+    <script src="../../01-quickstart/hello-indigo.md.js"></script>
+    <script src="../../01-quickstart/mdoc.js"></script>
+    <script src="../../03-gameloop/frame-context.md.js"></script>
+    <script src="../../03-gameloop/mdoc.js"></script>
+    <script src="../../03-gameloop/outcome.md.js"></script>
+    <script src="../../06-presentation/materials.md.js"></script>
+    <script src="../../06-presentation/cameras.md.js"></script>
+    <script src="../../06-presentation/lighting.md.js"></script>
+    <script src="../../06-presentation/depth.md.js"></script>
+    <script src="../../06-presentation/clones-and-mutants.md.js"></script>
+    <script src="../../06-presentation/animation.md.js"></script>
+    <script src="../../06-presentation/layers.md.js"></script>
+    <script src="../../06-presentation/audio.md.js"></script>
+    <script src="../../06-presentation/scene-update-fragment.md.js"></script>
+    <script src="../../06-presentation/boundaries.md.js"></script>
+    <script src="../../06-presentation/shapes.md.js"></script>
+    <script src="../../06-presentation/text-and-fonts.md.js"></script>
+    <script src="../../06-presentation/mdoc.js"></script>
+    <script src="../../08-time/signals.md.js"></script>
+    <script src="../../08-time/mdoc.js"></script>
+    <script src="../../08-time/time-varying-values.md.js"></script>
+    <script src="../../07-shaders/blending.md.js"></script>
+    <script src="../../07-shaders/mdoc.js"></script>
+    <script src="../../07-shaders/shaders-overview.md.js"></script>
+    <script src="../../09-uicomponents/button.md.js"></script>
+    <script src="../../09-uicomponents/input-field.md.js"></script>
+    <script src="../../09-uicomponents/hit-area.md.js"></script>
+    <script src="../../09-uicomponents/radio-button.md.js"></script>
+    <script src="../../09-uicomponents/mdoc.js"></script>
+    <script src="../../04-organisation/scene-management.md.js"></script>
+    <script src="../../04-organisation/boot-and-start-up.md.js"></script>
+    <script src="../../04-organisation/subsystems.md.js"></script>
+    <script src="../../04-organisation/mdoc.js"></script>
+    <script src="../../02-guides/mdoc.js"></script>
+    <script src="../../02-guides/howto-fire-shader.md.js"></script>
+    <script src="../../02-guides/howto-custom-entity.md.js"></script>
+    <script src="../assets.md.js"></script>
+    <script src="../logging.md.js"></script>
+    <script src="../mdoc.js"></script>
+    <script src="../input-handling.md.js"></script>
+    <script src="../../10-information/key-concepts.md.js"></script>
+    <script src="../../10-information/antipatterns.md.js"></script>
+    <script src="../../10-information/mdoc.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar" class="light-default dark-default">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="image-link" href="../../"><img src="../../img/indigo_logo_solid_text.svg" alt="Homepage" title="Indigo" width="150" height="50"></a>
+
+  <div class="row links">
+    
+    <a class="button-link" href="https://discord.gg/b5CD47g">Discord</a>
+    
+    <a class="button-link" href="/api">API</a>
+    
+    <a class="button-link" href="https://github.com/PurpleKingdomGames/indigo">Github</a>
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+    <a class="button-link" href="https://discord.gg/b5CD47g">Discord</a>
+    
+    <a class="button-link" href="/api">API</a>
+    
+    <a class="button-link" href="https://github.com/PurpleKingdomGames/indigo">Github</a>
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../../table-of-content/">Contents</a></li>
+    <li class="level1 nav-header">Setup &amp; Configuration</li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/examples/">Examples</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/hello-indigo/">Hello, Indigo!</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/project-templates/">Mill &amp; SBT Templates</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/quickstart/">Quick start</a></li>
+    <li class="level1 nav-header">Guides</li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-custom-entity/">How to make a custom entity</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-fire-shader/">How to write a fire shader</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-hello-indigo-tyrian/">How to make a responsive UI using Tyrian</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-indigo-game/">Converting <code>IndigoSandbox</code> to <code>IndigoGame</code></a></li>
+    <li class="level1 nav-header">Gameloop</li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/events/">Events</a></li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/frame-context/">Frame context</a></li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/outcome/">Outcome Type</a></li>
+    <li class="level1 nav-header">Organisation</li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/boot-and-start-up/">Boot &amp; Start Up</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/game-entry-points/">Game Entry Points</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/scene-management/">What are Scenes?</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/subsystems/">What SubSystems are</a></li>
+    <li class="level1 nav-header">Platform &amp; IO</li>
+    <li class="level2 nav-leaf"><a href="../assets/">Assets &amp; Asset Loading</a></li>
+    <li class="level2 active nav-leaf"><a href="#">Cross Platform Publishing</a></li>
+    <li class="level2 nav-leaf"><a href="../importers/">File Importers</a></li>
+    <li class="level2 nav-leaf"><a href="../input-handling/">Input Handling</a></li>
+    <li class="level2 nav-leaf"><a href="../loading-and-saving-data/">Loading &amp; Saving Data</a></li>
+    <li class="level2 nav-leaf"><a href="../logging/">Logging</a></li>
+    <li class="level2 nav-leaf"><a href="../networking/">Networking</a></li>
+    <li class="level1 nav-header">Presentation</li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/animation/">Animation</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/audio/">Audio</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/boundaries/">Boundaries</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/cameras/">Cameras</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/clones-and-mutants/">Clones &amp; Mutants</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/depth/">Depth</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/layers/">Layers</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/lighting/">Lighting</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/materials/">Materials</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/primitives/">Primitives &amp; Building Blocks</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/scene-update-fragment/">SceneUpdateFragment</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/shapes/">Shapes</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/text-and-fonts/">Text &amp; Fonts</a></li>
+    <li class="level1 nav-header">Shaders</li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/blending/">Blending</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/constants/">Shader Constants, Variables, and Outputs</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/premultiplied-alpha/">Premultiplied Alpha</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/shaders-overview/">Shaders Overview</a></li>
+    <li class="level1 nav-header">Time</li>
+    <li class="level2 nav-leaf"><a href="../../08-time/gametime/">GameTime</a></li>
+    <li class="level2 nav-leaf"><a href="../../08-time/signals/">Signals &amp; Signal Functions</a></li>
+    <li class="level2 nav-leaf"><a href="../../08-time/time-varying-values/">Time Varying Values</a></li>
+    <li class="level1 nav-header">UI Components</li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/button/">Buttons</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/hit-area/">Hit Areas</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/input-field/">Input Fields</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/radio-button/">Radio Buttons</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/ui-components/">UI Components</a></li>
+    <li class="level1 nav-header">Misc</li>
+    <li class="level2 nav-leaf"><a href="../../10-information/alternatives/">Alternatives to Indigo</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/antipatterns/">Anti-Patterns</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/glossary/">Glossary</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/key-concepts/">Key Concepts</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/model-viewmodel-view/">Model, ViewModel, &amp; View</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/motivation-and-constraints/">Motivation &amp; Constraints</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/performance/">Performance</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/prior-art/">Prior Art</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/rendering-technology/">Rendering Technology</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Cross Platform Publishing</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#installation">Installation</a></li>
+    <li class="level1 nav-leaf"><a href="#a-friendly-word-of-caution">A Friendly Word of Caution</a></li>
+    <li class="level1 nav-leaf"><a href="#foundations">Foundations</a></li>
+    <li class="level1 nav-leaf"><a href="#publishing-for-the-web">Publishing for the web</a></li>
+    <li class="level1 nav-leaf"><a href="#publishing-for-desktop">Publishing for Desktop</a></li>
+    <li class="level1 nav-leaf"><a href="#publishing-for-mobile">Publishing for Mobile</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="cross-platform-publishing" class="title">Cross Platform Publishing</h1>
+        <p>Indigo supports basic publishing to/building for the following platforms:</p>
+        <ul>
+          <li>Browser</li>
+          <li>Desktop</li>
+          <li>Mobile</li>
+        </ul>
+        <p>Using combinations of three supporting technologies:</p>
+        <ol class="arabic">
+          <li>HTML5</li>
+          <li>Electron</li>
+          <li>Cordova</li>
+        </ol>
+        
+        <h2 id="installation" class="section"><a class="anchor-link left" href="#installation"><i class="icofont-laika link">&#xef71;</i></a>Installation</h2>
+        <p>You will need Electron and Cordova installed globally to follow along, via npm they can be installed with <code>npm install -g electron</code> and <code>npm install -g cordova</code> respectively.</p>
+        
+        <h2 id="a-friendly-word-of-caution" class="section"><a class="anchor-link left" href="#a-friendly-word-of-caution"><i class="icofont-laika link">&#xef71;</i></a>A Friendly Word of Caution</h2>
+        <p>Indigo is not designed to be an all singing all dancing cross platform game publishing framework. That is a big maintenance overhead that we don&#39;t have the man power or hardware to fully support (sponsorship welcome!) - the testing alone is a serious undertaking.</p>
+        <p>What Indigo provides is a starting point: Some basic and probably very naive templates to get you going.</p>
+        <p>It is possible to publishing Indigo games to pretty much any device you like (we think...), but you will have to roll up your sleeves, set up testing rigs, read the relevant docs, and invest time learning how to do it.</p>
+        
+        <h2 id="foundations" class="section"><a class="anchor-link left" href="#foundations"><i class="icofont-laika link">&#xef71;</i></a>Foundations</h2>
+        <p>Indigo has two commands, <code>indigoBuild</code> and <code>indigoBuildFull</code> (for the optimized version)`, that will generate a simple static site of your game. Everything is built on top of that.</p>
+        
+        <h2 id="publishing-for-the-web" class="section"><a class="anchor-link left" href="#publishing-for-the-web"><i class="icofont-laika link">&#xef71;</i></a>Publishing for the web</h2>
+        <p>You can run the <code>indigoBuild</code> version from a local web server (such as npm&#39;s <code>http-server</code>) and view it in a browser.</p>
+        <p>The fancier way to do this is via Cordova. After doing a normal Scala.js compile, you run the <code>indigoCordovaBuild</code> (or <code>indigoCordovaBuildFull</code>) task, and navigate to the folder of the same name in the output directory, e.g. the <a href="https://github.com/PurpleKingdomGames/indigo-examples/tree/master/demos/snake">Snake demo</a> would be at <code>(..)/indigo-examples/demos/snake/out/snake/indigoCordovaBuild/dest</code> (note the <code>/dest</code> folder is there because it&#39;s a Mill build and wouldn&#39;t be present in SBT).</p>
+        <p>You then set up the Cordova project as follows:</p>
+        <ol class="arabic">
+          <li><code>cordova platform add browser</code></li>
+          <li><code>cordova prepare</code></li>
+          <li><code>cordova run browser</code></li>
+        </ol>
+        <p>This will start a web server and open a browser tab with your game running in it.</p>
+        <p>The benefits of doing this over just running <code>http-server</code> are limited. It does support dynamic reloading when assets change, though we believe this would only really work for the surrounding files (HTML, CSS and non-generated JS files) rather than the game itself, and even that may need additional Cordova configuration.</p>
+        
+        <h2 id="publishing-for-desktop" class="section"><a class="anchor-link left" href="#publishing-for-desktop"><i class="icofont-laika link">&#xef71;</i></a>Publishing for Desktop</h2>
+        <p>Desktop publishing can be achieved using Electron as a standalone, or Electron running in Cordova.</p>
+        <p>When you invoke the <code>indigoRun</code> command, what that actually does is build an electron template in a folder in the output directory called <code>indigoRun</code>, same at the task name. It then runs the electron game using the <code>electron .</code> command from within that folder. You can use that as a starting point directly.</p>
+        <p>Alternatively, you can publish via Electron-Cordova:</p>
+        <ol class="arabic">
+          <li>Run the <code>indigoCordovaBuild</code> task</li>
+          <li>Navigate to the <code>indigoCordovaBuild</code> output folder</li>
+          <li><code>cordova platform add electron</code></li>
+          <li><code>cordova prepare</code></li>
+          <li><code>cordova run electron</code></li>
+        </ol>
+        <p>Both Cordova and Electron come with packaging and publishing options, please see their respective documentation.</p>
+        <blockquote>Cordova also technically allows for the building of native applications using, for example, the <code>osx</code> platform. However this does not appear to work with Indigo since it loads a static view rather than one served from a web server as Electron and iOS do.</blockquote>
+        
+        <h2 id="publishing-for-mobile" class="section"><a class="anchor-link left" href="#publishing-for-mobile"><i class="icofont-laika link">&#xef71;</i></a>Publishing for Mobile</h2>
+        <p>The Indigo plugin currently only generates configuration for iOS apps. There is no reason Android can&#39;t be added, you just need to read the Cordova documentation.</p>
+        <blockquote>Android is not included by default for the reason that we can&#39;t adequately test it (boring logistical reasons), we&#39;ll try to add it in a future release...</blockquote>
+        <p>Publishing for mobile is slightly more involved as you&#39;ll need to have the relevant development kits installed, Xcode for iOS and Android SDK/Android Studio for Android.</p>
+        <p>Once you have your environment set up, the process is very similar:</p>
+        <ol class="arabic">
+          <li>Run the <code>indigoCordovaBuild</code> task</li>
+          <li>Navigate to the <code>indigoCordovaBuild</code> output folder</li>
+          <li><code>cordova platform add ios</code></li>
+          <li><code>cordova prepare</code></li>
+          <li><code>cordova run ios</code></li>
+        </ol>
+        <p>Where the process will eventually differ is that you will probably want to run different simulators, and open the output directory in Xcode or Android Studio in order to take advantage of their development and testing environments.</p>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://typelevel.org/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

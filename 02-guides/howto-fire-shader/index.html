@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>How to write a fire shader</title>
+  
+  
+  <meta name="description" content="website2"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="../../helium/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../helium/laika-helium.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/custom.css" />
+  <script src="../../helium/laika-helium.js"></script>
+    <script src="../../01-quickstart/hello-indigo.md.js"></script>
+    <script src="../../01-quickstart/mdoc.js"></script>
+    <script src="../../03-gameloop/frame-context.md.js"></script>
+    <script src="../../03-gameloop/mdoc.js"></script>
+    <script src="../../03-gameloop/outcome.md.js"></script>
+    <script src="../../06-presentation/materials.md.js"></script>
+    <script src="../../06-presentation/cameras.md.js"></script>
+    <script src="../../06-presentation/lighting.md.js"></script>
+    <script src="../../06-presentation/depth.md.js"></script>
+    <script src="../../06-presentation/clones-and-mutants.md.js"></script>
+    <script src="../../06-presentation/animation.md.js"></script>
+    <script src="../../06-presentation/layers.md.js"></script>
+    <script src="../../06-presentation/audio.md.js"></script>
+    <script src="../../06-presentation/scene-update-fragment.md.js"></script>
+    <script src="../../06-presentation/boundaries.md.js"></script>
+    <script src="../../06-presentation/shapes.md.js"></script>
+    <script src="../../06-presentation/text-and-fonts.md.js"></script>
+    <script src="../../06-presentation/mdoc.js"></script>
+    <script src="../../08-time/signals.md.js"></script>
+    <script src="../../08-time/mdoc.js"></script>
+    <script src="../../08-time/time-varying-values.md.js"></script>
+    <script src="../../07-shaders/blending.md.js"></script>
+    <script src="../../07-shaders/mdoc.js"></script>
+    <script src="../../07-shaders/shaders-overview.md.js"></script>
+    <script src="../../09-uicomponents/button.md.js"></script>
+    <script src="../../09-uicomponents/input-field.md.js"></script>
+    <script src="../../09-uicomponents/hit-area.md.js"></script>
+    <script src="../../09-uicomponents/radio-button.md.js"></script>
+    <script src="../../09-uicomponents/mdoc.js"></script>
+    <script src="../../04-organisation/scene-management.md.js"></script>
+    <script src="../../04-organisation/boot-and-start-up.md.js"></script>
+    <script src="../../04-organisation/subsystems.md.js"></script>
+    <script src="../../04-organisation/mdoc.js"></script>
+    <script src="../mdoc.js"></script>
+    <script src="../howto-fire-shader.md.js"></script>
+    <script src="../howto-custom-entity.md.js"></script>
+    <script src="../../05-platform/assets.md.js"></script>
+    <script src="../../05-platform/logging.md.js"></script>
+    <script src="../../05-platform/mdoc.js"></script>
+    <script src="../../05-platform/input-handling.md.js"></script>
+    <script src="../../10-information/key-concepts.md.js"></script>
+    <script src="../../10-information/antipatterns.md.js"></script>
+    <script src="../../10-information/mdoc.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar" class="light-default dark-default">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="image-link" href="../../"><img src="../../img/indigo_logo_solid_text.svg" alt="Homepage" title="Indigo" width="150" height="50"></a>
+
+  <div class="row links">
+    
+    <a class="button-link" href="https://discord.gg/b5CD47g">Discord</a>
+    
+    <a class="button-link" href="/api">API</a>
+    
+    <a class="button-link" href="https://github.com/PurpleKingdomGames/indigo">Github</a>
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+    <a class="button-link" href="https://discord.gg/b5CD47g">Discord</a>
+    
+    <a class="button-link" href="/api">API</a>
+    
+    <a class="button-link" href="https://github.com/PurpleKingdomGames/indigo">Github</a>
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../../table-of-content/">Contents</a></li>
+    <li class="level1 nav-header">Setup &amp; Configuration</li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/examples/">Examples</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/hello-indigo/">Hello, Indigo!</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/project-templates/">Mill &amp; SBT Templates</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/quickstart/">Quick start</a></li>
+    <li class="level1 nav-header">Guides</li>
+    <li class="level2 nav-leaf"><a href="../howto-custom-entity/">How to make a custom entity</a></li>
+    <li class="level2 active nav-leaf"><a href="#">How to write a fire shader</a></li>
+    <li class="level2 nav-leaf"><a href="../howto-hello-indigo-tyrian/">How to make a responsive UI using Tyrian</a></li>
+    <li class="level2 nav-leaf"><a href="../howto-indigo-game/">Converting <code>IndigoSandbox</code> to <code>IndigoGame</code></a></li>
+    <li class="level1 nav-header">Gameloop</li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/events/">Events</a></li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/frame-context/">Frame context</a></li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/outcome/">Outcome Type</a></li>
+    <li class="level1 nav-header">Organisation</li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/boot-and-start-up/">Boot &amp; Start Up</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/game-entry-points/">Game Entry Points</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/scene-management/">What are Scenes?</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/subsystems/">What SubSystems are</a></li>
+    <li class="level1 nav-header">Platform &amp; IO</li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/assets/">Assets &amp; Asset Loading</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/cross-platform-publishing/">Cross Platform Publishing</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/importers/">File Importers</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/input-handling/">Input Handling</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/loading-and-saving-data/">Loading &amp; Saving Data</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/logging/">Logging</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/networking/">Networking</a></li>
+    <li class="level1 nav-header">Presentation</li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/animation/">Animation</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/audio/">Audio</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/boundaries/">Boundaries</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/cameras/">Cameras</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/clones-and-mutants/">Clones &amp; Mutants</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/depth/">Depth</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/layers/">Layers</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/lighting/">Lighting</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/materials/">Materials</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/primitives/">Primitives &amp; Building Blocks</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/scene-update-fragment/">SceneUpdateFragment</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/shapes/">Shapes</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/text-and-fonts/">Text &amp; Fonts</a></li>
+    <li class="level1 nav-header">Shaders</li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/blending/">Blending</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/constants/">Shader Constants, Variables, and Outputs</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/premultiplied-alpha/">Premultiplied Alpha</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/shaders-overview/">Shaders Overview</a></li>
+    <li class="level1 nav-header">Time</li>
+    <li class="level2 nav-leaf"><a href="../../08-time/gametime/">GameTime</a></li>
+    <li class="level2 nav-leaf"><a href="../../08-time/signals/">Signals &amp; Signal Functions</a></li>
+    <li class="level2 nav-leaf"><a href="../../08-time/time-varying-values/">Time Varying Values</a></li>
+    <li class="level1 nav-header">UI Components</li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/button/">Buttons</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/hit-area/">Hit Areas</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/input-field/">Input Fields</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/radio-button/">Radio Buttons</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/ui-components/">UI Components</a></li>
+    <li class="level1 nav-header">Misc</li>
+    <li class="level2 nav-leaf"><a href="../../10-information/alternatives/">Alternatives to Indigo</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/antipatterns/">Anti-Patterns</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/glossary/">Glossary</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/key-concepts/">Key Concepts</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/model-viewmodel-view/">Model, ViewModel, &amp; View</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/motivation-and-constraints/">Motivation &amp; Constraints</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/performance/">Performance</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/prior-art/">Prior Art</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/rendering-technology/">Rendering Technology</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">How to write a fire shader</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-node"><a href="#indigo-shader-need-to-know-s">Indigo shader need-to-know&#39;s</a></li>
+    <li class="level2 nav-leaf"><a href="#the-entityshader">The <code>EntityShader</code></a></li>
+    <li class="level2 nav-leaf"><a href="#the-toshaderdata-method">The <code>toShaderData</code> method</a></li>
+    <li class="level2 nav-leaf"><a href="#uvs">UVs</a></li>
+    <li class="level1 nav-node"><a href="#flint-tinder">Flint &amp; Tinder</a></li>
+    <li class="level2 nav-leaf"><a href="#signed-distance-functions-sdfs">Signed Distance Functions (SDFs)</a></li>
+    <li class="level2 nav-leaf"><a href="#noise">Noise</a></li>
+    <li class="level1 nav-node"><a href="#making-fire">Making fire</a></li>
+    <li class="level2 nav-leaf"><a href="#putting-it-all-together">Putting it all together</a></li>
+    <li class="level1 nav-leaf"><a href="#wrapping-up">Wrapping up</a></li>
+    <li class="level1 nav-leaf"><a href="#finding-out-more-about-shaders">Finding out more about shaders</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="how-to-write-a-fire-shader" class="title">How to write a fire shader</h1>
+        <p>In this how-to guide, we&#39;re going to look at one approach to writing a little shader that produces procedural flames. Here&#39;s one I made earlier:</p>
+        <p><img src="../../img/howtos/campfire.gif" alt="A pixel art campfire with procedural flames" title="A pixel art campfire with procedural flames"></p>
+        <p>We&#39;re first going to cover a few basic concepts needed for writing shaders in Indigo, then look at Signed Distance Functions, Noise, and finally bring it all together to make our fire effect.</p>
+        <p>There is a <a href="https://github.com/PurpleKingdomGames/indigo-examples/tree/master/howto/fire">github repo</a> that accompanies this how-to.</p>
+        <blockquote>Small apology: I&#39;m using lots of gif animations to show what is going on, and they mostly do not loop cleanly!</blockquote>
+        
+        <h2 id="indigo-shader-need-to-know-s" class="section"><a class="anchor-link left" href="#indigo-shader-need-to-know-s"><i class="icofont-laika link">&#xef71;</i></a>Indigo shader need-to-know&#39;s</h2>
+        <p>Every game engine implements shaders in a slightly different way. This is because they are trying to bridge the gap between the various platforms they support, and the idiosyncrasies of how that particular engine works. Indigo is the same. Indigo uses <a href="https://en.wikipedia.org/wiki/OpenGL_Shading_Language">GLSL 300</a> which is the <a href="https://en.wikipedia.org/wiki/WebGL">WebGL 2.0</a> variation. The main gap Indigo has to bridge is between the Functional world of Scala and the procedural world of WebGL.</p>
+        <p>If you haven&#39;t already, you should go and read the <a href="../howto-custom-entity/">&quot;How to make a custom entity&quot;</a> guide first, because this how-to builds on that one. You will indeed need a custom entity to run your shader in, this is the one I&#39;m using:</p>
+        <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">indigo</span><span>.*
+</span><span class="keyword">import</span><span> </span><span class="identifier">indigo</span><span>.</span><span class="type-name">ShaderPrimitive</span><span>.*
+
+</span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Fire</span><span>(
+    </span><span class="identifier">position</span><span>: </span><span class="type-name">Point</span><span>,
+    </span><span class="identifier">size</span><span>: </span><span class="type-name">Size</span><span>,
+    </span><span class="identifier">depth</span><span>: </span><span class="type-name">Depth</span><span>,
+    </span><span class="identifier">outer</span><span>: </span><span class="type-name">RGB</span><span>,
+    </span><span class="identifier">inner</span><span>: </span><span class="type-name">RGB</span><span>,
+    </span><span class="identifier">center</span><span>: </span><span class="type-name">RGB</span><span>,
+    </span><span class="identifier">offset</span><span>: </span><span class="type-name">Double</span><span>
+) </span><span class="keyword">extends</span><span> </span><span class="type-name">EntityNode</span><span>[</span><span class="type-name">Fire</span><span>]:
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">flip</span><span>: </span><span class="type-name">Flip</span><span>        = </span><span class="type-name">Flip</span><span>.</span><span class="keyword">default</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">ref</span><span>: </span><span class="type-name">Point</span><span>        = </span><span class="type-name">Point</span><span>.</span><span class="identifier">zero</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">rotation</span><span>: </span><span class="type-name">Radians</span><span> = </span><span class="type-name">Radians</span><span>.</span><span class="identifier">zero</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">scale</span><span>: </span><span class="type-name">Vector2</span><span>    = </span><span class="type-name">Vector2</span><span>.</span><span class="identifier">one</span><span>
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">withDepth</span><span>(</span><span class="identifier">newDepth</span><span>: </span><span class="type-name">Depth</span><span>): </span><span class="type-name">Fire</span><span> =
+    </span><span class="keyword">this</span><span>.</span><span class="identifier">copy</span><span>(</span><span class="identifier">depth</span><span> = </span><span class="identifier">newDepth</span><span>)
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">eventHandler</span><span>: ((</span><span class="type-name">Fire</span><span>, </span><span class="type-name">GlobalEvent</span><span>)) =&gt; </span><span class="type-name">Option</span><span>[</span><span class="type-name">GlobalEvent</span><span>] =
+    </span><span class="identifier">_</span><span> =&gt; </span><span class="type-name">None</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">eventHandlerEnabled</span><span>: </span><span class="type-name">Boolean</span><span> = </span><span class="boolean-literal">false</span><span>
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">toShaderData</span><span>: </span><span class="type-name">ShaderData</span><span> =
+    </span><span class="type-name">ShaderData</span><span>(
+      </span><span class="type-name">Fire</span><span>.</span><span class="identifier">shaderId</span><span>,
+      </span><span class="type-name">UniformBlock</span><span>(
+        </span><span class="type-name">UniformBlockName</span><span>(</span><span class="string-literal">&quot;FireData&quot;</span><span>),
+        </span><span class="type-name">Batch</span><span>(
+          </span><span class="type-name">Uniform</span><span>(</span><span class="string-literal">&quot;OFFSET&quot;</span><span>)       -&gt; </span><span class="identifier">float</span><span>(</span><span class="identifier">offset</span><span>),
+          </span><span class="type-name">Uniform</span><span>(</span><span class="string-literal">&quot;COLOR_OUTER&quot;</span><span>)  -&gt; </span><span class="identifier">vec3</span><span>(</span><span class="identifier">outer</span><span>.</span><span class="identifier">r</span><span>, </span><span class="identifier">outer</span><span>.</span><span class="identifier">g</span><span>, </span><span class="identifier">outer</span><span>.</span><span class="identifier">b</span><span>),
+          </span><span class="type-name">Uniform</span><span>(</span><span class="string-literal">&quot;COLOR_INNER&quot;</span><span>)  -&gt; </span><span class="identifier">vec3</span><span>(</span><span class="identifier">inner</span><span>.</span><span class="identifier">r</span><span>, </span><span class="identifier">inner</span><span>.</span><span class="identifier">g</span><span>, </span><span class="identifier">inner</span><span>.</span><span class="identifier">b</span><span>),
+          </span><span class="type-name">Uniform</span><span>(</span><span class="string-literal">&quot;COLOR_CENTER&quot;</span><span>) -&gt; </span><span class="identifier">vec3</span><span>(</span><span class="identifier">center</span><span>.</span><span class="identifier">r</span><span>, </span><span class="identifier">center</span><span>.</span><span class="identifier">g</span><span>, </span><span class="identifier">center</span><span>.</span><span class="identifier">b</span><span>)
+        )
+      )
+    )
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">Fire</span><span>:
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">orange</span><span>(</span><span class="identifier">position</span><span>: </span><span class="type-name">Point</span><span>, </span><span class="identifier">size</span><span>: </span><span class="type-name">Size</span><span>): </span><span class="type-name">Fire</span><span> =
+    </span><span class="type-name">Fire</span><span>(</span><span class="identifier">position</span><span>, </span><span class="identifier">size</span><span>, </span><span class="type-name">Depth</span><span>(</span><span class="number-literal">1</span><span>), </span><span class="type-name">RGB</span><span>(</span><span class="number-literal">1.0</span><span>, </span><span class="number-literal">0.5</span><span>, </span><span class="number-literal">0.0</span><span>), </span><span class="type-name">RGB</span><span>(</span><span class="number-literal">1.0</span><span>, </span><span class="number-literal">0.8</span><span>, </span><span class="number-literal">0.0</span><span>), </span><span class="type-name">RGB</span><span>.</span><span class="type-name">White</span><span>, </span><span class="number-literal">0.0d</span><span>)
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">blue</span><span>(</span><span class="identifier">position</span><span>: </span><span class="type-name">Point</span><span>, </span><span class="identifier">size</span><span>: </span><span class="type-name">Size</span><span>): </span><span class="type-name">Fire</span><span> =
+    </span><span class="type-name">Fire</span><span>(</span><span class="identifier">position</span><span>, </span><span class="identifier">size</span><span>, </span><span class="type-name">Depth</span><span>(</span><span class="number-literal">1</span><span>), </span><span class="type-name">RGB</span><span>.</span><span class="type-name">Blue</span><span>, </span><span class="type-name">RGB</span><span>.</span><span class="type-name">Cyan</span><span>, </span><span class="type-name">RGB</span><span>.</span><span class="type-name">White</span><span>, </span><span class="number-literal">0.0d</span><span>)
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">green</span><span>(</span><span class="identifier">position</span><span>: </span><span class="type-name">Point</span><span>, </span><span class="identifier">size</span><span>: </span><span class="type-name">Size</span><span>): </span><span class="type-name">Fire</span><span> =
+    </span><span class="type-name">Fire</span><span>(</span><span class="identifier">position</span><span>, </span><span class="identifier">size</span><span>, </span><span class="type-name">Depth</span><span>(</span><span class="number-literal">1</span><span>), </span><span class="type-name">RGB</span><span>.</span><span class="type-name">Green</span><span>, </span><span class="type-name">RGB</span><span>.</span><span class="type-name">Yellow</span><span>, </span><span class="type-name">RGB</span><span>.</span><span class="type-name">White</span><span>, </span><span class="number-literal">0.0d</span><span>)
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">apply</span><span>(</span><span class="identifier">position</span><span>: </span><span class="type-name">Point</span><span>, </span><span class="identifier">size</span><span>: </span><span class="type-name">Size</span><span>): </span><span class="type-name">Fire</span><span> =
+    </span><span class="identifier">orange</span><span>(</span><span class="identifier">position</span><span>, </span><span class="identifier">size</span><span>)
+
+  </span><span class="keyword">val</span><span> </span><span class="identifier">shaderId</span><span>: </span><span class="type-name">ShaderId</span><span> =
+    </span><span class="type-name">ShaderId</span><span>(</span><span class="string-literal">&quot;fire shader&quot;</span><span>)
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">shader</span><span>(</span><span class="identifier">fragProgram</span><span>: </span><span class="type-name">AssetName</span><span>): </span><span class="type-name">EntityShader</span><span> =
+    </span><span class="type-name">EntityShader</span><span>
+      .</span><span class="type-name">External</span><span>(</span><span class="type-name">ShaderId</span><span>(</span><span class="string-literal">&quot;fire shader&quot;</span><span>))
+      .</span><span class="identifier">withFragmentProgram</span><span>(</span><span class="identifier">fragProgram</span><span>)</span></code></pre>
+        <p>The <code>Fire</code> case class extends <code>EntityNode</code> meaning that we must supply a few values for it to work, but once we&#39;ve done that we can add it to our scene. Here I&#39;m using one of the helper functions in the companion object to add an orange fire:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>  </span><span class="keyword">def</span><span> </span><span class="declaration-name">present</span><span>(</span><span class="identifier">context</span><span>: </span><span class="type-name">FrameContext</span><span>[</span><span class="type-name">Unit</span><span>], </span><span class="identifier">model</span><span>: </span><span class="type-name">Unit</span><span>, </span><span class="identifier">viewModel</span><span>: </span><span class="type-name">Unit</span><span>): </span><span class="type-name">Outcome</span><span>[</span><span class="type-name">SceneUpdateFragment</span><span>] =
+    </span><span class="type-name">Outcome</span><span>(
+      </span><span class="type-name">SceneUpdateFragment</span><span>(
+        </span><span class="type-name">Fire</span><span>.</span><span class="identifier">orange</span><span>(</span><span class="type-name">Point</span><span>(</span><span class="number-literal">60</span><span>, </span><span class="number-literal">30</span><span>), </span><span class="type-name">Size</span><span>(</span><span class="number-literal">70</span><span>, </span><span class="number-literal">100</span><span>))
+      )
+    )</span></code></pre>
+        <blockquote>In point of fact, all the screen shots below are set to take up the whole screen: <code>Fire.orange(Point(0, 0), Size(384, 384))</code></blockquote>
+        <p>Important things to note about our custom entity:</p>
+        <ol class="arabic">
+          <li>The <code>EntityShader</code> definition in the <code>Fire</code> companion object.</li>
+          <li>The <code>toShaderData</code> method</li>
+        </ol>
+        <p>Taking them in turn:</p>
+        
+        <h3 id="the-entityshader" class="section"><a class="anchor-link left" href="#the-entityshader"><i class="icofont-laika link">&#xef71;</i></a>The <code>EntityShader</code></h3>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">shader</span><span>(</span><span class="identifier">fragProgram</span><span>: </span><span class="type-name">AssetName</span><span>): </span><span class="type-name">EntityShader</span><span> =
+  </span><span class="type-name">EntityShader</span><span>
+    .</span><span class="type-name">External</span><span>(</span><span class="type-name">ShaderId</span><span>(</span><span class="string-literal">&quot;my fire shader&quot;</span><span>))
+    .</span><span class="identifier">withFragmentProgram</span><span>(</span><span class="identifier">fragProgram</span><span>)</span></code></pre>
+        <p>&lt;div id=&quot;mdoc-html-run1&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <p>In our case, the fragment program is being loaded as a normal <code>AssetType.Text</code>, and by supplying the <code>AssetName</code> to an <code>External</code> entity shader, Indigo will use the contents of the text asset as the shader code.</p>
+        <p>This shader only uses a custom <a href="https://www.khronos.org/opengl/wiki/Fragment_Shader#:~:text=A%20Fragment%20Shader%20is%20the,a%20%22fragment%22%20is%20generated.">fragment shader</a>. The simplest (although I have included our data struct) example of an external fragment shader written in file called <code>shader.frag</code> might be:</p>
+        <pre><code class="glsl">#version 300 es
+// Above line must be the first thing in the file, and tells WebGL which GLSL version we&#39;re using.
+
+precision mediump float; // Declare float precision
+
+// Declares a constant we know Indigo provides so that we can use it and the linter can check it.
+vec4 COLOR;
+
+// Everything outside of this tag is ignored by Indigo!
+//&lt;indigo-fragment&gt;
+
+// A struct that mirrors the data in the `toShaderData` method, this is data sent from Indigo to the shader.
+layout (std140) uniform FireData {
+  float OFFSET;
+  vec3 COLOR_OUTER;
+  vec3 COLOR_INNER;
+  vec3 COLOR_CENTER;
+};
+
+// The required fragment function setting the COLOR output variable to green.
+void fragment() {
+  COLOR = vec4(0.0, 1.0, 0.0, 1.0);
+}
+//&lt;/indigo-fragment&gt;</code></pre>
+        <p>The advantage of using an external file is that you can use a nice editor with GLSL syntax highlighting and linting. Everything outside the <code>//&lt;indigo-fragment&gt;</code> tags is ultimately ignored and omitted, but the values are used by GLSL linters to check your code. Any GLSL code you wish to use must be inside the tags.</p>
+        <p>You <em>MUST</em> remember to register your shader, like this (or under <code>val shader: Set[Shader]</code> in an Indigo sandbox game):</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">object</span><span> </span><span class="type-name">Assets</span><span>:
+  </span><span class="keyword">val</span><span> </span><span class="identifier">fireProgram</span><span> = </span><span class="type-name">AssetName</span><span>(</span><span class="string-literal">&quot;fire&quot;</span><span>)
+  </span><span class="keyword">val</span><span> </span><span class="identifier">assets</span><span>: </span><span class="type-name">Set</span><span>[</span><span class="type-name">AssetType</span><span>] =
+    </span><span class="type-name">Set</span><span>(</span><span class="type-name">AssetType</span><span>.</span><span class="type-name">Text</span><span>(</span><span class="identifier">fireProgram</span><span>, </span><span class="type-name">AssetPath</span><span>(</span><span class="string-literal">&quot;assets/shader.frag&quot;</span><span>)))
+
+</span><span class="type-name">BootResult</span><span>
+  .</span><span class="identifier">noData</span><span>(</span><span class="type-name">GameConfig</span><span>.</span><span class="keyword">default</span><span>.</span><span class="identifier">withViewport</span><span>(</span><span class="number-literal">384</span><span>, </span><span class="number-literal">384</span><span>).</span><span class="identifier">withMagnification</span><span>(</span><span class="number-literal">2</span><span>))
+  .</span><span class="identifier">withShaders</span><span>(</span><span class="type-name">Fire</span><span>.</span><span class="identifier">shader</span><span>(</span><span class="type-name">Assets</span><span>.</span><span class="identifier">fireProgram</span><span>))
+  .</span><span class="identifier">withAssets</span><span>(</span><span class="type-name">Assets</span><span>.</span><span class="identifier">assets</span><span>)</span></code></pre>
+        <p>&lt;div id=&quot;mdoc-html-run2&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        
+        <h3 id="the-toshaderdata-method" class="section"><a class="anchor-link left" href="#the-toshaderdata-method"><i class="icofont-laika link">&#xef71;</i></a>The <code>toShaderData</code> method</h3>
+        <p>Eventually we&#39;re going to need to tell our custom entity which shader to use (<code>Fire.shaderId</code>) and also supply values to the shader to change how it behaves. This is the final version, we&#39;re skipping to the end, but hopefully it should be fairly self explanatory:</p>
+        <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">offset</span><span> = </span><span class="number-literal">0.0d</span><span> </span><span class="comment">// Used to make different instances flicker out of sync
+</span><span class="keyword">val</span><span> </span><span class="identifier">center</span><span> = </span><span class="type-name">RGB</span><span>.</span><span class="type-name">White</span><span>
+</span><span class="keyword">val</span><span> </span><span class="identifier">inner</span><span> = </span><span class="type-name">RGB</span><span>.</span><span class="type-name">Yellow</span><span>
+</span><span class="keyword">val</span><span> </span><span class="identifier">outer</span><span> = </span><span class="type-name">RGB</span><span>.</span><span class="type-name">Red</span><span>.</span><span class="identifier">mix</span><span>(</span><span class="type-name">RGB</span><span>.</span><span class="type-name">Yellow</span><span>, </span><span class="number-literal">0.5</span><span>)
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">toShaderData</span><span>: </span><span class="type-name">ShaderData</span><span> =
+  </span><span class="type-name">ShaderData</span><span>(
+    </span><span class="type-name">Fire</span><span>.</span><span class="identifier">shaderId</span><span>,
+    </span><span class="type-name">UniformBlock</span><span>(
+      </span><span class="type-name">UniformBlockName</span><span>(</span><span class="string-literal">&quot;FireData&quot;</span><span>),
+      </span><span class="type-name">Batch</span><span>(
+        </span><span class="type-name">Uniform</span><span>(</span><span class="string-literal">&quot;OFFSET&quot;</span><span>)       -&gt; </span><span class="identifier">float</span><span>(</span><span class="identifier">offset</span><span>),
+        </span><span class="type-name">Uniform</span><span>(</span><span class="string-literal">&quot;COLOR_OUTER&quot;</span><span>)  -&gt; </span><span class="identifier">vec3</span><span>(</span><span class="identifier">outer</span><span>.</span><span class="identifier">r</span><span>, </span><span class="identifier">outer</span><span>.</span><span class="identifier">g</span><span>, </span><span class="identifier">outer</span><span>.</span><span class="identifier">b</span><span>),
+        </span><span class="type-name">Uniform</span><span>(</span><span class="string-literal">&quot;COLOR_INNER&quot;</span><span>)  -&gt; </span><span class="identifier">vec3</span><span>(</span><span class="identifier">inner</span><span>.</span><span class="identifier">r</span><span>, </span><span class="identifier">inner</span><span>.</span><span class="identifier">g</span><span>, </span><span class="identifier">inner</span><span>.</span><span class="identifier">b</span><span>),
+        </span><span class="type-name">Uniform</span><span>(</span><span class="string-literal">&quot;COLOR_CENTER&quot;</span><span>) -&gt; </span><span class="identifier">vec3</span><span>(</span><span class="identifier">center</span><span>.</span><span class="identifier">r</span><span>, </span><span class="identifier">center</span><span>.</span><span class="identifier">g</span><span>, </span><span class="identifier">center</span><span>.</span><span class="identifier">b</span><span>)
+      )
+    )
+  )</span></code></pre>
+        <p>&lt;div id=&quot;mdoc-html-run3&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <p>The main thing to note is that the <code>UniformBlock</code> aligns exactly to the struct found in the shader:</p>
+        <pre class="keep-together pdf epub"><code class="glsl">layout (std140) uniform FireData {
+  float OFFSET;
+  vec3 COLOR_OUTER;
+  vec3 COLOR_INNER;
+  vec3 COLOR_CENTER;
+};</code></pre>
+        <p>At some point in the future it would be good to improve the type safety around the relationship across this interface, but for now, please take care. More information on how this works including the <strong>all important packing rules</strong> can be found in the <a href="../../07-shaders/shaders-overview/">Shaders Overview</a>.</p>
+        
+        <h3 id="uvs" class="section"><a class="anchor-link left" href="#uvs"><i class="icofont-laika link">&#xef71;</i></a>UVs</h3>
+        <p>UV coordinates tell WebGL how to map a texture onto a mesh / 3d model.</p>
+        <p>The important thing to remember is that all coordinate systems in Indigo go from top left to bottom right, and shader UVs are no exception. This will be super important when we look at SDFs.</p>
+        <p><img src="../../img/howtos/shader_uvs.png" alt="Shader UV coords in Indigo are 0,0 top left to 1,1 bottom right" title="Shader UV coords in Indigo are 0,0 top left to 1,1 bottom right"></p>
+        
+        <h2 id="flint-tinder" class="section"><a class="anchor-link left" href="#flint-tinder"><i class="icofont-laika link">&#xef71;</i></a>Flint &amp; Tinder</h2>
+        <p>To make a fire shader, we need a couple of raw materials:</p>
+        <ol class="arabic">
+          <li>A way to draw a basic shape, in our case a circle.</li>
+          <li>A way to distort that shape into an animated flame.</li>
+        </ol>
+        <p>For this, we&#39;re going to use an SDF and Noise respectively.</p>
+        
+        <h3 id="signed-distance-functions-sdfs" class="section"><a class="anchor-link left" href="#signed-distance-functions-sdfs"><i class="icofont-laika link">&#xef71;</i></a>Signed Distance Functions (SDFs)</h3>
+        <p>An SDF, or Signed Distance Function, is simply a function that, for a given point (UV coordinate) returns the distance to the edge of a shape. Therefore, a distance of 0 means you are on the shape&#39;s border, a distance greater than 0 is outside the shape, and less than 0 is inside the shape.</p>
+        <p><em>The SDF for a circle might be the simplest SDF there is, so it&#39;s a good one to use to get the grips with the concept. Why not try a few values manually to get a feel for it?</em></p>
+        <blockquote><strong>It is important to note</strong> that SDFs work in &quot;world space&quot;, that is, around the origin coordinate (0,0).</blockquote>
+        <p>Here&#39;s the function we&#39;re going to use:</p>
+        <pre class="keep-together pdf epub"><code class="glsl">float sdfCircle(vec2 p, float r) {
+  return length(p) - r;
+}</code></pre>
+        <p>Recall that our UVs are (0,0) top-left to (1,1) bottom-right, so when we call this function we must move our <code>vec2 p</code> back to the origin by subtracting 0.5, and supply a radius <code>r</code> between 0 and 0.5, like this:</p>
+        <pre class="keep-together pdf epub"><code class="glsl">sdfCircle(UV - 0.5, 0.25)</code></pre>
+        <p>The function returns a float, and if we plumb it into our <code>COLOR</code> output like this:</p>
+        <pre class="keep-together pdf epub"><code class="glsl">void fragment() {
+  float sdf = sdfCircle(UV - 0.5, 0.25);
+  COLOR = vec4(vec3(abs(sdf)), 1.0);
+}</code></pre>
+        <blockquote>Note the use of <code>abs()</code> - inside the circle is a negative number, but there&#39;s no such thing as a -1.0 red color value!</blockquote>
+        <p>We get:</p>
+        <p><img src="../../img/howtos/sdf.png" alt="The SDF of a circle drawn literally" title="The SDF of a circle drawn literally"></p>
+        <p>Not bad but we need a hard edged circle, so we will employ a function called <code>step()</code>. <code>step()</code> acts as a logic gate, it takes an input value and a boundary value. If the input is less than the boundary then it returns 1, else 0.</p>
+        <p>Conveniently, our SDF is less than 0 inside the circle! So if we change our function to:</p>
+        <pre class="keep-together pdf epub"><code class="glsl">void fragment() {
+  float sdf = sdfCircle(UV - 0.5, 0.25);
+  COLOR = vec4(step(sdf, 0.0));
+}</code></pre>
+        <p>We get:</p>
+        <p><img src="../../img/howtos/sdf-circle.png" alt="A Circle drawn using an SDF" title="A Circle drawn using an SDF"></p>
+        <p>Perfect! Now for a bit of randomness...</p>
+        
+        <h3 id="noise" class="section"><a class="anchor-link left" href="#noise"><i class="icofont-laika link">&#xef71;</i></a>Noise</h3>
+        <p>It may come as a surprise, but GLSL does not include a noise function. For speed, we&#39;re going to borrow <a href="https://www.iquilezles.org/www/articles/gradientnoise/gradientnoise.htm">this one</a> which is a form of <a href="https://en.wikipedia.org/wiki/Perlin_noise">perlin noise</a>.</p>
+        <p>What we need is for our noise to be moving upwards to simulate rising heat. So we call our function as follows:</p>
+        <pre class="keep-together pdf epub"><code class="glsl">void fragment() {
+  float octaves = 8.0;
+  float noise = calcNoise(octaves * UV + vec2(0.0, TIME)).x;
+  COLOR = vec4(vec3(noise), 1.0);
+}</code></pre>
+        <p>When you use gradient noise you need to specify the complexity, which I&#39;m (possibly wrongly!) referring to as &quot;octaves&quot; above. To animate the noise, we add the <code>TIME</code> variable to the <code>y</code> component of the UV <code>vec2</code>. Then ultimately we use the <code>x</code> component value of the <code>vec4</code> returned by the noise calculation, as this is the noise amount. (<code>yzw</code> are the derivatives.)</p>
+        <blockquote>Note: <code>TIME</code> is an ever increasing value! We&#39;re using it rather naively here and it may create weird looking results eventually. A better solution may be to loop time to a known good range.</blockquote>
+        <p>This gives us animated noise. Doesn&#39;t look very fluid-like yet, but it&#39;s all we need.</p>
+        <p><img src="../../img/howtos/animated-noise.gif" alt="Noise move up on the Y-axis" title="Noise move up on the Y-axis"></p>
+        
+        <h2 id="making-fire" class="section"><a class="anchor-link left" href="#making-fire"><i class="icofont-laika link">&#xef71;</i></a>Making fire</h2>
+        <p>If we crudely overlay the two components we have so far as a reminder of what we&#39;ve done, we see the following:</p>
+        <p><img src="../../img/howtos/animated-noise-circle.gif" alt="A circle overlaid onto animated noise" title="A circle overlaid onto animated noise"></p>
+        <p>Our next challenge is to find a way to combine the SDF circle with the noise. Recall that the SDF calculation makes use of a point <code>p</code> to decide if the we&#39;re inside or outside the circle. Our approach in essence will be to move point <code>p</code> by the noise amount.</p>
+        <p>Here is an exciting first attempt!</p>
+        <pre class="keep-together pdf epub"><code class="glsl">void fragment() {
+  float octaves = 8.0;
+  float noise = calcNoise(vec2(octaves * UV.x, octaves * UV.y + TIME)).x;
+  float sdf = sdfCircle((UV - 0.5) * (noise * 5.0), 0.25);
+  COLOR = vec4(step(sdf, 0.0));
+}</code></pre>
+        <blockquote>Note that the 5.0 in <code>(noise * 5.0)</code> is a bit of a magic number. There are a few of those in the final code that I tinkered with, justified on the basis of being aesthetically pleasing. In terms of business logic and domain modeling I&#39;d normally find that rather uncomfortable, but let us not forget that we&#39;re making <strong><em>art</em></strong> here! Sometimes you just have to go with what (you think) looks good!</blockquote>
+        <p><img src="../../img/howtos/animated-noise-circle2.gif" alt="An sdf deformed uniformly by noise" title="An sdf deformed uniformly by noise"></p>
+        <p>At first glance it looks like some sort of 80s fashion accident. On closer inspection there is a glob of white nearer the center... so maybe we just need to be more selective about how we move the point <code>p</code>?</p>
+        <p>If you can imagine a candle or torch flame, the deformation of the flame is not uniform. There is very little movement on the X-Axis (assuming no wind!), and similarly very little movement on the Y-Axis at the base of the flame. All the real movement happens at the top. How might we account for that?</p>
+        <p>Well the X-Axis is simple enough, we just need to multiply the amount of deformation by a small number, we&#39;ll use <code>0.1</code>, i.e. a maximum of 10% wobble.</p>
+        <p>The Y-Axis is slight more tricky because we want to describe an area of effect, with the most movement happening in the top half of the shader. To do that, we&#39;re going to construct a gradient based on the UV values, like so:</p>
+        <p><code>float yGradient = clamp(0.7 - UV.y, 0.0, 1.0) * 0.6;</code></p>
+        <p>Drawn out, this looks as follows:</p>
+        <p><img src="../../img/howtos/gradient.png" alt="A gradient describing an area of effect" title="A gradient describing an area of effect"></p>
+        <blockquote>Figuring out how to draw the values your producing so that you can make sense of them is the equivalent of &quot;print statement&quot; debugging in shaders!</blockquote>
+        
+        <h3 id="putting-it-all-together" class="section"><a class="anchor-link left" href="#putting-it-all-together"><i class="icofont-laika link">&#xef71;</i></a>Putting it all together</h3>
+        <p>If we take our previous code and combine it with the gradient and fixed values to dampen the movement, our code looks like this:</p>
+        <pre class="keep-together pdf epub"><code class="glsl">void fragment() {
+  float octaves = 8.0;
+  float noiseAmount = calcNoise(vec2(octaves * UV.x, octaves * UV.y + TIME)).x;
+  float yGradient = clamp(0.7 - UV.y, 0.0, 1.0) * 0.6;
+  vec2 sdfNoise = vec2(noiseAmount * 0.1, noiseAmount * 2.5 * yGradient);
+  vec2 p = (UV - vec2(0.5, 0.7)) + sdfNoise;
+
+  COLOR = vec4(step(sdfCircle(p, 0.25), 0.0));
+}</code></pre>
+        <p><em>Note again a couple of magic numbers to make it look nicer! For example, I&#39;ve moved the flame down the y-axis a bit by using <code>UV - vec2(0.5, 0.7)</code> instead of <code>UV - 0.5</code>.</em></p>
+        <p><img src="../../img/howtos/slow-flame.gif" alt="A very slow black and white flame" title="A very slow black and white flame"></p>
+        <p>It&#39;s very slow, but that&#39;s basically our flame! All we have to do is speed up time by multiplying the <code>TIME</code> variable and we&#39;re nearly there.</p>
+        <p>We do need to fix the colour though, and to do that we&#39;re just going to draw several SDF circles one on top of the other, with a bit of repositioning.</p>
+        <p><img src="../../img/howtos/flame-colors.png" alt="Three SDF circles to create the flame colours" title="Three SDF circles to create the flame colours"></p>
+        <p>Put it all together and you get:</p>
+        <p><img src="../../img/howtos/flame.gif" alt="A procedural flame!" title="A procedural flame!"></p>
+        <p>Notice that the three colors move in sync. This is because they are all using the same underlying noise value and means that, for example, you could never be in a situation where the yellow fully escaped the orange.</p>
+        <p>..and if we use our <code>Fire</code> entity&#39;s constructor to supply different values to the shader...</p>
+        <p><img src="../../img/howtos/flames.gif" alt="Three different color procedural flames!" title="Three different color procedural flames!"></p>
+        <blockquote>You may notice that the aspect ratio of the flames in the second animation is different. The UV coordinates (0,0) to (1,1) respect the scale, rotation and aspect ratio of the space on the screen described by the custom entity. So if you make a square space you get a round flame because the SDF makes a circle, but if you give it a width half the value of the height, the SDF becomes a tall ellipse and the result is a narrow flame.</blockquote>
+        
+        <h2 id="wrapping-up" class="section"><a class="anchor-link left" href="#wrapping-up"><i class="icofont-laika link">&#xef71;</i></a>Wrapping up</h2>
+        <p>I hope you found that interesting and that you are feeling inspired to create some shader effects of your own. Don&#39;t forget to visit us on <a href="https://discord.gg/b5CD47g">Discord</a> to get help and show off your creations!</p>
+        
+        <h2 id="finding-out-more-about-shaders" class="section"><a class="anchor-link left" href="#finding-out-more-about-shaders"><i class="icofont-laika link">&#xef71;</i></a>Finding out more about shaders</h2>
+        <p>There are endless shader tutorials out there and this one barely scratches the surface, but the shader source code in the <a href="https://github.com/PurpleKingdomGames/indigo-examples/tree/master/howto/fire">github repo</a> makes reference to two sections of code shamelessly borrowed from master of shaders, <a href="https://twitter.com/iquilezles">Inigo Quilez</a>:</p>
+        <ol class="arabic">
+          <li><a href="https://www.iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm">SDF circle</a></li>
+          <li><a href="https://www.iquilezles.org/www/articles/gradientnoise/gradientnoise.htm">Gradiant noise</a></li>
+        </ol>
+        <p>Inigo Quilez also has a <a href="https://www.youtube.com/channel/UCdmAhiG8HQDlz8uyekw4ENw">YouTube channel</a> where he attempts to explain all this mathematical magic!</p>
+        <p>Here is some of his work. If you liked drawing with SDF&#39;s and noise, <a href="https://www.youtube.com/watch?v=s_UOFo2IULQ">check this out!</a>
+        &lt;script type=&quot;text/javascript&quot; src=&quot;howto-fire-shader.md.js&quot; defer&gt;&lt;/script&gt;
+        &lt;script type=&quot;text/javascript&quot; src=&quot;mdoc.js&quot; defer&gt;&lt;/script&gt;</p>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://typelevel.org/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

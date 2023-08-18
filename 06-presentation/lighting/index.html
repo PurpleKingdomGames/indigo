@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>Lighting</title>
+  
+  
+  <meta name="description" content="website2"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="../../helium/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../helium/laika-helium.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/custom.css" />
+  <script src="../../helium/laika-helium.js"></script>
+    <script src="../../01-quickstart/hello-indigo.md.js"></script>
+    <script src="../../01-quickstart/mdoc.js"></script>
+    <script src="../../03-gameloop/frame-context.md.js"></script>
+    <script src="../../03-gameloop/mdoc.js"></script>
+    <script src="../../03-gameloop/outcome.md.js"></script>
+    <script src="../materials.md.js"></script>
+    <script src="../cameras.md.js"></script>
+    <script src="../lighting.md.js"></script>
+    <script src="../depth.md.js"></script>
+    <script src="../clones-and-mutants.md.js"></script>
+    <script src="../animation.md.js"></script>
+    <script src="../layers.md.js"></script>
+    <script src="../audio.md.js"></script>
+    <script src="../scene-update-fragment.md.js"></script>
+    <script src="../boundaries.md.js"></script>
+    <script src="../shapes.md.js"></script>
+    <script src="../text-and-fonts.md.js"></script>
+    <script src="../mdoc.js"></script>
+    <script src="../../08-time/signals.md.js"></script>
+    <script src="../../08-time/mdoc.js"></script>
+    <script src="../../08-time/time-varying-values.md.js"></script>
+    <script src="../../07-shaders/blending.md.js"></script>
+    <script src="../../07-shaders/mdoc.js"></script>
+    <script src="../../07-shaders/shaders-overview.md.js"></script>
+    <script src="../../09-uicomponents/button.md.js"></script>
+    <script src="../../09-uicomponents/input-field.md.js"></script>
+    <script src="../../09-uicomponents/hit-area.md.js"></script>
+    <script src="../../09-uicomponents/radio-button.md.js"></script>
+    <script src="../../09-uicomponents/mdoc.js"></script>
+    <script src="../../04-organisation/scene-management.md.js"></script>
+    <script src="../../04-organisation/boot-and-start-up.md.js"></script>
+    <script src="../../04-organisation/subsystems.md.js"></script>
+    <script src="../../04-organisation/mdoc.js"></script>
+    <script src="../../02-guides/mdoc.js"></script>
+    <script src="../../02-guides/howto-fire-shader.md.js"></script>
+    <script src="../../02-guides/howto-custom-entity.md.js"></script>
+    <script src="../../05-platform/assets.md.js"></script>
+    <script src="../../05-platform/logging.md.js"></script>
+    <script src="../../05-platform/mdoc.js"></script>
+    <script src="../../05-platform/input-handling.md.js"></script>
+    <script src="../../10-information/key-concepts.md.js"></script>
+    <script src="../../10-information/antipatterns.md.js"></script>
+    <script src="../../10-information/mdoc.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar" class="light-default dark-default">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="image-link" href="../../"><img src="../../img/indigo_logo_solid_text.svg" alt="Homepage" title="Indigo" width="150" height="50"></a>
+
+  <div class="row links">
+    
+    <a class="button-link" href="https://discord.gg/b5CD47g">Discord</a>
+    
+    <a class="button-link" href="/api">API</a>
+    
+    <a class="button-link" href="https://github.com/PurpleKingdomGames/indigo">Github</a>
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+    <a class="button-link" href="https://discord.gg/b5CD47g">Discord</a>
+    
+    <a class="button-link" href="/api">API</a>
+    
+    <a class="button-link" href="https://github.com/PurpleKingdomGames/indigo">Github</a>
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../../table-of-content/">Contents</a></li>
+    <li class="level1 nav-header">Setup &amp; Configuration</li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/examples/">Examples</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/hello-indigo/">Hello, Indigo!</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/project-templates/">Mill &amp; SBT Templates</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/quickstart/">Quick start</a></li>
+    <li class="level1 nav-header">Guides</li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-custom-entity/">How to make a custom entity</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-fire-shader/">How to write a fire shader</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-hello-indigo-tyrian/">How to make a responsive UI using Tyrian</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-indigo-game/">Converting <code>IndigoSandbox</code> to <code>IndigoGame</code></a></li>
+    <li class="level1 nav-header">Gameloop</li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/events/">Events</a></li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/frame-context/">Frame context</a></li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/outcome/">Outcome Type</a></li>
+    <li class="level1 nav-header">Organisation</li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/boot-and-start-up/">Boot &amp; Start Up</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/game-entry-points/">Game Entry Points</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/scene-management/">What are Scenes?</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/subsystems/">What SubSystems are</a></li>
+    <li class="level1 nav-header">Platform &amp; IO</li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/assets/">Assets &amp; Asset Loading</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/cross-platform-publishing/">Cross Platform Publishing</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/importers/">File Importers</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/input-handling/">Input Handling</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/loading-and-saving-data/">Loading &amp; Saving Data</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/logging/">Logging</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/networking/">Networking</a></li>
+    <li class="level1 nav-header">Presentation</li>
+    <li class="level2 nav-leaf"><a href="../animation/">Animation</a></li>
+    <li class="level2 nav-leaf"><a href="../audio/">Audio</a></li>
+    <li class="level2 nav-leaf"><a href="../boundaries/">Boundaries</a></li>
+    <li class="level2 nav-leaf"><a href="../cameras/">Cameras</a></li>
+    <li class="level2 nav-leaf"><a href="../clones-and-mutants/">Clones &amp; Mutants</a></li>
+    <li class="level2 nav-leaf"><a href="../depth/">Depth</a></li>
+    <li class="level2 nav-leaf"><a href="../layers/">Layers</a></li>
+    <li class="level2 active nav-leaf"><a href="#">Lighting</a></li>
+    <li class="level2 nav-leaf"><a href="../materials/">Materials</a></li>
+    <li class="level2 nav-leaf"><a href="../primitives/">Primitives &amp; Building Blocks</a></li>
+    <li class="level2 nav-leaf"><a href="../scene-update-fragment/">SceneUpdateFragment</a></li>
+    <li class="level2 nav-leaf"><a href="../shapes/">Shapes</a></li>
+    <li class="level2 nav-leaf"><a href="../text-and-fonts/">Text &amp; Fonts</a></li>
+    <li class="level1 nav-header">Shaders</li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/blending/">Blending</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/constants/">Shader Constants, Variables, and Outputs</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/premultiplied-alpha/">Premultiplied Alpha</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/shaders-overview/">Shaders Overview</a></li>
+    <li class="level1 nav-header">Time</li>
+    <li class="level2 nav-leaf"><a href="../../08-time/gametime/">GameTime</a></li>
+    <li class="level2 nav-leaf"><a href="../../08-time/signals/">Signals &amp; Signal Functions</a></li>
+    <li class="level2 nav-leaf"><a href="../../08-time/time-varying-values/">Time Varying Values</a></li>
+    <li class="level1 nav-header">UI Components</li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/button/">Buttons</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/hit-area/">Hit Areas</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/input-field/">Input Fields</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/radio-button/">Radio Buttons</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/ui-components/">UI Components</a></li>
+    <li class="level1 nav-header">Misc</li>
+    <li class="level2 nav-leaf"><a href="../../10-information/alternatives/">Alternatives to Indigo</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/antipatterns/">Anti-Patterns</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/glossary/">Glossary</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/key-concepts/">Key Concepts</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/model-viewmodel-view/">Model, ViewModel, &amp; View</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/motivation-and-constraints/">Motivation &amp; Constraints</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/performance/">Performance</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/prior-art/">Prior Art</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/rendering-technology/">Rendering Technology</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Lighting</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-node"><a href="#image-based-lighting">Image based lighting</a></li>
+    <li class="level2 nav-leaf"><a href="#using-indigo-s-lighting-shaders">Using Indigo&#39;s lighting shaders</a></li>
+    <li class="level1 nav-node"><a href="#dynamic-lighting">Dynamic lighting</a></li>
+    <li class="level2 nav-leaf"><a href="#dynamic-lighting-limitations">Dynamic lighting limitations</a></li>
+    <li class="level2 nav-leaf"><a href="#types-of-light">Types of Light</a></li>
+    <li class="level2 nav-leaf"><a href="#materials-for-dynamic-lighting">Materials for Dynamic Lighting</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="lighting" class="title">Lighting</h1>
+        <p>Lighting in Indigo is in every sense of the word, fake. It was not designed to try and mimic real light, but to be useful and understandable to 2D game builders who were trying to add some interest to their games through lighting.</p>
+        <p>There are a two ways to add lighting effects to your game in order to create a mood, and they can be used in combination with each other to achieve the look you&#39;re after.</p>
+        <ol class="arabic">
+          <li>Image based lighting - &#39;hand drawn&#39; lighting effects.</li>
+          <li>Dynamic lighting - Adding lights to your scene</li>
+        </ol>
+        <p>Neither system currently supports shadows out-of-the-box.</p>
+        <blockquote>You can always roll your own lighting system, either with game code, totally custom shaders, or by writing &#39;lighting model&#39; shaders.</blockquote>
+        
+        <h2 id="image-based-lighting" class="section"><a class="anchor-link left" href="#image-based-lighting"><i class="icofont-laika link">&#xef71;</i></a>Image based lighting</h2>
+        <p>Imagine taking your scene, and then overlaying it with a black and white image. Black is full shadow, white is fully lit (which here means, full normal colour, no over exposure), and gray tones are everything in between.</p>
+        <p>Then imagine that you can add color to the black and white image, and where you do, it&#39;s like looking through colored plastic or stained glass: You can see the image underneath, but colors are absorbed, e.g. placing a red filter over a rainbow absorbs all the blue and green.</p>
+        <p>Finally, imagine you can build up that black/white/colour filter by adding entities to a normal layer (which means you can move and animate them), and they are specially blended so that overlaying red on green on blue produces a white filter, i.e. full color.</p>
+        <p>That&#39;s image based lighting.</p>
+        <p>This sort of effect is very useful for drawing things like the light from a street lamp on a foggy night. The limitation is that while your light will affect anything on the game layer under it, it won&#39;t produce any anything other than a flat lighting effect. In other words, no highlights or other edge effects. For that you need to combine your lighting layer effects with dynamic lighting or some other trick.</p>
+        
+        <h3 id="using-indigo-s-lighting-shaders" class="section"><a class="anchor-link left" href="#using-indigo-s-lighting-shaders"><i class="icofont-laika link">&#xef71;</i></a>Using Indigo&#39;s lighting shaders</h3>
+        <p>Indigo comes bundled with shaders you can use to produce image based lighting. These shaders do not make use of any special machinery, and so you can always write your own versions if you like!</p>
+        <p>Imaged based lighting in Indigo is all about the <a href="../../07-shaders/blending/">blending</a>.</p>
+        <p>There are two blending jobs to do:</p>
+        <ol class="arabic">
+          <li>When we add an entity, we need to blend it such that the colors are multiplied together rather than the usual &quot;drawn on top&quot;.</li>
+          <li>When we blend the layer onto the scene below it, that will also need to be multiplied correctly.</li>
+        </ol>
+        <p>Below is an example lighting layer that sets a low (25% white) ambient light so the scene is never absolutely black.</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">indigo</span><span>.*
+
+</span><span class="type-name">Layer</span><span>(</span><span class="type-name">Graphic</span><span>(</span><span class="number-literal">50</span><span>, </span><span class="number-literal">50</span><span>, </span><span class="type-name">Material</span><span>.</span><span class="type-name">ImageEffects</span><span>(</span><span class="type-name">AssetName</span><span>(</span><span class="string-literal">&quot;torch light&quot;</span><span>))))
+  .</span><span class="identifier">withBlending</span><span>(</span><span class="type-name">Blending</span><span>.</span><span class="type-name">Lighting</span><span>(</span><span class="type-name">RGBA</span><span>.</span><span class="type-name">White</span><span>.</span><span class="identifier">withAlpha</span><span>(</span><span class="number-literal">0.25</span><span>)))</span></code></pre>
+        
+        <h2 id="dynamic-lighting" class="section"><a class="anchor-link left" href="#dynamic-lighting"><i class="icofont-laika link">&#xef71;</i></a>Dynamic lighting</h2>
+        <p>Dynamic lighting changes the scene&#39;s lighting as the light moves around. It highlights corners and outlines objects. They can be added to your scene or layer like this:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">SceneUpdateFragment</span><span>(
+  </span><span class="type-name">Layer</span><span>(</span><span class="type-name">BindingKey</span><span>(</span><span class="string-literal">&quot;my layer&quot;</span><span>)).</span><span class="identifier">withLights</span><span>(</span><span class="type-name">PointLight</span><span>(</span><span class="type-name">Point</span><span>(</span><span class="number-literal">100</span><span>, </span><span class="number-literal">100</span><span>), </span><span class="type-name">RGBA</span><span>.</span><span class="type-name">Green</span><span>))
+).</span><span class="identifier">withLights</span><span>(</span><span class="type-name">AmbientLight</span><span>(</span><span class="type-name">RGBA</span><span>.</span><span class="type-name">Blue</span><span>.</span><span class="identifier">withAlpha</span><span>(</span><span class="number-literal">0.2</span><span>)))</span></code></pre>
+        <p>&lt;div id=&quot;mdoc-html-run1&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        
+        <h3 id="dynamic-lighting-limitations" class="section"><a class="anchor-link left" href="#dynamic-lighting-limitations"><i class="icofont-laika link">&#xef71;</i></a>Dynamic lighting limitations</h3>
+        <p>Indigo uses what is known as a forward renderer to draw it&#39;s scenes. Forward rendering is nice and simple and good for 2D engines, but has its limitations. One such limit is how many lights you can effectively have in a scene.</p>
+        <p><strong>Indigo&#39;s maximum lights per layer is set to 8.</strong></p>
+        <p>Do decide which lights to use, Indigo effectively does this:</p>
+        <p><code>(scene.lights ++ layer.lights).take(8)</code></p>
+        <p>Currently, shadow casting of any sort is not supported out of the box.</p>
+        
+        <h3 id="types-of-light" class="section"><a class="anchor-link left" href="#types-of-light"><i class="icofont-laika link">&#xef71;</i></a>Types of Light</h3>
+        <p>Most of a lights have a number of properties you can experiment with that are easy to discover, but here are some basic examples to get you started.</p>
+        
+        <h4 id="point-lights" class="section"><a class="anchor-link left" href="#point-lights"><i class="icofont-laika link">&#xef71;</i></a>Point lights</h4>
+        <p>Point lights are a point in space that emit light evenly in all directions. Example:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">PointLight</span><span>(</span><span class="type-name">Point</span><span>.</span><span class="identifier">zero</span><span>, </span><span class="type-name">RGBA</span><span>.</span><span class="type-name">White</span><span>)
+  .</span><span class="identifier">withFalloff</span><span>(</span><span class="type-name">Falloff</span><span>.</span><span class="type-name">SmoothQuadratic</span><span>(</span><span class="number-literal">0</span><span>, </span><span class="number-literal">100</span><span>))</span></code></pre>
+        <p>&lt;div id=&quot;mdoc-html-run2&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        
+        <h4 id="spotlights" class="section"><a class="anchor-link left" href="#spotlights"><i class="icofont-laika link">&#xef71;</i></a>Spotlights</h4>
+        <p>Spotlights shine a cone of light onto a scene at a given angle. Example:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">SpotLight</span><span>(</span><span class="type-name">Point</span><span>.</span><span class="identifier">zero</span><span>, </span><span class="type-name">RGBA</span><span>.</span><span class="type-name">White</span><span>)
+  .</span><span class="identifier">withAngle</span><span>(</span><span class="type-name">Radians</span><span>.</span><span class="identifier">fromDegrees</span><span>(</span><span class="number-literal">45</span><span>))
+  .</span><span class="identifier">lookAt</span><span>(</span><span class="type-name">Point</span><span>(</span><span class="number-literal">100</span><span>, </span><span class="number-literal">100</span><span>))</span></code></pre>
+        <p>&lt;div id=&quot;mdoc-html-run3&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        
+        <h4 id="direction-lights" class="section"><a class="anchor-link left" href="#direction-lights"><i class="icofont-laika link">&#xef71;</i></a>Direction lights</h4>
+        <p>Direction lights shin light evenly along one angle, as if from very far away. Useful for things like sun and moonlight. Example:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">DirectionLight</span><span>(</span><span class="type-name">Radians</span><span>.</span><span class="identifier">fromDegrees</span><span>(</span><span class="number-literal">45</span><span>), </span><span class="type-name">RGBA</span><span>.</span><span class="type-name">Blue</span><span>)</span></code></pre>
+        <p>&lt;div id=&quot;mdoc-html-run4&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        
+        <h4 id="ambient-lights" class="section"><a class="anchor-link left" href="#ambient-lights"><i class="icofont-laika link">&#xef71;</i></a>Ambient lights</h4>
+        <p>Ambient lights illuminate the whole scene evenly with some amount of &#39;background&#39; light. Example:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">AmbientLight</span><span>(</span><span class="type-name">RGBA</span><span>.</span><span class="type-name">White</span><span>.</span><span class="identifier">withAlpha</span><span>(</span><span class="number-literal">0.2</span><span>))</span></code></pre>
+        <p>&lt;div id=&quot;mdoc-html-run5&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        
+        <h3 id="materials-for-dynamic-lighting" class="section"><a class="anchor-link left" href="#materials-for-dynamic-lighting"><i class="icofont-laika link">&#xef71;</i></a>Materials for Dynamic Lighting</h3>
+        <p>Dynamic lighting only affects <a href="../materials/">materials</a> that can be lit, i.e. have a lighting model, and the material properties affect what happens when the light hits them.</p>
+        <p>Lighting models are either: <code>Unlit</code> or <code>Lit</code>, and if they are either textured or &#39;flat&#39;. For example a <code>Shape</code> can be lit, but is always flat since there are no textures.</p>
+        <p>If you want a textured / bumpy looking entity then your lighting material can be made up of up to four textures:</p>
+        <ol class="arabic">
+          <li>Albedo - the color texture, albedo has a special meaning compared to diffuse, in that there will be <em>no</em> shadows or highlights drawn into this texture.</li>
+          <li>Emissive - parts of your material that glow in the dark</li>
+          <li>Normal - Describes the bumps on your surface</li>
+          <li>Roughness/Specular - alters how shiny different parts of your texture are.</li>
+        </ol>
+        <p>A note on emissive materials:</p>
+        <p>&quot;Emissive&quot; means that it &quot;emits&quot; light all by itself. Very handy for representing eyes glowing in a dark cave, perhaps. Emissive materials have a couple of limitations worth calling out:</p>
+        <ol class="arabic">
+          <li>In a real 3D engine, an emissive material might also affect the colors of surrounding surfaces. Indigo does not do that.</li>
+          <li>Emissive materials are ignored by image based lighting.</li>
+        </ol>
+        <p>More information on the main <a href="../materials/">materials</a> page.
+        &lt;script type=&quot;text/javascript&quot; src=&quot;lighting.md.js&quot; defer&gt;&lt;/script&gt;
+        &lt;script type=&quot;text/javascript&quot; src=&quot;mdoc.js&quot; defer&gt;&lt;/script&gt;</p>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://typelevel.org/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

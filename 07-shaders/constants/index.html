@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>Shader Constants, Variables, and Outputs</title>
+  
+  
+  <meta name="description" content="website2"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="../../helium/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../helium/laika-helium.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/custom.css" />
+  <script src="../../helium/laika-helium.js"></script>
+    <script src="../../01-quickstart/hello-indigo.md.js"></script>
+    <script src="../../01-quickstart/mdoc.js"></script>
+    <script src="../../03-gameloop/frame-context.md.js"></script>
+    <script src="../../03-gameloop/mdoc.js"></script>
+    <script src="../../03-gameloop/outcome.md.js"></script>
+    <script src="../../06-presentation/materials.md.js"></script>
+    <script src="../../06-presentation/cameras.md.js"></script>
+    <script src="../../06-presentation/lighting.md.js"></script>
+    <script src="../../06-presentation/depth.md.js"></script>
+    <script src="../../06-presentation/clones-and-mutants.md.js"></script>
+    <script src="../../06-presentation/animation.md.js"></script>
+    <script src="../../06-presentation/layers.md.js"></script>
+    <script src="../../06-presentation/audio.md.js"></script>
+    <script src="../../06-presentation/scene-update-fragment.md.js"></script>
+    <script src="../../06-presentation/boundaries.md.js"></script>
+    <script src="../../06-presentation/shapes.md.js"></script>
+    <script src="../../06-presentation/text-and-fonts.md.js"></script>
+    <script src="../../06-presentation/mdoc.js"></script>
+    <script src="../../08-time/signals.md.js"></script>
+    <script src="../../08-time/mdoc.js"></script>
+    <script src="../../08-time/time-varying-values.md.js"></script>
+    <script src="../blending.md.js"></script>
+    <script src="../mdoc.js"></script>
+    <script src="../shaders-overview.md.js"></script>
+    <script src="../../09-uicomponents/button.md.js"></script>
+    <script src="../../09-uicomponents/input-field.md.js"></script>
+    <script src="../../09-uicomponents/hit-area.md.js"></script>
+    <script src="../../09-uicomponents/radio-button.md.js"></script>
+    <script src="../../09-uicomponents/mdoc.js"></script>
+    <script src="../../04-organisation/scene-management.md.js"></script>
+    <script src="../../04-organisation/boot-and-start-up.md.js"></script>
+    <script src="../../04-organisation/subsystems.md.js"></script>
+    <script src="../../04-organisation/mdoc.js"></script>
+    <script src="../../02-guides/mdoc.js"></script>
+    <script src="../../02-guides/howto-fire-shader.md.js"></script>
+    <script src="../../02-guides/howto-custom-entity.md.js"></script>
+    <script src="../../05-platform/assets.md.js"></script>
+    <script src="../../05-platform/logging.md.js"></script>
+    <script src="../../05-platform/mdoc.js"></script>
+    <script src="../../05-platform/input-handling.md.js"></script>
+    <script src="../../10-information/key-concepts.md.js"></script>
+    <script src="../../10-information/antipatterns.md.js"></script>
+    <script src="../../10-information/mdoc.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar" class="light-default dark-default">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="image-link" href="../../"><img src="../../img/indigo_logo_solid_text.svg" alt="Homepage" title="Indigo" width="150" height="50"></a>
+
+  <div class="row links">
+    
+    <a class="button-link" href="https://discord.gg/b5CD47g">Discord</a>
+    
+    <a class="button-link" href="/api">API</a>
+    
+    <a class="button-link" href="https://github.com/PurpleKingdomGames/indigo">Github</a>
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+    <a class="button-link" href="https://discord.gg/b5CD47g">Discord</a>
+    
+    <a class="button-link" href="/api">API</a>
+    
+    <a class="button-link" href="https://github.com/PurpleKingdomGames/indigo">Github</a>
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../../table-of-content/">Contents</a></li>
+    <li class="level1 nav-header">Setup &amp; Configuration</li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/examples/">Examples</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/hello-indigo/">Hello, Indigo!</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/project-templates/">Mill &amp; SBT Templates</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/quickstart/">Quick start</a></li>
+    <li class="level1 nav-header">Guides</li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-custom-entity/">How to make a custom entity</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-fire-shader/">How to write a fire shader</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-hello-indigo-tyrian/">How to make a responsive UI using Tyrian</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-indigo-game/">Converting <code>IndigoSandbox</code> to <code>IndigoGame</code></a></li>
+    <li class="level1 nav-header">Gameloop</li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/events/">Events</a></li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/frame-context/">Frame context</a></li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/outcome/">Outcome Type</a></li>
+    <li class="level1 nav-header">Organisation</li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/boot-and-start-up/">Boot &amp; Start Up</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/game-entry-points/">Game Entry Points</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/scene-management/">What are Scenes?</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/subsystems/">What SubSystems are</a></li>
+    <li class="level1 nav-header">Platform &amp; IO</li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/assets/">Assets &amp; Asset Loading</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/cross-platform-publishing/">Cross Platform Publishing</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/importers/">File Importers</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/input-handling/">Input Handling</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/loading-and-saving-data/">Loading &amp; Saving Data</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/logging/">Logging</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/networking/">Networking</a></li>
+    <li class="level1 nav-header">Presentation</li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/animation/">Animation</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/audio/">Audio</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/boundaries/">Boundaries</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/cameras/">Cameras</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/clones-and-mutants/">Clones &amp; Mutants</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/depth/">Depth</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/layers/">Layers</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/lighting/">Lighting</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/materials/">Materials</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/primitives/">Primitives &amp; Building Blocks</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/scene-update-fragment/">SceneUpdateFragment</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/shapes/">Shapes</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/text-and-fonts/">Text &amp; Fonts</a></li>
+    <li class="level1 nav-header">Shaders</li>
+    <li class="level2 nav-leaf"><a href="../blending/">Blending</a></li>
+    <li class="level2 active nav-leaf"><a href="#">Shader Constants, Variables, and Outputs</a></li>
+    <li class="level2 nav-leaf"><a href="../premultiplied-alpha/">Premultiplied Alpha</a></li>
+    <li class="level2 nav-leaf"><a href="../shaders-overview/">Shaders Overview</a></li>
+    <li class="level1 nav-header">Time</li>
+    <li class="level2 nav-leaf"><a href="../../08-time/gametime/">GameTime</a></li>
+    <li class="level2 nav-leaf"><a href="../../08-time/signals/">Signals &amp; Signal Functions</a></li>
+    <li class="level2 nav-leaf"><a href="../../08-time/time-varying-values/">Time Varying Values</a></li>
+    <li class="level1 nav-header">UI Components</li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/button/">Buttons</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/hit-area/">Hit Areas</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/input-field/">Input Fields</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/radio-button/">Radio Buttons</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/ui-components/">UI Components</a></li>
+    <li class="level1 nav-header">Misc</li>
+    <li class="level2 nav-leaf"><a href="../../10-information/alternatives/">Alternatives to Indigo</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/antipatterns/">Anti-Patterns</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/glossary/">Glossary</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/key-concepts/">Key Concepts</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/model-viewmodel-view/">Model, ViewModel, &amp; View</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/motivation-and-constraints/">Motivation &amp; Constraints</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/performance/">Performance</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/prior-art/">Prior Art</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/rendering-technology/">Rendering Technology</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Shader Constants, Variables, and Outputs</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-node"><a href="#common-1">Common</a></li>
+    <li class="level2 nav-leaf"><a href="#constants">Constants</a></li>
+    <li class="level2 nav-leaf"><a href="#variables-read-only-1">Variables (read only)</a></li>
+    <li class="level1 nav-node"><a href="#vertex-shader-programs">Vertex Shader Programs</a></li>
+    <li class="level2 nav-leaf"><a href="#common-2">Common</a></li>
+    <li class="level2 nav-leaf"><a href="#entity-shader-specific-1">Entity Shader Specific</a></li>
+    <li class="level2 nav-leaf"><a href="#blend-shader-specific-1">Blend Shader Specific</a></li>
+    <li class="level1 nav-node"><a href="#fragment-shader-programs">Fragment Shader Programs</a></li>
+    <li class="level2 nav-leaf"><a href="#common-3">Common</a></li>
+    <li class="level2 nav-leaf"><a href="#entity-shader-specific-2">Entity Shader Specific</a></li>
+    <li class="level2 nav-leaf"><a href="#blend-shader-specific-2">Blend Shader Specific</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="shader-constants-variables-and-outputs" class="title">Shader Constants, Variables, and Outputs</h1>
+        <p>Below are tables of shader constants and variables that are available to you, provided by Indigo, when writing shaders for the WebGL 2.0 renderer.</p>
+        <p>To clarify terminology use on this page:</p>
+        <ol class="arabic">
+          <li>&quot;Constants&quot; are fixed values that never change.</li>
+          <li>&quot;Variables&quot; are values that you should treat as read only, and that will change between program runs.</li>
+          <li>&quot;Outputs&quot; are values that you may be able to read, and may wish to write to in order to affect the final rendering.</li>
+        </ol>
+        
+        <h2 id="common-1" class="section"><a class="anchor-link left" href="#common-1"><i class="icofont-laika link">&#xef71;</i></a>Common</h2>
+        <p>These values are available to all shader programs.</p>
+        
+        <h3 id="constants" class="section"><a class="anchor-link left" href="#constants"><i class="icofont-laika link">&#xef71;</i></a>Constants</h3>
+        <p>Name | Type | Description
+        ---|---|---
+        <code>PI</code>|<code>float</code>|<code>3.141592653589793</code> or 180 degrees.
+        <code>PI_2</code>|<code>float</code>|<code>PI / 2</code> or 90 degrees.
+        <code>PI_4</code>|<code>float</code>|<code>PI / 4</code> or 45 degrees.
+        <code>TAU</code>|<code>float</code>|<code>2.0 * PI</code> or 360 degrees.
+        <code>TAU_2</code>|<code>float</code>|<code>PI</code> or 180 degrees.
+        <code>TAU_4</code>|<code>float</code>|<code>PI / 2</code> or 90 degrees.
+        <code>TAU_8</code>|<code>float</code>|<code>PI / 4</code> or 45 degrees.</p>
+        
+        <h3 id="variables-read-only-1" class="section"><a class="anchor-link left" href="#variables-read-only-1"><i class="icofont-laika link">&#xef71;</i></a>Variables (read only)</h3>
+        <p>Name | Type | Description
+        ---|---|---
+        <code>TIME</code>|<code>float</code>|Running time in seconds.
+        <code>VIEWPORT_SIZE</code>|<code>vec2</code>|Size of the viewport in pixels.</p>
+        
+        <h2 id="vertex-shader-programs" class="section"><a class="anchor-link left" href="#vertex-shader-programs"><i class="icofont-laika link">&#xef71;</i></a>Vertex Shader Programs</h2>
+        <blockquote>Note that <code>SIZE</code> and <code>UV</code> are treated differently between entity and blend shaders, this may be revised in the future.</blockquote>
+        
+        <h3 id="common-2" class="section"><a class="anchor-link left" href="#common-2"><i class="icofont-laika link">&#xef71;</i></a>Common</h3>
+        
+        <h4 id="outputs-read-write-1" class="section"><a class="anchor-link left" href="#outputs-read-write-1"><i class="icofont-laika link">&#xef71;</i></a>Outputs (read/write)</h4>
+        <p>Name | Type | Description
+        ---|---|---
+        <code>VERTEX</code>|<code>vec4</code>|The output position of the current vertex.</p>
+        
+        <h3 id="entity-shader-specific-1" class="section"><a class="anchor-link left" href="#entity-shader-specific-1"><i class="icofont-laika link">&#xef71;</i></a>Entity Shader Specific</h3>
+        
+        <h4 id="variables-read-only-2" class="section"><a class="anchor-link left" href="#variables-read-only-2"><i class="icofont-laika link">&#xef71;</i></a>Variables (read only)</h4>
+        <p>Name | Type | Description
+        ---|---|---
+        <code>ATLAS_SIZE</code>|<code>vec2</code>|Size of the atlas this texture is on, in pixels.
+        <code>CHANNEL_0_POSITION</code>|<code>vec2</code>|Top left position of this texture on the atlas in UV coords.
+        <code>CHANNEL_0_SIZE</code>|<code>vec2</code>|Size of this texture on the atlas in UV coords.
+        <code>FRAME_SIZE</code>|<code>vec2</code>|Size of sub-rectangle of the texture to be rendered, e.g. the crop (graphic) or animation frame (sprite).
+        <code>INSTANCE_ID</code>|<code>int</code>|The ID of the current instance, it is a count starting at 0.
+        <code>SIZE</code>|<code>vec2</code>|The width and height in pixels of the space on the screen being drawn to, e.g. the width and height of a graphic.
+        <code>TEXTURE_SIZE</code>|<code>vec2</code>|Size of the texture in pixels.
+        <code>UV</code>|<code>vec2</code>|The interpolates UV coordinates that will be passed to the fragment shader. Ranges from (0,0) top left to (1,1) bottom right. (Equivalent to <code>TEXTURE_COORDS</code>, but read only.)</p>
+        
+        <h4 id="outputs-read-write-2" class="section"><a class="anchor-link left" href="#outputs-read-write-2"><i class="icofont-laika link">&#xef71;</i></a>Outputs (read/write)</h4>
+        <p>Name | Type | Description
+        ---|---|---
+        <code>CHANNEL_0_ATLAS_OFFSET</code>|<code>vec2</code>|The position on the texture atlas for the texture assigned to channel 0.
+        <code>CHANNEL_1_ATLAS_OFFSET</code>|<code>vec2</code>|The position on the texture atlas for the texture assigned to channel 1.
+        <code>CHANNEL_2_ATLAS_OFFSET</code>|<code>vec2</code>|The position on the texture atlas for the texture assigned to channel 2.
+        <code>CHANNEL_3_ATLAS_OFFSET</code>|<code>vec2</code>|The position on the texture atlas for the texture assigned to channel 3.
+        <code>CHANNEL_0_TEXTURE_COORDS</code>|<code>vec2</code>|The scaled, interpolated texture coordinates for the texture in channel 0, uses <code>CHANNEL_0_ATLAS_OFFSET</code>.
+        <code>CHANNEL_1_TEXTURE_COORDS</code>|<code>vec2</code>|The scaled, interpolated texture coordinates for the texture in channel 1, uses <code>CHANNEL_1_ATLAS_OFFSET</code>.
+        <code>CHANNEL_2_TEXTURE_COORDS</code>|<code>vec2</code>|The scaled, interpolated texture coordinates for the texture in channel 2, uses <code>CHANNEL_2_ATLAS_OFFSET</code>.
+        <code>CHANNEL_3_TEXTURE_COORDS</code>|<code>vec2</code>|The scaled, interpolated texture coordinates for the texture in channel 3, uses <code>CHANNEL_3_ATLAS_OFFSET</code>.
+        <code>POSITION</code>|<code>vec2</code>|The position of the entity in screen coords (pixels)
+        <code>SCALE</code>|<code>vec2</code>|The scale factor of the entity
+        <code>REF</code>|<code>vec2</code>|The offset reference position of the entity in screen coords (pixels)
+        <code>FLIP</code>|<code>vec2</code>|The horizontal and vertical flip of the entity. -1 is flipped, 1 is not.
+        <code>ROTATION</code>|<code>float</code>|The rotation amount in radians to be applied to the current vertex.
+        <code>TEXTURE_COORDS</code> (Redundant, use <code>UV</code>)|<code>vec2</code>|The interpolates UV coordinates that will be passed to the fragment shader. Ranges from (0,0) top left to (1,1) bottom right. (Equivalent to <code>UV</code>, but modifiable.)</p>
+        
+        <h3 id="blend-shader-specific-1" class="section"><a class="anchor-link left" href="#blend-shader-specific-1"><i class="icofont-laika link">&#xef71;</i></a>Blend Shader Specific</h3>
+        
+        <h4 id="outputs-read-write-3" class="section"><a class="anchor-link left" href="#outputs-read-write-3"><i class="icofont-laika link">&#xef71;</i></a>Outputs (read/write)</h4>
+        <p>Name | Type | Description
+        ---|---|---
+        <code>SIZE</code>|<code>vec2</code>|The width and height in pixels of the space on the screen being drawn to, e.g. the width and height of a graphic.
+        <code>UV</code>|<code>vec2</code>|The interpolates UV coordinates. Ranges from (0,0) top left to (1,1) bottom right.</p>
+        
+        <h2 id="fragment-shader-programs" class="section"><a class="anchor-link left" href="#fragment-shader-programs"><i class="icofont-laika link">&#xef71;</i></a>Fragment Shader Programs</h2>
+        
+        <h3 id="common-3" class="section"><a class="anchor-link left" href="#common-3"><i class="icofont-laika link">&#xef71;</i></a>Common</h3>
+        
+        <h4 id="variables-read-only-3" class="section"><a class="anchor-link left" href="#variables-read-only-3"><i class="icofont-laika link">&#xef71;</i></a>Variables (read only)</h4>
+        <p>Name | Type | Description
+        ---|---|---
+        <code>SIZE</code>|<code>vec2</code>|The width and height in pixels of the space on the screen being drawn to, e.g. the width and height of a graphic.
+        <code>UV</code>|<code>vec2</code>|The interpolates UV coordinates. Ranges from (0,0) top left to (1,1) bottom right.</p>
+        
+        <h4 id="outputs-read-write-4" class="section"><a class="anchor-link left" href="#outputs-read-write-4"><i class="icofont-laika link">&#xef71;</i></a>Outputs (read/write)</h4>
+        <p>Name | Type | Description
+        ---|---|---
+        <code>COLOR</code>|<code>vec4</code>|Final pixel color.</p>
+        
+        <h3 id="entity-shader-specific-2" class="section"><a class="anchor-link left" href="#entity-shader-specific-2"><i class="icofont-laika link">&#xef71;</i></a>Entity Shader Specific</h3>
+        
+        <h4 id="variables-read-only-4" class="section"><a class="anchor-link left" href="#variables-read-only-4"><i class="icofont-laika link">&#xef71;</i></a>Variables (read only)</h4>
+        <p>Name | Type | Description
+        ---|---|---
+        <code>ATLAS_SIZE</code>|<code>vec2</code>|Size of the atlas this texture is on, in pixels.
+        <code>CHANNEL_0</code>|<code>vec4</code>|Pixel color value from texture channel 0.
+        <code>CHANNEL_1</code>|<code>vec4</code>|Pixel color value from texture channel 1.
+        <code>CHANNEL_2</code>|<code>vec4</code>|Pixel color value from texture channel 2.
+        <code>CHANNEL_3</code>|<code>vec4</code>|Pixel color value from texture channel 3.
+        <code>CHANNEL_0_POSITION</code>|<code>vec2</code>|Top left position of this texture on the atlas in UV coords.
+        <code>CHANNEL_0_SIZE</code>|<code>vec2</code>|Size of this texture on the atlas in UV coords.
+        <code>CHANNEL_0_TEXTURE_COORDS</code>|<code>vec2</code>|Scaled texture coordinates.
+        <code>CHANNEL_1_TEXTURE_COORDS</code>|<code>vec2</code>|Scaled texture coordinates.
+        <code>CHANNEL_2_TEXTURE_COORDS</code>|<code>vec2</code>|Scaled texture coordinates.
+        <code>CHANNEL_3_TEXTURE_COORDS</code>|<code>vec2</code>|Scaled texture coordinates.
+        <code>INSTANCE_ID</code>|<code>int</code>|The ID of the current instance, it is a count starting at 0.
+        <code>LIGHT_COUNT</code>|<code>int</code>|Total number of lights in the scene.
+        <code>LIGHT_INDEX</code>|<code>int</code>|Index of the current light starting at 0 with a range of 0 to 7.
+        <code>ROTATION</code>|<code>float</code>|The rotation amount in radians.
+        <code>SCREEN_COORDS</code>|<code>vec2</code>|The absolute position of this pixel on the screen.
+        <code>SRC_CHANNEL</code>|<code>sampler2D</code>|The texture channel for the source image data. Current we only bind one atlas at a time. The 4 channels otherwise mention are all textures on the same atlas. It&#39;s a limitation we may remove in the future.
+        <code>TEXTURE_SIZE</code>|<code>vec2</code>|Size of the texture in pixels.</p>
+        
+        <h4 id="outputs-read-write-5" class="section"><a class="anchor-link left" href="#outputs-read-write-5"><i class="icofont-laika link">&#xef71;</i></a>Outputs (read/write)</h4>
+        <blockquote>Please note that <code>LIGHT_</code> variables change during execution of the program to show the details of the current light affecting the element being drawn.</blockquote>
+        <p>Name | Type | Description
+        ---|---|---
+        <code>LIGHT_ACTIVE</code>|<code>int</code>|Is the light enabled?
+        <code>LIGHT_ANGLE</code>|<code>float</code>|Used in spotlights to determine the angle of the light cone.
+        <code>LIGHT_COLOR</code>|<code>vec4</code>|The color of the light.
+        <code>LIGHT_FALLOFF_TYPE</code>|<code>int</code>|The type of falloff to be used: 0 = none, 1 = smooth linear, 2 = smooth quadtratic, 3 = linear, 4 = quadratic
+        <code>LIGHT_FAR</code>|<code>float</code>|The maximum distance from the light up to which it will affect the scene.
+        <code>LIGHT_FAR_CUT_OFF</code>|<code>int</code>|Values are 1 or 0, this is really a boolean that determines if the <code>LIGHT_FAR</code> value is used or not. If not the light will attenuate forever.
+        <code>LIGHT_INTENSITY</code>|<code>float</code>|The intensity of the light.
+        <code>LIGHT_NEAR</code>|<code>float</code>|The minimum distance to the light where it will begin to affect the scene.
+        <code>LIGHT_POSITION</code>|<code>vec2</code>|The light&#39;s position.
+        <code>LIGHT_ROTATION</code>|<code>float</code>|The light&#39;s rotation.
+        <code>LIGHT_SPECULAR</code>|<code>vec4</code>|The specular color of the light.
+        <code>LIGHT_TYPE</code>|<code>int</code>|What type of light is it? (0 = ambient, 1 = direction, 2 = point, 3 = spot)</p>
+        
+        <h3 id="blend-shader-specific-2" class="section"><a class="anchor-link left" href="#blend-shader-specific-2"><i class="icofont-laika link">&#xef71;</i></a>Blend Shader Specific</h3>
+        
+        <h4 id="variables-read-only-5" class="section"><a class="anchor-link left" href="#variables-read-only-5"><i class="icofont-laika link">&#xef71;</i></a>Variables (read only)</h4>
+        <p>Name | Type | Description
+        ---|---|---
+        <code>DST_CHANNEL</code>|<code>sampler2D</code>|The texture channel for the destination image data.
+        <code>SRC_CHANNEL</code>|<code>sampler2D</code>|The texture channel for the source image data.</p>
+        
+        <h4 id="outputs-read-write-6" class="section"><a class="anchor-link left" href="#outputs-read-write-6"><i class="icofont-laika link">&#xef71;</i></a>Outputs (read/write)</h4>
+        <p>Name | Type | Description
+        ---|---|---
+        <code>DST</code>|<code>vec4</code>|Pixel color value from DST texture.
+        <code>SRC</code>|<code>vec4</code>|Pixel color value from SRC texture.</p>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://typelevel.org/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

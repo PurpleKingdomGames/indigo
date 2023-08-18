@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>Assets &amp; Asset Loading</title>
+  
+  
+  <meta name="description" content="website2"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="../../helium/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../helium/laika-helium.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/custom.css" />
+  <script src="../../helium/laika-helium.js"></script>
+    <script src="../../01-quickstart/hello-indigo.md.js"></script>
+    <script src="../../01-quickstart/mdoc.js"></script>
+    <script src="../../03-gameloop/frame-context.md.js"></script>
+    <script src="../../03-gameloop/mdoc.js"></script>
+    <script src="../../03-gameloop/outcome.md.js"></script>
+    <script src="../../06-presentation/materials.md.js"></script>
+    <script src="../../06-presentation/cameras.md.js"></script>
+    <script src="../../06-presentation/lighting.md.js"></script>
+    <script src="../../06-presentation/depth.md.js"></script>
+    <script src="../../06-presentation/clones-and-mutants.md.js"></script>
+    <script src="../../06-presentation/animation.md.js"></script>
+    <script src="../../06-presentation/layers.md.js"></script>
+    <script src="../../06-presentation/audio.md.js"></script>
+    <script src="../../06-presentation/scene-update-fragment.md.js"></script>
+    <script src="../../06-presentation/boundaries.md.js"></script>
+    <script src="../../06-presentation/shapes.md.js"></script>
+    <script src="../../06-presentation/text-and-fonts.md.js"></script>
+    <script src="../../06-presentation/mdoc.js"></script>
+    <script src="../../08-time/signals.md.js"></script>
+    <script src="../../08-time/mdoc.js"></script>
+    <script src="../../08-time/time-varying-values.md.js"></script>
+    <script src="../../07-shaders/blending.md.js"></script>
+    <script src="../../07-shaders/mdoc.js"></script>
+    <script src="../../07-shaders/shaders-overview.md.js"></script>
+    <script src="../../09-uicomponents/button.md.js"></script>
+    <script src="../../09-uicomponents/input-field.md.js"></script>
+    <script src="../../09-uicomponents/hit-area.md.js"></script>
+    <script src="../../09-uicomponents/radio-button.md.js"></script>
+    <script src="../../09-uicomponents/mdoc.js"></script>
+    <script src="../../04-organisation/scene-management.md.js"></script>
+    <script src="../../04-organisation/boot-and-start-up.md.js"></script>
+    <script src="../../04-organisation/subsystems.md.js"></script>
+    <script src="../../04-organisation/mdoc.js"></script>
+    <script src="../../02-guides/mdoc.js"></script>
+    <script src="../../02-guides/howto-fire-shader.md.js"></script>
+    <script src="../../02-guides/howto-custom-entity.md.js"></script>
+    <script src="../assets.md.js"></script>
+    <script src="../logging.md.js"></script>
+    <script src="../mdoc.js"></script>
+    <script src="../input-handling.md.js"></script>
+    <script src="../../10-information/key-concepts.md.js"></script>
+    <script src="../../10-information/antipatterns.md.js"></script>
+    <script src="../../10-information/mdoc.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar" class="light-default dark-default">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="image-link" href="../../"><img src="../../img/indigo_logo_solid_text.svg" alt="Homepage" title="Indigo" width="150" height="50"></a>
+
+  <div class="row links">
+    
+    <a class="button-link" href="https://discord.gg/b5CD47g">Discord</a>
+    
+    <a class="button-link" href="/api">API</a>
+    
+    <a class="button-link" href="https://github.com/PurpleKingdomGames/indigo">Github</a>
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+    <a class="button-link" href="https://discord.gg/b5CD47g">Discord</a>
+    
+    <a class="button-link" href="/api">API</a>
+    
+    <a class="button-link" href="https://github.com/PurpleKingdomGames/indigo">Github</a>
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../../table-of-content/">Contents</a></li>
+    <li class="level1 nav-header">Setup &amp; Configuration</li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/examples/">Examples</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/hello-indigo/">Hello, Indigo!</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/project-templates/">Mill &amp; SBT Templates</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/quickstart/">Quick start</a></li>
+    <li class="level1 nav-header">Guides</li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-custom-entity/">How to make a custom entity</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-fire-shader/">How to write a fire shader</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-hello-indigo-tyrian/">How to make a responsive UI using Tyrian</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-indigo-game/">Converting <code>IndigoSandbox</code> to <code>IndigoGame</code></a></li>
+    <li class="level1 nav-header">Gameloop</li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/events/">Events</a></li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/frame-context/">Frame context</a></li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/outcome/">Outcome Type</a></li>
+    <li class="level1 nav-header">Organisation</li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/boot-and-start-up/">Boot &amp; Start Up</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/game-entry-points/">Game Entry Points</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/scene-management/">What are Scenes?</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/subsystems/">What SubSystems are</a></li>
+    <li class="level1 nav-header">Platform &amp; IO</li>
+    <li class="level2 active nav-leaf"><a href="#">Assets &amp; Asset Loading</a></li>
+    <li class="level2 nav-leaf"><a href="../cross-platform-publishing/">Cross Platform Publishing</a></li>
+    <li class="level2 nav-leaf"><a href="../importers/">File Importers</a></li>
+    <li class="level2 nav-leaf"><a href="../input-handling/">Input Handling</a></li>
+    <li class="level2 nav-leaf"><a href="../loading-and-saving-data/">Loading &amp; Saving Data</a></li>
+    <li class="level2 nav-leaf"><a href="../logging/">Logging</a></li>
+    <li class="level2 nav-leaf"><a href="../networking/">Networking</a></li>
+    <li class="level1 nav-header">Presentation</li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/animation/">Animation</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/audio/">Audio</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/boundaries/">Boundaries</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/cameras/">Cameras</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/clones-and-mutants/">Clones &amp; Mutants</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/depth/">Depth</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/layers/">Layers</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/lighting/">Lighting</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/materials/">Materials</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/primitives/">Primitives &amp; Building Blocks</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/scene-update-fragment/">SceneUpdateFragment</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/shapes/">Shapes</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/text-and-fonts/">Text &amp; Fonts</a></li>
+    <li class="level1 nav-header">Shaders</li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/blending/">Blending</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/constants/">Shader Constants, Variables, and Outputs</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/premultiplied-alpha/">Premultiplied Alpha</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/shaders-overview/">Shaders Overview</a></li>
+    <li class="level1 nav-header">Time</li>
+    <li class="level2 nav-leaf"><a href="../../08-time/gametime/">GameTime</a></li>
+    <li class="level2 nav-leaf"><a href="../../08-time/signals/">Signals &amp; Signal Functions</a></li>
+    <li class="level2 nav-leaf"><a href="../../08-time/time-varying-values/">Time Varying Values</a></li>
+    <li class="level1 nav-header">UI Components</li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/button/">Buttons</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/hit-area/">Hit Areas</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/input-field/">Input Fields</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/radio-button/">Radio Buttons</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/ui-components/">UI Components</a></li>
+    <li class="level1 nav-header">Misc</li>
+    <li class="level2 nav-leaf"><a href="../../10-information/alternatives/">Alternatives to Indigo</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/antipatterns/">Anti-Patterns</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/glossary/">Glossary</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/key-concepts/">Key Concepts</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/model-viewmodel-view/">Model, ViewModel, &amp; View</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/motivation-and-constraints/">Motivation &amp; Constraints</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/performance/">Performance</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/prior-art/">Prior Art</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/rendering-technology/">Rendering Technology</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Assets &amp; Asset Loading</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-node"><a href="#asset-types">Asset Types</a></li>
+    <li class="level2 nav-leaf"><a href="#assetcollections"><code>AssetCollection</code>s</a></li>
+    <li class="level1 nav-node"><a href="#asset-loading">Asset Loading</a></li>
+    <li class="level2 nav-leaf"><a href="#load-ahead-of-game-start">Load ahead of game start</a></li>
+    <li class="level2 nav-leaf"><a href="#dynamic-asset-loading">Dynamic asset loading</a></li>
+    <li class="level2 nav-leaf"><a href="#using-the-asset-bundler-loader">Using the Asset Bundler Loader</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="assets-asset-loading" class="title">Assets &amp; Asset Loading</h1>
+        
+        <h2 id="asset-types" class="section"><a class="anchor-link left" href="#asset-types"><i class="icofont-laika link">&#xef71;</i></a>Asset Types</h2>
+        <p>There are three types of assets that Indigo understands how to load and make available:</p>
+        <ol class="arabic">
+          <li>Images - which can be JPEG or PNG format (others may work but are untested) - max size of 4096 x 4096.</li>
+          <li>Text - Any plain text format be it prose, yaml, json or xml. Indigo does not understand the text format, it just loads the text and makes it available.</li>
+          <li>Sound - Any browser supported audio format</li>
+        </ol>
+        <p>When assets are loaded they are registered, and in the case of Sounds and Images, some amount of preparation is immediately done to ensure they&#39;re usable.</p>
+        <p>Text is different. Plain text isn&#39;t useful in of itself in the scene construction, and the only time you can access text assets is during Startup via the <code>AssetCollection</code>, this give you an opportunity to read/decode the contents and build them into your model somewhere.</p>
+        
+        <h3 id="assetcollections" class="section"><a class="anchor-link left" href="#assetcollections"><i class="icofont-laika link">&#xef71;</i></a><code>AssetCollection</code>s</h3>
+        <p>The <code>IndigoSandbox</code> entry point defines a setup function with the following signature:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">indigo</span><span>.*
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">setup</span><span>(</span><span class="identifier">assetCollection</span><span>: </span><span class="type-name">AssetCollection</span><span>, </span><span class="identifier">dice</span><span>: </span><span class="type-name">Dice</span><span>): </span><span class="type-name">Startup</span><span>[</span><span class="type-name">Unit</span><span>] = ???</span></code></pre>
+        <p>The idea of this function is to give you an opportunity to do some light processing or preparation before your game starts (or re-starts), and this process can succeed or fail. The <code>Dice</code> provides a random element, and the <code>AssetCollection</code> gives you your <em>one and only</em> opportunity to directly access asset data directly.</p>
+        <p>As previously mentioned, this is particularly useful for reading plain text files and parsing them.</p>
+        <p>The interesting methods on an <code>AssetCollection</code> are:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">org</span><span>.</span><span class="identifier">scalajs</span><span>.</span><span class="identifier">dom</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">org</span><span>.</span><span class="identifier">scalajs</span><span>.</span><span class="identifier">dom</span><span>.</span><span class="identifier">html</span><span>
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">exists</span><span>(</span><span class="identifier">name</span><span>: </span><span class="type-name">AssetName</span><span>): </span><span class="type-name">Boolean</span><span> = ???
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">findImageDataByName</span><span>(</span><span class="identifier">name</span><span>: </span><span class="type-name">AssetName</span><span>): </span><span class="type-name">Option</span><span>[</span><span class="identifier">html</span><span>.</span><span class="type-name">Image</span><span>] = ???
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">findTextDataByName</span><span>(</span><span class="identifier">name</span><span>: </span><span class="type-name">AssetName</span><span>): </span><span class="type-name">Option</span><span>[</span><span class="type-name">String</span><span>] = ???
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">findAudioDataByName</span><span>(</span><span class="identifier">name</span><span>: </span><span class="type-name">AssetName</span><span>): </span><span class="type-name">Option</span><span>[</span><span class="identifier">dom</span><span>.</span><span class="type-name">AudioBuffer</span><span>] = ???
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">findFontDataByName</span><span>(</span><span class="identifier">name</span><span>: </span><span class="type-name">AssetName</span><span>): </span><span class="type-name">Option</span><span>[</span><span class="type-name">AssetName</span><span>] = ???</span></code></pre>
+        <p>&lt;div id=&quot;mdoc-html-run1&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <blockquote><code>AssetDataFormats.TextDataFormat</code> in this case is just a <code>String</code>. Although Indigo only works in the browser currently, architecturally it is somewhat organized for other platforms too.</blockquote>
+        
+        <h2 id="asset-loading" class="section"><a class="anchor-link left" href="#asset-loading"><i class="icofont-laika link">&#xef71;</i></a>Asset Loading</h2>
+        <p>Asset loading happens in either one or two phases, depending on whether you only need your assets before the game starts, or also want to load some of them later.</p>
+        
+        <h3 id="load-ahead-of-game-start" class="section"><a class="anchor-link left" href="#load-ahead-of-game-start"><i class="icofont-laika link">&#xef71;</i></a>Load ahead of game start</h3>
+        <p>The simplest from of asset loading happens based on your initial game definition, for example:</p>
+        <pre><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">baseUrl</span><span> = </span><span class="string-literal">&quot;./&quot;</span><span>
+
+</span><span class="comment">// If you&#39;re using the `IndigoSandbox` entry point
+</span><span class="keyword">val</span><span> </span><span class="identifier">assets</span><span>: </span><span class="type-name">Set</span><span>[</span><span class="type-name">AssetType</span><span>] =
+  </span><span class="type-name">Set</span><span>(
+    </span><span class="type-name">AssetType</span><span>.</span><span class="type-name">Text</span><span>(</span><span class="type-name">AssetName</span><span>(</span><span class="string-literal">&quot;map&quot;</span><span>), </span><span class="type-name">AssetPath</span><span>(</span><span class="identifier">baseUrl</span><span> + </span><span class="string-literal">&quot;assets/map.txt&quot;</span><span>)),
+    </span><span class="type-name">AssetType</span><span>.</span><span class="type-name">Image</span><span>(</span><span class="type-name">AssetName</span><span>(</span><span class="string-literal">&quot;font&quot;</span><span>), </span><span class="type-name">AssetPath</span><span>(</span><span class="identifier">baseUrl</span><span> + </span><span class="string-literal">&quot;assets/font.png&quot;</span><span>)),
+    </span><span class="type-name">AssetType</span><span>.</span><span class="type-name">Image</span><span>(</span><span class="type-name">AssetName</span><span>(</span><span class="string-literal">&quot;snake&quot;</span><span>), </span><span class="type-name">AssetPath</span><span>(</span><span class="identifier">baseUrl</span><span> + </span><span class="string-literal">&quot;assets/snake.png&quot;</span><span>)),
+    </span><span class="type-name">AssetType</span><span>.</span><span class="type-name">Audio</span><span>(</span><span class="type-name">AssetName</span><span>(</span><span class="string-literal">&quot;intro&quot;</span><span>), </span><span class="type-name">AssetPath</span><span>(</span><span class="identifier">baseUrl</span><span> + </span><span class="string-literal">&quot;assets/intro.mp3&quot;</span><span>)),
+    </span><span class="type-name">AssetType</span><span>.</span><span class="type-name">Audio</span><span>(</span><span class="type-name">AssetName</span><span>(</span><span class="string-literal">&quot;point&quot;</span><span>), </span><span class="type-name">AssetPath</span><span>(</span><span class="identifier">baseUrl</span><span> + </span><span class="string-literal">&quot;assets/point.mp3&quot;</span><span>)),
+    </span><span class="type-name">AssetType</span><span>.</span><span class="type-name">Audio</span><span>(</span><span class="type-name">AssetName</span><span>(</span><span class="string-literal">&quot;lose&quot;</span><span>), </span><span class="type-name">AssetPath</span><span>(</span><span class="identifier">baseUrl</span><span> + </span><span class="string-literal">&quot;assets/lose.mp3&quot;</span><span>))
+  )
+
+</span><span class="comment">// Or if you&#39;re using the IndigoDemo` or `IndigoGame` entry points
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">boot</span><span>(</span><span class="identifier">flags</span><span>: </span><span class="type-name">Map</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">String</span><span>]): </span><span class="type-name">BootResult</span><span>[</span><span class="type-name">Unit</span><span>] =
+  </span><span class="type-name">BootResult</span><span>.</span><span class="identifier">noData</span><span>(</span><span class="type-name">GameConfig</span><span>.</span><span class="keyword">default</span><span>)
+    .</span><span class="identifier">withAssets</span><span>(
+      </span><span class="type-name">Set</span><span>(
+        </span><span class="type-name">AssetType</span><span>.</span><span class="type-name">Text</span><span>(</span><span class="type-name">AssetName</span><span>(</span><span class="string-literal">&quot;map&quot;</span><span>), </span><span class="type-name">AssetPath</span><span>(</span><span class="identifier">baseUrl</span><span> + </span><span class="string-literal">&quot;assets/map.txt&quot;</span><span>)),
+        </span><span class="type-name">AssetType</span><span>.</span><span class="type-name">Image</span><span>(</span><span class="type-name">AssetName</span><span>(</span><span class="string-literal">&quot;font&quot;</span><span>), </span><span class="type-name">AssetPath</span><span>(</span><span class="identifier">baseUrl</span><span> + </span><span class="string-literal">&quot;assets/font.png&quot;</span><span>)),
+        </span><span class="type-name">AssetType</span><span>.</span><span class="type-name">Image</span><span>(</span><span class="type-name">AssetName</span><span>(</span><span class="string-literal">&quot;snake&quot;</span><span>), </span><span class="type-name">AssetPath</span><span>(</span><span class="identifier">baseUrl</span><span> + </span><span class="string-literal">&quot;assets/snake.png&quot;</span><span>)),
+        </span><span class="type-name">AssetType</span><span>.</span><span class="type-name">Audio</span><span>(</span><span class="type-name">AssetName</span><span>(</span><span class="string-literal">&quot;intro&quot;</span><span>), </span><span class="type-name">AssetPath</span><span>(</span><span class="identifier">baseUrl</span><span> + </span><span class="string-literal">&quot;assets/intro.mp3&quot;</span><span>)),
+        </span><span class="type-name">AssetType</span><span>.</span><span class="type-name">Audio</span><span>(</span><span class="type-name">AssetName</span><span>(</span><span class="string-literal">&quot;point&quot;</span><span>), </span><span class="type-name">AssetPath</span><span>(</span><span class="identifier">baseUrl</span><span> + </span><span class="string-literal">&quot;assets/point.mp3&quot;</span><span>)),
+        </span><span class="type-name">AssetType</span><span>.</span><span class="type-name">Audio</span><span>(</span><span class="type-name">AssetName</span><span>(</span><span class="string-literal">&quot;lose&quot;</span><span>), </span><span class="type-name">AssetPath</span><span>(</span><span class="identifier">baseUrl</span><span> + </span><span class="string-literal">&quot;assets/lose.mp3&quot;</span><span>))
+      )
+    )</span></code></pre>
+        <blockquote>The important thing to know here is that whichever entry point style you&#39;re using, all of those assets will be forced to load completely before your game will show anything on the screen <em>at all</em>. If they can&#39;t be loaded, the game will halt.</blockquote>
+        <p>For demos and tests or local development with no network latency, requiring all the assets to be primed and ready before your game starts is no big deal, even for substantial amounts of data. It is even advantageous, since there is a cost to loading images later, such as re-generating texture atlases.</p>
+        
+        <h3 id="dynamic-asset-loading" class="section"><a class="anchor-link left" href="#dynamic-asset-loading"><i class="icofont-laika link">&#xef71;</i></a>Dynamic asset loading</h3>
+        <p>When you&#39;re dealing with large amounts of asset data, you may not be happy to leave your player staring at a blank screen while Indigo loads and prepares everything. You might prefer to show them a loading screen, sometimes called a pre-loader.</p>
+        <p>The basic flow we want to achieve is:</p>
+        <ol class="arabic">
+          <li>Set up a scene that will be your loading screen.</li>
+          <li>Use the standard asset loading mechanism to load only the assets you need to be able to draw your loading screen.</li>
+          <li>Launch your loading screen.</li>
+          <li>Kick off a background load of the remaining assets.</li>
+          <li>As the assets arrive, update a progress bar / animation on the loading screen.</li>
+          <li>Once they all arrive and have been processed, proceed to the next scene of the game - perhaps a menu screen.</li>
+        </ol>
+        <blockquote>Note that the dynamic asset loading approach can be used to add assets <em>at any time</em>, not just at the beginning as the above flow suggests, and will make use of the browser cache to avoid re-delivery.</blockquote>
+        <p>You can either use the basic inbuilt events to load your assets, and manage the process yourself, or you can use the provided <code>AssetBundleLoader</code> <code>SubSystem</code> to do the work for you. There is nothing special about the <code>AssetBundleLoader</code>, it uses the same basic indigo asset events you have access to, it just abstracts over the problem to give you a friendlier experience. The remainder of this article assumes you are using the subsystem.</p>
+        <p><a href="https://github.com/PurpleKingdomGames/indigo/blob/master/examples/assetLoading/src/main/scala/com/example/assetloading/AssetLoadingExample.scala">There is a small example of the <code>AssetBundleLoader</code> running in the main indigo repo.</a></p>
+        
+        <h3 id="using-the-asset-bundler-loader" class="section"><a class="anchor-link left" href="#using-the-asset-bundler-loader"><i class="icofont-laika link">&#xef71;</i></a>Using the Asset Bundler Loader</h3>
+        <blockquote>Important! One advantage of loading everything up front is that you, the game developer, will find out <em>immediately</em> whether or not you have an asset that can&#39;t load for some reason or other. If however, as an example, you defer an asset load until just before the last level, and don&#39;t give yourself a way to jump to the last level for testing - you won&#39;t know you have a bad asset until that point in your game&#39;s testing cycle - which could be very long indeed! Load everything as early as possible to avoid disappointment.</blockquote>
+        <p>To kick off an asset bundle load, you need to fire off an <code>AssetBundleLoaderEvent.Load</code> event by attaching it to an <code>Outcome</code> or <code>SceneUpdateFragment</code>. In the example linked to above, we use a button (I&#39;ve simplified here slightly):</p>
+        <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">indigoextras</span><span>.</span><span class="identifier">ui</span><span>.*
+</span><span class="keyword">import</span><span> </span><span class="identifier">indigoextras</span><span>.</span><span class="identifier">subsystems</span><span>.*
+
+</span><span class="keyword">val</span><span> </span><span class="identifier">otherAssetsToLoad</span><span>: </span><span class="type-name">Set</span><span>[</span><span class="type-name">AssetType</span><span>] =
+  </span><span class="type-name">Set</span><span>(
+    </span><span class="type-name">AssetType</span><span>.</span><span class="type-name">Text</span><span>(</span><span class="type-name">AssetName</span><span>(</span><span class="string-literal">&quot;map&quot;</span><span>), </span><span class="type-name">AssetPath</span><span>(</span><span class="identifier">baseUrl</span><span> + </span><span class="string-literal">&quot;assets/map.txt&quot;</span><span>)),
+    </span><span class="type-name">AssetType</span><span>.</span><span class="type-name">Image</span><span>(</span><span class="type-name">AssetName</span><span>(</span><span class="string-literal">&quot;font&quot;</span><span>), </span><span class="type-name">AssetPath</span><span>(</span><span class="identifier">baseUrl</span><span> + </span><span class="string-literal">&quot;assets/font.png&quot;</span><span>)),
+    </span><span class="type-name">AssetType</span><span>.</span><span class="type-name">Image</span><span>(</span><span class="type-name">AssetName</span><span>(</span><span class="string-literal">&quot;snake&quot;</span><span>), </span><span class="type-name">AssetPath</span><span>(</span><span class="identifier">baseUrl</span><span> + </span><span class="string-literal">&quot;assets/snake.png&quot;</span><span>)),
+    </span><span class="type-name">AssetType</span><span>.</span><span class="type-name">Audio</span><span>(</span><span class="type-name">AssetName</span><span>(</span><span class="string-literal">&quot;intro&quot;</span><span>), </span><span class="type-name">AssetPath</span><span>(</span><span class="identifier">baseUrl</span><span> + </span><span class="string-literal">&quot;assets/intro.mp3&quot;</span><span>)),
+    </span><span class="type-name">AssetType</span><span>.</span><span class="type-name">Audio</span><span>(</span><span class="type-name">AssetName</span><span>(</span><span class="string-literal">&quot;point&quot;</span><span>), </span><span class="type-name">AssetPath</span><span>(</span><span class="identifier">baseUrl</span><span> + </span><span class="string-literal">&quot;assets/point.mp3&quot;</span><span>)),
+    </span><span class="type-name">AssetType</span><span>.</span><span class="type-name">Audio</span><span>(</span><span class="type-name">AssetName</span><span>(</span><span class="string-literal">&quot;lose&quot;</span><span>), </span><span class="type-name">AssetPath</span><span>(</span><span class="identifier">baseUrl</span><span> + </span><span class="string-literal">&quot;assets/lose.mp3&quot;</span><span>))
+  )
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">buttonAssets</span><span>: </span><span class="type-name">ButtonAssets</span><span> = 
+  </span><span class="type-name">ButtonAssets</span><span>(
+    </span><span class="identifier">up</span><span> = </span><span class="type-name">Graphic</span><span>(</span><span class="number-literal">50</span><span>, </span><span class="number-literal">50</span><span>, </span><span class="type-name">Material</span><span>.</span><span class="type-name">Bitmap</span><span>(</span><span class="type-name">AssetName</span><span>(</span><span class="string-literal">&quot;button up&quot;</span><span>))),
+    </span><span class="identifier">over</span><span> = </span><span class="type-name">Graphic</span><span>(</span><span class="number-literal">50</span><span>, </span><span class="number-literal">50</span><span>, </span><span class="type-name">Material</span><span>.</span><span class="type-name">Bitmap</span><span>(</span><span class="type-name">AssetName</span><span>(</span><span class="string-literal">&quot;button over&quot;</span><span>))),
+    </span><span class="identifier">down</span><span> = </span><span class="type-name">Graphic</span><span>(</span><span class="number-literal">50</span><span>, </span><span class="number-literal">50</span><span>, </span><span class="type-name">Material</span><span>.</span><span class="type-name">Bitmap</span><span>(</span><span class="type-name">AssetName</span><span>(</span><span class="string-literal">&quot;button down&quot;</span><span>)))
+  )
+
+</span><span class="type-name">Button</span><span>(
+  </span><span class="identifier">buttonAssets</span><span> = </span><span class="identifier">buttonAssets</span><span>,
+  </span><span class="identifier">bounds</span><span> = </span><span class="type-name">Rectangle</span><span>(</span><span class="number-literal">10</span><span>, </span><span class="number-literal">10</span><span>, </span><span class="number-literal">16</span><span>, </span><span class="number-literal">16</span><span>),
+  </span><span class="identifier">depth</span><span> = </span><span class="type-name">Depth</span><span>(</span><span class="number-literal">2</span><span>)
+).</span><span class="identifier">withUpActions</span><span> {
+  </span><span class="identifier">println</span><span>(</span><span class="string-literal">&quot;Start loading assets...&quot;</span><span>)
+  </span><span class="type-name">Batch</span><span>(</span><span class="type-name">AssetBundleLoaderEvent</span><span>.</span><span class="type-name">Load</span><span>(</span><span class="type-name">BindingKey</span><span>(</span><span class="string-literal">&quot;bundle 1&quot;</span><span>), </span><span class="identifier">otherAssetsToLoad</span><span>))
+}</span></code></pre>
+        <p>&lt;div id=&quot;mdoc-html-run3&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <p>As you can see, the asset bundle is just another <code>Set[AssetType]</code> like we&#39;d use during the pre-start asset load. We&#39;re also required to provide a <code>BindingKey</code> instance so that we can track which asset bundle has loaded - or not as the case may be.</p>
+        <p>We can then track the progress of our bundle load by pattern matching the relevant events:</p>
+        <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">indigoextras</span><span>.</span><span class="identifier">subsystems</span><span>.*
+
+</span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">MyGameModel</span><span>(</span><span class="identifier">loaded</span><span>: </span><span class="type-name">Boolean</span><span>)
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">updateModel</span><span>(</span><span class="identifier">context</span><span>: </span><span class="type-name">FrameContext</span><span>[</span><span class="type-name">Unit</span><span>], </span><span class="identifier">model</span><span>: </span><span class="type-name">MyGameModel</span><span>): </span><span class="type-name">GlobalEvent</span><span> =&gt; </span><span class="type-name">Outcome</span><span>[</span><span class="type-name">MyGameModel</span><span>] = {
+  </span><span class="keyword">case</span><span> </span><span class="type-name">AssetBundleLoaderEvent</span><span>.</span><span class="type-name">Started</span><span>(</span><span class="identifier">key</span><span>) =&gt;
+    </span><span class="identifier">println</span><span>(</span><span class="string-literal">&quot;Load started! &quot;</span><span> + </span><span class="identifier">key</span><span>.</span><span class="identifier">toString</span><span>())
+    </span><span class="type-name">Outcome</span><span>(</span><span class="identifier">model</span><span>)
+
+  </span><span class="keyword">case</span><span> </span><span class="type-name">AssetBundleLoaderEvent</span><span>.</span><span class="type-name">LoadProgress</span><span>(</span><span class="identifier">key</span><span>, </span><span class="identifier">percent</span><span>, </span><span class="identifier">completed</span><span>, </span><span class="identifier">total</span><span>) =&gt;
+    </span><span class="identifier">println</span><span>(</span><span class="string-literal">s&quot;In progress...: </span><span class="substitution">${key.toString()}</span><span class="string-literal"> - </span><span class="substitution">${percent.toString()}</span><span class="string-literal">%, </span><span class="substitution">${completed.toString()}</span><span class="string-literal"> of </span><span class="substitution">${total.toString()}</span><span class="string-literal">&quot;</span><span>)
+    </span><span class="type-name">Outcome</span><span>(</span><span class="identifier">model</span><span>)
+
+  </span><span class="keyword">case</span><span> </span><span class="type-name">AssetBundleLoaderEvent</span><span>.</span><span class="type-name">Success</span><span>(</span><span class="identifier">key</span><span>) =&gt;
+    </span><span class="identifier">println</span><span>(</span><span class="string-literal">&quot;Got it! &quot;</span><span> + </span><span class="identifier">key</span><span>.</span><span class="identifier">toString</span><span>())
+    </span><span class="type-name">Outcome</span><span>(</span><span class="identifier">model</span><span>.</span><span class="identifier">copy</span><span>(</span><span class="identifier">loaded</span><span> = </span><span class="boolean-literal">true</span><span>))
+      .</span><span class="identifier">addGlobalEvents</span><span>(</span><span class="type-name">PlaySound</span><span>(</span><span class="type-name">AssetName</span><span>(</span><span class="string-literal">&quot;sfx&quot;</span><span>), </span><span class="type-name">Volume</span><span>.</span><span class="type-name">Max</span><span>)) </span><span class="comment">// Make use of a freshly loaded asset.
+</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="type-name">AssetBundleLoaderEvent</span><span>.</span><span class="type-name">Failure</span><span>(</span><span class="identifier">key</span><span>, </span><span class="identifier">message</span><span>) =&gt;
+    </span><span class="identifier">println</span><span>(</span><span class="string-literal">&quot;Lost it... &quot;</span><span> + </span><span class="identifier">key</span><span>.</span><span class="identifier">toString</span><span>() + </span><span class="string-literal">&quot;, message: &quot;</span><span> + </span><span class="identifier">message</span><span>)
+    </span><span class="type-name">Outcome</span><span>(</span><span class="identifier">model</span><span>)
+
+  </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span> =&gt;
+    </span><span class="type-name">Outcome</span><span>(</span><span class="identifier">model</span><span>)
+}</span></code></pre>
+        <blockquote>Note that the percent loaded is based on items received not data transfered, i.e. 5 out of 10 items loaded is 50%, 5.5 items out of 10 is still 50%!</blockquote>
+        
+        <h4 id="stating-the-obvious" class="section"><a class="anchor-link left" href="#stating-the-obvious"><i class="icofont-laika link">&#xef71;</i></a>Stating the obvious</h4>
+        <p>You can&#39;t use an asset before you&#39;ve loaded it.</p>
+        <p>The eagle eyed among you may have noticed that the super simple model above has a loaded flag in it&#39;s definition, here is the whole thing:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">model</span><span> = </span><span class="type-name">MyGameModel</span><span>(</span><span class="boolean-literal">true</span><span>)</span></code></pre>
+        <p>The loaded flag above is a crude way of us saying &quot;Ok, the assets are ready for use now!&quot;, so that once set to true, we can start drawing with them, again a minimal example could be:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">SceneUpdateFragment</span><span>(
+  </span><span class="keyword">if</span><span> (</span><span class="identifier">model</span><span>.</span><span class="identifier">loaded</span><span>) {
+    </span><span class="type-name">Batch</span><span>(
+      </span><span class="type-name">Graphic</span><span>(</span><span class="type-name">Rectangle</span><span>(</span><span class="number-literal">0</span><span>, </span><span class="number-literal">0</span><span>, </span><span class="number-literal">64</span><span>, </span><span class="number-literal">64</span><span>), </span><span class="number-literal">1</span><span>, </span><span class="type-name">Material</span><span>.</span><span class="type-name">Bitmap</span><span>(</span><span class="type-name">AssetName</span><span>(</span><span class="string-literal">&quot;junction box&quot;</span><span>)))
+        .</span><span class="identifier">moveTo</span><span>(</span><span class="number-literal">30</span><span>, </span><span class="number-literal">30</span><span>)
+    )
+  } </span><span class="keyword">else</span><span> </span><span class="type-name">Batch</span><span>.</span><span class="identifier">empty</span><span>
+)</span></code></pre>
+        <p>&lt;div id=&quot;mdoc-html-run6&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        
+        <h4 id="using-dynamically-loaded-text-assets" class="section"><a class="anchor-link left" href="#using-dynamically-loaded-text-assets"><i class="icofont-laika link">&#xef71;</i></a>Using dynamically loaded <code>Text</code> assets</h4>
+        <p>As previously discussed, images and sounds can be used directly but text can only be accessed during startup. As such, a bundle load triggers a full engine restart (which in our admittedly small tests, isn&#39;t noticeable) with the current game state preserved. This means that you can check for the existence of a text item (and indeed any asset) at start up and use it if and when it becomes available.
+        &lt;script type=&quot;text/javascript&quot; src=&quot;assets.md.js&quot; defer&gt;&lt;/script&gt;
+        &lt;script type=&quot;text/javascript&quot; src=&quot;mdoc.js&quot; defer&gt;&lt;/script&gt;</p>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://typelevel.org/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

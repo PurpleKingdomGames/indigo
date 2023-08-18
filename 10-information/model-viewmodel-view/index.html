@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>Model, ViewModel, &amp; View</title>
+  
+  
+  <meta name="description" content="website2"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="../../helium/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../helium/laika-helium.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/custom.css" />
+  <script src="../../helium/laika-helium.js"></script>
+    <script src="../../01-quickstart/hello-indigo.md.js"></script>
+    <script src="../../01-quickstart/mdoc.js"></script>
+    <script src="../../03-gameloop/frame-context.md.js"></script>
+    <script src="../../03-gameloop/mdoc.js"></script>
+    <script src="../../03-gameloop/outcome.md.js"></script>
+    <script src="../../06-presentation/materials.md.js"></script>
+    <script src="../../06-presentation/cameras.md.js"></script>
+    <script src="../../06-presentation/lighting.md.js"></script>
+    <script src="../../06-presentation/depth.md.js"></script>
+    <script src="../../06-presentation/clones-and-mutants.md.js"></script>
+    <script src="../../06-presentation/animation.md.js"></script>
+    <script src="../../06-presentation/layers.md.js"></script>
+    <script src="../../06-presentation/audio.md.js"></script>
+    <script src="../../06-presentation/scene-update-fragment.md.js"></script>
+    <script src="../../06-presentation/boundaries.md.js"></script>
+    <script src="../../06-presentation/shapes.md.js"></script>
+    <script src="../../06-presentation/text-and-fonts.md.js"></script>
+    <script src="../../06-presentation/mdoc.js"></script>
+    <script src="../../08-time/signals.md.js"></script>
+    <script src="../../08-time/mdoc.js"></script>
+    <script src="../../08-time/time-varying-values.md.js"></script>
+    <script src="../../07-shaders/blending.md.js"></script>
+    <script src="../../07-shaders/mdoc.js"></script>
+    <script src="../../07-shaders/shaders-overview.md.js"></script>
+    <script src="../../09-uicomponents/button.md.js"></script>
+    <script src="../../09-uicomponents/input-field.md.js"></script>
+    <script src="../../09-uicomponents/hit-area.md.js"></script>
+    <script src="../../09-uicomponents/radio-button.md.js"></script>
+    <script src="../../09-uicomponents/mdoc.js"></script>
+    <script src="../../04-organisation/scene-management.md.js"></script>
+    <script src="../../04-organisation/boot-and-start-up.md.js"></script>
+    <script src="../../04-organisation/subsystems.md.js"></script>
+    <script src="../../04-organisation/mdoc.js"></script>
+    <script src="../../02-guides/mdoc.js"></script>
+    <script src="../../02-guides/howto-fire-shader.md.js"></script>
+    <script src="../../02-guides/howto-custom-entity.md.js"></script>
+    <script src="../../05-platform/assets.md.js"></script>
+    <script src="../../05-platform/logging.md.js"></script>
+    <script src="../../05-platform/mdoc.js"></script>
+    <script src="../../05-platform/input-handling.md.js"></script>
+    <script src="../key-concepts.md.js"></script>
+    <script src="../antipatterns.md.js"></script>
+    <script src="../mdoc.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar" class="light-default dark-default">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="image-link" href="../../"><img src="../../img/indigo_logo_solid_text.svg" alt="Homepage" title="Indigo" width="150" height="50"></a>
+
+  <div class="row links">
+    
+    <a class="button-link" href="https://discord.gg/b5CD47g">Discord</a>
+    
+    <a class="button-link" href="/api">API</a>
+    
+    <a class="button-link" href="https://github.com/PurpleKingdomGames/indigo">Github</a>
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+    <a class="button-link" href="https://discord.gg/b5CD47g">Discord</a>
+    
+    <a class="button-link" href="/api">API</a>
+    
+    <a class="button-link" href="https://github.com/PurpleKingdomGames/indigo">Github</a>
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../../table-of-content/">Contents</a></li>
+    <li class="level1 nav-header">Setup &amp; Configuration</li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/examples/">Examples</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/hello-indigo/">Hello, Indigo!</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/project-templates/">Mill &amp; SBT Templates</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/quickstart/">Quick start</a></li>
+    <li class="level1 nav-header">Guides</li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-custom-entity/">How to make a custom entity</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-fire-shader/">How to write a fire shader</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-hello-indigo-tyrian/">How to make a responsive UI using Tyrian</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-indigo-game/">Converting <code>IndigoSandbox</code> to <code>IndigoGame</code></a></li>
+    <li class="level1 nav-header">Gameloop</li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/events/">Events</a></li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/frame-context/">Frame context</a></li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/outcome/">Outcome Type</a></li>
+    <li class="level1 nav-header">Organisation</li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/boot-and-start-up/">Boot &amp; Start Up</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/game-entry-points/">Game Entry Points</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/scene-management/">What are Scenes?</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/subsystems/">What SubSystems are</a></li>
+    <li class="level1 nav-header">Platform &amp; IO</li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/assets/">Assets &amp; Asset Loading</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/cross-platform-publishing/">Cross Platform Publishing</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/importers/">File Importers</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/input-handling/">Input Handling</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/loading-and-saving-data/">Loading &amp; Saving Data</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/logging/">Logging</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/networking/">Networking</a></li>
+    <li class="level1 nav-header">Presentation</li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/animation/">Animation</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/audio/">Audio</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/boundaries/">Boundaries</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/cameras/">Cameras</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/clones-and-mutants/">Clones &amp; Mutants</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/depth/">Depth</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/layers/">Layers</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/lighting/">Lighting</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/materials/">Materials</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/primitives/">Primitives &amp; Building Blocks</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/scene-update-fragment/">SceneUpdateFragment</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/shapes/">Shapes</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/text-and-fonts/">Text &amp; Fonts</a></li>
+    <li class="level1 nav-header">Shaders</li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/blending/">Blending</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/constants/">Shader Constants, Variables, and Outputs</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/premultiplied-alpha/">Premultiplied Alpha</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/shaders-overview/">Shaders Overview</a></li>
+    <li class="level1 nav-header">Time</li>
+    <li class="level2 nav-leaf"><a href="../../08-time/gametime/">GameTime</a></li>
+    <li class="level2 nav-leaf"><a href="../../08-time/signals/">Signals &amp; Signal Functions</a></li>
+    <li class="level2 nav-leaf"><a href="../../08-time/time-varying-values/">Time Varying Values</a></li>
+    <li class="level1 nav-header">UI Components</li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/button/">Buttons</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/hit-area/">Hit Areas</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/input-field/">Input Fields</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/radio-button/">Radio Buttons</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/ui-components/">UI Components</a></li>
+    <li class="level1 nav-header">Misc</li>
+    <li class="level2 nav-leaf"><a href="../alternatives/">Alternatives to Indigo</a></li>
+    <li class="level2 nav-leaf"><a href="../antipatterns/">Anti-Patterns</a></li>
+    <li class="level2 nav-leaf"><a href="../glossary/">Glossary</a></li>
+    <li class="level2 nav-leaf"><a href="../key-concepts/">Key Concepts</a></li>
+    <li class="level2 active nav-leaf"><a href="#">Model, ViewModel, &amp; View</a></li>
+    <li class="level2 nav-leaf"><a href="../motivation-and-constraints/">Motivation &amp; Constraints</a></li>
+    <li class="level2 nav-leaf"><a href="../performance/">Performance</a></li>
+    <li class="level2 nav-leaf"><a href="../prior-art/">Prior Art</a></li>
+    <li class="level2 nav-leaf"><a href="../rendering-technology/">Rendering Technology</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Model, ViewModel, &amp; View</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#separation-of-concerns">Separation of concerns</a></li>
+    <li class="level1 nav-leaf"><a href="#seeing-is-believing">Seeing is believing</a></li>
+    <li class="level1 nav-leaf"><a href="#working-definitions">Working definitions</a></li>
+    <li class="level1 nav-leaf"><a href="#more-on-the-viewmodel">More on the <code>ViewModel</code></a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="model-viewmodel-view" class="title">Model, ViewModel, &amp; View</h1>
+        <p>The standard entry point traits define functions that talk about a <code>Model</code>, a <code>ViewModel</code>, and a &quot;view&quot; (in the form of a <code>present</code> function that returns a <code>SceneUpdateFragment</code>).</p>
+        <p>These are terms that will be very familiar to anyone that has worked with any of the many permutations of the MVC pattern, but the definitions can vary a bit.</p>
+        
+        <h2 id="separation-of-concerns" class="section"><a class="anchor-link left" href="#separation-of-concerns"><i class="icofont-laika link">&#xef71;</i></a>Separation of concerns</h2>
+        <p>Indigo keeps the model and view quite separate (we&#39;ll come on to the view model later), the aim is to strictly decouple your game&#39;s structures and logic from its presentation. How strictly this is adhered to is entirely up to the game developer, but we recommend keeping them as separate as posisble.</p>
+        
+        <h2 id="seeing-is-believing" class="section"><a class="anchor-link left" href="#seeing-is-believing"><i class="icofont-laika link">&#xef71;</i></a>Seeing is believing</h2>
+        <blockquote>The world the player sees and interacts with, is not the game.</blockquote>
+        <p>What do server-side programming and Wolfenstein 3D have in common?</p>
+        <p>If you&#39;ve ever worked in server-side programming, you will have already come across this idea. The way you represent data in a database is most likely - except in very simple cases - not how it appears when it is accessed by an API. Why not? Because they serve different purposes. One models your data in the most accurate, useful, and domain appropriate way possible, and the other presents it in the format most appropriate for consumption. Fields essential to data storage and business logic calculations are omitted, merged, or have their representations changed and massaged before being served up to the requester.</p>
+        <p>Another great example of this is the legendary game <a href="https://en.wikipedia.org/wiki/Wolfenstein_3D">Wolfenstein 3D</a>. Wolfenstein, precursor to Doom, was one of the first really famous &quot;3D&quot; game, filled with the high adrenaline action and an immersive (for its time) experience.</p>
+        <p>Except... &quot;Wolfenstein 3D&quot; is a 2D game.</p>
+        <p>If you could see a mini-map in the corner, it would show a flat blocky level with dots representing baddies moving about, and that is the real game. The mini-map is the model, the mini-map is the game, and the 3D corridors and bad guys filling your viewport are just an amazingly clever bit of presentation work.</p>
+        <p>If you&#39;d like to know more, <a href="https://fabiensanglard.net/gebbwolf3d/">Fabien Sanglard&#39;s book</a> goes into every tiny detail.</p>
+        
+        <h2 id="working-definitions" class="section"><a class="anchor-link left" href="#working-definitions"><i class="icofont-laika link">&#xef71;</i></a>Working definitions</h2>
+        <p>Here are the definitions Indigo uses:</p>
+        <ul>
+          <li><strong>Model</strong> - A pure and abstract representation of your game. Data that models your game&#39;s state with no regard for how it will be presented.</li>
+          <li><strong>ViewModel</strong> - Presentation state that is inessential to the game, but improves visual experience.</li>
+          <li><strong>View</strong> - An as-simple-as-possible translation of the model and view model into a visual experience, handling little to no game logic.</li>
+        </ul>
+        
+        <h2 id="more-on-the-viewmodel" class="section"><a class="anchor-link left" href="#more-on-the-viewmodel"><i class="icofont-laika link">&#xef71;</i></a>More on the <code>ViewModel</code></h2>
+        <p>We&#39;ve talked a bit about the model and the view, as they are the two most cleanly separated of the three elements.</p>
+        <p>The last element is the view model, and arguably it is superfluous. The view model is state used to help produce a visual representation, and could easily be kept as some sub-section of the Model data. Indeed, <code>SubSystem</code>s make no distinction as they assumed to be small and simple enough to be manageable. The point of the view model is that it represents data the matters to the view, but not to the state of the game, and thus helps you to keep your game model clean.</p>
+        <p>Example use of a <code>ViewModel</code>:</p>
+        <p>You&#39;ve built a pinball machine game!</p>
+        <p>The model stores the players running score as a simple number, and in your prototype, that score is extracted from the model and drawn on the screen by the <code>present</code> function that generates the view.</p>
+        <p>Works fine but lacks excitement. On real pinball machines, as you score more and more points, the scores are multiplied and big numbers start rolling onto the board. That &quot;rolling&quot; is literal, it&#39;s a mechanical process trying to keep up with the massive scores being achieved and its noisy and exciting!</p>
+        <p>In order to simulate that, at minimum we really need:</p>
+        <ol class="arabic">
+          <li>The actual current score that the player has achieved - the most important thing.</li>
+          <li>The score currently on the board (which is behind the real score)</li>
+          <li>A value describing how much to increment the score on the board by on each frame tick until it catches up with the actual score.</li>
+        </ol>
+        <p>Point 1 is clearly an essential business value. If you needed to send a highscore to a server for a global leaderboard - that is the only value you&#39;d care about. As such, it clearly belongs in your games model.</p>
+        <p>Points 2 and 3 though are inessential in terms of the integrity of the games inner state representation. The view needs them to draw the effect of the mechanical scoreboard, but they are transient, and putting them in the model itself is an act of coupling or polluting the model with presentation information.</p>
+        <p>Instead, we put those two values in the <code>ViewModel</code>. The effect can be rendered, but the model is unaware of the details of how it&#39;s presented.</p>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://typelevel.org/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

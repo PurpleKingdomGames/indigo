@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>How to make a custom entity</title>
+  
+  
+  <meta name="description" content="website2"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="../../helium/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../helium/laika-helium.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/custom.css" />
+  <script src="../../helium/laika-helium.js"></script>
+    <script src="../../01-quickstart/hello-indigo.md.js"></script>
+    <script src="../../01-quickstart/mdoc.js"></script>
+    <script src="../../03-gameloop/frame-context.md.js"></script>
+    <script src="../../03-gameloop/mdoc.js"></script>
+    <script src="../../03-gameloop/outcome.md.js"></script>
+    <script src="../../06-presentation/materials.md.js"></script>
+    <script src="../../06-presentation/cameras.md.js"></script>
+    <script src="../../06-presentation/lighting.md.js"></script>
+    <script src="../../06-presentation/depth.md.js"></script>
+    <script src="../../06-presentation/clones-and-mutants.md.js"></script>
+    <script src="../../06-presentation/animation.md.js"></script>
+    <script src="../../06-presentation/layers.md.js"></script>
+    <script src="../../06-presentation/audio.md.js"></script>
+    <script src="../../06-presentation/scene-update-fragment.md.js"></script>
+    <script src="../../06-presentation/boundaries.md.js"></script>
+    <script src="../../06-presentation/shapes.md.js"></script>
+    <script src="../../06-presentation/text-and-fonts.md.js"></script>
+    <script src="../../06-presentation/mdoc.js"></script>
+    <script src="../../08-time/signals.md.js"></script>
+    <script src="../../08-time/mdoc.js"></script>
+    <script src="../../08-time/time-varying-values.md.js"></script>
+    <script src="../../07-shaders/blending.md.js"></script>
+    <script src="../../07-shaders/mdoc.js"></script>
+    <script src="../../07-shaders/shaders-overview.md.js"></script>
+    <script src="../../09-uicomponents/button.md.js"></script>
+    <script src="../../09-uicomponents/input-field.md.js"></script>
+    <script src="../../09-uicomponents/hit-area.md.js"></script>
+    <script src="../../09-uicomponents/radio-button.md.js"></script>
+    <script src="../../09-uicomponents/mdoc.js"></script>
+    <script src="../../04-organisation/scene-management.md.js"></script>
+    <script src="../../04-organisation/boot-and-start-up.md.js"></script>
+    <script src="../../04-organisation/subsystems.md.js"></script>
+    <script src="../../04-organisation/mdoc.js"></script>
+    <script src="../mdoc.js"></script>
+    <script src="../howto-fire-shader.md.js"></script>
+    <script src="../howto-custom-entity.md.js"></script>
+    <script src="../../05-platform/assets.md.js"></script>
+    <script src="../../05-platform/logging.md.js"></script>
+    <script src="../../05-platform/mdoc.js"></script>
+    <script src="../../05-platform/input-handling.md.js"></script>
+    <script src="../../10-information/key-concepts.md.js"></script>
+    <script src="../../10-information/antipatterns.md.js"></script>
+    <script src="../../10-information/mdoc.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar" class="light-default dark-default">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="image-link" href="../../"><img src="../../img/indigo_logo_solid_text.svg" alt="Homepage" title="Indigo" width="150" height="50"></a>
+
+  <div class="row links">
+    
+    <a class="button-link" href="https://discord.gg/b5CD47g">Discord</a>
+    
+    <a class="button-link" href="/api">API</a>
+    
+    <a class="button-link" href="https://github.com/PurpleKingdomGames/indigo">Github</a>
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+    <a class="button-link" href="https://discord.gg/b5CD47g">Discord</a>
+    
+    <a class="button-link" href="/api">API</a>
+    
+    <a class="button-link" href="https://github.com/PurpleKingdomGames/indigo">Github</a>
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../../table-of-content/">Contents</a></li>
+    <li class="level1 nav-header">Setup &amp; Configuration</li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/examples/">Examples</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/hello-indigo/">Hello, Indigo!</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/project-templates/">Mill &amp; SBT Templates</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/quickstart/">Quick start</a></li>
+    <li class="level1 nav-header">Guides</li>
+    <li class="level2 active nav-leaf"><a href="#">How to make a custom entity</a></li>
+    <li class="level2 nav-leaf"><a href="../howto-fire-shader/">How to write a fire shader</a></li>
+    <li class="level2 nav-leaf"><a href="../howto-hello-indigo-tyrian/">How to make a responsive UI using Tyrian</a></li>
+    <li class="level2 nav-leaf"><a href="../howto-indigo-game/">Converting <code>IndigoSandbox</code> to <code>IndigoGame</code></a></li>
+    <li class="level1 nav-header">Gameloop</li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/events/">Events</a></li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/frame-context/">Frame context</a></li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/outcome/">Outcome Type</a></li>
+    <li class="level1 nav-header">Organisation</li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/boot-and-start-up/">Boot &amp; Start Up</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/game-entry-points/">Game Entry Points</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/scene-management/">What are Scenes?</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/subsystems/">What SubSystems are</a></li>
+    <li class="level1 nav-header">Platform &amp; IO</li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/assets/">Assets &amp; Asset Loading</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/cross-platform-publishing/">Cross Platform Publishing</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/importers/">File Importers</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/input-handling/">Input Handling</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/loading-and-saving-data/">Loading &amp; Saving Data</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/logging/">Logging</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/networking/">Networking</a></li>
+    <li class="level1 nav-header">Presentation</li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/animation/">Animation</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/audio/">Audio</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/boundaries/">Boundaries</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/cameras/">Cameras</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/clones-and-mutants/">Clones &amp; Mutants</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/depth/">Depth</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/layers/">Layers</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/lighting/">Lighting</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/materials/">Materials</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/primitives/">Primitives &amp; Building Blocks</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/scene-update-fragment/">SceneUpdateFragment</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/shapes/">Shapes</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/text-and-fonts/">Text &amp; Fonts</a></li>
+    <li class="level1 nav-header">Shaders</li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/blending/">Blending</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/constants/">Shader Constants, Variables, and Outputs</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/premultiplied-alpha/">Premultiplied Alpha</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/shaders-overview/">Shaders Overview</a></li>
+    <li class="level1 nav-header">Time</li>
+    <li class="level2 nav-leaf"><a href="../../08-time/gametime/">GameTime</a></li>
+    <li class="level2 nav-leaf"><a href="../../08-time/signals/">Signals &amp; Signal Functions</a></li>
+    <li class="level2 nav-leaf"><a href="../../08-time/time-varying-values/">Time Varying Values</a></li>
+    <li class="level1 nav-header">UI Components</li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/button/">Buttons</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/hit-area/">Hit Areas</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/input-field/">Input Fields</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/radio-button/">Radio Buttons</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/ui-components/">UI Components</a></li>
+    <li class="level1 nav-header">Misc</li>
+    <li class="level2 nav-leaf"><a href="../../10-information/alternatives/">Alternatives to Indigo</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/antipatterns/">Anti-Patterns</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/glossary/">Glossary</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/key-concepts/">Key Concepts</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/model-viewmodel-view/">Model, ViewModel, &amp; View</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/motivation-and-constraints/">Motivation &amp; Constraints</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/performance/">Performance</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/prior-art/">Prior Art</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/rendering-technology/">Rendering Technology</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">How to make a custom entity</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#what-are-custom-entities">What are custom entities?</a></li>
+    <li class="level1 nav-leaf"><a href="#custom-entities-and-built-in-primitives">Custom entities and built in primitives</a></li>
+    <li class="level1 nav-node"><a href="#making-a-custom-entity">Making a custom entity</a></li>
+    <li class="level2 nav-leaf"><a href="#the-basics">The basics</a></li>
+    <li class="level2 nav-leaf"><a href="#filling-the-space-with-color">Filling the space with color</a></li>
+    <li class="level2 nav-leaf"><a href="#using-textures">Using textures</a></li>
+    <li class="level1 nav-leaf"><a href="#wrapping-up">Wrapping up</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="how-to-make-a-custom-entity" class="title">How to make a custom entity</h1>
+        
+        <h2 id="what-are-custom-entities" class="section"><a class="anchor-link left" href="#what-are-custom-entities"><i class="icofont-laika link">&#xef71;</i></a>What are custom entities?</h2>
+        <p>Indigo comes with a range of primitive entity types such as <code>Graphic</code>s and <code>Sprite</code>s.</p>
+        <p>You can do a lot with a standard primitive, but sometimes you might like to create a visual effect that can&#39;t be expressed easily or perhaps efficiently using something out of the box.</p>
+        <p>That is where custom entities come in, they allow you to create pretty much anything you like. You are limited by what the interface requires and your ability to program against it.</p>
+        
+        <h2 id="custom-entities-and-built-in-primitives" class="section"><a class="anchor-link left" href="#custom-entities-and-built-in-primitives"><i class="icofont-laika link">&#xef71;</i></a>Custom entities and built in primitives</h2>
+        <p>A brief word on the relationship between custom entities and primitive types.</p>
+        <p>Primitive types have an advantage over custom entities in that the engine understands them, and can perform optimisations and special cased routines to help process them.</p>
+        <p>An example of this is the <code>Group</code> type. A custom entity is required to provide a size which tells Indigo how much space it will take up on the screen, however a group’s size is determined by the position and dimensions of it&#39;s children and this is calculated in the engine during the scene processing phase, indeed there is also special case code that manages the <em>un-grouping</em> of groups in order to produce a flat list of renderable items.</p>
+        <p>This sort of processing can&#39;t be achieved using custom entities because the engine does not understand them in the same way.</p>
+        <p>Having said that, new primitive types often start life as a new custom <code>EntityNode</code> because they are really very powerful things.</p>
+        
+        <h2 id="making-a-custom-entity" class="section"><a class="anchor-link left" href="#making-a-custom-entity"><i class="icofont-laika link">&#xef71;</i></a>Making a custom entity</h2>
+        <p>Our goal is to make two simple custom entities, one that is a solid color, and the other than draws a texture. The shaders we write will be very very simple, more complex shaders are out of the scope of this guide.</p>
+        <p>If you&#39;d like to skip ahead, you can see the end result <a href="https://github.com/PurpleKingdomGames/indigo-examples/tree/master/howto/custom-entity">in the custom entity example repo</a>.</p>
+        
+        <h3 id="the-basics" class="section"><a class="anchor-link left" href="#the-basics"><i class="icofont-laika link">&#xef71;</i></a>The basics</h3>
+        <p>When you get right down to it, Indigo needs to know two things about anything it&#39;s going to draw:</p>
+        <ol class="arabic">
+          <li>The area of the screen that will be drawn into.</li>
+          <li>What to draw in that space.</li>
+        </ol>
+        <p>These are handled by providing some spatial parameters that Indigo will interpret, and a shader program, respectively.</p>
+        <p>Here is the interface we have to satisfy for a hypothetical custom entity called <code>MyCustomEntity</code>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">indigo</span><span>.*</span></code></pre>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">MyCustomEntity</span><span>() </span><span class="keyword">extends</span><span> </span><span class="type-name">EntityNode</span><span>[</span><span class="type-name">MyCustomEntity</span><span>]:
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">position</span><span>: </span><span class="type-name">Point</span><span> = ???
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">size</span><span>: </span><span class="type-name">Size</span><span> = ???
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">depth</span><span>: </span><span class="type-name">Depth</span><span> = ???
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">flip</span><span>: </span><span class="type-name">Flip</span><span> = ???
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">ref</span><span>: </span><span class="type-name">Point</span><span> = ???
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">rotation</span><span>: </span><span class="type-name">Radians</span><span> = ???
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">scale</span><span>: </span><span class="type-name">Vector2</span><span> = ???
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">withDepth</span><span>(</span><span class="identifier">newDepth</span><span>: </span><span class="type-name">Depth</span><span>): </span><span class="type-name">MyCustomEntity</span><span> = ???
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">eventHandler</span><span>: ((</span><span class="type-name">MyCustomEntity</span><span>, </span><span class="type-name">GlobalEvent</span><span>)) =&gt; </span><span class="type-name">Option</span><span>[</span><span class="type-name">GlobalEvent</span><span>] = ???
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">eventHandlerEnabled</span><span>: </span><span class="type-name">Boolean</span><span> = ???
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">toShaderData</span><span>: </span><span class="type-name">ShaderData</span><span> = ???</span></code></pre>
+        <p>&lt;div id=&quot;mdoc-html-run1&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <p>Case classes work well, but anything that <em>is a</em> <code>EntityNode</code> will be fine.</p>
+        <p>Most of the fields are to do with allocating space on the screen, but unlike built-in primitives, you are not required to add all the usual modifiers - whether you want them or not is up to you.</p>
+        <p>The <code>toShaderData</code> definition is the part that tells Indigo how to draw the entity.</p>
+        
+        <h3 id="filling-the-space-with-color" class="section"><a class="anchor-link left" href="#filling-the-space-with-color"><i class="icofont-laika link">&#xef71;</i></a>Filling the space with color</h3>
+        <p>Here is a modified version of the code above that fills it&#39;s area with green.</p>
+        <pre><code class="nohighlight"><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">MyColoredEntity</span><span>(</span><span class="identifier">position</span><span>: </span><span class="type-name">Point</span><span>, </span><span class="identifier">depth</span><span>: </span><span class="type-name">Depth</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">EntityNode</span><span>[</span><span class="type-name">MyColoredEntity</span><span>]:
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">size</span><span>: </span><span class="type-name">Size</span><span>        = </span><span class="type-name">Size</span><span>(</span><span class="number-literal">32</span><span>, </span><span class="number-literal">32</span><span>)
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">flip</span><span>: </span><span class="type-name">Flip</span><span>        = </span><span class="type-name">Flip</span><span>.</span><span class="keyword">default</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">ref</span><span>: </span><span class="type-name">Point</span><span>        = </span><span class="type-name">Point</span><span>.</span><span class="identifier">zero</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">rotation</span><span>: </span><span class="type-name">Radians</span><span> = </span><span class="type-name">Radians</span><span>.</span><span class="identifier">zero</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">scale</span><span>: </span><span class="type-name">Vector2</span><span>    = </span><span class="type-name">Vector2</span><span>.</span><span class="identifier">one</span><span>
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">withDepth</span><span>(</span><span class="identifier">newDepth</span><span>: </span><span class="type-name">Depth</span><span>): </span><span class="type-name">MyColoredEntity</span><span> =
+    </span><span class="keyword">this</span><span>.</span><span class="identifier">copy</span><span>(</span><span class="identifier">depth</span><span> = </span><span class="identifier">newDepth</span><span>)
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">eventHandler</span><span>: ((</span><span class="type-name">MyColoredEntity</span><span>, </span><span class="type-name">GlobalEvent</span><span>)) =&gt; </span><span class="type-name">Option</span><span>[</span><span class="type-name">GlobalEvent</span><span>] =
+    </span><span class="identifier">_</span><span> =&gt; </span><span class="type-name">None</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">eventHandlerEnabled</span><span>: </span><span class="type-name">Boolean</span><span> = </span><span class="boolean-literal">false</span><span>
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">toShaderData</span><span>: </span><span class="type-name">ShaderData</span><span> =
+    </span><span class="type-name">ShaderData</span><span>(</span><span class="type-name">MyColoredEntity</span><span>.</span><span class="identifier">shader</span><span>.</span><span class="identifier">id</span><span>)
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">MyColoredEntity</span><span>:
+  </span><span class="keyword">val</span><span> </span><span class="identifier">shader</span><span>: </span><span class="type-name">EntityShader</span><span> =
+    </span><span class="type-name">EntityShader</span><span>
+      .</span><span class="type-name">Source</span><span>(</span><span class="type-name">ShaderId</span><span>(</span><span class="string-literal">&quot;my-colored-shader&quot;</span><span>))
+      .</span><span class="identifier">withFragmentProgram</span><span>(
+        </span><span class="string-literal">&quot;&quot;&quot;
+        |void fragment() {
+        |  COLOR = vec4(0.0, 1.0, 0.0, 1.0);
+        |}
+        |&quot;&quot;&quot;</span><span>.</span><span class="identifier">stripMargin</span><span>
+      )</span></code></pre>
+        <p>Walking through it, <code>position</code> and <code>depth</code> have been moved to be case class arguments. The other members have been given appropriate default values, e.g. you can&#39;t rotate this because there&#39;s no way to set rotation, and <code>withDepth</code> has been implemented as a simple case class copy operation.</p>
+        <p>Then things get a little more complicated. <code>toShaderData</code> has been implemented by creating a <code>ShaderData</code> instance that only takes a <code>ShaderId</code>, which it sources from the companion object.</p>
+        <p>The companion object defines the shader that is going to color in our entity by declaring an <code>EntityShader</code> (as opposed to a <code>BlendShader</code>). <code>Shader</code> instances whether a <code>BlendShader</code> or an <code>EntityShader</code> come in two forms: <code>EnityShader.Source(..)</code> or <code>EnityShader.External(..)</code>. The difference is that <code>Source</code> instances literally take the GLSL program as a <code>String</code>, and <code>External</code> instances look for loaded assets, which is a much nicer editing experience.</p>
+        <p>There are several parts to an Indigo shader program that can be set (or default implementations are used), but in this case we&#39;re only setting the fragment program as follows:</p>
+        <pre class="keep-together pdf epub"><code class="glsl">void fragment() {
+  COLOR = vec4(0.0, 1.0, 0.0, 1.0);
+}</code></pre>
+        <p><img src="../../img/howtos/green-square.png" alt="Shader filling a square green" title="Shader filling a square green"></p>
+        <p>This tells the GPU to set the <code>COLOR</code> output variable to a <code>vec4</code> that denotes the RGBA color of the pixel with values ranging from <code>0.0f</code> to <code>1.0f</code>. Here we&#39;re setting full green and full alpha (opaque).</p>
+        <p>To use this shiny new entity, we have to do two things:</p>
+        <p>First, tell indigo about the new shader:</p>
+        <p>In the sandbox this would be a game field just like assets and fonts, i.e. <code>val shaders: Set[Shader] = Set(MyColoredEntity.shader)</code>, and there is an equivalent for the <code>BootResult</code> type as follows:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">boot</span><span>(</span><span class="identifier">flags</span><span>: </span><span class="type-name">Map</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">String</span><span>]): </span><span class="type-name">Outcome</span><span>[</span><span class="type-name">BootResult</span><span>[</span><span class="type-name">Unit</span><span>]] =
+  </span><span class="type-name">Outcome</span><span>(
+    </span><span class="type-name">BootResult</span><span>
+      .</span><span class="identifier">noData</span><span>(</span><span class="type-name">GameConfig</span><span>.</span><span class="keyword">default</span><span>)
+      .</span><span class="identifier">withShaders</span><span>(</span><span class="type-name">MyColoredEntity</span><span>.</span><span class="identifier">shader</span><span>)
+  )</span></code></pre>
+        <p>&lt;div id=&quot;mdoc-html-run3&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <p>Next the fun bit, we need to add it to our scene, e.g.:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">present</span><span>(</span><span class="identifier">context</span><span>: </span><span class="type-name">FrameContext</span><span>[</span><span class="type-name">Unit</span><span>], </span><span class="identifier">model</span><span>: </span><span class="type-name">Unit</span><span>, </span><span class="identifier">viewModel</span><span>: </span><span class="type-name">Unit</span><span>): </span><span class="type-name">Outcome</span><span>[</span><span class="type-name">SceneUpdateFragment</span><span>] =
+  </span><span class="type-name">Outcome</span><span>(
+    </span><span class="type-name">SceneUpdateFragment</span><span>(
+      </span><span class="type-name">MyColoredEntity</span><span>(</span><span class="type-name">Point</span><span>(</span><span class="number-literal">10</span><span>, </span><span class="number-literal">10</span><span>), </span><span class="type-name">Depth</span><span>(</span><span class="number-literal">1</span><span>))
+    )
+  )</span></code></pre>
+        <p>&lt;div id=&quot;mdoc-html-run4&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <blockquote>If you wanted to set the color dynamically you&#39;d need to send it to the shader via a <code>UniformBlock</code>, but that&#39;s out of scope for this tutorial.</blockquote>
+        <p>One more thing before we move on to textures. Indigo&#39;s shaders come with a series of variables and constants you can access, let&#39;s use one of them now by modifying our program as follows:</p>
+        <pre class="keep-together pdf epub"><code class="glsl">void fragment() {
+  COLOR = vec4(UV.x, UV.y, 0.0, 1.0);
+}</code></pre>
+        <p><img src="../../img/howtos/uv-square.png" alt="Shader filling a square using UVs for red and green" title="Shader filling a square using UVs for red and green"></p>
+        <p>The <code>UV</code> variable of type <code>vec2</code>, tells you the position of the pixel you are drawing as coordinates from <code>(0.0f, 0.0f)</code> in the top left to <code>(1.0f, 1.0f)</code> in the bottom right. So conveniently, we can illustrate this top-left to bottom-right transition by plugging the <code>UV.x</code> and <code>UV.y</code> fields in as our red and green values.</p>
+        <blockquote>Note that GLSL has a limited set of types and they all have quite flexible constructors, so you could also write the following which has the same meaning: <code>COLOR = vec4(UV, 0.0, 1.0);</code>, additionally access to fields like <code>.x</code> can be replaced with color indicators like <code>.r</code>,<code>.g</code>,<code>.b</code>, and <code>.a</code> - same value but makes more reading sense if your processing colors.</blockquote>
+        
+        <h3 id="using-textures" class="section"><a class="anchor-link left" href="#using-textures"><i class="icofont-laika link">&#xef71;</i></a>Using textures</h3>
+        <p>Here is an almost identical entity to the last one and I won&#39;t repeat myself, but remember to:</p>
+        <ol class="arabic">
+          <li>Tell indigo about the shader (as above), note that shader id&#39;s must be unique.</li>
+          <li>Add the entity to the scene</li>
+          <li>Tell indigo to load the asset using the normal asset loading process.</li>
+        </ol>
+        <pre><code class="nohighlight"><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">MyBitmapEntity</span><span>(</span><span class="identifier">asset</span><span>: </span><span class="type-name">AssetName</span><span>, </span><span class="identifier">position</span><span>: </span><span class="type-name">Point</span><span>, </span><span class="identifier">depth</span><span>: </span><span class="type-name">Depth</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">EntityNode</span><span>[</span><span class="type-name">MyBitmapEntity</span><span>]:
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">size</span><span>: </span><span class="type-name">Size</span><span>        = </span><span class="type-name">Size</span><span>(</span><span class="number-literal">32</span><span>, </span><span class="number-literal">32</span><span>)
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">flip</span><span>: </span><span class="type-name">Flip</span><span>        = </span><span class="type-name">Flip</span><span>.</span><span class="keyword">default</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">ref</span><span>: </span><span class="type-name">Point</span><span>        = </span><span class="type-name">Point</span><span>.</span><span class="identifier">zero</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">rotation</span><span>: </span><span class="type-name">Radians</span><span> = </span><span class="type-name">Radians</span><span>.</span><span class="identifier">zero</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">scale</span><span>: </span><span class="type-name">Vector2</span><span>    = </span><span class="type-name">Vector2</span><span>.</span><span class="identifier">one</span><span>
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">withDepth</span><span>(</span><span class="identifier">newDepth</span><span>: </span><span class="type-name">Depth</span><span>): </span><span class="type-name">MyBitmapEntity</span><span> =
+    </span><span class="keyword">this</span><span>.</span><span class="identifier">copy</span><span>(</span><span class="identifier">depth</span><span> = </span><span class="identifier">newDepth</span><span>)
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">eventHandler</span><span>: ((</span><span class="type-name">MyBitmapEntity</span><span>, </span><span class="type-name">GlobalEvent</span><span>)) =&gt; </span><span class="type-name">Option</span><span>[</span><span class="type-name">GlobalEvent</span><span>] =
+    </span><span class="identifier">_</span><span> =&gt; </span><span class="type-name">None</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">eventHandlerEnabled</span><span>: </span><span class="type-name">Boolean</span><span> = </span><span class="boolean-literal">false</span><span>
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">toShaderData</span><span>: </span><span class="type-name">ShaderData</span><span> =
+    </span><span class="type-name">ShaderData</span><span>(</span><span class="type-name">MyBitmapEntity</span><span>.</span><span class="identifier">shader</span><span>.</span><span class="identifier">id</span><span>)
+      .</span><span class="identifier">withChannel0</span><span>(</span><span class="identifier">asset</span><span>)
+
+</span><span class="keyword">object</span><span> </span><span class="type-name">MyBitmapEntity</span><span>:
+  </span><span class="keyword">val</span><span> </span><span class="identifier">shader</span><span>: </span><span class="type-name">EntityShader</span><span> =
+    </span><span class="type-name">EntityShader</span><span>
+      .</span><span class="type-name">Source</span><span>(</span><span class="type-name">ShaderId</span><span>(</span><span class="string-literal">&quot;my-bitmap-shader&quot;</span><span>))
+      .</span><span class="identifier">withFragmentProgram</span><span>(
+        </span><span class="string-literal">&quot;&quot;&quot;
+        |void fragment() {
+        |  COLOR = CHANNEL_0;
+        |}
+        |&quot;&quot;&quot;</span><span>.</span><span class="identifier">stripMargin</span><span>
+      )</span></code></pre>
+        <p>&lt;div id=&quot;mdoc-html-run5&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <p>The difference between this one and the last one is that we&#39;re telling Indigo to use a texture by assigning it to a channel and referring to it in the shader program.</p>
+        <blockquote><strong>Important:</strong> Textures aren&#39;t quite as straightforward as they seem, a key piece of information is that when you load textures, Indigo attempts to compile them into 4k texture atlases, which reduces context switching. Currently, Indigo is <em>limited</em> to only loading one atlas at a time, so although a <code>ShaderData</code> instance allows you to set four channels with different <code>AssetName</code>s, they must all be on the same atlas. For small games you don&#39;t need to worry, but if you have large assets you can force Indigo to place related images onto the same atlas using <code>AssetType.Tagged(&quot;my tag&quot;)(image1..imageN)</code> in your asset list.</blockquote>
+        <p>The shader data has the asset name given to channel 0, and in the fragment shader we set the <code>COLOR</code> output to the color value sampled from the texture, which is set to a variable called <code>CHANNEL_0</code>, which is a <code>vec4</code>. If we wanted to, we could only draw the red component of the texture by doing the following:</p>
+        <pre class="keep-together pdf epub"><code class="glsl">void fragment() {
+  COLOR = vec4(CHANNEL_0.r, 0.0, 0.0, CHANNEL_0.a);
+}</code></pre>
+        
+        <h2 id="wrapping-up" class="section"><a class="anchor-link left" href="#wrapping-up"><i class="icofont-laika link">&#xef71;</i></a>Wrapping up</h2>
+        <p>I hope that&#39;s given you a small taste of the power of writing custom entities, and a starting point for you to begin creating your own. Much of the heavy lifting is done by writing shaders which we haven&#39;t gone too far into here, but if you need some shader inspiration I&#39;d recommend heading over to <a href="https://www.shadertoy.com/">shadertoy</a> for a browse.
+        &lt;script type=&quot;text/javascript&quot; src=&quot;howto-custom-entity.md.js&quot; defer&gt;&lt;/script&gt;
+        &lt;script type=&quot;text/javascript&quot; src=&quot;mdoc.js&quot; defer&gt;&lt;/script&gt;</p>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://typelevel.org/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>Primitives &amp; Building Blocks</title>
+  
+  
+  <meta name="description" content="website2"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="../../helium/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../helium/laika-helium.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/custom.css" />
+  <script src="../../helium/laika-helium.js"></script>
+    <script src="../../01-quickstart/hello-indigo.md.js"></script>
+    <script src="../../01-quickstart/mdoc.js"></script>
+    <script src="../../03-gameloop/frame-context.md.js"></script>
+    <script src="../../03-gameloop/mdoc.js"></script>
+    <script src="../../03-gameloop/outcome.md.js"></script>
+    <script src="../materials.md.js"></script>
+    <script src="../cameras.md.js"></script>
+    <script src="../lighting.md.js"></script>
+    <script src="../depth.md.js"></script>
+    <script src="../clones-and-mutants.md.js"></script>
+    <script src="../animation.md.js"></script>
+    <script src="../layers.md.js"></script>
+    <script src="../audio.md.js"></script>
+    <script src="../scene-update-fragment.md.js"></script>
+    <script src="../boundaries.md.js"></script>
+    <script src="../shapes.md.js"></script>
+    <script src="../text-and-fonts.md.js"></script>
+    <script src="../mdoc.js"></script>
+    <script src="../../08-time/signals.md.js"></script>
+    <script src="../../08-time/mdoc.js"></script>
+    <script src="../../08-time/time-varying-values.md.js"></script>
+    <script src="../../07-shaders/blending.md.js"></script>
+    <script src="../../07-shaders/mdoc.js"></script>
+    <script src="../../07-shaders/shaders-overview.md.js"></script>
+    <script src="../../09-uicomponents/button.md.js"></script>
+    <script src="../../09-uicomponents/input-field.md.js"></script>
+    <script src="../../09-uicomponents/hit-area.md.js"></script>
+    <script src="../../09-uicomponents/radio-button.md.js"></script>
+    <script src="../../09-uicomponents/mdoc.js"></script>
+    <script src="../../04-organisation/scene-management.md.js"></script>
+    <script src="../../04-organisation/boot-and-start-up.md.js"></script>
+    <script src="../../04-organisation/subsystems.md.js"></script>
+    <script src="../../04-organisation/mdoc.js"></script>
+    <script src="../../02-guides/mdoc.js"></script>
+    <script src="../../02-guides/howto-fire-shader.md.js"></script>
+    <script src="../../02-guides/howto-custom-entity.md.js"></script>
+    <script src="../../05-platform/assets.md.js"></script>
+    <script src="../../05-platform/logging.md.js"></script>
+    <script src="../../05-platform/mdoc.js"></script>
+    <script src="../../05-platform/input-handling.md.js"></script>
+    <script src="../../10-information/key-concepts.md.js"></script>
+    <script src="../../10-information/antipatterns.md.js"></script>
+    <script src="../../10-information/mdoc.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar" class="light-default dark-default">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="image-link" href="../../"><img src="../../img/indigo_logo_solid_text.svg" alt="Homepage" title="Indigo" width="150" height="50"></a>
+
+  <div class="row links">
+    
+    <a class="button-link" href="https://discord.gg/b5CD47g">Discord</a>
+    
+    <a class="button-link" href="/api">API</a>
+    
+    <a class="button-link" href="https://github.com/PurpleKingdomGames/indigo">Github</a>
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+    <a class="button-link" href="https://discord.gg/b5CD47g">Discord</a>
+    
+    <a class="button-link" href="/api">API</a>
+    
+    <a class="button-link" href="https://github.com/PurpleKingdomGames/indigo">Github</a>
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../../table-of-content/">Contents</a></li>
+    <li class="level1 nav-header">Setup &amp; Configuration</li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/examples/">Examples</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/hello-indigo/">Hello, Indigo!</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/project-templates/">Mill &amp; SBT Templates</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/quickstart/">Quick start</a></li>
+    <li class="level1 nav-header">Guides</li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-custom-entity/">How to make a custom entity</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-fire-shader/">How to write a fire shader</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-hello-indigo-tyrian/">How to make a responsive UI using Tyrian</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-indigo-game/">Converting <code>IndigoSandbox</code> to <code>IndigoGame</code></a></li>
+    <li class="level1 nav-header">Gameloop</li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/events/">Events</a></li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/frame-context/">Frame context</a></li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/outcome/">Outcome Type</a></li>
+    <li class="level1 nav-header">Organisation</li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/boot-and-start-up/">Boot &amp; Start Up</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/game-entry-points/">Game Entry Points</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/scene-management/">What are Scenes?</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/subsystems/">What SubSystems are</a></li>
+    <li class="level1 nav-header">Platform &amp; IO</li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/assets/">Assets &amp; Asset Loading</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/cross-platform-publishing/">Cross Platform Publishing</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/importers/">File Importers</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/input-handling/">Input Handling</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/loading-and-saving-data/">Loading &amp; Saving Data</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/logging/">Logging</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/networking/">Networking</a></li>
+    <li class="level1 nav-header">Presentation</li>
+    <li class="level2 nav-leaf"><a href="../animation/">Animation</a></li>
+    <li class="level2 nav-leaf"><a href="../audio/">Audio</a></li>
+    <li class="level2 nav-leaf"><a href="../boundaries/">Boundaries</a></li>
+    <li class="level2 nav-leaf"><a href="../cameras/">Cameras</a></li>
+    <li class="level2 nav-leaf"><a href="../clones-and-mutants/">Clones &amp; Mutants</a></li>
+    <li class="level2 nav-leaf"><a href="../depth/">Depth</a></li>
+    <li class="level2 nav-leaf"><a href="../layers/">Layers</a></li>
+    <li class="level2 nav-leaf"><a href="../lighting/">Lighting</a></li>
+    <li class="level2 nav-leaf"><a href="../materials/">Materials</a></li>
+    <li class="level2 active nav-leaf"><a href="#">Primitives &amp; Building Blocks</a></li>
+    <li class="level2 nav-leaf"><a href="../scene-update-fragment/">SceneUpdateFragment</a></li>
+    <li class="level2 nav-leaf"><a href="../shapes/">Shapes</a></li>
+    <li class="level2 nav-leaf"><a href="../text-and-fonts/">Text &amp; Fonts</a></li>
+    <li class="level1 nav-header">Shaders</li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/blending/">Blending</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/constants/">Shader Constants, Variables, and Outputs</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/premultiplied-alpha/">Premultiplied Alpha</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/shaders-overview/">Shaders Overview</a></li>
+    <li class="level1 nav-header">Time</li>
+    <li class="level2 nav-leaf"><a href="../../08-time/gametime/">GameTime</a></li>
+    <li class="level2 nav-leaf"><a href="../../08-time/signals/">Signals &amp; Signal Functions</a></li>
+    <li class="level2 nav-leaf"><a href="../../08-time/time-varying-values/">Time Varying Values</a></li>
+    <li class="level1 nav-header">UI Components</li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/button/">Buttons</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/hit-area/">Hit Areas</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/input-field/">Input Fields</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/radio-button/">Radio Buttons</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/ui-components/">UI Components</a></li>
+    <li class="level1 nav-header">Misc</li>
+    <li class="level2 nav-leaf"><a href="../../10-information/alternatives/">Alternatives to Indigo</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/antipatterns/">Anti-Patterns</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/glossary/">Glossary</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/key-concepts/">Key Concepts</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/model-viewmodel-view/">Model, ViewModel, &amp; View</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/motivation-and-constraints/">Motivation &amp; Constraints</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/performance/">Performance</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/prior-art/">Prior Art</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/rendering-technology/">Rendering Technology</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Primitives &amp; Building Blocks</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-node"><a href="#scene-graph-nodes">Scene graph nodes</a></li>
+    <li class="level2 nav-leaf"><a href="#non-renderable-node-types">Non-Renderable Node Types</a></li>
+    <li class="level2 nav-leaf"><a href="#renderable-node-types">Renderable Node Types</a></li>
+    <li class="level1 nav-leaf"><a href="#the-event-loop">The Event Loop</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="primitives-building-blocks" class="title">Primitives &amp; Building Blocks</h1>
+        <p>Indigo is made of several projects, but two of particular note are Indigo itself, and &quot;Indigo Extras&quot;.</p>
+        <p>Although it&#39;s called the &quot;Extras&quot; project, and is completely optional, it nonetheless contains some useful types and constructs to help you build your games, such as Buttons and some pre-made SubSystems like an FPS counter, automata, and an asset loader.</p>
+        <p>The important thing about the extras project is that everything in it is derived from the building blocks provided by indigo itself. You could rebuild all of it yourself without having to modify the core in anyway, and indigo doesn&#39;t depend on anything in the extras project.</p>
+        <p>What are the building blocks in use?</p>
+        
+        <h2 id="scene-graph-nodes" class="section"><a class="anchor-link left" href="#scene-graph-nodes"><i class="icofont-laika link">&#xef71;</i></a>Scene graph nodes</h2>
+        <p>When you put together a scene to be rendered, you are building a graph, known as a <a href="https://en.wikipedia.org/wiki/Scene_graph">&quot;Scene Graph&quot;</a> - it&#39;s really just a tree of things to draw, and Indigo&#39;s notion of a scene graph is fairly simplistic and gloriously <a href="https://en.wikipedia.org/wiki/Anemic_domain_model">anemic</a>.</p>
+        <p>Each element of the graph is called a node, and there are different types of node.</p>
+        
+        <h3 id="non-renderable-node-types" class="section"><a class="anchor-link left" href="#non-renderable-node-types"><i class="icofont-laika link">&#xef71;</i></a>Non-Renderable Node Types</h3>
+        <p>Non-renderable nodes are nodes that are meaningless except in the context of other nodes.</p>
+        
+        <h4 id="group" class="section"><a class="anchor-link left" href="#group"><i class="icofont-laika link">&#xef71;</i></a>Group</h4>
+        <p>A group is an element that is removed at render time - but it is used to help organise elements together. Putting several graph nodes into a group allows you to transform them as one unit, any elements that have their own properties set under the group, do so relative to the groups properties. You can also nest groups under groups.</p>
+        
+        <h3 id="renderable-node-types" class="section"><a class="anchor-link left" href="#renderable-node-types"><i class="icofont-laika link">&#xef71;</i></a>Renderable Node Types</h3>
+        <p>All renderable nodes come with the same set of basic transforms that you see on a clone:</p>
+        <ul>
+          <li>Depth (see below)</li>
+          <li>Position</li>
+          <li>Rotation</li>
+          <li>Scale</li>
+          <li>Alpha</li>
+          <li>Flip horizontal</li>
+          <li>Flip vertical</li>
+        </ul>
+        <p>They are then specialised to do certain jobs.</p>
+        
+        <h4 id="text-m-material" class="section"><a class="anchor-link left" href="#text-m-material"><i class="icofont-laika link">&#xef71;</i></a><code>Text[M &lt;: Material]</code></h4>
+        <p>Provides basic support for rendering text onto the screen, including things like alignment.</p>
+        <p>Requires you to have registered a <code>FontInfo</code> instance that you can link to using a <code>FontKey</code>.</p>
+        
+        <h4 id="textbox" class="section"><a class="anchor-link left" href="#textbox"><i class="icofont-laika link">&#xef71;</i></a><code>TextBox</code></h4>
+        <p>Provides a quick way to put font based rendering text onto the screen. Unlike <code>Text</code>, requires no special set up unless you want to use custom fonts. However, where <code>Text</code> is pixel perfect, <code>TextBox</code> is limited to what the browser can render and text will look fuzzy at high magnifications.</p>
+        
+        <h4 id="graphic-m-material" class="section"><a class="anchor-link left" href="#graphic-m-material"><i class="icofont-laika link">&#xef71;</i></a><code>Graphic[M &lt;: Material]</code></h4>
+        <p>The simplest type of drawn element, simply renders a bitmap (which may be cropped) onto the screen.</p>
+        
+        <h4 id="sprite-m-material" class="section"><a class="anchor-link left" href="#sprite-m-material"><i class="icofont-laika link">&#xef71;</i></a><code>Sprite[M &lt;: Material]</code></h4>
+        <p>Essentially an animated graphic. You need to provide an <code>AnimationKey</code> to link back to your registered <code>Animation</code> information, and then you can instruct the sprite to change animation cycles, and play or stop.</p>
+        
+        <h4 id="clip-m-material" class="section"><a class="anchor-link left" href="#clip-m-material"><i class="icofont-laika link">&#xef71;</i></a><code>Clip[M &lt;: Material]</code></h4>
+        <p>An even simpler animation primitive than <code>Sprite</code>, <code>Clip</code> is a super lightweight way to get simple animations into your game that requires little setup.</p>
+        
+        <h2 id="the-event-loop" class="section"><a class="anchor-link left" href="#the-event-loop"><i class="icofont-laika link">&#xef71;</i></a>The Event Loop</h2>
+        <p>The glue that binds the whole thing together is the event system. Events allow you to communicate through time and space from one component to another. Indigo&#39;s event life cycle is very strict. Events triggered in this frame will only be apparent in the next frame, available to all, and then expire (unless propagated again).</p>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://typelevel.org/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>Boot &amp; Start Up</title>
+  
+  
+  <meta name="description" content="website2"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="../../helium/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../helium/laika-helium.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/custom.css" />
+  <script src="../../helium/laika-helium.js"></script>
+    <script src="../../01-quickstart/hello-indigo.md.js"></script>
+    <script src="../../01-quickstart/mdoc.js"></script>
+    <script src="../../03-gameloop/frame-context.md.js"></script>
+    <script src="../../03-gameloop/mdoc.js"></script>
+    <script src="../../03-gameloop/outcome.md.js"></script>
+    <script src="../../06-presentation/materials.md.js"></script>
+    <script src="../../06-presentation/cameras.md.js"></script>
+    <script src="../../06-presentation/lighting.md.js"></script>
+    <script src="../../06-presentation/depth.md.js"></script>
+    <script src="../../06-presentation/clones-and-mutants.md.js"></script>
+    <script src="../../06-presentation/animation.md.js"></script>
+    <script src="../../06-presentation/layers.md.js"></script>
+    <script src="../../06-presentation/audio.md.js"></script>
+    <script src="../../06-presentation/scene-update-fragment.md.js"></script>
+    <script src="../../06-presentation/boundaries.md.js"></script>
+    <script src="../../06-presentation/shapes.md.js"></script>
+    <script src="../../06-presentation/text-and-fonts.md.js"></script>
+    <script src="../../06-presentation/mdoc.js"></script>
+    <script src="../../08-time/signals.md.js"></script>
+    <script src="../../08-time/mdoc.js"></script>
+    <script src="../../08-time/time-varying-values.md.js"></script>
+    <script src="../../07-shaders/blending.md.js"></script>
+    <script src="../../07-shaders/mdoc.js"></script>
+    <script src="../../07-shaders/shaders-overview.md.js"></script>
+    <script src="../../09-uicomponents/button.md.js"></script>
+    <script src="../../09-uicomponents/input-field.md.js"></script>
+    <script src="../../09-uicomponents/hit-area.md.js"></script>
+    <script src="../../09-uicomponents/radio-button.md.js"></script>
+    <script src="../../09-uicomponents/mdoc.js"></script>
+    <script src="../scene-management.md.js"></script>
+    <script src="../boot-and-start-up.md.js"></script>
+    <script src="../subsystems.md.js"></script>
+    <script src="../mdoc.js"></script>
+    <script src="../../02-guides/mdoc.js"></script>
+    <script src="../../02-guides/howto-fire-shader.md.js"></script>
+    <script src="../../02-guides/howto-custom-entity.md.js"></script>
+    <script src="../../05-platform/assets.md.js"></script>
+    <script src="../../05-platform/logging.md.js"></script>
+    <script src="../../05-platform/mdoc.js"></script>
+    <script src="../../05-platform/input-handling.md.js"></script>
+    <script src="../../10-information/key-concepts.md.js"></script>
+    <script src="../../10-information/antipatterns.md.js"></script>
+    <script src="../../10-information/mdoc.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar" class="light-default dark-default">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="image-link" href="../../"><img src="../../img/indigo_logo_solid_text.svg" alt="Homepage" title="Indigo" width="150" height="50"></a>
+
+  <div class="row links">
+    
+    <a class="button-link" href="https://discord.gg/b5CD47g">Discord</a>
+    
+    <a class="button-link" href="/api">API</a>
+    
+    <a class="button-link" href="https://github.com/PurpleKingdomGames/indigo">Github</a>
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+    <a class="button-link" href="https://discord.gg/b5CD47g">Discord</a>
+    
+    <a class="button-link" href="/api">API</a>
+    
+    <a class="button-link" href="https://github.com/PurpleKingdomGames/indigo">Github</a>
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../../table-of-content/">Contents</a></li>
+    <li class="level1 nav-header">Setup &amp; Configuration</li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/examples/">Examples</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/hello-indigo/">Hello, Indigo!</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/project-templates/">Mill &amp; SBT Templates</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/quickstart/">Quick start</a></li>
+    <li class="level1 nav-header">Guides</li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-custom-entity/">How to make a custom entity</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-fire-shader/">How to write a fire shader</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-hello-indigo-tyrian/">How to make a responsive UI using Tyrian</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-indigo-game/">Converting <code>IndigoSandbox</code> to <code>IndigoGame</code></a></li>
+    <li class="level1 nav-header">Gameloop</li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/events/">Events</a></li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/frame-context/">Frame context</a></li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/outcome/">Outcome Type</a></li>
+    <li class="level1 nav-header">Organisation</li>
+    <li class="level2 active nav-leaf"><a href="#">Boot &amp; Start Up</a></li>
+    <li class="level2 nav-leaf"><a href="../game-entry-points/">Game Entry Points</a></li>
+    <li class="level2 nav-leaf"><a href="../scene-management/">What are Scenes?</a></li>
+    <li class="level2 nav-leaf"><a href="../subsystems/">What SubSystems are</a></li>
+    <li class="level1 nav-header">Platform &amp; IO</li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/assets/">Assets &amp; Asset Loading</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/cross-platform-publishing/">Cross Platform Publishing</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/importers/">File Importers</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/input-handling/">Input Handling</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/loading-and-saving-data/">Loading &amp; Saving Data</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/logging/">Logging</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/networking/">Networking</a></li>
+    <li class="level1 nav-header">Presentation</li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/animation/">Animation</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/audio/">Audio</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/boundaries/">Boundaries</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/cameras/">Cameras</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/clones-and-mutants/">Clones &amp; Mutants</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/depth/">Depth</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/layers/">Layers</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/lighting/">Lighting</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/materials/">Materials</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/primitives/">Primitives &amp; Building Blocks</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/scene-update-fragment/">SceneUpdateFragment</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/shapes/">Shapes</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/text-and-fonts/">Text &amp; Fonts</a></li>
+    <li class="level1 nav-header">Shaders</li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/blending/">Blending</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/constants/">Shader Constants, Variables, and Outputs</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/premultiplied-alpha/">Premultiplied Alpha</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/shaders-overview/">Shaders Overview</a></li>
+    <li class="level1 nav-header">Time</li>
+    <li class="level2 nav-leaf"><a href="../../08-time/gametime/">GameTime</a></li>
+    <li class="level2 nav-leaf"><a href="../../08-time/signals/">Signals &amp; Signal Functions</a></li>
+    <li class="level2 nav-leaf"><a href="../../08-time/time-varying-values/">Time Varying Values</a></li>
+    <li class="level1 nav-header">UI Components</li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/button/">Buttons</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/hit-area/">Hit Areas</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/input-field/">Input Fields</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/radio-button/">Radio Buttons</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/ui-components/">UI Components</a></li>
+    <li class="level1 nav-header">Misc</li>
+    <li class="level2 nav-leaf"><a href="../../10-information/alternatives/">Alternatives to Indigo</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/antipatterns/">Anti-Patterns</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/glossary/">Glossary</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/key-concepts/">Key Concepts</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/model-viewmodel-view/">Model, ViewModel, &amp; View</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/motivation-and-constraints/">Motivation &amp; Constraints</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/performance/">Performance</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/prior-art/">Prior Art</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/rendering-technology/">Rendering Technology</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Boot &amp; Start Up</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-node"><a href="#booting-your-game">Booting your game</a></li>
+    <li class="level2 nav-leaf"><a href="#sandbox-games">Sandbox games</a></li>
+    <li class="level2 nav-leaf"><a href="#games-demos">Games &amp; Demos</a></li>
+    <li class="level1 nav-node"><a href="#start-up-setup">Start up / Setup</a></li>
+    <li class="level2 nav-leaf"><a href="#special-note-on-plain-text-assets">Special note on plain text assets</a></li>
+    <li class="level2 nav-leaf"><a href="#the-startup-data-type">The Startup Data Type</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="boot-start-up" class="title">Boot &amp; Start Up</h1>
+        <blockquote>Please note that the terms &quot;start up&quot; and &quot;setup&quot; are used interchangeably here. &quot;Startup&quot; is the name of the data type, while &quot;setup&quot; is the name of the method. This naming should probably be revisited...</blockquote>
+        <p>In order to get your game up and running, it needs to go through an initialization sequence comprised of two stages:</p>
+        <ol class="arabic">
+          <li>Boot - which only ever happens once;</li>
+          <li>Start up - which occurs on first run, and then whenever new assets are loaded dynamically.</li>
+        </ol>
+        <p>A lot of what this process relates to is the loading and processing of assets, so it&#39;s worth <a href="../../05-platform/assets/">reading up on that too</a>.</p>
+        
+        <h2 id="booting-your-game" class="section"><a class="anchor-link left" href="#booting-your-game"><i class="icofont-laika link">&#xef71;</i></a>Booting your game</h2>
+        <p>During your game&#39;s initial boot, you must specify all the things your game needs to get up and running.</p>
+        <p>At minimum, this is a <code>GameConfig</code> definition, but can also include assets, subsystems, animations, fonts and some custom data that you&#39;d like to make available to the rest of the game.</p>
+        
+        <h3 id="sandbox-games" class="section"><a class="anchor-link left" href="#sandbox-games"><i class="icofont-laika link">&#xef71;</i></a>Sandbox games</h3>
+        <p>Sandbox games (that implement <code>IndigoSandbox</code>) have a different boot sequence than other games, or rather they don&#39;t have a boot sequence. The main facilities of the boot process have been broken out onto the trait for you to populate. This is an intentional limitation that keeps the Sandbox simple.</p>
+        
+        <h3 id="games-demos" class="section"><a class="anchor-link left" href="#games-demos"><i class="icofont-laika link">&#xef71;</i></a>Games &amp; Demos</h3>
+        <p><code>IndigoGame</code>&#39;s and <code>IndigoDemo</code>s have a boot method such as this one, where &quot;<code>BootData</code>&quot; is some user defined type:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">indigo</span><span>.*
+
+</span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">BootData</span><span>(</span><span class="identifier">myData</span><span>: </span><span class="type-name">String</span><span>)
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">boot</span><span>(</span><span class="identifier">flags</span><span>: </span><span class="type-name">Map</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">String</span><span>]): </span><span class="type-name">Outcome</span><span>[</span><span class="type-name">BootResult</span><span>[</span><span class="type-name">BootData</span><span>]] = ???</span></code></pre>
+        
+        <h4 id="flags" class="section"><a class="anchor-link left" href="#flags"><i class="icofont-laika link">&#xef71;</i></a>Flags</h4>
+        <blockquote>Flags are an opportunity to change your games settings based on the environment in which it is being run.</blockquote>
+        <p>Running a game though one of the provided run methods, via the <code>indigoBuild</code> or <code>indigoRun</code> commands, is fine during general development, but at some point you&#39;re going to want to run your game in a real environment. Maybe it&#39;s going onto a game portal site, maybe its your own web site, maybe it&#39;s a desktop game. Whatever it is, those platforms come with practical problems to over come.</p>
+        <blockquote>By default Indigo will provide a width and height flag in the standard integration code (that you can choose to use or not) so that you can start your game at the size of the window.</blockquote>
+        <p>Let&#39;s look at the <a href="https://indigoengine.io/snake.html">Snake game on our website as a simple example</a>. When running locally, the assets are marshaled into a nice consistent folder called <code>assets</code> in the same directory as our <code>index.html</code> page. However, on the real site the assets are served statically from a different location! How do we reconcile these two worlds?</p>
+        <p>Well we use a flag, like this:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">indigo</span><span>.*
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">boot</span><span>(</span><span class="identifier">flags</span><span>: </span><span class="type-name">Map</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">String</span><span>]): </span><span class="type-name">Outcome</span><span>[</span><span class="type-name">BootResult</span><span>[</span><span class="type-name">GameViewport</span><span>]] = {
+  </span><span class="keyword">val</span><span> </span><span class="identifier">assetPath</span><span>: </span><span class="type-name">String</span><span> =
+    </span><span class="identifier">flags</span><span>.</span><span class="identifier">getOrElse</span><span>(</span><span class="string-literal">&quot;baseUrl&quot;</span><span>, </span><span class="string-literal">&quot;&quot;</span><span>)
+
+  ???
+}</span></code></pre>
+        <p>&lt;div id=&quot;mdoc-html-run1&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <p>As long as the games assets are always in the same folder name, we can now just pre-pend the provided <code>assetPath</code> to change the location of that folder.</p>
+        <p>Flags are just a JavaScript object of key value pairs that must be <code>String</code>s (like command line arguments), which can be injected into the game when it is embedded on the page, like this:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">var</span><span> </span><span class="identifier">flags</span><span> = {
+  </span><span class="string-literal">&quot;baseUrl&quot;</span><span>: </span><span class="string-literal">&quot;/my/websites/assets/folder/path/&quot;</span><span>
+};
+
+</span><span class="identifier">IndigoGame</span><span>.</span><span class="identifier">launch</span><span>(</span><span class="identifier">flags</span><span>);</span></code></pre>
+        <p>Flags can represent anything you like. In the Snake example we are providing the url to the assets folder, but you could do browser detection in the page and use your findings to instruct Indigo to specifically use WebGL 1.0 or 2.0, or to change the magnification setting, or starting view port size, or background color, or any number of other things.</p>
+        <p>The main limitation on flags is that they are typed to <code>Map[String, String]</code>, which is bothersome if you&#39;re trying to supply a number for instance. Perhaps the best way to use more sophisticated data at start up would be to supply JSON by setting a data flag, e.g. <code>{ data = &#39;{width: 10, height: 10}&#39; }</code>, and then pulling out the data flag at boot time and parsing the JSON string.</p>
+        
+        <h4 id="halting-a-game" class="section"><a class="anchor-link left" href="#halting-a-game"><i class="icofont-laika link">&#xef71;</i></a>Halting a game</h4>
+        <p>If you are embedding your game in a web page, you may have the need to stop a running game and free up it&#39;s resources, which you can do by calling the opposite function to <code>launch</code>, called <code>halt</code>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">IndigoGame</span><span>.</span><span class="identifier">halt</span><span>();</span></code></pre>
+        <p>Calling <code>halt</code> does not clean up your page in any way, the assumption is that you will remove the relevant HTML dom nodes.</p>
+        
+        <h4 id="bootresult" class="section"><a class="anchor-link left" href="#bootresult"><i class="icofont-laika link">&#xef71;</i></a>BootResult</h4>
+        <p>In a simple game, all of your animations, fonts, subsystems, shaders, and assets can be declared during the boot stage. For more complex games, such as ones that have a pre-loader, you should only include the elements you need for the preloader scene here.</p>
+        <blockquote>Note: You can add more animations, fonts, and assets at a later stage, but subsystems must be declared upfront or inside a <code>Scene</code> definition.</blockquote>
+        <p>Optionally the boot sequence can result in a value, particularly since the boot sequence has access to the initial flags. For example you might return:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">BootData</span><span>(</span><span class="identifier">runFullScreen</span><span>: </span><span class="type-name">Boolean</span><span>)</span></code></pre>
+        <p>&lt;div id=&quot;mdoc-html-run2&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        
+        <h2 id="start-up-setup" class="section"><a class="anchor-link left" href="#start-up-setup"><i class="icofont-laika link">&#xef71;</i></a>Start up / Setup</h2>
+        <p>After booting up, you hit the start up function (called <code>setup</code>...). Why are boot and start up separate functions? ..and what is start up for?</p>
+        <p>If &quot;boot&quot; is for marshaling your foundation game settings (bootstrapping), then start up is for pre-processing data and assets. Since assets can be loaded on first run, but also added dynamically during the game (and you might want to do something with them such as parse a text file), the start up or setup operation may be invoked more than once. For example:</p>
+        <ol class="arabic">
+          <li>During the first run you load a JSON definition of a animation and it&#39;s sprite sheet, which are processed during start up to create a <code>Sprite</code> and <code>Animation</code> you can render.</li>
+          <li>You use that to present a loading screen (preloader) while the rest of the games assets are loaded.</li>
+          <li>Once the other assets are loaded, <code>setup</code> is called again and you can now process the new / remaining asset data for future use.</li>
+        </ol>
+        <p>The setup function signature looks like this:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">StartUpData</span><span>(</span><span class="identifier">debugMode</span><span>: </span><span class="type-name">Boolean</span><span>) </span><span class="comment">// an example custom start up data type
+</span><span>
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">setup</span><span>(</span><span class="identifier">bootData</span><span>: </span><span class="type-name">BootData</span><span>, </span><span class="identifier">assetCollection</span><span>: </span><span class="type-name">AssetCollection</span><span>, </span><span class="identifier">dice</span><span>: </span><span class="type-name">Dice</span><span>): </span><span class="type-name">Outcome</span><span>[</span><span class="type-name">Startup</span><span>[</span><span class="type-name">StartUpData</span><span>]] = ???</span></code></pre>
+        <p>&lt;div id=&quot;mdoc-html-run3&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <blockquote>Important! The <code>StartUpData</code> type corresponds to one of the type parameters in <code>IndigoSandbox</code>, <code>IndigoDemo</code>, and <code>IndigoGame</code>.</blockquote>
+        
+        <h3 id="special-note-on-plain-text-assets" class="section"><a class="anchor-link left" href="#special-note-on-plain-text-assets"><i class="icofont-laika link">&#xef71;</i></a>Special note on plain text assets</h3>
+        <p>Unlike image and sound assets which are referenced directly in the presentation logic of your game. Plain text assets are only available for use during start up. The idea is that text is most likely not plain text, but actually string encoded data like JSON or perhaps a CSV. You can get hold of their data via the <code>AssetCollection</code> during start up / setup.</p>
+        
+        <h3 id="the-startup-data-type" class="section"><a class="anchor-link left" href="#the-startup-data-type"><i class="icofont-laika link">&#xef71;</i></a>The Startup Data Type</h3>
+        <p>If your setup function has succeeded:</p>
+        <pre><code class="nohighlight"><span class="comment">// This is a made up user defined type that represents some result of the Startup process
+</span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">MyStartUpData</span><span>(</span><span class="identifier">maxParticles</span><span>: </span><span class="type-name">Int</span><span>)
+</span><span class="keyword">case</span><span> </span><span class="keyword">object</span><span> </span><span class="type-name">MyGameEvent</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">GlobalEvent</span><span>
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">animation</span><span>: </span><span class="type-name">Animation</span><span> = ???
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">fontInfo</span><span>: </span><span class="type-name">FontInfo</span><span> = ???
+
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">startup</span><span> = 
+  </span><span class="type-name">Startup</span><span>.</span><span class="type-name">Success</span><span>(</span><span class="type-name">MyStartUpData</span><span>(</span><span class="number-literal">256</span><span>))
+    .</span><span class="identifier">addAnimations</span><span>(</span><span class="identifier">animation</span><span>) </span><span class="comment">// Optional: New animations you created during startup
+</span><span>    .</span><span class="identifier">additionalFonts</span><span>(</span><span class="identifier">fontInfo</span><span>) </span><span class="comment">// Optional: Font data you created during start up
+</span><span>
+</span><span class="type-name">Outcome</span><span>(</span><span class="identifier">startup</span><span>).</span><span class="identifier">addGlobalEvents</span><span>(</span><span class="type-name">MyGameEvent</span><span>) </span><span class="comment">// Optional: Any `GlobalEvent`s you would like to emit</span></code></pre>
+        <p>If you don&#39;t need say anything other than &quot;success&quot;, you can just say <code>Startup.Success(())</code>.</p>
+        <p>Should your setup function has fail, you should report errors like this:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">Startup</span><span>.</span><span class="type-name">Failure</span><span>(
+  </span><span class="string-literal">&quot;error message 1&quot;</span><span>,
+  </span><span class="string-literal">&quot;error message 2&quot;</span><span>,
+  </span><span class="string-literal">&quot;error message 3&quot;</span><span>
+)</span></code></pre>
+        <p>&lt;div id=&quot;mdoc-html-run4&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <p>If your set up function fails, the game will halt and the errors will be written to the console. The assumption is that a failure is unrecoverable.
+        &lt;script type=&quot;text/javascript&quot; src=&quot;boot-and-start-up.md.js&quot; defer&gt;&lt;/script&gt;
+        &lt;script type=&quot;text/javascript&quot; src=&quot;mdoc.js&quot; defer&gt;&lt;/script&gt;</p>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://typelevel.org/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

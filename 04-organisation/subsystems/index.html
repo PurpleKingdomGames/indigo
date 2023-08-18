@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>What SubSystems are</title>
+  
+  
+  <meta name="description" content="website2"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="../../helium/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../helium/laika-helium.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/custom.css" />
+  <script src="../../helium/laika-helium.js"></script>
+    <script src="../../01-quickstart/hello-indigo.md.js"></script>
+    <script src="../../01-quickstart/mdoc.js"></script>
+    <script src="../../03-gameloop/frame-context.md.js"></script>
+    <script src="../../03-gameloop/mdoc.js"></script>
+    <script src="../../03-gameloop/outcome.md.js"></script>
+    <script src="../../06-presentation/materials.md.js"></script>
+    <script src="../../06-presentation/cameras.md.js"></script>
+    <script src="../../06-presentation/lighting.md.js"></script>
+    <script src="../../06-presentation/depth.md.js"></script>
+    <script src="../../06-presentation/clones-and-mutants.md.js"></script>
+    <script src="../../06-presentation/animation.md.js"></script>
+    <script src="../../06-presentation/layers.md.js"></script>
+    <script src="../../06-presentation/audio.md.js"></script>
+    <script src="../../06-presentation/scene-update-fragment.md.js"></script>
+    <script src="../../06-presentation/boundaries.md.js"></script>
+    <script src="../../06-presentation/shapes.md.js"></script>
+    <script src="../../06-presentation/text-and-fonts.md.js"></script>
+    <script src="../../06-presentation/mdoc.js"></script>
+    <script src="../../08-time/signals.md.js"></script>
+    <script src="../../08-time/mdoc.js"></script>
+    <script src="../../08-time/time-varying-values.md.js"></script>
+    <script src="../../07-shaders/blending.md.js"></script>
+    <script src="../../07-shaders/mdoc.js"></script>
+    <script src="../../07-shaders/shaders-overview.md.js"></script>
+    <script src="../../09-uicomponents/button.md.js"></script>
+    <script src="../../09-uicomponents/input-field.md.js"></script>
+    <script src="../../09-uicomponents/hit-area.md.js"></script>
+    <script src="../../09-uicomponents/radio-button.md.js"></script>
+    <script src="../../09-uicomponents/mdoc.js"></script>
+    <script src="../scene-management.md.js"></script>
+    <script src="../boot-and-start-up.md.js"></script>
+    <script src="../subsystems.md.js"></script>
+    <script src="../mdoc.js"></script>
+    <script src="../../02-guides/mdoc.js"></script>
+    <script src="../../02-guides/howto-fire-shader.md.js"></script>
+    <script src="../../02-guides/howto-custom-entity.md.js"></script>
+    <script src="../../05-platform/assets.md.js"></script>
+    <script src="../../05-platform/logging.md.js"></script>
+    <script src="../../05-platform/mdoc.js"></script>
+    <script src="../../05-platform/input-handling.md.js"></script>
+    <script src="../../10-information/key-concepts.md.js"></script>
+    <script src="../../10-information/antipatterns.md.js"></script>
+    <script src="../../10-information/mdoc.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar" class="light-default dark-default">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="image-link" href="../../"><img src="../../img/indigo_logo_solid_text.svg" alt="Homepage" title="Indigo" width="150" height="50"></a>
+
+  <div class="row links">
+    
+    <a class="button-link" href="https://discord.gg/b5CD47g">Discord</a>
+    
+    <a class="button-link" href="/api">API</a>
+    
+    <a class="button-link" href="https://github.com/PurpleKingdomGames/indigo">Github</a>
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+    <a class="button-link" href="https://discord.gg/b5CD47g">Discord</a>
+    
+    <a class="button-link" href="/api">API</a>
+    
+    <a class="button-link" href="https://github.com/PurpleKingdomGames/indigo">Github</a>
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../../table-of-content/">Contents</a></li>
+    <li class="level1 nav-header">Setup &amp; Configuration</li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/examples/">Examples</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/hello-indigo/">Hello, Indigo!</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/project-templates/">Mill &amp; SBT Templates</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/quickstart/">Quick start</a></li>
+    <li class="level1 nav-header">Guides</li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-custom-entity/">How to make a custom entity</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-fire-shader/">How to write a fire shader</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-hello-indigo-tyrian/">How to make a responsive UI using Tyrian</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-indigo-game/">Converting <code>IndigoSandbox</code> to <code>IndigoGame</code></a></li>
+    <li class="level1 nav-header">Gameloop</li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/events/">Events</a></li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/frame-context/">Frame context</a></li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/outcome/">Outcome Type</a></li>
+    <li class="level1 nav-header">Organisation</li>
+    <li class="level2 nav-leaf"><a href="../boot-and-start-up/">Boot &amp; Start Up</a></li>
+    <li class="level2 nav-leaf"><a href="../game-entry-points/">Game Entry Points</a></li>
+    <li class="level2 nav-leaf"><a href="../scene-management/">What are Scenes?</a></li>
+    <li class="level2 active nav-leaf"><a href="#">What SubSystems are</a></li>
+    <li class="level1 nav-header">Platform &amp; IO</li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/assets/">Assets &amp; Asset Loading</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/cross-platform-publishing/">Cross Platform Publishing</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/importers/">File Importers</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/input-handling/">Input Handling</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/loading-and-saving-data/">Loading &amp; Saving Data</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/logging/">Logging</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/networking/">Networking</a></li>
+    <li class="level1 nav-header">Presentation</li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/animation/">Animation</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/audio/">Audio</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/boundaries/">Boundaries</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/cameras/">Cameras</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/clones-and-mutants/">Clones &amp; Mutants</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/depth/">Depth</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/layers/">Layers</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/lighting/">Lighting</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/materials/">Materials</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/primitives/">Primitives &amp; Building Blocks</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/scene-update-fragment/">SceneUpdateFragment</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/shapes/">Shapes</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/text-and-fonts/">Text &amp; Fonts</a></li>
+    <li class="level1 nav-header">Shaders</li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/blending/">Blending</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/constants/">Shader Constants, Variables, and Outputs</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/premultiplied-alpha/">Premultiplied Alpha</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/shaders-overview/">Shaders Overview</a></li>
+    <li class="level1 nav-header">Time</li>
+    <li class="level2 nav-leaf"><a href="../../08-time/gametime/">GameTime</a></li>
+    <li class="level2 nav-leaf"><a href="../../08-time/signals/">Signals &amp; Signal Functions</a></li>
+    <li class="level2 nav-leaf"><a href="../../08-time/time-varying-values/">Time Varying Values</a></li>
+    <li class="level1 nav-header">UI Components</li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/button/">Buttons</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/hit-area/">Hit Areas</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/input-field/">Input Fields</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/radio-button/">Radio Buttons</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/ui-components/">UI Components</a></li>
+    <li class="level1 nav-header">Misc</li>
+    <li class="level2 nav-leaf"><a href="../../10-information/alternatives/">Alternatives to Indigo</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/antipatterns/">Anti-Patterns</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/glossary/">Glossary</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/key-concepts/">Key Concepts</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/model-viewmodel-view/">Model, ViewModel, &amp; View</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/motivation-and-constraints/">Motivation &amp; Constraints</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/performance/">Performance</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/prior-art/">Prior Art</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/rendering-technology/">Rendering Technology</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">What SubSystems are</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#how-subsystems-work">How SubSystems work</a></li>
+    <li class="level1 nav-leaf"><a href="#adding-a-subsystem-to-your-game">Adding a SubSystem to your game</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
+
+      <main class="content">
+
+        <hr>
+        <p>id: subsystems
+        title: SubSystems
+        ---</p>
+        <h1 id="what-subsystems-are" class="title">What SubSystems are</h1>
+        <p><code>SubSystem</code>s are a way of breaking parts of your game off into mini-games. They offer you a means of encapsulation for certain kinds of game system.</p>
+        <p>Typically a subsystem is made from an object or class that extends this trait, or by using the <code>SubSystem.apply</code> constructor. SubSystem&#39;s can produce renderable output or just sit and process things in the background. Either way their only mechanism for interacting with the main game is through the event loop.</p>
+        <p>As an example, consider this simple (and arguably unhelpful) subsystem that tracks a score. This one happens to be using a <code>case class</code> as a convenient way to supply the initial score, but this could have been done in other ways. The important part is that the constructor arguments are effectively immutable, because the <code>update</code> function returns an <code>Int</code>, not a <code>PointsTrackerExample</code>.</p>
+        <blockquote><a href="https://github.com/PurpleKingdomGames/indigo-examples/blob/master/demos/pirate/src/main/scala/pirate/scenes/level/subsystems/CloudsSubSystem.scala">&quot;The Cursed Pirate&quot;</a> uses an alternative and arguable cleaner SubSystem construction method than the one below.</blockquote>
+        <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">indigo</span><span>.*
+
+</span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">PointsTrackerExample</span><span>(</span><span class="identifier">startingPoints</span><span>: </span><span class="type-name">Int</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">SubSystem</span><span>:
+  </span><span class="keyword">type</span><span> </span><span class="type-name">EventType</span><span>      = </span><span class="type-name">PointsTrackerEvent</span><span>
+  </span><span class="keyword">type</span><span> </span><span class="type-name">SubSystemModel</span><span> = </span><span class="type-name">Int</span><span>
+
+  </span><span class="keyword">val</span><span> </span><span class="identifier">id</span><span>: </span><span class="type-name">SubSystemId</span><span> = </span><span class="type-name">SubSystemId</span><span>(</span><span class="string-literal">&quot;points tracker&quot;</span><span>)
+
+  </span><span class="keyword">val</span><span> </span><span class="identifier">eventFilter</span><span>: </span><span class="type-name">GlobalEvent</span><span> =&gt; </span><span class="type-name">Option</span><span>[</span><span class="type-name">PointsTrackerEvent</span><span>] = {
+    </span><span class="keyword">case</span><span> </span><span class="identifier">e</span><span>: </span><span class="type-name">PointsTrackerEvent</span><span> </span><span class="annotation">@unchecked</span><span> =&gt; </span><span class="type-name">Option</span><span>(</span><span class="identifier">e</span><span>)
+    </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span>                                =&gt; </span><span class="type-name">None</span><span>
+  }
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">initialModel</span><span>: </span><span class="type-name">Outcome</span><span>[</span><span class="type-name">Int</span><span>] =
+    </span><span class="type-name">Outcome</span><span>(</span><span class="identifier">startingPoints</span><span>)
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">update</span><span>(</span><span class="identifier">context</span><span>: </span><span class="type-name">SubSystemFrameContext</span><span>, </span><span class="identifier">points</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">PointsTrackerEvent</span><span> =&gt; </span><span class="type-name">Outcome</span><span>[</span><span class="type-name">Int</span><span>] = {
+    </span><span class="keyword">case</span><span> </span><span class="type-name">PointsTrackerEvent</span><span>.</span><span class="type-name">Add</span><span>(</span><span class="identifier">pts</span><span>) =&gt;
+      </span><span class="type-name">Outcome</span><span>(</span><span class="identifier">points</span><span> + </span><span class="identifier">pts</span><span>)
+
+    </span><span class="keyword">case</span><span> </span><span class="type-name">PointsTrackerEvent</span><span>.</span><span class="type-name">LoseAll</span><span> =&gt;
+      </span><span class="type-name">Outcome</span><span>(</span><span class="number-literal">0</span><span>)
+        .</span><span class="identifier">addGlobalEvents</span><span>(</span><span class="type-name">GameOver</span><span>)
+  }
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">present</span><span>(</span><span class="identifier">context</span><span>: </span><span class="type-name">SubSystemFrameContext</span><span>, </span><span class="identifier">points</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">Outcome</span><span>[</span><span class="type-name">SceneUpdateFragment</span><span>] =
+    </span><span class="type-name">Outcome</span><span>(
+      </span><span class="type-name">SceneUpdateFragment</span><span>(</span><span class="type-name">Text</span><span>(</span><span class="identifier">points</span><span>.</span><span class="identifier">toString</span><span>, </span><span class="type-name">FontKey</span><span>(</span><span class="string-literal">&quot;&quot;</span><span>), </span><span class="type-name">Material</span><span>.</span><span class="type-name">Bitmap</span><span>(</span><span class="type-name">AssetName</span><span>(</span><span class="string-literal">&quot;font&quot;</span><span>))))
+    )
+
+</span><span class="identifier">enum</span><span> </span><span class="type-name">PointsTrackerEvent</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">GlobalEvent</span><span>:
+  </span><span class="keyword">case</span><span> </span><span class="type-name">Add</span><span>(</span><span class="identifier">points</span><span>: </span><span class="type-name">Int</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">PointsTrackerEvent</span><span>
+  </span><span class="keyword">case</span><span> </span><span class="type-name">LoseAll</span><span>          </span><span class="keyword">extends</span><span> </span><span class="type-name">PointsTrackerEvent</span><span>
+
+</span><span class="keyword">case</span><span> </span><span class="keyword">object</span><span> </span><span class="type-name">GameOver</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">GlobalEvent</span></code></pre>
+        <p>&lt;div id=&quot;mdoc-html-run0&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <p>SubSystems are really useful for doing nice bits of encapsulated work that add the all-important sense of polish to your game, but that you&#39;d rather not have polluting your main game logic. For example: You might like to have a system of clouds floating through the sky, or a pinball score counter rattling up - they look great - but as purely visual effects the do not represent important data (in terms of saving your game state) and can be handled independently of your main game.</p>
+        <blockquote>Hypothetically, they can also be used as really good encapsulation mechanisms for async or side-effecting processes. For example, perhaps you&#39;d like to call down to the browsers DOM in a clean way? Or run an FS2/Cats based process? You could make a subsystem that talks to your game via nice clean events, but internally does whatever specialist logic you need.</blockquote>
+        <p>The Indigo Extras module gives you two really helpful SubSystems: Automata for particle-like effects (not a real particle system in the conventional sense), and an &quot;Asset Bundle Loader&quot; that can be used for dynamically loading new assets during your game, both of which are used in <a href="https://github.com/PurpleKingdomGames/indigo-examples/tree/master/demos/pirate">&quot;The Cursed Pirate&quot;</a>.</p>
+        
+        <h2 id="how-subsystems-work" class="section"><a class="anchor-link left" href="#how-subsystems-work"><i class="icofont-laika link">&#xef71;</i></a>How SubSystems work</h2>
+        <p>Indigo&#39;s APIs are an exercise in composition, and if we ignore the state for a moment, the functions of a frame are approximately:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">update</span><span>: </span><span class="identifier">context</span><span> =&gt; </span><span class="type-name">Outcome</span><span>[</span><span class="identifier">_</span><span>] = ??? </span><span class="comment">// next version of the model
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">present</span><span>: </span><span class="identifier">context</span><span> =&gt; </span><span class="type-name">SceneUpdateFragment</span><span> = ??? </span><span class="comment">// What graphics to draw, what audio to play</span></code></pre>
+        <p>Which is exactly what you can see in the trait definition above. Yes, the standard entry points for indigo look more complicated, but really they all boil down to this.</p>
+        <p>Importantly, the context is immutable and the result types are monoidal.</p>
+        <p>This means we can imagine doing something like this when our frame is executed:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="comment">// All the outcomes combined
+</span><span>(</span><span class="identifier">context</span><span>) =&gt;
+  </span><span class="identifier">game</span><span>.</span><span class="identifier">update</span><span>(</span><span class="identifier">context</span><span>) |+| </span><span class="identifier">subsystem1</span><span>.</span><span class="identifier">update</span><span>(</span><span class="identifier">context</span><span>) |+| </span><span class="identifier">subsystem2</span><span>.</span><span class="identifier">update</span><span>(</span><span class="identifier">context</span><span>)
+
+</span><span class="comment">// All the scene fragments combined
+</span><span>(</span><span class="identifier">context</span><span>) =&gt;
+  </span><span class="identifier">game</span><span>.</span><span class="identifier">render</span><span>(</span><span class="identifier">context</span><span>) |+| </span><span class="identifier">subsystem1</span><span>.</span><span class="identifier">render</span><span>(</span><span class="identifier">context</span><span>) |+| </span><span class="identifier">subsystem2</span><span>.</span><span class="identifier">render</span><span>(</span><span class="identifier">context</span><span>)</span></code></pre>
+        <p>That isn&#39;t accurate or the full picture by any means, but hopefully it gives you a sense of how Indigo puts things together.</p>
+        
+        <h2 id="adding-a-subsystem-to-your-game" class="section"><a class="anchor-link left" href="#adding-a-subsystem-to-your-game"><i class="icofont-laika link">&#xef71;</i></a>Adding a SubSystem to your game</h2>
+        <p>The Sandbox entry point does not cater for subsystems, but the Demo and Game entry points both allow you to add global subsystems to the <code>BootResult</code> type using the <code>addSubSystems</code> method.</p>
+        <p>You cannot use model or start up data to initialise SubSystems, but you can use Boot data, just in case things like the configured magnification level or screen dimensions are important.</p>
+        <p>Additionally, you can also add scene specific SubSystems to individual scene definitions. For example in &quot;The Cursed Pirate&quot;, the loading scene makes use of the Asset Bundle Loader SubSystem, but this is no longer updated once we switch to the demo level itself, since by then all the assets have been loaded.
+        &lt;script type=&quot;text/javascript&quot; src=&quot;subsystems.md.js&quot; defer&gt;&lt;/script&gt;
+        &lt;script type=&quot;text/javascript&quot; src=&quot;mdoc.js&quot; defer&gt;&lt;/script&gt;</p>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://typelevel.org/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

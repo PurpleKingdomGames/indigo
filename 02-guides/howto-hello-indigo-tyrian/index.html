@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>How to make a responsive UI using Tyrian</title>
+  
+  
+  <meta name="description" content="website2"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="../../helium/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../helium/laika-helium.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/custom.css" />
+  <script src="../../helium/laika-helium.js"></script>
+    <script src="../../01-quickstart/hello-indigo.md.js"></script>
+    <script src="../../01-quickstart/mdoc.js"></script>
+    <script src="../../03-gameloop/frame-context.md.js"></script>
+    <script src="../../03-gameloop/mdoc.js"></script>
+    <script src="../../03-gameloop/outcome.md.js"></script>
+    <script src="../../06-presentation/materials.md.js"></script>
+    <script src="../../06-presentation/cameras.md.js"></script>
+    <script src="../../06-presentation/lighting.md.js"></script>
+    <script src="../../06-presentation/depth.md.js"></script>
+    <script src="../../06-presentation/clones-and-mutants.md.js"></script>
+    <script src="../../06-presentation/animation.md.js"></script>
+    <script src="../../06-presentation/layers.md.js"></script>
+    <script src="../../06-presentation/audio.md.js"></script>
+    <script src="../../06-presentation/scene-update-fragment.md.js"></script>
+    <script src="../../06-presentation/boundaries.md.js"></script>
+    <script src="../../06-presentation/shapes.md.js"></script>
+    <script src="../../06-presentation/text-and-fonts.md.js"></script>
+    <script src="../../06-presentation/mdoc.js"></script>
+    <script src="../../08-time/signals.md.js"></script>
+    <script src="../../08-time/mdoc.js"></script>
+    <script src="../../08-time/time-varying-values.md.js"></script>
+    <script src="../../07-shaders/blending.md.js"></script>
+    <script src="../../07-shaders/mdoc.js"></script>
+    <script src="../../07-shaders/shaders-overview.md.js"></script>
+    <script src="../../09-uicomponents/button.md.js"></script>
+    <script src="../../09-uicomponents/input-field.md.js"></script>
+    <script src="../../09-uicomponents/hit-area.md.js"></script>
+    <script src="../../09-uicomponents/radio-button.md.js"></script>
+    <script src="../../09-uicomponents/mdoc.js"></script>
+    <script src="../../04-organisation/scene-management.md.js"></script>
+    <script src="../../04-organisation/boot-and-start-up.md.js"></script>
+    <script src="../../04-organisation/subsystems.md.js"></script>
+    <script src="../../04-organisation/mdoc.js"></script>
+    <script src="../mdoc.js"></script>
+    <script src="../howto-fire-shader.md.js"></script>
+    <script src="../howto-custom-entity.md.js"></script>
+    <script src="../../05-platform/assets.md.js"></script>
+    <script src="../../05-platform/logging.md.js"></script>
+    <script src="../../05-platform/mdoc.js"></script>
+    <script src="../../05-platform/input-handling.md.js"></script>
+    <script src="../../10-information/key-concepts.md.js"></script>
+    <script src="../../10-information/antipatterns.md.js"></script>
+    <script src="../../10-information/mdoc.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar" class="light-default dark-default">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="image-link" href="../../"><img src="../../img/indigo_logo_solid_text.svg" alt="Homepage" title="Indigo" width="150" height="50"></a>
+
+  <div class="row links">
+    
+    <a class="button-link" href="https://discord.gg/b5CD47g">Discord</a>
+    
+    <a class="button-link" href="/api">API</a>
+    
+    <a class="button-link" href="https://github.com/PurpleKingdomGames/indigo">Github</a>
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+    <a class="button-link" href="https://discord.gg/b5CD47g">Discord</a>
+    
+    <a class="button-link" href="/api">API</a>
+    
+    <a class="button-link" href="https://github.com/PurpleKingdomGames/indigo">Github</a>
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../../table-of-content/">Contents</a></li>
+    <li class="level1 nav-header">Setup &amp; Configuration</li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/examples/">Examples</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/hello-indigo/">Hello, Indigo!</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/project-templates/">Mill &amp; SBT Templates</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/quickstart/">Quick start</a></li>
+    <li class="level1 nav-header">Guides</li>
+    <li class="level2 nav-leaf"><a href="../howto-custom-entity/">How to make a custom entity</a></li>
+    <li class="level2 nav-leaf"><a href="../howto-fire-shader/">How to write a fire shader</a></li>
+    <li class="level2 active nav-leaf"><a href="#">How to make a responsive UI using Tyrian</a></li>
+    <li class="level2 nav-leaf"><a href="../howto-indigo-game/">Converting <code>IndigoSandbox</code> to <code>IndigoGame</code></a></li>
+    <li class="level1 nav-header">Gameloop</li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/events/">Events</a></li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/frame-context/">Frame context</a></li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/outcome/">Outcome Type</a></li>
+    <li class="level1 nav-header">Organisation</li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/boot-and-start-up/">Boot &amp; Start Up</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/game-entry-points/">Game Entry Points</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/scene-management/">What are Scenes?</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/subsystems/">What SubSystems are</a></li>
+    <li class="level1 nav-header">Platform &amp; IO</li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/assets/">Assets &amp; Asset Loading</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/cross-platform-publishing/">Cross Platform Publishing</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/importers/">File Importers</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/input-handling/">Input Handling</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/loading-and-saving-data/">Loading &amp; Saving Data</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/logging/">Logging</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/networking/">Networking</a></li>
+    <li class="level1 nav-header">Presentation</li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/animation/">Animation</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/audio/">Audio</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/boundaries/">Boundaries</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/cameras/">Cameras</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/clones-and-mutants/">Clones &amp; Mutants</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/depth/">Depth</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/layers/">Layers</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/lighting/">Lighting</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/materials/">Materials</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/primitives/">Primitives &amp; Building Blocks</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/scene-update-fragment/">SceneUpdateFragment</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/shapes/">Shapes</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/text-and-fonts/">Text &amp; Fonts</a></li>
+    <li class="level1 nav-header">Shaders</li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/blending/">Blending</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/constants/">Shader Constants, Variables, and Outputs</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/premultiplied-alpha/">Premultiplied Alpha</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/shaders-overview/">Shaders Overview</a></li>
+    <li class="level1 nav-header">Time</li>
+    <li class="level2 nav-leaf"><a href="../../08-time/gametime/">GameTime</a></li>
+    <li class="level2 nav-leaf"><a href="../../08-time/signals/">Signals &amp; Signal Functions</a></li>
+    <li class="level2 nav-leaf"><a href="../../08-time/time-varying-values/">Time Varying Values</a></li>
+    <li class="level1 nav-header">UI Components</li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/button/">Buttons</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/hit-area/">Hit Areas</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/input-field/">Input Fields</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/radio-button/">Radio Buttons</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/ui-components/">UI Components</a></li>
+    <li class="level1 nav-header">Misc</li>
+    <li class="level2 nav-leaf"><a href="../../10-information/alternatives/">Alternatives to Indigo</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/antipatterns/">Anti-Patterns</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/glossary/">Glossary</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/key-concepts/">Key Concepts</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/model-viewmodel-view/">Model, ViewModel, &amp; View</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/motivation-and-constraints/">Motivation &amp; Constraints</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/performance/">Performance</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/prior-art/">Prior Art</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/rendering-technology/">Rendering Technology</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">How to make a responsive UI using Tyrian</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#responsive-ui-using-tyrian">Responsive UI Using Tyrian</a></li>
+    <li class="level1 nav-leaf"><a href="#overview">Overview</a></li>
+    <li class="level1 nav-node"><a href="#setup">Setup</a></li>
+    <li class="level2 nav-leaf"><a href="#setting-up-the-environment">Setting up the Environment</a></li>
+    <li class="level2 nav-leaf"><a href="#setting-up-the-build">Setting up the Build</a></li>
+    <li class="level2 nav-leaf"><a href="#setting-up-the-html-and-parceljs">Setting up the HTML and ParcelJS</a></li>
+    <li class="level2 nav-leaf"><a href="#update-helloindigo-scala">Update HelloIndigo.scala</a></li>
+    <li class="level1 nav-leaf"><a href="#create-a-tyrian-app">Create a Tyrian App</a></li>
+    <li class="level1 nav-leaf"><a href="#tyrian-to-indigo-communication">Tyrian to Indigo Communication</a></li>
+    <li class="level1 nav-leaf"><a href="#indigo-to-tyrian-communication">Indigo to Tyrian Communication</a></li>
+    <li class="level1 nav-leaf"><a href="#responsive-ui">Responsive UI</a></li>
+    <li class="level1 nav-leaf"><a href="#further-work">Further Work</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="how-to-make-a-responsive-ui-using-tyrian" class="title">How to make a responsive UI using Tyrian</h1>
+        
+        <h2 id="responsive-ui-using-tyrian" class="section"><a class="anchor-link left" href="#responsive-ui-using-tyrian"><i class="icofont-laika link">&#xef71;</i></a>Responsive UI Using Tyrian</h2>
+        <p>There tend to be two primary types of UI in games: In-game UI (such as health over a
+        player), and overlay (such as a HUD or dialog box). In-game UI tends not to
+        worry too much about the screen size, and is dealt with primarily by the
+        magnification configuration within Indigo. But what about overlays and HUD&#39;s?
+        These tend to scale with the size of the screen and the position of such
+        elements may change depending on the capabilities of the display. Many game
+        engines provide a way to create overlay UI elements that scale in some way to
+        the space they&#39;re in using a separate UI system. In Indigo we&#39;re exporting to
+        JavaScript and a browser (even in Electron), so depending on how we want the UI
+        to look, one option is to employ more standard web technologies to do this work
+        for us, i.e. HTML and CSS.</p>
+        <p>Using Tyrian we can utilise HTML and CSS to ensure our overlay UI scales
+        no matter what screen size we use.</p>
+        <p>In this guide we&#39;ll take the basic <code>hello-indigo</code> example and add a button and
+        a counter that scales with the size of the screen. It&#39;s a pretty basic example,
+        but it should give you an idea of what can be achieved.</p>
+        
+        <h2 id="overview" class="section"><a class="anchor-link left" href="#overview"><i class="icofont-laika link">&#xef71;</i></a>Overview</h2>
+        <p>This is a fairly involved guide with many parts to it that need to be implemented
+        in order to get everything working. However the concept is pretty simple - we&#39;ll
+        be using the Tyrian Bridge as a communication layer between Indigo and our
+        <code>index.html</code> (which is controlled by Tyrian).</p>
+        <p>These are the steps we&#39;re going to take:</p>
+        <ul>
+          <li><a href="#setting-up-the-environment">Set up the environment</a> - e.g. clone <code>hello-indigo</code> and set up ParcelJS</li>
+          <li><a href="#setting-up-the-build">Modify our build files</a> - e.g. update our <code>build.sbt</code> or <code>build.sc</code> files</li>
+          <li><a href="#setting-up-the-html-and-parceljs">Create our static files</a> - e.ge create our html, js, css and other static content</li>
+          <li><a href="#update-helloindigo-scala">Update Indigo with a new subsystem</a> and <a href="#create-a-tyrian-app">Initialise our Tyrian app</a></li>
+          <li><a href="#tyrian-to-indigo-communication">Get Tyrian publishing messages to Indigo</a> (and Indigo to subscribe to them)</li>
+          <li><a href="#indigo-to-tyrian-communication">Get Indigo publishing messages to Tyrian</a> (and Tyrian to subscribe to them)</li>
+          <li>And finally <a href="#responsive-ui">creating a responsive UI in CSS</a></li>
+        </ul>
+        
+        <h2 id="setup" class="section"><a class="anchor-link left" href="#setup"><i class="icofont-laika link">&#xef71;</i></a>Setup</h2>
+        
+        <h3 id="setting-up-the-environment" class="section"><a class="anchor-link left" href="#setting-up-the-environment"><i class="icofont-laika link">&#xef71;</i></a>Setting up the Environment</h3>
+        <p>For this guide we&#39;ll be using the <code>hello-indigo</code> example in either
+        <a href="https://github.com/PurpleKingdomGames/hello-indigo">mill</a> or
+        <a href="https://github.com/PurpleKingdomGames/hello-indigo-sbt">sbt</a>.
+        In the existing implementation clicking on the game window will create a new dot
+        that then rotates around the canvas. We&#39;ll modify this so that clicking a button
+        does this job instead.</p>
+        <p>You&#39;ll want to upgrade <code>hello-indigo</code> to use <code>IndigoGame</code>. To do this either
+        follow <a href="../howto-indigo-game/">this guide</a>
+        or replace <code>HelloIndigo.scala</code> with
+        <a href="https://gist.github.com/hobnob/c24f00936e91a7b7e5d644d19e4f1b32">this</a></p>
+        <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">indigo</span><span>.*
+</span><span class="keyword">import</span><span> </span><span class="identifier">indigo</span><span>.</span><span class="identifier">scenes</span><span>.*
+</span><span class="keyword">import</span><span> </span><span class="identifier">tyrian</span><span>.</span><span class="type-name">TyrianSubSystem</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="type-name">IO</span><span>
+
+</span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">HelloIndigo</span><span>(</span><span class="identifier">tyrianSubSystem</span><span>: </span><span class="type-name">TyrianSubSystem</span><span>[</span><span class="type-name">IO</span><span>, </span><span class="type-name">Int</span><span>]) </span><span class="keyword">extends</span><span> </span><span class="type-name">IndigoGame</span><span>[</span><span class="type-name">Unit</span><span>, </span><span class="type-name">Unit</span><span>, </span><span class="type-name">Model</span><span>, </span><span class="type-name">Unit</span><span>] {
+
+  </span><span class="keyword">val</span><span> </span><span class="identifier">magnification</span><span> = </span><span class="number-literal">3</span><span>
+
+  </span><span class="keyword">val</span><span> </span><span class="identifier">config</span><span>: </span><span class="type-name">GameConfig</span><span> =
+    </span><span class="type-name">GameConfig</span><span>.</span><span class="keyword">default</span><span>.</span><span class="identifier">withMagnification</span><span>(</span><span class="identifier">magnification</span><span>)
+
+  </span><span class="keyword">val</span><span> </span><span class="identifier">assetName</span><span> = </span><span class="type-name">AssetName</span><span>(</span><span class="string-literal">&quot;dots&quot;</span><span>)
+
+  </span><span class="keyword">val</span><span> </span><span class="identifier">assets</span><span>: </span><span class="type-name">Set</span><span>[</span><span class="type-name">AssetType</span><span>] =
+    </span><span class="type-name">Set</span><span>(
+      </span><span class="type-name">AssetType</span><span>.</span><span class="type-name">Image</span><span>(</span><span class="type-name">AssetName</span><span>(</span><span class="string-literal">&quot;dots&quot;</span><span>), </span><span class="type-name">AssetPath</span><span>(</span><span class="string-literal">&quot;assets/dots.png&quot;</span><span>))
+    )
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">initialScene</span><span>(</span><span class="identifier">bootData</span><span>: </span><span class="type-name">Unit</span><span>): </span><span class="type-name">Option</span><span>[</span><span class="type-name">SceneName</span><span>] =
+    </span><span class="type-name">None</span><span>
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">scenes</span><span>(</span><span class="identifier">bootData</span><span>: </span><span class="type-name">Unit</span><span>): </span><span class="type-name">NonEmptyList</span><span>[</span><span class="type-name">Scene</span><span>[</span><span class="type-name">Unit</span><span>, </span><span class="type-name">Model</span><span>, </span><span class="type-name">Unit</span><span>]] =
+    </span><span class="type-name">NonEmptyList</span><span>(</span><span class="type-name">Scene</span><span>.</span><span class="identifier">empty</span><span>)
+
+  </span><span class="keyword">val</span><span> </span><span class="identifier">eventFilters</span><span>: </span><span class="type-name">EventFilters</span><span> =
+    </span><span class="type-name">EventFilters</span><span>.</span><span class="type-name">Permissive</span><span>
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">boot</span><span>(</span><span class="identifier">flags</span><span>: </span><span class="type-name">Map</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">String</span><span>]): </span><span class="type-name">Outcome</span><span>[</span><span class="type-name">BootResult</span><span>[</span><span class="type-name">Unit</span><span>]] =
+    </span><span class="type-name">Outcome</span><span>(
+      </span><span class="type-name">BootResult</span><span>
+        .</span><span class="identifier">noData</span><span>(</span><span class="identifier">config</span><span>)
+        .</span><span class="identifier">withAssets</span><span>(</span><span class="identifier">assets</span><span>)
+        .</span><span class="identifier">withSubSystems</span><span>(</span><span class="identifier">tyrianSubSystem</span><span>)
+    )
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">setup</span><span>(
+      </span><span class="identifier">bootData</span><span>: </span><span class="type-name">Unit</span><span>,
+      </span><span class="identifier">assetCollection</span><span>: </span><span class="type-name">AssetCollection</span><span>,
+      </span><span class="identifier">dice</span><span>: </span><span class="type-name">Dice</span><span>
+  ): </span><span class="type-name">Outcome</span><span>[</span><span class="type-name">Startup</span><span>[</span><span class="type-name">Unit</span><span>]] =
+    </span><span class="type-name">Outcome</span><span>(</span><span class="type-name">Startup</span><span>.</span><span class="type-name">Success</span><span>(()))
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">initialModel</span><span>(</span><span class="identifier">startupData</span><span>: </span><span class="type-name">Unit</span><span>): </span><span class="type-name">Outcome</span><span>[</span><span class="type-name">Model</span><span>] =
+    </span><span class="type-name">Outcome</span><span>(
+      </span><span class="type-name">Model</span><span>.</span><span class="identifier">initial</span><span>(
+        </span><span class="identifier">config</span><span>.</span><span class="identifier">viewport</span><span>.</span><span class="identifier">giveDimensions</span><span>(</span><span class="identifier">magnification</span><span>).</span><span class="identifier">center</span><span>
+      )
+    )
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">updateModel</span><span>(
+      </span><span class="identifier">context</span><span>: </span><span class="type-name">FrameContext</span><span>[</span><span class="type-name">Unit</span><span>],
+      </span><span class="identifier">model</span><span>: </span><span class="type-name">Model</span><span>
+  ): </span><span class="type-name">GlobalEvent</span><span> =&gt; </span><span class="type-name">Outcome</span><span>[</span><span class="type-name">Model</span><span>] = {
+    </span><span class="keyword">case</span><span> </span><span class="type-name">MouseEvent</span><span>.</span><span class="type-name">Click</span><span>(</span><span class="identifier">pt</span><span>) =&gt;
+      </span><span class="keyword">val</span><span> </span><span class="identifier">adjustedPosition</span><span> = </span><span class="identifier">pt</span><span> - </span><span class="identifier">model</span><span>.</span><span class="identifier">center</span><span>
+
+      </span><span class="type-name">Outcome</span><span>(
+        </span><span class="identifier">model</span><span>.</span><span class="identifier">addDot</span><span>(
+          </span><span class="type-name">Dot</span><span>(
+            </span><span class="type-name">Point</span><span>.</span><span class="identifier">distanceBetween</span><span>(</span><span class="identifier">model</span><span>.</span><span class="identifier">center</span><span>, </span><span class="identifier">pt</span><span>).</span><span class="identifier">toInt</span><span>,
+            </span><span class="type-name">Radians</span><span>(
+              </span><span class="type-name">Math</span><span>.</span><span class="identifier">atan2</span><span>(
+                </span><span class="identifier">adjustedPosition</span><span>.</span><span class="identifier">x</span><span>.</span><span class="identifier">toDouble</span><span>,
+                </span><span class="identifier">adjustedPosition</span><span>.</span><span class="identifier">y</span><span>.</span><span class="identifier">toDouble</span><span>
+              )
+            )
+          )
+        )
+      )
+
+    </span><span class="keyword">case</span><span> </span><span class="type-name">FrameTick</span><span> =&gt;
+      </span><span class="type-name">Outcome</span><span>(</span><span class="identifier">model</span><span>.</span><span class="identifier">update</span><span>(</span><span class="identifier">context</span><span>.</span><span class="identifier">delta</span><span>))
+
+    </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span> =&gt;
+      </span><span class="type-name">Outcome</span><span>(</span><span class="identifier">model</span><span>)
+  }
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">initialViewModel</span><span>(</span><span class="identifier">startupData</span><span>: </span><span class="type-name">Unit</span><span>, </span><span class="identifier">model</span><span>: </span><span class="type-name">Model</span><span>): </span><span class="type-name">Outcome</span><span>[</span><span class="type-name">Unit</span><span>] =
+    </span><span class="type-name">Outcome</span><span>(())
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">updateViewModel</span><span>(
+      </span><span class="identifier">context</span><span>: </span><span class="type-name">FrameContext</span><span>[</span><span class="type-name">Unit</span><span>],
+      </span><span class="identifier">model</span><span>: </span><span class="type-name">Model</span><span>,
+      </span><span class="identifier">viewModel</span><span>: </span><span class="type-name">Unit</span><span>
+  ): </span><span class="type-name">GlobalEvent</span><span> =&gt; </span><span class="type-name">Outcome</span><span>[</span><span class="type-name">Unit</span><span>] =
+    </span><span class="identifier">_</span><span> =&gt; </span><span class="type-name">Outcome</span><span>(())
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">present</span><span>(
+      </span><span class="identifier">context</span><span>: </span><span class="type-name">FrameContext</span><span>[</span><span class="type-name">Unit</span><span>],
+      </span><span class="identifier">model</span><span>: </span><span class="type-name">Model</span><span>,
+      </span><span class="identifier">viewModel</span><span>: </span><span class="type-name">Unit</span><span>
+  ): </span><span class="type-name">Outcome</span><span>[</span><span class="type-name">SceneUpdateFragment</span><span>] =
+    </span><span class="type-name">Outcome</span><span>(
+      </span><span class="type-name">SceneUpdateFragment</span><span>(
+        </span><span class="type-name">Graphic</span><span>(</span><span class="type-name">Rectangle</span><span>(</span><span class="number-literal">0</span><span>, </span><span class="number-literal">0</span><span>, </span><span class="number-literal">32</span><span>, </span><span class="number-literal">32</span><span>), </span><span class="number-literal">1</span><span>, </span><span class="type-name">Material</span><span>.</span><span class="type-name">Bitmap</span><span>(</span><span class="identifier">assetName</span><span>)) ::
+          </span><span class="identifier">drawDots</span><span>(</span><span class="identifier">model</span><span>.</span><span class="identifier">center</span><span>, </span><span class="identifier">model</span><span>.</span><span class="identifier">dots</span><span>)
+      )
+    )
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">drawDots</span><span>(
+      </span><span class="identifier">center</span><span>: </span><span class="type-name">Point</span><span>,
+      </span><span class="identifier">dots</span><span>: </span><span class="type-name">Batch</span><span>[</span><span class="type-name">Dot</span><span>]
+  ): </span><span class="type-name">Batch</span><span>[</span><span class="type-name">Graphic</span><span>[</span><span class="identifier">_</span><span>]] =
+    </span><span class="identifier">dots</span><span>.</span><span class="identifier">map</span><span> { </span><span class="identifier">dot</span><span> =&gt;
+      </span><span class="keyword">val</span><span> </span><span class="identifier">position</span><span> = </span><span class="type-name">Point</span><span>(
+        (</span><span class="type-name">Math</span><span>.</span><span class="identifier">sin</span><span>(</span><span class="identifier">dot</span><span>.</span><span class="identifier">angle</span><span>.</span><span class="identifier">toDouble</span><span>) * </span><span class="identifier">dot</span><span>.</span><span class="identifier">orbitDistance</span><span> + </span><span class="identifier">center</span><span>.</span><span class="identifier">x</span><span>).</span><span class="identifier">toInt</span><span>,
+        (</span><span class="type-name">Math</span><span>.</span><span class="identifier">cos</span><span>(</span><span class="identifier">dot</span><span>.</span><span class="identifier">angle</span><span>.</span><span class="identifier">toDouble</span><span>) * </span><span class="identifier">dot</span><span>.</span><span class="identifier">orbitDistance</span><span> + </span><span class="identifier">center</span><span>.</span><span class="identifier">y</span><span>).</span><span class="identifier">toInt</span><span>
+      )
+
+      </span><span class="type-name">Graphic</span><span>(</span><span class="type-name">Rectangle</span><span>(</span><span class="number-literal">0</span><span>, </span><span class="number-literal">0</span><span>, </span><span class="number-literal">32</span><span>, </span><span class="number-literal">32</span><span>), </span><span class="number-literal">1</span><span>, </span><span class="type-name">Material</span><span>.</span><span class="type-name">Bitmap</span><span>(</span><span class="identifier">assetName</span><span>))
+        .</span><span class="identifier">withCrop</span><span>(</span><span class="type-name">Rectangle</span><span>(</span><span class="number-literal">16</span><span>, </span><span class="number-literal">16</span><span>, </span><span class="number-literal">16</span><span>, </span><span class="number-literal">16</span><span>))
+        .</span><span class="identifier">withRef</span><span>(</span><span class="number-literal">8</span><span>, </span><span class="number-literal">8</span><span>)
+        .</span><span class="identifier">moveTo</span><span>(</span><span class="identifier">position</span><span>)
+    }
+
+}
+
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Model</span><span>(</span><span class="identifier">center</span><span>: </span><span class="type-name">Point</span><span>, </span><span class="identifier">dots</span><span>: </span><span class="type-name">Batch</span><span>[</span><span class="type-name">Dot</span><span>]) {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">addDot</span><span>(</span><span class="identifier">dot</span><span>: </span><span class="type-name">Dot</span><span>): </span><span class="type-name">Model</span><span> =
+    </span><span class="keyword">this</span><span>.</span><span class="identifier">copy</span><span>(</span><span class="identifier">dots</span><span> = </span><span class="identifier">dot</span><span> :: </span><span class="identifier">dots</span><span>)
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">update</span><span>(</span><span class="identifier">timeDelta</span><span>: </span><span class="type-name">Seconds</span><span>): </span><span class="type-name">Model</span><span> =
+    </span><span class="keyword">this</span><span>.</span><span class="identifier">copy</span><span>(</span><span class="identifier">dots</span><span> = </span><span class="identifier">dots</span><span>.</span><span class="identifier">map</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">update</span><span>(</span><span class="identifier">timeDelta</span><span>)))
+}
+</span><span class="keyword">object</span><span> </span><span class="type-name">Model</span><span> {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">initial</span><span>(</span><span class="identifier">center</span><span>: </span><span class="type-name">Point</span><span>): </span><span class="type-name">Model</span><span> = </span><span class="type-name">Model</span><span>(</span><span class="identifier">center</span><span>, </span><span class="type-name">Batch</span><span>.</span><span class="identifier">empty</span><span>)
+}
+</span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Dot</span><span>(</span><span class="identifier">orbitDistance</span><span>: </span><span class="type-name">Int</span><span>, </span><span class="identifier">angle</span><span>: </span><span class="type-name">Radians</span><span>) {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">update</span><span>(</span><span class="identifier">timeDelta</span><span>: </span><span class="type-name">Seconds</span><span>): </span><span class="type-name">Dot</span><span> =
+    </span><span class="keyword">this</span><span>.</span><span class="identifier">copy</span><span>(</span><span class="identifier">angle</span><span> = </span><span class="identifier">angle</span><span> + </span><span class="type-name">Radians</span><span>.</span><span class="identifier">fromSeconds</span><span>(</span><span class="identifier">timeDelta</span><span>))
+}</span></code></pre>
+        <p>Although Indigo builds and exports to Electron natively, for this project
+        we&#39;ll export directly to HTML and use Yarn to run our web server, with
+        ParcelJS to copy and package up our HTML, JS, and CSS.</p>
+        <p>You can use NPM to install Yarn with the command <code>npm install yarn</code>, and then
+        install ParcelJS with <code>yarn add parcel --dev</code>.</p>
+        
+        <h3 id="setting-up-the-build" class="section"><a class="anchor-link left" href="#setting-up-the-build"><i class="icofont-laika link">&#xef71;</i></a>Setting up the Build</h3>
+        <p>Next you&#39;ll need to update either your
+        <code>build.sc</code> (if using mill) to  with this:</p>
+        <pre><code class="diff">   def buildGame() = T.command {
+     T {
+       compile()
+       fastOpt()
+-      indigoBuild()()
+     }
+   }
+
+-  def runGame() = T.command {
+-    T {
+-      compile()
+-      fastOpt()
+-      indigoRun()()
+-    }
+-  }
+-
+   val indigoVersion = &quot;0.12.1&quot;
+
+   def ivyDeps =
+    Agg(
++     ivy&quot;io.indigoengine::tyrian::0.3.1&quot;,
++     ivy&quot;io.indigoengine::tyrian-indigo-bridge::0.3.1&quot;,
+      ivy&quot;io.indigoengine::indigo-json-circe::$indigoVersion&quot;,
+      ivy&quot;io.indigoengine::indigo::$indigoVersion&quot;,
+      ivy&quot;io.indigoengine::indigo-extras::$indigoVersion&quot;
+    )</code></pre>
+        <p>or <code>build.sbt</code> (if using sbt) to this:</p>
+        <pre class="keep-together pdf epub"><code class="diff">libraryDependencies ++= Seq(
+  &quot;io.indigoengine&quot; %%% &quot;indigo&quot;            % &quot;0.12.1&quot;,
++  &quot;io.indigoengine&quot; %%% &quot;tyrian&quot;               % &quot;0.3.1&quot;,
++  &quot;io.indigoengine&quot; %%% &quot;tyrian-indigo-bridge&quot; % &quot;0.3.1&quot;,
+)
+
+-addCommandAlias(&quot;buildGame&quot;, &quot;;compile;fastOptJS;indigoBuild&quot;)
++addCommandAlias(&quot;buildGame&quot;, &quot;;compile;fastOptJS&quot;)
+-addCommandAlias(&quot;runGame&quot;, &quot;;compile;fastOptJS;indigoRun&quot;)</code></pre>
+        <p>What we&#39;ve done here is add Tyrian and the Tyrian Indigo Bridge to our build.
+        Tyrian will deal with all of our HTML and the Indigo Bridge will deal with
+        communication between Tyrian and Indigo. We&#39;ve also removed <code>runGame</code> as this
+        would usually run Electron.</p>
+        
+        <h3 id="setting-up-the-html-and-parceljs" class="section"><a class="anchor-link left" href="#setting-up-the-html-and-parceljs"><i class="icofont-laika link">&#xef71;</i></a>Setting up the HTML and ParcelJS</h3>
+        <p>Usually Indigo will generate all of our HTML for us and run it through Electron,
+        but for this example we&#39;re going to generate our own HTML so that we can
+        inject CSS.</p>
+        <p>Firstly we&#39;ll create an <code>app.js</code> file that simply loads Tyrian and then launches
+        it for our page:</p>
+        <blockquote>Note: The path in this example is from a Mill build, sbt&#39;s output will live in the <code>target</code> directory.</blockquote>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> {
+    </span><span class="identifier">TyrianApp</span><span>
+} </span><span class="keyword">from</span><span> </span><span class="string-literal">&#39;./out/HelloIndigo/fastOpt.dest/out.js&#39;</span><span>;
+
+</span><span class="identifier">TyrianApp</span><span>.</span><span class="identifier">launch</span><span>(</span><span class="string-literal">&quot;main&quot;</span><span>);</span></code></pre>
+        <p>We&#39;ll also need an <code>index.html</code> to hold our basic HTML data:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="tag-punctuation">&lt;!</span><span class="xml-dtd-tag-name">DOCTYPE</span><span class="tag-punctuation"> </span><span class="identifier">html</span><span class="tag-punctuation">&gt;</span><span>
+</span><span class="tag-punctuation">&lt;</span><span class="tag-name">html</span><span class="tag-punctuation">&gt;</span><span>
+  </span><span class="tag-punctuation">&lt;</span><span class="tag-name">head</span><span class="tag-punctuation">&gt;</span><span>
+      </span><span class="tag-punctuation">&lt;</span><span class="tag-name">meta</span><span class="tag-punctuation"> </span><span class="attribute-name">charset</span><span class="tag-punctuation">=</span><span class="string-literal">&quot;UTF-8&quot;</span><span class="tag-punctuation">&gt;</span><span>
+      </span><span class="tag-punctuation">&lt;</span><span class="tag-name">title</span><span class="tag-punctuation">&gt;</span><span>Hello Indigo</span><span class="tag-punctuation">&lt;/</span><span class="tag-name">title</span><span class="tag-punctuation">&gt;</span><span>
+      </span><span class="tag-punctuation">&lt;</span><span class="tag-name">link</span><span class="tag-punctuation"> </span><span class="attribute-name">rel</span><span class="tag-punctuation">=</span><span class="string-literal">&quot;stylesheet&quot;</span><span class="tag-punctuation"> </span><span class="attribute-name">href</span><span class="tag-punctuation">=</span><span class="string-literal">&quot;css/main.css&quot;</span><span class="tag-punctuation"> /&gt;</span><span>
+      </span><span class="tag-punctuation">&lt;</span><span class="tag-name">script</span><span class="tag-punctuation"> </span><span class="attribute-name">type</span><span class="tag-punctuation">=</span><span class="string-literal">&quot;module&quot;</span><span class="tag-punctuation"> </span><span class="attribute-name">defer</span><span class="tag-punctuation"> </span><span class="attribute-name">src</span><span class="tag-punctuation">=</span><span class="string-literal">&quot;app.js&quot;</span><span class="tag-punctuation">&gt;&lt;/</span><span class="tag-name">script</span><span class="tag-punctuation">&gt;</span><span>
+  </span><span class="tag-punctuation">&lt;/</span><span class="tag-name">head</span><span class="tag-punctuation">&gt;</span><span>
+  </span><span class="tag-punctuation">&lt;</span><span class="tag-name">body</span><span class="tag-punctuation">&gt;</span><span>
+      </span><span class="tag-punctuation">&lt;</span><span class="tag-name">div</span><span class="tag-punctuation"> </span><span class="attribute-name">id</span><span class="tag-punctuation">=</span><span class="string-literal">&quot;main&quot;</span><span class="tag-punctuation">&gt;&lt;/</span><span class="tag-name">div</span><span class="tag-punctuation">&gt;</span><span>
+  </span><span class="tag-punctuation">&lt;/</span><span class="tag-name">body</span><span class="tag-punctuation">&gt;</span><span>
+</span><span class="tag-punctuation">&lt;/</span><span class="tag-name">html</span><span class="tag-punctuation">&gt;</span></code></pre>
+        <p>Tyrian currently uses <code>snabbdom</code> for adding and removing elements in a web page.
+        To do this we will need to add a dependency to <code>snabbdom</code> by running
+        <code>yarn add snabbdom</code>.</p>
+        <p>You&#39;ll notice we&#39;re using the direct JS output from our build here, which may
+        feel odd. What will happen when we run ParcelJS through Yarn is that the HTML
+        will be copied to a build directory along with the JS, CSS and any dependant
+        static files (such as images) that may be needed, and everything will be correctly
+        linked by Parcel.</p>
+        <p>Now generate an empty <code>css/main.css</code>.</p>
+        <p>Next we&#39;ll need to update the <code>package.json</code> so that ParcelJS will run when yarn
+        starts and copies the static files for Indigo to use. To do this add the
+        following to the top of <code>package.json</code>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="attribute-name">&quot;scripts&quot;</span><span>: {
+  </span><span class="attribute-name">&quot;start&quot;</span><span>: </span><span class="string-literal">&quot;parcel index.html --open --no-cache&quot;</span><span>
+}</span></code></pre>
+        <p>We&#39;ll need to add to tell ParcelJS about our static files by adding the
+        following to <code>package.json</code>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="attribute-name">&quot;staticFiles&quot;</span><span>: {
+  </span><span class="attribute-name">&quot;staticPath&quot;</span><span>: </span><span class="string-literal">&quot;assets&quot;</span><span>,
+  </span><span class="attribute-name">&quot;staticOutPath&quot;</span><span>: </span><span class="string-literal">&quot;assets&quot;</span><span>,
+  </span><span class="attribute-name">&quot;watcherGlob&quot;</span><span>: </span><span class="string-literal">&quot;**&quot;</span><span>
+}</span></code></pre>
+        <p>We need to add the dependency for static files by running
+        <code>yarn add parcel-reporter-static-files-copy --dev</code> from the command line.</p>
+        <p>Finally, we need to configure ParcelJS so that it knows how to copy our static
+        files. Add a <code>.parcelrc</code> file and add the following:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>{
+  </span><span class="attribute-name">&quot;extends&quot;</span><span>: [</span><span class="string-literal">&quot;@parcel/config-default&quot;</span><span>],
+  </span><span class="attribute-name">&quot;reporters&quot;</span><span>:  [</span><span class="string-literal">&quot;...&quot;</span><span>, </span><span class="string-literal">&quot;parcel-reporter-static-files-copy&quot;</span><span>]
+}</span></code></pre>
+        
+        <h3 id="update-helloindigo-scala" class="section"><a class="anchor-link left" href="#update-helloindigo-scala"><i class="icofont-laika link">&#xef71;</i></a>Update HelloIndigo.scala</h3>
+        <p>We&#39;ll be using the
+        <a href="https://tyrian.indigoengine.io/concepts/tyrian-indigo-bridge/"><code>TyrianSubSystem</code></a>
+        as a way of communicating between Indigo and Tyrian. Add
+        <code>import tyrian.TyrianSubSystem</code> to the imports in <code>HelloIndigo.scala</code>, and then
+        update the <code>object</code> to be a <code>case class</code> so that we can pass in the subsystem as an argument. We can also remove the top level export, as we&#39;ll no longer need it:</p>
+        <pre class="keep-together pdf epub"><code class="diff">- import scala.scalajs.js.annotation.JSExportTopLevel
++ import tyrian.TyrianSubSystem
++ import cats.effect.IO
+
+- @JSExportTopLevel(&quot;IndigoGame&quot;)
+- object HelloIndigo extends IndigoGame[Unit, Unit, Model, Unit] {
++ final case class HelloIndigo(tyrianSubSystem: TyrianSubSystem[IO, Int]) extends IndigoGame[Unit, Unit, Model, Unit] {</code></pre>
+        <p>We&#39;ll also need to tell Indigo to use the new sub-system, which we can do by
+        adding an entry to the <code>boot</code> method like so:</p>
+        <pre class="keep-together pdf epub"><code class="diff">   def boot(flags: Map[String, String]): Outcome[BootResult[Unit]] =
+     Outcome(
+       BootResult
+         .noData(config)
+         .withAssets(assets)
++        .withSubSystems(tyrianSubSystem)
+     )</code></pre>
+        
+        <h2 id="create-a-tyrian-app" class="section"><a class="anchor-link left" href="#create-a-tyrian-app"><i class="icofont-laika link">&#xef71;</i></a>Create a Tyrian App</h2>
+        <p>We&#39;ll now develop our initial Tyrian app, which will consist simply of
+        a canvas (for Indigo), a counter, and a button, wrapped in a few <code>div</code> elements.
+        Create a new file called <code>HelloTyrian.scala</code> inside the <code>helloindigo/src</code> folder
+        and add the following contents found below, or
+        <a href="https://gist.github.com/hobnob/436318b3ae5eed5891ba2b18bb8c264b">here</a>.</p>
+        <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">cats</span><span>.</span><span class="identifier">effect</span><span>.</span><span class="type-name">IO</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">tyrian</span><span>.*
+</span><span class="keyword">import</span><span> </span><span class="identifier">tyrian</span><span>.</span><span class="type-name">Html</span><span>.*
+</span><span class="keyword">import</span><span> </span><span class="identifier">org</span><span>.</span><span class="identifier">scalajs</span><span>.</span><span class="identifier">dom</span><span>.</span><span class="identifier">document</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">scala</span><span>.</span><span class="identifier">scalajs</span><span>.</span><span class="identifier">js</span><span>.</span><span class="identifier">annotation</span><span>.*
+
+</span><span class="identifier">enum</span><span> </span><span class="type-name">Msg</span><span>:
+  </span><span class="keyword">case</span><span> </span><span class="type-name">StartIndigo</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">Msg</span><span>
+
+</span><span class="comment">// @JSExportTopLevel(&quot;TyrianApp&quot;) // Pandering to mdoc...
+</span><span class="keyword">object</span><span> </span><span class="type-name">Main</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">TyrianApp</span><span>[</span><span class="type-name">Msg</span><span>, </span><span class="type-name">TyrianModel</span><span>]:
+  </span><span class="keyword">val</span><span> </span><span class="identifier">gameDivId</span><span> = </span><span class="string-literal">&quot;game-container&quot;</span><span>
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">init</span><span>(</span><span class="identifier">flags</span><span>: </span><span class="type-name">Map</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">String</span><span>]): (</span><span class="type-name">TyrianModel</span><span>, </span><span class="type-name">Cmd</span><span>[</span><span class="type-name">IO</span><span>, </span><span class="type-name">Msg</span><span>]) =
+    (</span><span class="type-name">TyrianModel</span><span>.</span><span class="identifier">init</span><span>, </span><span class="type-name">Cmd</span><span>.</span><span class="type-name">Emit</span><span>(</span><span class="type-name">Msg</span><span>.</span><span class="type-name">StartIndigo</span><span>))
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">update</span><span>(</span><span class="identifier">model</span><span>: </span><span class="type-name">TyrianModel</span><span>): </span><span class="type-name">Msg</span><span> =&gt; (</span><span class="type-name">TyrianModel</span><span>, </span><span class="type-name">Cmd</span><span>[</span><span class="type-name">IO</span><span>, </span><span class="type-name">Msg</span><span>]) =
+    </span><span class="keyword">case</span><span> </span><span class="type-name">Msg</span><span>.</span><span class="type-name">StartIndigo</span><span> =&gt;
+      (
+        </span><span class="identifier">model</span><span>,
+        </span><span class="type-name">Cmd</span><span>.</span><span class="type-name">SideEffect</span><span> {
+          </span><span class="type-name">HelloIndigo</span><span>(</span><span class="identifier">model</span><span>.</span><span class="identifier">bridge</span><span>.</span><span class="identifier">subSystem</span><span>(</span><span class="type-name">IndigoGameId</span><span>(</span><span class="identifier">gameDivId</span><span>)))
+            .</span><span class="identifier">launch</span><span>(
+              </span><span class="identifier">gameDivId</span><span>,
+              </span><span class="string-literal">&quot;width&quot;</span><span>  -&gt; </span><span class="string-literal">&quot;550&quot;</span><span>,
+              </span><span class="string-literal">&quot;height&quot;</span><span> -&gt; </span><span class="string-literal">&quot;400&quot;</span><span>
+            )
+        }
+      )
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">view</span><span>(</span><span class="identifier">model</span><span>: </span><span class="type-name">TyrianModel</span><span>): </span><span class="type-name">Html</span><span>[</span><span class="type-name">Msg</span><span>] =
+    </span><span class="identifier">div</span><span>(</span><span class="identifier">`class`</span><span> := </span><span class="string-literal">&quot;main&quot;</span><span>)(
+      </span><span class="identifier">div</span><span>(</span><span class="identifier">`class`</span><span> := </span><span class="string-literal">&quot;game&quot;</span><span>, </span><span class="identifier">id</span><span> := </span><span class="identifier">gameDivId</span><span>)(),
+      </span><span class="identifier">div</span><span>(</span><span class="identifier">`class`</span><span>:= </span><span class="string-literal">&quot;counter&quot;</span><span>)(),
+      </span><span class="identifier">div</span><span>(</span><span class="identifier">`class`</span><span>:= </span><span class="string-literal">&quot;btn&quot;</span><span>)(
+        </span><span class="identifier">button</span><span>()(</span><span class="string-literal">&quot;Click me&quot;</span><span>)
+      )
+    )
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">subscriptions</span><span>(</span><span class="identifier">model</span><span>: </span><span class="type-name">TyrianModel</span><span>): </span><span class="type-name">Sub</span><span>[</span><span class="type-name">IO</span><span>, </span><span class="type-name">Msg</span><span>] =
+    </span><span class="type-name">Sub</span><span>.</span><span class="type-name">None</span><span>
+
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">main</span><span>(</span><span class="identifier">args</span><span>: </span><span class="type-name">Array</span><span>[</span><span class="type-name">String</span><span>]): </span><span class="type-name">Unit</span><span> =
+    </span><span class="type-name">Tyrian</span><span>.</span><span class="identifier">start</span><span>(</span><span class="identifier">document</span><span>.</span><span class="identifier">getElementById</span><span>(</span><span class="string-literal">&quot;main&quot;</span><span>), </span><span class="identifier">init</span><span>(</span><span class="type-name">Map</span><span>()), </span><span class="identifier">update</span><span>, </span><span class="identifier">view</span><span>, </span><span class="identifier">subscriptions</span><span>, </span><span class="number-literal">1024</span><span>)
+
+</span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">TyrianModel</span><span>(</span><span class="identifier">bridge</span><span>: </span><span class="type-name">TyrianIndigoBridge</span><span>[</span><span class="type-name">IO</span><span>, </span><span class="type-name">Int</span><span>])
+</span><span class="keyword">object</span><span> </span><span class="type-name">TyrianModel</span><span>:
+  </span><span class="keyword">val</span><span> </span><span class="identifier">init</span><span>: </span><span class="type-name">TyrianModel</span><span> = </span><span class="type-name">TyrianModel</span><span>(</span><span class="type-name">TyrianIndigoBridge</span><span>())</span></code></pre>
+        <p>You can now build the project in mill (<code>mill helloindigo.buildGame</code>) or sbt (<code>sbt buildGame</code>)  and then run <code>yarn start</code> to see the HelloIndigo demo running inside a Tyrian website. This is great if you want a
+        website surrounding your game with no interaction, but it would be much more
+        useful to get them both talking to each other... this is what we&#39;re doing next!</p>
+        
+        <h2 id="tyrian-to-indigo-communication" class="section"><a class="anchor-link left" href="#tyrian-to-indigo-communication"><i class="icofont-laika link">&#xef71;</i></a>Tyrian to Indigo Communication</h2>
+        <p>The first thing we&#39;ll do is get Tyrian to request that Indigo add a new dot. To
+        do this we&#39;ll need to add an <code>OnClick</code> event to our button, which will tell
+        Indigo what to do.</p>
+        <p>In <code>HelloTyrian.scala</code>, we&#39;ll need a new message type. Add a new message type called AddDot like so:</p>
+        <pre class="keep-together pdf epub"><code class="diff">   enum Msg:
+     case StartIndigo extends Msg
++    case AddDot      extends Msg</code></pre>
+        <p>Next we&#39;ll need to deal with that message in Tyrian, by adding a case to <code>update</code> like this:</p>
+        <pre class="keep-together pdf epub"><code class="diff">     msg match
++      case Msg.AddDot =&gt;
++        (model, model.bridge.publish(IndigoGameId(gameDivId), 0))
+       case Msg.StartIndigo =&gt;</code></pre>
+        <p>The final part on the Tyrian side is to hook the button up to fire the <code>AddDot</code>
+        message. To do this add an <code>OnClick</code> attribute to our button like so:</p>
+        <pre class="keep-together pdf epub"><code class="diff">       div(`class` := &quot;btn&quot;)(
+-        button()(&quot;Click me&quot;)
++        button(onClick(Msg.AddDot))(&quot;Click me&quot;)
+       )</code></pre>
+        <p>This will now send an event to Indigo with an integer message, which in this case
+        we&#39;ve set to zero. Now we just need to modify Indigo to receive and
+        process that message. To do this change the <code>MouseEvent.Click</code> line in
+        <code>HelloIndigo.scala</code> with the following:</p>
+        <pre class="keep-together pdf epub"><code class="diff">   ): GlobalEvent =&gt; Outcome[Model] = {
+-    case MouseEvent.Click(pt) =&gt;
++    case tyrianSubSystem.TyrianEvent.Receive(msg) =&gt;
++      val pt               = Point(100, 100)
+       val adjustedPosition = pt - model.center</code></pre>
+        <p>We&#39;ve also added a line below that to set a <code>pt</code> variable as we now longer have
+        a mouse position. For now, we&#39;ve set that to 100,100 like so which is just a
+        fixed point for the dots to rotate around.</p>
+        <p>Once more build the project in mill or sbt and then run <code>yarn start</code>. This time
+        you&#39;ll notice that clicking the game doesn&#39;t do anything, but clicking the
+        button adds a new rotating dot.</p>
+        <p>We&#39;ve now successfully gotten Tyrian to talk to Indigo. In the next part we&#39;ll
+        be doing the opposite, and adding a counter for the number of dots.</p>
+        
+        <h2 id="indigo-to-tyrian-communication" class="section"><a class="anchor-link left" href="#indigo-to-tyrian-communication"><i class="icofont-laika link">&#xef71;</i></a>Indigo to Tyrian Communication</h2>
+        <p>In this part we&#39;re going to store a count of the number of dots that Indigo is
+        currently displaying. To do this, first update the model in <code>HelloTyrian.scala</code>
+        so that it has a <code>count</code> property which is initialised to zero, like so:</p>
+        <pre class="keep-together pdf epub"><code class="diff">-final case class TyrianModel(bridge: TyrianIndigoBridge[Int])
++final case class TyrianModel(bridge: TyrianIndigoBridge[Int], count: Int)
+object TyrianModel:
+-  val init: TyrianModel
++  val init: TyrianModel =
++    TyrianModel(TyrianIndigoBridge(), 0)</code></pre>
+        <p>We&#39;ll need to display that count on the website. To do this, we simply modify our
+        counting <code>div</code> to display what&#39;s in the <code>model</code> like so</p>
+        <pre class="keep-together pdf epub"><code class="diff">-      div(`class` := &quot;counter&quot;)(),
++      div(`class` := &quot;counter&quot;)(model.count.toString)</code></pre>
+        <p>A new message type is also required as before, so we&#39;ll add a new one like so:</p>
+        <pre class="keep-together pdf epub"><code class="diff">   enum Msg:
+-    case StartIndigo extends Msg
++    case StartIndigo             extends Msg
+-    case AddDot      extends Msg
++    case AddDot                  extends Msg
++    case IndigoReceive(msg: Int) extends Msg</code></pre>
+        <p>We&#39;ll need to subscribe to incoming Indigo messages so that we can act on them.
+        This can be done using the bridge subscriptions like so:</p>
+        <pre class="keep-together pdf epub"><code class="diff">   def subscriptions(model: TyrianModel): Sub[Msg] =
+-    Sub.Empty
++    model.bridge.subscribe { case msg =&gt;
++      Some(Msg.IndigoReceive(msg))
++    }</code></pre>
+        <p>The final part on the Tyrian side is then to update the model once we get a
+        message from Indigo. Indigo will send an Integer message back to Tyrian, which
+        we can use directly in our model To do this we simply add the following to our
+        <code>update</code> pattern:</p>
+        <pre class="keep-together pdf epub"><code class="diff">     msg match
+       case Msg.AddDot =&gt;
+         (model, model.bridge.publish(IndigoGameId(gameDivId), 0))
++      case Msg.IndigoReceive(msg) =&gt;
++        (model.copy(count = msg), Cmd.Empty)
+       case Msg.StartIndigo =&gt;</code></pre>
+        <p>For the Indigo side we need to modify the <code>updateModel</code> so that the new model is
+        assigned to a variable for later use. We can then add a global event through
+        the Tyrian Subsystem letting the website know how many dots we have. This is done
+        with the following:</p>
+        <pre><code class="diff">     case tyrianSubSystem.TyrianEvent.Receive(msg) =&gt;
+       val pt               = Point(100, 100)
+       val adjustedPosition = pt - model.center
+-
+-      Outcome(
+-        model.addDot(
+-          Dot(
+-            Point.distanceBetween(model.center, pt).toInt,
+-            Radians(
+-              Math.atan2(
+-                adjustedPosition.x.toDouble,
+-                adjustedPosition.y.toDouble
+-              )
+-            )
+-          )
+-        )
+-      )
++      val newModel = model.addDot(
++        Dot(
++          Point.distanceBetween(model.center, pt).toInt,
++          Radians(
++            Math.atan2(
++              adjustedPosition.x.toDouble,
++              adjustedPosition.y.toDouble
++            )
++          )
++        )
++      )
++
++      Outcome(newModel)
++        .addGlobalEvents(tyrianSubSystem.send(newModel.dots.length))</code></pre>
+        <p>The important part here is the <code>addGlobalEvents</code> which sends a subsystem event
+        to Tyrian.</p>
+        <p>Now whenever you press the button on the website, the counter will increase by
+        one! This is the basics of communication to and from Tyrian, but we can go
+        further with a little CSS magic. In the next part we&#39;ll be dealing purely with
+        CSS to show how we can make a responsive UI.</p>
+        
+        <h2 id="responsive-ui" class="section"><a class="anchor-link left" href="#responsive-ui"><i class="icofont-laika link">&#xef71;</i></a>Responsive UI</h2>
+        <p>One of the benefits of adding UI via Tyrian is that you get full use of the
+        power of CSS and HTML for creating a game that supports all sorts of screen
+        sizes. To do this, we&#39;ll be making use of
+        <a href="https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout/Flexbox">Flexbox</a>
+        and <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Media_Queries/Using_media_queries">Media Queries</a>.</p>
+        <p>We&#39;ll gloss over the initial setup as it&#39;s a lot of boiler-plate. Replace your
+        <code>css/main.css</code> with
+        <a href="https://gist.github.com/hobnob/10a193a167813b95c690a35cccd9bfc1">this</a>.
+        All of the work in this part takes place in <code>main.css</code>.</p>
+        <p>On a desktop that looks pretty good, so we&#39;re going to change the layout for
+        mobiles. To do this, we&#39;ll first make a media query CSS rule at the end of our
+        CSS like so:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">@media</span><span> (</span><span class="attribute-name">max-width</span><span>: </span><span class="number-literal">767</span><span class="identifier">px</span><span>) {
+}</span></code></pre>
+        <p>All of the next few parts will now take place within the curly braces of that
+        media query. Firstly we&#39;ll change the button to be 100% of the screen width,
+        and increase it&#39;s height so it&#39;s easier to click on a mobile:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>.</span><span class="identifier">btn</span><span> {
+  </span><span class="attribute-name">align-self</span><span>: </span><span class="identifier">flex-end</span><span>;
+  </span><span class="attribute-name">padding-bottom</span><span>: </span><span class="number-literal">0</span><span>;
+}
+
+.</span><span class="identifier">btn</span><span> </span><span class="identifier">button</span><span> {
+  </span><span class="attribute-name">width</span><span>: </span><span class="number-literal">100</span><span class="identifier">vw</span><span>;
+  </span><span class="attribute-name">height</span><span>: </span><span class="number-literal">7</span><span class="identifier">rem</span><span>;
+}</span></code></pre>
+        <p>Now we&#39;ll make the counter bigger, so it&#39;s easier to read:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>.</span><span class="identifier">counter</span><span> {
+  </span><span class="attribute-name">font-size</span><span>: </span><span class="number-literal">5</span><span class="identifier">rem</span><span>;
+}</span></code></pre>
+        <p>And finally, we&#39;ll reduce the size of the Indigo canvas so that it will fit on
+        a smaller device sizes. It&#39;s worth noting that, to date, Indigo won&#39;t deal
+        particularly well with mouse positions when the canvas is scaled like this. For
+        our purposes though, this will be fine:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">canvas</span><span> {
+  </span><span class="attribute-name">transform</span><span>: </span><span class="identifier">scale</span><span>(</span><span class="number-literal">0.75</span><span>);
+}</span></code></pre>
+        <p>Once more run <code>yarn start</code> and you&#39;ll now be able to scale your browser window
+        bigger and smaller to see the effects of our changes.</p>
+        
+        <h2 id="further-work" class="section"><a class="anchor-link left" href="#further-work"><i class="icofont-laika link">&#xef71;</i></a>Further Work</h2>
+        <p>Now you know the basics of responsive UI using Tyrian and Indigo you can
+        experiment with some more advanced features. You could, for example, fire an
+        event to Indigo on a canvas resize that will change the size Indigo renders at
+        (which is more efficient that the transform we used here). We could also use
+        CSS to show a dialog box, preventing the player from interacting with the game
+        until they&#39;ve given feedback.</p>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://typelevel.org/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

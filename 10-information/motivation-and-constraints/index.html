@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>Motivation &amp; Constraints</title>
+  
+  
+  <meta name="description" content="website2"/>
+  
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="../../helium/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../helium/laika-helium.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/custom.css" />
+  <script src="../../helium/laika-helium.js"></script>
+    <script src="../../01-quickstart/hello-indigo.md.js"></script>
+    <script src="../../01-quickstart/mdoc.js"></script>
+    <script src="../../03-gameloop/frame-context.md.js"></script>
+    <script src="../../03-gameloop/mdoc.js"></script>
+    <script src="../../03-gameloop/outcome.md.js"></script>
+    <script src="../../06-presentation/materials.md.js"></script>
+    <script src="../../06-presentation/cameras.md.js"></script>
+    <script src="../../06-presentation/lighting.md.js"></script>
+    <script src="../../06-presentation/depth.md.js"></script>
+    <script src="../../06-presentation/clones-and-mutants.md.js"></script>
+    <script src="../../06-presentation/animation.md.js"></script>
+    <script src="../../06-presentation/layers.md.js"></script>
+    <script src="../../06-presentation/audio.md.js"></script>
+    <script src="../../06-presentation/scene-update-fragment.md.js"></script>
+    <script src="../../06-presentation/boundaries.md.js"></script>
+    <script src="../../06-presentation/shapes.md.js"></script>
+    <script src="../../06-presentation/text-and-fonts.md.js"></script>
+    <script src="../../06-presentation/mdoc.js"></script>
+    <script src="../../08-time/signals.md.js"></script>
+    <script src="../../08-time/mdoc.js"></script>
+    <script src="../../08-time/time-varying-values.md.js"></script>
+    <script src="../../07-shaders/blending.md.js"></script>
+    <script src="../../07-shaders/mdoc.js"></script>
+    <script src="../../07-shaders/shaders-overview.md.js"></script>
+    <script src="../../09-uicomponents/button.md.js"></script>
+    <script src="../../09-uicomponents/input-field.md.js"></script>
+    <script src="../../09-uicomponents/hit-area.md.js"></script>
+    <script src="../../09-uicomponents/radio-button.md.js"></script>
+    <script src="../../09-uicomponents/mdoc.js"></script>
+    <script src="../../04-organisation/scene-management.md.js"></script>
+    <script src="../../04-organisation/boot-and-start-up.md.js"></script>
+    <script src="../../04-organisation/subsystems.md.js"></script>
+    <script src="../../04-organisation/mdoc.js"></script>
+    <script src="../../02-guides/mdoc.js"></script>
+    <script src="../../02-guides/howto-fire-shader.md.js"></script>
+    <script src="../../02-guides/howto-custom-entity.md.js"></script>
+    <script src="../../05-platform/assets.md.js"></script>
+    <script src="../../05-platform/logging.md.js"></script>
+    <script src="../../05-platform/mdoc.js"></script>
+    <script src="../../05-platform/input-handling.md.js"></script>
+    <script src="../key-concepts.md.js"></script>
+    <script src="../antipatterns.md.js"></script>
+    <script src="../mdoc.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar" class="light-default dark-default">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="image-link" href="../../"><img src="../../img/indigo_logo_solid_text.svg" alt="Homepage" title="Indigo" width="150" height="50"></a>
+
+  <div class="row links">
+    
+    <a class="button-link" href="https://discord.gg/b5CD47g">Discord</a>
+    
+    <a class="button-link" href="/api">API</a>
+    
+    <a class="button-link" href="https://github.com/PurpleKingdomGames/indigo">Github</a>
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+    <a class="button-link" href="https://discord.gg/b5CD47g">Discord</a>
+    
+    <a class="button-link" href="/api">API</a>
+    
+    <a class="button-link" href="https://github.com/PurpleKingdomGames/indigo">Github</a>
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../../table-of-content/">Contents</a></li>
+    <li class="level1 nav-header">Setup &amp; Configuration</li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/examples/">Examples</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/hello-indigo/">Hello, Indigo!</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/project-templates/">Mill &amp; SBT Templates</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/quickstart/">Quick start</a></li>
+    <li class="level1 nav-header">Guides</li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-custom-entity/">How to make a custom entity</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-fire-shader/">How to write a fire shader</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-hello-indigo-tyrian/">How to make a responsive UI using Tyrian</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-indigo-game/">Converting <code>IndigoSandbox</code> to <code>IndigoGame</code></a></li>
+    <li class="level1 nav-header">Gameloop</li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/events/">Events</a></li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/frame-context/">Frame context</a></li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/outcome/">Outcome Type</a></li>
+    <li class="level1 nav-header">Organisation</li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/boot-and-start-up/">Boot &amp; Start Up</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/game-entry-points/">Game Entry Points</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/scene-management/">What are Scenes?</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/subsystems/">What SubSystems are</a></li>
+    <li class="level1 nav-header">Platform &amp; IO</li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/assets/">Assets &amp; Asset Loading</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/cross-platform-publishing/">Cross Platform Publishing</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/importers/">File Importers</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/input-handling/">Input Handling</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/loading-and-saving-data/">Loading &amp; Saving Data</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/logging/">Logging</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/networking/">Networking</a></li>
+    <li class="level1 nav-header">Presentation</li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/animation/">Animation</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/audio/">Audio</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/boundaries/">Boundaries</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/cameras/">Cameras</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/clones-and-mutants/">Clones &amp; Mutants</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/depth/">Depth</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/layers/">Layers</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/lighting/">Lighting</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/materials/">Materials</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/primitives/">Primitives &amp; Building Blocks</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/scene-update-fragment/">SceneUpdateFragment</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/shapes/">Shapes</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/text-and-fonts/">Text &amp; Fonts</a></li>
+    <li class="level1 nav-header">Shaders</li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/blending/">Blending</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/constants/">Shader Constants, Variables, and Outputs</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/premultiplied-alpha/">Premultiplied Alpha</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/shaders-overview/">Shaders Overview</a></li>
+    <li class="level1 nav-header">Time</li>
+    <li class="level2 nav-leaf"><a href="../../08-time/gametime/">GameTime</a></li>
+    <li class="level2 nav-leaf"><a href="../../08-time/signals/">Signals &amp; Signal Functions</a></li>
+    <li class="level2 nav-leaf"><a href="../../08-time/time-varying-values/">Time Varying Values</a></li>
+    <li class="level1 nav-header">UI Components</li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/button/">Buttons</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/hit-area/">Hit Areas</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/input-field/">Input Fields</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/radio-button/">Radio Buttons</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/ui-components/">UI Components</a></li>
+    <li class="level1 nav-header">Misc</li>
+    <li class="level2 nav-leaf"><a href="../alternatives/">Alternatives to Indigo</a></li>
+    <li class="level2 nav-leaf"><a href="../antipatterns/">Anti-Patterns</a></li>
+    <li class="level2 nav-leaf"><a href="../glossary/">Glossary</a></li>
+    <li class="level2 nav-leaf"><a href="../key-concepts/">Key Concepts</a></li>
+    <li class="level2 nav-leaf"><a href="../model-viewmodel-view/">Model, ViewModel, &amp; View</a></li>
+    <li class="level2 active nav-leaf"><a href="#">Motivation &amp; Constraints</a></li>
+    <li class="level2 nav-leaf"><a href="../performance/">Performance</a></li>
+    <li class="level2 nav-leaf"><a href="../prior-art/">Prior Art</a></li>
+    <li class="level2 nav-leaf"><a href="../rendering-technology/">Rendering Technology</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Motivation &amp; Constraints</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#motivation">Motivation</a></li>
+    <li class="level1 nav-leaf"><a href="#creative-constraints">Creative Constraints</a></li>
+    <li class="level1 nav-leaf"><a href="#the-influence-of-pixel-art">The influence of Pixel Art</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="motivation-constraints" class="title">Motivation &amp; Constraints</h1>
+        
+        <h2 id="motivation" class="section"><a class="anchor-link left" href="#motivation"><i class="icofont-laika link">&#xef71;</i></a>Motivation</h2>
+        <p>There were two questions driving Indigo&#39;s development:</p>
+        <ol class="arabic">
+          <li>Building games is hard, and testing games is harder... but does it have to be?</li>
+          <li>Can we build a game engine for functional programmers that is fun, productive, and reasonably easy to pick up?</li>
+        </ol>
+        <p>The reason testing games is hard is the perception that they are random, and their behavior is non-deterministic by default, but this doesn&#39;t have to be the case.</p>
+        <p>Indigo encodes the idea of a frame update into one single, pure, stateless, immutable function. The new frame is always predictably the direct outcome of the values it was supplied at the beginning of the update. Even apparently random elements are in fact pseudo-random.</p>
+        <blockquote>Of course, this depends on the game programmer! If they put a <code>Random</code> in the middle there isn&#39;t much we can do about it! (Use a propagated <code>Dice</code> instance instead!)</blockquote>
+        <p>To further increase reliability and code correctness, Indigo is written in Scala in order to take full advantage of it&#39;s advanced type checker.</p>
+        <p>Indigo is not an FRP engine, and does not force a particular programming model on the developer. A game programmer could write &quot;Scala-Java&quot; or as close to pure FP code as Scala allows. To further empower the developer, the engine has very few dependencies, so mixing in a library like Cats should be no problem at all.</p>
+        <p>Further more, the framework API &quot;entry points&quot; you get by default are just sugar on top of the <code>FrameProcessor</code> - you can <a href="https://github.com/PurpleKingdomGames/indigo/blob/master/indigo/indigo/src/main/scala/indigo/IndigoSandbox.scala">write your own</a>!</p>
+        
+        <h2 id="creative-constraints" class="section"><a class="anchor-link left" href="#creative-constraints"><i class="icofont-laika link">&#xef71;</i></a>Creative Constraints</h2>
+        <p>Why is indigo the way it is? Why isn&#39;t there proper font rendering for example?</p>
+        <p>Building a game engine is hard, and takes a long time. There is a piece of general wisdom in the gaming community that can be summarised as:</p>
+        <blockquote>Never build your own game engine.</blockquote>
+        <p>Why not? Well a lot of people who decide to build game engines actually start out intending to build a game. They then get bogged down in building an engine instead, because it takes absolutely ages, and never get around to building their game.</p>
+        <p>There is only one reason to build a game engine that people seem to agree on: There isn&#39;t already another one out there that does the very <em>very</em> specific thing you wanted an engine to do!</p>
+        <p>So in order to make building Indigo possible (4 years and counting...), we cut the scope. What is the smallest amount of functionality we&#39;d need to build an engine we&#39;d be happy to use? A few of those constraints included:</p>
+        <ol class="arabic">
+          <li>Scala only - A full FP language with a Mac / Linux friendly ecosystem.</li>
+          <li>2D only - with pixel art as a first class citizen specifically.</li>
+          <li>Browser only - adding platforms adds complexity, lets just make it work first.</li>
+          <li>No fonts - simplified text support only.</li>
+          <li>No custom shaders - nice to have, but we can do without them.</li>
+        </ol>
+        <p>Some of the initial constraints were relaxed, and some features that might be considered unnecessary were added just for fun, but if you look at indigo and wonder why something that might be standard in other engines isn&#39;t present, it is probably just because it wasn&#39;t considered part of a minimal spec!</p>
+        
+        <h2 id="the-influence-of-pixel-art" class="section"><a class="anchor-link left" href="#the-influence-of-pixel-art"><i class="icofont-laika link">&#xef71;</i></a>The influence of Pixel Art</h2>
+        <p>Indigo is a 2D game engine (you have go HD if you want to!), but is particularly aimed at Pixel Art. Why Pixel Art?</p>
+        <p>Pixel Art is a relatively accessible art form. Like any other artistic medium you could choose, it can be done poorly and look cheap, or it can be done brilliantly and be every bit as expressive and evocative as any other style of art.</p>
+        <p>The difference is that the barrier to entry is lower. Amazing and low cost tools like <a href="https://www.aseprite.org/">Aseprite</a> and <a href="https://www.mapeditor.org/">Tiled</a> help put good game art within the reach of the many, not the few.</p>
+        <p>Pixel Art is commercially viable too! There are many many commercially successful pixel art games released every year! Games like <a href="https://store.steampowered.com/app/606150/Moonlighter/">Moonlighter</a>, <a href="https://store.steampowered.com/app/504230/Celeste/">Celeste</a>, and <a href="https://store.steampowered.com/app/588650/Dead_Cells/">Dead Cells</a> to name but a few.</p>
+        <p>If you want to make a AAA title with photo-realistic graphics or even a super-slick 2D games and you have the resources to do that, there are better tools out there for the job! Pixel art requires us to build games that are <em>good games to play</em> in spite of a limited visual style, games that draw people in because they are engaging, not because you can see every wrinkle on a characters face.</p>
+        <p>Not unlike board games. Board games are fun, aren&#39;t they?</p>
+        <p>Forcing the engine to be aimed at pixel art, however, has influenced how it works:</p>
+        <ol class="arabic">
+          <li>Magnification. You design and code it to work as if it was on a 1 to 1 pixel scale, increase the magnification and everything goes with it. For instance, mouse positions and clicks are rescaled to remain accurate to your graphics. You can even dynamically set different magnifications per game layer, allowing for instance, an HD UI over a chunky pixel game.</li>
+          <li>Pixel perfect rendering. The whole engine works on whole pixels, and the shaders are written to render beautifully crisp, whole pixels at any scale. You don&#39;t have to do anything clever to get perfect results.</li>
+        </ol>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://typelevel.org/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>
