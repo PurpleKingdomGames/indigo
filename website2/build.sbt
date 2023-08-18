@@ -104,6 +104,10 @@ laikaTheme :=
     .tableOfContent(title = "Contents", depth = 2)
     .site
     .autoLinkCSS(Root / "css" / "custom.css")
+    .site.favIcons(
+      Favicon.internal(Root / "img" / "indigo_logo_solid.svg", sizes = "32x32"),
+      Favicon.internal(Root / "img" / "indigo_logo_solid.svg", sizes = "64x64")
+    )
     .build
 
 // Helium.defaults
