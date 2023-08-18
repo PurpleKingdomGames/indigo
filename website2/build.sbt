@@ -10,10 +10,13 @@ import laika.ast.Path.Root
 import laika.ast.Image
 import laika.ast.Length
 import laika.ast.LengthUnit
+import com.comcast.ip4s._
+import scala.concurrent.duration.DurationInt
+import laika.sbt.LaikaPreviewConfig
 
 ThisBuild / scalaVersion := "3.3.0"
 
-enablePlugins(LaikaPlugin)
+enablePlugins(LaikaPlugin, GhpagesPlugin)
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
@@ -90,6 +93,7 @@ laikaTheme :=
       ),
       navLinks = Seq(
         ButtonLink.external("https://discord.gg/b5CD47g", "Discord"),
+        ButtonLink.external("/api", "API"),
         ButtonLink.external(
           "https://github.com/PurpleKingdomGames/indigo",
           "Github"
@@ -104,10 +108,22 @@ laikaTheme :=
 
 // Helium.defaults
 
-import com.comcast.ip4s._
-import scala.concurrent.duration.DurationInt
-import laika.sbt.LaikaPreviewConfig
-
 laikaPreviewConfig :=
   LaikaPreviewConfig.defaults
     .withPort(port"8080")
+
+// Make site
+
+siteSourceDirectory := target.value / "docs" / "site"
+makeSite / includeFilter := "*"
+makeSite / excludeFilter := ".DS_Store"
+git.remoteRepo := "git@github.com:PurpleKingdomGames/indigo.git"
+ghpagesNoJekyll := true
+
+addCommandAlias(
+  "publishIndigoSite",
+  List(
+    "makeSite",
+    "ghpagesPushSite"
+  ).mkString(";", ";", "")
+)
