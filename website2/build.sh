@@ -20,6 +20,6 @@ sbt clean laikaSite
 
 # -----
 # Publish
-mkdir -p $WEBSITE_DIR/target/docs/site/api/
+mkdir -p target/docs/site/api/
 cp -R $INDIGO_ENGINE_DIR/target/scala-3.*/unidoc/. $WEBSITE_DIR/target/docs/site/api/
-sbt clean makeSite ghpagesPushSite
+sbt makeSite ghpagesPushSite
