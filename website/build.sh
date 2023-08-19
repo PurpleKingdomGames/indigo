@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# TODO
-# Auto update the demos?
-
 set -e
 
 WEBSITE_DIR=$(pwd)
@@ -18,10 +15,11 @@ sbt gendocs
 cd $WEBSITE_DIR
 
 # -----
-# build the site
-yarn run build
+# build the site // $WEBSITE_DIR/target/docs/site
+sbt clean laikaSite
 
 # -----
 # Publish
-cp -R $INDIGO_ENGINE_DIR/target/scala-3.*/unidoc/. $WEBSITE_DIR/build/indigo-site/api/
-sbt clean makeSite ghpagesPushSite
+mkdir -p target/docs/site/api/
+cp -R $INDIGO_ENGINE_DIR/target/scala-3.*/unidoc/. $WEBSITE_DIR/target/docs/site/api/
+sbt makeSite ghpagesPushSite

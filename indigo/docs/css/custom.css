@@ -1,0 +1,12 @@
+header {
+  height: 50px;
+  background-color: #29016a;
+}
+
+header .row a {
+  color: #ffffff;
+}
+
+#sidebar {
+  padding-top: 1em;
+}
