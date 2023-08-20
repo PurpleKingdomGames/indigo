@@ -59,6 +59,15 @@ sealed trait Batch[+A]:
     given CanEqual[B, B] = CanEqual.derived
     _jsArray.exists(_ == p)
 
+  def take(n: Int): Batch[A] =
+    Batch.Wrapped(_jsArray.take(n))
+
+  def takeRight(n: Int): Batch[A] =
+    Batch.Wrapped(_jsArray.takeRight(n))
+
+  def takeWhile(p: A => Boolean): Batch[A] =
+    Batch.Wrapped(_jsArray.takeWhile(p))
+
   def drop(count: Int): Batch[A] =
     Batch.Wrapped(_jsArray.drop(count))
 
