@@ -13,6 +13,7 @@ import laika.ast.LengthUnit
 import com.comcast.ip4s._
 import scala.concurrent.duration.DurationInt
 import laika.sbt.LaikaPreviewConfig
+import java.time.OffsetDateTime
 
 ThisBuild / scalaVersion := "3.3.0"
 
