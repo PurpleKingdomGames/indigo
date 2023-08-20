@@ -39,7 +39,12 @@ laikaTheme :=
   Helium.defaults.all
     .metadata(
       title = Some("Indigo"),
-      language = Some("en")
+      description = Some("A 2D Pixel Art FP game engine for Scala."),
+      identifier = Some(""),
+      authors = Seq(),
+      language = Some("en"),
+      datePublished = Some(OffsetDateTime.now),
+      version = Some("1.0.0")
     )
     .all
     .themeColors(
