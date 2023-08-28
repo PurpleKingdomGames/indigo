@@ -1,6 +1,8 @@
 package indigoplugin
 
-/** @param title
+/** Represents the various options that go into an Indigo game build.
+  *
+  * @param title
   *   Title of your game. Default 'Made with Indigo'.
   * @param showCursor
   *   Show the cursor? Default 'true'.
