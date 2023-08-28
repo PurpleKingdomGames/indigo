@@ -39,7 +39,7 @@ object SbtIndigo extends sbt.AutoPlugin {
     indigoRunFull          := indigoRunFullTask.value,
     indigoCordovaBuild     := indigoCordovaBuildTask.value,
     indigoCordovaBuildFull := indigoCordovaBuildFullTask.value,
-    indigoOptions          := indigoOptions.value
+    indigoOptions          := IndigoOptions.defaults
   )
 
   def giveScriptBasePath(baseDir: String, scalaVersion: String, projectName: String): String = {

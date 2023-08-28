@@ -65,7 +65,11 @@ final case class IndigoOptions(
 
   /** Sets the asset directory path */
   def withAssetDirectory(path: String): IndigoOptions =
-    this.copy(gameAssetsDirectory = os.Path(path))
+    this.copy(
+      gameAssetsDirectory =
+        if (path.startsWith("/")) os.Path(path)
+        else os.RelPath(path).resolveFrom(os.pwd)
+    )
   def withAssetDirectory(path: os.Path): IndigoOptions =
     this.copy(gameAssetsDirectory = path)
 

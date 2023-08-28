@@ -1,4 +1,4 @@
-import indigoplugin.ElectronInstall
+import indigoplugin.IndigoOptions
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
@@ -26,14 +26,12 @@ lazy val pirate =
       Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
     )
     .settings( // Indigo specific settings
-      showCursor            := true,
-      title                 := "The Cursed Pirate",
-      gameAssetsDirectory   := "assets",
-      windowStartWidth      := 1280,
-      windowStartHeight     := 720,
-      disableFrameRateLimit := false,
-      electronInstall       := ElectronInstall.Latest,
-      backgroundColor       := "black",
+      indigoOptions := 
+        IndigoOptions.defaults
+          .withTitle("The Cursed Pirate")
+          .withWindowStartWidth(1280)
+          .withWindowStartHeight(720)
+          .withBackgroundColor("black"),
       libraryDependencies ++= Seq(
         "io.indigoengine" %%% "indigo-json-circe" % IndigoVersion.getVersion, // Needed for Aseprite & Tiled support
         "io.indigoengine" %%% "indigo"            % IndigoVersion.getVersion, // Important! :-)
