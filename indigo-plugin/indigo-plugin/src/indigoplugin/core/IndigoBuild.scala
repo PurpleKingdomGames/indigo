@@ -1,8 +1,11 @@
-package indigoplugin
+package indigoplugin.core
 
 import os._
 import indigoplugin.templates.HtmlTemplate
 import indigoplugin.templates.SupportScriptTemplate
+import indigoplugin.datatypes.TemplateOptions
+import indigoplugin.datatypes.DirectoryStructure
+import indigoplugin.utils.Utils
 
 object IndigoBuild {
 

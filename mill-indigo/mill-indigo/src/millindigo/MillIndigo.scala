@@ -6,43 +6,16 @@ import os.Path
 import mill.define.Command
 import java.io.File
 import mill.define.Persistent
-import indigoplugin.{IndigoRun, IndigoBuildMill, TemplateOptions}
-import indigoplugin.IndigoCordova
+import indigoplugin.core.IndigoBuildMill
+import indigoplugin.datatypes.TemplateOptions
+import indigoplugin.core.IndigoRun
+import indigoplugin.core.IndigoCordova
+import indigoplugin.IndigoOptions
 
 trait MillIndigo extends mill.Module {
 
-  /** Title of your game.
-    */
-  def title: String
-
-  /** Show the cursor?
-    */
-  def showCursor: Boolean
-
-  /** HTML page background color
-    */
-  def backgroundColor: String
-
-  /** Project relative path to a directory that contains all of the assets the game needs to load.
-    */
-  def gameAssetsDirectory: Path
-
-  /** Initial window width.
-    */
-  def windowStartWidth: Int
-
-  /** Initial window height.
-    */
-  def windowStartHeight: Int
-
-  /** If possible, disables the runtime's frame rate limit, recommended to be `false`.
-    */
-  def disableFrameRateLimit: Boolean
-
-  /** How should electron be run? ElectronInstall.Global | ElectronInstall.Version(version: String) |
-    * ElectronInstall.Latest | ElectronInstall.PathToExecutable(path: String)
-    */
-  def electronInstall: ElectronInstall
+  /** Configuration options for your Indigo game. */
+  def indigoOptions: IndigoOptions
 
   def indigoBuild(): Command[Path] =
     T.command {
@@ -67,11 +40,11 @@ trait MillIndigo extends mill.Module {
       IndigoBuildMill.build(
         T.dest,
         TemplateOptions(
-          title,
-          showCursor,
+          indigoOptions.title,
+          indigoOptions.showCursor,
           scriptPathBase,
-          gameAssetsDirectory,
-          backgroundColor
+          indigoOptions.gameAssetsDirectory,
+          indigoOptions.backgroundColor
         )
       )
 
@@ -102,11 +75,11 @@ trait MillIndigo extends mill.Module {
       IndigoBuildMill.build(
         outputDir,
         TemplateOptions(
-          title,
-          showCursor,
+          indigoOptions.title,
+          indigoOptions.showCursor,
           scriptPathBase,
-          gameAssetsDirectory,
-          backgroundColor
+          indigoOptions.gameAssetsDirectory,
+          indigoOptions.backgroundColor
         )
       )
 
@@ -121,11 +94,11 @@ trait MillIndigo extends mill.Module {
       IndigoRun.run(
         outputDir,
         buildDir,
-        title,
-        windowStartWidth,
-        windowStartHeight,
-        disableFrameRateLimit,
-        electronInstall
+        indigoOptions.title,
+        indigoOptions.windowStartWidth,
+        indigoOptions.windowStartHeight,
+        indigoOptions.disableFrameRateLimit,
+        indigoOptions.electronInstall
       )
     }
 
@@ -137,11 +110,11 @@ trait MillIndigo extends mill.Module {
       IndigoRun.run(
         outputDir,
         buildDir,
-        title,
-        windowStartWidth,
-        windowStartHeight,
-        disableFrameRateLimit,
-        electronInstall
+        indigoOptions.title,
+        indigoOptions.windowStartWidth,
+        indigoOptions.windowStartHeight,
+        indigoOptions.disableFrameRateLimit,
+        indigoOptions.electronInstall
       )
     }
 
@@ -150,7 +123,13 @@ trait MillIndigo extends mill.Module {
       val outputDir: Path = T.dest
       val buildDir: Path  = indigoBuild()()
 
-      IndigoCordova.run(outputDir, buildDir, title, windowStartWidth, windowStartHeight)
+      IndigoCordova.run(
+        outputDir,
+        buildDir,
+        indigoOptions.title,
+        indigoOptions.windowStartWidth,
+        indigoOptions.windowStartHeight
+      )
     }
 
   def indigoCordovaBuildFull(): Command[Unit] =
@@ -158,7 +137,13 @@ trait MillIndigo extends mill.Module {
       val outputDir: Path = T.dest
       val buildDir: Path  = indigoBuildFull()()
 
-      IndigoCordova.run(outputDir, buildDir, title, windowStartWidth, windowStartHeight)
+      IndigoCordova.run(
+        outputDir,
+        buildDir,
+        indigoOptions.title,
+        indigoOptions.windowStartWidth,
+        indigoOptions.windowStartHeight
+      )
     }
 
 }
