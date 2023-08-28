@@ -1,17 +1,18 @@
 package indigoplugin.core
 
 import os._
-import indigoplugin.datatypes.TemplateOptions
 import indigoplugin.utils.AsciiLogo
+import indigoplugin.IndigoOptions
 
 object IndigoBuildMill {
 
-  def build(baseDir: Path, templateOptions: TemplateOptions): Unit = {
+  def build(scriptPathBase: Path, baseDir: Path, options: IndigoOptions): Unit = {
 
     println(AsciiLogo.logo)
 
     IndigoBuild.build(
-      templateOptions,
+      scriptPathBase,
+      options,
       IndigoBuild.createDirectoryStructure(baseDir),
       List("main.js", "out.js")
     )

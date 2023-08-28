@@ -3,29 +3,30 @@ package indigoplugin.core
 import os._
 import indigoplugin.templates.HtmlTemplate
 import indigoplugin.templates.SupportScriptTemplate
-import indigoplugin.datatypes.TemplateOptions
 import indigoplugin.datatypes.DirectoryStructure
 import indigoplugin.utils.Utils
+import indigoplugin.IndigoOptions
 
 object IndigoBuild {
 
   def build(
-      templateOptions: TemplateOptions,
+      scriptPathBase: Path,
+      options: IndigoOptions,
       directoryStructure: DirectoryStructure,
       scriptNames: List[String]
   ): Unit = {
 
-    val scriptName = findScriptName(scriptNames, templateOptions.scriptPathBase)
+    val scriptName = findScriptName(scriptNames, scriptPathBase)
 
     // copy built js file into scripts dir
-    IndigoBuild.copyScript(templateOptions, directoryStructure.artefacts, scriptName)
+    IndigoBuild.copyScript(scriptPathBase, directoryStructure.artefacts, scriptName)
 
     // copy assets into folder
-    IndigoBuild.copyAssets(templateOptions.gameAssetsDirectoryPath, directoryStructure.assets)
+    IndigoBuild.copyAssets(options.assets.gameAssetsDirectory, directoryStructure.assets)
 
     // copy built js source map file into scripts dir
     IndigoBuild.copyScript(
-      templateOptions,
+      scriptPathBase,
       directoryStructure.artefacts,
       scriptName + ".map"
     )
@@ -40,10 +41,10 @@ object IndigoBuild {
 
     // Fill out html template
     val html = HtmlTemplate.template(
-      templateOptions.title,
-      templateOptions.showCursor,
+      options.metadata.title,
+      options.metadata.showCursor,
       scriptName,
-      templateOptions.backgroundColor
+      options.metadata.backgroundColor
     )
 
     // Write out file
@@ -85,8 +86,8 @@ object IndigoBuild {
     }
 
   @SuppressWarnings(Array("org.wartremover.warts.Throw"))
-  def copyScript(templateOptions: TemplateOptions, destScriptsFolder: Path, fileName: String): Unit = {
-    val scriptFile = templateOptions.scriptPathBase / fileName
+  def copyScript(scriptPathBase: Path, destScriptsFolder: Path, fileName: String): Unit = {
+    val scriptFile = scriptPathBase / fileName
 
     if (os.exists(scriptFile))
       os.copy(scriptFile, destScriptsFolder / fileName, true, false, false, false, false)

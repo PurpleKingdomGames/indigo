@@ -1,14 +1,15 @@
 package indigoplugin.core
 
 import os._
-import indigoplugin.datatypes.TemplateOptions
 import indigoplugin.utils.AsciiLogo
+import indigoplugin.IndigoOptions
 
 object IndigoBuildSBT {
 
   def build(
+      scriptPathBase: Path,
       baseDir: String,
-      templateOptions: TemplateOptions,
+      options: IndigoOptions,
       outputFolderName: String,
       scriptNames: List[String]
   ): Unit = {
@@ -16,7 +17,8 @@ object IndigoBuildSBT {
     println(AsciiLogo.logo)
 
     IndigoBuild.build(
-      templateOptions,
+      scriptPathBase,
+      options,
       IndigoBuild.createDirectoryStructure(Path(baseDir) / "target" / outputFolderName),
       scriptNames
     )
