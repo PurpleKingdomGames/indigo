@@ -1,10 +1,13 @@
-package indigoplugin
+package indigoplugin.core
 
 import indigoplugin.templates.ElectronTemplates
 
 import scala.sys.process._
 import os._
 import indigoplugin.templates.SupportScriptTemplate
+import indigoplugin.datatypes.FileToWrite
+import indigoplugin.utils.AsciiLogo
+import indigoplugin.ElectronInstall
 
 object IndigoRun {
 

@@ -1,6 +1,8 @@
-package indigoplugin
+package indigoplugin.core
 
 import os._
+import indigoplugin.datatypes.TemplateOptions
+import indigoplugin.utils.AsciiLogo
 
 object IndigoBuildMill {
 

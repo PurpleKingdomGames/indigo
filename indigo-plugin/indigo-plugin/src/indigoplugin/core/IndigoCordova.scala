@@ -1,9 +1,10 @@
-package indigoplugin
+package indigoplugin.core
 
 import indigoplugin.templates.CordovaTemplates
 
 import os._
 import indigoplugin.templates.SupportScriptTemplate
+import indigoplugin.datatypes.FileToWrite
 
 object IndigoCordova {
 

@@ -1,3 +1,4 @@
+import indigoplugin.IndigoOptions
 import scala.language.postfixOps
 import Misc._
 
@@ -82,13 +83,12 @@ lazy val sandbox =
     .settings(
       neverPublish,
       commonSettings,
-      name                  := "sandbox",
-      showCursor            := true,
-      title                 := "Sandbox",
-      gameAssetsDirectory   := "assets",
-      disableFrameRateLimit := false,
-      backgroundColor       := "black",
-      electronInstall       := indigoplugin.ElectronInstall.Latest
+      name := "sandbox",
+      indigoOptions :=
+        IndigoOptions.defaults
+          .withTitle("Sandbox")
+          .withBackgroundColor("black")
+          .withAssetDirectory("sandbox/assets/")
     )
 
 lazy val perf =
@@ -99,17 +99,14 @@ lazy val perf =
     .settings(
       neverPublish,
       commonSettings,
-      name                := "indigo-perf",
-      showCursor          := true,
-      title               := "Perf",
-      gameAssetsDirectory := "assets",
-      windowStartWidth    := 800,
-      windowStartHeight   := 600,
-      disableFrameRateLimit := (sys.props("os.name").toLowerCase match {
-        case x if x contains "windows" => false
-        case _                         => true
-      }),
-      electronInstall := indigoplugin.ElectronInstall.Latest
+      name := "indigo-perf",
+      indigoOptions :=
+        IndigoOptions.defaults
+          .withTitle("Perf")
+          .withBackgroundColor("black")
+          .withWindowStartWidth(800)
+          .withWindowStartHeight(600)
+          .withAssetDirectory("perf/assets/")
     )
 
 lazy val shader =
@@ -120,18 +117,14 @@ lazy val shader =
     .settings(
       neverPublish,
       commonSettings,
-      name                := "indigo-shader",
-      showCursor          := true,
-      title               := "Shader",
-      gameAssetsDirectory := "assets",
-      windowStartWidth    := 450,
-      windowStartHeight   := 450,
-      backgroundColor     := "black",
-      disableFrameRateLimit := (sys.props("os.name").toLowerCase match {
-        case x if x contains "windows" => false
-        case _                         => true
-      }),
-      electronInstall := indigoplugin.ElectronInstall.Latest
+      name := "indigo-shader",
+      indigoOptions :=
+        IndigoOptions.defaults
+          .withTitle("Shader")
+          .withBackgroundColor("black")
+          .withWindowStartWidth(450)
+          .withWindowStartHeight(450)
+          .withAssetDirectory("shader/assets/")
     )
 
 // Indigo Extensions
@@ -191,10 +184,10 @@ lazy val jsdocs = project
     organization := "io.indigoengine",
     libraryDependencies ++= Dependencies.jsDocs.value,
     libraryDependencies ++= Seq(
-      "io.indigoengine" %%% "indigo-json-circe"    % indigoDocsVersion,
-      "io.indigoengine" %%% "indigo"               % indigoDocsVersion,
-      "io.indigoengine" %%% "indigo-extras"        % indigoDocsVersion,
-      "io.indigoengine" %%% "tyrian-io"            % tyrianDocsVersion//,
+      "io.indigoengine" %%% "indigo-json-circe" % indigoDocsVersion,
+      "io.indigoengine" %%% "indigo"            % indigoDocsVersion,
+      "io.indigoengine" %%% "indigo-extras"     % indigoDocsVersion,
+      "io.indigoengine" %%% "tyrian-io"         % tyrianDocsVersion // ,
       // "io.indigoengine" %%% "tyrian-indigo-bridge" % tyrianDocsVersion
     )
   )

@@ -1,4 +1,4 @@
-package indigoplugin
+package indigoplugin.utils
 
 object AsciiLogo {
 

@@ -3,8 +3,11 @@ package sbtindigo
 import sbt.plugins.JvmPlugin
 import sbt._
 
-import indigoplugin.{IndigoRun, IndigoBuildSBT, TemplateOptions}
-import indigoplugin.IndigoCordova
+import indigoplugin.IndigoOptions
+import indigoplugin.core.IndigoBuildSBT
+import indigoplugin.datatypes.TemplateOptions
+import indigoplugin.core.IndigoCordova
+import indigoplugin.core.IndigoRun
 
 object SbtIndigo extends sbt.AutoPlugin {
 
@@ -12,6 +15,8 @@ object SbtIndigo extends sbt.AutoPlugin {
   override def trigger: PluginTrigger   = allRequirements
 
   object autoImport {
+
+    // Build and Run tasks
     val indigoBuild: TaskKey[Unit]        = taskKey[Unit]("Build an Indigo game.")
     val indigoBuildFull: TaskKey[Unit]    = taskKey[Unit]("Build an Indigo game using full compression.")
     val indigoRun: TaskKey[Unit]          = taskKey[Unit]("Run an Indigo game.")
@@ -19,19 +24,10 @@ object SbtIndigo extends sbt.AutoPlugin {
     val indigoCordovaBuild: TaskKey[Unit] = taskKey[Unit]("Build an Indigo game Cordova template.")
     val indigoCordovaBuildFull: TaskKey[Unit] =
       taskKey[Unit]("Build an Indigo game Cordova template that has been compressed.")
-    val gameAssetsDirectory: SettingKey[String] =
-      settingKey[String]("Project relative path to a directory that contains all of the assets the game needs to load.")
-    val showCursor: SettingKey[Boolean] = settingKey[Boolean]("Show the cursor? True by default.")
-    val title: SettingKey[String]       = settingKey[String]("Title of your game. Defaults to 'Made with Indigo'.")
-    val backgroundColor: SettingKey[String] =
-      settingKey[String]("HTML page background color CSS property. Defaults to 'initial'.")
-    val windowStartWidth: SettingKey[Int]  = settingKey[Int]("Initial window width. Defaults to 550 pixels.")
-    val windowStartHeight: SettingKey[Int] = settingKey[Int]("Initial window height. Defaults to 400 pixels.")
-    val disableFrameRateLimit: SettingKey[Boolean] =
-      settingKey[Boolean]("If possible, disables the runtime's frame rate limit. Defaults to false.")
-    val electronInstall: SettingKey[ElectronInstall] = settingKey[ElectronInstall](
-      "How should electron be run? `ElectronInstall.Global | ElectronInstall.Version(version: String) | ElectronInstall.Latest | ElectronInstall.PathToExecutable(path: String)`. Defaults to ElectronInstall.Global."
-    )
+
+    // Config options
+    val indigoOptions: SettingKey[IndigoOptions] =
+      settingKey[IndigoOptions]("Config options for your Indigo game.")
   }
 
   import autoImport._
@@ -43,14 +39,7 @@ object SbtIndigo extends sbt.AutoPlugin {
     indigoRunFull          := indigoRunFullTask.value,
     indigoCordovaBuild     := indigoCordovaBuildTask.value,
     indigoCordovaBuildFull := indigoCordovaBuildFullTask.value,
-    showCursor             := true,
-    title                  := "Made with Indigo",
-    backgroundColor        := "white",
-    gameAssetsDirectory    := ".",
-    windowStartWidth       := 550,
-    windowStartHeight      := 400,
-    disableFrameRateLimit  := false,
-    electronInstall        := indigoplugin.ElectronInstall.Global
+    indigoOptions          := IndigoOptions.defaults
   )
 
   def giveScriptBasePath(baseDir: String, scalaVersion: String, projectName: String): String = {
@@ -86,15 +75,11 @@ object SbtIndigo extends sbt.AutoPlugin {
       IndigoBuildSBT.build(
         baseDir,
         TemplateOptions(
-          title = title.value,
-          showCursor = showCursor.value,
+          title = indigoOptions.value.title,
+          showCursor = indigoOptions.value.showCursor,
           scriptPathBase = os.Path(scriptPathBase),
-          gameAssetsDirectoryPath = os.Path(
-            if (gameAssetsDirectory.value.startsWith("/"))
-              gameAssetsDirectory.value
-            else baseDir.replace("/.js", "") + "/" + gameAssetsDirectory.value
-          ),
-          backgroundColor = backgroundColor.value
+          gameAssetsDirectoryPath = indigoOptions.value.gameAssetsDirectory,
+          backgroundColor = indigoOptions.value.backgroundColor
         ),
         outputDir,
         List(
@@ -123,15 +108,11 @@ object SbtIndigo extends sbt.AutoPlugin {
       IndigoBuildSBT.build(
         baseDir,
         TemplateOptions(
-          title = title.value,
-          showCursor = showCursor.value,
+          title = indigoOptions.value.title,
+          showCursor = indigoOptions.value.showCursor,
           scriptPathBase = os.Path(scriptPathBase),
-          gameAssetsDirectoryPath = os.Path(
-            if (gameAssetsDirectory.value.startsWith("/"))
-              gameAssetsDirectory.value
-            else baseDir + "/" + gameAssetsDirectory.value
-          ),
-          backgroundColor = backgroundColor.value
+          gameAssetsDirectoryPath = indigoOptions.value.gameAssetsDirectory,
+          backgroundColor = indigoOptions.value.backgroundColor
         ),
         outputDir,
         List(
@@ -152,11 +133,11 @@ object SbtIndigo extends sbt.AutoPlugin {
       IndigoRun.run(
         outputDir = outputDir,
         buildDir = buildDir,
-        title = title.value,
-        windowWidth = windowStartWidth.value,
-        windowHeight = windowStartHeight.value,
-        disableFrameRateLimit = disableFrameRateLimit.value,
-        electronInstall = electronInstall.value
+        title = indigoOptions.value.title,
+        windowWidth = indigoOptions.value.windowStartWidth,
+        windowHeight = indigoOptions.value.windowStartHeight,
+        disableFrameRateLimit = indigoOptions.value.disableFrameRateLimit,
+        electronInstall = indigoOptions.value.electronInstall
       )
     }
 
@@ -169,11 +150,11 @@ object SbtIndigo extends sbt.AutoPlugin {
       IndigoRun.run(
         outputDir = outputDir,
         buildDir = buildDir,
-        title = title.value,
-        windowWidth = windowStartWidth.value,
-        windowHeight = windowStartHeight.value,
-        disableFrameRateLimit = disableFrameRateLimit.value,
-        electronInstall = electronInstall.value
+        title = indigoOptions.value.title,
+        windowWidth = indigoOptions.value.windowStartWidth,
+        windowHeight = indigoOptions.value.windowStartHeight,
+        disableFrameRateLimit = indigoOptions.value.disableFrameRateLimit,
+        electronInstall = indigoOptions.value.electronInstall
       )
     }
 
@@ -186,9 +167,9 @@ object SbtIndigo extends sbt.AutoPlugin {
       IndigoCordova.run(
         outputDir = outputDir,
         buildDir = buildDir,
-        title = title.value,
-        windowWidth = windowStartWidth.value,
-        windowHeight = windowStartHeight.value
+        title = indigoOptions.value.title,
+        windowWidth = indigoOptions.value.windowStartWidth,
+        windowHeight = indigoOptions.value.windowStartHeight
       )
     }
 
@@ -201,9 +182,9 @@ object SbtIndigo extends sbt.AutoPlugin {
       IndigoCordova.run(
         outputDir = outputDir,
         buildDir = buildDir,
-        title = title.value,
-        windowWidth = windowStartWidth.value,
-        windowHeight = windowStartHeight.value
+        title = indigoOptions.value.title,
+        windowWidth = indigoOptions.value.windowStartWidth,
+        windowHeight = indigoOptions.value.windowStartHeight
       )
     }
 
