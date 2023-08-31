@@ -42,8 +42,14 @@ final case class IndigoOptions(
   /** Sets the asset directory path */
   def withAssetDirectory(path: String): IndigoOptions =
     this.copy(assets = assets.withAssetDirectory(path))
-  def withAssetDirectory(path: os.Path): IndigoOptions =
+  def withAssetDirectory(path: os.RelPath): IndigoOptions =
     this.copy(assets = assets.withAssetDirectory(path))
+
+  def includeAssets(rules: os.RelPath => Boolean*): IndigoOptions =
+    this.copy(assets = assets.includeRules(rules.toList))
+
+  def excludeAssets(rules: os.RelPath => Boolean*): IndigoOptions =
+    this.copy(assets = assets.excludeRules(rules.toList))
 
   /** Set the window start width */
   def withWindowWidth(value: Int): IndigoOptions =
@@ -254,18 +260,36 @@ object IndigoElectronOptions {
   *   Project relative path to a directory that contains all of the assets the game needs to load. Default './assets'.
   */
 final case class IndigoAssets(
-    gameAssetsDirectory: os.Path
+    gameAssetsDirectory: os.RelPath,
+    include: PartialFunction[os.RelPath, Boolean],
+    exclude: PartialFunction[os.RelPath, Boolean]
 ) {
 
   /** Sets the asset directory path */
   def withAssetDirectory(path: String): IndigoAssets =
     this.copy(
       gameAssetsDirectory =
-        if (path.startsWith("/")) os.Path(path)
-        else os.RelPath(path).resolveFrom(os.pwd)
+        if (path.startsWith("/")) os.Path(path).relativeTo(os.pwd)
+        else os.RelPath(path)
     )
-  def withAssetDirectory(path: os.Path): IndigoAssets =
+  def withAssetDirectory(path: os.RelPath): IndigoAssets =
     this.copy(gameAssetsDirectory = path)
+
+  def withInclude(p: PartialFunction[os.RelPath, Boolean]): IndigoAssets =
+    this.copy(include = p)
+
+  def includeRules(rules: List[os.RelPath => Boolean]): IndigoAssets =
+    withInclude { case path =>
+      rules.find(_(path)).map(_(path)).getOrElse(false)
+    }
+
+  def withExclude(p: PartialFunction[os.RelPath, Boolean]): IndigoAssets =
+    this.copy(exclude = p)
+
+  def excludeRules(rules: List[os.RelPath => Boolean]): IndigoAssets =
+    withExclude { case path =>
+      rules.find(_(path)).map(_(path)).getOrElse(false)
+    }
 
 }
 
@@ -274,6 +298,8 @@ object IndigoAssets {
   /** Default settings for an Indigo game's asset management */
   val defaults: IndigoAssets =
     IndigoAssets(
-      gameAssetsDirectory = os.pwd / "assets"
+      gameAssetsDirectory = os.RelPath("assets"),
+      _ => false,
+      _ => false
     )
 }
