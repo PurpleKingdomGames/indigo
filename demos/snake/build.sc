@@ -17,8 +17,8 @@ object snake extends ScalaJSModule with MillIndigo with ScalafmtModule {
   val indigoOptions: IndigoOptions =
     IndigoOptions.defaults
       .withTitle("Snake - Made with Indigo")
-      .withWindowStartWidth(720)
-      .withWindowStartHeight(516)
+      .withWindowWidth(720)
+      .withWindowHeight(516)
       .withBackgroundColor("black")
 
   def buildGame() = T.command {

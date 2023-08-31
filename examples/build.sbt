@@ -176,8 +176,8 @@ lazy val tiled =
           .withTitle("Tiled example")
           .withBackgroundColor("black")
           .withAssetDirectory("tiled/assets")
-          .withWindowStartWidth(19 * 32)
-          .withWindowStartHeight(11 * 32),
+          .withWindowWidth(19 * 32)
+          .withWindowHeight(11 * 32),
       libraryDependencies ++= Seq(
         "io.indigoengine" %%% "indigo-json-circe" % IndigoVersion.getVersion
       )
@@ -256,8 +256,8 @@ lazy val fireworks =
           .withTitle("Fireworks!")
           .withBackgroundColor("black")
           .withAssetDirectory("fireworks/assets")
-          .withWindowStartWidth(1280)
-          .withWindowStartHeight(720),
+          .withWindowWidth(1280)
+          .withWindowHeight(720),
       libraryDependencies ++= Seq(
         "org.scalacheck" %%% "scalacheck" % "1.15.3" % "test"
       )
@@ -290,8 +290,8 @@ lazy val lighting =
           .withTitle("Lighting")
           .withBackgroundColor("black")
           .withAssetDirectory("lighting/assets")
-          .withWindowStartWidth(684)
-          .withWindowStartHeight(384)
+          .withWindowWidth(684)
+          .withWindowHeight(384)
     )
     .settings(
       publish      := {},
@@ -310,8 +310,8 @@ lazy val distortion =
           .withTitle("Distortion Example")
           .withBackgroundColor("black")
           .withAssetDirectory("distortion/assets")
-          .withWindowStartWidth(684)
-          .withWindowStartHeight(384)
+          .withWindowWidth(684)
+          .withWindowHeight(384)
     )
     .settings(
       publish      := {},
@@ -382,8 +382,8 @@ lazy val jobs =
           .withTitle("Job System Example")
           .withBackgroundColor("black")
           .withAssetDirectory("jobs/assets")
-          .withWindowStartWidth(400)
-          .withWindowStartHeight(400)
+          .withWindowWidth(400)
+          .withWindowHeight(400)
     )
 
 lazy val confetti =
@@ -399,8 +399,8 @@ lazy val confetti =
           .withTitle("Confetti")
           .withBackgroundColor("black")
           .withAssetDirectory("confetti/assets")
-          .withWindowStartWidth(640)
-          .withWindowStartHeight(480)
+          .withWindowWidth(640)
+          .withWindowHeight(480)
     )
 
 lazy val inputmapper =
@@ -416,8 +416,8 @@ lazy val inputmapper =
           .withTitle("Input Mapper Example")
           .withBackgroundColor("black")
           .withAssetDirectory("inputmapper/assets")
-          .withWindowStartWidth(400)
-          .withWindowStartHeight(400)
+          .withWindowWidth(400)
+          .withWindowHeight(400)
     )
 
 lazy val mouseevents =
@@ -448,8 +448,8 @@ lazy val errors =
           .withTitle("Error Handling")
           .withBackgroundColor("black")
           .withAssetDirectory("errors/assets")
-          .withWindowStartWidth(800)
-          .withWindowStartHeight(800)
+          .withWindowWidth(800)
+          .withWindowHeight(800)
     )
 
 // Root

@@ -5,7 +5,6 @@ import sbt._
 
 import indigoplugin.IndigoOptions
 import indigoplugin.core.IndigoBuildSBT
-import indigoplugin.datatypes.TemplateOptions
 import indigoplugin.core.IndigoCordova
 import indigoplugin.core.IndigoRun
 
@@ -73,14 +72,9 @@ object SbtIndigo extends sbt.AutoPlugin {
       println(scriptPathBase)
 
       IndigoBuildSBT.build(
+        os.Path(scriptPathBase),
         baseDir,
-        TemplateOptions(
-          title = indigoOptions.value.title,
-          showCursor = indigoOptions.value.showCursor,
-          scriptPathBase = os.Path(scriptPathBase),
-          gameAssetsDirectoryPath = indigoOptions.value.gameAssetsDirectory,
-          backgroundColor = indigoOptions.value.backgroundColor
-        ),
+        indigoOptions.value,
         outputDir,
         List(
           "main.js",
@@ -106,14 +100,9 @@ object SbtIndigo extends sbt.AutoPlugin {
       println(scriptPathBase)
 
       IndigoBuildSBT.build(
+        os.Path(scriptPathBase),
         baseDir,
-        TemplateOptions(
-          title = indigoOptions.value.title,
-          showCursor = indigoOptions.value.showCursor,
-          scriptPathBase = os.Path(scriptPathBase),
-          gameAssetsDirectoryPath = indigoOptions.value.gameAssetsDirectory,
-          backgroundColor = indigoOptions.value.backgroundColor
-        ),
+        indigoOptions.value,
         outputDir,
         List(
           "main.js",
@@ -133,11 +122,7 @@ object SbtIndigo extends sbt.AutoPlugin {
       IndigoRun.run(
         outputDir = outputDir,
         buildDir = buildDir,
-        title = indigoOptions.value.title,
-        windowWidth = indigoOptions.value.windowStartWidth,
-        windowHeight = indigoOptions.value.windowStartHeight,
-        disableFrameRateLimit = indigoOptions.value.disableFrameRateLimit,
-        electronInstall = indigoOptions.value.electronInstall
+        indigoOptions = indigoOptions.value
       )
     }
 
@@ -150,11 +135,7 @@ object SbtIndigo extends sbt.AutoPlugin {
       IndigoRun.run(
         outputDir = outputDir,
         buildDir = buildDir,
-        title = indigoOptions.value.title,
-        windowWidth = indigoOptions.value.windowStartWidth,
-        windowHeight = indigoOptions.value.windowStartHeight,
-        disableFrameRateLimit = indigoOptions.value.disableFrameRateLimit,
-        electronInstall = indigoOptions.value.electronInstall
+        indigoOptions = indigoOptions.value
       )
     }
 
@@ -167,9 +148,7 @@ object SbtIndigo extends sbt.AutoPlugin {
       IndigoCordova.run(
         outputDir = outputDir,
         buildDir = buildDir,
-        title = indigoOptions.value.title,
-        windowWidth = indigoOptions.value.windowStartWidth,
-        windowHeight = indigoOptions.value.windowStartHeight
+        metadata = indigoOptions.value.metadata
       )
     }
 
@@ -182,9 +161,7 @@ object SbtIndigo extends sbt.AutoPlugin {
       IndigoCordova.run(
         outputDir = outputDir,
         buildDir = buildDir,
-        title = indigoOptions.value.title,
-        windowWidth = indigoOptions.value.windowStartWidth,
-        windowHeight = indigoOptions.value.windowStartHeight
+        metadata = indigoOptions.value.metadata
       )
     }
 

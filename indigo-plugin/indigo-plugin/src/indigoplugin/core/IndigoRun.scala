@@ -8,6 +8,7 @@ import indigoplugin.templates.SupportScriptTemplate
 import indigoplugin.datatypes.FileToWrite
 import indigoplugin.utils.AsciiLogo
 import indigoplugin.ElectronInstall
+import indigoplugin.IndigoOptions
 
 object IndigoRun {
 
@@ -20,16 +21,12 @@ object IndigoRun {
   def run(
       outputDir: Path,
       buildDir: Path,
-      title: String,
-      windowWidth: Int,
-      windowHeight: Int,
-      disableFrameRateLimit: Boolean,
-      electronInstall: ElectronInstall
+      indigoOptions: IndigoOptions
   ): Unit = {
 
     os.makeDir.all(outputDir)
 
-    filesToWrite(windowWidth, windowHeight, disableFrameRateLimit, electronInstall).foreach { f =>
+    filesToWrite(indigoOptions).foreach { f =>
       os.write.over(outputDir / f.name, f.contents)
     }
 
@@ -43,11 +40,11 @@ object IndigoRun {
     os.remove(supportFile)
     os.write(supportFile, support)
 
-    println(s"Starting '$title'")
+    println(s"Starting '${indigoOptions.metadata.title} title'")
 
     sys.props("os.name").toLowerCase match {
       case x if x contains "windows" =>
-        electronInstall match {
+        indigoOptions.electron.electronInstall match {
           case ElectronInstall.Global =>
             IndigoProc.Windows.npmStart(outputDir)
 
@@ -75,7 +72,7 @@ object IndigoRun {
         }
 
       case _ =>
-        electronInstall match {
+        indigoOptions.electron.electronInstall match {
           case ElectronInstall.Global =>
             IndigoProc.Nix.npmStart(outputDir)
 
@@ -106,16 +103,14 @@ object IndigoRun {
     ()
   }
 
-  def filesToWrite(
-      windowWidth: Int,
-      windowHeight: Int,
-      disableFrameRateLimit: Boolean,
-      electronInstall: ElectronInstall
-  ): List[FileToWrite] =
+  def filesToWrite(indigoOptions: IndigoOptions): List[FileToWrite] =
     List(
-      FileToWrite("main.js", ElectronTemplates.mainFileTemplate(windowWidth, windowHeight)),
+      FileToWrite(
+        "main.js",
+        ElectronTemplates.mainFileTemplate(indigoOptions.metadata.width, indigoOptions.metadata.height)
+      ),
       FileToWrite("preload.js", ElectronTemplates.preloadFileTemplate),
-      FileToWrite("package.json", ElectronTemplates.packageFileTemplate(disableFrameRateLimit, electronInstall))
+      FileToWrite("package.json", ElectronTemplates.packageFileTemplate(indigoOptions.electron))
     )
 
 }
