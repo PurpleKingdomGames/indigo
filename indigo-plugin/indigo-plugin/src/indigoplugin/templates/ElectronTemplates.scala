@@ -1,6 +1,7 @@
 package indigoplugin.templates
 
 import indigoplugin.ElectronInstall
+import indigoplugin.IndigoElectronOptions
 
 object ElectronTemplates {
 
@@ -53,23 +54,26 @@ app.on('window-all-closed', function () {
 // code. You can also put them in separate files and require them here.
     """
 
-  def packageFileTemplate(disableFrameRateLimit: Boolean, electronInstall: ElectronInstall): String =
+  def packageFileTemplate(electronOptions: IndigoElectronOptions): String = {
+    val disableFrameLimit = if (electronOptions.disableFrameRateLimit) " --disable-frame-rate-limit" else ""
+
     s"""{
   "name": "indigo-runner",
   "version": "1.0.0",
   "description": "Indigo Runner",
   "main": "main.js",
   "scripts": {
-    "start": "${electronInstall.executable}${if (disableFrameRateLimit) " --disable-frame-rate-limit" else ""} ."
+    "start": "${electronOptions.electronInstall.executable}${disableFrameLimit} ."
   },
   "repository": "",
   "author": "Purple Kingdom Games",
   "license": "MIT",
   "devDependencies": {
-    ${electronInstall.devDependencies}
+    ${electronOptions.electronInstall.devDependencies}
   }
 }
     """
+  }
 
   lazy val preloadFileTemplate: String =
     """// All of the Node.js APIs are available in the preload process.

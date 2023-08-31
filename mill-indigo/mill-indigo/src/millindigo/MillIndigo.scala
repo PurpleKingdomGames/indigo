@@ -7,7 +7,6 @@ import mill.define.Command
 import java.io.File
 import mill.define.Persistent
 import indigoplugin.core.IndigoBuildMill
-import indigoplugin.datatypes.TemplateOptions
 import indigoplugin.core.IndigoRun
 import indigoplugin.core.IndigoCordova
 import indigoplugin.IndigoOptions
@@ -38,14 +37,9 @@ trait MillIndigo extends mill.Module {
       }
 
       IndigoBuildMill.build(
+        scriptPathBase,
         T.dest,
-        TemplateOptions(
-          indigoOptions.title,
-          indigoOptions.showCursor,
-          scriptPathBase,
-          indigoOptions.gameAssetsDirectory,
-          indigoOptions.backgroundColor
-        )
+        indigoOptions
       )
 
       T.dest
@@ -73,14 +67,9 @@ trait MillIndigo extends mill.Module {
       }
 
       IndigoBuildMill.build(
+        scriptPathBase,
         outputDir,
-        TemplateOptions(
-          indigoOptions.title,
-          indigoOptions.showCursor,
-          scriptPathBase,
-          indigoOptions.gameAssetsDirectory,
-          indigoOptions.backgroundColor
-        )
+        indigoOptions
       )
 
       outputDir
@@ -94,11 +83,7 @@ trait MillIndigo extends mill.Module {
       IndigoRun.run(
         outputDir,
         buildDir,
-        indigoOptions.title,
-        indigoOptions.windowStartWidth,
-        indigoOptions.windowStartHeight,
-        indigoOptions.disableFrameRateLimit,
-        indigoOptions.electronInstall
+        indigoOptions
       )
     }
 
@@ -110,11 +95,7 @@ trait MillIndigo extends mill.Module {
       IndigoRun.run(
         outputDir,
         buildDir,
-        indigoOptions.title,
-        indigoOptions.windowStartWidth,
-        indigoOptions.windowStartHeight,
-        indigoOptions.disableFrameRateLimit,
-        indigoOptions.electronInstall
+        indigoOptions
       )
     }
 
@@ -126,9 +107,7 @@ trait MillIndigo extends mill.Module {
       IndigoCordova.run(
         outputDir,
         buildDir,
-        indigoOptions.title,
-        indigoOptions.windowStartWidth,
-        indigoOptions.windowStartHeight
+        indigoOptions.metadata
       )
     }
 
@@ -140,9 +119,7 @@ trait MillIndigo extends mill.Module {
       IndigoCordova.run(
         outputDir,
         buildDir,
-        indigoOptions.title,
-        indigoOptions.windowStartWidth,
-        indigoOptions.windowStartHeight
+        indigoOptions.metadata
       )
     }
 

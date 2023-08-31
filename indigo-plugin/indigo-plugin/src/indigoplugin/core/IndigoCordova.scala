@@ -5,15 +5,16 @@ import indigoplugin.templates.CordovaTemplates
 import os._
 import indigoplugin.templates.SupportScriptTemplate
 import indigoplugin.datatypes.FileToWrite
+import indigoplugin.IndigoGameMetadata
 
 object IndigoCordova {
 
-  def run(outputDir: Path, buildDir: Path, title: String, windowWidth: Int, windowHeight: Int): Unit = {
+  def run(outputDir: Path, buildDir: Path, metadata: IndigoGameMetadata): Unit = {
 
     os.remove.all(outputDir)
     os.makeDir.all(outputDir)
 
-    filesToWrite(title, windowWidth, windowHeight).foreach { f =>
+    filesToWrite(metadata.title, metadata.width, metadata.height).foreach { f =>
       os.makeDir.all(outputDir / f.folderPath)
       os.write.over(outputDir / f.folderPath / f.name, f.contents)
     }

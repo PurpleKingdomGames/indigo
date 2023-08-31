@@ -104,8 +104,8 @@ lazy val perf =
         IndigoOptions.defaults
           .withTitle("Perf")
           .withBackgroundColor("black")
-          .withWindowStartWidth(800)
-          .withWindowStartHeight(600)
+          .withWindowWidth(800)
+          .withWindowHeight(600)
           .withAssetDirectory("perf/assets/")
     )
 
@@ -122,8 +122,8 @@ lazy val shader =
         IndigoOptions.defaults
           .withTitle("Shader")
           .withBackgroundColor("black")
-          .withWindowStartWidth(450)
-          .withWindowStartHeight(450)
+          .withWindowWidth(450)
+          .withWindowHeight(450)
           .withAssetDirectory("shader/assets/")
     )
 

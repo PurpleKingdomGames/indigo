@@ -29,8 +29,8 @@ lazy val pirate =
       indigoOptions := 
         IndigoOptions.defaults
           .withTitle("The Cursed Pirate")
-          .withWindowStartWidth(1280)
-          .withWindowStartHeight(720)
+          .withWindowWidth(1280)
+          .withWindowHeight(720)
           .withBackgroundColor("black"),
       libraryDependencies ++= Seq(
         "io.indigoengine" %%% "indigo-json-circe" % IndigoVersion.getVersion, // Needed for Aseprite & Tiled support
