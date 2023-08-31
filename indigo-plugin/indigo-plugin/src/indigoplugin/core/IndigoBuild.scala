@@ -6,6 +6,10 @@ import indigoplugin.templates.SupportScriptTemplate
 import indigoplugin.datatypes.DirectoryStructure
 import indigoplugin.utils.Utils
 import indigoplugin.IndigoOptions
+import java.nio.file.CopyOption
+import java.nio.file.LinkOption
+import java.nio.file.StandardCopyOption
+import indigoplugin.IndigoAssets
 
 object IndigoBuild {
 
@@ -22,7 +26,7 @@ object IndigoBuild {
     IndigoBuild.copyScript(scriptPathBase, directoryStructure.artefacts, scriptName)
 
     // copy assets into folder
-    IndigoBuild.copyAssets(options.assets.gameAssetsDirectory, directoryStructure.assets)
+    IndigoBuild.copyAssets(options.assets, directoryStructure.assets)
 
     // copy built js source map file into scripts dir
     IndigoBuild.copyScript(
@@ -75,15 +79,23 @@ object IndigoBuild {
   }
 
   @SuppressWarnings(Array("org.wartremover.warts.Throw"))
-  def copyAssets(gameAssetsDirectoryPath: Path, destAssetsFolder: Path): Unit =
-    if (!os.exists(gameAssetsDirectoryPath))
-      throw new Exception("Supplied game assets path does not exist: " + gameAssetsDirectoryPath.toString())
-    else if (!os.isDir(gameAssetsDirectoryPath))
+  def copyAssets(indigoAssets: IndigoAssets, destAssetsFolder: Path): Unit = {
+    val absPath = indigoAssets.gameAssetsDirectory.resolveFrom(os.pwd)
+
+    if (!os.exists(absPath))
+      throw new Exception("Supplied game assets path does not exist: " + indigoAssets.gameAssetsDirectory.toString())
+    else if (!os.isDir(absPath))
       throw new Exception("Supplied game assets path was not a directory")
     else {
       println("Copying assets...")
-      os.copy(gameAssetsDirectoryPath, destAssetsFolder, true, true, true, false, false)
+      copyAllWithFilters(
+        absPath,
+        destAssetsFolder,
+        indigoAssets.include.orElse(_ => false),
+        indigoAssets.exclude.orElse(_ => false)
+      )
     }
+  }
 
   @SuppressWarnings(Array("org.wartremover.warts.Throw"))
   def copyScript(scriptPathBase: Path, destScriptsFolder: Path, fileName: String): Unit = {
@@ -102,6 +114,49 @@ object IndigoBuild {
     os.write(outFile, html)
 
     outFile
+  }
+
+  /** This is taken and modified from the os-lib code. */
+  def copyAllWithFilters(
+      from: Path,
+      to: Path,
+      include: RelPath => Boolean,
+      exclude: RelPath => Boolean
+  ): Unit = {
+    makeDir.all(to / up)
+
+    require(
+      !to.startsWith(from),
+      s"Can't copy a directory into itself: $to is inside $from"
+    )
+
+    def copyOne(p: Path): java.nio.file.Path = {
+      val rel    = p.relativeTo(from)
+      val target = to / p.relativeTo(from)
+
+      def doCopy(): java.nio.file.Path =
+        java.nio.file.Files.copy(
+          p.wrapped,
+          target.wrapped,
+          LinkOption.NOFOLLOW_LINKS,
+          StandardCopyOption.REPLACE_EXISTING,
+          StandardCopyOption.COPY_ATTRIBUTES
+        )
+
+      if (include(rel))
+        // Specifically include, even if in an excluded location
+        doCopy()
+      else if (exclude(rel))
+        // Specifically excluded, do nothing
+        target.wrapped
+      else
+        // Otherwise, no specific instruction so assume copy.
+        doCopy()
+    }
+
+    copyOne(from)
+
+    if (stat(from, followLinks = true).isDir) walk(from).map(copyOne)
   }
 
 }
