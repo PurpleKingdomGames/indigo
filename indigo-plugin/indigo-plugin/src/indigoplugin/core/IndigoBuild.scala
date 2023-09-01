@@ -88,11 +88,14 @@ object IndigoBuild {
       throw new Exception("Supplied game assets path was not a directory")
     else {
       println("Copying assets...")
+
+      val pf: PartialFunction[os.RelPath, Boolean] = { case _ => false }
+
       copyAllWithFilters(
         absPath,
         destAssetsFolder,
-        indigoAssets.include.orElse(_ => false),
-        indigoAssets.exclude.orElse(_ => false)
+        indigoAssets.include.orElse(pf),
+        indigoAssets.exclude.orElse(pf)
       )
     }
   }
