@@ -296,10 +296,9 @@ final case class IndigoAssets(
 object IndigoAssets {
 
   /** Default settings for an Indigo game's asset management */
-  val defaults: IndigoAssets =
-    IndigoAssets(
-      gameAssetsDirectory = os.RelPath("assets"),
-      _ => false,
-      _ => false
-    )
+  val defaults: IndigoAssets = {
+    val pf: PartialFunction[os.RelPath, Boolean] = { case _ => false }
+
+    IndigoAssets(gameAssetsDirectory = os.RelPath("assets"), pf, pf)
+  }
 }
