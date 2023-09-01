@@ -2,11 +2,9 @@ package indigoplugin.core
 
 import indigoplugin.templates.ElectronTemplates
 
-import scala.sys.process._
 import os._
 import indigoplugin.templates.SupportScriptTemplate
 import indigoplugin.datatypes.FileToWrite
-import indigoplugin.utils.AsciiLogo
 import indigoplugin.ElectronInstall
 import indigoplugin.IndigoOptions
 
@@ -67,7 +65,7 @@ object IndigoRun {
             }
             IndigoProc.Windows.npmStart(outputDir)
 
-          case ElectronInstall.PathToExecutable(path) =>
+          case ElectronInstall.PathToExecutable(_) =>
             IndigoProc.Windows.npmStart(outputDir)
         }
 
@@ -95,7 +93,7 @@ object IndigoRun {
             }
             IndigoProc.Nix.npmStart(outputDir)
 
-          case ElectronInstall.PathToExecutable(path) =>
+          case ElectronInstall.PathToExecutable(_) =>
             IndigoProc.Nix.npmStart(outputDir)
         }
     }

@@ -9,15 +9,19 @@ import mill.scalalib.scalafmt._
 import coursier.maven.MavenRepository
 import publish._
 
+import $ivy.`io.github.davidgregory084::mill-tpolecat::0.3.5`
+import io.github.davidgregory084.TpolecatModule
+
 object `indigo-plugin` extends Cross[IndigoPluginModule]("2.12", "2.13")
-trait IndigoPluginModule extends CrossScalaModule with PublishModule with ScalafmtModule {
-  def indigoVersion = T.input { IndigoVersion.getVersion }
+
+trait IndigoPluginModule extends CrossScalaModule with PublishModule with ScalafmtModule with TpolecatModule {
+  def indigoVersion = T.input(IndigoVersion.getVersion)
 
   def scalaVersion =
     crossScalaVersion match {
       case "2.12" => "2.12.17"
       case "2.13" => "2.13.10"
-      case _  => "2.13.10"
+      case _      => "2.13.10"
     }
 
   def artifactName = "indigo-plugin"
@@ -31,9 +35,6 @@ trait IndigoPluginModule extends CrossScalaModule with PublishModule with Scalaf
     )
   }
 
-  def scalacOptions =
-    ScalacOptions.scala213Compile
-
   object test extends ScalaTests {
     def ivyDeps =
       Agg(
@@ -41,8 +42,6 @@ trait IndigoPluginModule extends CrossScalaModule with PublishModule with Scalaf
       )
 
     def testFramework = "munit.Framework"
-
-    def scalacOptions = ScalacOptions.scala213Test
   }
 
   def publishVersion = indigoVersion()
@@ -87,35 +86,4 @@ object IndigoVersion {
 
     rec(".indigo-version", 0, None)
   }
-}
-
-object ScalacOptions {
-
-  lazy val scala213Compile: Seq[String] =
-    Seq(
-      "-deprecation", // Emit warning and location for usages of deprecated APIs.
-      "-encoding",
-      "utf-8",                         // Specify character encoding used by source files.
-      "-feature",                      // Emit warning and location for usages of features that should be imported explicitly.
-      "-language:existentials",        // Existential types (besides wildcard types) can be written and inferred
-      "-language:experimental.macros", // Allow macro definition (besides implementation and application)
-      "-language:higherKinds",         // Allow higher-kinded types
-      "-language:implicitConversions", // Allow definition of implicit functions called views
-      "-unchecked",                    // Enable additional warnings where generated code depends on assumptions.
-      "-Xfatal-warnings"               // Fail the compilation if there are any warnings.
-    )
-
-  lazy val scala213Test: Seq[String] =
-    Seq(
-      "-deprecation", // Emit warning and location for usages of deprecated APIs.
-      "-encoding",
-      "utf-8",                         // Specify character encoding used by source files.
-      "-feature",                      // Emit warning and location for usages of features that should be imported explicitly.
-      "-language:existentials",        // Existential types (besides wildcard types) can be written and inferred
-      "-language:experimental.macros", // Allow macro definition (besides implementation and application)
-      "-language:higherKinds",         // Allow higher-kinded types
-      "-language:implicitConversions", // Allow definition of implicit functions called views
-      "-unchecked",                    // Enable additional warnings where generated code depends on assumptions.
-    )
-
 }

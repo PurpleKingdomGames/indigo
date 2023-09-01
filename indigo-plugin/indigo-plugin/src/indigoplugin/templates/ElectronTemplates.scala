@@ -1,6 +1,5 @@
 package indigoplugin.templates
 
-import indigoplugin.ElectronInstall
 import indigoplugin.IndigoElectronOptions
 
 object ElectronTemplates {

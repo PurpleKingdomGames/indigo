@@ -6,7 +6,6 @@ import indigoplugin.templates.SupportScriptTemplate
 import indigoplugin.datatypes.DirectoryStructure
 import indigoplugin.utils.Utils
 import indigoplugin.IndigoOptions
-import java.nio.file.CopyOption
 import java.nio.file.LinkOption
 import java.nio.file.StandardCopyOption
 import indigoplugin.IndigoAssets
@@ -119,6 +118,24 @@ object IndigoBuild {
     outFile
   }
 
+  def isCopyAllowed(
+      from: Path,
+      include: RelPath => Boolean,
+      exclude: RelPath => Boolean
+  ): Boolean = {
+    val rel = from.relativeTo(from)
+
+    if (include(rel))
+      // Specifically include, even if in an excluded location
+      true
+    else if (exclude(rel))
+      // Specifically excluded, do nothing
+      false
+    else
+      // Otherwise, no specific instruction so assume copy.
+      true
+  }
+
   /** This is taken and modified from the os-lib code. */
   def copyAllWithFilters(
       from: Path,
@@ -134,32 +151,26 @@ object IndigoBuild {
     )
 
     def copyOne(p: Path): java.nio.file.Path = {
-      val rel    = p.relativeTo(from)
       val target = to / p.relativeTo(from)
 
-      def doCopy(): java.nio.file.Path =
-        java.nio.file.Files.copy(
-          p.wrapped,
-          target.wrapped,
-          LinkOption.NOFOLLOW_LINKS,
-          StandardCopyOption.REPLACE_EXISTING,
-          StandardCopyOption.COPY_ATTRIBUTES
-        )
-
-      if (include(rel))
-        // Specifically include, even if in an excluded location
-        doCopy()
-      else if (exclude(rel))
-        // Specifically excluded, do nothing
-        target.wrapped
-      else
-        // Otherwise, no specific instruction so assume copy.
-        doCopy()
+      java.nio.file.Files.copy(
+        p.wrapped,
+        target.wrapped,
+        LinkOption.NOFOLLOW_LINKS,
+        StandardCopyOption.REPLACE_EXISTING,
+        StandardCopyOption.COPY_ATTRIBUTES
+      )
     }
 
-    copyOne(from)
+    if (isCopyAllowed(from, include, exclude)) {
+      copyOne(from)
+    }
 
-    if (stat(from, followLinks = true).isDir) walk(from).map(copyOne)
+    if (stat(from, followLinks = true).isDir) walk(from).foreach { path =>
+      if (isCopyAllowed(path, include, exclude)) {
+        copyOne(path)
+      }
+    }
   }
 
 }
