@@ -10,7 +10,7 @@ class AcceptanceTests extends munit.FunSuite {
 
   override def beforeAll(): Unit = {
     if (os.exists(targetDir)) {
-      os.remove(target = targetDir, checkExists = true)
+      os.remove.all(target = targetDir)
     }
 
     os.makeDir.all(targetDir)
@@ -19,16 +19,37 @@ class AcceptanceTests extends munit.FunSuite {
   val indigoAssets =
     IndigoAssets(
       gameAssetsDirectory = sourceDir,
-      include = { case _ => false },
-      exclude = { case _ => false }
+      include = {
+        case p if p.endsWith(os.RelPath("taken.txt"))      => true
+        case p if p.toString.matches("(.*)also-taken.txt") => true
+        case _                                             => false
+      },
+      exclude = {
+        case p if p.startsWith(os.RelPath("ignored-folder")) => true
+        case p if p.startsWith(os.RelPath("mixed"))          => true
+        case _                                               => false
+      }
     )
 
   test("Copy assets and assert expected output files") {
 
     IndigoBuild.copyAssets(indigoAssets, targetDir)
 
+    // Basics
     assert(os.exists(targetDir))
     assert(os.exists(targetDir / "foo.txt"))
+    assert(os.exists(targetDir / "data" / "stats.csv"))
+
+    // Ignored folder
+    assert(!os.exists(targetDir / "ignored-folder"))
+    assert(!os.exists(targetDir / "ignored-folder" / "ignored-file.txt"))
+
+    // Generally excluded, but some taken.
+    assert(os.exists(targetDir / "mixed"))
+    assert(!os.exists(targetDir / "mixed" / "ignored-file.txt"))
+    assert(os.exists(targetDir / "mixed" / "taken.txt"))
+    assert(os.exists(targetDir / "mixed" / "also-taken.txt"))
+
   }
 
 }
