@@ -147,6 +147,8 @@ object IndigoBuild {
     def copyOne(p: Path): java.nio.file.Path = {
       val target = to / p.relativeTo(from)
 
+      os.makeDir.all(target)
+
       java.nio.file.Files.copy(
         p.wrapped,
         target.wrapped,
