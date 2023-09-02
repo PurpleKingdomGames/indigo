@@ -119,11 +119,12 @@ object IndigoBuild {
   }
 
   def isCopyAllowed(
-      from: Path,
+      base: Path,
+      toCopy: Path,
       include: RelPath => Boolean,
       exclude: RelPath => Boolean
   ): Boolean = {
-    val rel = from.relativeTo(from)
+    val rel = toCopy.relativeTo(base)
 
     if (include(rel))
       // Specifically include, even if in an excluded location
@@ -136,19 +137,12 @@ object IndigoBuild {
       true
   }
 
-  /** This is taken and modified from the os-lib code. */
   def copyAllWithFilters(
       from: Path,
       to: Path,
       include: RelPath => Boolean,
       exclude: RelPath => Boolean
   ): Unit = {
-    makeDir.all(to / up)
-
-    require(
-      !to.startsWith(from),
-      s"Can't copy a directory into itself: $to is inside $from"
-    )
 
     def copyOne(p: Path): java.nio.file.Path = {
       val target = to / p.relativeTo(from)
@@ -162,12 +156,22 @@ object IndigoBuild {
       )
     }
 
-    if (isCopyAllowed(from, include, exclude)) {
-      copyOne(from)
-    }
+    // Sanity check src and destination aren't the same
+    require(
+      !to.startsWith(from),
+      s"Can't copy a directory into itself: $to is inside $from"
+    )
 
-    if (stat(from, followLinks = true).isDir) walk(from).foreach { path =>
-      if (isCopyAllowed(path, include, exclude)) {
+    require(
+      stat(from, followLinks = true).isDir,
+      s"Asset source location is must be a directory and isn't: $from"
+    )
+
+    // Ensure destination directories are in place
+    makeDir.all(to)
+
+    walk(from).foreach { path =>
+      if (isCopyAllowed(from, path, include, exclude)) {
         copyOne(path)
       }
     }
