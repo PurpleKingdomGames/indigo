@@ -3,7 +3,6 @@ package sbtindigo
 import sbt.plugins.JvmPlugin
 import sbt._
 
-import indigoplugin.IndigoOptions
 import indigoplugin.core.IndigoBuildSBT
 import indigoplugin.core.IndigoCordova
 import indigoplugin.core.IndigoRun
