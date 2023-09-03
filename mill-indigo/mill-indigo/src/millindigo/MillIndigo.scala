@@ -11,6 +11,7 @@ import indigoplugin.core.IndigoRun
 import indigoplugin.core.IndigoCordova
 import indigoplugin.IndigoOptions
 import indigoplugin.generators.EmbedText
+import indigoplugin.generators.EmbedGLSLShaderPair
 
 trait MillIndigo extends mill.Module {
 
@@ -26,6 +27,25 @@ trait MillIndigo extends mill.Module {
         text: String
     ): Seq[PathRef] =
       EmbedText.generate(outDir, moduleName, fullyQualifiedPackage, text).map(p => PathRef(p))
+
+    def embedGLSLShaderPair(
+        outDir: os.Path,
+        moduleName: String,
+        fullyQualifiedPackage: String,
+        vertexShaderPath: os.Path,
+        fragmentShaderPath: os.Path,
+        validateGLSL: Boolean
+    ): Seq[PathRef] =
+      EmbedGLSLShaderPair
+        .generate(
+          outDir,
+          moduleName,
+          fullyQualifiedPackage,
+          vertexShaderPath,
+          fragmentShaderPath,
+          validateGLSL
+        )
+        .map(p => PathRef(p))
 
   }
 
