@@ -16,6 +16,7 @@ trait MillIndigo extends mill.Module {
   /** Configuration options for your Indigo game. */
   def indigoOptions: IndigoOptions
 
+  /** Build a static site for your game using Scala.js's fast linking. */
   def indigoBuild(): Command[Path] =
     T.command {
       val scriptPathBase: Path = {
@@ -45,6 +46,7 @@ trait MillIndigo extends mill.Module {
       T.dest
     }
 
+  /** Build a static site for your game using Scala.js's full linking. */
   def indigoBuildFull(): Command[Path] =
     T.command {
       val outputDir: Path = T.dest
@@ -75,6 +77,7 @@ trait MillIndigo extends mill.Module {
       outputDir
     }
 
+  /** Run your game using Electron and Scala.js's fast linking. */
   def indigoRun(): Command[Unit] =
     T.command {
       val outputDir: Path = T.dest
@@ -87,6 +90,7 @@ trait MillIndigo extends mill.Module {
       )
     }
 
+  /** Run your game using Electron and Scala.js's full linking. */
   def indigoRunFull(): Command[Unit] =
     T.command {
       val outputDir: Path = T.dest
@@ -99,6 +103,7 @@ trait MillIndigo extends mill.Module {
       )
     }
 
+  /** Build a Cordova app for your game using Scala.js's fast linking. */
   def indigoCordovaBuild(): Command[Unit] =
     T.command {
       val outputDir: Path = T.dest
@@ -111,6 +116,7 @@ trait MillIndigo extends mill.Module {
       )
     }
 
+  /** Build a Cordova app for your game using Scala.js's full linking. */
   def indigoCordovaBuildFull(): Command[Unit] =
     T.command {
       val outputDir: Path = T.dest
