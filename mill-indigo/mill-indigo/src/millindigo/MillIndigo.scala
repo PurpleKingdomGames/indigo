@@ -10,11 +10,24 @@ import indigoplugin.core.IndigoBuildMill
 import indigoplugin.core.IndigoRun
 import indigoplugin.core.IndigoCordova
 import indigoplugin.IndigoOptions
+import indigoplugin.generators.EmbedText
 
 trait MillIndigo extends mill.Module {
 
   /** Configuration options for your Indigo game. */
   def indigoOptions: IndigoOptions
+
+  object IndigoGenerators {
+
+    def embedText(
+        outDir: os.Path,
+        moduleName: String,
+        fullyQualifiedPackage: String,
+        text: String
+    ): Seq[PathRef] =
+      EmbedText.generate(outDir, moduleName, fullyQualifiedPackage, text).map(p => PathRef(p))
+
+  }
 
   /** Build a static site for your game using Scala.js's fast linking. */
   def indigoBuild(): Command[Path] =
