@@ -7,6 +7,7 @@ import indigoplugin.core.IndigoBuildSBT
 import indigoplugin.core.IndigoCordova
 import indigoplugin.core.IndigoRun
 import indigoplugin.generators.EmbedText
+import indigoplugin.generators.EmbedGLSLShaderPair
 
 object SbtIndigo extends sbt.AutoPlugin {
 
@@ -52,6 +53,25 @@ object SbtIndigo extends sbt.AutoPlugin {
         text: String
     ): Seq[File] =
       EmbedText.generate(os.Path(sourceManagedDir), moduleName, fullyQualifiedPackage, text).map(_.toIO)
+
+    def embedGLSLShaderPair(
+        outDir: os.Path,
+        moduleName: String,
+        fullyQualifiedPackage: String,
+        vertexShaderPath: String,
+        fragmentShaderPath: String,
+        validateGLSL: Boolean
+    ): Seq[File] =
+      EmbedGLSLShaderPair
+        .generate(
+          outDir,
+          moduleName,
+          fullyQualifiedPackage,
+          os.RelPath(vertexShaderPath).resolveFrom(os.pwd),
+          os.RelPath(fragmentShaderPath).resolveFrom(os.pwd),
+          validateGLSL
+        )
+        .map(_.toIO)
 
   }
 

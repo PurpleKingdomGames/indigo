@@ -2,15 +2,13 @@ package indigoplugin.generators
 
 object EmbedText {
 
-  val tripleQuotes: String = "\"\"\""
-
   def generate(
       outDir: os.Path,
       moduleName: String,
       fullyQualifiedPackage: String,
       text: String
   ): Seq[os.Path] = {
-    val wd = outDir / "indigo-compile-codegen-output"
+    val wd = outDir / Generators.OutputDirName
 
     os.makeDir.all(wd)
 
@@ -22,7 +20,7 @@ object EmbedText {
       |object $moduleName:
       |
       |  val text: String =
-      |    $tripleQuotes$text$tripleQuotes
+      |    ${Generators.TripleQuotes}$text${Generators.TripleQuotes}
       |""".stripMargin
 
     os.write.over(file, contents)
