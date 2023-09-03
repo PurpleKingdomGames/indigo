@@ -14,6 +14,11 @@ object snake extends ScalaJSModule with MillIndigo with ScalafmtModule {
   def scalaVersion   = "3.3.0"
   def scalaJSVersion = "1.13.1"
 
+  override def generatedSources: T[Seq[PathRef]] = T {
+    IndigoGenerators.embedText(os.pwd / "out", "Foo", "com.example", """foo, bar, "baz"""").map(p => PathRef(p)) ++
+      super.generatedSources()
+  }
+
   val indigoOptions: IndigoOptions =
     IndigoOptions.defaults
       .withTitle("Snake - Made with Indigo")
