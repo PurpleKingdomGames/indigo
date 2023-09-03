@@ -6,6 +6,7 @@ import sbt._
 import indigoplugin.core.IndigoBuildSBT
 import indigoplugin.core.IndigoCordova
 import indigoplugin.core.IndigoRun
+import indigoplugin.generators.EmbedText
 
 object SbtIndigo extends sbt.AutoPlugin {
 
@@ -15,8 +16,10 @@ object SbtIndigo extends sbt.AutoPlugin {
   object autoImport {
 
     // Build and Run tasks
-    val indigoBuild: TaskKey[Unit]        = taskKey[Unit]("Build an Indigo game.")
-    val indigoBuildFull: TaskKey[Unit]    = taskKey[Unit]("Build an Indigo game using full compression.")
+    val indigoBuild: TaskKey[String] =
+      taskKey[String]("Build an Indigo game. Returns output directory.")
+    val indigoBuildFull: TaskKey[String] =
+      taskKey[String]("Build an Indigo game using full compression. Returns output directory.")
     val indigoRun: TaskKey[Unit]          = taskKey[Unit]("Run an Indigo game.")
     val indigoRunFull: TaskKey[Unit]      = taskKey[Unit]("Run an Indigo game that has been compressed.")
     val indigoCordovaBuild: TaskKey[Unit] = taskKey[Unit]("Build an Indigo game Cordova template.")
@@ -31,8 +34,8 @@ object SbtIndigo extends sbt.AutoPlugin {
   import autoImport._
 
   override lazy val projectSettings = Seq(
-    indigoBuild            := { indigoBuildTask.value; () },
-    indigoBuildFull        := { indigoBuildFullTask.value; () },
+    indigoBuild            := indigoBuildTask.value,
+    indigoBuildFull        := indigoBuildFullTask.value,
     indigoRun              := indigoRunTask.value,
     indigoRunFull          := indigoRunFullTask.value,
     indigoCordovaBuild     := indigoCordovaBuildTask.value,
@@ -40,7 +43,19 @@ object SbtIndigo extends sbt.AutoPlugin {
     indigoOptions          := IndigoOptions.defaults
   )
 
-  def giveScriptBasePath(baseDir: String, scalaVersion: String, projectName: String): String = {
+  object IndigoGenerators {
+
+    def embedText(
+        sourceManagedDir: File,
+        moduleName: String,
+        fullyQualifiedPackage: String,
+        text: String
+    ): Seq[File] =
+      EmbedText.generate(os.Path(sourceManagedDir), moduleName, fullyQualifiedPackage, text).map(_.toIO)
+
+  }
+
+  private def giveScriptBasePath(baseDir: String, scalaVersion: String, projectName: String): String = {
     val base =
       if (scalaVersion.startsWith("2"))
         s"$baseDir/target/scala-${scalaVersion.split('.').init.mkString(".")}"

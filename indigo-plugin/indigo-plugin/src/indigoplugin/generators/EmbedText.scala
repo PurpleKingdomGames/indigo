@@ -1,16 +1,16 @@
-package indigoplugin
+package indigoplugin.generators
 
-object IndigoGenerators {
+object EmbedText {
 
   val tripleQuotes: String = "\"\"\""
 
-  def embedText(
+  def generate(
       outDir: os.Path,
       moduleName: String,
       fullyQualifiedPackage: String,
       text: String
   ): Seq[os.Path] = {
-    val wd = outDir / "indigo-codegen-output"
+    val wd = outDir / "indigo-compile-codegen-output"
 
     os.makeDir.all(wd)
 
