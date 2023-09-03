@@ -15,7 +15,7 @@ object snake extends ScalaJSModule with MillIndigo with ScalafmtModule {
   def scalaJSVersion = "1.13.1"
 
   override def generatedSources: T[Seq[PathRef]] = T {
-    IndigoGenerators.embedText(os.pwd / "out", "Foo", "com.example", """foo, bar, "baz"""").map(p => PathRef(p)) ++
+    IndigoGenerators.embedText(os.pwd / "out", "Foo", "com.example", """foo, bar, "baz"""") ++
       super.generatedSources()
   }
 
