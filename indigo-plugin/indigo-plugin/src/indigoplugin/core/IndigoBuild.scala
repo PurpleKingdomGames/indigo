@@ -88,13 +88,11 @@ object IndigoBuild {
     else {
       println("Copying assets...")
 
-      val pf: PartialFunction[os.RelPath, Boolean] = { case _ => false }
-
       copyAllWithFilters(
         absPath,
         destAssetsFolder,
-        indigoAssets.include.orElse(pf),
-        indigoAssets.exclude.orElse(pf)
+        indigoAssets.include,
+        indigoAssets.exclude
       )
     }
   }

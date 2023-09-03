@@ -45,11 +45,47 @@ final case class IndigoOptions(
   def withAssetDirectory(path: os.RelPath): IndigoOptions =
     this.copy(assets = assets.withAssetDirectory(path))
 
-  def includeAssets(rules: os.RelPath => Boolean*): IndigoOptions =
-    this.copy(assets = assets.includeRules(rules.toList))
+  // This is the sbt version, it's encoded differently because otherwise
+  // Scala 2.12 sees these as a double definition.
+  /** Filter to explicitly include matching assets.
+    *
+    * Decision order is to include is there is a rule, then exclude if there is a rule, and otherwise include by
+    * default.
+    */
+  def includeAssets(rules: PartialFunction[String, Boolean]): IndigoOptions = {
+    val default: PartialFunction[String, Boolean] = { case _ => false }
+    val pf: os.RelPath => Boolean                 = (r: os.RelPath) => (rules.orElse(default))(r.toString())
+    this.copy(assets = assets.withInclude(pf))
+  }
 
-  def excludeAssets(rules: os.RelPath => Boolean*): IndigoOptions =
-    this.copy(assets = assets.excludeRules(rules.toList))
+  /** Filter to explicitly include matching assets.
+    *
+    * Decision order is to include is there is a rule, then exclude if there is a rule, and otherwise include by
+    * default.
+    */
+  def includeAssets(rules: os.RelPath => Boolean): IndigoOptions =
+    this.copy(assets = assets.withInclude(rules))
+
+  // This is the sbt version, it's encoded differently because otherwise
+  // Scala 2.12 sees these as a double definition.
+  /** Filter to explicitly exclude matching assets.
+    *
+    * Decision order is to include is there is a rule, then exclude if there is a rule, and otherwise include by
+    * default.
+    */
+  def excludeAssets(rules: PartialFunction[String, Boolean]): IndigoOptions = {
+    val default: PartialFunction[String, Boolean] = { case _ => false }
+    val pf: os.RelPath => Boolean                 = (r: os.RelPath) => (rules.orElse(default))(r.toString())
+    this.copy(assets = assets.withExclude(pf))
+  }
+
+  /** Filter to explicitly exclude matching assets.
+    *
+    * Decision order is to include is there is a rule, then exclude if there is a rule, and otherwise include by
+    * default.
+    */
+  def excludeAssets(rules: os.RelPath => Boolean): IndigoOptions =
+    this.copy(assets = assets.withExclude(rules))
 
   /** Set the window start width */
   def withWindowWidth(value: Int): IndigoOptions =
@@ -261,8 +297,8 @@ object IndigoElectronOptions {
   */
 final case class IndigoAssets(
     gameAssetsDirectory: os.RelPath,
-    include: PartialFunction[os.RelPath, Boolean],
-    exclude: PartialFunction[os.RelPath, Boolean]
+    include: os.RelPath => Boolean,
+    exclude: os.RelPath => Boolean
 ) {
 
   /** Sets the asset directory path */
@@ -275,21 +311,11 @@ final case class IndigoAssets(
   def withAssetDirectory(path: os.RelPath): IndigoAssets =
     this.copy(gameAssetsDirectory = path)
 
-  def withInclude(p: PartialFunction[os.RelPath, Boolean]): IndigoAssets =
+  def withInclude(p: os.RelPath => Boolean): IndigoAssets =
     this.copy(include = p)
 
-  def includeRules(rules: List[os.RelPath => Boolean]): IndigoAssets =
-    withInclude { case path =>
-      rules.find(_(path)).map(_(path)).getOrElse(false)
-    }
-
-  def withExclude(p: PartialFunction[os.RelPath, Boolean]): IndigoAssets =
+  def withExclude(p: os.RelPath => Boolean): IndigoAssets =
     this.copy(exclude = p)
-
-  def excludeRules(rules: List[os.RelPath => Boolean]): IndigoAssets =
-    withExclude { case path =>
-      rules.find(_(path)).map(_(path)).getOrElse(false)
-    }
 
 }
 
