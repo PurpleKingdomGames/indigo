@@ -64,7 +64,7 @@ object EmbedGLSLShaderPair {
     val newContents: String =
       template(moduleName, fullyQualifiedPath, contents)
 
-    os.write(file, newContents)
+    os.write.over(file, newContents)
 
     Seq(file)
   }
