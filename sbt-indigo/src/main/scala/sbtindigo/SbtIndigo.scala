@@ -55,7 +55,7 @@ object SbtIndigo extends sbt.AutoPlugin {
       EmbedText.generate(os.Path(sourceManagedDir), moduleName, fullyQualifiedPackage, text).map(_.toIO)
 
     def embedGLSLShaderPair(
-        outDir: os.Path,
+        sourceManagedDir: File,
         moduleName: String,
         fullyQualifiedPackage: String,
         vertexShaderPath: String,
@@ -64,7 +64,7 @@ object SbtIndigo extends sbt.AutoPlugin {
     ): Seq[File] =
       EmbedGLSLShaderPair
         .generate(
-          outDir,
+          os.Path(sourceManagedDir),
           moduleName,
           fullyQualifiedPackage,
           os.RelPath(vertexShaderPath).resolveFrom(os.pwd),
