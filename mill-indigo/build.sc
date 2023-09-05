@@ -22,6 +22,7 @@ trait IndigoPluginModule extends CrossScalaModule with PublishModule with Scalaf
     ivy"com.lihaoyi::mill-main:${millLibVersion}",
     ivy"com.lihaoyi::mill-main-api:${millLibVersion}",
     ivy"com.lihaoyi::mill-scalalib:${millLibVersion}",
+    ivy"com.lihaoyi::mill-scalajslib:${millLibVersion}",
     ivy"com.lihaoyi::mill-scalalib-api:${millLibVersion}",
     ivy"com.lihaoyi::os-lib:0.8.0",
     ivy"io.indigoengine::indigo-plugin:${indigoVersion()}"

@@ -10,14 +10,9 @@ import coursier.maven.MavenRepository
 
 import $ivy.`io.indigoengine::mill-indigo:0.15.0-RC4`, millindigo._
 
-object snake extends ScalaJSModule with MillIndigo with ScalafmtModule {
+object snake extends MillIndigo with ScalafmtModule {
   def scalaVersion   = "3.3.0"
   def scalaJSVersion = "1.13.1"
-
-  override def generatedSources: T[Seq[PathRef]] = T {
-    IndigoGenerators.embedText(os.pwd / "out", "Foo", "com.example", """foo, bar, "baz"""") ++
-      super.generatedSources()
-  }
 
   val indigoOptions: IndigoOptions =
     IndigoOptions.defaults
@@ -25,6 +20,11 @@ object snake extends ScalaJSModule with MillIndigo with ScalafmtModule {
       .withWindowWidth(720)
       .withWindowHeight(516)
       .withBackgroundColor("black")
+
+  val indigoGenerators: IndigoGenerators =
+    IndigoGenerators
+      .mill("com.example")
+      .embedText("Foo", """foo, bar, "baz"""")
 
   def buildGame() = T.command {
     T {
