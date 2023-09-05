@@ -1,3 +1,4 @@
+import indigoplugin.IndigoGenerators
 import indigoplugin.IndigoOptions
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
@@ -26,12 +27,22 @@ lazy val pirate =
       Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
     )
     .settings( // Indigo specific settings
-      indigoOptions := 
+      indigoOptions :=
         IndigoOptions.defaults
           .withTitle("The Cursed Pirate")
           .withWindowWidth(1280)
           .withWindowHeight(720)
-          .withBackgroundColor("black"),
+          .withBackgroundColor("black")
+          .excludeAssetPaths { case p: String if p.startsWith("shaders") => true },
+      indigoGenerators :=
+        IndigoGenerators
+          .sbt((Compile / sourceManaged).value, "some.pkg")
+          .embedGLSLShaders(
+            "MyShader",
+            "assets/shaders/vert.vert",
+            "assets/shaders/frag.frag",
+            true
+          ),
       libraryDependencies ++= Seq(
         "io.indigoengine" %%% "indigo-json-circe" % IndigoVersion.getVersion, // Needed for Aseprite & Tiled support
         "io.indigoengine" %%% "indigo"            % IndigoVersion.getVersion, // Important! :-)

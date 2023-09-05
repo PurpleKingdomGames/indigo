@@ -2,12 +2,11 @@ package sbtindigo
 
 import sbt.plugins.JvmPlugin
 import sbt._
+import sbt.Keys._
 
 import indigoplugin.core.IndigoBuildSBT
 import indigoplugin.core.IndigoCordova
 import indigoplugin.core.IndigoRun
-import indigoplugin.generators.EmbedText
-import indigoplugin.generators.EmbedGLSLShaderPair
 
 object SbtIndigo extends sbt.AutoPlugin {
 
@@ -27,9 +26,14 @@ object SbtIndigo extends sbt.AutoPlugin {
     val indigoCordovaBuildFull: TaskKey[Unit] =
       taskKey[Unit]("Build an Indigo game Cordova template that has been compressed.")
 
-    // Config options
+    /** Configuration options for your Indigo game. */
     val indigoOptions: SettingKey[IndigoOptions] =
       settingKey[IndigoOptions]("Config options for your Indigo game.")
+
+    /** Indigo source code generators. */
+    val indigoGenerators: SettingKey[IndigoGenerators] =
+      settingKey[IndigoGenerators]("Indigo source code generators.")
+
   }
 
   import autoImport._
@@ -41,39 +45,13 @@ object SbtIndigo extends sbt.AutoPlugin {
     indigoRunFull          := indigoRunFullTask.value,
     indigoCordovaBuild     := indigoCordovaBuildTask.value,
     indigoCordovaBuildFull := indigoCordovaBuildFullTask.value,
-    indigoOptions          := IndigoOptions.defaults
+    indigoOptions          := IndigoOptions.defaults,
+    indigoGenerators       := IndigoGenerators.None
+  ) ++ inConfig(Compile)(
+    sourceGenerators += Def.task {
+      indigoGenerators.value.toSourceFiles
+    }
   )
-
-  object IndigoGenerators {
-
-    def embedText(
-        sourceManagedDir: File,
-        moduleName: String,
-        fullyQualifiedPackage: String,
-        text: String
-    ): Seq[File] =
-      EmbedText.generate(os.Path(sourceManagedDir), moduleName, fullyQualifiedPackage, text).map(_.toIO)
-
-    def embedGLSLShaderPair(
-        sourceManagedDir: File,
-        moduleName: String,
-        fullyQualifiedPackage: String,
-        vertexShaderPath: String,
-        fragmentShaderPath: String,
-        validateGLSL: Boolean
-    ): Seq[File] =
-      EmbedGLSLShaderPair
-        .generate(
-          os.Path(sourceManagedDir),
-          moduleName,
-          fullyQualifiedPackage,
-          os.RelPath(vertexShaderPath).resolveFrom(os.pwd),
-          os.RelPath(fragmentShaderPath).resolveFrom(os.pwd),
-          validateGLSL
-        )
-        .map(_.toIO)
-
-  }
 
   private def giveScriptBasePath(baseDir: String, scalaVersion: String, projectName: String): String = {
     val base =

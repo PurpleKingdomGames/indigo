@@ -2,6 +2,7 @@ package millindigo
 
 import mill._
 import mill.scalalib._
+import mill.scalajslib._
 import os.Path
 import mill.define.Command
 import java.io.File
@@ -9,44 +10,17 @@ import mill.define.Persistent
 import indigoplugin.core.IndigoBuildMill
 import indigoplugin.core.IndigoRun
 import indigoplugin.core.IndigoCordova
-import indigoplugin.IndigoOptions
-import indigoplugin.generators.EmbedText
-import indigoplugin.generators.EmbedGLSLShaderPair
 
-trait MillIndigo extends mill.Module {
+trait MillIndigo extends ScalaJSModule {
 
   /** Configuration options for your Indigo game. */
   def indigoOptions: IndigoOptions
 
-  object IndigoGenerators {
+  /** Indigo source code generators */
+  def indigoGenerators: IndigoGenerators
 
-    def embedText(
-        outDir: os.Path,
-        moduleName: String,
-        fullyQualifiedPackage: String,
-        text: String
-    ): Seq[PathRef] =
-      EmbedText.generate(outDir, moduleName, fullyQualifiedPackage, text).map(p => PathRef(p))
-
-    def embedGLSLShaderPair(
-        outDir: os.Path,
-        moduleName: String,
-        fullyQualifiedPackage: String,
-        vertexShaderPath: os.Path,
-        fragmentShaderPath: os.Path,
-        validateGLSL: Boolean
-    ): Seq[PathRef] =
-      EmbedGLSLShaderPair
-        .generate(
-          outDir,
-          moduleName,
-          fullyQualifiedPackage,
-          vertexShaderPath,
-          fragmentShaderPath,
-          validateGLSL
-        )
-        .map(p => PathRef(p))
-
+  override def generatedSources: T[Seq[PathRef]] = T {
+    indigoGenerators.toSources.map(mill.PathRef(_)) ++ super.generatedSources()
   }
 
   /** Build a static site for your game using Scala.js's fast linking. */

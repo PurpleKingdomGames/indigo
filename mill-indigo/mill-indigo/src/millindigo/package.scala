@@ -6,4 +6,7 @@ package object millindigo {
   type IndigoOptions = indigoplugin.IndigoOptions
   val IndigoOptions: indigoplugin.IndigoOptions.type = indigoplugin.IndigoOptions
 
+  type IndigoGenerators = indigoplugin.IndigoGenerators
+  val IndigoGenerators: indigoplugin.IndigoGenerators.type = indigoplugin.IndigoGenerators
+
 }
