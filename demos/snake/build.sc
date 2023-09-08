@@ -20,11 +20,15 @@ object snake extends MillIndigo with ScalafmtModule {
       .withWindowWidth(720)
       .withWindowHeight(516)
       .withBackgroundColor("black")
+      .excludeAssets {
+        case p if p.startsWith(os.RelPath("data")) => true
+        case _                      => false
+      }
 
   val indigoGenerators: IndigoGenerators =
     IndigoGenerators
       .mill("com.example")
-      .embedText("Foo", """foo, bar, "baz"""")
+      .embedText("Foo", os.pwd / "assets" / "data" / "foo.txt")
 
   def buildGame() = T.command {
     T {

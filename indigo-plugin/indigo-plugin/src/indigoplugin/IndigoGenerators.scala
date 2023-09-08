@@ -33,13 +33,39 @@ final case class IndigoGenerators(outDirectory: os.Path, fullyQualifiedPackageNa
     *
     * @param moduleName
     *   The name for the Scala module, e.g. 'MyModule' would be `object MyModule {}`
-    * @param text
-    *   The text to embed.
+    * @param file
+    *   The path to the text file to embed.
     */
-  def embedText(moduleName: String, text: String): IndigoGenerators =
+  def embedText(moduleName: String, file: os.Path): IndigoGenerators =
     this.copy(
       sources = sources ++
-        EmbedText.generate(outDirectory, moduleName, fullyQualifiedPackageName, text)
+        EmbedText.generate(outDirectory, moduleName, fullyQualifiedPackageName, file)
+    )
+
+  /** Embed raw text into a static variable.
+    *
+    * @param moduleName
+    *   The name for the Scala module, e.g. 'MyModule' would be `object MyModule {}`
+    * @param file
+    *   The text file to embed.
+    */
+  def embedText(moduleName: String, file: File): IndigoGenerators =
+    this.copy(
+      sources = sources ++
+        EmbedText.generate(outDirectory, moduleName, fullyQualifiedPackageName, os.Path(file))
+    )
+
+  /** Embed raw text into a static variable.
+    *
+    * @param moduleName
+    *   The name for the Scala module, e.g. 'MyModule' would be `object MyModule {}`
+    * @param file
+    *   The relative path to the text file to embed.
+    */
+  def embedText(moduleName: String, file: String): IndigoGenerators =
+    this.copy(
+      sources = sources ++
+        EmbedText.generate(outDirectory, moduleName, fullyQualifiedPackageName, os.RelPath(file).resolveFrom(os.pwd))
     )
 
   /** Embed a GLSL shader pair into a Scala module.
@@ -96,9 +122,9 @@ final case class IndigoGenerators(outDirectory: os.Path, fullyQualifiedPackageNa
     * @param moduleName
     *   The name for the Scala module, e.g. 'MyModule' would be `object MyModule {}`
     * @param vertexShaderPath
-    *   The path to the vertex shader file
+    *   The vertex shader file
     * @param fragmentShaderPath
-    *   The path to the fragment shader file
+    *   The fragment shader file
     * @param validate
     *   Attempt to validate the GLSL, requires the glslang validator to be install locally on the machine.
     */
@@ -135,9 +161,9 @@ final case class IndigoGenerators(outDirectory: os.Path, fullyQualifiedPackageNa
     * @param moduleName
     *   The name for the Scala module, e.g. 'MyModule' would be `object MyModule {}`
     * @param vertexShaderPath
-    *   The path to the vertex shader file
+    *   The relative path to the vertex shader file
     * @param fragmentShaderPath
-    *   The path to the fragment shader file
+    *   The relative path to the fragment shader file
     * @param validate
     *   Attempt to validate the GLSL, requires the glslang validator to be install locally on the machine.
     */
