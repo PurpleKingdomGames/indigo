@@ -41,7 +41,7 @@ lazy val pirate =
             "MyShader",
             "assets/shaders/vert.vert",
             "assets/shaders/frag.frag",
-            true
+            false
           ),
       libraryDependencies ++= Seq(
         "io.indigoengine" %%% "indigo-json-circe" % IndigoVersion.getVersion, // Needed for Aseprite & Tiled support
