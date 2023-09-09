@@ -31,9 +31,45 @@ class AcceptanceTests extends munit.FunSuite {
       }
     )
 
-  test("Copy assets and assert expected output files") {
+  test("List assets to copy") {
+    val baseDirectory = os.pwd
 
-    IndigoBuild.copyAssets(indigoAssets, targetDir)
+    val actual: List[os.Path] =
+      indigoAssets.filesToCopy(baseDirectory)
+
+    val expected: List[os.Path] =
+      List(
+        baseDirectory / sourceDir / "data",
+        baseDirectory / sourceDir / "data" / "stats.csv",
+        baseDirectory / sourceDir / "mixed" / "also-taken.txt",
+        baseDirectory / sourceDir / "mixed" / "taken.txt",
+        baseDirectory / sourceDir / "foo.txt"
+      )
+
+    assertEquals(actual, expected)
+  }
+
+  test("List all asset files as relative paths") {
+    val baseDirectory = os.pwd
+
+    val actual: List[os.RelPath] =
+      indigoAssets.listAssetFiles(baseDirectory)
+
+    val expected: List[os.RelPath] =
+      List(
+        os.RelPath.rel / "data" / "stats.csv",
+        os.RelPath.rel / "mixed" / "also-taken.txt",
+        os.RelPath.rel / "mixed" / "taken.txt",
+        os.RelPath.rel / "foo.txt"
+      )
+
+    assertEquals(actual, expected)
+  }
+
+  test("Copy assets and assert expected output files") {
+    val baseDirectory = os.pwd
+
+    IndigoBuild.copyAssets(baseDirectory, indigoAssets, targetDir)
 
     // Basics
     assert(os.exists(targetDir))

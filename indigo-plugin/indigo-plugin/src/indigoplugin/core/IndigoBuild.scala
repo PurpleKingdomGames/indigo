@@ -78,69 +78,17 @@ object IndigoBuild {
   }
 
   @SuppressWarnings(Array("org.wartremover.warts.Throw"))
-  def copyAssets(indigoAssets: IndigoAssets, destAssetsFolder: Path): Unit = {
-    val absPath = indigoAssets.gameAssetsDirectory.resolveFrom(os.pwd)
+  def copyAssets(baseDirectory: os.Path, indigoAssets: IndigoAssets, destAssetsFolder: Path): Unit = {
+    val from = baseDirectory / indigoAssets.gameAssetsDirectory
+    val to   = destAssetsFolder
 
-    if (!os.exists(absPath))
+    if (!os.exists(from))
       throw new Exception("Supplied game assets path does not exist: " + indigoAssets.gameAssetsDirectory.toString())
-    else if (!os.isDir(absPath))
+    else if (!os.isDir(from))
       throw new Exception("Supplied game assets path was not a directory")
     else {
       println("Copying assets...")
-
-      copyAllWithFilters(
-        absPath,
-        destAssetsFolder,
-        indigoAssets.include,
-        indigoAssets.exclude
-      )
     }
-  }
-
-  @SuppressWarnings(Array("org.wartremover.warts.Throw"))
-  def copyScript(scriptPathBase: Path, destScriptsFolder: Path, fileName: String): Unit = {
-    val scriptFile = scriptPathBase / fileName
-
-    if (os.exists(scriptFile))
-      os.copy(scriptFile, destScriptsFolder / fileName, true, false, false, false, false)
-    else
-      throw new Exception("Script file does not exist, have you compiled the JS file? Tried: " + scriptFile.toString())
-  }
-
-  def writeHtml(directoryStructure: DirectoryStructure, html: String): Path = {
-
-    val outFile = directoryStructure.base / "index.html"
-
-    os.write(outFile, html)
-
-    outFile
-  }
-
-  def isCopyAllowed(
-      base: Path,
-      toCopy: Path,
-      include: RelPath => Boolean,
-      exclude: RelPath => Boolean
-  ): Boolean = {
-    val rel = toCopy.relativeTo(base)
-
-    if (include(rel))
-      // Specifically include, even if in an excluded location
-      true
-    else if (exclude(rel))
-      // Specifically excluded, do nothing
-      false
-    else
-      // Otherwise, no specific instruction so assume copy.
-      true
-  }
-
-  def copyAllWithFilters(
-      from: Path,
-      to: Path,
-      include: RelPath => Boolean,
-      exclude: RelPath => Boolean
-  ): Unit = {
 
     def copyOne(p: Path): java.nio.file.Path = {
       val target = to / p.relativeTo(from)
@@ -170,11 +118,32 @@ object IndigoBuild {
     // Ensure destination directories are in place
     makeDir.all(to)
 
-    walk(from).foreach { path =>
-      if (isCopyAllowed(from, path, include, exclude)) {
+    indigoAssets
+      .filesToCopy(baseDirectory)
+      .foreach { path =>
         copyOne(path)
       }
-    }
+  }
+  def copyAssets(indigoAssets: IndigoAssets, destAssetsFolder: Path): Unit =
+    copyAssets(os.pwd, indigoAssets, destAssetsFolder)
+
+  @SuppressWarnings(Array("org.wartremover.warts.Throw"))
+  def copyScript(scriptPathBase: Path, destScriptsFolder: Path, fileName: String): Unit = {
+    val scriptFile = scriptPathBase / fileName
+
+    if (os.exists(scriptFile))
+      os.copy(scriptFile, destScriptsFolder / fileName, true, false, false, false, false)
+    else
+      throw new Exception("Script file does not exist, have you compiled the JS file? Tried: " + scriptFile.toString())
+  }
+
+  def writeHtml(directoryStructure: DirectoryStructure, html: String): Path = {
+
+    val outFile = directoryStructure.base / "index.html"
+
+    os.write(outFile, html)
+
+    outFile
   }
 
 }
