@@ -1,6 +1,6 @@
 package indigoplugin.generators
 
-class AssetListingTests extends munit.FunSuite {
+class PathTreeTests extends munit.FunSuite {
 
   test("Can convert a single rel path to a path tree") {
     val path = os.RelPath.rel / "folderA" / "folderB" / "d.jpg"
