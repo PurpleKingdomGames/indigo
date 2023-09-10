@@ -1,168 +1,132 @@
 package indigoplugin.generators
 
+import indigoplugin.IndigoAssets
+
 object AssetListing {
 
-  def pathsToTree(paths: List[os.RelPath]): PathTree =
-    PathTree.combineAll(
-      paths.map { p =>
-        PathTree.pathToPathTree(p) match {
-          case None        => throw new Exception(s"Could not parse given path: $p")
-          case Some(value) => value
-        }
-      }
-    ).sorted
+  def generate(
+      outDir: os.Path,
+      moduleName: String,
+      fullyQualifiedPackage: String,
+      indigoAssets: IndigoAssets
+  ): Seq[os.Path] = {
 
-}
+    val fileContents: String =
+      renderContent(indigoAssets.listAssetFiles)
 
-sealed trait PathTree {
-  def name: String
+    val wd = outDir / Generators.OutputDirName
 
-  def combine(other: PathTree): PathTree =
-    PathTree.combine(this, other)
-  def |+|(other: PathTree): PathTree =
-    combine(other)
+    os.makeDir.all(wd)
 
-  def sorted: PathTree =
-    this match {
-      case PathTree.Root(children) =>
-        PathTree.Root(children.map(_.sorted).sortBy(_.name))
+    val file = wd / s"$moduleName.scala"
 
-      case PathTree.Folder(n, children) =>
-        PathTree.Folder(n, children.map(_.sorted).sortBy(_.name))
+    val contents =
+      s"""package $fullyQualifiedPackage
+      |
+      |import indigo.*
+      |
+      |object $moduleName:
+      |
+      |${fileContents}
+      |
+      |""".stripMargin
 
-      case f @ PathTree.File(_, _, _) =>
-        f
-    }
-}
+    os.write.over(file, contents)
 
-object PathTree {
+    Seq(file)
+  }
 
-  def empty: PathTree =
-    PathTree.Root(Nil)
+  def renderContent(paths: List[os.RelPath]): String =
+    (convertPathsToTree _ andThen renderTree(0))(paths)
 
-  private def combineChildren(a: List[PathTree], b: List[PathTree]): List[PathTree] =
-    b.flatMap {
-      case PathTree.Root(children) =>
-        combineChildren(a, children)
-
-      case f @ PathTree.Folder(name, children) =>
-        a.find {
-          case PathTree.Folder(n, _) => n == name
-          case _                     => false
-        } match {
-          case None =>
-            a ++ List(f)
-
-          case Some(fdlr @ PathTree.Folder(n, c)) =>
-            a.filterNot(_ == fdlr) ++ List(PathTree.Folder(n, combineChildren(c, children)))
-
-          case Some(_) =>
-            a ++ List(f) // Shouldn't happen
-        }
-
-      case f: PathTree.File =>
-        if (a.contains(f)) a else a ++ List(f)
-    }
-
-  def combine(a: PathTree, b: PathTree): PathTree =
-    (a, b) match {
-      case (PathTree.Root(Nil), PathTree.Root(Nil)) =>
-        a
-
-      case (PathTree.Root(csA), PathTree.Root(csB)) =>
-        PathTree.Root(
-          combineChildren(csA, csB)
-        )
-
-      case (PathTree.Root(csA), f @ PathTree.Folder(_, _)) =>
-        PathTree.Root(combineChildren(csA, List(f)))
-
-      case (PathTree.Folder(n, csA), PathTree.Root(csB)) =>
-        PathTree.Folder(n, combineChildren(csA, csB))
-
-      case (PathTree.Root(cs), f @ PathTree.File(_, _, _)) =>
-        PathTree.Root(combineChildren(cs, List(f)))
-
-      case (f @ PathTree.File(_, _, _), PathTree.Root(cs)) =>
-        PathTree.Root(combineChildren(cs, List(f)))
-
-      case (PathTree.Folder(nA, _), PathTree.Folder(nB, _)) if nA != nB =>
-        throw new Exception(
-          s"Something has gone wrong merging asset trees. Found two folders with different names: $nA and $nB"
-        )
-
-      case (PathTree.Folder(nA, csA), PathTree.Folder(_, csB)) =>
-        PathTree.Folder(nA, combineChildren(csA, csB))
-
-      case (PathTree.File(nA, _, _), PathTree.File(nB, _, _)) if nA != nB =>
-        throw new Exception(
-          s"Something has gone wrong merging asset trees. Found two file with different names: $nA and $nB"
-        )
-
-      case (f @ PathTree.File(_, _, _), PathTree.File(_, _, _)) =>
-        f
-
-      case (PathTree.Folder(nA, csA), f @ PathTree.File(_, _, _)) =>
-        PathTree.Folder(nA, combineChildren(csA, List(f)))
-
-      case (f @ PathTree.File(_, _, _), PathTree.Folder(nB, csB)) =>
-        PathTree.Folder(nB, combineChildren(csB, List(f)))
-    }
-
-  def combineAll(pathTrees: List[PathTree]): PathTree =
-    pathTrees.foldLeft(empty)(_ |+| _)
-
-  def pathToPathTree(remaining: os.RelPath, original: os.RelPath): Option[PathTree] = {
-    val result =
-      remaining.segments.toList match {
-        case Nil =>
-          Option(
-            PathTree.Root(Nil)
-          )
-
-        case p :: _ if p.isEmpty =>
-          None
-
-        case p :: Nil =>
-          p.split('.').toList match {
-            case Nil =>
-              None
-
-            case n :: ext :: Nil =>
-              Option(
-                PathTree.File(n, ext, original)
-              )
-
-            case n :: exts =>
-              Option(
-                PathTree.File(n, exts.mkString("."), original)
-              )
+  def convertPathsToTree(paths: List[os.RelPath]): PathTree =
+    PathTree
+      .combineAll(
+        paths.map { p =>
+          PathTree.pathToPathTree(p) match {
+            case None        => throw new Exception(s"Could not parse given path: $p")
+            case Some(value) => value
           }
+        }
+      )
+      .sorted
 
-        case p :: ps =>
-          Option(
-            PathTree.Folder(
-              p,
-              pathToPathTree(os.RelPath(ps.toIndexedSeq, 0), original).toList
-            )
-          )
+  def renderTree(indent: Int)(pathTree: PathTree): String = {
+    /*
+
+    What are we doing?
+
+    For each root / folder, we make a object. (Root is top level)
+
+    For all the files in the children, we make essentially this:
+
+    val snakeTexture: AssetName  = AssetName("snakeTexture")
+    val snakeMaterial: Material.Bitmap = Material.Bitmap(snakeTexture)
+
+    |def assets(baseUrl: String): Set[AssetType] =
+    |  Set(
+    |    ...
+    |    AssetType.Image(snakeTexture, AssetPath(baseUrl + "assets/snake.png")),
+    |    ...
+    |  )
+
+    With tags. Or audio descriptions for audio files. Nothing special for text / unknown.
+
+    and for each sub-folder, we call render again.
+
+    Until we end up with one great big string or list of strings or something.
+
+     */
+
+    val indentSpaces     = List.fill(indent)("  ").mkString
+    val indentSpacesNext = indentSpaces + "  "
+
+    val res = 
+      pathTree match {
+        case PathTree.File(_, _, _) =>
+          ""
+
+        case PathTree.Folder(name, children) =>
+          val files: List[PathTree.File] = children.collect { case f: PathTree.File => f }
+
+          val renderedFiles: String =
+            files
+              .map { case PathTree.File(name, ext, path) =>
+                val safeName = toSafeName(name)
+                s"${indentSpacesNext}file: " + toSafeName(name) + " at: " + path.toString() + "\n"
+                s"""
+                |${indentSpacesNext}val ${safeName}Name: AssetName  = AssetName("${name}.${ext}")
+                |${indentSpacesNext}val ${safeName}Material: Material.Bitmap = Material.Bitmap(${safeName}Name)
+                |""".stripMargin
+              }
+              .mkString("\n")
+
+          val assetSeq: String =
+            if (files.isEmpty) ""
+            else
+              s"""${renderedFiles}
+              |
+              |${indentSpacesNext}def assets(baseUrl: String): Set[AssetType] =
+              |${indentSpacesNext}  Set(
+              |${indentSpacesNext}    AssetType.Image(snakeTexture, AssetPath(baseUrl + "assets/snake.png")),
+              |${indentSpacesNext}  )
+              |
+              |""".stripMargin
+
+          s"""${indentSpaces}object ${toSafeName(name)}:
+          |${children.map(renderTree(indent + 1)).mkString}
+          |""".stripMargin + assetSeq
+
+        case PathTree.Root(children) =>
+          children.map(renderTree(indent + 1)).mkString
       }
-
-    if (remaining == original) {
-      Option(PathTree.Root(result.toList))
-    } else {
-      result
-    }
+    
+    res
   }
-  def pathToPathTree(path: os.RelPath): Option[PathTree] =
-    pathToPathTree(path, path)
 
-  final case class Root(children: List[PathTree]) extends PathTree {
-    val name: String = ""
-  }
-  final case class Folder(name: String, children: List[PathTree]) extends PathTree
-  final case class File(name: String, extension: String, path: os.RelPath) extends PathTree {
-    val fullName: String = name + "." + extension
+  def toSafeName(name: String): String = {
+    val res = name.replaceAll("[^a-zA-Z0-9]", "-").split("-").map(_.capitalize).mkString
+    if (res.take(1).matches("[0-9]")) "_" + res else res
   }
 
 }
