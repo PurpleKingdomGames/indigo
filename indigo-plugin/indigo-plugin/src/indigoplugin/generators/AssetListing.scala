@@ -39,8 +39,8 @@ object PathTree {
           case None =>
             a ++ List(f)
 
-          case Some(PathTree.Folder(n, c)) =>
-            List(PathTree.Folder(n, combineChildren(c, children)))
+          case Some(fdlr @ PathTree.Folder(n, c)) =>
+            a.filterNot(_ == fdlr) ++ List(PathTree.Folder(n, combineChildren(c, children)))
 
           case Some(_) =>
             a ++ List(f) // Shouldn't happen

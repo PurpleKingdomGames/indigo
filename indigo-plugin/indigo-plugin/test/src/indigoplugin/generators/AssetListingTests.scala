@@ -75,14 +75,19 @@ class AssetListingTests extends munit.FunSuite {
         os.RelPath.rel / "folderA" / "e.svg"
       )
 
-    println(paths.map(PathTree.pathToPathTree).mkString("\n"))
-
     val actual =
       AssetListing.pathsToTree(paths)
 
     val expected =
       PathTree.Root(
         List(
+          PathTree.Folder(
+            "folderC",
+            List(
+              PathTree.File("f", "mp3", os.RelPath.rel / "folderC" / "f.mp3")
+            )
+          ),
+          PathTree.File("a", "txt", os.RelPath.rel / "a.txt"),
           PathTree.Folder(
             "folderA",
             List(
@@ -96,56 +101,11 @@ class AssetListingTests extends munit.FunSuite {
               ),
               PathTree.File("e", "svg", os.RelPath.rel / "folderA" / "e.svg")
             )
-          ),
-          PathTree.File("a", "txt", os.RelPath.rel / "a.txt"),
-          PathTree.Folder(
-            "folderC",
-            List(
-              PathTree.File("f", "mp3", os.RelPath.rel / "folderC" / "f.mp3")
-            )
           )
         )
       )
-/*
-Root(
-  children = List(
-    Folder(
-      name = "folderA",
-      children = List(
-        Folder(
-          name = "folderB",
-          children = List(
-            File(
-              name = "d",
-              extension = "jpg",
-              path = folderA/folderB/d.jpg
-            ),
-            File(
-              name = "b",
-              extension = "png",
-              path = folderA/folderB/b.png
-            ),
-            File(
-              name = "c",
-              extension = "png",
-              path = folderA/folderB/c.png
-            )
-          )
-        ),
-        File(
-          name = "e",
-          extension = "svg",
-          path = folderA/e.svg
-        )
-      )
-    )
-  )
-)
-
-*/
 
     assertEquals(clue(actual), clue(expected))
-
   }
 
 }
