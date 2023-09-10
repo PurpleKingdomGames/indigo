@@ -10,15 +10,29 @@ object AssetListing {
           case Some(value) => value
         }
       }
-    )
+    ).sorted
 
 }
 
 sealed trait PathTree {
+  def name: String
+
   def combine(other: PathTree): PathTree =
     PathTree.combine(this, other)
   def |+|(other: PathTree): PathTree =
     combine(other)
+
+  def sorted: PathTree =
+    this match {
+      case PathTree.Root(children) =>
+        PathTree.Root(children.map(_.sorted).sortBy(_.name))
+
+      case PathTree.Folder(n, children) =>
+        PathTree.Folder(n, children.map(_.sorted).sortBy(_.name))
+
+      case f @ PathTree.File(_, _, _) =>
+        f
+    }
 }
 
 object PathTree {
@@ -102,47 +116,36 @@ object PathTree {
     val result =
       remaining.segments.toList match {
         case Nil =>
-          // println("a) No segments, returning Root")
           Option(
             PathTree.Root(Nil)
           )
 
         case p :: _ if p.isEmpty =>
-          // println("b) name is empty, returning None")
           None
 
         case p :: Nil =>
-          // println(s"c) Looks like a leaf: $p")
           p.split('.').toList match {
             case Nil =>
-              // println("> Ah, Nil")
               None
 
             case n :: ext :: Nil =>
-              // println(s"> Good form, $n, $ext")
               Option(
                 PathTree.File(n, ext, original)
               )
 
             case n :: exts =>
-              // println(s"> Poor form, $n, $exts")
               Option(
                 PathTree.File(n, exts.mkString("."), original)
               )
           }
 
         case p :: ps =>
-          // println(s"c) Looks like a branch: $p")
-          val res = Option(
+          Option(
             PathTree.Folder(
               p,
               pathToPathTree(os.RelPath(ps.toIndexedSeq, 0), original).toList
             )
           )
-
-          // println(s"res: $res")
-
-          res
       }
 
     if (remaining == original) {
@@ -154,7 +157,9 @@ object PathTree {
   def pathToPathTree(path: os.RelPath): Option[PathTree] =
     pathToPathTree(path, path)
 
-  final case class Root(children: List[PathTree])                 extends PathTree
+  final case class Root(children: List[PathTree]) extends PathTree {
+    val name: String = ""
+  }
   final case class Folder(name: String, children: List[PathTree]) extends PathTree
   final case class File(name: String, extension: String, path: os.RelPath) extends PathTree {
     val fullName: String = name + "." + extension

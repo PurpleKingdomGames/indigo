@@ -76,7 +76,14 @@ class AssetListingTests extends munit.FunSuite {
       )
 
     val actual =
-      AssetListing.pathsToTree(paths)
+      PathTree.combineAll(
+        paths.map { p =>
+          PathTree.pathToPathTree(p) match {
+            case None        => throw new Exception(s"Could not parse given path: $p")
+            case Some(value) => value
+          }
+        }
+      )
 
     val expected =
       PathTree.Root(
@@ -100,6 +107,67 @@ class AssetListingTests extends munit.FunSuite {
                 )
               ),
               PathTree.File("e", "svg", os.RelPath.rel / "folderA" / "e.svg")
+            )
+          )
+        )
+      )
+
+    assertEquals(clue(actual), clue(expected))
+  }
+
+  test("Can return a PathTree sorted alphabetically") {
+
+    val actual =
+      PathTree
+        .Root(
+          List(
+            PathTree.Folder(
+              "folderC",
+              List(
+                PathTree.File("f", "mp3", os.RelPath.rel / "folderC" / "f.mp3")
+              )
+            ),
+            PathTree.Folder(
+              "folderA",
+              List(
+                PathTree.File("e", "svg", os.RelPath.rel / "folderA" / "e.svg"),
+                PathTree.Folder(
+                  "folderB",
+                  List(
+                    PathTree.File("d", "jpg", os.RelPath.rel / "folderA" / "folderB" / "d.jpg"),
+                    PathTree.File("b", "png", os.RelPath.rel / "folderA" / "folderB" / "b.png"),
+                    PathTree.File("c", "png", os.RelPath.rel / "folderA" / "folderB" / "c.png")
+                  )
+                )
+              )
+            ),
+            PathTree.File("a", "txt", os.RelPath.rel / "a.txt")
+          )
+        )
+        .sorted
+
+    val expected =
+      PathTree.Root(
+        List(
+          PathTree.File("a", "txt", os.RelPath.rel / "a.txt"),
+          PathTree.Folder(
+            "folderA",
+            List(
+              PathTree.File("e", "svg", os.RelPath.rel / "folderA" / "e.svg"),
+              PathTree.Folder(
+                "folderB",
+                List(
+                  PathTree.File("b", "png", os.RelPath.rel / "folderA" / "folderB" / "b.png"),
+                  PathTree.File("c", "png", os.RelPath.rel / "folderA" / "folderB" / "c.png"),
+                  PathTree.File("d", "jpg", os.RelPath.rel / "folderA" / "folderB" / "d.jpg")
+                )
+              )
+            )
+          ),
+          PathTree.Folder(
+            "folderC",
+            List(
+              PathTree.File("f", "mp3", os.RelPath.rel / "folderC" / "f.mp3")
             )
           )
         )
