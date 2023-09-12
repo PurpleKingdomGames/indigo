@@ -52,75 +52,88 @@ object AssetListing {
       .sorted
 
   def renderTree(indent: Int)(pathTree: PathTree): String = {
-    /*
-
-    What are we doing?
-
-    For each root / folder, we make a object. (Root is top level)
-
-    For all the files in the children, we make essentially this:
-
-    val snakeTexture: AssetName  = AssetName("snakeTexture")
-    val snakeMaterial: Material.Bitmap = Material.Bitmap(snakeTexture)
-
-    |def assets(baseUrl: String): Set[AssetType] =
-    |  Set(
-    |    ...
-    |    AssetType.Image(snakeTexture, AssetPath(baseUrl + "assets/snake.png")),
-    |    ...
-    |  )
-
-    With tags. Or audio descriptions for audio files. Nothing special for text / unknown.
-
-    and for each sub-folder, we call render again.
-
-    Until we end up with one great big string or list of strings or something.
-
-     */
 
     val indentSpaces     = List.fill(indent)("  ").mkString
     val indentSpacesNext = indentSpaces + "  "
 
-    val res = 
+    val res =
       pathTree match {
         case PathTree.File(_, _, _) =>
           ""
 
-        case PathTree.Folder(name, children) =>
+        case PathTree.Folder(folderName, children) =>
+          val safeFolderName             = toSafeName(folderName)
           val files: List[PathTree.File] = children.collect { case f: PathTree.File => f }
 
-          val renderedFiles: String =
+          val renderedFiles: List[(String, String)] =
             files
-              .map { case PathTree.File(name, ext, path) =>
-                val safeName = toSafeName(name)
-                s"${indentSpacesNext}file: " + toSafeName(name) + " at: " + path.toString() + "\n"
-                s"""
-                |${indentSpacesNext}val ${safeName}Name: AssetName  = AssetName("${name}.${ext}")
-                |${indentSpacesNext}val ${safeName}Material: Material.Bitmap = Material.Bitmap(${safeName}Name)
-                |""".stripMargin
-              }
-              .mkString("\n")
+              .map {
+                case PathTree.File(name, ext, path) if AudioFileExtensions.contains(ext) =>
+                  val safeName = toSafeName(name)
 
-          val assetSeq: String =
+                  val vals =
+                    s"""${indentSpacesNext}val ${safeName}Name: AssetName        = AssetName("${name}.${ext}")
+                    |${indentSpacesNext}val ${safeName}Play: PlaySound        = PlaySound(${safeName}Name, Volume.Max)
+                    |${indentSpacesNext}val ${safeName}SceneAudio: SceneAudio = SceneAudio(SceneAudioSource(BindingKey("${name}.${ext}"), PlaybackPattern.SingleTrackLoop(Track(${safeName}Name))))""".stripMargin
+
+                  val loadable =
+                    s"""${indentSpacesNext}    AssetType.Audio(${safeName}Name, AssetPath(baseUrl + "${path}")),"""
+
+                  (vals, loadable)
+
+                case PathTree.File(name, ext, path) if ImageFileExtensions.contains(ext) =>
+                  val safeName = toSafeName(name)
+
+                  val vals =
+                    s"""${indentSpacesNext}val ${safeName}Name: AssetName           = AssetName("${name}.${ext}")
+                    |${indentSpacesNext}val ${safeName}Material: Material.Bitmap = Material.Bitmap(${safeName}Name)""".stripMargin
+
+                  val tag =
+                    if (safeFolderName.isEmpty) "None"
+                    else s"""Option(AssetTag("${safeFolderName}"))"""
+
+                  val loadable =
+                    s"""${indentSpacesNext}    AssetType.Image(${safeName}Name, AssetPath(baseUrl + "${path}"), ${tag}),"""
+
+                  (vals, loadable)
+
+                case PathTree.File(name, ext, path) =>
+                  val safeName = toSafeName(name)
+
+                  val vals =
+                    s"""${indentSpacesNext}val ${safeName}Name: AssetName  = AssetName("${name}.${ext}")"""
+
+                  val loadable =
+                    s"""${indentSpacesNext}    AssetType.Text(${safeName}Name, AssetPath(baseUrl + "${path}")),"""
+
+                  (vals, loadable)
+              }
+
+          val assetSeq: String = {
             if (files.isEmpty) ""
             else
-              s"""${renderedFiles}
+              s"""${renderedFiles.map(_._1).mkString("\n")}
               |
               |${indentSpacesNext}def assets(baseUrl: String): Set[AssetType] =
               |${indentSpacesNext}  Set(
-              |${indentSpacesNext}    AssetType.Image(snakeTexture, AssetPath(baseUrl + "assets/snake.png")),
+              |${renderedFiles.map(_._2).mkString("\n")}
               |${indentSpacesNext}  )
               |
               |""".stripMargin
+          }
 
-          s"""${indentSpaces}object ${toSafeName(name)}:
-          |${children.map(renderTree(indent + 1)).mkString}
-          |""".stripMargin + assetSeq
+          val contents =
+            s"""${children.map(renderTree(indent + 1)).mkString}""".stripMargin + assetSeq
+
+          if (safeFolderName.isEmpty) contents
+          else
+            s"""${indentSpaces}object ${safeFolderName}:
+            |${contents}"""
 
         case PathTree.Root(children) =>
-          children.map(renderTree(indent + 1)).mkString
+          renderTree(indent)(PathTree.Folder("", children))
       }
-    
+
     res
   }
 
@@ -128,5 +141,40 @@ object AssetListing {
     val res = name.replaceAll("[^a-zA-Z0-9]", "-").split("-").map(_.capitalize).mkString
     if (res.take(1).matches("[0-9]")) "_" + res else res
   }
+
+  val AudioFileExtensions: Set[String] =
+    Set(
+      "aac",
+      "cda",
+      "mid",
+      "midi",
+      "mp3",
+      "oga",
+      "ogg",
+      "opus",
+      "wav",
+      "weba",
+      "flac"
+    )
+
+  val ImageFileExtensions: Set[String] =
+    Set(
+      "apng",
+      "avif",
+      "gif",
+      "jpg",
+      "jpeg",
+      "jfif",
+      "pjpeg",
+      "pjp",
+      "png",
+      "svg",
+      "webp",
+      "bmp",
+      "ico",
+      "cur",
+      "tif",
+      "tiff"
+    )
 
 }
