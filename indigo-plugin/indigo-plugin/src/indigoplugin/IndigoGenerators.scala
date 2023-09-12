@@ -3,6 +3,7 @@ package indigoplugin
 import indigoplugin.generators.EmbedText
 import java.io.File
 import indigoplugin.generators.EmbedGLSLShaderPair
+import indigoplugin.generators.AssetListing
 
 /** Assists with setting up source code generators for Indigo projects
   *
@@ -182,6 +183,28 @@ final case class IndigoGenerators(outDirectory: os.Path, fullyQualifiedPackageNa
           os.RelPath(vertexShaderPath).resolveFrom(os.pwd),
           os.RelPath(fragmentShaderPath).resolveFrom(os.pwd),
           validate
+        )
+    )
+
+  /** Generate a module that conveniently lists all of your assets with some helper / pre-constructed instances ready
+    * for use in your game.
+    *
+    * @param moduleName
+    *   The name for the Scala module, e.g. 'MyModule' would be `object MyModule {}`
+    * @param indigoAssets
+    *   The IndigoAssets config object, used to locate and fitler your assets.
+    */
+  def listAssets(
+      moduleName: String,
+      indigoAssets: IndigoAssets
+  ): IndigoGenerators =
+    this.copy(
+      sources = sources ++
+        AssetListing.generate(
+          outDirectory,
+          moduleName,
+          fullyQualifiedPackageName,
+          indigoAssets
         )
     )
 
