@@ -28,7 +28,8 @@ class AcceptanceTests extends munit.FunSuite {
         case p if p.startsWith(os.RelPath("ignored-folder")) => true
         case p if p.startsWith(os.RelPath("mixed"))          => true
         case _                                               => false
-      }
+      },
+      None
     )
 
   test("List assets to copy") {
