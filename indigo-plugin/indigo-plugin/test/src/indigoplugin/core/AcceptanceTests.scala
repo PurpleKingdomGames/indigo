@@ -6,7 +6,7 @@ class AcceptanceTests extends munit.FunSuite {
 
   val sourceDir = os.RelPath("test-assets")
 
-  val targetDir = os.pwd / "out" / "indigo-plugin-acceptance-test-output"
+  val targetDir = os.pwd / "out" / "indigo-plugin-acceptance-test-output" / sourceDir
 
   override def beforeAll(): Unit = {
     if (os.exists(targetDir)) {
@@ -57,10 +57,10 @@ class AcceptanceTests extends munit.FunSuite {
 
     val expected: List[os.RelPath] =
       List(
-        os.RelPath.rel / "data" / "stats.csv",
-        os.RelPath.rel / "mixed" / "also-taken.txt",
-        os.RelPath.rel / "mixed" / "taken.txt",
-        os.RelPath.rel / "foo.txt"
+        sourceDir / "data" / "stats.csv",
+        sourceDir / "mixed" / "also-taken.txt",
+        sourceDir / "mixed" / "taken.txt",
+        sourceDir / "foo.txt"
       )
 
     assertEquals(actual, expected)
