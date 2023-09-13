@@ -2,12 +2,14 @@ package indigoplugin.generators
 
 class AssetListingTests extends munit.FunSuite {
 
-  test("toSafeName should be able to convert file and folder names into something safe") {
-    assertEquals(AssetListing.toSafeName("hello"), "hello")
-    assertEquals(AssetListing.toSafeName("hello-there-01"), "helloThere01")
-    assertEquals(AssetListing.toSafeName("hello-there-01.jpg"), "helloThere01Jpg")
-    assertEquals(AssetListing.toSafeName("^hello!there_0 1.jpg"), "helloThere01Jpg")
-    assertEquals(AssetListing.toSafeName("00-hello"), "_00Hello")
+  test("should be able to convert file and folder names into something safe (using default)") {
+    def toSafeName(name: String) = AssetListing.toDefaultSafeName(name, "")
+
+    assertEquals(toSafeName("hello"), "hello")
+    assertEquals(toSafeName("hello-there-01"), "helloThere01")
+    assertEquals(toSafeName("hello-there-01.jpg"), "helloThere01Jpg")
+    assertEquals(toSafeName("^hello!there_0 1.jpg"), "helloThere01Jpg")
+    assertEquals(toSafeName("00-hello"), "_00Hello")
   }
 
   test("It should be able to render a simple tree of assets") {
@@ -19,7 +21,7 @@ class AssetListingTests extends munit.FunSuite {
       )
 
     val actual =
-      AssetListing.renderContent(paths)
+      AssetListing.renderContent(paths, AssetListing.toDefaultSafeName)
 
     val expected =
       """
@@ -58,7 +60,7 @@ class AssetListingTests extends munit.FunSuite {
       )
 
     val actual =
-      AssetListing.renderContent(paths)
+      AssetListing.renderContent(paths, AssetListing.toDefaultSafeName)
 
     val expected =
       """
