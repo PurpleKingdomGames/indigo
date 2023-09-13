@@ -1,41 +1,29 @@
 package snake.init
 
+import snake.GeneratedAssetList
+
 import indigo.*
 
 object GameAssets:
 
-  val smallFontName: AssetName = AssetName("smallFontName")
-  val snakeTexture: AssetName  = AssetName("snakeTexture")
-  val soundIntro: AssetName    = AssetName("introSound")
-  val soundPoint: AssetName    = AssetName("pointSound")
-  val soundLose: AssetName     = AssetName("loseSound")
-
-  val snakeMaterial: Material.Bitmap = Material.Bitmap(snakeTexture)
-
   def apple(blockSize: Int): Graphic[Material.Bitmap] =
-    Graphic(0, 0, blockSize, blockSize, 2, GameAssets.snakeMaterial)
+    Graphic(0, 0, blockSize, blockSize, 2, GeneratedAssetList.assets.snakeMaterial)
       .withCrop(blockSize, 0, blockSize, blockSize)
 
   def snake(blockSize: Int): Graphic[Material.Bitmap] =
-    Graphic(0, 0, blockSize, blockSize, 2, GameAssets.snakeMaterial)
+    Graphic(0, 0, blockSize, blockSize, 2, GeneratedAssetList.assets.snakeMaterial)
 
   def wall(blockSize: Int): Graphic[Material.Bitmap] =
-    Graphic(0, 0, blockSize, blockSize, 2, GameAssets.snakeMaterial)
+    Graphic(0, 0, blockSize, blockSize, 2, GeneratedAssetList.assets.snakeMaterial)
       .withCrop(blockSize * 2, 0, blockSize, blockSize)
 
   def assets(baseUrl: String): Set[AssetType] =
-    Set(
-      AssetType.Image(smallFontName, AssetPath(baseUrl + "assets/boxy_font_small.png")),
-      AssetType.Image(snakeTexture, AssetPath(baseUrl + "assets/snake.png")),
-      AssetType.Audio(soundIntro, AssetPath(baseUrl + "assets/intro.mp3")),
-      AssetType.Audio(soundPoint, AssetPath(baseUrl + "assets/point.mp3")),
-      AssetType.Audio(soundLose, AssetPath(baseUrl + "assets/lose.mp3"))
-    )
+    GeneratedAssetList.assets.assets(baseUrl)
 
   val fontKey: FontKey = FontKey("boxy font")
 
   val fontMaterial: Material.ImageEffects =
-    Material.ImageEffects(smallFontName)
+    Material.ImageEffects(GeneratedAssetList.assets.boxyFontSmall)
 
   val fontInfo: FontInfo =
     FontInfo(fontKey, 320, 230, FontChar("?", 47, 26, 11, 12))

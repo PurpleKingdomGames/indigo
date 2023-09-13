@@ -9,6 +9,7 @@ import snake.scenes.GameView
 import snake.Score
 import indigo.scenes.SceneEvent
 import snake.scenes.GameOverScene
+import snake.GeneratedAssetList
 
 final case class GameModel(
     snake: Snake,
@@ -137,7 +138,7 @@ object GameModel:
               case _           => Seconds(0.015)
             }
           )
-        ).addGlobalEvents(PlaySound(GameAssets.soundLose, Volume.Max))
+        ).addGlobalEvents(GeneratedAssetList.assets.losePlay)
 
       case CollisionCheckOutcome.PickUp(pt) =>
         Outcome(
@@ -154,7 +155,7 @@ object GameModel:
             score = gameModel.score + ScoreIncrement
           )
         ).addGlobalEvents(
-          PlaySound(GameAssets.soundPoint, Volume.Max),
+          GeneratedAssetList.assets.pointPlay,
           Score.spawnEvent(GameView.gridPointToPoint(pt, gameModel.gameMap.gridSize, gridSquareSize))
         )
 

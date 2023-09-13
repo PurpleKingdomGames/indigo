@@ -22,13 +22,13 @@ object snake extends MillIndigo with ScalafmtModule {
       .withBackgroundColor("black")
       .excludeAssets {
         case p if p.startsWith(os.RelPath("data")) => true
-        case _                      => false
+        case _                                     => false
       }
 
   val indigoGenerators: IndigoGenerators =
     IndigoGenerators
-      .mill("com.example")
-      .embedText("Foo", os.pwd / "assets" / "data" / "foo.txt")
+      .mill("snake")
+      .listAssets("GeneratedAssetList", indigoOptions.assets)
 
   def buildGame() = T.command {
     T {

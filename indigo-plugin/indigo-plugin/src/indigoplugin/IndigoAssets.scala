@@ -49,7 +49,7 @@ final case class IndigoAssets(
   def listAssetFiles(baseDirectory: os.Path): List[os.RelPath] =
     filesToCopy(baseDirectory)
       .filterNot(os.isDir)
-      .map(_.relativeTo(baseDirectory / gameAssetsDirectory))
+      .map(_.relativeTo(baseDirectory))
   def listAssetFiles: List[os.RelPath] =
     listAssetFiles(os.pwd)
 
