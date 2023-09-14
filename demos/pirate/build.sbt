@@ -15,6 +15,9 @@ lazy val pirateOptions: IndigoOptions =
     .withWindowWidth(1280)
     .withWindowHeight(720)
     .withBackgroundColor("black")
+    .excludeAssetPaths {
+      case p if p.contains("unused") => true
+    }
 
 lazy val pirate =
   (project in file("."))
@@ -35,15 +38,23 @@ lazy val pirate =
     )
     .settings( // Indigo specific settings
       indigoOptions := pirateOptions,
-      indigoGenerators :=
-        IndigoGenerators
-          .sbt((Compile / sourceManaged).value, "pirate.generated")
-          .listAssets("GeneratedAssets", pirateOptions.assets),
       libraryDependencies ++= Seq(
         "io.indigoengine" %%% "indigo-json-circe" % IndigoVersion.getVersion, // Needed for Aseprite & Tiled support
         "io.indigoengine" %%% "indigo"            % IndigoVersion.getVersion, // Important! :-)
         "io.indigoengine" %%% "indigo-extras"     % IndigoVersion.getVersion  // Important! :-)
-      )
+      ),
+      Compile / sourceGenerators += Def.task {
+        val cachedFun = FileFunction.cached(
+          streams.value.cacheDirectory / "pirate-gen"
+        ) { _ =>
+          IndigoGenerators
+            .sbt((Compile / sourceManaged).value, "pirate.generated")
+            .listAssets("GeneratedAssets", pirateOptions.assets)
+            .toSourceFiles
+            .toSet
+        }
+        cachedFun(IO.listFiles(baseDirectory.value / "assets").toSet).toSeq
+      }
     )
 
 addCommandAlias("buildGame", ";compile;fastLinkJS;indigoBuild")
