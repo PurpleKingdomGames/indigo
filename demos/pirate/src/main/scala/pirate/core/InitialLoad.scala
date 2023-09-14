@@ -3,6 +3,7 @@ package pirate.core
 import indigo.*
 import indigo.json.Json
 import indigo.shared.formats.TiledGridMap
+import pirate.generated.GeneratedAssets
 
 /*
 In a nutshell, the setup function here takes the boot data (screen dimensions),
@@ -29,7 +30,11 @@ object InitialLoad:
       dice: Dice
   ): Outcome[Startup[StartupData]] =
     Outcome(
-      loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.ref, Depth(2))
+      loadAnimation(assetCollection, dice)(
+        GeneratedAssets.assets.captain.CaptainClownNoseData,
+        GeneratedAssets.assets.captain.CaptainClownNose,
+        Depth(2)
+      )
         .map { captain =>
           makeStartupData(
             captain,
@@ -55,11 +60,11 @@ object InitialLoad:
 
     // If these assets haven't been loaded yet, we're not going to try and process anything.
     if (
-      assetCollection.findTextDataByName(Assets.Helm.jsonRef).isDefined &&
-      assetCollection.findTextDataByName(Assets.Trees.jsonRef).isDefined &&
-      assetCollection.findTextDataByName(Assets.Water.jsonRef).isDefined &&
-      assetCollection.findTextDataByName(Assets.Flag.jsonRef).isDefined &&
-      assetCollection.findTextDataByName(Assets.Static.terrainJsonRef).isDefined
+      assetCollection.findTextDataByName(GeneratedAssets.assets.helm.ShipHelmData).isDefined &&
+      assetCollection.findTextDataByName(GeneratedAssets.assets.trees.PalmTreeData).isDefined &&
+      assetCollection.findTextDataByName(GeneratedAssets.assets.water.WaterReflectData).isDefined &&
+      assetCollection.findTextDataByName(GeneratedAssets.assets.flag.FlagData).isDefined &&
+      assetCollection.findTextDataByName(GeneratedAssets.assets.static.terrainData).isDefined
     ) {
 
       val tileMapper: Int => TileType = {
@@ -71,18 +76,30 @@ object InitialLoad:
       // (the tile size, a `TiledGridMap` of data, and a renderable verison of the map)
       val terrainData: Option[(Point, TiledGridMap[TileType], Group)] =
         for {
-          json         <- assetCollection.findTextDataByName(Assets.Static.terrainJsonRef)
+          json         <- assetCollection.findTextDataByName(GeneratedAssets.assets.static.terrainData)
           tileMap      <- Json.tiledMapFromJson(json)
-          terrainGroup <- tileMap.toGroup(Assets.Static.terrainRef)
+          terrainGroup <- tileMap.toGroup(GeneratedAssets.assets.static.terrain)
           grid         <- tileMap.toGrid(tileMapper)
         } yield (Point(tileMap.tilewidth, tileMap.tileheight), grid, terrainGroup.withDepth(Depth(4)))
 
       for {
-        helm        <- loader(Assets.Helm.jsonRef, Assets.Helm.ref, Depth(9)).toOption
-        palm        <- loader(Assets.Trees.jsonRef, Assets.Trees.ref, Depth(1)).toOption
-        reflections <- loader(Assets.Water.jsonRef, Assets.Water.ref, Depth(20)).toOption
-        flag        <- loader(Assets.Flag.jsonRef, Assets.Flag.ref, Depth(10)).toOption
-        terrain     <- terrainData
+        helm <- loader(
+          GeneratedAssets.assets.helm.ShipHelmData,
+          GeneratedAssets.assets.helm.ShipHelm,
+          Depth(9)
+        ).toOption
+        palm <- loader(
+          GeneratedAssets.assets.trees.PalmTreeData,
+          GeneratedAssets.assets.trees.PalmTree,
+          Depth(1)
+        ).toOption
+        reflections <- loader(
+          GeneratedAssets.assets.water.WaterReflectData,
+          GeneratedAssets.assets.water.WaterReflect,
+          Depth(20)
+        ).toOption
+        flag    <- loader(GeneratedAssets.assets.flag.FlagData, GeneratedAssets.assets.flag.Flag, Depth(10)).toOption
+        terrain <- terrainData
       } yield makeAdditionalAssets(screenDimensions, helm, palm, reflections, flag, terrain._1, terrain._2, terrain._3)
     } else None
   }

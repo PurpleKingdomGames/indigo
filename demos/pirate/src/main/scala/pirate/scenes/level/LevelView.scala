@@ -10,6 +10,7 @@ import pirate.scenes.level.model.Pirate
 import pirate.scenes.level.model.LevelModel
 import pirate.scenes.level.viewmodel.LevelViewModel
 import pirate.scenes.level.viewmodel.PirateViewState
+import pirate.generated.GeneratedAssets
 
 object LevelView:
 
@@ -70,7 +71,7 @@ object LevelView:
             .addLayer(
               Layer(
                 BindingKey("background"),
-                Batch(Graphic(Rectangle(0, 0, 640, 360), 50, Material.Bitmap(Assets.Static.backgroundRef))) ++
+                Batch(Graphic(Rectangle(0, 0, 640, 360), 50, GeneratedAssets.assets.static.bgMaterial)) ++
                   drawWater(assets.waterReflections)
               )
             )
@@ -78,14 +79,15 @@ object LevelView:
               Layer(BindingKey("game"), drawForeground(assets))
             )
             .withAudio(
-              SceneAudio(
-                SceneAudioSource(
-                  BindingKey(Assets.Sounds.shanty.toString),
-                  PlaybackPattern.SingleTrackLoop(
-                    Track(Assets.Sounds.shanty, Volume(0.5))
-                  )
-                )
-              )
+              GeneratedAssets.assets.sounds.bgmusicSceneAudio
+              // SceneAudio(
+              //   SceneAudioSource(
+              //     BindingKey(GeneratedAssets.assets. Assets.Sounds.shanty.toString),
+              //     PlaybackPattern.SingleTrackLoop(
+              //       Track(Assets.Sounds.shanty, Volume(0.5))
+              //     )
+              //   )
+              // )
             )
         }
         .getOrElse(SceneUpdateFragment.empty)

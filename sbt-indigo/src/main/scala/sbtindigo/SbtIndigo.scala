@@ -2,7 +2,6 @@ package sbtindigo
 
 import sbt.plugins.JvmPlugin
 import sbt._
-import sbt.Keys._
 
 import indigoplugin.core.IndigoBuildSBT
 import indigoplugin.core.IndigoCordova
@@ -30,10 +29,6 @@ object SbtIndigo extends sbt.AutoPlugin {
     val indigoOptions: SettingKey[IndigoOptions] =
       settingKey[IndigoOptions]("Config options for your Indigo game.")
 
-    /** Indigo source code generators. */
-    val indigoGenerators: SettingKey[IndigoGenerators] =
-      settingKey[IndigoGenerators]("Indigo source code generators.")
-
   }
 
   import autoImport._
@@ -45,12 +40,7 @@ object SbtIndigo extends sbt.AutoPlugin {
     indigoRunFull          := indigoRunFullTask.value,
     indigoCordovaBuild     := indigoCordovaBuildTask.value,
     indigoCordovaBuildFull := indigoCordovaBuildFullTask.value,
-    indigoOptions          := IndigoOptions.defaults,
-    indigoGenerators       := IndigoGenerators.None
-  ) ++ inConfig(Compile)(
-    sourceGenerators += Def.task {
-      indigoGenerators.value.toSourceFiles
-    }
+    indigoOptions          := IndigoOptions.defaults
   )
 
   private def giveScriptBasePath(baseDir: String, scalaVersion: String, projectName: String): String = {
