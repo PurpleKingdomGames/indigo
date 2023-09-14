@@ -1,6 +1,7 @@
 package indigoplugin.generators
 
 import indigoplugin.IndigoAssets
+import scala.annotation.tailrec
 
 object AssetListing {
 
@@ -67,6 +68,38 @@ object AssetListing {
         renderFolderContents("", children, indent, toSafeName)
     }
 
+  def errorOnDuplicates(files: List[PathTree.File], toSafeName: (String, String) => String): Unit = {
+    @tailrec
+    def rec(remaining: List[PathTree.File], acc: List[(String, PathTree.File, PathTree.File)]): List[String] =
+      remaining match {
+        case Nil =>
+          acc.map { case (n, a, b) =>
+            s"""'$n' is the safe name of both '${a.fullName}' and '${b.fullName}'."""
+          }
+
+        case e :: es =>
+          val errors = es
+            .filter(n => toSafeName(n.name, n.extension) == toSafeName(e.name, e.extension))
+            .map(n => (toSafeName(e.name, e.extension), e, n))
+          rec(es, acc ++ errors)
+      }
+
+    val errors = rec(files, Nil)
+
+    if (errors.nonEmpty) {
+      val msg =
+        s"""
+        |**Generated asset names collision!**
+        |You have one or more conflicting asset names. Please change these names, or move them to separate sub-folders within your assets directory."
+        |The following assets would have the same names in your generated asset listings code:
+        |
+        |${errors.mkString("\n")}
+        |""".stripMargin
+
+      println(msg)
+    } else ()
+  }
+
   def renderFolderContents(
       folderName: String,
       children: List[PathTree],
@@ -78,6 +111,8 @@ object AssetListing {
     val indentSpacesNext           = indentSpaces + "  "
     val safeFolderName             = toSafeName(folderName, "")
     val files: List[PathTree.File] = children.collect { case f: PathTree.File => f }
+
+    errorOnDuplicates(files, toSafeName)
 
     val renderedFiles: List[(String, String)] =
       files
