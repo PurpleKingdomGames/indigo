@@ -2,6 +2,7 @@ package indigoplugin.generators
 
 import indigoplugin.IndigoAssets
 import scala.annotation.tailrec
+import scala.io.AnsiColor._
 
 object AssetListing {
 
@@ -68,13 +69,17 @@ object AssetListing {
         renderFolderContents("", children, indent, toSafeName)
     }
 
-  def errorOnDuplicates(files: List[PathTree.File], toSafeName: (String, String) => String): Unit = {
+  def errorOnDuplicates(
+      folderName: String,
+      files: List[PathTree.File],
+      toSafeName: (String, String) => String
+  ): Unit = {
     @tailrec
     def rec(remaining: List[PathTree.File], acc: List[(String, PathTree.File, PathTree.File)]): List[String] =
       remaining match {
         case Nil =>
           acc.map { case (n, a, b) =>
-            s"""'$n' is the safe name of both '${a.fullName}' and '${b.fullName}'."""
+            s"""${GREEN}'$n'${RESET} is the safe name of both ${GREEN}'${a.fullName}'${RESET} and ${GREEN}'${b.fullName}'${RESET}."""
           }
 
         case e :: es =>
@@ -89,9 +94,12 @@ object AssetListing {
     if (errors.nonEmpty) {
       val msg =
         s"""
-        |**Generated asset names collision!**
-        |You have one or more conflicting asset names. Please change these names, or move them to separate sub-folders within your assets directory."
-        |The following assets would have the same names in your generated asset listings code:
+        |${BOLD}${RED}Generated asset name collision${if (errors.length == 1) "" else "s"} in asset folder '${if (
+          folderName.isEmpty
+        ) "."
+        else folderName}'${RESET}
+        |${YELLOW}You have one or more conflicting asset names. Please change these names, or move them to separate sub-folders within your assets directory.
+        |The following assets would have the same names in your generated asset listings code:${RESET}
         |
         |${errors.mkString("\n")}
         |""".stripMargin
@@ -112,7 +120,7 @@ object AssetListing {
     val safeFolderName             = toSafeName(folderName, "")
     val files: List[PathTree.File] = children.collect { case f: PathTree.File => f }
 
-    errorOnDuplicates(files, toSafeName)
+    errorOnDuplicates(folderName, files, toSafeName)
 
     val renderedFiles: List[(String, String)] =
       files
