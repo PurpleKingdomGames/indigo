@@ -3,23 +3,58 @@ package indigoplugin.generators
 class ConfigGenTests extends munit.FunSuite {
 
   test("Can detect/extract rgba") {
-    assert(1 == 2)
+
+    val actual =
+      ConfigGen.extractBgColor("rgba(255, 127, 12,   255)")
+
+    val expected =
+      "RGBA.fromColorInts(255, 127, 12, 255)"
+
+    assertEquals(actual, expected)
   }
 
   test("Can detect/extract rgb") {
-    assert(1 == 2)
+
+    val actual =
+      ConfigGen.extractBgColor("rgb(  255, 127, 12)")
+
+    val expected =
+      "RGBA.fromColorInts(255, 127, 12)"
+
+    assertEquals(actual, expected)
   }
 
   test("Can detect/extract hex") {
-    assert(1 == 2)
+
+    val actual =
+      ConfigGen.extractBgColor("#FFFF00")
+
+    val expected =
+      """RGBA.fromHexString("#FFFF00")"""
+
+    assertEquals(actual, expected)
   }
 
   test("Can detect/extract named colour") {
-    assert(1 == 2)
+
+    val actual =
+      ConfigGen.extractBgColor("red")
+
+    val expected =
+      """RGBA.fromHexString("#FF0000")"""
+
+    assertEquals(actual, expected)
   }
 
   test("Will fall back to black") {
-    assert(1 == 2)
+
+    val actual =
+      ConfigGen.extractBgColor("nonsense")
+
+    val expected =
+      "RGBA.Black"
+
+    assertEquals(actual, expected)
   }
 
 }
