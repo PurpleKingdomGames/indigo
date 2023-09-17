@@ -10,7 +10,7 @@ import pirate.scenes.level.model.Pirate
 import pirate.scenes.level.model.LevelModel
 import pirate.scenes.level.viewmodel.LevelViewModel
 import pirate.scenes.level.viewmodel.PirateViewState
-import pirate.generated.GeneratedAssets
+import pirate.generated.Assets.*
 
 object LevelView:
 
@@ -66,28 +66,20 @@ object LevelView:
 
     def draw(levelDataStore: Option[LevelDataStore]): SceneUpdateFragment =
       levelDataStore
-        .map { assets =>
+        .map { levelAssets =>
           SceneUpdateFragment.empty
             .addLayer(
               Layer(
                 BindingKey("background"),
-                Batch(Graphic(Rectangle(0, 0, 640, 360), 50, GeneratedAssets.assets.static.bgMaterial)) ++
-                  drawWater(assets.waterReflections)
+                Batch(Graphic(Rectangle(0, 0, 640, 360), 50, assets.static.bgMaterial)) ++
+                  drawWater(levelAssets.waterReflections)
               )
             )
             .addLayer(
-              Layer(BindingKey("game"), drawForeground(assets))
+              Layer(BindingKey("game"), drawForeground(levelAssets))
             )
             .withAudio(
-              GeneratedAssets.assets.sounds.bgmusicSceneAudio
-              // SceneAudio(
-              //   SceneAudioSource(
-              //     BindingKey(GeneratedAssets.assets. Assets.Sounds.shanty.toString),
-              //     PlaybackPattern.SingleTrackLoop(
-              //       Track(Assets.Sounds.shanty, Volume(0.5))
-              //     )
-              //   )
-              // )
+              assets.sounds.bgmusicSceneAudio
             )
         }
         .getOrElse(SceneUpdateFragment.empty)

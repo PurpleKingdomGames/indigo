@@ -1,44 +1,44 @@
 package pirate.core
 
 import indigo.*
-import pirate.generated.GeneratedAssets
+import pirate.generated.Assets.*
 
 object Assets:
 
   object Static:
     val chestGraphic: Graphic[Material.Bitmap] =
-      Graphic(Rectangle(0, 0, 64, 35), 4, GeneratedAssets.assets.static.ChestClose01Material).withRef(33, 34)
+      Graphic(Rectangle(0, 0, 64, 35), 4, assets.static.ChestClose01Material).withRef(33, 34)
 
   object Clouds:
 
     val bigCloudsGraphic: Graphic[Material.Bitmap] =
-      Graphic(Rectangle(0, 0, 448, 101), 40, GeneratedAssets.assets.clouds.BigCloudsMaterial).withRef(0, 101)
+      Graphic(Rectangle(0, 0, 448, 101), 40, assets.clouds.BigCloudsMaterial).withRef(0, 101)
     val bigCloudsWidth: Int = bigCloudsGraphic.crop.width
 
     val cloud1: Graphic[Material.Bitmap] =
-      Graphic(Rectangle(0, 0, 140, 39), 45, GeneratedAssets.assets.clouds.smallCloudsMaterial)
+      Graphic(Rectangle(0, 0, 140, 39), 45, assets.clouds.smallCloudsMaterial)
     val cloud2: Graphic[Material.Bitmap] =
-      Graphic(Rectangle(0, 39, 140, 39), 45, GeneratedAssets.assets.clouds.smallCloudsMaterial)
+      Graphic(Rectangle(0, 39, 140, 39), 45, assets.clouds.smallCloudsMaterial)
     val cloud3: Graphic[Material.Bitmap] =
-      Graphic(Rectangle(0, 78, 140, 39), 45, GeneratedAssets.assets.clouds.smallCloudsMaterial)
+      Graphic(Rectangle(0, 78, 140, 39), 45, assets.clouds.smallCloudsMaterial)
 
   object Trees:
 
     val tallTrunkGraphic: Graphic[Material.Bitmap] =
-      Graphic(Rectangle(0, 0, 96, 96), 1, GeneratedAssets.assets.trees.FrontPalmTreesMaterial)
+      Graphic(Rectangle(0, 0, 96, 96), 1, assets.trees.FrontPalmTreesMaterial)
         .withCrop(Rectangle(8, 0, 16, 60))
 
     val leftLeaningTrunkGraphic: Graphic[Material.Bitmap] =
-      Graphic(Rectangle(0, 0, 96, 96), 1, GeneratedAssets.assets.trees.FrontPalmTreesMaterial)
+      Graphic(Rectangle(0, 0, 96, 96), 1, assets.trees.FrontPalmTreesMaterial)
         .withCrop(Rectangle(43, 0, 50, 22))
 
     val rightLeaningTrunkGraphic: Graphic[Material.Bitmap] =
-      Graphic(Rectangle(0, 0, 96, 96), 1, GeneratedAssets.assets.trees.FrontPalmTreesMaterial)
+      Graphic(Rectangle(0, 0, 96, 96), 1, assets.trees.FrontPalmTreesMaterial)
         .withCrop(Rectangle(36, 32, 48, 23))
 
   object Fonts:
     val fontKey: FontKey                    = FontKey("boxy font")
-    val fontMaterial: Material.ImageEffects = Material.ImageEffects(GeneratedAssets.assets.fonts.boxyFontSmall)
+    val fontMaterial: Material.ImageEffects = Material.ImageEffects(assets.fonts.boxyFontSmall)
 
     val fontInfo: FontInfo =
       FontInfo(fontKey, 320, 230, FontChar("?", 47, 26, 11, 12))
@@ -96,14 +96,14 @@ object Assets:
         .addChar(FontChar("%", 47, 0, 14, 12))
 
   def initialAssets(baseUrl: String): Set[AssetType] =
-    GeneratedAssets.assets.fonts.assets(baseUrl) ++
-      GeneratedAssets.assets.captain.assets(baseUrl)
+    assets.fonts.assets(baseUrl) ++
+      assets.captain.assets(baseUrl)
 
   def remainingAssets(baseUrl: String): Set[AssetType] =
-    GeneratedAssets.assets.static.assets(baseUrl) ++
-      GeneratedAssets.assets.sounds.assets(baseUrl) ++
-      GeneratedAssets.assets.clouds.assets(baseUrl) ++
-      GeneratedAssets.assets.water.assets(baseUrl) ++
-      GeneratedAssets.assets.flag.assets(baseUrl) ++
-      GeneratedAssets.assets.trees.assets(baseUrl) ++
-      GeneratedAssets.assets.helm.assets(baseUrl)
+    assets.static.assets(baseUrl) ++
+      assets.sounds.assets(baseUrl) ++
+      assets.clouds.assets(baseUrl) ++
+      assets.water.assets(baseUrl) ++
+      assets.flag.assets(baseUrl) ++
+      assets.trees.assets(baseUrl) ++
+      assets.helm.assets(baseUrl)

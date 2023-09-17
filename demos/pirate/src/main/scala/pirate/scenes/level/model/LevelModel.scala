@@ -4,7 +4,7 @@ import indigo.*
 import indigo.syntax.*
 import indigo.physics.World
 import pirate.core.Assets
-import pirate.generated.GeneratedAssets
+import pirate.generated.Assets.*
 
 /*
 The model cannot be initialised at game start up, because we want to load
@@ -53,13 +53,13 @@ enum LevelModel:
                   if p.position.y > platform.rowCount.toDouble + 1 then
                     Outcome(Pirate(nextState, gameTime.running))
                       .addGlobalEvents(
-                        GeneratedAssets.assets.sounds.respawnPlay,
+                        assets.sounds.respawnPlay,
                         PirateRespawn(Pirate.respawnPoint)
                       )
                   else
                     val maybeJumpSound =
                       if (!pirate.state.inMidAir && nextState.isJumping)
-                        Batch(GeneratedAssets.assets.sounds.jumpPlay)
+                        Batch(assets.sounds.jumpPlay)
                       else Batch.empty
 
                     Outcome(Pirate(nextState, pirate.lastRespawn))

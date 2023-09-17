@@ -4,7 +4,7 @@ import indigo.*
 import pirate.scenes.level.model.Pirate
 import pirate.core.Assets
 import pirate.scenes.level.model.PirateState
-import pirate.generated.GeneratedAssets
+import pirate.generated.Assets.*
 
 /*
 The model that describes the level is concerned with abstract
@@ -68,7 +68,7 @@ final case class PirateViewState(
 
   def updateWalkSound(gameTime: GameTime, soundLastPlayed: Seconds): (Batch[GlobalEvent], Seconds) =
     if gameTime.running > soundLastPlayed + Seconds(0.25) then
-      (Batch(PlaySound(GeneratedAssets.assets.sounds.walk, Volume(0.5d))), gameTime.running)
+      (Batch(PlaySound(assets.sounds.walk, Volume(0.5d))), gameTime.running)
     else (Batch.empty, soundLastPlayed)
 
 object PirateViewState:
