@@ -63,7 +63,7 @@ object snake extends MillIndigo with ScalafmtModule {
     }
   }
 
-  val indigoVersion = "0.15.0-RC3"
+  val indigoVersion = "0.15.0-RC4"
 
   def ivyDeps = Agg(
     ivy"io.indigoengine::indigo-json-circe::$indigoVersion",

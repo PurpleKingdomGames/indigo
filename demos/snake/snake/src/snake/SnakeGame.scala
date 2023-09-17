@@ -30,11 +30,9 @@ object SnakeGame extends IndigoGame[ViewConfig, StartupData, GameModel, ViewMode
         flags.getOrElse("baseUrl", "")
 
       val config =
-        GameConfig(
-          viewport = viewConfig.viewport,
-          clearColor = RGBA.Black,
-          magnification = viewConfig.magnificationLevel
-        ).withFrameRateLimit(60)
+        snake.generated.SnakeConfig.config
+          .withMagnification(viewConfig.magnificationLevel)
+          .withViewport(viewConfig.viewport)
 
       BootResult(config, viewConfig)
         .withAssets(GameAssets.assets(assetPath))
