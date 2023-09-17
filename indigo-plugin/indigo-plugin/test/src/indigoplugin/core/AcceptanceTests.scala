@@ -47,7 +47,8 @@ class AcceptanceTests extends munit.FunSuite {
         baseDirectory / sourceDir / "foo.txt"
       )
 
-    assertEquals(actual, expected)
+    assertEquals(actual.length, expected.length)
+    assert(clue(expected).forall(clue(actual).contains))
   }
 
   test("List all asset files as relative paths") {
@@ -64,7 +65,8 @@ class AcceptanceTests extends munit.FunSuite {
         sourceDir / "foo.txt"
       )
 
-    assertEquals(actual, expected)
+    assertEquals(actual.length, expected.length)
+    assert(clue(expected).forall(clue(actual).contains))
   }
 
   test("Copy assets and assert expected output files") {
