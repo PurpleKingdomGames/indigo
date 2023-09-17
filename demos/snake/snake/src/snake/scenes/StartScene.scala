@@ -8,7 +8,7 @@ import snake.model.ViewModel
 import snake.init.StartupData
 import snake.GameReset
 import snake.model.GameModel
-import snake.GeneratedAssetList
+import snake.generated.Assets
 
 object StartScene extends Scene[StartupData, GameModel, ViewModel]:
   type SceneModel     = Unit
@@ -70,7 +70,7 @@ object StartScene extends Scene[StartupData, GameModel, ViewModel]:
           )
         )
         .withAudio(
-          GeneratedAssetList.assets.introSceneAudio
+          Assets.assets.introSceneAudio
         )
     }
 
