@@ -1,6 +1,7 @@
 package indigoplugin.generators
 
 import indigoplugin.IndigoOptions
+import scala.util.matching.Regex
 
 object ConfigGen {
 
@@ -49,26 +50,29 @@ object ConfigGen {
 
   def extractBgColor(backgroundColor: String): String =
     backgroundColor.replace(" ", "") match {
-      case c if c.matches(extractRGBA) =>
-        "RGBA.White"
+      case extractRGBA(r, g, b, a) =>
+        s"""RGBA.fromColorInts($r, $g, $b, $a)"""
 
-      case c if c.matches(extractRGB) =>
-        "RGBA.White"
+      case extractRGB(r, g, b) =>
+        s"""RGBA.fromColorInts($r, $g, $b)"""
 
-      case c if c.matches(hexColorMatch) =>
-        "RGBA.White"
+      case hexColorMatch(c) =>
+        s"""RGBA.fromHexString("$c")"""
 
-      case c if colorLookUp.keySet.contains(c.toLowerCase) =>
-        "RGBA.White"
+      case c =>
+        colorLookUp.get(c) match {
+          case None =>
+            "RGBA.Black"
 
-      case _ =>
-        "RGBA.White"
+          case Some(value) =>
+            s"""RGBA.fromHexString("$value")"""
+        }
     }
 
-  private val hexColorMatch: String = "#[A-Z0-9]*"                             // Remember to remove whitespace first.
-  private val extractRGB: String    = """^rgb\(([0-9]*),([0-9]*),([0-9]*)\)""" // Remember to remove whitespace first.
-  private val extractRGBA: String =
-    """^rgba\(([0-9]*),([0-9]*),([0-9]*),([0-9]*)\)""" // Remember to remove whitespace first.
+  private val hexColorMatch: Regex = "(#[A-Z0-9]*)".r                           // Remember to remove whitespace first.
+  private val extractRGB: Regex    = """^rgb\(([0-9]*),([0-9]*),([0-9]*)\)""".r // Remember to remove whitespace first.
+  private val extractRGBA: Regex =
+    """^rgba\(([0-9]*),([0-9]*),([0-9]*),([0-9]*)\)""".r // Remember to remove whitespace first.
 
   private val colorLookUp: Map[String, String] =
     Map(
