@@ -27,8 +27,9 @@ object snake extends MillIndigo with ScalafmtModule {
 
   val indigoGenerators: IndigoGenerators =
     IndigoGenerators
-      .mill("snake")
-      .listAssets("GeneratedAssetList", indigoOptions.assets)
+      .mill("snake.generated")
+      .listAssets("Assets", indigoOptions.assets)
+      .generateConfig("SnakeConfig", indigoOptions)
 
   def buildGame() = T.command {
     T {

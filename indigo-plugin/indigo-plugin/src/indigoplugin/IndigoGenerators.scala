@@ -4,6 +4,7 @@ import indigoplugin.generators.EmbedText
 import java.io.File
 import indigoplugin.generators.EmbedGLSLShaderPair
 import indigoplugin.generators.AssetListing
+import indigoplugin.generators.ConfigGen
 
 /** Assists with setting up source code generators for Indigo projects
   *
@@ -205,6 +206,27 @@ final case class IndigoGenerators(outDirectory: os.Path, fullyQualifiedPackageNa
           moduleName,
           fullyQualifiedPackageName,
           indigoAssets
+        )
+    )
+
+  /** Generate a module that provides a default `GameConfig` instance that is synchronised with your build settings.
+    *
+    * @param moduleName
+    *   The name for the Scala module, e.g. 'MyModule' would be `object MyModule {}`
+    * @param indigoOptions
+    *   The IndigoOptions config object
+    */
+  def generateConfig(
+      moduleName: String,
+      indigoOptions: IndigoOptions
+  ): IndigoGenerators =
+    this.copy(
+      sources = sources ++
+        ConfigGen.generate(
+          outDirectory,
+          moduleName,
+          fullyQualifiedPackageName,
+          indigoOptions
         )
     )
 
