@@ -2,6 +2,76 @@ package indigoplugin.generators
 
 class EmbedDataTests extends munit.FunSuite {
 
+  test("Create a DataFrame") {
+
+    val rows =
+      EmbedData.extractRows(
+        List(
+          "name,game,highscore,allowed",
+          "bob,tron,10000.00,true",
+          "Fred,tanks,476,false"
+        ),
+        ","
+      )
+
+    val actual =
+      DataFrame.fromRows(rows)
+
+    val expectedHeaders =
+      List(
+        DataType.StringData("name"),
+        DataType.StringData("game"),
+        DataType.StringData("highscore"),
+        DataType.StringData("allowed")
+      )
+
+    val expectedRows =
+      List(
+        List(
+          DataType.StringData("bob"),
+          DataType.StringData("tron"),
+          DataType.DoubleData(10000.0),
+          DataType.BooleanData(true)
+        ),
+        List(
+          DataType.StringData("Fred"),
+          DataType.StringData("tanks"),
+          DataType.DoubleData(476.0),
+          DataType.BooleanData(false)
+        )
+      )
+
+    assertEquals(actual.headers.toList, expectedHeaders)
+    assertEquals(actual.rows.toList.map(_.toList), expectedRows)
+
+    val actualEnum =
+      actual.renderEnum("GameScores")
+
+    val expectedEnum =
+      """
+enum GameScores(val game: String, val highscore: Double, val allowed: Boolean):
+  case Bob extends GameScores("tron", 10000.0, true)
+  case Fred extends GameScores("tanks", 476.0, false)
+      """
+
+    assertEquals(actualEnum, expectedEnum)
+
+    val actualMap =
+      actual.renderMap("GameScores")
+
+    val expectedMap =
+      """
+final case class GameScores(val game: String, val highscore: Double, val allowed: Boolean)
+Map(
+  "bob" -> GameScores("tron", 10000.0, true),
+  "Fred" -> GameScores("tanks", 476.0, false)
+)
+      """
+
+    assertEquals(actualMap, expectedMap)
+
+  }
+
   test("Extract row data - csv - simple") {
     val row = " abc,123, def,456.5 ,ghi789,true "
 

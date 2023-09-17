@@ -109,7 +109,7 @@ sealed trait DataType {
       case _                       => false
     }
 
-  def toStringData: DataType =
+  def toStringData: DataType.StringData =
     this match {
       case s: DataType.StringData      => s
       case DataType.BooleanData(value) => DataType.StringData(value.toString)
@@ -174,6 +174,53 @@ object DataType {
     } else {
       // Nothing else to do, but make everything a string
       l.map(_.toStringData)
+    }
+
+}
+
+final case class DataFrame(data: Array[Array[DataType]], columnCount: Int) {
+  def headers: Array[DataType.StringData] =
+    data.head.map(_.toStringData)
+
+  def rows: Array[Array[DataType]] =
+    data.tail
+
+  def alignColumnTypes: DataFrame =
+    this.copy(
+      data = headers.asInstanceOf[Array[DataType]] +: rows.transpose
+        .map(d => DataType.convertToBestType(d.toList).toArray)
+        .transpose
+    )
+
+  def renderEnum(moduleName: String): String =
+    s"""enum $moduleName
+    |""".stripMargin
+
+  def renderMap(moduleName: String): String =
+    s"""enum $moduleName
+    |""".stripMargin
+}
+object DataFrame {
+
+  private val standardMessage: String =
+    "Embedded data must have two rows (minimum) of the same length. The first row is the headers / field names. The first column are the keys."
+
+  def fromRows(rows: List[List[DataType]]): DataFrame =
+    rows match {
+      case Nil =>
+        throw new Exception("No data to create. " + standardMessage)
+
+      case _ :: Nil =>
+        throw new Exception("Only one row of data found. " + standardMessage)
+
+      case h :: t =>
+        val len = h.length
+
+        if (!t.forall(_.length == len)) {
+          throw new Exception(s"All rows must be the same length. Header row had '$len' columns. " + standardMessage)
+        } else {
+          DataFrame(rows.map(_.toArray).toArray, len).alignColumnTypes
+        }
     }
 
 }
