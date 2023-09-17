@@ -6,6 +6,7 @@ import indigoextras.subsystems.FPSCounter
 import pirate.scenes.loading.LoadingScene
 import pirate.scenes.level.LevelScene
 import pirate.core.{Model, ViewModel}
+import pirate.generated.Config
 
 import pirate.core.{Assets, InitialLoad, StartupData}
 
@@ -50,10 +51,8 @@ object CursedPirateDemo extends IndigoGame[BootInformation, StartupData, Model, 
         flags.getOrElse("baseUrl", "")
 
       val config =
-        GameConfig.default
-          .withViewport(GameViewport.at720p)
+        Config.config
           .withMagnification(2)
-          .withFrameRateLimit(60)
 
       BootResult(
         config,

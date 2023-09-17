@@ -49,7 +49,8 @@ lazy val pirate =
         ) { _ =>
           IndigoGenerators
             .sbt((Compile / sourceManaged).value, "pirate.generated")
-            .listAssets("GeneratedAssets", pirateOptions.assets)
+            .listAssets("Assets", pirateOptions.assets)
+            .generateConfig("Config", pirateOptions)
             .toSourceFiles
             .toSet
         }
