@@ -5,6 +5,7 @@ import java.io.File
 import indigoplugin.generators.EmbedGLSLShaderPair
 import indigoplugin.generators.AssetListing
 import indigoplugin.generators.ConfigGen
+import indigoplugin.generators.EmbedData
 
 /** Assists with setting up source code generators for Indigo projects
   *
@@ -229,6 +230,152 @@ final case class IndigoGenerators(outDirectory: os.Path, fullyQualifiedPackageNa
           indigoOptions
         )
     )
+
+  /** Used to embed CSV (Comma Separated Value) data, usage: embedCSV.asEnum(moduleName, filePath), or
+    * embedCSV.asMap(moduleName, filePath)
+    */
+  def embedCSV: DataEmbed = new DataEmbed(
+    this,
+    delimiter = ",",
+    rowFilter = (row: String) =>
+      row match {
+        case r if r.isEmpty => false
+        case _              => true
+      }
+  )
+
+  /** Used to embed TSV (Tab Separated Value) data, usage: embedTSV.asEnum(moduleName, filePath), or
+    * embedTSV.asMap(moduleName, filePath)
+    */
+  def embedTSV: DataEmbed = new DataEmbed(
+    this,
+    delimiter = "\t",
+    rowFilter = (row: String) =>
+      row match {
+        case r if r.isEmpty => false
+        case _              => true
+      }
+  )
+
+  /** Used to embed markdown table data, usage: embedMarkdownTable.asEnum(moduleName, filePath), or
+    * embedMarkdownTable.asMap(moduleName, filePath)
+    */
+  def embedMarkdownTable: DataEmbed = new DataEmbed(
+    this,
+    delimiter = "\\|",
+    rowFilter = (row: String) =>
+      row match {
+        case r if r.isEmpty        => false
+        case r if r.contains("-|") => false
+        case _                     => true
+      }
+  )
+
+  /** Used to embed data separated by some value other than commas, tabs, or pipes.
+    *
+    * @param delimiter
+    *   The String to be used as a separator
+    * @param rowFilter
+    *   Allows you to ignore certain kinds of rows, for example empty rows or rows that divide headers from data
+    */
+  def embedSeparatedData(delimiter: String, rowFilter: String => Boolean): DataEmbed = new DataEmbed(
+    this,
+    delimiter,
+    rowFilter
+  )
+
+  final class DataEmbed(gens: IndigoGenerators, delimiter: String, rowFilter: String => Boolean) {
+
+    /** Embed the data as a Scala 3 Enum. */
+    def asEnum(moduleName: String, file: os.Path): IndigoGenerators =
+      gens.copy(
+        sources = sources ++
+          EmbedData.generate(
+            outDirectory,
+            moduleName,
+            fullyQualifiedPackageName,
+            file,
+            delimiter,
+            rowFilter,
+            asEnum = true
+          )
+      )
+
+    /** Embed the data as a Scala 3 Enum. */
+    def asEnum(moduleName: String, file: File): IndigoGenerators =
+      gens.copy(
+        sources = sources ++
+          EmbedData.generate(
+            outDirectory,
+            moduleName,
+            fullyQualifiedPackageName,
+            os.Path(file),
+            delimiter,
+            rowFilter,
+            asEnum = true
+          )
+      )
+
+    /** Embed the data as a Scala 3 Enum. */
+    def asEnum(moduleName: String, file: String): IndigoGenerators =
+      gens.copy(
+        sources = sources ++
+          EmbedData.generate(
+            outDirectory,
+            moduleName,
+            fullyQualifiedPackageName,
+            os.RelPath(file).resolveFrom(os.pwd),
+            delimiter,
+            rowFilter,
+            asEnum = true
+          )
+      )
+
+    /** Embed the data as a Map. */
+    def asMap(moduleName: String, file: os.Path): IndigoGenerators =
+      gens.copy(
+        sources = sources ++
+          EmbedData.generate(
+            outDirectory,
+            moduleName,
+            fullyQualifiedPackageName,
+            file,
+            delimiter,
+            rowFilter,
+            asEnum = false
+          )
+      )
+
+    /** Embed the data as a Map. */
+    def asMap(moduleName: String, file: File): IndigoGenerators =
+      gens.copy(
+        sources = sources ++
+          EmbedData.generate(
+            outDirectory,
+            moduleName,
+            fullyQualifiedPackageName,
+            os.Path(file),
+            delimiter,
+            rowFilter,
+            asEnum = false
+          )
+      )
+
+    /** Embed the data as a Map. */
+    def asMap(moduleName: String, file: String): IndigoGenerators =
+      gens.copy(
+        sources = sources ++
+          EmbedData.generate(
+            outDirectory,
+            moduleName,
+            fullyQualifiedPackageName,
+            os.RelPath(file).resolveFrom(os.pwd),
+            delimiter,
+            rowFilter,
+            asEnum = false
+          )
+      )
+  }
 
 }
 
