@@ -117,6 +117,22 @@ sealed trait DataType {
       case DataType.IntData(value)     => DataType.StringData(value.toString)
     }
 
+  def asString: String =
+    this match {
+      case s: DataType.StringData      => s""""${s.value}""""
+      case DataType.BooleanData(value) => value.toString
+      case DataType.DoubleData(value)  => value.toString
+      case DataType.IntData(value)     => value.toString
+    }
+
+  def giveType: String =
+    this match {
+      case _: DataType.StringData  => "String"
+      case _: DataType.BooleanData => "Boolean"
+      case _: DataType.DoubleData  => "Double"
+      case _: DataType.IntData     => "Int"
+    }
+
 }
 object DataType {
 
@@ -185,25 +201,70 @@ final case class DataFrame(data: Array[Array[DataType]], columnCount: Int) {
   def rows: Array[Array[DataType]] =
     data.tail
 
-  def alignColumnTypes: DataFrame =
+  def alignColumnTypes: DataFrame = {
+    val transposed                  = rows.transpose
+    val stringKeys: Array[DataType] = transposed.head.map(_.toStringData)
+    val typeRows: Array[Array[DataType]] = transposed.tail
+      .map(d => DataType.convertToBestType(d.toList).toArray)
+    val cleanedRows: Array[Array[DataType]] =
+      (stringKeys +: typeRows).transpose
+
     this.copy(
-      data = headers.asInstanceOf[Array[DataType]] +: rows.transpose
-        .map(d => DataType.convertToBestType(d.toList).toArray)
-        .transpose
+      data = headers.asInstanceOf[Array[DataType]] +: cleanedRows
     )
+  }
 
-  def renderEnum(moduleName: String): String =
-    s"""enum $moduleName
-    |""".stripMargin
+  def toSafeName: String => String = { name: String =>
+    name.replaceAll("[^a-zA-Z0-9]", "-").split("-").toList.filterNot(_.isEmpty) match {
+      case h :: t if h.take(1).matches("[0-9]") => ("_" :: h :: t.map(_.capitalize)).mkString
+      case l                                    => l.map(_.capitalize).mkString
+    }
+  }
 
-  def renderMap(moduleName: String): String =
-    s"""enum $moduleName
+  def renderVars: String = {
+    val names = headers.drop(1).map(_.value)
+    val types = rows.head.drop(1).map(_.giveType)
+    names.zip(types).map { case (n, t) => s"val $n: $t" }.mkString(", ")
+  }
+
+  def renderEnum(moduleName: String, indent: Int): String = {
+    val indentSpaces = List.fill(indent)("  ").mkString
+    val renderedRows =
+      rows
+        .map { r =>
+          s"""${indentSpaces}  case ${toSafeName(r.head.asString)} extends $moduleName(${r.tail
+            .map(_.asString)
+            .mkString(", ")})"""
+        }
+        .mkString("\n")
+
+    s"""
+    |${indentSpaces}enum $moduleName(${renderVars}):
+    |${renderedRows}
     |""".stripMargin
+  }
+
+  def renderMap(moduleName: String, indent: Int): String = {
+    val indentSpaces = List.fill(indent)("  ").mkString
+    val renderedRows =
+      rows
+        .map { r =>
+          s"""${indentSpaces}  ${r.head.asString} -> $moduleName(${r.tail.map(_.asString).mkString(", ")})"""
+        }
+        .mkString(",\n")
+
+    s"""
+    |${indentSpaces}final case class $moduleName(${renderVars})
+    |${indentSpaces}Map(
+    |${renderedRows}
+    |${indentSpaces})
+    |""".stripMargin
+  }
 }
 object DataFrame {
 
   private val standardMessage: String =
-    "Embedded data must have two rows (minimum) of the same length. The first row is the headers / field names. The first column are the keys."
+    "Embedded data must have two rows (minimum) of the same length (two columns minimum). The first row is the headers / field names. The first column are the keys."
 
   def fromRows(rows: List[List[DataType]]): DataFrame =
     rows match {
@@ -216,7 +277,11 @@ object DataFrame {
       case h :: t =>
         val len = h.length
 
-        if (!t.forall(_.length == len)) {
+        if (len == 0) {
+          throw new Exception("No data to create. " + standardMessage)
+        } else if (len == 1) {
+          throw new Exception("Only one column of data. " + standardMessage)
+        } else if (!t.forall(_.length == len)) {
           throw new Exception(s"All rows must be the same length. Header row had '$len' columns. " + standardMessage)
         } else {
           DataFrame(rows.map(_.toArray).toArray, len).alignColumnTypes
