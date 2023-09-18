@@ -10,6 +10,7 @@ object EmbedData {
   // Strings delimited with single or double quotes preserve the delimited
   // value, the quotes are dropped, but the other kind of quote within that
   // string is kept.
+  // Cells cannot be empty.
   def generate(
       outDir: os.Path,
       moduleName: String,
@@ -61,7 +62,12 @@ object EmbedData {
     rows.map(r => extractRowData(r, delimiter))
 
   def extractRowData(row: String, delimiter: String): List[DataType] =
-    parse(delimiter)(row).map(_._1)
+    parse(delimiter)(row).map(_._1).collect {
+      case d @ DataType.StringData(s) if s.nonEmpty => d
+      case d: DataType.BooleanData                  => d
+      case d: DataType.DoubleData                   => d
+      case d: DataType.IntData                      => d
+    }
 
   // A parser of things,
   // is a function from strings,
@@ -270,7 +276,7 @@ final case class DataFrame(data: Array[Array[DataType]], columnCount: Int) {
 object DataFrame {
 
   private val standardMessage: String =
-    "Embedded data must have two rows (minimum) of the same length (two columns minimum). The first row is the headers / field names. The first column are the keys."
+    "Embedded data must have two rows (minimum) of the same length (two columns minimum). The first row is the headers / field names. The first column are the keys. Cells cannot be empty."
 
   def fromRows(rows: List[List[DataType]]): DataFrame =
     rows match {
