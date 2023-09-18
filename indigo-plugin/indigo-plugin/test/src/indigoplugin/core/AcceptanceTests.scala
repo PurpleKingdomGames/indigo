@@ -27,6 +27,7 @@ class AcceptanceTests extends munit.FunSuite {
       exclude = {
         case p if p.startsWith(os.RelPath("ignored-folder")) => true
         case p if p.startsWith(os.RelPath("mixed"))          => true
+        case p if p.endsWith(os.RelPath("stats.md"))         => true
         case _                                               => false
       },
       None

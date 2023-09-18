@@ -263,12 +263,15 @@ final case class IndigoGenerators(outDirectory: os.Path, fullyQualifiedPackageNa
   def embedMarkdownTable: DataEmbed = new DataEmbed(
     this,
     delimiter = "\\|",
-    rowFilter = (row: String) =>
+    rowFilter = (row: String) => {
+      val rgx = """---[ ?]*\|""".r
+
       row match {
-        case r if r.isEmpty        => false
-        case r if r.contains("-|") => false
-        case _                     => true
+        case r if r.isEmpty                    => false
+        case r if rgx.findFirstIn(r).isDefined => false
+        case _                                 => true
       }
+    }
   )
 
   /** Used to embed data separated by some value other than commas, tabs, or pipes.
