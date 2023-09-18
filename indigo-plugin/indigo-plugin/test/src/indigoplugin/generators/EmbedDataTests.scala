@@ -45,7 +45,7 @@ class EmbedDataTests extends munit.FunSuite {
     assertEquals(actual.rows.toList.map(_.toList), expectedRows)
 
     val actualEnum =
-      actual.renderEnum("GameScores", 0)
+      actual.renderEnum("GameScores")
 
     val expectedEnum =
       """
@@ -57,15 +57,17 @@ class EmbedDataTests extends munit.FunSuite {
     assertEquals(actualEnum.trim, expectedEnum.trim)
 
     val actualMap =
-      actual.renderMap("GameScores", 1)
+      actual.renderMap("GameScores")
 
     val expectedMap =
       """
-      |  final case class GameScores(val game: String, val highscore: Double, val allowed: Boolean)
-      |  Map(
-      |    "bob" -> GameScores("tron", 10000.0, true),
-      |    "Fred" -> GameScores("tanks", 476.0, false)
-      |  )
+      |final case class GameScores(val game: String, val highscore: Double, val allowed: Boolean)
+      |object GameScores:
+      |  val data: Map[String, GameScores] =
+      |    Map(
+      |      "bob" -> GameScores("tron", 10000.0, true),
+      |      "Fred" -> GameScores("tanks", 476.0, false)
+      |    )
       """.stripMargin
 
     assertEquals(actualMap.trim, expectedMap.trim)
