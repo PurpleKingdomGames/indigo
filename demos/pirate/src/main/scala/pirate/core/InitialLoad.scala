@@ -4,6 +4,7 @@ import indigo.*
 import indigo.json.Json
 import indigo.shared.formats.TiledGridMap
 import pirate.generated.Assets.*
+import pirate.generated.CaptainAnim
 
 /*
 In a nutshell, the setup function here takes the boot data (screen dimensions),
@@ -30,21 +31,19 @@ object InitialLoad:
       dice: Dice
   ): Outcome[Startup[StartupData]] =
     Outcome(
-      loadAnimation(assetCollection, dice)(
-        assets.captain.CaptainClownNoseData,
-        assets.captain.CaptainClownNose,
-        Depth(2)
-      )
+      CaptainAnim.aseprite
+        .toSpriteAndAnimations(dice, assets.captain.CaptainClownNose)
+        .map(s => s.copy(sprite = s.sprite.withDepth(Depth(2))))
         .map { captain =>
           makeStartupData(
             captain,
             levelDataStore(screenDimensions, assetCollection, dice)
           )
         } match {
-        case Left(message) =>
-          Startup.Failure(message)
+        case None =>
+          Startup.Failure("Failed to start The Cursed Pirate")
 
-        case Right(success) =>
+        case Some(success) =>
           success
       }
     )
