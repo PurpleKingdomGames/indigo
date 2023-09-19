@@ -6,6 +6,7 @@ import indigoplugin.generators.EmbedGLSLShaderPair
 import indigoplugin.generators.AssetListing
 import indigoplugin.generators.ConfigGen
 import indigoplugin.generators.EmbedData
+import indigoplugin.generators.EmbedAseprite
 
 /** Assists with setting up source code generators for Indigo projects
   *
@@ -379,6 +380,56 @@ final case class IndigoGenerators(outDirectory: os.Path, fullyQualifiedPackageNa
           )
       )
   }
+
+  /** Embed Aseprite data in a module.
+    *
+    * PLEASE NOTE: Aseprite data must be exported using the 'array' option, the 'hash' format is not supported.
+    *
+    * @param moduleName
+    *   The name for the Scala module, e.g. 'MyModule' would be `object MyModule {}`
+    * @param file
+    *   The path to the Asprite JSON data file.
+    */
+  def embedAseprite(moduleName: String, file: os.Path): IndigoGenerators =
+    this.copy(
+      sources = sources ++
+        EmbedAseprite.generate(outDirectory, moduleName, fullyQualifiedPackageName, file)
+    )
+
+  /** Embed Aseprite data in a module.
+    *
+    * PLEASE NOTE: Aseprite data must be exported using the 'array' option, the 'hash' format is not supported.
+    *
+    * @param moduleName
+    *   The name for the Scala module, e.g. 'MyModule' would be `object MyModule {}`
+    * @param file
+    *   The path to the Asprite JSON data file.
+    */
+  def embedAseprite(moduleName: String, file: File): IndigoGenerators =
+    this.copy(
+      sources = sources ++
+        EmbedAseprite.generate(outDirectory, moduleName, fullyQualifiedPackageName, os.Path(file))
+    )
+
+  /** Embed Aseprite data in a module.
+    *
+    * PLEASE NOTE: Aseprite data must be exported using the 'array' option, the 'hash' format is not supported.
+    *
+    * @param moduleName
+    *   The name for the Scala module, e.g. 'MyModule' would be `object MyModule {}`
+    * @param file
+    *   The path to the Asprite JSON data file.
+    */
+  def embedAseprite(moduleName: String, file: String): IndigoGenerators =
+    this.copy(
+      sources = sources ++
+        EmbedAseprite.generate(
+          outDirectory,
+          moduleName,
+          fullyQualifiedPackageName,
+          os.RelPath(file).resolveFrom(os.pwd)
+        )
+    )
 
 }
 

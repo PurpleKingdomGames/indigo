@@ -16,7 +16,8 @@ lazy val pirateOptions: IndigoOptions =
     .withWindowHeight(720)
     .withBackgroundColor("black")
     .excludeAssetPaths {
-      case p if p.contains("unused") => true
+      case p if p.contains("unused")                       => true
+      case p if p.contains("Captain Clown Nose Data.json") => true
     }
 
 lazy val pirate =
@@ -51,6 +52,7 @@ lazy val pirate =
             .sbt((Compile / sourceManaged).value, "pirate.generated")
             .listAssets("Assets", pirateOptions.assets)
             .generateConfig("Config", pirateOptions)
+            .embedAseprite("CaptainAnim", baseDirectory.value / "assets" / "captain" / "Captain Clown Nose Data.json")
             .toSourceFiles
             .toSet
         }
