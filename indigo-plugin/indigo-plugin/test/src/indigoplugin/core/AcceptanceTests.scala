@@ -71,6 +71,23 @@ class AcceptanceTests extends munit.FunSuite {
     assert(clue(expected).forall(clue(actual).contains))
   }
 
+  test("List all asset files as relative paths - sub dir") {
+    val actual: List[os.RelPath] =
+      indigoAssets
+        .withAssetDirectory(sourceDir / "mixed")
+        .listAssetFiles
+
+    val expected: List[os.RelPath] =
+      List(
+        os.RelPath.rel / "mixed" / "ignored-file.txt",
+        os.RelPath.rel / "mixed" / "also-taken.txt",
+        os.RelPath.rel / "mixed" / "taken.txt"
+      )
+
+    assertEquals(actual.length, expected.length)
+    assert(clue(expected).forall(clue(actual).contains))
+  }
+
   test("Copy assets and assert expected output files") {
     val baseDirectory = os.pwd
 
