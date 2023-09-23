@@ -301,7 +301,24 @@ final case class IndigoGenerators(outDirectory: os.Path, fullyQualifiedPackageNa
             file,
             delimiter,
             rowFilter,
-            asEnum = true
+            asEnum = true,
+            extendsFrom = None
+          )
+      )
+
+    /** Embed the data as a Scala 3 Enum that extends some fully qualified module name. E.g. `com.example.MyData`. */
+    def asEnum(moduleName: String, file: os.Path, extendsFrom: String): IndigoGenerators =
+      gens.copy(
+        sources = sources ++
+          EmbedData.generate(
+            outDirectory,
+            moduleName,
+            fullyQualifiedPackageName,
+            file,
+            delimiter,
+            rowFilter,
+            asEnum = true,
+            extendsFrom = Option(extendsFrom)
           )
       )
 
@@ -316,7 +333,24 @@ final case class IndigoGenerators(outDirectory: os.Path, fullyQualifiedPackageNa
             os.Path(file),
             delimiter,
             rowFilter,
-            asEnum = true
+            asEnum = true,
+            extendsFrom = None
+          )
+      )
+
+    /** Embed the data as a Scala 3 Enum that extends some fully qualified module name. E.g. `com.example.MyData`. */
+    def asEnum(moduleName: String, file: File, extendsFrom: String): IndigoGenerators =
+      gens.copy(
+        sources = sources ++
+          EmbedData.generate(
+            outDirectory,
+            moduleName,
+            fullyQualifiedPackageName,
+            os.Path(file),
+            delimiter,
+            rowFilter,
+            asEnum = true,
+            extendsFrom = Option(extendsFrom)
           )
       )
 
@@ -331,7 +365,24 @@ final case class IndigoGenerators(outDirectory: os.Path, fullyQualifiedPackageNa
             os.RelPath(file).resolveFrom(os.pwd),
             delimiter,
             rowFilter,
-            asEnum = true
+            asEnum = true,
+            extendsFrom = None
+          )
+      )
+
+    /** Embed the data as a Scala 3 Enum that extends some fully qualified module name. E.g. `com.example.MyData`. */
+    def asEnum(moduleName: String, file: String, extendsFrom: String): IndigoGenerators =
+      gens.copy(
+        sources = sources ++
+          EmbedData.generate(
+            outDirectory,
+            moduleName,
+            fullyQualifiedPackageName,
+            os.RelPath(file).resolveFrom(os.pwd),
+            delimiter,
+            rowFilter,
+            asEnum = true,
+            extendsFrom = Option(extendsFrom)
           )
       )
 
@@ -346,7 +397,8 @@ final case class IndigoGenerators(outDirectory: os.Path, fullyQualifiedPackageNa
             file,
             delimiter,
             rowFilter,
-            asEnum = false
+            asEnum = false,
+            None
           )
       )
 
@@ -361,7 +413,8 @@ final case class IndigoGenerators(outDirectory: os.Path, fullyQualifiedPackageNa
             os.Path(file),
             delimiter,
             rowFilter,
-            asEnum = false
+            asEnum = false,
+            None
           )
       )
 
@@ -376,7 +429,8 @@ final case class IndigoGenerators(outDirectory: os.Path, fullyQualifiedPackageNa
             os.RelPath(file).resolveFrom(os.pwd),
             delimiter,
             rowFilter,
-            asEnum = false
+            asEnum = false,
+            None
           )
       )
   }
