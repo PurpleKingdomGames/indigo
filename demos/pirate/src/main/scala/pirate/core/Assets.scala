@@ -96,14 +96,14 @@ object Assets:
         .addChar(FontChar("%", 47, 0, 14, 12))
 
   def initialAssets(baseUrl: String): Set[AssetType] =
-    assets.fonts.assets(baseUrl) ++
-      assets.captain.assets(baseUrl)
+    assets.fonts.assetSet(baseUrl) ++
+      assets.captain.assetSet(baseUrl)
 
   def remainingAssets(baseUrl: String): Set[AssetType] =
-    assets.static.assets(baseUrl) ++
-      assets.sounds.assets(baseUrl) ++
-      assets.clouds.assets(baseUrl) ++
-      assets.water.assets(baseUrl) ++
-      assets.flag.assets(baseUrl) ++
-      assets.trees.assets(baseUrl) ++
-      assets.helm.assets(baseUrl)
+    assets.static.assetSet(baseUrl) ++
+      assets.sounds.assetSet(baseUrl) ++
+      assets.clouds.assetSet(baseUrl) ++
+      assets.water.assetSet(baseUrl) ++
+      assets.flag.assetSet(baseUrl) ++
+      assets.trees.assetSet(baseUrl) ++
+      assets.helm.assetSet(baseUrl)
