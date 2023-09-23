@@ -122,7 +122,7 @@ object AssetListing {
 
     errorOnDuplicates(folderName, files, toSafeName)
 
-    val renderedFiles: List[(String, String)] =
+    val renderedFiles: List[(String, String, String)] =
       files
         .map {
           case PathTree.File(name, ext, path) if AudioFileExtensions.contains(ext) =>
@@ -136,7 +136,10 @@ object AssetListing {
             val loadable =
               s"""${indentSpacesNext}    AssetType.Audio(${safeName}, AssetPath(baseUrl + "${path}"))"""
 
-            (vals, loadable)
+            val named =
+              s"""${indentSpacesNext}    $safeName"""
+
+            (vals, loadable, named)
 
           case PathTree.File(name, ext, path) if ImageFileExtensions.contains(ext) =>
             val safeName = toSafeName(name, ext)
@@ -152,7 +155,10 @@ object AssetListing {
             val loadable =
               s"""${indentSpacesNext}    AssetType.Image(${safeName}, AssetPath(baseUrl + "${path}"), ${tag})"""
 
-            (vals, loadable)
+            val named =
+              s"""${indentSpacesNext}    $safeName"""
+
+            (vals, loadable, named)
 
           case PathTree.File(name, ext, path) =>
             val safeName = toSafeName(name, ext)
@@ -163,7 +169,10 @@ object AssetListing {
             val loadable =
               s"""${indentSpacesNext}    AssetType.Text(${safeName}, AssetPath(baseUrl + "${path}"))"""
 
-            (vals, loadable)
+            val named =
+              s"""${indentSpacesNext}    $safeName"""
+
+            (vals, loadable, named)
         }
 
     val assetSeq: String = {
@@ -171,9 +180,15 @@ object AssetListing {
       else
         s"""${renderedFiles.map(_._1).mkString("\n")}
         |
-        |${indentSpacesNext}def assets(baseUrl: String): Set[AssetType] =
+        |${indentSpacesNext}def assetSet(baseUrl: String): Set[AssetType] =
         |${indentSpacesNext}  Set(
         |${renderedFiles.map(_._2).mkString(",\n")}
+        |${indentSpacesNext}  )
+        |${indentSpacesNext}def assetSet: Set[AssetType] = assetSet("./")
+        |
+        |${indentSpacesNext}def assetNameSet: Set[AssetName] =
+        |${indentSpacesNext}  Set(
+        |${renderedFiles.map(_._3).mkString(",\n")}
         |${indentSpacesNext}  )
         |
         |""".stripMargin

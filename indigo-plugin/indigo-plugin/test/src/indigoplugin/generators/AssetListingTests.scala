@@ -30,17 +30,30 @@ class AssetListingTests extends munit.FunSuite {
       val fancyLogo: AssetName               = AssetName("fancy logo!.svg")
       val fancyLogoMaterial: Material.Bitmap = Material.Bitmap(fancyLogo)
 
-      def assets(baseUrl: String): Set[AssetType] =
+      def assetSet(baseUrl: String): Set[AssetType] =
         Set(
           AssetType.Image(fancyLogo, AssetPath(baseUrl + "assets/images/fancy logo!.svg"), Option(AssetTag("images")))
+        )
+      def assetSet: Set[AssetType] = assetSet("./")
+
+      def assetNameSet: Set[AssetName] =
+        Set(
+          fancyLogo
         )
 
     val someText: AssetName = AssetName("some_text.txt")
 
-    def assets(baseUrl: String): Set[AssetType] =
+    def assetSet(baseUrl: String): Set[AssetType] =
       Set(
         AssetType.Text(someText, AssetPath(baseUrl + "assets/some_text.txt"))
       )
+    def assetSet: Set[AssetType] = assetSet("./")
+
+    def assetNameSet: Set[AssetName] =
+      Set(
+        someText
+      )
+
       """.trim
 
     assertEquals(actual.trim, expected.trim)
@@ -74,19 +87,33 @@ class AssetListingTests extends munit.FunSuite {
         val d: AssetName               = AssetName("d.jpg")
         val dMaterial: Material.Bitmap = Material.Bitmap(d)
 
-        def assets(baseUrl: String): Set[AssetType] =
+        def assetSet(baseUrl: String): Set[AssetType] =
           Set(
             AssetType.Image(b, AssetPath(baseUrl + "assets/folderA/folderB/b.png"), Option(AssetTag("folderB"))),
             AssetType.Image(c, AssetPath(baseUrl + "assets/folderA/folderB/c.png"), Option(AssetTag("folderB"))),
             AssetType.Image(d, AssetPath(baseUrl + "assets/folderA/folderB/d.jpg"), Option(AssetTag("folderB")))
           )
+        def assetSet: Set[AssetType] = assetSet("./")
+
+        def assetNameSet: Set[AssetName] =
+          Set(
+            b,
+            c,
+            d
+          )
 
       val e: AssetName               = AssetName("e.svg")
       val eMaterial: Material.Bitmap = Material.Bitmap(e)
 
-      def assets(baseUrl: String): Set[AssetType] =
+      def assetSet(baseUrl: String): Set[AssetType] =
         Set(
           AssetType.Image(e, AssetPath(baseUrl + "assets/folderA/e.svg"), Option(AssetTag("folderA")))
+        )
+      def assetSet: Set[AssetType] = assetSet("./")
+
+      def assetNameSet: Set[AssetName] =
+        Set(
+          e
         )
 
     object folderC:
@@ -94,16 +121,28 @@ class AssetListingTests extends munit.FunSuite {
       val fPlay: PlaySound        = PlaySound(f, Volume.Max)
       val fSceneAudio: SceneAudio = SceneAudio(SceneAudioSource(BindingKey("f.mp3"), PlaybackPattern.SingleTrackLoop(Track(f))))
 
-      def assets(baseUrl: String): Set[AssetType] =
+      def assetSet(baseUrl: String): Set[AssetType] =
         Set(
           AssetType.Audio(f, AssetPath(baseUrl + "assets/folderC/f.mp3"))
+        )
+      def assetSet: Set[AssetType] = assetSet("./")
+
+      def assetNameSet: Set[AssetName] =
+        Set(
+          f
         )
 
     val a: AssetName = AssetName("a.txt")
 
-    def assets(baseUrl: String): Set[AssetType] =
+    def assetSet(baseUrl: String): Set[AssetType] =
       Set(
         AssetType.Text(a, AssetPath(baseUrl + "assets/a.txt"))
+      )
+    def assetSet: Set[AssetType] = assetSet("./")
+
+    def assetNameSet: Set[AssetName] =
+      Set(
+        a
       )
       """.trim
 

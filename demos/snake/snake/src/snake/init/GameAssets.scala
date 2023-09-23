@@ -17,7 +17,7 @@ object GameAssets:
       .withCrop(blockSize * 2, 0, blockSize, blockSize)
 
   def assets(baseUrl: String): Set[AssetType] =
-    Assets.assets.assets(baseUrl)
+    Assets.assets.assetSet(baseUrl)
 
   val fontKey: FontKey = FontKey("boxy font")
 
