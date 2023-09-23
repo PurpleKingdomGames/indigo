@@ -29,6 +29,7 @@ class AcceptanceTests extends munit.FunSuite {
         case p if p.startsWith(os.RelPath("mixed"))          => true
         case p if p.startsWith(os.RelPath("captain"))        => true
         case p if p.endsWith(os.RelPath("stats.md"))         => true
+        case p if p.endsWith(os.RelPath("armour.md"))        => true
         case _                                               => false
       },
       None

@@ -233,10 +233,18 @@ final case class DataFrame(data: Array[Array[DataType]], columnCount: Int) {
     }
   }
 
+  def toSafeNameCamel: String => String = { name: String =>
+    name.replaceAll("[^a-zA-Z0-9]", "-").split("-").toList.filterNot(_.isEmpty) match {
+      case h :: t if h.take(1).matches("[0-9]") => ("_" :: h :: t.map(_.capitalize)).mkString
+      case h :: t                               => (h :: t.map(_.capitalize)).mkString
+      case l                                    => l.map(_.capitalize).mkString
+    }
+  }
+
   def renderVars: String = {
     val names = headers.drop(1).map(_.value)
     val types = rows.head.drop(1).map(_.giveType)
-    names.zip(types).map { case (n, t) => s"val $n: $t" }.mkString(", ")
+    names.zip(types).map { case (n, t) => s"val ${toSafeNameCamel(n)}: $t" }.mkString(", ")
   }
 
   def renderEnum(moduleName: String): String = {
