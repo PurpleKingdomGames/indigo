@@ -7,6 +7,7 @@ import indigoplugin.generators.AssetListing
 import indigoplugin.generators.ConfigGen
 import indigoplugin.generators.EmbedData
 import indigoplugin.generators.EmbedAseprite
+import indigoplugin.DataType
 
 /** Assists with setting up source code generators for Indigo projects
   *
@@ -301,8 +302,7 @@ final case class IndigoGenerators(outDirectory: os.Path, fullyQualifiedPackageNa
             file,
             delimiter,
             rowFilter,
-            asEnum = true,
-            extendsFrom = None
+            embedMode = EmbedData.Mode.AsEnum(None)
           )
       )
 
@@ -317,8 +317,7 @@ final case class IndigoGenerators(outDirectory: os.Path, fullyQualifiedPackageNa
             file,
             delimiter,
             rowFilter,
-            asEnum = true,
-            extendsFrom = Option(extendsFrom)
+            embedMode = EmbedData.Mode.AsEnum(Option(extendsFrom))
           )
       )
 
@@ -333,8 +332,7 @@ final case class IndigoGenerators(outDirectory: os.Path, fullyQualifiedPackageNa
             os.Path(file),
             delimiter,
             rowFilter,
-            asEnum = true,
-            extendsFrom = None
+            embedMode = EmbedData.Mode.AsEnum(None)
           )
       )
 
@@ -349,8 +347,7 @@ final case class IndigoGenerators(outDirectory: os.Path, fullyQualifiedPackageNa
             os.Path(file),
             delimiter,
             rowFilter,
-            asEnum = true,
-            extendsFrom = Option(extendsFrom)
+            embedMode = EmbedData.Mode.AsEnum(Option(extendsFrom))
           )
       )
 
@@ -365,8 +362,7 @@ final case class IndigoGenerators(outDirectory: os.Path, fullyQualifiedPackageNa
             os.RelPath(file).resolveFrom(os.pwd),
             delimiter,
             rowFilter,
-            asEnum = true,
-            extendsFrom = None
+            embedMode = EmbedData.Mode.AsEnum(None)
           )
       )
 
@@ -381,8 +377,7 @@ final case class IndigoGenerators(outDirectory: os.Path, fullyQualifiedPackageNa
             os.RelPath(file).resolveFrom(os.pwd),
             delimiter,
             rowFilter,
-            asEnum = true,
-            extendsFrom = Option(extendsFrom)
+            embedMode = EmbedData.Mode.AsEnum(Option(extendsFrom))
           )
       )
 
@@ -397,8 +392,7 @@ final case class IndigoGenerators(outDirectory: os.Path, fullyQualifiedPackageNa
             file,
             delimiter,
             rowFilter,
-            asEnum = false,
-            None
+            embedMode = EmbedData.Mode.AsMap
           )
       )
 
@@ -413,8 +407,7 @@ final case class IndigoGenerators(outDirectory: os.Path, fullyQualifiedPackageNa
             os.Path(file),
             delimiter,
             rowFilter,
-            asEnum = false,
-            None
+            embedMode = EmbedData.Mode.AsMap
           )
       )
 
@@ -429,8 +422,103 @@ final case class IndigoGenerators(outDirectory: os.Path, fullyQualifiedPackageNa
             os.RelPath(file).resolveFrom(os.pwd),
             delimiter,
             rowFilter,
-            asEnum = false,
-            None
+            embedMode = EmbedData.Mode.AsMap
+          )
+      )
+
+    /** Embed the data using a custom present function. In this mode we make no assumptions about what code you plan to
+      * generate. The result of the present function will be placed inside a scala file named after the module name,
+      * that includes the package, but nothing else.
+      *
+      * We provide the same mechanism and guarantees as using the other data embed methods, things like consistent row
+      * lengths, and all columns having the same type of data (`StringData`, `IntData`, `DouleData`, or `BooleanData`).
+      * The `DataType` provides information about the type in the Cell, and some simple/useful methods, and can be
+      * exhustively pattern matched.
+      *
+      * @param moduleName
+      *   In this mode, this is the name of the file only. If you wish to use it in your present function, you can
+      *   always apply it as an argument to a curried function.
+      * @param file
+      *   The data file to read.
+      * @param present
+      *   A function from a list of all the rows, including the headers, to some generated output code, written as a
+      *   simple `String` value.
+      */
+    def asCustom(moduleName: String, file: os.Path)(present: List[List[DataType]] => String): IndigoGenerators =
+      gens.copy(
+        sources = sources ++
+          EmbedData.generate(
+            outDirectory,
+            moduleName,
+            fullyQualifiedPackageName,
+            file,
+            delimiter,
+            rowFilter,
+            embedMode = EmbedData.Mode.AsCustom(present)
+          )
+      )
+
+    /** Embed the data using a custom present function. In this mode we make no assumptions about what code you plan to
+      * generate. The result of the present function will be placed inside a scala file named after the module name,
+      * that includes the package, but nothing else.
+      *
+      * We provide the same mechanism and guarantees as using the other data embed methods, things like consistent row
+      * lengths, and all columns having the same type of data (`StringData`, `IntData`, `DouleData`, or `BooleanData`).
+      * The `DataType` provides information about the type in the Cell, and some simple/useful methods, and can be
+      * exhustively pattern matched.
+      *
+      * @param moduleName
+      *   In this mode, this is the name of the file only. If you wish to use it in your present function, you can
+      *   always apply it as an argument to a curried function.
+      * @param file
+      *   The data file to read.
+      * @param present
+      *   A function from a list of all the rows, including the headers, to some generated output code, written as a
+      *   simple `String` value.
+      */
+    def asCustom(moduleName: String, file: File)(present: List[List[DataType]] => String): IndigoGenerators =
+      gens.copy(
+        sources = sources ++
+          EmbedData.generate(
+            outDirectory,
+            moduleName,
+            fullyQualifiedPackageName,
+            os.Path(file),
+            delimiter,
+            rowFilter,
+            embedMode = EmbedData.Mode.AsCustom(present)
+          )
+      )
+
+    /** Embed the data using a custom present function. In this mode we make no assumptions about what code you plan to
+      * generate. The result of the present function will be placed inside a scala file named after the module name,
+      * that includes the package, but nothing else.
+      *
+      * We provide the same mechanism and guarantees as using the other data embed methods, things like consistent row
+      * lengths, and all columns having the same type of data (`StringData`, `IntData`, `DouleData`, or `BooleanData`).
+      * The `DataType` provides information about the type in the Cell, and some simple/useful methods, and can be
+      * exhustively pattern matched.
+      *
+      * @param moduleName
+      *   In this mode, this is the name of the file only. If you wish to use it in your present function, you can
+      *   always apply it as an argument to a curried function.
+      * @param file
+      *   The data file to read.
+      * @param present
+      *   A function from a list of all the rows, including the headers, to some generated output code, written as a
+      *   simple `String` value.
+      */
+    def asCustom(moduleName: String, file: String)(present: List[List[DataType]] => String): IndigoGenerators =
+      gens.copy(
+        sources = sources ++
+          EmbedData.generate(
+            outDirectory,
+            moduleName,
+            fullyQualifiedPackageName,
+            os.RelPath(file).resolveFrom(os.pwd),
+            delimiter,
+            rowFilter,
+            embedMode = EmbedData.Mode.AsCustom(present)
           )
       )
   }
