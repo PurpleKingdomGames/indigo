@@ -7,20 +7,19 @@ import indigo.shared.time.FPS
 
 import scala.annotation.targetName
 
-enum ResizePolicy derives CanEqual:
-  case NoResize, Resize, ResizePreserveAspect
-
 /** All the base settings needed to get a game up and running.
   *
   * @param viewport
   *   How big is the window initially? Defaults to 550 x 400 pixels.
-  * @param frameRate
+  * @param frameRateLimit
   *   Optionally throttles frame rate. By default (`None`), the browser sets the limits, recommended unless you
   *   specifically need a lower framerate.
   * @param clearColor
   *   Default background colour. Defaults to Black.
   * @param magnification
   *   Pixel magnification level. Defaults to 1.
+  * @param resizePolicy
+  *   Sets the policy for how Indigo games should resize themselves.
   * @param transparentBackground
   *   Make the canvas background transparent.
   * @param advanced
@@ -146,3 +145,8 @@ object GameConfig:
       resizePolicy = ResizePolicy.Resize,
       advanced = AdvancedGameConfig.default
     )
+
+/** ResizePolicy instructs Indigo on how you would like the game to handle a change in viewport size.
+  */
+enum ResizePolicy derives CanEqual:
+  case NoResize, Resize, ResizePreserveAspect

@@ -4,7 +4,7 @@ import indigo.shared.config.RenderingTechnology.WebGL1
 import indigo.shared.config.RenderingTechnology.WebGL2
 import indigo.shared.config.RenderingTechnology.WebGL2WithFallback
 
-/** Additional settings to help tune a games performance.
+/** Additional settings to help tune aspects of your game's performance.
   *
   * @param renderingTechnology
   *   Use WebGL 1.0 or 2.0? Defaults to 2.0 with fallback to 1.0.
@@ -12,6 +12,12 @@ import indigo.shared.config.RenderingTechnology.WebGL2WithFallback
   *   Smooth the rendered view? Defaults to false.
   * @param batchSize
   *   How many scene nodes to batch together between draws, defaults to 256.
+  * @param premultipliedAlpha
+  *   Should the renderer use premultiplied alpha? All the standard shaders expect the answer to be yes! Disable with
+  *   caution, defaults to true.
+  * @param autoLoadStandardShaders
+  *   Should all the standard shaders be made available by default? They can be added individually / manually if you
+  *   prefer. Defaults to true, to include them.
   * @param disableContextMenu
   *   By default, context menu on right-click is disable for the canvas.
   */
