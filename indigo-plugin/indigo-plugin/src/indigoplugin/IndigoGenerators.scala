@@ -7,7 +7,6 @@ import indigoplugin.generators.AssetListing
 import indigoplugin.generators.ConfigGen
 import indigoplugin.generators.EmbedData
 import indigoplugin.generators.EmbedAseprite
-import indigoplugin.DataType
 
 /** Assists with setting up source code generators for Indigo projects
   *
