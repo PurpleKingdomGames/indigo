@@ -12,7 +12,7 @@ import $ivy.`io.indigoengine::mill-indigo:0.15.0-RC4`, millindigo._
 
 object snake extends MillIndigo with ScalafmtModule {
   def scalaVersion   = "3.3.1"
-  def scalaJSVersion = "1.13.1"
+  def scalaJSVersion = "1.13.2"
 
   val indigoOptions: IndigoOptions =
     IndigoOptions.defaults
