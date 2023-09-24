@@ -625,7 +625,9 @@ object KeyboardEvent {
   * @param volume
   *   What volume level to play at
   */
-final case class PlaySound(assetName: AssetName, volume: Volume) extends GlobalEvent
+final case class PlaySound(assetName: AssetName, volume: Volume) extends GlobalEvent:
+  def withVolume(newVolume: Volume): PlaySound =
+    this.copy(volume = newVolume)
 
 /** A class of events representing general networking events
   */
