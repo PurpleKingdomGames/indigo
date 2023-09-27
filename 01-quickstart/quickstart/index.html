@@ -229,7 +229,9 @@
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">addSbtPlugin</span><span>(</span><span class="string-literal">&quot;org.scala-js&quot;</span><span> % </span><span class="string-literal">&quot;sbt-scalajs&quot;</span><span> % </span><span class="string-literal">&quot;1.13.2&quot;</span><span>)
 </span><span class="identifier">addSbtPlugin</span><span>(</span><span class="string-literal">&quot;io.indigoengine&quot;</span><span> % </span><span class="string-literal">&quot;sbt-indigo&quot;</span><span> % </span><span class="string-literal">&quot;0.15.0&quot;</span><span>)</span></code></pre>
         <p>Here is an example minimal <code>build.sbt</code> file:</p>
-        <pre><code class="nohighlight"><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">mygame</span><span> =
+        <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">indigoplugin</span><span>.</span><span class="identifier">_</span><span>
+
+</span><span class="keyword">lazy</span><span> </span><span class="keyword">val</span><span> </span><span class="identifier">mygame</span><span> =
   (</span><span class="identifier">project</span><span> </span><span class="identifier">in</span><span> </span><span class="identifier">file</span><span>(</span><span class="string-literal">&quot;.&quot;</span><span>))
     .</span><span class="identifier">enablePlugins</span><span>(</span><span class="type-name">ScalaJSPlugin</span><span>, </span><span class="type-name">SbtIndigo</span><span>) </span><span class="comment">// Enable the Scala.js and Indigo plugins
 </span><span>    .</span><span class="identifier">settings</span><span>( </span><span class="comment">// Standard SBT settings
@@ -239,12 +241,11 @@
       </span><span class="identifier">organization</span><span> := </span><span class="string-literal">&quot;org.mygame&quot;</span><span>
     )
     .</span><span class="identifier">settings</span><span>( </span><span class="comment">// Indigo specific settings
-</span><span>      </span><span class="identifier">showCursor</span><span> := </span><span class="boolean-literal">true</span><span>,
-      </span><span class="identifier">title</span><span> := </span><span class="string-literal">&quot;My Game&quot;</span><span>,
-      </span><span class="identifier">gameAssetsDirectory</span><span> := </span><span class="string-literal">&quot;assets&quot;</span><span>,
-      </span><span class="identifier">windowStartWidth</span><span> := </span><span class="number-literal">720</span><span>, </span><span class="comment">// Width of Electron window, used with `indigoRun`.
-</span><span>      </span><span class="identifier">windowStartHeight</span><span> := </span><span class="number-literal">480</span><span>, </span><span class="comment">// Height of Electron window, used with `indigoRun`.
-</span><span>      </span><span class="identifier">libraryDependencies</span><span> ++= </span><span class="type-name">Seq</span><span>(
+</span><span>      </span><span class="identifier">indigoOptions</span><span> :=
+        </span><span class="type-name">IndigoOptions</span><span>.</span><span class="identifier">defaults</span><span>
+          .</span><span class="identifier">withTitle</span><span>(</span><span class="string-literal">&quot;My Game&quot;</span><span>)
+          .</span><span class="identifier">withWindowSize</span><span>(</span><span class="number-literal">720</span><span>, </span><span class="number-literal">480</span><span>),
+      </span><span class="identifier">libraryDependencies</span><span> ++= </span><span class="type-name">Seq</span><span>(
         </span><span class="string-literal">&quot;io.indigoengine&quot;</span><span> %%% </span><span class="string-literal">&quot;indigo&quot;</span><span> % </span><span class="string-literal">&quot;0.15.0&quot;</span><span>,
         </span><span class="string-literal">&quot;io.indigoengine&quot;</span><span> %%% </span><span class="string-literal">&quot;indigo-extras&quot;</span><span> % </span><span class="string-literal">&quot;0.15.0&quot;</span><span>,
         </span><span class="string-literal">&quot;io.indigoengine&quot;</span><span> %%% </span><span class="string-literal">&quot;indigo-json-circe&quot;</span><span> % </span><span class="string-literal">&quot;0.15.0&quot;</span><span>,
@@ -264,13 +265,13 @@
   </span><span class="keyword">def</span><span> </span><span class="declaration-name">scalaVersion</span><span>   = </span><span class="string-literal">&quot;3.3.1&quot;</span><span>
   </span><span class="keyword">def</span><span> </span><span class="declaration-name">scalaJSVersion</span><span> = </span><span class="string-literal">&quot;1.13.2&quot;</span><span>
 
-  </span><span class="keyword">val</span><span> </span><span class="identifier">gameAssetsDirectory</span><span>: </span><span class="identifier">os</span><span>.</span><span class="type-name">Path</span><span>   = </span><span class="identifier">os</span><span>.</span><span class="identifier">pwd</span><span> / </span><span class="string-literal">&quot;assets&quot;</span><span>
-  </span><span class="keyword">val</span><span> </span><span class="identifier">showCursor</span><span>: </span><span class="type-name">Boolean</span><span>            = </span><span class="boolean-literal">true</span><span>
-  </span><span class="keyword">val</span><span> </span><span class="identifier">title</span><span>: </span><span class="type-name">String</span><span>                  = </span><span class="string-literal">&quot;My Game&quot;</span><span>
-  </span><span class="keyword">val</span><span> </span><span class="identifier">windowStartWidth</span><span>: </span><span class="type-name">Int</span><span>          = </span><span class="number-literal">720</span><span> </span><span class="comment">// Width of Electron window, used with `indigoRun`.
-</span><span>  </span><span class="keyword">val</span><span> </span><span class="identifier">windowStartHeight</span><span>: </span><span class="type-name">Int</span><span>         = </span><span class="number-literal">480</span><span> </span><span class="comment">// Height of Electron window, used with `indigoRun`.
-</span><span>  </span><span class="keyword">val</span><span> </span><span class="identifier">disableFrameRateLimit</span><span>: </span><span class="type-name">Boolean</span><span> = </span><span class="boolean-literal">false</span><span>
-  </span><span class="keyword">val</span><span> </span><span class="identifier">electronInstall</span><span>                = </span><span class="identifier">indigoplugin</span><span>.</span><span class="type-name">ElectronInstall</span><span>.</span><span class="type-name">Global</span><span>
+  </span><span class="keyword">val</span><span> </span><span class="identifier">indigoOptions</span><span>: </span><span class="type-name">IndigoOptions</span><span> =
+    </span><span class="type-name">IndigoOptions</span><span>.</span><span class="identifier">defaults</span><span>
+      .</span><span class="identifier">withTitle</span><span>(</span><span class="string-literal">&quot;My Game&quot;</span><span>)
+      .</span><span class="identifier">withWindowSize</span><span>(</span><span class="number-literal">720</span><span>, </span><span class="number-literal">480</span><span>)
+
+  </span><span class="keyword">val</span><span> </span><span class="identifier">indigoGenerators</span><span>: </span><span class="type-name">IndigoGenerators</span><span> =
+    </span><span class="type-name">IndigoGenerators</span><span>.</span><span class="type-name">None</span><span>
 
   </span><span class="keyword">def</span><span> </span><span class="declaration-name">ivyDeps</span><span> = </span><span class="type-name">Agg</span><span>(
     </span><span class="string-literal">ivy&quot;io.indigoengine::indigo::0.15.0&quot;</span><span>,
@@ -299,23 +300,20 @@ Copying assets...
         <p>The second to last line is an absolute path to where your game is.</p>
         
         <h3 id="running-your-game-locally-electron-application" class="section"><a class="anchor-link left" href="#running-your-game-locally-electron-application"><i class="icofont-laika link">&#xef71;</i></a>Running your game locally (Electron Application)</h3>
-        <p>You will need to have electron installed globally, install with npm as follows:</p>
-        <pre class="keep-together pdf epub"><code class="nohighlight"><span>npm install -g electron</span></code></pre>
-        <p>On Linux, you may find that command is insufficient, you may need something like:</p>
-        <pre class="keep-together pdf epub"><code class="nohighlight"><span>sudo npm install -g electron --unsafe-perm=</span><span class="boolean-literal">true</span><span> --allow-root</span></code></pre>
-        <p>Then from your command line:</p>
-        <pre class="keep-together pdf epub"><code class="nohighlight"><span>mill mygame.fastOpt </span><span class="comment"># Compiles and produces the JS file of your game.
+        <p>If you use the plugin commands, <code>indigoRun</code> will automatically use the version of electron specified in your <code>IndigoOptions</code> config. By default, this installs the latest version locally.</p>
+        <p>From your command line:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>mill mygame.fastLinkJS </span><span class="comment"># Compiles and produces the JS file of your game.
 </span><span>mill mygame.indigoRun </span><span class="comment"># First runs indigoBuild, then bundles it into an app and runs it.</span></code></pre>
         <p>Your game should appear on your desktop.</p>
         
         <h3 id="running-your-game-locally-web" class="section"><a class="anchor-link left" href="#running-your-game-locally-web"><i class="icofont-laika link">&#xef71;</i></a>Running your game locally (Web)</h3>
         <p>If your game is in active development, you might prefer to run it as a website that is slightly quicker to refresh and develop against.</p>
         <p>First you need to build your game, as follows:</p>
-        <pre class="keep-together pdf epub"><code class="nohighlight"><span>mill mygame.fastOpt </span><span class="comment"># Compiles and produces the JS file of your game.
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span>mill mygame.fastLinkJS </span><span class="comment"># Compiles and produces the JS file of your game.
 </span><span>mill mygame.indigoBuild </span><span class="comment"># Marshall scripts and assets together and link them to an HTML file.</span></code></pre>
         <p>Most modern browsers do not allow you to run local sites that load in assets and modules just by opening the HTML file in your browser. So if you use the Indigo build tool to produce a bootstrapped game, the quickest way to run it is to use <a href="https://www.npmjs.com/package/http-server">http-server</a> as follows:</p>
         <ol class="arabic">
-          <li>Install with <code>npm install -g http-server</code>.</li>
+          <li>Install with <code>npm install -g http-server</code>. (For a global install, you can also use it locally if you prefer by omitting the <code>-g</code> and running using <code>npx</code>)</li>
           <li>Navigate to the output directory shown after running the indigo plugin.</li>
           <li>Run <code>http-server -c-1</code> - which means &quot;serve this directory as a static site with no caching&quot;.</li>
           <li>Go to <a href="http://127.0.0.1:8080/"><a href="http://127.0.0.1:8080/">http://127.0.0.1:8080/</a></a> (or whatever <code>http-server</code> says in it output) and marvel at your creation..</li>
@@ -341,13 +339,13 @@ Copying assets...
   </span><span class="keyword">def</span><span> </span><span class="declaration-name">scalaVersion</span><span>   = </span><span class="string-literal">&quot;3.3.1&quot;</span><span>
   </span><span class="keyword">def</span><span> </span><span class="declaration-name">scalaJSVersion</span><span> = </span><span class="string-literal">&quot;1.13.2&quot;</span><span>
 
-  </span><span class="keyword">val</span><span> </span><span class="identifier">gameAssetsDirectory</span><span>: </span><span class="identifier">os</span><span>.</span><span class="type-name">Path</span><span>   = </span><span class="identifier">os</span><span>.</span><span class="identifier">pwd</span><span> / </span><span class="string-literal">&quot;assets&quot;</span><span>
-  </span><span class="keyword">val</span><span> </span><span class="identifier">showCursor</span><span>: </span><span class="type-name">Boolean</span><span>            = </span><span class="boolean-literal">true</span><span>
-  </span><span class="keyword">val</span><span> </span><span class="identifier">title</span><span>: </span><span class="type-name">String</span><span>                  = </span><span class="string-literal">&quot;My Game&quot;</span><span>
-  </span><span class="keyword">val</span><span> </span><span class="identifier">windowStartWidth</span><span>: </span><span class="type-name">Int</span><span>          = </span><span class="number-literal">720</span><span> </span><span class="comment">// Width of Electron window, used with `indigoRun`.
-</span><span>  </span><span class="keyword">val</span><span> </span><span class="identifier">windowStartHeight</span><span>: </span><span class="type-name">Int</span><span>         = </span><span class="number-literal">480</span><span> </span><span class="comment">// Height of Electron window, used with `indigoRun`.
-</span><span>  </span><span class="keyword">val</span><span> </span><span class="identifier">disableFrameRateLimit</span><span>: </span><span class="type-name">Boolean</span><span> = </span><span class="boolean-literal">false</span><span>
-  </span><span class="keyword">val</span><span> </span><span class="identifier">electronInstall</span><span>                = </span><span class="identifier">indigoplugin</span><span>.</span><span class="type-name">ElectronInstall</span><span>.</span><span class="type-name">Global</span><span>
+  </span><span class="keyword">val</span><span> </span><span class="identifier">indigoOptions</span><span>: </span><span class="type-name">IndigoOptions</span><span> =
+    </span><span class="type-name">IndigoOptions</span><span>.</span><span class="identifier">defaults</span><span>
+      .</span><span class="identifier">withTitle</span><span>(</span><span class="string-literal">&quot;My Game&quot;</span><span>)
+      .</span><span class="identifier">withWindowSize</span><span>(</span><span class="number-literal">720</span><span>, </span><span class="number-literal">480</span><span>)
+
+  </span><span class="keyword">val</span><span> </span><span class="identifier">indigoGenerators</span><span>: </span><span class="type-name">IndigoGenerators</span><span> =
+    </span><span class="type-name">IndigoGenerators</span><span>.</span><span class="type-name">None</span><span>
 
   </span><span class="keyword">def</span><span> </span><span class="declaration-name">ivyDeps</span><span> = </span><span class="type-name">Agg</span><span>(
     </span><span class="string-literal">ivy&quot;io.indigoengine::indigo::0.15.0&quot;</span><span>,
@@ -369,7 +367,7 @@ Copying assets...
         <p>Run the following:</p>
         <ol class="arabic">
           <li><code>mill mygame.compile</code></li>
-          <li><code>mill mygame.fastOpt</code></li>
+          <li><code>mill mygame.fastLinkJS</code></li>
           <li><code>mill mygame.indigoBuild</code></li>
         </ol>
         <p>This will output your game and all the correctly referenced assets into <code>out/mygame/indigoBuild/</code>. Note that the module will give you a full path at the end of it&#39;s output.</p>
@@ -380,7 +378,7 @@ Copying assets...
         <pre><code class="nohighlight"><span>  </span><span class="keyword">def</span><span> </span><span class="declaration-name">buildGame</span><span>() = </span><span class="type-name">T</span><span>.</span><span class="identifier">command</span><span> {
     </span><span class="type-name">T</span><span> {
       </span><span class="identifier">compile</span><span>()
-      </span><span class="identifier">fastOpt</span><span>()
+      </span><span class="identifier">fastLinkJS</span><span>()
       </span><span class="identifier">indigoBuild</span><span>()() </span><span class="comment">// Note the double parenthesis!
 </span><span>    }
   }
@@ -388,7 +386,7 @@ Copying assets...
   </span><span class="keyword">def</span><span> </span><span class="declaration-name">runGame</span><span>() = </span><span class="type-name">T</span><span>.</span><span class="identifier">command</span><span> {
     </span><span class="type-name">T</span><span> {
       </span><span class="identifier">compile</span><span>()
-      </span><span class="identifier">fastOpt</span><span>()
+      </span><span class="identifier">fastLinkJS</span><span>()
       </span><span class="identifier">indigoRun</span><span>()() </span><span class="comment">// Note the double parenthesis!
 </span><span>    }
   }
@@ -396,7 +394,7 @@ Copying assets...
   </span><span class="keyword">def</span><span> </span><span class="declaration-name">buildGameFull</span><span>() = </span><span class="type-name">T</span><span>.</span><span class="identifier">command</span><span> {
     </span><span class="type-name">T</span><span> {
       </span><span class="identifier">compile</span><span>()
-      </span><span class="identifier">fullOpt</span><span>()
+      </span><span class="identifier">fullLinkJS</span><span>()
       </span><span class="identifier">indigoBuildFull</span><span>()() </span><span class="comment">// Note the double parenthesis!
 </span><span>    }
   }
@@ -404,7 +402,7 @@ Copying assets...
   </span><span class="keyword">def</span><span> </span><span class="declaration-name">runGameFull</span><span>() = </span><span class="type-name">T</span><span>.</span><span class="identifier">command</span><span> {
     </span><span class="type-name">T</span><span> {
       </span><span class="identifier">compile</span><span>()
-      </span><span class="identifier">fullOpt</span><span>()
+      </span><span class="identifier">fullLinkJS</span><span>()
       </span><span class="identifier">indigoRunFull</span><span>()() </span><span class="comment">// Note the double parenthesis!
 </span><span>    }
   }</span></code></pre>
@@ -429,12 +427,11 @@ Copying assets...
       </span><span class="identifier">organization</span><span> := </span><span class="string-literal">&quot;org.mygame&quot;</span><span>
     )
     .</span><span class="identifier">settings</span><span>( </span><span class="comment">// Indigo specific settings
-</span><span>      </span><span class="identifier">showCursor</span><span> := </span><span class="boolean-literal">true</span><span>,
-      </span><span class="identifier">title</span><span> := </span><span class="string-literal">&quot;My Game&quot;</span><span>,
-      </span><span class="identifier">gameAssetsDirectory</span><span> := </span><span class="string-literal">&quot;assets&quot;</span><span>,
-      </span><span class="identifier">windowStartWidth</span><span> := </span><span class="number-literal">720</span><span>, </span><span class="comment">// Width of Electron window, used with `indigoRun`.
-</span><span>      </span><span class="identifier">windowStartHeight</span><span> := </span><span class="number-literal">480</span><span>, </span><span class="comment">// Height of Electron window, used with `indigoRun`.
-</span><span>      </span><span class="identifier">libraryDependencies</span><span> ++= </span><span class="type-name">Seq</span><span>(
+</span><span>      </span><span class="identifier">indigoOptions</span><span> :=
+        </span><span class="type-name">IndigoOptions</span><span>.</span><span class="identifier">defaults</span><span>
+          .</span><span class="identifier">withTitle</span><span>(</span><span class="string-literal">&quot;My Game&quot;</span><span>)
+          .</span><span class="identifier">withWindowSize</span><span>(</span><span class="number-literal">720</span><span>, </span><span class="number-literal">480</span><span>),
+      </span><span class="identifier">libraryDependencies</span><span> ++= </span><span class="type-name">Seq</span><span>(
         </span><span class="string-literal">&quot;io.indigoengine&quot;</span><span> %%% </span><span class="string-literal">&quot;indigo&quot;</span><span> % </span><span class="string-literal">&quot;0.15.0&quot;</span><span>,
         </span><span class="string-literal">&quot;io.indigoengine&quot;</span><span> %%% </span><span class="string-literal">&quot;indigo-extras&quot;</span><span> % </span><span class="string-literal">&quot;0.15.0&quot;</span><span>,
         </span><span class="string-literal">&quot;io.indigoengine&quot;</span><span> %%% </span><span class="string-literal">&quot;indigo-json-circe&quot;</span><span> % </span><span class="string-literal">&quot;0.15.0&quot;</span><span>,
@@ -443,20 +440,20 @@ Copying assets...
         
         <h3 id="running-via-sbt" class="section"><a class="anchor-link left" href="#running-via-sbt"><i class="icofont-laika link">&#xef71;</i></a>Running via SBT</h3>
         <p>Run the following:</p>
-        <p><code>sbt compile fastOptJS indigoRun</code></p>
+        <p><code>sbt compile fastLinkJS indigoRun</code></p>
         
         <h3 id="building-via-sbt" class="section"><a class="anchor-link left" href="#building-via-sbt"><i class="icofont-laika link">&#xef71;</i></a>Building via SBT</h3>
         <p>Run the following:</p>
-        <p><code>sbt compile fastOptJS indigoBuild</code></p>
+        <p><code>sbt compile fastLinkJS indigoBuild</code></p>
         <p>This will output your game and all the correctly referenced assets into <code>target/indigoBuild/</code>. Note that the plugin will give you a full path at the end of it&#39;s output.</p>
         <p>To run as a web site, navigate to the folder, run <code>http-server -c-1</code>, and go to <a href="http://127.0.0.1:8080/"><a href="http://127.0.0.1:8080/">http://127.0.0.1:8080/</a></a> in your browser of choice.</p>
         
         <h3 id="rolling-it-up-into-one-command-in-sbt" class="section"><a class="anchor-link left" href="#rolling-it-up-into-one-command-in-sbt"><i class="icofont-laika link">&#xef71;</i></a>Rolling it up into one command in SBT</h3>
         <p>You can also define the following in your <code>build.sbt</code> file:</p>
-        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">addCommandAlias</span><span>(</span><span class="string-literal">&quot;buildGame&quot;</span><span>, </span><span class="string-literal">&quot;;compile;fastOptJS;indigoBuild&quot;</span><span>)
-</span><span class="identifier">addCommandAlias</span><span>(</span><span class="string-literal">&quot;runGame&quot;</span><span>, </span><span class="string-literal">&quot;;compile;fastOptJS;indigoRun&quot;</span><span>)
-</span><span class="identifier">addCommandAlias</span><span>(</span><span class="string-literal">&quot;buildGameFull&quot;</span><span>, </span><span class="string-literal">&quot;;compile;fullOptJS;indigoBuildFull&quot;</span><span>)
-</span><span class="identifier">addCommandAlias</span><span>(</span><span class="string-literal">&quot;runGameFull&quot;</span><span>, </span><span class="string-literal">&quot;;compile;fullOptJS;indigoRunFull&quot;</span><span>)</span></code></pre>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">addCommandAlias</span><span>(</span><span class="string-literal">&quot;buildGame&quot;</span><span>, </span><span class="string-literal">&quot;;compile;fastLinkJS;indigoBuild&quot;</span><span>)
+</span><span class="identifier">addCommandAlias</span><span>(</span><span class="string-literal">&quot;runGame&quot;</span><span>, </span><span class="string-literal">&quot;;compile;fastLinkJS;indigoRun&quot;</span><span>)
+</span><span class="identifier">addCommandAlias</span><span>(</span><span class="string-literal">&quot;buildGameFull&quot;</span><span>, </span><span class="string-literal">&quot;;compile;fullLinkJS;indigoBuildFull&quot;</span><span>)
+</span><span class="identifier">addCommandAlias</span><span>(</span><span class="string-literal">&quot;runGameFull&quot;</span><span>, </span><span class="string-literal">&quot;;compile;fullLinkJS;indigoRunFull&quot;</span><span>)</span></code></pre>
         <p>Which give you some convenient shortcuts to speed up development.</p>
 
         

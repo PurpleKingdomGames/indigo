@@ -214,11 +214,12 @@
         <p>There are <a href="https://github.com/PurpleKingdomGames/hello-indigo">Mill</a> and <a href="https://github.com/PurpleKingdomGames/hello-indigo-sbt">SBT</a> repositories that go with this guide, please note that you can follow the games original development progression by looking through the commits on the <em>Mill</em> version.</p>
         
         <h2 id="choose-your-game-api-style" class="section"><a class="anchor-link left" href="#choose-your-game-api-style"><i class="icofont-laika link">&#xef71;</i></a>Choose your game API style</h2>
-        <p>Indigo comes with three game templates. Called entry points, they are just traits you extend that help give your game some shape, and can be described as:</p>
+        <p>Indigo comes with four game templates. Called entry points, they are just traits you extend that help give your game some shape, and can be described as:</p>
         <ol class="arabic">
           <li><code>IndigoSandbox</code> - The smallest API interface, great for trying things out but doesn&#39;t scale as well, and is missing some functionality.</li>
           <li><code>IndigoDemo</code> - Technically gives you access to everything, but doesn&#39;t provide Scene management (you&#39;d have to roll your own).</li>
           <li><code>IndigoGame</code> - Like <code>IndigoDemo</code>, but with Scene management built it.</li>
+          <li><code>IndigoShader</code> - This one is different from the others, and provides a lightweight single shader development experience, not until using <a href="https://www.shadertoy.com/">shadertoy</a>.</li>
         </ol>
         <blockquote>You can also write your own entry point, take a look at the code for <code>IndigoSandbox</code> in the repo.</blockquote>
         <p>In this guide, we&#39;ll be using <code>IndigoSandbox</code> for brevity and our &quot;game&quot; will be called <code>helloindigo</code>.</p>
