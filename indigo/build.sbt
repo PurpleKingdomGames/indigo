@@ -12,12 +12,12 @@ ThisBuild / scalaVersion                                   := scala3Version
 
 lazy val indigoVersion = IndigoVersion.getVersion
 // For the docs site
-lazy val indigoDocsVersion  = "0.15.0-RC3"
-lazy val tyrianDocsVersion  = "0.7.1"
+lazy val indigoDocsVersion  = "0.15.0"
+lazy val tyrianDocsVersion  = "0.8.0"
 lazy val scalaJsDocsVersion = "1.13.2"
 lazy val scalaDocsVersion   = "3.3.1"
-lazy val sbtDocsVersion     = "1.9.2"
-lazy val millDocsVersion    = "0.11.0"
+lazy val sbtDocsVersion     = "1.9.6"
+lazy val millDocsVersion    = "0.11.4"
 
 lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
   version            := indigoVersion,
@@ -189,6 +189,11 @@ lazy val jsdocs = project
       "io.indigoengine" %%% "indigo-extras"     % indigoDocsVersion,
       "io.indigoengine" %%% "tyrian-io"         % tyrianDocsVersion // ,
       // "io.indigoengine" %%% "tyrian-indigo-bridge" % tyrianDocsVersion
+    ),
+    Compile / tpolecatExcludeOptions ++= Set(
+      ScalacOptions.warnValueDiscard,
+      ScalacOptions.warnUnusedImports,
+      ScalacOptions.warnUnusedLocals
     )
   )
   .enablePlugins(ScalaJSPlugin)
@@ -208,6 +213,11 @@ lazy val docs = project
       "SBT_VERSION"     -> sbtDocsVersion,
       "MILL_VERSION"    -> millDocsVersion,
       "js-opt"          -> "fast"
+    ),
+    Compile / tpolecatExcludeOptions ++= Set(
+      ScalacOptions.warnValueDiscard,
+      ScalacOptions.warnUnusedImports,
+      ScalacOptions.warnUnusedLocals
     )
   )
   .settings(
