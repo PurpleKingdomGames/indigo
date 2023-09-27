@@ -18,6 +18,8 @@ addSbtPlugin("io.indigoengine" % "sbt-indigo" % "@VERSION@")
 Here is an example minimal `build.sbt` file:
 
 ```scala
+import indigoplugin._
+
 lazy val mygame =
   (project in file("."))
     .enablePlugins(ScalaJSPlugin, SbtIndigo) // Enable the Scala.js and Indigo plugins
@@ -28,11 +30,10 @@ lazy val mygame =
       organization := "org.mygame"
     )
     .settings( // Indigo specific settings
-      showCursor := true,
-      title := "My Game",
-      gameAssetsDirectory := "assets",
-      windowStartWidth := 720, // Width of Electron window, used with `indigoRun`.
-      windowStartHeight := 480, // Height of Electron window, used with `indigoRun`.
+      indigoOptions :=
+        IndigoOptions.defaults
+          .withTitle("My Game")
+          .withWindowSize(720, 480),
       libraryDependencies ++= Seq(
         "io.indigoengine" %%% "indigo" % "@VERSION@",
         "io.indigoengine" %%% "indigo-extras" % "@VERSION@",
@@ -57,13 +58,13 @@ object mygame extends ScalaJSModule with MillIndigo {
   def scalaVersion   = "@SCALA_VERSION@"
   def scalaJSVersion = "@SCALAJS_VERSION@"
 
-  val gameAssetsDirectory: os.Path   = os.pwd / "assets"
-  val showCursor: Boolean            = true
-  val title: String                  = "My Game"
-  val windowStartWidth: Int          = 720 // Width of Electron window, used with `indigoRun`.
-  val windowStartHeight: Int         = 480 // Height of Electron window, used with `indigoRun`.
-  val disableFrameRateLimit: Boolean = false
-  val electronInstall                = indigoplugin.ElectronInstall.Global
+  val indigoOptions: IndigoOptions =
+    IndigoOptions.defaults
+      .withTitle("My Game")
+      .withWindowSize(720, 480)
+
+  val indigoGenerators: IndigoGenerators =
+    IndigoGenerators.None
 
   def ivyDeps = Agg(
     ivy"io.indigoengine::indigo::@VERSION@",
@@ -105,22 +106,12 @@ The second to last line is an absolute path to where your game is.
 
 ### Running your game locally (Electron Application)
 
-You will need to have electron installed globally, install with npm as follows:
+If you use the plugin commands, `indigoRun` will automatically use the version of electron specified in your `IndigoOptions` config. By default, this installs the latest version locally.
+
+From your command line:
 
 ```bash
-npm install -g electron
-```
-
-On Linux, you may find that command is insufficient, you may need something like:
-
-```bash
-sudo npm install -g electron --unsafe-perm=true --allow-root
-```
-
-Then from your command line:
-
-```bash
-mill mygame.fastOpt # Compiles and produces the JS file of your game.
+mill mygame.fastLinkJS # Compiles and produces the JS file of your game.
 mill mygame.indigoRun # First runs indigoBuild, then bundles it into an app and runs it.
 ```
 
@@ -133,13 +124,13 @@ If your game is in active development, you might prefer to run it as a website t
 First you need to build your game, as follows:
 
 ```bash
-mill mygame.fastOpt # Compiles and produces the JS file of your game.
+mill mygame.fastLinkJS # Compiles and produces the JS file of your game.
 mill mygame.indigoBuild # Marshall scripts and assets together and link them to an HTML file.
 ```
 
 Most modern browsers do not allow you to run local sites that load in assets and modules just by opening the HTML file in your browser. So if you use the Indigo build tool to produce a bootstrapped game, the quickest way to run it is to use [http-server](https://www.npmjs.com/package/http-server) as follows:
 
-1. Install with `npm install -g http-server`.
+1. Install with `npm install -g http-server`. (For a global install, you can also use it locally if you prefer by omitting the `-g` and running using `npx`)
 1. Navigate to the output directory shown after running the indigo plugin.
 1. Run `http-server -c-1` - which means "serve this directory as a static site with no caching".
 1. Go to [http://127.0.0.1:8080/](http://127.0.0.1:8080/) (or whatever `http-server` says in it output) and marvel at your creation..
@@ -170,13 +161,13 @@ object mygame extends ScalaJSModule with MillIndigo {
   def scalaVersion   = "@SCALA_VERSION@"
   def scalaJSVersion = "@SCALAJS_VERSION@"
 
-  val gameAssetsDirectory: os.Path   = os.pwd / "assets"
-  val showCursor: Boolean            = true
-  val title: String                  = "My Game"
-  val windowStartWidth: Int          = 720 // Width of Electron window, used with `indigoRun`.
-  val windowStartHeight: Int         = 480 // Height of Electron window, used with `indigoRun`.
-  val disableFrameRateLimit: Boolean = false
-  val electronInstall                = indigoplugin.ElectronInstall.Global
+  val indigoOptions: IndigoOptions =
+    IndigoOptions.defaults
+      .withTitle("My Game")
+      .withWindowSize(720, 480)
+
+  val indigoGenerators: IndigoGenerators =
+    IndigoGenerators.None
 
   def ivyDeps = Agg(
     ivy"io.indigoengine::indigo::@VERSION@",
@@ -200,7 +191,7 @@ Run the following:
 Run the following:
 
 1. `mill mygame.compile`
-1. `mill mygame.fastOpt`
+1. `mill mygame.fastLinkJS`
 1. `mill mygame.indigoBuild`
 
 This will output your game and all the correctly referenced assets into `out/mygame/indigoBuild/`. Note that the module will give you a full path at the end of it's output.
@@ -215,7 +206,7 @@ You can also define the following in your `build.sc` file inside the `mygame` ob
   def buildGame() = T.command {
     T {
       compile()
-      fastOpt()
+      fastLinkJS()
       indigoBuild()() // Note the double parenthesis!
     }
   }
@@ -223,7 +214,7 @@ You can also define the following in your `build.sc` file inside the `mygame` ob
   def runGame() = T.command {
     T {
       compile()
-      fastOpt()
+      fastLinkJS()
       indigoRun()() // Note the double parenthesis!
     }
   }
@@ -231,7 +222,7 @@ You can also define the following in your `build.sc` file inside the `mygame` ob
   def buildGameFull() = T.command {
     T {
       compile()
-      fullOpt()
+      fullLinkJS()
       indigoBuildFull()() // Note the double parenthesis!
     }
   }
@@ -239,7 +230,7 @@ You can also define the following in your `build.sc` file inside the `mygame` ob
   def runGameFull() = T.command {
     T {
       compile()
-      fullOpt()
+      fullLinkJS()
       indigoRunFull()() // Note the double parenthesis!
     }
   }
@@ -273,11 +264,10 @@ lazy val mygame =
       organization := "org.mygame"
     )
     .settings( // Indigo specific settings
-      showCursor := true,
-      title := "My Game",
-      gameAssetsDirectory := "assets",
-      windowStartWidth := 720, // Width of Electron window, used with `indigoRun`.
-      windowStartHeight := 480, // Height of Electron window, used with `indigoRun`.
+      indigoOptions :=
+        IndigoOptions.defaults
+          .withTitle("My Game")
+          .withWindowSize(720, 480),
       libraryDependencies ++= Seq(
         "io.indigoengine" %%% "indigo" % "@VERSION@",
         "io.indigoengine" %%% "indigo-extras" % "@VERSION@",
@@ -290,13 +280,13 @@ lazy val mygame =
 
 Run the following:
 
-`sbt compile fastOptJS indigoRun`
+`sbt compile fastLinkJS indigoRun`
 
 ### Building via SBT
 
 Run the following:
 
-`sbt compile fastOptJS indigoBuild`
+`sbt compile fastLinkJS indigoBuild`
 
 This will output your game and all the correctly referenced assets into `target/indigoBuild/`. Note that the plugin will give you a full path at the end of it's output.
 
@@ -307,10 +297,10 @@ To run as a web site, navigate to the folder, run `http-server -c-1`, and go to 
 You can also define the following in your `build.sbt` file:
 
 ```scala
-addCommandAlias("buildGame", ";compile;fastOptJS;indigoBuild")
-addCommandAlias("runGame", ";compile;fastOptJS;indigoRun")
-addCommandAlias("buildGameFull", ";compile;fullOptJS;indigoBuildFull")
-addCommandAlias("runGameFull", ";compile;fullOptJS;indigoRunFull")
+addCommandAlias("buildGame", ";compile;fastLinkJS;indigoBuild")
+addCommandAlias("runGame", ";compile;fastLinkJS;indigoRun")
+addCommandAlias("buildGameFull", ";compile;fullLinkJS;indigoBuildFull")
+addCommandAlias("runGameFull", ";compile;fullLinkJS;indigoRunFull")
 ```
 
 Which give you some convenient shortcuts to speed up development.
