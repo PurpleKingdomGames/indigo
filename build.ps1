@@ -17,7 +17,3 @@ cd -Path .. -PassThru
 cd -Path examples -PassThru
 & .\build.ps1
 cd -Path .. -PassThru
-
-cd -Path demos -PassThru
-& .\build.ps1
-cd -Path .. -PassThru

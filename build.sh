@@ -31,9 +31,3 @@ echo ">>> Examples"
 cd examples
 bash build.sh
 cd ..
-
-# Demos
-echo ">>> Demos"
-cd demos
-bash build.sh
-cd ..
