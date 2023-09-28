@@ -25,9 +25,3 @@ echo ">>> Indigo"
 cd indigo
 bash build.sh
 cd ..
-
-# Examples
-echo ">>> Examples"
-cd examples
-bash build.sh
-cd ..

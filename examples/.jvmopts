@@ -1,4 +1,0 @@
--Xss8m
--Xms1G
--Xmx8G
--XX:+UseG1GC
