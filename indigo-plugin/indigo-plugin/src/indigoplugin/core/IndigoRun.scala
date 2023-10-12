@@ -38,7 +38,7 @@ object IndigoRun {
     os.remove(supportFile)
     os.write(supportFile, support)
 
-    println(s"Starting '${indigoOptions.metadata.title} title'")
+    println(s"Starting '${indigoOptions.metadata.title}'")
 
     sys.props("os.name").toLowerCase match {
       case x if x contains "windows" =>
