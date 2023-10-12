@@ -36,6 +36,12 @@ All renderable nodes come with the same set of basic transforms that you see on 
 
 They are then specialised to do certain jobs.
 
+#### `BlankEntity`
+
+Represents nothing more than a space on the screen that you can manipulate and paint into, by providing a [`ShaderData`](/07-shaders/shaders-overview.md) instance.
+
+Useful when you want total rendering control with none of the built in frills and opinions of the other primative types.
+
 #### `Text[M <: Material]`
 
 Provides basic support for rendering text onto the screen, including things like alignment.
