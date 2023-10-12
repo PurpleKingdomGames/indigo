@@ -43,14 +43,19 @@ object SbtIndigo extends sbt.AutoPlugin {
     indigoOptions          := IndigoOptions.defaults
   )
 
-  private def giveScriptBasePath(baseDir: String, scalaVersion: String, projectName: String): String = {
+  private def giveScriptBasePath(
+      baseDir: String,
+      scalaVersion: String,
+      projectName: String,
+      suffix: String
+  ): String = {
     val base =
       if (scalaVersion.startsWith("2"))
         s"$baseDir/target/scala-${scalaVersion.split('.').init.mkString(".")}"
       else
         s"$baseDir/target/scala-${scalaVersion}"
 
-    val subDir = "/" + projectName + "-fastopt"
+    val subDir = "/" + projectName + suffix
 
     if (new sbt.File(base + subDir).isDirectory) {
       base + subDir
@@ -68,7 +73,8 @@ object SbtIndigo extends sbt.AutoPlugin {
         giveScriptBasePath(
           baseDir = baseDir,
           scalaVersion = Keys.scalaVersion.value,
-          projectName = Keys.projectID.value.name
+          projectName = Keys.projectID.value.name,
+          suffix = "-fastopt"
         )
 
       println(scriptPathBase)
@@ -96,7 +102,8 @@ object SbtIndigo extends sbt.AutoPlugin {
         giveScriptBasePath(
           baseDir = baseDir,
           scalaVersion = Keys.scalaVersion.value,
-          projectName = Keys.projectID.value.name
+          projectName = Keys.projectID.value.name,
+          suffix = "-opt"
         )
 
       println(scriptPathBase)
