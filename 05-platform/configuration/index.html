@@ -6,7 +6,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="generator" content="Typelevel Laika + Helium Theme" />
-  <title>Networking</title>
+  <title>Game Configuration</title>
   
   
   <meta name="description" content="A 2D Pixel Art FP game engine for Scala."/>
@@ -135,13 +135,13 @@
     <li class="level2 nav-leaf"><a href="../../04-organisation/subsystems/">What SubSystems are</a></li>
     <li class="level1 nav-header">Platform &amp; IO</li>
     <li class="level2 nav-leaf"><a href="../assets/">Assets &amp; Asset Loading</a></li>
-    <li class="level2 nav-leaf"><a href="../configuration/">Game Configuration</a></li>
+    <li class="level2 active nav-leaf"><a href="#">Game Configuration</a></li>
     <li class="level2 nav-leaf"><a href="../cross-platform-publishing/">Cross Platform Publishing</a></li>
     <li class="level2 nav-leaf"><a href="../importers/">File Importers</a></li>
     <li class="level2 nav-leaf"><a href="../input-handling/">Input Handling</a></li>
     <li class="level2 nav-leaf"><a href="../loading-and-saving-data/">Loading &amp; Saving Data</a></li>
     <li class="level2 nav-leaf"><a href="../logging/">Logging</a></li>
-    <li class="level2 active nav-leaf"><a href="#">Networking</a></li>
+    <li class="level2 nav-leaf"><a href="../networking/">Networking</a></li>
     <li class="level1 nav-header">Presentation</li>
     <li class="level2 nav-leaf"><a href="../../06-presentation/animation/">Animation</a></li>
     <li class="level2 nav-leaf"><a href="../../06-presentation/audio/">Audio</a></li>
@@ -189,10 +189,14 @@
 
       
 <nav id="page-nav">
-  <p class="header"><a href="#">Networking</a></p>
+  <p class="header"><a href="#">Game Configuration</a></p>
 
   <ul class="nav-list">
-    <li class="level1 nav-leaf"><a href="#network-calls-and-the-game-loop">Network calls and the game loop</a></li>
+    <li class="level1 nav-leaf"><a href="#build-config">Build config</a></li>
+    <li class="level1 nav-node"><a href="#gameconfig">GameConfig</a></li>
+    <li class="level2 nav-leaf"><a href="#resize-policy">Resize Policy</a></li>
+    <li class="level2 nav-leaf"><a href="#frame-rate">Frame rate</a></li>
+    <li class="level2 nav-leaf"><a href="#advanced">Advanced</a></li>
   </ul>
 
   <p class="footer"></p>
@@ -201,20 +205,71 @@
 
       <main class="content">
 
-        <h1 id="networking" class="title">Networking</h1>
-        <p>Indigo supports basic networking via HTTP or WebSockets. You can also get a
-        rudimentary indication as to whether the local machine has an active network
-        connection using <code>indigo.platform.networking.Network.isOnline</code>. Note, however,
-        that this will only indicate the presence of a local network and is not
-        necessarily an indication of internet connectivity, or the availability of an
-        internet resource.</p>
+        <h1 id="game-configuration" class="title">Game Configuration</h1>
+        <p>Configuring your game happens in two places:</p>
+        <ol class="arabic">
+          <li>In the game&#39;s build via the plugin (if your project uses it).</li>
+          <li>In the game itself during boot up.</li>
+        </ol>
         
-        <h2 id="network-calls-and-the-game-loop" class="section"><a class="anchor-link left" href="#network-calls-and-the-game-loop"><i class="icofont-laika link">&#xef71;</i></a>Network calls and the game loop</h2>
-        <p>JavaScript handles network calls via callbacks and promises, but that doesn&#39;t fit comfortably with Indigo&#39;s design. Network calls by their nature are side effects, which is bad for testing our game. We&#39;d prefer to declare the <em>intention</em> to make a network call and then have a response in as an argument to a future frame, than to have to make sense of a mid frame interruption.</p>
-        <p>Therefore, what we have is a side-effecting networking system inside Indigo which you communicate with via the normal event loop. If you want to send an HTTP request you emit a <code>GET(url, params, headers)</code> event, and at the beginning of some future frame, hopefully you&#39;ll get an <code>HttpResponse(status, headers, body)</code>. WebSockets work in a similar way but are complicated by having more states.</p>
-        <p>For a complete list of network events, please head over the the <a href="../../03-gameloop/events/">events documentation</a>.</p>
-        <p>We have examples of networking in our indigo-examples repo, of both <a href="https://github.com/PurpleKingdomGames/indigo-examples/blob/master/examples/http/src/main/scala/indigoexamples/HttpExample.scala">HTTP</a> and <a href="https://github.com/PurpleKingdomGames/indigo-examples/blob/master/examples/websocket/src/main/scala/indigoexamples/WebSocketExample.scala">WebSockets</a>.</p>
-        <p>The examples make use of buttons which you can find out about on the <a href="../../09-uicomponents/ui-components/">UI Components</a> page.</p>
+        <h2 id="build-config" class="section"><a class="anchor-link left" href="#build-config"><i class="icofont-laika link">&#xef71;</i></a>Build config</h2>
+        <blockquote>As of Indigo 0.15.0</blockquote>
+        <p>Whether you are using Mill or sbt, you configure your game&#39;s build settings using an <code>IndigoOptions</code> instance, here is an example:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">IndigoOptions</span><span>.</span><span class="identifier">defaults</span><span>
+  .</span><span class="identifier">withTitle</span><span>(</span><span class="string-literal">&quot;My Game&quot;</span><span>)
+  .</span><span class="identifier">withBackgroundColor</span><span>(</span><span class="string-literal">&quot;black&quot;</span><span>)
+  .</span><span class="identifier">withWindowSize</span><span>(</span><span class="number-literal">800</span><span>, </span><span class="number-literal">600</span><span>)
+  .</span><span class="identifier">withAssetDirectory</span><span>(</span><span class="string-literal">&quot;assets&quot;</span><span>)</span></code></pre>
+        <p>The <code>IndigoOptions</code> type provides a fluent API that exposes a range of configuration options that can be discovered via your IDE.</p>
+        <p>One problem that you may notice is that we set values here such as window dimension. In a moment we will see those same values being set in the <code>GameConfig</code> - is there a way to keep them in sync? Yes! You can use Indigo&#39;s generators in your build definition to produce a basic <code>GameConfig</code> instance for you that sync&#39;s the appropriate values from the build definition, like so:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="comment">// sbt: https://github.com/PurpleKingdomGames/pirate-demo/blob/main/build.sbt
+</span><span class="type-name">IndigoGenerators</span><span>
+  .</span><span class="identifier">sbt</span><span>((</span><span class="type-name">Compile</span><span> / </span><span class="identifier">sourceManaged</span><span>).</span><span class="identifier">value</span><span>, </span><span class="string-literal">&quot;pirate.generated&quot;</span><span>)
+  .</span><span class="identifier">generateConfig</span><span>(</span><span class="string-literal">&quot;Config&quot;</span><span>, </span><span class="identifier">pirateOptions</span><span>)
+
+</span><span class="comment">// Mill: https://github.com/PurpleKingdomGames/snake-demo/blob/main/build.sc
+</span><span class="keyword">val</span><span> </span><span class="identifier">indigoGenerators</span><span>: </span><span class="type-name">IndigoGenerators</span><span> =
+    </span><span class="type-name">IndigoGenerators</span><span>
+      .</span><span class="identifier">mill</span><span>(</span><span class="string-literal">&quot;snake.generated&quot;</span><span>)
+      .</span><span class="identifier">generateConfig</span><span>(</span><span class="string-literal">&quot;SnakeConfig&quot;</span><span>, </span><span class="identifier">indigoOptions</span><span>)</span></code></pre>
+        
+        <h2 id="gameconfig" class="section"><a class="anchor-link left" href="#gameconfig"><i class="icofont-laika link">&#xef71;</i></a>GameConfig</h2>
+        <p>Inside the game itself you are required to configure your game by supplying a <code>GameConfig</code> instance. As usual, you and easily provide an basic instance using <code>GameConfig.default</code>, and configure/explore it using it&#39;s fluent API, a typical example might be:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">GameConfig</span><span>.</span><span class="keyword">default</span><span>
+  .</span><span class="identifier">withViewport</span><span>(</span><span class="type-name">Size</span><span>(</span><span class="number-literal">800</span><span>, </span><span class="number-literal">600</span><span>))
+  .</span><span class="identifier">withMagnification</span><span>(</span><span class="number-literal">2</span><span>)</span></code></pre>
+        <p>Most of the config options are pretty self explanatory, but there are a couple of things to know:</p>
+        
+        <h3 id="resize-policy" class="section"><a class="anchor-link left" href="#resize-policy"><i class="icofont-laika link">&#xef71;</i></a>Resize Policy</h3>
+        <p>The resize policy controls how Indigo decides to respond to a change in window / canvas size.</p>
+        <p>For historical reasons, the default is set to <code>ResizePolicy.Resize</code>, meaning that the game will fill the available space (without stretching / distorting). </p>
+        <p><strong><em>Warning!</em></strong> This works perfectly well with the code generated by the Indigo plugins, however! If you&#39;re embedding the game yourself, in a webpage say, then you need to control the canvas a little or it will continuously try to grow the viewport size. There are two ways to do that:</p>
+        <ol class="arabic">
+          <li>Change the resize policy: <code>GameConfig.default.noResize</code></li>
+          <li>With CSS (as generated by the plugin):</li>
+        </ol>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">#indigo-container</span><span> {
+  </span><span class="attribute-name">display</span><span>: </span><span class="identifier">flex</span><span>;
+  </span><span class="attribute-name">align-items</span><span>: </span><span class="identifier">center</span><span>;
+  </span><span class="attribute-name">justify-content</span><span>: </span><span class="identifier">center</span><span>;
+  </span><span class="attribute-name">padding</span><span>:</span><span class="number-literal">0</span><span class="identifier">px</span><span>;
+  </span><span class="attribute-name">margin</span><span>:</span><span class="number-literal">0</span><span class="identifier">px</span><span>;
+  </span><span class="attribute-name">width</span><span>: </span><span class="number-literal">100</span><span class="identifier">vw</span><span>;
+  </span><span class="attribute-name">height</span><span>: </span><span class="number-literal">100</span><span class="identifier">vh</span><span>;
+}</span></code></pre>
+        
+        <h3 id="frame-rate" class="section"><a class="anchor-link left" href="#frame-rate"><i class="icofont-laika link">&#xef71;</i></a>Frame rate</h3>
+        <blockquote><strong><em>The simple advice is <em>not</em> to set the game&#39;s framerate at all.</em></strong> However...</blockquote>
+        <p>You can set the game&#39;s framerate as follows (this is the default):</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">GameConfig</span><span>.</span><span class="keyword">default</span><span>.</span><span class="identifier">withFrameRateLimit</span><span>(</span><span class="type-name">Option</span><span>(</span><span class="type-name">FPS</span><span>.</span><span class="identifier">`60`</span><span>))</span></code></pre>
+        <p>But what does that do, and why is it optional?!</p>
+        <p>By default you will be limited by the browser / electron typically to 60fps or the vsync rate of your monitor. The frame rate generated at that level will be smooth and accurate.</p>
+        <p>The <em>only</em> use of the framerate limiter in the <code>GameConfig</code> is to globally prevent excessive updates. For example, by default we set a limit of 60 FPS (frames per second), because for a pixel art 2D game 60 is perfectly fine, and your monitor&#39;s vsync might try for, say, 144 FPS which means more than double the processing for no good reason.</p>
+        <p>What about that optional type?</p>
+        <p>If you disable the framerate limiter in Electron (in the Indigo plugin / build settings), and set the framerate limiter to <code>None</code>, with a modern version of electron and a simple enough game, it&#39;s plausible to get  <em>&gt; 1000 fps</em> - at which point the browser goes a bit crazy trying to keep up and performance actually degrades. Doing this in general is bad and you should not release a game in this state, but could be handy if you are performance tuning a complicated game, perhaps.</p>
+        
+        <h3 id="advanced" class="section"><a class="anchor-link left" href="#advanced"><i class="icofont-laika link">&#xef71;</i></a>Advanced</h3>
+        <p>Most people should leave the advanced config alone, but it&#39;s there to let you tune some of the engine settings, particularly the rendering settings. Please see the scaladocs for details.</p>
 
         
 <hr class="footer-rule"/>

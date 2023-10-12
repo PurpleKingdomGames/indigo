@@ -135,6 +135,7 @@
     <li class="level2 nav-leaf"><a href="../../04-organisation/subsystems/">What SubSystems are</a></li>
     <li class="level1 nav-header">Platform &amp; IO</li>
     <li class="level2 nav-leaf"><a href="../../05-platform/assets/">Assets &amp; Asset Loading</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/configuration/">Game Configuration</a></li>
     <li class="level2 nav-leaf"><a href="../../05-platform/cross-platform-publishing/">Cross Platform Publishing</a></li>
     <li class="level2 nav-leaf"><a href="../../05-platform/importers/">File Importers</a></li>
     <li class="level2 nav-leaf"><a href="../../05-platform/input-handling/">Input Handling</a></li>
@@ -231,6 +232,10 @@
           <li>Flip vertical</li>
         </ul>
         <p>They are then specialised to do certain jobs.</p>
+        
+        <h4 id="blankentity" class="section"><a class="anchor-link left" href="#blankentity"><i class="icofont-laika link">&#xef71;</i></a><code>BlankEntity</code></h4>
+        <p>Represents nothing more than a space on the screen that you can manipulate and paint into, by providing a <a href="../../07-shaders/shaders-overview/"><code>ShaderData</code></a> instance.</p>
+        <p>Useful when you want total rendering control with none of the built in frills and opinions of the other primative types.</p>
         
         <h4 id="text-m-material" class="section"><a class="anchor-link left" href="#text-m-material"><i class="icofont-laika link">&#xef71;</i></a><code>Text[M &lt;: Material]</code></h4>
         <p>Provides basic support for rendering text onto the screen, including things like alignment.</p>
