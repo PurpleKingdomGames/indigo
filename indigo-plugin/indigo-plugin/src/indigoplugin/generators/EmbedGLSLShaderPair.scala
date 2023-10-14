@@ -3,13 +3,12 @@ package indigoplugin.generators
 object EmbedGLSLShaderPair {
 
   def generate(
-      outDir: os.Path,
       moduleName: String,
       fullyQualifiedPath: String,
       vertex: os.Path,
       fragment: os.Path,
       runValidator: Boolean
-  ): Seq[os.Path] = {
+  ): os.Path => Seq[os.Path] = outDir => {
 
     val shaderFiles: Seq[os.Path] =
       Seq(vertex, fragment)

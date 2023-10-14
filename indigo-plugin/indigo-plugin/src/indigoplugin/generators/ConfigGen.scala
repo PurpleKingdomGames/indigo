@@ -6,11 +6,10 @@ import scala.util.matching.Regex
 object ConfigGen {
 
   def generate(
-      outDir: os.Path,
       moduleName: String,
       fullyQualifiedPackage: String,
       indigoOptions: IndigoOptions
-  ): Seq[os.Path] = {
+  ): os.Path => Seq[os.Path] = outDir => {
 
     val wd = outDir / Generators.OutputDirName
 

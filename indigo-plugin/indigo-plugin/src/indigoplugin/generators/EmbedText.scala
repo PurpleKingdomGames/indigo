@@ -3,11 +3,10 @@ package indigoplugin.generators
 object EmbedText {
 
   def generate(
-      outDir: os.Path,
       moduleName: String,
       fullyQualifiedPackage: String,
       filePath: os.Path
-  ): Seq[os.Path] = {
+  ): os.Path => Seq[os.Path] = outDir => {
 
     val text =
       if (!os.exists(filePath)) throw new Exception("Text file to embed not found: " + filePath.toString())

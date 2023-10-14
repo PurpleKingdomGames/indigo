@@ -6,11 +6,10 @@ import indigoplugin.datatypes.Aseprite
 object EmbedAseprite {
 
   def generate(
-      outDir: os.Path,
       moduleName: String,
       fullyQualifiedPackage: String,
       filePath: os.Path
-  ): Seq[os.Path] = {
+  ): os.Path => Seq[os.Path] = outDir => {
 
     val asepriteJson =
       if (!os.exists(filePath))
