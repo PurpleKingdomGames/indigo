@@ -17,17 +17,12 @@ import indigoplugin.generators.EmbedAseprite
   * @param sources
   *   Accumulated source paths
   */
-final case class IndigoGenerators(outDirectory: os.Path, fullyQualifiedPackageName: String, sources: Seq[os.Path]) {
+final case class IndigoGenerators(fullyQualifiedPackageName: String, sources: Seq[os.Path => Seq[os.Path]]) {
 
-  def toSources: Seq[os.Path]  = sources
-  def toSourceFiles: Seq[File] = sources.map(_.toIO)
-
-  def withOutputDirectory(value: os.Path): IndigoGenerators =
-    this.copy(outDirectory = value)
-  def withOutputDirectory(value: File): IndigoGenerators =
-    this.copy(outDirectory = os.Path(value))
-  def withOutputDirectory(value: String): IndigoGenerators =
-    this.copy(outDirectory = os.Path(value))
+  def toSourcePaths(destination: os.Path): Seq[os.Path] = sources.flatMap(_(destination))
+  def toSourcePaths(destination: File): Seq[os.Path]    = sources.flatMap(_(os.Path(destination)))
+  def toSourceFiles(destination: os.Path): Seq[File]    = sources.flatMap(_(destination)).map(_.toIO)
+  def toSourceFiles(destination: File): Seq[File]       = sources.flatMap(_(os.Path(destination))).map(_.toIO)
 
   /** Set a fully qualified package names for your output sources, e.g. com.mycompany.generated.code */
   def withPackage(packageName: String): IndigoGenerators =
@@ -42,8 +37,8 @@ final case class IndigoGenerators(outDirectory: os.Path, fullyQualifiedPackageNa
     */
   def embedText(moduleName: String, file: os.Path): IndigoGenerators =
     this.copy(
-      sources = sources ++
-        EmbedText.generate(outDirectory, moduleName, fullyQualifiedPackageName, file)
+      sources = sources :+
+        EmbedText.generate(moduleName, fullyQualifiedPackageName, file)
     )
 
   /** Embed raw text into a static variable.
@@ -55,8 +50,8 @@ final case class IndigoGenerators(outDirectory: os.Path, fullyQualifiedPackageNa
     */
   def embedText(moduleName: String, file: File): IndigoGenerators =
     this.copy(
-      sources = sources ++
-        EmbedText.generate(outDirectory, moduleName, fullyQualifiedPackageName, os.Path(file))
+      sources = sources :+
+        EmbedText.generate(moduleName, fullyQualifiedPackageName, os.Path(file))
     )
 
   /** Embed raw text into a static variable.
@@ -68,8 +63,8 @@ final case class IndigoGenerators(outDirectory: os.Path, fullyQualifiedPackageNa
     */
   def embedText(moduleName: String, file: String): IndigoGenerators =
     this.copy(
-      sources = sources ++
-        EmbedText.generate(outDirectory, moduleName, fullyQualifiedPackageName, os.RelPath(file).resolveFrom(os.pwd))
+      sources = sources :+
+        EmbedText.generate(moduleName, fullyQualifiedPackageName, os.RelPath(file).resolveFrom(os.pwd))
     )
 
   /** Embed a GLSL shader pair into a Scala module.
@@ -100,9 +95,8 @@ final case class IndigoGenerators(outDirectory: os.Path, fullyQualifiedPackageNa
       validate: Boolean
   ): IndigoGenerators =
     this.copy(
-      sources = sources ++
+      sources = sources :+
         EmbedGLSLShaderPair.generate(
-          outDirectory,
           moduleName,
           fullyQualifiedPackageName,
           vertexShaderPath,
@@ -139,9 +133,8 @@ final case class IndigoGenerators(outDirectory: os.Path, fullyQualifiedPackageNa
       validate: Boolean
   ): IndigoGenerators =
     this.copy(
-      sources = sources ++
+      sources = sources :+
         EmbedGLSLShaderPair.generate(
-          outDirectory,
           moduleName,
           fullyQualifiedPackageName,
           os.Path(vertexShaderPath),
@@ -178,9 +171,8 @@ final case class IndigoGenerators(outDirectory: os.Path, fullyQualifiedPackageNa
       validate: Boolean
   ): IndigoGenerators =
     this.copy(
-      sources = sources ++
+      sources = sources :+
         EmbedGLSLShaderPair.generate(
-          outDirectory,
           moduleName,
           fullyQualifiedPackageName,
           os.RelPath(vertexShaderPath).resolveFrom(os.pwd),
@@ -202,9 +194,8 @@ final case class IndigoGenerators(outDirectory: os.Path, fullyQualifiedPackageNa
       indigoAssets: IndigoAssets
   ): IndigoGenerators =
     this.copy(
-      sources = sources ++
+      sources = sources :+
         AssetListing.generate(
-          outDirectory,
           moduleName,
           fullyQualifiedPackageName,
           indigoAssets
@@ -223,9 +214,8 @@ final case class IndigoGenerators(outDirectory: os.Path, fullyQualifiedPackageNa
       indigoOptions: IndigoOptions
   ): IndigoGenerators =
     this.copy(
-      sources = sources ++
+      sources = sources :+
         ConfigGen.generate(
-          outDirectory,
           moduleName,
           fullyQualifiedPackageName,
           indigoOptions
@@ -293,9 +283,8 @@ final case class IndigoGenerators(outDirectory: os.Path, fullyQualifiedPackageNa
     /** Embed the data as a Scala 3 Enum. */
     def asEnum(moduleName: String, file: os.Path): IndigoGenerators =
       gens.copy(
-        sources = sources ++
+        sources = sources :+
           EmbedData.generate(
-            outDirectory,
             moduleName,
             fullyQualifiedPackageName,
             file,
@@ -308,9 +297,8 @@ final case class IndigoGenerators(outDirectory: os.Path, fullyQualifiedPackageNa
     /** Embed the data as a Scala 3 Enum that extends some fully qualified module name. E.g. `com.example.MyData`. */
     def asEnum(moduleName: String, file: os.Path, extendsFrom: String): IndigoGenerators =
       gens.copy(
-        sources = sources ++
+        sources = sources :+
           EmbedData.generate(
-            outDirectory,
             moduleName,
             fullyQualifiedPackageName,
             file,
@@ -323,9 +311,8 @@ final case class IndigoGenerators(outDirectory: os.Path, fullyQualifiedPackageNa
     /** Embed the data as a Scala 3 Enum. */
     def asEnum(moduleName: String, file: File): IndigoGenerators =
       gens.copy(
-        sources = sources ++
+        sources = sources :+
           EmbedData.generate(
-            outDirectory,
             moduleName,
             fullyQualifiedPackageName,
             os.Path(file),
@@ -338,9 +325,8 @@ final case class IndigoGenerators(outDirectory: os.Path, fullyQualifiedPackageNa
     /** Embed the data as a Scala 3 Enum that extends some fully qualified module name. E.g. `com.example.MyData`. */
     def asEnum(moduleName: String, file: File, extendsFrom: String): IndigoGenerators =
       gens.copy(
-        sources = sources ++
+        sources = sources :+
           EmbedData.generate(
-            outDirectory,
             moduleName,
             fullyQualifiedPackageName,
             os.Path(file),
@@ -353,9 +339,8 @@ final case class IndigoGenerators(outDirectory: os.Path, fullyQualifiedPackageNa
     /** Embed the data as a Scala 3 Enum. */
     def asEnum(moduleName: String, file: String): IndigoGenerators =
       gens.copy(
-        sources = sources ++
+        sources = sources :+
           EmbedData.generate(
-            outDirectory,
             moduleName,
             fullyQualifiedPackageName,
             os.RelPath(file).resolveFrom(os.pwd),
@@ -368,9 +353,8 @@ final case class IndigoGenerators(outDirectory: os.Path, fullyQualifiedPackageNa
     /** Embed the data as a Scala 3 Enum that extends some fully qualified module name. E.g. `com.example.MyData`. */
     def asEnum(moduleName: String, file: String, extendsFrom: String): IndigoGenerators =
       gens.copy(
-        sources = sources ++
+        sources = sources :+
           EmbedData.generate(
-            outDirectory,
             moduleName,
             fullyQualifiedPackageName,
             os.RelPath(file).resolveFrom(os.pwd),
@@ -383,9 +367,8 @@ final case class IndigoGenerators(outDirectory: os.Path, fullyQualifiedPackageNa
     /** Embed the data as a Map. */
     def asMap(moduleName: String, file: os.Path): IndigoGenerators =
       gens.copy(
-        sources = sources ++
+        sources = sources :+
           EmbedData.generate(
-            outDirectory,
             moduleName,
             fullyQualifiedPackageName,
             file,
@@ -398,9 +381,8 @@ final case class IndigoGenerators(outDirectory: os.Path, fullyQualifiedPackageNa
     /** Embed the data as a Map. */
     def asMap(moduleName: String, file: File): IndigoGenerators =
       gens.copy(
-        sources = sources ++
+        sources = sources :+
           EmbedData.generate(
-            outDirectory,
             moduleName,
             fullyQualifiedPackageName,
             os.Path(file),
@@ -413,9 +395,8 @@ final case class IndigoGenerators(outDirectory: os.Path, fullyQualifiedPackageNa
     /** Embed the data as a Map. */
     def asMap(moduleName: String, file: String): IndigoGenerators =
       gens.copy(
-        sources = sources ++
+        sources = sources :+
           EmbedData.generate(
-            outDirectory,
             moduleName,
             fullyQualifiedPackageName,
             os.RelPath(file).resolveFrom(os.pwd),
@@ -445,9 +426,8 @@ final case class IndigoGenerators(outDirectory: os.Path, fullyQualifiedPackageNa
       */
     def asCustom(moduleName: String, file: os.Path)(present: List[List[DataType]] => String): IndigoGenerators =
       gens.copy(
-        sources = sources ++
+        sources = sources :+
           EmbedData.generate(
-            outDirectory,
             moduleName,
             fullyQualifiedPackageName,
             file,
@@ -477,9 +457,8 @@ final case class IndigoGenerators(outDirectory: os.Path, fullyQualifiedPackageNa
       */
     def asCustom(moduleName: String, file: File)(present: List[List[DataType]] => String): IndigoGenerators =
       gens.copy(
-        sources = sources ++
+        sources = sources :+
           EmbedData.generate(
-            outDirectory,
             moduleName,
             fullyQualifiedPackageName,
             os.Path(file),
@@ -509,9 +488,8 @@ final case class IndigoGenerators(outDirectory: os.Path, fullyQualifiedPackageNa
       */
     def asCustom(moduleName: String, file: String)(present: List[List[DataType]] => String): IndigoGenerators =
       gens.copy(
-        sources = sources ++
+        sources = sources :+
           EmbedData.generate(
-            outDirectory,
             moduleName,
             fullyQualifiedPackageName,
             os.RelPath(file).resolveFrom(os.pwd),
@@ -533,8 +511,8 @@ final case class IndigoGenerators(outDirectory: os.Path, fullyQualifiedPackageNa
     */
   def embedAseprite(moduleName: String, file: os.Path): IndigoGenerators =
     this.copy(
-      sources = sources ++
-        EmbedAseprite.generate(outDirectory, moduleName, fullyQualifiedPackageName, file)
+      sources = sources :+
+        EmbedAseprite.generate(moduleName, fullyQualifiedPackageName, file)
     )
 
   /** Embed Aseprite data in a module.
@@ -548,8 +526,8 @@ final case class IndigoGenerators(outDirectory: os.Path, fullyQualifiedPackageNa
     */
   def embedAseprite(moduleName: String, file: File): IndigoGenerators =
     this.copy(
-      sources = sources ++
-        EmbedAseprite.generate(outDirectory, moduleName, fullyQualifiedPackageName, os.Path(file))
+      sources = sources :+
+        EmbedAseprite.generate(moduleName, fullyQualifiedPackageName, os.Path(file))
     )
 
   /** Embed Aseprite data in a module.
@@ -563,9 +541,8 @@ final case class IndigoGenerators(outDirectory: os.Path, fullyQualifiedPackageNa
     */
   def embedAseprite(moduleName: String, file: String): IndigoGenerators =
     this.copy(
-      sources = sources ++
+      sources = sources :+
         EmbedAseprite.generate(
-          outDirectory,
           moduleName,
           fullyQualifiedPackageName,
           os.RelPath(file).resolveFrom(os.pwd)
@@ -577,18 +554,9 @@ final case class IndigoGenerators(outDirectory: os.Path, fullyQualifiedPackageNa
 object IndigoGenerators {
 
   val None: IndigoGenerators =
-    IndigoGenerators(os.Path("/tmp/indigo-build-null"), "", Seq())
+    IndigoGenerators("", Seq())
 
-  def default(outputDirectory: os.Path, fullyQualifiedPackageName: String): IndigoGenerators =
-    IndigoGenerators(outputDirectory, fullyQualifiedPackageName, Seq())
-
-  def mill(fullyQualifiedPackageName: String): IndigoGenerators =
-    default(os.pwd / "out", fullyQualifiedPackageName)
-
-  def mill(outDirectory: os.Path, fullyQualifiedPackageName: String): IndigoGenerators =
-    default(outDirectory, fullyQualifiedPackageName)
-
-  def sbt(sourceManagedDirectory: File, fullyQualifiedPackageName: String): IndigoGenerators =
-    default(os.Path(sourceManagedDirectory), fullyQualifiedPackageName)
+  def apply(fullyQualifiedPackageName: String): IndigoGenerators =
+    IndigoGenerators(fullyQualifiedPackageName, Seq())
 
 }

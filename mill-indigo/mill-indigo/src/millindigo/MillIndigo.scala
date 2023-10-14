@@ -20,7 +20,7 @@ trait MillIndigo extends ScalaJSModule {
   def indigoGenerators: IndigoGenerators
 
   override def generatedSources: T[Seq[PathRef]] = T {
-    indigoGenerators.toSources.map(mill.PathRef(_)) ++ super.generatedSources()
+    indigoGenerators.toSourcePaths(T.dest).map(mill.PathRef(_)) ++ super.generatedSources()
   }
 
   /** Build a static site for your game using Scala.js's fast linking. */

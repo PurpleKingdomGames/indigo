@@ -20,11 +20,9 @@ class GeneratorAcceptanceTests extends munit.FunSuite {
   test("Can generate an enum from a CSV file") {
 
     val files =
-      IndigoGenerators
-        .default(targetDir, "com.example.test")
-        .embedCSV
+      IndigoGenerators("com.example.test").embedCSV
         .asEnum("StatsEnum", sourceCSV)
-        .toSources
+        .toSourcePaths(targetDir)
 
     files.headOption match {
       case None =>
@@ -54,11 +52,9 @@ class GeneratorAcceptanceTests extends munit.FunSuite {
   test("Can generate a map from a markdown table file") {
 
     val files =
-      IndigoGenerators
-        .default(targetDir, "com.example.test")
-        .embedMarkdownTable
+      IndigoGenerators("com.example.test").embedMarkdownTable
         .asMap("StatsMap", sourceMD)
-        .toSources
+        .toSourcePaths(targetDir)
 
     files.headOption match {
       case None =>
@@ -92,11 +88,9 @@ class GeneratorAcceptanceTests extends munit.FunSuite {
   test("Can generate a map from a markdown table file (armour, unformatted)") {
 
     val files =
-      IndigoGenerators
-        .default(targetDir, "com.example.test")
-        .embedMarkdownTable
+      IndigoGenerators("com.example.test").embedMarkdownTable
         .asEnum("Armour", os.pwd / "test-assets" / "data" / "armour.md")
-        .toSources
+        .toSourcePaths(targetDir)
 
     files.headOption match {
       case None =>
@@ -125,15 +119,13 @@ class GeneratorAcceptanceTests extends munit.FunSuite {
   test("Can generate a custom output from a markdown table file") {
 
     val files =
-      IndigoGenerators
-        .default(targetDir, "com.example.test")
-        .embedMarkdownTable
+      IndigoGenerators("com.example.test").embedMarkdownTable
         .asCustom("StatsMap", sourceMD) { data =>
           s"""/*
           |${data.map(_.map(cell => s"${cell.asString}: ${cell.giveTypeName}").mkString(",")).mkString("\n")}
           |*/""".stripMargin.trim
         }
-        .toSources
+        .toSourcePaths(targetDir)
 
     files.headOption match {
       case None =>
@@ -166,10 +158,9 @@ class GeneratorAcceptanceTests extends munit.FunSuite {
     val jsonFile = os.pwd / "test-assets" / "captain" / "Captain Clown Nose Data.json"
 
     val files =
-      IndigoGenerators
-        .default(targetDir, "com.example.test")
+      IndigoGenerators("com.example.test")
         .embedAseprite("MyAnimation", jsonFile)
-        .toSources
+        .toSourcePaths(targetDir)
 
     files.headOption match {
       case None =>

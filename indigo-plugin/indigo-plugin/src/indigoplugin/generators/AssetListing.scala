@@ -7,11 +7,10 @@ import scala.io.AnsiColor._
 object AssetListing {
 
   def generate(
-      outDir: os.Path,
       moduleName: String,
       fullyQualifiedPackage: String,
       indigoAssets: IndigoAssets
-  ): Seq[os.Path] = {
+  ): os.Path => Seq[os.Path] = outDir => {
 
     val toSafeName: (String, String) => String =
       indigoAssets.rename.getOrElse(toDefaultSafeName)

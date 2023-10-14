@@ -19,14 +19,13 @@ object EmbedData {
   // string is kept.
   // Cells cannot be empty.
   def generate(
-      outDir: os.Path,
       moduleName: String,
       fullyQualifiedPackage: String,
       filePath: os.Path,
       delimiter: String,
       rowFilter: String => Boolean,
       embedMode: Mode
-  ): Seq[os.Path] = {
+  ): os.Path => Seq[os.Path] = outDir => {
 
     val lines =
       if (!os.exists(filePath)) throw new Exception("Path to data file not found: " + filePath.toString())
