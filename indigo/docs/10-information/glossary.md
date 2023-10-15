@@ -30,6 +30,8 @@ The blend mode is the mode that the graphics card should use when compositing on
 
 ### BlendShader
 
+A shader used for blending one layer onto another.
+
 ### BootData
 
 The initial data provided to the game, used to 'boot strap' the application.
@@ -66,9 +68,13 @@ A specialised version of cloning that allows you to draw many instances of tiles
 
 ### Collider
 
+A rigid body used in a physics simulation.
+
 ## D
 
 ### Depth
+
+Depth from the camera / player, where 0 is closest and increasing positive values are further away.
 
 ### Dice
 
@@ -78,7 +84,11 @@ A pseudo-random number generator seeded on the current frames running time to fa
 
 ### Entity
 
+The base type of anything that can be drawn onto the screen, essentially represents an area of the screen.
+
 ### EntityShader
+
+A shader used for rendering entities onto a layer.
 
 ### Entry point
 
@@ -90,13 +100,21 @@ A description of an action that is emitted during a frame and made available to 
 
 ## F
 
+### Fill
+
+Describes how a shape, say, should be filled. With a solid colour or a gradient, for example.
+
 ### FontInfo
 
-### Fill
+A data type that describes how font information is layed out on a sprite sheet for use with `Text` entities.
 
 ### Fragment Shader
 
+A shader that works out what colour value each pixel of a rendered entity should be.
+
 ### FrameContext
+
+Contains general information about the current frame, such as the running time and a time delta since the previous frame.
 
 ### Frame Independence
 
@@ -109,6 +127,8 @@ Movement that is adjusted to account for the time elapsed between frames in orde
 A sample of the current time provided to every frame. All computations are assumed to happen instantly at the time given.
 
 ### Generators
+
+Part of Indigo plugins, generators are tools for generating code at build time that represents your game config, assets, or other data sets.
 
 ### GLSL
 
