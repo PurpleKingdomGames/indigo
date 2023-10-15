@@ -28,6 +28,8 @@ Blending is the process of compositing one layer onto another, and is a combinat
 
 The blend mode is the mode that the graphics card should use when compositing on pixel/fragment on top of another.
 
+### BlendShader
+
 ### BootData
 
 The initial data provided to the game, used to 'boot strap' the application.
@@ -92,6 +94,8 @@ A description of an action that is emitted during a frame and made available to 
 
 ### Fill
 
+### Fragment Shader
+
 ### FrameContext
 
 ### Frame Independence
@@ -136,15 +140,21 @@ The current state of input devices like the keyboard, mouse or game pad.
 
 ## M
 
+### Magnification
+
 ### Material
 
 ### Matrix3/4
 
 ### Mutants
 
+A mutant is a twist on a `Clone`. Clones are carbon copies of their original that have be repositioned. Mutant's on the other had do not change any spatial information, instead they modify only the shader - which in fact means you can change/mutate them in strange new ways from the original (including spatially, by way of the vertex shader).
+
 ## N
 
 ### Noise
+
+A mathematical function that appears to create randomness, but is usually psuedo random, and so predicatable / repeatable.
 
 ## O
 
@@ -156,11 +166,19 @@ Used to gather state and events that were the result of a frame update.
 
 ### Pixel-art
 
+The style of art Indigo was made for. Pixel art was, in the late 80's - early 90's, the only art style available, and went out of fashion in favour of vector and 3D graphics, as the industry persued ever higher graphical fidelity.
+
+Pixel art can back into fashion in the 00's as a retro kitsch nostaligic throwback, and was largely dismissed again shortly there after.
+
+Modern pixel art is a style in it's own right. It takes advantage of up to date computer graphics rendering hardware and techniques, such as dynamic lighting and a wide colour pallette, while it's blocky nature lends itself to a sort of impressionism, leaving the viewer to fill in the gaps.
+
 ### Pre-multiplied Alpha
 
 ## Q
 
 ### QuadTree
+
+A spatial data structure that can be used to find things by location.
 
 ## R
 
@@ -192,9 +210,15 @@ A combinator used to manipulate, process, and compose Signals.
 
 ### Sprite
 
+A primitive type for rendering animations, such as characters.
+
 ### Spritesheet
 
+An image / texture that contains all the frames of one or many animations.
+
 ### Stroke
+
+The line around a shape, has variable thickness.
 
 ### SubSystem
 
@@ -204,9 +228,11 @@ A small, well encapsulated game that can be combined with the main game. Used to
 
 ### Text
 
+A primitive type that renders text as a series of individual entities. In contrast to `TextBox`, text renders well at any scale, but is relatively expensive.
+
 ### TextBox
 
-### TileMap
+A text rendering approach that draws letters to the browsers canvas. This has the advantage of supporting any web font, but the draw backs of being slow and forcibly anti-aliased (smoothed). This means the font looks good at a magnificaiton of 1, but poor at higher game magnifications.
 
 ### Time Varying Value
 
@@ -214,25 +240,45 @@ A value that is updated automatically based on some behavior and the time delta 
 
 ### Track
 
+An audio track, with Volume.
+
 ### Transform
+
+A transform is the combination of translation (movement), rotation, and scaling, that can be applied to an entity.
 
 ## U
 
 ### Ultraviolet
 
+A Scala 3 to GLSL transpiler
+
 ## V
 
 ### Vector2/3/4
 
+Data type that represents position and magnitude as a 2D coordinate, the magnitude being the distance to the origin (0, 0).
+
 ### Vertex
+
+An (x, y) coordinate that represents a position on a graph. Vertices make up the points at the corners of triangles, for example.
+
+### Vertex Shader
+
+A shader program that arranges the location an entity will be drawn at on the screen.
 
 ### Viewport
 
+The viewable screen area.
+
 ## W
 
-### WebGL
+### WebGL 1.0/2.0
+
+The web based 3d rendering technology that Indigo is built upon.
 
 ### World
+
+Contains all the colliders and other elements of a physics simulation.
 
 ## X
 
