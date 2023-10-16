@@ -4,17 +4,23 @@ Entry points are typically traits that you extend in order to write your game, a
 
 ## Built in entry points
 
-There are currently three recommended ways to make an indigo game, three entry points traits to extend from listed here in order of increasing complexity and power:
+There are currently four recommended ways to make an indigo game, four entry points traits to extend from listed here in order of increasing complexity and power:
 
 1. `IndigoSandbox[StartUpData, Model]`
 2. `IndigoDemo[BootData, StartUpData, Model, ViewModel]`
 3. `IndigoGame[BootData, StartUpData, Model, ViewModel]`
+
+...and the more specialised:
+
+4. `IndigoShader`
 
 `IndigoSandbox` is for experiments and very simple games that require only the core facilities to work. This interface has the benefit of being very clean and clear, but you'll quickly need to upgrade if you need to do anything like embedding it in your own website. The sandbox is also great place to start learning Indigo since all of the core principles carry through to the other entry points.
 
 `IndigoDemo` is the next step up in complexity. With Indigo demo you can theoretically do anything, but it lacks built in scene management. You might choose this entry point for demos or games that still aren't too big but require more functionality / control than sandbox affords, such as boot flags and subsystems.
 
 `IndigoGame` has all the functionality of `IndigoDemo`, but it adds scene management to help you describe games that have many screens and levels and so on. There is another complexity bump here that makes it less friendly for beginners but that quickly becomes worth it when building bigger projects.
+
+`IndigoShader` is specifically for shader development, and provides a game that renders a single viewport sized `BlankEntity`, that displays your shader. The set up is quite a bit different from the other entry points, and is losely modelled on [shadertoy](https://www.shadertoy.com/).
 
 ## Roll Your Own
 
