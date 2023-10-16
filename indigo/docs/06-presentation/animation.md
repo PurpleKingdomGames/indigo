@@ -14,7 +14,9 @@ An example of this is that Indigo has support for [Aseprite](https://www.aseprit
 1. Create your animation in Aseprite.
 1. Export the animations and frames as a sprite sheet and a JSON description.
 1. Add the sprite sheet and JSON description as a static asset to Indigo.
-1. During startup, use the `AsepriteConverter` and indigo's (confusingly named) `JSON` object to parse the JSON into an `Animation` instance, and add it to the `Startup` result type, thereby making it available to your game.
+1. Then Either:
+   1. Use Indigo's Mill/sbt plugin to generate an `Aseprite` instance at build time, OR,
+   1. During startup (runtime), use Indigo's (confusingly named) `Json` object to parse the JSON into an `Animation` instance using the `asepriteFromJson` function, and add it to the `Startup` result type, thereby making it available to your game.
 
 You can then either turn that into a `Sprite` or a series of `Clip`s.
 
