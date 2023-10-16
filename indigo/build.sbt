@@ -12,7 +12,7 @@ ThisBuild / scalaVersion                                   := scala3Version
 
 lazy val indigoVersion = IndigoVersion.getVersion
 // For the docs site
-lazy val indigoDocsVersion  = "0.15.0"
+lazy val indigoDocsVersion  = "0.15.1"
 lazy val tyrianDocsVersion  = "0.8.0"
 lazy val scalaJsDocsVersion = "1.13.2"
 lazy val scalaDocsVersion   = "3.3.1"
