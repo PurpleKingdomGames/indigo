@@ -116,6 +116,7 @@
     <li class="level1 nav-leaf"><a href="../../table-of-content/">Contents</a></li>
     <li class="level1 nav-header">Setup &amp; Configuration</li>
     <li class="level2 nav-leaf"><a href="../examples/">Examples, Demos, and References</a></li>
+    <li class="level2 nav-leaf"><a href="../extensions-and-libs/">Extensions, Libraries, and Related Projects</a></li>
     <li class="level2 nav-leaf"><a href="../hello-indigo/">Hello, Indigo!</a></li>
     <li class="level2 nav-leaf"><a href="../project-templates/">Mill &amp; SBT Templates</a></li>
     <li class="level2 active nav-leaf"><a href="#">Quick start</a></li>
@@ -181,6 +182,8 @@
     <li class="level2 nav-leaf"><a href="../../10-information/performance/">Performance</a></li>
     <li class="level2 nav-leaf"><a href="../../10-information/prior-art/">Prior Art</a></li>
     <li class="level2 nav-leaf"><a href="../../10-information/rendering-technology/">Rendering Technology</a></li>
+    <li class="level1 nav-header">Physics</li>
+    <li class="level2 nav-leaf"><a href="../../11-physics/physics-overview/">Physics Overview</a></li>
   </ul>
 
 </nav>
@@ -227,7 +230,7 @@
         
         <h3 id="for-sbt" class="section"><a class="anchor-link left" href="#for-sbt"><i class="icofont-laika link">&#xef71;</i></a>For sbt</h3>
         <p>Add the following to your <code>project/plugins.sbt</code> file:</p>
-        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">addSbtPlugin</span><span>(</span><span class="string-literal">&quot;org.scala-js&quot;</span><span> % </span><span class="string-literal">&quot;sbt-scalajs&quot;</span><span> % </span><span class="string-literal">&quot;1.13.2&quot;</span><span>)
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">addSbtPlugin</span><span>(</span><span class="string-literal">&quot;org.scala-js&quot;</span><span> % </span><span class="string-literal">&quot;sbt-scalajs&quot;</span><span> % </span><span class="string-literal">&quot;1.14.0&quot;</span><span>)
 </span><span class="identifier">addSbtPlugin</span><span>(</span><span class="string-literal">&quot;io.indigoengine&quot;</span><span> % </span><span class="string-literal">&quot;sbt-indigo&quot;</span><span> % </span><span class="string-literal">&quot;0.15.0&quot;</span><span>)</span></code></pre>
         <p>Here is an example minimal <code>build.sbt</code> file:</p>
         <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">indigoplugin</span><span>.</span><span class="identifier">_</span><span>
@@ -264,7 +267,7 @@
 
 </span><span class="keyword">object</span><span> </span><span class="identifier">mygame</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">ScalaJSModule</span><span> </span><span class="keyword">with</span><span> </span><span class="type-name">MillIndigo</span><span> {
   </span><span class="keyword">def</span><span> </span><span class="declaration-name">scalaVersion</span><span>   = </span><span class="string-literal">&quot;3.3.1&quot;</span><span>
-  </span><span class="keyword">def</span><span> </span><span class="declaration-name">scalaJSVersion</span><span> = </span><span class="string-literal">&quot;1.13.2&quot;</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">scalaJSVersion</span><span> = </span><span class="string-literal">&quot;1.14.0&quot;</span><span>
 
   </span><span class="keyword">val</span><span> </span><span class="identifier">indigoOptions</span><span>: </span><span class="type-name">IndigoOptions</span><span> =
     </span><span class="type-name">IndigoOptions</span><span>.</span><span class="identifier">defaults</span><span>
@@ -338,7 +341,7 @@ Copying assets...
 
 </span><span class="keyword">object</span><span> </span><span class="identifier">mygame</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">ScalaJSModule</span><span> </span><span class="keyword">with</span><span> </span><span class="type-name">MillIndigo</span><span> {
   </span><span class="keyword">def</span><span> </span><span class="declaration-name">scalaVersion</span><span>   = </span><span class="string-literal">&quot;3.3.1&quot;</span><span>
-  </span><span class="keyword">def</span><span> </span><span class="declaration-name">scalaJSVersion</span><span> = </span><span class="string-literal">&quot;1.13.2&quot;</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">scalaJSVersion</span><span> = </span><span class="string-literal">&quot;1.14.0&quot;</span><span>
 
   </span><span class="keyword">val</span><span> </span><span class="identifier">indigoOptions</span><span>: </span><span class="type-name">IndigoOptions</span><span> =
     </span><span class="type-name">IndigoOptions</span><span>.</span><span class="identifier">defaults</span><span>
@@ -413,7 +416,7 @@ Copying assets...
         
         <h3 id="plugins-sbt" class="section"><a class="anchor-link left" href="#plugins-sbt"><i class="icofont-laika link">&#xef71;</i></a>plugins.sbt</h3>
         <p>Add the following to your <code>project/plugins.sbt</code> file:</p>
-        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">addSbtPlugin</span><span>(</span><span class="string-literal">&quot;org.scala-js&quot;</span><span> % </span><span class="string-literal">&quot;sbt-scalajs&quot;</span><span> % </span><span class="string-literal">&quot;1.13.2&quot;</span><span>)
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">addSbtPlugin</span><span>(</span><span class="string-literal">&quot;org.scala-js&quot;</span><span> % </span><span class="string-literal">&quot;sbt-scalajs&quot;</span><span> % </span><span class="string-literal">&quot;1.14.0&quot;</span><span>)
 </span><span class="identifier">addSbtPlugin</span><span>(</span><span class="string-literal">&quot;io.indigoengine&quot;</span><span> %% </span><span class="string-literal">&quot;sbt-indigo&quot;</span><span> % </span><span class="string-literal">&quot;0.15.0&quot;</span><span>) </span><span class="comment">// Note the double %%</span></code></pre>
         
         <h3 id="build-sbt" class="section"><a class="anchor-link left" href="#build-sbt"><i class="icofont-laika link">&#xef71;</i></a>build.sbt</h3>

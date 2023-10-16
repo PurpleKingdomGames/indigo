@@ -116,6 +116,7 @@
     <li class="level1 nav-leaf"><a href="../../table-of-content/">Contents</a></li>
     <li class="level1 nav-header">Setup &amp; Configuration</li>
     <li class="level2 nav-leaf"><a href="../../01-quickstart/examples/">Examples, Demos, and References</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/extensions-and-libs/">Extensions, Libraries, and Related Projects</a></li>
     <li class="level2 nav-leaf"><a href="../../01-quickstart/hello-indigo/">Hello, Indigo!</a></li>
     <li class="level2 nav-leaf"><a href="../../01-quickstart/project-templates/">Mill &amp; SBT Templates</a></li>
     <li class="level2 nav-leaf"><a href="../../01-quickstart/quickstart/">Quick start</a></li>
@@ -181,6 +182,8 @@
     <li class="level2 nav-leaf"><a href="../performance/">Performance</a></li>
     <li class="level2 nav-leaf"><a href="../prior-art/">Prior Art</a></li>
     <li class="level2 nav-leaf"><a href="../rendering-technology/">Rendering Technology</a></li>
+    <li class="level1 nav-header">Physics</li>
+    <li class="level2 nav-leaf"><a href="../../11-physics/physics-overview/">Physics Overview</a></li>
   </ul>
 
 </nav>
@@ -193,44 +196,96 @@
 
   <ul class="nav-list">
     <li class="level1 nav-node"><a href="#a">A</a></li>
+    <li class="level2 nav-leaf"><a href="#asset-s">Asset(s)</a></li>
     <li class="level2 nav-leaf"><a href="#automata">Automata</a></li>
-    <li class="level1 nav-leaf"><a href="#b">B</a></li>
-    <li class="level1 nav-leaf"><a href="#c">C</a></li>
+    <li class="level1 nav-node"><a href="#b">B</a></li>
+    <li class="level2 nav-leaf"><a href="#batch">Batch</a></li>
+    <li class="level2 nav-leaf"><a href="#bitmap-material">Bitmap (Material)</a></li>
+    <li class="level2 nav-leaf"><a href="#blending">Blending</a></li>
+    <li class="level2 nav-leaf"><a href="#blendmode">BlendMode</a></li>
+    <li class="level2 nav-leaf"><a href="#blendshader">BlendShader</a></li>
+    <li class="level2 nav-leaf"><a href="#bootdata">BootData</a></li>
+    <li class="level2 nav-leaf"><a href="#bounds">Bounds</a></li>
+    <li class="level2 nav-leaf"><a href="#boundarylocator">BoundaryLocator</a></li>
+    <li class="level1 nav-node"><a href="#c">C</a></li>
+    <li class="level2 nav-leaf"><a href="#clip">Clip</a></li>
+    <li class="level2 nav-leaf"><a href="#clone">Clone</a></li>
+    <li class="level2 nav-leaf"><a href="#cloneblank">CloneBlank</a></li>
+    <li class="level2 nav-leaf"><a href="#clonebatch">CloneBatch</a></li>
+    <li class="level2 nav-leaf"><a href="#clonetile">CloneTile</a></li>
+    <li class="level2 nav-leaf"><a href="#collider">Collider</a></li>
     <li class="level1 nav-node"><a href="#d">D</a></li>
+    <li class="level2 nav-leaf"><a href="#depth">Depth</a></li>
     <li class="level2 nav-leaf"><a href="#dice">Dice</a></li>
     <li class="level1 nav-node"><a href="#e">E</a></li>
+    <li class="level2 nav-leaf"><a href="#entity">Entity</a></li>
+    <li class="level2 nav-leaf"><a href="#entityshader">EntityShader</a></li>
     <li class="level2 nav-leaf"><a href="#entry-point">Entry point</a></li>
     <li class="level2 nav-leaf"><a href="#event">Event</a></li>
     <li class="level1 nav-node"><a href="#f">F</a></li>
+    <li class="level2 nav-leaf"><a href="#fill">Fill</a></li>
+    <li class="level2 nav-leaf"><a href="#fontinfo">FontInfo</a></li>
+    <li class="level2 nav-leaf"><a href="#fragment-shader">Fragment Shader</a></li>
+    <li class="level2 nav-leaf"><a href="#framecontext">FrameContext</a></li>
     <li class="level2 nav-leaf"><a href="#frame-independence">Frame Independence</a></li>
     <li class="level1 nav-node"><a href="#g">G</a></li>
     <li class="level2 nav-leaf"><a href="#gametime">GameTime</a></li>
-    <li class="level1 nav-leaf"><a href="#h">H</a></li>
+    <li class="level2 nav-leaf"><a href="#generators">Generators</a></li>
+    <li class="level2 nav-leaf"><a href="#glsl">GLSL</a></li>
+    <li class="level2 nav-leaf"><a href="#graphic">Graphic</a></li>
+    <li class="level1 nav-node"><a href="#h">H</a></li>
+    <li class="level2 nav-leaf"><a href="#hitarea">HitArea</a></li>
     <li class="level1 nav-node"><a href="#i">I</a></li>
+    <li class="level2 nav-leaf"><a href="#imageeffects-material">ImageEffects (Material)</a></li>
     <li class="level2 nav-leaf"><a href="#inputstate">InputState</a></li>
     <li class="level1 nav-leaf"><a href="#j">J</a></li>
     <li class="level1 nav-leaf"><a href="#k">K</a></li>
-    <li class="level1 nav-leaf"><a href="#l">L</a></li>
-    <li class="level1 nav-leaf"><a href="#m">M</a></li>
-    <li class="level1 nav-leaf"><a href="#n">N</a></li>
+    <li class="level1 nav-node"><a href="#l">L</a></li>
+    <li class="level2 nav-leaf"><a href="#layer">Layer</a></li>
+    <li class="level2 nav-leaf"><a href="#line">Line</a></li>
+    <li class="level2 nav-leaf"><a href="#linesegment">LineSegment</a></li>
+    <li class="level1 nav-node"><a href="#m">M</a></li>
+    <li class="level2 nav-leaf"><a href="#magnification">Magnification</a></li>
+    <li class="level2 nav-leaf"><a href="#material">Material</a></li>
+    <li class="level2 nav-leaf"><a href="#matrix-3-4">Matrix 3/4</a></li>
+    <li class="level2 nav-leaf"><a href="#mutants">Mutants</a></li>
+    <li class="level1 nav-node"><a href="#n">N</a></li>
+    <li class="level2 nav-leaf"><a href="#noise">Noise</a></li>
     <li class="level1 nav-node"><a href="#o">O</a></li>
     <li class="level2 nav-leaf"><a href="#outcome">Outcome</a></li>
-    <li class="level1 nav-leaf"><a href="#p">P</a></li>
-    <li class="level1 nav-leaf"><a href="#q">Q</a></li>
+    <li class="level1 nav-node"><a href="#p">P</a></li>
+    <li class="level2 nav-leaf"><a href="#pixel-art">Pixel-art</a></li>
+    <li class="level2 nav-leaf"><a href="#pre-multiplied-alpha">Pre-multiplied Alpha</a></li>
+    <li class="level1 nav-node"><a href="#q">Q</a></li>
+    <li class="level2 nav-leaf"><a href="#quadtree">QuadTree</a></li>
     <li class="level1 nav-node"><a href="#r">R</a></li>
     <li class="level2 nav-leaf"><a href="#referential-transparency">Referential Transparency</a></li>
     <li class="level1 nav-node"><a href="#s">S</a></li>
     <li class="level2 nav-leaf"><a href="#scene">Scene</a></li>
-    <li class="level2 nav-leaf"><a href="#scene-update-fragment">Scene Update Fragment</a></li>
+    <li class="level2 nav-leaf"><a href="#sceneupdatefragment">SceneUpdateFragment</a></li>
     <li class="level2 nav-leaf"><a href="#shader">Shader</a></li>
     <li class="level2 nav-leaf"><a href="#signal">Signal</a></li>
     <li class="level2 nav-leaf"><a href="#signal-function">Signal Function</a></li>
+    <li class="level2 nav-leaf"><a href="#sprite">Sprite</a></li>
+    <li class="level2 nav-leaf"><a href="#spritesheet">Spritesheet</a></li>
+    <li class="level2 nav-leaf"><a href="#stroke">Stroke</a></li>
     <li class="level2 nav-leaf"><a href="#subsystem">SubSystem</a></li>
     <li class="level1 nav-node"><a href="#t">T</a></li>
+    <li class="level2 nav-leaf"><a href="#text">Text</a></li>
+    <li class="level2 nav-leaf"><a href="#textbox">TextBox</a></li>
     <li class="level2 nav-leaf"><a href="#time-varying-value">Time Varying Value</a></li>
-    <li class="level1 nav-leaf"><a href="#u">U</a></li>
-    <li class="level1 nav-leaf"><a href="#v">V</a></li>
-    <li class="level1 nav-leaf"><a href="#w">W</a></li>
+    <li class="level2 nav-leaf"><a href="#track">Track</a></li>
+    <li class="level2 nav-leaf"><a href="#transform">Transform</a></li>
+    <li class="level1 nav-node"><a href="#u">U</a></li>
+    <li class="level2 nav-leaf"><a href="#ultraviolet">Ultraviolet</a></li>
+    <li class="level1 nav-node"><a href="#v">V</a></li>
+    <li class="level2 nav-leaf"><a href="#vector2-3-4">Vector2/3/4</a></li>
+    <li class="level2 nav-leaf"><a href="#vertex">Vertex</a></li>
+    <li class="level2 nav-leaf"><a href="#vertex-shader">Vertex Shader</a></li>
+    <li class="level2 nav-leaf"><a href="#viewport">Viewport</a></li>
+    <li class="level1 nav-node"><a href="#w">W</a></li>
+    <li class="level2 nav-leaf"><a href="#webgl-1-0-2-0">WebGL 1.0/2.0</a></li>
+    <li class="level2 nav-leaf"><a href="#world">World</a></li>
     <li class="level1 nav-leaf"><a href="#x">X</a></li>
     <li class="level1 nav-leaf"><a href="#y">Y</a></li>
     <li class="level1 nav-leaf"><a href="#z">Z</a></li>
@@ -246,19 +301,73 @@
         
         <h2 id="a" class="section"><a class="anchor-link left" href="#a"><i class="icofont-laika link">&#xef71;</i></a>A</h2>
         
+        <h3 id="asset-s" class="section"><a class="anchor-link left" href="#asset-s"><i class="icofont-laika link">&#xef71;</i></a>Asset(s)</h3>
+        <p>Data to be loaded into you game, such as images, test, sounds, and animations.</p>
+        
         <h3 id="automata" class="section"><a class="anchor-link left" href="#automata"><i class="icofont-laika link">&#xef71;</i></a>Automata</h3>
         <p>A type of subsystem used to manage simple autonomous particles.</p>
         
         <h2 id="b" class="section"><a class="anchor-link left" href="#b"><i class="icofont-laika link">&#xef71;</i></a>B</h2>
         
+        <h3 id="batch" class="section"><a class="anchor-link left" href="#batch"><i class="icofont-laika link">&#xef71;</i></a>Batch</h3>
+        <p>The <code>Batch</code> type is an efficent <code>List</code>-like data structure used on most Indigo APIs.</p>
+        
+        <h3 id="bitmap-material" class="section"><a class="anchor-link left" href="#bitmap-material"><i class="icofont-laika link">&#xef71;</i></a>Bitmap (Material)</h3>
+        <p>A <code>Bitmap</code> material simply draws textures as-is, according to the needs of the primitive using the material.</p>
+        
+        <h3 id="blending" class="section"><a class="anchor-link left" href="#blending"><i class="icofont-laika link">&#xef71;</i></a>Blending</h3>
+        <p>Blending is the process of compositing one layer onto another, and is a combination of the blend mode, and a blend shader that tells the graphics card how to combine the pixels.</p>
+        
+        <h3 id="blendmode" class="section"><a class="anchor-link left" href="#blendmode"><i class="icofont-laika link">&#xef71;</i></a>BlendMode</h3>
+        <p>The blend mode is the mode that the graphics card should use when compositing on pixel/fragment on top of another.</p>
+        
+        <h3 id="blendshader" class="section"><a class="anchor-link left" href="#blendshader"><i class="icofont-laika link">&#xef71;</i></a>BlendShader</h3>
+        <p>A shader used for blending one layer onto another.</p>
+        
+        <h3 id="bootdata" class="section"><a class="anchor-link left" href="#bootdata"><i class="icofont-laika link">&#xef71;</i></a>BootData</h3>
+        <p>The initial data provided to the game, used to &#39;boot strap&#39; the application.</p>
+        
+        <h3 id="bounds" class="section"><a class="anchor-link left" href="#bounds"><i class="icofont-laika link">&#xef71;</i></a>Bounds</h3>
+        <p>Typically refers to the area that the primitive occupies on the screen.</p>
+        
+        <h3 id="boundarylocator" class="section"><a class="anchor-link left" href="#boundarylocator"><i class="icofont-laika link">&#xef71;</i></a>BoundaryLocator</h3>
+        <p>The <code>BoundaryLocator</code> is a tool used to accurately compute the on-screen size of an element. The calculation can be expensive depending on the primitive type. </p>
+        
         <h2 id="c" class="section"><a class="anchor-link left" href="#c"><i class="icofont-laika link">&#xef71;</i></a>C</h2>
         
+        <h3 id="clip" class="section"><a class="anchor-link left" href="#clip"><i class="icofont-laika link">&#xef71;</i></a>Clip</h3>
+        <p>A simple animation primitve that loops and animation over time without holding state.</p>
+        
+        <h3 id="clone" class="section"><a class="anchor-link left" href="#clone"><i class="icofont-laika link">&#xef71;</i></a>Clone</h3>
+        <p>A cheap copy of a primitive that can be quickly and efficiently drawn to the screen.</p>
+        
+        <h3 id="cloneblank" class="section"><a class="anchor-link left" href="#cloneblank"><i class="icofont-laika link">&#xef71;</i></a>CloneBlank</h3>
+        <p>A clone blank is a normal primitive, like a graphic, to be used as the reference data for many clones / copies.</p>
+        
+        <h3 id="clonebatch" class="section"><a class="anchor-link left" href="#clonebatch"><i class="icofont-laika link">&#xef71;</i></a>CloneBatch</h3>
+        <p>The concrete method used to draw many copies of a clone blank to the screen. Limitiations are that you cannot change the details, like materials, only the transformation.</p>
+        
+        <h3 id="clonetile" class="section"><a class="anchor-link left" href="#clonetile"><i class="icofont-laika link">&#xef71;</i></a>CloneTile</h3>
+        <p>A specialised version of cloning that allows you to draw many instances of tiles from a tilemap.</p>
+        
+        <h3 id="collider" class="section"><a class="anchor-link left" href="#collider"><i class="icofont-laika link">&#xef71;</i></a>Collider</h3>
+        <p>A rigid body used in a physics simulation.</p>
+        
         <h2 id="d" class="section"><a class="anchor-link left" href="#d"><i class="icofont-laika link">&#xef71;</i></a>D</h2>
+        
+        <h3 id="depth" class="section"><a class="anchor-link left" href="#depth"><i class="icofont-laika link">&#xef71;</i></a>Depth</h3>
+        <p>Depth from the camera / player, where 0 is closest and increasing positive values are further away.</p>
         
         <h3 id="dice" class="section"><a class="anchor-link left" href="#dice"><i class="icofont-laika link">&#xef71;</i></a>Dice</h3>
         <p>A pseudo-random number generator seeded on the current frames running time to facilitate testing and issue reproduction.</p>
         
         <h2 id="e" class="section"><a class="anchor-link left" href="#e"><i class="icofont-laika link">&#xef71;</i></a>E</h2>
+        
+        <h3 id="entity" class="section"><a class="anchor-link left" href="#entity"><i class="icofont-laika link">&#xef71;</i></a>Entity</h3>
+        <p>The base type of anything that can be drawn onto the screen, essentially represents an area of the screen.</p>
+        
+        <h3 id="entityshader" class="section"><a class="anchor-link left" href="#entityshader"><i class="icofont-laika link">&#xef71;</i></a>EntityShader</h3>
+        <p>A shader used for rendering entities onto a layer.</p>
         
         <h3 id="entry-point" class="section"><a class="anchor-link left" href="#entry-point"><i class="icofont-laika link">&#xef71;</i></a>Entry point</h3>
         <p>The main interface an Indigo game developer is exposed to when trying to write a game. It is a user friendly game template that constructs the Frame Processor that Indigo needs to run your game, and starts the game engine.</p>
@@ -268,6 +377,18 @@
         
         <h2 id="f" class="section"><a class="anchor-link left" href="#f"><i class="icofont-laika link">&#xef71;</i></a>F</h2>
         
+        <h3 id="fill" class="section"><a class="anchor-link left" href="#fill"><i class="icofont-laika link">&#xef71;</i></a>Fill</h3>
+        <p>Describes how a shape, say, should be filled. With a solid colour or a gradient, for example.</p>
+        
+        <h3 id="fontinfo" class="section"><a class="anchor-link left" href="#fontinfo"><i class="icofont-laika link">&#xef71;</i></a>FontInfo</h3>
+        <p>A data type that describes how font information is layed out on a sprite sheet for use with <code>Text</code> entities.</p>
+        
+        <h3 id="fragment-shader" class="section"><a class="anchor-link left" href="#fragment-shader"><i class="icofont-laika link">&#xef71;</i></a>Fragment Shader</h3>
+        <p>A shader that works out what colour value each pixel of a rendered entity should be.</p>
+        
+        <h3 id="framecontext" class="section"><a class="anchor-link left" href="#framecontext"><i class="icofont-laika link">&#xef71;</i></a>FrameContext</h3>
+        <p>Contains general information about the current frame, such as the running time and a time delta since the previous frame.</p>
+        
         <h3 id="frame-independence" class="section"><a class="anchor-link left" href="#frame-independence"><i class="icofont-laika link">&#xef71;</i></a>Frame Independence</h3>
         <p>Movement that is adjusted to account for the time elapsed between frames in order to proceed at a consistent rate.</p>
         
@@ -276,9 +397,24 @@
         <h3 id="gametime" class="section"><a class="anchor-link left" href="#gametime"><i class="icofont-laika link">&#xef71;</i></a>GameTime</h3>
         <p>A sample of the current time provided to every frame. All computations are assumed to happen instantly at the time given.</p>
         
+        <h3 id="generators" class="section"><a class="anchor-link left" href="#generators"><i class="icofont-laika link">&#xef71;</i></a>Generators</h3>
+        <p>Part of Indigo plugins, generators are tools for generating code at build time that represents your game config, assets, or other data sets.</p>
+        
+        <h3 id="glsl" class="section"><a class="anchor-link left" href="#glsl"><i class="icofont-laika link">&#xef71;</i></a>GLSL</h3>
+        <p>An OpenGL dervived programming language used to write graphics shaders.</p>
+        
+        <h3 id="graphic" class="section"><a class="anchor-link left" href="#graphic"><i class="icofont-laika link">&#xef71;</i></a>Graphic</h3>
+        <p>A primitive type for simple drawing of textures/images to the screen. Allows for cropping.</p>
+        
         <h2 id="h" class="section"><a class="anchor-link left" href="#h"><i class="icofont-laika link">&#xef71;</i></a>H</h2>
         
+        <h3 id="hitarea" class="section"><a class="anchor-link left" href="#hitarea"><i class="icofont-laika link">&#xef71;</i></a>HitArea</h3>
+        <p>An unusual UI element that is transparent - in fact not rendered - that acts as an invisible button.</p>
+        
         <h2 id="i" class="section"><a class="anchor-link left" href="#i"><i class="icofont-laika link">&#xef71;</i></a>I</h2>
+        
+        <h3 id="imageeffects-material" class="section"><a class="anchor-link left" href="#imageeffects-material"><i class="icofont-laika link">&#xef71;</i></a>ImageEffects (Material)</h3>
+        <p>The ImageEffects material is used to rendering images / textures to the screen while applying one of a number of typical effects, such as adjusting the transparency or colour tint.</p>
         
         <h3 id="inputstate" class="section"><a class="anchor-link left" href="#inputstate"><i class="icofont-laika link">&#xef71;</i></a>InputState</h3>
         <p>The current state of input devices like the keyboard, mouse or game pad.</p>
@@ -289,9 +425,33 @@
         
         <h2 id="l" class="section"><a class="anchor-link left" href="#l"><i class="icofont-laika link">&#xef71;</i></a>L</h2>
         
+        <h3 id="layer" class="section"><a class="anchor-link left" href="#layer"><i class="icofont-laika link">&#xef71;</i></a>Layer</h3>
+        <p>Indigo games are rendered in layers, where the layers stack up on top of each other, and depth only applies within the current layer. As you place one layer on top of the previous one, you can decide how to blend the layer together to create interesting effects.</p>
+        
+        <h3 id="line" class="section"><a class="anchor-link left" href="#line"><i class="icofont-laika link">&#xef71;</i></a>Line</h3>
+        <p>An infinite mathematical line that can be compared to other lines to test for intersections.</p>
+        
+        <h3 id="linesegment" class="section"><a class="anchor-link left" href="#linesegment"><i class="icofont-laika link">&#xef71;</i></a>LineSegment</h3>
+        <p>A specific section/segment of a Line, useful in many modelling / calculation scenarios where you need to think about the edges of things, or rays, or tangential lines and so on.</p>
+        
         <h2 id="m" class="section"><a class="anchor-link left" href="#m"><i class="icofont-laika link">&#xef71;</i></a>M</h2>
         
+        <h3 id="magnification" class="section"><a class="anchor-link left" href="#magnification"><i class="icofont-laika link">&#xef71;</i></a>Magnification</h3>
+        <p>Indigo is a Pixel art engine, and in order to see the pixels, we need to zoom in! Magnification can be set globally and also per layer.</p>
+        
+        <h3 id="material" class="section"><a class="anchor-link left" href="#material"><i class="icofont-laika link">&#xef71;</i></a>Material</h3>
+        <p>A material is what is used to tell primitive types how to render.</p>
+        
+        <h3 id="matrix-3-4" class="section"><a class="anchor-link left" href="#matrix-3-4"><i class="icofont-laika link">&#xef71;</i></a>Matrix 3/4</h3>
+        <p>A matrix is a maths construct that in graphics programming is used for stacking transformations, such as move, rotate, and scale.</p>
+        
+        <h3 id="mutants" class="section"><a class="anchor-link left" href="#mutants"><i class="icofont-laika link">&#xef71;</i></a>Mutants</h3>
+        <p>A mutant is a twist on a <code>Clone</code>. Clones are carbon copies of their original that have be repositioned. Mutant&#39;s on the other had do not change any spatial information, instead they modify only the shader - which in fact means you can change/mutate them in strange new ways from the original (including spatially, by way of the vertex shader).</p>
+        
         <h2 id="n" class="section"><a class="anchor-link left" href="#n"><i class="icofont-laika link">&#xef71;</i></a>N</h2>
+        
+        <h3 id="noise" class="section"><a class="anchor-link left" href="#noise"><i class="icofont-laika link">&#xef71;</i></a>Noise</h3>
+        <p>A mathematical function that appears to create randomness, but is usually psuedo random, and so predicatable / repeatable.</p>
         
         <h2 id="o" class="section"><a class="anchor-link left" href="#o"><i class="icofont-laika link">&#xef71;</i></a>O</h2>
         
@@ -300,7 +460,17 @@
         
         <h2 id="p" class="section"><a class="anchor-link left" href="#p"><i class="icofont-laika link">&#xef71;</i></a>P</h2>
         
+        <h3 id="pixel-art" class="section"><a class="anchor-link left" href="#pixel-art"><i class="icofont-laika link">&#xef71;</i></a>Pixel-art</h3>
+        <p>The style of art Indigo was made for. Pixel art was, in the late 80&#39;s - early 90&#39;s, the only art style available, and went out of fashion in favour of vector and 3D graphics, as the industry persued ever higher graphical fidelity.</p>
+        <p>Pixel art can back into fashion in the 00&#39;s as a retro kitsch nostaligic throwback, and was largely dismissed again shortly there after.</p>
+        <p>Modern pixel art is a style in it&#39;s own right. It takes advantage of up to date computer graphics rendering hardware and techniques, such as dynamic lighting and a wide colour pallette, while it&#39;s blocky nature lends itself to a sort of impressionism, leaving the viewer to fill in the gaps.</p>
+        
+        <h3 id="pre-multiplied-alpha" class="section"><a class="anchor-link left" href="#pre-multiplied-alpha"><i class="icofont-laika link">&#xef71;</i></a>Pre-multiplied Alpha</h3>
+        
         <h2 id="q" class="section"><a class="anchor-link left" href="#q"><i class="icofont-laika link">&#xef71;</i></a>Q</h2>
+        
+        <h3 id="quadtree" class="section"><a class="anchor-link left" href="#quadtree"><i class="icofont-laika link">&#xef71;</i></a>QuadTree</h3>
+        <p>A spatial data structure that can be used to find things by location.</p>
         
         <h2 id="r" class="section"><a class="anchor-link left" href="#r"><i class="icofont-laika link">&#xef71;</i></a>R</h2>
         
@@ -312,7 +482,7 @@
         <h3 id="scene" class="section"><a class="anchor-link left" href="#scene"><i class="icofont-laika link">&#xef71;</i></a>Scene</h3>
         <p>A part of your game that represents a particular stage like a screen or a level.</p>
         
-        <h3 id="scene-update-fragment" class="section"><a class="anchor-link left" href="#scene-update-fragment"><i class="icofont-laika link">&#xef71;</i></a>Scene Update Fragment</h3>
+        <h3 id="sceneupdatefragment" class="section"><a class="anchor-link left" href="#sceneupdatefragment"><i class="icofont-laika link">&#xef71;</i></a>SceneUpdateFragment</h3>
         <p>A piece of the final scene to be presented that can be combined with other pieces to form the final scene.</p>
         
         <h3 id="shader" class="section"><a class="anchor-link left" href="#shader"><i class="icofont-laika link">&#xef71;</i></a>Shader</h3>
@@ -324,19 +494,61 @@
         <h3 id="signal-function" class="section"><a class="anchor-link left" href="#signal-function"><i class="icofont-laika link">&#xef71;</i></a>Signal Function</h3>
         <p>A combinator used to manipulate, process, and compose Signals.</p>
         
+        <h3 id="sprite" class="section"><a class="anchor-link left" href="#sprite"><i class="icofont-laika link">&#xef71;</i></a>Sprite</h3>
+        <p>A primitive type for rendering animations, such as characters.</p>
+        
+        <h3 id="spritesheet" class="section"><a class="anchor-link left" href="#spritesheet"><i class="icofont-laika link">&#xef71;</i></a>Spritesheet</h3>
+        <p>An image / texture that contains all the frames of one or many animations.</p>
+        
+        <h3 id="stroke" class="section"><a class="anchor-link left" href="#stroke"><i class="icofont-laika link">&#xef71;</i></a>Stroke</h3>
+        <p>The line around a shape, has variable thickness.</p>
+        
         <h3 id="subsystem" class="section"><a class="anchor-link left" href="#subsystem"><i class="icofont-laika link">&#xef71;</i></a>SubSystem</h3>
         <p>A small, well encapsulated game that can be combined with the main game. Used to organise sections of you game and to manages tasks and processes in the background.</p>
         
         <h2 id="t" class="section"><a class="anchor-link left" href="#t"><i class="icofont-laika link">&#xef71;</i></a>T</h2>
         
+        <h3 id="text" class="section"><a class="anchor-link left" href="#text"><i class="icofont-laika link">&#xef71;</i></a>Text</h3>
+        <p>A primitive type that renders text as a series of individual entities. In contrast to <code>TextBox</code>, text renders well at any scale, but is relatively expensive.</p>
+        
+        <h3 id="textbox" class="section"><a class="anchor-link left" href="#textbox"><i class="icofont-laika link">&#xef71;</i></a>TextBox</h3>
+        <p>A text rendering approach that draws letters to the browsers canvas. This has the advantage of supporting any web font, but the draw backs of being slow and forcibly anti-aliased (smoothed). This means the font looks good at a magnificaiton of 1, but poor at higher game magnifications.</p>
+        
         <h3 id="time-varying-value" class="section"><a class="anchor-link left" href="#time-varying-value"><i class="icofont-laika link">&#xef71;</i></a>Time Varying Value</h3>
         <p>A value that is updated automatically based on some behavior and the time delta between frames.</p>
         
+        <h3 id="track" class="section"><a class="anchor-link left" href="#track"><i class="icofont-laika link">&#xef71;</i></a>Track</h3>
+        <p>An audio track, with Volume.</p>
+        
+        <h3 id="transform" class="section"><a class="anchor-link left" href="#transform"><i class="icofont-laika link">&#xef71;</i></a>Transform</h3>
+        <p>A transform is the combination of translation (movement), rotation, and scaling, that can be applied to an entity.</p>
+        
         <h2 id="u" class="section"><a class="anchor-link left" href="#u"><i class="icofont-laika link">&#xef71;</i></a>U</h2>
+        
+        <h3 id="ultraviolet" class="section"><a class="anchor-link left" href="#ultraviolet"><i class="icofont-laika link">&#xef71;</i></a>Ultraviolet</h3>
+        <p>A Scala 3 to GLSL transpiler</p>
         
         <h2 id="v" class="section"><a class="anchor-link left" href="#v"><i class="icofont-laika link">&#xef71;</i></a>V</h2>
         
+        <h3 id="vector2-3-4" class="section"><a class="anchor-link left" href="#vector2-3-4"><i class="icofont-laika link">&#xef71;</i></a>Vector2/3/4</h3>
+        <p>Data type that represents position and magnitude as a 2D coordinate, the magnitude being the distance to the origin (0, 0).</p>
+        
+        <h3 id="vertex" class="section"><a class="anchor-link left" href="#vertex"><i class="icofont-laika link">&#xef71;</i></a>Vertex</h3>
+        <p>An (x, y) coordinate that represents a position on a graph. Vertices make up the points at the corners of triangles, for example.</p>
+        
+        <h3 id="vertex-shader" class="section"><a class="anchor-link left" href="#vertex-shader"><i class="icofont-laika link">&#xef71;</i></a>Vertex Shader</h3>
+        <p>A shader program that arranges the location an entity will be drawn at on the screen.</p>
+        
+        <h3 id="viewport" class="section"><a class="anchor-link left" href="#viewport"><i class="icofont-laika link">&#xef71;</i></a>Viewport</h3>
+        <p>The viewable screen area.</p>
+        
         <h2 id="w" class="section"><a class="anchor-link left" href="#w"><i class="icofont-laika link">&#xef71;</i></a>W</h2>
+        
+        <h3 id="webgl-1-0-2-0" class="section"><a class="anchor-link left" href="#webgl-1-0-2-0"><i class="icofont-laika link">&#xef71;</i></a>WebGL 1.0/2.0</h3>
+        <p>The web based 3d rendering technology that Indigo is built upon.</p>
+        
+        <h3 id="world" class="section"><a class="anchor-link left" href="#world"><i class="icofont-laika link">&#xef71;</i></a>World</h3>
+        <p>Contains all the colliders and other elements of a physics simulation.</p>
         
         <h2 id="x" class="section"><a class="anchor-link left" href="#x"><i class="icofont-laika link">&#xef71;</i></a>X</h2>
         

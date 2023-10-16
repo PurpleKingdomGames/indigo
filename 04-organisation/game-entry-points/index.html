@@ -116,6 +116,7 @@
     <li class="level1 nav-leaf"><a href="../../table-of-content/">Contents</a></li>
     <li class="level1 nav-header">Setup &amp; Configuration</li>
     <li class="level2 nav-leaf"><a href="../../01-quickstart/examples/">Examples, Demos, and References</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/extensions-and-libs/">Extensions, Libraries, and Related Projects</a></li>
     <li class="level2 nav-leaf"><a href="../../01-quickstart/hello-indigo/">Hello, Indigo!</a></li>
     <li class="level2 nav-leaf"><a href="../../01-quickstart/project-templates/">Mill &amp; SBT Templates</a></li>
     <li class="level2 nav-leaf"><a href="../../01-quickstart/quickstart/">Quick start</a></li>
@@ -181,6 +182,8 @@
     <li class="level2 nav-leaf"><a href="../../10-information/performance/">Performance</a></li>
     <li class="level2 nav-leaf"><a href="../../10-information/prior-art/">Prior Art</a></li>
     <li class="level2 nav-leaf"><a href="../../10-information/rendering-technology/">Rendering Technology</a></li>
+    <li class="level1 nav-header">Physics</li>
+    <li class="level2 nav-leaf"><a href="../../11-physics/physics-overview/">Physics Overview</a></li>
   </ul>
 
 </nav>
@@ -206,15 +209,20 @@
         <p>Entry points are typically traits that you extend in order to write your game, and they provide the basic structure that you need to adhere to, to make a game that Indigo understands. What they actually do underneath is provide a user friendly way to build the frame processor and start the engine that does all of the work.</p>
         
         <h2 id="built-in-entry-points" class="section"><a class="anchor-link left" href="#built-in-entry-points"><i class="icofont-laika link">&#xef71;</i></a>Built in entry points</h2>
-        <p>There are currently three recommended ways to make an indigo game, three entry points traits to extend from listed here in order of increasing complexity and power:</p>
+        <p>There are currently four recommended ways to make an indigo game, four entry points traits to extend from listed here in order of increasing complexity and power:</p>
         <ol class="arabic">
           <li><code>IndigoSandbox[StartUpData, Model]</code></li>
           <li><code>IndigoDemo[BootData, StartUpData, Model, ViewModel]</code></li>
           <li><code>IndigoGame[BootData, StartUpData, Model, ViewModel]</code></li>
         </ol>
+        <p>...and the more specialised:</p>
+        <ol class="arabic">
+          <li><code>IndigoShader</code></li>
+        </ol>
         <p><code>IndigoSandbox</code> is for experiments and very simple games that require only the core facilities to work. This interface has the benefit of being very clean and clear, but you&#39;ll quickly need to upgrade if you need to do anything like embedding it in your own website. The sandbox is also great place to start learning Indigo since all of the core principles carry through to the other entry points.</p>
         <p><code>IndigoDemo</code> is the next step up in complexity. With Indigo demo you can theoretically do anything, but it lacks built in scene management. You might choose this entry point for demos or games that still aren&#39;t too big but require more functionality / control than sandbox affords, such as boot flags and subsystems.</p>
         <p><code>IndigoGame</code> has all the functionality of <code>IndigoDemo</code>, but it adds scene management to help you describe games that have many screens and levels and so on. There is another complexity bump here that makes it less friendly for beginners but that quickly becomes worth it when building bigger projects.</p>
+        <p><code>IndigoShader</code> is specifically for shader development, and provides a game that renders a single viewport sized <code>BlankEntity</code>, that displays your shader. The set up is quite a bit different from the other entry points, and is losely modelled on <a href="https://www.shadertoy.com/">shadertoy</a>.</p>
         
         <h2 id="roll-your-own" class="section"><a class="anchor-link left" href="#roll-your-own"><i class="icofont-laika link">&#xef71;</i></a>Roll Your Own</h2>
         <p>All of the entry points previously described are provided with Indigo, but they are abstractions and not <em>actually</em> required.</p>

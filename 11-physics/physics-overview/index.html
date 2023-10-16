@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>Physics Overview</title>
+  
+  
+  <meta name="description" content="A 2D Pixel Art FP game engine for Scala."/>
+  
+  
+  
+  <link rel="icon" sizes="32x32" type="image/svg+xml" href="../../img/indigo_logo_solid.svg"/>
+  
+  <link rel="icon" sizes="64x64" type="image/svg+xml" href="../../img/indigo_logo_solid.svg"/>
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="../../helium/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../helium/laika-helium.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/custom.css" />
+  <script src="../../helium/laika-helium.js"></script>
+    <script src="../../01-quickstart/hello-indigo.md.js"></script>
+    <script src="../../01-quickstart/mdoc.js"></script>
+    <script src="../../03-gameloop/frame-context.md.js"></script>
+    <script src="../../03-gameloop/mdoc.js"></script>
+    <script src="../../03-gameloop/outcome.md.js"></script>
+    <script src="../../06-presentation/materials.md.js"></script>
+    <script src="../../06-presentation/cameras.md.js"></script>
+    <script src="../../06-presentation/lighting.md.js"></script>
+    <script src="../../06-presentation/depth.md.js"></script>
+    <script src="../../06-presentation/clones-and-mutants.md.js"></script>
+    <script src="../../06-presentation/animation.md.js"></script>
+    <script src="../../06-presentation/layers.md.js"></script>
+    <script src="../../06-presentation/audio.md.js"></script>
+    <script src="../../06-presentation/scene-update-fragment.md.js"></script>
+    <script src="../../06-presentation/boundaries.md.js"></script>
+    <script src="../../06-presentation/shapes.md.js"></script>
+    <script src="../../06-presentation/text-and-fonts.md.js"></script>
+    <script src="../../06-presentation/mdoc.js"></script>
+    <script src="../../08-time/signals.md.js"></script>
+    <script src="../../08-time/mdoc.js"></script>
+    <script src="../../08-time/time-varying-values.md.js"></script>
+    <script src="../../07-shaders/blending.md.js"></script>
+    <script src="../../07-shaders/mdoc.js"></script>
+    <script src="../../07-shaders/shaders-overview.md.js"></script>
+    <script src="../../09-uicomponents/button.md.js"></script>
+    <script src="../../09-uicomponents/input-field.md.js"></script>
+    <script src="../../09-uicomponents/hit-area.md.js"></script>
+    <script src="../../09-uicomponents/radio-button.md.js"></script>
+    <script src="../../09-uicomponents/mdoc.js"></script>
+    <script src="../../04-organisation/scene-management.md.js"></script>
+    <script src="../../04-organisation/boot-and-start-up.md.js"></script>
+    <script src="../../04-organisation/subsystems.md.js"></script>
+    <script src="../../04-organisation/mdoc.js"></script>
+    <script src="../../02-guides/mdoc.js"></script>
+    <script src="../../02-guides/howto-fire-shader.md.js"></script>
+    <script src="../../02-guides/howto-custom-entity.md.js"></script>
+    <script src="../../05-platform/assets.md.js"></script>
+    <script src="../../05-platform/logging.md.js"></script>
+    <script src="../../05-platform/mdoc.js"></script>
+    <script src="../../05-platform/input-handling.md.js"></script>
+    <script src="../../10-information/key-concepts.md.js"></script>
+    <script src="../../10-information/antipatterns.md.js"></script>
+    <script src="../../10-information/mdoc.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar" class="light-default dark-default">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="image-link" href="../../"><img src="../../img/indigo_logo_solid_text.svg" alt="Homepage" title="Indigo" width="150" height="50"></a>
+
+  <div class="row links">
+    
+    <a class="button-link" href="https://discord.gg/b5CD47g">Discord</a>
+    
+    <a class="button-link" href="/api">API</a>
+    
+    <a class="button-link" href="https://github.com/PurpleKingdomGames/indigo">Github</a>
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+    <a class="button-link" href="https://discord.gg/b5CD47g">Discord</a>
+    
+    <a class="button-link" href="/api">API</a>
+    
+    <a class="button-link" href="https://github.com/PurpleKingdomGames/indigo">Github</a>
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../../table-of-content/">Contents</a></li>
+    <li class="level1 nav-header">Setup &amp; Configuration</li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/examples/">Examples, Demos, and References</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/extensions-and-libs/">Extensions, Libraries, and Related Projects</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/hello-indigo/">Hello, Indigo!</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/project-templates/">Mill &amp; SBT Templates</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/quickstart/">Quick start</a></li>
+    <li class="level1 nav-header">Guides</li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-custom-entity/">How to make a custom entity</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-fire-shader/">How to write a fire shader</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-hello-indigo-tyrian/">How to make a responsive UI using Tyrian</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-indigo-game/">Converting <code>IndigoSandbox</code> to <code>IndigoGame</code></a></li>
+    <li class="level1 nav-header">Gameloop</li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/events/">Events</a></li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/frame-context/">Frame context</a></li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/outcome/">Outcome Type</a></li>
+    <li class="level1 nav-header">Organisation</li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/boot-and-start-up/">Boot &amp; Start Up</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/game-entry-points/">Game Entry Points</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/scene-management/">What are Scenes?</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/subsystems/">What SubSystems are</a></li>
+    <li class="level1 nav-header">Platform &amp; IO</li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/assets/">Assets &amp; Asset Loading</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/configuration/">Game Configuration</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/cross-platform-publishing/">Cross Platform Publishing</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/importers/">File Importers</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/input-handling/">Input Handling</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/loading-and-saving-data/">Loading &amp; Saving Data</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/logging/">Logging</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/networking/">Networking</a></li>
+    <li class="level1 nav-header">Presentation</li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/animation/">Animation</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/audio/">Audio</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/boundaries/">Boundaries</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/cameras/">Cameras</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/clones-and-mutants/">Clones &amp; Mutants</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/depth/">Depth</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/layers/">Layers</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/lighting/">Lighting</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/materials/">Materials</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/primitives/">Primitives &amp; Building Blocks</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/scene-update-fragment/">SceneUpdateFragment</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/shapes/">Shapes</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/text-and-fonts/">Text &amp; Fonts</a></li>
+    <li class="level1 nav-header">Shaders</li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/blending/">Blending</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/constants/">Shader Constants, Variables, and Outputs</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/premultiplied-alpha/">Premultiplied Alpha</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/shaders-overview/">Shaders Overview</a></li>
+    <li class="level1 nav-header">Time</li>
+    <li class="level2 nav-leaf"><a href="../../08-time/gametime/">GameTime</a></li>
+    <li class="level2 nav-leaf"><a href="../../08-time/signals/">Signals &amp; Signal Functions</a></li>
+    <li class="level2 nav-leaf"><a href="../../08-time/time-varying-values/">Time Varying Values</a></li>
+    <li class="level1 nav-header">UI Components</li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/button/">Buttons</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/hit-area/">Hit Areas</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/input-field/">Input Fields</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/radio-button/">Radio Buttons</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/ui-components/">UI Components</a></li>
+    <li class="level1 nav-header">Misc</li>
+    <li class="level2 nav-leaf"><a href="../../10-information/alternatives/">Alternatives to Indigo</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/antipatterns/">Anti-Patterns</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/glossary/">Glossary</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/key-concepts/">Key Concepts</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/model-viewmodel-view/">Model, ViewModel, &amp; View</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/motivation-and-constraints/">Motivation &amp; Constraints</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/performance/">Performance</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/prior-art/">Prior Art</a></li>
+    <li class="level2 nav-leaf"><a href="../../10-information/rendering-technology/">Rendering Technology</a></li>
+    <li class="level1 nav-header">Physics</li>
+    <li class="level2 active nav-leaf"><a href="#">Physics Overview</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Physics Overview</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-node"><a href="#live-example-pong">Live example: Pong!</a></li>
+    <li class="level2 nav-leaf"><a href="#quick-start">Quick start</a></li>
+    <li class="level2 nav-leaf"><a href="#limitations-and-issues-bullets-and-paper-walls">Limitations and issues, bullets and paper walls</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="physics-overview" class="title">Physics Overview</h1>
+        <p>Indigo includes a basic physics engine as of release <code>0.15.0-RC3</code>. The engine is what is known as a rigid body axis-aligned physics engine. This is as simple as physics gets! Axis aligned means that there is no support for rotation, but for the kinds of game Indigo is intended for, this is still good enough for a wide range of use cases.</p>
+        <p>Indigo&#39;s phyics support has not yet been battled tested/hardened or performance tuned yet. Please report issues. Still, creative and enterprising developers may be able to find a use for it.</p>
+        
+        <h2 id="live-example-pong" class="section"><a class="anchor-link left" href="#live-example-pong"><i class="icofont-laika link">&#xef71;</i></a>Live example: Pong!</h2>
+        <p>A very small example of a running game using physics is our little Pong! demo (playable link on the repo):</p>
+        <p><a href="https://github.com/davesmith00000/pong"><a href="https://github.com/davesmith00000/pong">https://github.com/davesmith00000/pong</a></a></p>
+        <p>In this demo the physics engine is simply used to deal with the ball colliding with the walls and paddles.</p>
+        
+        <h3 id="quick-start" class="section"><a class="anchor-link left" href="#quick-start"><i class="icofont-laika link">&#xef71;</i></a>Quick start</h3>
+        <p>All of the physics primitives are available with the following import:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">indigo</span><span>.</span><span class="identifier">physics</span><span>.*</span></code></pre>
+        <p>As always, a lot of work has gone into the API to let the types and IDE discoverable methods guide you, however, here are a few pointers to get you started.</p>
+        <p>Everything starts with a world, that you keep in your <code>Model</code>:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">World</span><span>.</span><span class="identifier">empty</span><span>[</span><span class="type-name">String</span><span>]</span></code></pre>
+        <p>Notice the <code>String</code> type there? That is the type of your collider &#39;tags&#39;, and can be any type you like, an enum is a good idea. The tags are used to help you access and manipulate the scene. For example the world has methods like <code>findByTag</code>.</p>
+        <p>Initially, your world is a lot like outer space. No general forces or resistances. Let&#39;s add some gravity and wind resistance:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">World</span><span>.</span><span class="identifier">empty</span><span>[</span><span class="type-name">String</span><span>]
+  .</span><span class="identifier">addForces</span><span>(</span><span class="type-name">Vector2</span><span>(</span><span class="number-literal">0</span><span>, </span><span class="number-literal">1000</span><span>))
+  .</span><span class="identifier">withResistance</span><span>(</span><span class="type-name">Resistance</span><span>(</span><span class="number-literal">0.01</span><span>))</span></code></pre>
+        <p>What are these magic numbers? Well here you need to use some discretion. The physics engine does not understand the scale of your game - the scale can be anything! In this case we&#39;re adding a force that acts on all elements at a rate of 1000 &#39;units&#39; per second, meaning, at full speed an item will be moving 1000 &#39;thingys&#39; downwards. How do we decide what the units are/mean? Well in this case we have a screen that is 600 pixels high, so we&#39;re saying that terminal velocity (maximum speed by falling) allows you to cover just under 2 times the height of the screen in 1 second. Again, this scale is arbitrary, you will need to think about what makes sense for your game.</p>
+        <p>Now we need a bouncy ball and a platform for it to land on. Our screen is 800x600 in size, so positions are based on that:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">World</span><span>.</span><span class="identifier">empty</span><span>[</span><span class="type-name">String</span><span>]
+  .</span><span class="identifier">addForces</span><span>(</span><span class="type-name">Vector2</span><span>(</span><span class="number-literal">0</span><span>, </span><span class="number-literal">1000</span><span>))
+  .</span><span class="identifier">withResistance</span><span>(</span><span class="type-name">Resistance</span><span>(</span><span class="number-literal">0.01</span><span>))
+  .</span><span class="identifier">withColliders</span><span>(
+    </span><span class="type-name">Collider</span><span>(</span><span class="string-literal">&quot;ball&quot;</span><span>, </span><span class="type-name">BoundingCircle</span><span>(</span><span class="number-literal">400.0</span><span>, </span><span class="number-literal">80.0</span><span>, </span><span class="number-literal">25.0</span><span>)).</span><span class="identifier">withRestitution</span><span>(</span><span class="type-name">Restitution</span><span>(</span><span class="number-literal">0.8</span><span>)),
+    </span><span class="type-name">Collider</span><span>(</span><span class="string-literal">&quot;platform&quot;</span><span>, </span><span class="type-name">BoundingBox</span><span>(</span><span class="number-literal">10.0d</span><span>, </span><span class="number-literal">550.0</span><span>, </span><span class="number-literal">780.0</span><span>, </span><span class="number-literal">20.0</span><span>)).</span><span class="identifier">makeStatic</span><span>
+  )</span></code></pre>
+        <p>Physics engines use things called &#39;colliders&#39; to represent physical things in the world that can ...collide! Colliders can be <code>Collider.Circle</code> or <code>Collider.Box</code> types.</p>
+        <p>We have two colliders in our scene:</p>
+        <ol class="arabic">
+          <li>The first collider is our ball, it&#39;s positioned near the top of the screen, centered horizontally. The ball has been given a &#39;restitution&#39; value of <code>0.8</code>. </li>
+        </ol>
+        <blockquote>Restitution is how much energy is retained when it bounces, so <code>0</code> would be no bounce at all, and <code>1</code> would be a perfect elastic bounce.</blockquote>
+        <ol class="arabic">
+          <li>The second is our platform, notice that the platform has been made &#39;static&#39;. This has a few effects internally, but all you need to know right now is that it won&#39;t move no matter what happens.</li>
+        </ol>
+        <p>This simulation is entirely self contained, but you can interact with it using the various world &#39;find&#39;, &#39;modify&#39; and &#39;remove&#39; methods. You can also add transient colliders, which are colliders that don&#39;t exist in the world but are added deliberately on update / presentation for some reason. A good example of this is the paddles in the <a href="https://github.com/davesmith00000/pong">Pong demo</a>, which are added every frame because they are directly controlled by the player (<strong><em>Tip:</em></strong> Make things like this static!). They need to be in the world for the ball to interact with, but otherwise aren&#39;t an on going part of the simulation.</p>
+        <p>Ok, so we have a simulation set up, how do we use it? </p>
+        <ol class="arabic">
+          <li>First, we place it in our model during the <code>initialModel</code> call.</li>
+          <li>On each <code>FrameTick</code> of the <code>updateModel</code> function, we need to update it using: <code>world.update(context.delta)</code> (<code>delta</code> is the time delta, or the time that has elapsed since the last frame. All calculations are frame rate independent.)</li>
+          <li>We need to decide how to present our world...</li>
+        </ol>
+        <p>Presentation comes in a few flavours, which you can mix and match to suit your needs. You can:</p>
+        <ol class="arabic">
+          <li>Call <code>present</code> on the world and render a <code>Batch[SceneNode]</code> based on what is in the simulation. Present can also perform a partial presentation based on the filter arguments.</li>
+          <li>Look up the colliders or map over them yourself and render the parts you care about. Perhaps your simulation is abstract and you just need information rather than it being a direct 1-1 collider to renderable relationship.</li>
+          <li>Render things in your model directly, that only affect the sim as transient colliders (like the paddles in Pong).</li>
+        </ol>
+        <p>In our case, let&#39;s just render the world and see what&#39;s going on*:</p>
+        <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">present</span><span>(</span><span class="identifier">world</span><span>: </span><span class="type-name">World</span><span>[</span><span class="type-name">String</span><span>]): </span><span class="type-name">Outcome</span><span>[</span><span class="type-name">SceneUpdateFragment</span><span>] =
+  </span><span class="type-name">Outcome</span><span>(
+    </span><span class="type-name">SceneUpdateFragment</span><span>(
+      </span><span class="identifier">world</span><span>.</span><span class="identifier">present</span><span> {
+        </span><span class="keyword">case</span><span> </span><span class="type-name">Collider</span><span>.</span><span class="type-name">Circle</span><span>(</span><span class="identifier">_</span><span>, </span><span class="identifier">bounds</span><span>, </span><span class="identifier">_</span><span>, </span><span class="identifier">_</span><span>, </span><span class="identifier">_</span><span>, </span><span class="identifier">_</span><span>, </span><span class="identifier">_</span><span>, </span><span class="identifier">_</span><span>, </span><span class="identifier">_</span><span>) =&gt;
+          </span><span class="type-name">Shape</span><span>.</span><span class="type-name">Circle</span><span>(
+            </span><span class="identifier">bounds</span><span>.</span><span class="identifier">position</span><span>.</span><span class="identifier">toPoint</span><span>,
+            </span><span class="identifier">bounds</span><span>.</span><span class="identifier">radius</span><span>.</span><span class="identifier">toInt</span><span>,
+            </span><span class="type-name">Fill</span><span>.</span><span class="type-name">Color</span><span>(</span><span class="type-name">RGBA</span><span>.</span><span class="type-name">White</span><span>.</span><span class="identifier">withAlpha</span><span>(</span><span class="number-literal">0.2</span><span>)),
+            </span><span class="type-name">Stroke</span><span>(</span><span class="number-literal">1</span><span>, </span><span class="type-name">RGBA</span><span>.</span><span class="type-name">White</span><span>)
+          )
+
+        </span><span class="keyword">case</span><span> </span><span class="type-name">Collider</span><span>.</span><span class="type-name">Box</span><span>(</span><span class="identifier">_</span><span>, </span><span class="identifier">bounds</span><span>, </span><span class="identifier">_</span><span>, </span><span class="identifier">_</span><span>, </span><span class="identifier">_</span><span>, </span><span class="identifier">_</span><span>, </span><span class="identifier">_</span><span>, </span><span class="identifier">_</span><span>, </span><span class="identifier">_</span><span>) =&gt;
+          </span><span class="type-name">Shape</span><span>.</span><span class="type-name">Box</span><span>(
+            </span><span class="identifier">bounds</span><span>.</span><span class="identifier">toRectangle</span><span>,
+            </span><span class="type-name">Fill</span><span>.</span><span class="type-name">Color</span><span>(</span><span class="type-name">RGBA</span><span>.</span><span class="type-name">White</span><span>.</span><span class="identifier">withAlpha</span><span>(</span><span class="number-literal">0.2</span><span>)),
+            </span><span class="type-name">Stroke</span><span>(</span><span class="number-literal">1</span><span>, </span><span class="type-name">RGBA</span><span>.</span><span class="type-name">White</span><span>)
+          )
+      }
+    )
+  )</span></code></pre>
+        <p>(* Tip: Rendering colliders on top of your game can also be handy for visual debugging.)</p>
+        
+        <h3 id="limitations-and-issues-bullets-and-paper-walls" class="section"><a class="anchor-link left" href="#limitations-and-issues-bullets-and-paper-walls"><i class="icofont-laika link">&#xef71;</i></a>Limitations and issues, bullets and paper walls</h3>
+        <p>This is a limited Physics model, and it will have problems both in terms of physical accuracy (even within the scope of what we model) and in terms of initial feature set. You are welcome and encouraged to help by playing with it, reporting issues, and helping with code / maths / physics if you can.</p>
+        <p>One example of a known limitation of the current model, is that it suffers from what is sometimes called the &#39;bullet through paper&#39; problem.</p>
+        <p>Simply put: If a projectile is moving fast enough and an object in it&#39;s flight path is small / thin enough, then on frame A the projectile&#39;s calculated position is on one side of the object it should collide with, and on the next frame B it&#39;s calculated position is on the other side of the object in it&#39;s way. The result is that the two objects never collide in the engine and carry on unobstructed, even though they clearly would collide in the real world.</p>
+        <p>You can see this problem for yourself if you go and play the <a href="https://davesmith00000.github.io/pong/">pong demo</a> until the ball is going <em>really, really fast!</em> (It doesn&#39;t take long provided you can keep up.)</p>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://typelevel.org/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>

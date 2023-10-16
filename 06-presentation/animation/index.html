@@ -116,6 +116,7 @@
     <li class="level1 nav-leaf"><a href="../../table-of-content/">Contents</a></li>
     <li class="level1 nav-header">Setup &amp; Configuration</li>
     <li class="level2 nav-leaf"><a href="../../01-quickstart/examples/">Examples, Demos, and References</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/extensions-and-libs/">Extensions, Libraries, and Related Projects</a></li>
     <li class="level2 nav-leaf"><a href="../../01-quickstart/hello-indigo/">Hello, Indigo!</a></li>
     <li class="level2 nav-leaf"><a href="../../01-quickstart/project-templates/">Mill &amp; SBT Templates</a></li>
     <li class="level2 nav-leaf"><a href="../../01-quickstart/quickstart/">Quick start</a></li>
@@ -181,6 +182,8 @@
     <li class="level2 nav-leaf"><a href="../../10-information/performance/">Performance</a></li>
     <li class="level2 nav-leaf"><a href="../../10-information/prior-art/">Prior Art</a></li>
     <li class="level2 nav-leaf"><a href="../../10-information/rendering-technology/">Rendering Technology</a></li>
+    <li class="level1 nav-header">Physics</li>
+    <li class="level2 nav-leaf"><a href="../../11-physics/physics-overview/">Physics Overview</a></li>
   </ul>
 
 </nav>
@@ -221,7 +224,13 @@
           <li>Create your animation in Aseprite.</li>
           <li>Export the animations and frames as a sprite sheet and a JSON description.</li>
           <li>Add the sprite sheet and JSON description as a static asset to Indigo.</li>
-          <li>During startup, use the <code>AsepriteConverter</code> and indigo&#39;s (confusingly named) <code>JSON</code> object to parse the JSON into an <code>Animation</code> instance, and add it to the <code>Startup</code> result type, thereby making it available to your game.</li>
+          <li>Then Either:</li>
+        </ol>
+        <ol class="arabic">
+          <li>Use Indigo&#39;s Mill/sbt plugin to generate an <code>Aseprite</code> instance at build time, OR,</li>
+        </ol>
+        <ol class="arabic">
+          <li>During startup (runtime), use Indigo&#39;s (confusingly named) <code>Json</code> object to parse the JSON into an <code>Animation</code> instance using the <code>asepriteFromJson</code> function, and add it to the <code>Startup</code> result type, thereby making it available to your game.</li>
         </ol>
         <p>You can then either turn that into a <code>Sprite</code> or a series of <code>Clip</code>s.</p>
         <p>For <code>Sprite</code>s:</p>
