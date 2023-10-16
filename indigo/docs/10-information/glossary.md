@@ -132,15 +132,23 @@ Part of Indigo plugins, generators are tools for generating code at build time t
 
 ### GLSL
 
+An OpenGL dervived programming language used to write graphics shaders.
+
 ### Graphic
+
+A primitive type for simple drawing of textures/images to the screen. Allows for cropping.
 
 ## H
 
 ### HitArea
 
+An unusual UI element that is transparent - in fact not rendered - that acts as an invisible button.
+
 ## I
 
 ### ImageEffects (Material)
+
+The ImageEffects material is used to rendering images / textures to the screen while applying one of a number of typical effects, such as adjusting the transparency or colour tint.
 
 ### InputState
 
@@ -154,17 +162,29 @@ The current state of input devices like the keyboard, mouse or game pad.
 
 ### Layer
 
+Indigo games are rendered in layers, where the layers stack up on top of each other, and depth only applies within the current layer. As you place one layer on top of the previous one, you can decide how to blend the layer together to create interesting effects.
+
 ### Line
 
+An infinite mathematical line that can be compared to other lines to test for intersections.
+
 ### LineSegment
+
+A specific section/segment of a Line, useful in many modelling / calculation scenarios where you need to think about the edges of things, or rays, or tangential lines and so on.
 
 ## M
 
 ### Magnification
 
+Indigo is a Pixel art engine, and in order to see the pixels, we need to zoom in! Magnification can be set globally and also per layer.
+
 ### Material
 
-### Matrix3/4
+A material is what is used to tell primitive types how to render.
+
+### Matrix 3/4
+
+A matrix is a maths construct that in graphics programming is used for stacking transformations, such as move, rotate, and scale.
 
 ### Mutants
 
