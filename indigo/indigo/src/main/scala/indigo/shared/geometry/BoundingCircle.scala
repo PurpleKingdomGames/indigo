@@ -169,6 +169,11 @@ object BoundingCircle:
       case _ =>
         None
 
+  /** Creates a `BoundingCircle` from three vertices such that all of the vertices lie on the circles circumference.
+    */
+  def circumcircle(a: Vertex, b: Vertex, c: Vertex): Option[BoundingCircle] =
+    fromThreeVertices(a, b, c)
+
   /** Creates a `BoundingCircle` that contains all of the points provided.
     */
   def fromVertices(vertices: Batch[Vertex]): BoundingCircle =
@@ -189,9 +194,15 @@ object BoundingCircle:
   def fromBoundingBox(boundingBox: BoundingBox): BoundingCircle =
     incircle(boundingBox)
 
+  /** Creates a `Circle` from a square (BoundingBox's are squared off by the max width/height) where the circle fits
+    * inside the square.
+    */
   def incircle(bounds: BoundingBox): BoundingCircle =
     BoundingCircle(bounds.center, Math.max(bounds.halfSize.x, bounds.halfSize.y))
 
+  /** Creates a `BoundingCircle` from a square (BoundingBox's are squared off by the max width/height) such that all of
+    * the corners lie on the circle's circumference.
+    */
   def circumcircle(bounds: BoundingBox): BoundingCircle =
     val b = bounds.toSquare
     BoundingCircle(b.center, b.center.distanceTo(b.topLeft).toInt)

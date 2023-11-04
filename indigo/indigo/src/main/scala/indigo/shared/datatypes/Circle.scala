@@ -119,12 +119,23 @@ object Circle:
   def fromRectangle(rectangle: Rectangle): Circle =
     incircle(rectangle)
 
+  /** Creates a `Circle` from a square (rectangles are squared off by the max width/height) where the circle fits inside
+    * the square.
+    */
   def incircle(rectangle: Rectangle): Circle =
     Circle(rectangle.center, Math.max(rectangle.halfSize.width, rectangle.halfSize.height))
 
+  /** Creates a `Circle` from a square (rectangles are squared off by the max width/height) such that all of the corners
+    * lie on the circle's circumference.
+    */
   def circumcircle(rectangle: Rectangle): Circle =
     val r = rectangle.toSquare
     Circle(r.center, r.center.distanceTo(r.topLeft).toInt)
+
+  /** Creates a `Circle` from three points such that all of the points lie on the circle's circumference.
+    */
+  def circumcircle(a: Point, b: Point, c: Point): Option[Circle] =
+    BoundingCircle.circumcircle(a.toVertex, b.toVertex, c.toVertex).map(_.toCircle)
 
   def expandToInclude(a: Circle, b: Circle): Circle =
     a.resize((a.position.distanceTo(b.position) + Math.abs(b.radius)).toInt)

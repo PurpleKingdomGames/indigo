@@ -198,13 +198,33 @@ class BoundingCircleTests extends munit.FunSuite {
 
   }
 
+  test("BoundingCircle - incircle") {
+    val actual =
+      BoundingCircle.incircle(BoundingBox(10, 10, 10, 10))
+
+    val expected =
+      BoundingCircle(15, 15, 5)
+
+    assertEquals(actual, expected)
+  }
+
+  test("BoundingCircle - circumcircle (BoundingBox)") {
+    val actual =
+      BoundingCircle.circumcircle(BoundingBox(10, 10, 10, 10))
+
+    val expected =
+      BoundingCircle(15, 15, 7)
+
+    assertEquals(actual, expected)
+  }
+
   test("Create a bounding circle where the three vertices provided lie on the circumference") {
     val a: Vertex = Vertex(1, 1)
     val b: Vertex = Vertex(2, 3)
     val c: Vertex = Vertex(2, -1)
 
     val actual =
-      BoundingCircle.fromThreeVertices(a, b, c)
+      BoundingCircle.circumcircle(a, b, c)
 
     val expected =
       BoundingCircle(Vertex(3.5, 1.0), 2.5)

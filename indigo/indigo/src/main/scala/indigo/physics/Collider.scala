@@ -78,7 +78,7 @@ object Collider:
     def toBox: Collider.Box[A] =
       Collider.Box(
         c.tag,
-        c.bounds.toBoundingBox,
+        c.bounds.toIncircleBoundingBox,
         c.mass,
         c.velocity,
         c.restitution,
