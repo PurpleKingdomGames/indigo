@@ -78,14 +78,24 @@ final case class Circle(position: Point, radius: Int) derives CanEqual:
   def contract(by: Int): Circle =
     resize(radius - by)
 
+  @deprecated("Please use `toIncircleRectangle`, or alternatively `toCircumcircleRectangle`.")
   def toRectangle: Rectangle =
-    Rectangle(Point(left, top), Size(diameter, diameter))
+    Rectangle.fromIncircle(this)
+  def toIncircleRectangle: Rectangle =
+    Rectangle.fromIncircle(this)
+  def toCircumcircleRectangle: Rectangle =
+    Rectangle.fromCircumcircle(this)
 
   def toBoundingCircle: BoundingCircle =
     BoundingCircle.fromCircle(this)
 
+  @deprecated("Please use `toIncircleBoundingBox`, or alternatively `toCircumcircleBoundingBox`.")
   def toBoundingBox: BoundingBox =
-    BoundingBox(Vertex(left, top), Vertex(diameter, diameter))
+    BoundingBox.fromCircle(this)
+  def toIncircleBoundingBox: BoundingBox =
+    BoundingBox.fromIncircle(this)
+  def toCircumcircleBoundingBox: BoundingBox =
+    BoundingBox.fromCircumcircle(this)
 
 object Circle:
 
@@ -105,8 +115,16 @@ object Circle:
   def fromPointCloud(points: Batch[Point]): Circle =
     fromPoint(points)
 
+  @deprecated("Please use `Circle.incircle`, or alternatively `Circle.circumcircle`.")
   def fromRectangle(rectangle: Rectangle): Circle =
+    incircle(rectangle)
+
+  def incircle(rectangle: Rectangle): Circle =
     Circle(rectangle.center, Math.max(rectangle.halfSize.width, rectangle.halfSize.height))
+
+  def circumcircle(rectangle: Rectangle): Circle =
+    val r = rectangle.toSquare
+    Circle(r.center, r.center.distanceTo(r.topLeft).toInt)
 
   def expandToInclude(a: Circle, b: Circle): Circle =
     a.resize((a.position.distanceTo(b.position) + Math.abs(b.radius)).toInt)
@@ -115,7 +133,7 @@ object Circle:
     a.position.distanceTo(b.position) <= Math.abs(a.radius) - Math.abs(b.radius)
 
   def overlapping(a: Circle, b: Circle): Boolean =
-    a.toBoundingCircle.overlaps(b.toBoundingBox)
+    a.toBoundingCircle.overlaps(b.toIncircleBoundingBox)
   def overlapping(a: Circle, b: Rectangle): Boolean =
     a.toBoundingCircle.overlaps(b.toBoundingBox)
 

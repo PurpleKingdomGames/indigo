@@ -82,11 +82,21 @@ final case class BoundingCircle(position: Vertex, radius: Double) derives CanEqu
   def toCircle: Circle =
     Circle(position.toPoint, radius.toInt)
 
+  @deprecated("Please use `toIncircleRectangle`, or alternatively `toCircumcircleRectangle`.")
   def toRectangle: Rectangle =
-    Rectangle(Point(left.toInt, top.toInt), Size(diameter.toInt, diameter.toInt))
+    Rectangle.fromIncircle(this.toCircle)
+  def toIncircleRectangle: Rectangle =
+    Rectangle.fromIncircle(this.toCircle)
+  def toCircumcircleRectangle: Rectangle =
+    Rectangle.fromCircumcircle(this.toCircle)
 
+  @deprecated("Please use `toIncircleBoundingBox`, or alternatively `toCircumcircleBoundingBox`.")
   def toBoundingBox: BoundingBox =
-    BoundingBox(Vertex(left, top), Vertex(diameter, diameter))
+    BoundingBox.fromIncircle(this)
+  def toIncircleBoundingBox: BoundingBox =
+    BoundingBox.fromIncircle(this)
+  def toCircumcircleBoundingBox: BoundingBox =
+    BoundingBox.fromCircumcircle(this)
 
   def lineIntersects(line: LineSegment): Boolean =
     BoundingCircle.lineIntersects(this, line)
@@ -175,8 +185,16 @@ object BoundingCircle:
       circle.radius.toDouble
     )
 
+  @deprecated("Please use `BoundingCircle.incircle`, or alternatively `BoundingCircle.circumcircle`.")
   def fromBoundingBox(boundingBox: BoundingBox): BoundingCircle =
-    BoundingCircle(boundingBox.center, Math.max(boundingBox.halfSize.x, boundingBox.halfSize.y))
+    incircle(boundingBox)
+
+  def incircle(bounds: BoundingBox): BoundingCircle =
+    BoundingCircle(bounds.center, Math.max(bounds.halfSize.x, bounds.halfSize.y))
+
+  def circumcircle(bounds: BoundingBox): BoundingCircle =
+    val b = bounds.toSquare
+    BoundingCircle(b.center, b.center.distanceTo(b.topLeft).toInt)
 
   def expandToInclude(a: BoundingCircle, b: BoundingCircle): BoundingCircle =
     a.resize(a.position.distanceTo(b.position) + Math.abs(b.radius))

@@ -107,14 +107,24 @@ final case class Rectangle(position: Point, size: Size) derives CanEqual:
   def toSquare: Rectangle =
     this.copy(size = Size(Math.max(size.width, size.height)))
 
+  @deprecated("Please use `toIncircle`, or alternatively `toCircumcircle`.")
   def toCircle: Circle =
-    Circle.fromRectangle(this)
+    Circle.incircle(this)
+  def toIncircle: Circle =
+    Circle.incircle(this)
+  def toCircumcircle: Circle =
+    Circle.circumcircle(this)
 
   def toBoundingBox: BoundingBox =
     BoundingBox.fromRectangle(this)
 
+  @deprecated("Please use `toBoundingIncircle`, or alternatively `toBoundingCircumcircle`.")
   def toBoundingCircle: BoundingCircle =
-    BoundingBox.fromRectangle(this).toBoundingCircle
+    BoundingCircle.incircle(this.toBoundingBox)
+  def toBoundingIncircle: BoundingCircle =
+    BoundingCircle.incircle(this.toBoundingBox)
+  def toBoundingCircumcircle: BoundingCircle =
+    BoundingCircle.circumcircle(this.toBoundingBox)
 
 object Rectangle:
 
@@ -175,6 +185,13 @@ object Rectangle:
         )
 
     rec(points, Int.MaxValue, Int.MaxValue, Int.MinValue, Int.MinValue)
+
+  def fromIncircle(circle: Circle): Rectangle =
+    Rectangle(Point(circle.left, circle.top), Size(circle.diameter))
+
+  def fromCircumcircle(circle: Circle): Rectangle =
+    val sideLength = (circle.diameter * Math.sqrt(2)) / 2
+    Rectangle(circle.center - (sideLength / 2).toInt, Size(sideLength.toInt))
 
   def expand(rectangle: Rectangle, amount: Int): Rectangle =
     Rectangle(
