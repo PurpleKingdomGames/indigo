@@ -67,7 +67,7 @@ final class RendererInitialiser(
         .map(id => if id.isEmpty then defaultName else id)
         .getOrElse(defaultName)
 
-    val name = s"$parentElementId-[indigo-canvas]"
+    val name = s"$parentElementId-canvas"
 
     createNamedCanvas(width, height, name, Some(parentElement))
 
