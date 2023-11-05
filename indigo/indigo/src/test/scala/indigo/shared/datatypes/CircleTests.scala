@@ -102,6 +102,40 @@ class CircleTests extends munit.FunSuite {
 
   }
 
+  test("Circle - incircle") {
+    val actual =
+      Circle.incircle(Rectangle(10, 10, 10, 10))
+
+    val expected =
+      Circle(15, 15, 5)
+
+    assertEquals(actual, expected)
+  }
+
+  test("Circle - circumcircle (Rectangle)") {
+    val actual =
+      Circle.circumcircle(Rectangle(10, 10, 10, 10))
+
+    val expected =
+      Circle(15, 15, 7)
+
+    assertEquals(actual, expected)
+  }
+
+  test("Create a circle where the three points provided lie on the circumference") {
+    val a: Point = Point(1, 1)
+    val b: Point = Point(2, 3)
+    val c: Point = Point(2, -1)
+
+    val actual =
+      Circle.circumcircle(a, b, c)
+
+    val expected =
+      Circle(Point(3, 1), 2)
+
+    assertEquals(actual.get, expected)
+  }
+
   def doubleCloseEnough(r1: Double, r2: Double): Boolean =
     r1 - 0.001 < r2 && r1 + 0.001 > r2
 
