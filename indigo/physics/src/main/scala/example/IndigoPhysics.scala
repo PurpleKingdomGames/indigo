@@ -11,7 +11,7 @@ import indigoextras.subsystems.FPSCounter
 import scala.scalajs.js.annotation.JSExportTopLevel
 
 @JSExportTopLevel("IndigoGame")
-object IndigoPhysicsPoc extends IndigoGame[Unit, Unit, Model, Unit]:
+object IndigoPhysics extends IndigoGame[Unit, Unit, Model, Unit]:
 
   def initialScene(bootData: Unit): Option[SceneName] =
     Some(LoadScene.name)
@@ -25,11 +25,7 @@ object IndigoPhysicsPoc extends IndigoGame[Unit, Unit, Model, Unit]:
   def boot(flags: Map[String, String]): Outcome[BootResult[Unit]] =
     Outcome(
       BootResult
-        .noData(
-          GameConfig.default
-            .withViewport(800, 600)
-            .withFrameRateLimit(60)
-        )
+        .noData(Config.config)
         .withSubSystems(FPSCounter(Point(10)))
     )
 

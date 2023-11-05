@@ -1,4 +1,4 @@
-import indigoplugin.IndigoOptions
+import indigoplugin._
 import scala.language.postfixOps
 import Misc._
 
@@ -127,6 +127,14 @@ lazy val shader =
           .withAssetDirectory("shader/assets/")
     )
 
+lazy val physicsOptions =
+  IndigoOptions.defaults
+    .withTitle("Physics")
+    .withBackgroundColor("black")
+    .withAssetDirectory("physics/assets/")
+    .withWindowSize(800, 600)
+    .cursorHidden
+
 lazy val physics =
   project
     .enablePlugins(ScalaJSPlugin, SbtIndigo)
@@ -135,13 +143,13 @@ lazy val physics =
     .settings(
       neverPublish,
       commonSettings,
-      name := "physics",
-      indigoOptions :=
-        IndigoOptions.defaults
-          .withTitle("Physics")
-          .withBackgroundColor("black")
-          .withAssetDirectory("physics/assets/")
-          .withWindowSize(800, 600)
+      name          := "physics",
+      indigoOptions := physicsOptions,
+      Compile / sourceGenerators += Def.task {
+        IndigoGenerators("example")
+          .generateConfig("Config", physicsOptions)
+          .toSourceFiles((Compile / sourceManaged).value)
+      }
     )
 
 // Indigo Extensions

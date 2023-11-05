@@ -2,7 +2,12 @@ package indigoplugin.templates
 
 object HtmlTemplate {
 
-  def template(title: String, showCursor: Boolean, scriptName: String, backgroundColor: String): String =
+  def template(
+      title: String,
+      showCursor: Boolean,
+      scriptName: String,
+      backgroundColor: String
+  ): String =
     s"""<!DOCTYPE html>
       |<html>
       |  <head>
@@ -26,8 +31,9 @@ object HtmlTemplate {
       |        width: 100vw;
       |        height: 100vh;
       |      }
-      |
-      |      ${if (!showCursor) "canvas { cursor: none }" else ""}
+      |      #indigo-container canvas {
+      |        ${if (!showCursor) "cursor: none;" else ""}
+      |      }
       |    </style>
       |  </head>
       |  <body>
