@@ -98,7 +98,7 @@ object SandboxView:
       Text("AB!\n!C", 100, 2, 5, Fonts.fontKey, SandboxAssets.fontMaterial.withAlpha(0.5)).alignCenter,
       Text("AB!\n!C", 200, 2, 5, Fonts.fontKey, SandboxAssets.fontMaterial.withAlpha(0.5)).alignRight
         .withEventHandler {
-          case (txt, MouseEvent.Click(pt, _, _, _, _, _, _, _)) if bl.bounds(txt).contains(pt) =>
+          case (txt, MouseEvent.Click(pt)) if bl.bounds(txt).contains(pt) =>
             println("Clicked me!")
             None
 
