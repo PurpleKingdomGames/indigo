@@ -223,6 +223,8 @@ object MouseEvent:
         movementPosition = Point.zero,
         button = MouseButton.LeftMouseButton
       )
+    def unapply(e: Click): Option[Point] =
+      Option(e.position)
 
   /** The mouse button was released.
     * @param button
@@ -272,6 +274,8 @@ object MouseEvent:
         movementPosition = Point.zero,
         button = button
       )
+    def unapply(e: MouseUp): Option[Point] =
+      Option(e.position)
 
   /** The mouse button was pressed down.
     * @param button
@@ -321,6 +325,8 @@ object MouseEvent:
         movementPosition = Point.zero,
         button = button
       )
+    def unapply(e: MouseDown): Option[Point] =
+      Option(e.position)
 
   /** The mouse was moved to a new position.
     */
@@ -344,6 +350,8 @@ object MouseEvent:
         isShiftKeyDown = false,
         movementPosition = Point.zero
       )
+    def unapply(e: Move): Option[Point] =
+      Option(e.position)
 
   /** Mouse has moved into canvas hit test boundaries. It's counterpart is [[Leave]].
     */
@@ -356,6 +364,9 @@ object MouseEvent:
       isShiftKeyDown: Boolean,
       movementPosition: Point
   ) extends MouseEvent
+  object Enter:
+    def unapply(e: Enter): Option[Point] =
+      Option(e.position)
 
   /** Mouse has left canvas hit test boundaries. It's counterpart is [[Enter]].
     */
@@ -368,6 +379,9 @@ object MouseEvent:
       isShiftKeyDown: Boolean,
       movementPosition: Point
   ) extends MouseEvent
+  object Leave:
+    def unapply(e: Leave): Option[Point] =
+      Option(e.position)
 
   /** The mouse wheel was rotated a certain amount into the Y axis.
     *
@@ -396,6 +410,8 @@ object MouseEvent:
         movementPosition = Point.zero,
         amount = amount
       )
+    def unapply(e: Wheel): Option[(Point, Double)] =
+      Option((e.position, e.amount))
 
 end MouseEvent
 
@@ -479,6 +495,9 @@ object PointerEvent:
       pointerType: PointerType,
       isPrimary: Boolean
   ) extends PointerEvent
+  object PointerEnter:
+    def unapply(e: PointerEnter): Option[Point] =
+      Option(e.position)
 
   /** Pointing device left canvas hit test boundaries. It's counterpart is [[PointerEnter]].
     */
@@ -501,6 +520,9 @@ object PointerEvent:
       pointerType: PointerType,
       isPrimary: Boolean
   ) extends PointerEvent
+  object PointerLeave:
+    def unapply(e: PointerLeave): Option[Point] =
+      Option(e.position)
 
   /** Pointing device is in active buttons state.
     */
@@ -524,6 +546,9 @@ object PointerEvent:
       isPrimary: Boolean,
       button: Option[MouseButton]
   ) extends PointerEvent
+  object PointerDown:
+    def unapply(e: PointerDown): Option[Point] =
+      Option(e.position)
 
   /** Pointing device is no longer in active buttons state.
     */
@@ -547,6 +572,9 @@ object PointerEvent:
       isPrimary: Boolean,
       button: Option[MouseButton]
   ) extends PointerEvent
+  object PointerUp:
+    def unapply(e: PointerUp): Option[Point] =
+      Option(e.position)
 
   /** Pointing device changed coordinates.
     */
@@ -569,6 +597,9 @@ object PointerEvent:
       pointerType: PointerType,
       isPrimary: Boolean
   ) extends PointerEvent
+  object PointerMove:
+    def unapply(e: PointerMove): Option[Point] =
+      Option(e.position)
 
   /** The ongoing interactions was cancelled due to:
     *   - the pointer device being disconnected
@@ -595,6 +626,9 @@ object PointerEvent:
       pointerType: PointerType,
       isPrimary: Boolean
   ) extends PointerEvent
+  object PointerCancel:
+    def unapply(e: PointerCancel): Option[Point] =
+      Option(e.position)
 
 /** Represents all keyboard events
   */
