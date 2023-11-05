@@ -18,5 +18,6 @@ object Main:
       SimpleComparisons.suite,
       LineBenchmarks.suite,
       BatchBenchmarks.suite,
-      SignalFunctionBenchmarks.suite
+      SignalFunctionBenchmarks.suite,
+      PhysicsWorldBenchmarks.suite
     )
