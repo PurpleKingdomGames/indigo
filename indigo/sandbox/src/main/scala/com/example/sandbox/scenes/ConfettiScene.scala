@@ -82,12 +82,23 @@ object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
       .withFontSize(Pixels(12))
       .withColor(RGBA.White)
 
-  def particlesToCloneTiles(particles: js.Array[Particle]): CloneTiles =
-    CloneTiles(
+  def particlesToCloneTiles(count: Int, particles: js.Array[Particle]): Clones.RawTiles =
+    Clones.RawTiles(
       cloneId,
-      Batch(particles).map { p =>
+      count,
+      Batch(particles).flatMap { p =>
         val crop = crops(p.color)
-        CloneTileData(p.x, p.y, Radians.zero, p.scale, p.scale, crop(0), crop(1), crop(2), crop(3))
+        Batch(
+          p.x.toFloat,
+          p.y.toFloat,
+          0.0f,
+          p.scale.toFloat,
+          p.scale.toFloat,
+          crop(0).toFloat,
+          crop(1).toFloat,
+          crop(2).toFloat,
+          crop(3).toFloat
+        )
       }
     )
 
@@ -99,7 +110,7 @@ object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
     Outcome(
       SceneUpdateFragment(
         Layer(
-          Batch(model.particles.map(particlesToCloneTiles))
+          Batch(model.particles.map(ps => particlesToCloneTiles(ps.length, ps)))
         ).withMagnification(1),
         Layer(
           count.withText(s"count: ${model.particles.length * spawnCount}")

@@ -786,14 +786,11 @@ val CloneBlank: shared.scenegraph.CloneBlank.type = shared.scenegraph.CloneBlank
 type CloneId = shared.scenegraph.CloneId
 val CloneId: shared.scenegraph.CloneId.type = shared.scenegraph.CloneId
 
-type CloneBatch = shared.scenegraph.CloneBatch
-val CloneBatch: shared.scenegraph.CloneBatch.type = shared.scenegraph.CloneBatch
+type Clones = shared.scenegraph.Clones
+val Clones: shared.scenegraph.Clones.type = shared.scenegraph.Clones
 
 type CloneBatchData = shared.scenegraph.CloneBatchData
 val CloneBatchData: shared.scenegraph.CloneBatchData.type = shared.scenegraph.CloneBatchData
-
-type CloneTiles = shared.scenegraph.CloneTiles
-val CloneTiles: shared.scenegraph.CloneTiles.type = shared.scenegraph.CloneTiles
 
 type CloneTileData = shared.scenegraph.CloneTileData
 val CloneTileData: shared.scenegraph.CloneTileData.type = shared.scenegraph.CloneTileData

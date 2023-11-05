@@ -16,7 +16,9 @@ import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Vector2
 import indigo.shared.datatypes.Vector3
 import indigo.shared.datatypes.mutable.CheapMatrix4
-import indigo.shared.display.DisplayCloneBatch
+import indigo.shared.display.DisplayCloneInstances
+import indigo.shared.display.DisplayCloneRawInstances
+import indigo.shared.display.DisplayCloneRawTiles
 import indigo.shared.display.DisplayCloneTiles
 import indigo.shared.display.DisplayGroup
 import indigo.shared.display.DisplayMutants
@@ -74,11 +76,17 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
       )
       ._1
       .head match {
-      case _: DisplayCloneBatch =>
+      case _: DisplayCloneInstances =>
         throw new Exception("failed (DisplayCloneBatch)")
+
+      case _: DisplayCloneRawInstances =>
+        throw new Exception("failed (DisplayCloneRawInstances)")
 
       case _: DisplayCloneTiles =>
         throw new Exception("failed (DisplayCloneTiles)")
+
+      case _: DisplayCloneRawTiles =>
+        throw new Exception("failed (DisplayCloneRawTiles)")
 
       case _: DisplayMutants =>
         throw new Exception("failed (DisplayMutants)")

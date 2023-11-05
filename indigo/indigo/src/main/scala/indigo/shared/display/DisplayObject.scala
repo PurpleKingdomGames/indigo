@@ -29,24 +29,40 @@ object DisplayTextLetters:
   val empty: DisplayTextLetters =
     DisplayTextLetters(scalajs.js.Array())
 
-final case class DisplayCloneBatch(
+final case class DisplayCloneInstances(
     id: CloneId,
     z: Double,
-    cloneData: scalajs.js.Array[CloneBatchData]
+    data: scalajs.js.Array[CloneBatchData]
+) extends DisplayEntity
+    derives CanEqual
+
+final case class DisplayCloneRawInstances(
+    id: CloneId,
+    z: Double,
+    count: Int,
+    data: scalajs.js.Array[Float]
 ) extends DisplayEntity
     derives CanEqual
 
 final case class DisplayCloneTiles(
     id: CloneId,
     z: Double,
-    cloneData: scalajs.js.Array[CloneTileData]
+    data: scalajs.js.Array[CloneTileData]
+) extends DisplayEntity
+    derives CanEqual
+
+final case class DisplayCloneRawTiles(
+    id: CloneId,
+    z: Double,
+    count: Int,
+    data: scalajs.js.Array[Float]
 ) extends DisplayEntity
     derives CanEqual
 
 final case class DisplayMutants(
     id: CloneId,
     z: Double,
-    cloneData: scalajs.js.Array[scalajs.js.Array[DisplayObjectUniformData]]
+    data: scalajs.js.Array[scalajs.js.Array[DisplayObjectUniformData]]
 ) extends DisplayEntity
     derives CanEqual
 

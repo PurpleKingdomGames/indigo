@@ -107,9 +107,9 @@ object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
               Stroke(11, RGBA.Black.withAlpha(0.75))
             )
             .withRef(squareSize.toPoint / 2),
-          CloneBatch(CloneId("shape clone"), CloneBatchData(10, 10)),
-          CloneBatch(CloneId("shape clone"), CloneBatchData(20, 10)),
-          CloneBatch(CloneId("shape clone"), CloneBatchData(30, 10)),
+          Clones.Instances(CloneId("shape clone"), CloneBatchData(10, 10)),
+          Clones.Instances(CloneId("shape clone"), CloneBatchData(20, 10)),
+          Clones.Instances(CloneId("shape clone"), CloneBatchData(30, 10)),
           Shape
             .Polygon(
               Fill.LinearGradient(Point(0), RGBA.Magenta, Point(45), RGBA.Cyan),

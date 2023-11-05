@@ -66,7 +66,7 @@ object CratesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
       SceneUpdateFragment(
         Layer(
           graphic.moveTo(16, 16),
-          CloneTiles(
+          Clones.Tiles(
             cloneId,
             Batch(
               CloneTileData(60, 100, Radians.zero, 1.0, 1.0, 0, 0, 32, 32),

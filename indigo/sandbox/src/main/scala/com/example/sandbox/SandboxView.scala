@@ -76,7 +76,7 @@ object SandboxView:
       currentState.dude.dude.sprite
         .moveBy(8, -10)
         .modifyMaterial(_.withAlpha(0.5).withTint(RGBA.Red.withAmount(0.75))),
-      CloneBatch(dudeCloneId, CloneBatchData(16, 64, Radians.zero, -1.0, 1.0))
+      Clones.Instances(dudeCloneId, CloneBatchData(16, 64, Radians.zero, -1.0, 1.0))
     )
 
   def lightingLayer(mouse: Mouse): Batch[SceneNode] =

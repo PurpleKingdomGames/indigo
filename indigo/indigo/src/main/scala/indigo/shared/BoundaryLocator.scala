@@ -10,8 +10,7 @@ import indigo.shared.datatypes.Size
 import indigo.shared.datatypes.TextAlignment
 import indigo.shared.datatypes.Vector3
 import indigo.shared.datatypes.mutable.CheapMatrix4
-import indigo.shared.scenegraph.CloneBatch
-import indigo.shared.scenegraph.CloneTiles
+import indigo.shared.scenegraph.Clones
 import indigo.shared.scenegraph.EntityNode
 import indigo.shared.scenegraph.Graphic
 import indigo.shared.scenegraph.Group
@@ -76,10 +75,7 @@ final class BoundaryLocator(
       case g: Group =>
         Option(groupBounds(g))
 
-      case _: CloneBatch =>
-        None
-
-      case _: CloneTiles =>
+      case _: Clones =>
         None
 
       case _: Mutants =>

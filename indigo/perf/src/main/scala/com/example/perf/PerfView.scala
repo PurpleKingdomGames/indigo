@@ -27,9 +27,14 @@ object PerfView {
       Point((Random.nextFloat() * PerfGame.viewportWidth).toInt, (Random.nextFloat() * PerfGame.viewportHeight).toInt)
     }
 
-  private val theHerd: Batch[CloneBatch] = {
+  private val theHerd: Batch[Clones.RawInstances] = {
     @tailrec
-    def rec(remaining: List[Point], batchSize: Int, batchNumber: Int, acc: List[CloneBatch]): Batch[CloneBatch] =
+    def rec(
+        remaining: List[Point],
+        batchSize: Int,
+        batchNumber: Int,
+        acc: List[Clones.RawInstances]
+    ): Batch[Clones.RawInstances] =
       remaining match {
         case Nil =>
           Batch.fromList(acc)
@@ -46,10 +51,13 @@ object PerfView {
                 r,
                 batchSize,
                 batchNumber + 1,
-                CloneBatch(
-                  cloneId,
-                  Batch.fromList(ps).map(p => CloneBatchData(p.x, p.y))
-                ).withStaticBatchKey(BindingKey("herd" + batchNumber.toString)) :: acc
+                Clones
+                  .RawInstances(
+                    cloneId,
+                    ps.length,
+                    Batch.fromList(ps).flatMap(p => Batch(p.x.toFloat, p.y.toFloat, 0.0f, 1.0f, 1.0f))
+                  )
+                  .withStaticBatchKey(BindingKey("herd" + batchNumber.toString)) :: acc
               )
       }
 

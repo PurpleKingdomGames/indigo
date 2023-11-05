@@ -9,7 +9,9 @@ import indigo.platform.renderer.shared.TextureLookupResult
 import indigo.platform.renderer.shared.WebGLHelper
 import indigo.shared.datatypes.RGBA
 import indigo.shared.datatypes.mutable.CheapMatrix4
-import indigo.shared.display.DisplayCloneBatch
+import indigo.shared.display.DisplayCloneInstances
+import indigo.shared.display.DisplayCloneRawInstances
+import indigo.shared.display.DisplayCloneRawTiles
 import indigo.shared.display.DisplayCloneTiles
 import indigo.shared.display.DisplayEntity
 import indigo.shared.display.DisplayGroup
@@ -115,16 +117,20 @@ class LayerRenderer(
     textureSizeAtlasSizeData((i * 4) + 3) = d.atlasHeight
   }
 
-  inline private def updateCloneData(
+  inline private def updateCloneInstanceData(
       i: Int,
-      clone: CloneBatchData
+      x: Float,
+      y: Float,
+      scaleX: Float,
+      scaleY: Float,
+      rotation: Float
   ): Unit = {
-    translateScaleData((i * 4) + 0) = clone.x.toFloat
-    translateScaleData((i * 4) + 1) = clone.y.toFloat
-    translateScaleData((i * 4) + 2) = clone.scaleX.toFloat
-    translateScaleData((i * 4) + 3) = clone.scaleY.toFloat
+    translateScaleData((i * 4) + 0) = x
+    translateScaleData((i * 4) + 1) = y
+    translateScaleData((i * 4) + 2) = scaleX
+    translateScaleData((i * 4) + 3) = scaleY
 
-    rotationData(i) = clone.rotation.toFloat
+    rotationData(i) = rotation
   }
 
   inline private def updateCloneTileData(
@@ -541,7 +547,7 @@ class LayerRenderer(
             batchCount = batchCount + 1
             i += 1
 
-          case c: DisplayCloneBatch =>
+          case c: DisplayCloneInstances =>
             drawBuffer(batchCount)
 
             var cloneBlankExists = false
@@ -572,6 +578,47 @@ class LayerRenderer(
 
               val numberProcessed: Int =
                 processCloneBatch(c)
+
+              drawCloneBuffer(numberProcessed)
+
+              batchCount = 0
+              atlasName = currentCloneRef.atlasName
+              currentShader = currentCloneRef.shaderId
+              currentShaderHash = currentCloneRef.shaderUniformData.map(_.uniformHash)
+
+            i += 1
+
+          case c: DisplayCloneRawInstances =>
+            drawBuffer(batchCount)
+
+            var cloneBlankExists = false
+            var refreshCloneUBO  = false
+
+            if c.id.toString != currentCloneId.toString then
+              cloneBlankDisplayObjects.get(c.id.toString) match
+                case None => ()
+                case Some(d) =>
+                  currentCloneId = c.id
+                  currentCloneRef = d
+                  cloneBlankExists = true
+                  refreshCloneUBO = true
+            else cloneBlankExists = true
+
+            if cloneBlankExists then
+              doContextChange(
+                currentCloneRef,
+                atlasName,
+                currentShader,
+                currentShaderHash,
+                customShaders,
+                baseTransform,
+                1
+              )
+
+              if refreshCloneUBO || currentShader != currentCloneRef.shaderId then uploadRefUBO(currentCloneRef)
+
+              val numberProcessed: Int =
+                processCloneRawBatch(c)
 
               drawCloneBuffer(numberProcessed)
 
@@ -613,6 +660,47 @@ class LayerRenderer(
 
               val numberProcessed: Int =
                 processCloneTiles(c, currentCloneRef)
+
+              drawCloneTileBuffer(numberProcessed)
+
+              batchCount = 0
+              atlasName = currentCloneRef.atlasName
+              currentShader = currentCloneRef.shaderId
+              currentShaderHash = currentCloneRef.shaderUniformData.map(_.uniformHash)
+
+            i += 1
+
+          case c: DisplayCloneRawTiles =>
+            drawBuffer(batchCount)
+
+            var cloneBlankExists = false
+            var refreshCloneUBO  = false
+
+            if c.id.toString != currentCloneId.toString then
+              cloneBlankDisplayObjects.get(c.id.toString) match
+                case None => ()
+                case Some(d) =>
+                  currentCloneId = c.id
+                  currentCloneRef = d
+                  cloneBlankExists = true
+                  refreshCloneUBO = true
+            else cloneBlankExists = true
+
+            if cloneBlankExists then
+              doContextChange(
+                currentCloneRef,
+                atlasName,
+                currentShader,
+                currentShaderHash,
+                customShaders,
+                baseTransform,
+                2
+              )
+
+              if refreshCloneUBO || currentShader != currentCloneRef.shaderId then uploadRefUBO(currentCloneRef)
+
+              val numberProcessed: Int =
+                processCloneRawTiles(c, currentCloneRef)
 
               drawCloneTileBuffer(numberProcessed)
 
@@ -753,14 +841,42 @@ class LayerRenderer(
       currentRefUBOHash = code
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while"))
-  private def processCloneBatch(c: DisplayCloneBatch): Int = {
-    val count: Int = c.cloneData.length
+  private def processCloneBatch(c: DisplayCloneInstances): Int = {
+    val count: Int = c.data.length
     var i: Int     = 0
 
     while (i < count) {
-      updateCloneData(
+      val d = c.data(i)
+      updateCloneInstanceData(
         i,
-        c.cloneData(i)
+        d.x.toFloat,
+        d.y.toFloat,
+        d.scaleX.toFloat,
+        d.scaleY.toFloat,
+        d.rotation.toFloat
+      )
+
+      i += 1
+    }
+
+    count
+  }
+
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while"))
+  private def processCloneRawBatch(c: DisplayCloneRawInstances): Int = {
+    val count: Int = c.count
+    var i: Int     = 0
+
+    while (i < count) {
+      val offset = i * 5
+      val d      = c.data
+      updateCloneInstanceData(
+        i,
+        d(offset),
+        d(offset + 1),
+        d(offset + 2),
+        d(offset + 3),
+        d(offset + 4)
       )
 
       i += 1
@@ -774,7 +890,7 @@ class LayerRenderer(
       c: DisplayCloneTiles,
       refDisplayObject: DisplayObject
   ): Int = {
-    val count: Int = c.cloneData.length
+    val count: Int = c.data.length
     var i: Int     = 0
 
     val atlasWidth  = refDisplayObject.atlasWidth
@@ -789,7 +905,7 @@ class LayerRenderer(
     val c3Y         = refDisplayObject.channelOffset3Y - refDisplayObject.channelOffset0Y
 
     while (i < count) {
-      val clone           = c.cloneData(i)
+      val clone           = c.data(i)
       val cropWidth       = clone.cropWidth
       val cropHeight      = clone.cropHeight
       val frameScaleX     = cropWidth / atlasWidth
@@ -825,22 +941,80 @@ class LayerRenderer(
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while"))
+  private def processCloneRawTiles(
+      c: DisplayCloneRawTiles,
+      refDisplayObject: DisplayObject
+  ): Int = {
+    val count: Int = c.count
+    var i: Int     = 0
+
+    val atlasWidth  = refDisplayObject.atlasWidth
+    val atlasHeight = refDisplayObject.atlasHeight
+    val textureX    = refDisplayObject.textureX
+    val textureY    = refDisplayObject.textureY
+    val c1X         = refDisplayObject.channelOffset1X - refDisplayObject.channelOffset0X
+    val c1Y         = refDisplayObject.channelOffset1Y - refDisplayObject.channelOffset0Y
+    val c2X         = refDisplayObject.channelOffset2X - refDisplayObject.channelOffset0X
+    val c2Y         = refDisplayObject.channelOffset2Y - refDisplayObject.channelOffset0Y
+    val c3X         = refDisplayObject.channelOffset3X - refDisplayObject.channelOffset0X
+    val c3Y         = refDisplayObject.channelOffset3Y - refDisplayObject.channelOffset0Y
+
+    while (i < count) {
+      val offset          = i * 9
+      val d               = c.data
+      val cropX           = d(offset + 5)
+      val cropY           = d(offset + 6)
+      val cropWidth       = d(offset + 7)
+      val cropHeight      = d(offset + 8)
+      val frameScaleX     = cropWidth / atlasWidth
+      val frameScaleY     = cropHeight / atlasHeight
+      val channelOffset0X = frameScaleX * ((cropX + textureX) / cropWidth)
+      val channelOffset0Y = frameScaleY * ((cropY + textureY) / cropHeight)
+
+      updateCloneTileData(
+        i = i,
+        x = d(offset),
+        y = d(offset + 1),
+        rotation = d(offset + 2),
+        scaleX = d(offset + 3),
+        scaleY = d(offset + 4),
+        width = cropWidth.toFloat,
+        height = cropHeight.toFloat,
+        frameScaleX = frameScaleX,
+        frameScaleY = frameScaleY,
+        channelOffset0X = channelOffset0X,
+        channelOffset0Y = channelOffset0Y,
+        channelOffset1X = channelOffset0X + c1X,
+        channelOffset1Y = channelOffset0Y + c1Y,
+        channelOffset2X = channelOffset0X + c2X,
+        channelOffset2Y = channelOffset0Y + c2Y,
+        channelOffset3X = channelOffset0X + c3X,
+        channelOffset3Y = channelOffset0Y + c3Y
+      )
+
+      i += 1
+    }
+
+    count
+  }
+
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while"))
   private def processMutants(
       c: DisplayMutants,
       refDisplayObject: DisplayObject,
       activeShader: WebGLProgram
   ): Unit =
-    if (c.cloneData.length > 0) {
+    if (c.data.length > 0) {
       updateData(refDisplayObject, 0)
       prepareCloneProgramBuffer()
 
-      val count: Int                              = c.cloneData.length
+      val count: Int                              = c.data.length
       var i: Int                                  = 0
       var currentUniformHash: js.Array[String]    = new js.Array()
       val blockIndexLookup: js.Dictionary[Double] = js.Dictionary()
 
       while (i < count) {
-        val shaderUniformData = c.cloneData(i)
+        val shaderUniformData = c.data(i)
 
         // UBO data
         if shaderUniformData.nonEmpty then

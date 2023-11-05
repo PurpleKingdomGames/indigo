@@ -19,7 +19,9 @@ import indigo.shared.datatypes.TextAlignment
 import indigo.shared.datatypes.Vector2
 import indigo.shared.datatypes.Vector3
 import indigo.shared.datatypes.mutable.CheapMatrix4
-import indigo.shared.display.DisplayCloneBatch
+import indigo.shared.display.DisplayCloneInstances
+import indigo.shared.display.DisplayCloneRawInstances
+import indigo.shared.display.DisplayCloneRawTiles
 import indigo.shared.display.DisplayCloneTiles
 import indigo.shared.display.DisplayEntity
 import indigo.shared.display.DisplayGroup
@@ -33,10 +35,9 @@ import indigo.shared.display.SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets
 import indigo.shared.events.GlobalEvent
 import indigo.shared.materials.ShaderData
 import indigo.shared.platform.AssetMapping
-import indigo.shared.scenegraph.CloneBatch
 import indigo.shared.scenegraph.CloneId
 import indigo.shared.scenegraph.CloneTileData
-import indigo.shared.scenegraph.CloneTiles
+import indigo.shared.scenegraph.Clones
 import indigo.shared.scenegraph.DependentNode
 import indigo.shared.scenegraph.EntityNode
 import indigo.shared.scenegraph.Graphic
@@ -68,8 +69,10 @@ final class DisplayObjectConversions(
   implicit private val vector2Cache: QuickCache[Vector2]                                   = QuickCache.empty
   implicit private val frameCache: QuickCache[SpriteSheetFrameCoordinateOffsets]           = QuickCache.empty
   implicit private val listDoCache: QuickCache[scalajs.js.Array[DisplayEntity]]            = QuickCache.empty
-  implicit private val cloneBatchCache: QuickCache[DisplayCloneBatch]                      = QuickCache.empty
+  implicit private val cloneInstancesCache: QuickCache[DisplayCloneInstances]              = QuickCache.empty
+  implicit private val cloneRawInstancesCache: QuickCache[DisplayCloneRawInstances]        = QuickCache.empty
   implicit private val cloneTilesCache: QuickCache[DisplayCloneTiles]                      = QuickCache.empty
+  implicit private val cloneRawTilesCache: QuickCache[DisplayCloneRawTiles]                = QuickCache.empty
   implicit private val uniformsCache: QuickCache[scalajs.js.Array[Float]]                  = QuickCache.empty
   implicit private val textCloneTileDataCache: QuickCache[scalajs.js.Array[CloneTileData]] = QuickCache.empty
   implicit private val displayObjectCache: QuickCache[DisplayObject]                       = QuickCache.empty
@@ -83,8 +86,10 @@ final class DisplayObjectConversions(
     vector2Cache.purgeAllNow()
     frameCache.purgeAllNow()
     listDoCache.purgeAllNow()
-    cloneBatchCache.purgeAllNow()
+    cloneInstancesCache.purgeAllNow()
+    cloneRawInstancesCache.purgeAllNow()
     cloneTilesCache.purgeAllNow()
+    cloneRawTilesCache.purgeAllNow()
     uniformsCache.purgeAllNow()
     textCloneTileDataCache.purgeAllNow()
     displayObjectCache.purgeAllNow()
@@ -105,36 +110,72 @@ final class DisplayObjectConversions(
         }
     }
 
-  private def cloneBatchDataToDisplayEntities(batch: CloneBatch): DisplayCloneBatch =
+  private def cloneInstancesDataToDisplayEntities(batch: Clones.Instances): DisplayCloneInstances =
     if batch.staticBatchKey.isDefined then
       QuickCache(batch.staticBatchKey.get.toString) {
-        new DisplayCloneBatch(
+        new DisplayCloneInstances(
           id = batch.id,
           z = batch.depth.toDouble,
-          cloneData = batch.cloneData.toJSArray
+          data = batch.data.toJSArray
         )
       }
     else
-      new DisplayCloneBatch(
+      new DisplayCloneInstances(
         id = batch.id,
         z = batch.depth.toDouble,
-        cloneData = batch.cloneData.toJSArray
+        data = batch.data.toJSArray
       )
 
-  private def cloneTilesDataToDisplayEntities(batch: CloneTiles): DisplayCloneTiles =
+  private def cloneRawInstancesDataToDisplayEntities(batch: Clones.RawInstances): DisplayCloneRawInstances =
+    if batch.staticBatchKey.isDefined then
+      QuickCache(batch.staticBatchKey.get.toString) {
+        new DisplayCloneRawInstances(
+          id = batch.id,
+          z = batch.depth.toDouble,
+          count = batch.count,
+          data = batch.data.toJSArray
+        )
+      }
+    else
+      new DisplayCloneRawInstances(
+        id = batch.id,
+        z = batch.depth.toDouble,
+        count = batch.count,
+        data = batch.data.toJSArray
+      )
+
+  private def cloneTilesDataToDisplayEntities(batch: Clones.Tiles): DisplayCloneTiles =
     if batch.staticBatchKey.isDefined then
       QuickCache(batch.staticBatchKey.get.toString) {
         new DisplayCloneTiles(
           id = batch.id,
           z = batch.depth.toDouble,
-          cloneData = batch.cloneData.toJSArray
+          data = batch.data.toJSArray
         )
       }
     else
       new DisplayCloneTiles(
         id = batch.id,
         z = batch.depth.toDouble,
-        cloneData = batch.cloneData.toJSArray
+        data = batch.data.toJSArray
+      )
+
+  private def cloneRawTilesDataToDisplayEntities(batch: Clones.RawTiles): DisplayCloneRawTiles =
+    if batch.staticBatchKey.isDefined then
+      QuickCache(batch.staticBatchKey.get.toString) {
+        new DisplayCloneRawTiles(
+          id = batch.id,
+          z = batch.depth.toDouble,
+          count = batch.count,
+          data = batch.data.toJSArray
+        )
+      }
+    else
+      new DisplayCloneRawTiles(
+        id = batch.id,
+        z = batch.depth.toDouble,
+        count = batch.count,
+        data = batch.data.toJSArray
       )
 
   private def mutantsToDisplayEntities(batch: Mutants): DisplayMutants =
@@ -150,7 +191,7 @@ final class DisplayObjectConversions(
     new DisplayMutants(
       id = batch.id,
       z = batch.depth.toDouble,
-      cloneData = batch.uniformBlocks.toJSArray.map(uniformDataConvert)
+      data = batch.uniformBlocks.toJSArray.map(uniformDataConvert)
     )
 
   def processSceneNodes(
@@ -218,6 +259,7 @@ final class DisplayObjectConversions(
         0.0f
       )
 
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def sceneNodeToDisplayObject(
       gameTime: GameTime,
       assetMapping: AssetMapping,
@@ -241,19 +283,35 @@ final class DisplayObjectConversions(
       case s: EntityNode[_] =>
         (sceneEntityToDisplayObject(s, assetMapping), noClones)
 
-      case c: CloneBatch =>
+      case c: Clones.Instances =>
         (
           cloneBlankDisplayObjects.get(c.id.toString) match {
             case None =>
               DisplayGroup.empty
 
             case Some(_) =>
-              cloneBatchDataToDisplayEntities(c)
+              cloneInstancesDataToDisplayEntities(c)
           },
           noClones
         )
 
-      case c: CloneTiles =>
+      case c: Clones.RawInstances =>
+        (
+          cloneBlankDisplayObjects.get(c.id.toString) match {
+            case None =>
+              DisplayGroup.empty
+
+            case Some(_) =>
+              if c.count * 5 != c.data.length then
+                throw new Exception(
+                  s"Invalid Clones.RawInstances data with id '${c.id.toString}'. Provided count was incorrect for the amount of data available."
+                )
+              else cloneRawInstancesDataToDisplayEntities(c)
+          },
+          noClones
+        )
+
+      case c: Clones.Tiles =>
         (
           cloneBlankDisplayObjects.get(c.id.toString) match {
             case None =>
@@ -261,6 +319,22 @@ final class DisplayObjectConversions(
 
             case Some(_) =>
               cloneTilesDataToDisplayEntities(c)
+          },
+          noClones
+        )
+
+      case c: Clones.RawTiles =>
+        (
+          cloneBlankDisplayObjects.get(c.id.toString) match {
+            case None =>
+              DisplayGroup.empty
+
+            case Some(_) =>
+              if c.count * 9 != c.data.length then
+                throw new Exception(
+                  s"Invalid Clones.RawTiles data with id '${c.id.toString}'. Provided count was incorrect for the amount of data available."
+                )
+              else cloneRawTilesDataToDisplayEntities(c)
           },
           noClones
         )
@@ -390,10 +464,10 @@ final class DisplayObjectConversions(
         (
           DisplayTextLetters(
             letters.grouped(maxBatchSize).toJSArray.map { d =>
-              new DisplayCloneTiles(
+              new DisplayCloneTiles( // TODO. Use RAW
                 id = cloneId,
                 z = x.depth.toDouble,
-                cloneData = d
+                data = d
               )
             }
           ),
