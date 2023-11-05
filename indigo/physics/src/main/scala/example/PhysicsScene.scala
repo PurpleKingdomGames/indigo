@@ -61,7 +61,8 @@ object BoxesScene extends PhysicsScene:
           .withVelocity(dice.roll(200) - 100, -dice.roll(350))
       }
 
-    World.empty[MyTag]
+    World
+      .empty[MyTag]
       .addForces(Vector2(0, 600))
       .withResistance(Resistance(0.01))
       .withColliders(
@@ -99,7 +100,8 @@ object BoxesAndBallsScene extends PhysicsScene:
           .withRestitution(Restitution(0.7))
       }
 
-    World.empty[MyTag]
+    World
+      .empty[MyTag]
       .addForces(Vector2(0, 600))
       .withResistance(Resistance(0.01))
       .withColliders(
