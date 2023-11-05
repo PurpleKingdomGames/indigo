@@ -51,7 +51,7 @@ final class Mouse(
   lazy val scrolled: Option[MouseWheel] =
     val amount = mouseEvents.foldLeft(0d) {
       case (acc, MouseEvent.Wheel(_, deltaY)) => acc + deltaY
-      case (acc, _)                                             => acc
+      case (acc, _)                           => acc
     }
 
     if amount == 0 then Option.empty[MouseWheel]
