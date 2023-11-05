@@ -27,6 +27,7 @@ object Misc {
     UsefulTask("sandboxRun", "Run the sandbox game (fastOptJS + Electron)").noAlias,
     UsefulTask("perfRun", "Run the perf game (fastOptJS + Electron)").noAlias,
     UsefulTask("shaderRun", "Run the shader game (fastOptJS + Electron)").noAlias,
+    UsefulTask("physicsRun", "Run the physics game (fastOptJS + Electron)").noAlias,
     UsefulTask("scalafmtCheckAll", "Check formatting").noAlias,
     UsefulTask("code", "Launch VSCode").noAlias
   )

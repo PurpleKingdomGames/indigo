@@ -69,9 +69,9 @@ lazy val indigoProject =
       code        := codeTaskDefinition,
       usefulTasks := customTasksAliases,
       presentationSettings(version),
-      ScalaUnidoc / unidoc / unidocProjectFilter := inAnyProject -- inProjects(sandbox, perf, shader, docs)
+      ScalaUnidoc / unidoc / unidocProjectFilter := inAnyProject -- inProjects(sandbox, perf, shader, physics, docs)
     )
-    .aggregate(indigo, indigoExtras, indigoJsonCirce, sandbox, perf, shader, docs, benchmarks)
+    .aggregate(indigo, indigoExtras, indigoJsonCirce, sandbox, perf, shader, physics, docs, benchmarks)
 
 // Testing
 
@@ -125,6 +125,23 @@ lazy val shader =
           .withWindowWidth(450)
           .withWindowHeight(450)
           .withAssetDirectory("shader/assets/")
+    )
+
+lazy val physics =
+  project
+    .enablePlugins(ScalaJSPlugin, SbtIndigo)
+    .dependsOn(indigoExtras)
+    .dependsOn(indigoJsonCirce)
+    .settings(
+      neverPublish,
+      commonSettings,
+      name := "physics",
+      indigoOptions :=
+        IndigoOptions.defaults
+          .withTitle("Physics")
+          .withBackgroundColor("black")
+          .withAssetDirectory("physics/assets/")
+          .withWindowSize(800, 600)
     )
 
 // Indigo Extensions

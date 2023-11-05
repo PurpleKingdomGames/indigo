@@ -215,6 +215,24 @@ addCommandAlias(
 )
 
 addCommandAlias(
+  "physicsRun",
+  List(
+    "buildAllNoClean",
+    "physics/fastOptJS",
+    "physics/indigoRun"
+  ).mkString(";", ";", "")
+)
+
+addCommandAlias(
+  "physicsRunFull",
+  List(
+    "buildAllNoClean",
+    "physics/fullOptJS",
+    "physics/indigoRunFull"
+  ).mkString(";", ";", "")
+)
+
+addCommandAlias(
   "indigoPublishAllSigned",
   applyToAllReleaseable("publishSigned")
 )
