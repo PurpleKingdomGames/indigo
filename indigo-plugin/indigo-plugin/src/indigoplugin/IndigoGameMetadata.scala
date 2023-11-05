@@ -12,13 +12,16 @@ package indigoplugin
   *   Initial window width. Default '550'.
   * @param height
   *   Initial window height. Default '400'.
+  * @param antiAliasing
+  *   Smooth the rendered view? Defaults to false for pixel art.
   */
 final case class IndigoGameMetadata(
     title: String,
     showCursor: Boolean,
     backgroundColor: String,
     width: Int,
-    height: Int
+    height: Int,
+    antiAliasing: Boolean
 ) {
 
   /** Sets a new title for your game's window / title bar / tab */
@@ -67,6 +70,14 @@ final case class IndigoGameMetadata(
   def withWindowSize(w: Int, h: Int): IndigoGameMetadata =
     this.copy(width = w, height = h)
 
+  /** Smooths the image for normal graphics (i.e. not pixel art) */
+  def useAntiAliasing: IndigoGameMetadata =
+    this.copy(antiAliasing = true)
+
+  /** Does not smooth the image for crisp pixel-art. */
+  def noAntiAliasing: IndigoGameMetadata =
+    this.copy(antiAliasing = false)
+
 }
 
 object IndigoGameMetadata {
@@ -78,6 +89,7 @@ object IndigoGameMetadata {
       showCursor = true,
       backgroundColor = "white",
       width = 550,
-      height = 400
+      height = 400,
+      antiAliasing = false
     )
 }

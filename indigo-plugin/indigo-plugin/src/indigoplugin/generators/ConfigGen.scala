@@ -35,7 +35,7 @@ object ConfigGen {
       |      resizePolicy = ResizePolicy.Resize,
       |      advanced = AdvancedGameConfig(
       |        renderingTechnology = RenderingTechnology.WebGL2WithFallback,
-      |        antiAliasing = false,
+      |        antiAliasing = ${indigoOptions.metadata.antiAliasing.toString},
       |        premultipliedAlpha = true,
       |        batchSize = 256,
       |        autoLoadStandardShaders = true,
