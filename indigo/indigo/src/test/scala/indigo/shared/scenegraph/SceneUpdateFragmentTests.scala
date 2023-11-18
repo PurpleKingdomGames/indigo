@@ -25,7 +25,7 @@ class SceneUpdateFragmentTests extends munit.FunSuite {
       SceneUpdateFragment(Option(Layer(BindingKey("key A"))))
 
     val expected =
-      SceneUpdateFragment.empty.addLayers(Batch(Layer(BindingKey("key "))))
+      SceneUpdateFragment.empty.addLayers(Batch(Layer(BindingKey("key A"))))
 
     assertEquals(actual, expected)
 
