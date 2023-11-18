@@ -137,12 +137,17 @@ final class BoundaryLocator(
 
   def textLineBounds(lineText: String, fontInfo: FontInfo): Rectangle =
     QuickCache(s"""textline-${fontInfo.fontKey}-$lineText""") {
-      lineText
-        .toCharArray()
-        .map(c => fontInfo.findByCharacter(c).bounds)
-        .foldLeft(Rectangle.zero) { (acc, curr) =>
-          Rectangle(0, 0, acc.width + curr.width, Math.max(acc.height, curr.height))
-        }
+      if lineText.isEmpty then {
+        val b = fontInfo.findByCharacter(' ').bounds
+        b.withSize(Size(0, b.height))
+      } else {
+        lineText
+          .toCharArray()
+          .map(c => fontInfo.findByCharacter(c).bounds)
+          .foldLeft(Rectangle.zero) { (acc, curr) =>
+            Rectangle(0, 0, acc.width + curr.width, Math.max(acc.height, curr.height))
+          }
+      }
     }
 
   def textAsLinesWithBounds(text: String, fontKey: FontKey): Batch[TextLine] =
