@@ -173,7 +173,7 @@ object DataType {
   final case class StringData(value: String) extends DataType
 
   private val isBoolean: Regex = """^(true|false)$""".r
-  private val isDouble: Regex  = """^([0-9]*?)\.([0-9]*)$""".r
+  private val isDouble: Regex  = """^([0-9]+?)\.([0-9]+)$""".r
   private val isInt: Regex     = """^([0-9]+)$""".r
 
   def decideType: String => DataType = {
