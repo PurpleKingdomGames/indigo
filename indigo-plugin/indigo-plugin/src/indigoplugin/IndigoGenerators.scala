@@ -28,6 +28,57 @@ final case class IndigoGenerators(fullyQualifiedPackageName: String, sources: Se
   def withPackage(packageName: String): IndigoGenerators =
     this.copy(fullyQualifiedPackageName = packageName)
 
+  /** Takes the contents of a text file, and leaves it to you to decide how to turn it into Scala code. The template
+    * provides nothing except the package declaration.
+    *
+    * @param moduleName
+    *   The name for the Scala module, in this case, acts as the file name only.
+    * @param file
+    *   The path to the text file to embed.
+    * @param present
+    *   A function that takes and String and expects you to create a String of Scala code. You could parse JSON or read
+    *   a list of files or... anything!
+    */
+  def embed(moduleName: String, file: os.Path)(present: String => String): IndigoGenerators =
+    this.copy(
+      sources = sources :+
+        EmbedText.generate(moduleName, fullyQualifiedPackageName, file, present)
+    )
+
+  /** Takes the contents of a text file, and leaves it to you to decide how to turn it into Scala code. The template
+    * provides nothing except the package declaration.
+    *
+    * @param moduleName
+    *   The name for the Scala module, in this case, acts as the file name only.
+    * @param file
+    *   The relative path to the text file to embed.
+    * @param present
+    *   A function that takes and String and expects you to create a String of Scala code. You could parse JSON or read
+    *   a list of files or... anything!
+    */
+  def embed(moduleName: String, file: File)(present: String => String): IndigoGenerators =
+    this.copy(
+      sources = sources :+
+        EmbedText.generate(moduleName, fullyQualifiedPackageName, os.RelPath(file).resolveFrom(os.pwd), present)
+    )
+
+  /** Takes the contents of a text file, and leaves it to you to decide how to turn it into Scala code. The template
+    * provides nothing except the package declaration.
+    *
+    * @param moduleName
+    *   The name for the Scala module, in this case, acts as the file name only.
+    * @param file
+    *   The relative path to the text file to embed.
+    * @param present
+    *   A function that takes and String and expects you to create a String of Scala code. You could parse JSON or read
+    *   a list of files or... anything!
+    */
+  def embed(moduleName: String, file: String)(present: String => String): IndigoGenerators =
+    this.copy(
+      sources = sources :+
+        EmbedText.generate(moduleName, fullyQualifiedPackageName, os.RelPath(file).resolveFrom(os.pwd), present)
+    )
+
   /** Embed raw text into a static variable.
     *
     * @param moduleName
