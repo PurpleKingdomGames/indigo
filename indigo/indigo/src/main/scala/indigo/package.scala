@@ -159,6 +159,19 @@ object syntax:
 
 end syntax
 
+object mutable:
+
+  type CacheKey = shared.CacheKey
+  val CacheKey: shared.CacheKey.type = shared.CacheKey
+
+  type ToCacheKey[A] = shared.ToCacheKey[A]
+  val ToCacheKey: shared.ToCacheKey.type = shared.ToCacheKey
+
+  type QuickCache[A] = shared.QuickCache[A]
+  val QuickCache: shared.QuickCache.type = shared.QuickCache
+
+end mutable
+
 val logger: indigo.shared.IndigoLogger.type = indigo.shared.IndigoLogger
 
 type Startup[SuccessType] = shared.Startup[SuccessType]
