@@ -74,16 +74,35 @@ object EmbedData {
     Seq(file)
   }
 
-  def extractRows(rows: List[String], delimiter: String): List[List[DataType]] =
-    rows.map(r => extractRowData(r, delimiter))
+  def extractRowData(row: String, delimiter: String): List[DataType] = {
 
-  def extractRowData(row: String, delimiter: String): List[DataType] =
-    parse(delimiter)(row).map(_._1).collect {
+    val cleanDelimiter: String =
+      if (delimiter == "\\|") "|" else delimiter
+
+    val cleanRow: String =
+      row.trim match {
+        case r if r.startsWith(cleanDelimiter) && r.endsWith(cleanDelimiter) =>
+          r.drop(cleanDelimiter.length()).dropRight(cleanDelimiter.length())
+
+        case r if r.startsWith(cleanDelimiter) =>
+          r.drop(cleanDelimiter.length())
+
+        case r if r.endsWith(cleanDelimiter) =>
+          r.dropRight(cleanDelimiter.length())
+
+        case r =>
+          r
+      }
+
+    parse(delimiter)(cleanRow).map(_._1).collect {
       case d @ DataType.StringData(s) if s.nonEmpty => d
+      case DataType.StringData(_)                   => DataType.NullData
       case d: DataType.BooleanData                  => d
       case d: DataType.DoubleData                   => d
       case d: DataType.IntData                      => d
+      case DataType.NullData                        => DataType.NullData
     }
+  }
 
   // A parser of things,
   // is a function from strings,
@@ -137,12 +156,19 @@ sealed trait DataType {
       case _                       => false
     }
 
+  def isNull: Boolean =
+    this match {
+      case DataType.NullData => true
+      case _                 => false
+    }
+
   def toStringData: DataType.StringData =
     this match {
       case s: DataType.StringData      => s
       case DataType.BooleanData(value) => DataType.StringData(value.toString)
       case DataType.DoubleData(value)  => DataType.StringData(value.toString)
       case DataType.IntData(value)     => DataType.StringData(value.toString)
+      case DataType.NullData           => DataType.StringData("null")
     }
 
   def asString: String =
@@ -151,6 +177,7 @@ sealed trait DataType {
       case DataType.BooleanData(value) => value.toString
       case DataType.DoubleData(value)  => value.toString
       case DataType.IntData(value)     => value.toString
+      case DataType.NullData           => "null"
     }
 
   def giveTypeName: String =
@@ -159,6 +186,7 @@ sealed trait DataType {
       case _: DataType.BooleanData => "Boolean"
       case _: DataType.DoubleData  => "Double"
       case _: DataType.IntData     => "Int"
+      case DataType.NullData       => "Null"
     }
 
 }
@@ -171,24 +199,35 @@ object DataType {
   }
   final case class DoubleData(value: Double) extends DataType
   final case class StringData(value: String) extends DataType
+  case object NullData                       extends DataType
 
   private val isBoolean: Regex = """^(true|false)$""".r
   private val isDouble: Regex  = """^([0-9]+?)\.([0-9]+)$""".r
   private val isInt: Regex     = """^([0-9]+)$""".r
+  private val isNull: Regex    = """^(null)$""".r
 
   def decideType: String => DataType = {
     case isBoolean(v)     => BooleanData(v.toBoolean)
     case isInt(v)         => IntData(v.toInt)
     case isDouble(v1, v2) => DoubleData(s"$v1.$v2".toDouble)
+    case isNull(_)        => NullData
     case v                => StringData(v)
   }
 
   def sameType(a: DataType, b: DataType): Boolean =
     (a, b) match {
       case (_: DataType.StringData, _: DataType.StringData)   => true
+      case (DataType.NullData, _: DataType.StringData)        => true
+      case (_: DataType.StringData, DataType.NullData)        => true
       case (_: DataType.BooleanData, _: DataType.BooleanData) => true
+      case (DataType.NullData, _: DataType.BooleanData)       => true
+      case (_: DataType.BooleanData, DataType.NullData)       => true
       case (_: DataType.DoubleData, _: DataType.DoubleData)   => true
+      case (DataType.NullData, _: DataType.DoubleData)        => true
+      case (_: DataType.DoubleData, DataType.NullData)        => true
       case (_: DataType.IntData, _: DataType.IntData)         => true
+      case (DataType.NullData, _: DataType.IntData)           => true
+      case (_: DataType.IntData, DataType.NullData)           => true
       case _                                                  => false
     }
 
@@ -199,11 +238,14 @@ object DataType {
     }
 
   def allNumericTypes(l: List[DataType]): Boolean =
-    l.forall(d => d.isDouble || d.isInt)
+    l.forall(d => d.isDouble || d.isInt || d.isNull)
+
+  def hasOptionalValues(l: List[DataType]): Boolean =
+    l.contains(DataType.NullData)
 
   def convertToBestType(l: List[DataType]): List[DataType] =
     // Cases we can manage:
-    // - They're all the same!
+    // - They're all the same! Maybe optional...
     // - Doubles and Ints, convert Ints to Doubles
     // - Fallback is that everything is a string.
     if (allSameType(l)) {
@@ -213,11 +255,15 @@ object DataType {
       l.map {
         case v @ DataType.DoubleData(_) => v
         case v @ DataType.IntData(_)    => v.toDoubleData
+        case DataType.NullData          => DataType.NullData
         case s => throw new Exception(s"Unexpected non-numeric type '$s'") // Shouldn't get here.
       }
     } else {
-      // Nothing else to do, but make everything a string
-      l.map(_.toStringData)
+      // Nothing else to do, but make everything a string that isn't null.
+      l.map {
+        case DataType.NullData => DataType.NullData
+        case d                 => d.toStringData
+      }
     }
 
 }
@@ -309,7 +355,7 @@ final case class DataFrame(data: Array[Array[DataType]], columnCount: Int) {
 object DataFrame {
 
   private val standardMessage: String =
-    "Embedded data must have two rows (minimum) of the same length (two columns minimum). The first row is the headers / field names. The first column are the keys. Cells cannot be empty."
+    "Embedded data must have two rows (minimum) of the same length (two columns minimum). The first row is the headers / field names. The first column are the keys."
 
   def fromRows(rows: List[List[DataType]]): DataFrame =
     rows match {
