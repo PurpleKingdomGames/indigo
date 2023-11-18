@@ -97,6 +97,9 @@ class BatchTests extends munit.FunSuite {
   }
 
   test("head") {
+    intercept[NoSuchElementException] {
+      Batch.empty[Int].head
+    }
     assert(Batch(1, 2, 3).head == 1)
     assert(Batch.Combine(Batch(1), Batch(2, 3)).head == 1)
     assert((Batch.empty |+| Batch(2, 3)).head == 2)
@@ -464,6 +467,17 @@ class BatchTests extends munit.FunSuite {
 
   test("sortWith") {
     assertEquals(Batch(3, 5, 2, 4, 1).sortWith(_ > _), Batch(5, 4, 3, 2, 1))
+  }
+
+  test("last") {
+    intercept[NoSuchElementException] {
+      Batch.empty[Int].last
+    }
+    assert(Batch(1, 2, 3).last == 3)
+    assert(Batch.Combine(Batch(1), Batch(2, 3)).last == 3)
+    assert((Batch.empty |+| Batch(2, 3)).last == 3)
+    assert(Batch(Batch.empty, Batch(1, 2, 3)).last == Batch(1, 2, 3))
+    assert(Batch.combine(Batch.empty, Batch(1, 2, 3)).last == 3)
   }
 
   test("lastOption") {

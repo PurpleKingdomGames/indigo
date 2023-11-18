@@ -18,6 +18,7 @@ sealed trait Batch[+A]:
 
   def head: A
   def headOption: Option[A]
+  def last: A
   def lastOption: Option[A]
   def isEmpty: Boolean
   def size: Int
@@ -315,6 +316,9 @@ object Batch:
     export batch1.head
     export batch1.headOption
 
+    def last: A =
+      if batch2.isEmpty then batch1.last else batch2.last
+
     def lastOption: Option[A] =
       if batch2.isEmpty then batch1.lastOption else batch2.lastOption
 
@@ -367,6 +371,7 @@ object Batch:
     val isEmpty: Boolean               = values.isEmpty
     def head: A                        = values.head
     def headOption: Option[A]          = values.headOption
+    def last: A                        = values.last
     def lastOption: Option[A]          = values.lastOption
     def toJSArray[B >: A]: js.Array[B] = values.asInstanceOf[js.Array[B]]
 
