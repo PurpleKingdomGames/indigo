@@ -466,4 +466,12 @@ class BatchTests extends munit.FunSuite {
     assertEquals(Batch(3, 5, 2, 4, 1).sortWith(_ > _), Batch(5, 4, 3, 2, 1))
   }
 
+  test("lastOption") {
+    assertEquals(Batch.empty[Int].lastOption, None)
+    assertEquals(Batch(1, 2, 3).lastOption, Option(3))
+    assertEquals(Batch.Combine(Batch(1, 2, 3), Batch.empty[Int]).lastOption, Option(3))
+    assertEquals(Batch.Combine(Batch.empty[Int], Batch(1, 2, 3)).lastOption, Option(3))
+    assertEquals(Batch.Combine(Batch.empty[Int], Batch.empty[Int]).lastOption, None)
+  }
+
 }

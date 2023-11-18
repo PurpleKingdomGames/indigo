@@ -314,7 +314,9 @@ object Batch:
 
     export batch1.head
     export batch1.headOption
-    export batch1.lastOption
+
+    def lastOption: Option[A] =
+      if batch2.isEmpty then batch1.lastOption else batch2.lastOption
 
     @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while"))
     def toJSArray[B >: A]: js.Array[B] =
