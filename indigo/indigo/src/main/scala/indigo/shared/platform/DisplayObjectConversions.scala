@@ -338,7 +338,7 @@ final class DisplayObjectConversions(
 
         val letters: scalajs.js.Array[DisplayEntity] =
           boundaryLocator
-            .textAsLinesWithBounds(x.text, x.fontKey)
+            .textAsLinesWithBounds(x.text, x.fontKey, x.letterSpacing, x.lineHeight)
             .toJSArray
             .foldLeft(0 -> scalajs.js.Array[DisplayEntity]()) { (acc, textLine) =>
               (
@@ -375,7 +375,7 @@ final class DisplayObjectConversions(
 
         val letters: scalajs.js.Array[CloneTileData] =
           boundaryLocator
-            .textAsLinesWithBounds(x.text, x.fontKey)
+            .textAsLinesWithBounds(x.text, x.fontKey, x.letterSpacing, x.lineHeight)
             .toJSArray
             .foldLeft(
               0 -> scalajs.js.Array[CloneTileData]()
@@ -722,7 +722,7 @@ final class DisplayObjectConversions(
         }
 
       QuickCache(lineHash) {
-        zipWithCharDetails(line.text.toArray, fontInfo).map { case (fontChar, xPosition) =>
+        zipWithCharDetails(line.text.toArray, fontInfo, leaf.letterSpacing).map { case (fontChar, xPosition) =>
           val frameInfo =
             QuickCache(fontChar.bounds.hashCode().toString + "_" + shaderDataHash) {
               SpriteSheetFrame.calculateFrameOffset(
@@ -853,7 +853,7 @@ final class DisplayObjectConversions(
           leaf.fontKey.toString
 
       QuickCache(lineHash) {
-        zipWithCharDetails(line.text.toArray, fontInfo).map { case (fontChar, xPosition) =>
+        zipWithCharDetails(line.text.toArray, fontInfo, leaf.letterSpacing).map { case (fontChar, xPosition) =>
           CloneTileData(
             x = leaf.position.x + leaf.ref.x + xPosition + alignmentOffsetX,
             y = leaf.position.y + leaf.ref.y + yOffset,
@@ -872,7 +872,11 @@ final class DisplayObjectConversions(
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var accCharDetails: scalajs.js.Array[(FontChar, Int)] = new scalajs.js.Array()
 
-  private def zipWithCharDetails(charList: Array[Char], fontInfo: FontInfo): scalajs.js.Array[(FontChar, Int)] = {
+  private def zipWithCharDetails(
+      charList: Array[Char],
+      fontInfo: FontInfo,
+      letterSpacing: Int
+  ): scalajs.js.Array[(FontChar, Int)] = {
     @tailrec
     def rec(remaining: scalajs.js.Array[(Char, FontChar)], nextX: Int): scalajs.js.Array[(FontChar, Int)] =
       if remaining.isEmpty then accCharDetails
@@ -880,7 +884,9 @@ final class DisplayObjectConversions(
         val x  = remaining.head
         val xs = remaining.tail
         (x._2, nextX) +=: accCharDetails
-        rec(xs, nextX + x._2.bounds.width)
+
+        val ls = if xs.isEmpty then 0 else letterSpacing
+        rec(xs, nextX + x._2.bounds.width + ls)
 
     accCharDetails = new scalajs.js.Array()
     rec(charList.toJSArray.map(c => (c, fontInfo.findByCharacter(c))), 0)

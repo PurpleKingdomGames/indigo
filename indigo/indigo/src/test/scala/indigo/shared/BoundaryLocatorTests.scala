@@ -28,38 +28,66 @@ class BoundaryLocatorTests extends munit.FunSuite {
     new BoundaryLocator(new AnimationsRegister, fontRegister, new DynamicText)
 
   test("Text boundary calculations.Text as lines with bounds.empty") {
-    val actual = boundaryLocator.textAsLinesWithBounds("", fontKey)
+    val actual = boundaryLocator.textAsLinesWithBounds("", fontKey, 0, 0)
     assertEquals(actual.length, 0)
   }
   test("Text boundary calculations.Text as lines with bounds.abc") {
-    val actual = boundaryLocator.textAsLinesWithBounds("abc", fontKey)
+    val actual = boundaryLocator.textAsLinesWithBounds("abc", fontKey, 0, 0)
     assertEquals(actual.length, 1)
     assertEquals(actual.headOption.get.text, "abc")
     assertEquals(actual.headOption.get.lineBounds, Rectangle(0, 0, 42, 20))
   }
   test("Text boundary calculations.Text as lines with bounds.ab->c") {
-    val actual = boundaryLocator.textAsLinesWithBounds("ab\nc", fontKey)
+    val actual = boundaryLocator.textAsLinesWithBounds("ab\nc", fontKey, 0, 0)
     assertEquals(actual.length, 2)
     assertEquals(actual(0).text, "ab")
     assertEquals(actual(0).lineBounds, Rectangle(0, 0, 26, 20))
     assertEquals(actual(1).text, "c")
     assertEquals(actual(1).lineBounds, Rectangle(0, 20, 16, 16))
   }
+  test("Text boundary calculations.Text as lines with bounds.abc with letterSpacing") {
+    val actual = boundaryLocator.textAsLinesWithBounds("abc", fontKey, 10, 0)
+    assertEquals(actual.length, 1)
+    assertEquals(actual.head.text, "abc")
+    assertEquals(actual.head.lineBounds, Rectangle(0, 0, 42 + 20, 20))
+  }
 
   test("Text boundary calculations.textAllLineBounds with bounds.empty") {
-    val actual = boundaryLocator.textAllLineBounds("", fontKey)
+    val actual = boundaryLocator.textAllLineBounds("", fontKey, 0, 0)
     assertEquals(actual.length, 0)
   }
   test("Text boundary calculations.textAllLineBounds with bounds.abc") {
-    val actual = boundaryLocator.textAllLineBounds("abc", fontKey)
+    val actual = boundaryLocator.textAllLineBounds("abc", fontKey, 0, 0)
     assertEquals(actual.length, 1)
     assertEquals(actual.headOption.get, Rectangle(0, 0, 42, 20))
   }
   test("Text boundary calculations.textAllLineBounds with bounds.ab->c") {
-    val actual = boundaryLocator.textAllLineBounds("ab\nc", fontKey)
+    val actual = boundaryLocator.textAllLineBounds("ab\nc", fontKey, 0, 0)
     assertEquals(actual.length, 2)
     assertEquals(actual(0), Rectangle(0, 0, 26, 20))
     assertEquals(actual(1), Rectangle(0, 20, 16, 16))
+  }
+  test("Text boundary calculations.textAllLineBounds with bounds.ab->c with lineHeight") {
+    val lineHeight = 10
+    val actual     = boundaryLocator.textAllLineBounds("ab\nc", fontKey, 0, lineHeight)
+    assertEquals(actual.length, 2)
+    assertEquals(actual(0), Rectangle(0, 0, 26, 20 + lineHeight))
+    assertEquals(actual(1), Rectangle(0, 20 + lineHeight, 16, 16 + lineHeight))
+  }
+  test("Text boundary calculations.textAllLineBounds with bounds.ab->c with letterSpacing") {
+    val letterSpacing = 10
+    val actual        = boundaryLocator.textAllLineBounds("ab\nc", fontKey, letterSpacing, 0)
+    assertEquals(actual.length, 2)
+    assertEquals(actual(0), Rectangle(0, 0, 26 + letterSpacing, 20))
+    assertEquals(actual(1), Rectangle(0, 20, 16, 16))
+  }
+  test("Text boundary calculations.textAllLineBounds with bounds.ab->c with lineHeight and letterSpacing") {
+    val lineHeight    = 10
+    val letterSpacing = 10
+    val actual        = boundaryLocator.textAllLineBounds("ab\nc", fontKey, letterSpacing, lineHeight)
+    assertEquals(actual.length, 2)
+    assertEquals(actual(0), Rectangle(0, 0, 26 + letterSpacing, 20 + lineHeight))
+    assertEquals(actual(1), Rectangle(0, 20 + lineHeight, 16, 16 + lineHeight))
   }
 
   // These should be identical, regardless of alignment.

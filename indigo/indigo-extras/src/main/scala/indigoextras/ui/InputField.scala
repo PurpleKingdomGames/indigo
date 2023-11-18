@@ -250,7 +250,7 @@ final case class InputField(
 
       val cursorPositionPoint =
         boundaryLocator
-          .textAsLinesWithBounds(textToCursor, field.fontKey)
+          .textAsLinesWithBounds(textToCursor, field.fontKey, field.letterSpacing, field.lineHeight)
           .reverse
           .headOption
           .map(_.lineBounds.topRight + position)

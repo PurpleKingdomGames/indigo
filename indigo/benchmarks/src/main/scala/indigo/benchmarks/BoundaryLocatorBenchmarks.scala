@@ -22,24 +22,24 @@ object BoundaryLocatorBenchmarks:
     Suite("BoundaryLocator Benchmarks")(
       Benchmark("(text) textLineBounds (purge)") {
         boundaryLocator.purgeCache()
-        boundaryLocator.textLineBounds(TextSamples.textValue, TextSamples.fontInfo)
+        boundaryLocator.textLineBounds(TextSamples.textValue, TextSamples.fontInfo, 0, 0)
       },
       Benchmark("(text) textLineBounds (no purge)") {
-        boundaryLocator.textLineBounds(TextSamples.textValue, TextSamples.fontInfo)
+        boundaryLocator.textLineBounds(TextSamples.textValue, TextSamples.fontInfo, 0, 0)
       },
       Benchmark("(text) textAsLinesWithBounds (purge)") {
         boundaryLocator.purgeCache()
-        boundaryLocator.textAsLinesWithBounds(TextSamples.textValue, TextSamples.fontKey)
+        boundaryLocator.textAsLinesWithBounds(TextSamples.textValue, TextSamples.fontKey, 0, 0)
       },
       Benchmark("(text) textAsLinesWithBounds (no purge)") {
-        boundaryLocator.textAsLinesWithBounds(TextSamples.textValue, TextSamples.fontKey)
+        boundaryLocator.textAsLinesWithBounds(TextSamples.textValue, TextSamples.fontKey, 0, 0)
       },
       Benchmark("(text) textAllLineBounds (purge)") {
         boundaryLocator.purgeCache()
-        boundaryLocator.textAllLineBounds(TextSamples.textValue, TextSamples.fontKey)
+        boundaryLocator.textAllLineBounds(TextSamples.textValue, TextSamples.fontKey, 0, 0)
       },
       Benchmark("(text) textAllLineBounds (no purge)") {
-        boundaryLocator.textAllLineBounds(TextSamples.textValue, TextSamples.fontKey)
+        boundaryLocator.textAllLineBounds(TextSamples.textValue, TextSamples.fontKey, 0, 0)
       },
       Benchmark("(text) textBounds (purge)") {
         boundaryLocator.purgeCache()

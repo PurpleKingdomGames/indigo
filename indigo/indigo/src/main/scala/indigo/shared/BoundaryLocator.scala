@@ -135,28 +135,31 @@ final class BoundaryLocator(
 
   // Text / Fonts
 
-  def textLineBounds(lineText: String, fontInfo: FontInfo): Rectangle =
-    QuickCache(s"""textline-${fontInfo.fontKey}-$lineText""") {
+  def textLineBounds(lineText: String, fontInfo: FontInfo, letterSpacing: Int, lineHeight: Int): Rectangle =
+    QuickCache(s"""textline-${fontInfo.fontKey}-$lineText-${letterSpacing.toString()}-${lineHeight.toString()}""") {
       if lineText.isEmpty then {
         val b = fontInfo.findByCharacter(' ').bounds
-        b.withSize(Size(0, b.height))
+        b.withSize(Size(0, b.height + lineHeight))
       } else {
-        lineText
-          .toCharArray()
-          .map(c => fontInfo.findByCharacter(c).bounds)
-          .foldLeft(Rectangle.zero) { (acc, curr) =>
-            Rectangle(0, 0, acc.width + curr.width, Math.max(acc.height, curr.height))
-          }
+        val b =
+          lineText
+            .toCharArray()
+            .map(c => fontInfo.findByCharacter(c).bounds)
+            .foldLeft(Rectangle.zero) { (acc, curr) =>
+              Rectangle(0, 0, acc.width + curr.width + letterSpacing, Math.max(acc.height, curr.height + lineHeight))
+            }
+        b.withSize(b.size - Size(letterSpacing, 0))
       }
+
     }
 
-  def textAsLinesWithBounds(text: String, fontKey: FontKey): Batch[TextLine] =
-    QuickCache(s"""text-lines-$fontKey-$text""") {
+  def textAsLinesWithBounds(text: String, fontKey: FontKey, letterSpacing: Int, lineHeight: Int): Batch[TextLine] =
+    QuickCache(s"""text-lines-$fontKey-$text-${letterSpacing.toString()}-${lineHeight.toString()}""") {
       fontRegister
         .findByFontKey(fontKey)
         .map { fontInfo =>
           text.linesIterator.toList
-            .map(lineText => new TextLine(lineText, textLineBounds(lineText, fontInfo)))
+            .map(lineText => new TextLine(lineText, textLineBounds(lineText, fontInfo, letterSpacing, lineHeight)))
             .foldLeft((0, Batch.empty[TextLine])) { case ((yPos, lines), textLine) =>
               (yPos + textLine.lineBounds.height, lines ++ Batch(textLine.moveTo(0, yPos)))
             }
@@ -168,13 +171,13 @@ final class BoundaryLocator(
         }
     }
 
-  def textAllLineBounds(text: String, fontKey: FontKey): Array[Rectangle] =
-    QuickCache(s"""text-all-line-bounds-$fontKey-$text""") {
+  def textAllLineBounds(text: String, fontKey: FontKey, letterSpacing: Int, lineHeight: Int): Array[Rectangle] =
+    QuickCache(s"""text-all-line-bounds-$fontKey-$text-${letterSpacing.toString()}-${lineHeight.toString()}""") {
       fontRegister
         .findByFontKey(fontKey)
         .map { fontInfo =>
           text.linesIterator.toArray
-            .map(lineText => textLineBounds(lineText, fontInfo))
+            .map(lineText => textLineBounds(lineText, fontInfo, letterSpacing, lineHeight))
             .foldLeft((0, Array[Rectangle]())) { case ((yPos, lines), lineBounds) =>
               (yPos + lineBounds.height, lines ++ Array(lineBounds.moveTo(0, yPos)))
             }
@@ -188,7 +191,7 @@ final class BoundaryLocator(
 
   def textBounds(text: Text[_]): Rectangle =
     val unaligned =
-      textAllLineBounds(text.text, text.fontKey)
+      textAllLineBounds(text.text, text.fontKey, text.letterSpacing, text.lineHeight)
         .fold(Rectangle.zero) { (acc, next) =>
           acc.resize(Size(Math.max(acc.width, next.width), acc.height + next.height))
         }

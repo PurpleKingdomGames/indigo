@@ -105,4 +105,6 @@ object SandboxView:
           case _ =>
             None
         }
+        .withLineHeight(20)
+        .withLetterSpacing(10)
     )

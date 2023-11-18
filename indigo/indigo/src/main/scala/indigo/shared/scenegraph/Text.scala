@@ -13,6 +13,8 @@ final case class Text[M <: Material](
     text: String,
     alignment: TextAlignment,
     fontKey: FontKey,
+    lineHeight: Int,
+    letterSpacing: Int,
     material: M,
     eventHandlerEnabled: Boolean,
     eventHandler: ((Text[_], GlobalEvent)) => Option[GlobalEvent],
@@ -98,6 +100,14 @@ final case class Text[M <: Material](
   def withFontKey(newFontKey: FontKey): Text[M] =
     this.copy(fontKey = newFontKey)
 
+  /** Sets the vertical gap between lines of text _in addition_ (relative to) to the actual height of the text. Defaults to 0. */
+  def withLineHeight(amount: Int): Text[M] =
+    this.copy(lineHeight = amount)
+
+  /** Sets the horiztonal gap between letters in a line of text. Defaults to 0. */
+  def withLetterSpacing(amount: Int): Text[M] =
+    this.copy(letterSpacing = amount)
+
   def withEventHandler(f: ((Text[_], GlobalEvent)) => Option[GlobalEvent]): Text[M] =
     this.copy(eventHandler = f, eventHandlerEnabled = true)
   def onEvent(f: PartialFunction[((Text[_], GlobalEvent)), GlobalEvent]): Text[M] =
@@ -120,6 +130,8 @@ object Text:
       text = text,
       alignment = TextAlignment.Left,
       fontKey = fontKey,
+      lineHeight = 0,
+      letterSpacing = 0,
       eventHandlerEnabled = false,
       eventHandler = Function.const(None),
       material = material
@@ -136,6 +148,8 @@ object Text:
       text = text,
       alignment = TextAlignment.Left,
       fontKey = fontKey,
+      lineHeight = 0,
+      letterSpacing = 0,
       eventHandlerEnabled = false,
       eventHandler = Function.const(None),
       material = material
