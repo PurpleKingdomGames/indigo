@@ -9,6 +9,9 @@ final case class LineSegment(start: Vertex, end: Vertex) derives CanEqual:
       ((end.y - start.y) / 2) + start.y
     )
 
+  lazy val from: Vertex = start
+  lazy val to: Vertex   = end
+
   def left: Double   = Math.min(start.x, end.x)
   def right: Double  = Math.max(start.x, end.x)
   def top: Double    = Math.min(start.y, end.y)
