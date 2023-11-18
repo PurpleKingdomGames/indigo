@@ -5,13 +5,10 @@ class EmbedDataTests extends munit.FunSuite {
   test("Create a DataFrame") {
 
     val rows =
-      EmbedData.extractRows(
-        List(
-          "name,game,highscore,allowed",
-          "bob,tron,10000.00,true",
-          "Fred,tanks,476,false"
-        ),
-        ","
+      List(
+        EmbedData.extractRowData("name,game,highscore,allowed", ","),
+        EmbedData.extractRowData("bob,tron,10000.00,true", ","),
+        EmbedData.extractRowData("Fred,tanks,476,false", ",")
       )
 
     val actual =
@@ -87,7 +84,7 @@ class EmbedDataTests extends munit.FunSuite {
   }
 
   test("Extract row data - csv - simple") {
-    val row = " abc,123, def,456.5 ,ghi789,true ,."
+    val row = " abc,123, def,456.5 ,ghi789,true ,.,null, ,"
 
     val actual =
       EmbedData.extractRowData(row, ",")
@@ -100,7 +97,9 @@ class EmbedDataTests extends munit.FunSuite {
         DataType.DoubleData(456.5),
         DataType.StringData("ghi789"),
         DataType.BooleanData(true),
-        DataType.StringData(".")
+        DataType.StringData("."),
+        DataType.NullData,
+        DataType.NullData
       )
 
     assertEquals(actual, expected)
