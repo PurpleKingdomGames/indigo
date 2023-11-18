@@ -52,6 +52,11 @@ final case class SceneUpdateFragment(
   def addLayers(newLayers: Batch[Layer]): SceneUpdateFragment =
     this.copy(layers = newLayers.foldLeft(layers)((acc, l) => SceneUpdateFragment.addLayer(acc, l)))
 
+  def withLayers(layers: Batch[Layer]): SceneUpdateFragment =
+    this.copy(layers = layers)
+  def withLayers(layers: Layer*): SceneUpdateFragment =
+    withLayers(layers.toBatch)
+
   def noLights: SceneUpdateFragment =
     this.copy(lights = Batch.empty)
 

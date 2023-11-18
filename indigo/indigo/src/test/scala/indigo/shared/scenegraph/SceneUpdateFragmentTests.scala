@@ -25,7 +25,7 @@ class SceneUpdateFragmentTests extends munit.FunSuite {
       SceneUpdateFragment(Option(Layer(BindingKey("key A"))))
 
     val expected =
-      SceneUpdateFragment.empty.addLayers(Batch(Layer(BindingKey("key A"))))
+      SceneUpdateFragment.empty.addLayers(Batch(Layer(BindingKey("key "))))
 
     assertEquals(actual, expected)
 
@@ -92,6 +92,19 @@ class SceneUpdateFragmentTests extends munit.FunSuite {
 
     assert(actual.layers.length == 1)
     assertEquals(actual.layers.head.magnification, Some(2))
+
+  }
+
+  test("Replace layers using withLayers") {
+
+    val scene =
+      SceneUpdateFragment.empty.addLayer(Layer(BindingKey("key A")))
+
+    val actual =
+      scene.withLayers(Layer(BindingKey("key B")))
+
+    assert(actual.layers.length == 1)
+    assertEquals(actual.layers.head.key, Some(BindingKey("key B")))
 
   }
 
