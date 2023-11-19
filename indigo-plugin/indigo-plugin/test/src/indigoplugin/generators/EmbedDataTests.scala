@@ -198,4 +198,49 @@ class EmbedDataTests extends munit.FunSuite {
     assertEquals(DataType.decideType("."), DataType.StringData("."))
   }
 
+  test("matchHeaderRowLength") {
+
+    val rows =
+      List(
+        EmbedData.extractRowData("name,game,highscore,allowed", ","),
+        EmbedData.extractRowData("bob", ","),
+        EmbedData.extractRowData("Fred,tanks,476,false", ","),
+        EmbedData.extractRowData("Stan,,-2", ",")
+      )
+
+    val actual =
+      DataType.matchHeaderRowLength(rows.map(_.toArray).toArray).map(_.toList).toList
+
+    val expected =
+      List(
+        List(
+          DataType.StringData("name", false),
+          DataType.StringData("game", false),
+          DataType.StringData("highscore", false),
+          DataType.StringData("allowed", false)
+        ),
+        List(
+          DataType.StringData("bob", false),
+          DataType.NullData,
+          DataType.NullData,
+          DataType.NullData
+        ),
+        List(
+          DataType.StringData("Fred", false),
+          DataType.StringData("tanks", false),
+          DataType.IntData(476, false),
+          DataType.BooleanData(false, false)
+        ),
+        List(
+          DataType.StringData("Stan", false),
+          DataType.NullData,
+          DataType.IntData(-2, false),
+          DataType.NullData
+        )
+      )
+
+    assertEquals(actual, expected)
+
+  }
+
 }

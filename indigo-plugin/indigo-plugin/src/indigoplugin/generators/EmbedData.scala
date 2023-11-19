@@ -33,10 +33,11 @@ object EmbedData {
         os.read.lines(filePath).filter(rowFilter)
       }
 
+    val rows =
+      lines.map(row => extractRowData(row, delimiter)).toList
+
     val dataFrame =
-      DataFrame.fromRows(
-        lines.map(row => extractRowData(row, delimiter)).toList
-      )
+      DataFrame.fromRows(rows)
 
     val wd = outDir / Generators.OutputDirName
 
@@ -201,7 +202,7 @@ sealed trait DataType {
       case _: DataType.DoubleData                => "Double"
       case d: DataType.IntData if d.nullable     => "Option[Int]"
       case _: DataType.IntData                   => "Int"
-      case DataType.NullData                     => "Null"
+      case DataType.NullData                     => "Option[Any]"
     }
 
 }
@@ -307,6 +308,26 @@ object DataType {
       }
     }
 
+  def matchHeaderRowLength(rows: Array[Array[DataType]]): Array[Array[DataType]] =
+    rows.toList match {
+      case Nil =>
+        rows
+
+      case headers :: data =>
+        val l = headers.length
+        val res =
+          headers :: data.map { r =>
+            val diff = l - r.length
+            if (diff > 0) {
+              r ++ List.fill(diff)(DataType.NullData)
+            } else {
+              r
+            }
+          }
+
+        res.toArray
+    }
+
 }
 
 final case class DataFrame(data: Array[Array[DataType]], columnCount: Int) {
@@ -318,7 +339,7 @@ final case class DataFrame(data: Array[Array[DataType]], columnCount: Int) {
 
   def alignColumnTypes: DataFrame = {
     val columns =
-      rows.transpose
+      DataType.matchHeaderRowLength(rows).transpose
 
     val stringKeys: Array[DataType] =
       columns.head.map(_.toStringData)
@@ -425,15 +446,13 @@ object DataFrame {
       case _ :: Nil =>
         throw new Exception("Only one row of data found. " + standardMessage)
 
-      case h :: t =>
+      case h :: _ =>
         val len = h.length
 
         if (len == 0) {
           throw new Exception("No data to create. " + standardMessage)
         } else if (len == 1) {
           throw new Exception("Only one column of data. " + standardMessage)
-        } else if (!t.forall(_.length == len)) {
-          throw new Exception(s"All rows must be the same length. Header row had '$len' columns. " + standardMessage)
         } else {
           DataFrame(rows.map(_.toArray).toArray, len).alignColumnTypes
         }
