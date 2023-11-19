@@ -202,8 +202,8 @@ object DataType {
   case object NullData                       extends DataType
 
   private val isBoolean: Regex = """^(true|false)$""".r
-  private val isDouble: Regex  = """^([0-9]+?)\.([0-9]+)$""".r
-  private val isInt: Regex     = """^([0-9]+)$""".r
+  private val isInt: Regex     = """^(\-?[0-9]+)$""".r
+  private val isDouble: Regex  = """^(\-?[0-9]+?)\.([0-9]+)$""".r
   private val isNull: Regex    = """^$""".r
 
   def decideType: String => DataType = {
@@ -276,12 +276,17 @@ final case class DataFrame(data: Array[Array[DataType]], columnCount: Int) {
     data.tail
 
   def alignColumnTypes: DataFrame = {
-    val transposed                  = rows.transpose
-    val stringKeys: Array[DataType] = transposed.head.map(_.toStringData)
-    val typeRows: Array[Array[DataType]] = transposed.tail
+    val columns =
+      rows.transpose
+
+    val stringKeys: Array[DataType] =
+      columns.head.map(_.toStringData)
+
+    val typedColumns: Array[Array[DataType]] = columns.tail
       .map(d => DataType.convertToBestType(d.toList).toArray)
+
     val cleanedRows: Array[Array[DataType]] =
-      (stringKeys +: typeRows).transpose
+      (stringKeys +: typedColumns).transpose
 
     this.copy(
       data = headers.asInstanceOf[Array[DataType]] +: cleanedRows
