@@ -17,31 +17,31 @@ class EmbedDataTests extends munit.FunSuite {
 
     val expectedHeaders =
       List(
-        DataType.StringData("name"),
-        DataType.StringData("game"),
-        DataType.StringData("highscore"),
-        DataType.StringData("allowed")
+        DataType.StringData("name", false),
+        DataType.StringData("game", false),
+        DataType.StringData("highscore", false),
+        DataType.StringData("allowed", false)
       )
 
     val expectedRows =
       List(
         List(
-          DataType.StringData("bob"),
-          DataType.StringData("tron"),
-          DataType.DoubleData(10000.0),
-          DataType.BooleanData(true)
+          DataType.StringData("bob", false),
+          DataType.StringData("tron", true),
+          DataType.DoubleData(10000.0, false),
+          DataType.BooleanData(true, false)
         ),
         List(
-          DataType.StringData("Fred"),
-          DataType.StringData("tanks"),
-          DataType.DoubleData(476.0),
-          DataType.BooleanData(false)
+          DataType.StringData("Fred", false),
+          DataType.StringData("tanks", true),
+          DataType.DoubleData(476.0, false),
+          DataType.BooleanData(false, false)
         ),
         List(
-          DataType.StringData("Stan"),
+          DataType.StringData("Stan", false),
           DataType.NullData,
-          DataType.DoubleData(-2),
-          DataType.BooleanData(true)
+          DataType.DoubleData(-2, false),
+          DataType.BooleanData(true, false)
         )
       )
 
@@ -53,10 +53,10 @@ class EmbedDataTests extends munit.FunSuite {
 
     val expectedEnum =
       """
-      |enum GameScores(val game: String, val highscore: Double, val allowed: Boolean):
-      |  case Bob extends GameScores("tron", 10000.0, true)
-      |  case Fred extends GameScores("tanks", 476.0, false)
-      |  case Stan extends GameScores(null, -2.0, true)
+      |enum GameScores(val game: Option[String], val highscore: Double, val allowed: Boolean):
+      |  case Bob extends GameScores(Some("tron"), 10000.0, true)
+      |  case Fred extends GameScores(Some("tanks"), 476.0, false)
+      |  case Stan extends GameScores(None, -2.0, true)
       """.stripMargin
 
     assertEquals(actualEnum.trim, expectedEnum.trim)
@@ -66,10 +66,10 @@ class EmbedDataTests extends munit.FunSuite {
 
     val expectedEnumWithExtends =
       """
-      |enum GameScores(val game: String, val highscore: Double, val allowed: Boolean) extends ScoreData:
-      |  case Bob extends GameScores("tron", 10000.0, true)
-      |  case Fred extends GameScores("tanks", 476.0, false)
-      |  case Stan extends GameScores(null, -2.0, true)
+      |enum GameScores(val game: Option[String], val highscore: Double, val allowed: Boolean) extends ScoreData:
+      |  case Bob extends GameScores(Some("tron"), 10000.0, true)
+      |  case Fred extends GameScores(Some("tanks"), 476.0, false)
+      |  case Stan extends GameScores(None, -2.0, true)
       """.stripMargin
 
     assertEquals(actualEnumWithExtends.trim, expectedEnumWithExtends.trim)
@@ -79,13 +79,13 @@ class EmbedDataTests extends munit.FunSuite {
 
     val expectedMap =
       """
-      |final case class GameScores(val game: String, val highscore: Double, val allowed: Boolean)
+      |final case class GameScores(game: Option[String], highscore: Double, allowed: Boolean)
       |object GameScores:
       |  val data: Map[String, GameScores] =
       |    Map(
-      |      "bob" -> GameScores("tron", 10000.0, true),
-      |      "Fred" -> GameScores("tanks", 476.0, false),
-      |      "Stan" -> GameScores(null, -2.0, true)
+      |      "bob" -> GameScores(Some("tron"), 10000.0, true),
+      |      "Fred" -> GameScores(Some("tanks"), 476.0, false),
+      |      "Stan" -> GameScores(None, -2.0, true)
       |    )
       """.stripMargin
 

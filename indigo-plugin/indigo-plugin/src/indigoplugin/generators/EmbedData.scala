@@ -95,12 +95,12 @@ object EmbedData {
       }
 
     parse(delimiter)(cleanRow).map(_._1).collect {
-      case d @ DataType.StringData(s) if s.nonEmpty => d
-      case DataType.StringData(_)                   => DataType.NullData
-      case d: DataType.BooleanData                  => d
-      case d: DataType.DoubleData                   => d
-      case d: DataType.IntData                      => d
-      case DataType.NullData                        => DataType.NullData
+      case d @ DataType.StringData(s, _) if s.nonEmpty => d
+      case DataType.StringData(_, _)                   => DataType.NullData
+      case d: DataType.BooleanData                     => d
+      case d: DataType.DoubleData                      => d
+      case d: DataType.IntData                         => d
+      case DataType.NullData                           => DataType.NullData
     }
   }
 
@@ -131,6 +131,9 @@ object EmbedData {
 }
 
 sealed trait DataType {
+
+  def nullable: Boolean
+  def makeOptional: DataType
 
   def isString: Boolean =
     this match {
@@ -164,42 +167,80 @@ sealed trait DataType {
 
   def toStringData: DataType.StringData =
     this match {
-      case s: DataType.StringData      => s
-      case DataType.BooleanData(value) => DataType.StringData(value.toString)
-      case DataType.DoubleData(value)  => DataType.StringData(value.toString)
-      case DataType.IntData(value)     => DataType.StringData(value.toString)
-      case DataType.NullData           => DataType.StringData("null")
+      case s: DataType.StringData if s.nullable              => DataType.StringData(s"""Some("${s.value}")""", true)
+      case s: DataType.StringData                            => s
+      case DataType.BooleanData(value, nullable) if nullable => DataType.StringData(s"Some(${value.toString})", true)
+      case DataType.BooleanData(value, _)                    => DataType.StringData(value.toString, false)
+      case DataType.DoubleData(value, nullable) if nullable  => DataType.StringData(s"Some(${value.toString})", true)
+      case DataType.DoubleData(value, _)                     => DataType.StringData(value.toString, false)
+      case DataType.IntData(value, nullable) if nullable     => DataType.StringData(s"Some(${value.toString})", true)
+      case DataType.IntData(value, _)                        => DataType.StringData(value.toString, false)
+      case DataType.NullData                                 => DataType.StringData("None", true)
     }
 
   def asString: String =
     this match {
-      case s: DataType.StringData      => s""""${s.value}""""
-      case DataType.BooleanData(value) => value.toString
-      case DataType.DoubleData(value)  => value.toString
-      case DataType.IntData(value)     => value.toString
-      case DataType.NullData           => "null"
+      case s: DataType.StringData if s.nullable              => s"""Some("${s.value}")"""
+      case s: DataType.StringData                            => s""""${s.value}""""
+      case DataType.BooleanData(value, nullable) if nullable => s"Some(${value.toString})"
+      case DataType.BooleanData(value, _)                    => value.toString
+      case DataType.DoubleData(value, nullable) if nullable  => s"Some(${value.toString})"
+      case DataType.DoubleData(value, _)                     => value.toString
+      case DataType.IntData(value, nullable) if nullable     => s"Some(${value.toString})"
+      case DataType.IntData(value, _)                        => value.toString
+      case DataType.NullData                                 => "None"
     }
 
   def giveTypeName: String =
     this match {
-      case _: DataType.StringData  => "String"
-      case _: DataType.BooleanData => "Boolean"
-      case _: DataType.DoubleData  => "Double"
-      case _: DataType.IntData     => "Int"
-      case DataType.NullData       => "Null"
+      case d: DataType.StringData if d.nullable  => "Option[String]"
+      case _: DataType.StringData                => "String"
+      case d: DataType.BooleanData if d.nullable => "Option[Boolean]"
+      case _: DataType.BooleanData               => "Boolean"
+      case d: DataType.DoubleData if d.nullable  => "Option[Double]"
+      case _: DataType.DoubleData                => "Double"
+      case d: DataType.IntData if d.nullable     => "Option[Int]"
+      case _: DataType.IntData                   => "Int"
+      case DataType.NullData                     => "Null"
     }
 
 }
 object DataType {
 
   // Most to least specific: Boolean, Int, Double, String
-  final case class BooleanData(value: Boolean) extends DataType
-  final case class IntData(value: Int) extends DataType {
-    def toDoubleData: DoubleData = DoubleData(value.toDouble)
+  final case class BooleanData(value: Boolean, nullable: Boolean) extends DataType {
+    def makeOptional: BooleanData = this.copy(nullable = true)
   }
-  final case class DoubleData(value: Double) extends DataType
-  final case class StringData(value: String) extends DataType
-  case object NullData                       extends DataType
+  object BooleanData {
+    def apply(value: Boolean): BooleanData = BooleanData(value, false)
+  }
+
+  final case class IntData(value: Int, nullable: Boolean) extends DataType {
+    def toDoubleData: DoubleData = DoubleData(value.toDouble, nullable)
+    def makeOptional: IntData    = this.copy(nullable = true)
+  }
+  object IntData {
+    def apply(value: Int): IntData = IntData(value, false)
+  }
+
+  final case class DoubleData(value: Double, nullable: Boolean) extends DataType {
+    def makeOptional: DoubleData = this.copy(nullable = true)
+  }
+  object DoubleData {
+    def apply(value: Double): DoubleData = DoubleData(value, false)
+  }
+
+  final case class StringData(value: String, nullable: Boolean) extends DataType {
+    def makeOptional: StringData = this.copy(nullable = true)
+  }
+  object StringData {
+    def apply(value: String): StringData = StringData(value, false)
+  }
+
+  case object NullData extends DataType {
+    val nullable: Boolean      = true
+    def makeOptional: DataType = this
+  }
 
   private val isBoolean: Regex = """^(true|false)$""".r
   private val isInt: Regex     = """^(\-?[0-9]+)$""".r
@@ -207,11 +248,11 @@ object DataType {
   private val isNull: Regex    = """^$""".r
 
   def decideType: String => DataType = {
-    case isBoolean(v)     => BooleanData(v.toBoolean)
-    case isInt(v)         => IntData(v.toInt)
-    case isDouble(v1, v2) => DoubleData(s"$v1.$v2".toDouble)
+    case isBoolean(v)     => BooleanData(v.toBoolean, false)
+    case isInt(v)         => IntData(v.toInt, false)
+    case isDouble(v1, v2) => DoubleData(s"$v1.$v2".toDouble, false)
     case isNull(_)        => NullData
-    case v                => StringData(v)
+    case v                => StringData(v, false)
   }
 
   def sameType(a: DataType, b: DataType): Boolean =
@@ -253,9 +294,9 @@ object DataType {
       l
     } else if (allNumericTypes(l)) {
       l.map {
-        case v @ DataType.DoubleData(_) => v
-        case v @ DataType.IntData(_)    => v.toDoubleData
-        case DataType.NullData          => DataType.NullData
+        case v @ DataType.DoubleData(_, _) => v
+        case v @ DataType.IntData(_, _)    => v.toDoubleData
+        case DataType.NullData             => DataType.NullData
         case s => throw new Exception(s"Unexpected non-numeric type '$s'") // Shouldn't get here.
       }
     } else {
@@ -285,8 +326,17 @@ final case class DataFrame(data: Array[Array[DataType]], columnCount: Int) {
     val typedColumns: Array[Array[DataType]] = columns.tail
       .map(d => DataType.convertToBestType(d.toList).toArray)
 
+    val optionalColumns: Array[Array[DataType]] =
+      typedColumns.map { col =>
+        if (DataType.hasOptionalValues(col.toList)) {
+          col.map(_.makeOptional)
+        } else {
+          col
+        }
+      }
+
     val cleanedRows: Array[Array[DataType]] =
-      (stringKeys +: typedColumns).transpose
+      (stringKeys +: optionalColumns).transpose
 
     this.copy(
       data = headers.asInstanceOf[Array[DataType]] +: cleanedRows
@@ -308,10 +358,15 @@ final case class DataFrame(data: Array[Array[DataType]], columnCount: Int) {
     }
   }
 
-  def renderVars: String = {
+  def renderVars(omitVal: Boolean): String = {
     val names = headers.drop(1).map(_.value)
     val types = rows.head.drop(1).map(_.giveTypeName)
-    names.zip(types).map { case (n, t) => s"val ${toSafeNameCamel(n)}: $t" }.mkString(", ")
+    names
+      .zip(types)
+      .map { case (n, t) =>
+        (if (omitVal) "" else "val ") + s"${toSafeNameCamel(n)}: $t"
+      }
+      .mkString(", ")
   }
 
   def renderEnum(moduleName: String, extendsFrom: Option[String]): String = {
@@ -331,7 +386,7 @@ final case class DataFrame(data: Array[Array[DataType]], columnCount: Int) {
       .getOrElse("")
 
     s"""
-    |enum $moduleName(${renderVars})$extFrom:
+    |enum $moduleName(${renderVars(false)})$extFrom:
     |${renderedRows}
     |""".stripMargin
   }
@@ -345,7 +400,7 @@ final case class DataFrame(data: Array[Array[DataType]], columnCount: Int) {
         .mkString(",\n")
 
     s"""
-    |final case class $moduleName(${renderVars})
+    |final case class $moduleName(${renderVars(true)})
     |object $moduleName:
     |  val data: Map[String, $moduleName] =
     |    Map(
