@@ -8,7 +8,8 @@ class EmbedDataTests extends munit.FunSuite {
       List(
         EmbedData.extractRowData("name,game,highscore,allowed", ","),
         EmbedData.extractRowData("bob,tron,10000.00,true", ","),
-        EmbedData.extractRowData("Fred,tanks,476,false", ",")
+        EmbedData.extractRowData("Fred,tanks,476,false", ","),
+        EmbedData.extractRowData("Stan,,-2,true", ",")
       )
 
     val actual =
@@ -35,6 +36,12 @@ class EmbedDataTests extends munit.FunSuite {
           DataType.StringData("tanks"),
           DataType.DoubleData(476.0),
           DataType.BooleanData(false)
+        ),
+        List(
+          DataType.StringData("Stan"),
+          DataType.NullData,
+          DataType.DoubleData(-2),
+          DataType.BooleanData(true)
         )
       )
 
@@ -49,6 +56,7 @@ class EmbedDataTests extends munit.FunSuite {
       |enum GameScores(val game: String, val highscore: Double, val allowed: Boolean):
       |  case Bob extends GameScores("tron", 10000.0, true)
       |  case Fred extends GameScores("tanks", 476.0, false)
+      |  case Stan extends GameScores(null, -2.0, true)
       """.stripMargin
 
     assertEquals(actualEnum.trim, expectedEnum.trim)
@@ -61,6 +69,7 @@ class EmbedDataTests extends munit.FunSuite {
       |enum GameScores(val game: String, val highscore: Double, val allowed: Boolean) extends ScoreData:
       |  case Bob extends GameScores("tron", 10000.0, true)
       |  case Fred extends GameScores("tanks", 476.0, false)
+      |  case Stan extends GameScores(null, -2.0, true)
       """.stripMargin
 
     assertEquals(actualEnumWithExtends.trim, expectedEnumWithExtends.trim)
@@ -75,7 +84,8 @@ class EmbedDataTests extends munit.FunSuite {
       |  val data: Map[String, GameScores] =
       |    Map(
       |      "bob" -> GameScores("tron", 10000.0, true),
-      |      "Fred" -> GameScores("tanks", 476.0, false)
+      |      "Fred" -> GameScores("tanks", 476.0, false),
+      |      "Stan" -> GameScores(null, -2.0, true)
       |    )
       """.stripMargin
 
@@ -173,6 +183,19 @@ class EmbedDataTests extends munit.FunSuite {
       )
 
     assertEquals(actual, expected)
+  }
+
+  test("decideType - int") {
+    assertEquals(DataType.decideType("10"), DataType.IntData(10))
+    assertEquals(DataType.decideType("-10"), DataType.IntData(-10))
+  }
+
+  test("decideType - double") {
+    assertEquals(DataType.decideType("10.0"), DataType.DoubleData(10.0))
+    assertEquals(DataType.decideType("-10.0"), DataType.DoubleData(-10.0))
+    assertEquals(DataType.decideType("-10."), DataType.StringData("-10."))
+    assertEquals(DataType.decideType(".0"), DataType.StringData(".0"))
+    assertEquals(DataType.decideType("."), DataType.StringData("."))
   }
 
 }
