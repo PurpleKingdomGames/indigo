@@ -110,9 +110,11 @@ object EmbedData {
   // to a list of pairs
   // of things and strings.
   def parse(delimiter: String): String => List[(DataType, String)] = {
-    val takeUpToDelimiter        = s"^(.*?)${delimiter}(.*)".r
-    val takeMatchingSingleQuotes = s"^'(.*?)'${delimiter}(.*)".r
-    val takeMatchingDoubleQuotes = s"""^\"(.*?)\"${delimiter}(.*)""".r
+    val takeUpToDelimiter         = s"^(.*?)${delimiter}(.*)".r
+    val takeMatchingSingleQuotes  = s"^'(.*?)'${delimiter}(.*)".r
+    val takeMatchingDoubleQuotes  = s"""^\"(.*?)\"${delimiter}(.*)""".r
+    val takeRemainingSingleQuotes = s"^'(.*?)'".r
+    val takeRemainingDoubleQuotes = s"""^\"(.*?)\"""".r
 
     (in: String) =>
       in match {
@@ -124,6 +126,12 @@ object EmbedData {
 
         case takeUpToDelimiter(take, left) =>
           List(DataType.decideType(take.trim) -> left) ++ parse(delimiter)(left.trim)
+
+        case takeRemainingSingleQuotes(take) =>
+          List(DataType.decideType(take.trim) -> "")
+
+        case takeRemainingDoubleQuotes(take) =>
+          List(DataType.decideType(take.trim) -> "")
 
         case take =>
           List(DataType.decideType(take.trim) -> "")
