@@ -100,7 +100,9 @@ final case class Text[M <: Material](
   def withFontKey(newFontKey: FontKey): Text[M] =
     this.copy(fontKey = newFontKey)
 
-  /** Sets the vertical gap between lines of text _in addition_ (relative to) to the actual height of the text. Defaults to 0. */
+  /** Sets the vertical gap between lines of text _in addition_ (relative to) to the actual height of the text. Defaults
+    * to 0.
+    */
   def withLineHeight(amount: Int): Text[M] =
     this.copy(lineHeight = amount)
 

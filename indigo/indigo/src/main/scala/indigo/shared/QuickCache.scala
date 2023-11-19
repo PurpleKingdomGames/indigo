@@ -2,12 +2,12 @@ package indigo.shared
 
 /** QuickCache is a handy way to avoid expensive re-calculation of data. It is a side-effecting arrangement that Indigo
   * uses a lot internally, that can also be used by cautious game devs. Simple example:
-
-  ```
-  given QuickCache[MyExpensiveObject] = QuickCache.empty
-
-  QuickCache("key")(obj)
-  ```
+  *
+  * ```
+  * given QuickCache[MyExpensiveObject] = QuickCache.empty
+  *
+  * QuickCache("key")(obj)
+  * ```
   */
 final class QuickCache[A](private val cache: scalajs.js.Dictionary[A]):
 
