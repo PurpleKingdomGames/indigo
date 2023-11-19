@@ -84,7 +84,7 @@ class EmbedDataTests extends munit.FunSuite {
   }
 
   test("Extract row data - csv - simple") {
-    val row = " abc,123, def,456.5 ,ghi789,true ,.,null, ,"
+    val row = " abc,123, def,456.5 ,ghi789,true ,.,, ,"
 
     val actual =
       EmbedData.extractRowData(row, ",")

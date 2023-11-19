@@ -204,7 +204,7 @@ object DataType {
   private val isBoolean: Regex = """^(true|false)$""".r
   private val isDouble: Regex  = """^([0-9]+?)\.([0-9]+)$""".r
   private val isInt: Regex     = """^([0-9]+)$""".r
-  private val isNull: Regex    = """^(null)$""".r
+  private val isNull: Regex    = """^$""".r
 
   def decideType: String => DataType = {
     case isBoolean(v)     => BooleanData(v.toBoolean)
