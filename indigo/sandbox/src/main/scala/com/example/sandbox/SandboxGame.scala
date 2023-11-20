@@ -5,6 +5,7 @@ import com.example.sandbox.scenes.BoundingCircleScene
 import com.example.sandbox.scenes.BoundsScene
 import com.example.sandbox.scenes.BoxesScene
 import com.example.sandbox.scenes.CameraScene
+import com.example.sandbox.scenes.CameraWithCloneTilesScene
 import com.example.sandbox.scenes.ClipScene
 import com.example.sandbox.scenes.ConfettiScene
 import com.example.sandbox.scenes.CratesScene
@@ -46,7 +47,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
   val viewportHeight: Int     = gameHeight * magnificationLevel // 256
 
   def initialScene(bootData: SandboxBootData): Option[SceneName] =
-    Some(OriginalScene.name)
+    Some(CameraWithCloneTilesScene.name)
 
   def scenes(bootData: SandboxBootData): NonEmptyList[Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]] =
     NonEmptyList(
@@ -71,7 +72,8 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
       UltravioletScene,
       PointersScene,
       BoundingCircleScene,
-      LineReflectionScene
+      LineReflectionScene,
+      CameraWithCloneTilesScene
     )
 
   val eventFilters: EventFilters = EventFilters.Permissive

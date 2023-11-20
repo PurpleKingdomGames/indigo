@@ -8,7 +8,8 @@ object CameraHelper:
   def calculateCameraMatrix(
       screenWidth: Double,
       screenHeight: Double,
-      magnification: Double,
+      renderMagnification: Double,
+      actualMagnification: Double,
       cameraX: Double,
       cameraY: Double,
       cameraZoom: Double,
@@ -16,8 +17,8 @@ object CameraHelper:
       cameraRotation: Radians,
       isLookAt: Boolean
   ): CheapMatrix4 =
-    val newWidth  = screenWidth / magnification
-    val newHeight = screenHeight / magnification
+    val newWidth  = screenWidth / renderMagnification
+    val newHeight = screenHeight / renderMagnification
 
     val bounds: (Float, Float, Float, Float) =
       if isLookAt then zoom(0, 0, newWidth.toFloat, newHeight.toFloat, cameraZoom.toFloat)
@@ -25,17 +26,23 @@ object CameraHelper:
 
     val mat =
       if isLookAt then
-        CheapMatrix4.identity
-          .translate(-cameraX.toFloat, -cameraY.toFloat, 1.0f)
-          .rotate(cameraRotation.toFloat)
-          .translate(newWidth.toFloat / 2.0f, newHeight.toFloat / 2.0f, 1.0f) *
-          CheapMatrix4
-            .orthographic(
-              bounds._1,
-              bounds._2,
-              bounds._3,
-              bounds._4
+        val m1 =
+          CheapMatrix4.identity
+            .translate(-cameraX.toFloat, -cameraY.toFloat, 1.0f)
+            .rotate(cameraRotation.toFloat)
+            .translate(
+              Math.floor(newWidth.toFloat / (2.0f * actualMagnification.toFloat)).toFloat,
+              Math.floor(newHeight.toFloat / (2.0f * actualMagnification.toFloat)).toFloat,
+              1.0f
             )
+
+        m1 * CheapMatrix4
+          .orthographic(
+            bounds._1,
+            bounds._2,
+            bounds._3,
+            bounds._4
+          )
       else
         CheapMatrix4.identity
           .rotate(cameraRotation.toFloat) *
