@@ -151,7 +151,7 @@ class EmbedDataTests extends munit.FunSuite {
     assertEquals(actual, expected)
   }
 
-  test("Extract row data - csv - with leading and trailing quotes".only) {
+  test("Extract row data - csv - with leading and trailing quotes") {
     val row = """"hello there",abc,123,def,456,"ghi 789""""
 
     val actual =
