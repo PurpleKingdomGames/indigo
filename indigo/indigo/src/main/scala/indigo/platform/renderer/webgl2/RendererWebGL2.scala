@@ -22,7 +22,6 @@ import indigo.shared.platform.ProcessedSceneData
 import indigo.shared.platform.RendererConfig
 import indigo.shared.scenegraph.Blend
 import indigo.shared.scenegraph.BlendFactor
-import indigo.shared.scenegraph.Camera
 import indigo.shared.shader.RawShaderCode
 import indigo.shared.shader.ShaderId
 import indigo.shared.shader.StandardShaders
@@ -248,7 +247,8 @@ final class RendererWebGL2(
               .calculateCameraMatrix(
                 lastWidth.toDouble,
                 lastHeight.toDouble,
-                1.0d, // Layers aren't magnified
+                1.0d, // Layers aren't magnified during rendering.
+                layer.magnification.map(_.toDouble).getOrElse(1.0),
                 c.position.x.toDouble,
                 c.position.y.toDouble,
                 c.zoom.toDouble,
@@ -287,6 +287,7 @@ final class RendererWebGL2(
                   lastWidth.toDouble,
                   lastHeight.toDouble,
                   m.toDouble,
+                  1.0d, // During merge, we always used a fixed camera, so irrelevant.
                   0,
                   0,
                   1,
