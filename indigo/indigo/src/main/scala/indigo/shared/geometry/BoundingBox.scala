@@ -95,6 +95,19 @@ final case class BoundingBox(position: Vertex, size: Vertex) derives CanEqual:
     this.copy(size = newSize)
   def resize(newSize: Vector2): BoundingBox =
     resize(Vertex.fromVector2(newSize))
+  def resize(x: Double, y: Double): BoundingBox =
+    resize(Vertex(x, y))
+  def resize(value: Double): BoundingBox =
+    resize(Vertex(value))
+
+  def resizeBy(amount: Vertex): BoundingBox =
+    this.copy(size = size + amount)
+  def resizeBy(amount: Vector2): BoundingBox =
+    resizeBy(Vertex.fromVector2(amount))
+  def resizeBy(x: Int, y: Int): BoundingBox =
+    resizeBy(Vertex(x, y))
+  def resizeBy(amount: Int): BoundingBox =
+    resizeBy(Vertex(amount))
 
   @deprecated("Please use `toIncircle`, or alternatively `toCircumcircle`.")
   def toCircle: Circle =

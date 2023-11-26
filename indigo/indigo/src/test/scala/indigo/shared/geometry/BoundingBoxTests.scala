@@ -348,4 +348,18 @@ class BoundingBoxTests extends munit.FunSuite {
 
   }
 
+  test("resize") {
+    assertEquals(BoundingBox(10, 10, 10, 10).resize(Vertex(20, 20)), BoundingBox(10, 10, 20, 20))
+    assertEquals(BoundingBox(10, 10, 10, 10).resize(Vector2(20, 20)), BoundingBox(10, 10, 20, 20))
+    assertEquals(BoundingBox(10, 10, 10, 10).resize(20, 20), BoundingBox(10, 10, 20, 20))
+    assertEquals(BoundingBox(10, 10, 10, 10).resize(20), BoundingBox(10, 10, 20, 20))
+  }
+
+  test("resizeBy") {
+    assertEquals(BoundingBox(10, 10, 10, 10).resizeBy(Vertex(20, 20)), BoundingBox(10, 10, 30, 30))
+    assertEquals(BoundingBox(10, 10, 10, 10).resizeBy(Vector2(20, 20)), BoundingBox(10, 10, 30, 30))
+    assertEquals(BoundingBox(10, 10, 10, 10).resizeBy(20, 20), BoundingBox(10, 10, 30, 30))
+    assertEquals(BoundingBox(10, 10, 10, 10).resizeBy(20), BoundingBox(10, 10, 30, 30))
+  }
+
 }

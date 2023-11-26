@@ -209,4 +209,16 @@ class RectangleTests extends munit.FunSuite {
     assert(a.top == -20)
     assert(a.bottom == 20)
   }
+
+  test("resize") {
+    assertEquals(Rectangle(10, 10, 10, 10).resize(Size(20, 20)), Rectangle(10, 10, 20, 20))
+    assertEquals(Rectangle(10, 10, 10, 10).resize(20, 20), Rectangle(10, 10, 20, 20))
+    assertEquals(Rectangle(10, 10, 10, 10).resize(20), Rectangle(10, 10, 20, 20))
+  }
+
+  test("resizeBy") {
+    assertEquals(Rectangle(10, 10, 10, 10).resizeBy(Size(20, 20)), Rectangle(10, 10, 30, 30))
+    assertEquals(Rectangle(10, 10, 10, 10).resizeBy(20, 20), Rectangle(10, 10, 30, 30))
+    assertEquals(Rectangle(10, 10, 10, 10).resizeBy(20), Rectangle(10, 10, 30, 30))
+  }
 }

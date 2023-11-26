@@ -93,6 +93,15 @@ final case class Rectangle(position: Point, size: Size) derives CanEqual:
     this.copy(size = newSize)
   def resize(x: Int, y: Int): Rectangle =
     resize(Size(x, y))
+  def resize(value: Int): Rectangle =
+    resize(Size(value))
+
+  def resizeBy(amount: Size): Rectangle =
+    this.copy(size = size + amount)
+  def resizeBy(x: Int, y: Int): Rectangle =
+    resizeBy(Size(x, y))
+  def resizeBy(amount: Int): Rectangle =
+    resizeBy(Size(amount))
 
   def withPosition(point: Point): Rectangle =
     moveTo(point)
