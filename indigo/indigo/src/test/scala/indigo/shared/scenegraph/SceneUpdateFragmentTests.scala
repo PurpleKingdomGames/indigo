@@ -148,4 +148,18 @@ class SceneUpdateFragmentTests extends munit.FunSuite {
         fail("match failed")
   }
 
+  test("Map over layers") {
+    val scene =
+      SceneUpdateFragment.empty
+        .addLayer(Layer(BindingKey("key A")).withMagnification(1))
+        .addLayer(Layer(BindingKey("key B")).withMagnification(1))
+
+    val actual =
+      scene.mapLayers(l => l.withKey(BindingKey(l.key.map(_.toString).getOrElse("!") + "?")).withMagnification(2))
+
+    assert(actual.layers.length == 2)
+    assertEquals(actual.layers.map(_.key.get).toList, List(BindingKey("key A?"), BindingKey("key B?")))
+    assertEquals(actual.layers.map(_.magnification.get).toList, List(2, 2))
+  }
+
 }
