@@ -60,6 +60,12 @@ sealed trait Batch[+A]:
     given CanEqual[B, B] = CanEqual.derived
     _jsArray.exists(_ == p)
 
+  def distinct: Batch[A] =
+    Batch(_jsArray.distinct)
+
+  def distinctBy[B](f: A => B): Batch[A] =
+    Batch(_jsArray.distinctBy(f))
+
   def take(n: Int): Batch[A] =
     Batch.Wrapped(_jsArray.take(n))
 

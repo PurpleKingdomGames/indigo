@@ -488,4 +488,13 @@ class BatchTests extends munit.FunSuite {
     assertEquals(Batch.Combine(Batch.empty[Int], Batch.empty[Int]).lastOption, None)
   }
 
+  test("distinct") {
+    assertEquals(Batch(3, 5, 2, 4, 1, 3, 2, 10).distinct, Batch(3, 5, 2, 4, 1, 10))
+  }
+
+  test("distinctBy") {
+    // Takes the first odd and event number it finds.
+    assertEquals(Batch(3, 5, 2, 4).distinctBy(_ % 2), Batch(3, 2))
+  }
+
 }
