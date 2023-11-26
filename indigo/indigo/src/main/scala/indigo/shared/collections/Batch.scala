@@ -132,6 +132,9 @@ sealed trait Batch[+A]:
   def lift(index: Int): Option[A] =
     _jsArray.lift(index)
 
+  def padTo[B >: A](len: Int, elem: B): Batch[B] =
+    Batch(_jsArray.padTo(len, elem))
+
   def partition(p: A => Boolean): (Batch[A], Batch[A]) =
     val (a, b) = _jsArray.partition(p)
     (Batch.Wrapped(a), Batch.Wrapped(b))

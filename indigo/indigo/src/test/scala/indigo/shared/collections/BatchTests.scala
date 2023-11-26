@@ -497,4 +497,8 @@ class BatchTests extends munit.FunSuite {
     assertEquals(Batch(3, 5, 2, 4).distinctBy(_ % 2), Batch(3, 2))
   }
 
+  test("padTo") {
+    assertEquals(Batch(1, 2, 3).padTo(5, 0), Batch(1, 2, 3, 0, 0))
+  }
+
 }
