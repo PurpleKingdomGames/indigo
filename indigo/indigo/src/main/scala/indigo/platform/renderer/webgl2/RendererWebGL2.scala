@@ -248,7 +248,7 @@ final class RendererWebGL2(
                 lastWidth.toDouble,
                 lastHeight.toDouble,
                 1.0d, // Layers aren't magnified during rendering.
-                layer.magnification.map(_.toDouble).getOrElse(1.0),
+                layer.magnification.map(_.toDouble).getOrElse(cNc.magnification),
                 c.position.x.toDouble,
                 c.position.y.toDouble,
                 c.zoom.toDouble,
