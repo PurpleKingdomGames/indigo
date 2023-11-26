@@ -230,8 +230,8 @@
         
         <h3 id="for-sbt" class="section"><a class="anchor-link left" href="#for-sbt"><i class="icofont-laika link">&#xef71;</i></a>For sbt</h3>
         <p>Add the following to your <code>project/plugins.sbt</code> file:</p>
-        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">addSbtPlugin</span><span>(</span><span class="string-literal">&quot;org.scala-js&quot;</span><span> % </span><span class="string-literal">&quot;sbt-scalajs&quot;</span><span> % </span><span class="string-literal">&quot;1.13.2&quot;</span><span>)
-</span><span class="identifier">addSbtPlugin</span><span>(</span><span class="string-literal">&quot;io.indigoengine&quot;</span><span> % </span><span class="string-literal">&quot;sbt-indigo&quot;</span><span> % </span><span class="string-literal">&quot;0.15.1&quot;</span><span>)</span></code></pre>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">addSbtPlugin</span><span>(</span><span class="string-literal">&quot;org.scala-js&quot;</span><span> % </span><span class="string-literal">&quot;sbt-scalajs&quot;</span><span> % </span><span class="string-literal">&quot;1.14.0&quot;</span><span>)
+</span><span class="identifier">addSbtPlugin</span><span>(</span><span class="string-literal">&quot;io.indigoengine&quot;</span><span> % </span><span class="string-literal">&quot;sbt-indigo&quot;</span><span> % </span><span class="string-literal">&quot;0.15.2&quot;</span><span>)</span></code></pre>
         <p>Here is an example minimal <code>build.sbt</code> file:</p>
         <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">indigoplugin</span><span>.</span><span class="identifier">_</span><span>
 
@@ -250,9 +250,9 @@
           .</span><span class="identifier">withTitle</span><span>(</span><span class="string-literal">&quot;My Game&quot;</span><span>)
           .</span><span class="identifier">withWindowSize</span><span>(</span><span class="number-literal">720</span><span>, </span><span class="number-literal">480</span><span>),
       </span><span class="identifier">libraryDependencies</span><span> ++= </span><span class="type-name">Seq</span><span>(
-        </span><span class="string-literal">&quot;io.indigoengine&quot;</span><span> %%% </span><span class="string-literal">&quot;indigo&quot;</span><span> % </span><span class="string-literal">&quot;0.15.1&quot;</span><span>,
-        </span><span class="string-literal">&quot;io.indigoengine&quot;</span><span> %%% </span><span class="string-literal">&quot;indigo-extras&quot;</span><span> % </span><span class="string-literal">&quot;0.15.1&quot;</span><span>,
-        </span><span class="string-literal">&quot;io.indigoengine&quot;</span><span> %%% </span><span class="string-literal">&quot;indigo-json-circe&quot;</span><span> % </span><span class="string-literal">&quot;0.15.1&quot;</span><span>,
+        </span><span class="string-literal">&quot;io.indigoengine&quot;</span><span> %%% </span><span class="string-literal">&quot;indigo&quot;</span><span> % </span><span class="string-literal">&quot;0.15.2&quot;</span><span>,
+        </span><span class="string-literal">&quot;io.indigoengine&quot;</span><span> %%% </span><span class="string-literal">&quot;indigo-extras&quot;</span><span> % </span><span class="string-literal">&quot;0.15.2&quot;</span><span>,
+        </span><span class="string-literal">&quot;io.indigoengine&quot;</span><span> %%% </span><span class="string-literal">&quot;indigo-json-circe&quot;</span><span> % </span><span class="string-literal">&quot;0.15.2&quot;</span><span>,
       )
     )</span></code></pre>
         
@@ -263,11 +263,11 @@
 </span><span class="keyword">import</span><span> </span><span class="identifier">mill</span><span>.</span><span class="identifier">scalajslib</span><span>.</span><span class="identifier">_</span><span>
 </span><span class="keyword">import</span><span> </span><span class="identifier">mill</span><span>.</span><span class="identifier">scalajslib</span><span>.</span><span class="identifier">api</span><span>.</span><span class="identifier">_</span><span>
 
-</span><span class="keyword">import</span><span> </span><span class="identifier">$ivy</span><span>.</span><span class="identifier">`io.indigoengine::mill-indigo:0.15.1`</span><span>, </span><span class="identifier">millindigo</span><span>.</span><span class="identifier">_</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">$ivy</span><span>.</span><span class="identifier">`io.indigoengine::mill-indigo:0.15.2`</span><span>, </span><span class="identifier">millindigo</span><span>.</span><span class="identifier">_</span><span>
 
 </span><span class="keyword">object</span><span> </span><span class="identifier">mygame</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">ScalaJSModule</span><span> </span><span class="keyword">with</span><span> </span><span class="type-name">MillIndigo</span><span> {
   </span><span class="keyword">def</span><span> </span><span class="declaration-name">scalaVersion</span><span>   = </span><span class="string-literal">&quot;3.3.1&quot;</span><span>
-  </span><span class="keyword">def</span><span> </span><span class="declaration-name">scalaJSVersion</span><span> = </span><span class="string-literal">&quot;1.13.2&quot;</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">scalaJSVersion</span><span> = </span><span class="string-literal">&quot;1.14.0&quot;</span><span>
 
   </span><span class="keyword">val</span><span> </span><span class="identifier">indigoOptions</span><span>: </span><span class="type-name">IndigoOptions</span><span> =
     </span><span class="type-name">IndigoOptions</span><span>.</span><span class="identifier">defaults</span><span>
@@ -278,9 +278,9 @@
     </span><span class="type-name">IndigoGenerators</span><span>.</span><span class="type-name">None</span><span>
 
   </span><span class="keyword">def</span><span> </span><span class="declaration-name">ivyDeps</span><span> = </span><span class="type-name">Agg</span><span>(
-    </span><span class="string-literal">ivy&quot;io.indigoengine::indigo::0.15.1&quot;</span><span>,
-    </span><span class="string-literal">ivy&quot;io.indigoengine::indigo-extras::0.15.1&quot;</span><span>,
-    </span><span class="string-literal">ivy&quot;io.indigoengine::indigo-json-circe::0.15.1&quot;</span><span>
+    </span><span class="string-literal">ivy&quot;io.indigoengine::indigo::0.15.2&quot;</span><span>,
+    </span><span class="string-literal">ivy&quot;io.indigoengine::indigo-extras::0.15.2&quot;</span><span>,
+    </span><span class="string-literal">ivy&quot;io.indigoengine::indigo-json-circe::0.15.2&quot;</span><span>
   )
 
 }</span></code></pre>
@@ -291,7 +291,7 @@
         
         <h2 id="building-indigo-games" class="section"><a class="anchor-link left" href="#building-indigo-games"><i class="icofont-laika link">&#xef71;</i></a>Building Indigo Games</h2>
         <p>Indigo games are completely normal <a href="https://www.scala-js.org/">Scala.js</a> projects.</p>
-        <p>You can use either <a href="http://www.lihaoyi.com/mill/">Mill</a> (Mill 0.11.4  or above) or <a href="https://www.scala-sbt.org/">SBT</a> (recommend sbt 1.9.6 or greater) to build your games, and for your convenience both Mill and SBT have associated plugins, <code>mill-indigo</code> and <code>sbt-indigo</code> respectively.</p>
+        <p>You can use either <a href="http://www.lihaoyi.com/mill/">Mill</a> (Mill 0.11.4  or above) or <a href="https://www.scala-sbt.org/">SBT</a> (recommend sbt 1.9.7 or greater) to build your games, and for your convenience both Mill and SBT have associated plugins, <code>mill-indigo</code> and <code>sbt-indigo</code> respectively.</p>
         <p>The plugins help you bootstrap your game during development, they marshal your assets and serve as a reference implementation for <em>one</em> fairly basic way to embed your game into a web page or electron app.</p>
         <p>The plugins let you build a simple web page via the <code>indigoBuild</code> task, or run an Electron app of your game with <code>indigoRun</code>.</p>
         <p>Example output from a Mill indigo build of the <a href="https://github.com/PurpleKingdomGames/indigo/tree/master/demos/snake">Snake example game</a>, the SBT version is nearly identical:</p>
@@ -337,11 +337,11 @@ Copying assets...
 </span><span class="keyword">import</span><span> </span><span class="identifier">mill</span><span>.</span><span class="identifier">scalajslib</span><span>.</span><span class="identifier">_</span><span>
 </span><span class="keyword">import</span><span> </span><span class="identifier">mill</span><span>.</span><span class="identifier">scalajslib</span><span>.</span><span class="identifier">api</span><span>.</span><span class="identifier">_</span><span>
 
-</span><span class="keyword">import</span><span> </span><span class="identifier">$ivy</span><span>.</span><span class="identifier">`io.indigoengine::mill-indigo:0.15.1`</span><span>, </span><span class="identifier">millindigo</span><span>.</span><span class="identifier">_</span><span>
+</span><span class="keyword">import</span><span> </span><span class="identifier">$ivy</span><span>.</span><span class="identifier">`io.indigoengine::mill-indigo:0.15.2`</span><span>, </span><span class="identifier">millindigo</span><span>.</span><span class="identifier">_</span><span>
 
 </span><span class="keyword">object</span><span> </span><span class="identifier">mygame</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">ScalaJSModule</span><span> </span><span class="keyword">with</span><span> </span><span class="type-name">MillIndigo</span><span> {
   </span><span class="keyword">def</span><span> </span><span class="declaration-name">scalaVersion</span><span>   = </span><span class="string-literal">&quot;3.3.1&quot;</span><span>
-  </span><span class="keyword">def</span><span> </span><span class="declaration-name">scalaJSVersion</span><span> = </span><span class="string-literal">&quot;1.13.2&quot;</span><span>
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">scalaJSVersion</span><span> = </span><span class="string-literal">&quot;1.14.0&quot;</span><span>
 
   </span><span class="keyword">val</span><span> </span><span class="identifier">indigoOptions</span><span>: </span><span class="type-name">IndigoOptions</span><span> =
     </span><span class="type-name">IndigoOptions</span><span>.</span><span class="identifier">defaults</span><span>
@@ -352,9 +352,9 @@ Copying assets...
     </span><span class="type-name">IndigoGenerators</span><span>.</span><span class="type-name">None</span><span>
 
   </span><span class="keyword">def</span><span> </span><span class="declaration-name">ivyDeps</span><span> = </span><span class="type-name">Agg</span><span>(
-    </span><span class="string-literal">ivy&quot;io.indigoengine::indigo::0.15.1&quot;</span><span>,
-    </span><span class="string-literal">ivy&quot;io.indigoengine::indigo-extras::0.15.1&quot;</span><span>,
-    </span><span class="string-literal">ivy&quot;io.indigoengine::indigo-json-circe::0.15.1&quot;</span><span>
+    </span><span class="string-literal">ivy&quot;io.indigoengine::indigo::0.15.2&quot;</span><span>,
+    </span><span class="string-literal">ivy&quot;io.indigoengine::indigo-extras::0.15.2&quot;</span><span>,
+    </span><span class="string-literal">ivy&quot;io.indigoengine::indigo-json-circe::0.15.2&quot;</span><span>
   )
 
 }</span></code></pre>
@@ -416,8 +416,8 @@ Copying assets...
         
         <h3 id="plugins-sbt" class="section"><a class="anchor-link left" href="#plugins-sbt"><i class="icofont-laika link">&#xef71;</i></a>plugins.sbt</h3>
         <p>Add the following to your <code>project/plugins.sbt</code> file:</p>
-        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">addSbtPlugin</span><span>(</span><span class="string-literal">&quot;org.scala-js&quot;</span><span> % </span><span class="string-literal">&quot;sbt-scalajs&quot;</span><span> % </span><span class="string-literal">&quot;1.13.2&quot;</span><span>)
-</span><span class="identifier">addSbtPlugin</span><span>(</span><span class="string-literal">&quot;io.indigoengine&quot;</span><span> %% </span><span class="string-literal">&quot;sbt-indigo&quot;</span><span> % </span><span class="string-literal">&quot;0.15.1&quot;</span><span>) </span><span class="comment">// Note the double %%</span></code></pre>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">addSbtPlugin</span><span>(</span><span class="string-literal">&quot;org.scala-js&quot;</span><span> % </span><span class="string-literal">&quot;sbt-scalajs&quot;</span><span> % </span><span class="string-literal">&quot;1.14.0&quot;</span><span>)
+</span><span class="identifier">addSbtPlugin</span><span>(</span><span class="string-literal">&quot;io.indigoengine&quot;</span><span> %% </span><span class="string-literal">&quot;sbt-indigo&quot;</span><span> % </span><span class="string-literal">&quot;0.15.2&quot;</span><span>) </span><span class="comment">// Note the double %%</span></code></pre>
         
         <h3 id="build-sbt" class="section"><a class="anchor-link left" href="#build-sbt"><i class="icofont-laika link">&#xef71;</i></a>build.sbt</h3>
         <p>Example minimal <code>build.sbt</code> file for the root of your project:</p>
@@ -436,9 +436,9 @@ Copying assets...
           .</span><span class="identifier">withTitle</span><span>(</span><span class="string-literal">&quot;My Game&quot;</span><span>)
           .</span><span class="identifier">withWindowSize</span><span>(</span><span class="number-literal">720</span><span>, </span><span class="number-literal">480</span><span>),
       </span><span class="identifier">libraryDependencies</span><span> ++= </span><span class="type-name">Seq</span><span>(
-        </span><span class="string-literal">&quot;io.indigoengine&quot;</span><span> %%% </span><span class="string-literal">&quot;indigo&quot;</span><span> % </span><span class="string-literal">&quot;0.15.1&quot;</span><span>,
-        </span><span class="string-literal">&quot;io.indigoengine&quot;</span><span> %%% </span><span class="string-literal">&quot;indigo-extras&quot;</span><span> % </span><span class="string-literal">&quot;0.15.1&quot;</span><span>,
-        </span><span class="string-literal">&quot;io.indigoengine&quot;</span><span> %%% </span><span class="string-literal">&quot;indigo-json-circe&quot;</span><span> % </span><span class="string-literal">&quot;0.15.1&quot;</span><span>,
+        </span><span class="string-literal">&quot;io.indigoengine&quot;</span><span> %%% </span><span class="string-literal">&quot;indigo&quot;</span><span> % </span><span class="string-literal">&quot;0.15.2&quot;</span><span>,
+        </span><span class="string-literal">&quot;io.indigoengine&quot;</span><span> %%% </span><span class="string-literal">&quot;indigo-extras&quot;</span><span> % </span><span class="string-literal">&quot;0.15.2&quot;</span><span>,
+        </span><span class="string-literal">&quot;io.indigoengine&quot;</span><span> %%% </span><span class="string-literal">&quot;indigo-json-circe&quot;</span><span> % </span><span class="string-literal">&quot;0.15.2&quot;</span><span>,
       )
     )</span></code></pre>
         
