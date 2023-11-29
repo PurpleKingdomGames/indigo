@@ -33,25 +33,15 @@ final case class EventFilters(
 object EventFilters {
 
   private def fromAccessControl(ac: AccessControl): GlobalEvent => Option[GlobalEvent] = {
-    case e: AssetEvent if ac.allowAssetEvents            => Some(e)
-    case _: AssetEvent                                   => None
-    case FrameTick if ac.allowFrameTick                  => Some(FrameTick)
-    case FrameTick                                       => None
-    case e: KeyboardEvent if ac.allowKeyboardEvents      => Some(e)
-    case _: KeyboardEvent                                => None
-    case e: MouseEvent if ac.allowMouseEvents            => Some(e)
-    case _: MouseEvent                                   => None
-    case e: NetworkReceiveEvent if ac.allowNetworkEvents => Some(e)
-    case _: NetworkReceiveEvent                          => None
-    case e: StorageEvent if ac.allowStorageEvents        => Some(e)
-    case _: StorageEvent                                 => None
-    case e: SubSystemEvent if ac.allowSubSystemEvents    => Some(e)
-    case _: SubSystemEvent                               => None
-    case e: ViewEvent if ac.allowViewEvents              => Some(e)
-    case _: ViewEvent                                    => None
-    case e if ac.allowCustomEvents                       => Some(e)
-    case _ if ac.allowCustomEvents                       => None
-    case _                                               => None
+    case FrameTick              => Option.when(ac.allowFrameTick)(FrameTick)
+    case e: KeyboardEvent       => Option.when(ac.allowKeyboardEvents)(e)
+    case e: MouseEvent          => Option.when(ac.allowMouseEvents)(e)
+    case e: NetworkReceiveEvent => Option.when(ac.allowNetworkEvents)(e)
+    case e: StorageEvent        => Option.when(ac.allowStorageEvents)(e)
+    case e: SubSystemEvent      => Option.when(ac.allowSubSystemEvents)(e)
+    case e: ViewEvent           => Option.when(ac.allowViewEvents)(e)
+    case e: AssetEvent          => Option.when(ac.allowAssetEvents)(e)
+    case e                      => Option.when(ac.allowCustomEvents)(e)
   }
 
   /** Access controlled event filters are a convienient way to have explicit control which events arrive at which

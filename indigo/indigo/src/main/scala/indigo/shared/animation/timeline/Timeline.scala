@@ -136,7 +136,7 @@ object Timeline:
       *   `Seconds`
       */
     def duration: Seconds =
-      tl.map(_.end).sortWith(_ > _).headOption.getOrElse(Seconds.zero)
+      tl.maxByOption(_.end.toDouble).fold(Seconds.zero)(_.end)
 
     /** Alias for duration, returns the total time duration of the animation in seconds, including any initial delays.
       *

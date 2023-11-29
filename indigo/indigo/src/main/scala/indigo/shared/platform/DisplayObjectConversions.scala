@@ -939,6 +939,7 @@ object DisplayObjectConversions {
       cacheKey: String,
       disableCache: Boolean
   )(using QuickCache[scalajs.js.Array[Float]]): scalajs.js.Array[Float] = {
+    @tailrec
     def rec(
         remaining: scalajs.js.Array[ShaderPrimitive],
         current: scalajs.js.Array[Float],

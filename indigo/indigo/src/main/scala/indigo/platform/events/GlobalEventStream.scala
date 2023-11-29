@@ -62,7 +62,7 @@ final class GlobalEventStream(
         }
       }
 
-      if errors.length > 0 then errors foreach (e => eventQueue.enqueue(e))
+      if errors.nonEmpty then errors foreach (e => eventQueue.enqueue(e))
       else
         eventQueue.enqueue(StorageEvent.KeysFound(keys.flatMap {
           _ match {

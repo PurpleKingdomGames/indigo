@@ -33,8 +33,8 @@ final class Mouse(
     case _: MouseEvent.Click => true
     case _                   => false
   }
-  lazy val mousePressed  = pressed(MouseButton.LeftMouseButton)
-  lazy val mouseReleased = released(MouseButton.LeftMouseButton)
+  lazy val mousePressed: Boolean  = pressed(MouseButton.LeftMouseButton)
+  lazy val mouseReleased: Boolean = released(MouseButton.LeftMouseButton)
 
   def pressed(button: MouseButton): Boolean =
     mouseEvents.exists {

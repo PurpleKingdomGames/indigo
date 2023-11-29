@@ -13,7 +13,7 @@ final case class SceneAudio(
 
 object SceneAudio:
 
-  val Mute = SceneAudio(None, None, None)
+  val Mute: SceneAudio = SceneAudio(None, None, None)
 
   def apply(sourceA: SceneAudioSource): SceneAudio =
     SceneAudio(Some(sourceA), None, None)

@@ -15,8 +15,9 @@ final class QuickCache[A](private val cache: scalajs.js.Dictionary[A]):
     cache.get(key.toString)
 
   def add(key: CacheKey, value: => A): A = {
-    cache.update(key.toString, value)
-    value
+    val v = value
+    cache.update(key.toString, v)
+    v
   }
 
   def fetchOrAdd(key: CacheKey, disabled: Boolean, value: => A): A =

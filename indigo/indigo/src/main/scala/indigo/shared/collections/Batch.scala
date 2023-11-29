@@ -142,6 +142,12 @@ sealed trait Batch[+A]:
   def map[B](f: A => B): Batch[B] =
     Batch.Wrapped(_jsArray.map(f))
 
+  def maxBy[B](f: A => B)(using ord: Ordering[B]): A =
+    _jsArray.maxBy(f)(ord)
+
+  def maxByOption[B](f: A => B)(using ord: Ordering[B]): Option[A] =
+    Option.when(_jsArray.nonEmpty)(_jsArray.maxBy(f)(ord))
+
   /** Converts the batch into a String`
     * @return
     *   `String`

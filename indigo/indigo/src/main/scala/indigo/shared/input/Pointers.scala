@@ -14,7 +14,7 @@ object Pointers:
   val default: Pointers =
     Pointers(Batch.empty, Point.zero)
 
-  def calculateNext(previous: Pointers, events: Batch[PointerEvent]) =
+  def calculateNext(previous: Pointers, events: Batch[PointerEvent]): Pointers =
     Pointers(
       pointerEvents = events,
       position = lastPointerPosition(previous.position, events)
