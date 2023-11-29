@@ -150,7 +150,7 @@ trait MouseOrPointerEvent:
 
   /** Indicates whether buttons are in active state
     */
-  def isActive: Boolean = buttons.isEmpty == false
+  def isActive: Boolean = !buttons.isEmpty
 
   /** Whether the `alt` key was pressed when the event was fired
     */

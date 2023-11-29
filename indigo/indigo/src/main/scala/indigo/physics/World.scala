@@ -32,7 +32,7 @@ final case class World[A](colliders: Batch[Collider[A]], forces: Batch[Vector2],
   def removeByTag(tag: A)(using CanEqual[A, A]): World[A] =
     this.copy(colliders = colliders.filterNot(_.tag == tag))
 
-  def modifyByTag(tag: A)(f: Collider[A] => Collider[A])(using CanEqual[A, A]) =
+  def modifyByTag(tag: A)(f: Collider[A] => Collider[A])(using CanEqual[A, A]): World[A] =
     this.copy(colliders = colliders.map(c => if c.tag == tag then f(c) else c))
 
   def findFirstAt(position: Vertex): Option[Collider[A]] =
