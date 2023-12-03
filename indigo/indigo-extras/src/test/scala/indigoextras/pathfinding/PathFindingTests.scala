@@ -6,6 +6,9 @@ import indigoextras.pathfinding.GridSquare.EndSquare
 import indigoextras.pathfinding.GridSquare.ImpassableSquare
 import indigoextras.pathfinding.GridSquare.StartSquare
 
+import scala.annotation.nowarn
+
+@nowarn("cat=deprecation")
 class PathFindingTests extends munit.FunSuite {
 
   val coords: Coords = Coords(0, 0)
