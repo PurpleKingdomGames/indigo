@@ -3,14 +3,19 @@ package indigoextras.pathfinding
 import scala.annotation.tailrec
 
 /** The structure allowing to customize the path finding and to build a path of type T
- *
- * @tparam T
- * the type of the points
- */
+  *
+  * @tparam T
+  *   the type of the points
+  */
 trait PathBuilder[T]:
-  def neighbours(t: T): List[T] // neighbours retrieval allows to select the allowed moves (horizontal, vertical, diagonal, impossible moves, jumps, etc.)
+  def neighbours(
+      t: T
+  ): List[T] // neighbours retrieval allows to select the allowed moves (horizontal, vertical, diagonal, impossible moves, jumps, etc.)
   def distance(t1: T, t2: T): Int // distance allows to select the cost of each move (diagonal, slow terrain, etc.)
-  def heuristic(t1: T, t2: T): Int // heuristic allows to select the way to estimate the distance from a point to the end
+  def heuristic(
+      t1: T,
+      t2: T
+  ): Int // heuristic allows to select the way to estimate the distance from a point to the end
 
 // A* (A Star) inspired algorithm version allowing generic types and customisation of the path finding
 object PathFinder:
@@ -32,7 +37,8 @@ object PathFinder:
     * @tparam T
     *   the type of the points
     */
-  private case class PathProps[T](value: T, g: Int, h: Int, f: Int, parent: Option[PathProps[T]] = None) derives CanEqual
+  private case class PathProps[T](value: T, g: Int, h: Int, f: Int, parent: Option[PathProps[T]] = None)
+      derives CanEqual
 
   /** Find a path from start to end using the A* algorithm
     * @param start
@@ -46,14 +52,16 @@ object PathFinder:
     * @return
     *   the path from start to end if it exists
     */
-  def findPath[T](start: T, end: T, pathBuilder: PathBuilder[T])(using CanEqual[T,T]): Option[List[T]] = {
+  def findPath[T](start: T, end: T, pathBuilder: PathBuilder[T])(using CanEqual[T, T]): Option[List[T]] = {
     val startProps = PathProps(start, 0, pathBuilder.heuristic(start, end), pathBuilder.heuristic(start, end))
     val path       = loop[T](end, pathBuilder, List(startProps), Nil)
     if (path.isEmpty && start != end) None else Some(path)
   }
 
   @tailrec
-  private def loop[T](end: T, pathBuilder: PathBuilder[T], open: OpenList[T], closed: ClosedList[T])(using CanEqual[T,T]): List[T] =
+  private def loop[T](end: T, pathBuilder: PathBuilder[T], open: OpenList[T], closed: ClosedList[T])(using
+      CanEqual[T, T]
+  ): List[T] =
     if (open.isEmpty) Nil
     else
       val current = open.minBy(_.f)
@@ -77,8 +85,9 @@ object PathFinder:
       end: T,
       pathBuilder: PathBuilder[T],
       current: PathProps[T]
-  )(using CanEqual[T,T]): ((OpenList[T], ClosedList[T]), T) => (OpenList[T], ClosedList[T]) =
-    (openClosed: (OpenList[T], ClosedList[T]), neighbour: T) => updateWithNeighbours(end, pathBuilder, openClosed._1, openClosed._2, current, neighbour)
+  )(using CanEqual[T, T]): ((OpenList[T], ClosedList[T]), T) => (OpenList[T], ClosedList[T]) =
+    (openClosed: (OpenList[T], ClosedList[T]), neighbour: T) =>
+      updateWithNeighbours(end, pathBuilder, openClosed._1, openClosed._2, current, neighbour)
 
   private def updateWithNeighbours[T](
       end: T,
@@ -87,9 +96,8 @@ object PathFinder:
       closed: ClosedList[T],
       current: PathProps[T],
       neighbour: T
-  )(using CanEqual[T,T]): (OpenList[T], ClosedList[T]) =
-    if (closed.exists(_.value == neighbour))
-      (open, closed)
+  )(using CanEqual[T, T]): (OpenList[T], ClosedList[T]) =
+    if (closed.exists(_.value == neighbour)) (open, closed)
     else
       val g = current.g + pathBuilder.distance(current.value, neighbour)
       val h = pathBuilder.heuristic(neighbour, end)
@@ -117,4 +125,3 @@ object PathFinder:
       }
 
     loop(props, Nil)
-
