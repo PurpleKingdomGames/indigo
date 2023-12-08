@@ -12,10 +12,10 @@ sealed trait ElectronInstall {
 
   def devDependencies: String =
     this match {
-      case ElectronInstall.Global                 => ""
-      case ElectronInstall.Version(version)       => s""""electron": "${version}""""
-      case ElectronInstall.Latest                 => ""
-      case ElectronInstall.PathToExecutable(_)    => ""
+      case ElectronInstall.Global              => ""
+      case ElectronInstall.Version(version)    => s""""electron": "${version}""""
+      case ElectronInstall.Latest              => ""
+      case ElectronInstall.PathToExecutable(_) => ""
     }
 
 }
