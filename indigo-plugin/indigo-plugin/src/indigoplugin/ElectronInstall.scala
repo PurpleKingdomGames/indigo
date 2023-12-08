@@ -15,7 +15,7 @@ sealed trait ElectronInstall {
       case ElectronInstall.Global                 => ""
       case ElectronInstall.Version(version)       => s""""electron": "${version}""""
       case ElectronInstall.Latest                 => ""
-      case ElectronInstall.PathToExecutable(path) => ""
+      case ElectronInstall.PathToExecutable(_)    => ""
     }
 
 }
