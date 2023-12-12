@@ -52,14 +52,14 @@ object ShapePolygon:
         var j: Int = count - 1
 
         while i < count do
-          j = i
-          i = i + 1
           val e = v(j) - v(i)
           val w = p - v(i)
           val b = w - e * clamp(dot(w, e) / dot(e, e), 0.0f, 1.0f)
           d = min(d, dot(b, b))
           val c = bvec3(p.y >= v(i).y, p.y < v(j).y, e.x * w.y > e.y * w.x)
           if (all(c) || all(not(c))) s = s * -1.0f
+          j = i
+          i = i + 1
 
         s * sqrt(d)
 
