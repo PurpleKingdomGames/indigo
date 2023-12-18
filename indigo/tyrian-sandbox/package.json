@@ -1,0 +1,14 @@
+{
+  "scripts": {
+    "start": "parcel index.html --no-cache --dist-dir dist --log-level info",
+    "build": "parcel build index.html --dist-dir dist --log-level info"
+  },
+  "devDependencies": {
+    "parcel": "^2.10.3",
+    "parcel-reporter-static-files-copy": "^1.3.4",
+    "process": "^0.11.10"
+  },
+  "staticFiles": {
+    "staticPath": "static"
+  }
+}
