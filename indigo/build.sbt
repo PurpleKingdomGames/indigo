@@ -251,11 +251,12 @@ lazy val jsdocs = project
     organization := "io.indigoengine",
     libraryDependencies ++= Dependencies.jsDocs.value,
     libraryDependencies ++= Seq(
-      "io.indigoengine" %%% "indigo-json-circe"    % indigoDocsVersion,
-      "io.indigoengine" %%% "indigo"               % indigoDocsVersion,
-      "io.indigoengine" %%% "indigo-extras"        % indigoDocsVersion,
-      "io.indigoengine" %%% "tyrian-io"            % Dependencies.Versions.tyrianVersion,
-      "io.indigoengine" %%% "tyrian-indigo-bridge" % indigoDocsVersion
+      "io.indigoengine" %%% "indigo-json-circe" % indigoDocsVersion,
+      "io.indigoengine" %%% "indigo"            % indigoDocsVersion,
+      "io.indigoengine" %%% "indigo-extras"     % indigoDocsVersion,
+      "io.indigoengine" %%% "tyrian-io"         % Dependencies.Versions.tyrianVersion,
+      // TODO: Replace Tyrian version with Indigo version after next release.
+      "io.indigoengine" %%% "tyrian-indigo-bridge" % Dependencies.Versions.tyrianVersion
     ),
     Compile / tpolecatExcludeOptions ++= Set(
       ScalacOptions.warnValueDiscard,
