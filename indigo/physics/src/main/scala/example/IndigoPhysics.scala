@@ -1,8 +1,5 @@
 package example
 
-import example.BallsScene
-import example.BoxesScene
-import example.LoadScene
 import indigo.*
 import indigo.physics.*
 import indigo.scenes.*
@@ -14,10 +11,10 @@ import scala.scalajs.js.annotation.JSExportTopLevel
 object IndigoPhysics extends IndigoGame[Unit, Unit, Model, Unit]:
 
   def initialScene(bootData: Unit): Option[SceneName] =
-    Some(LoadScene.name)
+    None
 
   def scenes(bootData: Unit): NonEmptyList[Scene[Unit, Model, Unit]] =
-    NonEmptyList(LoadScene, BoxesAndBallsScene, BoxesScene, BallsScene)
+    NonEmptyList(LoadScene, VolumeScene, BoxesAndBallsScene, BoxesScene, BallsScene)
 
   val eventFilters: EventFilters =
     EventFilters.Permissive
@@ -69,10 +66,11 @@ object IndigoPhysics extends IndigoGame[Unit, Unit, Model, Unit]:
   ): Outcome[SceneUpdateFragment] =
     Outcome(SceneUpdateFragment.empty)
 
-final case class Model(balls: World[MyTag], boxes: World[MyTag], boxesAndBalls: World[MyTag])
+final case class Model(volume: World[MyTag], balls: World[MyTag], boxes: World[MyTag], boxesAndBalls: World[MyTag])
 object Model:
   def initial(dice: Dice): Model =
     Model(
+      VolumeScene.world(dice),
       BallsScene.world(dice),
       BoxesScene.world(dice),
       BoxesAndBallsScene.world(dice)

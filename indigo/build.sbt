@@ -162,7 +162,6 @@ lazy val physicsOptions =
     .withBackgroundColor("black")
     .withAssetDirectory("physics/assets/")
     .withWindowSize(800, 600)
-    .cursorHidden
 
 lazy val physics =
   project
