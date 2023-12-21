@@ -249,6 +249,27 @@ class BoundingBoxTests extends munit.FunSuite {
     assertEquals(BoundingBox.overlapping(a, b), false)
   }
 
+  test("overlaps BoundingCircle (encompasses)") {
+    val b = BoundingBox(Vertex(0, 0), Vertex(500))
+    val c = BoundingCircle(Vertex(250), 10)
+
+    assert(b.overlaps(c) == true)
+  }
+
+  test("overlaps BoundingCircle (edge)") {
+    val b = BoundingBox(Vertex(0, 0), Vertex(500))
+    val c = BoundingCircle(Vertex(505), 10)
+
+    assert(b.overlaps(c) == true)
+  }
+
+  test("overlaps BoundingCircle (doesn't overlap)") {
+    val b = BoundingBox(Vertex(0, 0), Vertex(500))
+    val c = BoundingCircle(Vertex(600), 10)
+
+    assert(b.overlaps(c) == false)
+  }
+
   test("Expand should be able to expand in size by a given amount") {
     val a = BoundingBox(10, 10, 20, 20)
     val b = BoundingBox(0, 10, 100, 5)
