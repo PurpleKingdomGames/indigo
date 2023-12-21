@@ -13,7 +13,7 @@ import indigoextras.pathfinding.*
 The computation of the path can be done with the following function call:
 
 ```scala
-// def findPath[T](start: T, end: T, pathBuilder: PathBuilder[T])(using CanEqual[T,T]): Option[List[T]]
+// def findPath[T](start: T, end: T, pathBuilder: PathBuilder[T])(using CanEqual[T,T]): Option[Batch[T]]
 PathFinder.findPath(start, end, pathBuilder)
 ```
 
@@ -21,10 +21,11 @@ PathFinder.findPath(start, end, pathBuilder)
 `pathBuilder` is the type allowing to customize the pathfinding algorithm (see below).
 
 If `start` and `end` are of type `Point`:
-- when a path is found, the function returns a `Some[List[Point]]` containing the path from `start` to `end`.
+- when a path is found, the function returns a `Some[Batch[Point]]` containing the path from `start` to `end`.
 - when no path is found, the function returns `None`
-- when `start` and `end` are the same point, the function returns `Some(List(start))` (that is also `Some(List(end))`).
+- when `start` and `end` are the same point, the function returns `Some(Batch(start))` (that is also `Some(Batch(end))`).
 
+You may also find samples in the tests `indigoextras.pathfinding.PathFinderTests` or in the sandbox `com.example.sandbox.scenes.PathFindingScene`.
 
 ### PathBuilder
 
@@ -42,9 +43,9 @@ This object contains default path builders for the most common use cases.
 It also contains a few helper functions and constants to compute the neighbours and to define the allowed movements.
 If you need to customize the pathfinding algorithm this file is a good starting point.
 
-Indigo provides default path builders, for `Point`, located in `indigoextras.pathfinding.DefaultPathBuilder`.
+Indigo provides default path builders, for `Point`, located in `indigoextras.pathfinding.PathBuilder` companion object.
 
-- `DefaultPathBuilders.fromAllowedPoints`
-- `DefaultPathBuilders.fromImpassablePoints`
-- `DefaultPathBuilders.fromWeightedGrid`
-- `DefaultPathBuilders.fromWeighted2DGrid`
+- `PathBuilder.fromAllowedPoints`
+- `PathBuilder.fromImpassablePoints`
+- `PathBuilder.fromWeightedGrid`
+- `PathBuilder.fromWeighted2DGrid`
