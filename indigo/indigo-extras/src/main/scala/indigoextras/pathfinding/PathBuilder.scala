@@ -1,12 +1,27 @@
 package indigoextras.pathfinding
 
 import indigo.*
-import indigoextras.pathfinding.DefaultPathBuilders.Movements.*
+import indigoextras.pathfinding.PathBuilder.Movements.*
 
 import scala.scalajs.js
 
+/** The structure allowing to customize the path finding and to build a path of type T
+  *
+  * @tparam T
+  *   the type of the points
+  */
+trait PathBuilder[T]:
+  def neighbours(
+      t: T
+  ): Batch[T] // neighbours retrieval allows to select the allowed moves (horizontal, vertical, diagonal, impossible moves, jumps, etc.)
+  def distance(t1: T, t2: T): Int // distance allows to select the cost of each move (diagonal, slow terrain, etc.)
+  def heuristic(
+      t1: T,
+      t2: T
+  ): Int // heuristic allows to select the way to estimate the distance from a point to the end
+
 // simple path builder implementations based on Point
-object DefaultPathBuilders:
+object PathBuilder:
 
   // defines the movements as relative points
   object Movements:
@@ -21,11 +36,11 @@ object DefaultPathBuilders:
     val UpLeft: Point    = Up + Left
 
     // most common movement groups
-    val Vertical: List[Point]   = List(Up, Down)
-    val Horizontal: List[Point] = List(Right, Left)
-    val Side: List[Point]       = Vertical ++ Horizontal
-    val Diagonal: List[Point]   = List(UpRight, DownRight, DownLeft, UpLeft)
-    val All: List[Point]        = Side ++ Diagonal
+    val Vertical: Batch[Point]   = Batch(Up, Down)
+    val Horizontal: Batch[Point] = Batch(Right, Left)
+    val Side: Batch[Point]       = Vertical ++ Horizontal
+    val Diagonal: Batch[Point]   = Batch(UpRight, DownRight, DownLeft, UpLeft)
+    val All: Batch[Point]        = Side ++ Diagonal
 
   // the common default values for A* algorithm
   val DefaultSideCost: Int           = 10
@@ -34,6 +49,7 @@ object DefaultPathBuilders:
 
   /** Builds a function that returns the neighbours of a point from a list of allowed movements and a filter on the
     * generated points
+    *
     * @param allowedMovements
     *   the allowed movements
     * @param pointsFilter
@@ -41,10 +57,11 @@ object DefaultPathBuilders:
     * @return
     *   a function that returns the neighbours of a point
     */
-  def buildPointNeighbours(allowedMovements: List[Point], pointsFilter: Point => Boolean): Point => List[Point] =
+  def buildPointNeighbours(allowedMovements: Batch[Point], pointsFilter: Point => Boolean): Point => Batch[Point] =
     (p: Point) => allowedMovements.map(p + _).filter(pointsFilter)
 
   /** Builds a path finder builder from a set of allowed points
+    *
     * @param allowedPoints
     *   the set of allowed points
     * @param allowedMovements
@@ -58,25 +75,27 @@ object DefaultPathBuilders:
     * @return
     *   a path finder builder
     */
-  @SuppressWarnings(Array("scalafix:DisableSyntax.defaultArgs"))
   def fromAllowedPoints(
       allowedPoints: Set[Point],
-      allowedMovements: List[Point] = All,
-      directSideCost: Int = DefaultSideCost,
-      diagonalCost: Int = DefaultDiagonalCost,
-      maxHeuristicFactor: Int = DefaultMaxHeuristicFactor
+      allowedMovements: Batch[Point],
+      directSideCost: Int,
+      diagonalCost: Int,
+      maxHeuristicFactor: Int
   ): PathBuilder[Point] =
 
     val buildNeighbours = buildPointNeighbours(allowedMovements, allowedPoints.contains)
 
     new PathBuilder[Point]:
-      def neighbours(t: Point): List[Point] = buildNeighbours(t)
+      def neighbours(t: Point): Batch[Point] = buildNeighbours(t)
 
       def distance(t1: Point, t2: Point): Int =
         if (t1.x == t2.x || t1.y == t2.y) directSideCost else diagonalCost
 
       def heuristic(t1: Point, t2: Point): Int =
         (Math.abs(t1.x - t2.x) + Math.abs(t1.y - t2.y)) * maxHeuristicFactor
+
+  def fromAllowedPoints(allowedPoints: Set[Point]): PathBuilder[Point] =
+    fromAllowedPoints(allowedPoints, All, DefaultSideCost, DefaultDiagonalCost, DefaultMaxHeuristicFactor)
 
   /** Builds a path finder builder from a set of impassable points
     *
@@ -97,15 +116,14 @@ object DefaultPathBuilders:
     * @return
     *   a path finder builder
     */
-  @SuppressWarnings(Array("scalafix:DisableSyntax.defaultArgs"))
   def fromImpassablePoints(
       impassablePoints: Set[Point],
       width: Int,
       height: Int,
-      allowedMovements: List[Point] = All,
-      directSideCost: Int = DefaultSideCost,
-      diagonalCost: Int = DefaultDiagonalCost,
-      maxHeuristicFactor: Int = DefaultMaxHeuristicFactor
+      allowedMovements: Batch[Point],
+      directSideCost: Int,
+      diagonalCost: Int,
+      maxHeuristicFactor: Int
   ): PathBuilder[Point] =
 
     val neighboursFilter = (p: Point) =>
@@ -113,13 +131,24 @@ object DefaultPathBuilders:
     val buildNeighbours = buildPointNeighbours(allowedMovements, neighboursFilter)
 
     new PathBuilder[Point]:
-      def neighbours(t: Point): List[Point] = buildNeighbours(t)
+      def neighbours(t: Point): Batch[Point] = buildNeighbours(t)
 
       def distance(t1: Point, t2: Point): Int =
         if (t1.x == t2.x || t1.y == t2.y) directSideCost else diagonalCost
 
       def heuristic(t1: Point, t2: Point): Int =
         (Math.abs(t1.x - t2.x) + Math.abs(t1.y - t2.y)) * maxHeuristicFactor
+
+  def fromImpassablePoints(impassablePoints: Set[Point], width: Int, height: Int): PathBuilder[Point] =
+    fromImpassablePoints(
+      impassablePoints,
+      width,
+      height,
+      All,
+      DefaultSideCost,
+      DefaultDiagonalCost,
+      DefaultMaxHeuristicFactor
+    )
 
   /** Builds a path finder builder from a weighted 2D grid. Impassable points are represented by Int.MaxValue other
     * points are represented by their weight/ cost grid(y)(x) is the weight of the point (x, y)
@@ -141,15 +170,14 @@ object DefaultPathBuilders:
     * @return
     *   a path finder builder
     */
-  @SuppressWarnings(Array("scalafix:DisableSyntax.defaultArgs"))
   def fromWeighted2DGrid(
       grid: js.Array[js.Array[Int]],
       width: Int,
       height: Int,
-      allowedMovements: List[Point] = All,
-      directSideCost: Int = DefaultSideCost,
-      diagonalCost: Int = DefaultDiagonalCost,
-      maxHeuristicFactor: Int = DefaultMaxHeuristicFactor
+      allowedMovements: Batch[Point],
+      directSideCost: Int,
+      diagonalCost: Int,
+      maxHeuristicFactor: Int
   ): PathBuilder[Point] =
 
     val neighboursFilter = (p: Point) =>
@@ -158,13 +186,16 @@ object DefaultPathBuilders:
 
     new PathBuilder[Point]:
 
-      def neighbours(t: Point): List[Point] = buildNeighbours(t)
+      def neighbours(t: Point): Batch[Point] = buildNeighbours(t)
 
       def distance(t1: Point, t2: Point): Int =
         (if (t1.x == t2.x || t1.y == t2.y) directSideCost else diagonalCost) + grid(t2.y)(t2.x)
 
       def heuristic(t1: Point, t2: Point): Int =
         (Math.abs(t1.x - t2.x) + Math.abs(t1.y - t2.y)) * maxHeuristicFactor
+
+  def fromWeighted2DGrid(grid: js.Array[js.Array[Int]], width: Int, height: Int): PathBuilder[Point] =
+    fromWeighted2DGrid(grid, width, height, All, DefaultSideCost, DefaultDiagonalCost, DefaultMaxHeuristicFactor)
 
   /** Builds a path finder builder from a weighted 1D grid. Impassable points are represented by Int.MaxValue other
     * points are represented by their weight/ cost grid(y * width + x) is the weight of the point (x, y)
@@ -186,25 +217,27 @@ object DefaultPathBuilders:
     * @return
     *   a path finder builder
     */
-  @SuppressWarnings(Array("scalafix:DisableSyntax.defaultArgs"))
   def fromWeightedGrid(
-      grid: js.Array[Int],
+      grid: Batch[Int],
       width: Int,
       height: Int,
-      allowedMovements: List[Point] = All,
-      directSideCost: Int = DefaultSideCost,
-      diagonalCost: Int = DefaultDiagonalCost,
-      maxHeuristicFactor: Int = DefaultMaxHeuristicFactor
+      allowedMovements: Batch[Point],
+      directSideCost: Int,
+      diagonalCost: Int,
+      maxHeuristicFactor: Int
   ): PathBuilder[Point] =
     val neighboursFilter = (p: Point) =>
       p.x >= 0 && p.x < width && p.y >= 0 && p.y < height && grid(p.y * width + p.x) != Int.MaxValue
     val buildNeighbours = buildPointNeighbours(allowedMovements, neighboursFilter)
 
     new PathBuilder[Point]:
-      def neighbours(t: Point): List[Point] = buildNeighbours(t)
+      def neighbours(t: Point): Batch[Point] = buildNeighbours(t)
 
       def distance(t1: Point, t2: Point): Int =
         (if (t1.x == t2.x || t1.y == t2.y) directSideCost else diagonalCost) + grid(t2.y * width + t2.x)
 
       def heuristic(t1: Point, t2: Point): Int =
         (Math.abs(t1.x - t2.x) + Math.abs(t1.y - t2.y)) * maxHeuristicFactor
+
+  def fromWeightedGrid(grid: Batch[Int], width: Int, height: Int): PathBuilder[Point] =
+    fromWeightedGrid(grid, width, height, All, DefaultSideCost, DefaultDiagonalCost, DefaultMaxHeuristicFactor)

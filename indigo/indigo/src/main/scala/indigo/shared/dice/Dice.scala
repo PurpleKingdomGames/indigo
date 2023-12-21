@@ -1,5 +1,6 @@
 package indigo.shared.dice
 
+import indigo.Batch
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.time.Millis
 import indigo.shared.time.Seconds
@@ -65,6 +66,9 @@ trait Dice:
   /** Shuffles a list of values into a random order
     */
   def shuffle[A](items: List[A]): List[A]
+
+  def shuffle[A](items: Batch[A]): Batch[A] =
+    Batch.fromSeq(shuffle(items.toList))
 
   override def toString: String =
     s"Dice(seed = ${seed.toString()})"

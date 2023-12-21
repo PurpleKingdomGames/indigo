@@ -1,8 +1,9 @@
 package com.example.sandbox
 
 import com.example.sandbox.scenes.ConfettiModel
+import com.example.sandbox.scenes.PathFindingModel
 import com.example.sandbox.scenes.PointersModel
-import indigo._
+import indigo.*
 import indigoextras.ui.InputFieldChange
 
 object SandboxModel {
@@ -16,6 +17,7 @@ object SandboxModel {
       None,
       ConfettiModel.empty,
       PointersModel.empty,
+      PathFindingModel.empty,
       Radians.zero
     )
 
@@ -138,6 +140,7 @@ final case class SandboxGameModel(
     data: Option[String],
     confetti: ConfettiModel,
     pointers: PointersModel,
+    pathfinding: PathFindingModel,
     rotation: Radians
 )
 

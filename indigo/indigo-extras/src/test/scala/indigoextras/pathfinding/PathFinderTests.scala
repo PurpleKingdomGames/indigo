@@ -2,27 +2,29 @@ package indigoextras.pathfinding
 
 import indigo.*
 import indigo.shared.dice.Dice
-import indigoextras.pathfinding.DefaultPathBuilders
-import indigoextras.pathfinding.DefaultPathBuilders.Movements.*
 import indigoextras.pathfinding.PathBuilder
+import indigoextras.pathfinding.PathBuilder.DefaultDiagonalCost
+import indigoextras.pathfinding.PathBuilder.DefaultMaxHeuristicFactor
+import indigoextras.pathfinding.PathBuilder.DefaultSideCost
+import indigoextras.pathfinding.PathBuilder.Movements.*
 import indigoextras.pathfinding.PathFinder
 import org.scalacheck.*
 
 import scala.annotation.tailrec
 import scala.scalajs.js
 
-import js.JSConverters._
+import js.JSConverters.*
 
-final case class TestContext(width: Int, height: Int, path: List[Point], allowedMoves: List[Point], dice: Dice) {
-  def allowedPoints: List[Point] = path
+final case class TestContext(width: Int, height: Int, path: Batch[Point], allowedMoves: Batch[Point], dice: Dice) {
+  def allowedPoints: Batch[Point] = path
 
-  def impassablePoints: List[Point] =
-    (for {
+  def impassablePoints: Batch[Point] =
+    Batch.fromSeq((for {
       x <- 0 until width
       y <- 0 until height
       p = Point(x, y)
       if !path.contains(p)
-    } yield p).toList
+    } yield p).toList)
 
   def weighted2DGrid: js.Array[js.Array[Int]] =
     val grid = Array.fill(height, width)(Int.MaxValue)
@@ -33,22 +35,22 @@ final case class TestContext(width: Int, height: Int, path: List[Point], allowed
 
 object TestContext {
 
-  def build(width: Int, height: Int, allowedMoves: List[Point], dice: Dice): TestContext =
+  def build(width: Int, height: Int, allowedMoves: Batch[Point], dice: Dice): TestContext =
     val startX     = dice.roll(width) - 1
     val startY     = dice.roll(height) - 1
     val startPoint = Point(startX, startY)
-    val path       = buildPath(width, height, allowedMoves, dice, List(startPoint), startPoint)
+    val path       = buildPath(width, height, allowedMoves, dice, Batch(startPoint), startPoint)
     TestContext(width, height, path.reverse, allowedMoves, dice)
 
   @tailrec
   private def buildPath(
       width: Int,
       height: Int,
-      allowedMoves: List[Point],
+      allowedMoves: Batch[Point],
       dice: Dice,
-      path: List[Point],
+      path: Batch[Point],
       currentPosition: Point
-  ): List[Point] =
+  ): Batch[Point] =
     computeNextPosition(width, height, path, dice.shuffle(allowedMoves), currentPosition) match {
       case None    => path
       case Some(p) => buildPath(width, height, allowedMoves, dice, p :: path, p)
@@ -57,8 +59,8 @@ object TestContext {
   private def computeNextPosition(
       width: Int,
       height: Int,
-      path: List[Point],
-      allowedMoves: List[Point],
+      path: Batch[Point],
+      allowedMoves: Batch[Point],
       currentPosition: Point
   ): Option[Point] =
     allowedMoves
@@ -79,7 +81,7 @@ final class PathFinderTests extends Properties("PathFinder") {
 
   private def adjacent(p1: Point, p2: Point): Boolean = Math.abs(p1.x - p2.x) <= 1 && Math.abs(p1.y - p2.y) <= 1
 
-  val genAllowedMoves: Gen[List[Point]] =
+  val genAllowedMoves: Gen[Batch[Point]] =
     Gen.oneOf(
       Vertical,
       Horizontal,
@@ -103,20 +105,32 @@ final class PathFinderTests extends Properties("PathFinder") {
       dice   <- Gen.choose(0L, Long.MaxValue).map(Dice.fromSeed)
     } yield (width, height, dice, Array.fill(height * width)(dice.roll(Int.MaxValue) - 1).toJSArray)
 
-  property("return Some(list(start)) when start and end are the same") = Prop.forAll(genContext) { context =>
+  property("return Some(Batch(start)) when start and end are the same") = Prop.forAll(genContext) { context =>
     val start: Point = context.dice.shuffle(context.allowedPoints).head
     val pathBuilder: PathBuilder[Point] =
-      DefaultPathBuilders.fromAllowedPoints(context.allowedPoints.toSet, context.allowedMoves)
-    PathFinder.findPath(start, start, pathBuilder) == Some(List(start))
+      PathBuilder.fromAllowedPoints(
+        context.allowedPoints.toSet,
+        context.allowedMoves,
+        DefaultSideCost,
+        DefaultDiagonalCost,
+        DefaultMaxHeuristicFactor
+      )
+    PathFinder.findPath(start, start, pathBuilder) == Some(Batch(start))
   }
 
   property("return None when start and end are not connected") = Prop.forAll(genContext) { context =>
     val start: Point = context.dice.shuffle(context.allowedPoints).head
     val end: Point   = context.dice.shuffle(context.impassablePoints).head
     if (start != end && !context.allowedMoves.map(_ + start).contains(end))
-      val newContext = context.copy(path = List(start, end))
+      val newContext = context.copy(path = Batch(start, end))
       val pathBuilder: PathBuilder[Point] =
-        DefaultPathBuilders.fromAllowedPoints(newContext.allowedPoints.toSet, newContext.allowedMoves)
+        PathBuilder.fromAllowedPoints(
+          newContext.allowedPoints.toSet,
+          newContext.allowedMoves,
+          DefaultSideCost,
+          DefaultDiagonalCost,
+          DefaultMaxHeuristicFactor
+        )
       PathFinder.findPath(start, end, pathBuilder) == None
     else true
   }
@@ -125,7 +139,13 @@ final class PathFinderTests extends Properties("PathFinder") {
     val start: Point = context.dice.shuffle(context.allowedPoints).head
     val end: Point   = context.dice.shuffle(context.allowedPoints).head
     val pathBuilder: PathBuilder[Point] =
-      DefaultPathBuilders.fromAllowedPoints(context.allowedPoints.toSet, context.allowedMoves)
+      PathBuilder.fromAllowedPoints(
+        context.allowedPoints.toSet,
+        context.allowedMoves,
+        DefaultSideCost,
+        DefaultDiagonalCost,
+        DefaultMaxHeuristicFactor
+      )
     PathFinder.findPath(start, end, pathBuilder).fold(true)(_.length <= context.path.length)
   }
 
@@ -133,7 +153,13 @@ final class PathFinderTests extends Properties("PathFinder") {
     val start: Point = context.dice.shuffle(context.allowedPoints).head
     val end: Point   = context.dice.shuffle(context.allowedPoints).head
     val pathBuilder: PathBuilder[Point] =
-      DefaultPathBuilders.fromAllowedPoints(context.allowedPoints.toSet, context.allowedMoves)
+      PathBuilder.fromAllowedPoints(
+        context.allowedPoints.toSet,
+        context.allowedMoves,
+        DefaultSideCost,
+        DefaultDiagonalCost,
+        DefaultMaxHeuristicFactor
+      )
     PathFinder.findPath(start, end, pathBuilder).fold(true)(p => p.forall(context.path.contains))
   }
 
@@ -142,7 +168,13 @@ final class PathFinderTests extends Properties("PathFinder") {
     val end: Point   = context.dice.shuffle(context.allowedPoints).head
     if (start != end)
       val pathBuilder: PathBuilder[Point] =
-        DefaultPathBuilders.fromAllowedPoints(context.allowedPoints.toSet, context.allowedMoves)
+        PathBuilder.fromAllowedPoints(
+          context.allowedPoints.toSet,
+          context.allowedMoves,
+          DefaultSideCost,
+          DefaultDiagonalCost,
+          DefaultMaxHeuristicFactor
+        )
       PathFinder.findPath(start, end, pathBuilder).exists(_.length > 1)
     else true
   }
@@ -151,15 +183,27 @@ final class PathFinderTests extends Properties("PathFinder") {
     val start: Point = context.dice.shuffle(context.allowedPoints).head
     val end: Point   = context.dice.shuffle(context.allowedPoints).head
     val pathBuilder: PathBuilder[Point] =
-      DefaultPathBuilders.fromAllowedPoints(context.allowedPoints.toSet, context.allowedMoves)
+      PathBuilder.fromAllowedPoints(
+        context.allowedPoints.toSet,
+        context.allowedMoves,
+        DefaultSideCost,
+        DefaultDiagonalCost,
+        DefaultMaxHeuristicFactor
+      )
     PathFinder.findPath(start, end, pathBuilder).fold(true)(p => p.distinct.length == p.length)
   }
 
-  property("return a list of adjacent entries") = Prop.forAll(genContext) { context =>
+  property("return a batch of adjacent entries") = Prop.forAll(genContext) { context =>
     val start: Point = context.dice.shuffle(context.allowedPoints).head
     val end: Point   = context.dice.shuffle(context.allowedPoints).head
     val pathBuilder: PathBuilder[Point] =
-      DefaultPathBuilders.fromAllowedPoints(context.allowedPoints.toSet, context.allowedMoves)
+      PathBuilder.fromAllowedPoints(
+        context.allowedPoints.toSet,
+        context.allowedMoves,
+        DefaultSideCost,
+        DefaultDiagonalCost,
+        DefaultMaxHeuristicFactor
+      )
     PathFinder.findPath(start, end, pathBuilder).fold(true) { path =>
       path.tail.foldLeft((true, path.head))((acc, current) => (acc._1 && adjacent(acc._2, current), current))._1
     }
@@ -168,11 +212,14 @@ final class PathFinderTests extends Properties("PathFinder") {
   property("build a path from the impassable points") = Prop.forAll(genContext) { context =>
     val start: Point = context.dice.shuffle(context.allowedPoints).head
     val end: Point   = context.dice.shuffle(context.allowedPoints).head
-    val pathBuilder: PathBuilder[Point] = DefaultPathBuilders.fromImpassablePoints(
+    val pathBuilder: PathBuilder[Point] = PathBuilder.fromImpassablePoints(
       context.impassablePoints.toSet,
       context.width,
       context.height,
-      context.allowedMoves
+      context.allowedMoves,
+      DefaultSideCost,
+      DefaultDiagonalCost,
+      DefaultMaxHeuristicFactor
     )
     PathFinder
       .findPath(start, end, pathBuilder)
@@ -184,11 +231,14 @@ final class PathFinderTests extends Properties("PathFinder") {
   property("build a path from a weighted 2D grid") = Prop.forAll(genContext) { context =>
     val start: Point = context.dice.shuffle(context.allowedPoints).head
     val end: Point   = context.dice.shuffle(context.allowedPoints).head
-    val pathBuilder: PathBuilder[Point] = DefaultPathBuilders.fromWeighted2DGrid(
+    val pathBuilder: PathBuilder[Point] = PathBuilder.fromWeighted2DGrid(
       context.weighted2DGrid,
       context.width,
       context.height,
-      context.allowedMoves
+      context.allowedMoves,
+      DefaultSideCost,
+      DefaultDiagonalCost,
+      DefaultMaxHeuristicFactor
     )
     PathFinder
       .findPath(start, end, pathBuilder)
@@ -202,12 +252,23 @@ final class PathFinderTests extends Properties("PathFinder") {
     val end: Point   = context.dice.shuffle(context.allowedPoints).head
     val a2DGrid      = context.weighted2DGrid
     val pathBuilder1: PathBuilder[Point] =
-      DefaultPathBuilders.fromWeighted2DGrid(a2DGrid, context.width, context.height, context.allowedMoves)
-    val pathBuilder2: PathBuilder[Point] = DefaultPathBuilders.fromWeightedGrid(
-      a2DGrid.flatten.toJSArray,
+      PathBuilder.fromWeighted2DGrid(
+        a2DGrid,
+        context.width,
+        context.height,
+        context.allowedMoves,
+        DefaultSideCost,
+        DefaultDiagonalCost,
+        DefaultMaxHeuristicFactor
+      )
+    val pathBuilder2: PathBuilder[Point] = PathBuilder.fromWeightedGrid(
+      Batch(a2DGrid.flatten),
       context.width,
       context.height,
-      context.allowedMoves
+      context.allowedMoves,
+      DefaultSideCost,
+      DefaultDiagonalCost,
+      DefaultMaxHeuristicFactor
     )
     PathFinder.findPath(start, end, pathBuilder1) == PathFinder.findPath(start, end, pathBuilder2)
   }
@@ -216,7 +277,7 @@ final class PathFinderTests extends Properties("PathFinder") {
     // one dimensional grid last element coordinates
     val start                           = Point(0, 0)
     val end                             = Point(width - 1, height - 1)
-    val pathBuilder: PathBuilder[Point] = DefaultPathBuilders.fromWeightedGrid(grid, width, height)
+    val pathBuilder: PathBuilder[Point] = PathBuilder.fromWeightedGrid(Batch(grid), width, height)
 
     PathFinder.findPath(start, end, pathBuilder) match {
       case Some(firstPath) =>
@@ -232,25 +293,25 @@ final class PathFinderTests extends Properties("PathFinder") {
   }
 
   property("allow to find a path using a custom type") = Prop.forAll(genContext) { context =>
-    val pathWithCustomTypes: List[PointWithUserContext] = context.path.map(PointWithUserContext.fromPoint)
-    val start: PointWithUserContext                     = context.dice.shuffle(pathWithCustomTypes).head
-    val end: PointWithUserContext                       = context.dice.shuffle(pathWithCustomTypes).head
+    val pathWithCustomTypes: Batch[PointWithUserContext] = context.path.map(PointWithUserContext.fromPoint)
+    val start: PointWithUserContext                      = context.dice.shuffle(pathWithCustomTypes).head
+    val end: PointWithUserContext                        = context.dice.shuffle(pathWithCustomTypes).head
 
     val pathBuilder: PathBuilder[PointWithUserContext] =
       new PathBuilder[PointWithUserContext]:
-        def neighbours(t: PointWithUserContext): List[PointWithUserContext] =
+        def neighbours(t: PointWithUserContext): Batch[PointWithUserContext] =
           context.allowedMoves
             .map(_ + t.point)
-            .flatMap(p => pathWithCustomTypes.find(_.point == p).map(identity))
+            .flatMap(p => Batch.fromOption(pathWithCustomTypes.find(_.point == p).map(identity)))
 
         def distance(t1: PointWithUserContext, t2: PointWithUserContext): Int =
-          if (t1.point.x == t2.point.x || t1.point.y == t2.point.y) DefaultPathBuilders.DefaultSideCost
-          else DefaultPathBuilders.DefaultDiagonalCost
+          if (t1.point.x == t2.point.x || t1.point.y == t2.point.y) PathBuilder.DefaultSideCost
+          else PathBuilder.DefaultDiagonalCost
 
         def heuristic(t1: PointWithUserContext, t2: PointWithUserContext): Int =
           (Math.abs(t1.point.x - t2.point.x) + Math.abs(
             t1.point.y - t2.point.y
-          )) * DefaultPathBuilders.DefaultMaxHeuristicFactor
+          )) * PathBuilder.DefaultMaxHeuristicFactor
 
     PathFinder
       .findPath(start, end, pathBuilder)

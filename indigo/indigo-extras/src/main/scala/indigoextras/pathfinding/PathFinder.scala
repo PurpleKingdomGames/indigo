@@ -1,27 +1,14 @@
 package indigoextras.pathfinding
 
-import scala.annotation.tailrec
+import indigo.*
 
-/** The structure allowing to customize the path finding and to build a path of type T
-  *
-  * @tparam T
-  *   the type of the points
-  */
-trait PathBuilder[T]:
-  def neighbours(
-      t: T
-  ): List[T] // neighbours retrieval allows to select the allowed moves (horizontal, vertical, diagonal, impossible moves, jumps, etc.)
-  def distance(t1: T, t2: T): Int // distance allows to select the cost of each move (diagonal, slow terrain, etc.)
-  def heuristic(
-      t1: T,
-      t2: T
-  ): Int // heuristic allows to select the way to estimate the distance from a point to the end
+import scala.annotation.tailrec
 
 // A* (A Star) inspired algorithm version allowing generic types and customisation of the path finding
 object PathFinder:
 
-  private type OpenList[T]   = List[PathProps[T]] // the open list is the list of the points to explore
-  private type ClosedList[T] = List[PathProps[T]] // the closed list is the list of the points already explored
+  private type OpenList[T]   = Batch[PathProps[T]] // the open list is the list of the points to explore
+  private type ClosedList[T] = Batch[PathProps[T]] // the closed list is the list of the points already explored
 
   /** The structure containing the properties of a point
     * @param value
@@ -37,8 +24,7 @@ object PathFinder:
     * @tparam T
     *   the type of the points
     */
-  private case class PathProps[T](value: T, g: Int, h: Int, f: Int, parent: Option[PathProps[T]] = None)
-      derives CanEqual
+  private case class PathProps[T](value: T, g: Int, h: Int, f: Int, parent: Option[PathProps[T]]) derives CanEqual
 
   /** Find a path from start to end using the A* algorithm
     * @param start
@@ -52,17 +38,17 @@ object PathFinder:
     * @return
     *   the path from start to end if it exists
     */
-  def findPath[T](start: T, end: T, pathBuilder: PathBuilder[T])(using CanEqual[T, T]): Option[List[T]] = {
-    val startProps = PathProps(start, 0, pathBuilder.heuristic(start, end), pathBuilder.heuristic(start, end))
-    val path       = loop[T](end, pathBuilder, List(startProps), Nil)
+  def findPath[T](start: T, end: T, pathBuilder: PathBuilder[T])(using CanEqual[T, T]): Option[Batch[T]] = {
+    val startProps = PathProps(start, 0, pathBuilder.heuristic(start, end), pathBuilder.heuristic(start, end), None)
+    val path       = loop[T](end, pathBuilder, Batch(startProps), Batch.empty)
     if (path.isEmpty && start != end) None else Some(path)
   }
 
   @tailrec
   private def loop[T](end: T, pathBuilder: PathBuilder[T], open: OpenList[T], closed: ClosedList[T])(using
       CanEqual[T, T]
-  ): List[T] =
-    if (open.isEmpty) Nil
+  ): Batch[T] =
+    if (open.isEmpty) Batch.empty
     else
       val current = open.minBy(_.f)
       if (current.value == end)
@@ -116,12 +102,12 @@ object PathFinder:
       (newOpen, closed)
 
   // build the path from the end to the start
-  private def buildPath[T](props: PathProps[T]): List[T] =
+  private def buildPath[T](props: PathProps[T]): Batch[T] =
     @tailrec
-    def loop(props: PathProps[T], acc: List[T]): List[T] =
+    def loop(props: PathProps[T], acc: Batch[T]): Batch[T] =
       props.parent match {
         case Some(parent) => loop(parent, props.value :: acc)
         case None         => props.value :: acc
       }
 
-    loop(props, Nil)
+    loop(props, Batch.empty)
