@@ -148,6 +148,12 @@ sealed trait Batch[+A]:
   def maxByOption[B](f: A => B)(using ord: Ordering[B]): Option[A] =
     Option.when(_jsArray.nonEmpty)(_jsArray.maxBy(f)(ord))
 
+  def minBy[B](f: A => B)(using ord: Ordering[B]): A =
+    _jsArray.minBy(f)(ord)
+
+  def minByOption[B](f: A => B)(using ord: Ordering[B]): Option[A] =
+    Option.when(_jsArray.nonEmpty)(_jsArray.minBy(f)(ord))
+
   /** Converts the batch into a String`
     * @return
     *   `String`

@@ -6,8 +6,11 @@ import indigoextras.pathfinding.GridSquare.EndSquare
 import indigoextras.pathfinding.GridSquare.ImpassableSquare
 import indigoextras.pathfinding.GridSquare.StartSquare
 
+import scala.annotation.nowarn
 import scala.annotation.tailrec
 
+@deprecated("Use the new indigoextras.pathfinding.PathFinder", "0.15.3")
+@nowarn("cat=deprecation")
 final case class SearchGrid(
     validationWidth: Int,
     validationHeight: Int,
@@ -24,6 +27,7 @@ final case class SearchGrid(
 
 }
 
+@nowarn("cat=deprecation")
 object SearchGrid {
 
   def isValid(searchGrid: SearchGrid): Boolean =

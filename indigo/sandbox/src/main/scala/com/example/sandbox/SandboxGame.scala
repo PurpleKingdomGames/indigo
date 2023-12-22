@@ -15,6 +15,7 @@ import com.example.sandbox.scenes.LineReflectionScene
 import com.example.sandbox.scenes.ManyEventHandlers
 import com.example.sandbox.scenes.MutantsScene
 import com.example.sandbox.scenes.OriginalScene
+import com.example.sandbox.scenes.PathFindingScene
 import com.example.sandbox.scenes.PointersScene
 import com.example.sandbox.scenes.RefractionScene
 import com.example.sandbox.scenes.Shaders
@@ -73,7 +74,8 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
       PointersScene,
       BoundingCircleScene,
       LineReflectionScene,
-      CameraWithCloneTilesScene
+      CameraWithCloneTilesScene,
+      PathFindingScene
     )
 
   val eventFilters: EventFilters = EventFilters.Permissive
