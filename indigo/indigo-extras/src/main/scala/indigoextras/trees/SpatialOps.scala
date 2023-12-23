@@ -1,7 +1,8 @@
 package indigoextras.trees
 
-import indigo.BoundingBox
 import indigo.shared.collections.Batch
+import indigo.shared.datatypes.Point
+import indigo.shared.geometry.BoundingBox
 import indigo.shared.geometry.Vertex
 
 trait SpatialOps[S]:
@@ -21,8 +22,13 @@ trait SpatialOps[S]:
 object SpatialOps:
 
   given SpatialOps[Vertex] with
-    def giveBounds(ref: Vertex): BoundingBox = BoundingBox.fromVertexCloud(Batch(ref))
-    def withinBounds(ref: Vertex, bounds: BoundingBox): Boolean =
-      bounds.contains(ref)
-    def equals(ref: Vertex, other: Vertex): Boolean       = ref ~== other
-    def giveDistance(ref: Vertex, vertex: Vertex): Double = ref.distanceTo(vertex)
+    def giveBounds(ref: Vertex): BoundingBox                    = BoundingBox.fromVertexCloud(Batch(ref))
+    def withinBounds(ref: Vertex, bounds: BoundingBox): Boolean = bounds.contains(ref)
+    def equals(ref: Vertex, other: Vertex): Boolean             = ref ~== other
+    def giveDistance(ref: Vertex, vertex: Vertex): Double       = ref.distanceTo(vertex)
+
+  given SpatialOps[Point] with
+    def giveBounds(ref: Point): BoundingBox                    = BoundingBox.fromVertexCloud(Batch(ref.toVertex))
+    def withinBounds(ref: Point, bounds: BoundingBox): Boolean = bounds.contains(ref.toVertex)
+    def equals(ref: Point, other: Point): Boolean              = ref == other
+    def giveDistance(ref: Point, vertex: Vertex): Double       = ref.toVertex.distanceTo(vertex)
