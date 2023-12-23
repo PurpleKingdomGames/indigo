@@ -12,7 +12,7 @@ class QuadTreeTests extends munit.FunSuite {
   test("should be able to fetch an element at a given position") {
     val gridPoint: Vertex = Vertex(5, 1)
 
-    val tree: QuadBranch[String] = QuadBranch(
+    val tree: QuadBranch[Vertex, String] = QuadBranch(
       BoundingBox(0, 0, 8, 8),
       QuadEmpty(BoundingBox(0, 0, 4, 4)),
       QuadBranch(
@@ -32,25 +32,25 @@ class QuadTreeTests extends munit.FunSuite {
       QuadEmpty(BoundingBox(4, 4, 4, 4))
     )
 
-    assertEquals(tree.fetchElementAt(gridPoint), Some("hello"))
+    assertEquals(tree.fetchElement(gridPoint), Some("hello"))
 
   }
 
   val tree = QuadTree
     .empty(16, 16)
-    .insertElement("a", Vertex(9, 2))
-    .insertElement("b", Vertex(0, 0))
-    .insertElement("c", Vertex(10, 10))
-    .insertElement("d", Vertex(20, 50))
+    .insertElement(Vertex(9, 2), "a")
+    .insertElement(Vertex(0, 0), "b")
+    .insertElement(Vertex(10, 10), "c")
+    .insertElement(Vertex(20, 50), "d")
 
   test("should be able insert multiple items") {
     given CanEqual[Option[String], Option[String]] = CanEqual.derived
 
     val actual =
       QuadTree(
-        ("a", Vertex(9, 2)),
-        ("b", Vertex(0, 0)),
-        ("c", Vertex(10, 10))
+        (Vertex(9, 2), "a"),
+        (Vertex(0, 0), "b"),
+        (Vertex(10, 10), "c")
       )
 
     val expected =
@@ -66,30 +66,30 @@ class QuadTreeTests extends munit.FunSuite {
 
     assert(
       List(Vertex(9, 2), Vertex(0, 0), Vertex(10, 10)).forall { v =>
-        clue(tree.fetchElementAt(clue(v))) == actual.fetchElementAt(v) &&
-        tree.fetchElementAt(v) == expected.fetchElementAt(v)
+        clue(tree.fetchElement(clue(v))) == actual.fetchElement(v) &&
+        tree.fetchElement(v) == expected.fetchElement(v)
       }
     )
   }
 
   test("should be able to insert an element at a given position.[9, 2]") {
-    assertEquals(tree.fetchElementAt(Vertex(9, 2)), Some("a"))
+    assertEquals(tree.fetchElement(Vertex(9, 2)), Some("a"))
   }
 
   test("should be able to insert an element at a given position.Should be missing at [1, 2]") {
-    assertEquals(tree.fetchElementAt(Vertex(1, 2)), None)
+    assertEquals(tree.fetchElement(Vertex(1, 2)), None)
   }
 
   test("should be able to insert an element at a given position.[0, 0]") {
-    assertEquals(tree.fetchElementAt(Vertex(0, 0)), Some("b"))
+    assertEquals(tree.fetchElement(Vertex(0, 0)), Some("b"))
   }
 
   test("should be able to insert an element at a given position.[10, 10]") {
-    assertEquals(tree.fetchElementAt(Vertex(10, 10)), Some("c"))
+    assertEquals(tree.fetchElement(Vertex(10, 10)), Some("c"))
   }
 
   test("should be able to insert an element at a given position.Outside of area at [20, 50]") {
-    assertEquals(tree.fetchElementAt(Vertex(20, 50)), None)
+    assertEquals(tree.fetchElement(Vertex(20, 50)), None)
   }
 
   test("should be able to remove an element from a tree") {
@@ -98,13 +98,13 @@ class QuadTreeTests extends munit.FunSuite {
 
     val tree = QuadTree
       .empty(16, 16)
-      .insertElement("test", gridPoint)
+      .insertElement(gridPoint, "test")
 
-    assertEquals(tree.fetchElementAt(gridPoint), Some("test"))
+    assertEquals(tree.fetchElement(gridPoint), Some("test"))
 
     val tree2 = tree.removeElement(gridPoint)
 
-    assertEquals(tree2.fetchElementAt(gridPoint), None)
+    assertEquals(tree2.fetchElement(gridPoint), None)
 
   }
 
@@ -112,9 +112,9 @@ class QuadTreeTests extends munit.FunSuite {
 
     val actual: Batch[String] = QuadTree
       .empty(2, 2)
-      .insertElement("a", Vertex(0, 0))
-      .insertElement("b", Vertex(0, 1))
-      .insertElement("c", Vertex(1, 0))
+      .insertElement(Vertex(0, 0), "a")
+      .insertElement(Vertex(0, 1), "b")
+      .insertElement(Vertex(1, 0), "c")
       .toBatch
 
     val expected: Batch[String] =
@@ -128,9 +128,9 @@ class QuadTreeTests extends munit.FunSuite {
 
     val actual: Batch[String] = QuadTree
       .empty(2, 2)
-      .insertElement("a", Vertex(0, 0))
-      .insertElement("b", Vertex(0, 1))
-      .insertElement("c", Vertex(1, 0))
+      .insertElement(Vertex(0, 0), "a")
+      .insertElement(Vertex(0, 1), "b")
+      .insertElement(Vertex(1, 0), "c")
       .toBatch(v => v == "b" || v == "c")
 
     val expected: Batch[String] =
@@ -144,9 +144,9 @@ class QuadTreeTests extends munit.FunSuite {
 
     val actual: Batch[(Vertex, String)] = QuadTree
       .empty(2, 2)
-      .insertElement("a", Vertex(0, 0))
-      .insertElement("b", Vertex(0, 1))
-      .insertElement("c", Vertex(1, 0))
+      .insertElement(Vertex(0, 0), "a")
+      .insertElement(Vertex(0, 1), "b")
+      .insertElement(Vertex(1, 0), "c")
       .toBatchWithPosition
 
     val expected: Batch[(Vertex, String)] =
@@ -164,9 +164,9 @@ class QuadTreeTests extends munit.FunSuite {
 
     val actual: Batch[(Vertex, String)] = QuadTree
       .empty(2, 2)
-      .insertElement("a", Vertex(0, 0))
-      .insertElement("b", Vertex(0, 1))
-      .insertElement("c", Vertex(1, 0))
+      .insertElement(Vertex(0, 0), "a")
+      .insertElement(Vertex(0, 1), "b")
+      .insertElement(Vertex(1, 0), "c")
       .toBatchWithPosition(v => v == "b" || v == "c")
 
     val expected: Batch[(Vertex, String)] =
@@ -183,15 +183,15 @@ class QuadTreeTests extends munit.FunSuite {
 
     val treeA = QuadTree
       .empty(2, 2)
-      .insertElement("a", Vertex(0, 0))
-      .insertElement("b", Vertex(0, 1))
-      .insertElement("c", Vertex(1, 0))
+      .insertElement(Vertex(0, 0), "a")
+      .insertElement(Vertex(0, 1), "b")
+      .insertElement(Vertex(1, 0), "c")
 
     val treeB = QuadTree
       .empty(2, 2)
-      .insertElement("a", Vertex(0, 0))
-      .insertElement("b", Vertex(0, 1))
-      .insertElement("c", Vertex(1, 0))
+      .insertElement(Vertex(0, 0), "a")
+      .insertElement(Vertex(0, 1), "b")
+      .insertElement(Vertex(1, 0), "c")
 
     assert(treeA === treeB)
   }
@@ -200,15 +200,15 @@ class QuadTreeTests extends munit.FunSuite {
 
     val treeA = QuadTree
       .empty(2, 2)
-      .insertElement("a", Vertex(0, 0))
-      .insertElement("b", Vertex(0, 1))
-      .insertElement("c", Vertex(1, 0))
+      .insertElement(Vertex(0, 0), "a")
+      .insertElement(Vertex(0, 1), "b")
+      .insertElement(Vertex(1, 0), "c")
 
     val treeB = QuadTree
       .empty(2, 2)
-      .insertElement("c", Vertex(1, 0))
-      .insertElement("a", Vertex(0, 0))
-      .insertElement("b", Vertex(0, 1))
+      .insertElement(Vertex(1, 0), "c")
+      .insertElement(Vertex(0, 0), "a")
+      .insertElement(Vertex(0, 1), "b")
 
     assert(treeA === treeB)
   }
@@ -217,15 +217,15 @@ class QuadTreeTests extends munit.FunSuite {
 
     val treeA = QuadTree
       .empty(2, 2)
-      .insertElement("a", Vertex(0, 0))
-      .insertElement("b", Vertex(0, 1))
-      .insertElement("c", Vertex(1, 0))
+      .insertElement(Vertex(0, 0), "a")
+      .insertElement(Vertex(0, 1), "b")
+      .insertElement(Vertex(1, 0), "c")
 
     val treeB = QuadTree
       .empty(2, 2)
-      .insertElement("a", Vertex(0, 0))
-      .insertElement("b", Vertex(0, 1))
-      .insertElement("d", Vertex(1, 0))
+      .insertElement(Vertex(0, 0), "a")
+      .insertElement(Vertex(0, 1), "b")
+      .insertElement(Vertex(1, 0), "d")
 
     assert(treeA !== treeB)
   }
@@ -234,15 +234,15 @@ class QuadTreeTests extends munit.FunSuite {
 
     val treeA = QuadTree
       .empty(2, 2)
-      .insertElement("a", Vertex(0, 0))
-      .insertElement("b", Vertex(0, 1))
-      .insertElement("c", Vertex(1, 0))
+      .insertElement(Vertex(0, 0), "a")
+      .insertElement(Vertex(0, 1), "b")
+      .insertElement(Vertex(1, 0), "c")
 
     val treeB = QuadTree
       .empty(2, 2)
-      .insertElement("a", Vertex(0, 0))
-      .insertElement("b", Vertex(1, 0))
-      .insertElement("c", Vertex(0, 1))
+      .insertElement(Vertex(0, 0), "a")
+      .insertElement(Vertex(1, 0), "b")
+      .insertElement(Vertex(0, 1), "c")
 
     assert(treeA !== treeB)
   }
@@ -253,7 +253,7 @@ class QuadTreeTests extends munit.FunSuite {
 
     val tree = QuadTree
       .empty(16, 16)
-      .insertElement(999, gridPoint)
+      .insertElement(gridPoint, 999)
       .removeElement(gridPoint)
       .prune
 
@@ -267,7 +267,7 @@ class QuadTreeTests extends munit.FunSuite {
 
     val tree = QuadTree
       .empty(16, 16)
-      .insertElement(999, gridPoint)
+      .insertElement(gridPoint, 999)
 
     assertEquals(tree.prune, tree)
 
@@ -276,15 +276,15 @@ class QuadTreeTests extends munit.FunSuite {
   test("should be able to search for a leaf under a point") {
     val tree = QuadTree
       .empty(2, 2)
-      .insertElement("a", Vertex(0, 0))
-      .insertElement("b", Vertex(0, 1))
-      .insertElement("c", Vertex(1, 0))
+      .insertElement(Vertex(0, 0), "a")
+      .insertElement(Vertex(0, 1), "b")
+      .insertElement(Vertex(1, 0), "c")
 
     val expected: Option[String] = Some("b")
 
     val point: Vertex = Vertex(0, 1)
 
-    assertEquals(QuadTree.findClosestTo(tree, point), expected)
+    assertEquals(QuadTree.findClosestTo(point, tree), expected)
   }
 
   test("should allow a search of squares where the line points are in the same square") {
@@ -504,23 +504,23 @@ class QuadTreeTests extends munit.FunSuite {
 
 object SampleTree {
 
-  val tree: QuadTree[String] = QuadTree
+  val tree: QuadTree[Vertex, String] = QuadTree
     .empty(4, 4)
-    .insertElement("0,0", Vertex(0, 0))
-    .insertElement("0,1", Vertex(0, 1))
-    .insertElement("0,2", Vertex(0, 2))
-    .insertElement("0,3", Vertex(0, 3))
-    .insertElement("1,0", Vertex(1, 0))
-    .insertElement("1,1", Vertex(1, 1))
-    .insertElement("1,2", Vertex(1, 2))
-    .insertElement("1,3", Vertex(1, 3))
-    .insertElement("2,0", Vertex(2, 0))
-    .insertElement("2,1", Vertex(2, 1))
-    .insertElement("2,2", Vertex(2, 2))
-    .insertElement("2,3", Vertex(2, 3))
-    .insertElement("3,0", Vertex(3, 0))
-    .insertElement("3,1", Vertex(3, 1))
-    .insertElement("3,2", Vertex(3, 2))
-    .insertElement("3,3", Vertex(3, 3))
+    .insertElement(Vertex(0, 0), "0,0")
+    .insertElement(Vertex(0, 1), "0,1")
+    .insertElement(Vertex(0, 2), "0,2")
+    .insertElement(Vertex(0, 3), "0,3")
+    .insertElement(Vertex(1, 0), "1,0")
+    .insertElement(Vertex(1, 1), "1,1")
+    .insertElement(Vertex(1, 2), "1,2")
+    .insertElement(Vertex(1, 3), "1,3")
+    .insertElement(Vertex(2, 0), "2,0")
+    .insertElement(Vertex(2, 1), "2,1")
+    .insertElement(Vertex(2, 2), "2,2")
+    .insertElement(Vertex(2, 3), "2,3")
+    .insertElement(Vertex(3, 0), "3,0")
+    .insertElement(Vertex(3, 1), "3,1")
+    .insertElement(Vertex(3, 2), "3,2")
+    .insertElement(Vertex(3, 3), "3,3")
 
 }
