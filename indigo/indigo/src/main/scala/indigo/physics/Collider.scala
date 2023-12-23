@@ -16,6 +16,11 @@ enum Collider[A]:
   def canCollideWith: A => Boolean
   def onCollisionWith: Collider[A] => Batch[GlobalEvent]
 
+  def boundingBox: BoundingBox =
+    this match
+      case c: Collider.Circle[_] => c.bounds.toIncircleBoundingBox
+      case c: Collider.Box[_]    => c.bounds
+
   case Circle(
       tag: A,
       bounds: BoundingCircle,

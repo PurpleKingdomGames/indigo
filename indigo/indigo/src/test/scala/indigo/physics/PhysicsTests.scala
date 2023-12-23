@@ -28,6 +28,7 @@ class PhysicsTests extends munit.FunSuite:
       Batch(
         Physics.Internal.IndexedCollider(
           0,
+          collider,
           collider.moveTo(Vertex(10, 20))
         )
       )
@@ -42,11 +43,11 @@ class PhysicsTests extends munit.FunSuite:
     val c4 = Collider.Circle(tag, BoundingCircle(10, 20, 2)).withFriction(Friction.zero) // not touching
     val c5 = Collider.Circle(tag, BoundingCircle(8, 4, 2)).withFriction(Friction.zero)   // overlaps c3
 
-    val idx1 = Physics.Internal.IndexedCollider(0, c1)
-    val idx2 = Physics.Internal.IndexedCollider(1, c2)
-    val idx3 = Physics.Internal.IndexedCollider(2, c3)
-    val idx4 = Physics.Internal.IndexedCollider(3, c4)
-    val idx5 = Physics.Internal.IndexedCollider(4, c5)
+    val idx1 = Physics.Internal.IndexedCollider(0, c1, c1)
+    val idx2 = Physics.Internal.IndexedCollider(1, c2, c2)
+    val idx3 = Physics.Internal.IndexedCollider(2, c3, c3)
+    val idx4 = Physics.Internal.IndexedCollider(3, c4, c4)
+    val idx5 = Physics.Internal.IndexedCollider(4, c5, c5)
 
     val indexed =
       Batch(
@@ -79,9 +80,9 @@ class PhysicsTests extends munit.FunSuite:
     val c4 = Collider.Circle(tag, BoundingCircle(10, 20, 2)).withFriction(Friction.zero) // not touching
     val c5 = Collider.Circle(tag, BoundingCircle(8, 4, 2)).withFriction(Friction.zero)   // overlaps c3
 
-    val idx1 = Physics.Internal.IndexedCollider(0, c1)
-    val idx2 = Physics.Internal.IndexedCollider(1, c2)
-    val idx3 = Physics.Internal.IndexedCollider(2, c3)
+    val idx1 = Physics.Internal.IndexedCollider(0, c1, c1)
+    val idx2 = Physics.Internal.IndexedCollider(1, c2, c2)
+    val idx3 = Physics.Internal.IndexedCollider(2, c3, c3)
 
     val indexed =
       Batch(
