@@ -17,6 +17,11 @@ object Physics:
     val moved: Batch[Internal.IndexedCollider[A]] =
       Internal.moveColliders(timeDelta, world)
 
+    val superBounds: BoundingBox =
+      if moved.isEmpty then BoundingBox.zero
+      else
+        moved.tail.foldLeft(moved.head.movementBounds) { case (acc, next) => acc.expandToInclude(next.movementBounds) }
+
     val collisions: Batch[(Collider[A], Batch[Collider[A]])] =
       Internal.findCollisionGroups(moved, transient)
 
@@ -67,24 +72,26 @@ object Physics:
 
       collider match
         case c @ Collider.Circle(_, _, _, _, _, _, static, _, _) if static =>
-          IndexedCollider(index, c)
+          IndexedCollider(index, c, c)
 
         case c @ Collider.Circle(_, bounds, mass, velocity, _, _, _, _, _) =>
           val (p, v) = calculateNewMovement(timeDelta, worldForces, worldResistance, c.bounds.position, velocity, mass)
 
           IndexedCollider(
             index,
+            c,
             c.copy(bounds = c.bounds.moveTo(p), velocity = v)
           )
 
         case c @ Collider.Box(_, _, _, _, _, _, static, _, _) if static =>
-          IndexedCollider(index, c)
+          IndexedCollider(index, c, c)
 
         case c @ Collider.Box(_, bounds, mass, velocity, _, _, _, _, _) =>
           val (p, v) = calculateNewMovement(timeDelta, worldForces, worldResistance, c.bounds.position, velocity, mass)
 
           IndexedCollider(
             index,
+            c,
             c.copy(bounds = c.bounds.moveTo(p), velocity = v)
           )
 
@@ -93,25 +100,25 @@ object Physics:
         transient: Batch[Collider[A]]
     ): Batch[(Collider[A], Batch[Collider[A]])] =
       indexedColliders.map(c =>
-        if c.collider.isStatic then c.collider -> Batch()
+        if c.proposed.isStatic then c.proposed -> Batch()
         else
           val worldCollisions =
             indexedColliders
               .filter { i =>
                 i.index != c.index &&
-                c.collider.canCollideWith(i.collider.tag) &&
-                c.collider.hitTest(i.collider)
+                c.proposed.canCollideWith(i.proposed.tag) &&
+                c.proposed.hitTest(i.proposed)
               }
-              .map(_.collider)
+              .map(_.proposed)
 
           val tempCollisions =
             transient
               .filter { tmp =>
-                c.collider.canCollideWith(tmp.tag) &&
-                c.collider.hitTest(tmp)
+                c.proposed.canCollideWith(tmp.tag) &&
+                c.proposed.hitTest(tmp)
               }
 
-          c.collider -> (worldCollisions ++ tempCollisions)
+          c.proposed -> (worldCollisions ++ tempCollisions)
       )
 
     def solveAllCollisions[A](
@@ -252,5 +259,7 @@ object Physics:
         case Some(reflected) =>
           Solved(nextPosition + (reflected * continueDistance), reflected * remainingEnergy * frictionAmount)
 
-    final case class IndexedCollider[A](index: Int, collider: Collider[A])
+    final case class IndexedCollider[A](index: Int, previous: Collider[A], proposed: Collider[A]):
+      val movementBounds: BoundingBox = BoundingBox.expandToInclude(previous.boundingBox, proposed.boundingBox)
+
     final case class Solved(nextPosition: Vertex, nextVelocity: Vector2)
