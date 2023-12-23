@@ -6,6 +6,7 @@ import indigo.shared.geometry.Vertex
 import indigoextras.trees.QuadTree.QuadBranch
 import indigoextras.trees.QuadTree.QuadEmpty
 import indigoextras.trees.QuadTree.QuadLeaf
+import indigo.shared.datatypes.Point
 
 class QuadTreeTests extends munit.FunSuite {
 
@@ -498,6 +499,30 @@ class QuadTreeTests extends munit.FunSuite {
     // .foldLeft(z)((acc, next) => acc.expandToInclude(next))
 
     assert(clue(recombined) ~== clue(original))
+  }
+
+  test("Point example") {
+    given CanEqual[Option[String], Option[String]] = CanEqual.derived
+
+    val actual =
+      QuadTree(
+        (Point(9, 2), "a"),
+        (Point(0, 0), "b"),
+        (Point(10, 10), "c")
+      )
+
+    val expected =
+      QuadBranch(
+        BoundingBox(Vertex(0, 0), Vertex(10.001, 10.001)),
+        QuadLeaf(BoundingBox(Vertex(0, 0), Vertex(5.0005, 5.0005)), Point(0, 0), "b"),
+        QuadLeaf(BoundingBox(Vertex(5.0005, 0), Vertex(5.0005, 5.0005)), Point(9, 2), "a"),
+        QuadEmpty(BoundingBox(Vertex(0, 5.0005), Vertex(5.0005, 5.0005))),
+        QuadLeaf(BoundingBox(Vertex(5.0005, 5.0005), Vertex(5.0005, 5.0005)), Point(10, 10), "c")
+      )
+
+    assertEquals(actual, expected)
+    assertEquals(actual.findClosestTo(Vertex(9, 9)), Option("c"))
+    assertEquals(actual.searchByBoundingBox(BoundingBox(-1, -1, 11, 4)), Batch("a", "b"))
   }
 
 }

@@ -53,9 +53,6 @@ sealed trait QuadTree[S, T](using SpatialOps[S]) derives CanEqual:
   def searchByLineWithPosition(line: LineSegment)(using CanEqual[T, T]): Batch[(S, T)] =
     QuadTree.searchByLineWithPosition(this, line)
 
-  @deprecated("use `searchByBoundingBox` or `searchByBoundingBoxWithPosition` instead")
-  def searchByRectangle(boundingBox: BoundingBox)(using CanEqual[T, T]): Batch[T] =
-    QuadTree.searchByBoundingBox(this, boundingBox)
   def searchByBoundingBox(boundingBox: BoundingBox)(using CanEqual[T, T]): Batch[T] =
     QuadTree.searchByBoundingBox(this, boundingBox)
   def searchByBoundingBoxWithPosition(boundingBox: BoundingBox)(using CanEqual[T, T]): Batch[(S, T)] =
