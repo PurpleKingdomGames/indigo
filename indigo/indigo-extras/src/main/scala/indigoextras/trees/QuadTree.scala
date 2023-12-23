@@ -7,7 +7,7 @@ import indigo.shared.geometry.Vertex
 
 import scala.annotation.tailrec
 
-sealed trait QuadTree[S, T](using SpatialOps[S]) derives CanEqual:
+sealed trait QuadTree[S, T](using s: SpatialOps[S]) derives CanEqual:
   val bounds: BoundingBox
   def isEmpty: Boolean
 
@@ -94,7 +94,7 @@ sealed trait QuadTree[S, T](using SpatialOps[S]) derives CanEqual:
           rec(as, bs)
 
         case (QuadTree.QuadLeaf(b1, p1, v1) :: as, QuadTree.QuadLeaf(b2, p2, v2) :: bs)
-            if (b1 ~== b2) && (p1 === p2) && v1 == v2 =>
+            if (b1 ~== b2) && s.equals(p1, p2) && v1 == v2 =>
           rec(as, bs)
 
         case (QuadTree.QuadBranch(bounds1, a1, b1, c1, d1) :: as, QuadTree.QuadBranch(bounds2, a2, b2, c2, d2) :: bs)
@@ -122,10 +122,13 @@ object QuadTree:
 
   def apply[S, T](elements: (S, T)*)(using SpatialOps[S]): QuadTree[S, T] =
     QuadTree(Batch.fromSeq(elements))
-  def apply[S, T](elements: Batch[(S, T)])(using SpatialOps[S]): QuadTree[S, T] =
+  def apply[S, T](elements: Batch[(S, T)])(using s: SpatialOps[S]): QuadTree[S, T] =
     val b =
       if elements.isEmpty then BoundingBox.zero
-      else elements.tail.foldLeft(elements.head._1.bounds) { case (acc, next) => acc.expandToInclude(next._1.bounds) }
+      else
+        elements.tail.foldLeft(s.bounds(elements.head._1)) { case (acc, next) =>
+          acc.expandToInclude(s.bounds(next._1))
+        }
 
     QuadEmpty(b).insertElements(elements)
 
@@ -190,17 +193,17 @@ object QuadTree:
 
   end QuadBranch
 
-  def fetchElement[S, T](ref: S, quadTree: QuadTree[S, T])(using CanEqual[T, T], SpatialOps[S]): Option[T] =
+  def fetchElement[S, T](ref: S, quadTree: QuadTree[S, T])(using CanEqual[T, T])(using s: SpatialOps[S]): Option[T] =
     @tailrec
     def rec(remaining: List[QuadTree[S, T]]): Option[T] =
       remaining match
         case Nil =>
           None
 
-        case QuadLeaf(_, otherRef, value) :: xs if otherRef === ref =>
+        case QuadLeaf(_, otherRef, value) :: xs if s.equals(otherRef, ref) =>
           Some(value)
 
-        case QuadBranch(bounds, a, b, c, d) :: xs if ref.containedBy(bounds) =>
+        case QuadBranch(bounds, a, b, c, d) :: xs if s.within(ref, bounds) =>
           rec(xs ++ List(a, b, c, d))
 
         case _ :: xs =>
@@ -208,17 +211,17 @@ object QuadTree:
 
     rec(List(quadTree))
 
-  def insertElement[S, T](ref: S, quadTree: QuadTree[S, T], element: T)(using SpatialOps[S]): QuadTree[S, T] =
+  def insertElement[S, T](ref: S, quadTree: QuadTree[S, T], element: T)(using s: SpatialOps[S]): QuadTree[S, T] =
     quadTree match
-      case QuadEmpty(bounds) if ref.containedBy(bounds) =>
+      case QuadEmpty(bounds) if s.within(ref, bounds) =>
         // Straight insert
         QuadLeaf(bounds, ref, element)
 
-      case QuadLeaf(bounds, otherRef, _) if otherRef === ref =>
+      case QuadLeaf(bounds, otherRef, _) if s.equals(otherRef, ref) =>
         // Replace
         QuadLeaf(bounds, ref, element)
 
-      case QuadLeaf(bounds, otherRef, value) if ref.containedBy(bounds) =>
+      case QuadLeaf(bounds, otherRef, value) if s.within(ref, bounds) =>
         // Both elements in the same region but not overlapping,
         // subdivide and insert both.
         QuadBranch
@@ -226,7 +229,7 @@ object QuadTree:
           .insertElement(otherRef, value) // original
           .insertElement(ref, element)    // new
 
-      case QuadBranch(bounds, a, b, c, d) if ref.containedBy(bounds) =>
+      case QuadBranch(bounds, a, b, c, d) if s.within(ref, bounds) =>
         // Delegate to sub-regions
         QuadBranch[S, T](
           bounds,
@@ -239,12 +242,12 @@ object QuadTree:
       case _ =>
         quadTree
 
-  def removeElement[S, T](ref: S, quadTree: QuadTree[S, T])(using SpatialOps[S]): QuadTree[S, T] =
+  def removeElement[S, T](ref: S, quadTree: QuadTree[S, T])(using s: SpatialOps[S]): QuadTree[S, T] =
     quadTree match
-      case QuadLeaf(bounds, p, _) if bounds.contains(ref) && (p === ref) =>
+      case QuadLeaf(bounds, p, _) if s.within(ref, bounds) && s.equals(p, ref) =>
         QuadEmpty(bounds)
 
-      case QuadBranch(bounds, a, b, c, d) if bounds.contains(ref) =>
+      case QuadBranch(bounds, a, b, c, d) if s.within(ref, bounds) =>
         QuadBranch[S, T](
           bounds,
           a.removeElement(ref),
@@ -334,9 +337,8 @@ object QuadTree:
       case QuadBranch(bounds, a, b, c, d) =>
         QuadBranch[S, T](bounds, a.prune, b.prune, c.prune, d.prune)
 
-  def findClosestToWithPosition[S, T](vertex: Vertex, quadTree: QuadTree[S, T], p: T => Boolean)(using
-      CanEqual[T, T],
-      SpatialOps[S]
+  def findClosestToWithPosition[S, T](vertex: Vertex, quadTree: QuadTree[S, T], p: T => Boolean)(using CanEqual[T, T])(
+      using s: SpatialOps[S]
   ): Option[(S, T)] =
     @tailrec
     def rec(remaining: List[QuadTree[S, T]], closestDistance: Double, acc: Option[(S, T)]): Option[(S, T)] =
@@ -345,8 +347,8 @@ object QuadTree:
           acc
 
         case QuadLeaf(_, ref, value) :: rs =>
-          if ref.distanceTo(vertex) < closestDistance && p(value) then
-            rec(rs, ref.distanceTo(vertex), Some((ref, value)))
+          val dist = s.distance(ref, vertex)
+          if dist < closestDistance && p(value) then rec(rs, dist, Some((ref, value)))
           else rec(rs, closestDistance, acc)
 
         case QuadBranch(bounds, a, b, c, d) :: rs if vertex.distanceTo(bounds.center) < closestDistance =>
@@ -362,9 +364,8 @@ object QuadTree:
   ): Option[(S, T)] =
     findClosestToWithPosition(vertex, quadTree, _ => true)
 
-  def findClosestTo[S, T](vertex: Vertex, quadTree: QuadTree[S, T], p: T => Boolean)(using
-      CanEqual[T, T],
-      SpatialOps[S]
+  def findClosestTo[S, T](vertex: Vertex, quadTree: QuadTree[S, T], p: T => Boolean)(using CanEqual[T, T])(using
+      s: SpatialOps[S]
   ): Option[T] =
     @tailrec
     def rec(remaining: List[QuadTree[S, T]], closestDistance: Double, acc: Option[T]): Option[T] =
@@ -373,7 +374,8 @@ object QuadTree:
           acc
 
         case QuadLeaf(_, ref, value) :: rs =>
-          if ref.distanceTo(vertex) < closestDistance && p(value) then rec(rs, ref.distanceTo(vertex), Some(value))
+          val dist = s.distance(ref, vertex)
+          if dist < closestDistance && p(value) then rec(rs, dist, Some(value))
           else rec(rs, closestDistance, acc)
 
         case QuadBranch(bounds, a, b, c, d) :: rs if vertex.distanceTo(bounds.center) < closestDistance =>
@@ -463,9 +465,8 @@ object QuadTree:
     searchByLine(quadTree, LineSegment(start, end), _ => true)
 
   def searchByBoundingBoxWithPosition[S, T](quadTree: QuadTree[S, T], boundingBox: BoundingBox, p: T => Boolean)(using
-      CanEqual[T, T],
-      SpatialOps[S]
-  ): Batch[(S, T)] =
+      CanEqual[T, T]
+  )(using s: SpatialOps[S]): Batch[(S, T)] =
     @tailrec
     def rec(remaining: List[QuadTree[S, T]], acc: Batch[(S, T)]): Batch[(S, T)] =
       remaining match
@@ -473,7 +474,7 @@ object QuadTree:
           acc
 
         case QuadLeaf(_, ref, value) :: rs =>
-          if boundingBox.contains(ref) && p(value) then rec(rs, (ref, value) :: acc)
+          if s.within(ref, boundingBox) && p(value) then rec(rs, (ref, value) :: acc)
           else rec(rs, acc)
 
         case QuadBranch(bounds, a, b, c, d) :: rs if boundingBox.overlaps(bounds) =>
@@ -490,9 +491,8 @@ object QuadTree:
     searchByBoundingBoxWithPosition(quadTree, boundingBox, _ => true)
 
   def searchByBoundingBox[S, T](quadTree: QuadTree[S, T], boundingBox: BoundingBox, p: T => Boolean)(using
-      CanEqual[T, T],
-      SpatialOps[S]
-  ): Batch[T] =
+      CanEqual[T, T]
+  )(using s: SpatialOps[S]): Batch[T] =
     @tailrec
     def rec(remaining: List[QuadTree[S, T]], acc: Batch[T]): Batch[T] =
       remaining match
@@ -500,7 +500,7 @@ object QuadTree:
           acc
 
         case QuadLeaf(_, ref, value) :: rs =>
-          if boundingBox.contains(ref) && p(value) then rec(rs, value :: acc)
+          if s.within(ref, boundingBox) && p(value) then rec(rs, value :: acc)
           else rec(rs, acc)
 
         case QuadBranch(bounds, a, b, c, d) :: rs if boundingBox.overlaps(bounds) =>
