@@ -183,12 +183,8 @@ object QuadTree:
         // Straight insert
         Leaf(bounds, ref, element)
 
-      case Leaf(bounds, otherRef, _) if s.equals(otherRef, ref) =>
-        // Replace
-        Leaf(bounds, ref, element)
-
       case Leaf(bounds, otherRef, value) if s.within(ref, bounds) =>
-        // Both elements in the same region but not overlapping,
+        // Both elements in the same region,
         // subdivide and insert both.
         Branch
           .fromBounds(bounds)
