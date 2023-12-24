@@ -628,18 +628,24 @@ class QuadTreeTests extends munit.FunSuite {
     assertEquals(actual.searchByBoundingBox(BoundingBox(0, 0, 5, 4)).distinct, Batch("b", "a"))
   }
 
-  test("BoundingBox example".only) {
+  test("BoundingBox example".only) { // TODO: Remove 'only' when done!
 
     /*
     Need to implement:
+    - Get rid of the 'replace' notion during insert
+    - Get rid of remove element 'at' and replace with remove by search.
     - Max depth: The maximum number of sub-divisions allowed.
     - Min size: The smallest allowed quad size before we give up and group all remaining results here.
     - Multple values: Quad's can hold a Batch of values of the given type
     - Max values: Quad's can hold a max value before sub-division unless max depth or min size have been hit.
     - Detect duplicates. If a split results in quads that do not change the outcome, stop and group, to prevent infinite depth due to matching values.
-
-    Also, nice to have
-    - Can we switch to Quad.Leaf?
+    - Can we switch to Quad.Leaf syntax?
+    - Move out of extras to Indigo proper
+    - SpatialOps instance for Circle + tests
+    - SpatialOps instance for BoundingCircle + tests
+    - SpatialOps instance for Line + tests
+    - SpatialOps instance for LineSegment + tests
+    - Check benchmarks.
      */
 
     fail("Got some work to do here before this will work.")
