@@ -5,9 +5,7 @@ import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Point
 import indigo.shared.geometry.BoundingBox
 import indigo.shared.geometry.Vertex
-import indigoextras.trees.QuadTree.QuadBranch
-import indigoextras.trees.QuadTree.QuadEmpty
-import indigoextras.trees.QuadTree.QuadLeaf
+import indigoextras.trees.QuadTree
 
 class QuadTreeTests extends munit.FunSuite {
   given CanEqual[Option[String], Option[String]] = CanEqual.derived
@@ -15,24 +13,24 @@ class QuadTreeTests extends munit.FunSuite {
   test("should be able to fetch an element at a given position") {
     val gridPoint: Vertex = Vertex(5, 1)
 
-    val tree: QuadBranch[Vertex, String] = QuadBranch(
+    val tree: QuadTree.Branch[Vertex, String] = QuadTree.Branch(
       BoundingBox(0, 0, 8, 8),
-      QuadEmpty(BoundingBox(0, 0, 4, 4)),
-      QuadBranch(
+      QuadTree.Empty(BoundingBox(0, 0, 4, 4)),
+      QuadTree.Branch(
         BoundingBox(4, 0, 4, 4),
-        QuadBranch(
+        QuadTree.Branch(
           BoundingBox(4, 0, 2, 2),
-          QuadEmpty(BoundingBox(4, 0, 1, 1)),
-          QuadEmpty(BoundingBox(5, 0, 1, 1)),
-          QuadEmpty(BoundingBox(4, 1, 1, 1)),
-          QuadLeaf(BoundingBox(5, 1, 1, 1), Vertex(5, 1), "hello")
+          QuadTree.Empty(BoundingBox(4, 0, 1, 1)),
+          QuadTree.Empty(BoundingBox(5, 0, 1, 1)),
+          QuadTree.Empty(BoundingBox(4, 1, 1, 1)),
+          QuadTree.Leaf(BoundingBox(5, 1, 1, 1), Vertex(5, 1), "hello")
         ),
-        QuadEmpty(BoundingBox(6, 0, 2, 2)),
-        QuadEmpty(BoundingBox(4, 2, 2, 2)),
-        QuadEmpty(BoundingBox(6, 2, 2, 2))
+        QuadTree.Empty(BoundingBox(6, 0, 2, 2)),
+        QuadTree.Empty(BoundingBox(4, 2, 2, 2)),
+        QuadTree.Empty(BoundingBox(6, 2, 2, 2))
       ),
-      QuadEmpty(BoundingBox(0, 4, 4, 4)),
-      QuadEmpty(BoundingBox(4, 4, 4, 4))
+      QuadTree.Empty(BoundingBox(0, 4, 4, 4)),
+      QuadTree.Empty(BoundingBox(4, 4, 4, 4))
     )
 
     assertEquals(tree.fetchElement(gridPoint), Some("hello"))
@@ -56,12 +54,12 @@ class QuadTreeTests extends munit.FunSuite {
       )
 
     val expected =
-      QuadBranch(
+      QuadTree.Branch(
         BoundingBox(Vertex(0, 0), Vertex(10.001, 10.001)),
-        QuadLeaf(BoundingBox(Vertex(0, 0), Vertex(5.0005, 5.0005)), Vertex(0, 0), "b"),
-        QuadLeaf(BoundingBox(Vertex(5.0005, 0), Vertex(5.0005, 5.0005)), Vertex(9, 2), "a"),
-        QuadEmpty(BoundingBox(Vertex(0, 5.0005), Vertex(5.0005, 5.0005))),
-        QuadLeaf(BoundingBox(Vertex(5.0005, 5.0005), Vertex(5.0005, 5.0005)), Vertex(10, 10), "c")
+        QuadTree.Leaf(BoundingBox(Vertex(0, 0), Vertex(5.0005, 5.0005)), Vertex(0, 0), "b"),
+        QuadTree.Leaf(BoundingBox(Vertex(5.0005, 0), Vertex(5.0005, 5.0005)), Vertex(9, 2), "a"),
+        QuadTree.Empty(BoundingBox(Vertex(0, 5.0005), Vertex(5.0005, 5.0005))),
+        QuadTree.Leaf(BoundingBox(Vertex(5.0005, 5.0005), Vertex(5.0005, 5.0005)), Vertex(10, 10), "c")
       )
 
     assertEquals(actual, expected)
@@ -469,7 +467,7 @@ class QuadTreeTests extends munit.FunSuite {
   test("subdivision") {
     val original = BoundingBox(0, 0, 100, 200)
 
-    val (q1, q2, q3, q4) = QuadTree.QuadBranch.subdivide(original)
+    val (q1, q2, q3, q4) = QuadTree.Branch.subdivide(original)
 
     assert(q1 ~== BoundingBox(0, 0, 50, 100))
     assert(q2 ~== BoundingBox(50, 0, 50, 100))
@@ -492,12 +490,11 @@ class QuadTreeTests extends munit.FunSuite {
         84.26157060607267
       )
 
-    val (q1, q2, q3, q4) = QuadTree.QuadBranch.subdivide(original)
+    val (q1, q2, q3, q4) = QuadTree.Branch.subdivide(original)
 
     val recombined: BoundingBox =
       List(q1, q2, q3, q4)
         .reduce(_.expandToInclude(_))
-    // .foldLeft(z)((acc, next) => acc.expandToInclude(next))
 
     assert(clue(recombined) ~== clue(original))
   }
@@ -512,12 +509,12 @@ class QuadTreeTests extends munit.FunSuite {
       )
 
     val expected =
-      QuadBranch(
+      QuadTree.Branch(
         BoundingBox(Vertex(0, 0), Vertex(10.001, 10.001)),
-        QuadLeaf(BoundingBox(Vertex(0, 0), Vertex(5.0005, 5.0005)), Vertex(0, 0), "b"),
-        QuadLeaf(BoundingBox(Vertex(5.0005, 0), Vertex(5.0005, 5.0005)), Vertex(9, 2), "a"),
-        QuadEmpty(BoundingBox(Vertex(0, 5.0005), Vertex(5.0005, 5.0005))),
-        QuadLeaf(BoundingBox(Vertex(5.0005, 5.0005), Vertex(5.0005, 5.0005)), Vertex(10, 10), "c")
+        QuadTree.Leaf(BoundingBox(Vertex(0, 0), Vertex(5.0005, 5.0005)), Vertex(0, 0), "b"),
+        QuadTree.Leaf(BoundingBox(Vertex(5.0005, 0), Vertex(5.0005, 5.0005)), Vertex(9, 2), "a"),
+        QuadTree.Empty(BoundingBox(Vertex(0, 5.0005), Vertex(5.0005, 5.0005))),
+        QuadTree.Leaf(BoundingBox(Vertex(5.0005, 5.0005), Vertex(5.0005, 5.0005)), Vertex(10, 10), "c")
       )
 
     assertEquals(actual, expected)
@@ -535,12 +532,12 @@ class QuadTreeTests extends munit.FunSuite {
       )
 
     val expected =
-      QuadBranch(
+      QuadTree.Branch(
         BoundingBox(Vertex(0, 0), Vertex(10.001, 10.001)),
-        QuadLeaf(BoundingBox(Vertex(0, 0), Vertex(5.0005, 5.0005)), Point(0, 0), "b"),
-        QuadLeaf(BoundingBox(Vertex(5.0005, 0), Vertex(5.0005, 5.0005)), Point(9, 2), "a"),
-        QuadEmpty(BoundingBox(Vertex(0, 5.0005), Vertex(5.0005, 5.0005))),
-        QuadLeaf(BoundingBox(Vertex(5.0005, 5.0005), Vertex(5.0005, 5.0005)), Point(10, 10), "c")
+        QuadTree.Leaf(BoundingBox(Vertex(0, 0), Vertex(5.0005, 5.0005)), Point(0, 0), "b"),
+        QuadTree.Leaf(BoundingBox(Vertex(5.0005, 0), Vertex(5.0005, 5.0005)), Point(9, 2), "a"),
+        QuadTree.Empty(BoundingBox(Vertex(0, 5.0005), Vertex(5.0005, 5.0005))),
+        QuadTree.Leaf(BoundingBox(Vertex(5.0005, 5.0005), Vertex(5.0005, 5.0005)), Point(10, 10), "c")
       )
 
     assertEquals(actual, expected)
@@ -558,7 +555,7 @@ class QuadTreeTests extends munit.FunSuite {
         )
 
     val expected =
-      QuadLeaf(BoundingBox(0, 0, 5, 5), BoundingBox(0.5, 0.5, 1, 1), "a")
+      QuadTree.Leaf(BoundingBox(0, 0, 5, 5), BoundingBox(0.5, 0.5, 1, 1), "a")
 
     assertEquals(actual, expected)
     assertEquals(actual.findClosestTo(Vertex(1, 3)), Option("a"))
@@ -577,42 +574,43 @@ class QuadTreeTests extends munit.FunSuite {
         )
 
     val expected =
-      QuadBranch(
+      QuadTree.Branch(
         BoundingBox(0, 0, 5, 5),
-        QuadBranch(
+        QuadTree.Branch(
           BoundingBox(Vertex(0, 0), Vertex(2.5, 2.5)),
-          QuadLeaf(BoundingBox(Vertex(0, 0), Vertex(1.25, 1.25)), BoundingBox(0.5, 0.5, 1, 1), "a"),
-          QuadBranch(
+          QuadTree.Leaf(BoundingBox(Vertex(0, 0), Vertex(1.25, 1.25)), BoundingBox(0.5, 0.5, 1, 1), "a"),
+          QuadTree.Branch(
             BoundingBox(Vertex(1.25, 0), Vertex(1.25, 1.25)),
-            QuadLeaf(BoundingBox(Vertex(1.25, 0), Vertex(0.625, 0.625)), BoundingBox(0.5, 0.5, 1, 1), "a"),
-            QuadLeaf(BoundingBox(Vertex(1.875, 0), Vertex(0.625, 0.625)), BoundingBox(Vertex(2, 0), Vertex(2, 4)), "b"),
-            QuadLeaf(BoundingBox(Vertex(1.25, 0.625), Vertex(0.625, 0.625)), BoundingBox(0.5, 0.5, 1, 1), "a"),
-            QuadLeaf(
+            QuadTree.Leaf(BoundingBox(Vertex(1.25, 0), Vertex(0.625, 0.625)), BoundingBox(0.5, 0.5, 1, 1), "a"),
+            QuadTree
+              .Leaf(BoundingBox(Vertex(1.875, 0), Vertex(0.625, 0.625)), BoundingBox(Vertex(2, 0), Vertex(2, 4)), "b"),
+            QuadTree.Leaf(BoundingBox(Vertex(1.25, 0.625), Vertex(0.625, 0.625)), BoundingBox(0.5, 0.5, 1, 1), "a"),
+            QuadTree.Leaf(
               BoundingBox(Vertex(1.875, 0.625), Vertex(0.625, 0.625)),
               BoundingBox(Vertex(2, 0), Vertex(2, 4)),
               "b"
             )
           ),
-          QuadLeaf(BoundingBox(Vertex(0, 1.25), Vertex(1.25, 1.25)), BoundingBox(0.5, 0.5, 1, 1), "a"),
-          QuadBranch(
+          QuadTree.Leaf(BoundingBox(Vertex(0, 1.25), Vertex(1.25, 1.25)), BoundingBox(0.5, 0.5, 1, 1), "a"),
+          QuadTree.Branch(
             BoundingBox(Vertex(1.25, 1.25), Vertex(1.25, 1.25)),
-            QuadLeaf(BoundingBox(Vertex(1.25, 1.25), Vertex(0.625, 0.625)), BoundingBox(0.5, 0.5, 1, 1), "a"),
-            QuadLeaf(
+            QuadTree.Leaf(BoundingBox(Vertex(1.25, 1.25), Vertex(0.625, 0.625)), BoundingBox(0.5, 0.5, 1, 1), "a"),
+            QuadTree.Leaf(
               BoundingBox(Vertex(1.875, 1.25), Vertex(0.625, 0.625)),
               BoundingBox(Vertex(2, 0), Vertex(2, 4)),
               "b"
             ),
-            QuadEmpty(BoundingBox(Vertex(1.25, 1.875), Vertex(0.625, 0.625))),
-            QuadLeaf(
+            QuadTree.Empty(BoundingBox(Vertex(1.25, 1.875), Vertex(0.625, 0.625))),
+            QuadTree.Leaf(
               BoundingBox(Vertex(1.875, 1.875), Vertex(0.625, 0.625)),
               BoundingBox(Vertex(2, 0), Vertex(2, 4)),
               "b"
             )
           )
         ),
-        QuadLeaf(BoundingBox(Vertex(2.5, 0), Vertex(2.5, 2.5)), BoundingBox(Vertex(2, 0), Vertex(2, 4)), "b"),
-        QuadLeaf(BoundingBox(Vertex(0, 2.5), Vertex(2.5, 2.5)), BoundingBox(Vertex(2, 0), Vertex(2, 4)), "b"),
-        QuadLeaf(BoundingBox(Vertex(2.5, 2.5), Vertex(2.5, 2.5)), BoundingBox(Vertex(2, 0), Vertex(2, 4)), "b")
+        QuadTree.Leaf(BoundingBox(Vertex(2.5, 0), Vertex(2.5, 2.5)), BoundingBox(Vertex(2, 0), Vertex(2, 4)), "b"),
+        QuadTree.Leaf(BoundingBox(Vertex(0, 2.5), Vertex(2.5, 2.5)), BoundingBox(Vertex(2, 0), Vertex(2, 4)), "b"),
+        QuadTree.Leaf(BoundingBox(Vertex(2.5, 2.5), Vertex(2.5, 2.5)), BoundingBox(Vertex(2, 0), Vertex(2, 4)), "b")
       )
 
     assertEquals(actual, expected)
@@ -639,7 +637,6 @@ class QuadTreeTests extends munit.FunSuite {
     - Multple values: Quad's can hold a Batch of values of the given type
     - Max values: Quad's can hold a max value before sub-division unless max depth or min size have been hit.
     - Detect duplicates. If a split results in quads that do not change the outcome, stop and group, to prevent infinite depth due to matching values.
-    - Can we switch to Quad.Leaf syntax?
     - Move out of extras to Indigo proper
     - SpatialOps instance for Circle + tests
     - SpatialOps instance for BoundingCircle + tests
@@ -663,12 +660,12 @@ class QuadTreeTests extends munit.FunSuite {
     // println(actual.prettyPrint)
 
     // val expected =
-    //   QuadBranch(
+    //   QuadTree.Branch(
     //     BoundingBox(Vertex(0, 0), Vertex(10.001, 10.001)),
-    //     QuadLeaf(BoundingBox(Vertex(0, 0), Vertex(5.0005, 5.0005)), BoundingBox(2, 0, 2, 4), "b"),
-    //     QuadLeaf(BoundingBox(Vertex(5.0005, 0), Vertex(5.0005, 5.0005)), BoundingBox(0.5, 0.5, 1, 1), "a"),
-    //     QuadEmpty(BoundingBox(Vertex(0, 5.0005), Vertex(5.0005, 5.0005))),
-    //     QuadLeaf(BoundingBox(Vertex(5.0005, 5.0005), Vertex(5.0005, 5.0005)), BoundingBox(0.25, 3.25, 4, 0.5), "c")
+    //     QuadTree.Leaf(BoundingBox(Vertex(0, 0), Vertex(5.0005, 5.0005)), BoundingBox(2, 0, 2, 4), "b"),
+    //     QuadTree.Leaf(BoundingBox(Vertex(5.0005, 0), Vertex(5.0005, 5.0005)), BoundingBox(0.5, 0.5, 1, 1), "a"),
+    //     QuadTree.Empty(BoundingBox(Vertex(0, 5.0005), Vertex(5.0005, 5.0005))),
+    //     QuadTree.Leaf(BoundingBox(Vertex(5.0005, 5.0005), Vertex(5.0005, 5.0005)), BoundingBox(0.25, 3.25, 4, 0.5), "c")
     //   )
 
     // assertEquals(actual, expected)
@@ -691,12 +688,12 @@ class QuadTreeTests extends munit.FunSuite {
   //       )
 
   //   val expected =
-  //     QuadBranch(
+  //     QuadTree.Branch(
   //       BoundingBox(Vertex(0, 0), Vertex(10.001, 10.001)),
-  //       QuadLeaf(BoundingBox(Vertex(0, 0), Vertex(5.0005, 5.0005)), Rectangle(2, 0, 2, 4), "b"),
-  //       QuadLeaf(BoundingBox(Vertex(5.0005, 0), Vertex(5.0005, 5.0005)), Rectangle(1, 1, 1, 1), "a"),
-  //       QuadEmpty(BoundingBox(Vertex(0, 5.0005), Vertex(5.0005, 5.0005))),
-  //       QuadLeaf(BoundingBox(Vertex(5.0005, 5.0005), Vertex(5.0005, 5.0005)), Rectangle(0, 3, 5, 1), "c")
+  //       QuadTree.Leaf(BoundingBox(Vertex(0, 0), Vertex(5.0005, 5.0005)), Rectangle(2, 0, 2, 4), "b"),
+  //       QuadTree.Leaf(BoundingBox(Vertex(5.0005, 0), Vertex(5.0005, 5.0005)), Rectangle(1, 1, 1, 1), "a"),
+  //       QuadTree.Empty(BoundingBox(Vertex(0, 5.0005), Vertex(5.0005, 5.0005))),
+  //       QuadTree.Leaf(BoundingBox(Vertex(5.0005, 5.0005), Vertex(5.0005, 5.0005)), Rectangle(0, 3, 5, 1), "c")
   //     )
 
   //   assertEquals(actual, expected)
