@@ -11,7 +11,7 @@ object QuadTreeSpecification extends Properties("QuadTree") {
   property("subdivide") = Prop.forAll(gen, gen, gen, gen) { (x: Double, y: Double, width: Double, height: Double) =>
     val original = BoundingBox(x, y, width, height)
 
-    val divisions = QuadTree.QuadBranch.subdivide(original)
+    val divisions = QuadTree.Branch.subdivide(original)
 
     val recombined: BoundingBox =
       List(divisions._1, divisions._2, divisions._3, divisions._4)
