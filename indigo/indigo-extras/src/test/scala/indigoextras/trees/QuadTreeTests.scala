@@ -10,39 +10,32 @@ import indigoextras.trees.QuadTree
 class QuadTreeTests extends munit.FunSuite {
   given CanEqual[Option[String], Option[String]] = CanEqual.derived
 
-  test("should be able to fetch an element at a given position") {
-    val gridPoint: Vertex = Vertex(5, 1)
+  // test("should be able to fetch an element at a given position") {
+  //   val gridPoint: Vertex = Vertex(5, 1)
 
-    val tree: QuadTree.Branch[Vertex, String] = QuadTree.Branch(
-      BoundingBox(0, 0, 8, 8),
-      QuadTree.Empty(BoundingBox(0, 0, 4, 4)),
-      QuadTree.Branch(
-        BoundingBox(4, 0, 4, 4),
-        QuadTree.Branch(
-          BoundingBox(4, 0, 2, 2),
-          QuadTree.Empty(BoundingBox(4, 0, 1, 1)),
-          QuadTree.Empty(BoundingBox(5, 0, 1, 1)),
-          QuadTree.Empty(BoundingBox(4, 1, 1, 1)),
-          QuadTree.Leaf(BoundingBox(5, 1, 1, 1), Vertex(5, 1), "hello")
-        ),
-        QuadTree.Empty(BoundingBox(6, 0, 2, 2)),
-        QuadTree.Empty(BoundingBox(4, 2, 2, 2)),
-        QuadTree.Empty(BoundingBox(6, 2, 2, 2))
-      ),
-      QuadTree.Empty(BoundingBox(0, 4, 4, 4)),
-      QuadTree.Empty(BoundingBox(4, 4, 4, 4))
-    )
+  //   val tree: QuadTree.Branch[Vertex, String] = QuadTree.Branch(
+  //     BoundingBox(0, 0, 8, 8),
+  //     QuadTree.Empty(BoundingBox(0, 0, 4, 4)),
+  //     QuadTree.Branch(
+  //       BoundingBox(4, 0, 4, 4),
+  //       QuadTree.Branch(
+  //         BoundingBox(4, 0, 2, 2),
+  //         QuadTree.Empty(BoundingBox(4, 0, 1, 1)),
+  //         QuadTree.Empty(BoundingBox(5, 0, 1, 1)),
+  //         QuadTree.Empty(BoundingBox(4, 1, 1, 1)),
+  //         QuadTree.Leaf(BoundingBox(5, 1, 1, 1), Vertex(5, 1), "hello")
+  //       ),
+  //       QuadTree.Empty(BoundingBox(6, 0, 2, 2)),
+  //       QuadTree.Empty(BoundingBox(4, 2, 2, 2)),
+  //       QuadTree.Empty(BoundingBox(6, 2, 2, 2))
+  //     ),
+  //     QuadTree.Empty(BoundingBox(0, 4, 4, 4)),
+  //     QuadTree.Empty(BoundingBox(4, 4, 4, 4))
+  //   )
 
-    assertEquals(tree.fetchElement(gridPoint), Some("hello"))
+  //   assertEquals(tree.fetchElement(gridPoint), Some("hello"))
 
-  }
-
-  val tree = QuadTree
-    .empty(16, 16)
-    .insertElement(Vertex(9, 2), "a")
-    .insertElement(Vertex(0, 0), "b")
-    .insertElement(Vertex(10, 10), "c")
-    .insertElement(Vertex(20, 50), "d")
+  // }
 
   test("should be able insert multiple items") {
 
@@ -63,33 +56,6 @@ class QuadTreeTests extends munit.FunSuite {
       )
 
     assertEquals(actual, expected)
-
-    assert(
-      List(Vertex(9, 2), Vertex(0, 0), Vertex(10, 10)).forall { v =>
-        clue(tree.fetchElement(clue(v))) == actual.fetchElement(v) &&
-        tree.fetchElement(v) == expected.fetchElement(v)
-      }
-    )
-  }
-
-  test("should be able to insert an element at a given position.[9, 2]") {
-    assertEquals(tree.fetchElement(Vertex(9, 2)), Some("a"))
-  }
-
-  test("should be able to insert an element at a given position.Should be missing at [1, 2]") {
-    assertEquals(tree.fetchElement(Vertex(1, 2)), None)
-  }
-
-  test("should be able to insert an element at a given position.[0, 0]") {
-    assertEquals(tree.fetchElement(Vertex(0, 0)), Some("b"))
-  }
-
-  test("should be able to insert an element at a given position.[10, 10]") {
-    assertEquals(tree.fetchElement(Vertex(10, 10)), Some("c"))
-  }
-
-  test("should be able to insert an element at a given position.Outside of area at [20, 50]") {
-    assertEquals(tree.fetchElement(Vertex(20, 50)), None)
   }
 
   test("toBatch") {
@@ -611,7 +577,7 @@ class QuadTreeTests extends munit.FunSuite {
     assertEquals(actual.searchByBoundingBox(BoundingBox(0, 0, 5, 4)).distinct, Batch("b", "a"))
   }
 
-  test("BoundingBox example".only) { // TODO: Remove 'only' when done!
+  test("BoundingBox example") {
 
     /*
     Need to implement:

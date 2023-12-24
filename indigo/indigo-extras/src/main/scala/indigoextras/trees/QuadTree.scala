@@ -20,9 +20,6 @@ enum QuadTree[S, T](val isEmpty: Boolean)(using s: SpatialOps[S]) derives CanEqu
 
   val bounds: BoundingBox
 
-  def fetchElement(ref: S)(using CanEqual[T, T]): Option[T] =
-    QuadTree.fetchElement(ref, this)
-
   def insertElement(ref: S, element: T): QuadTree[S, T] =
     QuadTree.insertElement(ref, this, element)
 
@@ -179,24 +176,6 @@ object QuadTree:
         Empty(quads._3),
         Empty(quads._4)
       )
-
-  def fetchElement[S, T](ref: S, quadTree: QuadTree[S, T])(using CanEqual[T, T])(using s: SpatialOps[S]): Option[T] =
-    @tailrec
-    def rec(remaining: List[QuadTree[S, T]]): Option[T] =
-      remaining match
-        case Nil =>
-          None
-
-        case Leaf(_, otherRef, value) :: xs if s.equals(otherRef, ref) =>
-          Some(value)
-
-        case Branch(bounds, a, b, c, d) :: xs if s.within(ref, bounds) =>
-          rec(xs ++ List(a, b, c, d))
-
-        case _ :: xs =>
-          rec(xs)
-
-    rec(List(quadTree))
 
   def insertElement[S, T](ref: S, quadTree: QuadTree[S, T], element: T)(using s: SpatialOps[S]): QuadTree[S, T] =
     quadTree match
