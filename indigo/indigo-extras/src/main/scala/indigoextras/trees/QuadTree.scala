@@ -31,9 +31,6 @@ enum QuadTree[S, T](val isEmpty: Boolean)(using s: SpatialOps[S]) derives CanEqu
   def insertElements(elements: Batch[(S, T)]): QuadTree[S, T] =
     elements.foldLeft(this)((acc, item) => acc.insertElement(item._1, item._2))
 
-  def removeElement(ref: S): QuadTree[S, T] =
-    QuadTree.removeElement(ref, this)
-
   def toBatch(using CanEqual[T, T]): Batch[T] =
     QuadTree.toBatch(this, _ => true)
   def toBatch(p: T => Boolean)(using CanEqual[T, T]): Batch[T] =
@@ -231,23 +228,6 @@ object QuadTree:
 
       case _ =>
         quadTree
-
-  def removeElement[S, T](ref: S, quadTree: QuadTree[S, T])(using s: SpatialOps[S]): QuadTree[S, T] =
-    quadTree match
-      case Leaf(bounds, p, _) if s.within(ref, bounds) && s.equals(p, ref) =>
-        Empty(bounds)
-
-      case Branch(bounds, a, b, c, d) if s.within(ref, bounds) =>
-        Branch[S, T](
-          bounds,
-          a.removeElement(ref),
-          b.removeElement(ref),
-          c.removeElement(ref),
-          d.removeElement(ref)
-        )
-
-      case tree =>
-        tree
 
   def toBatch[S, T](quadTree: QuadTree[S, T], p: T => Boolean)(using CanEqual[T, T]): Batch[T] =
     @tailrec

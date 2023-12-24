@@ -92,22 +92,6 @@ class QuadTreeTests extends munit.FunSuite {
     assertEquals(tree.fetchElement(Vertex(20, 50)), None)
   }
 
-  test("should be able to remove an element from a tree") {
-
-    val gridPoint = Vertex(9, 2)
-
-    val tree = QuadTree
-      .empty(16, 16)
-      .insertElement(gridPoint, "test")
-
-    assertEquals(tree.fetchElement(gridPoint), Some("test"))
-
-    val tree2 = tree.removeElement(gridPoint)
-
-    assertEquals(tree2.fetchElement(gridPoint), None)
-
-  }
-
   test("toBatch") {
 
     val actual: Batch[String] = QuadTree
@@ -247,19 +231,20 @@ class QuadTreeTests extends munit.FunSuite {
     assert(treeA !== treeB)
   }
 
-  test("should be able to prune an existing tree to simplify the structure") {
+  // TODO: Bring back when we have remove by search functions.
+  // test("should be able to prune an existing tree to simplify the structure") {
 
-    val gridPoint = Vertex(9, 2)
+  //   val gridPoint = Vertex(9, 2)
 
-    val tree = QuadTree
-      .empty(16, 16)
-      .insertElement(gridPoint, 999)
-      .removeElement(gridPoint)
-      .prune
+  //   val tree = QuadTree
+  //     .empty(16, 16)
+  //     .insertElement(gridPoint, 999)
+  //     .removeElement(gridPoint)
+  //     .prune
 
-    assertEquals(tree === QuadTree.empty(16, 16), true)
+  //   assertEquals(tree === QuadTree.empty(16, 16), true)
 
-  }
+  // }
 
   test("should not prune an already optimal tree") {
 
@@ -630,11 +615,11 @@ class QuadTreeTests extends munit.FunSuite {
 
     /*
     Need to implement:
-    - Get rid of the 'replace' notion during insert
-    - Get rid of remove element 'at' and replace with remove by search.
+    - Get rid of the 'replace' notion during insert.
+    - Add remove by search functions. (?)
     - Max depth: The maximum number of sub-divisions allowed.
     - Min size: The smallest allowed quad size before we give up and group all remaining results here.
-    - Multple values: Quad's can hold a Batch of values of the given type
+    - Multple values: Quad's can hold a Batch of values of the given type.
     - Max values: Quad's can hold a max value before sub-division unless max depth or min size have been hit.
     - Detect duplicates. If a split results in quads that do not change the outcome, stop and group, to prevent infinite depth due to matching values.
     - Move out of extras to Indigo proper
