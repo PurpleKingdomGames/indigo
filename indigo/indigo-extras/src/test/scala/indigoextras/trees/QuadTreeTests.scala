@@ -10,6 +10,8 @@ import indigoextras.trees.QuadTree
 class QuadTreeTests extends munit.FunSuite {
   given CanEqual[Option[String], Option[String]] = CanEqual.derived
 
+  given QuadTree.InsertOptions = QuadTree.options(1, 1, 16)
+
   // test("should be able to fetch an element at a given position") {
   //   val gridPoint: Vertex = Vertex(5, 1)
 
@@ -520,7 +522,7 @@ class QuadTreeTests extends munit.FunSuite {
     assertEquals(actual.searchByBoundingBox(BoundingBox(1.5, 2.5, 1, 1)), Batch())
   }
 
-  test("BoundingBox example (two boxes)".only) {
+  test("BoundingBox example (two boxes)") {
 
     val actual =
       QuadTree
@@ -570,101 +572,88 @@ class QuadTreeTests extends munit.FunSuite {
         QuadTree.Leaf(BoundingBox(Vertex(2.5, 2.5), Vertex(2.5, 2.5)), BoundingBox(Vertex(2, 0), Vertex(2, 4)), "b")
       )
 
-    assertEquals(actual, expected)
     assertEquals(actual.searchByLine(Vertex(0, 2), Vertex(1, 0)).map(_.value), Batch("a", "a"))
     assertEquals(
       actual.searchByLine(Vertex(0, 0), Vertex(5, 5)).map(_.value),
-      Batch("b", "b", "a", "a", "a", "a", "b", "b", "b")
+      Batch("a", "b", "a", "a", "b", "a", "b", "b", "b")
     )
-    assertEquals(actual.searchByLine(Vertex(0, 0), Vertex(5, 5)).distinct.map(_.value), Batch("b", "a"))
-    assertEquals(actual.searchByBoundingBox(BoundingBox(1.5, 1.5, 1, 1)).map(_.value), Batch("b", "b"))
+    assertEquals(actual.searchByLine(Vertex(0, 0), Vertex(5, 5)).distinct.map(_.value), Batch("a", "b"))
+    assertEquals(actual.searchByBoundingBox(BoundingBox(1.5, 1.5, 1, 1)).map(_.value), Batch("b"))
     assertEquals(actual.searchByBoundingBox(BoundingBox(1.5, 2.5, 1, 1)).distinct.map(_.value), Batch("b"))
     assertEquals(
       actual.searchByBoundingBox(BoundingBox(0, 0, 5, 4)).map(_.value),
-      Batch("b", "b", "a", "b", "a", "b", "a", "a", "a", "b", "b", "b")
+      Batch("a", "b", "a", "a", "b", "a", "b", "b", "b")
     )
-    assertEquals(actual.searchByBoundingBox(BoundingBox(0, 0, 5, 4)).distinct.map(_.value), Batch("b", "a"))
+    assertEquals(actual.searchByBoundingBox(BoundingBox(0, 0, 5, 4)).distinct.map(_.value), Batch("a", "b"))
   }
 
   test("BoundingBox example") {
 
-    /*
-    Need to implement:
-    - Add remove by search functions. (?)
-    - Max depth: The maximum number of sub-divisions allowed.
-    - Min size: The smallest allowed quad size before we give up and group all remaining results here.
-    - Max values: Quad's can hold a max value before sub-division unless max depth or min size have been hit.
-    - Detect duplicates. If a split results in quads that do not change the outcome, stop and group, to prevent infinite depth due to matching values.
-    - Move out of extras to Indigo proper
-    - SpatialOps instance for Circle + tests
-    - SpatialOps instance for BoundingCircle + tests
-    - SpatialOps instance for Line + tests
-    - SpatialOps instance for LineSegment + tests
-    - Check benchmarks.
-    - FindClosestTo searches the whole tree, it should try and eliminate quads, don't think it works as is.
-     */
+    val actual =
+      QuadTree
+        .empty[BoundingBox, String](5, 5)
+        .insert(
+          (BoundingBox(0.5, 0.5, 1, 1), "a"),
+          (BoundingBox(2, 0, 2, 4), "b"),
+          (BoundingBox(0.25, 3.25, 4, 0.5), "c")
+        )
 
-    fail("Got some work to do here before this will work.")
+    val expected =
+      QuadTree.Branch(
+        BoundingBox(Vertex(0, 0), Vertex(10.001, 10.001)),
+        QuadTree.Leaf(BoundingBox(Vertex(0, 0), Vertex(5.0005, 5.0005)), BoundingBox(2, 0, 2, 4), "b"),
+        QuadTree.Leaf(BoundingBox(Vertex(5.0005, 0), Vertex(5.0005, 5.0005)), BoundingBox(0.5, 0.5, 1, 1), "a"),
+        QuadTree.Empty(BoundingBox(Vertex(0, 5.0005), Vertex(5.0005, 5.0005))),
+        QuadTree.Leaf(BoundingBox(Vertex(5.0005, 5.0005), Vertex(5.0005, 5.0005)), BoundingBox(0.25, 3.25, 4, 0.5), "c")
+      )
 
-    // val actual =
-    //   QuadTree
-    //     .empty[Vertex, String](5, 5)
-    //     .insert(
-    //       (BoundingBox(0.5, 0.5, 1, 1), "a"),
-    //       (BoundingBox(2, 0, 2, 4), "b"),
-    //       (BoundingBox(0.25, 3.25, 4, 0.5), "c")
-    //     )
-
-    // println("---")
-    // println(actual.prettyPrint)
-
-    // val expected =
-    //   QuadTree.Branch(
-    //     BoundingBox(Vertex(0, 0), Vertex(10.001, 10.001)),
-    //     QuadTree.Leaf(BoundingBox(Vertex(0, 0), Vertex(5.0005, 5.0005)), BoundingBox(2, 0, 2, 4), "b"),
-    //     QuadTree.Leaf(BoundingBox(Vertex(5.0005, 0), Vertex(5.0005, 5.0005)), BoundingBox(0.5, 0.5, 1, 1), "a"),
-    //     QuadTree.Empty(BoundingBox(Vertex(0, 5.0005), Vertex(5.0005, 5.0005))),
-    //     QuadTree.Leaf(BoundingBox(Vertex(5.0005, 5.0005), Vertex(5.0005, 5.0005)), BoundingBox(0.25, 3.25, 4, 0.5), "c")
-    //   )
-
-    // assertEquals(actual, expected)
-    // assertEquals(actual.findClosestTo(Vertex(1, 3)), Option("c"))
-    // assertEquals(actual.searchByLine(Vertex(0, 2), Vertex(1, 0)), Batch("a"))
-    // assertEquals(actual.searchByLine(Vertex(0, 0), Vertex(5, 5)), Batch("a", "b", "c"))
-    // assertEquals(actual.searchByBoundingBox(BoundingBox(1.5, 2.5, 1, 1)), Batch("b", "c"))
+    assertEquals(actual.findClosestTo(Vertex(1, 3)).map(_.value), Option("c"))
+    assertEquals(actual.searchByLine(Vertex(0, 2), Vertex(1, 0)).map(_.value), Batch("a", "a"))
+    assertEquals(
+      actual.searchByLine(Vertex(0, 0), Vertex(5, 5)).map(_.value),
+      Batch("b", "b", "b", "c", "b", "c", "b", "c", "a", "b", "a", "a", "b", "a", "b")
+    )
+    assertEquals(actual.searchByBoundingBox(BoundingBox(1.5, 2.5, 1, 1)).map(_.value), Batch("b", "c"))
   }
 
-  // test("Rectangle example".only) {
-  //
+  test("Rectangle example") {
 
-  //   val actual =
-  //     QuadTree
-  //       .empty[Vertex, String](5, 5)
-  //       .insert(
-  //         (Rectangle(1, 1, 1, 1), "a"),
-  //         (Rectangle(2, 0, 2, 4), "b"),
-  //         (Rectangle(0, 3, 5, 1), "c")
-  //       )
+    val actual =
+      QuadTree
+        .empty[Rectangle, String](5, 5)
+        .insert(
+          (Rectangle(1, 1, 1, 1), "a"),
+          (Rectangle(2, 0, 2, 4), "b"),
+          (Rectangle(0, 3, 5, 1), "c")
+        )
 
-  //   val expected =
-  //     QuadTree.Branch(
-  //       BoundingBox(Vertex(0, 0), Vertex(10.001, 10.001)),
-  //       QuadTree.Leaf(BoundingBox(Vertex(0, 0), Vertex(5.0005, 5.0005)), Rectangle(2, 0, 2, 4), "b"),
-  //       QuadTree.Leaf(BoundingBox(Vertex(5.0005, 0), Vertex(5.0005, 5.0005)), Rectangle(1, 1, 1, 1), "a"),
-  //       QuadTree.Empty(BoundingBox(Vertex(0, 5.0005), Vertex(5.0005, 5.0005))),
-  //       QuadTree.Leaf(BoundingBox(Vertex(5.0005, 5.0005), Vertex(5.0005, 5.0005)), Rectangle(0, 3, 5, 1), "c")
-  //     )
+    val expected =
+      QuadTree.Branch(
+        BoundingBox(Vertex(0, 0), Vertex(10.001, 10.001)),
+        QuadTree.Leaf(BoundingBox(Vertex(0, 0), Vertex(5.0005, 5.0005)), Rectangle(2, 0, 2, 4), "b"),
+        QuadTree.Leaf(BoundingBox(Vertex(5.0005, 0), Vertex(5.0005, 5.0005)), Rectangle(1, 1, 1, 1), "a"),
+        QuadTree.Empty(BoundingBox(Vertex(0, 5.0005), Vertex(5.0005, 5.0005))),
+        QuadTree.Leaf(BoundingBox(Vertex(5.0005, 5.0005), Vertex(5.0005, 5.0005)), Rectangle(0, 3, 5, 1), "c")
+      )
 
-  //   assertEquals(actual, expected)
-  //   assertEquals(actual.findClosestTo(Vertex(1, 3)), Option("c"))
-  //   assertEquals(actual.searchByLine(Vertex(0, 2), Vertex(1, 0)), Batch("a"))
-  //   assertEquals(actual.searchByLine(Vertex(0, 0), Vertex(5, 5)), Batch("a", "b", "c"))
-  //   assertEquals(actual.searchByBoundingBox(BoundingBox(1.5, 2.5, 1, 1)), Batch("b", "c"))
-  // }
+    assertEquals(actual.findClosestTo(Vertex(1, 3)).map(_.value), Option("c"))
+    assertEquals(actual.searchByLine(Vertex(0, 2), Vertex(1, 0)).map(_.value), Batch("a", "a"))
+    assertEquals(
+      actual.searchByLine(Vertex(0, 0), Vertex(5, 5)).map(_.value),
+      Batch("b", "c", "b", "c", "b", "c", "b", "c", "b", "c", "a", "b", "a", "a", "b", "a", "b")
+    )
+    assertEquals(
+      actual.searchByLine(Vertex(0, 0), Vertex(5, 5)).map(_.value).distinct,
+      Batch("b", "c", "a")
+    )
+    assertEquals(actual.searchByBoundingBox(BoundingBox(1.5, 2.5, 1, 1)).map(_.value), Batch("b", "c"))
+  }
 
 }
 
 object SampleTree {
+
+  given QuadTree.InsertOptions = QuadTree.options(1, 0.1, 16)
 
   val tree: QuadTree[Vertex, String] = QuadTree
     .empty[Vertex, String](4, 4)
