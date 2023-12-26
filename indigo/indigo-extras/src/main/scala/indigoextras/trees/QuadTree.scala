@@ -20,13 +20,40 @@ enum QuadTree[S, T](val isEmpty: Boolean)(using s: SpatialOps[S]) derives CanEqu
 
   val bounds: BoundingBox
 
-  def insert(location: S, value: T): QuadTree[S, T] =
-    QuadTree.insert(this, QuadTreeValue(location, value))
-  def insert(elements: (S, T)*): QuadTree[S, T] =
-    QuadTree.insert(this, Batch.fromSeq(elements).map(QuadTreeValue.fromTuple))
-  def insert(elements: Batch[(S, T)]): QuadTree[S, T] =
-    QuadTree.insert(this, elements.map(QuadTreeValue.fromTuple))
+  def insert(location: S, value: T)(using opts: QuadTree.InsertOptions): QuadTree[S, T] =
+    QuadTree.insert(
+      this,
+      QuadTreeValue(location, value),
+      opts.idealCount,
+      opts.minSize,
+      opts.maxDepth,
+      0
+    )
+  def insert(elements: (S, T)*)(using opts: QuadTree.InsertOptions): QuadTree[S, T] =
+    QuadTree.insert(
+      this,
+      Batch.fromSeq(elements).map(QuadTreeValue.fromTuple),
+      opts.idealCount,
+      opts.minSize,
+      opts.maxDepth
+    )
+  def insert(elements: Batch[(S, T)])(using opts: QuadTree.InsertOptions): QuadTree[S, T] =
+    QuadTree.insert(
+      this,
+      elements.map(QuadTreeValue.fromTuple),
+      opts.idealCount,
+      opts.minSize,
+      opts.maxDepth
+    )
 
+  def insert(location: S, value: T, idealCount: Int, minSize: Double, maxDepth: Int): QuadTree[S, T] =
+    QuadTree.insert(this, QuadTreeValue(location, value), idealCount, minSize, maxDepth, 0)
+  def insert(idealCount: Int, minSize: Double, maxDepth: Int)(elements: (S, T)*): QuadTree[S, T] =
+    QuadTree.insert(this, Batch.fromSeq(elements).map(QuadTreeValue.fromTuple), idealCount, minSize, maxDepth)
+  def insert(elements: Batch[(S, T)], idealCount: Int, minSize: Double, maxDepth: Int): QuadTree[S, T] =
+    QuadTree.insert(this, elements.map(QuadTreeValue.fromTuple), idealCount, minSize, maxDepth)
+
+//
   def toBatch(using CanEqual[T, T]): Batch[QuadTreeValue[S, T]] =
     QuadTree.toBatch(this, _ => true)
   def toBatch(p: T => Boolean)(using CanEqual[T, T]): Batch[QuadTreeValue[S, T]] =
@@ -101,6 +128,30 @@ enum QuadTree[S, T](val isEmpty: Boolean)(using s: SpatialOps[S]) derives CanEqu
 
 object QuadTree:
 
+  trait InsertOptions:
+
+    /** The ideal number of values in a quad bucket, defaults to 1. It is called "ideal" because you may have more or
+      * less than this number depending on the circumstances of your tree. However, assuming some other limit hasn't
+      * been hit, the ideal count is the point at which a leaf will split into a another quad branch.
+      */
+    val idealCount: Int
+
+    /** The min size of a quad. */
+    val minSize: Double
+
+    /** The max depth to insert a value at. */
+    val maxDepth: Int
+
+  object InsertOptions:
+    def apply(_idealCount: Int, _minSize: Double, _maxDepth: Int): InsertOptions =
+      new InsertOptions:
+        val idealCount: Int = _idealCount
+        val minSize: Double = _minSize
+        val maxDepth: Int   = _maxDepth
+
+  def options(idealCount: Int, minSize: Double, maxDepth: Int): InsertOptions =
+    InsertOptions(idealCount, minSize, maxDepth)
+
   given [S, T](using CanEqual[T, T]): CanEqual[Option[QuadTree[S, T]], Option[QuadTree[S, T]]] = CanEqual.derived
   given [S, T](using CanEqual[T, T]): CanEqual[Batch[QuadTree[S, T]], Batch[QuadTree[S, T]]]   = CanEqual.derived
 
@@ -110,9 +161,9 @@ object QuadTree:
   def empty[S, T](gridSize: Vertex)(using SpatialOps[S]): QuadTree[S, T] =
     Empty(BoundingBox(Vertex.zero, gridSize))
 
-  def apply[S, T](elements: (S, T)*)(using SpatialOps[S]): QuadTree[S, T] =
+  def apply[S, T](elements: (S, T)*)(using SpatialOps[S], InsertOptions): QuadTree[S, T] =
     QuadTree(Batch.fromSeq(elements))
-  def apply[S, T](elements: Batch[(S, T)])(using s: SpatialOps[S]): QuadTree[S, T] =
+  def apply[S, T](elements: Batch[(S, T)])(using s: SpatialOps[S])(using InsertOptions): QuadTree[S, T] =
     val b =
       if elements.isEmpty then BoundingBox.zero
       else
@@ -168,39 +219,65 @@ object QuadTree:
         Empty(quads._4)
       )
 
-  def insert[S, T](quadTree: QuadTree[S, T], values: Batch[QuadTreeValue[S, T]])(using
+  def insert[S, T](
+      quadTree: QuadTree[S, T],
+      values: Batch[QuadTreeValue[S, T]],
+      idealCount: Int,
+      minSize: Double,
+      maxDepth: Int
+  )(using
       s: SpatialOps[S]
   ): QuadTree[S, T] =
-    values.foldLeft(quadTree) { case (acc, next) => insert(acc, next) }
+    values.foldLeft(quadTree) { case (acc, next) => insert(acc, next, idealCount, minSize, maxDepth, 0) }
 
-  def insert[S, T](quadTree: QuadTree[S, T], value: QuadTreeValue[S, T])(using
+  def insert[S, T](
+      quadTree: QuadTree[S, T],
+      value: QuadTreeValue[S, T],
+      idealCount: Int,
+      minSize: Double,
+      maxDepth: Int,
+      depth: Int
+  )(using
       s: SpatialOps[S]
   ): QuadTree[S, T] =
     quadTree match
-      case Empty(bounds) if s.within(value.location, bounds) =>
+      case Empty(bounds) if s.intersects(value.location, bounds) =>
         // Straight insert
         Leaf(bounds, Batch(value))
 
-      case Leaf(bounds, values) if s.within(value.location, bounds) =>
-        // Both elements in the same region,
-        // subdivide and insert both.
-        insert(
-          insert(Branch.fromBounds(bounds), values), // originals
-          value                                      // new
-        )
+      case q: Empty[_, _] =>
+        q
 
-      case Branch(bounds, a, b, c, d) if s.within(value.location, bounds) =>
+      case l @ Leaf(bounds, values) =>
+        // Decide how to add the value to this leaf
+        if s.surrounds(value.location, bounds) then l.copy(values = l.values :+ value)
+        else if s.intersects(value.location, bounds) then
+          // The pathological case here is when the leaf bounds left or top edge
+          // is outside the value.bounds by some microscopic number, and so
+          // halving the size doesn't make any difference, practically
+          // infinitely, and certainly not before we stack overflow.
+          // This should be dealt with by the max size / depth limits.
+
+          if values.length < idealCount then l.copy(values = l.values :+ value)
+          else if bounds.width / 2 < minSize || bounds.height / 2 < minSize then l.copy(values = l.values :+ value)
+          else if depth + 1 > maxDepth then l.copy(values = l.values :+ value)
+          else
+            val x = insert(Branch.fromBounds(bounds), values, idealCount, minSize, maxDepth)
+            insert(x, value, idealCount, minSize, maxDepth, depth + 1)
+        else l
+
+      case Branch(bounds, a, b, c, d) if s.intersects(value.location, bounds) =>
         // Delegate to sub-regions
         Branch[S, T](
           bounds,
-          insert(a, value),
-          insert(b, value),
-          insert(c, value),
-          insert(d, value)
+          insert(a, value, idealCount, minSize, maxDepth, depth + 1),
+          insert(b, value, idealCount, minSize, maxDepth, depth + 1),
+          insert(c, value, idealCount, minSize, maxDepth, depth + 1),
+          insert(d, value, idealCount, minSize, maxDepth, depth + 1)
         )
 
-      case _ =>
-        quadTree
+      case b: Branch[_, _] =>
+        b
 
   def toBatch[S, T](quadTree: QuadTree[S, T], p: T => Boolean)(using CanEqual[T, T]): Batch[QuadTreeValue[S, T]] =
     @tailrec
@@ -334,7 +411,7 @@ object QuadTree:
           acc
 
         case Leaf(bounds, values) :: rs if boundingBox.overlaps(bounds) =>
-          val res = values.filter(v => s.within(v.location, boundingBox) && p(v.value))
+          val res = values.filter(v => s.intersects(v.location, boundingBox) && p(v.value))
           rec(rs, res ++ acc)
 
         case Branch(bounds, a, b, c, d) :: rs if boundingBox.overlaps(bounds) =>
