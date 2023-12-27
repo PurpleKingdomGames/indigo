@@ -91,7 +91,7 @@ object QuadTreeBenchmarks:
         QuadTree.searchByBoundingBox(SampleTree.tree, BoundingBox(0, 1, 2, 2))
       },
       Benchmark("searchByLine") {
-        QuadTree.searchByLine(SampleTree.tree, Vertex(0.5, 0.5), Vertex(3.5, 3.5))
+        QuadTree.searchByLine(SampleTree.tree, LineSegment(Vertex(0.5, 0.5), Vertex(3.5, 3.5)))
       },
       Benchmark("toList") {
         SampleTree.tree.toBatch
