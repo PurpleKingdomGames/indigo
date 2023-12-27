@@ -19,7 +19,7 @@ class BoundingBoxTests extends munit.FunSuite {
 
     val expected = BoundingBox(1, 3, 4, 3)
 
-    assertEquals(BoundingBox.fromTwoVertices(pt1, pt2) == expected, true)
+    assert(BoundingBox.fromTwoVertices(pt1, pt2) ~== expected)
   }
 
   test("creating rectangles.should be able to construct a bounding box from a cloud of vertices") {
@@ -268,6 +268,13 @@ class BoundingBoxTests extends munit.FunSuite {
     val c = BoundingCircle(Vertex(600), 10)
 
     assert(b.overlaps(c) == false)
+  }
+
+  test("overlaps LineSegment") {
+    val b = BoundingBox(Vertex(0, 0), Vertex(500))
+    val l = LineSegment((-1.0, -1.0), (10.0, 10.0))
+
+    assert(b.overlaps(l))
   }
 
   test("Expand should be able to expand in size by a given amount") {
