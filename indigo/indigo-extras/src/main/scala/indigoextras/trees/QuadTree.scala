@@ -501,13 +501,13 @@ object QuadTree:
   )(using s: SpatialOps[S], ls: SpatialOps[LineSegment]): QuadTree[S, T] =
     def removeAt[T](quadTree: QuadTree[S, T]): QuadTree[S, T] =
       quadTree match
-        case l @ QuadTree.Leaf(bounds, values) if ls.intersects(lineSegment, bounds) =>
+        case l @ QuadTree.Leaf(bounds, values) =>
           val newValues = values.filterNot { v =>
             s.intersects(v.location, lineSegment)
           }
           if newValues.isEmpty then QuadTree.Empty(bounds) else l.copy(values = newValues)
 
-        case QuadTree.Branch(bounds, a, b, c, d) if ls.intersects(lineSegment, bounds) =>
+        case QuadTree.Branch(bounds, a, b, c, d) =>
           QuadTree.Branch[S, T](
             bounds,
             removeAt(a),
