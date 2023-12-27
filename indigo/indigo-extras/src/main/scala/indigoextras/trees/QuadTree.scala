@@ -64,14 +64,27 @@ enum QuadTree[S, T](val isEmpty: Boolean)(using s: SpatialOps[S]) derives CanEqu
 
   def findClosestTo(vertex: Vertex)(using CanEqual[T, T], SpatialOps[S]): Option[QuadTreeValue[S, T]] =
     QuadTree.findClosestTo(vertex, this)
+  def findClosestTo(vertex: Vertex, filter: T => Boolean)(using
+      CanEqual[T, T],
+      SpatialOps[S]
+  ): Option[QuadTreeValue[S, T]] =
+    QuadTree.findClosestTo(vertex, filter, this)
 
   def searchByLine(start: Vertex, end: Vertex)(using CanEqual[T, T]): Batch[QuadTreeValue[S, T]] =
-    QuadTree.searchByLine(this, start, end)
+    QuadTree.searchByLine(this, LineSegment(start, end))
+  def searchByLine(start: Vertex, end: Vertex, filter: T => Boolean)(using CanEqual[T, T]): Batch[QuadTreeValue[S, T]] =
+    QuadTree.searchByLine(this, LineSegment(start, end), filter)
   def searchByLine(line: LineSegment)(using CanEqual[T, T]): Batch[QuadTreeValue[S, T]] =
     QuadTree.searchByLine(this, line)
+  def searchByLine(line: LineSegment, filter: T => Boolean)(using CanEqual[T, T]): Batch[QuadTreeValue[S, T]] =
+    QuadTree.searchByLine(this, line, filter)
 
   def searchByBoundingBox(boundingBox: BoundingBox)(using CanEqual[T, T]): Batch[QuadTreeValue[S, T]] =
     QuadTree.searchByBoundingBox(this, boundingBox)
+  def searchByBoundingBox(boundingBox: BoundingBox, filter: T => Boolean)(using
+      CanEqual[T, T]
+  ): Batch[QuadTreeValue[S, T]] =
+    QuadTree.searchByBoundingBox(this, boundingBox, filter)
 
   def prettyPrint: String =
     // Not tail recursive
@@ -361,6 +374,11 @@ object QuadTree:
       SpatialOps[S]
   ): Option[QuadTreeValue[S, T]] =
     findClosestTo(vertex, quadTree, _ => true)
+  def findClosestTo[S, T](vertex: Vertex, p: T => Boolean, quadTree: QuadTree[S, T])(using
+      CanEqual[T, T],
+      SpatialOps[S]
+  ): Option[QuadTreeValue[S, T]] =
+    findClosestTo(vertex, quadTree, p)
 
   def searchByLine[S, T](quadTree: QuadTree[S, T], lineSegment: LineSegment, p: T => Boolean)(using
       CanEqual[T, T],
@@ -393,16 +411,6 @@ object QuadTree:
       SpatialOps[S]
   ): Batch[QuadTreeValue[S, T]] =
     searchByLine(quadTree, lineSegment, _ => true)
-  def searchByLine[S, T](quadTree: QuadTree[S, T], start: Vertex, end: Vertex, p: T => Boolean)(using
-      CanEqual[T, T],
-      SpatialOps[S]
-  ): Batch[QuadTreeValue[S, T]] =
-    searchByLine(quadTree, LineSegment(start, end), p)
-  def searchByLine[S, T](quadTree: QuadTree[S, T], start: Vertex, end: Vertex)(using
-      CanEqual[T, T],
-      SpatialOps[S]
-  ): Batch[QuadTreeValue[S, T]] =
-    searchByLine(quadTree, start, end, _ => true)
 
   def searchByBoundingBox[S, T](quadTree: QuadTree[S, T], boundingBox: BoundingBox, p: T => Boolean)(using
       CanEqual[T, T]
