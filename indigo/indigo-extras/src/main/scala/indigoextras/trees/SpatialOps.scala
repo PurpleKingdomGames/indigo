@@ -50,7 +50,7 @@ object SpatialOps:
   given SpatialOps[BoundingBox] with
     def bounds(ref: BoundingBox): BoundingBox                           = ref
     def intersects(ref: BoundingBox, bounds: BoundingBox): Boolean      = bounds.overlaps(ref)
-    def intersects(ref: BoundingBox, lineSegment: LineSegment): Boolean = ref.lineIntersects(lineSegment)
+    def intersects(ref: BoundingBox, lineSegment: LineSegment): Boolean = ref.overlaps(lineSegment)
     def equals(ref: BoundingBox, other: BoundingBox): Boolean           = ref ~== other
     def distance(ref: BoundingBox, vertex: Vertex): Double              = ref.sdf(vertex)
     def surrounds(ref: BoundingBox, bounds: BoundingBox): Boolean       = ref.encompasses(bounds)
@@ -58,7 +58,7 @@ object SpatialOps:
   given SpatialOps[Rectangle] with
     def bounds(ref: Rectangle): BoundingBox                           = ref.toBoundingBox
     def intersects(ref: Rectangle, bounds: BoundingBox): Boolean      = bounds.overlaps(ref.toBoundingBox)
-    def intersects(ref: Rectangle, lineSegment: LineSegment): Boolean = ref.toBoundingBox.lineIntersects(lineSegment)
+    def intersects(ref: Rectangle, lineSegment: LineSegment): Boolean = ref.toBoundingBox.overlaps(lineSegment)
     def equals(ref: Rectangle, other: Rectangle): Boolean             = ref == other
     def distance(ref: Rectangle, vertex: Vertex): Double              = ref.toBoundingBox.sdf(vertex)
     def surrounds(ref: Rectangle, bounds: BoundingBox): Boolean       = ref.toBoundingBox.encompasses(bounds)
@@ -66,7 +66,7 @@ object SpatialOps:
   given SpatialOps[BoundingCircle] with
     def bounds(ref: BoundingCircle): BoundingBox                           = ref.toIncircleBoundingBox
     def intersects(ref: BoundingCircle, bounds: BoundingBox): Boolean      = bounds.overlaps(ref)
-    def intersects(ref: BoundingCircle, lineSegment: LineSegment): Boolean = ref.lineIntersects(lineSegment)
+    def intersects(ref: BoundingCircle, lineSegment: LineSegment): Boolean = ref.overlaps(lineSegment)
     def equals(ref: BoundingCircle, other: BoundingCircle): Boolean        = ref ~== other
     def distance(ref: BoundingCircle, vertex: Vertex): Double              = ref.sdf(vertex)
     def surrounds(ref: BoundingCircle, bounds: BoundingBox): Boolean = ref.toIncircleBoundingBox.encompasses(bounds)
@@ -74,7 +74,7 @@ object SpatialOps:
   given SpatialOps[Circle] with
     def bounds(ref: Circle): BoundingBox                           = ref.toIncircleBoundingBox
     def intersects(ref: Circle, bounds: BoundingBox): Boolean      = bounds.overlaps(ref.toBoundingCircle)
-    def intersects(ref: Circle, lineSegment: LineSegment): Boolean = ref.toBoundingCircle.lineIntersects(lineSegment)
+    def intersects(ref: Circle, lineSegment: LineSegment): Boolean = ref.toBoundingCircle.overlaps(lineSegment)
     def equals(ref: Circle, other: Circle): Boolean                = ref == other
     def distance(ref: Circle, vertex: Vertex): Double              = ref.toBoundingCircle.sdf(vertex)
     def surrounds(ref: Circle, bounds: BoundingBox): Boolean       = ref.toIncircleBoundingBox.encompasses(bounds)
