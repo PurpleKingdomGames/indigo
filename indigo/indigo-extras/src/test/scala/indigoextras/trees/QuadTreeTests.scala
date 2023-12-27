@@ -1,5 +1,8 @@
 package indigoextras.trees
 
+import indigo.BoundingCircle
+import indigo.Circle
+import indigo.LineSegment
 import indigo.Rectangle
 import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Point
@@ -598,20 +601,32 @@ class QuadTreeTests extends munit.FunSuite {
           (BoundingBox(0.25, 3.25, 4, 0.5), "c")
         )
 
-    val expected =
-      QuadTree.Branch(
-        BoundingBox(Vertex(0, 0), Vertex(10.001, 10.001)),
-        QuadTree.Leaf(BoundingBox(Vertex(0, 0), Vertex(5.0005, 5.0005)), BoundingBox(2, 0, 2, 4), "b"),
-        QuadTree.Leaf(BoundingBox(Vertex(5.0005, 0), Vertex(5.0005, 5.0005)), BoundingBox(0.5, 0.5, 1, 1), "a"),
-        QuadTree.Empty(BoundingBox(Vertex(0, 5.0005), Vertex(5.0005, 5.0005))),
-        QuadTree.Leaf(BoundingBox(Vertex(5.0005, 5.0005), Vertex(5.0005, 5.0005)), BoundingBox(0.25, 3.25, 4, 0.5), "c")
-      )
-
     assertEquals(actual.findClosestTo(Vertex(1, 3)).map(_.value), Option("c"))
     assertEquals(actual.searchByLine(Vertex(0, 2), Vertex(1, 0)).map(_.value), Batch("a", "a"))
     assertEquals(
       actual.searchByLine(Vertex(0, 0), Vertex(5, 5)).map(_.value),
       Batch("b", "b", "b", "c", "b", "c", "b", "c", "a", "b", "a", "a", "b", "a", "b")
+    )
+    assertEquals(actual.searchByBoundingBox(BoundingBox(1.5, 2.5, 1, 1)).map(_.value), Batch("b", "c"))
+  }
+
+  test("BoundingCircle example") {
+
+    val actual =
+      QuadTree
+        .empty[BoundingCircle, String](5, 5)
+        .insert(
+          (BoundingCircle(1, 1, 0.5), "a"),
+          (BoundingCircle(3.5, 2.5, 1.5), "b"),
+          (BoundingCircle(2, 4, 1), "c")
+        )
+
+    assertEquals(actual.findClosestTo(Vertex(2, 0.5)).map(_.value), Option("a"))
+    assertEquals(actual.findClosestTo(Vertex(2, 2)).map(_.value), Option("b"))
+    assertEquals(actual.searchByLine(Vertex(0, 2), Vertex(1, 0)).map(_.value), Batch("a", "a"))
+    assertEquals(
+      actual.searchByLine(Vertex(1, 0), Vertex(3.5, 5)).map(_.value),
+      Batch("b", "c", "b", "c", "b", "c", "a", "b", "a", "a")
     )
     assertEquals(actual.searchByBoundingBox(BoundingBox(1.5, 2.5, 1, 1)).map(_.value), Batch("b", "c"))
   }
@@ -627,15 +642,6 @@ class QuadTreeTests extends munit.FunSuite {
           (Rectangle(0, 3, 5, 1), "c")
         )
 
-    val expected =
-      QuadTree.Branch(
-        BoundingBox(Vertex(0, 0), Vertex(10.001, 10.001)),
-        QuadTree.Leaf(BoundingBox(Vertex(0, 0), Vertex(5.0005, 5.0005)), Rectangle(2, 0, 2, 4), "b"),
-        QuadTree.Leaf(BoundingBox(Vertex(5.0005, 0), Vertex(5.0005, 5.0005)), Rectangle(1, 1, 1, 1), "a"),
-        QuadTree.Empty(BoundingBox(Vertex(0, 5.0005), Vertex(5.0005, 5.0005))),
-        QuadTree.Leaf(BoundingBox(Vertex(5.0005, 5.0005), Vertex(5.0005, 5.0005)), Rectangle(0, 3, 5, 1), "c")
-      )
-
     assertEquals(actual.findClosestTo(Vertex(1, 3)).map(_.value), Option("c"))
     assertEquals(actual.searchByLine(Vertex(0, 2), Vertex(1, 0)).map(_.value), Batch("a", "a"))
     assertEquals(
@@ -645,6 +651,48 @@ class QuadTreeTests extends munit.FunSuite {
     assertEquals(
       actual.searchByLine(Vertex(0, 0), Vertex(5, 5)).map(_.value).distinct,
       Batch("b", "c", "a")
+    )
+    assertEquals(actual.searchByBoundingBox(BoundingBox(1.5, 2.5, 1, 1)).map(_.value), Batch("b", "c"))
+  }
+
+  test("Circle example") {
+
+    val actual =
+      QuadTree
+        .empty[Circle, String](5, 5)
+        .insert(
+          (Circle(1, 1, 1), "a"),
+          (Circle(3, 2, 1), "b"),
+          (Circle(2, 4, 1), "c")
+        )
+
+    assertEquals(actual.findClosestTo(Vertex(2, 0.5)).map(_.value), Option("a"))
+    assertEquals(actual.findClosestTo(Vertex(2, 2)).map(_.value), Option("b"))
+    assertEquals(actual.searchByLine(Vertex(0, 2), Vertex(1, 0)).map(_.value), Batch("a", "a"))
+    assertEquals(
+      actual.searchByLine(Vertex(1, 0), Vertex(3.5, 5)).map(_.value).distinct,
+      Batch("c", "b", "a")
+    )
+    assertEquals(actual.searchByBoundingBox(BoundingBox(1.5, 2.5, 1, 1)).map(_.value), Batch("b", "c"))
+  }
+
+  test("LineSegment example".only) {
+
+    val actual =
+      QuadTree
+        .empty[LineSegment, String](5, 5)
+        .insert(
+          (LineSegment((0.5, 1.5), (1.5, 0.5)), "a"),
+          (LineSegment((2.5, 0.5), (3.5, 3.5)), "b"),
+          (LineSegment((3.5, 1.5), (1.5, 3.5)), "c")
+        )
+
+    assertEquals(actual.findClosestTo(Vertex(2, 0.5)).map(_.value), Option("a"))
+    assertEquals(actual.findClosestTo(Vertex(2, 2)).map(_.value), Option("b"))
+    assertEquals(actual.searchByLine(Vertex(0, 2), Vertex(1, 0)).map(_.value), Batch("a", "a"))
+    assertEquals(
+      actual.searchByLine(Vertex(1, 0), Vertex(3.5, 5)).map(_.value).distinct,
+      Batch("c", "b", "a")
     )
     assertEquals(actual.searchByBoundingBox(BoundingBox(1.5, 2.5, 1, 1)).map(_.value), Batch("b", "c"))
   }

@@ -1,9 +1,12 @@
 package indigoextras.trees
 
 import indigo.shared.collections.Batch
+import indigo.shared.datatypes.Circle
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.geometry.BoundingBox
+import indigo.shared.geometry.BoundingCircle
+import indigo.shared.geometry.LineSegment
 import indigo.shared.geometry.Vertex
 
 trait SpatialOps[S]:
@@ -52,3 +55,24 @@ object SpatialOps:
     def equals(ref: Rectangle, other: Rectangle): Boolean        = ref == other
     def distance(ref: Rectangle, vertex: Vertex): Double         = ref.toBoundingBox.sdf(vertex)
     def surrounds(ref: Rectangle, bounds: BoundingBox): Boolean  = ref.toBoundingBox.encompasses(bounds)
+
+  given SpatialOps[BoundingCircle] with
+    def bounds(ref: BoundingCircle): BoundingBox                      = ref.toIncircleBoundingBox
+    def intersects(ref: BoundingCircle, bounds: BoundingBox): Boolean = bounds.overlaps(ref)
+    def equals(ref: BoundingCircle, other: BoundingCircle): Boolean   = ref ~== other
+    def distance(ref: BoundingCircle, vertex: Vertex): Double         = ref.sdf(vertex)
+    def surrounds(ref: BoundingCircle, bounds: BoundingBox): Boolean  = ref.toIncircleBoundingBox.encompasses(bounds)
+
+  given SpatialOps[Circle] with
+    def bounds(ref: Circle): BoundingBox                      = ref.toIncircleBoundingBox
+    def intersects(ref: Circle, bounds: BoundingBox): Boolean = bounds.overlaps(ref.toBoundingCircle)
+    def equals(ref: Circle, other: Circle): Boolean           = ref == other
+    def distance(ref: Circle, vertex: Vertex): Double         = ref.toBoundingCircle.sdf(vertex)
+    def surrounds(ref: Circle, bounds: BoundingBox): Boolean  = ref.toIncircleBoundingBox.encompasses(bounds)
+
+  given SpatialOps[LineSegment] with
+    def bounds(ref: LineSegment): BoundingBox                      = ref.toBoundingBox
+    def intersects(ref: LineSegment, bounds: BoundingBox): Boolean = bounds.lineIntersects(ref)
+    def equals(ref: LineSegment, other: LineSegment): Boolean      = ref ~== other
+    def distance(ref: LineSegment, vertex: Vertex): Double         = ref.sdf(vertex)
+    def surrounds(ref: LineSegment, bounds: BoundingBox): Boolean  = false
