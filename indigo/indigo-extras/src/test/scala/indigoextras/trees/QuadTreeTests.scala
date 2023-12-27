@@ -250,7 +250,7 @@ class QuadTreeTests extends munit.FunSuite {
   }
 
   test("should allow a search of squares where the line points are in the same square") {
-    val actual = QuadTree.searchByLine(SampleTree.tree, Vertex(1, 1), Vertex(1, 1))
+    val actual = SampleTree.tree.searchByLine(Vertex(1, 1), Vertex(1, 1))
 
     val expected: List[String] =
       List(
@@ -262,7 +262,7 @@ class QuadTreeTests extends munit.FunSuite {
   }
 
   test("should allow a search of squares between two horizontal points") {
-    val actual = QuadTree.searchByLine(SampleTree.tree, Vertex(1.1, 1.5), Vertex(3.5, 1.5))
+    val actual = SampleTree.tree.searchByLine(Vertex(1.1, 1.5), Vertex(3.5, 1.5))
 
     val expected: List[String] =
       List(
@@ -276,7 +276,7 @@ class QuadTreeTests extends munit.FunSuite {
   }
 
   test("should allow a search of squares between two horizontal points - filtered") {
-    val actual = QuadTree.searchByLine(SampleTree.tree, Vertex(1.1, 1.5), Vertex(3.5, 1.5), _ != "2,1")
+    val actual = SampleTree.tree.searchByLine(Vertex(1.1, 1.5), Vertex(3.5, 1.5), _ != "2,1")
 
     val expected: List[String] =
       List(
@@ -290,7 +290,7 @@ class QuadTreeTests extends munit.FunSuite {
   }
 
   test("should allow a search of squares between two vertical points") {
-    val actual = QuadTree.searchByLine(SampleTree.tree, Vertex(2.1, 0.5), Vertex(2.1, 2.1))
+    val actual = SampleTree.tree.searchByLine(Vertex(2.1, 0.5), Vertex(2.1, 2.1))
 
     val expected: List[String] =
       List(
@@ -304,7 +304,7 @@ class QuadTreeTests extends munit.FunSuite {
   }
 
   test("should allow a search of squares between two 45 degree points") {
-    val actual = QuadTree.searchByLine(SampleTree.tree, Vertex(0.5, 0.5), Vertex(3.5, 3.5))
+    val actual = SampleTree.tree.searchByLine(Vertex(0.5, 0.5), Vertex(3.5, 3.5))
 
     val expected: List[String] =
       List(
@@ -333,7 +333,7 @@ class QuadTreeTests extends munit.FunSuite {
   3 |_|_|_|_|
    */
   test("should allow a search of squares between two diagonal points") {
-    val actual = QuadTree.searchByLine(SampleTree.tree, Vertex(0.5, 1.5), Vertex(3.5, 2.5))
+    val actual = SampleTree.tree.searchByLine(Vertex(0.5, 1.5), Vertex(3.5, 2.5))
 
     val expected: List[String] =
       List(
