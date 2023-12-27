@@ -9,6 +9,8 @@ import indigoextras.trees.QuadTree
 
 object QuadTreeBenchmarks:
 
+  given QuadTree.InsertOptions = QuadTree.DefaultOptions
+
   val empty: QuadTree[Vertex, String] =
     QuadTree.empty(8, 8)
 
@@ -98,6 +100,8 @@ object QuadTreeBenchmarks:
   )
 
 object SampleTree {
+
+  given QuadTree.InsertOptions = QuadTree.DefaultOptions
 
   val tree: QuadTree[Vertex, String] = QuadTree
     .empty(4, 4)
