@@ -351,7 +351,7 @@ object QuadTree:
       case Branch(bounds, a, b, c, d) =>
         Branch[S, T](bounds, a.prune, b.prune, c.prune, d.prune)
 
-  def findClosestTo[S, T](vertex: Vertex, quadTree: QuadTree[S, T], p: T => Boolean)(using CanEqual[T, T])(using
+  def findClosestTo[S, T](vertex: Vertex, p: T => Boolean, quadTree: QuadTree[S, T])(using CanEqual[T, T])(using
       s: SpatialOps[S]
   ): Option[QuadTreeValue[S, T]] =
     @tailrec
@@ -373,7 +373,7 @@ object QuadTree:
 
           rec(rs, res._1, res._2)
 
-        case Branch(bounds, a, b, c, d) :: rs if vertex.distanceTo(bounds.center) < closestDistance =>
+        case Branch(bounds, a, b, c, d) :: rs =>
           rec(a :: b :: c :: d :: rs, closestDistance, acc)
 
         case _ :: rs =>
@@ -384,12 +384,7 @@ object QuadTree:
       CanEqual[T, T],
       SpatialOps[S]
   ): Option[QuadTreeValue[S, T]] =
-    findClosestTo(vertex, quadTree, _ => true)
-  def findClosestTo[S, T](vertex: Vertex, p: T => Boolean, quadTree: QuadTree[S, T])(using
-      CanEqual[T, T],
-      SpatialOps[S]
-  ): Option[QuadTreeValue[S, T]] =
-    findClosestTo(vertex, quadTree, p)
+    findClosestTo(vertex, _ => true, quadTree)
 
   def searchByLine[S, T](quadTree: QuadTree[S, T], lineSegment: LineSegment, p: T => Boolean)(using
       CanEqual[T, T],
@@ -504,14 +499,16 @@ object QuadTree:
 
   def removeByBoundingBox[S, T](quadTree: QuadTree[S, T], boundingBox: BoundingBox)(using
       CanEqual[T, T]
-  )(using s: SpatialOps[S], bs: SpatialOps[BoundingBox]): QuadTree[S, T] =
+  )(using s: SpatialOps[S]): QuadTree[S, T] =
     def removeAt[T](quadTree: QuadTree[S, T]): QuadTree[S, T] =
       quadTree match
-        case l @ QuadTree.Leaf(bounds, values) if bs.intersects(boundingBox, bounds) =>
-          val newValues = values.filterNot(v => bs.intersects(boundingBox, s.bounds(v.location)))
+        case l @ QuadTree.Leaf(bounds, values) =>
+          val newValues = values.filterNot { v =>
+            s.intersects(v.location, boundingBox)
+          }
           if newValues.isEmpty then QuadTree.Empty(bounds) else l.copy(values = newValues)
 
-        case QuadTree.Branch(bounds, a, b, c, d) if bs.intersects(boundingBox, bounds) =>
+        case QuadTree.Branch(bounds, a, b, c, d) =>
           QuadTree.Branch[S, T](
             bounds,
             removeAt(a),
