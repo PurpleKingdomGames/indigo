@@ -71,8 +71,9 @@ object SpatialOps:
     def surrounds(ref: Circle, bounds: BoundingBox): Boolean  = ref.toIncircleBoundingBox.encompasses(bounds)
 
   given SpatialOps[LineSegment] with
-    def bounds(ref: LineSegment): BoundingBox                      = ref.toBoundingBox
-    def intersects(ref: LineSegment, bounds: BoundingBox): Boolean = bounds.lineIntersects(ref)
-    def equals(ref: LineSegment, other: LineSegment): Boolean      = ref ~== other
-    def distance(ref: LineSegment, vertex: Vertex): Double         = ref.sdf(vertex)
-    def surrounds(ref: LineSegment, bounds: BoundingBox): Boolean  = false
+    def bounds(ref: LineSegment): BoundingBox = ref.toBoundingBox
+    def intersects(ref: LineSegment, bounds: BoundingBox): Boolean =
+      bounds.contains(ref.start) || bounds.contains(ref.end) || bounds.lineIntersects(ref)
+    def equals(ref: LineSegment, other: LineSegment): Boolean     = ref ~== other
+    def distance(ref: LineSegment, vertex: Vertex): Double        = ref.sdf(vertex)
+    def surrounds(ref: LineSegment, bounds: BoundingBox): Boolean = false

@@ -676,7 +676,7 @@ class QuadTreeTests extends munit.FunSuite {
     assertEquals(actual.searchByBoundingBox(BoundingBox(1.5, 2.5, 1, 1)).map(_.value), Batch("b", "c"))
   }
 
-  test("LineSegment example".only) {
+  test("LineSegment example") {
 
     val actual =
       QuadTree
@@ -688,13 +688,13 @@ class QuadTreeTests extends munit.FunSuite {
         )
 
     assertEquals(actual.findClosestTo(Vertex(2, 0.5)).map(_.value), Option("a"))
-    assertEquals(actual.findClosestTo(Vertex(2, 2)).map(_.value), Option("b"))
+    assertEquals(actual.findClosestTo(Vertex(2, 2)).map(_.value), Option("c"))
     assertEquals(actual.searchByLine(Vertex(0, 2), Vertex(1, 0)).map(_.value), Batch("a", "a"))
     assertEquals(
       actual.searchByLine(Vertex(1, 0), Vertex(3.5, 5)).map(_.value).distinct,
-      Batch("c", "b", "a")
+      Batch("b", "c", "a")
     )
-    assertEquals(actual.searchByBoundingBox(BoundingBox(1.5, 2.5, 1, 1)).map(_.value), Batch("b", "c"))
+    assertEquals(actual.searchByBoundingBox(BoundingBox(2.5, 1.5, 1, 1)).map(_.value), Batch("b", "c"))
   }
 
 }
