@@ -86,6 +86,17 @@ enum QuadTree[S, T](val isEmpty: Boolean)(using s: SpatialOps[S]) derives CanEqu
   ): Batch[QuadTreeValue[S, T]] =
     QuadTree.searchByBoundingBox(this, boundingBox, filter)
 
+  def removeClosestTo(vertex: Vertex)(using CanEqual[T, T], SpatialOps[S]): QuadTree[S, T] =
+    QuadTree.removeClosestTo(vertex, this)
+
+  def removeByLine(start: Vertex, end: Vertex)(using CanEqual[T, T]): QuadTree[S, T] =
+    QuadTree.removeByLine(this, LineSegment(start, end))
+  def removeByLine(line: LineSegment)(using CanEqual[T, T]): QuadTree[S, T] =
+    QuadTree.removeByLine(this, line)
+
+  def removeByBoundingBox(boundingBox: BoundingBox)(using CanEqual[T, T]): QuadTree[S, T] =
+    QuadTree.removeByBoundingBox(this, boundingBox)
+
   def prettyPrint: String =
     // Not tail recursive
     def rec(quadTree: QuadTree[S, T], indent: String): String =
@@ -437,6 +448,82 @@ object QuadTree:
       SpatialOps[S]
   ): Batch[QuadTreeValue[S, T]] =
     searchByBoundingBox(quadTree, boundingBox, _ => true)
+
+  def removeClosestTo[S, T](vertex: Vertex, quadTree: QuadTree[S, T])(using CanEqual[T, T])(using
+      s: SpatialOps[S]
+  ): QuadTree[S, T] =
+    def removeAt[T](quadTree: QuadTree[S, T], target: QuadTreeValue[S, T]): QuadTree[S, T] =
+      quadTree match
+        case l @ QuadTree.Leaf(bounds, values) if s.intersects(target.location, bounds) =>
+          val newValues = values.filterNot(v => s.equals(v.location, target.location))
+          if newValues.isEmpty then QuadTree.Empty(bounds) else l.copy(values = newValues)
+
+        case QuadTree.Branch(bounds, a, b, c, d) if s.intersects(target.location, bounds) =>
+          QuadTree.Branch[S, T](
+            bounds,
+            removeAt(a, target),
+            removeAt(b, target),
+            removeAt(c, target),
+            removeAt(d, target)
+          )
+
+        case tree =>
+          tree
+
+    findClosestTo(vertex, quadTree) match
+      case None =>
+        quadTree
+
+      case Some(target) =>
+        removeAt(quadTree, target)
+
+  def removeByLine[S, T](quadTree: QuadTree[S, T], lineSegment: LineSegment)(using
+      CanEqual[T, T]
+  )(using s: SpatialOps[S], ls: SpatialOps[LineSegment]): QuadTree[S, T] =
+    def removeAt[T](quadTree: QuadTree[S, T]): QuadTree[S, T] =
+      quadTree match
+        case l @ QuadTree.Leaf(bounds, values) if ls.intersects(lineSegment, bounds) =>
+          val newValues = values.filterNot { v =>
+            s.intersects(v.location, lineSegment)
+          }
+          if newValues.isEmpty then QuadTree.Empty(bounds) else l.copy(values = newValues)
+
+        case QuadTree.Branch(bounds, a, b, c, d) if ls.intersects(lineSegment, bounds) =>
+          QuadTree.Branch[S, T](
+            bounds,
+            removeAt(a),
+            removeAt(b),
+            removeAt(c),
+            removeAt(d)
+          )
+
+        case tree =>
+          tree
+
+    removeAt(quadTree)
+
+  def removeByBoundingBox[S, T](quadTree: QuadTree[S, T], boundingBox: BoundingBox)(using
+      CanEqual[T, T]
+  )(using s: SpatialOps[S], bs: SpatialOps[BoundingBox]): QuadTree[S, T] =
+    def removeAt[T](quadTree: QuadTree[S, T]): QuadTree[S, T] =
+      quadTree match
+        case l @ QuadTree.Leaf(bounds, values) if bs.intersects(boundingBox, bounds) =>
+          val newValues = values.filterNot(v => bs.intersects(boundingBox, s.bounds(v.location)))
+          if newValues.isEmpty then QuadTree.Empty(bounds) else l.copy(values = newValues)
+
+        case QuadTree.Branch(bounds, a, b, c, d) if bs.intersects(boundingBox, bounds) =>
+          QuadTree.Branch[S, T](
+            bounds,
+            removeAt(a),
+            removeAt(b),
+            removeAt(c),
+            removeAt(d)
+          )
+
+        case tree =>
+          tree
+
+    removeAt(quadTree)
 
 final case class QuadTreeValue[S, T](location: S, value: T):
   def toTuple: (S, T) = location -> value
