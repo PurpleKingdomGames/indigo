@@ -76,6 +76,8 @@ final case class BoundingBox(position: Vertex, size: Vertex) derives CanEqual:
     BoundingBox.overlapping(this, other)
   def overlaps(other: BoundingCircle): Boolean =
     contains(other.position) || Math.abs(sdf(other.position)) <= Math.abs(other.radius)
+  def overlaps(other: LineSegment): Boolean =
+    contains(other.start) || contains(other.end) || lineIntersects(other)
 
   def moveBy(amount: Vertex): BoundingBox =
     this.copy(position = position + amount)
