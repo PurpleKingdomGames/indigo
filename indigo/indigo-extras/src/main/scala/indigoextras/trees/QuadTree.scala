@@ -7,6 +7,30 @@ import indigo.shared.geometry.Vertex
 
 import scala.annotation.tailrec
 
+/** QuadTree is a data structure that allows you to store any value that exists in some space, e.g. a String at a Point
+  * or a class instance in a BoundingBox, e.g. The space station occupies a large `BoundingCircle`. The only restriction
+  * on what defines where something can be stored, is that it must have an implicit/given SpatialOps instance in scope.
+  *
+  * You will also need an implicit `QuadTree.InsertOptions` in scope. You can use the defaults by doing `given opts =
+  * QuadTree.DefaultOptions`, however, the author's suspicion is that these are next to useless since the values are
+  * highly context specific. To make your own, do `give opts = QuadTree.options(...)` and fill in the blanks,
+  * considering carefully the size and nature of the data you plan to store. Try and set sensible limits to avoid
+  * degenerate cases of, for instance, very deep trees.
+  *
+  * Remember, the point of a QuadTree is to make spatial search more efficient by allowing you to quickly cull areas
+  * that don't contain anything interesting.
+  *
+  * Some points of interest about this implementation:
+  *
+  *   - It is valid for the same entry to exist in many parts of the tree. For example, if a LineSegment cuts across
+  *     several quads, then all Quads it touches must contain that line segment's value at the leaf level.
+  *   - The 'insert' and 'search' functions should be effient since they can cull/ignore uninteresting nodes.
+  *   - The 'find' and the 'remove' functions are slower since they need to visit the whole tree to ensure all entries
+  *     are removed.
+  *   - Leaf nodes are buckets that can (and will, probably) store more than one value at any given time, how many they
+  *     should aim to store is configured in the options previously mentioned. The idea is to allow you to quickly find
+  *     the value in the general area you care about cheaply, before you do some more expensive operation on them.
+  */
 enum QuadTree[S, T](val isEmpty: Boolean)(using s: SpatialOps[S]) derives CanEqual:
   case Branch(
       bounds: BoundingBox,
