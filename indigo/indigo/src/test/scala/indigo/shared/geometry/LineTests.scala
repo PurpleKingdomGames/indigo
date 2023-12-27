@@ -259,4 +259,10 @@ class LineTests extends munit.FunSuite {
     assertEquals(actual, expected)
   }
 
+  test("Approximately equal") {
+    assert(LineSegment((-3d, 3d), (2d, 3d)).toLine ~== LineSegment((-3d, 3d), (2d, 3d)).toLine)
+    assert(LineSegment((-3.000001d, 3d), (2d, 3d)).toLine ~== LineSegment((-2.999d, 3d), (2d, 3d)).toLine)
+    assert(!(LineSegment((-3d, 3d), (2d, 3d)).toLine ~== LineSegment((-3d, 5d), (2d, 3d)).toLine))
+  }
+
 }

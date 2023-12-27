@@ -8,6 +8,23 @@ sealed trait Line derives CanEqual:
   def intersectsWith(other: Line): Boolean
   def intersectsAt(other: Line): Option[Vertex]
 
+  def ~==(other: Line): Boolean =
+    def equalish(a: Double, b: Double): Boolean =
+      Math.abs(a - b) < 0.0001
+
+    (this, other) match
+      case (Line.Components(m1, b1), Line.Components(m2, b2)) =>
+        equalish(m1, m2) && equalish(b1, b2)
+
+      case (Line.ParallelToAxisY(xPosition1), Line.ParallelToAxisY(xPosition2)) =>
+        equalish(xPosition1, xPosition2)
+
+      case (Line.InvalidLine, Line.InvalidLine) =>
+        true
+
+      case _ =>
+        false
+
 object Line:
   final case class Components(m: Double, b: Double) extends Line:
 
