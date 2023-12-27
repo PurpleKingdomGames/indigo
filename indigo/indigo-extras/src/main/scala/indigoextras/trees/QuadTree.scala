@@ -152,6 +152,9 @@ object QuadTree:
   def options(idealCount: Int, minSize: Double, maxDepth: Int): InsertOptions =
     InsertOptions(idealCount, minSize, maxDepth)
 
+  val DefaultOptions: InsertOptions =
+    InsertOptions(1, 1, 16)
+
   given [S, T](using CanEqual[T, T]): CanEqual[Option[QuadTree[S, T]], Option[QuadTree[S, T]]] = CanEqual.derived
   given [S, T](using CanEqual[T, T]): CanEqual[Batch[QuadTree[S, T]], Batch[QuadTree[S, T]]]   = CanEqual.derived
 
