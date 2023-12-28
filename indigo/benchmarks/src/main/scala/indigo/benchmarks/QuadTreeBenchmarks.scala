@@ -4,8 +4,6 @@ import indigo.*
 
 import japgolly.scalajs.benchmark._
 import japgolly.scalajs.benchmark.gui._
-import indigoextras.trees.QuadTree.*
-import indigoextras.trees.QuadTree
 
 object QuadTreeBenchmarks:
 
