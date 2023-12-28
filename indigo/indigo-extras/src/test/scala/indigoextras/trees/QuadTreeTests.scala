@@ -54,24 +54,6 @@ class QuadTreeTests extends munit.FunSuite {
     assert(actual.forall(expected.contains))
   }
 
-  test("toBatch with filter") {
-
-    val actual: Batch[String] =
-      QuadTree
-        .empty[Vertex, String](2, 2)
-        .insert(Vertex(0, 0), "a")
-        .insert(Vertex(0, 1), "b")
-        .insert(Vertex(1, 0), "c")
-        .toBatch(v => v == "b" || v == "c")
-        .map(_.value)
-
-    val expected: Batch[String] =
-      Batch("b", "c")
-
-    assert(actual.length == expected.length)
-    assert(actual.forall(expected.contains))
-  }
-
   test("toPositionedBatch") {
 
     val actual: Batch[QuadTreeValue[Vertex, String]] =
@@ -85,26 +67,6 @@ class QuadTreeTests extends munit.FunSuite {
     val expected: Batch[QuadTreeValue[Vertex, String]] =
       Batch(
         QuadTreeValue(Vertex(0, 0), "a"),
-        QuadTreeValue(Vertex(0, 1), "b"),
-        QuadTreeValue(Vertex(1, 0), "c")
-      )
-
-    assert(actual.length == expected.length)
-    assert(actual.forall(expected.contains))
-  }
-
-  test("toPositionedBatch with filter") {
-
-    val actual: Batch[QuadTreeValue[Vertex, String]] =
-      QuadTree
-        .empty[Vertex, String](2, 2)
-        .insert(Vertex(0, 0), "a")
-        .insert(Vertex(0, 1), "b")
-        .insert(Vertex(1, 0), "c")
-        .toBatch(v => v == "b" || v == "c")
-
-    val expected: Batch[QuadTreeValue[Vertex, String]] =
-      Batch(
         QuadTreeValue(Vertex(0, 1), "b"),
         QuadTreeValue(Vertex(1, 0), "c")
       )
@@ -217,7 +179,7 @@ class QuadTreeTests extends munit.FunSuite {
 
     val point: Vertex = Vertex(0, 1)
 
-    assertEquals(QuadTree.findClosestTo(point, tree).map(_.value), expected)
+    assertEquals(QuadTree.findClosestTo(tree, point).map(_.value), expected)
   }
 
   test("should allow a search under a vertex") {
@@ -254,20 +216,6 @@ class QuadTreeTests extends munit.FunSuite {
       List(
         "1,1",
         "2,1",
-        "3,1"
-      )
-
-    assertEquals(actual.length, expected.length)
-    assert(actual.map(_.value).forall(expected.contains))
-  }
-
-  test("should allow a search of squares between two horizontal points - filtered") {
-    val actual = SampleTree.tree.searchByLine(Vertex(1.1, 1.5), Vertex(3.5, 1.5), _ != "2,1")
-
-    val expected: List[String] =
-      List(
-        "1,1",
-        // "2,1", // filtered out
         "3,1"
       )
 
@@ -349,11 +297,11 @@ class QuadTreeTests extends munit.FunSuite {
   test("should allow a search of squares intersecting with a 2x2 rectangle") {
     val r: BoundingBox = BoundingBox(0, 1, 2, 2)
 
-    val actual = QuadTree.searchByBoundingBox(SampleTree.tree, r, _ != "1,1")
+    val actual = QuadTree.searchByBoundingBox(SampleTree.tree, r)
 
     val expected: List[String] = List(
       "0,1",
-      // "1,1", // filtered out
+      "1,1",
       "0,2",
       "1,2"
     )
@@ -365,7 +313,7 @@ class QuadTreeTests extends munit.FunSuite {
   test("should allow a search of squares intersecting with a rectangle the size of the grid") {
     val r: BoundingBox = BoundingBox(0, 0, 4, 4)
 
-    val actual = QuadTree.searchByBoundingBox(SampleTree.tree, r, p => p != "1,3")
+    val actual = QuadTree.searchByBoundingBox(SampleTree.tree, r)
 
     val expected: List[String] =
       List(
@@ -376,7 +324,7 @@ class QuadTreeTests extends munit.FunSuite {
         "1,0",
         "1,1",
         "1,2",
-        // "1,3", // filtered out
+        "1,3",
         "2,0",
         "2,1",
         "2,2",
