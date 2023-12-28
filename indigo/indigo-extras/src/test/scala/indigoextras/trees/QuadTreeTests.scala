@@ -521,12 +521,12 @@ class QuadTreeTests extends munit.FunSuite {
     assertEquals(actual.searchByBoundingBox(BoundingBox(1.5, 2.5, 1, 1)), Batch())
 
     // Removing
-    assertEquals(actual.removeClosestTo(Vertex.zero).findClosestTo(Vertex.zero).map(_.value), Option("a"))
-    assertEquals(actual.removeByLine(Vertex.zero, Vertex(1, 1)).findClosestTo(Vertex.zero).map(_.value), Option("a"))
-    assertEquals(actual.removeByLine(Vertex.zero, Vertex(10, 10)).toBatch.map(_.value), Batch("a"))
+    assertEquals(actual.removeClosestTo(Vertex.zero).findClosestTo(Vertex.zero).map(_.value), None)
+    assertEquals(actual.removeByLine(Vertex.zero, Vertex(1, 1)).findClosestTo(Vertex.zero).map(_.value), None)
+    assertEquals(actual.removeByLine(Vertex(0, 2), Vertex(5, 5)).toBatch.map(_.value).distinct, Batch("a"))
     assertEquals(
-      actual.removeByBoundingBox(BoundingBox(-1, -1, 11, 4)).findClosestTo(Vertex.zero).map(_.value),
-      Option("c")
+      actual.removeByBoundingBox(BoundingBox(0, 0, 5, 2)).findClosestTo(Vertex.zero).map(_.value),
+      None
     )
   }
 
@@ -596,12 +596,12 @@ class QuadTreeTests extends munit.FunSuite {
     assertEquals(actual.searchByBoundingBox(BoundingBox(0, 0, 5, 4)).distinct.map(_.value), Batch("a", "b"))
 
     // Removing
-    assertEquals(actual.removeClosestTo(Vertex.zero).findClosestTo(Vertex.zero).map(_.value), Option("a"))
-    assertEquals(actual.removeByLine(Vertex.zero, Vertex(1, 1)).findClosestTo(Vertex.zero).map(_.value), Option("a"))
-    assertEquals(actual.removeByLine(Vertex.zero, Vertex(10, 10)).toBatch.map(_.value), Batch("a"))
+    assertEquals(actual.removeClosestTo(Vertex.zero).findClosestTo(Vertex.zero).map(_.value), Option("b"))
+    assertEquals(actual.removeByLine(Vertex.zero, Vertex(1, 1)).findClosestTo(Vertex.zero).map(_.value), Option("b"))
+    assertEquals(actual.removeByLine(Vertex(0, 2), Vertex(5, 5)).toBatch.map(_.value).distinct, Batch("a"))
     assertEquals(
-      actual.removeByBoundingBox(BoundingBox(-1, -1, 11, 4)).findClosestTo(Vertex.zero).map(_.value),
-      Option("c")
+      actual.removeByBoundingBox(BoundingBox(0, 0, 5, 2)).findClosestTo(Vertex.zero).map(_.value),
+      None
     )
   }
 
@@ -626,11 +626,11 @@ class QuadTreeTests extends munit.FunSuite {
     assertEquals(actual.searchByBoundingBox(BoundingBox(1.5, 2.5, 1, 1)).map(_.value), Batch("b", "c"))
 
     // Removing
-    assertEquals(actual.removeClosestTo(Vertex.zero).findClosestTo(Vertex.zero).map(_.value), Option("a"))
-    assertEquals(actual.removeByLine(Vertex.zero, Vertex(1, 1)).findClosestTo(Vertex.zero).map(_.value), Option("a"))
-    assertEquals(actual.removeByLine(Vertex.zero, Vertex(10, 10)).toBatch.map(_.value), Batch("a"))
+    assertEquals(actual.removeClosestTo(Vertex.zero).findClosestTo(Vertex.zero).map(_.value), Option("b"))
+    assertEquals(actual.removeByLine(Vertex.zero, Vertex(1, 1)).findClosestTo(Vertex.zero).map(_.value), Option("b"))
+    assertEquals(actual.removeByLine(Vertex(0, 2), Vertex(5, 5)).toBatch.map(_.value).distinct, Batch("a"))
     assertEquals(
-      actual.removeByBoundingBox(BoundingBox(-1, -1, 11, 4)).findClosestTo(Vertex.zero).map(_.value),
+      actual.removeByBoundingBox(BoundingBox(0, 0, 5, 2)).findClosestTo(Vertex.zero).map(_.value),
       Option("c")
     )
   }
@@ -657,11 +657,11 @@ class QuadTreeTests extends munit.FunSuite {
     assertEquals(actual.searchByBoundingBox(BoundingBox(1.5, 2.5, 1, 1)).map(_.value), Batch("b", "c"))
 
     // Removing
-    assertEquals(actual.removeClosestTo(Vertex.zero).findClosestTo(Vertex.zero).map(_.value), Option("a"))
-    assertEquals(actual.removeByLine(Vertex.zero, Vertex(1, 1)).findClosestTo(Vertex.zero).map(_.value), Option("a"))
-    assertEquals(actual.removeByLine(Vertex.zero, Vertex(10, 10)).toBatch.map(_.value), Batch("a"))
+    assertEquals(actual.removeClosestTo(Vertex.zero).findClosestTo(Vertex.zero).map(_.value), Option("b"))
+    assertEquals(actual.removeByLine(Vertex.zero, Vertex(1, 1)).findClosestTo(Vertex.zero).map(_.value), Option("b"))
+    assertEquals(actual.removeByLine(Vertex(0, 2), Vertex(5, 5)).toBatch.map(_.value).distinct, Batch("a"))
     assertEquals(
-      actual.removeByBoundingBox(BoundingBox(-1, -1, 11, 4)).findClosestTo(Vertex.zero).map(_.value),
+      actual.removeByBoundingBox(BoundingBox(0, 0, 5, 2)).findClosestTo(Vertex.zero).map(_.value),
       Option("c")
     )
   }
@@ -691,11 +691,11 @@ class QuadTreeTests extends munit.FunSuite {
     assertEquals(actual.searchByBoundingBox(BoundingBox(1.5, 2.5, 1, 1)).map(_.value), Batch("b", "c"))
 
     // Removing
-    assertEquals(actual.removeClosestTo(Vertex.zero).findClosestTo(Vertex.zero).map(_.value), Option("a"))
-    assertEquals(actual.removeByLine(Vertex.zero, Vertex(1, 1)).findClosestTo(Vertex.zero).map(_.value), Option("a"))
-    assertEquals(actual.removeByLine(Vertex.zero, Vertex(10, 10)).toBatch.map(_.value), Batch("a"))
+    assertEquals(actual.removeClosestTo(Vertex.zero).findClosestTo(Vertex.zero).map(_.value), Option("b"))
+    assertEquals(actual.removeByLine(Vertex.zero, Vertex(1, 1)).findClosestTo(Vertex.zero).map(_.value), Option("b"))
+    assertEquals(actual.removeByLine(Vertex(0, 2), Vertex(5, 5)).toBatch.map(_.value).distinct, Batch("a"))
     assertEquals(
-      actual.removeByBoundingBox(BoundingBox(-1, -1, 11, 4)).findClosestTo(Vertex.zero).map(_.value),
+      actual.removeByBoundingBox(BoundingBox(0, 0, 5, 2)).findClosestTo(Vertex.zero).map(_.value),
       Option("c")
     )
   }
