@@ -39,8 +39,9 @@ enum QuadTree[S, T](val isEmpty: Boolean)(using s: SpatialOps[S]) derives CanEqu
       c: QuadTree[S, T],
       d: QuadTree[S, T]
   )(using SpatialOps[S]) extends QuadTree[S, T](a.isEmpty && b.isEmpty && c.isEmpty && d.isEmpty)
-  case Leaf(bounds: BoundingBox, values: Batch[QuadTreeValue[S, T]])(using SpatialOps[S]) extends QuadTree[S, T](false)
-  case Empty(bounds: BoundingBox)(using SpatialOps[S])                                    extends QuadTree[S, T](true)
+  case Leaf(bounds: BoundingBox, values: Batch[QuadTreeValue[S, T]])(using SpatialOps[S])
+      extends QuadTree[S, T](values.isEmpty)
+  case Empty(bounds: BoundingBox)(using SpatialOps[S]) extends QuadTree[S, T](true)
 
   val bounds: BoundingBox
 
@@ -50,32 +51,35 @@ enum QuadTree[S, T](val isEmpty: Boolean)(using s: SpatialOps[S]) derives CanEqu
       QuadTreeValue(location, value),
       opts.idealCount,
       opts.minSize,
-      opts.maxDepth,
-      0
+      opts.maxDepth
     )
-  def insert(elements: (S, T)*)(using opts: QuadTree.InsertOptions): QuadTree[S, T] =
+
+  def insert(values: (S, T)*)(using opts: QuadTree.InsertOptions): QuadTree[S, T] =
     QuadTree.insert(
       this,
-      Batch.fromSeq(elements).map(QuadTreeValue.fromTuple),
+      Batch.fromSeq(values).map(QuadTreeValue.fromTuple),
       opts.idealCount,
       opts.minSize,
       opts.maxDepth
     )
-  def insert(elements: Batch[(S, T)])(using opts: QuadTree.InsertOptions): QuadTree[S, T] =
+
+  def insert(values: Batch[(S, T)])(using opts: QuadTree.InsertOptions): QuadTree[S, T] =
     QuadTree.insert(
       this,
-      elements.map(QuadTreeValue.fromTuple),
+      values.map(QuadTreeValue.fromTuple),
       opts.idealCount,
       opts.minSize,
       opts.maxDepth
     )
 
   def insert(location: S, value: T, idealCount: Int, minSize: Double, maxDepth: Int): QuadTree[S, T] =
-    QuadTree.insert(this, QuadTreeValue(location, value), idealCount, minSize, maxDepth, 0)
-  def insert(idealCount: Int, minSize: Double, maxDepth: Int)(elements: (S, T)*): QuadTree[S, T] =
-    QuadTree.insert(this, Batch.fromSeq(elements).map(QuadTreeValue.fromTuple), idealCount, minSize, maxDepth)
-  def insert(elements: Batch[(S, T)], idealCount: Int, minSize: Double, maxDepth: Int): QuadTree[S, T] =
-    QuadTree.insert(this, elements.map(QuadTreeValue.fromTuple), idealCount, minSize, maxDepth)
+    QuadTree.insert(this, QuadTreeValue(location, value), idealCount, minSize, maxDepth)
+
+  def insert(idealCount: Int, minSize: Double, maxDepth: Int)(values: (S, T)*): QuadTree[S, T] =
+    QuadTree.insert(this, Batch.fromSeq(values).map(QuadTreeValue.fromTuple), idealCount, minSize, maxDepth)
+
+  def insert(values: Batch[(S, T)], idealCount: Int, minSize: Double, maxDepth: Int): QuadTree[S, T] =
+    QuadTree.insert(this, values.map(QuadTreeValue.fromTuple), idealCount, minSize, maxDepth)
 
   def toBatch(using CanEqual[T, T]): Batch[QuadTreeValue[S, T]] =
     QuadTree.toBatch(this)
@@ -91,6 +95,7 @@ enum QuadTree[S, T](val isEmpty: Boolean)(using s: SpatialOps[S]) derives CanEqu
 
   def searchByLine(start: Vertex, end: Vertex)(using CanEqual[T, T]): Batch[QuadTreeValue[S, T]] =
     QuadTree.searchByLine(this, LineSegment(start, end))
+
   def searchByLine(line: LineSegment)(using CanEqual[T, T]): Batch[QuadTreeValue[S, T]] =
     QuadTree.searchByLine(this, line)
 
@@ -111,6 +116,7 @@ enum QuadTree[S, T](val isEmpty: Boolean)(using s: SpatialOps[S]) derives CanEqu
 
   def removeByLine(start: Vertex, end: Vertex)(using CanEqual[T, T]): QuadTree[S, T] =
     QuadTree.removeByLine(this, LineSegment(start, end))
+
   def removeByLine(line: LineSegment)(using CanEqual[T, T]): QuadTree[S, T] =
     QuadTree.removeByLine(this, line)
 
@@ -118,7 +124,6 @@ enum QuadTree[S, T](val isEmpty: Boolean)(using s: SpatialOps[S]) derives CanEqu
     QuadTree.removeByBoundingBox(this, boundingBox)
 
   def prettyPrint: String =
-    // Not tail recursive
     def rec(quadTree: QuadTree[S, T], indent: String): String =
       quadTree match
         case QuadTree.Empty(bounds) =>
@@ -275,9 +280,19 @@ object QuadTree:
   )(using
       s: SpatialOps[S]
   ): QuadTree[S, T] =
-    values.foldLeft(quadTree) { case (acc, next) => insert(acc, next, idealCount, minSize, maxDepth, 0) }
-
+    values.foldLeft(quadTree) { case (acc, next) => insertValue(acc, next, idealCount, minSize, maxDepth, 0) }
   def insert[S, T](
+      quadTree: QuadTree[S, T],
+      value: QuadTreeValue[S, T],
+      idealCount: Int,
+      minSize: Double,
+      maxDepth: Int
+  )(using
+      s: SpatialOps[S]
+  ): QuadTree[S, T] =
+    insertValue(quadTree, value, idealCount, minSize, maxDepth, 0)
+
+  private def insertValue[S, T](
       quadTree: QuadTree[S, T],
       value: QuadTreeValue[S, T],
       idealCount: Int,
@@ -310,17 +325,17 @@ object QuadTree:
           else if depth + 1 > maxDepth then l.copy(values = l.values :+ value)
           else
             val x = insert(Branch.fromBounds(bounds), values, idealCount, minSize, maxDepth)
-            insert(x, value, idealCount, minSize, maxDepth, depth + 1)
+            insertValue(x, value, idealCount, minSize, maxDepth, depth + 1)
         else l
 
       case Branch(bounds, a, b, c, d) if s.intersects(value.location, bounds) =>
         // Delegate to sub-regions
         Branch[S, T](
           bounds,
-          insert(a, value, idealCount, minSize, maxDepth, depth + 1),
-          insert(b, value, idealCount, minSize, maxDepth, depth + 1),
-          insert(c, value, idealCount, minSize, maxDepth, depth + 1),
-          insert(d, value, idealCount, minSize, maxDepth, depth + 1)
+          insertValue(a, value, idealCount, minSize, maxDepth, depth + 1),
+          insertValue(b, value, idealCount, minSize, maxDepth, depth + 1),
+          insertValue(c, value, idealCount, minSize, maxDepth, depth + 1),
+          insertValue(d, value, idealCount, minSize, maxDepth, depth + 1)
         )
 
       case b: Branch[_, _] =>
@@ -358,11 +373,14 @@ object QuadTree:
 
   def prune[S, T](quadTree: QuadTree[S, T])(using SpatialOps[S]): QuadTree[S, T] =
     quadTree match
-      case l: Leaf[S, T] =>
-        l
-
       case e: Empty[S, T] =>
         e
+
+      case l: Leaf[S, T] if l.isEmpty =>
+        Empty(l.bounds)
+
+      case l: Leaf[S, T] =>
+        l
 
       case b: Branch[S, T] if b.isEmpty =>
         Empty(b.bounds)
