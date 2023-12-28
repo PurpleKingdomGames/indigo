@@ -40,12 +40,11 @@ object QuadTreeBenchmarks:
       QuadTree.Empty(BoundingBox(4, 4, 4, 4))
     )
 
-  // TODO: Bring back when we have remove by search functions.
-  // val needPrune = QuadTree
-  //   .empty(16, 16)
-  //   .insert(Vertex(9, 2), 999)
-  //   .removeElement(Vertex(9, 2))
-  //   .prune
+  val needPrune = QuadTree
+    .empty(16, 16)
+    .insert(Vertex(9, 2), 999)
+    .removeAt(Vertex(9, 2))
+    .prune
 
   val suite = GuiSuite(
     Suite("QuadTree Benchmarks")(
@@ -69,18 +68,15 @@ object QuadTreeBenchmarks:
       Benchmark("insert in a nested location") {
         tree.insert(Vertex(4, 0), "test")
       },
-      // TODO: Bring back when we have remove by search functions.
-      // Benchmark("removeElement at top level of existing tree") {
-      //   one.removeElement(Vertex(0, 0))
-      // },
-      // TODO: Bring back when we have remove by search functions.
-      // Benchmark("removeElement in a nested location") {
-      //   tree.removeElement(Vertex(5, 1))
-      // },
-      // TODO: Bring back when we have remove by search functions.
-      // Benchmark("prune") {
-      //   needPrune.prune
-      // },
+      Benchmark("removeElement at top level of existing tree") {
+        one.removeAt(Vertex(0, 0))
+      },
+      Benchmark("removeElement in a nested location") {
+        tree.removeAt(Vertex(5, 1))
+      },
+      Benchmark("prune") {
+        needPrune.prune
+      },
       Benchmark("subdivision") {
         QuadTree.Branch.subdivide(BoundingBox(0, 0, 100, 200))
       },

@@ -100,6 +100,15 @@ enum QuadTree[S, T](val isEmpty: Boolean)(using s: SpatialOps[S]) derives CanEqu
   def removeClosestTo(vertex: Vertex)(using CanEqual[T, T], SpatialOps[S]): QuadTree[S, T] =
     QuadTree.removeClosestTo(this, vertex)
 
+  /** Removes the value at the quad directly under the vertex, if there is one. Note that while this is fast, it only
+    * works well for simple cases, or trees of vertices / points. This is because it does not visit the whole tree
+    * looking for other quads that might share ownership of this value. For example, if you add a bounding box the size
+    * of the whole tree, but then use `removeAt` to remove it's value in just one quad, say the top left quad, the box
+    * will continue to exist in all the other quads it touched.
+    */
+  def removeAt(vertex: Vertex): QuadTree[S, T] =
+    QuadTree.removeAt(this, vertex)
+
   def removeByLine(start: Vertex, end: Vertex)(using CanEqual[T, T]): QuadTree[S, T] =
     QuadTree.removeByLine(this, LineSegment(start, end))
   def removeByLine(line: LineSegment)(using CanEqual[T, T]): QuadTree[S, T] =
@@ -460,7 +469,7 @@ object QuadTree:
   def removeClosestTo[S, T](quadTree: QuadTree[S, T], vertex: Vertex)(using CanEqual[T, T])(using
       s: SpatialOps[S]
   ): QuadTree[S, T] =
-    def removeAt[T](quadTree: QuadTree[S, T], target: QuadTreeValue[S, T]): QuadTree[S, T] =
+    def rec[T](quadTree: QuadTree[S, T], target: QuadTreeValue[S, T]): QuadTree[S, T] =
       quadTree match
         case l @ QuadTree.Leaf(bounds, values) if s.intersects(target.location, bounds) =>
           val newValues = values.filterNot(v => s.equals(v.location, target.location))
@@ -469,10 +478,10 @@ object QuadTree:
         case QuadTree.Branch(bounds, a, b, c, d) if s.intersects(target.location, bounds) =>
           QuadTree.Branch[S, T](
             bounds,
-            removeAt(a, target),
-            removeAt(b, target),
-            removeAt(c, target),
-            removeAt(d, target)
+            rec(a, target),
+            rec(b, target),
+            rec(c, target),
+            rec(d, target)
           )
 
         case tree =>
@@ -483,12 +492,38 @@ object QuadTree:
         quadTree
 
       case Some(target) =>
-        removeAt(quadTree, target)
+        rec(quadTree, target)
+
+  /** Removes the value at the quad directly under the vertex, if there is one. Note that while this is fast, it only
+    * works well for simple cases, or trees of vertices / points. This is because it does not visit the whole tree
+    * looking for other quads that might share ownership of this value. For example, if you add a bounding box the size
+    * of the whole tree, but then use `removeAt` to remove it's value in just one quad, say the top left quad, the box
+    * will continue to exist in all the other quads it touched.
+    */
+  def removeAt[S, T](quadTree: QuadTree[S, T], vertex: Vertex)(using s: SpatialOps[S]): QuadTree[S, T] =
+    def rec[T](quadTree: QuadTree[S, T]): QuadTree[S, T] =
+      quadTree match
+        case l @ QuadTree.Leaf(bounds, values) if bounds.contains(vertex) =>
+          QuadTree.Empty(bounds)
+
+        case QuadTree.Branch(bounds, a, b, c, d) if bounds.contains(vertex) =>
+          QuadTree.Branch[S, T](
+            bounds,
+            rec(a),
+            rec(b),
+            rec(c),
+            rec(d)
+          )
+
+        case tree =>
+          tree
+
+    rec(quadTree)
 
   def removeByLine[S, T](quadTree: QuadTree[S, T], lineSegment: LineSegment)(using
       CanEqual[T, T]
   )(using s: SpatialOps[S], ls: SpatialOps[LineSegment]): QuadTree[S, T] =
-    def removeAt[T](quadTree: QuadTree[S, T]): QuadTree[S, T] =
+    def rec[T](quadTree: QuadTree[S, T]): QuadTree[S, T] =
       quadTree match
         case l @ QuadTree.Leaf(bounds, values) =>
           val newValues = values.filterNot { v =>
@@ -499,21 +534,21 @@ object QuadTree:
         case QuadTree.Branch(bounds, a, b, c, d) =>
           QuadTree.Branch[S, T](
             bounds,
-            removeAt(a),
-            removeAt(b),
-            removeAt(c),
-            removeAt(d)
+            rec(a),
+            rec(b),
+            rec(c),
+            rec(d)
           )
 
         case tree =>
           tree
 
-    removeAt(quadTree)
+    rec(quadTree)
 
   def removeByBoundingBox[S, T](quadTree: QuadTree[S, T], boundingBox: BoundingBox)(using
       CanEqual[T, T]
   )(using s: SpatialOps[S]): QuadTree[S, T] =
-    def removeAt[T](quadTree: QuadTree[S, T]): QuadTree[S, T] =
+    def rec[T](quadTree: QuadTree[S, T]): QuadTree[S, T] =
       quadTree match
         case l @ QuadTree.Leaf(bounds, values) =>
           val newValues = values.filterNot { v =>
@@ -524,16 +559,16 @@ object QuadTree:
         case QuadTree.Branch(bounds, a, b, c, d) =>
           QuadTree.Branch[S, T](
             bounds,
-            removeAt(a),
-            removeAt(b),
-            removeAt(c),
-            removeAt(d)
+            rec(a),
+            rec(b),
+            rec(c),
+            rec(d)
           )
 
         case tree =>
           tree
 
-    removeAt(quadTree)
+    rec(quadTree)
 
 final case class QuadTreeValue[S, T](location: S, value: T):
   def toTuple: (S, T) = location -> value
