@@ -77,9 +77,6 @@ object QuadTreeBenchmarks:
       Benchmark("prune") {
         needPrune.prune
       },
-      Benchmark("subdivision") {
-        QuadTree.Branch.subdivide(BoundingBox(0, 0, 100, 200))
-      },
       Benchmark("searchByBoundingBox (simple tree)") {
         QuadTree.searchByBoundingBox(SampleTree.oneElementTree, BoundingBox(0, 1, 2, 2))
       },
