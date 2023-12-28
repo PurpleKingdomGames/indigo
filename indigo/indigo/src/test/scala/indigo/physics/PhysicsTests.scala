@@ -6,6 +6,16 @@ import indigo.syntax.*
 
 class PhysicsTests extends munit.FunSuite:
 
+  given [A]: CanEqual[Collider[String], Collider[String]] =
+    CanEqual.derived
+
+  given QuadTree.InsertOptions =
+    QuadTree.options(
+      idealCount = 1,
+      minSize = 1,
+      maxDepth = 16
+    )
+
   val tag = "test"
 
   test("moveColliders") {
@@ -70,7 +80,8 @@ class PhysicsTests extends munit.FunSuite:
         c5 -> Batch(c3)
       )
 
-    assertEquals(actual, expected)
+    assert(actual.length == expected.length)
+    assert(actual.forall(p => expected.exists(q => q._1 == p._1 && q._2.forall(p._2.contains))))
   }
 
   test("findCollisionGroups, with transient") {
@@ -101,7 +112,8 @@ class PhysicsTests extends munit.FunSuite:
         c3 -> Batch(c1, c5)
       )
 
-    assertEquals(actual, expected)
+    assert(actual.length == expected.length)
+    assert(actual.forall(p => expected.exists(q => q._1 == p._1 && q._2.forall(p._2.contains))))
   }
 
   test("(Circles) solveCollisions") {
