@@ -178,6 +178,18 @@ final case class World[A](colliders: Batch[Collider[A]], forces: Batch[Vector2],
   ): Batch[SceneNode] =
     (colliders ++ transient).filterNot(filterNot).map(render)
 
+  private val minSize: Double =
+    colliders.map(_.boundingBox.size.x).foldLeft(Double.MaxValue) { case (acc, next) =>
+      if next < acc then next else acc
+    }
+
+  private given QuadTree.InsertOptions =
+    QuadTree.options(
+      idealCount = 16,
+      minSize = minSize,
+      maxDepth = 16
+    )
+
   def update(timeDelta: Seconds): Outcome[World[A]] =
     Physics.update(timeDelta, this, Batch.empty)
 

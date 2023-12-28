@@ -13,14 +13,11 @@ import scala.annotation.tailrec
 
 object Physics:
 
-  def update[A](timeDelta: Seconds, world: World[A], transient: Batch[Collider[A]]): Outcome[World[A]] =
+  def update[A](timeDelta: Seconds, world: World[A], transient: Batch[Collider[A]])(using
+      QuadTree.InsertOptions
+  ): Outcome[World[A]] =
     val moved: Batch[Internal.IndexedCollider[A]] =
       Internal.moveColliders(timeDelta, world)
-
-    val superBounds: BoundingBox =
-      if moved.isEmpty then BoundingBox.zero
-      else
-        moved.tail.foldLeft(moved.head.movementBounds) { case (acc, next) => acc.expandToInclude(next.movementBounds) }
 
     val collisions: Batch[(Collider[A], Batch[Collider[A]])] =
       Internal.findCollisionGroups(moved, transient)
@@ -37,6 +34,8 @@ object Physics:
       .addGlobalEvents(collisionEvents)
 
   object Internal:
+
+    given [A]: CanEqual[IndexedCollider[A], IndexedCollider[A]] = CanEqual.derived
 
     def moveColliders[A](timeDelta: Seconds, world: World[A]): Batch[IndexedCollider[A]] =
       world.colliders.zipWithIndex.map(moveCollider(timeDelta, world.combinedForce, world.resistance))
@@ -98,12 +97,34 @@ object Physics:
     def findCollisionGroups[A](
         indexedColliders: Batch[IndexedCollider[A]],
         transient: Batch[Collider[A]]
-    ): Batch[(Collider[A], Batch[Collider[A]])] =
-      indexedColliders.map(c =>
+    )(using QuadTree.InsertOptions): Batch[(Collider[A], Batch[Collider[A]])] =
+
+      val superBounds: BoundingBox =
+        if indexedColliders.isEmpty then BoundingBox.zero
+        else
+          indexedColliders.tail.foldLeft(indexedColliders.head.movementBounds) { case (acc, next) =>
+            acc.expandToInclude(next.movementBounds)
+          }
+
+      val lookup: QuadTree[BoundingBox, Internal.IndexedCollider[A]] =
+        QuadTree
+          .empty(superBounds)
+          .insert(
+            indexedColliders.map(m => m.movementBounds -> m) ++
+              transient.zipWithIndex.map { case (t, i) =>
+                val c = IndexedCollider(-i - 1, t, t)
+                c.movementBounds -> c
+              }
+          )
+
+      indexedColliders.map { c =>
         if c.proposed.isStatic then c.proposed -> Batch()
         else
-          val worldCollisions =
-            indexedColliders
+          val collisions =
+            lookup
+              .searchByBoundingBox(c.movementBounds)
+              .map(_.value)
+              .distinctBy(_.index)
               .filter { i =>
                 i.index != c.index &&
                 c.proposed.canCollideWith(i.proposed.tag) &&
@@ -111,15 +132,8 @@ object Physics:
               }
               .map(_.proposed)
 
-          val tempCollisions =
-            transient
-              .filter { tmp =>
-                c.proposed.canCollideWith(tmp.tag) &&
-                c.proposed.hitTest(tmp)
-              }
-
-          c.proposed -> (worldCollisions ++ tempCollisions)
-      )
+          c.proposed -> collisions
+      }
 
     def solveAllCollisions[A](
         collisions: Batch[(Collider[A], Batch[Collider[A]])]
