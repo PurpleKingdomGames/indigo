@@ -1,6 +1,7 @@
 package indigoextras.trees
 
 import indigo.shared.collections.Batch
+import indigo.shared.datatypes.Size
 import indigo.shared.geometry.BoundingBox
 import indigo.shared.geometry.LineSegment
 import indigo.shared.geometry.Vertex
@@ -39,12 +40,19 @@ enum QuadTree[S, T](val isEmpty: Boolean)(using s: SpatialOps[S]) derives CanEqu
       c: QuadTree[S, T],
       d: QuadTree[S, T]
   )(using SpatialOps[S]) extends QuadTree[S, T](a.isEmpty && b.isEmpty && c.isEmpty && d.isEmpty)
+
+  /** Represents a quad probably containing values. */
   case Leaf(bounds: BoundingBox, values: Batch[QuadTreeValue[S, T]])(using SpatialOps[S])
       extends QuadTree[S, T](values.isEmpty)
+
+  /** Represents four quads that may or may not contain values. */
   case Empty(bounds: BoundingBox)(using SpatialOps[S]) extends QuadTree[S, T](true)
 
   val bounds: BoundingBox
 
+  /** Insert value T (e.g. a String) with spatial value S (e.g. a BoundingBox or a Point) into the QuadTree.
+    * `QuadTree.InsertOptions` are supplied via implicit / given; construct using `given opts = QuadTree.options(..)`.
+    */
   def insert(location: S, value: T)(using opts: QuadTree.InsertOptions): QuadTree[S, T] =
     QuadTree.insert(
       this,
@@ -54,6 +62,10 @@ enum QuadTree[S, T](val isEmpty: Boolean)(using s: SpatialOps[S]) derives CanEqu
       opts.maxDepth
     )
 
+  /** Insert values T (e.g. a String) with corresponding spatial values S (e.g. a BoundingBox or a Point) into the
+    * QuadTree. `QuadTree.InsertOptions` are supplied via implicit / given; construct using `given opts =
+    * QuadTree.options(..)`.
+    */
   def insert(values: (S, T)*)(using opts: QuadTree.InsertOptions): QuadTree[S, T] =
     QuadTree.insert(
       this,
@@ -63,6 +75,10 @@ enum QuadTree[S, T](val isEmpty: Boolean)(using s: SpatialOps[S]) derives CanEqu
       opts.maxDepth
     )
 
+  /** Insert a Batch of values of T (e.g. a String) with corresponding spatial values S (e.g. a BoundingBox or a Point)
+    * into the QuadTree. `QuadTree.InsertOptions` are supplied via implicit / given; construct using `given opts =
+    * QuadTree.options(..)`.
+    */
   def insert(values: Batch[(S, T)])(using opts: QuadTree.InsertOptions): QuadTree[S, T] =
     QuadTree.insert(
       this,
@@ -72,40 +88,66 @@ enum QuadTree[S, T](val isEmpty: Boolean)(using s: SpatialOps[S]) derives CanEqu
       opts.maxDepth
     )
 
+  /** Insert value T (e.g. a String) with spatial value S (e.g. a BoundingBox or a Point) into the QuadTree with
+    * explicit option values.
+    */
   def insert(location: S, value: T, idealCount: Int, minSize: Double, maxDepth: Int): QuadTree[S, T] =
     QuadTree.insert(this, QuadTreeValue(location, value), idealCount, minSize, maxDepth)
 
+  /** Insert values T (e.g. a String) with corresponding spatial values S (e.g. a BoundingBox or a Point) into the
+    * QuadTree with explicit option values.
+    */
   def insert(idealCount: Int, minSize: Double, maxDepth: Int)(values: (S, T)*): QuadTree[S, T] =
     QuadTree.insert(this, Batch.fromSeq(values).map(QuadTreeValue.fromTuple), idealCount, minSize, maxDepth)
 
+  /** Insert a Batch of values of T (e.g. a String) with corresponding spatial values S (e.g. a BoundingBox or a Point)
+    * into the QuadTree with explicit option values.
+    */
   def insert(values: Batch[(S, T)], idealCount: Int, minSize: Double, maxDepth: Int): QuadTree[S, T] =
     QuadTree.insert(this, values.map(QuadTreeValue.fromTuple), idealCount, minSize, maxDepth)
 
+  /** Return a `Batch` containing all the values in the `QuadTree`, please be aware that there will probably be
+    * duplicate entries.
+    */
   def toBatch(using CanEqual[T, T]): Batch[QuadTreeValue[S, T]] =
     QuadTree.toBatch(this)
 
+  /** Simplifies the `QuadTree` by removing unused leaves and branches. */
   def prune: QuadTree[S, T] =
     QuadTree.prune(this)
 
+  /** Traverses the whole tree to find the element that is closest to the vertex specified. Slower than `searchAt`, but
+    * it will find a value assuming the tree has values in it.
+    */
   def findClosestTo(vertex: Vertex)(using CanEqual[T, T], SpatialOps[S]): Option[QuadTreeValue[S, T]] =
     QuadTree.findClosestTo(this, vertex)
 
+  /** Dives down to the leaf nodes directly under the vertex and returns it's values. Faster than `findClosestTo` as it
+    * does not traverse the tree, but only returns what is in the final quad, and won't look outside it for values.
+    */
   def searchAt(vertex: Vertex): Batch[QuadTreeValue[S, T]] =
     QuadTree.searchAt(this, vertex)
 
+  /** Searches the tree for any values who's spatial value interset with the LineSegment. */
   def searchByLine(start: Vertex, end: Vertex)(using CanEqual[T, T]): Batch[QuadTreeValue[S, T]] =
     QuadTree.searchByLine(this, LineSegment(start, end))
 
+  /** Searches the tree for any values who's spatial value interset with the LineSegment. */
   def searchByLine(line: LineSegment)(using CanEqual[T, T]): Batch[QuadTreeValue[S, T]] =
     QuadTree.searchByLine(this, line)
 
+  /** Searches the tree for any values who's spatial value interset with the BoundingBox. */
   def searchByBoundingBox(boundingBox: BoundingBox)(using CanEqual[T, T]): Batch[QuadTreeValue[S, T]] =
     QuadTree.searchByBoundingBox(this, boundingBox)
 
+  /** Traverses the whole tree to find the element that is closest to the vertex specified, and removes it. Slower than
+    * `removeAt`, but it will find a value to remove, assuming the tree has values in it. On removal, all instances of
+    * that value are deleted from the tree.
+    */
   def removeClosestTo(vertex: Vertex)(using CanEqual[T, T], SpatialOps[S]): QuadTree[S, T] =
     QuadTree.removeClosestTo(this, vertex)
 
-  /** Removes the value at the quad directly under the vertex, if there is one. Note that while this is fast, it only
+  /** Removes the values at the quad directly under the vertex, if there is any. Note that while this is fast, it only
     * works well for simple cases, or trees of vertices / points. This is because it does not visit the whole tree
     * looking for other quads that might share ownership of this value. For example, if you add a bounding box the size
     * of the whole tree, but then use `removeAt` to remove it's value in just one quad, say the top left quad, the box
@@ -114,15 +156,19 @@ enum QuadTree[S, T](val isEmpty: Boolean)(using s: SpatialOps[S]) derives CanEqu
   def removeAt(vertex: Vertex): QuadTree[S, T] =
     QuadTree.removeAt(this, vertex)
 
+  /** Removes any values who's spatial value intersect with the LineSegment. */
   def removeByLine(start: Vertex, end: Vertex)(using CanEqual[T, T]): QuadTree[S, T] =
     QuadTree.removeByLine(this, LineSegment(start, end))
 
+  /** Removes any values who's spatial value intersect with the LineSegment. */
   def removeByLine(line: LineSegment)(using CanEqual[T, T]): QuadTree[S, T] =
     QuadTree.removeByLine(this, line)
 
+  /** Removes any values who's spatial value interset with the BoundingBox. */
   def removeByBoundingBox(boundingBox: BoundingBox)(using CanEqual[T, T]): QuadTree[S, T] =
     QuadTree.removeByBoundingBox(this, boundingBox)
 
+  /** Prints the tree as a string, with the levels indented. */
   def prettyPrint: String =
     def rec(quadTree: QuadTree[S, T], indent: String): String =
       quadTree match
@@ -141,6 +187,7 @@ enum QuadTree[S, T](val isEmpty: Boolean)(using s: SpatialOps[S]) derives CanEqu
 
     rec(this, "")
 
+  /** Compare two trees for equality. */
   def ===(other: QuadTree[S, T])(using CanEqual[T, T]): Boolean =
     @tailrec
     def rec(a: List[QuadTree[S, T]], b: List[QuadTree[S, T]]): Boolean =
@@ -172,11 +219,13 @@ enum QuadTree[S, T](val isEmpty: Boolean)(using s: SpatialOps[S]) derives CanEqu
 
     rec(List(this), List(other))
 
+  /** Compare two trees for inequality. */
   def !==(other: QuadTree[S, T])(using CanEqual[T, T]): Boolean =
     !(this === other)
 
 object QuadTree:
 
+  /** Represents the options used to guide the process of inserting a value into the Quadtree. */
   trait InsertOptions:
 
     /** The ideal number of values in a quad bucket, defaults to 1. It is called "ideal" because you may have more or
@@ -191,6 +240,7 @@ object QuadTree:
     /** The max depth to insert a value at. */
     val maxDepth: Int
 
+  /** Represents the options used to guide the process of inserting a value into the Quadtree. */
   object InsertOptions:
     def apply(_idealCount: Int, _minSize: Double, _maxDepth: Int): InsertOptions =
       new InsertOptions:
@@ -198,23 +248,38 @@ object QuadTree:
         val minSize: Double = _minSize
         val maxDepth: Int   = _maxDepth
 
+  /** `QuadTree.options(...)` is a convenience method for making instances of `InsertOptions`, and some insert
+    * operations require implicitly.
+    */
   def options(idealCount: Int, minSize: Double, maxDepth: Int): InsertOptions =
     InsertOptions(idealCount, minSize, maxDepth)
 
+  /** A default set of `InsertOptions`. Please note that these options are very use-case / context specific, so the
+    * usefulness of these defaults should be doubted.
+    */
   val DefaultOptions: InsertOptions =
     InsertOptions(1, 1, 16)
 
   given [S, T](using CanEqual[T, T]): CanEqual[Option[QuadTree[S, T]], Option[QuadTree[S, T]]] = CanEqual.derived
   given [S, T](using CanEqual[T, T]): CanEqual[Batch[QuadTree[S, T]], Batch[QuadTree[S, T]]]   = CanEqual.derived
 
+  /** Construct an empty QuadTree of a given size. */
   def empty[S, T](width: Double, height: Double)(using SpatialOps[S]): QuadTree[S, T] =
     Empty(BoundingBox(0, 0, width, height))
 
-  def empty[S, T](gridSize: Vertex)(using SpatialOps[S]): QuadTree[S, T] =
-    Empty(BoundingBox(Vertex.zero, gridSize))
+  /** Construct an empty QuadTree of a given size. */
+  def empty[S, T](size: Vertex)(using SpatialOps[S]): QuadTree[S, T] =
+    Empty(BoundingBox(Vertex.zero, size))
 
+  /** Construct an empty QuadTree of a given size. */
+  def empty[S, T](size: Size)(using SpatialOps[S]): QuadTree[S, T] =
+    Empty(BoundingBox(Vertex.zero, size.toVertex))
+
+  /** Construct a QuadTree from a repeated sequence of elements. */
   def apply[S, T](elements: (S, T)*)(using SpatialOps[S], InsertOptions): QuadTree[S, T] =
     QuadTree(Batch.fromSeq(elements))
+
+  /** Construct a QuadTree from a Batch of elements. */
   def apply[S, T](elements: Batch[(S, T)])(using s: SpatialOps[S])(using InsertOptions): QuadTree[S, T] =
     val b =
       if elements.isEmpty then BoundingBox.zero
@@ -225,16 +290,20 @@ object QuadTree:
 
     Empty(b).insert(elements)
 
+  /** Represents a quad probably containing values. */
   object Leaf:
+    /** */
     def apply[S, T](bounds: BoundingBox, location: S, value: T)(using SpatialOps[S]): QuadTree.Leaf[S, T] =
       QuadTree.Leaf(bounds, Batch(QuadTreeValue(location, value)))
 
+  /** Represents four quads that may or may not contain values. */
   object Branch:
 
+    /** Create a QuadTree.Branch from it's bounds. */
     def fromBounds[S, T](bounds: BoundingBox)(using SpatialOps[S]): Branch[S, T] =
       fromBoundsAndQuads(bounds, subdivide(bounds))
 
-    def subdivide(quadBounds: BoundingBox): (BoundingBox, BoundingBox, BoundingBox, BoundingBox) =
+    private[trees] def subdivide(quadBounds: BoundingBox): (BoundingBox, BoundingBox, BoundingBox, BoundingBox) =
       val newWidth  = quadBounds.width / 2
       val newHeight = quadBounds.height / 2
       (
@@ -259,7 +328,7 @@ object QuadTree:
         )
       )
 
-    def fromBoundsAndQuads[S, T](
+    private def fromBoundsAndQuads[S, T](
         bounds: BoundingBox,
         quads: (BoundingBox, BoundingBox, BoundingBox, BoundingBox)
     )(using SpatialOps[S]): Branch[S, T] =
@@ -271,6 +340,8 @@ object QuadTree:
         Empty(quads._4)
       )
 
+  /** Insert a Batch of QuadTreeValue instances into the QuadTree with explicit option values.
+    */
   def insert[S, T](
       quadTree: QuadTree[S, T],
       values: Batch[QuadTreeValue[S, T]],
@@ -281,6 +352,9 @@ object QuadTree:
       s: SpatialOps[S]
   ): QuadTree[S, T] =
     values.foldLeft(quadTree) { case (acc, next) => insertValue(acc, next, idealCount, minSize, maxDepth, 0) }
+
+  /** Insert a single QuadTreeValue instance into the QuadTree with explicit option values.
+    */
   def insert[S, T](
       quadTree: QuadTree[S, T],
       value: QuadTreeValue[S, T],
@@ -341,6 +415,9 @@ object QuadTree:
       case b: Branch[_, _] =>
         b
 
+  /** Return a `Batch` containing all the values in the `QuadTree`, please be aware that there will probably be
+    * duplicate entries.
+    */
   def toBatch[S, T](quadTree: QuadTree[S, T])(using CanEqual[T, T]): Batch[QuadTreeValue[S, T]] =
     @tailrec
     def rec(open: List[QuadTree[S, T]], acc: Batch[QuadTreeValue[S, T]]): Batch[QuadTreeValue[S, T]] =
@@ -371,6 +448,7 @@ object QuadTree:
 
     rec(List(quadTree), Batch.empty)
 
+  /** Simplifies the `QuadTree` by removing unused leaves and branches. */
   def prune[S, T](quadTree: QuadTree[S, T])(using SpatialOps[S]): QuadTree[S, T] =
     quadTree match
       case e: Empty[S, T] =>
@@ -388,6 +466,9 @@ object QuadTree:
       case Branch(bounds, a, b, c, d) =>
         Branch[S, T](bounds, a.prune, b.prune, c.prune, d.prune)
 
+  /** Traverses the whole tree to find the element that is closest to the vertex specified. Slower than `searchAt`, but
+    * it will find a value assuming the tree has values in it.
+    */
   def findClosestTo[S, T](quadTree: QuadTree[S, T], vertex: Vertex)(using CanEqual[T, T])(using
       s: SpatialOps[S]
   ): Option[QuadTreeValue[S, T]] =
@@ -418,6 +499,9 @@ object QuadTree:
 
     rec(List(quadTree), Double.MaxValue, None)
 
+  /** Dives down to the leaf nodes directly under the vertex and returns it's values. Faster than `findClosestTo` as it
+    * does not traverse the tree, but only returns what is in the final quad, and won't look outside it for values.
+    */
   def searchAt[S, T](quadTree: QuadTree[S, T], vertex: Vertex): Batch[QuadTreeValue[S, T]] =
     @tailrec
     def rec(remaining: List[QuadTree[S, T]], acc: Batch[QuadTreeValue[S, T]]): Batch[QuadTreeValue[S, T]] =
@@ -436,6 +520,7 @@ object QuadTree:
 
     rec(List(quadTree), Batch.empty)
 
+  /** Searches the tree for any values who's spatial value interset with the LineSegment. */
   def searchByLine[S, T](quadTree: QuadTree[S, T], lineSegment: LineSegment)(using
       CanEqual[T, T],
       SpatialOps[S]
@@ -463,6 +548,7 @@ object QuadTree:
 
     rec(List(quadTree), Batch.empty)
 
+  /** Searches the tree for any values who's spatial value interset with the BoundingBox. */
   def searchByBoundingBox[S, T](quadTree: QuadTree[S, T], boundingBox: BoundingBox)(using
       CanEqual[T, T]
   )(using s: SpatialOps[S]): Batch[QuadTreeValue[S, T]] =
@@ -484,6 +570,10 @@ object QuadTree:
 
     rec(List(quadTree), Batch.empty)
 
+  /** Traverses the whole tree to find the element that is closest to the vertex specified, and removes it. Slower than
+    * `removeAt`, but it will find a value to remove, assuming the tree has values in it. On removal, all instances of
+    * that value are deleted from the tree.
+    */
   def removeClosestTo[S, T](quadTree: QuadTree[S, T], vertex: Vertex)(using CanEqual[T, T])(using
       s: SpatialOps[S]
   ): QuadTree[S, T] =
@@ -538,6 +628,7 @@ object QuadTree:
 
     rec(quadTree)
 
+  /** Removes any values who's spatial value intersect with the LineSegment. */
   def removeByLine[S, T](quadTree: QuadTree[S, T], lineSegment: LineSegment)(using
       CanEqual[T, T]
   )(using s: SpatialOps[S], ls: SpatialOps[LineSegment]): QuadTree[S, T] =
@@ -563,6 +654,7 @@ object QuadTree:
 
     rec(quadTree)
 
+  /** Removes any values who's spatial value interset with the BoundingBox. */
   def removeByBoundingBox[S, T](quadTree: QuadTree[S, T], boundingBox: BoundingBox)(using
       CanEqual[T, T]
   )(using s: SpatialOps[S]): QuadTree[S, T] =
@@ -588,8 +680,11 @@ object QuadTree:
 
     rec(quadTree)
 
+/** Holds the spatial location (e.g. a Vertex) and the value. */
 final case class QuadTreeValue[S, T](location: S, value: T):
+  /** Converts QuadTreeValue to a tuple of (S, T). */
   def toTuple: (S, T) = location -> value
 object QuadTreeValue:
+  /** Makes a QuadTreeValue from a tuple of (S, T). */
   def fromTuple[S, T](t: (S, T)): QuadTreeValue[S, T] =
     QuadTreeValue(t._1, t._2)
