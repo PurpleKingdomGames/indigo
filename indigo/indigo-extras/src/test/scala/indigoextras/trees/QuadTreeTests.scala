@@ -197,6 +197,18 @@ class QuadTreeTests extends munit.FunSuite {
     assertEquals(tree.searchAt(Vertex(2, 2)).map(_.value), Batch("b"))
   }
 
+  test("should allow a remove under a vertex") {
+    val tree =
+      QuadTree
+        .empty(4, 4)
+        .insert(
+          Vertex(1) -> "a",
+          Vertex(2) -> "b"
+        )
+
+    assertEquals(tree.removeAt(Vertex(1, 1)).toBatch.map(_.value), Batch("b"))
+  }
+
   test("should allow a search of squares where the line points are in the same square") {
     val actual = SampleTree.tree.searchByLine(Vertex(1, 1), Vertex(1, 1))
 
