@@ -857,3 +857,14 @@ val Polygon: shared.geometry.Polygon.type = shared.geometry.Polygon
 
 type Vertex = shared.geometry.Vertex
 val Vertex: shared.geometry.Vertex.type = shared.geometry.Vertex
+
+// Trees
+
+type SpatialOps[S] = shared.trees.SpatialOps[S]
+val SpatialOps: shared.trees.SpatialOps.type = shared.trees.SpatialOps
+
+type QuadTree[S, T] = shared.trees.QuadTree[S, T]
+val QuadTree: shared.trees.QuadTree.type = shared.trees.QuadTree
+
+type QuadTreeValue[S, T] = shared.trees.QuadTreeValue[S, T]
+val QuadTreeValue: shared.trees.QuadTreeValue.type = shared.trees.QuadTreeValue

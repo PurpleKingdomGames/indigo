@@ -1,4 +1,4 @@
-package indigoextras.trees
+package indigo.shared.trees
 
 import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Circle

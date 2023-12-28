@@ -1,4 +1,4 @@
-package indigoextras.trees
+package indigo.shared.trees
 
 import indigo.shared.geometry.BoundingBox
 import org.scalacheck.Prop.propBoolean
