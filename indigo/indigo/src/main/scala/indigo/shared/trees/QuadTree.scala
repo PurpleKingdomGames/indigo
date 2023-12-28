@@ -275,6 +275,10 @@ object QuadTree:
   def empty[S, T](size: Size)(using SpatialOps[S]): QuadTree[S, T] =
     Empty(BoundingBox(Vertex.zero, size.toVertex))
 
+  /** Construct an empty QuadTree of a given bounds. */
+  def empty[S, T](bounds: BoundingBox)(using SpatialOps[S]): QuadTree[S, T] =
+    Empty(bounds)
+
   /** Construct a QuadTree from a repeated sequence of elements. */
   def apply[S, T](elements: (S, T)*)(using SpatialOps[S], InsertOptions): QuadTree[S, T] =
     QuadTree(Batch.fromSeq(elements))
