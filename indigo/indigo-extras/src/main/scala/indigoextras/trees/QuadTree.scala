@@ -77,7 +77,6 @@ enum QuadTree[S, T](val isEmpty: Boolean)(using s: SpatialOps[S]) derives CanEqu
   def insert(elements: Batch[(S, T)], idealCount: Int, minSize: Double, maxDepth: Int): QuadTree[S, T] =
     QuadTree.insert(this, elements.map(QuadTreeValue.fromTuple), idealCount, minSize, maxDepth)
 
-//
   def toBatch(using CanEqual[T, T]): Batch[QuadTreeValue[S, T]] =
     QuadTree.toBatch(this, _ => true)
   def toBatch(p: T => Boolean)(using CanEqual[T, T]): Batch[QuadTreeValue[S, T]] =
@@ -93,6 +92,9 @@ enum QuadTree[S, T](val isEmpty: Boolean)(using s: SpatialOps[S]) derives CanEqu
       SpatialOps[S]
   ): Option[QuadTreeValue[S, T]] =
     QuadTree.findClosestTo(vertex, filter, this)
+
+  def searchAt(vertex: Vertex): Batch[QuadTreeValue[S, T]] =
+    QuadTree.searchAt(this, vertex)
 
   def searchByLine(start: Vertex, end: Vertex)(using CanEqual[T, T]): Batch[QuadTreeValue[S, T]] =
     QuadTree.searchByLine(this, LineSegment(start, end))
@@ -409,6 +411,24 @@ object QuadTree:
       SpatialOps[S]
   ): Option[QuadTreeValue[S, T]] =
     findClosestTo(vertex, _ => true, quadTree)
+
+  def searchAt[S, T](quadTree: QuadTree[S, T], vertex: Vertex): Batch[QuadTreeValue[S, T]] =
+    @tailrec
+    def rec(remaining: List[QuadTree[S, T]], acc: Batch[QuadTreeValue[S, T]]): Batch[QuadTreeValue[S, T]] =
+      remaining match
+        case Nil =>
+          acc
+
+        case Branch(bounds, a, b, c, d) :: rs if bounds.contains(vertex) =>
+          rec(rs ++ List(a, b, c, d), acc)
+
+        case Leaf(bounds, values) :: rs if bounds.contains(vertex) =>
+          rec(rs, values ++ acc)
+
+        case _ :: rs =>
+          rec(rs, acc)
+
+    rec(List(quadTree), Batch.empty)
 
   def searchByLine[S, T](quadTree: QuadTree[S, T], lineSegment: LineSegment, p: T => Boolean)(using
       CanEqual[T, T],
