@@ -102,11 +102,10 @@ object Physics:
         transient: Batch[Collider[A]],
         simulationBounds: BoundingBox
     ): Batch[IndexedCollider[A]] =
-      indexedColliders ++ transient.zipWithIndex
-        .map { case (t, i) =>
-          Internal.IndexedCollider(-i - 1, t, t)
-        }
-        .filter(p => p.proposed.boundingBox.overlaps(simulationBounds))
+      (
+        indexedColliders ++
+          transient.zipWithIndex.map { case (t, i) => Internal.IndexedCollider(-i - 1, t, t) }
+      ).filter(p => p.proposed.boundingBox.overlaps(simulationBounds))
 
     def findCollisionGroups[A](
         indexedColliders: Batch[IndexedCollider[A]],
