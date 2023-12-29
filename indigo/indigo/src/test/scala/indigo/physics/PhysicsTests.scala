@@ -16,6 +16,13 @@ class PhysicsTests extends munit.FunSuite:
       maxDepth = 16
     )
 
+  val settings = SimulationSettings(
+    bounds = BoundingBox(0, 0, 10, 10),
+    idealCount = 1,
+    minSize = 1,
+    maxDepth = 16
+  )
+
   val tag = "test"
 
   test("moveColliders") {
@@ -28,7 +35,8 @@ class PhysicsTests extends munit.FunSuite:
     val w = World(
       colliders,
       Batch(Vector2(0)),
-      Resistance.zero
+      Resistance.zero,
+      settings
     )
 
     val actual =
@@ -69,7 +77,7 @@ class PhysicsTests extends munit.FunSuite:
       )
 
     val actual =
-      Physics.Internal.findCollisionGroups(indexed, Batch.empty)
+      Physics.Internal.findCollisionGroups(indexed, Batch.empty, settings)
 
     val expected =
       Batch(
@@ -103,7 +111,11 @@ class PhysicsTests extends munit.FunSuite:
       )
 
     val actual =
-      Physics.Internal.findCollisionGroups(indexed, Batch(c4, c5))
+      Physics.Internal.findCollisionGroups(
+        indexed,
+        Batch(c4, c5),
+        settings
+      )
 
     val expected =
       Batch(
@@ -471,14 +483,14 @@ class PhysicsTests extends munit.FunSuite:
     val c1 = Collider.Circle(tag, BoundingCircle(2, 0, 2)).withVelocity(Vector2(1, 0)).withFriction(Friction.zero)
     val c2 = Collider.Circle(tag, BoundingCircle(7, 0, 2)).withVelocity(Vector2(-1, 0)).withFriction(Friction.zero)
 
-    val world = World.empty[String].withColliders(c1, c2)
+    val world = World.empty[String](settings).withColliders(c1, c2)
 
     val actual =
-      Physics.update(Seconds(1), world, Batch.empty)
+      Physics.update(Seconds(1), world, Batch.empty, settings)
 
     val expected =
       World
-        .empty[String]
+        .empty[String](settings)
         .withColliders(
           c1.withPosition(2, 0).withVelocity(0, 0),
           c2.withPosition(7, 0).withVelocity(0, 0)
@@ -516,14 +528,14 @@ class PhysicsTests extends munit.FunSuite:
     val c2 =
       Collider.Circle(tag, BoundingCircle(4, 0, 2)).withFriction(Friction.zero).makeStatic
 
-    val world = World.empty[String].withColliders(c1)
+    val world = World.empty[String](settings).withColliders(c1)
 
     val actual =
-      Physics.update(Seconds(1), world, Batch(c2))
+      Physics.update(Seconds(1), world, Batch(c2), settings)
 
     val expected =
       World
-        .empty[String]
+        .empty[String](settings)
         .withColliders(
           c1.withPosition(-1, 0).withVelocity(-1, 0)
         )

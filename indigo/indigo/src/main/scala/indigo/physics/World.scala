@@ -5,7 +5,12 @@ import indigo.physics.Collider
 import indigo.physics.Resistance
 import indigo.syntax.*
 
-final case class World[A](colliders: Batch[Collider[A]], forces: Batch[Vector2], resistance: Resistance):
+final case class World[A](
+    colliders: Batch[Collider[A]],
+    forces: Batch[Vector2],
+    resistance: Resistance,
+    settings: SimulationSettings
+):
 
   def combinedForce: Vector2 =
     forces.foldLeft(Vector2.zero)(_ + _)
@@ -183,22 +188,15 @@ final case class World[A](colliders: Batch[Collider[A]], forces: Batch[Vector2],
       if next < acc then next else acc
     }
 
-  private given QuadTree.InsertOptions =
-    QuadTree.options(
-      idealCount = 16,
-      minSize = minSize,
-      maxDepth = 16
-    )
-
   def update(timeDelta: Seconds): Outcome[World[A]] =
-    Physics.update(timeDelta, this, Batch.empty)
+    Physics.update(timeDelta, this, Batch.empty, settings)
 
   def update(timeDelta: Seconds)(transient: Batch[Collider[A]]): Outcome[World[A]] =
-    Physics.update(timeDelta, this, transient)
+    Physics.update(timeDelta, this, transient, settings)
   def update(timeDelta: Seconds)(transient: Collider[A]*): Outcome[World[A]] =
-    Physics.update(timeDelta, this, transient.toBatch)
+    Physics.update(timeDelta, this, transient.toBatch, settings)
 
 object World:
 
-  def empty[A]: World[A] =
-    World(Batch(), Batch(), Resistance.zero)
+  def empty[A](settings: SimulationSettings): World[A] =
+    World(Batch(), Batch(), Resistance.zero, settings)
