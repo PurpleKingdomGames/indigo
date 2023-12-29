@@ -63,7 +63,7 @@ object TestWorlds:
       }
 
     World
-      .empty[MyTag]
+      .empty[MyTag](SimulationSettings(BoundingBox(0, 0, 1280, 920)))
       .addForces(Vector2(0, 600))
       .withResistance(Resistance(0.01))
       .withColliders(circles)

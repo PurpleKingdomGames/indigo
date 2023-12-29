@@ -13,14 +13,17 @@ import scala.annotation.tailrec
 
 object Physics:
 
-  def update[A](timeDelta: Seconds, world: World[A], transient: Batch[Collider[A]])(using
-      QuadTree.InsertOptions
+  def update[A](
+      timeDelta: Seconds,
+      world: World[A],
+      transient: Batch[Collider[A]],
+      settings: SimulationSettings
   ): Outcome[World[A]] =
     val moved: Batch[Internal.IndexedCollider[A]] =
       Internal.moveColliders(timeDelta, world)
 
     val collisions: Batch[(Internal.IndexedCollider[A], Batch[Collider[A]])] =
-      Internal.findCollisionGroups(moved, transient)
+      Internal.findCollisionGroups(moved, transient, settings)
 
     val collisionEvents: Batch[GlobalEvent] =
       collisions.flatMap { case (c, cs) =>
@@ -94,27 +97,30 @@ object Physics:
             c.copy(bounds = c.bounds.moveTo(p), velocity = v)
           )
 
+    def combineAndCull[A](
+        indexedColliders: Batch[IndexedCollider[A]],
+        transient: Batch[Collider[A]],
+        simulationBounds: BoundingBox
+    ): Batch[IndexedCollider[A]] =
+      indexedColliders ++ transient.zipWithIndex
+        .map { case (t, i) =>
+          Internal.IndexedCollider(-i - 1, t, t)
+        }
+        .filter(p => p.proposed.boundingBox.overlaps(simulationBounds))
+
     def findCollisionGroups[A](
         indexedColliders: Batch[IndexedCollider[A]],
-        transient: Batch[Collider[A]]
-    )(using QuadTree.InsertOptions): Batch[(IndexedCollider[A], Batch[Collider[A]])] =
-
-      val superBounds: BoundingBox =
-        if indexedColliders.isEmpty then BoundingBox.zero
-        else
-          indexedColliders.tail.foldLeft(indexedColliders.head.movementBounds) { case (acc, next) =>
-            acc.expandToInclude(next.movementBounds)
-          }
-
+        transient: Batch[Collider[A]],
+        settings: SimulationSettings
+    ): Batch[(IndexedCollider[A], Batch[Collider[A]])] =
       val lookup: QuadTree[BoundingBox, Internal.IndexedCollider[A]] =
         QuadTree
-          .empty(superBounds)
+          .empty(settings.bounds)
           .insert(
-            indexedColliders.map(m => m.movementBounds -> m) ++
-              transient.zipWithIndex.map { case (t, i) =>
-                val c = IndexedCollider(-i - 1, t, t)
-                c.movementBounds -> c
-              }
+            combineAndCull(indexedColliders, transient, settings.bounds).map(m => m.movementBounds -> m),
+            settings.idealCount,
+            settings.minSize,
+            settings.maxDepth
           )
 
       indexedColliders.map { c =>
