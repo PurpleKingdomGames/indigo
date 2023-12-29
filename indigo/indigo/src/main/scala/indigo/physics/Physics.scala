@@ -23,7 +23,7 @@ object Physics:
       Internal.moveColliders(timeDelta, world)
 
     val collisions: Batch[(Internal.IndexedCollider[A], Batch[Collider[A]])] =
-      Internal.findCollisionGroups(moved, transient, settings)
+      Internal.findCollisionGroups(moved, transient.map(_.makeStatic), settings)
 
     val collisionEvents: Batch[GlobalEvent] =
       collisions.flatMap { case (c, cs) =>
