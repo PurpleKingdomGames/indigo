@@ -73,11 +73,11 @@ class PhysicsTests extends munit.FunSuite:
 
     val expected =
       Batch(
-        c1 -> Batch(c2, c3),
-        c2 -> Batch(c1),
-        c3 -> Batch(c1, c5),
-        c4 -> Batch(),
-        c5 -> Batch(c3)
+        idx1 -> Batch(c2, c3),
+        idx2 -> Batch(c1),
+        idx3 -> Batch(c1, c5),
+        idx4 -> Batch(),
+        idx5 -> Batch(c3)
       )
 
     assert(actual.length == expected.length)
@@ -107,9 +107,9 @@ class PhysicsTests extends munit.FunSuite:
 
     val expected =
       Batch(
-        c1 -> Batch(c2, c3),
-        c2 -> Batch(c1),
-        c3 -> Batch(c1, c5)
+        idx1 -> Batch(c2, c3),
+        idx2 -> Batch(c1),
+        idx3 -> Batch(c1, c5)
       )
 
     assert(actual.length == expected.length)
@@ -123,9 +123,9 @@ class PhysicsTests extends munit.FunSuite:
 
     val collisions =
       Batch(
-        c1 -> Batch(c2, c3),
-        c2 -> Batch(c1),
-        c3 -> Batch(c1)
+        Physics.Internal.IndexedCollider(0, c1, c1) -> Batch(c2, c3),
+        Physics.Internal.IndexedCollider(1, c2, c2) -> Batch(c1),
+        Physics.Internal.IndexedCollider(2, c3, c3) -> Batch(c1)
       )
 
     val actual =
@@ -149,8 +149,8 @@ class PhysicsTests extends munit.FunSuite:
 
     val collisions =
       Batch(
-        c2 -> Batch(),
-        c3 -> Batch()
+        Physics.Internal.IndexedCollider(0, c2, c2) -> Batch(),
+        Physics.Internal.IndexedCollider(1, c3, c3) -> Batch()
       )
 
     val actual =
@@ -172,8 +172,8 @@ class PhysicsTests extends munit.FunSuite:
 
     val collisions =
       Batch(
-        c3 -> Batch(c5),
-        c5 -> Batch(c3)
+        Physics.Internal.IndexedCollider(0, c3, c3) -> Batch(c5),
+        Physics.Internal.IndexedCollider(1, c5, c5) -> Batch(c3)
       )
 
     val actual =
@@ -195,8 +195,8 @@ class PhysicsTests extends munit.FunSuite:
 
     val collisions =
       Batch(
-        b1 -> Batch(b2),
-        b2 -> Batch(b1)
+        Physics.Internal.IndexedCollider(0, b1, b1) -> Batch(b2),
+        Physics.Internal.IndexedCollider(1, b2, b2) -> Batch(b1)
       )
 
     val actual =
@@ -218,8 +218,8 @@ class PhysicsTests extends munit.FunSuite:
 
     val collisions =
       Batch(
-        c3 -> Batch(c5),
-        c5 -> Batch(c3)
+        Physics.Internal.IndexedCollider(0, c3, c3) -> Batch(c5),
+        Physics.Internal.IndexedCollider(1, c5, c5) -> Batch(c3)
       )
 
     val actual =
@@ -241,8 +241,8 @@ class PhysicsTests extends munit.FunSuite:
 
     val collisions =
       Batch(
-        c3 -> Batch(c5),
-        c5 -> Batch(c3)
+        Physics.Internal.IndexedCollider(0, c3, c3) -> Batch(c5),
+        Physics.Internal.IndexedCollider(1, c5, c5) -> Batch(c3)
       )
 
     val actual =
@@ -273,8 +273,8 @@ class PhysicsTests extends munit.FunSuite:
 
     val collisions =
       Batch(
-        c3 -> Batch(c5),
-        c5 -> Batch(c3)
+        Physics.Internal.IndexedCollider(0, c3, c3) -> Batch(c5),
+        Physics.Internal.IndexedCollider(1, c5, c5) -> Batch(c3)
       )
 
     val actual =
@@ -305,8 +305,8 @@ class PhysicsTests extends munit.FunSuite:
 
     val collisions =
       Batch(
-        c3 -> Batch(c5),
-        c5 -> Batch(c3)
+        Physics.Internal.IndexedCollider(0, c3, c3) -> Batch(c5),
+        Physics.Internal.IndexedCollider(1, c5, c5) -> Batch(c3)
       )
 
     val actual =
@@ -329,8 +329,8 @@ class PhysicsTests extends munit.FunSuite:
 
     val collisions =
       Batch(
-        c3 -> Batch(c5),
-        c5 -> Batch(c3)
+        Physics.Internal.IndexedCollider(0, c3, c3) -> Batch(c5),
+        Physics.Internal.IndexedCollider(1, c5, c5) -> Batch(c3)
       )
 
     val actual =
@@ -353,8 +353,8 @@ class PhysicsTests extends munit.FunSuite:
 
     val collisions =
       Batch(
-        c3 -> Batch(c5),
-        c5 -> Batch(c3)
+        Physics.Internal.IndexedCollider(0, c3, c3) -> Batch(c5),
+        Physics.Internal.IndexedCollider(1, c5, c5) -> Batch(c3)
       )
 
     val actual =
@@ -377,8 +377,8 @@ class PhysicsTests extends munit.FunSuite:
 
     val collisions =
       Batch(
-        c3 -> Batch(c5),
-        c5 -> Batch(c3)
+        Physics.Internal.IndexedCollider(0, c3, c3) -> Batch(c5),
+        Physics.Internal.IndexedCollider(1, c5, c5) -> Batch(c3)
       )
 
     val actual =
@@ -404,7 +404,7 @@ class PhysicsTests extends munit.FunSuite:
 
     val collisions =
       Batch(
-        circle -> Batch(box)
+        Physics.Internal.IndexedCollider(0, circle, circle) -> Batch(box)
       )
 
     val actual =
@@ -429,7 +429,7 @@ class PhysicsTests extends munit.FunSuite:
 
     val collisions =
       Batch(
-        box -> Batch(circle)
+        Physics.Internal.IndexedCollider(0, box, box) -> Batch(circle)
       )
 
     val actual =
@@ -453,7 +453,7 @@ class PhysicsTests extends munit.FunSuite:
 
     val collisions =
       Batch(
-        circle -> Batch(box)
+        Physics.Internal.IndexedCollider(0, circle, circle) -> Batch(box)
       )
 
     val actual =
@@ -494,8 +494,8 @@ class PhysicsTests extends munit.FunSuite:
 
     val collisions =
       Batch(
-        c1 -> Batch(c2),
-        c2 -> Batch(c1)
+        Physics.Internal.IndexedCollider(0, c1, c1) -> Batch(c2),
+        Physics.Internal.IndexedCollider(1, c2, c2) -> Batch(c1)
       )
 
     val actual =
