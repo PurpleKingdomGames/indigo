@@ -40,7 +40,8 @@ class QuadTreeTests extends munit.FunSuite {
   test("toBatch") {
 
     val actual: Batch[String] =
-      QuadTree.empty[Vertex, String](2, 2)
+      QuadTree
+        .empty[Vertex, String](2, 2)
         .insert(Vertex(0, 0), "a")
         .insert(Vertex(0, 1), "b")
         .insert(Vertex(1, 0), "c")
@@ -57,7 +58,8 @@ class QuadTreeTests extends munit.FunSuite {
   test("toPositionedBatch") {
 
     val actual: Batch[QuadTreeValue[Vertex, String]] =
-      QuadTree.empty[Vertex, String](2, 2)
+      QuadTree
+        .empty[Vertex, String](2, 2)
         .insert(Vertex(0, 0), "a")
         .insert(Vertex(0, 1), "b")
         .insert(Vertex(1, 0), "c")
@@ -76,12 +78,14 @@ class QuadTreeTests extends munit.FunSuite {
 
   test("should be able to check equality.equal") {
 
-    val treeA = QuadTree.empty[Vertex, String](2, 2)
+    val treeA = QuadTree
+      .empty[Vertex, String](2, 2)
       .insert(Vertex(0, 0), "a")
       .insert(Vertex(0, 1), "b")
       .insert(Vertex(1, 0), "c")
 
-    val treeB = QuadTree.empty[Vertex, String](2, 2)
+    val treeB = QuadTree
+      .empty[Vertex, String](2, 2)
       .insert(Vertex(0, 0), "a")
       .insert(Vertex(0, 1), "b")
       .insert(Vertex(1, 0), "c")
@@ -91,12 +95,14 @@ class QuadTreeTests extends munit.FunSuite {
 
   test("should be able to check equality.equal") {
 
-    val treeA = QuadTree.empty[Vertex, String](2, 2)
+    val treeA = QuadTree
+      .empty[Vertex, String](2, 2)
       .insert(Vertex(0, 0), "a")
       .insert(Vertex(0, 1), "b")
       .insert(Vertex(1, 0), "c")
 
-    val treeB = QuadTree.empty[Vertex, String](2, 2)
+    val treeB = QuadTree
+      .empty[Vertex, String](2, 2)
       .insert(Vertex(1, 0), "c")
       .insert(Vertex(0, 0), "a")
       .insert(Vertex(0, 1), "b")
@@ -106,12 +112,14 @@ class QuadTreeTests extends munit.FunSuite {
 
   test("should be able to check equality.not equal") {
 
-    val treeA = QuadTree.empty[Vertex, String](2, 2)
+    val treeA = QuadTree
+      .empty[Vertex, String](2, 2)
       .insert(Vertex(0, 0), "a")
       .insert(Vertex(0, 1), "b")
       .insert(Vertex(1, 0), "c")
 
-    val treeB = QuadTree.empty[Vertex, String](2, 2)
+    val treeB = QuadTree
+      .empty[Vertex, String](2, 2)
       .insert(Vertex(0, 0), "a")
       .insert(Vertex(0, 1), "b")
       .insert(Vertex(1, 0), "d")
@@ -121,12 +129,14 @@ class QuadTreeTests extends munit.FunSuite {
 
   test("should be able to check equality.not equal 2") {
 
-    val treeA = QuadTree.empty[Vertex, String](2, 2)
+    val treeA = QuadTree
+      .empty[Vertex, String](2, 2)
       .insert(Vertex(0, 0), "a")
       .insert(Vertex(0, 1), "b")
       .insert(Vertex(1, 0), "c")
 
-    val treeB = QuadTree.empty[Vertex, String](2, 2)
+    val treeB = QuadTree
+      .empty[Vertex, String](2, 2)
       .insert(Vertex(0, 0), "a")
       .insert(Vertex(1, 0), "b")
       .insert(Vertex(0, 1), "c")
@@ -138,7 +148,8 @@ class QuadTreeTests extends munit.FunSuite {
 
     val gridPoint = Vertex(9, 2)
 
-    val tree = QuadTree.empty[Vertex, Int](16, 16)
+    val tree = QuadTree
+      .empty[Vertex, Int](16, 16)
       .insert(gridPoint, 999)
       .removeClosestTo(gridPoint)
       .prune
@@ -150,7 +161,8 @@ class QuadTreeTests extends munit.FunSuite {
 
     val gridPoint = Vertex(9, 2)
 
-    val tree = QuadTree.empty[Vertex, Int](16, 16)
+    val tree = QuadTree
+      .empty[Vertex, Int](16, 16)
       .insert(gridPoint, 999)
 
     assertEquals(tree.prune, tree)
@@ -158,7 +170,8 @@ class QuadTreeTests extends munit.FunSuite {
   }
 
   test("should be able to search for a leaf under a point") {
-    val tree = QuadTree.empty[Vertex, String](2, 2)
+    val tree = QuadTree
+      .empty[Vertex, String](2, 2)
       .insert(Vertex(0, 0), "a")
       .insert(Vertex(0, 1), "b")
       .insert(Vertex(1, 0), "c")
@@ -172,7 +185,8 @@ class QuadTreeTests extends munit.FunSuite {
 
   test("should allow a search under a vertex") {
     val tree =
-      QuadTree.empty(4, 4)
+      QuadTree
+        .empty(4, 4)
         .insert(
           Vertex(1) -> "a",
           Vertex(2) -> "b"
@@ -186,7 +200,8 @@ class QuadTreeTests extends munit.FunSuite {
 
   test("should allow a remove under a vertex") {
     val tree =
-      QuadTree.empty(4, 4)
+      QuadTree
+        .empty(4, 4)
         .insert(
           Vertex(1) -> "a",
           Vertex(2) -> "b"
@@ -465,7 +480,8 @@ class QuadTreeTests extends munit.FunSuite {
   test("BoundingBox example (one box)") {
 
     val actual =
-      QuadTree.empty[BoundingBox, String](5, 5)
+      QuadTree
+        .empty[BoundingBox, String](5, 5)
         .insert(
           (BoundingBox(0.5, 0.5, 1, 1), "a")
         )
@@ -493,7 +509,8 @@ class QuadTreeTests extends munit.FunSuite {
   test("BoundingBox example (two boxes)") {
 
     val actual =
-      QuadTree.empty[BoundingBox, String](5, 5)
+      QuadTree
+        .empty[BoundingBox, String](5, 5)
         .insert(
           (BoundingBox(0.5, 0.5, 1, 1), "a"),
           (BoundingBox(2, 0, 2, 4), "b")
@@ -508,7 +525,8 @@ class QuadTreeTests extends munit.FunSuite {
           QuadTree.Branch(
             BoundingBox(Vertex(1.25, 0), Vertex(1.25, 1.25)),
             QuadTree.Leaf(BoundingBox(Vertex(1.25, 0), Vertex(0.625, 0.625)), BoundingBox(0.5, 0.5, 1, 1), "a"),
-            QuadTree.Leaf(BoundingBox(Vertex(1.875, 0), Vertex(0.625, 0.625)), BoundingBox(Vertex(2, 0), Vertex(2, 4)), "b"),
+            QuadTree
+              .Leaf(BoundingBox(Vertex(1.875, 0), Vertex(0.625, 0.625)), BoundingBox(Vertex(2, 0), Vertex(2, 4)), "b"),
             QuadTree.Leaf(BoundingBox(Vertex(1.25, 0.625), Vertex(0.625, 0.625)), BoundingBox(0.5, 0.5, 1, 1), "a"),
             QuadTree.Leaf(
               BoundingBox(Vertex(1.875, 0.625), Vertex(0.625, 0.625)),
@@ -566,7 +584,8 @@ class QuadTreeTests extends munit.FunSuite {
   test("BoundingBox example") {
 
     val actual =
-      QuadTree.empty[BoundingBox, String](5, 5)
+      QuadTree
+        .empty[BoundingBox, String](5, 5)
         .insert(
           (BoundingBox(0.5, 0.5, 1, 1), "a"),
           (BoundingBox(2, 0, 2, 4), "b"),
@@ -595,7 +614,8 @@ class QuadTreeTests extends munit.FunSuite {
   test("BoundingCircle example") {
 
     val actual =
-      QuadTree.empty[BoundingCircle, String](5, 5)
+      QuadTree
+        .empty[BoundingCircle, String](5, 5)
         .insert(
           (BoundingCircle(1, 1, 0.5), "a"),
           (BoundingCircle(3.5, 2.5, 1.5), "b"),
@@ -625,7 +645,8 @@ class QuadTreeTests extends munit.FunSuite {
   test("Rectangle example") {
 
     val actual =
-      QuadTree.empty[Rectangle, String](5, 5)
+      QuadTree
+        .empty[Rectangle, String](5, 5)
         .insert(
           (Rectangle(1, 1, 1, 1), "a"),
           (Rectangle(2, 0, 2, 4), "b"),
@@ -658,7 +679,8 @@ class QuadTreeTests extends munit.FunSuite {
   test("Circle example") {
 
     val actual =
-      QuadTree.empty[Circle, String](5, 5)
+      QuadTree
+        .empty[Circle, String](5, 5)
         .insert(
           (Circle(1, 1, 1), "a"),
           (Circle(3, 2, 1), "b"),
@@ -688,7 +710,8 @@ class QuadTreeTests extends munit.FunSuite {
   test("LineSegment example") {
 
     val actual =
-      QuadTree.empty[LineSegment, String](5, 5)
+      QuadTree
+        .empty[LineSegment, String](5, 5)
         .insert(
           (LineSegment((0.5, 1.5), (1.5, 0.5)), "a"),
           (LineSegment((2.5, 0.5), (3.5, 3.5)), "b"),
@@ -724,7 +747,8 @@ object SampleTree {
 
   given QuadTree.InsertOptions = QuadTree.options(1, 0.1, 16)
 
-  val tree: QuadTree[Vertex, String] = QuadTree.empty[Vertex, String](4, 4)
+  val tree: QuadTree[Vertex, String] = QuadTree
+    .empty[Vertex, String](4, 4)
     .insert(Vertex(0, 0), "0,0")
     .insert(Vertex(0, 1), "0,1")
     .insert(Vertex(0, 2), "0,2")
