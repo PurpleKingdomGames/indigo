@@ -19,12 +19,12 @@ object Physics:
     val moved: Batch[Internal.IndexedCollider[A]] =
       Internal.moveColliders(timeDelta, world)
 
-    val collisions: Batch[(Collider[A], Batch[Collider[A]])] =
+    val collisions: Batch[(Internal.IndexedCollider[A], Batch[Collider[A]])] =
       Internal.findCollisionGroups(moved, transient)
 
     val collisionEvents: Batch[GlobalEvent] =
       collisions.flatMap { case (c, cs) =>
-        cs.flatMap(target => c.onCollisionWith(target))
+        cs.flatMap(target => c.proposed.onCollisionWith(target))
       }
 
     val resolved: Batch[Collider[A]] =
@@ -97,7 +97,7 @@ object Physics:
     def findCollisionGroups[A](
         indexedColliders: Batch[IndexedCollider[A]],
         transient: Batch[Collider[A]]
-    )(using QuadTree.InsertOptions): Batch[(Collider[A], Batch[Collider[A]])] =
+    )(using QuadTree.InsertOptions): Batch[(IndexedCollider[A], Batch[Collider[A]])] =
 
       val superBounds: BoundingBox =
         if indexedColliders.isEmpty then BoundingBox.zero
@@ -118,7 +118,7 @@ object Physics:
           )
 
       indexedColliders.map { c =>
-        if c.proposed.isStatic then c.proposed -> Batch()
+        if c.proposed.isStatic then c -> Batch()
         else
           val collisions =
             lookup
@@ -132,17 +132,19 @@ object Physics:
               }
               .map(_.proposed)
 
-          c.proposed -> collisions
+          c -> collisions
       }
 
     def solveAllCollisions[A](
-        collisions: Batch[(Collider[A], Batch[Collider[A]])]
+        collisions: Batch[(IndexedCollider[A], Batch[Collider[A]])]
     ): Batch[Collider[A]] =
       collisions.map { case (c, cs) =>
-        if c.isStatic then c else solveCollisions(c, cs)
+        if c.proposed.isStatic then c.proposed else solveCollisions(c, cs)
       }
 
-    def solveCollisions[A](collider: Collider[A], collidees: Batch[Collider[A]]): Collider[A] =
+    def solveCollisions[A](indexed: IndexedCollider[A], collidees: Batch[Collider[A]]): Collider[A] =
+      val collider = indexed.proposed
+
       if collidees.isEmpty then collider
       else
         val results =
