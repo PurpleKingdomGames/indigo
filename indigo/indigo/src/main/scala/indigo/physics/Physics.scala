@@ -281,6 +281,9 @@ object Physics:
           Solved(nextPosition + (reflected * continueDistance), reflected * remainingEnergy * frictionAmount)
 
     final case class IndexedCollider[A](index: Int, previous: Collider[A], proposed: Collider[A]):
-      val movementBounds: BoundingBox = BoundingBox.expandToInclude(previous.boundingBox, proposed.boundingBox)
+      val safeMove: Boolean = previous.boundingBox.overlaps(proposed.boundingBox)
+      val movementBounds: BoundingBox =
+        if safeMove then proposed.boundingBox
+        else BoundingBox.expandToInclude(previous.boundingBox, proposed.boundingBox)
 
     final case class Solved(nextPosition: Vertex, nextVelocity: Vector2)
