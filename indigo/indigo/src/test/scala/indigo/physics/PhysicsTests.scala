@@ -543,31 +543,3 @@ class PhysicsTests extends munit.FunSuite:
     assert(clue(actual.unsafeGet.colliders.length) == clue(1))
     assert(clue(actual.unsafeGet.colliders(0)) ~== clue(expected.colliders(0)))
   }
-
-  test("findCollisionGroups - paperwall problem".only) {
-    val c1 = Collider.Circle(tag, BoundingCircle(0, 0, 1)).withVelocity(Vector2(4, 4)).withFriction(Friction.zero)
-    val c2 = Collider.Circle(tag, BoundingCircle(2, 2, 1)).withFriction(Friction.zero).makeStatic
-
-    val idx1 = Physics.Internal.IndexedCollider(0, c1, c1.moveTo(Vertex(4, 4)))
-    val idx2 = Physics.Internal.IndexedCollider(1, c2, c2)
-
-    val indexed =
-      Batch(
-        idx1,
-        idx2
-      )
-
-    val actual =
-      Physics.Internal.findCollisionGroups(indexed, Batch.empty, settings)
-
-    val expected =
-      Batch(
-        idx1 -> Batch(c2),
-        idx2 -> Batch()
-      )
-
-    println(actual.mkString("\n"))
-
-    assert(actual.length == expected.length)
-    assert(actual.forall(p => expected.exists(q => q._1 == p._1 && q._2.forall(p._2.contains))))
-  }

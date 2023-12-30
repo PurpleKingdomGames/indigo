@@ -112,84 +112,21 @@ object Physics:
         transient: Batch[Collider[A]],
         settings: SimulationSettings
     ): Batch[(IndexedCollider[A], Batch[Collider[A]])] =
-      val (safe, unsafe) = indexedColliders.partition(_.safeMove)
-
       val lookup: QuadTree[BoundingBox, Internal.IndexedCollider[A]] =
         QuadTree
           .empty(settings.bounds)
           .insert(
-            combineAndCull(safe, transient, settings.bounds).map(m => m.movementBounds -> m),
+            combineAndCull(indexedColliders, transient, settings.bounds).map(m => m.movementBounds -> m),
             settings.idealCount,
             settings.minSize,
             settings.maxDepth
           )
 
-      val validatedMoves =
-        unsafe
-          .map { c =>
-            lookup
-              .searchByLine(c.movementLine)
-              .map(_.value)
-              .sortWith { case (a, b) =>
-                a.proposed.boundingBox.center.distanceTo(c.previous.center) <
-                  b.proposed.boundingBox.center.distanceTo(c.previous.center)
-              }
-              .headOption match
-              case None =>
-                c
-
-              case Some(closest) =>
-                val updated =
-                  c.proposed match
-                    case cc @ Collider.Circle(_, _, _, _, _, _, static, _, _) if static =>
-                      cc
-
-                    case cc @ Collider.Box(_, _, _, _, _, _, static, _, _) if static =>
-                      cc
-
-                    case cc @ Collider.Circle(_, bounds, _, _, _, _, _, _, _) =>
-                      val distToMove =
-                        closest.proposed match
-                          case Collider.Circle(_, b, _, _, _, _, _, _, _) =>
-                            b.sdf(bounds.lineIntersectsAt(c.movementLine).nearest.getOrElse(bounds.center))
-
-                          case Collider.Box(_, b, _, _, _, _, _, _, _) =>
-                            b.sdf(bounds.lineIntersectsAt(c.movementLine).nearest.getOrElse(bounds.center))
-
-                      cc.copy(bounds =
-                        cc.bounds.moveTo(c.previous.boundingBox.position + (c.proposed.velocity.normalise * distToMove))
-                      )
-
-                    case cc @ Collider.Box(_, bounds, _, _, _, _, _, _, _) =>
-                      val distToMove =
-                        closest.proposed match
-                          case Collider.Circle(_, b, _, _, _, _, _, _, _) =>
-                            b.sdf(bounds.lineIntersectsAt(c.movementLine).getOrElse(bounds.center))
-
-                          case Collider.Box(_, b, _, _, _, _, _, _, _) =>
-                            b.sdf(bounds.lineIntersectsAt(c.movementLine).getOrElse(bounds.center))
-
-                      cc.copy(bounds =
-                        cc.bounds.moveTo(c.previous.boundingBox.position + (c.proposed.velocity.normalise * distToMove))
-                      )
-
-                c.copy(proposed = updated)
-          }
-          .filter(p => p.proposed.boundingBox.overlaps(settings.bounds))
-
-      val completedLookup =
-        lookup.insert(
-          validatedMoves.map(m => m.movementBounds -> m),
-          settings.idealCount,
-          settings.minSize,
-          settings.maxDepth
-        )
-
       indexedColliders.map { c =>
         if c.proposed.isStatic then c -> Batch()
         else
           val collisions =
-            completedLookup
+            lookup
               .searchByBoundingBox(c.movementBounds)
               .map(_.value)
               .distinctBy(_.index)
@@ -348,6 +285,5 @@ object Physics:
       val movementBounds: BoundingBox =
         if safeMove then proposed.boundingBox
         else BoundingBox.expandToInclude(previous.boundingBox, proposed.boundingBox)
-      lazy val movementLine: LineSegment = LineSegment(previous.boundingBox.center, proposed.boundingBox.center)
 
     final case class Solved(nextPosition: Vertex, nextVelocity: Vector2)
