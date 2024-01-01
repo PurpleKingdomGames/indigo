@@ -441,6 +441,28 @@ class QuadTreeTests extends munit.FunSuite {
       actual.removeByBoundingBox(BoundingBox(-1, -1, 11, 4)).findClosestTo(Vertex.zero).map(_.value),
       Option("c")
     )
+
+    // Filtering
+    assertEquals(
+      actual.filter(_.value != "b").toBatch.map(_.value).distinct,
+      Batch("c", "a")
+    )
+    assertEquals(
+      actual.filterAt(Vertex(0, 0), _.value == "b").findClosestTo(Vertex.zero).map(_.value),
+      Option("b")
+    )
+    assertEquals(
+      actual.filterByLine(Vertex.zero, Vertex(1, 1), _.value != "a").findClosestTo(Vertex.zero).map(_.value),
+      Option("b")
+    )
+    assertEquals(
+      actual.filterByLine(Vertex(0, 0), Vertex(5, 5), _.value == "c").toBatch.map(_.value).distinct,
+      Batch("c", "a")
+    )
+    assertEquals(
+      actual.filterByBoundingBox(BoundingBox(0, 0, 5, 2), _.value == "a").toBatch.map(_.value).distinct,
+      Batch("c", "a")
+    )
   }
 
   test("Point example") {
@@ -474,6 +496,28 @@ class QuadTreeTests extends munit.FunSuite {
     assertEquals(
       actual.removeByBoundingBox(BoundingBox(-1, -1, 11, 4)).findClosestTo(Vertex.zero).map(_.value),
       Option("c")
+    )
+
+    // Filtering
+    assertEquals(
+      actual.filter(_.value != "b").toBatch.map(_.value).distinct,
+      Batch("c", "a")
+    )
+    assertEquals(
+      actual.filterAt(Vertex(0, 0), _.value == "b").findClosestTo(Vertex.zero).map(_.value),
+      Option("b")
+    )
+    assertEquals(
+      actual.filterByLine(Vertex.zero, Vertex(1, 1), _.value != "a").findClosestTo(Vertex.zero).map(_.value),
+      Option("b")
+    )
+    assertEquals(
+      actual.filterByLine(Vertex(0, 0), Vertex(5, 5), _.value == "c").toBatch.map(_.value).distinct,
+      Batch("c", "a")
+    )
+    assertEquals(
+      actual.filterByBoundingBox(BoundingBox(0, 0, 5, 2), _.value == "a").toBatch.map(_.value).distinct,
+      Batch("c", "a")
     )
   }
 
@@ -609,6 +653,24 @@ class QuadTreeTests extends munit.FunSuite {
       actual.removeByBoundingBox(BoundingBox(0, 0, 5, 2)).findClosestTo(Vertex.zero).map(_.value),
       Option("c")
     )
+
+    // Filtering
+    assertEquals(
+      actual.filter(_.value != "b").toBatch.map(_.value).distinct,
+      Batch("c", "a")
+    )
+    assertEquals(
+      actual.filterByLine(Vertex.zero, Vertex(1, 1), _.value != "a").findClosestTo(Vertex.zero).map(_.value),
+      Option("b")
+    )
+    assertEquals(
+      actual.filterByLine(Vertex(0, 0), Vertex(5, 5), _.value != "a").toBatch.map(_.value).distinct,
+      Batch("b", "c")
+    )
+    assertEquals(
+      actual.filterByBoundingBox(BoundingBox(0, 0, 5, 2), _.value != "a").toBatch.map(_.value).distinct,
+      Batch("b", "c")
+    )
   }
 
   test("BoundingCircle example") {
@@ -639,6 +701,24 @@ class QuadTreeTests extends munit.FunSuite {
     assertEquals(
       actual.removeByBoundingBox(BoundingBox(0, 0, 5, 2)).findClosestTo(Vertex.zero).map(_.value),
       Option("c")
+    )
+
+    // Filtering
+    assertEquals(
+      actual.filter(_.value != "b").toBatch.map(_.value).distinct,
+      Batch("c", "a")
+    )
+    assertEquals(
+      actual.filterByLine(Vertex.zero, Vertex(1, 1), _.value != "a").findClosestTo(Vertex.zero).map(_.value),
+      Option("b")
+    )
+    assertEquals(
+      actual.filterByLine(Vertex.zero, Vertex(5, 5), _.value == "b").toBatch.map(_.value).distinct,
+      Batch("b", "c")
+    )
+    assertEquals(
+      actual.filterByBoundingBox(BoundingBox(-1, -1, 6, 3), _.value == "b").toBatch.map(_.value).distinct,
+      Batch("b", "c")
     )
   }
 
@@ -674,6 +754,24 @@ class QuadTreeTests extends munit.FunSuite {
       actual.removeByBoundingBox(BoundingBox(0, 0, 5, 2)).findClosestTo(Vertex.zero).map(_.value),
       Option("c")
     )
+
+    // Filtering
+    assertEquals(
+      actual.filter(_.value != "b").toBatch.map(_.value).distinct,
+      Batch("c", "a")
+    )
+    assertEquals(
+      actual.filterByLine(Vertex.zero, Vertex(1, 1), _.value != "a").findClosestTo(Vertex.zero).map(_.value),
+      Option("b")
+    )
+    assertEquals(
+      actual.filterByLine(Vertex(0, 0), Vertex(5, 5), _.value != "a").toBatch.map(_.value).distinct,
+      Batch("b", "c")
+    )
+    assertEquals(
+      actual.filterByBoundingBox(BoundingBox(0, 0, 5, 2), _.value != "a").toBatch.map(_.value).distinct,
+      Batch("b", "c")
+    )
   }
 
   test("Circle example") {
@@ -704,6 +802,24 @@ class QuadTreeTests extends munit.FunSuite {
     assertEquals(
       actual.removeByBoundingBox(BoundingBox(-1, -1, 6, 3)).findClosestTo(Vertex.zero).map(_.value),
       Option("c")
+    )
+
+    // Filtering
+    assertEquals(
+      actual.filter(_.value != "b").toBatch.map(_.value).distinct,
+      Batch("c", "a")
+    )
+    assertEquals(
+      actual.filterByLine(Vertex.zero, Vertex(1, 1), _.value != "a").findClosestTo(Vertex.zero).map(_.value),
+      Option("b")
+    )
+    assertEquals(
+      actual.filterByLine(Vertex.zero, Vertex(5, 5), _.value == "b").toBatch.map(_.value).distinct,
+      Batch("c", "b")
+    )
+    assertEquals(
+      actual.filterByBoundingBox(BoundingBox(-1, -1, 6, 3), _.value == "b").toBatch.map(_.value).distinct,
+      Batch("c", "b")
     )
   }
 
@@ -738,6 +854,24 @@ class QuadTreeTests extends munit.FunSuite {
     assertEquals(
       actual.removeByBoundingBox(BoundingBox(0, 0, 3, 1)).findClosestTo(Vertex.zero).map(_.value),
       Option("c")
+    )
+
+    // Filtering
+    assertEquals(
+      actual.filterByLine(Vertex.zero, Vertex(1.5, 1.5), _.value != "a").findClosestTo(Vertex.zero).map(_.value),
+      Option("b")
+    )
+    assertEquals(
+      actual.filterByLine(Vertex.zero, Vertex(3, 3), _.value == "a").toBatch.map(_.value).distinct,
+      Batch("b", "a")
+    )
+    assertEquals(
+      actual
+        .filterByBoundingBox(BoundingBox(0, 0, 3, 1), _.value == "b")
+        .toBatch
+        .map(_.value)
+        .distinct,
+      Batch("b", "c")
     )
   }
 
