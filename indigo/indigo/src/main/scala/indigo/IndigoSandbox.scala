@@ -23,23 +23,23 @@ trait IndigoSandbox[StartUpData, Model] extends GameLauncher[StartUpData, Model,
 
   /** Your game's configuration settings.
     */
-  val config: GameConfig
+  def config: GameConfig
 
   /** A fixed set of assets that will be loaded before the game starts
     */
-  val assets: Set[AssetType]
+  def assets: Set[AssetType]
 
   /** A fixed set of fonts that your game will be able to render
     */
-  val fonts: Set[FontInfo]
+  def fonts: Set[FontInfo]
 
   /** A fixed set of animations your game will be able to play
     */
-  val animations: Set[Animation]
+  def animations: Set[Animation]
 
   /** A fixed set of custom shaders you will be able to render with
     */
-  val shaders: Set[Shader]
+  def shaders: Set[Shader]
 
   /** The `setup` function is your only opportunity to do an initial work to set up your game. For example, perhaps one
     * of your assets was a JSON description of a map or an animation sequence, you could process that now, which is why

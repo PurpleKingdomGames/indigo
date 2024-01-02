@@ -31,31 +31,31 @@ trait IndigoShader extends GameLauncher[IndigoShaderModel, IndigoShaderModel, Un
 
   /** Your shader's default configuration settings, values like the viewport size can be overriden with flags.
     */
-  val config: GameConfig
+  def config: GameConfig
 
   /** A fixed set of assets that will be loaded before the game starts, typically for loading an external shader file.
     */
-  val assets: Set[AssetType]
+  def assets: Set[AssetType]
 
   /** An optional path to an image asset you would like to be mapped to channel 0 for your shader to use.
     */
-  val channel0: Option[AssetPath]
+  def channel0: Option[AssetPath]
 
   /** An optional path to an image asset you would like to be mapped to channel 1 for your shader to use.
     */
-  val channel1: Option[AssetPath]
+  def channel1: Option[AssetPath]
 
   /** An optional path to an image asset you would like to be mapped to channel 2 for your shader to use.
     */
-  val channel2: Option[AssetPath]
+  def channel2: Option[AssetPath]
 
   /** An optional path to an image asset you would like to be mapped to channel 3 for your shader to use.
     */
-  val channel3: Option[AssetPath]
+  def channel3: Option[AssetPath]
 
   /** The shader you want to render
     */
-  val shader: Shader
+  def shader: Shader
 
   private def boot(flags: Map[String, String]): Outcome[BootResult[IndigoShaderModel]] =
     val width  = flags.get("width").map(_.toInt).getOrElse(config.viewport.width)
