@@ -12,7 +12,7 @@ import scala.concurrent.duration.*
 import scala.scalajs.js.annotation.*
 
 @JSExportTopLevel("TyrianApp")
-object IndigoSandbox extends TyrianApp[Msg, Model]:
+object IndigoSandbox extends TyrianIOApp[Msg, Model]:
 
   val gameDivId1: String    = "my-game-1"
   val gameDivId2: String    = "my-game-2"
