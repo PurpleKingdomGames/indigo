@@ -13,6 +13,7 @@ ThisBuild / scalaVersion                                   := scala3Version
 lazy val indigoVersion = IndigoVersion.getVersion
 // For the docs site
 lazy val indigoDocsVersion  = "0.15.2"
+lazy val tyrianDocsVersion  = "0.8.0"
 lazy val scalaJsDocsVersion = "1.14.0"
 lazy val scalaDocsVersion   = "3.3.1"
 lazy val sbtDocsVersion     = "1.9.7"
@@ -68,7 +69,14 @@ lazy val indigoProject =
       code        := codeTaskDefinition,
       usefulTasks := customTasksAliases,
       presentationSettings(version),
-      ScalaUnidoc / unidoc / unidocProjectFilter := inAnyProject -- inProjects(sandbox, perf, shader, physics, docs)
+      ScalaUnidoc / unidoc / unidocProjectFilter := inAnyProject -- inProjects(
+        tyrianIndigoBridge, // TODO: After next release (>0.15.2), try removing tyrianIndigoBridge from unidoc filter
+        sandbox,
+        perf,
+        shader,
+        physics,
+        docs
+      )
     )
     .aggregate(
       indigo,
@@ -253,9 +261,10 @@ lazy val jsdocs = project
       "io.indigoengine" %%% "indigo-json-circe" % indigoDocsVersion,
       "io.indigoengine" %%% "indigo"            % indigoDocsVersion,
       "io.indigoengine" %%% "indigo-extras"     % indigoDocsVersion,
-      "io.indigoengine" %%% "tyrian-io"         % Dependencies.Versions.tyrianVersion,
-      // TODO: Replace Tyrian version with Indigo version after next release.
-      "io.indigoengine" %%% "tyrian-indigo-bridge" % Dependencies.Versions.tyrianVersion
+      // TODO: After next release (>0.15.2), should be Dependencies.Versions.tyrianVersion
+      "io.indigoengine" %%% "tyrian-io" % tyrianDocsVersion,
+      // TODO: After next release (>0.15.2), should be indigoDocsVersion
+      "io.indigoengine" %%% "tyrian-indigo-bridge" % tyrianDocsVersion
     ),
     Compile / tpolecatExcludeOptions ++= Set(
       ScalacOptions.warnValueDiscard,
