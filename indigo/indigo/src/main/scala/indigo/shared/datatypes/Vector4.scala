@@ -36,6 +36,8 @@ final case class Vector4(x: Double, y: Double, z: Double, w: Double) derives Can
       Math.min(max, Math.max(min, z)),
       Math.min(max, Math.max(min, w))
     )
+  def clamp(min: Vector4, max: Vector4): Vector4 =
+    this.min(max).max(min)
 
   def length: Double =
     Math.sqrt(x * x + y * y + z * z + w * w)

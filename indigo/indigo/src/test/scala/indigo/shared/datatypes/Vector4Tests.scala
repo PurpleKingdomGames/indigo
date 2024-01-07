@@ -63,10 +63,18 @@ class Vector4Tests extends munit.FunSuite {
     assertEquals(Vector4(10, 10, 10, 10).max(Vector4(50, 5, 2, 100)), Vector4(50, 10, 10, 100))
   }
 
-  test("clamp") {
+  test("clamp - Double") {
     assertEquals(Vector4(0.1, 0.1, 0.1, 0.1).clamp(0, 1), Vector4(0.1, 0.1, 0.1, 0.1))
     assertEquals(Vector4(-0.1, 1.1, 0.1, 0.1).clamp(0, 1), Vector4(0.0, 1.0, 0.1, 0.1))
     assertEquals(Vector4(1, 4, 5, 0).clamp(2, 3), Vector4(2, 3, 3, 2))
+  }
+
+  test("clamp - Vector4") {
+    assertEquals(Vector4(0.1, 0.1, 0.1, 0.1).clamp(Vector4(0), Vector4(1)), Vector4(0.1, 0.1, 0.1, 0.1))
+    assertEquals(Vector4(-0.1, 1.1, 0.1, 0.1).clamp(Vector4(0), Vector4(1)), Vector4(0.0, 1.0, 0.1, 0.1))
+    assertEquals(Vector4(1, 4, 5, 0).clamp(Vector4(2), Vector4(3)), Vector4(2, 3, 3, 2))
+    assertEquals(Vector4(-2, 2, -2, 2).clamp(Vector4(-1), Vector4(1)), Vector4(-1, 1, -1, 1))
+    assertEquals(Vector4(-2, 2, 2, -2).clamp(Vector4(-1, 0, 0, 0), Vector4(0, 1, 5, 1)), Vector4(-1, 1, 2, 0))
   }
 
   test("length") {
