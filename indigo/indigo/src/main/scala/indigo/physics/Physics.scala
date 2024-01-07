@@ -85,7 +85,15 @@ object Physics:
           IndexedCollider(index, c, c)
 
         case c @ Collider.Circle(_, bounds, mass, velocity, terminalVelocity, _, _, _, _, _) =>
-          val (p, v) = calculateNewMovement(timeDelta, worldForces, worldResistance, c.bounds.position, velocity, terminalVelocity, mass)
+          val (p, v) = calculateNewMovement(
+            timeDelta,
+            worldForces,
+            worldResistance,
+            c.bounds.position,
+            velocity,
+            terminalVelocity,
+            mass
+          )
 
           IndexedCollider(
             index,
@@ -97,7 +105,15 @@ object Physics:
           IndexedCollider(index, c, c)
 
         case c @ Collider.Box(_, bounds, mass, velocity, terminalVelocity, _, _, _, _, _) =>
-          val (p, v) = calculateNewMovement(timeDelta, worldForces, worldResistance, c.bounds.position, velocity, terminalVelocity, mass)
+          val (p, v) = calculateNewMovement(
+            timeDelta,
+            worldForces,
+            worldResistance,
+            c.bounds.position,
+            velocity,
+            terminalVelocity,
+            mass
+          )
 
           IndexedCollider(
             index,
