@@ -30,6 +30,7 @@ object VolumeScene extends PhysicsScene:
           )
         )
           .withVelocity(Vector2(Math.sin(i.toDouble) * energy, Math.cos(i.toDouble) * energy))
+          .withTerminalVelocity(Vector2(50))
       }
 
     World
