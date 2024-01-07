@@ -26,6 +26,8 @@ final case class Vector2(x: Double, y: Double) derives CanEqual:
 
   def clamp(min: Double, max: Double): Vector2 =
     Vector2(Math.min(max, Math.max(min, x)), Math.min(max, Math.max(min, y)))
+  def clamp(min: Vector2, max: Vector2): Vector2 =
+    this.min(max).max(min)
 
   def length: Double =
     Math.sqrt(x * x + y * y)
@@ -145,6 +147,7 @@ object Vector2:
   val zero: Vector2     = Vector2(0d, 0d)
   val one: Vector2      = Vector2(1d, 1d)
   val minusOne: Vector2 = Vector2(-1d, -1d)
+  val max: Vector2      = Vector2(Double.MaxValue, Double.MaxValue)
 
   def fromPoints(start: Point, end: Point): Vector2 =
     Vector2((end.x - start.x).toDouble, (end.y - start.y).toDouble)

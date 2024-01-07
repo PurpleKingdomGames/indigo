@@ -28,6 +28,8 @@ final case class Vector3(x: Double, y: Double, z: Double) derives CanEqual:
 
   def clamp(min: Double, max: Double): Vector3 =
     Vector3(Math.min(max, Math.max(min, x)), Math.min(max, Math.max(min, y)), Math.min(max, Math.max(min, z)))
+  def clamp(min: Vector3, max: Vector3): Vector3 =
+    this.min(max).max(min)
 
   def length: Double =
     Math.sqrt(x * x + y * y + z * z)

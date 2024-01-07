@@ -63,10 +63,18 @@ class Vector3Tests extends munit.FunSuite {
     assertEquals(Vector3(10, 10, 10).max(Vector3(50, 5, 2)), Vector3(50, 10, 10))
   }
 
-  test("clamp") {
+  test("clamp - Double") {
     assertEquals(Vector3(0.1, 0.1, 0.1).clamp(0, 1), Vector3(0.1, 0.1, 0.1))
     assertEquals(Vector3(-0.1, 1.1, 0.1).clamp(0, 1), Vector3(0.0, 1.0, 0.1))
     assertEquals(Vector3(1, 4, 5).clamp(2, 3), Vector3(2, 3, 3))
+  }
+
+  test("clamp - Vector3") {
+    assertEquals(Vector3(0.1, 0.1, 0.1).clamp(Vector3(0), Vector3(1)), Vector3(0.1, 0.1, 0.1))
+    assertEquals(Vector3(-0.1, 1.1, 0.1).clamp(Vector3(0), Vector3(1)), Vector3(0.0, 1.0, 0.1))
+    assertEquals(Vector3(1, 4, 5).clamp(Vector3(2), Vector3(3)), Vector3(2, 3, 3))
+    assertEquals(Vector3(-2, 2, -2).clamp(Vector3(-1), Vector3(1)), Vector3(-1, 1, -1))
+    assertEquals(Vector3(-2, 2, 2).clamp(Vector3(-1, 0, 0), Vector3(0, 1, 5)), Vector3(-1, 1, 2))
   }
 
   test("length") {
