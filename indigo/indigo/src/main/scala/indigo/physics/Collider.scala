@@ -11,6 +11,7 @@ enum Collider[A]:
   def tag: A
   def static: Boolean
   def velocity: Vector2
+  def terminalVelocity: Vector2
   def mass: Mass
   def restitution: Restitution
   def canCollideWith: A => Boolean
@@ -26,6 +27,7 @@ enum Collider[A]:
       bounds: BoundingCircle,
       mass: Mass,
       velocity: Vector2,
+      terminalVelocity: Vector2,
       restitution: Restitution,
       friction: Friction,
       static: Boolean,
@@ -37,6 +39,7 @@ enum Collider[A]:
       bounds: BoundingBox,
       mass: Mass,
       velocity: Vector2,
+      terminalVelocity: Vector2,
       restitution: Restitution,
       friction: Friction,
       static: Boolean,
@@ -58,6 +61,7 @@ object Collider:
         bounds,
         Mass.default,
         Vector2.zero,
+        Vector2.max,
         Restitution.default,
         Friction.zero,
         false,
@@ -72,6 +76,7 @@ object Collider:
         bounds,
         Mass.default,
         Vector2.zero,
+        Vector2.max,
         Restitution.default,
         Friction.zero,
         false,
@@ -86,6 +91,7 @@ object Collider:
         c.bounds.toIncircleBoundingBox,
         c.mass,
         c.velocity,
+        c.terminalVelocity,
         c.restitution,
         c.friction,
         c.static,
@@ -135,6 +141,13 @@ object Collider:
         case cc: Box[_]    => cc.copy(velocity = value)
     def withVelocity(x: Double, y: Double): Collider[A] =
       withVelocity(Vector2(x, y))
+
+    def withTerminalVelocity(value: Vector2): Collider[A] =
+      c match
+        case cc: Circle[_] => cc.copy(terminalVelocity = value)
+        case cc: Box[_]    => cc.copy(terminalVelocity = value)
+    def withTerminalVelocity(x: Double, y: Double): Collider[A] =
+      withTerminalVelocity(Vector2(x, y))
 
     def withPosition(value: Vertex): Collider[A] =
       c match
@@ -199,16 +212,19 @@ object Collider:
 
     def reflect(ray: LineSegment): Option[ReflectionData] =
       c match
-        case Circle(_, bounds, _, _, _, _, _, _, _) => bounds.reflect(ray)
-        case Box(_, bounds, _, _, _, _, _, _, _)    => bounds.reflect(ray)
+        case Circle(_, bounds, _, _, _, _, _, _, _, _) => bounds.reflect(ray)
+        case Box(_, bounds, _, _, _, _, _, _, _, _)    => bounds.reflect(ray)
 
     def ~==(other: Collider[A])(using CanEqual[A, A]): Boolean =
       (c, other) match
-        case (Collider.Circle(aT, a, aM, aV, aR, aF, aS, _, _), Collider.Circle(bT, b, bM, bV, bR, bF, bS, _, _)) =>
-          (aT == bT) && (a ~== b) && (aM ~== bM) && (aV ~== bV) && (aR ~== bR) && (aF ~== bF) && aS == bS
+        case (
+              Collider.Circle(aT, a, aM, aV, aTV, aR, aF, aS, _, _),
+              Collider.Circle(bT, b, bM, bV, bTV, bR, bF, bS, _, _)
+            ) =>
+          (aT == bT) && (a ~== b) && (aM ~== bM) && (aV ~== bV) && (aTV ~== bTV) && (aR ~== bR) && (aF ~== bF) && aS == bS
 
-        case (Collider.Box(aT, a, aM, aV, aR, aF, aS, _, _), Collider.Box(bT, b, bM, bV, bR, bF, bS, _, _)) =>
-          (aT == bT) && (a ~== b) && (aM ~== bM) && (aV ~== bV) && (aR ~== bR) && (aF ~== bF) && aS == bS
+        case (Collider.Box(aT, a, aM, aV, aTV, aR, aF, aS, _, _), Collider.Box(bT, b, bM, bV, bTV, bR, bF, bS, _, _)) =>
+          (aT == bT) && (a ~== b) && (aM ~== bM) && (aV ~== bV) && (aTV ~== bTV) && (aR ~== bR) && (aF ~== bF) && aS == bS
 
         case _ =>
           false

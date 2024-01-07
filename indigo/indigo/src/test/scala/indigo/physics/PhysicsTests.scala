@@ -54,6 +54,50 @@ class PhysicsTests extends munit.FunSuite:
     assertEquals(actual, expected)
   }
 
+  test("moveColliders - respect terminal velocity") {
+    val colliderA =
+      Collider
+        .Circle(tag, BoundingCircle(10, 10, 5))
+        .withVelocity(Vector2(0, -10))
+        .withTerminalVelocity(Vector2(5))
+        .withFriction(Friction.zero)
+    val colliderB =
+      Collider
+        .Circle(tag, BoundingCircle(10, 10, 5))
+        .withVelocity(Vector2(0, 10))
+        .withTerminalVelocity(Vector2(5))
+        .withFriction(Friction.zero)
+
+    val colliders =
+      Batch(colliderA, colliderB)
+
+    val w = World(
+      colliders,
+      Batch(Vector2(0)),
+      Resistance.zero,
+      settings
+    )
+
+    val actual =
+      Physics.Internal.moveColliders(1.second, w)
+
+    val expected =
+      Batch(
+        Physics.Internal.IndexedCollider(
+          0,
+          colliderA,
+          colliderA.moveTo(Vertex(10, 5)).withVelocity(Vector2(0, -5))
+        ),
+        Physics.Internal.IndexedCollider(
+          1,
+          colliderB,
+          colliderB.moveTo(Vertex(10, 15)).withVelocity(Vector2(0, 5))
+        )
+      )
+
+    assertEquals(actual, expected)
+  }
+
   test("findCollisionGroups") {
     val c1 = Collider.Circle(tag, BoundingCircle(3, 2, 2)).withFriction(Friction.zero)   // overlaps c2 and c3
     val c2 = Collider.Circle(tag, BoundingCircle(1, 4, 2)).withFriction(Friction.zero)   // overlaps c1

@@ -49,6 +49,7 @@ object Physics:
         worldResistance: Resistance,
         position: Vertex,
         velocity: Vector2,
+        terminalVelocity: Vector2,
         mass: Mass
     ): (Vertex, Vector2) =
       val t = timeDelta.toDouble
@@ -60,11 +61,18 @@ object Physics:
       val newVelocity =
         ((force * Vector2(t)) + velocity) * (1.0 - worldResistance.toDouble)
 
+      val clampedVelocity =
+        clampVelocity(newVelocity, terminalVelocity)
+
       // p(n + 1) = v * t + p(n)
       val newPosition =
-        (newVelocity * Vector2(t)).toVertex + position
+        (clampedVelocity * Vector2(t)).toVertex + position
 
-      (newPosition, newVelocity)
+      (newPosition, clampedVelocity)
+
+    def clampVelocity(velocity: Vector2, terminalVelocity: Vector2): Vector2 =
+      val abs = terminalVelocity.abs
+      velocity.clamp(abs.invert, abs)
 
     def moveCollider[A](timeDelta: Seconds, worldForces: Vector2, worldResistance: Resistance)(
         colliderWithIndex: (Collider[A], Int)
@@ -73,11 +81,11 @@ object Physics:
       val (collider, index) = colliderWithIndex
 
       collider match
-        case c @ Collider.Circle(_, _, _, _, _, _, static, _, _) if static =>
+        case c @ Collider.Circle(_, _, _, _, _, _, _, static, _, _) if static =>
           IndexedCollider(index, c, c)
 
-        case c @ Collider.Circle(_, bounds, mass, velocity, _, _, _, _, _) =>
-          val (p, v) = calculateNewMovement(timeDelta, worldForces, worldResistance, c.bounds.position, velocity, mass)
+        case c @ Collider.Circle(_, bounds, mass, velocity, terminalVelocity, _, _, _, _, _) =>
+          val (p, v) = calculateNewMovement(timeDelta, worldForces, worldResistance, c.bounds.position, velocity, terminalVelocity, mass)
 
           IndexedCollider(
             index,
@@ -85,11 +93,11 @@ object Physics:
             c.copy(bounds = c.bounds.moveTo(p), velocity = v)
           )
 
-        case c @ Collider.Box(_, _, _, _, _, _, static, _, _) if static =>
+        case c @ Collider.Box(_, _, _, _, _, _, _, static, _, _) if static =>
           IndexedCollider(index, c, c)
 
-        case c @ Collider.Box(_, bounds, mass, velocity, _, _, _, _, _) =>
-          val (p, v) = calculateNewMovement(timeDelta, worldForces, worldResistance, c.bounds.position, velocity, mass)
+        case c @ Collider.Box(_, bounds, mass, velocity, terminalVelocity, _, _, _, _, _) =>
+          val (p, v) = calculateNewMovement(timeDelta, worldForces, worldResistance, c.bounds.position, velocity, terminalVelocity, mass)
 
           IndexedCollider(
             index,
@@ -163,7 +171,7 @@ object Physics:
             val continueDistance = displacement.displaceAmount * collider.restitution.toDouble
 
             collider match
-              case Collider.Circle(_, bounds, _, velocity, _, friction, _, _, _) =>
+              case Collider.Circle(_, bounds, _, velocity, _, _, friction, _, _, _) =>
                 c match
                   case c: Collider.Circle[_] =>
                     solveCollisionWithCircle(
@@ -190,7 +198,7 @@ object Physics:
                       remainingEnergy = remainingEnergy
                     )
 
-              case Collider.Box(_, bounds, _, velocity, _, friction, _, _, _) =>
+              case Collider.Box(_, bounds, _, velocity, _, _, friction, _, _, _) =>
                 c match
                   case c: Collider.Circle[_] =>
                     solveCollisionWithCircle(

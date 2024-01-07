@@ -10,7 +10,7 @@ import japgolly.scalajs.benchmark.gui._
 object PhysicsWorldBenchmarks:
 
   def render[A]: Collider[A] => SceneNode = {
-    case Collider.Circle(_, bounds, _, _, _, _, _, _, _) =>
+    case Collider.Circle(_, bounds, _, _, _, _, _, _, _, _) =>
       Shape.Circle(
         bounds.position.toPoint,
         bounds.radius.toInt,
@@ -18,7 +18,7 @@ object PhysicsWorldBenchmarks:
         Stroke(1, RGBA.White)
       )
 
-    case Collider.Box(_, bounds, _, _, _, _, _, _, _) =>
+    case Collider.Box(_, bounds, _, _, _, _, _, _, _, _) =>
       Shape.Box(
         bounds.toRectangle,
         Fill.Color(RGBA.White.withAlpha(0.2)),
