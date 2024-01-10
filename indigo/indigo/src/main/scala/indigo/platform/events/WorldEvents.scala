@@ -538,7 +538,7 @@ final class WorldEvents:
     def indigoButtons =
       Batch.fromArray(
         (0 to 5)
-          .filter(i => ((e.buttons >> i) & 1) == 0)
+          .filter(i => ((e.buttons >> i) & 1) == 1)
           .flatMap(MouseButton.fromOrdinalOpt)
           .toArray
       )
