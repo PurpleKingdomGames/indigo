@@ -535,17 +535,11 @@ final class WorldEvents:
         (e.movementY / magnification).toInt
       )
 
-    /**
-      * The property indicates which buttons are pressed on the mouse
-      * (or other input device) when a mouse event is triggered.
+    /** The property indicates which buttons are pressed on the mouse (or other input device) when a mouse event is
+      * triggered.
       */
     def indigoButtons =
-      Batch.fromArray(
-        (0 to 5)
-          .filter(i => ((e.buttons >> i) & 1) == 1)
-          .flatMap(MouseButton.fromOrdinalOpt)
-          .toArray
-      )
+      WorldEvents.buttonsFromInt(e.buttons)
 
   extension (e: dom.PointerEvent)
     def width(magnification: Int): Int =
@@ -563,3 +557,16 @@ final class WorldEvents:
       }
 
 end WorldEvents
+
+object WorldEvents:
+
+  /** Work out which buttons are pressed on the mouse (or other input device) based on the `buttons` field from a
+    * `dom.MouseEvent`.
+    */
+  def buttonsFromInt(buttons: Int): Batch[MouseButton] =
+    Batch.fromArray(
+      (0 to 5)
+        .filter(i => ((buttons >> i) & 1) == 1)
+        .flatMap(MouseButton.fromOrdinalOpt)
+        .toArray
+    )
