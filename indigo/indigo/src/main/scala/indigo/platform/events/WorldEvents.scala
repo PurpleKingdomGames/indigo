@@ -535,6 +535,10 @@ final class WorldEvents:
         (e.movementY / magnification).toInt
       )
 
+    /**
+      * The property indicates which buttons are pressed on the mouse
+      * (or other input device) when a mouse event is triggered.
+      */
     def indigoButtons =
       Batch.fromArray(
         (0 to 5)
