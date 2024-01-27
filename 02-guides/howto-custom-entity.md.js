@@ -5,7 +5,7 @@ var $linkingInfo = Object.freeze({
   "esVersion": 6,
   "assumingES6": true,
   "productionMode": false,
-  "linkerVersion": "1.13.0",
+  "linkerVersion": "1.15.0",
   "fileLevelThis": this
 });
 var $getOwnPropertyDescriptors = (Object.getOwnPropertyDescriptors || (() => {
@@ -58,7 +58,7 @@ function $throwArrayCastException(arg0, arg1, arg2) {
   };
   $throwClassCastException(arg0, arg1)
 }
-function $throwArrayIndexOutOfBoundsException(arg0) {
+function $throwArrayIndexOutOFBoundsException(arg0) {
   throw new $c_Lorg_scalajs_linker_runtime_UndefinedBehaviorError(new $c_jl_ArrayIndexOutOfBoundsException(((arg0 === null) ? null : ("" + arg0))))
 }
 function $throwArrayStoreException(arg0) {
@@ -228,7 +228,7 @@ function $superSet(arg0, arg1, arg2, arg3) {
 }
 function $arraycopyCheckBounds(arg0, arg1, arg2, arg3, arg4) {
   if ((((((arg1 < 0) || (arg3 < 0)) || (arg4 < 0)) || (arg1 > ((arg0 - arg4) | 0))) || (arg3 > ((arg2 - arg4) | 0)))) {
-    $throwArrayIndexOutOfBoundsException(null)
+    $throwArrayIndexOutOFBoundsException(null)
   }
 }
 function $arraycopyGeneric(arg0, arg1, arg2, arg3, arg4) {
@@ -400,13 +400,13 @@ $ac_O.prototype = new $h_O();
 $ac_O.prototype.constructor = $ac_O;
 $ac_O.prototype.get = (function(i) {
   if (((i < 0) || (i >= this.u.length))) {
-    $throwArrayIndexOutOfBoundsException(i)
+    $throwArrayIndexOutOFBoundsException(i)
   };
   return this.u[i]
 });
 $ac_O.prototype.set = (function(i, v) {
   if (((i < 0) || (i >= this.u.length))) {
-    $throwArrayIndexOutOfBoundsException(i)
+    $throwArrayIndexOutOFBoundsException(i)
   };
   this.u[i] = v
 });
@@ -437,13 +437,13 @@ $ac_Z.prototype = new $h_O();
 $ac_Z.prototype.constructor = $ac_Z;
 $ac_Z.prototype.get = (function(i) {
   if (((i < 0) || (i >= this.u.length))) {
-    $throwArrayIndexOutOfBoundsException(i)
+    $throwArrayIndexOutOFBoundsException(i)
   };
   return this.u[i]
 });
 $ac_Z.prototype.set = (function(i, v) {
   if (((i < 0) || (i >= this.u.length))) {
-    $throwArrayIndexOutOfBoundsException(i)
+    $throwArrayIndexOutOFBoundsException(i)
   };
   this.u[i] = v
 });
@@ -467,13 +467,13 @@ $ac_C.prototype = new $h_O();
 $ac_C.prototype.constructor = $ac_C;
 $ac_C.prototype.get = (function(i) {
   if (((i < 0) || (i >= this.u.length))) {
-    $throwArrayIndexOutOfBoundsException(i)
+    $throwArrayIndexOutOFBoundsException(i)
   };
   return this.u[i]
 });
 $ac_C.prototype.set = (function(i, v) {
   if (((i < 0) || (i >= this.u.length))) {
-    $throwArrayIndexOutOfBoundsException(i)
+    $throwArrayIndexOutOFBoundsException(i)
   };
   this.u[i] = v
 });
@@ -498,13 +498,13 @@ $ac_B.prototype = new $h_O();
 $ac_B.prototype.constructor = $ac_B;
 $ac_B.prototype.get = (function(i) {
   if (((i < 0) || (i >= this.u.length))) {
-    $throwArrayIndexOutOfBoundsException(i)
+    $throwArrayIndexOutOFBoundsException(i)
   };
   return this.u[i]
 });
 $ac_B.prototype.set = (function(i, v) {
   if (((i < 0) || (i >= this.u.length))) {
-    $throwArrayIndexOutOfBoundsException(i)
+    $throwArrayIndexOutOFBoundsException(i)
   };
   this.u[i] = v
 });
@@ -529,13 +529,13 @@ $ac_S.prototype = new $h_O();
 $ac_S.prototype.constructor = $ac_S;
 $ac_S.prototype.get = (function(i) {
   if (((i < 0) || (i >= this.u.length))) {
-    $throwArrayIndexOutOfBoundsException(i)
+    $throwArrayIndexOutOFBoundsException(i)
   };
   return this.u[i]
 });
 $ac_S.prototype.set = (function(i, v) {
   if (((i < 0) || (i >= this.u.length))) {
-    $throwArrayIndexOutOfBoundsException(i)
+    $throwArrayIndexOutOFBoundsException(i)
   };
   this.u[i] = v
 });
@@ -560,13 +560,13 @@ $ac_I.prototype = new $h_O();
 $ac_I.prototype.constructor = $ac_I;
 $ac_I.prototype.get = (function(i) {
   if (((i < 0) || (i >= this.u.length))) {
-    $throwArrayIndexOutOfBoundsException(i)
+    $throwArrayIndexOutOFBoundsException(i)
   };
   return this.u[i]
 });
 $ac_I.prototype.set = (function(i, v) {
   if (((i < 0) || (i >= this.u.length))) {
-    $throwArrayIndexOutOfBoundsException(i)
+    $throwArrayIndexOutOFBoundsException(i)
   };
   this.u[i] = v
 });
@@ -594,13 +594,13 @@ $ac_J.prototype = new $h_O();
 $ac_J.prototype.constructor = $ac_J;
 $ac_J.prototype.get = (function(i) {
   if (((i < 0) || (i >= this.u.length))) {
-    $throwArrayIndexOutOfBoundsException(i)
+    $throwArrayIndexOutOFBoundsException(i)
   };
   return this.u[i]
 });
 $ac_J.prototype.set = (function(i, v) {
   if (((i < 0) || (i >= this.u.length))) {
-    $throwArrayIndexOutOfBoundsException(i)
+    $throwArrayIndexOutOFBoundsException(i)
   };
   this.u[i] = v
 });
@@ -624,13 +624,13 @@ $ac_F.prototype = new $h_O();
 $ac_F.prototype.constructor = $ac_F;
 $ac_F.prototype.get = (function(i) {
   if (((i < 0) || (i >= this.u.length))) {
-    $throwArrayIndexOutOfBoundsException(i)
+    $throwArrayIndexOutOFBoundsException(i)
   };
   return this.u[i]
 });
 $ac_F.prototype.set = (function(i, v) {
   if (((i < 0) || (i >= this.u.length))) {
-    $throwArrayIndexOutOfBoundsException(i)
+    $throwArrayIndexOutOFBoundsException(i)
   };
   this.u[i] = v
 });
@@ -655,13 +655,13 @@ $ac_D.prototype = new $h_O();
 $ac_D.prototype.constructor = $ac_D;
 $ac_D.prototype.get = (function(i) {
   if (((i < 0) || (i >= this.u.length))) {
-    $throwArrayIndexOutOfBoundsException(i)
+    $throwArrayIndexOutOFBoundsException(i)
   };
   return this.u[i]
 });
 $ac_D.prototype.set = (function(i, v) {
   if (((i < 0) || (i >= this.u.length))) {
-    $throwArrayIndexOutOfBoundsException(i)
+    $throwArrayIndexOutOFBoundsException(i)
   };
   this.u[i] = v
 });
@@ -755,7 +755,7 @@ $TypeData.prototype.initArray = (function(componentData) {
   ArrayClass.prototype.constructor = ArrayClass;
   ArrayClass.prototype.set = (function(i, v) {
     if (((i < 0) || (i >= this.u.length))) {
-      $throwArrayIndexOutOfBoundsException(i)
+      $throwArrayIndexOutOFBoundsException(i)
     };
     if ((((v !== null) && (!componentData.isJSType)) && (!componentData.isInstance(v)))) {
       $throwArrayStoreException(v)
@@ -1341,9 +1341,9 @@ $c_RTLong$.prototype.org$scalajs$linker$runtime$RuntimeLong$$toString__I__I__T =
 $c_RTLong$.prototype.org$scalajs$linker$runtime$RuntimeLong$$toDouble__I__I__D = (function(lo, hi) {
   if ((hi < 0)) {
     var x = ((lo !== 0) ? (~hi) : ((-hi) | 0));
-    var $$x1 = $uD((x >>> 0.0));
+    var $x_1 = $uD((x >>> 0.0));
     var x$1 = ((-lo) | 0);
-    return (-((4.294967296E9 * $$x1) + $uD((x$1 >>> 0.0))))
+    return (-((4.294967296E9 * $x_1) + $uD((x$1 >>> 0.0))))
   } else {
     return ((4.294967296E9 * hi) + $uD((lo >>> 0.0)))
   }
@@ -1531,8 +1531,8 @@ class $c_jl_Throwable extends Error {
     this.jl_Throwable__f_s = null
   };
   fillInStackTrace__jl_Throwable() {
-    var $$x1 = this;
-    var reference = (false ? $$x1.sjs_js_JavaScriptException__f_exception : $n($$x1));
+    var $x_1 = this;
+    var reference = (false ? $x_1.sjs_js_JavaScriptException__f_exception : $n($x_1));
     var identifyingString = Object.prototype.toString.call(reference);
     if ((identifyingString !== "[object Error]")) {
       if ((Error.captureStackTrace === (void 0))) {
@@ -1830,9 +1830,9 @@ var $d_jl_Integer = new $TypeData().initClass({
   jl_constant_ConstantDesc: 1
 }, (void 0), (void 0), ((x) => $isInt(x)));
 function $f_jl_Long__hashCode__I($thiz) {
-  var $$x1 = $thiz.RTLong__f_lo;
+  var $x_1 = $thiz.RTLong__f_lo;
   var hi = $thiz.RTLong__f_hi;
-  return ($$x1 ^ hi)
+  return ($x_1 ^ hi)
 }
 function $f_jl_Long__toString__T($thiz) {
   return $m_RTLong$().org$scalajs$linker$runtime$RuntimeLong$$toString__I__I__T($thiz.RTLong__f_lo, $thiz.RTLong__f_hi)
@@ -1853,9 +1853,9 @@ function $f_T__hashCode__I($thiz) {
   var mul = 1;
   var i = (((-1) + $thiz.length) | 0);
   while ((i >= 0)) {
-    var $$x1 = res;
+    var $x_1 = res;
     var index = i;
-    res = (($$x1 + Math.imul($charAt($thiz, index), mul)) | 0);
+    res = (($x_1 + Math.imul($charAt($thiz, index), mul)) | 0);
     mul = Math.imul(31, mul);
     i = (((-1) + i) | 0)
   };

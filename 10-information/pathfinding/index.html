@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Typelevel Laika + Helium Theme" />
+  <title>Path finding</title>
+  
+  
+  <meta name="description" content="A 2D Pixel Art FP game engine for Scala."/>
+  
+  
+  
+  <link rel="icon" sizes="32x32" type="image/svg+xml" href="../../img/indigo_logo_solid.svg"/>
+  
+  <link rel="icon" sizes="64x64" type="image/svg+xml" href="../../img/indigo_logo_solid.svg"/>
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono:500">
+  
+  <link rel="stylesheet" type="text/css" href="../../helium/site/icofont.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../helium/site/laika-helium.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/custom.css" />
+  <script src="../../helium/site/laika-helium.js"></script>
+  
+  
+  <script> /* for avoiding page load transitions */ </script>
+</head>
+
+  <body>
+
+    <header id="top-bar" class="light-default dark-default">
+
+  <div class="row">
+    <a id="nav-icon">
+      <i class="icofont-laika navigationMenu" title="Navigation">&#xefa2;</i>
+    </a>
+    
+    
+  </div>
+
+  <a class="image-link" href="../../"><img src="../../img/indigo_logo_solid_text.svg" alt="Homepage" title="Indigo" width="150" height="50"></a>
+
+  <div class="row links">
+    
+    <a class="button-link" href="https://discord.gg/b5CD47g">Discord</a>
+    
+    <a class="button-link" href="/api">API</a>
+    
+    <a class="button-link" href="https://github.com/PurpleKingdomGames/indigo">Github</a>
+    
+  </div>  
+
+</header>
+    
+    <nav id="sidebar">
+
+  <div class="row">
+    
+    <a class="button-link" href="https://discord.gg/b5CD47g">Discord</a>
+    
+    <a class="button-link" href="/api">API</a>
+    
+    <a class="button-link" href="https://github.com/PurpleKingdomGames/indigo">Github</a>
+    
+  </div>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="../../table-of-content/">Contents</a></li>
+    <li class="level1 nav-header">Setup &amp; Configuration</li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/examples/">Examples, Demos, and References</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/extensions-and-libs/">Extensions, Libraries, and Related Projects</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/hello-indigo/">Hello, Indigo!</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/project-templates/">Mill &amp; SBT Templates</a></li>
+    <li class="level2 nav-leaf"><a href="../../01-quickstart/quickstart/">Quick start</a></li>
+    <li class="level1 nav-header">Guides</li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-custom-entity/">How to make a custom entity</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-fire-shader/">How to write a fire shader</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-hello-indigo-tyrian/">How to make a responsive UI using Tyrian</a></li>
+    <li class="level2 nav-leaf"><a href="../../02-guides/howto-indigo-game/">Converting <code>IndigoSandbox</code> to <code>IndigoGame</code></a></li>
+    <li class="level1 nav-header">Gameloop</li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/events/">Events</a></li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/frame-context/">Frame context</a></li>
+    <li class="level2 nav-leaf"><a href="../../03-gameloop/outcome/">Outcome Type</a></li>
+    <li class="level1 nav-header">Organisation</li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/boot-and-start-up/">Boot &amp; Start Up</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/game-entry-points/">Game Entry Points</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/scene-management/">What are Scenes?</a></li>
+    <li class="level2 nav-leaf"><a href="../../04-organisation/subsystems/">What SubSystems are</a></li>
+    <li class="level1 nav-header">Platform &amp; IO</li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/assets/">Assets &amp; Asset Loading</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/configuration/">Game Configuration</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/cross-platform-publishing/">Cross Platform Publishing</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/importers/">File Importers</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/input-handling/">Input Handling</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/loading-and-saving-data/">Loading &amp; Saving Data</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/logging/">Logging</a></li>
+    <li class="level2 nav-leaf"><a href="../../05-platform/networking/">Networking</a></li>
+    <li class="level1 nav-header">Presentation</li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/animation/">Animation</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/audio/">Audio</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/boundaries/">Boundaries</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/cameras/">Cameras</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/clones-and-mutants/">Clones &amp; Mutants</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/depth/">Depth</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/layers/">Layers</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/lighting/">Lighting</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/materials/">Materials</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/primitives/">Primitives &amp; Building Blocks</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/scene-update-fragment/">SceneUpdateFragment</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/shapes/">Shapes</a></li>
+    <li class="level2 nav-leaf"><a href="../../06-presentation/text-and-fonts/">Text &amp; Fonts</a></li>
+    <li class="level1 nav-header">Shaders</li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/blending/">Blending</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/constants/">Shader Constants, Variables, and Outputs</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/premultiplied-alpha/">Premultiplied Alpha</a></li>
+    <li class="level2 nav-leaf"><a href="../../07-shaders/shaders-overview/">Shaders Overview</a></li>
+    <li class="level1 nav-header">Time</li>
+    <li class="level2 nav-leaf"><a href="../../08-time/gametime/">GameTime</a></li>
+    <li class="level2 nav-leaf"><a href="../../08-time/signals/">Signals &amp; Signal Functions</a></li>
+    <li class="level2 nav-leaf"><a href="../../08-time/time-varying-values/">Time Varying Values</a></li>
+    <li class="level1 nav-header">UI Components</li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/button/">Buttons</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/hit-area/">Hit Areas</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/input-field/">Input Fields</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/radio-button/">Radio Buttons</a></li>
+    <li class="level2 nav-leaf"><a href="../../09-uicomponents/ui-components/">UI Components</a></li>
+    <li class="level1 nav-header">Misc</li>
+    <li class="level2 nav-leaf"><a href="../alternatives/">Alternatives to Indigo</a></li>
+    <li class="level2 nav-leaf"><a href="../antipatterns/">Anti-Patterns</a></li>
+    <li class="level2 nav-leaf"><a href="../glossary/">Glossary</a></li>
+    <li class="level2 nav-leaf"><a href="../key-concepts/">Key Concepts</a></li>
+    <li class="level2 nav-leaf"><a href="../model-viewmodel-view/">Model, ViewModel, &amp; View</a></li>
+    <li class="level2 nav-leaf"><a href="../motivation-and-constraints/">Motivation &amp; Constraints</a></li>
+    <li class="level2 active nav-leaf"><a href="#">Path finding</a></li>
+    <li class="level2 nav-leaf"><a href="../performance/">Performance</a></li>
+    <li class="level2 nav-leaf"><a href="../prior-art/">Prior Art</a></li>
+    <li class="level2 nav-leaf"><a href="../rendering-technology/">Rendering Technology</a></li>
+    <li class="level1 nav-header">Physics</li>
+    <li class="level2 nav-leaf"><a href="../../11-physics/physics-overview/">Physics Overview</a></li>
+  </ul>
+
+</nav>
+
+    <div id="container">
+
+      
+<nav id="page-nav">
+  <p class="header"><a href="#">Path finding</a></p>
+
+  <ul class="nav-list">
+    <li class="level1 nav-leaf"><a href="#quick-start">Quick start</a></li>
+    <li class="level1 nav-leaf"><a href="#pathbuilder">PathBuilder</a></li>
+    <li class="level1 nav-leaf"><a href="#default-path-builders">Default path builders</a></li>
+  </ul>
+
+  <p class="footer"></p>
+</nav>
+
+
+      <main class="content">
+
+        <h1 id="path-finding" class="title">Path finding</h1>
+        <p>Indigo includes a generic pathfinding algorithm (A* generic variant) as of release <code>0.15.3</code>.</p>
+        
+        <h3 id="quick-start" class="section"><a class="anchor-link left" href="#quick-start"><i class="icofont-laika link">&#xef71;</i></a>Quick start</h3>
+        <p>All of the pathfinding primitives are available with the following import:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">indigoextras</span><span>.</span><span class="identifier">pathfinding</span><span>.*</span></code></pre>
+        <p>The computation of the path can be done with the following function call:</p>
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="comment">// def findPath[T](start: T, end: T, pathBuilder: PathBuilder[T])(using CanEqual[T,T]): Option[Batch[T]]
+</span><span class="type-name">PathFinder</span><span>.</span><span class="identifier">findPath</span><span>(</span><span class="identifier">start</span><span>, </span><span class="identifier">end</span><span>, </span><span class="identifier">pathBuilder</span><span>)</span></code></pre>
+        <p><code>start</code> and <code>end</code> have the same type and are the start and end points of the path.
+        <code>pathBuilder</code> is the type allowing to customize the pathfinding algorithm (see below).</p>
+        <p>If <code>start</code> and <code>end</code> are of type <code>Point</code>:</p>
+        <ul>
+          <li>when a path is found, the function returns a <code>Some[Batch[Point]]</code> containing the path from <code>start</code> to <code>end</code>.</li>
+          <li>when no path is found, the function returns <code>None</code></li>
+          <li>when <code>start</code> and <code>end</code> are the same point, the function returns <code>Some(Batch(start))</code> (that is also <code>Some(Batch(end))</code>).</li>
+        </ul>
+        <p>You may also find samples in the tests <code>indigoextras.pathfinding.PathFinderTests</code> or in the sandbox <code>com.example.sandbox.scenes.PathFindingScene</code>.</p>
+        
+        <h3 id="pathbuilder" class="section"><a class="anchor-link left" href="#pathbuilder"><i class="icofont-laika link">&#xef71;</i></a>PathBuilder</h3>
+        <p>The path builder is a trait that allows to customize the pathfinding algorithm.
+        It requires the implementations of the 3 main characteristics of the A* algorithm:</p>
+        <ul>
+          <li><code>neighbours</code>: the function that returns the neighbours of a point</li>
+          <li><code>distance</code>: the function that returns the distance (cost) to reach a neighbour from a point</li>
+          <li><code>heuristic</code>: the heuristic function used to estimate the distance (cost) from a point to reach the end point</li>
+        </ul>
+        <p>The path builder also requires a given of type <code>CanEqual[T,T]</code> to compare the points.</p>
+        
+        <h2 id="default-path-builders" class="section"><a class="anchor-link left" href="#default-path-builders"><i class="icofont-laika link">&#xef71;</i></a>Default path builders</h2>
+        <p>This object contains default path builders for the most common use cases.
+        It also contains a few helper functions and constants to compute the neighbours and to define the allowed movements.
+        If you need to customize the pathfinding algorithm this file is a good starting point.</p>
+        <p>Indigo provides default path builders, for <code>Point</code>, located in <code>indigoextras.pathfinding.PathBuilder</code> companion object.</p>
+        <ul>
+          <li><code>PathBuilder.fromAllowedPoints</code></li>
+          <li><code>PathBuilder.fromImpassablePoints</code></li>
+          <li><code>PathBuilder.fromWeightedGrid</code></li>
+          <li><code>PathBuilder.fromWeighted2DGrid</code></li>
+        </ul>
+
+        
+<hr class="footer-rule"/>
+<footer>
+  Site generated by <a href="https://typelevel.org/Laika/">Laika</a> with the Helium theme.
+</footer>
+
+
+      </main>
+
+    </div>
+
+  </body>
+
+</html>
