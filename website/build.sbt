@@ -1,6 +1,6 @@
-import laika.markdown.github.GitHubFlavor
-import laika.parse.code.SyntaxHighlighting
-import laika.rewrite.nav.PrettyURLs
+import laika.format.Markdown
+import laika.config.SyntaxHighlighting
+import laika.config.PrettyURLs
 import laika.helium.Helium
 import laika.theme.config.Color
 import laika.theme.config.Color._
@@ -25,7 +25,7 @@ Laika / sourceDirectories := Seq(
   baseDirectory.value / "../indigo/indigo-docs/target/mdoc"
 )
 
-laikaExtensions := Seq(GitHubFlavor, SyntaxHighlighting, PrettyURLs)
+laikaExtensions ++= Seq(Markdown.GitHubFlavor, SyntaxHighlighting, PrettyURLs)
 
 /*
 Dark purple - #29016a
@@ -109,7 +109,7 @@ laikaTheme :=
     .site
     .tableOfContent(title = "Contents", depth = 2)
     .site
-    .autoLinkCSS(Root / "css" / "custom.css")
+    .internalCSS(Root / "css" / "custom.css")
     .site.favIcons(
       Favicon.internal(Root / "img" / "indigo_logo_solid.svg", sizes = "32x32"),
       Favicon.internal(Root / "img" / "indigo_logo_solid.svg", sizes = "64x64")
