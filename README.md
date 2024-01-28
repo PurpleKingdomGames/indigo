@@ -11,6 +11,14 @@ Indigo is built entirely on Scala.js + WebGL, but it's sbt and Mill plugins will
 
 Documentation can be found on [indigoengine.io](https://indigoengine.io).
 
+## Thank you, to our sponsors! 💜
+
+Thank you to all our wonderful sponsors, and particularly to [dedipresta](https://www.dedipresta.com/) for their generous support.
+
+![dedipresta](sponsors/dedipresta.png)
+
+If you'd like to help advance our work, we are ever grateful for all forms of contribution, either by volunteering time or [financial backing](https://github.com/sponsors/PurpleKingdomGames?o=esb). 
+
 ## Full local build and test instructions
 
 ### Using Nix
