@@ -122,6 +122,8 @@ laikaPreviewConfig :=
   LaikaPreviewConfig.defaults
     .withPort(port"8080")
 
+laikaConfig := LaikaConfig.defaults.withRawContent
+
 // Make site
 
 siteSourceDirectory := target.value / "docs" / "site"
