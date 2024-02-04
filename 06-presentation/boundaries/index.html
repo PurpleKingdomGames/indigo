@@ -169,11 +169,11 @@
         <p><code>findBounds</code> finds the bounds of any scene node you give it.</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">graphic</span><span> = </span><span class="type-name">Graphic</span><span>(</span><span class="number-literal">32</span><span>, </span><span class="number-literal">32</span><span>, </span><span class="type-name">Material</span><span>.</span><span class="type-name">Bitmap</span><span>(</span><span class="type-name">AssetName</span><span>(</span><span class="string-literal">&quot;my graphic&quot;</span><span>)))
 </span><span class="identifier">context</span><span>.</span><span class="identifier">boundaryLocator</span><span>.</span><span class="identifier">findBounds</span><span>(</span><span class="identifier">graphic</span><span>)</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run1&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run1" data-mdoc-js></div>
         <p><code>measureText</code> is used specifically to find the real size of the text in a <code>TextBox</code>. This is costly as it requires rendering the text with all it&#39;s font properties in the background.</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">tb</span><span> = </span><span class="type-name">TextBox</span><span>(</span><span class="string-literal">&quot;hello, world!&quot;</span><span>)
 </span><span class="identifier">context</span><span>.</span><span class="identifier">boundaryLocator</span><span>.</span><span class="identifier">measureText</span><span>(</span><span class="identifier">tb</span><span>)</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run2&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run2" data-mdoc-js></div>
         
         <h2 id="the-fast-the-slow-and-the-unavailable" class="section"><a class="anchor-link left" href="#the-fast-the-slow-and-the-unavailable"><i class="icofont-laika link">&#xef71;</i></a>The fast, the slow, and the unavailable</h2>
         <p>Measuring the bounds of something is assumed to mean more than just reading it&#39;s size property, and takes into account scaling and rotation. This means that measuring the real size of scene entities ranges from being fairly easy to we-won&#39;t-even-try hard.</p>
@@ -190,8 +190,8 @@
         <code>Sprite</code>|X|-|-|
         <code>Text</code>|-|X|-|
         <code>TextBox</code>|X|-|-|Note that this is the given bounds. Use <code>measureText</code> to find the real bounds.
-        &lt;script type=&quot;text/javascript&quot; src=&quot;boundaries.md.js&quot; defer&gt;&lt;/script&gt;
-        &lt;script type=&quot;text/javascript&quot; src=&quot;mdoc.js&quot; defer&gt;&lt;/script&gt;</p>
+        <script type="text/javascript" src="boundaries.md.js" defer></script>
+        <script type="text/javascript" src="mdoc.js" defer></script></p>
 
         
 <hr class="footer-rule"/>

@@ -261,7 +261,7 @@
   </span><span class="type-name">EntityShader</span><span>
     .</span><span class="type-name">External</span><span>(</span><span class="type-name">ShaderId</span><span>(</span><span class="string-literal">&quot;my fire shader&quot;</span><span>))
     .</span><span class="identifier">withFragmentProgram</span><span>(</span><span class="identifier">fragProgram</span><span>)</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run1&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run1" data-mdoc-js></div>
         <p>In our case, the fragment program is being loaded as a normal <code>AssetType.Text</code>, and by supplying the <code>AssetName</code> to an <code>External</code> entity shader, Indigo will use the contents of the text asset as the shader code.</p>
         <p>This shader only uses a custom <a href="https://www.khronos.org/opengl/wiki/Fragment_Shader#:~:text=A%20Fragment%20Shader%20is%20the,a%20%22fragment%22%20is%20generated.">fragment shader</a>. The simplest (although I have included our data struct) example of an external fragment shader written in file called <code>shader.frag</code> might be:</p>
         <pre><code class="glsl">#version 300 es
@@ -299,7 +299,7 @@ void fragment() {
   .</span><span class="identifier">noData</span><span>(</span><span class="type-name">GameConfig</span><span>.</span><span class="keyword">default</span><span>.</span><span class="identifier">withViewport</span><span>(</span><span class="number-literal">384</span><span>, </span><span class="number-literal">384</span><span>).</span><span class="identifier">withMagnification</span><span>(</span><span class="number-literal">2</span><span>))
   .</span><span class="identifier">withShaders</span><span>(</span><span class="type-name">Fire</span><span>.</span><span class="identifier">shader</span><span>(</span><span class="type-name">Assets</span><span>.</span><span class="identifier">fireProgram</span><span>))
   .</span><span class="identifier">withAssets</span><span>(</span><span class="type-name">Assets</span><span>.</span><span class="identifier">assets</span><span>)</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run2&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run2" data-mdoc-js></div>
         
         <h3 id="the-toshaderdata-method" class="section"><a class="anchor-link left" href="#the-toshaderdata-method"><i class="icofont-laika link">&#xef71;</i></a>The <code>toShaderData</code> method</h3>
         <p>Eventually we&#39;re going to need to tell our custom entity which shader to use (<code>Fire.shaderId</code>) and also supply values to the shader to change how it behaves. This is the final version, we&#39;re skipping to the end, but hopefully it should be fairly self explanatory:</p>
@@ -321,7 +321,7 @@ void fragment() {
       )
     )
   )</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run3&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run3" data-mdoc-js></div>
         <p>The main thing to note is that the <code>UniformBlock</code> aligns exactly to the struct found in the shader:</p>
         <pre class="keep-together pdf epub"><code class="glsl">layout (std140) uniform FireData {
   float OFFSET;
@@ -441,8 +441,8 @@ void fragment() {
         </ol>
         <p>Inigo Quilez also has a <a href="https://www.youtube.com/channel/UCdmAhiG8HQDlz8uyekw4ENw">YouTube channel</a> where he attempts to explain all this mathematical magic!</p>
         <p>Here is some of his work. If you liked drawing with SDF&#39;s and noise, <a href="https://www.youtube.com/watch?v=s_UOFo2IULQ">check this out!</a>
-        &lt;script type=&quot;text/javascript&quot; src=&quot;howto-fire-shader.md.js&quot; defer&gt;&lt;/script&gt;
-        &lt;script type=&quot;text/javascript&quot; src=&quot;mdoc.js&quot; defer&gt;&lt;/script&gt;</p>
+        <script type="text/javascript" src="howto-fire-shader.md.js" defer></script>
+        <script type="text/javascript" src="mdoc.js" defer></script></p>
 
         
 <hr class="footer-rule"/>

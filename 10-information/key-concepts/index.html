@@ -230,10 +230,10 @@
         <h2 id="key-outputs-are-monoids" class="section"><a class="anchor-link left" href="#key-outputs-are-monoids"><i class="icofont-laika link">&#xef71;</i></a>Key outputs are Monoids</h2>
         <p>Some clarification, the return type of the function above is:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">outcome</span><span>: </span><span class="type-name">Outcome</span><span>[(</span><span class="type-name">Model</span><span>, </span><span class="type-name">ViewModel</span><span>, </span><span class="type-name">SceneUpdateFragment</span><span>)] = ???</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run1&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run1" data-mdoc-js></div>
         <p>But it&#39;s easier to think of this as:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">outcome</span><span>: (</span><span class="type-name">Model</span><span>, </span><span class="type-name">ViewModel</span><span>, </span><span class="type-name">SceneUpdateFragment</span><span>, </span><span class="type-name">Batch</span><span>[</span><span class="type-name">GlobalEvent</span><span>]) = ???</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run2&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run2" data-mdoc-js></div>
         <ol class="arabic">
           <li>An updated model</li>
           <li>An updated view model</li>
@@ -244,8 +244,8 @@
         <p>The <code>SceneUpdateFragment</code> and <code>Batch[GlobalEvent]</code> however are critical as they are the instructions that tell Indigo what side effects to produce. Rendering graphics, playing sounds, storing and fetching data, communicating over a network, etc.</p>
         <p>Since the scene and events can be produced as outputs from a range of processes, it&#39;s essential that they can be combined reliably and predictably so that they can be tested (hence, Monoidal).</p>
         <p>This has the incredibly useful property that you don&#39;t need to describe your frame&#39;s results (graph and events) all in one go. You can define them in little modules (such as Indigo&#39;s <code>SubSystem</code>s) and be sure that Indigo will combine them in a predictable and test friendly way when the game is run.
-        &lt;script type=&quot;text/javascript&quot; src=&quot;key-concepts.md.js&quot; defer&gt;&lt;/script&gt;
-        &lt;script type=&quot;text/javascript&quot; src=&quot;mdoc.js&quot; defer&gt;&lt;/script&gt;</p>
+        <script type="text/javascript" src="key-concepts.md.js" defer></script>
+        <script type="text/javascript" src="mdoc.js" defer></script></p>
 
         
 <hr class="footer-rule"/>

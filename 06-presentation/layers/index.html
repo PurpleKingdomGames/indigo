@@ -194,10 +194,10 @@
     </span><span class="identifier">graphic</span><span>.</span><span class="identifier">moveTo</span><span>(</span><span class="number-literal">10</span><span>, </span><span class="number-literal">30</span><span>)
   )
 )</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run1&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run1" data-mdoc-js></div>
         <p>You can always add layers to scene fragments:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">SceneUpdateFragment</span><span>.</span><span class="identifier">empty</span><span>.</span><span class="identifier">addLayers</span><span>(</span><span class="type-name">Layer</span><span>(</span><span class="identifier">graphic</span><span>), </span><span class="type-name">Layer</span><span>(</span><span class="identifier">graphic</span><span>))</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run2&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run2" data-mdoc-js></div>
         
         <h2 id="merging-scenes-and-layers" class="section"><a class="anchor-link left" href="#merging-scenes-and-layers"><i class="icofont-laika link">&#xef71;</i></a>Merging scenes and layers</h2>
         <p>Combining scene fragments works as you might expect:</p>
@@ -213,7 +213,7 @@
   </span><span class="type-name">Layer</span><span>(</span><span class="identifier">graphicA</span><span>, </span><span class="identifier">graphicA</span><span>, </span><span class="identifier">graphicA</span><span>),
   </span><span class="type-name">Layer</span><span>(</span><span class="identifier">graphicB</span><span>, </span><span class="identifier">graphicB</span><span>, </span><span class="identifier">graphicB</span><span>)
 )</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run4&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run4" data-mdoc-js></div>
         <p>However, you may want to merge scenes and have all the elements end up on the same layer, in which case you need to name the layers:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">c</span><span> = </span><span class="type-name">SceneUpdateFragment</span><span>(
   </span><span class="type-name">Layer</span><span>(</span><span class="type-name">BindingKey</span><span>(</span><span class="string-literal">&quot;my layer&quot;</span><span>), </span><span class="identifier">graphicA</span><span>, </span><span class="identifier">graphicA</span><span>, </span><span class="identifier">graphicA</span><span>)
@@ -223,7 +223,7 @@
 )
 
 </span><span class="identifier">c</span><span> |+| </span><span class="identifier">d</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run5&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run5" data-mdoc-js></div>
         <p>Results in:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">SceneUpdateFragment</span><span>(
   </span><span class="type-name">Layer</span><span>(
@@ -231,10 +231,10 @@
     </span><span class="type-name">Batch</span><span>(</span><span class="identifier">graphicA</span><span>, </span><span class="identifier">graphicA</span><span>, </span><span class="identifier">graphicA</span><span>, </span><span class="identifier">graphicB</span><span>, </span><span class="identifier">graphicB</span><span>, </span><span class="identifier">graphicB</span><span>)
   )
 )</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run6&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run6" data-mdoc-js></div>
         <p>Layers can be merged to!</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">Layer</span><span>(</span><span class="identifier">graphicA</span><span>) |+| </span><span class="type-name">Layer</span><span>(</span><span class="identifier">graphicB</span><span>)</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run7&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run7" data-mdoc-js></div>
         
         <h2 id="other-layer-properties" class="section"><a class="anchor-link left" href="#other-layer-properties"><i class="icofont-laika link">&#xef71;</i></a>Other layer properties</h2>
         
@@ -247,7 +247,7 @@
           <li>With layers, <strong><em>0</em></strong> mean <strong><em>bottom of the stack</em></strong>, like the bottom layer of a cake, and bigger numbers are placed above it.</li>
         </ul>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">Layer</span><span>(</span><span class="identifier">graphicA</span><span>).</span><span class="identifier">withDepth</span><span>(</span><span class="type-name">Depth</span><span>(</span><span class="number-literal">100</span><span>))</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run8&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run8" data-mdoc-js></div>
         
         <h3 id="visibility" class="section"><a class="anchor-link left" href="#visibility"><i class="icofont-laika link">&#xef71;</i></a>Visibility</h3>
         <p>Layers can be made invisible, which may be handy for certain effects or even just debugging. Invisible layers incur no rendering overhead.</p>
@@ -269,8 +269,8 @@
         </ol>
         <p>Blending occurs, in different ways, for each entity as it is rendered onto layer, for each layer rendered on the layers before it, and for the scene as it&#39;s finally rendered onto the canvas.</p>
         <p>There are three built in <code>BlendMaterials</code>: <code>Normal</code>, <code>Lighting</code> and <code>BlendEffects</code>.
-        &lt;script type=&quot;text/javascript&quot; src=&quot;layers.md.js&quot; defer&gt;&lt;/script&gt;
-        &lt;script type=&quot;text/javascript&quot; src=&quot;mdoc.js&quot; defer&gt;&lt;/script&gt;</p>
+        <script type="text/javascript" src="layers.md.js" defer></script>
+        <script type="text/javascript" src="mdoc.js" defer></script></p>
 
         
 <hr class="footer-rule"/>

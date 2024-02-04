@@ -203,7 +203,7 @@
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">SceneUpdateFragment</span><span>(
   </span><span class="type-name">Layer</span><span>(</span><span class="type-name">BindingKey</span><span>(</span><span class="string-literal">&quot;my layer&quot;</span><span>)).</span><span class="identifier">withLights</span><span>(</span><span class="type-name">PointLight</span><span>(</span><span class="type-name">Point</span><span>(</span><span class="number-literal">100</span><span>, </span><span class="number-literal">100</span><span>), </span><span class="type-name">RGBA</span><span>.</span><span class="type-name">Green</span><span>))
 ).</span><span class="identifier">withLights</span><span>(</span><span class="type-name">AmbientLight</span><span>(</span><span class="type-name">RGBA</span><span>.</span><span class="type-name">Blue</span><span>.</span><span class="identifier">withAlpha</span><span>(</span><span class="number-literal">0.2</span><span>)))</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run1&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run1" data-mdoc-js></div>
         
         <h3 id="dynamic-lighting-limitations" class="section"><a class="anchor-link left" href="#dynamic-lighting-limitations"><i class="icofont-laika link">&#xef71;</i></a>Dynamic lighting limitations</h3>
         <p>Indigo uses what is known as a forward renderer to draw it&#39;s scenes. Forward rendering is nice and simple and good for 2D engines, but has its limitations. One such limit is how many lights you can effectively have in a scene.</p>
@@ -219,24 +219,24 @@
         <p>Point lights are a point in space that emit light evenly in all directions. Example:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">PointLight</span><span>(</span><span class="type-name">Point</span><span>.</span><span class="identifier">zero</span><span>, </span><span class="type-name">RGBA</span><span>.</span><span class="type-name">White</span><span>)
   .</span><span class="identifier">withFalloff</span><span>(</span><span class="type-name">Falloff</span><span>.</span><span class="type-name">SmoothQuadratic</span><span>(</span><span class="number-literal">0</span><span>, </span><span class="number-literal">100</span><span>))</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run2&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run2" data-mdoc-js></div>
         
         <h4 id="spotlights" class="section"><a class="anchor-link left" href="#spotlights"><i class="icofont-laika link">&#xef71;</i></a>Spotlights</h4>
         <p>Spotlights shine a cone of light onto a scene at a given angle. Example:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">SpotLight</span><span>(</span><span class="type-name">Point</span><span>.</span><span class="identifier">zero</span><span>, </span><span class="type-name">RGBA</span><span>.</span><span class="type-name">White</span><span>)
   .</span><span class="identifier">withAngle</span><span>(</span><span class="type-name">Radians</span><span>.</span><span class="identifier">fromDegrees</span><span>(</span><span class="number-literal">45</span><span>))
   .</span><span class="identifier">lookAt</span><span>(</span><span class="type-name">Point</span><span>(</span><span class="number-literal">100</span><span>, </span><span class="number-literal">100</span><span>))</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run3&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run3" data-mdoc-js></div>
         
         <h4 id="direction-lights" class="section"><a class="anchor-link left" href="#direction-lights"><i class="icofont-laika link">&#xef71;</i></a>Direction lights</h4>
         <p>Direction lights shin light evenly along one angle, as if from very far away. Useful for things like sun and moonlight. Example:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">DirectionLight</span><span>(</span><span class="type-name">Radians</span><span>.</span><span class="identifier">fromDegrees</span><span>(</span><span class="number-literal">45</span><span>), </span><span class="type-name">RGBA</span><span>.</span><span class="type-name">Blue</span><span>)</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run4&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run4" data-mdoc-js></div>
         
         <h4 id="ambient-lights" class="section"><a class="anchor-link left" href="#ambient-lights"><i class="icofont-laika link">&#xef71;</i></a>Ambient lights</h4>
         <p>Ambient lights illuminate the whole scene evenly with some amount of &#39;background&#39; light. Example:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">AmbientLight</span><span>(</span><span class="type-name">RGBA</span><span>.</span><span class="type-name">White</span><span>.</span><span class="identifier">withAlpha</span><span>(</span><span class="number-literal">0.2</span><span>))</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run5&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run5" data-mdoc-js></div>
         
         <h3 id="materials-for-dynamic-lighting" class="section"><a class="anchor-link left" href="#materials-for-dynamic-lighting"><i class="icofont-laika link">&#xef71;</i></a>Materials for Dynamic Lighting</h3>
         <p>Dynamic lighting only affects <a href="../materials/">materials</a> that can be lit, i.e. have a lighting model, and the material properties affect what happens when the light hits them.</p>
@@ -255,8 +255,8 @@
           <li>Emissive materials are ignored by image based lighting.</li>
         </ol>
         <p>More information on the main <a href="../materials/">materials</a> page.
-        &lt;script type=&quot;text/javascript&quot; src=&quot;lighting.md.js&quot; defer&gt;&lt;/script&gt;
-        &lt;script type=&quot;text/javascript&quot; src=&quot;mdoc.js&quot; defer&gt;&lt;/script&gt;</p>
+        <script type="text/javascript" src="lighting.md.js" defer></script>
+        <script type="text/javascript" src="mdoc.js" defer></script></p>
 
         
 <hr class="footer-rule"/>

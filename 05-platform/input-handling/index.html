@@ -186,7 +186,7 @@
         <blockquote>Note that this is how gamepads are usually modeled and at the moment Indigo is no exception. Adding discrete events for specific button presses to emulate mouse-like behavior is under consideration.</blockquote>
         <p>To continue our example from above: If you wanted the current mouse position, rather than listening to all of the <code>Move</code> events and redundantly reprocessing your model many times per frame, you can simply access the position directly with:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">mousePosition</span><span> = </span><span class="identifier">context</span><span>.</span><span class="identifier">mouse</span><span>.</span><span class="identifier">position</span><span> </span><span class="comment">// returns a Point(x, y)</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run1&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run1" data-mdoc-js></div>
         
         <h3 id="input-mapping" class="section"><a class="anchor-link left" href="#input-mapping"><i class="icofont-laika link">&#xef71;</i></a>Input Mapping</h3>
         <p><code>InputState</code>s ability to tell you about continuous input signals from mice, keyboards and gamepads is great, but what if you need to capture combinations of events? It&#39;s surprisingly hard work!</p>
@@ -226,10 +226,10 @@
     )
   }
 }</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run2&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run2" data-mdoc-js></div>
         <p><code>Combo</code> instances can also be combined using the <code>|+|</code> operator.
-        &lt;script type=&quot;text/javascript&quot; src=&quot;input-handling.md.js&quot; defer&gt;&lt;/script&gt;
-        &lt;script type=&quot;text/javascript&quot; src=&quot;mdoc.js&quot; defer&gt;&lt;/script&gt;</p>
+        <script type="text/javascript" src="input-handling.md.js" defer></script>
+        <script type="text/javascript" src="mdoc.js" defer></script></p>
 
         
 <hr class="footer-rule"/>

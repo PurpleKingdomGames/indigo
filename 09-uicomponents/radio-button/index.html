@@ -184,13 +184,13 @@
     </span><span class="type-name">RadioButton</span><span>(</span><span class="type-name">Point</span><span>(</span><span class="number-literal">25</span><span>, </span><span class="number-literal">5</span><span>)).</span><span class="identifier">withSelectedActions</span><span>(</span><span class="type-name">MyRadioButtonEvent</span><span>(</span><span class="type-name">RGBA</span><span>.</span><span class="type-name">Green</span><span>)),
     </span><span class="type-name">RadioButton</span><span>(</span><span class="type-name">Point</span><span>(</span><span class="number-literal">45</span><span>, </span><span class="number-literal">5</span><span>)).</span><span class="identifier">withSelectedActions</span><span>(</span><span class="type-name">MyRadioButtonEvent</span><span>(</span><span class="type-name">RGBA</span><span>.</span><span class="type-name">Blue</span><span>))
   )</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run1&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run1" data-mdoc-js></div>
         <p>In the example above, we construct an empty <code>RadioButtonGroup</code> group with <code>ButtonAssets</code> display data, and a width and height. The width and height are really producing a hit area <code>Rectangle(0, 0, width, height)</code> that is used to decide if a mouse action should be accounted for. The hit area does not need to start at <code>0, 0</code> though, and can be changed with the <code>.withHitArea</code> method.</p>
         <p>We then add a group of radio buttons that all share the same button assets, giving each a unique position and defining what events will be fired as the radio button pass through the different states we care about.</p>
         <blockquote>Please note that each radio button can optionally have a unique <code>ButtonAssets</code> instance and hit area. When unspecified, the radio buttons will use the group level versions.</blockquote>
         <p><a href="https://github.com/PurpleKingdomGames/indigo-examples/tree/master/examples/radio">The full radio button example is in the indigo-examples repo.</a>
-        &lt;script type=&quot;text/javascript&quot; src=&quot;radio-button.md.js&quot; defer&gt;&lt;/script&gt;
-        &lt;script type=&quot;text/javascript&quot; src=&quot;mdoc.js&quot; defer&gt;&lt;/script&gt;</p>
+        <script type="text/javascript" src="radio-button.md.js" defer></script>
+        <script type="text/javascript" src="mdoc.js" defer></script></p>
 
         
 <hr class="footer-rule"/>

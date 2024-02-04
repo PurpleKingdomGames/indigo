@@ -207,7 +207,7 @@
   </span><span class="keyword">case</span><span> </span><span class="type-name">LoseAll</span><span>          </span><span class="keyword">extends</span><span> </span><span class="type-name">PointsTrackerEvent</span><span>
 
 </span><span class="keyword">case</span><span> </span><span class="keyword">object</span><span> </span><span class="type-name">GameOver</span><span> </span><span class="keyword">extends</span><span> </span><span class="type-name">GlobalEvent</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run0&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run0" data-mdoc-js></div>
         <p>SubSystems are really useful for doing nice bits of encapsulated work that add the all-important sense of polish to your game, but that you&#39;d rather not have polluting your main game logic. For example: You might like to have a system of clouds floating through the sky, or a pinball score counter rattling up - they look great - but as purely visual effects the do not represent important data (in terms of saving your game state) and can be handled independently of your main game.</p>
         <blockquote>Hypothetically, they can also be used as really good encapsulation mechanisms for async or side-effecting processes. For example, perhaps you&#39;d like to call down to the browsers DOM in a clean way? Or run an FS2/Cats based process? You could make a subsystem that talks to your game via nice clean events, but internally does whatever specialist logic you need.</blockquote>
         <p>The Indigo Extras module gives you two really helpful SubSystems: Automata for particle-like effects (not a real particle system in the conventional sense), and an &quot;Asset Bundle Loader&quot; that can be used for dynamically loading new assets during your game, both of which are used in <a href="https://github.com/PurpleKingdomGames/indigo-examples/tree/master/demos/pirate">&quot;The Cursed Pirate&quot;</a>.</p>
@@ -232,8 +232,8 @@
         <p>The Sandbox entry point does not cater for subsystems, but the Demo and Game entry points both allow you to add global subsystems to the <code>BootResult</code> type using the <code>addSubSystems</code> method.</p>
         <p>You cannot use model or start up data to initialise SubSystems, but you can use Boot data, just in case things like the configured magnification level or screen dimensions are important.</p>
         <p>Additionally, you can also add scene specific SubSystems to individual scene definitions. For example in &quot;The Cursed Pirate&quot;, the loading scene makes use of the Asset Bundle Loader SubSystem, but this is no longer updated once we switch to the demo level itself, since by then all the assets have been loaded.
-        &lt;script type=&quot;text/javascript&quot; src=&quot;subsystems.md.js&quot; defer&gt;&lt;/script&gt;
-        &lt;script type=&quot;text/javascript&quot; src=&quot;mdoc.js&quot; defer&gt;&lt;/script&gt;</p>
+        <script type="text/javascript" src="subsystems.md.js" defer></script>
+        <script type="text/javascript" src="mdoc.js" defer></script></p>
 
         
 <hr class="footer-rule"/>

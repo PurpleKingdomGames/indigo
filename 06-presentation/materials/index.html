@@ -191,7 +191,7 @@
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">SceneUpdateFragment</span><span>(
   </span><span class="type-name">Graphic</span><span>(</span><span class="number-literal">32</span><span>, </span><span class="number-literal">32</span><span>, </span><span class="type-name">Material</span><span>.</span><span class="type-name">Bitmap</span><span>(</span><span class="type-name">AssetName</span><span>(</span><span class="string-literal">&quot;funny cat&quot;</span><span>)))
 )</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run1&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run1" data-mdoc-js></div>
         <p>The relationship between <code>Graphic</code>s and <code>Material</code>s is nice and simple to understand because they use materials directly. Materials also turn up in <code>Text</code> and <code>Sprite</code> primitives too, but indirectly inside their <code>FontInfo</code> and <code>Animation</code> classes respectively.</p>
         
         <h3 id="material-imageeffects" class="section"><a class="anchor-link left" href="#material-imageeffects"><i class="icofont-laika link">&#xef71;</i></a><code>Material.ImageEffects</code></h3>
@@ -236,7 +236,7 @@
         <p>If you would like to take the basic form of one of the standard shaders (i.e. and the data they provide) and write your own shader, you can swap the shader id like this:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">Material</span><span>.</span><span class="type-name">Bitmap</span><span>(</span><span class="type-name">AssetName</span><span>(</span><span class="string-literal">&quot;funny cat&quot;</span><span>))
   .</span><span class="identifier">withShaderId</span><span>(</span><span class="type-name">ShaderId</span><span>(</span><span class="string-literal">&quot;my bitmap shader&quot;</span><span>))</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run2&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run2" data-mdoc-js></div>
         <p>Arguably you would usually be better off just writing your own Material + Shader, but this is an option if you find it useful.</p>
         
         <h3 id="filling-in-the-space" class="section"><a class="anchor-link left" href="#filling-in-the-space"><i class="icofont-laika link">&#xef71;</i></a>Filling in the space</h3>
@@ -249,7 +249,7 @@
 
 </span><span class="comment">// The above methods are aliases for:
 </span><span class="identifier">material</span><span>.</span><span class="identifier">withFillType</span><span>(</span><span class="type-name">FillType</span><span>.</span><span class="type-name">Tile</span><span>)</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run3&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run3" data-mdoc-js></div>
         <p>When you describe a primitive like a <code>Graphic</code>, you have to give it a size. However, that size does not have any direct relationship with the dimensions of the texture being used in the material. For example, you could have a graphic with a width and height of 100 x 100, and add a material with a texture that is only 50 x 50. What happens to all the extra space?</p>
         <ul>
           <li>In &quot;normal&quot; mode, the space is left empty.</li>
@@ -309,8 +309,8 @@
         </ul>
         <p>But, both formats encode normals in either an unprocessed or pre-processed way.</p>
         <p><a href="https://indigoengine.io/tools/">Wouldn&#39;t it be nice if someone had made a tool that converted bump maps to normal maps for you?</a>
-        &lt;script type=&quot;text/javascript&quot; src=&quot;materials.md.js&quot; defer&gt;&lt;/script&gt;
-        &lt;script type=&quot;text/javascript&quot; src=&quot;mdoc.js&quot; defer&gt;&lt;/script&gt;</p>
+        <script type="text/javascript" src="materials.md.js" defer></script>
+        <script type="text/javascript" src="mdoc.js" defer></script></p>
 
         
 <hr class="footer-rule"/>

@@ -227,16 +227,16 @@
   </span><span class="identifier">blendMaterial</span><span> = </span><span class="type-name">BlendMaterial</span><span>.</span><span class="type-name">Lighting</span><span>(</span><span class="identifier">ambientLightColor</span><span>),
   </span><span class="identifier">clearColor</span><span> = </span><span class="type-name">Option</span><span>(</span><span class="type-name">RGBA</span><span>.</span><span class="type-name">Black</span><span>)
 )</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run1&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run1" data-mdoc-js></div>
         <p>What is going on here?</p>
         <p>Starting at the bottom, we&#39;re doing lighting! So the first thing we want to do is &quot;remove all light&quot; so we clear the screen to black.</p>
         <p>Entities are then blended onto the layer using the mode we saw before, which multiplies the colors together such that putting a full red dot on a full green dot on a full blue dot would result in a white dot:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">Blend</span><span>.</span><span class="type-name">Lighten</span><span>(</span><span class="type-name">BlendFactor</span><span>.</span><span class="type-name">SrcAlpha</span><span>, </span><span class="type-name">BlendFactor</span><span>.</span><span class="type-name">DstAlpha</span><span>)</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run2&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run2" data-mdoc-js></div>
         <p>The layer then appears to be blended normally, simply adding this layer onto the layers below it. However this is misleading as the default behavior is overridden in the blend material.</p>
         <p>The blend material actually takes the source and destination pixels and multiplies them together along with an ambient light value, to give the appearance that the scene is lit.
-        &lt;script type=&quot;text/javascript&quot; src=&quot;blending.md.js&quot; defer&gt;&lt;/script&gt;
-        &lt;script type=&quot;text/javascript&quot; src=&quot;mdoc.js&quot; defer&gt;&lt;/script&gt;</p>
+        <script type="text/javascript" src="blending.md.js" defer></script>
+        <script type="text/javascript" src="mdoc.js" defer></script></p>
 
         
 <hr class="footer-rule"/>

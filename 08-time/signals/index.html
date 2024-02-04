@@ -195,7 +195,7 @@
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">indigo</span><span>.*
 
 </span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">Signal</span><span>[</span><span class="type-name">A</span><span>](</span><span class="identifier">f</span><span>: </span><span class="type-name">Seconds</span><span> =&gt; </span><span class="type-name">A</span><span>)</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run0&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run0" data-mdoc-js></div>
         <p>In other words, a <code>Signal</code> of <code>A</code> is nothing more than a function that when given the current running time in <code>Seconds</code>, <em>will</em> produce some value of type <code>A</code>.</p>
         
         <h2 id="signals-animation" class="section"><a class="anchor-link left" href="#signals-animation"><i class="icofont-laika link">&#xef71;</i></a>Signals &amp; Animation</h2>
@@ -230,7 +230,7 @@
 </span><span>
 (</span><span class="identifier">positionX</span><span> + </span><span class="number-literal">1</span><span> * </span><span class="identifier">timeDelta</span><span>).</span><span class="identifier">toInt</span><span> </span><span class="comment">// toInt for pixels, which are integers
 // res2: Int = 0 // Oops!</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run1&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run1" data-mdoc-js></div>
         <p>We made no progress! In fact we will never make any progress because it doesn&#39;t matter how many times you add zero to anything the answer is always the original value! Gah!</p>
         
         <h3 id="using-a-higher-precision" class="section"><a class="anchor-link left" href="#using-a-higher-precision"><i class="icofont-laika link">&#xef71;</i></a>Using a higher precision</h3>
@@ -275,7 +275,7 @@
 </span><span>
 </span><span class="identifier">calculatePosition</span><span>(</span><span class="number-literal">0</span><span>, </span><span class="number-literal">15</span><span>)
 </span><span class="comment">// res2: Int = 10</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run2&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run2" data-mdoc-js></div>
         <p>So that&#39;s an animation described in terms of a function of time ...which means we must be able to encode that as a <code>Signal</code>, so lets try the <code>Signal</code> version:</p>
         <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">indigo</span><span>.*
 
@@ -337,7 +337,7 @@
   } </span><span class="keyword">yield</span><span> </span><span class="identifier">a</span><span> + </span><span class="identifier">b</span><span> + </span><span class="identifier">c</span><span>
 
 </span><span class="identifier">signal</span><span>.</span><span class="identifier">at</span><span>(</span><span class="type-name">Seconds</span><span>.</span><span class="identifier">zero</span><span>) </span><span class="comment">// 60</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run4&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run4" data-mdoc-js></div>
         <p>This helps a lot with building signal values, but another useful construct is the <code>SignalFunction</code>.</p>
         
         <h2 id="signalfunctions" class="section"><a class="anchor-link left" href="#signalfunctions"><i class="icofont-laika link">&#xef71;</i></a><code>SignalFunction</code>s</h2>
@@ -359,7 +359,7 @@
 
 </span><span class="identifier">signal</span><span>.</span><span class="identifier">at</span><span>(</span><span class="type-name">Seconds</span><span>.</span><span class="identifier">zero</span><span>)
 </span><span class="comment">// &quot;count: 10&quot;</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run5&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run5" data-mdoc-js></div>
         <p>In this example we pipe a fixed value (ignores time) into a signal function which prints a string. So far, we could have achieved this by just using <code>map</code>:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">indigo</span><span>.*
 
@@ -367,7 +367,7 @@
 
 </span><span class="identifier">signal</span><span>.</span><span class="identifier">at</span><span>(</span><span class="type-name">Seconds</span><span>.</span><span class="identifier">zero</span><span>)
 </span><span class="comment">// &quot;count: 10&quot;</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run6&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run6" data-mdoc-js></div>
         <p>You don&#39;t <em>need</em> signal functions, but they are a nice way to describe combining and processing signals. Here is an more interesting example:</p>
         <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">indigo</span><span>.*
 
@@ -403,15 +403,15 @@
 </span><span>
 (</span><span class="identifier">signal</span><span> |&gt; </span><span class="identifier">signalFunction</span><span>).</span><span class="identifier">at</span><span>(</span><span class="type-name">Seconds</span><span>(</span><span class="number-literal">1</span><span>))
 </span><span class="comment">// List(&quot;1 cat&quot;, &quot;2 cat&quot;, &quot;3 cat&quot;, &quot;4 cat&quot;, &quot;5 cat&quot;)</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run7&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run7" data-mdoc-js></div>
         
         <h2 id="signalreader" class="section"><a class="anchor-link left" href="#signalreader"><i class="icofont-laika link">&#xef71;</i></a>SignalReader</h2>
         <p><code>// TODO</code></p>
         
         <h2 id="signalstate" class="section"><a class="anchor-link left" href="#signalstate"><i class="icofont-laika link">&#xef71;</i></a>SignalState</h2>
         <p><code>// TODO</code>
-        &lt;script type=&quot;text/javascript&quot; src=&quot;signals.md.js&quot; defer&gt;&lt;/script&gt;
-        &lt;script type=&quot;text/javascript&quot; src=&quot;mdoc.js&quot; defer&gt;&lt;/script&gt;</p>
+        <script type="text/javascript" src="signals.md.js" defer></script>
+        <script type="text/javascript" src="mdoc.js" defer></script></p>
 
         
 <hr class="footer-rule"/>

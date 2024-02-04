@@ -216,10 +216,10 @@
 </span><span class="keyword">val</span><span> </span><span class="identifier">animations</span><span>: </span><span class="type-name">Set</span><span>[</span><span class="type-name">Animation</span><span>] = </span><span class="type-name">Set</span><span>(</span><span class="identifier">myAnimation</span><span>)</span></code></pre>
         <p>However, to add an animation to the boot sequence of <code>IndigoDemo</code> or <code>IndigoGame</code>, you will need to add them to the <code>BootResult</code>:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">BootResult</span><span>.</span><span class="identifier">noData</span><span>(</span><span class="type-name">GameConfig</span><span>.</span><span class="keyword">default</span><span>).</span><span class="identifier">addAnimations</span><span>(</span><span class="identifier">myAnimation</span><span>)</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run1&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run1" data-mdoc-js></div>
         <p>During setup, you can add an animation like this:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">Startup</span><span>.</span><span class="type-name">Success</span><span>(()).</span><span class="identifier">addAnimations</span><span>(</span><span class="identifier">myAnimation</span><span>)</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run2&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run2" data-mdoc-js></div>
         <p>The advantage of adding animations during the set up stage is that they can be based on loaded data, for example an imported Aseprite animation.</p>
         
         <h3 id="structure" class="section"><a class="anchor-link left" href="#structure"><i class="icofont-laika link">&#xef71;</i></a>Structure</h3>
@@ -279,7 +279,7 @@
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">signal</span><span>.</span><span class="identifier">affectTime</span><span>(</span><span class="number-literal">0.5</span><span>).</span><span class="identifier">at</span><span>(</span><span class="type-name">Seconds</span><span>(</span><span class="number-literal">2.0</span><span>)) </span><span class="comment">// 10
 </span><span class="identifier">signal</span><span>.</span><span class="identifier">affectTime</span><span>(</span><span class="number-literal">1.0</span><span>).</span><span class="identifier">at</span><span>(</span><span class="type-name">Seconds</span><span>(</span><span class="number-literal">2.0</span><span>)) </span><span class="comment">// 20
 </span><span class="identifier">signal</span><span>.</span><span class="identifier">affectTime</span><span>(</span><span class="number-literal">1.5</span><span>).</span><span class="identifier">at</span><span>(</span><span class="type-name">Seconds</span><span>(</span><span class="number-literal">2.0</span><span>)) </span><span class="comment">// 30</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run4&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run4" data-mdoc-js></div>
         <p>There are a range of pre-made Signal types you can play with, such as <code>Lerp</code> and <code>Orbit</code>, but the power of them is that you can combine and transform them.</p>
         <p>Signals themselves are Functors up to Monad and compose in all the usual ways.</p>
         <p><code>SignalFunction</code>s are Signal combinators. Combinators are functions that take a function and return a function, in this case: <code>Signal[A] =&gt; Signal[B]</code> which is really:</p>
@@ -308,7 +308,7 @@
 
 </span><span class="keyword">def</span><span> </span><span class="declaration-name">giveCords</span><span>(</span><span class="identifier">range</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">Signal</span><span>[(</span><span class="type-name">Int</span><span>, </span><span class="type-name">Int</span><span>)] =
   </span><span class="type-name">Signal</span><span>(</span><span class="identifier">t</span><span> =&gt; </span><span class="type-name">Radians</span><span>.</span><span class="identifier">fromSeconds</span><span>(</span><span class="identifier">t</span><span>)) |&gt; (</span><span class="identifier">xPos</span><span> &amp;&amp;&amp; </span><span class="identifier">yPos</span><span>) &gt;&gt;&gt; </span><span class="identifier">distance</span><span>(</span><span class="identifier">range</span><span>)</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run5&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run5" data-mdoc-js></div>
         <p>Then calling <code>giveCords(100).at(t)</code> with different values of <code>t</code> would give you various positions on an orbit with a distance of 100 around a world 0,0 coordinate where 1 full orbit takes 1 second.</p>
         <p>It works by:</p>
         <ol class="arabic">
@@ -322,8 +322,8 @@
         <p>The main gotcha to be aware of with this kind of programming, is that the amount of time that passes between frames is not consistent. In other words, you can&#39;t add <code>1</code> to a characters <code>x</code> position and expect it to move smoothly across the screen.</p>
         <p>All movement must therefore be described in terms of the amount of time that has passed, and there are a few helpful functions on the <code>GameTime</code> instance you are supplied with to help you do that. The typical approach is to work out how many &#39;units per second&#39; your animated thing should run at, and multiply that by the time delta provided in the <code>FrameContext</code>.</p>
         <p>Sprite and Clip based animations and Signals already have time either taken care of or factored into the equation for you in some way or other.
-        &lt;script type=&quot;text/javascript&quot; src=&quot;animation.md.js&quot; defer&gt;&lt;/script&gt;
-        &lt;script type=&quot;text/javascript&quot; src=&quot;mdoc.js&quot; defer&gt;&lt;/script&gt;</p>
+        <script type="text/javascript" src="animation.md.js" defer></script>
+        <script type="text/javascript" src="mdoc.js" defer></script></p>
 
         
 <hr class="footer-rule"/>

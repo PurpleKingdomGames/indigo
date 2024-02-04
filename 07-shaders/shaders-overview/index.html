@@ -292,7 +292,7 @@ void fragment() {
     </span><span class="type-name">AssetType</span><span>.</span><span class="type-name">Text</span><span>(</span><span class="type-name">AssetName</span><span>(</span><span class="string-literal">&quot;my vertex shader&quot;</span><span>), </span><span class="type-name">AssetPath</span><span>(</span><span class="string-literal">&quot;assets/shader.vert&quot;</span><span>)),
     </span><span class="type-name">AssetType</span><span>.</span><span class="type-name">Text</span><span>(</span><span class="type-name">AssetName</span><span>(</span><span class="string-literal">&quot;my fragment shader&quot;</span><span>), </span><span class="type-name">AssetPath</span><span>(</span><span class="string-literal">&quot;assets/shader.frag&quot;</span><span>))
   )</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run1&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run1" data-mdoc-js></div>
         <blockquote>Note, best practice is to do what is shown in this example and have two shader files with the same name, one with a <code>.vert</code> and the other with a <code>.frag</code> extension. These are standard shader file names that your GLSL editor of choice will understand. Technically they could all be in the same file, but if you need to pass data from your vertex to your fragment shader (using varyings) then you&#39;ll run into problems with conflicting variable names, e.g. you&#39;d have to declare <code>out vec4 mydata;</code> and <code>in vec4 mydata;</code> in the same file, which a linter won&#39;t like.</blockquote>
         <p>Here we&#39;re loading two shader files with potentially a complete set of function overrides, but please note that you only need to supply what you need. If you only need a fragment shader that overrides <code>void fragment(){}</code>, you can just supply that and Indigo will use defaults for the others.</p>
         <p>Next we need to build our shader:</p>
@@ -306,7 +306,7 @@ void fragment() {
       .</span><span class="identifier">withVertexProgram</span><span>(</span><span class="identifier">vertAsset</span><span>)
       .</span><span class="identifier">withFragmentProgram</span><span>(</span><span class="identifier">fragAsset</span><span>)
       .</span><span class="identifier">withLightProgram</span><span>(</span><span class="identifier">fragAsset</span><span>)</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run2&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run2" data-mdoc-js></div>
         <p>Finally we need to tell Indigo about these shaders, or we won&#39;t be able to use them:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span>    </span><span class="type-name">Outcome</span><span>(
       </span><span class="type-name">BootResult</span><span>.</span><span class="identifier">noData</span><span>(</span><span class="type-name">GameConfig</span><span>.</span><span class="keyword">default</span><span>)
@@ -348,7 +348,7 @@ void fragment() {
         |}
         |&quot;&quot;&quot;</span><span>.</span><span class="identifier">stripMargin</span><span>
       )</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run3&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run3" data-mdoc-js></div>
         <p>If we wanted to supply the colour, we need to modify our code as follows:</p>
         <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">indigo</span><span>.</span><span class="type-name">ShaderPrimitive</span><span>.*
 
@@ -389,7 +389,7 @@ void fragment() {
         |}
         |&quot;&quot;&quot;</span><span>.</span><span class="identifier">stripMargin</span><span>
       )</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run4&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run4" data-mdoc-js></div>
         <p>The <code>toShaderData</code> function now includes a uniform block that declares (in this case) a single variable called &quot;MY_COLOR&quot; of type <code>vec4</code>.</p>
         <blockquote>Aside, the variable names are not checked! It&#39;s the order that matters, but keep the names the same for your own sanity...</blockquote>
         <p>We then declare a uniform block (a special kind of struct) in the shader code, and then we can use the variable in your fragment function.</p>
@@ -421,8 +421,8 @@ FF00 VVVV F000
 You also can&#39;t straddle byte boundries. So if you&#39;re trying to pack this: Float-Vec2
 This is valid: F0VV
 But this isn&#39;t: FVV0</code></pre>
-        <p>&lt;script type=&quot;text/javascript&quot; src=&quot;shaders-overview.md.js&quot; defer&gt;&lt;/script&gt;
-        &lt;script type=&quot;text/javascript&quot; src=&quot;mdoc.js&quot; defer&gt;&lt;/script&gt;</p>
+        <p><script type="text/javascript" src="shaders-overview.md.js" defer></script>
+        <script type="text/javascript" src="mdoc.js" defer></script></p>
 
         
 <hr class="footer-rule"/>

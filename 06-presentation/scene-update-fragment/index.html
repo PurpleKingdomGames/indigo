@@ -194,7 +194,7 @@
 </span><span class="keyword">val</span><span> </span><span class="identifier">foreground</span><span>: </span><span class="type-name">SceneUpdateFragment</span><span> = ???
 
 </span><span class="identifier">sceneAudio</span><span> |+| </span><span class="identifier">background</span><span> |+| </span><span class="identifier">clouds</span><span> |+| </span><span class="identifier">player</span><span> |+| </span><span class="identifier">foreground</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run1&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run1" data-mdoc-js></div>
         <p>Consider also the following:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">visible</span><span> = </span><span class="boolean-literal">true</span><span>
 </span><span class="keyword">val</span><span> </span><span class="identifier">vanishingThing</span><span> =
@@ -202,13 +202,13 @@
   </span><span class="keyword">else</span><span> </span><span class="type-name">SceneUpdateFragment</span><span>.</span><span class="identifier">empty</span><span>
 
 </span><span class="type-name">SceneUpdateFragment</span><span>(</span><span class="identifier">graphic</span><span>) |+| </span><span class="identifier">vanishingThing</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run2&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run2" data-mdoc-js></div>
         <p>Or this:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">scene</span><span> = </span><span class="type-name">SceneUpdateFragment</span><span>(</span><span class="identifier">graphic</span><span>)
 </span><span class="keyword">val</span><span> </span><span class="identifier">b</span><span>: </span><span class="type-name">Batch</span><span>[</span><span class="type-name">SceneUpdateFragment</span><span>] = </span><span class="type-name">Batch</span><span>(</span><span class="identifier">scene</span><span>, </span><span class="identifier">scene</span><span>, </span><span class="identifier">scene</span><span>)
 
 </span><span class="identifier">b</span><span>.</span><span class="identifier">foldLeft</span><span>(</span><span class="type-name">SceneUpdateFragment</span><span>.</span><span class="identifier">empty</span><span>)(</span><span class="identifier">_</span><span> |+| </span><span class="identifier">_</span><span>)</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run3&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run3" data-mdoc-js></div>
         <p>There are some special rules about what happens when you combine <code>SceneUpdateFragment</code>s that optionally have things like cameras. The rules are: Lists are concatenated in the expected way. Optional elements (cameras, blend materials, scene audio elements) are &quot;appended&quot; such that a defined element is always taken in preference to an undefined element, and if two are defined, the last or &quot;incoming&quot; version is assumed to be the desired one. Consider the following illustration:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">a</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">Int</span><span>] = </span><span class="type-name">Some</span><span>(</span><span class="number-literal">1</span><span>)
 </span><span class="keyword">val</span><span> </span><span class="identifier">b</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">Int</span><span>] = </span><span class="type-name">None</span><span>
@@ -218,7 +218,7 @@
   </span><span class="keyword">case</span><span> (</span><span class="type-name">Some</span><span>(</span><span class="identifier">i</span><span>), </span><span class="type-name">None</span><span>)    =&gt; </span><span class="type-name">Some</span><span>(</span><span class="identifier">i</span><span>)
   </span><span class="keyword">case</span><span> (</span><span class="type-name">None</span><span>, </span><span class="type-name">Some</span><span>(</span><span class="identifier">i</span><span>))    =&gt; </span><span class="type-name">Some</span><span>(</span><span class="identifier">i</span><span>)
   </span><span class="keyword">case</span><span> (</span><span class="type-name">Some</span><span>(</span><span class="identifier">_</span><span>), </span><span class="type-name">Some</span><span>(</span><span class="identifier">i</span><span>)) =&gt; </span><span class="type-name">Some</span><span>(</span><span class="identifier">i</span><span>)</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run4&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run4" data-mdoc-js></div>
         
         <h2 id="relationship-with-layers" class="section"><a class="anchor-link left" href="#relationship-with-layers"><i class="icofont-laika link">&#xef71;</i></a>Relationship with <code>Layer</code>s</h2>
         <p>Layers describe horizontal bands through the total scene that need to be drawn. Ultimately all layers are part of the final scene, and as such the resulting <code>SceneUpdateFragment</code> acts in some regards as a fall back or default state. For example, if a camera is defined on a layer it will be used first, but if not the scene level camera will be used (or else a default).</p>
@@ -234,8 +234,8 @@
           <li><strong>A scene blend material</strong>: Used in <a href="../../07-shaders/blending/">blending</a>, unlike layers you cannot change the blend mode, only the blend material.</li>
           <li><strong>Clone blanks</strong>: A list of nodes used as look up reference for Cloning.</li>
           <li><strong>Scene Camera</strong>: A default <a href="../cameras/">camera</a>.
-          &lt;script type=&quot;text/javascript&quot; src=&quot;scene-update-fragment.md.js&quot; defer&gt;&lt;/script&gt;
-          &lt;script type=&quot;text/javascript&quot; src=&quot;mdoc.js&quot; defer&gt;&lt;/script&gt;</li>
+          <script type="text/javascript" src="scene-update-fragment.md.js" defer></script>
+          <script type="text/javascript" src="mdoc.js" defer></script></li>
         </ul>
 
         

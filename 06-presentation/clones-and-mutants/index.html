@@ -249,7 +249,7 @@
     </span><span class="type-name">CloneTileData</span><span>(</span><span class="identifier">p</span><span>.</span><span class="identifier">x</span><span>, </span><span class="identifier">p</span><span>.</span><span class="identifier">y</span><span>, </span><span class="type-name">Radians</span><span>.</span><span class="identifier">zero</span><span>, </span><span class="number-literal">1</span><span>, </span><span class="number-literal">1</span><span>, </span><span class="identifier">c</span><span>.</span><span class="identifier">x</span><span>, </span><span class="identifier">c</span><span>.</span><span class="identifier">y</span><span>, </span><span class="identifier">c</span><span>.</span><span class="identifier">width</span><span>, </span><span class="identifier">c</span><span>.</span><span class="identifier">height</span><span>)
   }
 )</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run2&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run2" data-mdoc-js></div>
         
         <h3 id="mutants" class="section"><a class="anchor-link left" href="#mutants"><i class="icofont-laika link">&#xef71;</i></a>Mutants</h3>
         <p>The idea of mutants is to take a clone blank and &#39;mutate&#39; it per instance by providing different data to it&#39;s shader program. In theory this makes mutants extremely powerful, as you can render pretty much anything, but this also makes them quite complicated.</p>
@@ -270,7 +270,7 @@
     )
   )
 )</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run3&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run3" data-mdoc-js></div>
         <p>The idea here is that you have <a href="../../02-guides/howto-custom-entity/">created a custom entity</a> and for each instance, you want to set it&#39;s UBO data, which here contains a position, a scale and an alpha value.</p>
         <p>In many ways the important part of this example is the alpha. If you only wanted to position the entities you be far better off with one of the clone types. The whole point is that you also plan to programmatically influence the visual rendering of the entity in some way.</p>
         <p>You will then need a pair of shaders to go with that data.</p>
@@ -318,8 +318,8 @@ void fragment(){
 }
 //&lt;/indigo-fragment&gt;</code></pre>
         <p>The fragment shader takes the default texture channel and applies the supplied alpha to it. Note the use of <a href="../../07-shaders/premultiplied-alpha/">premultiplied alpha</a>.
-        &lt;script type=&quot;text/javascript&quot; src=&quot;clones-and-mutants.md.js&quot; defer&gt;&lt;/script&gt;
-        &lt;script type=&quot;text/javascript&quot; src=&quot;mdoc.js&quot; defer&gt;&lt;/script&gt;</p>
+        <script type="text/javascript" src="clones-and-mutants.md.js" defer></script>
+        <script type="text/javascript" src="mdoc.js" defer></script></p>
 
         
 <hr class="footer-rule"/>

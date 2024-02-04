@@ -204,13 +204,13 @@
   .</span><span class="identifier">withStroke</span><span>(</span><span class="type-name">TextStroke</span><span>(</span><span class="type-name">RGBA</span><span>.</span><span class="type-name">Red</span><span>, </span><span class="type-name">Pixels</span><span>(</span><span class="number-literal">1</span><span>)))
   .</span><span class="identifier">italic</span><span>
   .</span><span class="identifier">alignRight</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run1&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run1" data-mdoc-js></div>
         
         <h2 id="the-text-primitive" class="section"><a class="anchor-link left" href="#the-text-primitive"><i class="icofont-laika link">&#xef71;</i></a>The Text Primitive</h2>
         <p>The alternative to <code>TextBox</code> is the <code>Text</code> primitive, which renders text using what are known as bitmap fonts, i.e, an image containing all the characters and data structure explaining where they are.</p>
         <p>You can create a Text node using one of it&#39;s constructors and manipulate its properties with fluent API methods like this:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">Text</span><span>(</span><span class="string-literal">&quot;Hello, world!</span><span class="escape-sequence">\n</span><span class="string-literal">This is some text!&quot;</span><span>, </span><span class="type-name">FontKey</span><span>(</span><span class="string-literal">&quot;my font&quot;</span><span>), </span><span class="type-name">Material</span><span>.</span><span class="type-name">Bitmap</span><span>(</span><span class="type-name">AssetName</span><span>(</span><span class="string-literal">&quot;my font sheet&quot;</span><span>))).</span><span class="identifier">alignRight</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run2&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run2" data-mdoc-js></div>
         <p>Easy enough, and note that you can use newlines ...but if indigo doesn&#39;t support fonts for <code>Text</code>, what is the <code>fontKey</code> in reference to?</p>
         
         <h3 id="allowing-fonts-without-supporting-fonts" class="section"><a class="anchor-link left" href="#allowing-fonts-without-supporting-fonts"><i class="icofont-laika link">&#xef71;</i></a>Allowing fonts without supporting fonts</h3>
@@ -225,7 +225,7 @@
 
 </span><span class="keyword">val</span><span> </span><span class="identifier">assets</span><span>: </span><span class="type-name">Set</span><span>[</span><span class="type-name">AssetType</span><span>] =
   </span><span class="type-name">Set</span><span>()</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run3&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run3" data-mdoc-js></div>
         <p>What you need to do, one way or another, is provide an image that represents your font characters, and the <code>FontInfo</code> that tells indigo how to render each character.</p>
         <p>The image might look like this:</p>
         <p><img src="../../img/font-example.png" alt="Font sheet example"></p>
@@ -236,7 +236,7 @@
 
 </span><span class="keyword">val</span><span> </span><span class="identifier">assets</span><span>: </span><span class="type-name">Set</span><span>[</span><span class="type-name">AssetType</span><span>] =
   </span><span class="type-name">Set</span><span>(</span><span class="type-name">AssetType</span><span>.</span><span class="type-name">Image</span><span>(</span><span class="identifier">imageAsset</span><span>, </span><span class="type-name">AssetPath</span><span>(</span><span class="string-literal">&quot;assets/my-font.png&quot;</span><span>)))</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run4&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run4" data-mdoc-js></div>
         <p>And the associated <code>FontInfo</code> definition would be as follows, where the <code>FontChar</code> contains the character to match, and an image crop rectangle:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">fontKey</span><span>: </span><span class="type-name">FontKey</span><span> = </span><span class="type-name">FontKey</span><span>(</span><span class="string-literal">&quot;my font&quot;</span><span>)
 
@@ -248,7 +248,7 @@
     .</span><span class="identifier">addChar</span><span>(</span><span class="type-name">FontChar</span><span>(</span><span class="string-literal">&quot;D&quot;</span><span>, </span><span class="number-literal">37</span><span>, </span><span class="number-literal">39</span><span>, </span><span class="number-literal">9</span><span>, </span><span class="number-literal">12</span><span>))
     .</span><span class="identifier">addChar</span><span>(</span><span class="type-name">FontChar</span><span>(</span><span class="string-literal">&quot;E&quot;</span><span>, </span><span class="number-literal">49</span><span>, </span><span class="number-literal">39</span><span>, </span><span class="number-literal">9</span><span>, </span><span class="number-literal">12</span><span>))
     </span><span class="comment">// etc.</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run5&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run5" data-mdoc-js></div>
         <p>The eagle eyed among you may have noticed two things:</p>
         <ol class="arabic">
           <li>That our <code>fontKey</code> has appeared, and it ties the <code>Text</code> primitive to a specific <code>FontInfo</code> instance.</li>
@@ -303,9 +303,9 @@
 
   </span><span class="keyword">case</span><span> </span><span class="type-name">None</span><span> =&gt;
     </span><span class="comment">// handle error case here.</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run7&quot; data-mdoc-js&gt;&lt;/div&gt;
-        &lt;script type=&quot;text/javascript&quot; src=&quot;text-and-fonts.md.js&quot; defer&gt;&lt;/script&gt;
-        &lt;script type=&quot;text/javascript&quot; src=&quot;mdoc.js&quot; defer&gt;&lt;/script&gt;</p>
+        <div id="mdoc-html-run7" data-mdoc-js></div>
+        <p><script type="text/javascript" src="text-and-fonts.md.js" defer></script>
+        <script type="text/javascript" src="mdoc.js" defer></script></p>
 
         
 <hr class="footer-rule"/>

@@ -207,7 +207,7 @@
   </span><span class="keyword">def</span><span> </span><span class="declaration-name">eventHandler</span><span>: ((</span><span class="type-name">MyCustomEntity</span><span>, </span><span class="type-name">GlobalEvent</span><span>)) =&gt; </span><span class="type-name">Option</span><span>[</span><span class="type-name">GlobalEvent</span><span>] = ???
   </span><span class="keyword">def</span><span> </span><span class="declaration-name">eventHandlerEnabled</span><span>: </span><span class="type-name">Boolean</span><span> = ???
   </span><span class="keyword">def</span><span> </span><span class="declaration-name">toShaderData</span><span>: </span><span class="type-name">ShaderData</span><span> = ???</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run1&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run1" data-mdoc-js></div>
         <p>Case classes work well, but anything that <em>is a</em> <code>EntityNode</code> will be fine.</p>
         <p>Most of the fields are to do with allocating space on the screen, but unlike built-in primitives, you are not required to add all the usual modifiers - whether you want them or not is up to you.</p>
         <p>The <code>toShaderData</code> definition is the part that tells Indigo how to draw the entity.</p>
@@ -260,7 +260,7 @@
       .</span><span class="identifier">noData</span><span>(</span><span class="type-name">GameConfig</span><span>.</span><span class="keyword">default</span><span>)
       .</span><span class="identifier">withShaders</span><span>(</span><span class="type-name">MyColoredEntity</span><span>.</span><span class="identifier">shader</span><span>)
   )</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run3&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run3" data-mdoc-js></div>
         <p>Next the fun bit, we need to add it to our scene, e.g.:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">present</span><span>(</span><span class="identifier">context</span><span>: </span><span class="type-name">FrameContext</span><span>[</span><span class="type-name">Unit</span><span>], </span><span class="identifier">model</span><span>: </span><span class="type-name">Unit</span><span>, </span><span class="identifier">viewModel</span><span>: </span><span class="type-name">Unit</span><span>): </span><span class="type-name">Outcome</span><span>[</span><span class="type-name">SceneUpdateFragment</span><span>] =
   </span><span class="type-name">Outcome</span><span>(
@@ -268,7 +268,7 @@
       </span><span class="type-name">MyColoredEntity</span><span>(</span><span class="type-name">Point</span><span>(</span><span class="number-literal">10</span><span>, </span><span class="number-literal">10</span><span>), </span><span class="type-name">Depth</span><span>(</span><span class="number-literal">1</span><span>))
     )
   )</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run4&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run4" data-mdoc-js></div>
         <blockquote>If you wanted to set the color dynamically you&#39;d need to send it to the shader via a <code>UniformBlock</code>, but that&#39;s out of scope for this tutorial.</blockquote>
         <p>One more thing before we move on to textures. Indigo&#39;s shaders come with a series of variables and constants you can access, let&#39;s use one of them now by modifying our program as follows:</p>
         <pre class="keep-together pdf epub"><code class="glsl">void fragment() {
@@ -314,7 +314,7 @@
         |}
         |&quot;&quot;&quot;</span><span>.</span><span class="identifier">stripMargin</span><span>
       )</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run5&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run5" data-mdoc-js></div>
         <p>The difference between this one and the last one is that we&#39;re telling Indigo to use a texture by assigning it to a channel and referring to it in the shader program.</p>
         <blockquote><strong>Important:</strong> Textures aren&#39;t quite as straightforward as they seem, a key piece of information is that when you load textures, Indigo attempts to compile them into 4k texture atlases, which reduces context switching. Currently, Indigo is <em>limited</em> to only loading one atlas at a time, so although a <code>ShaderData</code> instance allows you to set four channels with different <code>AssetName</code>s, they must all be on the same atlas. For small games you don&#39;t need to worry, but if you have large assets you can force Indigo to place related images onto the same atlas using <code>AssetType.Tagged(&quot;my tag&quot;)(image1..imageN)</code> in your asset list.</blockquote>
         <p>The shader data has the asset name given to channel 0, and in the fragment shader we set the <code>COLOR</code> output to the color value sampled from the texture, which is set to a variable called <code>CHANNEL_0</code>, which is a <code>vec4</code>. If we wanted to, we could only draw the red component of the texture by doing the following:</p>
@@ -324,8 +324,8 @@
         
         <h2 id="wrapping-up" class="section"><a class="anchor-link left" href="#wrapping-up"><i class="icofont-laika link">&#xef71;</i></a>Wrapping up</h2>
         <p>I hope that&#39;s given you a small taste of the power of writing custom entities, and a starting point for you to begin creating your own. Much of the heavy lifting is done by writing shaders which we haven&#39;t gone too far into here, but if you need some shader inspiration I&#39;d recommend heading over to <a href="https://www.shadertoy.com/">shadertoy</a> for a browse.
-        &lt;script type=&quot;text/javascript&quot; src=&quot;howto-custom-entity.md.js&quot; defer&gt;&lt;/script&gt;
-        &lt;script type=&quot;text/javascript&quot; src=&quot;mdoc.js&quot; defer&gt;&lt;/script&gt;</p>
+        <script type="text/javascript" src="howto-custom-entity.md.js" defer></script>
+        <script type="text/javascript" src="mdoc.js" defer></script></p>
 
         
 <hr class="footer-rule"/>

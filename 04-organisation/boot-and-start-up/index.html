@@ -205,7 +205,7 @@
 
   ???
 }</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run1&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run1" data-mdoc-js></div>
         <p>As long as the games assets are always in the same folder name, we can now just pre-pend the provided <code>assetPath</code> to change the location of that folder.</p>
         <p>Flags are just a JavaScript object of key value pairs that must be <code>String</code>s (like command line arguments), which can be injected into the game when it is embedded on the page, like this:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">var</span><span> </span><span class="identifier">flags</span><span> = {
@@ -226,7 +226,7 @@
         <blockquote>Note: You can add more animations, fonts, and assets at a later stage, but subsystems must be declared upfront or inside a <code>Scene</code> definition.</blockquote>
         <p>Optionally the boot sequence can result in a value, particularly since the boot sequence has access to the initial flags. For example you might return:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">BootData</span><span>(</span><span class="identifier">runFullScreen</span><span>: </span><span class="type-name">Boolean</span><span>)</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run2&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run2" data-mdoc-js></div>
         
         <h2 id="start-up-setup" class="section"><a class="anchor-link left" href="#start-up-setup"><i class="icofont-laika link">&#xef71;</i></a>Start up / Setup</h2>
         <p>After booting up, you hit the start up function (called <code>setup</code>...). Why are boot and start up separate functions? ..and what is start up for?</p>
@@ -240,7 +240,7 @@
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">StartUpData</span><span>(</span><span class="identifier">debugMode</span><span>: </span><span class="type-name">Boolean</span><span>) </span><span class="comment">// an example custom start up data type
 </span><span>
 </span><span class="keyword">def</span><span> </span><span class="declaration-name">setup</span><span>(</span><span class="identifier">bootData</span><span>: </span><span class="type-name">BootData</span><span>, </span><span class="identifier">assetCollection</span><span>: </span><span class="type-name">AssetCollection</span><span>, </span><span class="identifier">dice</span><span>: </span><span class="type-name">Dice</span><span>): </span><span class="type-name">Outcome</span><span>[</span><span class="type-name">Startup</span><span>[</span><span class="type-name">StartUpData</span><span>]] = ???</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run3&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run3" data-mdoc-js></div>
         <blockquote>Important! The <code>StartUpData</code> type corresponds to one of the type parameters in <code>IndigoSandbox</code>, <code>IndigoDemo</code>, and <code>IndigoGame</code>.</blockquote>
         
         <h3 id="special-note-on-plain-text-assets" class="section"><a class="anchor-link left" href="#special-note-on-plain-text-assets"><i class="icofont-laika link">&#xef71;</i></a>Special note on plain text assets</h3>
@@ -268,10 +268,10 @@
   </span><span class="string-literal">&quot;error message 2&quot;</span><span>,
   </span><span class="string-literal">&quot;error message 3&quot;</span><span>
 )</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run4&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run4" data-mdoc-js></div>
         <p>If your set up function fails, the game will halt and the errors will be written to the console. The assumption is that a failure is unrecoverable.
-        &lt;script type=&quot;text/javascript&quot; src=&quot;boot-and-start-up.md.js&quot; defer&gt;&lt;/script&gt;
-        &lt;script type=&quot;text/javascript&quot; src=&quot;mdoc.js&quot; defer&gt;&lt;/script&gt;</p>
+        <script type="text/javascript" src="boot-and-start-up.md.js" defer></script>
+        <script type="text/javascript" src="mdoc.js" defer></script></p>
 
         
 <hr class="footer-rule"/>

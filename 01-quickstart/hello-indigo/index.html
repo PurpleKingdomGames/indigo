@@ -256,7 +256,7 @@
         <p>Replace:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">assets</span><span>: </span><span class="type-name">Set</span><span>[</span><span class="type-name">AssetType</span><span>] =
   </span><span class="type-name">Set</span><span>()</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run1&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run1" data-mdoc-js></div>
         <p>with:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">assetName</span><span> = </span><span class="type-name">AssetName</span><span>(</span><span class="string-literal">&quot;dots&quot;</span><span>)
 
@@ -270,7 +270,7 @@
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">SceneUpdateFragment</span><span>(
   </span><span class="type-name">Graphic</span><span>(</span><span class="type-name">Rectangle</span><span>(</span><span class="number-literal">0</span><span>, </span><span class="number-literal">0</span><span>, </span><span class="number-literal">32</span><span>, </span><span class="number-literal">32</span><span>), </span><span class="number-literal">1</span><span>, </span><span class="type-name">Material</span><span>.</span><span class="type-name">Bitmap</span><span>(</span><span class="identifier">assetName</span><span>))
 )</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run3&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run3" data-mdoc-js></div>
         <p>Note the use of <code>assetName</code> again to identify which image you want to use.</p>
         <p><code>Graphic</code> is a member of the <code>SceneNode</code> types, which also include things like <code>Sprite</code>, <code>Text</code>, <code>Group</code>, and <code>Clone</code>. Please note that most of these have a range of constructors to try and make using them easier, and all of them follow a fluent API design to modify their parameters.</p>
         <p>Run the demo again and you should see a graphic in the top left corner at position <code>(0,0)</code>!</p>
@@ -286,7 +286,7 @@
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">SceneUpdateFragment</span><span>(
   </span><span class="type-name">Graphic</span><span>(</span><span class="type-name">Rectangle</span><span>(</span><span class="number-literal">0</span><span>, </span><span class="number-literal">0</span><span>, </span><span class="number-literal">32</span><span>, </span><span class="number-literal">32</span><span>), </span><span class="number-literal">1</span><span>, </span><span class="type-name">Material</span><span>.</span><span class="type-name">Bitmap</span><span>(</span><span class="identifier">assetName</span><span>))
 )</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run5&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run5" data-mdoc-js></div>
         <p>to:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">SceneUpdateFragment</span><span>(
   </span><span class="type-name">Graphic</span><span>(</span><span class="type-name">Rectangle</span><span>(</span><span class="number-literal">0</span><span>, </span><span class="number-literal">0</span><span>, </span><span class="number-literal">32</span><span>, </span><span class="number-literal">32</span><span>), </span><span class="number-literal">1</span><span>, </span><span class="type-name">Material</span><span>.</span><span class="type-name">Bitmap</span><span>(</span><span class="identifier">assetName</span><span>)),
@@ -295,7 +295,7 @@
     .</span><span class="identifier">withRef</span><span>(</span><span class="number-literal">8</span><span>, </span><span class="number-literal">8</span><span>)
     .</span><span class="identifier">moveTo</span><span>(</span><span class="identifier">config</span><span>.</span><span class="identifier">viewport</span><span>.</span><span class="identifier">giveDimensions</span><span>(</span><span class="identifier">magnification</span><span>).</span><span class="identifier">center</span><span>)
 )</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run6&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run6" data-mdoc-js></div>
         <p>Run it again and you should now have just the yellow circle right in the middle of the screen. The image is 32x32, and we&#39;ve cropped down to the bottom right corner which is at location 16x16 and is 16x16 pixels in size. We&#39;ve then moved the &quot;reference point&quot; which is the point Indigo uses to position, scale, and rotate things to being in the middle of the new graphic, i.e. 8x8. Finally we moved it to the middle of the screen. Normally the top left of the image would now be at the screen&#39;s center, but because we moved the reference point, the graphic is placed evenly over the mid point.</p>
         <blockquote>An important but subtle thing has happened here, that if you&#39;re used to conventional game engines might surprise you. Normally to add an entity to the screen you have to explicitly add it (perhaps after a callback or event), and then later, explicitly remove or delete it by location in the tree or by id. This is because usually scene graphs are mutable trees of some kind, and each leaf carries state and so on. In Indigo, the view is stateless and simply draws whatever is currently returned by the <code>present</code> function. So &quot;deleting&quot; something from the view is just the same as omitting it from the returned <code>SceneUpdateFragment</code> on this frame.</blockquote>
         
@@ -307,7 +307,7 @@
   .</span><span class="identifier">withCrop</span><span>(</span><span class="type-name">Rectangle</span><span>(</span><span class="number-literal">16</span><span>, </span><span class="number-literal">16</span><span>, </span><span class="number-literal">16</span><span>, </span><span class="number-literal">16</span><span>))
   .</span><span class="identifier">withRef</span><span>(</span><span class="number-literal">8</span><span>, </span><span class="number-literal">8</span><span>)
   .</span><span class="identifier">moveTo</span><span>(</span><span class="identifier">config</span><span>.</span><span class="identifier">viewport</span><span>.</span><span class="identifier">giveDimensions</span><span>(</span><span class="identifier">magnification</span><span>).</span><span class="identifier">center</span><span>)</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run8&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run8" data-mdoc-js></div>
         <p>with:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">Graphic</span><span>(</span><span class="type-name">Rectangle</span><span>(</span><span class="number-literal">0</span><span>, </span><span class="number-literal">0</span><span>, </span><span class="number-literal">32</span><span>, </span><span class="number-literal">32</span><span>), </span><span class="number-literal">1</span><span>, </span><span class="type-name">Material</span><span>.</span><span class="type-name">Bitmap</span><span>(</span><span class="identifier">assetName</span><span>))
   .</span><span class="identifier">withCrop</span><span>(</span><span class="type-name">Rectangle</span><span>(</span><span class="number-literal">16</span><span>, </span><span class="number-literal">16</span><span>, </span><span class="number-literal">16</span><span>, </span><span class="number-literal">16</span><span>))
@@ -318,7 +318,7 @@
       .</span><span class="identifier">map</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">toPoint</span><span>)
       .</span><span class="identifier">at</span><span>(</span><span class="identifier">context</span><span>.</span><span class="identifier">running</span><span>)
   )</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run9&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run9" data-mdoc-js></div>
         <p>Signals are just a function from <code>time: Seconds =&gt; A</code>. This code uses an inbuilt Signal called Orbit that rotates around a point at a fixed distance based on the current time.</p>
         <pre class="keep-together pdf epub"><code class="text">Question: Orbit looks a bit simple, what if you wanted it to rotate slower or faster?
 
@@ -330,7 +330,7 @@ Answer: Slow down or speed up time! (There is an `affectTime` function for this.
         <p>Consider how we might move something along the x-axis:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">graphic</span><span> = </span><span class="type-name">Graphic</span><span>(</span><span class="number-literal">10</span><span>, </span><span class="number-literal">10</span><span>, </span><span class="type-name">Material</span><span>.</span><span class="type-name">Bitmap</span><span>(</span><span class="type-name">AssetName</span><span>(</span><span class="string-literal">&quot;graphic&quot;</span><span>)))</span></code></pre>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="identifier">graphic</span><span>.</span><span class="identifier">moveBy</span><span>(</span><span class="number-literal">10</span><span>, </span><span class="number-literal">0</span><span>)</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run11&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run11" data-mdoc-js></div>
         <p>Every time that code is run, it will increment the graphic&#39;s x position by 10. Great! Our games runs at 60 frames per second (FPS) so we&#39;re going to move at a velocity of 600 pixels per second. Or are we?</p>
         <p>The problem is the frame processing times vary, meaning that at <em>best</em> you&#39;ll get 60 FPS / 600 pixels movement, but more likely your frame rate will fluctuate, peaking at 60 and occasionally dropping lower, maybe for a minor GC pause, maybe because you suddenly had a massive bit of processing to do for your game or just started drawing more stuff on the screen.</p>
         <p>Either way the result is that your x-axis movement is no longer smooth.</p>
@@ -395,7 +395,7 @@ A lot of game engines still talk about radians in terms of PI, but it&#39;s far 
         <p>Replace:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">initialModel</span><span>(</span><span class="identifier">startupData</span><span>: </span><span class="type-name">Unit</span><span>): </span><span class="type-name">Outcome</span><span>[</span><span class="type-name">Unit</span><span>] =
   </span><span class="type-name">Outcome</span><span>(())</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run13&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run13" data-mdoc-js></div>
         <p>with:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">initialModel</span><span>(</span><span class="identifier">startupData</span><span>: </span><span class="type-name">Unit</span><span>): </span><span class="type-name">Outcome</span><span>[</span><span class="type-name">Model</span><span>] =
   </span><span class="type-name">Outcome</span><span>(
@@ -403,14 +403,14 @@ A lot of game engines still talk about radians in terms of PI, but it&#39;s far 
       </span><span class="identifier">config</span><span>.</span><span class="identifier">viewport</span><span>.</span><span class="identifier">giveDimensions</span><span>(</span><span class="identifier">magnification</span><span>).</span><span class="identifier">center</span><span>
     )
   )</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run14&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run14" data-mdoc-js></div>
         <p>And then we need to update it, replace:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">updateModel</span><span>(
     </span><span class="identifier">context</span><span>: </span><span class="type-name">FrameContext</span><span>[</span><span class="type-name">Unit</span><span>],
     </span><span class="identifier">model</span><span>: </span><span class="type-name">Unit</span><span>
 ): </span><span class="type-name">GlobalEvent</span><span> =&gt; </span><span class="type-name">Outcome</span><span>[</span><span class="type-name">Unit</span><span>] =
   </span><span class="identifier">_</span><span> =&gt; </span><span class="type-name">Outcome</span><span>(())</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run15&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run15" data-mdoc-js></div>
         <p>with</p>
         <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">updateModel</span><span>(
     </span><span class="identifier">context</span><span>: </span><span class="type-name">FrameContext</span><span>[</span><span class="type-name">Unit</span><span>],
@@ -440,7 +440,7 @@ A lot of game engines still talk about radians in terms of PI, but it&#39;s far 
   </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span> =&gt;
     </span><span class="type-name">Outcome</span><span>(</span><span class="identifier">model</span><span>)
 }</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run16&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run16" data-mdoc-js></div>
         <p>The model update function is just a function that has been partially applied with the context of this frame, and then a big pattern match on the event types.</p>
         <blockquote><code>GlobalEvent</code> is a trait used to tag things as events. The largest source of errors / surprises in Indigo - in the authors experience so far - is from the fact that we can&#39;t enforce exhaustively checks on these events. In other words, you forgot to catch an event case somewhere.</blockquote>
         <p>In this case, we&#39;re interested in two events. A <code>MouseEvent.Click(x, y)</code> so that we can add a new dot, and a <code>FrameTick</code>. FrameTick is a bit special because it always happens last... and it always happens!</p>
@@ -477,7 +477,7 @@ A lot of game engines still talk about radians in terms of PI, but it&#39;s far 
   </span><span class="type-name">Graphic</span><span>(</span><span class="type-name">Rectangle</span><span>(</span><span class="number-literal">0</span><span>, </span><span class="number-literal">0</span><span>, </span><span class="number-literal">32</span><span>, </span><span class="number-literal">32</span><span>), </span><span class="number-literal">1</span><span>, </span><span class="type-name">Material</span><span>.</span><span class="type-name">Bitmap</span><span>(</span><span class="identifier">assetName</span><span>)) ::
     </span><span class="identifier">drawDots</span><span>(</span><span class="identifier">model</span><span>.</span><span class="identifier">center</span><span>, </span><span class="identifier">model</span><span>.</span><span class="identifier">dots</span><span>)
 )</span></code></pre>
-        <p>&lt;div id=&quot;mdoc-html-run18&quot; data-mdoc-js&gt;&lt;/div&gt;</p>
+        <div id="mdoc-html-run18" data-mdoc-js></div>
         <p>Run it, and hopefully clicking on the screen will add yellow dots!</p>
         <p>If it doesn&#39;t work, remember you can always <a href="https://github.com/PurpleKingdomGames/hello-indigo">compare with the repo</a>!</p>
         <p>Hopefully this has given you a little taste of how Indigo works. Next you could try:</p>
@@ -488,8 +488,8 @@ A lot of game engines still talk about radians in terms of PI, but it&#39;s far 
           <li>Try porting the code above to a <code>SubSystem</code> - what will the relationship between the main game and the subsystem be?</li>
         </ol>
         <p>We hope you enjoyed creating something - however simple - that was visual, interactive and fun in Scala, and we look forward to seeing what you create next!
-        &lt;script type=&quot;text/javascript&quot; src=&quot;hello-indigo.md.js&quot; defer&gt;&lt;/script&gt;
-        &lt;script type=&quot;text/javascript&quot; src=&quot;mdoc.js&quot; defer&gt;&lt;/script&gt;</p>
+        <script type="text/javascript" src="hello-indigo.md.js" defer></script>
+        <script type="text/javascript" src="mdoc.js" defer></script></p>
 
         
 <hr class="footer-rule"/>
