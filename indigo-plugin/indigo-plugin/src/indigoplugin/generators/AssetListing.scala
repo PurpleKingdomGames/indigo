@@ -159,6 +159,21 @@ object AssetListing {
 
             (vals, loadable, named)
 
+          case PathTree.File(name, ext, path) if FontFileExtensions.contains(ext) =>
+            val safeName = toSafeName(name, ext)
+
+            val vals =
+              s"""${indentSpacesNext}val ${safeName}: AssetName               = AssetName("${name}")
+              |${indentSpacesNext}val ${safeName}FontFamily: FontFamily    = FontFamily(${safeName}.toString())"""
+
+            val loadable =
+              s"""${indentSpacesNext}    AssetType.Font(${safeName}, AssetPath(baseUrl + "${path}"))"""
+
+            val named =
+              s"""${indentSpacesNext}    $safeName"""
+
+            (vals, loadable, named)
+
           case PathTree.File(name, ext, path) =>
             val safeName = toSafeName(name, ext)
 
@@ -245,4 +260,10 @@ object AssetListing {
       "tiff"
     )
 
+  val FontFileExtensions: Set[String] =
+    Set(
+      "ttf",
+      "woff",
+      "woff2"
+    )
 }
