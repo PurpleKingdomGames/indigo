@@ -163,7 +163,7 @@ object AssetListing {
             val safeName = toSafeName(name, ext)
 
             val vals =
-              s"""${indentSpacesNext}val ${safeName}: AssetName               = AssetName("${name}")
+              s"""${indentSpacesNext}val ${safeName}: AssetName               = AssetName("${name}_${ext}")
               |${indentSpacesNext}val ${safeName}FontFamily: FontFamily    = FontFamily(${safeName}.toString())"""
 
             val loadable =
