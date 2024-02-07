@@ -262,6 +262,7 @@ object AssetListing {
 
   val FontFileExtensions: Set[String] =
     Set(
+      "eot",
       "ttf",
       "woff",
       "woff2"
