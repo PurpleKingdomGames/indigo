@@ -19,19 +19,15 @@ object Physics:
       transient: Batch[Collider[A]],
       settings: SimulationSettings
   ): Outcome[World[A]] =
-    val moved: Batch[Internal.IndexedCollider[A]] =
-      Internal.moveColliders(timeDelta, world)
+    val perform = Internal.performIteration(
+      timeDelta,
+      world.combinedForce,
+      world.resistance,
+      transient.map(_.makeStatic),
+      settings
+    )
 
-    val collisions: Batch[(Internal.IndexedCollider[A], Batch[Collider[A]])] =
-      Internal.findCollisionGroups(moved, transient.map(_.makeStatic), settings)
-
-    val collisionEvents: Batch[GlobalEvent] =
-      collisions.flatMap { case (c, cs) =>
-        cs.flatMap(target => c.proposed.onCollisionWith(target))
-      }
-
-    val resolved: Batch[Collider[A]] =
-      Internal.solveAllCollisions(collisions)
+    val (resolved, collisionEvents) = perform(world.colliders)
 
     Outcome(world.copy(colliders = resolved))
       .addGlobalEvents(collisionEvents)
@@ -40,8 +36,36 @@ object Physics:
 
     given [A]: CanEqual[IndexedCollider[A], IndexedCollider[A]] = CanEqual.derived
 
-    def moveColliders[A](timeDelta: Seconds, world: World[A]): Batch[IndexedCollider[A]] =
-      world.colliders.zipWithIndex.map(moveCollider(timeDelta, world.combinedForce, world.resistance))
+    def performIteration[A](
+        timeDelta: Seconds,
+        combinedForce: Vector2,
+        resistance: Resistance,
+        transient: Batch[Collider[A]],
+        settings: SimulationSettings
+    )(colliders: Batch[Collider[A]]): (Batch[Collider[A]], Batch[GlobalEvent]) =
+      val moved: Batch[Internal.IndexedCollider[A]] =
+        Internal.moveColliders(timeDelta, colliders, combinedForce, resistance)
+
+      val collisions: Batch[(Internal.IndexedCollider[A], Batch[Collider[A]])] =
+        Internal.findCollisionGroups(moved, transient, settings)
+
+      val collisionEvents: Batch[GlobalEvent] =
+        collisions.flatMap { case (c, cs) =>
+          cs.flatMap(target => c.proposed.onCollisionWith(target))
+        }
+
+      val resolved: Batch[Collider[A]] =
+        Internal.solveAllCollisions(collisions)
+
+      (resolved, collisionEvents)
+
+    def moveColliders[A](
+        timeDelta: Seconds,
+        colliders: Batch[Collider[A]],
+        combinedForce: Vector2,
+        resistance: Resistance
+    ): Batch[IndexedCollider[A]] =
+      colliders.zipWithIndex.map(moveCollider(timeDelta, combinedForce, resistance))
 
     def calculateNewMovement(
         timeDelta: Seconds,

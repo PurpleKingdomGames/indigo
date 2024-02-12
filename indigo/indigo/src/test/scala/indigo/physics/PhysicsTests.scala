@@ -40,7 +40,7 @@ class PhysicsTests extends munit.FunSuite:
     )
 
     val actual =
-      Physics.Internal.moveColliders(1.second, w)
+      Physics.Internal.moveColliders(1.second, w.colliders, w.combinedForce, w.resistance)
 
     val expected =
       Batch(
@@ -79,7 +79,7 @@ class PhysicsTests extends munit.FunSuite:
     )
 
     val actual =
-      Physics.Internal.moveColliders(1.second, w)
+      Physics.Internal.moveColliders(1.second, w.colliders, w.combinedForce, w.resistance)
 
     val expected =
       Batch(
