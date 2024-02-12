@@ -15,8 +15,17 @@ import indigo.BoundingBox
   *   much smaller than your smallest collider. Defaults to 1.
   * @param maxDepth
   *   The maximum depth the spatial tree should go to. Defaults to 16.
+  * @param maxIterations
+  *   The maximum number of solver iterations to perform. Fewer iterations improves performance at the cost of accuracy.
+  *   Defaults to 4.
   */
-final case class SimulationSettings(bounds: BoundingBox, idealCount: Int, minSize: Double, maxDepth: Int):
+final case class SimulationSettings(
+    bounds: BoundingBox,
+    idealCount: Int,
+    minSize: Double,
+    maxDepth: Int,
+    maxIterations: Int
+):
 
   def withBounds(value: BoundingBox): SimulationSettings =
     this.copy(bounds = value)
@@ -30,17 +39,24 @@ final case class SimulationSettings(bounds: BoundingBox, idealCount: Int, minSiz
   def withMaxDepth(value: Int): SimulationSettings =
     this.copy(maxDepth = value)
 
+  def withMaxIterations(value: Int): SimulationSettings =
+    this.copy(maxIterations = value)
+
 object SimulationSettings:
 
-  val DefaultIdealCount: Int = 16
-  val DefaultMinSize: Double = 1
-  val DefaultMaxDepth: Int   = 16
+  val DefaultIdealCount: Int    = 16
+  val DefaultMinSize: Double    = 1
+  val DefaultMaxDepth: Int      = 16
+  val DefaultMaxIterations: Int = 4
 
   def apply(bounds: BoundingBox): SimulationSettings =
-    SimulationSettings(bounds, DefaultIdealCount, DefaultMinSize, DefaultMaxDepth)
+    SimulationSettings(bounds, DefaultIdealCount, DefaultMinSize, DefaultMaxDepth, DefaultMaxIterations)
 
   def apply(bounds: BoundingBox, idealCount: Int): SimulationSettings =
-    SimulationSettings(bounds, idealCount, DefaultMinSize, DefaultMaxDepth)
+    SimulationSettings(bounds, idealCount, DefaultMinSize, DefaultMaxDepth, DefaultMaxIterations)
 
   def apply(bounds: BoundingBox, idealCount: Int, minSize: Double): SimulationSettings =
-    SimulationSettings(bounds, idealCount, minSize, DefaultMaxDepth)
+    SimulationSettings(bounds, idealCount, minSize, DefaultMaxDepth, DefaultMaxIterations)
+
+  def apply(bounds: BoundingBox, idealCount: Int, minSize: Double, maxDepth: Int): SimulationSettings =
+    SimulationSettings(bounds, idealCount, minSize, maxDepth, DefaultMaxIterations)

@@ -194,9 +194,9 @@ class PhysicsTests extends munit.FunSuite:
         c3.withPosition(5.8284, 4.8284).withVelocity(7.07106, 7.07106)
       )
 
-    assert(clue(actual(0)) ~== clue(expected(0)))
-    assert(clue(actual(1)) ~== clue(expected(1)))
-    assert(clue(actual(2)) ~== clue(expected(2)))
+    assert(clue(actual(0).proposed) ~== clue(expected(0)))
+    assert(clue(actual(1).proposed) ~== clue(expected(1)))
+    assert(clue(actual(2).proposed) ~== clue(expected(2)))
   }
 
   test("(Circles) solveCollisions - two dynamic - no movement") {
@@ -218,8 +218,8 @@ class PhysicsTests extends munit.FunSuite:
         c3
       )
 
-    assert(clue(actual(0)) ~== clue(expected(0)))
-    assert(clue(actual(1)) ~== clue(expected(1)))
+    assert(clue(actual(0).proposed) ~== clue(expected(0)))
+    assert(clue(actual(1).proposed) ~== clue(expected(1)))
   }
 
   test("(Circles) solveCollisions - two dynamic - collide") {
@@ -241,8 +241,8 @@ class PhysicsTests extends munit.FunSuite:
         c5.withPosition(9, 4).withVelocity(10, 0)
       )
 
-    assert(clue(actual(0)) ~== clue(expected(0)))
-    assert(clue(actual(1)) ~== clue(expected(1)))
+    assert(clue(actual(0).proposed) ~== clue(expected(0)))
+    assert(clue(actual(1).proposed) ~== clue(expected(1)))
   }
 
   test("(Boxes) solveCollisions - two dynamic - collide") {
@@ -264,8 +264,8 @@ class PhysicsTests extends munit.FunSuite:
         b2.withPosition(7, 2).withVelocity(10, 0)
       )
 
-    assert(clue(actual(0)) ~== clue(expected(0)))
-    assert(clue(actual(1)) ~== clue(expected(1)))
+    assert(clue(actual(0).proposed) ~== clue(expected(0)))
+    assert(clue(actual(1).proposed) ~== clue(expected(1)))
   }
 
   test("(Circles) solveCollisions - two dynamic - collide - zero time delta - displacement resolved") {
@@ -287,8 +287,8 @@ class PhysicsTests extends munit.FunSuite:
         c5.withPosition(9, 4).withVelocity(10, 0)
       )
 
-    assert(clue(actual(0)) ~== clue(expected(0)))
-    assert(clue(actual(1)) ~== clue(expected(1)))
+    assert(clue(actual(0).proposed) ~== clue(expected(0)))
+    assert(clue(actual(1).proposed) ~== clue(expected(1)))
   }
 
   test("(Boxes) solveCollisions - two dynamic - collide - zero time delta - displacement resolved") {
@@ -310,8 +310,8 @@ class PhysicsTests extends munit.FunSuite:
         c5.withPosition(7, 2).withVelocity(10, 0)
       )
 
-    assert(clue(actual(0)) ~== clue(expected(0)))
-    assert(clue(actual(1)) ~== clue(expected(1)))
+    assert(clue(actual(0).proposed) ~== clue(expected(0)))
+    assert(clue(actual(1).proposed) ~== clue(expected(1)))
   }
 
   test("(Circles) solveCollisions - two dynamic - collide - half bounce") {
@@ -342,8 +342,8 @@ class PhysicsTests extends munit.FunSuite:
         c5.withPosition(8.75, 4).withVelocity(5, 0)
       )
 
-    assert(clue(actual(0)) ~== clue(expected(0)))
-    assert(clue(actual(1)) ~== clue(expected(1)))
+    assert(clue(actual(0).proposed) ~== clue(expected(0)))
+    assert(clue(actual(1).proposed) ~== clue(expected(1)))
   }
 
   test("(Boxes) solveCollisions - two dynamic - collide - half bounce") {
@@ -374,8 +374,8 @@ class PhysicsTests extends munit.FunSuite:
         c5.withPosition(6.75, 2).withVelocity(5, 0)
       )
 
-    assert(clue(actual(0)) ~== clue(expected(0)))
-    assert(clue(actual(1)) ~== clue(expected(1)))
+    assert(clue(actual(0).proposed) ~== clue(expected(0)))
+    assert(clue(actual(1).proposed) ~== clue(expected(1)))
   }
 
   test("(Circles) solveCollisions - one dynamic one static - collide") {
@@ -398,8 +398,8 @@ class PhysicsTests extends munit.FunSuite:
         c5
       )
 
-    assert(clue(actual(0)) ~== clue(expected(0)))
-    assert(clue(actual(1)) ~== clue(expected(1)))
+    assert(clue(actual(0).proposed) ~== clue(expected(0)))
+    assert(clue(actual(1).proposed) ~== clue(expected(1)))
   }
 
   test("(Boxes) solveCollisions - one dynamic one static - collide") {
@@ -422,8 +422,8 @@ class PhysicsTests extends munit.FunSuite:
         c5
       )
 
-    assert(clue(actual(0)) ~== clue(expected(0)))
-    assert(clue(actual(1)) ~== clue(expected(1)))
+    assert(clue(actual(0).proposed) ~== clue(expected(0)))
+    assert(clue(actual(1).proposed) ~== clue(expected(1)))
   }
 
   test("(Boxes) solveCollisions - one dynamic one static - collide - vertical") {
@@ -446,8 +446,8 @@ class PhysicsTests extends munit.FunSuite:
         c5
       )
 
-    assert(clue(actual(0)) ~== clue(expected(0)))
-    assert(clue(actual(1)) ~== clue(expected(1)))
+    assert(clue(actual(0).proposed) ~== clue(expected(0)))
+    assert(clue(actual(1).proposed) ~== clue(expected(1)))
   }
 
   test("Example: A circle coming to rest on top of a box, as it reaches the edge, should fall off not bounce back.") {
@@ -471,7 +471,7 @@ class PhysicsTests extends munit.FunSuite:
         circle.withPosition(-0.0855, -1.1425).withVelocity(-10, 0)
       )
 
-    assert(clue(actual(0)) ~== clue(expected(0)))
+    assert(clue(actual(0).proposed) ~== clue(expected(0)))
   }
 
   test("Example: A box travelling down y whose corner hits a static circle at ~45 degrees should not get stuck.") {
@@ -496,7 +496,7 @@ class PhysicsTests extends munit.FunSuite:
         box.withPosition(1.4284, -4.4284).withVelocity(7.07106, -7.07106)
       )
 
-    assert(clue(actual(0)) ~== clue(expected(0)))
+    assert(clue(actual(0).proposed) ~== clue(expected(0)))
   }
 
   test("Example: From the top, striking the corner") {
@@ -520,7 +520,7 @@ class PhysicsTests extends munit.FunSuite:
         circle.withPosition(-0.4901, -1.0651).withVelocity(-10, -10)
       )
 
-    assert(clue(actual(0)) ~== clue(expected(0)))
+    assert(clue(actual(0).proposed) ~== clue(expected(0)))
   }
 
   test("Physics.update should update the world") {
@@ -563,8 +563,8 @@ class PhysicsTests extends munit.FunSuite:
         c2.withPosition(7, 0).withVelocity(0, 0)
       )
 
-    assert(clue(actual(0)) ~== clue(expected(0)))
-    assert(clue(actual(1)) ~== clue(expected(1)))
+    assert(clue(actual(0).proposed) ~== clue(expected(0)))
+    assert(clue(actual(1).proposed) ~== clue(expected(1)))
   }
 
   test("Physics.update should consider, but not return transient colliders") {
