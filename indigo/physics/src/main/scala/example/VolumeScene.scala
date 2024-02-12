@@ -14,13 +14,13 @@ object VolumeScene extends PhysicsScene:
     Lens(_.volume, (m, w) => m.copy(volume = w))
 
   def world(dice: Dice): World[MyTag] =
-    val energy = 400
+    val energy = 1000
     val r      = 5
     val size   = (r + 2) * 2
     val cols   = (500 - 40) / size
 
     val balls =
-      (0 to 1000).toBatch.map { i =>
+      (0 to 250).toBatch.map { i =>
         Collider(
           MyTag.Ball,
           BoundingCircle(
@@ -30,7 +30,7 @@ object VolumeScene extends PhysicsScene:
           )
         )
           .withVelocity(Vector2(Math.sin(i.toDouble) * energy, Math.cos(i.toDouble) * energy))
-          .withTerminalVelocity(Vector2(50))
+          .withTerminalVelocity(Vector2(100))
       }
 
     World

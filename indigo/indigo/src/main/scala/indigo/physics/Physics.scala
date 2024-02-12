@@ -19,45 +19,43 @@ object Physics:
       transient: Batch[Collider[A]],
       settings: SimulationSettings
   ): Outcome[World[A]] =
-    val perform = Internal.performIteration(
-      timeDelta,
-      world.combinedForce,
-      world.resistance,
-      transient.map(_.makeStatic),
-      settings
-    )
+    val moved: Batch[Internal.IndexedCollider[A]] =
+      Internal.moveColliders(timeDelta, world.colliders, world.combinedForce, world.resistance)
 
-    val (resolved, collisionEvents) = perform(world.colliders)
+    val staticTransient = transient.map(_.makeStatic)
 
-    Outcome(world.copy(colliders = resolved))
+    @tailrec
+    def rec(
+        remaining: Int,
+        workingColliders: Batch[Internal.IndexedCollider[A]],
+        accEvents: Batch[GlobalEvent]
+    ): (Batch[Internal.IndexedCollider[A]], Batch[GlobalEvent]) =
+      if remaining == 0 then (workingColliders, accEvents)
+      else
+        val collisions: Batch[(Internal.IndexedCollider[A], Batch[Collider[A]])] =
+          Internal.findCollisionGroups(workingColliders, staticTransient, settings)
+
+        if collisions.exists(_._2.nonEmpty) then
+          val collisionEvents: Batch[GlobalEvent] =
+            collisions.flatMap { case (c, cs) =>
+              cs.flatMap(target => c.proposed.onCollisionWith(target))
+            }
+
+          val resolved: Batch[Internal.IndexedCollider[A]] =
+            Internal.solveAllCollisions(collisions)
+
+          rec(remaining - 1, resolved, collisionEvents)
+        else (workingColliders, accEvents)
+
+    val (resolved, collisionEvents) =
+      rec(settings.maxIterations, moved, Batch.empty)
+
+    Outcome(world.copy(colliders = resolved.map(_.proposed)))
       .addGlobalEvents(collisionEvents)
 
   object Internal:
 
     given [A]: CanEqual[IndexedCollider[A], IndexedCollider[A]] = CanEqual.derived
-
-    def performIteration[A](
-        timeDelta: Seconds,
-        combinedForce: Vector2,
-        resistance: Resistance,
-        transient: Batch[Collider[A]],
-        settings: SimulationSettings
-    )(colliders: Batch[Collider[A]]): (Batch[Collider[A]], Batch[GlobalEvent]) =
-      val moved: Batch[Internal.IndexedCollider[A]] =
-        Internal.moveColliders(timeDelta, colliders, combinedForce, resistance)
-
-      val collisions: Batch[(Internal.IndexedCollider[A], Batch[Collider[A]])] =
-        Internal.findCollisionGroups(moved, transient, settings)
-
-      val collisionEvents: Batch[GlobalEvent] =
-        collisions.flatMap { case (c, cs) =>
-          cs.flatMap(target => c.proposed.onCollisionWith(target))
-        }
-
-      val resolved: Batch[Collider[A]] =
-        Internal.solveAllCollisions(collisions)
-
-      (resolved, collisionEvents)
 
     def moveColliders[A](
         timeDelta: Seconds,
@@ -190,15 +188,15 @@ object Physics:
 
     def solveAllCollisions[A](
         collisions: Batch[(IndexedCollider[A], Batch[Collider[A]])]
-    ): Batch[Collider[A]] =
+    ): Batch[IndexedCollider[A]] =
       collisions.map { case (c, cs) =>
-        if c.proposed.isStatic then c.proposed else solveCollisions(c, cs)
+        if c.proposed.isStatic then c else solveCollisions(c, cs)
       }
 
-    def solveCollisions[A](indexed: IndexedCollider[A], collidees: Batch[Collider[A]]): Collider[A] =
+    def solveCollisions[A](indexed: IndexedCollider[A], collidees: Batch[Collider[A]]): IndexedCollider[A] =
       val collider = indexed.proposed
 
-      if collidees.isEmpty then collider
+      if collidees.isEmpty then indexed
       else
         val results =
           collidees.map { c =>
@@ -274,7 +272,9 @@ object Physics:
           val vrts = results.map(_.nextPosition)
           vrts.foldLeft(Vertex.zero)(_ + _) / vrts.length.toDouble
 
-        collider.withVelocity(meanVelocity).withPosition(meanPosition)
+        indexed.copy(
+          proposed = collider.withVelocity(meanVelocity).withPosition(meanPosition)
+        )
 
     def solveCollisionWithCircle[A](
         ray: LineSegment,
