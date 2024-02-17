@@ -20,7 +20,7 @@ object VolumeScene extends PhysicsScene:
     val cols   = (500 - 40) / size
 
     val balls =
-      (0 to 250).toBatch.map { i =>
+      (0 to 1000).toBatch.map { i =>
         Collider(
           MyTag.Ball,
           BoundingCircle(
