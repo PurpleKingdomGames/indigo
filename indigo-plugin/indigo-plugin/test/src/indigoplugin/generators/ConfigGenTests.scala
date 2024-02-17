@@ -35,6 +35,17 @@ class ConfigGenTests extends munit.FunSuite {
     assertEquals(actual, expected)
   }
 
+  test("Can detect/extract mixed case hex") {
+
+    val actual =
+      ConfigGen.extractBgColor("#FffF00")
+
+    val expected =
+      """RGBA.fromHexString("#FffF00")"""
+
+    assertEquals(actual, expected)
+  }
+
   test("Can detect/extract named colour") {
 
     val actual =
