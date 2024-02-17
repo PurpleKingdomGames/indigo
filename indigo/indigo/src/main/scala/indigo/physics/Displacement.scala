@@ -26,7 +26,7 @@ final case class Displacement(amount: Double, normal: Vector2, contact: LineSegm
 
 object Displacement:
 
-  val boxBoxCornerThreshold: Double = 0.1
+  val boxBoxCornerThreshold: Double = 0.001
 
   def calculate[A](ca: Collider[A], cb: Collider[A]): Displacement =
     (ca, cb) match
