@@ -156,7 +156,9 @@ final class WorldEvents:
           e.metaKey,
           e.shiftKey,
           movementPosition,
-          e.deltaY
+          e.deltaX,
+          e.deltaY,
+          e.deltaZ
         )
 
         globalEventStream.pushGlobalEvent(wheel)

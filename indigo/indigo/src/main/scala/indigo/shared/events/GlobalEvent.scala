@@ -383,10 +383,14 @@ object MouseEvent:
     def unapply(e: Leave): Option[Point] =
       Option(e.position)
 
-  /** The mouse wheel was rotated a certain amount into the Y axis.
+  /** The mouse wheel was rotated a certain amount around an axis.
     *
-    * @param amount
-    *   vertical amount of pixels, pages or other unit, depending on delta mode, the Y axis was scrolled
+    * @param deltaX
+    *   horizontal amount of pixels, pages or other unit, depending on delta mode, the X axis was scrolled
+    * @param deltaY
+    *   horizontal amount of pixels, pages or other unit, depending on delta mode, the Y axis was scrolled
+    * @param deltaZ
+    *   horizontal amount of pixels, pages or other unit, depending on delta mode, the Z axis was scrolled
     */
   final case class Wheel(
       position: Point,
@@ -396,10 +400,12 @@ object MouseEvent:
       isMetaKeyDown: Boolean,
       isShiftKeyDown: Boolean,
       movementPosition: Point,
-      amount: Double
+      deltaX: Double,
+      deltaY: Double,
+      deltaZ: Double
   ) extends MouseEvent
   object Wheel:
-    def apply(x: Int, y: Int, amount: Double): Wheel =
+    def apply(x: Int, y: Int, deltaX: Double, deltaY: Double, deltaZ: Double): Wheel =
       Wheel(
         position = Point(x, y),
         buttons = Batch.empty,
@@ -408,10 +414,26 @@ object MouseEvent:
         isMetaKeyDown = false,
         isShiftKeyDown = false,
         movementPosition = Point.zero,
-        amount = amount
+        deltaX = deltaX,
+        deltaY = deltaY,
+        deltaZ = deltaZ
+      )
+
+    def apply(x: Int, y: Int, deltaY: Double): Wheel =
+      Wheel(
+        position = Point(x, y),
+        buttons = Batch.empty,
+        isAltKeyDown = false,
+        isCtrlKeyDown = false,
+        isMetaKeyDown = false,
+        isShiftKeyDown = false,
+        movementPosition = Point.zero,
+        deltaX = 0,
+        deltaY = deltaY,
+        deltaZ = 0
       )
     def unapply(e: Wheel): Option[(Point, Double)] =
-      Option((e.position, e.amount))
+      Option((e.position, e.deltaY))
 
 end MouseEvent
 

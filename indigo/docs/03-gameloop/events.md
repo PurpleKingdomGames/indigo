@@ -94,7 +94,7 @@ The following events are available:
 - `MouseUp(position, buttons, isAltKeyDown, isCtrlKeyDown, isMetaKeyDown, isShiftKeyDown, movementPosition, button)`
 - `MouseDown(position, buttons, isAltKeyDown, isCtrlKeyDown, isMetaKeyDown, isShiftKeyDown, movementPosition, button)`
 - `Move(position, buttons, isAltKeyDown, isCtrlKeyDown, isMetaKeyDown, isShiftKeyDown, movementPosition)`
-- `Wheel(position, buttons, isAltKeyDown, isCtrlKeyDown, isMetaKeyDown, isShiftKeyDown, movementPosition, amount)`
+- `Wheel(position, buttons, isAltKeyDown, isCtrlKeyDown, isMetaKeyDown, isShiftKeyDown, movementPosition, deltaX, deltaY, deltaZ)`
 
 #### `KeyboardEvent`s
 
