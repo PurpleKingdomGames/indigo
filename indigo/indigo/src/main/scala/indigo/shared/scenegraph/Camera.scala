@@ -3,6 +3,7 @@ package indigo.shared.scenegraph
 import indigo.shared.config.GameViewport
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Radians
+import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Size
 
 /** Parent type of camera instances. Cameras are used to look around your games graphics / levels / scenes.
@@ -11,6 +12,10 @@ sealed trait Camera:
   def position: Point
   def topLeft(viewport: GameViewport): Point
   def topLeft(viewport: Size): Point
+  def bounds(viewport: GameViewport): Rectangle
+  def bounds(viewport: Size): Rectangle
+  def frustum(viewport: GameViewport): Rectangle = bounds(viewport)
+  def frustum(viewport: Size): Rectangle         = bounds(viewport)
   def zoom: Zoom
   def rotation: Radians
   def isLookAt: Boolean
@@ -26,9 +31,11 @@ object Camera:
     * while controlling the position, zoom and rotation.
     */
   final case class Fixed(position: Point, zoom: Zoom, rotation: Radians) extends Camera:
-    def topLeft(viewport: GameViewport): Point = position
-    def topLeft(viewport: Size): Point         = position
-    val isLookAt: Boolean                      = false
+    def topLeft(viewport: GameViewport): Point    = position
+    def topLeft(viewport: Size): Point            = position
+    def bounds(viewport: GameViewport): Rectangle = Rectangle(position, viewport.size)
+    def bounds(viewport: Size): Rectangle         = Rectangle(position, viewport)
+    val isLookAt: Boolean                         = false
 
     def withX(newX: Int): Fixed =
       this.copy(position = position.withX(newX))
@@ -75,6 +82,10 @@ object Camera:
       topLeft(viewport.size)
     def topLeft(viewport: Size): Point =
       target - (viewport.toPoint / 2) / zoom.toDouble.toInt
+    def bounds(viewport: GameViewport): Rectangle =
+      bounds(viewport.size)
+    def bounds(viewport: Size): Rectangle =
+      Rectangle(topLeft(viewport), viewport)
 
     def withTarget(newTarget: Point): LookAt =
       this.copy(target = newTarget)
