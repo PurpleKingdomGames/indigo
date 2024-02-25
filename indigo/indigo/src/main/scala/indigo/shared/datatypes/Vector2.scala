@@ -94,11 +94,19 @@ final case class Vector2(x: Double, y: Double) derives CanEqual:
   def -(other: Vector2): Vector2 = Vector2.subtract(this, other)
   def *(other: Vector2): Vector2 = Vector2.multiply(this, other)
   def /(other: Vector2): Vector2 = Vector2.divide(this, other)
+  def %(other: Vector2): Vector2 = Vector2.mod(this, other)
+
+  def +(other: Vertex): Vector2 = Vector2.add(this, other.toVector2)
+  def -(other: Vertex): Vector2 = Vector2.subtract(this, other.toVector2)
+  def *(other: Vertex): Vector2 = Vector2.multiply(this, other.toVector2)
+  def /(other: Vertex): Vector2 = Vector2.divide(this, other.toVector2)
+  def %(other: Vertex): Vector2 = Vector2.mod(this, other.toVector2)
 
   def +(value: Double): Vector2 = Vector2.add(this, Vector2(value, value))
   def -(value: Double): Vector2 = Vector2.subtract(this, Vector2(value, value))
   def *(value: Double): Vector2 = Vector2.multiply(this, Vector2(value, value))
   def /(value: Double): Vector2 = Vector2.divide(this, Vector2(value, value))
+  def %(value: Double): Vector2 = Vector2.mod(this, Vector2(value))
 
   def dot(other: Vector2): Double =
     Vector2.dotProduct(this, other)
@@ -178,3 +186,9 @@ object Vector2:
 
   def distance(v1: Vector2, v2: Vector2): Double =
     Math.sqrt(Math.abs(Math.pow(v2.x - v1.x, 2) + Math.pow(v2.y - v1.y, 2)))
+
+  def mod(dividend: Vector2, divisor: Vector2): Vector2 =
+    Vector2(
+      x = (dividend.x % divisor.x + divisor.x) % divisor.x,
+      y = (dividend.y % divisor.y + divisor.y) % divisor.y
+    )

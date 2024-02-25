@@ -41,6 +41,17 @@ class RadiansTests extends munit.FunSuite {
     assert(doubleCloseEnough(clue(Radians(0.25).toDegrees), clue(14.32d)))
   }
 
+  test("mod") {
+    assert(Radians.mod(Radians(11), Radians(10)) ~== Radians(1))
+    assert(Radians(11) % Radians(10) ~== Radians(1))
+    assert(Radians.mod(Radians(9), Radians(10)) ~== Radians(9))
+    assert(Radians.mod(Radians(1), Radians(10)) ~== Radians(1))
+    assert(Radians.mod(Radians(-11), Radians(10)) ~== Radians(9))
+    assert(Radians.mod(Radians(-1), Radians(10)) ~== Radians(9))
+    assert(Radians.mod(Radians(0), Radians(10)) ~== Radians(0))
+    assert(clue(Radians.mod(Radians(-11), Radians(-10))) ~== clue(Radians(-1)))
+  }
+
   def doubleCloseEnough(r1: Double, r2: Double): Boolean =
     r1 - 0.01 < r2 && r1 + 0.01 > r2
 

@@ -15,6 +15,9 @@ final case class Point(x: Int, y: Int) derives CanEqual:
   def /(pt: Point): Point = Point(x / pt.x, y / pt.y)
   def /(i: Int): Point    = Point(x / i, y / i)
   def /(d: Double): Point = Point((x.toDouble / d).toInt, (y.toDouble / d).toInt)
+  def %(pt: Point): Point = Point.mod(this, pt)
+  def %(i: Int): Point    = Point.mod(this, Point(i))
+  def %(d: Double): Point = Point.mod(this, Point(d.toInt))
 
   def withX(newX: Int): Point = this.copy(x = newX)
   def withY(newY: Int): Point = this.copy(y = newY)
@@ -121,3 +124,9 @@ object Point:
 
   def fromVertex(vertex: Vertex): Point =
     Point(vertex.x.toInt, vertex.y.toInt)
+
+  def mod(dividend: Point, divisor: Point): Point =
+    Point(
+      x = (dividend.x % divisor.x + divisor.x) % divisor.x,
+      y = (dividend.y % divisor.y + divisor.y) % divisor.y
+    )

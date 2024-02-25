@@ -81,11 +81,13 @@ final case class Vector4(x: Double, y: Double, z: Double, w: Double) derives Can
   def -(other: Vector4): Vector4 = Vector4.subtract(this, other)
   def *(other: Vector4): Vector4 = Vector4.multiply(this, other)
   def /(other: Vector4): Vector4 = Vector4.divide(this, other)
+  def %(other: Vector4): Vector4 = Vector4.mod(this, other)
 
   def +(value: Double): Vector4 = Vector4.add(this, Vector4(value, value, value, value))
   def -(value: Double): Vector4 = Vector4.subtract(this, Vector4(value, value, value, value))
   def *(value: Double): Vector4 = Vector4.multiply(this, Vector4(value, value, value, value))
   def /(value: Double): Vector4 = Vector4.divide(this, Vector4(value, value, value, value))
+  def %(value: Double): Vector4 = Vector4.mod(this, Vector4(value))
 
   def dot(other: Vector4): Double =
     Vector4.dotProduct(this, other)
@@ -174,4 +176,12 @@ object Vector4:
       Math.abs(
         Math.pow(v2.x - v1.x, 2) + Math.pow(v2.y - v1.y, 2) + Math.pow(v2.z - v1.z, 2) + Math.pow(v2.w - v1.w, 2)
       )
+    )
+
+  def mod(dividend: Vector4, divisor: Vector4): Vector4 =
+    Vector4(
+      x = (dividend.x % divisor.x + divisor.x) % divisor.x,
+      y = (dividend.y % divisor.y + divisor.y) % divisor.y,
+      z = (dividend.z % divisor.z + divisor.z) % divisor.z,
+      w = (dividend.w % divisor.w + divisor.w) % divisor.w
     )

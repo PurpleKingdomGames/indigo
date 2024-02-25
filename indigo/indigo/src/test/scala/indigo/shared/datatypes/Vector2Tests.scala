@@ -196,6 +196,17 @@ class Vector2Tests extends munit.FunSuite {
     assertEquals(Vector2(0, -8.5).angle, Radians.PIby2 * -1.0)
   }
 
+  test("mod") {
+    assert(Vector2.mod(Vector2(11, 12), Vector2(10, 10)) ~== Vector2(1, 2))
+    assert(Vector2(11, 12) % Vector2(10, 10) ~== Vector2(1, 2))
+    assert(Vector2.mod(Vector2(9, 10), Vector2(10, 10)) ~== Vector2(9, 0))
+    assert(Vector2.mod(Vector2(1, 1), Vector2(10, 10)) ~== Vector2(1, 1))
+    assert(Vector2.mod(Vector2(-11, -12), Vector2(10, 10)) ~== Vector2(9, 8))
+    assert(Vector2.mod(Vector2(-1, -1), Vector2(10, 10)) ~== Vector2(9, 9))
+    assert(Vector2.mod(Vector2(0, 0), Vector2(10, 10)) ~== Vector2(0, 0))
+    assert(clue(Vector2.mod(Vector2(-11), Vector2(-10))) ~== clue(Vector2(-1)))
+  }
+
   def to2dp(d: Double): Double =
     Math.round(d * 100).toDouble / 100
 

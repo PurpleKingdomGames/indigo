@@ -124,6 +124,17 @@ class Vector4Tests extends munit.FunSuite {
     assert(!(Vector4(5.0, 5.0, 5.0, 5.0) ~== Vector4(-4.999999, 5.00001, 5.0, 5.0)))
   }
 
+  test("mod") {
+    assert(Vector4.mod(Vector4(11, 12, 13, 14), Vector4(10)) ~== Vector4(1, 2, 3, 4))
+    assert(Vector4(11, 12, 13, 14) % Vector4(10) ~== Vector4(1, 2, 3, 4))
+    assert(Vector4.mod(Vector4(9, 10, 11, 12), Vector4(10)) ~== Vector4(9, 0, 1, 2))
+    assert(Vector4.mod(Vector4(1), Vector4(10)) ~== Vector4(1))
+    assert(Vector4.mod(Vector4(-11, -12, -13, -14), Vector4(10)) ~== Vector4(9, 8, 7, 6))
+    assert(Vector4.mod(Vector4(-1), Vector4(10)) ~== Vector4(9))
+    assert(Vector4.mod(Vector4(0), Vector4(10)) ~== Vector4(0))
+    assert(clue(Vector4.mod(Vector4(-11), Vector4(-10))) ~== clue(Vector4(-1)))
+  }
+
   // ----------------------
   // Vector 4 matrix tests
 

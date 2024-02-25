@@ -110,16 +110,19 @@ final case class Vertex(x: Double, y: Double) derives CanEqual:
   def -(other: Vertex): Vertex = Vertex(x - other.x, y - other.y)
   def *(other: Vertex): Vertex = Vertex(x * other.x, y * other.y)
   def /(other: Vertex): Vertex = Vertex(x / other.x, y / other.y)
+  def %(other: Vertex): Vertex = Vertex.mod(this, other)
 
   def +(other: Vector2): Vertex = Vertex(x + other.x, y + other.y)
   def -(other: Vector2): Vertex = Vertex(x - other.x, y - other.y)
   def *(other: Vector2): Vertex = Vertex(x * other.x, y * other.y)
   def /(other: Vector2): Vertex = Vertex(x / other.x, y / other.y)
+  def %(other: Vector2): Vertex = Vertex.mod(this, other.toVertex)
 
   def +(value: Double): Vertex = this + Vertex(value, value)
   def -(value: Double): Vertex = this - Vertex(value, value)
   def *(value: Double): Vertex = this * Vertex(value, value)
   def /(value: Double): Vertex = this / Vertex(value, value)
+  def %(value: Double): Vertex = Vertex.mod(this, Vertex(value))
 
   def distanceTo(other: Vertex): Double =
     Math.sqrt(Math.abs(Math.pow(other.x - x, 2) + Math.pow(other.y - y, 2)))
@@ -161,3 +164,9 @@ object Vertex:
 
   val zero: Vertex = Vertex(0d, 0d)
   val one: Vertex  = Vertex(1d, 1d)
+
+  def mod(dividend: Vertex, divisor: Vertex): Vertex =
+    Vertex(
+      x = (dividend.x % divisor.x + divisor.x) % divisor.x,
+      y = (dividend.y % divisor.y + divisor.y) % divisor.y
+    )
