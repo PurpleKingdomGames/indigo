@@ -3,12 +3,14 @@ package indigo.shared.scenegraph
 import indigo.shared.config.GameViewport
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Radians
+import indigo.shared.datatypes.Size
 
 /** Parent type of camera instances. Cameras are used to look around your games graphics / levels / scenes.
   */
 sealed trait Camera:
   def position: Point
   def topLeft(viewport: GameViewport): Point
+  def topLeft(viewport: Size): Point
   def zoom: Zoom
   def rotation: Radians
   def isLookAt: Boolean
@@ -25,6 +27,7 @@ object Camera:
     */
   final case class Fixed(position: Point, zoom: Zoom, rotation: Radians) extends Camera:
     def topLeft(viewport: GameViewport): Point = position
+    def topLeft(viewport: Size): Point         = position
     val isLookAt: Boolean                      = false
 
     def withX(newX: Int): Fixed =
@@ -69,7 +72,9 @@ object Camera:
     val isLookAt: Boolean = true
     val position: Point   = target
     def topLeft(viewport: GameViewport): Point =
-      target - Point(viewport.width / 2, viewport.height / 2) / zoom.toDouble.toInt
+      topLeft(viewport.size)
+    def topLeft(viewport: Size): Point =
+      target - (viewport.toPoint / 2) / zoom.toDouble.toInt
 
     def withTarget(newTarget: Point): LookAt =
       this.copy(target = newTarget)
