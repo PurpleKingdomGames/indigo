@@ -64,4 +64,15 @@ class PointTests extends munit.FunSuite {
     // -90 at different magnitude
     assertEquals(Point(0, -8).angle, Radians.PIby2 * -1.0)
   }
+
+  test("mod") {
+    assertEquals(Point.mod(Point(11, 12), Point(10, 10)), Point(1, 2))
+    assertEquals(Point(11, 12) % Point(10, 10), Point(1, 2))
+    assertEquals(Point.mod(Point(9, 10), Point(10, 10)), Point(9, 0))
+    assertEquals(Point.mod(Point(1, 1), Point(10, 10)), Point(1, 1))
+    assertEquals(Point.mod(Point(-11, -12), Point(10, 10)), Point(9, 8))
+    assertEquals(Point.mod(Point(-1, -1), Point(10, 10)), Point(9, 9))
+    assertEquals(Point.mod(Point(0, 0), Point(10, 10)), Point(0, 0))
+    assertEquals(clue(Point.mod(Point(-11), Point(-10))), clue(Point(-1)))
+  }
 }

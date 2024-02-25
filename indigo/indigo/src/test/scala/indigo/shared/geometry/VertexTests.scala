@@ -160,4 +160,15 @@ class VertexTests extends munit.FunSuite {
     assert(!(Vertex(5.0, 5.0) ~== Vertex(4.98, 5.00001)))
   }
 
+  test("mod") {
+    assert(Vertex.mod(Vertex(11, 12), Vertex(10, 10)) ~== Vertex(1, 2))
+    assert(Vertex(11, 12) % Vertex(10, 10) ~== Vertex(1, 2))
+    assert(Vertex.mod(Vertex(9, 10), Vertex(10, 10)) ~== Vertex(9, 0))
+    assert(Vertex.mod(Vertex(1, 1), Vertex(10, 10)) ~== Vertex(1, 1))
+    assert(Vertex.mod(Vertex(-11, -12), Vertex(10, 10)) ~== Vertex(9, 8))
+    assert(Vertex.mod(Vertex(-1, -1), Vertex(10, 10)) ~== Vertex(9, 9))
+    assert(Vertex.mod(Vertex(0, 0), Vertex(10, 10)) ~== Vertex(0, 0))
+    assert(clue(Vertex.mod(Vertex(-11), Vertex(-10))) ~== clue(Vertex(-1)))
+  }
+
 }

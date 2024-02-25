@@ -73,11 +73,13 @@ final case class Vector3(x: Double, y: Double, z: Double) derives CanEqual:
   def -(other: Vector3): Vector3 = Vector3.subtract(this, other)
   def *(other: Vector3): Vector3 = Vector3.multiply(this, other)
   def /(other: Vector3): Vector3 = Vector3.divide(this, other)
+  def %(other: Vector3): Vector3 = Vector3.mod(this, other)
 
   def +(value: Double): Vector3 = Vector3.add(this, Vector3(value, value, value))
   def -(value: Double): Vector3 = Vector3.subtract(this, Vector3(value, value, value))
   def *(value: Double): Vector3 = Vector3.multiply(this, Vector3(value, value, value))
   def /(value: Double): Vector3 = Vector3.divide(this, Vector3(value, value, value))
+  def %(value: Double): Vector3 = Vector3.mod(this, Vector3(value))
 
   def dot(other: Vector3): Double =
     Vector3.dotProduct(this, other)
@@ -149,3 +151,10 @@ object Vector3:
 
   def distance(v1: Vector3, v2: Vector3): Double =
     Math.sqrt(Math.abs(Math.pow(v2.x - v1.x, 2) + Math.pow(v2.y - v1.y, 2) + Math.pow(v2.z - v1.z, 2)))
+
+  def mod(dividend: Vector3, divisor: Vector3): Vector3 =
+    Vector3(
+      x = (dividend.x % divisor.x + divisor.x) % divisor.x,
+      y = (dividend.y % divisor.y + divisor.y) % divisor.y,
+      z = (dividend.z % divisor.z + divisor.z) % divisor.z
+    )

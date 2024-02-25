@@ -15,6 +15,9 @@ final case class Size(width: Int, height: Int) derives CanEqual:
   def /(size: Size): Size = Size(width / size.width, height / size.height)
   def /(i: Int): Size     = Size(width / i, height / i)
   def /(d: Double): Size  = Size((width.toDouble / d).toInt, (height.toDouble / d).toInt)
+  def %(pt: Size): Size   = Size.mod(this, pt)
+  def %(i: Int): Size     = Size.mod(this, Size(i))
+  def %(d: Double): Size  = Size.mod(this, Size(d.toInt))
 
   def withWidth(newX: Int): Size  = this.copy(width = newX)
   def withHeight(newY: Int): Size = this.copy(height = newY)
@@ -71,3 +74,9 @@ object Size:
 
   def fromVertex(vertex: Vertex): Size =
     Size(vertex.x.toInt, vertex.y.toInt)
+
+  def mod(dividend: Size, divisor: Size): Size =
+    Size(
+      width = (dividend.width   % divisor.width + divisor.width)   % divisor.width,
+      height = (dividend.height % divisor.height + divisor.height) % divisor.height
+    )

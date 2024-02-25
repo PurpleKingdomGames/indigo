@@ -27,6 +27,9 @@ object Radians:
   inline def fromSeconds(seconds: Seconds): Radians =
     pi2 * (seconds.toDouble % 1.0d)
 
+  def mod(dividend: Radians, divisor: Radians): Radians =
+    Radians((dividend % divisor + divisor) % divisor)
+
   extension (r: Radians)
     def +(other: Radians): Radians =
       Radians(r + other)
@@ -52,8 +55,14 @@ object Radians:
     def /(other: Double): Radians =
       Radians(r / other)
 
+    def %(other: Radians): Radians =
+      Radians.mod(r, other)
+    @targetName("%_Double")
+    def %(other: Double): Radians =
+      Radians.mod(r, other)
+
     def wrap: Radians =
-      ((r % pi2) + pi2) % pi2
+      Radians.mod(r, pi2)
 
     def negative: Radians =
       -r

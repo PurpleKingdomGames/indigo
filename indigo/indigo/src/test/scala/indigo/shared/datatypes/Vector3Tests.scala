@@ -124,6 +124,17 @@ class Vector3Tests extends munit.FunSuite {
     assert(!(Vector3(5.0, 5.0, 5.0) ~== Vector3(-4.999999, 5.00001, 5.0)))
   }
 
+  test("mod") {
+    assert(Vector3.mod(Vector3(11, 12, 13), Vector3(10)) ~== Vector3(1, 2, 3))
+    assert(Vector3(11, 12, 13) % Vector3(10) ~== Vector3(1, 2, 3))
+    assert(Vector3.mod(Vector3(9, 10, 11), Vector3(10)) ~== Vector3(9, 0, 1))
+    assert(Vector3.mod(Vector3(1), Vector3(10)) ~== Vector3(1))
+    assert(Vector3.mod(Vector3(-11, -12, -13), Vector3(10)) ~== Vector3(9, 8, 7))
+    assert(Vector3.mod(Vector3(-1), Vector3(10)) ~== Vector3(9))
+    assert(Vector3.mod(Vector3(0), Vector3(10)) ~== Vector3(0))
+    assert(clue(Vector3.mod(Vector3(-11), Vector3(-10))) ~== clue(Vector3(-1)))
+  }
+
   def to2dp(d: Double): Double =
     Math.round(d * 100).toDouble / 100
 
