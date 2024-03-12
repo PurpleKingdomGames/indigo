@@ -10,7 +10,7 @@
 </div>
 <div class="main-signature mono-small-block">
  <div class="signature">
-  <span class="modifiers"><span t="k">final case </span></span><span class="kind"><span t="k">class </span></span><a href="SimulationSettings.html" t="n" class="documentableName ">SimulationSettings</a>(<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">bounds</span>: <a href="../../indigo.html#BoundingBox-0" t="t">BoundingBox</a>, <span t="k"></span><span data-unresolved-link="" t="n">idealCount</span>: <span data-unresolved-link="" t="t">Int</span>, <span t="k"></span><span data-unresolved-link="" t="n">minSize</span>: <span data-unresolved-link="" t="t">Double</span>, <span t="k"></span><span data-unresolved-link="" t="n">maxDepth</span>: <span data-unresolved-link="" t="t">Int</span>)
+  <span class="modifiers"><span t="k">final case </span></span><span class="kind"><span t="k">class </span></span><a href="SimulationSettings.html" t="n" class="documentableName ">SimulationSettings</a>(<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">bounds</span>: <a href="../../indigo.html#BoundingBox-0" t="t">BoundingBox</a>, <span t="k"></span><span data-unresolved-link="" t="n">idealCount</span>: <span data-unresolved-link="" t="t">Int</span>, <span t="k"></span><span data-unresolved-link="" t="n">minSize</span>: <span data-unresolved-link="" t="t">Double</span>, <span t="k"></span><span data-unresolved-link="" t="n">maxDepth</span>: <span data-unresolved-link="" t="t">Int</span>, <span t="k"></span><span data-unresolved-link="" t="n">maxIterations</span>: <span data-unresolved-link="" t="t">Int</span>)
  </div>
 </div>
 <div class="cover">
@@ -37,6 +37,12 @@
    </dt>
    <dd class="body-medium">
     <p>The maximum depth the spatial tree should go to. Defaults to 16.</p> 
+   </dd>
+   <dt class="body-small">
+    maxIterations
+   </dt>
+   <dd class="body-medium">
+    <p>The maximum number of solver iterations to perform. Fewer iterations improves performance at the cost of accuracy. Defaults to 4.</p> 
    </dd>
    <dt class="body-small">
     minSize
@@ -156,6 +162,15 @@ node6 -> node2;
           <div class="header monospace mono-medium">
            <div class="signature">
             <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="SimulationSettings.html#withMaxDepth-cc6" t="n" class="documentableName ">withMaxDepth</a>(<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">value</span>: <span data-unresolved-link="" t="t">Int</span>): <a href="SimulationSettings.html" t="t">SimulationSettings</a>
+           </div>
+          </div>
+         </div>
+        </div>
+        <div class="documentableElement" id="withMaxIterations-cc6">
+         <div class="documentableElement-expander">
+          <div class="header monospace mono-medium">
+           <div class="signature">
+            <span class="modifiers"></span><span class="kind"><span t="k">def </span></span><a href="SimulationSettings.html#withMaxIterations-cc6" t="n" class="documentableName ">withMaxIterations</a>(<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">value</span>: <span data-unresolved-link="" t="t">Int</span>): <a href="SimulationSettings.html" t="t">SimulationSettings</a>
            </div>
           </div>
          </div>

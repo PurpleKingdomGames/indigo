@@ -951,7 +951,7 @@ node5 -> node1;
           <button class="icon-button ar show-content"></button>
           <div class="header monospace mono-medium">
            <div class="signature">
-            <span class="signature-short"><span class="modifiers"><span t="k">final case </span></span><span class="kind"><span t="k">class </span></span><a href="MouseEvent$$Wheel.html" t="n" class="documentableName ">Wheel</a>(<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">position</span>: <a href="../datatypes/Point.html" t="t">Point</a>, <span t="k"></span><span data-unresolved-link="" t="n">buttons</span>: <a href="../collections/Batch.html" t="t">Batch</a>[<a href="MouseButton.html" t="t">MouseButton</a>], <span t="k"></span><span data-unresolved-link="" t="n">isAltKeyDown</span>: <span data-unresolved-link="" t="t">Boolean</span>, <span t="k"></span><span data-unresolved-link="" t="n">isCtrlKeyDown</span>: <span data-unresolved-link="" t="t">Boolean</span>, <span t="k"></span><span data-unresolved-link="" t="n">isMetaKeyDown</span>: <span data-unresolved-link="" t="t">Boolean</span>, <span t="k"></span><span data-unresolved-link="" t="n">isShiftKeyDown</span>: <span data-unresolved-link="" t="t">Boolean</span>, <span t="k"></span><span data-unresolved-link="" t="n">movementPosition</span>: <a href="../datatypes/Point.html" t="t">Point</a>, <span t="k"></span><span data-unresolved-link="" t="n">amount</span>: <span data-unresolved-link="" t="t">Double</span>)<span t="k"> extends </span><a href="MouseEvent.html" t="t">MouseEvent</a></span><span class="signature-long"></span>
+            <span class="signature-short"><span class="modifiers"><span t="k">final case </span></span><span class="kind"><span t="k">class </span></span><a href="MouseEvent$$Wheel.html" t="n" class="documentableName ">Wheel</a>(<span t="k"></span><span t="k"></span><span data-unresolved-link="" t="n">position</span>: <a href="../datatypes/Point.html" t="t">Point</a>, <span t="k"></span><span data-unresolved-link="" t="n">buttons</span>: <a href="../collections/Batch.html" t="t">Batch</a>[<a href="MouseButton.html" t="t">MouseButton</a>], <span t="k"></span><span data-unresolved-link="" t="n">isAltKeyDown</span>: <span data-unresolved-link="" t="t">Boolean</span>, <span t="k"></span><span data-unresolved-link="" t="n">isCtrlKeyDown</span>: <span data-unresolved-link="" t="t">Boolean</span>, <span t="k"></span><span data-unresolved-link="" t="n">isMetaKeyDown</span>: <span data-unresolved-link="" t="t">Boolean</span>, <span t="k"></span><span data-unresolved-link="" t="n">isShiftKeyDown</span>: <span data-unresolved-link="" t="t">Boolean</span>, <span t="k"></span><span data-unresolved-link="" t="n">movementPosition</span>: <a href="../datatypes/Point.html" t="t">Point</a>, <span t="k"></span><span data-unresolved-link="" t="n">deltaX</span>: <span data-unresolved-link="" t="t">Double</span>, <span t="k"></span><span data-unresolved-link="" t="n">deltaY</span>: <span data-unresolved-link="" t="t">Double</span>, <span t="k"></span><span data-unresolved-link="" t="n">deltaZ</span>: <span data-unresolved-link="" t="t">Double</span>)<span t="k"> extends </span><a href="MouseEvent.html" t="t">MouseEvent</a></span><span class="signature-long"></span>
            </div>
           </div>
          </div>
@@ -961,19 +961,31 @@ node5 -> node1;
            <div class="originInfo"></div>
            <div class="memberDocumentation">
             <div class="documentableBrief doc">
-             <p>The mouse wheel was rotated a certain amount into the Y axis.</p> 
+             <p>The mouse wheel was rotated a certain amount around an axis.</p> 
             </div>
             <div class="cover">
              <div class="doc">
-              <p>The mouse wheel was rotated a certain amount into the Y axis.</p> 
+              <p>The mouse wheel was rotated a certain amount around an axis.</p> 
              </div>
              <h2 class="h200">Value parameters</h2>
              <dl class="attributes attributes-small">
               <dt class="body-small">
-               amount
+               deltaX
               </dt>
               <dd class="body-medium">
-               <p>vertical amount of pixels, pages or other unit, depending on delta mode, the Y axis was scrolled</p> 
+               <p>horizontal amount of pixels, pages or other unit, depending on delta mode, the X axis was scrolled</p> 
+              </dd>
+              <dt class="body-small">
+               deltaY
+              </dt>
+              <dd class="body-medium">
+               <p>horizontal amount of pixels, pages or other unit, depending on delta mode, the Y axis was scrolled</p> 
+              </dd>
+              <dt class="body-small">
+               deltaZ
+              </dt>
+              <dd class="body-medium">
+               <p>horizontal amount of pixels, pages or other unit, depending on delta mode, the Z axis was scrolled</p> 
               </dd>
              </dl>
              <h2 class="h200">Attributes</h2>
