@@ -1,8 +1,7 @@
 # Mill & SBT Templates
 
-To help you get started quickly, we've put together a minimal project template for both [Mill](http://www.lihaoyi.com/mill/) and [SBT](https://www.scala-sbt.org/).
+To help you get started quickly, we've put together a minimal [Giter8](https://www.foundweekends.org/giter8/) project template that supports both [Mill](https://mill-build.com/) and [SBT](https://www.scala-sbt.org/).
 
-Just head to your repo of choice from the links below, read through the README file, and download a zip of the project to get going.
+For up to date usage information, please visit the README file in the templates git repository:
 
-- Mill: [blank-indigo-mill](https://github.com/PurpleKingdomGames/blank-indigo-mill)
-- SBT: [blank-indigo-sbt](https://github.com/PurpleKingdomGames/blank-indigo-sbt)
+[https://github.com/PurpleKingdomGames/indigo.g8](https://github.com/PurpleKingdomGames/indigo.g8)
