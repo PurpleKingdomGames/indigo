@@ -16,7 +16,7 @@ import indigo.shared.time.Seconds
 class SceneManager[StartUpData, GameModel, ViewModel](
     scenes: NonEmptyList[Scene[StartUpData, GameModel, ViewModel]],
     scenesFinder: SceneFinder
-) {
+):
 
   private given CanEqual[Option[Scene[StartUpData, GameModel, ViewModel]], Option[
     Scene[StartUpData, GameModel, ViewModel]
@@ -42,15 +42,42 @@ class SceneManager[StartUpData, GameModel, ViewModel](
 
   // Scene delegation
 
-  def updateModel(frameContext: FrameContext[StartUpData], model: GameModel): GlobalEvent => Outcome[GameModel] = {
+  def updateModel(frameContext: FrameContext[StartUpData], model: GameModel): GlobalEvent => Outcome[GameModel] =
+    case SceneEvent.First =>
+      lastSceneChangeAt = frameContext.gameTime.running
+
+      val from = finderInstance.current.name
+      finderInstance = finderInstance.first
+      val to = finderInstance.current.name
+
+      val events =
+        if from == to then Batch.empty
+        else Batch(SceneEvent.SceneChange(from, to, lastSceneChangeAt))
+
+      Outcome(model, events)
+
+    case SceneEvent.Last =>
+      lastSceneChangeAt = frameContext.gameTime.running
+
+      val from = finderInstance.current.name
+      finderInstance = finderInstance.last
+      val to = finderInstance.current.name
+
+      val events =
+        if from == to then Batch.empty
+        else Batch(SceneEvent.SceneChange(from, to, lastSceneChangeAt))
+
+      Outcome(model, events)
+
     case SceneEvent.Next =>
       lastSceneChangeAt = frameContext.gameTime.running
 
       val from = finderInstance.current.name
       finderInstance = finderInstance.forward
       val to = finderInstance.current.name
+
       val events =
-        if (from == to) Batch.empty
+        if from == to then Batch.empty
         else Batch(SceneEvent.SceneChange(from, to, lastSceneChangeAt))
 
       Outcome(model, events)
@@ -61,8 +88,9 @@ class SceneManager[StartUpData, GameModel, ViewModel](
       val from = finderInstance.current.name
       finderInstance = finderInstance.backward
       val to = finderInstance.current.name
+
       val events =
-        if (from == to) Batch.empty
+        if from == to then Batch.empty
         else Batch(SceneEvent.SceneChange(from, to, lastSceneChangeAt))
 
       Outcome(model, events)
@@ -73,14 +101,15 @@ class SceneManager[StartUpData, GameModel, ViewModel](
       val from = finderInstance.current.name
       finderInstance = finderInstance.jumpToSceneByName(name)
       val to = finderInstance.current.name
+
       val events =
-        if (from == to) Batch.empty
+        if from == to then Batch.empty
         else Batch(SceneEvent.SceneChange(from, to, lastSceneChangeAt))
 
       Outcome(model, events)
 
     case event =>
-      scenes.find(_.name == finderInstance.current.name) match {
+      scenes.find(_.name == finderInstance.current.name) match
         case None =>
           IndigoLogger.errorOnce("Could not find scene called: " + finderInstance.current.name)
           Outcome(model)
@@ -92,8 +121,6 @@ class SceneManager[StartUpData, GameModel, ViewModel](
               SceneContext(scene.name, lastSceneChangeAt, frameContext),
               model
             )(event)
-      }
-  }
 
   def updateSubSystems(
       frameContext: SubSystemFrameContext,
@@ -119,7 +146,7 @@ class SceneManager[StartUpData, GameModel, ViewModel](
       model: GameModel,
       viewModel: ViewModel
   ): GlobalEvent => Outcome[ViewModel] =
-    scenes.find(_.name == finderInstance.current.name) match {
+    scenes.find(_.name == finderInstance.current.name) match
       case None =>
         IndigoLogger.errorOnce("Could not find scene called: " + finderInstance.current.name)
         _ => Outcome(viewModel)
@@ -131,14 +158,13 @@ class SceneManager[StartUpData, GameModel, ViewModel](
           model,
           viewModel
         )
-    }
 
   def updateView(
       frameContext: FrameContext[StartUpData],
       model: GameModel,
       viewModel: ViewModel
   ): Outcome[SceneUpdateFragment] =
-    scenes.find(_.name == finderInstance.current.name) match {
+    scenes.find(_.name == finderInstance.current.name) match
       case None =>
         IndigoLogger.errorOnce("Could not find scene called: " + finderInstance.current.name)
         Outcome(SceneUpdateFragment.empty)
@@ -161,21 +187,16 @@ class SceneManager[StartUpData, GameModel, ViewModel](
           subsystemView
         )(_ |+| _)
 
-    }
-
   def eventFilters: EventFilters =
-    scenes.find(_.name == finderInstance.current.name) match {
+    scenes.find(_.name == finderInstance.current.name) match
       case None =>
         // This should never be the case, we should always find a scene.
         EventFilters((_: GlobalEvent) => None, (_: GlobalEvent) => None)
 
       case Some(value) =>
         value.eventFilters
-    }
 
-}
-
-object SceneManager {
+object SceneManager:
 
   def apply[StartUpData, GameModel, ViewModel](
       scenes: NonEmptyList[Scene[StartUpData, GameModel, ViewModel]],
@@ -185,5 +206,3 @@ object SceneManager {
       scenes,
       SceneFinder.fromScenes[StartUpData, GameModel, ViewModel](scenes).jumpToSceneByName(initialScene)
     )
-
-}
