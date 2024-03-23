@@ -267,6 +267,14 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
       Outcome(viewModel)
         .addGlobalEvents(SceneEvent.Previous)
 
+    case KeyboardEvent.KeyDown(Key.HOME) =>
+      Outcome(viewModel)
+        .addGlobalEvents(SceneEvent.First)
+
+    case KeyboardEvent.KeyDown(Key.END) =>
+      Outcome(viewModel)
+        .addGlobalEvents(SceneEvent.Last)
+
     case _ =>
       Outcome(viewModel)
   }

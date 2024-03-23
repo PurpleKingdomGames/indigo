@@ -72,4 +72,14 @@ class SceneFinderTests extends munit.FunSuite {
     assertEquals(sceneFinder.jumpToSceneByName(SceneName("foo")).current == ScenePosition(0, sceneA.name), true)
   }
 
+  test("scene finder can move to the first and last scenes") {
+    val moreScenes: NonEmptyList[Scene[Unit, TestGameModel, TestViewModel]] =
+      NonEmptyList(TestSceneA("a"), TestSceneA("b"), TestSceneA("c"), TestSceneA("d"))
+
+    val sf = SceneFinder.fromScenes(moreScenes).jumpToSceneByName(SceneName("c"))
+
+    assertEquals(sf.first.current, ScenePosition(0, SceneName("a")))
+    assertEquals(sf.last.current, ScenePosition(3, SceneName("d")))
+  }
+
 }
