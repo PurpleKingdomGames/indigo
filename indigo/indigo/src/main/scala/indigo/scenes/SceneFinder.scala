@@ -6,7 +6,7 @@ import indigo.shared.collections.NonEmptyList
 import scala.annotation.tailrec
 
 final case class SceneFinder(previous: List[ScenePosition], current: ScenePosition, next: List[ScenePosition])
-    derives CanEqual {
+    derives CanEqual:
 
   val sceneCount: Int =
     toList.length
@@ -24,22 +24,20 @@ final case class SceneFinder(previous: List[ScenePosition], current: ScenePositi
     }
 
   def forward: SceneFinder =
-    next match {
+    next match
       case Nil =>
         this
 
       case x :: xs =>
         SceneFinder(previous ++ List(current), x, xs)
-    }
 
   def backward: SceneFinder =
-    previous.reverse match {
+    previous.reverse match
       case Nil =>
         this
 
       case x :: xs =>
         SceneFinder(xs.reverse, x, current :: next)
-    }
 
   @tailrec
   def jumpToSceneByPosition(index: Int): SceneFinder =
@@ -65,28 +63,27 @@ final case class SceneFinder(previous: List[ScenePosition], current: ScenePositi
   def jumpToSceneByName(name: SceneName): SceneFinder =
     this.toList
       .find(p => p.name == name)
-      .map(p => jumpToSceneByPosition(p.index)) match {
+      .map(p => jumpToSceneByPosition(p.index)) match
       case Some(sf) =>
         sf
 
       case None =>
         IndigoLogger.errorOnce("Failed to find scene called: " + name)
         this
-    }
 
-}
+  def first: SceneFinder =
+    jumpToSceneByPosition(0)
 
-object SceneFinder {
+  def last: SceneFinder =
+    jumpToSceneByPosition(sceneCount - 1)
+
+object SceneFinder:
   given CanEqual[Option[SceneFinder], Option[SceneFinder]] = CanEqual.derived
 
   def fromScenes[StartUpData, GameModel, ViewModel](
       scenesList: NonEmptyList[Scene[StartUpData, GameModel, ViewModel]]
-  ): SceneFinder = {
+  ): SceneFinder =
     val a = scenesList.map(_.name).zipWithIndex.map(p => ScenePosition(p._2, p._1))
-
     SceneFinder(Nil, a.head, a.tail)
-  }
-
-}
 
 final case class ScenePosition(index: Int, name: SceneName) derives CanEqual
