@@ -23,7 +23,7 @@ object BoundingCircleScene extends Scene[SandboxStartupData, SandboxGameModel, S
   def name: SceneName =
     SceneName("Bounding Circle Scene")
 
-  def subSystems: Set[SubSystem] =
+  def subSystems: Set[SubSystem[SandboxGameModel]] =
     Set()
 
   def updateModel(

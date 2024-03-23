@@ -25,7 +25,7 @@ object LineReflectionScene extends Scene[SandboxStartupData, SandboxGameModel, S
   def name: SceneName =
     SceneName("LineReflectionScene")
 
-  def subSystems: Set[SubSystem] =
+  def subSystems: Set[SubSystem[SandboxGameModel]] =
     Set()
 
   def updateModel(

@@ -80,7 +80,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
 
   val eventFilters: EventFilters = EventFilters.Permissive
 
-  def boot(flags: Map[String, String]): Outcome[BootResult[SandboxBootData]] = {
+  def boot(flags: Map[String, String]): Outcome[BootResult[SandboxBootData, SandboxGameModel]] = {
     val gameViewport =
       (flags.get("width"), flags.get("height")) match {
         case (Some(w), Some(h)) =>
@@ -104,7 +104,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
           Archetype.assets
       ).withFonts(Fonts.fontInfo)
         .withSubSystems(
-          FPSCounter(
+          FPSCounter[SandboxGameModel](
             Point(5, 165),
             BindingKey("fps counter")
           )

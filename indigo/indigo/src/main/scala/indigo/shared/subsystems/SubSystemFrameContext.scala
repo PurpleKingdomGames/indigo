@@ -30,6 +30,7 @@ final class SubSystemFrameContext(
     val dice: Dice,
     val inputState: InputState,
     val boundaryLocator: BoundaryLocator
+    
 ) {
 
   val running: Seconds = gameTime.running

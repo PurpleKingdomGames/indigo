@@ -25,7 +25,7 @@ object CameraWithCloneTilesScene extends Scene[SandboxStartupData, SandboxGameMo
   def name: SceneName =
     SceneName("crates with camera")
 
-  def subSystems: Set[SubSystem] =
+  def subSystems: Set[SubSystem[SandboxGameModel]] =
     Set()
 
   def updateModel(

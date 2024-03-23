@@ -25,7 +25,7 @@ object UiScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewMo
   def name: SceneName =
     SceneName("ui")
 
-  def subSystems: Set[SubSystem] =
+  def subSystems: Set[SubSystem[SandboxGameModel]] =
     Set()
 
   def updateModel(

@@ -59,7 +59,7 @@ final case class TestSceneA() extends Scene[Unit, TestGameModel, TestViewModel] 
       viewModelEventFilter
     )
 
-  val subSystems: Set[SubSystem] = Set()
+  val subSystems: Set[SubSystem[TestGameModel]] = Set()
 
   def updateModel(context: SceneContext[Unit], sceneModel: TestSceneModelA): GlobalEvent => Outcome[TestSceneModelA] =
     _ => Outcome(sceneModel.copy(count = sceneModel.count + 1))
@@ -122,7 +122,7 @@ final case class TestSceneB() extends Scene[Unit, TestGameModel, TestViewModel] 
       viewModelEventFilter
     )
 
-  val subSystems: Set[SubSystem] = Set()
+  val subSystems: Set[SubSystem[TestGameModel]] = Set()
 
   def updateModel(context: SceneContext[Unit], sceneModel: TestSceneModelB): GlobalEvent => Outcome[TestSceneModelB] =
     _ => Outcome(sceneModel.copy(count = sceneModel.count + 10))

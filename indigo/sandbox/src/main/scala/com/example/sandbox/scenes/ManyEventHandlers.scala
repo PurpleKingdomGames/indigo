@@ -25,7 +25,7 @@ object ManyEventHandlers extends Scene[SandboxStartupData, SandboxGameModel, San
   def name: SceneName =
     SceneName("many event handlers")
 
-  def subSystems: Set[SubSystem] =
+  def subSystems: Set[SubSystem[SandboxGameModel]] =
     Set()
 
   def updateModel(

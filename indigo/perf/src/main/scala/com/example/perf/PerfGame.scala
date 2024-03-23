@@ -31,7 +31,7 @@ object PerfGame extends IndigoDemo[Unit, Dude, DudeModel, Unit] {
       _ => None
     )
 
-  def boot(flags: Map[String, String]): Outcome[BootResult[Unit]] =
+  def boot(flags: Map[String, String]): Outcome[BootResult[Unit, DudeModel]] =
     Outcome {
       BootResult
         .noData(
