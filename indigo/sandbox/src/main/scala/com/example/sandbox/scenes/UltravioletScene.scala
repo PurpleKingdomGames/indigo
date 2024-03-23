@@ -25,7 +25,7 @@ object UltravioletScene extends Scene[SandboxStartupData, SandboxGameModel, Sand
   def name: SceneName =
     SceneName("ultraviolet")
 
-  def subSystems: Set[SubSystem] =
+  def subSystems: Set[SubSystem[SandboxGameModel]] =
     Set()
 
   def updateModel(

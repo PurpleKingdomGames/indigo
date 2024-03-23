@@ -57,7 +57,7 @@ trait IndigoShader extends GameLauncher[IndigoShaderModel, IndigoShaderModel, Un
     */
   def shader: Shader
 
-  private def boot(flags: Map[String, String]): Outcome[BootResult[IndigoShaderModel]] =
+  private def boot(flags: Map[String, String]): Outcome[BootResult[IndigoShaderModel, IndigoShaderModel]] =
     val width  = flags.get("width").map(_.toInt).getOrElse(config.viewport.width)
     val height = flags.get("height").map(_.toInt).getOrElse(config.viewport.height)
     val c0     = flags.get(Channel0Name).map(p => AssetPath(p)).orElse(channel0)
@@ -152,7 +152,7 @@ trait IndigoShader extends GameLauncher[IndigoShaderModel, IndigoShaderModel, Un
     )
 
   private def indigoGame(
-      boot: BootResult[IndigoShaderModel]
+      boot: BootResult[IndigoShaderModel, IndigoShaderModel]
   ): GameEngine[IndigoShaderModel, IndigoShaderModel, Unit] = {
 
     val updateViewModel: (FrameContext[IndigoShaderModel], IndigoShaderModel, Unit) => GlobalEvent => Outcome[Unit] =

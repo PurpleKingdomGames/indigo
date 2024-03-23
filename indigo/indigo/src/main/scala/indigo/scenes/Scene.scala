@@ -18,7 +18,7 @@ trait Scene[StartUpData, GameModel, ViewModel] derives CanEqual {
   def modelLens: Lens[GameModel, SceneModel]
   def viewModelLens: Lens[ViewModel, SceneViewModel]
   def eventFilters: EventFilters
-  def subSystems: Set[SubSystem]
+  def subSystems: Set[SubSystem[GameModel]]
 
   def updateModel(context: SceneContext[StartUpData], model: SceneModel): GlobalEvent => Outcome[SceneModel]
   def updateViewModel(
@@ -85,7 +85,7 @@ object Scene {
       val eventFilters: EventFilters =
         EventFilters.BlockAll
 
-      val subSystems: Set[SubSystem] =
+      val subSystems: Set[SubSystem[GM]] =
         Set()
 
       def updateModel(

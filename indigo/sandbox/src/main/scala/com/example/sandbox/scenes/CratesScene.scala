@@ -24,7 +24,7 @@ object CratesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
   def name: SceneName =
     SceneName("crates")
 
-  def subSystems: Set[SubSystem] =
+  def subSystems: Set[SubSystem[SandboxGameModel]] =
     Set()
 
   def updateModel(

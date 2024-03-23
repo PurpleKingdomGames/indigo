@@ -23,7 +23,7 @@ object BoxesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVie
   def name: SceneName =
     SceneName("boxes")
 
-  def subSystems: Set[SubSystem] =
+  def subSystems: Set[SubSystem[SandboxGameModel]] =
     Set()
 
   def updateModel(

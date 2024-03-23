@@ -25,7 +25,7 @@ object TextureTileScene extends Scene[SandboxStartupData, SandboxGameModel, Sand
   def name: SceneName =
     SceneName("tiling textures")
 
-  def subSystems: Set[SubSystem] =
+  def subSystems: Set[SubSystem[SandboxGameModel]] =
     Set()
 
   def updateModel(

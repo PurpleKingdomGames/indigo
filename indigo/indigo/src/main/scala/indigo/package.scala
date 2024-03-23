@@ -321,8 +321,7 @@ val SignalState: shared.temporal.SignalState.type = shared.temporal.SignalState
 type SignalFunction[A, B] = shared.temporal.SignalFunction[A, B]
 val SignalFunction: shared.temporal.SignalFunction.type = shared.temporal.SignalFunction
 
-type SubSystem = shared.subsystems.SubSystem
-val SubSystem: shared.subsystems.SubSystem.type = shared.subsystems.SubSystem
+type SubSystem[Model] = shared.subsystems.SubSystem[Model]
 
 type SubSystemId = shared.subsystems.SubSystemId
 val SubSystemId: shared.subsystems.SubSystemId.type = shared.subsystems.SubSystemId

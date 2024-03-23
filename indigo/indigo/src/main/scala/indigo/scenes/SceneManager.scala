@@ -29,12 +29,12 @@ class SceneManager[StartUpData, GameModel, ViewModel](
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var lastSceneChangeAt: Seconds = Seconds.zero
 
-  private val subSystemStates: scalajs.js.Dictionary[SubSystemsRegister] =
+  private val subSystemStates: scalajs.js.Dictionary[SubSystemsRegister[GameModel]] =
     scalajs.js.Dictionary
-      .empty[SubSystemsRegister]
+      .empty[SubSystemsRegister[GameModel]]
       .addAll(
         scenes.toList.map { s =>
-          val r = new SubSystemsRegister()
+          val r = new SubSystemsRegister[GameModel]()
           r.register(Batch.fromSet(s.subSystems))
           (s.name.toString -> r)
         }
@@ -150,15 +150,16 @@ class SceneManager[StartUpData, GameModel, ViewModel](
 
   def updateSubSystems(
       frameContext: SubSystemFrameContext,
+      model: GameModel,
       globalEvents: Batch[GlobalEvent]
-  ): Outcome[SubSystemsRegister] =
+  ): Outcome[SubSystemsRegister[GameModel]] =
     scenes
       .find(_.name == finderInstance.current.name)
       .flatMap { scene =>
         subSystemStates
           .get(scene.name.toString)
           .map {
-            _.update(frameContext, globalEvents.toJSArray)
+            _.update(frameContext, model, globalEvents.toJSArray)
           }
       }
       .getOrElse(
@@ -199,7 +200,7 @@ class SceneManager[StartUpData, GameModel, ViewModel](
         val subsystemView = subSystemStates
           .get(scene.name.toString)
           .map { ssr =>
-            ssr.present(frameContext.forSubSystems)
+            ssr.present(frameContext.forSubSystems, model)
           }
           .getOrElse(Outcome(SceneUpdateFragment.empty))
 

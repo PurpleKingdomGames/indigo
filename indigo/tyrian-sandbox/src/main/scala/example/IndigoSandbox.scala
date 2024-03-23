@@ -179,7 +179,7 @@ object Counter:
       case Msg.Decrement => model - 1
 
 final case class Model(
-    bridge: TyrianIndigoBridge[IO, String],
+    bridge: TyrianIndigoBridge[IO, String, Unit],
     field: String,
     components: List[Counter.Model],
     randomNumber: Int

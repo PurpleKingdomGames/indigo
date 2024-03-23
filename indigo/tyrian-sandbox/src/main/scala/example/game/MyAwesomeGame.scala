@@ -5,7 +5,7 @@ import indigo._
 import indigo.scenes._
 import tyrian.TyrianSubSystem
 
-final case class MyAwesomeGame(tyrianSubSystem: TyrianSubSystem[IO, String], clockwise: Boolean)
+final case class MyAwesomeGame(tyrianSubSystem: TyrianSubSystem[IO, String, Unit], clockwise: Boolean)
     extends IndigoGame[Unit, Unit, Unit, Unit]:
 
   def initialScene(bootData: Unit): Option[SceneName] =
@@ -17,7 +17,7 @@ final case class MyAwesomeGame(tyrianSubSystem: TyrianSubSystem[IO, String], clo
   val eventFilters: EventFilters =
     EventFilters.Permissive
 
-  def boot(flags: Map[String, String]): Outcome[BootResult[Unit]] =
+  def boot(flags: Map[String, String]): Outcome[BootResult[Unit, Unit]] =
     val gameViewport =
       (flags.get("width"), flags.get("height")) match {
         case (Some(w), Some(h)) =>

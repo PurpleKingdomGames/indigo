@@ -58,7 +58,7 @@ trait IndigoGame[BootData, StartUpData, Model, ViewModel] extends GameLauncher[S
     * @return
     *   Bootup data consisting of a custom data type, animations, subsytems, assets, fonts, and the game's config.
     */
-  def boot(flags: Map[String, String]): Outcome[BootResult[BootData]]
+  def boot(flags: Map[String, String]): Outcome[BootResult[BootData, Model]]
 
   /** The `setup` function is your only opportunity to do an initial work to set up your game. For example, perhaps one
     * of your assets was a JSON description of a map or an animation sequence, you could process that now, which is why
@@ -143,10 +143,10 @@ trait IndigoGame[BootData, StartUpData, Model, ViewModel] extends GameLauncher[S
     */
   def present(context: FrameContext[StartUpData], model: Model, viewModel: ViewModel): Outcome[SceneUpdateFragment]
 
-  private val subSystemsRegister: SubSystemsRegister =
+  private val subSystemsRegister: SubSystemsRegister[Model] =
     new SubSystemsRegister()
 
-  private def indigoGame(bootUp: BootResult[BootData]): GameEngine[StartUpData, Model, ViewModel] = {
+  private def indigoGame(bootUp: BootResult[BootData, Model]): GameEngine[StartUpData, Model, ViewModel] = {
 
     val subSystemEvents = subSystemsRegister.register(Batch.fromSet(bootUp.subSystems))
 
