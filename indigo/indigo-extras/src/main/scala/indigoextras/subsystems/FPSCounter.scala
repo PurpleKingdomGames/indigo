@@ -54,7 +54,10 @@ final case class FPSCounter[Model](
   def initialModel: Outcome[SubSystemModel] =
     Outcome(FPSCounterState.initial(startPosition))
 
-  def update(context: SubSystemFrameContext[ReferenceData], model: FPSCounterState): GlobalEvent => Outcome[FPSCounterState] = {
+  def update(
+      context: SubSystemFrameContext[ReferenceData],
+      model: FPSCounterState
+  ): GlobalEvent => Outcome[FPSCounterState] = {
     case FrameTick =>
       if (context.gameTime.running >= (model.lastInterval + Seconds(1)))
         Outcome(
