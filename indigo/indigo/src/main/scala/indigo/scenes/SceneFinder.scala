@@ -43,12 +43,12 @@ final case class SceneFinder(previous: List[ScenePosition], current: ScenePositi
 
   @tailrec
   def jumpToSceneByPosition(index: Int): SceneFinder =
-    index match {
+    index match
       case i if i < 0 =>
-        this
+        jumpToSceneByPosition(0)
 
-      case i if i > sceneCount =>
-        this
+      case i if i >= sceneCount =>
+        jumpToSceneByPosition(sceneCount - 1)
 
       case i if i == current.index =>
         this
@@ -61,7 +61,6 @@ final case class SceneFinder(previous: List[ScenePosition], current: ScenePositi
 
       case _ =>
         this
-    }
 
   def jumpToSceneByName(name: SceneName): SceneFinder =
     this.toList
