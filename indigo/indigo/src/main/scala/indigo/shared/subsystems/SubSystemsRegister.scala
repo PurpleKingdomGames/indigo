@@ -44,7 +44,7 @@ final class SubSystemsRegister[Model] {
 
   // @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
   def update(
-      frameContext: SubSystemFrameContext,
+      frameContext: SubSystemFrameContext[Unit],
       gameModel: Model,
       globalEvents: js.Array[GlobalEvent]
   ): Outcome[SubSystemsRegister[Model]] = {
@@ -66,7 +66,10 @@ final class SubSystemsRegister[Model] {
 
                 filteredEvents.foldLeft(Outcome(model)) { (acc, e) =>
                   acc.flatMap { m =>
-                    subSystem.update(frameContext, subSystem.reference(gameModel), m)(e)
+                    subSystem.update(
+                      frameContext.copy(reference = subSystem.reference(gameModel)),
+                      m
+                    )(e)
                   }
                 } match {
                   case Outcome.Error(e, _) =>
@@ -85,12 +88,11 @@ final class SubSystemsRegister[Model] {
   }
 
   // @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
-  def present(frameContext: SubSystemFrameContext, gameModel: Model): Outcome[SceneUpdateFragment] =
+  def present(frameContext: SubSystemFrameContext[Unit], gameModel: Model): Outcome[SceneUpdateFragment] =
     registeredSubSystems
       .map { rss =>
         rss.subSystem.present(
-          frameContext,
-          rss.subSystem.reference(gameModel),
+          frameContext.copy(reference = rss.subSystem.reference(gameModel)),
           stateMap(rss.id).asInstanceOf[rss.subSystem.SubSystemModel]
         )
       }

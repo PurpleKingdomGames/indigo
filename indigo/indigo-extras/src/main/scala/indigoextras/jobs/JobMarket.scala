@@ -35,7 +35,10 @@ final case class JobMarket(id: SubSystemId, availableJobs: List[Job]) extends Su
 
   private given CanEqual[Option[Job], Option[Job]] = CanEqual.derived
 
-  def update(frameContext: SubSystemFrameContext, reference: ReferenceData, jobs: List[Job]): JobMarketEvent => Outcome[List[Job]] = {
+  def update(
+      frameContext: SubSystemFrameContext[ReferenceData],
+      jobs: List[Job]
+  ): JobMarketEvent => Outcome[List[Job]] = {
     case JobMarketEvent.Post(job) =>
       Outcome(jobs ++ List(job))
 
@@ -54,7 +57,7 @@ final case class JobMarket(id: SubSystemId, availableJobs: List[Job]) extends Su
       Outcome(jobs)
   }
 
-  def present(frameContext: SubSystemFrameContext, reference: ReferenceData, jobs: List[Job]): Outcome[SceneUpdateFragment] =
+  def present(frameContext: SubSystemFrameContext[ReferenceData], jobs: List[Job]): Outcome[SceneUpdateFragment] =
     Outcome(SceneUpdateFragment.empty)
 }
 

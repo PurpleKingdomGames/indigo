@@ -56,7 +56,10 @@ final case class Automata[Model](
 
   private given CanEqual[Option[Int], Option[Int]] = CanEqual.derived
 
-  def update(frameContext: SubSystemFrameContext, reference: ReferenceData, state: AutomataState): AutomataEvent => Outcome[AutomataState] =
+  def update(
+      frameContext: SubSystemFrameContext[ReferenceData],
+      state: AutomataState
+  ): AutomataEvent => Outcome[AutomataState] =
     case Spawn(key, position, lifeSpan, payload) if key == poolKey =>
       val spawned =
         SpawnedAutomaton(
@@ -118,7 +121,7 @@ final case class Automata[Model](
     case _ =>
       Outcome(state)
 
-  def present(frameContext: SubSystemFrameContext, reference: ReferenceData, state: AutomataState): Outcome[SceneUpdateFragment] =
+  def present(frameContext: SubSystemFrameContext[ReferenceData], state: AutomataState): Outcome[SceneUpdateFragment] =
     val updated = Automata.renderNoLayer(state.pool, frameContext.gameTime)
 
     Outcome(

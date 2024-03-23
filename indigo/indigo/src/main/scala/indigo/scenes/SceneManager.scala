@@ -96,7 +96,7 @@ class SceneManager[StartUpData, GameModel, ViewModel](
   }
 
   def updateSubSystems(
-      frameContext: SubSystemFrameContext,
+      frameContext: SubSystemFrameContext[Unit],
       model: GameModel,
       globalEvents: Batch[GlobalEvent]
   ): Outcome[SubSystemsRegister[GameModel]] =

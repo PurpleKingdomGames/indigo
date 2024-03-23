@@ -54,7 +54,7 @@ final case class FPSCounter[Model](
   def initialModel: Outcome[SubSystemModel] =
     Outcome(FPSCounterState.initial(startPosition))
 
-  def update(context: SubSystemFrameContext, reference: ReferenceData, model: FPSCounterState): GlobalEvent => Outcome[FPSCounterState] = {
+  def update(context: SubSystemFrameContext[ReferenceData], model: FPSCounterState): GlobalEvent => Outcome[FPSCounterState] = {
     case FrameTick =>
       if (context.gameTime.running >= (model.lastInterval + Seconds(1)))
         Outcome(
@@ -78,7 +78,7 @@ final case class FPSCounter[Model](
       .withFontFamily(fontFamily)
       .withFontSize(fontSize)
 
-  def present(context: SubSystemFrameContext, reference: ReferenceData, model: FPSCounterState): Outcome[SceneUpdateFragment] =
+  def present(context: SubSystemFrameContext[ReferenceData], model: FPSCounterState): Outcome[SceneUpdateFragment] =
     val text: TextBox =
       textBox
         .withText(s"""FPS ${model.fps.toString}""")

@@ -12,15 +12,17 @@ import indigo.shared.subsystems.SubSystemId
 
 import scala.collection.mutable
 
-final case class TyrianSubSystem[F[_]: Async, A, Model](indigoGameId: Option[IndigoGameId], bridge: TyrianIndigoBridge[F, A, Model])
-    extends SubSystem[Model]:
+final case class TyrianSubSystem[F[_]: Async, A, Model](
+    indigoGameId: Option[IndigoGameId],
+    bridge: TyrianIndigoBridge[F, A, Model]
+) extends SubSystem[Model]:
 
   val id: SubSystemId =
     SubSystemId(indigoGameId.map(id => "[TyrianSubSystem] " + id).getOrElse("[TyrianSubSystem] " + hashCode.toString))
 
   type EventType      = GlobalEvent
   type SubSystemModel = Unit
-  type ReferenceData   = Unit
+  type ReferenceData  = Unit
 
   def send(value: A): TyrianEvent.Send =
     TyrianEvent.Send(value)
@@ -50,7 +52,7 @@ final case class TyrianSubSystem[F[_]: Async, A, Model](indigoGameId: Option[Ind
   def initialModel: Outcome[Unit] =
     Outcome(())
 
-  def update(context: SubSystemFrameContext, reference: ReferenceData, model: Unit): GlobalEvent => Outcome[Unit] =
+  def update(context: SubSystemFrameContext[ReferenceData], model: Unit): GlobalEvent => Outcome[Unit] =
     case TyrianEvent.Send(value) =>
       bridge.eventTarget.dispatchEvent(TyrianIndigoBridge.BridgeToTyrian(indigoGameId, value))
       Outcome(model)
@@ -61,7 +63,7 @@ final case class TyrianSubSystem[F[_]: Async, A, Model](indigoGameId: Option[Ind
     case _ =>
       Outcome(model)
 
-  def present(context: SubSystemFrameContext, reference: ReferenceData, model: Unit): Outcome[SceneUpdateFragment] =
+  def present(context: SubSystemFrameContext[ReferenceData], model: Unit): Outcome[SceneUpdateFragment] =
     Outcome(SceneUpdateFragment.empty)
 
   enum TyrianEvent extends GlobalEvent:

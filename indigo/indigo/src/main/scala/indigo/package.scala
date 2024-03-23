@@ -606,8 +606,8 @@ val GamepadButtons: shared.input.GamepadButtons.type = shared.input.GamepadButto
 
 type BoundaryLocator = shared.BoundaryLocator
 
-type FrameContext[StartUpData] = shared.FrameContext[StartUpData]
-type SubSystemFrameContext     = shared.subsystems.SubSystemFrameContext
+type FrameContext[StartUpData]            = shared.FrameContext[StartUpData]
+type SubSystemFrameContext[ReferenceData] = shared.subsystems.SubSystemFrameContext[ReferenceData]
 
 //WebSockets
 
