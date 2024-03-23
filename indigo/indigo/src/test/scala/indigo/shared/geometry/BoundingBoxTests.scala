@@ -94,6 +94,24 @@ class BoundingBoxTests extends munit.FunSuite {
     assertEquals(a.expand(10), BoundingBox(-20, 0, 40, -40))
   }
 
+  test("expand a rectangle by a fixed amount") {
+    val a = BoundingBox(10, 10, 20, 20)
+
+    assertEquals(a.expand(10), BoundingBox(0, 0, 40, 40))
+  }
+
+  test("expand a rectangle by a fixed amount (negative)") {
+    val a = BoundingBox(10, 10, 40, 40)
+
+    assertEquals(a.expand(-5), BoundingBox(15, 15, 30, 30))
+  }
+
+  test("expand a rectangle by a fixed amount (Vector2)") {
+    val a = BoundingBox(10, 10, 20, 20)
+
+    assertEquals(a.expand(Vector2(20, 10)), BoundingBox(-10, 0, 60, 40))
+  }
+
   test("contract by a fixed amount") {
     val actual =
       BoundingBox(10, 20, 90, 80).contract(10)
@@ -110,6 +128,16 @@ class BoundingBoxTests extends munit.FunSuite {
 
     val expected =
       BoundingBox(0, -30, 70, -60)
+
+    assertEquals(actual, expected)
+  }
+
+  test("contract by a fixed amount (Vector2)") {
+    val actual =
+      BoundingBox(10, 20, 90, 80).contract(Vector2(20, 10))
+
+    val expected =
+      BoundingBox(30, 30, 50, 60)
 
     assertEquals(actual, expected)
   }

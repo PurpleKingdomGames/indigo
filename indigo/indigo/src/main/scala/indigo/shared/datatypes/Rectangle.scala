@@ -64,11 +64,15 @@ final case class Rectangle(position: Point, size: Size) derives CanEqual:
 
   def expand(amount: Int): Rectangle =
     Rectangle.expand(this, amount)
+  def expand(amount: Size): Rectangle =
+    Rectangle.expand(this, amount)
 
   def expandToInclude(other: Rectangle): Rectangle =
     Rectangle.expandToInclude(this, other)
 
   def contract(amount: Int): Rectangle =
+    Rectangle.contract(this, amount)
+  def contract(amount: Size): Rectangle =
     Rectangle.contract(this, amount)
 
   def encompasses(other: Rectangle): Boolean =
@@ -209,6 +213,15 @@ object Rectangle:
       width = if rectangle.width >= 0 then rectangle.width + (amount * 2) else rectangle.width - (amount * 2),
       height = if rectangle.height >= 0 then rectangle.height + (amount * 2) else rectangle.height - (amount * 2)
     )
+  def expand(rectangle: Rectangle, amount: Size): Rectangle =
+    Rectangle(
+      x = if rectangle.width >= 0 then rectangle.x - amount.width else rectangle.x + amount.width,
+      y = if rectangle.height >= 0 then rectangle.y - amount.height else rectangle.y + amount.height,
+      width =
+        if rectangle.width >= 0 then rectangle.width + (amount.width * 2) else rectangle.width - (amount.width * 2),
+      height =
+        if rectangle.height >= 0 then rectangle.height + (amount.height * 2) else rectangle.height - (amount.height * 2)
+    )
 
   def expandToInclude(a: Rectangle, b: Rectangle): Rectangle =
     val newX: Int = if (a.left < b.left) a.left else b.left
@@ -227,6 +240,15 @@ object Rectangle:
       y = if rectangle.height >= 0 then rectangle.y + amount else rectangle.y - amount,
       width = if rectangle.width >= 0 then rectangle.width - (amount * 2) else rectangle.width + (amount * 2),
       height = if rectangle.height >= 0 then rectangle.height - (amount * 2) else rectangle.height + (amount * 2)
+    )
+  def contract(rectangle: Rectangle, amount: Size): Rectangle =
+    Rectangle(
+      x = if rectangle.width >= 0 then rectangle.x + amount.width else rectangle.x - amount.width,
+      y = if rectangle.height >= 0 then rectangle.y + amount.height else rectangle.y - amount.height,
+      width =
+        if rectangle.width >= 0 then rectangle.width - (amount.width * 2) else rectangle.width + (amount.width * 2),
+      height =
+        if rectangle.height >= 0 then rectangle.height - (amount.height * 2) else rectangle.height + (amount.height * 2)
     )
 
   def encompassing(a: Rectangle, b: Rectangle): Boolean =
