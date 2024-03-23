@@ -17,21 +17,28 @@ import indigo.shared.subsystems.SubSystemId
   * @param availableJobs
   *   Jobs currently available for allocation to workers.
   */
-final case class JobMarket(id: SubSystemId, availableJobs: List[Job]) extends SubSystem {
+final case class JobMarket[Model](id: SubSystemId, availableJobs: List[Job]) extends SubSystem[Model] {
   type EventType      = JobMarketEvent
   type SubSystemModel = List[Job]
+  type ReferenceData  = Unit
 
   val eventFilter: GlobalEvent => Option[JobMarketEvent] = {
     case e: JobMarketEvent => Option(e)
     case _                 => None
   }
 
+  def reference(model: Model): ReferenceData =
+    ()
+
   val initialModel: Outcome[List[Job]] =
     Outcome(availableJobs)
 
   private given CanEqual[Option[Job], Option[Job]] = CanEqual.derived
 
-  def update(frameContext: SubSystemFrameContext, jobs: List[Job]): JobMarketEvent => Outcome[List[Job]] = {
+  def update(
+      frameContext: SubSystemFrameContext[ReferenceData],
+      jobs: List[Job]
+  ): JobMarketEvent => Outcome[List[Job]] = {
     case JobMarketEvent.Post(job) =>
       Outcome(jobs ++ List(job))
 
@@ -50,7 +57,7 @@ final case class JobMarket(id: SubSystemId, availableJobs: List[Job]) extends Su
       Outcome(jobs)
   }
 
-  def present(frameContext: SubSystemFrameContext, jobs: List[Job]): Outcome[SceneUpdateFragment] =
+  def present(frameContext: SubSystemFrameContext[ReferenceData], jobs: List[Job]): Outcome[SceneUpdateFragment] =
     Outcome(SceneUpdateFragment.empty)
 }
 
@@ -61,10 +68,10 @@ object JobMarket {
     * @return
     *   An empty JobMarket
     */
-  def subSystem(id: SubSystemId): JobMarket =
+  def subSystem[Model](id: SubSystemId): JobMarket[Model] =
     JobMarket(id, Nil)
 
-  def apply(id: SubSystemId, availableJobs: Job*): JobMarket =
+  def apply[Model](id: SubSystemId, availableJobs: Job*): JobMarket[Model] =
     JobMarket(id, availableJobs.toList)
 
   def findJob(availableJobs: List[Job], canTakeJob: Job => Boolean): (Option[Job], List[Job]) = {

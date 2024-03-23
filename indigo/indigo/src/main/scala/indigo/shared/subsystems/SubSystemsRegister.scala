@@ -9,15 +9,15 @@ import indigo.shared.subsystems.SubSystemFrameContext
 
 import scalajs.js
 
-final class SubSystemsRegister() {
+final class SubSystemsRegister[Model] {
 
   val stateMap: scalajs.js.Dictionary[Object] = scalajs.js.Dictionary.empty
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  private var registeredSubSystems: js.Array[RegisteredSubSystem] = js.Array()
+  private var registeredSubSystems: js.Array[RegisteredSubSystem[Model]] = js.Array()
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  def register(newSubSystems: Batch[SubSystem]): Batch[GlobalEvent] =
+  def register(newSubSystems: Batch[SubSystem[Model]]): Batch[GlobalEvent] =
     newSubSystems.map(initialiseSubSystem).sequence match {
       case oe @ Outcome.Error(e, _) =>
         IndigoLogger.error("Error during subsystem setup - Halting.")
@@ -31,7 +31,7 @@ final class SubSystemsRegister() {
     }
 
   // @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
-  private def initialiseSubSystem(subSystem: SubSystem): Outcome[RegisteredSubSystem] = {
+  private def initialiseSubSystem(subSystem: SubSystem[Model]): Outcome[RegisteredSubSystem[Model]] = {
     val key = subSystem.id.toString
     val res = RegisteredSubSystem(key, subSystem)
 
@@ -43,7 +43,11 @@ final class SubSystemsRegister() {
   }
 
   // @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
-  def update(frameContext: SubSystemFrameContext, globalEvents: js.Array[GlobalEvent]): Outcome[SubSystemsRegister] = {
+  def update(
+      frameContext: SubSystemFrameContext[Unit],
+      gameModel: Model,
+      globalEvents: js.Array[GlobalEvent]
+  ): Outcome[SubSystemsRegister[Model]] = {
     def outcomeEvents: Outcome[Batch[GlobalEvent]] =
       Outcome
         .sequence(
@@ -62,7 +66,10 @@ final class SubSystemsRegister() {
 
                 filteredEvents.foldLeft(Outcome(model)) { (acc, e) =>
                   acc.flatMap { m =>
-                    subSystem.update(frameContext, m)(e)
+                    subSystem.update(
+                      frameContext.copy(reference = subSystem.reference(gameModel)),
+                      m
+                    )(e)
                   }
                 } match {
                   case Outcome.Error(e, _) =>
@@ -81,11 +88,11 @@ final class SubSystemsRegister() {
   }
 
   // @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
-  def present(frameContext: SubSystemFrameContext): Outcome[SceneUpdateFragment] =
+  def present(frameContext: SubSystemFrameContext[Unit], gameModel: Model): Outcome[SceneUpdateFragment] =
     registeredSubSystems
       .map { rss =>
         rss.subSystem.present(
-          frameContext,
+          frameContext.copy(reference = rss.subSystem.reference(gameModel)),
           stateMap(rss.id).asInstanceOf[rss.subSystem.SubSystemModel]
         )
       }
@@ -96,4 +103,4 @@ final class SubSystemsRegister() {
 
 }
 
-final case class RegisteredSubSystem(id: String, subSystem: SubSystem) derives CanEqual
+final case class RegisteredSubSystem[Model](id: String, subSystem: SubSystem[Model]) derives CanEqual

@@ -19,7 +19,7 @@ object IndigoPhysics extends IndigoGame[Unit, Unit, Model, Unit]:
   val eventFilters: EventFilters =
     EventFilters.Permissive
 
-  def boot(flags: Map[String, String]): Outcome[BootResult[Unit]] =
+  def boot(flags: Map[String, String]): Outcome[BootResult[Unit, Model]] =
     Outcome(
       BootResult
         .noData(Config.config)

@@ -15,9 +15,10 @@ import indigo.shared.subsystems.SubSystemFrameContext
 import indigo.shared.subsystems.SubSystemId
 
 // Provides "at least once" message delivery for updates on a bundle's loading status.
-object AssetBundleLoader extends SubSystem:
+final class AssetBundleLoader[Model] extends SubSystem[Model]:
   type EventType      = GlobalEvent
   type SubSystemModel = AssetBundleTracker
+  type ReferenceData  = Unit
 
   val id: SubSystemId = SubSystemId("[indigo_AssetBundleLoader_subsystem]")
 
@@ -27,13 +28,16 @@ object AssetBundleLoader extends SubSystem:
     case _                         => None
   }
 
+  def reference(model: Model): ReferenceData =
+    ()
+
   def initialModel: Outcome[AssetBundleTracker] =
     Outcome(AssetBundleTracker.empty)
 
   private given CanEqual[Option[Set[AssetType]], Option[Set[AssetType]]] = CanEqual.derived
 
   def update(
-      frameContext: SubSystemFrameContext,
+      frameContext: SubSystemFrameContext[ReferenceData],
       tracker: AssetBundleTracker
   ): GlobalEvent => Outcome[AssetBundleTracker] =
     // Asset Bundle Loader Commands
@@ -71,7 +75,10 @@ object AssetBundleLoader extends SubSystem:
     case _ =>
       Outcome(tracker)
 
-  def present(frameContext: SubSystemFrameContext, model: AssetBundleTracker): Outcome[SceneUpdateFragment] =
+  def present(
+      frameContext: SubSystemFrameContext[ReferenceData],
+      model: AssetBundleTracker
+  ): Outcome[SceneUpdateFragment] =
     Outcome(SceneUpdateFragment.empty)
 
   private def createBeginLoadingOutcome(
@@ -124,6 +131,11 @@ object AssetBundleLoader extends SubSystem:
         }
 
     Outcome(updatedTracker, Batch.fromList(statusBasedEvents))
+
+object AssetBundleLoader:
+
+  def apply[Model]: AssetBundleLoader[Model] =
+    new AssetBundleLoader[Model]
 
 enum AssetBundleLoaderEvent extends GlobalEvent derives CanEqual:
   // commands

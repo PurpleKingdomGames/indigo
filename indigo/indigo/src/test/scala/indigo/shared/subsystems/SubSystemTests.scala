@@ -10,7 +10,15 @@ class SubSystemTests extends munit.FunSuite {
   val subSystem = PointsTrackerExample(1, 0)
 
   test("A SubSystem (PointsTracker example).should render the initial state correctly") {
-    val expected = subSystem.present(context(6), 1230).unsafeGet.layers.head.nodes.head.asInstanceOf[Text[_]].text
+    val expected = subSystem
+      .present(context(6).copy(reference = 10), 1230)
+      .unsafeGet
+      .layers
+      .head
+      .nodes
+      .head
+      .asInstanceOf[Text[_]]
+      .text
 
     assert(expected == "1230")
   }
@@ -18,10 +26,10 @@ class SubSystemTests extends munit.FunSuite {
   test("A SubSystem (PointsTracker example).should respond to an Add event") {
     val expected = {
       val points = subSystem
-        .update(context(6), 0)(PointsTrackerEvent.Add(10))
+        .update(context(6).copy(reference = 10), 0)(PointsTrackerEvent.Add(10))
 
       subSystem
-        .present(context(6), points.unsafeGet)
+        .present(context(6).copy(reference = 10), points.unsafeGet)
         .unsafeGet
         .layers
         .head
@@ -31,16 +39,16 @@ class SubSystemTests extends munit.FunSuite {
         .text
     }
 
-    assert(expected == "10")
+    assertEquals(expected, "20") // 10 + reference data of 10
   }
 
   test("A SubSystem (PointsTracker example).should respond to a LoseAll event and emit an event") {
     val expected = {
       val points = subSystem
-        .update(context(6), 1000)(PointsTrackerEvent.LoseAll)
+        .update(context(6).copy(reference = 10), 1000)(PointsTrackerEvent.LoseAll)
 
       subSystem
-        .present(context(6), points.unsafeGet)
+        .present(context(6).copy(reference = 10), points.unsafeGet)
         .unsafeGet
         .layers
         .head
@@ -50,7 +58,7 @@ class SubSystemTests extends munit.FunSuite {
         .text
     }
 
-    assert(expected == "0")
+    assertEquals(expected, "0")
   }
 
 }

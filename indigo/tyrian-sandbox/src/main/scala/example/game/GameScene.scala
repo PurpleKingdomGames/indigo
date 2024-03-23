@@ -20,7 +20,7 @@ final case class GameScene(clockwise: Boolean) extends Scene[Unit, Unit, Unit]:
   val eventFilters: EventFilters =
     EventFilters.Permissive
 
-  val subSystems: Set[SubSystem] =
+  val subSystems: Set[SubSystem[Unit]] =
     Set()
 
   def updateModel(

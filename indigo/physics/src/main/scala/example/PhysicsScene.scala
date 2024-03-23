@@ -22,7 +22,7 @@ trait PhysicsScene extends Scene[Unit, Model, Unit]:
   val eventFilters: EventFilters =
     EventFilters.Permissive
 
-  val subSystems: Set[SubSystem] =
+  val subSystems: Set[SubSystem[Model]] =
     Set()
 
   def updateModel(

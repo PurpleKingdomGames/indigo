@@ -25,7 +25,7 @@ object TextScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxView
   def name: SceneName =
     SceneName("text")
 
-  def subSystems: Set[SubSystem] =
+  def subSystems: Set[SubSystem[SandboxGameModel]] =
     Set()
 
   def updateModel(

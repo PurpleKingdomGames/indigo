@@ -30,7 +30,7 @@ object PointersScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
   def name: SceneName =
     SceneName("pointers")
 
-  def subSystems: Set[SubSystem] =
+  def subSystems: Set[SubSystem[SandboxGameModel]] =
     Set()
 
   def updateModel(
