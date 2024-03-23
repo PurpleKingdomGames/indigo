@@ -18,11 +18,12 @@ import indigo.shared.time.GameTime
 class JobMarketTests extends munit.FunSuite {
 
   val context =
-    new SubSystemFrameContext(
+    SubSystemFrameContext[Unit](
       GameTime.zero,
       Dice.loaded(6),
       InputState.default,
-      new BoundaryLocator(new AnimationsRegister, new FontRegister, new DynamicText)
+      new BoundaryLocator(new AnimationsRegister, new FontRegister, new DynamicText),
+      ()
     )
 
   val workContext =
