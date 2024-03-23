@@ -91,6 +91,24 @@ class RectangleTests extends munit.FunSuite {
     assertEquals(a.expand(10), Rectangle(-20, 0, 40, -40))
   }
 
+  test("expand a rectangle by a fixed amount") {
+    val a = Rectangle(10, 10, 20, 20)
+
+    assertEquals(a.expand(10), Rectangle(0, 0, 40, 40))
+  }
+
+  test("expand a rectangle by a fixed amount (negative)") {
+    val a = Rectangle(10, 10, 40, 40)
+
+    assertEquals(a.expand(-5), Rectangle(15, 15, 30, 30))
+  }
+
+  test("expand a rectangle by a fixed amount (Size)") {
+    val a = Rectangle(10, 10, 20, 20)
+
+    assertEquals(a.expand(Size(20, 10)), Rectangle(-10, 0, 60, 40))
+  }
+
   test("contract by a fixed amount") {
     val actual =
       Rectangle(10, 20, 90, 80).contract(10)
@@ -107,6 +125,16 @@ class RectangleTests extends munit.FunSuite {
 
     val expected =
       Rectangle(0, -30, 70, -60)
+
+    assertEquals(actual, expected)
+  }
+
+  test("contract by a fixed amount (Size)") {
+    val actual =
+      Rectangle(10, 20, 90, 80).contract(Size(20, 10))
+
+    val expected =
+      Rectangle(30, 30, 50, 60)
 
     assertEquals(actual, expected)
   }

@@ -62,11 +62,15 @@ final case class BoundingBox(position: Vertex, size: Vertex) derives CanEqual:
 
   def expand(amount: Double): BoundingBox =
     BoundingBox.expand(this, amount)
+  def expand(amount: Vector2): BoundingBox =
+    BoundingBox.expand(this, amount)
 
   def expandToInclude(other: BoundingBox): BoundingBox =
     BoundingBox.expandToInclude(this, other)
 
   def contract(amount: Double): BoundingBox =
+    BoundingBox.contract(this, amount)
+  def contract(amount: Vector2): BoundingBox =
     BoundingBox.contract(this, amount)
 
   def encompasses(other: BoundingBox): Boolean =
@@ -244,6 +248,15 @@ object BoundingBox:
       height = if boundingBox.height >= 0 then boundingBox.height + (amount * 2) else boundingBox.height - (amount * 2)
     )
 
+  def expand(boundingBox: BoundingBox, amount: Vector2): BoundingBox =
+    BoundingBox(
+      x = if boundingBox.width >= 0 then boundingBox.x - amount.x else boundingBox.x + amount.x,
+      y = if boundingBox.height >= 0 then boundingBox.y - amount.y else boundingBox.y + amount.y,
+      width = if boundingBox.width >= 0 then boundingBox.width + (amount.x * 2) else boundingBox.width - (amount.x * 2),
+      height =
+        if boundingBox.height >= 0 then boundingBox.height + (amount.y * 2) else boundingBox.height - (amount.y * 2)
+    )
+
   def expandToInclude(a: BoundingBox, b: BoundingBox): BoundingBox =
     val newX: Double = if (a.left < b.left) a.left else b.left
     val newY: Double = if (a.top < b.top) a.top else b.top
@@ -261,6 +274,15 @@ object BoundingBox:
       y = if boundingBox.height >= 0 then boundingBox.y + amount else boundingBox.y - amount,
       width = if boundingBox.width >= 0 then boundingBox.width - (amount * 2) else boundingBox.width + (amount * 2),
       height = if boundingBox.height >= 0 then boundingBox.height - (amount * 2) else boundingBox.height + (amount * 2)
+    )
+
+  def contract(boundingBox: BoundingBox, amount: Vector2): BoundingBox =
+    BoundingBox(
+      x = if boundingBox.width >= 0 then boundingBox.x + amount.x else boundingBox.x - amount.x,
+      y = if boundingBox.height >= 0 then boundingBox.y + amount.y else boundingBox.y - amount.y,
+      width = if boundingBox.width >= 0 then boundingBox.width - (amount.x * 2) else boundingBox.width + (amount.x * 2),
+      height =
+        if boundingBox.height >= 0 then boundingBox.height - (amount.y * 2) else boundingBox.height + (amount.y * 2)
     )
 
   def encompassing(a: BoundingBox, b: BoundingBox): Boolean =
