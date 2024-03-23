@@ -58,9 +58,10 @@ class SceneFinderTests extends munit.FunSuite {
     assertEquals(sceneFinder.jumpToSceneByPosition(1).current == ScenePosition(1, sceneB.name), true)
   }
 
-  test("managing the scenes list.should reject invalid index numbers to jump to") {
-    assertEquals(sceneFinder.jumpToSceneByPosition(10).current == ScenePosition(0, sceneA.name), true)
-    assertEquals(sceneFinder.jumpToSceneByPosition(-1).current == ScenePosition(0, sceneA.name), true)
+  test("managing the scenes list.should clamp invalid index numbers to jump to") {
+    assertEquals(sceneFinder.jumpToSceneByPosition(10).current, ScenePosition(1, sceneB.name))
+    assertEquals(sceneFinder.jumpToSceneByPosition(-1).current, ScenePosition(0, sceneA.name))
+    assertEquals(sceneFinder.jumpToSceneByPosition(2).current, ScenePosition(1, sceneB.name))
   }
 
   test("managing the scenes list.should be able to jump to a scene by name") {
