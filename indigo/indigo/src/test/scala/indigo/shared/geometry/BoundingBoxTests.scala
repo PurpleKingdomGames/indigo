@@ -298,6 +298,22 @@ class BoundingBoxTests extends munit.FunSuite {
     assert(b.overlaps(c) == false)
   }
 
+  test("overlaps BoundingCircle (encompasses)") {
+    assert(BoundingBox(0, 0, 160, 160).overlaps(BoundingCircle(Vertex(100, 100), 5)))
+    assert(BoundingCircle(Vertex(100, 100), 5).overlaps(BoundingBox(0, 0, 160, 160)))
+
+    assert(BoundingBox(100, 100, 5, 5).overlaps(BoundingCircle(Vertex(90, 90), 20)))
+    assert(BoundingCircle(Vertex(90, 90), 20).overlaps(BoundingBox(100, 100, 5, 5)))
+  }
+
+  test("encompasses BoundingCircle") {
+    assert(BoundingBox(0, 0, 160, 160).encompasses(BoundingCircle(Vertex(100, 100), 5)))
+    assert(!BoundingCircle(Vertex(100, 100), 5).encompasses(BoundingBox(100, 100, 5, 5)))
+
+    assert(!BoundingBox(100, 100, 5, 5).encompasses(BoundingCircle(Vertex(90, 90), 20)))
+    assert(BoundingCircle(Vertex(100, 100), 20).encompasses(BoundingBox(100, 100, 5, 5)))
+  }
+
   test("overlaps LineSegment") {
     val b = BoundingBox(Vertex(0, 0), Vertex(500))
     val l = LineSegment((-1.0, -1.0), (10.0, 10.0))

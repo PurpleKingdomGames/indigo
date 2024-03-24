@@ -77,6 +77,8 @@ final case class Rectangle(position: Point, size: Size) derives CanEqual:
 
   def encompasses(other: Rectangle): Boolean =
     Rectangle.encompassing(this, other)
+  def encompasses(other: Circle): Boolean =
+    Rectangle.encompassing(this, other)
 
   def overlaps(other: Rectangle): Boolean =
     Rectangle.overlapping(this, other)
@@ -253,6 +255,8 @@ object Rectangle:
 
   def encompassing(a: Rectangle, b: Rectangle): Boolean =
     b.x >= a.x && b.y >= a.y && (b.width + (b.x - a.x)) <= a.width && (b.height + (b.y - a.y)) <= a.height
+  def encompassing(a: Rectangle, b: Circle): Boolean =
+    encompassing(a, b.toIncircleRectangle)
 
   def overlapping(a: Rectangle, b: Rectangle): Boolean =
     a.toBoundingBox.overlaps(b.toBoundingBox)

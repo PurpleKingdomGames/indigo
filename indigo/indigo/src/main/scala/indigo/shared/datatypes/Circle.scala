@@ -45,6 +45,8 @@ final case class Circle(position: Point, radius: Int) derives CanEqual:
 
   def encompasses(other: Circle): Boolean =
     Circle.encompassing(this, other)
+  def encompasses(other: Rectangle): Boolean =
+    Circle.encompassing(this, other)
 
   def overlaps(other: Circle): Boolean =
     Circle.overlapping(this, other)
@@ -142,6 +144,8 @@ object Circle:
 
   def encompassing(a: Circle, b: Circle): Boolean =
     a.position.distanceTo(b.position) <= Math.abs(a.radius) - Math.abs(b.radius)
+  def encompassing(a: Circle, b: Rectangle): Boolean =
+    b.corners.forall(a.contains)
 
   def overlapping(a: Circle, b: Circle): Boolean =
     a.toBoundingCircle.overlaps(b.toIncircleBoundingBox)

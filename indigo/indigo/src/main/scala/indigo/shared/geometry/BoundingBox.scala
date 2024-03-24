@@ -75,6 +75,8 @@ final case class BoundingBox(position: Vertex, size: Vertex) derives CanEqual:
 
   def encompasses(other: BoundingBox): Boolean =
     BoundingBox.encompassing(this, other)
+  def encompasses(other: BoundingCircle): Boolean =
+    BoundingBox.encompassing(this, other)
 
   def overlaps(other: BoundingBox): Boolean =
     BoundingBox.overlapping(this, other)
@@ -287,6 +289,8 @@ object BoundingBox:
 
   def encompassing(a: BoundingBox, b: BoundingBox): Boolean =
     b.x >= a.x && b.y >= a.y && (b.width + (b.x - a.x)) <= a.width && (b.height + (b.y - a.y)) <= a.height
+  def encompassing(a: BoundingBox, b: BoundingCircle): Boolean =
+    encompassing(a, b.toIncircleBoundingBox)
 
   def overlapping(a: BoundingBox, b: BoundingBox): Boolean =
     Math.abs(a.center.x - b.center.x) < a.halfSize.x + b.halfSize.x &&
