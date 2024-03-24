@@ -31,10 +31,26 @@ final case class SceneFinder(previous: List[ScenePosition], current: ScenePositi
       case x :: xs =>
         SceneFinder(previous ++ List(current), x, xs)
 
+  def forwardLoop: SceneFinder =
+    next match
+      case Nil =>
+        first
+
+      case x :: xs =>
+        SceneFinder(previous ++ List(current), x, xs)
+
   def backward: SceneFinder =
     previous.reverse match
       case Nil =>
         this
+
+      case x :: xs =>
+        SceneFinder(xs.reverse, x, current :: next)
+
+  def backwardLoop: SceneFinder =
+    previous.reverse match
+      case Nil =>
+        last
 
       case x :: xs =>
         SceneFinder(xs.reverse, x, current :: next)
