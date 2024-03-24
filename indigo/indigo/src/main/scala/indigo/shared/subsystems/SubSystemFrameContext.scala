@@ -45,6 +45,15 @@ final class SubSystemFrameContext(
   def bounds(sceneGraphNode: SceneNode): Rectangle =
     boundaryLocator.bounds(sceneGraphNode)
 
+  def toFrameContext: FrameContext[Unit] =
+    new FrameContext[Unit](
+      gameTime,
+      dice,
+      inputState,
+      boundaryLocator,
+      ()
+    )
+
 }
 object SubSystemFrameContext {
 

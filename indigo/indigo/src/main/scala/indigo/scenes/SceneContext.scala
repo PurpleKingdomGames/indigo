@@ -45,3 +45,6 @@ final class SceneContext[StartUpData](
     */
   lazy val sceneRunning: Seconds =
     frameContext.gameTime.running - sceneStartTime
+
+  def toFrameContext: FrameContext[StartUpData] =
+    frameContext
