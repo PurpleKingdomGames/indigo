@@ -29,6 +29,14 @@ class CircleTests extends munit.FunSuite {
     assert(!c1.encompasses(c2))
   }
 
+  test("encompasses rectangle") {
+    assert(Rectangle(0, 0, 160, 160).encompasses(Circle(Point(100, 100), 5)))
+    assert(!Circle(Point(100, 100), 5).encompasses(Rectangle(100, 100, 5, 5)))
+
+    assert(!Rectangle(100, 100, 5, 5).encompasses(Circle(Point(90, 90), 20)))
+    assert(Circle(Point(100, 100), 20).encompasses(Rectangle(100, 100, 5, 5)))
+  }
+
   test("overlaps") {
     val c1 = Circle(Point(20, 20), 10)
     val c2 = Circle(Point(25, 25), 10)
@@ -36,6 +44,14 @@ class CircleTests extends munit.FunSuite {
 
     assert(c1 overlaps c2)
     assert(!(c1 overlaps c3))
+  }
+
+  test("overlaps rectangle (encompasses)") {
+    assert(Rectangle(0, 0, 160, 160).overlaps(Circle(Point(100, 100), 5)))
+    assert(Circle(Point(100, 100), 5).overlaps(Rectangle(0, 0, 160, 160)))
+
+    assert(Rectangle(100, 100, 5, 5).overlaps(Circle(Point(90, 90), 20)))
+    assert(Circle(Point(90, 90), 20).overlaps(Rectangle(100, 100, 5, 5)))
   }
 
   test("moveBy | moveTo") {
