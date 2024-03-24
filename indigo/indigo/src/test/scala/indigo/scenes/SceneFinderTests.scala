@@ -43,11 +43,19 @@ class SceneFinderTests extends munit.FunSuite {
   }
 
   test("managing the scenes list.should be able go forward") {
-    assertEquals(SceneFinder.fromScenes(scenes).forward.current == ScenePosition(1, sceneB.name), true)
+    assertEquals(SceneFinder.fromScenes(scenes).forward.current, ScenePosition(1, sceneB.name))
+  }
+
+  test("managing the scenes list.should be able go forward and loop") {
+    assertEquals(SceneFinder.fromScenes(scenes).forward.forwardLoop.current, ScenePosition(0, sceneA.name))
   }
 
   test("managing the scenes list.should be able go backward") {
-    assertEquals(SceneFinder.fromScenes(scenes).forward.backward.current == ScenePosition(0, sceneA.name), true)
+    assertEquals(SceneFinder.fromScenes(scenes).forward.backward.current, ScenePosition(0, sceneA.name))
+  }
+
+  test("managing the scenes list.should be able go backward and loop") {
+    assertEquals(SceneFinder.fromScenes(scenes).backwardLoop.current, ScenePosition(1, sceneB.name))
   }
 
   test("managing the scenes list.should be able go forward, backward, and forward again") {

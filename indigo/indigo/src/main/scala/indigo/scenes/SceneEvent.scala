@@ -8,6 +8,8 @@ import indigo.shared.time.Seconds
 enum SceneEvent extends GlobalEvent derives CanEqual:
   case Next
   case Previous
+  case LoopNext
+  case LoopPrevious
   case JumpTo(name: SceneName)
   case SceneChange(from: SceneName, to: SceneName, at: Seconds)
   case First
