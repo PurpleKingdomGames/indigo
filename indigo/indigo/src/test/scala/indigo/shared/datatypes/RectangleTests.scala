@@ -212,6 +212,22 @@ class RectangleTests extends munit.FunSuite {
     assert(Rectangle.overlapping(a, b))
   }
 
+  test("overlaps circle (encompasses)") {
+    assert(Rectangle(0, 0, 160, 160).overlaps(Circle(Point(100, 100), 5)))
+    assert(Circle(Point(100, 100), 5).overlaps(Rectangle(0, 0, 160, 160)))
+
+    assert(Rectangle(100, 100, 5, 5).overlaps(Circle(Point(90, 90), 20)))
+    assert(Circle(Point(90, 90), 20).overlaps(Rectangle(100, 100, 5, 5)))
+  }
+
+  test("encompasses circle") {
+    assert(Rectangle(0, 0, 160, 160).encompasses(Circle(Point(100, 100), 5)))
+    assert(!Circle(Point(100, 100), 5).encompasses(Rectangle(100, 100, 5, 5)))
+
+    assert(!Rectangle(100, 100, 5, 5).encompasses(Circle(Point(90, 90), 20)))
+    assert(Circle(Point(100, 100), 20).encompasses(Rectangle(100, 100, 5, 5)))
+  }
+
   test("Expand should be able to expand in size by a given amount") {
     val a = Rectangle(10, 10, 20, 20)
     val b = Rectangle(0, 10, 100, 5)

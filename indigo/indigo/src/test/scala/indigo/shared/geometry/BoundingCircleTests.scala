@@ -69,6 +69,14 @@ class BoundingCircleTests extends munit.FunSuite {
     assert(c.overlaps(l))
   }
 
+  test("overlaps BoundingBox (encompasses both ways)") {
+    assert(BoundingBox(0, 0, 160, 160).overlaps(BoundingCircle(Vertex(100, 100), 5)))
+    assert(BoundingCircle(Vertex(100, 100), 5).overlaps(BoundingBox(0, 0, 160, 160)))
+
+    assert(BoundingBox(100, 100, 5, 5).overlaps(BoundingCircle(Vertex(90, 90), 20)))
+    assert(BoundingCircle(Vertex(90, 90), 20).overlaps(BoundingBox(100, 100, 5, 5)))
+  }
+
   test("moveBy | moveTo") {
     val c = BoundingCircle(Vertex(20, 20), 10)
 
