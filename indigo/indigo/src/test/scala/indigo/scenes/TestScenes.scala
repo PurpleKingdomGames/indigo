@@ -62,7 +62,9 @@ final case class TestSceneA(id: String) extends Scene[Unit, TestGameModel, TestV
   val subSystems: Set[SubSystem] = Set()
 
   def updateModel(context: SceneContext[Unit], sceneModel: TestSceneModelA): GlobalEvent => Outcome[TestSceneModelA] =
-    _ => Outcome(sceneModel.copy(count = sceneModel.count + 1))
+    _ =>
+      // println(s"A - before: ${sceneModel.count}, after: ${sceneModel.count + 1}")
+      Outcome(sceneModel.copy(count = sceneModel.count + 1))
 
   def updateViewModel(
       context: SceneContext[Unit],
@@ -125,7 +127,9 @@ final case class TestSceneB(id: String) extends Scene[Unit, TestGameModel, TestV
   val subSystems: Set[SubSystem] = Set()
 
   def updateModel(context: SceneContext[Unit], sceneModel: TestSceneModelB): GlobalEvent => Outcome[TestSceneModelB] =
-    _ => Outcome(sceneModel.copy(count = sceneModel.count + 10))
+    _ =>
+      // println(s"B - before: ${sceneModel.count}, after: ${sceneModel.count + 10}")
+      Outcome(sceneModel.copy(count = sceneModel.count + 10))
 
   def updateViewModel(
       context: SceneContext[Unit],

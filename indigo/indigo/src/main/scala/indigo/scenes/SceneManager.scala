@@ -95,6 +95,19 @@ class SceneManager[StartUpData, GameModel, ViewModel](
 
       Outcome(model, events)
 
+    case SceneEvent.Previous =>
+      lastSceneChangeAt = frameContext.gameTime.running
+
+      val from = finderInstance.current.name
+      finderInstance = finderInstance.backward
+      val to = finderInstance.current.name
+
+      val events =
+        if from == to then Batch.empty
+        else Batch(SceneEvent.SceneChange(from, to, lastSceneChangeAt))
+
+      Outcome(model, events)
+
     case SceneEvent.LoopPrevious =>
       lastSceneChangeAt = frameContext.gameTime.running
 
