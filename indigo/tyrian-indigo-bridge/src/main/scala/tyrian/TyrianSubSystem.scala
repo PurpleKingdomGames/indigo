@@ -12,14 +12,17 @@ import indigo.shared.subsystems.SubSystemId
 
 import scala.collection.mutable
 
-final case class TyrianSubSystem[F[_]: Async, A](indigoGameId: Option[IndigoGameId], bridge: TyrianIndigoBridge[F, A])
-    extends SubSystem:
+final case class TyrianSubSystem[F[_]: Async, A, Model](
+    indigoGameId: Option[IndigoGameId],
+    bridge: TyrianIndigoBridge[F, A, Model]
+) extends SubSystem[Model]:
 
   val id: SubSystemId =
     SubSystemId(indigoGameId.map(id => "[TyrianSubSystem] " + id).getOrElse("[TyrianSubSystem] " + hashCode.toString))
 
   type EventType      = GlobalEvent
   type SubSystemModel = Unit
+  type ReferenceData  = Unit
 
   def send(value: A): TyrianEvent.Send =
     TyrianEvent.Send(value)
@@ -43,10 +46,13 @@ final case class TyrianSubSystem[F[_]: Async, A](indigoGameId: Option[IndigoGame
     case e: TyrianEvent => Some(e)
     case _              => None
 
+  def reference(model: Model): ReferenceData =
+    ()
+
   def initialModel: Outcome[Unit] =
     Outcome(())
 
-  def update(context: SubSystemFrameContext, model: Unit): GlobalEvent => Outcome[Unit] =
+  def update(context: SubSystemFrameContext[ReferenceData], model: Unit): GlobalEvent => Outcome[Unit] =
     case TyrianEvent.Send(value) =>
       bridge.eventTarget.dispatchEvent(TyrianIndigoBridge.BridgeToTyrian(indigoGameId, value))
       Outcome(model)
@@ -57,7 +63,7 @@ final case class TyrianSubSystem[F[_]: Async, A](indigoGameId: Option[IndigoGame
     case _ =>
       Outcome(model)
 
-  def present(context: SubSystemFrameContext, model: Unit): Outcome[SceneUpdateFragment] =
+  def present(context: SubSystemFrameContext[ReferenceData], model: Unit): Outcome[SceneUpdateFragment] =
     Outcome(SceneUpdateFragment.empty)
 
   enum TyrianEvent extends GlobalEvent:
@@ -67,5 +73,5 @@ final case class TyrianSubSystem[F[_]: Async, A](indigoGameId: Option[IndigoGame
   case object TyrianSubSystemEnqueue extends GlobalEvent
 
 object TyrianSubSystem:
-  def apply[F[_]: Async, A](bridge: TyrianIndigoBridge[F, A]): TyrianSubSystem[F, A] =
+  def apply[F[_]: Async, A, Model](bridge: TyrianIndigoBridge[F, A, Model]): TyrianSubSystem[F, A, Model] =
     TyrianSubSystem(None, bridge)

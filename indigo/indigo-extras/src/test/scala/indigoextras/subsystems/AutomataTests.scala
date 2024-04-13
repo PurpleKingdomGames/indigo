@@ -42,7 +42,7 @@ class AutomataTests extends munit.FunSuite {
   val layerKey =
     BindingKey("test layer")
 
-  val automata: Automata =
+  val automata: Automata[Unit] =
     Automata(poolKey, automaton, layerKey)
 
   val startingState: AutomataState =

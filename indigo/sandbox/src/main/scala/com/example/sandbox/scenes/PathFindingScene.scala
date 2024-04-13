@@ -41,7 +41,7 @@ object PathFindingScene extends Scene[SandboxStartupData, SandboxGameModel, Sand
   def name: SceneName =
     SceneName("pathfinding")
 
-  def subSystems: Set[SubSystem] =
+  def subSystems: Set[SubSystem[SandboxGameModel]] =
     Set()
 
   def updateModel(

@@ -20,7 +20,7 @@ class AssetBundleLoaderTests extends munit.FunSuite {
 
   test("AssetBundleLoader - Journey (happy path)") {
 
-    val loader  = AssetBundleLoader
+    val loader  = AssetBundleLoader[Unit]
     val tracker = AssetBundleTracker.empty
 
     val key = BindingKey("test")
@@ -72,7 +72,7 @@ class AssetBundleLoaderTests extends munit.FunSuite {
   }
 
   test("AssetBundleLoader - Journey (unhappy path)") {
-    val loader  = AssetBundleLoader
+    val loader  = AssetBundleLoader[Unit]
     val tracker = AssetBundleTracker.empty
 
     val key = BindingKey("test")

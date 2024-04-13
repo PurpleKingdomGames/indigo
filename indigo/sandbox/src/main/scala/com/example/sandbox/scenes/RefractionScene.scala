@@ -26,7 +26,7 @@ object RefractionScene extends Scene[SandboxStartupData, SandboxGameModel, Sandb
   def name: SceneName =
     SceneName("refraction")
 
-  def subSystems: Set[SubSystem] =
+  def subSystems: Set[SubSystem[SandboxGameModel]] =
     Set()
 
   def updateModel(

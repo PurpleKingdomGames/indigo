@@ -28,7 +28,7 @@ object LegacyEffectsScene extends Scene[SandboxStartupData, SandboxGameModel, Sa
   def name: SceneName =
     SceneName("legacy effects")
 
-  def subSystems: Set[SubSystem] =
+  def subSystems: Set[SubSystem[SandboxGameModel]] =
     Set()
 
   def updateModel(

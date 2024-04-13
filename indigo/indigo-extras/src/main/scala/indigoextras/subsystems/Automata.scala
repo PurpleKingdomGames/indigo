@@ -23,18 +23,19 @@ import indigoextras.subsystems.AutomataEvent._
 import scalajs.js
 import scalajs.js.JSConverters.*
 
-final case class Automata(
+final case class Automata[Model](
     poolKey: AutomataPoolKey,
     automaton: Automaton,
     layerKey: Option[BindingKey],
     maxPoolSize: Option[Int]
-) extends SubSystem:
+) extends SubSystem[Model]:
   type EventType      = AutomataEvent
   type SubSystemModel = AutomataState
+  type ReferenceData  = Unit
 
   val id: SubSystemId = SubSystemId(poolKey.toString)
 
-  def withMaxPoolSize(limit: Int): Automata =
+  def withMaxPoolSize(limit: Int): Automata[Model] =
     Automata(poolKey, automaton, layerKey, Option(limit))
 
   val eventFilter: GlobalEvent => Option[AutomataEvent] =
@@ -47,12 +48,18 @@ final case class Automata(
     case _ =>
       None
 
+  def reference(model: Model): ReferenceData =
+    ()
+
   val initialModel: Outcome[AutomataState] =
     Outcome(AutomataState(0, js.Array()))
 
   private given CanEqual[Option[Int], Option[Int]] = CanEqual.derived
 
-  def update(frameContext: SubSystemFrameContext, state: AutomataState): AutomataEvent => Outcome[AutomataState] =
+  def update(
+      frameContext: SubSystemFrameContext[ReferenceData],
+      state: AutomataState
+  ): AutomataEvent => Outcome[AutomataState] =
     case Spawn(key, position, lifeSpan, payload) if key == poolKey =>
       val spawned =
         SpawnedAutomaton(
@@ -114,7 +121,7 @@ final case class Automata(
     case _ =>
       Outcome(state)
 
-  def present(frameContext: SubSystemFrameContext, state: AutomataState): Outcome[SceneUpdateFragment] =
+  def present(frameContext: SubSystemFrameContext[ReferenceData], state: AutomataState): Outcome[SceneUpdateFragment] =
     val updated = Automata.renderNoLayer(state.pool, frameContext.gameTime)
 
     Outcome(
@@ -129,10 +136,10 @@ final case class Automata(
 
 object Automata:
 
-  def apply(poolKey: AutomataPoolKey, automaton: Automaton): Automata =
+  def apply[Model](poolKey: AutomataPoolKey, automaton: Automaton): Automata[Model] =
     Automata(poolKey, automaton, None, None)
 
-  def apply(poolKey: AutomataPoolKey, automaton: Automaton, layerKey: BindingKey): Automata =
+  def apply[Model](poolKey: AutomataPoolKey, automaton: Automaton, layerKey: BindingKey): Automata[Model] =
     Automata(poolKey, automaton, Some(layerKey), None)
 
   def renderNoLayer(pool: js.Array[SpawnedAutomaton], gameTime: GameTime): AutomatonUpdate =

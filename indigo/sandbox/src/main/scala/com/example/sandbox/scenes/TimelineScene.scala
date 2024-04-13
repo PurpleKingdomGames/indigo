@@ -26,7 +26,7 @@ object TimelineScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
   def name: SceneName =
     SceneName("timeline")
 
-  def subSystems: Set[SubSystem] =
+  def subSystems: Set[SubSystem[SandboxGameModel]] =
     Set()
 
   def updateModel(

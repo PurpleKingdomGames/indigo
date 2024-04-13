@@ -25,12 +25,13 @@ import indigo.shared.time.Seconds
   * @param boundaryLocator
   *   A service that can be interogated for the calculated dimensions of screen elements.
   */
-final class SubSystemFrameContext(
-    val gameTime: GameTime,
-    val dice: Dice,
-    val inputState: InputState,
-    val boundaryLocator: BoundaryLocator
-) {
+final case class SubSystemFrameContext[ReferenceData](
+    gameTime: GameTime,
+    dice: Dice,
+    inputState: InputState,
+    boundaryLocator: BoundaryLocator,
+    reference: ReferenceData
+):
 
   val running: Seconds = gameTime.running
   val delta: Seconds   = gameTime.delta
@@ -54,17 +55,16 @@ final class SubSystemFrameContext(
       ()
     )
 
-}
 object SubSystemFrameContext {
 
-  implicit class FrameContextForSubSystems(frameContext: FrameContext[_]) {
-    def forSubSystems: SubSystemFrameContext =
+  extension (frameContext: FrameContext[_])
+    def forSubSystems: SubSystemFrameContext[Unit] =
       new SubSystemFrameContext(
         frameContext.gameTime,
         frameContext.dice,
         frameContext.inputState,
-        frameContext.boundaryLocator
+        frameContext.boundaryLocator,
+        ()
       )
-  }
 
 }

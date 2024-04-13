@@ -24,7 +24,7 @@ object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
   def name: SceneName =
     SceneName("lights")
 
-  def subSystems: Set[SubSystem] =
+  def subSystems: Set[SubSystem[SandboxGameModel]] =
     Set()
 
   def updateModel(

@@ -7,7 +7,7 @@ import util.Functions
 
 import scala.scalajs.js
 
-final class TyrianIndigoBridge[F[_]: Async, A]:
+final class TyrianIndigoBridge[F[_]: Async, A, Model]:
 
   val eventTarget: EventTarget = new EventTarget()
 
@@ -21,9 +21,9 @@ final class TyrianIndigoBridge[F[_]: Async, A]:
   def subscribe[B](indigoGame: IndigoGameId)(extract: A => Option[B])(using CanEqual[B, B]): Sub[F, B] =
     subscribeToBridge(Option(indigoGame), extract)
 
-  def subSystem: TyrianSubSystem[F, A] =
+  def subSystem: TyrianSubSystem[F, A, Model] =
     TyrianSubSystem(this)
-  def subSystem(indigoGame: IndigoGameId): TyrianSubSystem[F, A] =
+  def subSystem(indigoGame: IndigoGameId): TyrianSubSystem[F, A, Model] =
     TyrianSubSystem(Option(indigoGame), this)
 
   private def publishToBridge(indigoGameId: Option[IndigoGameId], value: A): Cmd[F, Nothing] =
@@ -62,8 +62,8 @@ final class TyrianIndigoBridge[F[_]: Async, A]:
 
 object TyrianIndigoBridge:
 
-  def apply[F[_]: Async, A](): TyrianIndigoBridge[F, A] =
-    new TyrianIndigoBridge[F, A]()
+  def apply[F[_]: Async, A, Model](): TyrianIndigoBridge[F, A, Model] =
+    new TyrianIndigoBridge[F, A, Model]()
 
   final class BridgeToIndigo[A](val indigoGameId: Option[IndigoGameId], val value: A)
       extends Event(BridgeToIndigo.EventName)

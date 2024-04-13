@@ -18,11 +18,12 @@ import indigo.shared.time.GameTime
 class JobMarketTests extends munit.FunSuite {
 
   val context =
-    new SubSystemFrameContext(
+    SubSystemFrameContext[Unit](
       GameTime.zero,
       Dice.loaded(6),
       InputState.default,
-      new BoundaryLocator(new AnimationsRegister, new FontRegister, new DynamicText)
+      new BoundaryLocator(new AnimationsRegister, new FontRegister, new DynamicText),
+      ()
     )
 
   val workContext =
@@ -66,8 +67,8 @@ class JobMarketTests extends munit.FunSuite {
   }
 
   test("The job market.should be able to report it's current jobs") {
-    val job: Job          = SampleJobs.CantHave()
-    val market: JobMarket = JobMarket(SubSystemId("market"), List(job))
+    val job: Job                = SampleJobs.CantHave()
+    val market: JobMarket[Unit] = JobMarket(SubSystemId("market"), List(job))
 
     val report = market.availableJobs.map(_.jobName.toString).mkString(",")
 
@@ -75,8 +76,8 @@ class JobMarketTests extends munit.FunSuite {
   }
 
   test("The job market.should not render anything") {
-    val job: Job          = SampleJobs.WanderTo(10)
-    val market: JobMarket = JobMarket.subSystem(SubSystemId("market"))
+    val job: Job                = SampleJobs.WanderTo(10)
+    val market: JobMarket[Unit] = JobMarket.subSystem(SubSystemId("market"))
 
     assertEquals(market.present(context, List(job)).unsafeGet.layers.flatMap(_.nodes).isEmpty, true)
     assertEquals(market.present(context, List(job)).unsafeGlobalEvents.isEmpty, true)
@@ -92,7 +93,7 @@ class JobMarketTests extends munit.FunSuite {
   test("The job market.should allow a you to find work.when there is a job you can do") {
     val bindingKey: BindingKey    = BindingKey("0001")
     val job: Job                  = SampleJobs.WanderTo(10)
-    val market: JobMarket         = JobMarket.subSystem(SubSystemId("market"))
+    val market: JobMarket[Unit]   = JobMarket.subSystem(SubSystemId("market"))
     val findEvent: JobMarketEvent = JobMarketEvent.Find(bindingKey, SampleActor.worker.canTakeJob(workContext))
 
     val updated = market.update(context, List(job))(findEvent)
@@ -103,7 +104,7 @@ class JobMarketTests extends munit.FunSuite {
 
   test("The job market.should allow a you to find work.but not when there isn't any work") {
     val bindingKey: BindingKey    = BindingKey("0001")
-    val market: JobMarket         = JobMarket.subSystem(SubSystemId("market"))
+    val market: JobMarket[Unit]   = JobMarket.subSystem(SubSystemId("market"))
     val findEvent: JobMarketEvent = JobMarketEvent.Find(bindingKey, SampleActor.worker.canTakeJob(workContext))
 
     val updated = market.update(context, Nil)(findEvent)
@@ -115,7 +116,7 @@ class JobMarketTests extends munit.FunSuite {
   test("The job market.should allow a you to find work.or when the work is not acceptable to the worker") {
     val bindingKey: BindingKey    = BindingKey("0001")
     val job: Job                  = SampleJobs.CantHave()
-    val market: JobMarket         = JobMarket.subSystem(SubSystemId("market"))
+    val market: JobMarket[Unit]   = JobMarket.subSystem(SubSystemId("market"))
     val findEvent: JobMarketEvent = JobMarketEvent.Find(bindingKey, SampleActor.worker.canTakeJob(workContext))
 
     val updated = market.update(context, List(job))(findEvent)
@@ -127,7 +128,7 @@ class JobMarketTests extends munit.FunSuite {
   test("The job market.should allow a you to find work.should give you the highest priority job first") {
     val bindingKey: BindingKey    = BindingKey("0001")
     val jobs: List[Job]           = List(SampleJobs.WanderTo(10), SampleJobs.WanderTo(20), SampleJobs.Fishing(0))
-    val market: JobMarket         = JobMarket.subSystem(SubSystemId("market"))
+    val market: JobMarket[Unit]   = JobMarket.subSystem(SubSystemId("market"))
     val findEvent: JobMarketEvent = JobMarketEvent.Find(bindingKey, SampleActor.worker.canTakeJob(workContext))
 
     val updated = market.update(context, jobs)(findEvent)
@@ -138,7 +139,7 @@ class JobMarketTests extends munit.FunSuite {
 
   test("The job market.should allow you to post a job.to an empty market") {
     val job: Job                  = SampleJobs.WanderTo(10)
-    val market: JobMarket         = JobMarket.subSystem(SubSystemId("market"))
+    val market: JobMarket[Unit]   = JobMarket.subSystem(SubSystemId("market"))
     val postEvent: JobMarketEvent = JobMarketEvent.Post(job)
 
     val updated = market.update(context, Nil)(postEvent)
@@ -148,7 +149,7 @@ class JobMarketTests extends munit.FunSuite {
 
   test("The job market.should allow you to post a job.and append to a non-empty market") {
     val job: Job                  = SampleJobs.WanderTo(10)
-    val market: JobMarket         = JobMarket.subSystem(SubSystemId("market"))
+    val market: JobMarket[Unit]   = JobMarket.subSystem(SubSystemId("market"))
     val postEvent: JobMarketEvent = JobMarketEvent.Post(job)
 
     val updated = market.update(context, List(SampleJobs.Fishing(0)))(postEvent)
@@ -158,7 +159,7 @@ class JobMarketTests extends munit.FunSuite {
 
   test("The job market.should allow you to post a job.the jobs state will be preserved") {
     val job: Job                  = SampleJobs.Fishing(50)
-    val market: JobMarket         = JobMarket.subSystem(SubSystemId("market"))
+    val market: JobMarket[Unit]   = JobMarket.subSystem(SubSystemId("market"))
     val postEvent: JobMarketEvent = JobMarketEvent.Post(job)
 
     val updated = market.update(context, Nil)(postEvent)
