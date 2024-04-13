@@ -22,13 +22,13 @@ class SignalFunctionTests extends munit.FunSuite {
   }
 
   test("andThen / >>>") {
-    assertEquals((Signal.fixed(10) |> (SignalFunction(f) andThen SignalFunction(g))).at(Seconds.zero), false)
+    assertEquals((Signal.fixed(10) |> (SignalFunction(f) `andThen` SignalFunction(g))).at(Seconds.zero), false)
     assertEquals((Signal.fixed(10000) |> (SignalFunction(f) >>> SignalFunction(g))).at(Seconds.zero), true)
   }
 
   test("parallel / &&& / and") {
     assertEquals(
-      (Signal.fixed(100) |> (SignalFunction(f) and SignalFunction(x))).at(Seconds.zero),
+      (Signal.fixed(100) |> (SignalFunction(f) `and` SignalFunction(x))).at(Seconds.zero),
       ("count: 100", true)
     )
     assertEquals((Signal.fixed(1) |> (SignalFunction(f) &&& SignalFunction(x))).at(Seconds.zero), ("count: 1", false))
@@ -38,7 +38,7 @@ class SignalFunctionTests extends munit.FunSuite {
     val f = SignalFunction.lift((i: Int) => s"$i")
     val g = SignalFunction.lift((s: String) => s.length < 2)
 
-    val h: SignalFunction[Int, Boolean] = f andThen g
+    val h: SignalFunction[Int, Boolean] = f `andThen` g
 
     assertEquals(h.run(Signal.fixed(1)).at(Seconds.zero), true)
     assertEquals(h.run(Signal.fixed(1000)).at(Seconds.zero), false)
@@ -48,7 +48,7 @@ class SignalFunctionTests extends munit.FunSuite {
     val f = SignalFunction.lift((i: Int) => s"$i")
     val g = SignalFunction.lift((i: Int) => i < 10)
 
-    val h: SignalFunction[Int, (String, Boolean)] = f and g
+    val h: SignalFunction[Int, (String, Boolean)] = f `and` g
 
     assertEquals(h.run(Signal.fixed(1)).at(Seconds.zero), ("1", true))
     assertEquals(h.run(Signal.fixed(1000)).at(Seconds.zero), ("1000", false))

@@ -1,6 +1,7 @@
 package indigo.shared.shader
 
 import indigo.shared.shader.library
+
 object StandardShaders {
 
   def all: Set[Shader] =
@@ -28,7 +29,7 @@ object StandardShaders {
 
   // Entity Shaders
 
-  val Bitmap: UltravioletShader =
+  lazy val Bitmap: UltravioletShader =
     UltravioletShader(
       ShaderId("[indigo_engine_bitmap]"),
       EntityShader.vertex(library.NoOp.vertex, ()),
@@ -41,7 +42,7 @@ object StandardShaders {
       )
     )
 
-  val LitBitmap: UltravioletShader =
+  lazy val LitBitmap: UltravioletShader =
     UltravioletShader(
       ShaderId("[indigo_engine_lit_bitmap]"),
       EntityShader.vertex(library.NoOp.vertex, ()),
@@ -54,7 +55,7 @@ object StandardShaders {
       )
     )
 
-  val ImageEffects: UltravioletShader =
+  lazy val ImageEffects: UltravioletShader =
     UltravioletShader(
       ShaderId("[indigo_engine_image_effects]"),
       EntityShader.vertex(library.NoOp.vertex, ()),
@@ -67,7 +68,7 @@ object StandardShaders {
       )
     )
 
-  val LitImageEffects: UltravioletShader =
+  lazy val LitImageEffects: UltravioletShader =
     UltravioletShader(
       ShaderId("[indigo_engine_lit_image_effects]"),
       EntityShader.vertex(library.NoOp.vertex, ()),
@@ -94,14 +95,14 @@ object StandardShaders {
       )
     )
 
-  val BitmapClip: UltravioletShader          = makeClipShader(Bitmap)
-  val LitBitmapClip: UltravioletShader       = makeClipShader(LitBitmap)
-  val ImageEffectsClip: UltravioletShader    = makeClipShader(ImageEffects)
-  val LitImageEffectsClip: UltravioletShader = makeClipShader(LitImageEffects)
+  lazy val BitmapClip: UltravioletShader          = makeClipShader(Bitmap)
+  lazy val LitBitmapClip: UltravioletShader       = makeClipShader(LitBitmap)
+  lazy val ImageEffectsClip: UltravioletShader    = makeClipShader(ImageEffects)
+  lazy val LitImageEffectsClip: UltravioletShader = makeClipShader(LitImageEffects)
 
   // Shapes
 
-  val ShapeBox: UltravioletShader =
+  lazy val ShapeBox: UltravioletShader =
     UltravioletShader(
       ShaderId("[indigo_engine_shape_box]"),
       EntityShader.vertex(library.NoOp.vertex, ()),
@@ -114,7 +115,7 @@ object StandardShaders {
       )
     )
 
-  val LitShapeBox: UltravioletShader =
+  lazy val LitShapeBox: UltravioletShader =
     UltravioletShader(
       ShaderId("[indigo_engine_lit_shape_box]"),
       EntityShader.vertex(library.NoOp.vertex, ()),
@@ -127,7 +128,7 @@ object StandardShaders {
       )
     )
 
-  val ShapeCircle: UltravioletShader =
+  lazy val ShapeCircle: UltravioletShader =
     UltravioletShader(
       ShaderId("[indigo_engine_shape_circle]"),
       EntityShader.vertex(library.NoOp.vertex, ()),
@@ -140,7 +141,7 @@ object StandardShaders {
       )
     )
 
-  val LitShapeCircle: UltravioletShader =
+  lazy val LitShapeCircle: UltravioletShader =
     UltravioletShader(
       ShaderId("[indigo_engine_lit_shape_circle]"),
       EntityShader.vertex(library.NoOp.vertex, ()),
@@ -153,7 +154,7 @@ object StandardShaders {
       )
     )
 
-  val ShapeLine: UltravioletShader =
+  lazy val ShapeLine: UltravioletShader =
     UltravioletShader(
       ShaderId("[indigo_engine_shape_line]"),
       EntityShader.vertex(library.NoOp.vertex, ()),
@@ -166,7 +167,7 @@ object StandardShaders {
       )
     )
 
-  val LitShapeLine: UltravioletShader =
+  lazy val LitShapeLine: UltravioletShader =
     UltravioletShader(
       ShaderId("[indigo_engine_lit_shape_line]"),
       EntityShader.vertex(library.NoOp.vertex, ()),
@@ -179,7 +180,7 @@ object StandardShaders {
       )
     )
 
-  val ShapePolygon: UltravioletShader =
+  lazy val ShapePolygon: UltravioletShader =
     UltravioletShader(
       ShaderId("[indigo_engine_shape_polygon]"),
       EntityShader.vertex(library.NoOp.vertex, ()),
@@ -192,7 +193,7 @@ object StandardShaders {
       )
     )
 
-  val LitShapePolygon: UltravioletShader =
+  lazy val LitShapePolygon: UltravioletShader =
     UltravioletShader(
       ShaderId("[indigo_engine_lit_shape_polygon]"),
       EntityShader.vertex(library.NoOp.vertex, ()),
@@ -207,7 +208,7 @@ object StandardShaders {
 
   // Blend Shaders
 
-  val NormalBlend: UltravioletShader =
+  lazy val NormalBlend: UltravioletShader =
     UltravioletShader(
       ShaderId("[indigo_engine_blend_normal]"),
       BlendShader.vertex(library.NoOp.vertex, ()),
@@ -217,7 +218,7 @@ object StandardShaders {
       )
     )
 
-  val LightingBlend: UltravioletShader =
+  lazy val LightingBlend: UltravioletShader =
     UltravioletShader(
       ShaderId("[indigo_engine_blend_lighting]"),
       BlendShader.vertex(library.NoOp.vertex, ()),
@@ -227,7 +228,7 @@ object StandardShaders {
       )
     )
 
-  val BlendEffects: UltravioletShader =
+  lazy val BlendEffects: UltravioletShader =
     UltravioletShader(
       ShaderId("[indigo_engine_blend_effects]"),
       BlendShader.vertex(library.NoOp.vertex, ()),

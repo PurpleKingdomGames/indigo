@@ -15,4 +15,4 @@ object TimelineAnimation:
   extension [A](tl: TimelineAnimation[A])
     def compile: TimeSlot[A] =
       if tl.isEmpty then TimeSlot.start
-      else tl.tail.foldLeft(tl.head) { case (acc, next) => acc andThen next }
+      else tl.tail.foldLeft(tl.head) { case (acc, next) => acc `andThen` next }

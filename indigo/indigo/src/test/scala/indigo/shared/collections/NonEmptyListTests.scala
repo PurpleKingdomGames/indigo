@@ -80,7 +80,7 @@ class NonEmptyListTests extends munit.FunSuite {
 
   test("NonEmptyList ops.should have: zip") {
     assertEquals(
-      (NonEmptyList(1, 2, 3) zip NonEmptyList("a", "b", "c")) == NonEmptyList((1, "a"), (2, "b"), (3, "c")),
+      (NonEmptyList(1, 2, 3) `zip` NonEmptyList("a", "b", "c")) == NonEmptyList((1, "a"), (2, "b"), (3, "c")),
       true
     )
   }

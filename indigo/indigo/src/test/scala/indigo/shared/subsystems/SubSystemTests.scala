@@ -17,7 +17,7 @@ class SubSystemTests extends munit.FunSuite {
       .head
       .nodes
       .head
-      .asInstanceOf[Text[_]]
+      .asInstanceOf[Text[?]]
       .text
 
     assert(expected == "1230")
@@ -35,7 +35,7 @@ class SubSystemTests extends munit.FunSuite {
         .head
         .nodes
         .head
-        .asInstanceOf[Text[_]]
+        .asInstanceOf[Text[?]]
         .text
     }
 
@@ -54,7 +54,7 @@ class SubSystemTests extends munit.FunSuite {
         .head
         .nodes
         .head
-        .asInstanceOf[Text[_]]
+        .asInstanceOf[Text[?]]
         .text
     }
 

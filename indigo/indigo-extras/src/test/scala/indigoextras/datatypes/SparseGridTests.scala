@@ -225,7 +225,7 @@ class SparseGridTests extends munit.FunSuite {
         .put(Point(2, 2), "!")
 
     val combined =
-      consoleA combine consoleB
+      consoleA `combine` consoleB
 
     assert(combined.get(Point(1)).get == "@")
     assert(combined.get(Point(2)).get == "!")
@@ -244,7 +244,7 @@ class SparseGridTests extends munit.FunSuite {
       List(None, None, None, None, Some("@"), None, None, None, Some("!"))
 
     val actual =
-      (consoleA combine consoleB).toBatch
+      (consoleA `combine` consoleB).toBatch
 
     assert(actual.length == expected.length)
     assert(actual.forall(expected.contains))
@@ -327,7 +327,7 @@ class SparseGridTests extends munit.FunSuite {
       List((Point(1), "@"), (Point(2), "!"))
 
     val actual =
-      (consoleA combine consoleB).toPositionedBatch
+      (consoleA `combine` consoleB).toPositionedBatch
 
     assert(actual.length == expected.length)
     assert(actual.forall(expected.contains))

@@ -17,7 +17,7 @@ final case class Text[M <: Material](
     letterSpacing: Int,
     material: M,
     eventHandlerEnabled: Boolean,
-    eventHandler: ((Text[_], GlobalEvent)) => Option[GlobalEvent],
+    eventHandler: ((Text[?], GlobalEvent)) => Option[GlobalEvent],
     position: Point,
     rotation: Radians,
     scale: Vector2,
@@ -110,9 +110,9 @@ final case class Text[M <: Material](
   def withLetterSpacing(amount: Int): Text[M] =
     this.copy(letterSpacing = amount)
 
-  def withEventHandler(f: ((Text[_], GlobalEvent)) => Option[GlobalEvent]): Text[M] =
+  def withEventHandler(f: ((Text[?], GlobalEvent)) => Option[GlobalEvent]): Text[M] =
     this.copy(eventHandler = f, eventHandlerEnabled = true)
-  def onEvent(f: PartialFunction[((Text[_], GlobalEvent)), GlobalEvent]): Text[M] =
+  def onEvent(f: PartialFunction[((Text[?], GlobalEvent)), GlobalEvent]): Text[M] =
     withEventHandler(f.lift)
   def enableEvents: Text[M] =
     this.copy(eventHandlerEnabled = true)

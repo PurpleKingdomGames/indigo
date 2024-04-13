@@ -229,7 +229,7 @@ final case class NonEmptyBatch[A](head: A, tail: Batch[A]) derives CanEqual:
   override def equals(that: Any): Boolean =
     given CanEqual[A, A] = CanEqual.derived
 
-    if that.isInstanceOf[NonEmptyBatch[_]] then
+    if that.isInstanceOf[NonEmptyBatch[?]] then
       try
         val b = that.asInstanceOf[NonEmptyBatch[A]]
         b.head == head && b.tail == tail

@@ -39,7 +39,7 @@ final class GlobalEventStream(
     case httpRequest: HttpRequest =>
       Http.processRequest(httpRequest, this)
 
-    case webSocketEvent: WebSocketEvent with NetworkSendEvent =>
+    case webSocketEvent: (WebSocketEvent & NetworkSendEvent) =>
       WebSockets.processSendEvent(webSocketEvent, this)
 
     // Audio

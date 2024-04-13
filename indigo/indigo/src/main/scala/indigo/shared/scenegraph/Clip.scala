@@ -26,7 +26,7 @@ final case class Clip[M <: Material](
     playMode: ClipPlayMode,
     material: M,
     eventHandlerEnabled: Boolean,
-    eventHandler: ((Clip[_], GlobalEvent)) => Option[GlobalEvent],
+    eventHandler: ((Clip[?], GlobalEvent)) => Option[GlobalEvent],
     position: Point,
     rotation: Radians,
     scale: Vector2,
@@ -173,9 +173,9 @@ final case class Clip[M <: Material](
         )
       )
 
-  def withEventHandler(f: ((Clip[_], GlobalEvent)) => Option[GlobalEvent]): Clip[M] =
+  def withEventHandler(f: ((Clip[?], GlobalEvent)) => Option[GlobalEvent]): Clip[M] =
     this.copy(eventHandler = f, eventHandlerEnabled = true)
-  def onEvent(f: PartialFunction[(Clip[_], GlobalEvent), GlobalEvent]): Clip[M] =
+  def onEvent(f: PartialFunction[(Clip[?], GlobalEvent), GlobalEvent]): Clip[M] =
     withEventHandler(f.lift)
   def enableEvents: Clip[M] =
     this.copy(eventHandlerEnabled = true)

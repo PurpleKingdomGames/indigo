@@ -19,7 +19,7 @@ final case class Graphic[M <: Material](
     material: M,
     crop: Rectangle,
     eventHandlerEnabled: Boolean,
-    eventHandler: ((Graphic[_], GlobalEvent)) => Option[GlobalEvent],
+    eventHandler: ((Graphic[?], GlobalEvent)) => Option[GlobalEvent],
     position: Point,
     rotation: Radians,
     scale: Vector2,
@@ -101,9 +101,9 @@ final case class Graphic[M <: Material](
   lazy val toShaderData: ShaderData =
     material.toShaderData
 
-  def withEventHandler(f: ((Graphic[_], GlobalEvent)) => Option[GlobalEvent]): Graphic[M] =
+  def withEventHandler(f: ((Graphic[?], GlobalEvent)) => Option[GlobalEvent]): Graphic[M] =
     this.copy(eventHandler = f, eventHandlerEnabled = true)
-  def onEvent(f: PartialFunction[(Graphic[_], GlobalEvent), GlobalEvent]): Graphic[M] =
+  def onEvent(f: PartialFunction[(Graphic[?], GlobalEvent), GlobalEvent]): Graphic[M] =
     withEventHandler(f.lift)
   def enableEvents: Graphic[M] =
     this.copy(eventHandlerEnabled = true)

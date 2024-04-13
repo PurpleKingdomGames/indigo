@@ -251,17 +251,17 @@ object Batch:
 
   extension [A](s: Seq[A]) def toBatch: Batch[A] = Batch.fromSeq(s)
 
-  given CanEqual[Batch[_], Batch[_]]         = CanEqual.derived
-  given CanEqual[Batch[_], Batch.Combine[_]] = CanEqual.derived
-  given CanEqual[Batch[_], Batch.Wrapped[_]] = CanEqual.derived
+  given CanEqual[Batch[?], Batch[?]]         = CanEqual.derived
+  given CanEqual[Batch[?], Batch.Combine[?]] = CanEqual.derived
+  given CanEqual[Batch[?], Batch.Wrapped[?]] = CanEqual.derived
 
-  given CanEqual[Batch.Combine[_], Batch[_]]         = CanEqual.derived
-  given CanEqual[Batch.Combine[_], Batch.Combine[_]] = CanEqual.derived
-  given CanEqual[Batch.Combine[_], Batch.Wrapped[_]] = CanEqual.derived
+  given CanEqual[Batch.Combine[?], Batch[?]]         = CanEqual.derived
+  given CanEqual[Batch.Combine[?], Batch.Combine[?]] = CanEqual.derived
+  given CanEqual[Batch.Combine[?], Batch.Wrapped[?]] = CanEqual.derived
 
-  given CanEqual[Batch.Wrapped[_], Batch[_]]         = CanEqual.derived
-  given CanEqual[Batch.Wrapped[_], Batch.Combine[_]] = CanEqual.derived
-  given CanEqual[Batch.Wrapped[_], Batch.Wrapped[_]] = CanEqual.derived
+  given CanEqual[Batch.Wrapped[?], Batch[?]]         = CanEqual.derived
+  given CanEqual[Batch.Wrapped[?], Batch.Combine[?]] = CanEqual.derived
+  given CanEqual[Batch.Wrapped[?], Batch.Wrapped[?]] = CanEqual.derived
 
   def apply[A](value: A): Batch[A] =
     Wrapped(js.Array(value))
@@ -373,8 +373,8 @@ object Batch:
     lazy val size: Int = batch1.size + batch2.size
 
     override def equals(that: Any): Boolean =
-      given CanEqual[Combine[_], Any] = CanEqual.derived
-      given CanEqual[Wrapped[_], Any] = CanEqual.derived
+      given CanEqual[Combine[?], Any] = CanEqual.derived
+      given CanEqual[Wrapped[?], Any] = CanEqual.derived
       given CanEqual[A, A]            = CanEqual.derived
 
       try
@@ -399,8 +399,8 @@ object Batch:
     lazy val size: Int = values.length
 
     override def equals(that: Any): Boolean =
-      given CanEqual[Combine[_], Any] = CanEqual.derived
-      given CanEqual[Wrapped[_], Any] = CanEqual.derived
+      given CanEqual[Combine[?], Any] = CanEqual.derived
+      given CanEqual[Wrapped[?], Any] = CanEqual.derived
       given CanEqual[A, A]            = CanEqual.derived
 
       try

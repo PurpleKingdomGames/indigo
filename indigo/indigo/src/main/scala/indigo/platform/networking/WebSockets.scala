@@ -16,7 +16,7 @@ object WebSockets:
   private val connections: scalajs.js.Dictionary[dom.WebSocket] = scalajs.js.Dictionary.empty
   private val configs: scalajs.js.Dictionary[WebSocketConfig]   = scalajs.js.Dictionary.empty
 
-  def processSendEvent(event: WebSocketEvent with NetworkSendEvent, globalEventStream: GlobalEventStream): Unit =
+  def processSendEvent(event: WebSocketEvent & NetworkSendEvent, globalEventStream: GlobalEventStream): Unit =
     try
       event match {
         case WebSocketEvent.ConnectOnly(config) =>
