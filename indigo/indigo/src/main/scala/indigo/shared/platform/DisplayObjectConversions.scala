@@ -416,7 +416,7 @@ final class DisplayObjectConversions(
         lookupTexture(assetMapping, assetName).offset
     }
 
-  def shapeToDisplayObject(leaf: Shape[_]): DisplayObject = {
+  def shapeToDisplayObject(leaf: Shape[?]): DisplayObject = {
 
     val offset = leaf match
       case s: Shape.Box =>
@@ -475,7 +475,7 @@ final class DisplayObjectConversions(
 
   private given CanEqual[Option[TextureRefAndOffset], Option[TextureRefAndOffset]] = CanEqual.derived
 
-  def sceneEntityToDisplayObject(leaf: EntityNode[_], assetMapping: AssetMapping): DisplayObject = {
+  def sceneEntityToDisplayObject(leaf: EntityNode[?], assetMapping: AssetMapping): DisplayObject = {
     val shader: ShaderData = leaf.toShaderData
 
     val channelOffset1 = optionalAssetToOffset(assetMapping, shader.channel1)
@@ -557,7 +557,7 @@ final class DisplayObjectConversions(
       height = leaf.size.height
     )
 
-  def graphicToDisplayObject(leaf: Graphic[_], assetMapping: AssetMapping): DisplayObject = {
+  def graphicToDisplayObject(leaf: Graphic[?], assetMapping: AssetMapping): DisplayObject = {
     val shaderData     = leaf.material.toShaderData
     val shaderDataHash = shaderData.toCacheKey
     val materialName   = shaderData.channel0.get
@@ -616,7 +616,7 @@ final class DisplayObjectConversions(
 
   def spriteToDisplayObject(
       boundaryLocator: BoundaryLocator,
-      leaf: Sprite[_],
+      leaf: Sprite[?],
       assetMapping: AssetMapping,
       anim: AnimationRef
   ): DisplayObject = {
@@ -680,7 +680,7 @@ final class DisplayObjectConversions(
   }
 
   def textLineToDisplayObjects(
-      leaf: Text[_],
+      leaf: Text[?],
       assetMapping: AssetMapping,
       fontInfo: FontInfo
   ): (TextLine, Int, Int) => scalajs.js.Array[DisplayEntity] =
@@ -761,7 +761,7 @@ final class DisplayObjectConversions(
     }
 
   def makeTextCloneDisplayObject(
-      leaf: Text[_],
+      leaf: Text[?],
       assetMapping: AssetMapping
   ): (CloneId, DisplayObject) = {
 
@@ -840,7 +840,7 @@ final class DisplayObjectConversions(
   }
 
   def textLineToDisplayCloneTileData(
-      leaf: Text[_],
+      leaf: Text[?],
       fontInfo: FontInfo
   ): (TextLine, Int, Int) => scalajs.js.Array[CloneTileData] =
     (line, alignmentOffsetX, yOffset) => {

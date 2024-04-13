@@ -107,7 +107,7 @@ object PathFindingScene extends Scene[SandboxStartupData, SandboxGameModel, Sand
                 else RGBA.fromColorInts(c, c, c)
               )
             )
-          )): _*
+          ))*
         )
       )
     )

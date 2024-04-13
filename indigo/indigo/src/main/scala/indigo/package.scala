@@ -721,7 +721,7 @@ val TimelineAnimation: indigo.shared.animation.timeline.TimelineAnimation.type =
 type BlankEntity = shared.scenegraph.BlankEntity
 val BlankEntity: shared.scenegraph.BlankEntity.type = shared.scenegraph.BlankEntity
 
-type Shape[T <: shared.scenegraph.Shape[_]] = shared.scenegraph.Shape[T]
+type Shape[T <: shared.scenegraph.Shape[?]] = shared.scenegraph.Shape[T]
 val Shape: shared.scenegraph.Shape.type = shared.scenegraph.Shape
 
 type Sprite[M <: Material] = shared.scenegraph.Sprite[M]

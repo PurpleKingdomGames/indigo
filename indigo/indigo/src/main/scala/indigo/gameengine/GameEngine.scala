@@ -34,6 +34,7 @@ import indigo.shared.shader.UltravioletShader
 import org.scalajs.dom.Element
 import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits._
 
+import scala.compiletime.uninitialized
 import scala.concurrent.Future
 
 final class GameEngine[StartUpData, GameModel, ViewModel](
@@ -83,7 +84,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
   var renderer: Renderer = null
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  var startUpData: StartUpData = _
+  var startUpData: StartUpData = uninitialized
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
   var platform: Platform = null
 
@@ -348,7 +349,7 @@ object GameEngine {
         IndigoLogger.info(e.report)
         Outcome.raiseError(new Exception("Game aborted due to start up failure"))
 
-      case x: Startup.Success[_] =>
+      case x: Startup.Success[?] =>
         IndigoLogger.info("Game initialisation succeeded")
         Outcome(x.success)
     }

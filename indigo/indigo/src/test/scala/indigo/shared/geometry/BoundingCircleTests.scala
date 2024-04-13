@@ -36,8 +36,8 @@ class BoundingCircleTests extends munit.FunSuite {
     val c2 = BoundingCircle(Vertex(25, 25), 10)
     val c3 = BoundingCircle(Vertex(10, 40), 10)
 
-    assert(c1 overlaps c2)
-    assert(!(c1 overlaps c3))
+    assert(c1 `overlaps` c2)
+    assert(!(c1 `overlaps` c3))
   }
 
   test("overlaps BoundingBox") {

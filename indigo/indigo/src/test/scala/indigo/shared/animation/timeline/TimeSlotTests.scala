@@ -13,8 +13,8 @@ class TimeSlotTests extends munit.FunSuite {
   val f = (i: Int) => SignalFunction((_: Seconds) => i)
 
   test("toWindows") {
-    val slot: TimeSlot[Int] = pause(2.seconds) andThen
-      animate(5.seconds)(f) andThen
+    val slot: TimeSlot[Int] = pause(2.seconds) `andThen`
+      animate(5.seconds)(f) `andThen`
       animate(3.seconds, f)
 
     val actual =

@@ -57,7 +57,7 @@ final case class SubSystemFrameContext[ReferenceData](
 
 object SubSystemFrameContext {
 
-  extension (frameContext: FrameContext[_])
+  extension (frameContext: FrameContext[?])
     def forSubSystems: SubSystemFrameContext[Unit] =
       new SubSystemFrameContext(
         frameContext.gameTime,

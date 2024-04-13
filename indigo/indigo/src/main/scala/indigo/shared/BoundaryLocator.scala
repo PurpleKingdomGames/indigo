@@ -118,7 +118,7 @@ final class BoundaryLocator(
     BoundaryLocator.findBounds(group, rect.position, rect.size, group.ref)
   end groupBounds
 
-  def spriteFrameBounds(sprite: Sprite[_]): Option[Rectangle] =
+  def spriteFrameBounds(sprite: Sprite[?]): Option[Rectangle] =
     QuickCache(s"""sprite-${sprite.bindingKey.toString}-${sprite.animationKey.toString}""") {
       animationsRegister.fetchAnimationInLastState(sprite.bindingKey, sprite.animationKey) match {
         case Some(animation) =>
@@ -130,7 +130,7 @@ final class BoundaryLocator(
       }
     }
 
-  private def spriteBounds(sprite: Sprite[_]): Option[Rectangle] =
+  private def spriteBounds(sprite: Sprite[?]): Option[Rectangle] =
     spriteFrameBounds(sprite).map(rect => BoundaryLocator.findBounds(sprite, rect.position, rect.size, sprite.ref))
 
   // Text / Fonts
@@ -189,7 +189,7 @@ final class BoundaryLocator(
         }
     }
 
-  def textBounds(text: Text[_]): Rectangle =
+  def textBounds(text: Text[?]): Rectangle =
     val unaligned =
       textAllLineBounds(text.text, text.fontKey, text.letterSpacing, text.lineHeight)
         .fold(Rectangle.zero) { (acc, next) =>
@@ -224,7 +224,7 @@ object BoundaryLocator:
       m.transform(Vector3(0, size.height, 0)).toPoint
     )
 
-  def untransformedShapeBounds(shape: Shape[_]): Rectangle =
+  def untransformedShapeBounds(shape: Shape[?]): Rectangle =
     shape match
       case s: Shape.Box =>
         Rectangle(
@@ -245,6 +245,6 @@ object BoundaryLocator:
         val ex = if s.stroke.width == 1 then 1 else s.stroke.width / 2
         Rectangle.fromPointCloud(s.vertices).expand(ex)
 
-  def findShapeBounds(shape: Shape[_]): Rectangle =
+  def findShapeBounds(shape: Shape[?]): Rectangle =
     val rect = untransformedShapeBounds(shape)
     findBounds(shape, rect.position, rect.size, shape.ref)

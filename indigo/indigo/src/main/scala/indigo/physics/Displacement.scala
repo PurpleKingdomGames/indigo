@@ -42,14 +42,14 @@ object Displacement:
       case (a: Collider.Box[_], b: Collider.Box[_]) =>
         calculateDisplacement(a, b)
 
-  def calculateDisplacement(a: Collider.Circle[_], b: Vertex, bMass: Option[Mass]): Displacement =
+  def calculateDisplacement(a: Collider.Circle[?], b: Vertex, bMass: Option[Mass]): Displacement =
     val amount  = a.bounds.position.distanceTo(b)
     val normal  = (a.bounds.center - b).toVector2.normalise
     val contact = LineSegment(a.bounds.center, b)
 
     Displacement(amount, normal, contact, a.mass, bMass)
 
-  def calculateDisplacement(a: Collider.Circle[_], b: Collider.Circle[_]): Displacement =
+  def calculateDisplacement(a: Collider.Circle[?], b: Collider.Circle[?]): Displacement =
     val amount  = a.bounds.radius + b.bounds.radius - a.bounds.position.distanceTo(b.bounds.position)
     val normal  = (a.bounds.center - b.bounds.center).toVector2.normalise
     val contact = LineSegment(a.bounds.center, b.bounds.center)
@@ -64,7 +64,7 @@ object Displacement:
       Vector2(-1, 1)   // bottom left
     )
 
-  def calculateDisplacement(circle: Collider.Circle[_], box: Collider.Box[_]): Displacement =
+  def calculateDisplacement(circle: Collider.Circle[?], box: Collider.Box[?]): Displacement =
     val shortestSide = Math.min(box.bounds.halfSize.x, box.bounds.halfSize.y)
     val innerBounds  = box.bounds.contract(shortestSide)
 
@@ -87,7 +87,7 @@ object Displacement:
       case Some(amount) =>
         Displacement(amount, normal, contact, circle.mass, if box.isStatic then None else Option(box.mass))
 
-  def calculateDisplacement(box: Collider.Box[_], circle: Collider.Circle[_]): Displacement =
+  def calculateDisplacement(box: Collider.Box[?], circle: Collider.Circle[?]): Displacement =
     val circleCenterToBox = box.bounds.sdf(circle.bounds.center)
     val normal            = (box.bounds.center - circle.bounds.center).toVector2.normalise
     val contact           = LineSegment(box.bounds.center, circle.bounds.center)
@@ -102,7 +102,7 @@ object Displacement:
       case Some(amount) =>
         Displacement(amount, normal, contact, box.mass, if circle.isStatic then None else Option(circle.mass))
 
-  def calculateDisplacement(a: Collider.Box[_], b: Collider.Box[_]): Displacement =
+  def calculateDisplacement(a: Collider.Box[?], b: Collider.Box[?]): Displacement =
     val aMidX = a.bounds.center.x
     val aMidY = a.bounds.center.y
     val bMidX = b.bounds.center.x

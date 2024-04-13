@@ -29,7 +29,7 @@ import indigo.shared.shader.UniformBlockName
   * quite versitile and support different fills and stroke effects, even lighting. Due to the way strokes around shapes
   * are drawn, the corners are always rounded.
   */
-sealed trait Shape[T <: Shape[_]] extends RenderNode[T] with Cloneable with SpatialModifiers[T] derives CanEqual:
+sealed trait Shape[T <: Shape[?]] extends RenderNode[T] with Cloneable with SpatialModifiers[T] derives CanEqual:
   def moveTo(pt: Point): T
   def moveTo(x: Int, y: Int): T
   def withPosition(newPosition: Point): T
@@ -698,7 +698,7 @@ object Shape:
       case _: Fill.RadialGradient => 2.0f
     }
 
-  def toShaderData(shape: Shape[_], bounds: Rectangle): ShaderData =
+  def toShaderData(shape: Shape[?], bounds: Rectangle): ShaderData =
     shape match
       case s: Shape.Box =>
         // A terrible fix, but it works. In cases where we have a perfect aspect

@@ -165,7 +165,7 @@ final case class InputField(
   def withLoseFocusActions(actions: => Batch[GlobalEvent]): InputField =
     this.copy(onLoseFocus = () => actions)
 
-  def update(frameContext: FrameContext[_]): Outcome[InputField] = {
+  def update(frameContext: FrameContext[?]): Outcome[InputField] = {
     @tailrec
     def rec(
         keysReleased: List[Key],
@@ -323,10 +323,10 @@ object InputField:
       () => Batch.empty
     )
 
-final case class InputFieldAssets(text: Text[_], cursor: Graphic[_]) derives CanEqual:
-  def withText(newText: Text[_]): InputFieldAssets =
+final case class InputFieldAssets(text: Text[?], cursor: Graphic[?]) derives CanEqual:
+  def withText(newText: Text[?]): InputFieldAssets =
     this.copy(text = newText)
-  def withCursor(newCursor: Graphic[_]): InputFieldAssets =
+  def withCursor(newCursor: Graphic[?]): InputFieldAssets =
     this.copy(cursor = newCursor)
 
 final case class InputFieldChange(key: BindingKey, updatedText: String) extends GlobalEvent derives CanEqual

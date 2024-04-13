@@ -83,7 +83,7 @@ class AutomataTests extends munit.FunSuite {
     assertEquals(makePosition(seed).at(Seconds(1)), Point(0, -30))
 
     // Test the automaton
-    def drawAt(time: Seconds): Graphic[_] = {
+    def drawAt(time: Seconds): Graphic[?] = {
       val ctx = context(1, time, time)
 
       val nextState =
@@ -139,7 +139,7 @@ class AutomataTests extends munit.FunSuite {
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  def toRenderNode(node: SceneNode): RenderNode[_] =
+  def toRenderNode(node: SceneNode): RenderNode[?] =
     node match {
       case r: RenderNode[_] => r
       case _                => throw new Exception("Wasn't a render node")

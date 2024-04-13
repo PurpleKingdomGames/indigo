@@ -67,7 +67,7 @@ class LensTests extends munit.FunSuite {
   }
 
   test("Getting.should be able to get a more deeply nested sub-object with lens composition") {
-    assertEquals((lensAC andThen lensCD >=> lensD).get(sample), "hello")
+    assertEquals((lensAC `andThen` lensCD >=> lensD).get(sample), "hello")
   }
 
   test("Setting.should be able to set a sub-object") {
@@ -79,7 +79,7 @@ class LensTests extends munit.FunSuite {
   }
 
   test("Setting.should be able to set a more deeply nested sub-object with lens composition") {
-    val lens: Lens[A, String] = lensAC andThen lensCD andThen lensD
+    val lens: Lens[A, String] = lensAC `andThen` lensCD `andThen` lensD
     val res1                  = lens.set(sample, "world")
 
     assertEquals(res1.c.d.s, "world")
@@ -88,7 +88,7 @@ class LensTests extends munit.FunSuite {
 
   test("Modifying.should be able to modify a value in place") {
 
-    val lens  = lensCD andThen lensD
+    val lens  = lensCD `andThen` lensD
     val value = C(D("hello"))
 
     assertEquals(lensCD.modify(value, d => D(d.s + " there")), C(D("hello there")))

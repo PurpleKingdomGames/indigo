@@ -84,7 +84,7 @@ class NonEmptyBatchTests extends munit.FunSuite {
 
   test("NonEmptyBatch ops.should have: zip") {
     assertEquals(
-      (NonEmptyBatch(1, 2, 3) zip NonEmptyBatch("a", "b", "c")) == NonEmptyBatch((1, "a"), (2, "b"), (3, "c")),
+      (NonEmptyBatch(1, 2, 3) `zip` NonEmptyBatch("a", "b", "c")) == NonEmptyBatch((1, "a"), (2, "b"), (3, "c")),
       true
     )
   }
