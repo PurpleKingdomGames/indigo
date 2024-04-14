@@ -13,7 +13,7 @@ object Dependencies {
     val chartjs          = "1.0.2"
     val munit            = "0.7.29"
     val ultraviolet      = "0.3.0"
-    val tyrianVersion    = "0.9.0"
+    val tyrianVersion    = "0.11.0"
   }
 
   object Shared {
