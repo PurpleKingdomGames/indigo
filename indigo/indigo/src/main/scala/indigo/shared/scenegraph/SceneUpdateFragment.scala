@@ -27,7 +27,7 @@ import annotation.targetName
   *   Scene level camera enabling pan and zoom.
   */
 final case class SceneUpdateFragment(
-    layers: Batch[Layer],
+    layers: Layer,
     lights: Batch[Light],
     audio: Option[SceneAudio],
     blendMaterial: Option[BlendMaterial],
@@ -130,7 +130,7 @@ object SceneUpdateFragment:
     SceneUpdateFragment(layers.toBatch, Batch.empty, None, None, Batch.empty, None)
 
   val empty: SceneUpdateFragment =
-    SceneUpdateFragment(Batch.empty, Batch.empty, None, None, Batch.empty, None)
+    SceneUpdateFragment(Layer.Stack.empty, Batch.empty, None, None, Batch.empty, None)
 
   def append(a: SceneUpdateFragment, b: SceneUpdateFragment): SceneUpdateFragment =
     SceneUpdateFragment(
