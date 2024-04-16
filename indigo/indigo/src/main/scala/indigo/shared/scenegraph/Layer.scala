@@ -15,19 +15,8 @@ import indigo.shared.materials.BlendMaterial
   */
 enum Layer derives CanEqual:
 
-  /** Apply a magnification to this content layer, or all of the layers in this stack.
-    *
-    * @param level
-    */
-  def withMagnification(level: Int): Layer =
-    this match
-      case l: Stack =>
-        l.copy(
-          layers = l.layers.map(_.withMagnification(level))
-        )
-
-      case l: Layer.Content =>
-        l.copy(magnification = Option(Math.max(1, Math.min(256, level))))
+  // An Empty layer
+  case Empty
 
   /** A 'stack' represents a group of nested layers. Stacks are purely for organisation, and are ignored at render time.
     *
@@ -35,27 +24,6 @@ enum Layer derives CanEqual:
     *   a batch of layers to be processed.
     */
   case Stack(key: Option[BindingKey], layers: Batch[Layer])
-
-  extension (ls: Layer.Stack)
-    def combine(other: Layer.Stack): Layer.Stack =
-      ls.copy(layers = ls.layers ++ other.layers)
-    def ++(other: Layer.Stack): Layer.Stack =
-      ls.copy(layers = ls.layers ++ other.layers)
-
-    def append(content: Layer.Content): Layer.Stack =
-      ls.copy(layers = ls.layers :+ content)
-    def :+(content: Layer.Content): Layer.Stack =
-      ls.append(content)
-
-    def prepend(content: Layer.Content): Layer.Stack =
-      ls.copy(layers = content :: ls.layers)
-    def cons(content: Layer.Content): Layer.Stack =
-      ls.prepend(content)
-    def ::(content: Layer.Content): Layer.Stack =
-      ls.prepend(content)
-
-    def withKey(newKey: BindingKey): Layer.Stack =
-      ls.copy(key = Option(newKey))
 
   /** Content layers are used to stack collections of screen elements on top of one another.
     *
@@ -96,15 +64,63 @@ enum Layer derives CanEqual:
       camera: Option[Camera]
   )
 
+  def giveKey: Option[BindingKey] =
+    this match
+      case Layer.Empty                             => None
+      case Layer.Stack(key, _)                     => key
+      case Layer.Content(key, _, _, _, _, _, _, _) => key
+
+  def hasKey: Boolean =
+    giveKey.isDefined
+
+  /** Apply a magnification to this content layer, or all of the layers in this stack.
+    *
+    * @param level
+    */
+  def withMagnification(level: Int): Layer =
+    this match
+      case e @ Layer.Empty =>
+        e
+
+      case l: Layer.Stack =>
+        l.copy(
+          layers = l.layers.map(_.withMagnification(level))
+        )
+
+      case l: Layer.Content =>
+        l.copy(magnification = Option(Math.max(1, Math.min(256, level))))
+
+  extension (ls: Layer.Stack)
+    def combine(other: Layer.Stack): Layer.Stack =
+      ls.copy(layers = ls.layers ++ other.layers)
+    def ++(other: Layer.Stack): Layer.Stack =
+      ls.copy(layers = ls.layers ++ other.layers)
+
+    def append(content: Layer.Content): Layer.Stack =
+      ls.copy(layers = ls.layers :+ content)
+    def :+(content: Layer.Content): Layer.Stack =
+      ls.append(content)
+
+    def prepend(content: Layer.Content): Layer.Stack =
+      ls.copy(layers = content :: ls.layers)
+    def cons(content: Layer.Content): Layer.Stack =
+      ls.prepend(content)
+    def ::(content: Layer.Content): Layer.Stack =
+      ls.prepend(content)
+
+    def withKey(newKey: BindingKey): Layer.Stack =
+      ls.copy(key = Option(newKey))
+
   def mergeContentLayers(a: Layer.Content, b: Layer.Content): Layer.Content =
     a.copy(
-      nodes = a.nodes ++ b.nodes,
-      key = a.key.orElse(b.key),
-      magnification = a.magnification.orElse(b.magnification),
-      depth = a.depth.orElse(b.depth),
-      visible = a.visible.orElse(b.visible),
-      blending = a.blending.orElse(b.blending),
-      camera = a.camera.orElse(b.camera)
+      a.key.orElse(b.key),
+      a.nodes ++ b.nodes,
+      a.lights ++ b.lights,
+      a.magnification.orElse(b.magnification),
+      a.depth.orElse(b.depth),
+      a.visible.orElse(b.visible),
+      a.blending.orElse(b.blending),
+      a.camera.orElse(b.camera)
     )
 
   extension (lc: Layer.Content)
@@ -172,8 +188,8 @@ enum Layer derives CanEqual:
 
 object Layer:
 
-  val empty: Layer.Content =
-    Layer.Content.empty
+  val empty: Layer.Empty.type =
+    Layer.Empty
 
   def apply(key: BindingKey): Layer.Content =
     Layer.Content(key)
@@ -200,8 +216,6 @@ object Layer:
     Layer.Content(key, magnification, depth, nodes)
 
   object Stack:
-    val empty: Layer.Stack =
-      Layer.Stack(None, Batch.empty)
 
     def apply(key: BindingKey): Layer.Stack =
       Layer.Stack(Option(key), Batch.empty)
@@ -219,9 +233,6 @@ object Layer:
       Layer.Stack(Option(key), Batch.fromSeq(layers))
 
   object Content:
-
-    val empty: Layer.Content =
-      Layer.Content(None, Batch.empty, Batch.empty, None, None, None, None, None)
 
     def apply(key: BindingKey): Layer.Content =
       Layer.Content(Option(key), Batch.empty, Batch.empty, None, None, None, None, None)
