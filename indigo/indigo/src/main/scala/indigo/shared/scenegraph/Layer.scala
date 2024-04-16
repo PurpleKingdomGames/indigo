@@ -24,7 +24,7 @@ enum Layer derives CanEqual:
     * @param layers
     *   a batch of layers to be processed.
     */
-  case Stack(key: Option[BindingKey], layers: Batch[Layer])
+  case Stack(layers: Batch[Layer])
 
   /** Content layers are used to stack collections of screen elements on top of one another.
     *
@@ -37,8 +37,6 @@ enum Layer derives CanEqual:
     * |+| b.hide, the layer will be visible. This may look odd, and maybe it is (time will tell!), but the idea is that
     * you can set empty placeholder layers early in your scene and then add things to them, confident of the outcome.
     *
-    * @param key
-    *   Optionally set a binding key, allows you to target specific layers when merging `SceneUpdateFragment`s.
     * @param nodes
     *   Nodes to render in this layer.
     * @param lights
@@ -55,7 +53,6 @@ enum Layer derives CanEqual:
     *   Optional camera specifically for this layer. If None, fallback to scene camera, or default camera.
     */
   case Content(
-      key: Option[BindingKey],
       nodes: Batch[SceneNode],
       lights: Batch[Light],
       magnification: Option[Int],
@@ -64,15 +61,6 @@ enum Layer derives CanEqual:
       blending: Option[Blending],
       camera: Option[Camera]
   )
-
-  def giveKey: Option[BindingKey] =
-    this match
-      case Layer.Empty                             => None
-      case Layer.Stack(key, _)                     => key
-      case Layer.Content(key, _, _, _, _, _, _, _) => key
-
-  def hasKey: Boolean =
-    giveKey.isDefined
 
   /** Apply a magnification to this content layer, or all of the layers in this stack.
     *
@@ -103,7 +91,7 @@ enum Layer derives CanEqual:
           case Layer.Empty =>
             rec(t, acc)
 
-          case Layer.Stack(key, layers) =>
+          case Layer.Stack(layers) =>
             rec(layers ++ t, acc)
 
           case l: Layer.Content =>
@@ -129,12 +117,8 @@ enum Layer derives CanEqual:
     def ::(content: Layer.Content): Layer.Stack =
       ls.prepend(content)
 
-    def withKey(newKey: BindingKey): Layer.Stack =
-      ls.copy(key = Option(newKey))
-
   def mergeContentLayers(a: Layer.Content, b: Layer.Content): Layer.Content =
     a.copy(
-      a.key.orElse(b.key),
       a.nodes ++ b.nodes,
       a.lights ++ b.lights,
       a.magnification.orElse(b.magnification),
@@ -174,9 +158,6 @@ enum Layer derives CanEqual:
     def addLights(newLights: Batch[Light]): Layer.Content =
       withLights(lc.lights ++ newLights)
 
-    def withKey(newKey: BindingKey): Layer.Content =
-      lc.copy(key = Option(newKey))
-
     def withDepth(newDepth: Depth): Layer.Content =
       lc.copy(depth = Option(newDepth))
 
@@ -212,9 +193,6 @@ object Layer:
   val empty: Layer.Empty.type =
     Layer.Empty
 
-  def apply(key: BindingKey): Layer.Content =
-    Layer.Content(key)
-
   def apply(nodes: SceneNode*): Layer.Content =
     Layer.Content(Batch.fromSeq(nodes))
 
@@ -224,57 +202,21 @@ object Layer:
   def apply(maybeNode: Option[SceneNode]): Layer.Content =
     Layer.Content(maybeNode)
 
-  def apply(key: BindingKey, nodes: Batch[SceneNode]): Layer.Content =
-    Layer.Content(key, nodes)
-
-  def apply(key: BindingKey, nodes: SceneNode*): Layer.Content =
-    Layer.Content(key, Batch.fromSeq(nodes))
-
-  def apply(key: BindingKey, magnification: Int, depth: Depth): Layer.Content =
-    Layer.Content(key, magnification, depth)
-
-  def apply(key: BindingKey, magnification: Int, depth: Depth, nodes: Batch[SceneNode]): Layer.Content =
-    Layer.Content(key, magnification, depth, nodes)
-
   object Stack:
 
-    def apply(key: BindingKey): Layer.Stack =
-      Layer.Stack(Option(key), Batch.empty)
-
     def apply(layers: Layer*): Layer.Stack =
-      Layer.Stack(None, Batch.fromSeq(layers))
+      Layer.Stack(Batch.fromSeq(layers))
 
     def apply(layers: Batch[Layer]): Layer.Stack =
-      Layer.Stack(None, layers)
-
-    def apply(key: BindingKey, layers: Batch[Layer]): Layer.Stack =
-      Layer.Stack(Option(key), layers)
-
-    def apply(key: BindingKey, layers: Layer*): Layer.Stack =
-      Layer.Stack(Option(key), Batch.fromSeq(layers))
+      Layer.Stack(layers)
 
   object Content:
 
-    def apply(key: BindingKey): Layer.Content =
-      Layer.Content(Option(key), Batch.empty, Batch.empty, None, None, None, None, None)
-
     def apply(nodes: SceneNode*): Layer.Content =
-      Layer.Content(None, Batch.fromSeq(nodes), Batch.empty, None, None, None, None, None)
+      Layer.Content(Batch.fromSeq(nodes), Batch.empty, None, None, None, None, None)
 
     def apply(nodes: Batch[SceneNode]): Layer.Content =
-      Layer.Content(None, nodes, Batch.empty, None, None, None, None, None)
+      Layer.Content(nodes, Batch.empty, None, None, None, None, None)
 
     def apply(maybeNode: Option[SceneNode]): Layer.Content =
-      Layer.Content(None, Batch.fromOption(maybeNode), Batch.empty, None, None, None, None, None)
-
-    def apply(key: BindingKey, nodes: Batch[SceneNode]): Layer.Content =
-      Layer.Content(Option(key), nodes, Batch.empty, None, None, None, None, None)
-
-    def apply(key: BindingKey, nodes: SceneNode*): Layer.Content =
-      Layer.Content(Option(key), Batch.fromSeq(nodes), Batch.empty, None, None, None, None, None)
-
-    def apply(key: BindingKey, magnification: Int, depth: Depth): Layer.Content =
-      Layer.Content(Option(key), Batch.empty, Batch.empty, Option(magnification), Option(depth), None, None, None)
-
-    def apply(key: BindingKey, magnification: Int, depth: Depth, nodes: Batch[SceneNode]): Layer.Content =
-      Layer.Content(Option(key), nodes, Batch.empty, Option(magnification), Option(depth), None, None, None)
+      Layer.Content(Batch.fromOption(maybeNode), Batch.empty, None, None, None, None, None)
