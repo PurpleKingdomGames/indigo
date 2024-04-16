@@ -4,6 +4,7 @@ import indigo.shared.collections.Batch
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.datatypes.Depth
 import indigo.shared.materials.BlendMaterial
+import scala.annotation.tailrec
 
 /** Layers are used to stack collections of renderable elements on top of one another, and then blend them into the rest
   * of the image composited so far. They are very much like layers from photo editing software.
@@ -89,6 +90,26 @@ enum Layer derives CanEqual:
 
       case l: Layer.Content =>
         l.copy(magnification = Option(Math.max(1, Math.min(256, level))))
+
+  def toBatch: Batch[Layer.Content] =
+    @tailrec
+    def rec(remaining: Batch[Layer], acc: Batch[Layer.Content]): Batch[Layer.Content] =
+      if remaining.isEmpty then acc
+      else
+        val h = remaining.head
+        val t = remaining.tail
+
+        h match
+          case Layer.Empty =>
+            rec(t, acc)
+
+          case Layer.Stack(key, layers) =>
+            rec(layers ++ t, acc)
+
+          case l: Layer.Content =>
+            rec(t, acc :+ l)
+
+    rec(Batch(this), Batch.empty)
 
   extension (ls: Layer.Stack)
     def combine(other: Layer.Stack): Layer.Stack =
