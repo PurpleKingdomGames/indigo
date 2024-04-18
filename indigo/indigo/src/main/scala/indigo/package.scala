@@ -652,6 +652,9 @@ val Zoom: shared.scenegraph.Zoom.type = shared.scenegraph.Zoom
 type Layer = shared.scenegraph.Layer
 val Layer: shared.scenegraph.Layer.type = shared.scenegraph.Layer
 
+type LayerEntry = shared.scenegraph.LayerEntry
+val LayerEntry: shared.scenegraph.LayerEntry.type = shared.scenegraph.LayerEntry
+
 type Blending = shared.scenegraph.Blending
 val Blending: shared.scenegraph.Blending.type = shared.scenegraph.Blending
 

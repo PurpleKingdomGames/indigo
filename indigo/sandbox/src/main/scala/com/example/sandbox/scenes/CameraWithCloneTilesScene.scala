@@ -64,7 +64,7 @@ object CameraWithCloneTilesScene extends Scene[SandboxStartupData, SandboxGameMo
       SceneUpdateFragment(
         Layer(
           CloneTiles(cloneId, crates)
-        ).withMagnification(2)
-          .withCamera(Camera.LookAt(Point(96)))
+        ).withCamera(Camera.LookAt(Point(96)))
+          .withMagnification(2)
       ).addCloneBlanks(cloneBlanks)
     )

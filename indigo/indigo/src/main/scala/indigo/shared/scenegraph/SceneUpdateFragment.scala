@@ -46,6 +46,13 @@ final case class SceneUpdateFragment(
     SceneUpdateFragment.insertLayer(this, LayerEntry.Untagged(newLayer))
   def addLayer(key: BindingKey, newLayer: Layer): SceneUpdateFragment =
     SceneUpdateFragment.insertLayer(this, LayerEntry.Tagged(key, newLayer))
+  def addLayer(keyAndLayer: (BindingKey, Layer)): SceneUpdateFragment =
+    SceneUpdateFragment.insertLayer(this, LayerEntry.Tagged(keyAndLayer._1, keyAndLayer._2))
+  def addLayer(maybeKey: Option[BindingKey], newLayer: Layer): SceneUpdateFragment =
+    SceneUpdateFragment.insertLayer(this, LayerEntry(maybeKey, newLayer))
+  @targetName("addLayer_maybe_key_and_layer")
+  def addLayer(maybeKeyAndLayer: (Option[BindingKey], Layer)): SceneUpdateFragment =
+    SceneUpdateFragment.insertLayer(this, LayerEntry(maybeKeyAndLayer._1, maybeKeyAndLayer._2))
 
   def addLayer(nodes: SceneNode*): SceneUpdateFragment =
     addLayer(nodes.toBatch)
@@ -158,24 +165,52 @@ object SceneUpdateFragment:
       None
     )
 
-  def apply(layer: Layer): SceneUpdateFragment =
+  def apply(key: BindingKey, layer: Layer): SceneUpdateFragment =
+    SceneUpdateFragment(Batch(LayerEntry.Tagged(key, layer)), Batch.empty, None, None, Batch.empty, None)
+  def apply(maybeKey: Option[BindingKey], layer: Layer): SceneUpdateFragment =
     SceneUpdateFragment(Batch(LayerEntry(layer)), Batch.empty, None, None, Batch.empty, None)
 
+  @targetName("suf-maybe-layer-entry")
+  def apply(maybeLayerEntry: Option[LayerEntry]): SceneUpdateFragment =
+    val layers = maybeLayerEntry.map(Batch.apply).getOrElse(Batch.empty)
+    SceneUpdateFragment(layers, Batch.empty, None, None, Batch.empty, None)
   @targetName("suf-maybe-layer")
   def apply(maybeLayer: Option[Layer]): SceneUpdateFragment =
     val layers = maybeLayer.map(l => Batch(LayerEntry(l))).getOrElse(Batch.empty)
     SceneUpdateFragment(layers, Batch.empty, None, None, Batch.empty, None)
+  @targetName("suf-maybe-key-and-layer")
+  def apply(maybeKeyAndLayer: Option[(BindingKey, Layer)]): SceneUpdateFragment =
+    val layers = maybeKeyAndLayer.map(l => Batch(LayerEntry(l))).getOrElse(Batch.empty)
+    SceneUpdateFragment(layers, Batch.empty, None, None, Batch.empty, None)
 
-  @targetName("suf-batch-layers")
+  @targetName("suf-batch-layer-entry")
+  def apply(layerEntries: Batch[LayerEntry]): SceneUpdateFragment =
+    SceneUpdateFragment(layerEntries, Batch.empty, None, None, Batch.empty, None)
+  @targetName("suf-batch-layer")
   def apply(layers: Batch[Layer]): SceneUpdateFragment =
     SceneUpdateFragment(layers.map(LayerEntry.apply), Batch.empty, None, None, Batch.empty, None)
+  @targetName("suf-batch-key-and-layer")
+  def apply(keysAndLayers: Batch[(BindingKey, Layer)]): SceneUpdateFragment =
+    SceneUpdateFragment(keysAndLayers.map(LayerEntry.apply), Batch.empty, None, None, Batch.empty, None)
+  @targetName("suf-batch-maybe-key-and-layer")
+  def apply(maybeKeysAndLayers: Batch[(Option[BindingKey], Layer)]): SceneUpdateFragment =
+    SceneUpdateFragment(maybeKeysAndLayers.map(p => LayerEntry(p._1, p._2)), Batch.empty, None, None, Batch.empty, None)
 
-  @targetName("suf-apply-many-layers")
+  @targetName("suf-apply-repeated-layer-entry")
+  def apply(layerEntries: LayerEntry*): SceneUpdateFragment =
+    SceneUpdateFragment(layerEntries.toBatch)
+  @targetName("suf-apply-repeated-layers")
   def apply(layers: Layer*): SceneUpdateFragment =
-    SceneUpdateFragment(layers.toBatch.map(LayerEntry.apply), Batch.empty, None, None, Batch.empty, None)
+    SceneUpdateFragment(layers.toBatch)
+  @targetName("suf-apply-repeated-keys-and-layers")
+  def apply(keysAndLayers: (BindingKey, Layer)*): SceneUpdateFragment =
+    SceneUpdateFragment(keysAndLayers.toBatch)
+  @targetName("suf-apply-repeated-maybe-keys-and-layers")
+  def apply(maybeKeysAndLayers: (Option[BindingKey], Layer)*): SceneUpdateFragment =
+    SceneUpdateFragment(maybeKeysAndLayers.toBatch)
 
   val empty: SceneUpdateFragment =
-    SceneUpdateFragment(Batch.empty, Batch.empty, None, None, Batch.empty, None)
+    SceneUpdateFragment(Batch.empty[LayerEntry])
 
   def append(a: SceneUpdateFragment, b: SceneUpdateFragment): SceneUpdateFragment =
     SceneUpdateFragment(
@@ -214,42 +249,3 @@ object SceneUpdateFragment:
 
   def insertLayer(suf: SceneUpdateFragment, layer: LayerEntry): SceneUpdateFragment =
     suf.copy(layers = mergeLayers(suf.layers, layer))
-
-enum LayerEntry:
-  def layer: Layer
-
-  case Untagged(layer: Layer)
-  case Tagged(key: BindingKey, layer: Layer)
-
-  def hasKey(key: BindingKey): Boolean =
-    this match
-      case _: LayerEntry.Untagged => false
-      case l: LayerEntry.Tagged   => l.key == key
-
-  def withKey(newKey: BindingKey): LayerEntry =
-    LayerEntry.Tagged(newKey, this.layer)
-
-  def withLayer(newLayer: Layer): LayerEntry =
-    this match
-      case l: LayerEntry.Untagged => l.copy(layer = newLayer)
-      case l: LayerEntry.Tagged   => l.copy(layer = newLayer)
-
-  def modify(f: LayerEntry => LayerEntry): LayerEntry =
-    f(this)
-  def modifyLayer(f: Layer => Layer): LayerEntry =
-    this match
-      case l: LayerEntry.Untagged => l.copy(layer = f(l.layer))
-      case l: LayerEntry.Tagged   => l.copy(layer = f(l.layer))
-
-  def withMagnification(level: Int): LayerEntry =
-    this match
-      case l: LayerEntry.Untagged => l.copy(layer = l.layer.withMagnification(level))
-      case l: LayerEntry.Tagged   => l.copy(layer = l.layer.withMagnification(level))
-
-object LayerEntry:
-
-  def apply(key: BindingKey, layer: Layer): LayerEntry =
-    LayerEntry.Tagged(key, layer)
-
-  def apply(layer: Layer): LayerEntry =
-    LayerEntry.Untagged(layer)

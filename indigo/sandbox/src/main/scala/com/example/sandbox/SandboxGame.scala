@@ -286,9 +286,10 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
-        Layer("fps counter".bindingKey)
-          .withDepth(200.depth)
-          .withCamera(Camera.default)
+        "fps counter".bindingKey ->
+          Layer.empty
+            .withDepth(200.depth)
+            .withCamera(Camera.default)
       )
     )
 

@@ -58,16 +58,11 @@ object OriginalScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
         )
 
     Outcome(
-      SceneUpdateFragment.empty
+      scene
         .addLayer(
-          Layer.empty
-            .withKey(BindingKey("bg"))
-            .withMagnification(1)
-        ) |+| scene
-        .addLayer(
-          Layer(
+          BindingKey("bg") -> Layer(
             BlankEntity(0, 0, 228 * 3, 140 * 3, Depth(10), ShaderData(Shaders.seaId))
-          ).withKey(BindingKey("bg"))
+          ).withMagnification(1)
         )
         .addLayer(
           Layer(
