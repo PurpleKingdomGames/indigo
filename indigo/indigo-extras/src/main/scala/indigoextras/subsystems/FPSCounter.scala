@@ -1,5 +1,6 @@
 package indigoextras.subsystems
 
+import indigo.LayerEntry
 import indigo.shared.Outcome
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.datatypes.Fill
@@ -106,10 +107,7 @@ final case class FPSCounter[Model](
 
     Outcome(
       SceneUpdateFragment(
-        layerKey match {
-          case None      => Layer(bg, text.withSize(size.size))
-          case Some(key) => Layer(key, bg, text.withSize(size.size))
-        }
+        layerKey -> Layer(bg, text.withSize(size.size))
       )
     )
 

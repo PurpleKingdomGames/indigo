@@ -102,8 +102,8 @@ enum Layer derives CanEqual:
 
 object Layer:
 
-  val empty: Layer.Empty.type =
-    Layer.Empty
+  val empty: Layer.Content =
+    Layer.Content.empty
 
   def apply(nodes: SceneNode*): Layer.Content =
     Layer.Content(Batch.fromSeq(nodes))
@@ -116,6 +116,9 @@ object Layer:
 
   object Stack:
 
+    val empty: Layer.Stack =
+      Layer.Stack(Batch.empty)
+
     def apply(layers: Layer*): Layer.Stack =
       Layer.Stack(Batch.fromSeq(layers))
 
@@ -123,6 +126,9 @@ object Layer:
       Layer.Stack(layers)
 
   object Content:
+
+    val empty: Layer.Content =
+      Layer.Content(Batch.empty, Batch.empty, None, None, None, None, None)
 
     def apply(nodes: SceneNode*): Layer.Content =
       Layer.Content(Batch.fromSeq(nodes), Batch.empty, None, None, None, None, None)

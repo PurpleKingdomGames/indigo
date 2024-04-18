@@ -126,10 +126,7 @@ final case class Automata[Model](
 
     Outcome(
       SceneUpdateFragment(
-        layerKey match {
-          case None      => Layer(updated.nodes)
-          case Some(key) => Layer(key, updated.nodes)
-        }
+        layerKey -> Layer(updated.nodes)
       ),
       updated.events
     )
