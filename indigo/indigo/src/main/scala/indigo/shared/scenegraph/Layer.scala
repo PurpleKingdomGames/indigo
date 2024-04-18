@@ -4,6 +4,7 @@ import indigo.shared.collections.Batch
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.datatypes.Depth
 import indigo.shared.materials.BlendMaterial
+
 import scala.annotation.tailrec
 
 /** Layers are used to stack collections of renderable elements on top of one another, and then blend them into the rest
@@ -99,6 +100,39 @@ enum Layer derives CanEqual:
 
     rec(Batch(this), Batch.empty)
 
+object Layer:
+
+  val empty: Layer.Empty.type =
+    Layer.Empty
+
+  def apply(nodes: SceneNode*): Layer.Content =
+    Layer.Content(Batch.fromSeq(nodes))
+
+  def apply(nodes: Batch[SceneNode]): Layer.Content =
+    Layer.Content(nodes)
+
+  def apply(maybeNode: Option[SceneNode]): Layer.Content =
+    Layer.Content(maybeNode)
+
+  object Stack:
+
+    def apply(layers: Layer*): Layer.Stack =
+      Layer.Stack(Batch.fromSeq(layers))
+
+    def apply(layers: Batch[Layer]): Layer.Stack =
+      Layer.Stack(layers)
+
+  object Content:
+
+    def apply(nodes: SceneNode*): Layer.Content =
+      Layer.Content(Batch.fromSeq(nodes), Batch.empty, None, None, None, None, None)
+
+    def apply(nodes: Batch[SceneNode]): Layer.Content =
+      Layer.Content(nodes, Batch.empty, None, None, None, None, None)
+
+    def apply(maybeNode: Option[SceneNode]): Layer.Content =
+      Layer.Content(Batch.fromOption(maybeNode), Batch.empty, None, None, None, None, None)
+
   extension (ls: Layer.Stack)
     def combine(other: Layer.Stack): Layer.Stack =
       ls.copy(layers = ls.layers ++ other.layers)
@@ -113,8 +147,6 @@ enum Layer derives CanEqual:
     def prepend(content: Layer.Content): Layer.Stack =
       ls.copy(layers = content :: ls.layers)
     def cons(content: Layer.Content): Layer.Stack =
-      ls.prepend(content)
-    def ::(content: Layer.Content): Layer.Stack =
       ls.prepend(content)
 
   def mergeContentLayers(a: Layer.Content, b: Layer.Content): Layer.Content =
@@ -188,35 +220,7 @@ enum Layer derives CanEqual:
     def noCamera: Layer.Content =
       lc.copy(camera = None)
 
-object Layer:
-
-  val empty: Layer.Empty.type =
-    Layer.Empty
-
-  def apply(nodes: SceneNode*): Layer.Content =
-    Layer.Content(Batch.fromSeq(nodes))
-
-  def apply(nodes: Batch[SceneNode]): Layer.Content =
-    Layer.Content(nodes)
-
-  def apply(maybeNode: Option[SceneNode]): Layer.Content =
-    Layer.Content(maybeNode)
-
-  object Stack:
-
-    def apply(layers: Layer*): Layer.Stack =
-      Layer.Stack(Batch.fromSeq(layers))
-
-    def apply(layers: Batch[Layer]): Layer.Stack =
-      Layer.Stack(layers)
-
-  object Content:
-
-    def apply(nodes: SceneNode*): Layer.Content =
-      Layer.Content(Batch.fromSeq(nodes), Batch.empty, None, None, None, None, None)
-
-    def apply(nodes: Batch[SceneNode]): Layer.Content =
-      Layer.Content(nodes, Batch.empty, None, None, None, None, None)
-
-    def apply(maybeNode: Option[SceneNode]): Layer.Content =
-      Layer.Content(Batch.fromOption(maybeNode), Batch.empty, None, None, None, None, None)
+    def ::(stack: Layer.Stack): Layer.Stack =
+      stack.prepend(lc)
+    def +:(stack: Layer.Stack): Layer.Stack =
+      stack.prepend(lc)
