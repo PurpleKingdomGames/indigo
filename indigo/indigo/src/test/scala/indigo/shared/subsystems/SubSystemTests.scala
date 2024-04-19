@@ -14,6 +14,7 @@ class SubSystemTests extends munit.FunSuite {
       .present(context(6).copy(reference = 10), 1230)
       .unsafeGet
       .layers
+      .flatMap(_.toBatch)
       .head
       .nodes
       .head
@@ -32,6 +33,7 @@ class SubSystemTests extends munit.FunSuite {
         .present(context(6).copy(reference = 10), points.unsafeGet)
         .unsafeGet
         .layers
+        .flatMap(_.toBatch)
         .head
         .nodes
         .head
@@ -51,6 +53,7 @@ class SubSystemTests extends munit.FunSuite {
         .present(context(6).copy(reference = 10), points.unsafeGet)
         .unsafeGet
         .layers
+        .flatMap(_.toBatch)
         .head
         .nodes
         .head

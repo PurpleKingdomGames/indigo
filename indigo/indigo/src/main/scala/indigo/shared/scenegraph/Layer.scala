@@ -17,9 +17,6 @@ import scala.annotation.tailrec
   */
 enum Layer derives CanEqual:
 
-  // An Empty layer
-  case Empty
-
   /** A 'stack' represents a group of nested layers. Stacks are purely for organisation, and are ignored at render time.
     *
     * @param layers
@@ -69,9 +66,6 @@ enum Layer derives CanEqual:
     */
   def withMagnification(level: Int): Layer =
     this match
-      case e @ Layer.Empty =>
-        e
-
       case l: Layer.Stack =>
         l.copy(
           layers = l.layers.map(_.withMagnification(level))
@@ -89,9 +83,6 @@ enum Layer derives CanEqual:
         val t = remaining.tail
 
         h match
-          case Layer.Empty =>
-            rec(t, acc)
-
           case Layer.Stack(layers) =>
             rec(layers ++ t, acc)
 

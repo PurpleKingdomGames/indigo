@@ -112,7 +112,7 @@ final class SceneProcessor(
 
     val displayLayers: scalajs.js.Array[(DisplayLayer, scalajs.js.Array[(String, DisplayObject)])] =
       scene.layers
-        .flatMap(_.layer.toBatch)
+        .flatMap(_.toBatch)
         .toJSArray
         .filter(l => l.visible.getOrElse(true))
         .zipWithIndex

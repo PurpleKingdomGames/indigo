@@ -60,14 +60,14 @@ final case class SceneUpdateFragment(
     SceneUpdateFragment.insertLayer(this, LayerEntry(Layer(nodes)))
 
   def addLayers(newLayers: Batch[LayerEntry]): SceneUpdateFragment =
-    this.copy(layers = newLayers.foldLeft(layers)((acc, l) => SceneUpdateFragment.mergeLayers(this.layers, l)))
+    this.copy(layers = newLayers.foldLeft(layers)((acc, l) => SceneUpdateFragment.mergeLayers(acc, l)))
   def addLayers(newLayers: LayerEntry*): SceneUpdateFragment =
     addLayers(newLayers.toBatch)
   @targetName("addLayers_batch_key_layer")
   def addLayers(newLayers: Batch[(BindingKey, Layer)]): SceneUpdateFragment =
     this.copy(
       layers = newLayers.foldLeft(layers) { case (acc, (k, l)) =>
-        SceneUpdateFragment.mergeLayers(this.layers, LayerEntry(k, l))
+        SceneUpdateFragment.mergeLayers(acc, LayerEntry(k, l))
       }
     )
   @targetName("addLayers_args_key_layer")
@@ -76,7 +76,7 @@ final case class SceneUpdateFragment(
   @targetName("addLayers_batch_layer")
   def addLayers(newLayers: Batch[Layer]): SceneUpdateFragment =
     this.copy(
-      layers = newLayers.foldLeft(layers)((acc, l) => SceneUpdateFragment.mergeLayers(this.layers, LayerEntry(l)))
+      layers = newLayers.foldLeft(layers)((acc, l) => SceneUpdateFragment.mergeLayers(acc, LayerEntry(l)))
     )
   @targetName("addLayers_args_layer")
   def addLayers(newLayers: Layer*): SceneUpdateFragment =
@@ -101,9 +101,6 @@ final case class SceneUpdateFragment(
 
   def mapLayers(f: LayerEntry => LayerEntry): SceneUpdateFragment =
     this.copy(layers = layers.map(_.modify(f)))
-  @targetName("mapLayers_untagged")
-  def mapLayers(f: Layer => Layer): SceneUpdateFragment =
-    this.copy(layers = layers.map(_.modifyLayer(f)))
 
   def noLights: SceneUpdateFragment =
     this.copy(lights = Batch.empty)
@@ -227,21 +224,23 @@ object SceneUpdateFragment:
       case l @ LayerEntry.Untagged(_) =>
         layers :+ layer
 
-      case LayerEntry.Tagged(t, l) if layers.exists(_.hasKey(t)) =>
-        layers.map { ll =>
-          if ll.hasKey(t) then
+      case LayerEntry.Tagged(t, l) if layers.exists(_.hasTag(t)) =>
+        layers.map {
+          case x: LayerEntry.Untagged =>
+            x
+
+          case x @ LayerEntry.Tagged(k, ll) if t == k =>
             val newLayer =
-              (ll.layer, l) match
-                case (Layer.Empty, b)                     => b
-                case (a: Layer.Stack, Layer.Empty)        => a
+              (ll, l) match
                 case (a: Layer.Stack, b: Layer.Content)   => a.append(b)
                 case (a: Layer.Stack, b: Layer.Stack)     => a ++ b
-                case (a: Layer.Content, Layer.Empty)      => a
                 case (a: Layer.Content, b: Layer.Content) => a |+| b
                 case (a: Layer.Content, b: Layer.Stack)   => a :: b
 
             LayerEntry.Tagged(t, newLayer)
-          else ll
+
+          case x: LayerEntry.Tagged =>
+            x
         }
 
       case LayerEntry.Tagged(_, _) =>

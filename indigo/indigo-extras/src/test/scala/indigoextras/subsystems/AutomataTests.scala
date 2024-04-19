@@ -95,8 +95,10 @@ class AutomataTests extends munit.FunSuite {
         .present(ctx, nextState)
         .unsafeGet
         .layers
-        .find(l => l.key.contains(layerKey))
+        .find(l => l.hasTag(layerKey))
         .get
+        .toBatch
+        .head
         .nodes
         .collect { case g: Graphic[_] => g }
         .head

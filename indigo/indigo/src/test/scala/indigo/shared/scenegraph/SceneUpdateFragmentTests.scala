@@ -10,22 +10,23 @@ class SceneUpdateFragmentTests extends munit.FunSuite {
   test("Able to add a batch of layers from a constructor") {
 
     val actual =
-      SceneUpdateFragment(Batch(Layer(BindingKey("key A")), Layer(BindingKey("key B"))))
+      SceneUpdateFragment(Batch(BindingKey("key A") -> Layer.empty, BindingKey("key B") -> Layer.empty))
 
     val expected =
-      SceneUpdateFragment.empty.addLayers(Batch(Layer(BindingKey("key A")), Layer(BindingKey("key B"))))
+      SceneUpdateFragment.empty.addLayers(
+        Batch(LayerEntry(BindingKey("key A"), Layer.empty), LayerEntry(BindingKey("key B"), Layer.empty))
+      )
 
     assertEquals(actual, expected)
-
   }
 
   test("Able to add an optional layer from a constructor (Some)") {
 
     val actual =
-      SceneUpdateFragment(Option(Layer(BindingKey("key A"))))
+      SceneUpdateFragment(Option(BindingKey("key A") -> Layer.empty))
 
     val expected =
-      SceneUpdateFragment.empty.addLayers(Batch(Layer(BindingKey("key A"))))
+      SceneUpdateFragment.empty.addLayers(Batch(LayerEntry(BindingKey("key A"), Layer.empty)))
 
     assertEquals(actual, expected)
 
@@ -46,81 +47,85 @@ class SceneUpdateFragmentTests extends munit.FunSuite {
   test("Adding a layer with an existing key merges magnification down (none, none)") {
 
     val scene =
-      SceneUpdateFragment.empty.addLayer(Layer(BindingKey("key A")))
+      SceneUpdateFragment.empty.addLayer(LayerEntry(BindingKey("key A"), Layer.empty))
 
     val actual =
-      scene.addLayer(Layer(BindingKey("key A")))
+      scene.addLayer(BindingKey("key A") -> Layer.empty)
 
     assert(actual.layers.length == 1)
-    assertEquals(actual.layers.head.magnification, None)
+    assertEquals(actual.layers.flatMap(_.toBatch).head.magnification, None)
 
   }
 
   test("Adding a layer with an existing key merges magnification down (some, some)") {
 
     val scene =
-      SceneUpdateFragment.empty.addLayer(Layer(BindingKey("key A")).withMagnification(2))
+      SceneUpdateFragment.empty.addLayer((BindingKey("key A") -> Layer.empty.withMagnification(2)))
 
     val actual =
-      scene.addLayer(Layer(BindingKey("key A")).withMagnification(1))
+      scene.addLayer(LayerEntry(BindingKey("key A"), Layer.empty.withMagnification(1)))
 
     assert(actual.layers.length == 1)
-    assertEquals(actual.layers.head.magnification, Some(2))
+    assertEquals(actual.layers.flatMap(_.toBatch).head.magnification, Some(2))
 
   }
 
   test("Adding a layer with an existing key merges magnification down (none, some)") {
 
     val scene =
-      SceneUpdateFragment.empty.addLayer(Layer(BindingKey("key A")))
+      SceneUpdateFragment.empty.addLayer(BindingKey("key A") -> Layer.empty)
 
     val actual =
-      scene.addLayer(Layer(BindingKey("key A")).withMagnification(1))
+      scene.addLayer(BindingKey("key A") -> Layer.empty.withMagnification(1))
 
     assert(actual.layers.length == 1)
-    assertEquals(actual.layers.head.magnification, Some(1))
+    assertEquals(actual.layers.flatMap(_.toBatch).head.magnification, Some(1))
 
   }
 
   test("Adding a layer with an existing key merges magnification down (some, none)") {
 
     val scene =
-      SceneUpdateFragment.empty.addLayer(Layer(BindingKey("key A")).withMagnification(2))
+      SceneUpdateFragment.empty.addLayer(BindingKey("key A") -> Layer.empty.withMagnification(2))
 
     val actual =
-      scene.addLayer(Layer(BindingKey("key A")))
+      scene.addLayer(BindingKey("key A") -> Layer.empty)
 
     assert(actual.layers.length == 1)
-    assertEquals(actual.layers.head.magnification, Some(2))
+    assertEquals(actual.layers.flatMap(_.toBatch).head.magnification, Some(2))
 
   }
 
   test("Replace layers using withLayers") {
 
     val scene =
-      SceneUpdateFragment.empty.addLayer(Layer(BindingKey("key A")))
+      SceneUpdateFragment.empty.addLayer(BindingKey("key A") -> Layer.empty)
 
     val actual =
-      scene.withLayers(Layer(BindingKey("key B")))
+      scene.withLayers(BindingKey("key B") -> Layer.empty)
 
     assert(actual.layers.length == 1)
-    assertEquals(actual.layers.head.key, Some(BindingKey("key B")))
+
+    actual.layers.head match
+      case LayerEntry.Untagged(_) => fail("Should have been a tagged layer entry")
+      case LayerEntry.Tagged(key, _) =>
+        assertEquals(key, BindingKey("key B"))
 
   }
 
   test("SUF append preseves layer keys") {
 
     val sceneA: SceneUpdateFragment =
-      SceneUpdateFragment.empty.addLayer(Layer(BindingKey("key A")).withMagnification(2))
+      SceneUpdateFragment.empty.addLayer(BindingKey("key A") -> Layer.empty.withMagnification(2))
 
     val sceneB: SceneUpdateFragment =
-      SceneUpdateFragment.empty.addLayer(Layer(BindingKey("key A")).withMagnification(3))
+      SceneUpdateFragment.empty.addLayer(BindingKey("key A") -> Layer.empty.withMagnification(3))
 
     val actual: SceneUpdateFragment =
       sceneA |+| sceneB
 
     assert(actual.layers.length == 1)
-    assertEquals(actual.layers.head.magnification, Some(2))
+    assertEquals(actual.layers.flatMap(_.toBatch).head.magnification, Some(2))
 
   }
 
@@ -151,15 +156,25 @@ class SceneUpdateFragmentTests extends munit.FunSuite {
   test("Map over layers") {
     val scene =
       SceneUpdateFragment.empty
-        .addLayer(Layer(BindingKey("key A")).withMagnification(1))
-        .addLayer(Layer(BindingKey("key B")).withMagnification(1))
+        .addLayer(BindingKey("key A") -> Layer.empty.withMagnification(1))
+        .addLayer(BindingKey("key B") -> Layer.empty.withMagnification(1))
 
     val actual =
-      scene.mapLayers(l => l.withKey(BindingKey(l.key.map(_.toString).getOrElse("!") + "?")).withMagnification(2))
+      scene.mapLayers {
+        case LayerEntry.Untagged(_) =>
+          fail("Should have been a tagged layer entry")
 
-    assert(actual.layers.length == 2)
-    assertEquals(actual.layers.map(_.key.get).toList, List(BindingKey("key A?"), BindingKey("key B?")))
-    assertEquals(actual.layers.map(_.magnification.get).toList, List(2, 2))
+        case l @ LayerEntry.Tagged(key, layer) =>
+          l.withTag(BindingKey(key.toString + "?")).withMagnification(2)
+      }
+
+    assert(actual.layers.flatMap(_.toBatch).length == 2)
+
+    assertEquals(
+      actual.layers.map(_.giveTag.get).toList,
+      List(BindingKey("key A?"), BindingKey("key B?"))
+    )
+    assertEquals(actual.layers.flatMap(_.toBatch).map(_.magnification.get).toList, List(2, 2))
   }
 
 }
