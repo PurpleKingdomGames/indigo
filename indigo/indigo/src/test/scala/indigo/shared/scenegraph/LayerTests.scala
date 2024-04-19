@@ -7,18 +7,9 @@ import indigo.shared.materials.BlendMaterial
 
 class LayerTests extends munit.FunSuite {
 
-  test("combining layer should preserve left hand side magnification") {
-
-    assertEquals(Layer(BindingKey("key A")).key, Some(BindingKey("key A")))
-    assertEquals((Layer(BindingKey("key A")) |+| Layer(BindingKey("key B"))).key, Some(BindingKey("key A")))
-    assertEquals((Layer(BindingKey("key A")) |+| Layer(Batch.empty)).key, Some(BindingKey("key A")))
-    assertEquals((Layer(Batch.empty) |+| Layer(BindingKey("key B"))).key, Some(BindingKey("key B")))
-
-  }
-
   test("Can add a blend material with no Blending instance in place") {
     val layer =
-      Layer(BindingKey("test")).withBlendMaterial(BlendMaterial.Lighting(RGBA.Red))
+      Layer.empty.withBlendMaterial(BlendMaterial.Lighting(RGBA.Red))
 
     layer.blending match
       case Some(Blending(entity, layer, BlendMaterial.Lighting(color), clearColor)) =>
@@ -30,7 +21,7 @@ class LayerTests extends munit.FunSuite {
 
   test("Can modify blending with no Blending instance in place") {
     val layer =
-      Layer(BindingKey("test")).modifyBlending(_.withClearColor(RGBA.Green))
+      Layer.empty.modifyBlending(_.withClearColor(RGBA.Green))
 
     layer.blending match
       case Some(Blending(entity, layer, blendMaterial, Some(clearColor))) =>
@@ -42,7 +33,7 @@ class LayerTests extends munit.FunSuite {
 
   test("Can add an entity blend mode with no Blending instance in place") {
     val layer =
-      Layer(BindingKey("test")).withEntityBlend(Blend.LightingEntity)
+      Layer.empty.withEntityBlend(Blend.LightingEntity)
 
     layer.blending match
       case Some(Blending(entity, layer, blendMaterial, clearColor)) =>
@@ -54,7 +45,7 @@ class LayerTests extends munit.FunSuite {
 
   test("Can add a layer blend mode with no Blending instance in place") {
     val layer =
-      Layer(BindingKey("test")).withLayerBlend(Blend.LightingEntity)
+      Layer.empty.withLayerBlend(Blend.LightingEntity)
 
     layer.blending match
       case Some(Blending(entity, layer, blendMaterial, clearColor)) =>
