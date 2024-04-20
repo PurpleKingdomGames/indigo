@@ -1,20 +1,26 @@
 package indigoplugin.core
 
 import indigoplugin.IndigoAssets
+import indigoplugin.IndigoOptions
+import indigoplugin.IndigoTemplate
 
 class AcceptanceTests extends munit.FunSuite {
 
   val sourceDir = os.RelPath("test-assets")
 
-  val targetDir = os.pwd / "out" / "indigo-plugin-acceptance-test-output" / sourceDir
+  val targetBaseDir = os.pwd / "out" / "indigo-plugin-acceptance-test-output"
+  val targetDir     = targetBaseDir / sourceDir
 
-  override def beforeAll(): Unit = {
-    if (os.exists(targetDir)) {
-      os.remove.all(target = targetDir)
+  private def cleanUp(): Unit = {
+    if (os.exists(targetBaseDir)) {
+      os.remove.all(target = targetBaseDir)
     }
 
-    os.makeDir.all(targetDir)
+    os.makeDir.all(targetBaseDir)
   }
+
+  override def beforeAll(): Unit                     = cleanUp()
+  override def beforeEach(context: BeforeEach): Unit = cleanUp()
 
   val indigoAssets =
     IndigoAssets(
@@ -35,6 +41,11 @@ class AcceptanceTests extends munit.FunSuite {
       },
       None
     )
+
+  val indigoOptions =
+    IndigoOptions.defaults
+      .withAssets(indigoAssets)
+      .useDefaultTemplate
 
   test("List assets to copy") {
     val baseDirectory = os.pwd
@@ -110,6 +121,71 @@ class AcceptanceTests extends munit.FunSuite {
     assert(os.exists(targetDir / "mixed" / "taken.txt"))
     assert(os.exists(targetDir / "mixed" / "also-taken.txt"))
 
+  }
+
+  test("Build a game using the default template") {
+    IndigoBuild.build(
+      scriptPathBase = os.pwd / "test-files",
+      options = indigoOptions,
+      baseDir = targetBaseDir,
+      scriptNames = List("game.js")
+    )
+
+    // Template files
+    assert(os.exists(targetBaseDir))
+    assert(os.exists(targetBaseDir / "index.html"))
+    assert(os.exists(targetBaseDir / "cordova.js"))
+    assert(os.exists(targetBaseDir / "scripts" / "game.js"))
+    assert(os.exists(targetBaseDir / "scripts" / "game.js.map"))
+    assert(os.exists(targetBaseDir / "scripts" / "indigo-support.js"))
+
+    // Assets - Basics
+    assert(os.exists(targetBaseDir / "assets"))
+    assert(os.exists(targetBaseDir / "assets" / "foo.txt"))
+    assert(os.exists(targetBaseDir / "assets" / "data" / "stats.csv"))
+
+    // Assets - Ignored folder
+    assert(!os.exists(targetBaseDir / "assets" / "ignored-folder"))
+    assert(!os.exists(targetBaseDir / "assets" / "ignored-folder" / "ignored-file.txt"))
+
+    // Assets - Generally excluded, but some taken.
+    assert(os.exists(targetBaseDir / "assets" / "mixed"))
+    assert(!os.exists(targetBaseDir / "assets" / "mixed" / "ignored-file.txt"))
+    assert(os.exists(targetBaseDir / "assets" / "mixed" / "taken.txt"))
+    assert(os.exists(targetBaseDir / "assets" / "mixed" / "also-taken.txt"))
+  }
+
+  test("Build a game using a custom template") {
+    val custom =
+      indigoOptions.useCustomTemplate(
+        IndigoTemplate.Inputs(os.pwd / "test-custom-template"),
+        IndigoTemplate.Outputs(
+          os.rel / "game-assets",
+          os.rel / "game-scripts"
+        )
+      )
+
+    IndigoBuild.build(
+      scriptPathBase = os.pwd / "test-files",
+      options = custom,
+      baseDir = targetBaseDir,
+      scriptNames = List("game.js")
+    )
+
+    // Template files
+    assert(os.exists(targetBaseDir))
+    assert(os.exists(targetBaseDir / "index.html"))
+    assert(os.exists(targetBaseDir / "test.css"))
+    assert(os.exists(targetBaseDir / "game-scripts" / "game.js"))
+    assert(os.exists(targetBaseDir / "game-scripts" / "game.js.map"))
+
+    // Assets
+    assert(os.exists(targetBaseDir / "game-assets"))
+    assert(os.exists(targetBaseDir / "game-assets" / "foo.txt"))
+    assert(os.exists(targetBaseDir / "game-assets" / "data" / "stats.csv"))
+    assert(os.exists(targetBaseDir / "game-assets" / "mixed"))
+    assert(os.exists(targetBaseDir / "game-assets" / "mixed" / "taken.txt"))
+    assert(os.exists(targetBaseDir / "game-assets" / "mixed" / "also-taken.txt"))
   }
 
 }

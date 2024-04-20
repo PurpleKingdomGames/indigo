@@ -12,8 +12,13 @@ package indigoplugin
 final case class IndigoOptions(
     metadata: IndigoGameMetadata,
     assets: IndigoAssets,
-    electron: IndigoElectronOptions
+    electron: IndigoElectronOptions,
+    template: IndigoTemplate
 ) {
+
+  /** Provide a replacement IndigoGameMetadata instance */
+  def withGameMetadata(newMetadata: IndigoGameMetadata): IndigoOptions =
+    this.copy(metadata = newMetadata)
 
   /** Sets a new title for your game's window / title bar / tab */
   def withTitle(newTitle: String): IndigoOptions =
@@ -38,6 +43,10 @@ final case class IndigoOptions(
   /** Set the background color from RGB values */
   def withBackgroundColor(r: Double, g: Double, b: Double): IndigoOptions =
     this.copy(metadata = metadata.withBackgroundColor(r, g, b))
+
+  /** Provide a replacement IndigoAssets instance */
+  def withAssets(newAssets: IndigoAssets): IndigoOptions =
+    this.copy(assets = newAssets)
 
   /** Sets the asset directory path */
   def withAssetDirectory(path: String): IndigoOptions =
@@ -99,6 +108,10 @@ final case class IndigoOptions(
   def withWindowSize(w: Int, h: Int): IndigoOptions =
     this.copy(metadata = metadata.withWindowSize(w, h))
 
+  /** Provide a replacement IndigoElectronOptions instance */
+  def withElectronOptions(newElectronOptions: IndigoElectronOptions): IndigoOptions =
+    this.copy(electron = newElectronOptions)
+
   /** Electron will limit the frame rate using the default browser refresh rate, typically it will sync with your
     * monitor's refresh rate. It is recommended that you do this, and set your indigo config to limit the framerate too.
     */
@@ -134,6 +147,20 @@ final case class IndigoOptions(
   def useElectronExecutable(path: String): IndigoOptions =
     withElectronInstallType(ElectronInstall.PathToExecutable(path))
 
+  /** Provide a replacement IndigoTemplate instance */
+  def withTemplate(newTemplate: IndigoTemplate): IndigoOptions =
+    this.copy(template = newTemplate)
+
+  /** Use the static site template during the game build */
+  def useDefaultTemplate: IndigoOptions =
+    withTemplate(IndigoTemplate.Default)
+
+  /** Use a custom static site template during the game build, with the given inputs and outputs specifiying important
+    * locations.
+    */
+  def useCustomTemplate(inputs: IndigoTemplate.Inputs, outputs: IndigoTemplate.Outputs): IndigoOptions =
+    withTemplate(IndigoTemplate.Custom(inputs, outputs))
+
 }
 
 object IndigoOptions {
@@ -141,9 +168,10 @@ object IndigoOptions {
   /** Default configuration for an Indigo game. */
   val defaults: IndigoOptions =
     IndigoOptions(
-      metadata = IndigoGameMetadata.defaults,
-      assets = IndigoAssets.defaults,
-      electron = IndigoElectronOptions.defaults
+      IndigoGameMetadata.defaults,
+      IndigoAssets.defaults,
+      IndigoElectronOptions.defaults,
+      IndigoTemplate.Default
     )
 
 }
