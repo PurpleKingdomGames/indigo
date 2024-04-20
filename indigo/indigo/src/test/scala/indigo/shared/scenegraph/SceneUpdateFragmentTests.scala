@@ -177,4 +177,75 @@ class SceneUpdateFragmentTests extends munit.FunSuite {
     assertEquals(actual.layers.flatMap(_.toBatch).map(_.magnification.get).toList, List(2, 2))
   }
 
+  test("Merging SUF's with layer stacks") {
+
+    val sceneA =
+      SceneUpdateFragment.empty
+        .addLayers(
+          BindingKey("a") -> Layer.Content.empty,
+          BindingKey("b") -> Layer.Stack(
+            Layer.Content.empty,
+            Layer.Stack(
+              Layer.Content.empty
+            ),
+            Layer.Content.empty
+          ),
+          BindingKey("c") -> Layer.Content.empty
+        )
+
+    val sceneB =
+      SceneUpdateFragment.empty
+        .addLayers(
+          BindingKey("a") -> Layer.Content.empty,
+          BindingKey("b") -> Layer.Content.empty,
+          BindingKey("c") -> Layer.Stack(
+            Layer.Content.empty
+          )
+        )
+        .addLayer(Layer.empty)
+
+    val actual =
+      sceneA |+| sceneB
+
+    val expected =
+      SceneUpdateFragment.empty
+        .addLayers(
+          BindingKey("a") -> Layer.Content.empty,
+          BindingKey("b") -> Layer.Stack(
+            Layer.Content.empty,
+            Layer.Stack(
+              Layer.Content.empty
+            ),
+            Layer.Content.empty,
+            Layer.Content.empty
+          ),
+          BindingKey("c") -> Layer.Stack(
+            Layer.Content.empty,
+            Layer.Content.empty
+          )
+        )
+        .addLayer(Layer.empty)
+
+    assertEquals(actual, expected)
+
+    val actualBatch =
+      actual.layers.flatMap(_.toBatch)
+
+    val expectedBatch =
+      Batch(
+        Layer.Content.empty,
+        Layer.Content.empty,
+        Layer.Content.empty,
+        Layer.Content.empty,
+        Layer.Content.empty,
+        Layer.Content.empty,
+        Layer.Content.empty,
+        Layer.Content.empty
+      )
+
+    assertEquals(actualBatch.length, expectedBatch.length)
+    assertEquals(actualBatch, expectedBatch)
+
+  }
+
 }
