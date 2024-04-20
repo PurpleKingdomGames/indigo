@@ -159,7 +159,6 @@
     <li class="level1 nav-node"><a href="#the-text-primitive">The Text Primitive</a></li>
     <li class="level2 nav-leaf"><a href="#allowing-fonts-without-supporting-fonts">Allowing fonts without supporting fonts</a></li>
     <li class="level2 nav-leaf"><a href="#setting-up-fonts-manually">Setting up fonts manually</a></li>
-    <li class="level2 nav-leaf"><a href="#getting-a-computer-to-do-it-for-you">Getting a computer to do it for you</a></li>
   </ul>
 
   <p class="footer"></p>
@@ -216,7 +215,7 @@
         <h3 id="allowing-fonts-without-supporting-fonts" class="section"><a class="anchor-link left" href="#allowing-fonts-without-supporting-fonts"><i class="icofont-laika link">&#xef71;</i></a>Allowing fonts without supporting fonts</h3>
         <p>A very early design decision from back when Indigo was ruthlessly focused on the pixel art market, was that we didn&#39;t need real font support. Pixel art fonts tend to be blocky and mono-space.</p>
         <p>Inspiration came from early versions of Flash where selected font glyphs were rendered into images at specific sizes during the Flash build. We went one step further and decided, in the name of <em>not</em> getting bogged down in the world of font rendering, that you&#39;d have to provide your font glyph images - not unlike an animation sprite sheet - pre-rendered and then tell us where all the characters were.</p>
-        <p>It&#39;s inconvenient and a bit simplistic, but it works, and the results look good even when magnified for pixel art! And we have a <a href="https://indigoengine.io/tools/">tool to help you</a>, more on that further down.</p>
+        <p>It&#39;s inconvenient and a bit simplistic, but it works, and the results look good even when magnified for pixel art!</p>
         
         <h3 id="setting-up-fonts-manually" class="section"><a class="anchor-link left" href="#setting-up-fonts-manually"><i class="icofont-laika link">&#xef71;</i></a>Setting up fonts manually</h3>
         <p>At the beginning of your (<code>IndigoSandbox</code>) game definition, you were given a couple of blanks to fill in that looked like this:</p>
@@ -254,57 +253,8 @@
           <li>That our <code>fontKey</code> has appeared, and it ties the <code>Text</code> primitive to a specific <code>FontInfo</code> instance.</li>
           <li>The &quot;character&quot; to match is represented by a <code>String</code> rather than a <code>Char</code>... this is because of the way JavaScript represents it, an implementation leak if you will.</li>
         </ol>
-        <p>That all works fine, it&#39;s just a very boring job.</p>
-        
-        <h3 id="getting-a-computer-to-do-it-for-you" class="section"><a class="anchor-link left" href="#getting-a-computer-to-do-it-for-you"><i class="icofont-laika link">&#xef71;</i></a>Getting a computer to do it for you</h3>
-        <p>How to avoid doing all the manual labor of painstaking setting up the font info, and getting a font rendered to an image for you in the first place?</p>
-        <p>Well you still need the asset and the <code>FontInfo</code>, but we have a process to make generating it easier.</p>
-        <ol class="arabic">
-          <li>Head over to our <a href="https://indigoengine.io/tools/">tools site</a> and use the Font Sheet generator to produce an image containing the exact glyphs you want and an associated JSON blob representing the glyph information.</li>
-          <li>Ensure you have added an Indigo JSON dependency to your games build definition, either <code>indigo-json-circe</code>.</li>
-        </ol>
-        <p>Then load both assets:</p>
-        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">indigo</span><span>.*
-
-</span><span class="keyword">val</span><span> </span><span class="identifier">imageAsset</span><span> = </span><span class="string-literal">&quot;my font image&quot;</span><span>
-</span><span class="keyword">val</span><span> </span><span class="identifier">jsonAsset</span><span> = </span><span class="string-literal">&quot;my font json&quot;</span><span>
-
-</span><span class="keyword">val</span><span> </span><span class="identifier">assets</span><span>: </span><span class="type-name">Set</span><span>[</span><span class="type-name">AssetType</span><span>] =
-  </span><span class="type-name">Set</span><span>(
-    </span><span class="type-name">AssetType</span><span>.</span><span class="type-name">Image</span><span>(</span><span class="type-name">AssetName</span><span>(</span><span class="identifier">imageAsset</span><span>), </span><span class="type-name">AssetPath</span><span>(</span><span class="string-literal">&quot;assets/my-font.png&quot;</span><span>)),
-    </span><span class="type-name">AssetType</span><span>.</span><span class="type-name">Text</span><span>(</span><span class="type-name">AssetName</span><span>(</span><span class="identifier">jsonAsset</span><span>), </span><span class="type-name">AssetPath</span><span>(</span><span class="string-literal">&quot;assets/my-font.json&quot;</span><span>))
-  )</span></code></pre>
-        <p>..and then during the <code>setup</code> function where you create the <code>Startup</code> data, you can do something like the following:</p>
-        <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">indigo</span><span>.</span><span class="identifier">json</span><span>.</span><span class="type-name">Json</span><span>
-</span><span class="keyword">import</span><span> </span><span class="identifier">indigo</span><span>.</span><span class="identifier">syntax</span><span>.*
-</span><span class="comment">//Placeholder: AssetCollection is one of the setup function arguments.
-</span><span class="keyword">import</span><span> </span><span class="identifier">indigo</span><span>.</span><span class="identifier">platform</span><span>.</span><span class="identifier">assets</span><span>.</span><span class="type-name">AssetCollection</span><span>
-</span><span class="keyword">val</span><span> </span><span class="identifier">assetCollection</span><span> = </span><span class="type-name">AssetCollection</span><span>.</span><span class="identifier">empty</span><span>
-
-</span><span class="keyword">def</span><span> </span><span class="declaration-name">makeFontInfo</span><span>(</span><span class="identifier">unknownChar</span><span>: </span><span class="type-name">FontChar</span><span>, </span><span class="identifier">fontChars</span><span>: </span><span class="type-name">Batch</span><span>[</span><span class="type-name">FontChar</span><span>]): </span><span class="type-name">FontInfo</span><span> =
-  </span><span class="type-name">FontInfo</span><span>(
-    </span><span class="identifier">fontKey</span><span> = </span><span class="type-name">FontKey</span><span>(</span><span class="string-literal">&quot;my font key&quot;</span><span>),
-    </span><span class="identifier">fontSheetBounds</span><span> = </span><span class="type-name">Size</span><span>(</span><span class="number-literal">320</span><span>, </span><span class="number-literal">230</span><span>),
-    </span><span class="identifier">unknownChar</span><span> = </span><span class="identifier">unknownChar</span><span>,
-    </span><span class="identifier">fontChars</span><span> = </span><span class="identifier">fontChars</span><span>,
-    </span><span class="identifier">caseSensitive</span><span> = </span><span class="boolean-literal">true</span><span>
-  )
-
-</span><span class="keyword">val</span><span> </span><span class="identifier">maybeFontInfo</span><span>: </span><span class="type-name">Option</span><span>[</span><span class="type-name">FontInfo</span><span>] =
-  </span><span class="keyword">for</span><span> {
-    </span><span class="identifier">json</span><span>        &lt;- </span><span class="identifier">assetCollection</span><span>.</span><span class="identifier">findTextDataByName</span><span>(</span><span class="type-name">AssetName</span><span>(</span><span class="identifier">jsonAsset</span><span>))
-    </span><span class="identifier">chars</span><span>       &lt;- </span><span class="type-name">Json</span><span>.</span><span class="identifier">readFontToolJson</span><span>(</span><span class="identifier">json</span><span>)
-    </span><span class="identifier">unknownChar</span><span> &lt;- </span><span class="identifier">chars</span><span>.</span><span class="identifier">find</span><span>(</span><span class="identifier">_</span><span>.</span><span class="identifier">character</span><span> == </span><span class="string-literal">&quot;☐&quot;</span><span>)
-  } </span><span class="keyword">yield</span><span> </span><span class="identifier">makeFontInfo</span><span>(</span><span class="identifier">unknownChar</span><span>, </span><span class="identifier">chars</span><span>.</span><span class="identifier">toBatch</span><span>)
-
-</span><span class="identifier">maybeFontInfo</span><span> </span><span class="keyword">match</span><span>
-  </span><span class="keyword">case</span><span> </span><span class="type-name">Some</span><span>(</span><span class="identifier">fontInfo</span><span>) =&gt;
-    </span><span class="type-name">Startup</span><span>.</span><span class="type-name">Success</span><span>(()).</span><span class="identifier">addFonts</span><span>(</span><span class="identifier">fontInfo</span><span>)
-
-  </span><span class="keyword">case</span><span> </span><span class="type-name">None</span><span> =&gt;
-    </span><span class="comment">// handle error case here.</span></code></pre>
-        <div id="mdoc-html-run7" data-mdoc-js></div>
-        <p><script type="text/javascript" src="text-and-fonts.md.js" defer></script>
+        <p>That all works fine, it&#39;s just a very boring job.
+        <script type="text/javascript" src="text-and-fonts.md.js" defer></script>
         <script type="text/javascript" src="mdoc.js" defer></script></p>
 
         
