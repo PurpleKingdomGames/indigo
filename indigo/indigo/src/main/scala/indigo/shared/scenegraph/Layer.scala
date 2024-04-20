@@ -113,9 +113,6 @@ object Layer:
     def apply(layers: Layer*): Layer.Stack =
       Layer.Stack(Batch.fromSeq(layers))
 
-    def apply(layers: Batch[Layer]): Layer.Stack =
-      Layer.Stack(layers)
-
   object Content:
 
     val empty: Layer.Content =
