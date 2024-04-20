@@ -1,5 +1,6 @@
 package indigo.shared.datatypes
 
+import indigo.shared.dice.Dice
 import indigo.shared.time.Seconds
 
 import annotation.targetName
@@ -29,6 +30,9 @@ object Radians:
 
   def mod(dividend: Radians, divisor: Radians): Radians =
     Radians((dividend % divisor + divisor) % divisor)
+
+  def random(dice: Dice): Radians =
+    TAU * dice.rollDouble
 
   extension (r: Radians)
     def +(other: Radians): Radians =

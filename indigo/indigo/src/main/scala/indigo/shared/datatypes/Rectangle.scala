@@ -1,6 +1,7 @@
 package indigo.shared.datatypes
 
 import indigo.shared.collections.Batch
+import indigo.shared.dice.Dice
 import indigo.shared.geometry.BoundingBox
 import indigo.shared.geometry.BoundingCircle
 
@@ -262,3 +263,15 @@ object Rectangle:
     a.toBoundingBox.overlaps(b.toBoundingBox)
   def overlapping(a: Rectangle, b: Circle): Boolean =
     a.toBoundingBox.overlaps(b.toBoundingCircle)
+
+  def random(dice: Dice, max: Int): Rectangle =
+    Rectangle(Point.random(dice, max), Size.random(dice, max))
+
+  def random(dice: Dice, max: Rectangle): Rectangle =
+    Rectangle(Point.random(dice, max.position), Size.random(dice, max.size))
+
+  def random(dice: Dice, min: Int, max: Int): Rectangle =
+    Rectangle(Point.random(dice, min, max), Size.random(dice, min, max))
+
+  def random(dice: Dice, min: Rectangle, max: Rectangle): Rectangle =
+    Rectangle(Point.random(dice, min.position, max.position), Size.random(dice, min.size, max.size))

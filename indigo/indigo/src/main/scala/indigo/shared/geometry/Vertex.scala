@@ -4,6 +4,7 @@ import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.Size
 import indigo.shared.datatypes.Vector2
+import indigo.shared.dice.Dice
 
 /** A `Vertex` is another co-ordinate-like type that specifically represents a point on a graph.
   */
@@ -170,3 +171,6 @@ object Vertex:
       x = (dividend.x % divisor.x + divisor.x) % divisor.x,
       y = (dividend.y % divisor.y + divisor.y) % divisor.y
     )
+
+  def random(dice: Dice): Vertex =
+    Vertex(dice.rollDouble, dice.rollDouble)
