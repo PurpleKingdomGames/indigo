@@ -69,7 +69,7 @@ A very early design decision from back when Indigo was ruthlessly focused on the
 
 Inspiration came from early versions of Flash where selected font glyphs were rendered into images at specific sizes during the Flash build. We went one step further and decided, in the name of _not_ getting bogged down in the world of font rendering, that you'd have to provide your font glyph images - not unlike an animation sprite sheet - pre-rendered and then tell us where all the characters were.
 
-It's inconvenient and a bit simplistic, but it works, and the results look good even when magnified for pixel art! And we have a [tool to help you](https://indigoengine.io/tools/), more on that further down.
+It's inconvenient and a bit simplistic, but it works, and the results look good even when magnified for pixel art!
 
 ### Setting up fonts manually
 
@@ -121,60 +121,3 @@ The eagle eyed among you may have noticed two things:
 2. The "character" to match is represented by a `String` rather than a `Char`... this is because of the way JavaScript represents it, an implementation leak if you will.
 
 That all works fine, it's just a very boring job.
-
-### Getting a computer to do it for you
-
-How to avoid doing all the manual labor of painstaking setting up the font info, and getting a font rendered to an image for you in the first place?
-
-Well you still need the asset and the `FontInfo`, but we have a process to make generating it easier.
-
-1. Head over to our [tools site](https://indigoengine.io/tools/) and use the Font Sheet generator to produce an image containing the exact glyphs you want and an associated JSON blob representing the glyph information.
-2. Ensure you have added an Indigo JSON dependency to your games build definition, either `indigo-json-circe`.
-
-Then load both assets:
-
-```scala mdoc:js:shared
-import indigo.*
-
-val imageAsset = "my font image"
-val jsonAsset = "my font json"
-
-val assets: Set[AssetType] =
-  Set(
-    AssetType.Image(AssetName(imageAsset), AssetPath("assets/my-font.png")),
-    AssetType.Text(AssetName(jsonAsset), AssetPath("assets/my-font.json"))
-  )
-```
-
-..and then during the `setup` function where you create the `Startup` data, you can do something like the following:
-
-```scala mdoc:js
-import indigo.json.Json
-import indigo.syntax.*
-//Placeholder: AssetCollection is one of the setup function arguments.
-import indigo.platform.assets.AssetCollection
-val assetCollection = AssetCollection.empty
-
-def makeFontInfo(unknownChar: FontChar, fontChars: Batch[FontChar]): FontInfo =
-  FontInfo(
-    fontKey = FontKey("my font key"),
-    fontSheetBounds = Size(320, 230),
-    unknownChar = unknownChar,
-    fontChars = fontChars,
-    caseSensitive = true
-  )
-
-val maybeFontInfo: Option[FontInfo] =
-  for {
-    json        <- assetCollection.findTextDataByName(AssetName(jsonAsset))
-    chars       <- Json.readFontToolJson(json)
-    unknownChar <- chars.find(_.character == "☐")
-  } yield makeFontInfo(unknownChar, chars.toBatch)
-
-maybeFontInfo match
-  case Some(fontInfo) =>
-    Startup.Success(()).addFonts(fontInfo)
-
-  case None =>
-    // handle error case here.
-```

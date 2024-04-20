@@ -147,6 +147,4 @@ As stated earlier:
 - Humans are good at making height maps.
 - Equally, humans are generally _not_ good at hand crafting normal maps.
 
-But, both formats encode normals in either an unprocessed or pre-processed way.
-
-[Wouldn't it be nice if someone had made a tool that converted bump maps to normal maps for you?](https://indigoengine.io/tools/)
+There are lots of tools available for converting height maps to normal maps, a number of them are free to use websites.
