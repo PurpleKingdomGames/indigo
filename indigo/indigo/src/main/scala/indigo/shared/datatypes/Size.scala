@@ -1,5 +1,6 @@
 package indigo.shared.datatypes
 
+import indigo.shared.dice.Dice
 import indigo.shared.geometry.Vertex
 
 final case class Size(width: Int, height: Int) derives CanEqual:
@@ -80,3 +81,15 @@ object Size:
       width = (dividend.width   % divisor.width + divisor.width)   % divisor.width,
       height = (dividend.height % divisor.height + divisor.height) % divisor.height
     )
+
+  def random(dice: Dice, max: Int): Size =
+    Size(dice.rollFromZero(max), dice.rollFromZero(max))
+
+  def random(dice: Dice, max: Size): Size =
+    Size(dice.rollFromZero(max.width), dice.rollFromZero(max.height))
+
+  def random(dice: Dice, min: Int, max: Int): Size =
+    Size(dice.rollFromZero(max - min) + min, dice.rollFromZero(max - min) + min)
+
+  def random(dice: Dice, min: Size, max: Size): Size =
+    Size(dice.rollFromZero(max.width - min.width) + min.width, dice.rollFromZero(max.height - min.height) + min.height)

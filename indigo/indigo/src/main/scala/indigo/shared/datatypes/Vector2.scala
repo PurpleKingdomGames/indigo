@@ -1,6 +1,7 @@
 package indigo.shared.datatypes
 
 import indigo.shared.collections.Batch
+import indigo.shared.dice.Dice
 import indigo.shared.geometry.Vertex
 
 final case class Vector2(x: Double, y: Double) derives CanEqual:
@@ -192,3 +193,6 @@ object Vector2:
       x = (dividend.x % divisor.x + divisor.x) % divisor.x,
       y = (dividend.y % divisor.y + divisor.y) % divisor.y
     )
+
+  def random(dice: Dice): Vector2 =
+    Vector2(dice.rollDouble, dice.rollDouble)

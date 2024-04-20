@@ -1,5 +1,6 @@
 package indigo.shared.datatypes
 
+import indigo.Dice
 import indigo.shared.geometry.Vertex
 
 final case class Point(x: Int, y: Int) derives CanEqual:
@@ -51,7 +52,7 @@ final case class Point(x: Int, y: Int) derives CanEqual:
   def moveBy(x: Int, y: Int): Point =
     moveBy(Point(x, y))
 
-  def rotateBy(angle: Radians): Point = {
+  def rotateBy(angle: Radians): Point =
     val a = angle.wrap.toDouble
     val s = Math.sin(a)
     val c = Math.cos(a)
@@ -60,18 +61,17 @@ final case class Point(x: Int, y: Int) derives CanEqual:
       Math.round(this.x * c - this.y * s).toInt,
       Math.round(this.x * s + this.y * c).toInt
     )
-  }
+
   def rotateBy(angle: Radians, origin: Point): Point =
     (this - origin).rotateBy(angle) + origin
 
-  def rotateTo(angle: Radians): Point = {
+  def rotateTo(angle: Radians): Point =
     val a = angle.wrap.toDouble
     val r = this.distanceTo(Point.zero)
     Point(
       Math.round(r * Math.cos(a)).toInt,
       Math.round(r * Math.sin(a)).toInt
     )
-  }
 
   def angle: Radians = Radians(Math.atan2(this.y, this.x))
 
@@ -102,7 +102,7 @@ object Point:
     Point(a.x + (((b.x - a.x) / divisor) * multiplier).toInt, a.y + (((b.y - a.y) / divisor) * multiplier).toInt)
 
   def distanceBetween(a: Point, b: Point): Double =
-    (a, b) match {
+    (a, b) match
       case (Point(x1, y1), Point(x2, y2)) if x1 == x2 =>
         Math.abs((y2 - y1).toDouble)
 
@@ -114,7 +114,6 @@ object Point:
         val bb = y2.toDouble - y1.toDouble
 
         Math.sqrt(Math.abs((aa * aa) + (bb * bb)))
-    }
 
   def fromSize(size: Size): Point =
     Point(size.width, size.height)
@@ -130,3 +129,15 @@ object Point:
       x = (dividend.x % divisor.x + divisor.x) % divisor.x,
       y = (dividend.y % divisor.y + divisor.y) % divisor.y
     )
+
+  def random(dice: Dice, max: Int): Point =
+    Point(dice.rollFromZero(max), dice.rollFromZero(max))
+
+  def random(dice: Dice, max: Point): Point =
+    Point(dice.rollFromZero(max.x), dice.rollFromZero(max.y))
+
+  def random(dice: Dice, min: Int, max: Int): Point =
+    Point(dice.rollFromZero(max - min) + min, dice.rollFromZero(max - min) + min)
+
+  def random(dice: Dice, min: Point, max: Point): Point =
+    Point(dice.rollFromZero(max.x - min.x) + min.x, dice.rollFromZero(max.y - min.y) + min.y)
