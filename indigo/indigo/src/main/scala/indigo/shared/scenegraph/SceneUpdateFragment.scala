@@ -65,22 +65,16 @@ final case class SceneUpdateFragment(
     addLayers(newLayers.toBatch)
   @targetName("addLayers_batch_key_layer")
   def addLayers(newLayers: Batch[(BindingKey, Layer)]): SceneUpdateFragment =
-    this.copy(
-      layers = newLayers.foldLeft(layers) { case (acc, (k, l)) =>
-        SceneUpdateFragment.mergeLayers(acc, LayerEntry(k, l))
-      }
-    )
+    addLayers(newLayers.map(p => LayerEntry(p._1, p._2)))
   @targetName("addLayers_args_key_layer")
   def addLayers(newLayers: (BindingKey, Layer)*): SceneUpdateFragment =
-    addLayers(newLayers.toBatch)
+    addLayers(newLayers.toBatch.map(p => LayerEntry(p._1, p._2)))
   @targetName("addLayers_batch_layer")
   def addLayers(newLayers: Batch[Layer]): SceneUpdateFragment =
-    this.copy(
-      layers = newLayers.foldLeft(layers)((acc, l) => SceneUpdateFragment.mergeLayers(acc, LayerEntry(l)))
-    )
+    addLayers(newLayers.map(LayerEntry.Untagged.apply))
   @targetName("addLayers_args_layer")
   def addLayers(newLayers: Layer*): SceneUpdateFragment =
-    addLayers(newLayers.toBatch)
+    addLayers(newLayers.toBatch.map(LayerEntry.Untagged.apply))
 
   def withLayers(layers: Batch[LayerEntry]): SceneUpdateFragment =
     this.copy(layers = layers)
@@ -88,13 +82,13 @@ final case class SceneUpdateFragment(
     withLayers(layers.toBatch)
   @targetName("withLayers_batch_key_layer")
   def withLayers(layers: Batch[(BindingKey, Layer)]): SceneUpdateFragment =
-    this.copy(layers = layers.map((k, l) => LayerEntry(k, l)))
+    withLayers(layers.map(LayerEntry.apply))
   @targetName("withLayers_args_key_layer")
   def withLayers(layers: (BindingKey, Layer)*): SceneUpdateFragment =
     withLayers(layers.toBatch)
   @targetName("withLayers_batch_layer")
   def withLayers(layers: Batch[Layer]): SceneUpdateFragment =
-    this.copy(layers = layers.map(LayerEntry.apply))
+    withLayers(layers.map(LayerEntry.apply))
   @targetName("withLayers_args_layer")
   def withLayers(layers: Layer*): SceneUpdateFragment =
     withLayers(layers.toBatch.map(LayerEntry.apply))
