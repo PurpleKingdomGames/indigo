@@ -27,12 +27,12 @@ class PointSpecification extends Properties("Dice") {
       value.x >= min && value.y >= min && value.x <= max && value.y <= max
   }
 
-  property("all random values are within the min / max range (Point)") = Prop.forAll(Gen.choose(-500, 0), Gen.choose(0, 500)) {
-    (min, max) =>
+  property("all random values are within the min / max range (Point)") =
+    Prop.forAll(Gen.choose(-500, 0), Gen.choose(0, 500)) { (min, max) =>
       val dice  = Dice.fromSeed(0)
       val value = Point.random(dice, Point(min), Point(max))
 
       value.x >= Point(min).x && value.y >= Point(min).y && value.x <= Point(max).x && value.y <= Point(max).y
-  }
+    }
 
 }

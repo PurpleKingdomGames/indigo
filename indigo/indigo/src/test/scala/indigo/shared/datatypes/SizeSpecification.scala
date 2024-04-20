@@ -27,12 +27,14 @@ class SizeSpecification extends Properties("Dice") {
       value.width >= min && value.height >= min && value.width <= max && value.height <= max
   }
 
-  property("all random values are within the min / max range (Size)") = Prop.forAll(Gen.choose(-500, 0), Gen.choose(0, 500)) {
-    (min, max) =>
+  property("all random values are within the min / max range (Size)") =
+    Prop.forAll(Gen.choose(-500, 0), Gen.choose(0, 500)) { (min, max) =>
       val dice  = Dice.fromSeed(0)
       val value = Size.random(dice, Size(min), Size(max))
 
-      value.width >= Size(min).width && value.height >= Size(min).height && value.width <= Size(max).width && value.height <= Size(max).height
-  }
+      value.width >= Size(min).width && value.height >= Size(min).height && value.width <= Size(
+        max
+      ).width && value.height <= Size(max).height
+    }
 
 }
