@@ -13,7 +13,7 @@ object IndigoBuildMill {
     IndigoBuild.build(
       scriptPathBase,
       options,
-      IndigoBuild.createDirectoryStructure(baseDir),
+      baseDir,
       List("main.js", "out.js")
     )
   }
