@@ -10,13 +10,16 @@ class GeneratorAcceptanceTests extends munit.FunSuite {
 
   val targetDir = os.pwd / "out" / "indigo-plugin-generator-acceptance-test-output"
 
-  override def beforeAll(): Unit = {
+  private def cleanUp(): Unit = {
     if (os.exists(targetDir)) {
       os.remove.all(target = targetDir)
     }
 
     os.makeDir.all(targetDir)
   }
+
+  override def beforeAll(): Unit                     = cleanUp()
+  override def beforeEach(context: BeforeEach): Unit = cleanUp()
 
   test("Can generate an enum from a CSV file") {
 
