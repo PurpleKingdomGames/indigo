@@ -7,12 +7,7 @@ object FontGen {
   def generate(
       moduleName: String,
       fullyQualifiedPackage: String,
-      fontKey: String,
-      fontFilePath: os.Path,
-      fontSize: Int,
-      charactersPerLine: Int,
-      defaultChar: Char,
-      chars: List[Char]
+      fontOptions: FontOptions
   ): os.Path => Seq[os.Path] = outDir => {
 
     val wd = outDir / Generators.OutputDirName
@@ -21,36 +16,36 @@ object FontGen {
 
     val file = wd / s"$moduleName.scala"
 
-    val helper = AWTStuff.makeHelper(fontFilePath.toIO, fontSize)
+    val helper = FontAWTHelper.makeHelper(fontOptions.fontFilePath.toIO, fontOptions.fontSize)
 
     // Process into laid out details
     val charDetails =
       layout(
-        chars
+        fontOptions.chars
           .map { c =>
             val (w, h, a) = helper.getCharBounds(c)
             CharDetail(c, 0, 0, w, h, a)
           },
         helper.getBaselineOffset,
-        charactersPerLine
+        fontOptions.charactersPerLine
       )
 
     // Write out FontInfo
     val default =
       charDetails
-        .find(_.char == defaultChar)
-        .getOrElse(throw new Exception(s"Couldn't find default character '${defaultChar.toString}'"))
+        .find(_.char == fontOptions.defaultChar)
+        .getOrElse(throw new Exception(s"Couldn't find default character '${fontOptions.defaultChar.toString}'"))
 
     val (sheetWidth, sheetHeight) = findBounds(charDetails)
     val fontInfo =
-      genFontInfo(moduleName, fullyQualifiedPackage, fontKey, sheetWidth, sheetHeight, default, charDetails)
+      genFontInfo(moduleName, fullyQualifiedPackage, fontOptions.fontKey, sheetWidth, sheetHeight, default, charDetails)
 
     os.write.over(file, fontInfo)
 
     // Write out font image
-    val outImageFileName = sanitiseName(fontKey, "png")
+    val outImageFileName = sanitiseName(fontOptions.fontKey, "png")
 
-    helper.drawFontSheet((wd / outImageFileName).toIO, charDetails, sheetWidth, sheetHeight)
+    helper.drawFontSheet((wd / outImageFileName).toIO, charDetails, sheetWidth, sheetHeight, fontOptions)
 
     Seq(
       file,
@@ -153,7 +148,24 @@ object FontGen {
 
 final case class CharDetail(char: Char, x: Int, y: Int, width: Int, height: Int, ascent: Int)
 
-object AWTStuff {
+final case class FontOptions(
+    fontKey: String,
+    fontFilePath: os.Path,
+    fontSize: Int,
+    color: FontColor,
+    antiAlias: Boolean,
+    defaultChar: Char,
+    chars: List[Char],
+    charactersPerLine: Int
+)
+
+final case class FontColor(red: Int, green: Int, blue: Int) {
+
+  def toColor: java.awt.Color =
+    new java.awt.Color(red, green, blue)
+}
+
+object FontAWTHelper {
 
   import java.awt._
   import java.awt.image._
@@ -170,9 +182,6 @@ object AWTStuff {
   }
 
   final case class Helper(font: Font) {
-    val color             = Color.WHITE
-    val antiAlias         = false
-    val charactersPerLine = 16
 
     def getCharBounds(char: Char): (Int, Int, Int) = {
       val tmpBuffer = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB)
@@ -204,20 +213,21 @@ object AWTStuff {
         outFile: File,
         charDetails: scala.collection.immutable.List[CharDetail],
         sheetWidth: Int,
-        sheetHeight: Int
+        sheetHeight: Int,
+        fontOptions: FontOptions
     ): Unit = {
       val bufferedImage = new BufferedImage(sheetWidth, sheetHeight, BufferedImage.TYPE_INT_ARGB)
 
       val g2d = bufferedImage.createGraphics()
 
-      if (antiAlias) {
+      if (fontOptions.antiAlias) {
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
       }
 
       g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY)
 
       g2d.setFont(font)
-      g2d.setColor(color)
+      g2d.setColor(fontOptions.color.toColor)
 
       charDetails.foreach { c =>
         g2d.drawString(c.char.toString, c.x, c.y + c.ascent)
