@@ -7,6 +7,7 @@ class GeneratorAcceptanceTests extends munit.FunSuite {
   val sourceCSV     = os.pwd / "test-assets" / "data" / "stats.csv"
   val sourceMD      = os.pwd / "test-assets" / "data" / "stats.md"
   val sourceColours = os.pwd / "test-assets" / "data" / "colours.txt"
+  val sourceFontTTF = os.pwd / "test-files" / "VCR_OSD_MONO_1.001.ttf"
 
   val targetDir = os.pwd / "out" / "indigo-plugin-generator-acceptance-test-output"
 
@@ -20,6 +21,30 @@ class GeneratorAcceptanceTests extends munit.FunSuite {
 
   override def beforeAll(): Unit                     = cleanUp()
   override def beforeEach(context: BeforeEach): Unit = cleanUp()
+
+  test("Can generate font bitmap and FontInfo from TTF file") {
+
+    val options: FontOptions =
+      FontOptions("my font", 16, List(' ', 'a', 'b', 'c'))
+        .withMaxCharactersPerLine(16)
+        .noAntiAliasing
+
+    val files =
+      IndigoGenerators("com.example.test")
+        .embedFont("MyFont", sourceFontTTF, options)
+        .toSourcePaths(targetDir)
+
+    files.toList match {
+      case fontInfo :: png :: Nil =>
+        assert(os.exists(fontInfo))
+        assert(os.exists(png))
+
+      case _ =>
+        fail(
+          s"Unexpected number of files generated, got ${files.length} files:\n${files.map(_.toString()).mkString("\n")}"
+        )
+    }
+  }
 
   test("Can generate an enum from a CSV file") {
 

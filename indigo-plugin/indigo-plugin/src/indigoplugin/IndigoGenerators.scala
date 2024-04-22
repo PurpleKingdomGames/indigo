@@ -7,6 +7,7 @@ import indigoplugin.generators.AssetListing
 import indigoplugin.generators.ConfigGen
 import indigoplugin.generators.EmbedData
 import indigoplugin.generators.EmbedAseprite
+import indigoplugin.generators.FontGen
 
 /** Assists with setting up source code generators for Indigo projects
   *
@@ -270,6 +271,30 @@ final case class IndigoGenerators(fullyQualifiedPackageName: String, sources: Se
           moduleName,
           fullyQualifiedPackageName,
           indigoOptions
+        )
+    )
+
+  /** Used to generate a rendered font sheet and `FontInfo` instance based on a supplied font source file.
+    *
+    * @param moduleName
+    *   The name for the Scala module, e.g. 'MyModule' would be `object MyModule {}`
+    * @param font
+    *   The path to the font file, e.g. a TrueType *.ttf file
+    * @param fontOptions
+    *   Parameters for the font, such as its identifier (font key), size, and anti-aliasing.
+    */
+  def embedFont(
+      moduleName: String,
+      font: os.Path,
+      fontOptions: FontOptions
+  ): IndigoGenerators =
+    this.copy(
+      sources = sources :+
+        FontGen.generate(
+          moduleName,
+          fullyQualifiedPackageName,
+          font,
+          fontOptions
         )
     )
 
