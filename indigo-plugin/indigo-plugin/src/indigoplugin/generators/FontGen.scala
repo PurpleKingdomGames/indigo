@@ -22,11 +22,10 @@ object FontGen {
     // Process into laid out details
     val charDetails =
       layout(
-        fontOptions.chars
-          .map { c =>
-            val (w, h, a) = helper.getCharBounds(c)
-            CharDetail(c, 0, 0, w, h, a)
-          },
+        fontOptions.charSet.toCharacterCodes.map { c =>
+          val (w, h, a) = helper.getCharBounds(c.toChar)
+          CharDetail(c.toChar, c, 0, 0, w, h, a)
+        }.toList,
         helper.getBaselineOffset,
         fontOptions.maxCharactersPerLine
       )
@@ -34,8 +33,8 @@ object FontGen {
     // Write out FontInfo
     val default =
       charDetails
-        .find(_.char == fontOptions.defaultChar)
-        .getOrElse(throw new Exception(s"Couldn't find default character '${fontOptions.defaultChar.toString}'"))
+        .find(_.char == fontOptions.charSet.default)
+        .getOrElse(throw new Exception(s"Couldn't find default character '${fontOptions.charSet.default.toString}'"))
 
     val (sheetWidth, sheetHeight) = findBounds(charDetails)
     val fontInfo =
@@ -139,7 +138,7 @@ object FontGen {
   def toFontChar(
       charDetail: CharDetail
   ): String = {
-    val c = charDetail.char.toString()
+    val c = escapeChar(charDetail.char, charDetail.code)
     val x = charDetail.x.toString()
     val y = charDetail.y.toString()
     val w = charDetail.width.toString()
@@ -148,6 +147,42 @@ object FontGen {
     s"""FontChar("$c", $x, $y, $w, $h)"""
   }
 
+  def escapeChar(c: Char, code: Int): String =
+    c match {
+      case '\\'            => "\\\\"
+      case '\n'            => "\\n"
+      case '\t'            => "\\t"
+      case '\b'            => "\\b"
+      case '\r'            => "\\r"
+      case '\f'            => "\\f"
+      case '\"'            => "\\\""
+      case '\''            => "\\'"
+      case _ if code == 26 => "\\u001A"
+      case _               => c.toString
+    }
+
+  def charCodesToRanges(charCodes: List[Int]): List[FromTo] = {
+    val codes = charCodes.distinct.sorted
+
+    codes.headOption match {
+      case None =>
+        List.empty[FromTo]
+
+      case Some(start) =>
+        codes.tail.foldLeft(List(FromTo(start))) { case (acc, code) =>
+          acc.headOption match {
+            case Some(FromTo(from, to)) if code == to + 1 => FromTo(from, code) :: acc.tail
+            case _                                        => FromTo(code) :: acc
+          }
+        }
+    }
+  }
+
+  final case class FromTo(from: Int, to: Int)
+  object FromTo {
+    def apply(code: Int): FromTo =
+      FromTo(code, code)
+  }
 }
 
 object FontAWTHelper {
@@ -229,14 +264,13 @@ object FontAWTHelper {
 
 }
 
-final case class CharDetail(char: Char, x: Int, y: Int, width: Int, height: Int, ascent: Int)
+final case class CharDetail(char: Char, code: Int, x: Int, y: Int, width: Int, height: Int, ascent: Int)
 
 final case class FontOptions(
     fontKey: String,
     fontSize: Int,
-    chars: List[Char],
+    charSet: CharSet,
     color: RGB,
-    defaultChar: Char,
     antiAlias: Boolean,
     maxCharactersPerLine: Int
 ) {
@@ -247,14 +281,11 @@ final case class FontOptions(
   def withFontSize(newFontSize: Int): FontOptions =
     this.copy(fontSize = newFontSize)
 
-  def withChars(newChars: List[Char]): FontOptions =
-    this.copy(chars = newChars)
+  def withChars(newCharSet: CharSet): FontOptions =
+    this.copy(charSet = newCharSet)
 
   def withColor(newColor: RGB): FontOptions =
     this.copy(color = newColor)
-
-  def withDefaultChar(newDefaultChar: Char): FontOptions =
-    this.copy(defaultChar = newDefaultChar)
 
   def withAntiAlias(newAntiAlias: Boolean): FontOptions =
     this.copy(antiAlias = newAntiAlias)
@@ -270,8 +301,11 @@ final case class FontOptions(
 
 object FontOptions {
 
-  def apply(fontKey: String, fontSize: Int, chars: List[Char]): FontOptions =
-    FontOptions(fontKey, fontSize, chars, RGB.White, chars.headOption.getOrElse(' '), false, 16)
+  def apply(fontKey: String, fontSize: Int): FontOptions =
+    FontOptions(fontKey, fontSize, CharSet.ASCII, RGB.White, false, 16)
+
+  def apply(fontKey: String, fontSize: Int, charSet: CharSet): FontOptions =
+    FontOptions(fontKey, fontSize, charSet, RGB.White, false, 16)
 
 }
 
@@ -376,4 +410,55 @@ object RGB {
   def fromColorInts(r: Int, g: Int, b: Int): RGB =
     RGB((1.0 / 255) * r, (1.0 / 255) * g, (1.0 / 255) * b)
 
+}
+
+/** Represents a set of characters used for generating fonts.
+  *
+  * @param characters
+  *   The string containing the characters in the set.
+  */
+final case class CharSet(characters: String, default: Char) {
+
+  def toCharacterCodes: Array[Int] =
+    characters.toCharArray.map(_.toInt)
+
+}
+
+object CharSet {
+
+  val DefaultCharacter: Char = ' '
+
+  def fromString(characters: String, default: Char): CharSet =
+    CharSet(characters, default)
+  def fromString(characters: String): CharSet =
+    fromString(characters + DefaultCharacter, DefaultCharacter)
+
+  def fromSeq(chars: Seq[Char], default: Char): CharSet =
+    CharSet(chars.mkString, default)
+  def fromSeq(chars: Seq[Char]): CharSet =
+    fromSeq(chars :+ DefaultCharacter, DefaultCharacter)
+
+  def fromCharCodeRange(from: Int, to: Int, default: Char): CharSet =
+    CharSet((from to to).map(_.toChar).mkString, default)
+  def fromCharCodeRange(from: Int, to: Int): CharSet =
+    CharSet(((from to to).map(_.toChar) :+ DefaultCharacter).mkString, DefaultCharacter)
+
+  def fromCharRange(start: Char, end: Char, default: Char): CharSet =
+    fromCharCodeRange(start.toInt, end.toInt, default)
+  def fromCharRange(start: Char, end: Char): CharSet =
+    fromCharCodeRange(start.toInt, end.toInt)
+
+  def fromUniqueString(characters: String, default: Char): CharSet =
+    CharSet(characters.distinct, default)
+  def fromUniqueString(characters: String): CharSet =
+    CharSet((characters + DefaultCharacter).distinct, DefaultCharacter)
+
+  val ASCII: CharSet           = fromCharCodeRange(0, 127)
+  val ExtendedASCII: CharSet   = fromCharCodeRange(0, 255)
+  val AlphabeticLower: CharSet = fromCharCodeRange('a'.toInt, 'z'.toInt)
+  val AlphabeticUpper: CharSet = fromCharCodeRange('A'.toInt, 'Z'.toInt)
+  val Alphabetic: CharSet      = fromSeq(('a' to 'z') ++ ('A' to 'Z'))
+  val Numeric: CharSet         = fromCharCodeRange('0'.toInt, '9'.toInt)
+  val Alphanumeric: CharSet    = fromSeq(('a' to 'z') ++ ('A' to 'Z') ++ ('0' to '9'))
+  val Whitespace: CharSet      = fromString(" \t\n\r\f")
 }

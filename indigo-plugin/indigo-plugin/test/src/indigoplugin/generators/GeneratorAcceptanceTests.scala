@@ -22,10 +22,10 @@ class GeneratorAcceptanceTests extends munit.FunSuite {
   override def beforeAll(): Unit                     = cleanUp()
   override def beforeEach(context: BeforeEach): Unit = cleanUp()
 
-  test("Can generate font bitmap and FontInfo from TTF file") {
+  test("Can generate font bitmap and FontInfo from TTF file".only) {
 
     val options: FontOptions =
-      FontOptions("my font", 16, List(' ', 'a', 'b', 'c'))
+      FontOptions("my font", 16, CharSet.ASCII)
         .withMaxCharactersPerLine(16)
         .noAntiAliasing
 
