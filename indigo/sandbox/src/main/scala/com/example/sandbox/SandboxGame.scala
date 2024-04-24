@@ -27,6 +27,7 @@ import com.example.sandbox.scenes.TimelineScene
 import com.example.sandbox.scenes.UVShaders
 import com.example.sandbox.scenes.UiScene
 import com.example.sandbox.scenes.UltravioletScene
+import example.TestFont
 import indigo.*
 import indigo.json.Json
 import indigo.scenes._
@@ -48,7 +49,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
   val viewportHeight: Int     = gameHeight * magnificationLevel // 256
 
   def initialScene(bootData: SandboxBootData): Option[SceneName] =
-    Some(CameraWithCloneTilesScene.name)
+    Some(TextScene.name)
 
   def scenes(bootData: SandboxBootData): NonEmptyList[Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]] =
     NonEmptyList(
@@ -102,24 +103,24 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
         SandboxAssets.assets ++
           Shaders.assets ++
           Archetype.assets
-      ).withFonts(Fonts.fontInfo)
-        .withSubSystems(
-          FPSCounter[SandboxGameModel](
-            Point(5, 165),
-            BindingKey("fps counter")
-          )
+      ).withFonts(
+        Fonts.fontInfo,
+        TestFont.fontInfo
+      ).withSubSystems(
+        FPSCounter[SandboxGameModel](
+          Point(5, 165),
+          BindingKey("fps counter")
         )
-        .withShaders(
-          Shaders.circle,
-          Shaders.external,
-          Shaders.sea,
-          LegacyEffects.entityShader,
-          Archetype.shader,
-          UVShaders.circle,
-          UVShaders.voronoi,
-          UVShaders.redBlend
-        )
-        .addShaders(Refraction.shaders)
+      ).withShaders(
+        Shaders.circle,
+        Shaders.external,
+        Shaders.sea,
+        LegacyEffects.entityShader,
+        Archetype.shader,
+        UVShaders.circle,
+        UVShaders.voronoi,
+        UVShaders.redBlend
+      ).addShaders(Refraction.shaders)
     )
   }
 

@@ -125,7 +125,25 @@ lazy val sandbox =
         IndigoOptions.defaults
           .withTitle("Sandbox")
           .withBackgroundColor("black")
-          .withAssetDirectory("sandbox/assets/")
+          .withAssetDirectory("sandbox/assets/"),
+      Compile / sourceGenerators += Def.task {
+        IndigoGenerators("example")
+          .embedFont(
+            "TestFont",
+            os.pwd / "sandbox" / "assets" / "fonts" / "pixelated.ttf",
+            indigoplugin.generators
+              .FontOptions(
+                "test font",
+                32,
+                indigoplugin.generators.CharSet.fromUniqueString("The quick brown fox\njumps over the\nlazy dog.")
+              )
+              .withColor(indigoplugin.generators.RGB.White)
+              .withMaxCharactersPerLine(16)
+              .noAntiAliasing,
+            os.pwd / "sandbox" / "assets" / "generated"
+          )
+          .toSourceFiles((Compile / sourceManaged).value)
+      }
     )
 
 lazy val perf =

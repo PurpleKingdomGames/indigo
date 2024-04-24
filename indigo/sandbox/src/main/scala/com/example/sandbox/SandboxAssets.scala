@@ -6,6 +6,9 @@ import indigoextras.effectmaterials.RefractionEntity
 
 object SandboxAssets {
 
+  val testFont: AssetName = AssetName("test font")
+  val testFontMaterial: Material.ImageEffects  = Material.ImageEffects(testFont)
+
   val captainName: AssetName           = AssetName("captain clown nose")
   val captainMaterial: Material.Bitmap = Material.Bitmap(captainName)
 
@@ -71,6 +74,7 @@ object SandboxAssets {
 
   def assets: Set[AssetType] =
     Set(
+      AssetType.Image(testFont, AssetPath("assets/generated/TestFont.png")),
       AssetType.Font(pixelFont, AssetPath(s"assets/fonts/${pixelFont.toString}.woff2")),
       AssetType.Image(smallFontName, AssetPath("assets/boxy_font.png")),
       AssetType.Image(light, AssetPath("assets/light_texture.png")),
