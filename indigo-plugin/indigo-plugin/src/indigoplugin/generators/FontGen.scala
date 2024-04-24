@@ -2,14 +2,30 @@ package indigoplugin.generators
 
 import scala.annotation.tailrec
 
+/** Provides functionality for generating font images and associated FontInfo instances.
+  */
 object FontGen {
 
   def generate(
       moduleName: String,
       fullyQualifiedPackage: String,
       fontFilePath: os.Path,
-      fontOptions: FontOptions
+      fontOptions: FontOptions,
+      imageOut: os.Path
   ): os.Path => Seq[os.Path] = outDir => {
+
+    // Some director sanity checking...
+    if (!os.exists(imageOut)) {
+      throw new Exception(
+        s"The supplied path to the output directory for the font-sheet image does not exist: ${imageOut.toString}"
+      )
+    } else if (!os.isDir(imageOut)) {
+      throw new Exception(
+        s"The supplied path to the output directory for the font-sheet image is not a directory: ${imageOut.toString}"
+      )
+    } else {
+      //
+    }
 
     val wd = outDir / Generators.OutputDirName
 
@@ -20,12 +36,22 @@ object FontGen {
     val helper = FontAWTHelper.makeHelper(fontFilePath.toIO, fontOptions.fontSize)
 
     // Process into laid out details
+    val initialCharDetails =
+      fontOptions.charSet.toCharacterCodes.map { c =>
+        val (w, h, a) = helper.getCharBounds(c.toChar)
+        CharDetail(c.toChar, c, 0, 0, w, h, a)
+      }.toList
+
+    val filteredCharDetails =
+      initialCharDetails
+        .filter(cd => filterUnsupportedChars(cd.char, cd.code))
+
+    if (initialCharDetails.length > filteredCharDetails.length)
+      println("WARNING: Some unsupported characters were filtered out.")
+
     val charDetails =
       layout(
-        fontOptions.charSet.toCharacterCodes.map { c =>
-          val (w, h, a) = helper.getCharBounds(c.toChar)
-          CharDetail(c.toChar, c, 0, 0, w, h, a)
-        }.toList,
+        filteredCharDetails,
         helper.getBaselineOffset,
         fontOptions.maxCharactersPerLine
       )
@@ -43,13 +69,13 @@ object FontGen {
     os.write.over(file, fontInfo)
 
     // Write out font image
-    val outImageFileName = sanitiseName(fontOptions.fontKey, "png") + ".png"
+    val outImageFileName = s"$moduleName.png"
 
-    helper.drawFontSheet((wd / outImageFileName).toIO, charDetails, sheetWidth, sheetHeight, fontOptions)
+    helper.drawFontSheet((imageOut / outImageFileName).toIO, charDetails, sheetWidth, sheetHeight, fontOptions)
 
     Seq(
       file,
-      wd / outImageFileName
+      imageOut / outImageFileName
     )
   }
 
@@ -109,6 +135,11 @@ object FontGen {
       .mkString("\n")
       .dropRight(1) // Drops the last ','
 
+    val dx = default.x.toString
+    val dy = default.y.toString
+    val dw = default.width.toString
+    val dh = default.height.toString
+
     s"""package $fullyQualifiedPackage
     |
     |import indigo.*
@@ -123,7 +154,7 @@ object FontGen {
     |      fontKey,
     |      $sheetWidth,
     |      $sheetHeight,
-    |      FontChar("${default.char.toString()}", 0, 0, ${default.width.toString}, ${default.height.toString})
+    |      FontChar("${default.char.toString()}", $dx, $dy, $dw, $dh)
     |    ).isCaseSensitive
     |      .addChars(
     |        Batch(
@@ -138,7 +169,7 @@ object FontGen {
   def toFontChar(
       charDetail: CharDetail
   ): String = {
-    val c = escapeChar(charDetail.char, charDetail.code)
+    val c = escapeChar(charDetail.char)
     val x = charDetail.x.toString()
     val y = charDetail.y.toString()
     val w = charDetail.width.toString()
@@ -147,18 +178,24 @@ object FontGen {
     s"""FontChar("$c", $x, $y, $w, $h)"""
   }
 
-  def escapeChar(c: Char, code: Int): String =
+  def filterUnsupportedChars(c: Char, code: Int): Boolean =
     c match {
-      case '\\'            => "\\\\"
-      case '\n'            => "\\n"
-      case '\t'            => "\\t"
-      case '\b'            => "\\b"
-      case '\r'            => "\\r"
-      case '\f'            => "\\f"
-      case '\"'            => "\\\""
-      case '\''            => "\\'"
-      case _ if code == 26 => "\\u001A"
-      case _               => c.toString
+      case '\n'            => false
+      case '\t'            => false
+      case '\b'            => false
+      case '\r'            => false
+      case '\f'            => false
+      case _ if code == 0  => false
+      case _ if code == 26 => false
+      case _               => true
+    }
+
+  def escapeChar(c: Char): String =
+    c match {
+      case '\\' => "\\\\"
+      case '\"' => "\\\""
+      case '\'' => "\\'"
+      case _    => c.toString
     }
 
   def charCodesToRanges(charCodes: List[Int]): List[FromTo] = {
