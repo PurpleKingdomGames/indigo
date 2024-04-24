@@ -73,10 +73,7 @@ object FontGen {
 
     helper.drawFontSheet((imageOut / outImageFileName).toIO, charDetails, sheetWidth, sheetHeight, fontOptions)
 
-    Seq(
-      file,
-      imageOut / outImageFileName
-    )
+    Seq(file)
   }
 
   def sanitiseName(name: String, ext: String): String = {

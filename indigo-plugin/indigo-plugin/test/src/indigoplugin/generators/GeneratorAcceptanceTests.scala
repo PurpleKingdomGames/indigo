@@ -24,7 +24,9 @@ class GeneratorAcceptanceTests extends munit.FunSuite {
 
   test("Can generate font bitmap and FontInfo from TTF file") {
 
-    os.makeDir.all(targetDir / Generators.OutputDirName / "images")
+    val imageOutDir = targetDir / Generators.OutputDirName / "images"
+
+    os.makeDir.all(imageOutDir)
 
     val options: FontOptions =
       FontOptions("my font", 16, CharSet.Alphanumeric)
@@ -34,13 +36,13 @@ class GeneratorAcceptanceTests extends munit.FunSuite {
 
     val files =
       IndigoGenerators("com.example.test")
-        .embedFont("MyFont", sourceFontTTF, options, targetDir / Generators.OutputDirName / "images")
+        .embedFont("MyFont", sourceFontTTF, options, imageOutDir)
         .toSourcePaths(targetDir)
 
     files.toList match {
-      case fontInfo :: png :: Nil =>
+      case fontInfo :: Nil =>
         assert(os.exists(fontInfo))
-        assert(os.exists(png))
+        assert(os.exists(imageOutDir / "MyFont.png"))
 
       case _ =>
         fail(
