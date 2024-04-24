@@ -282,11 +282,15 @@ final case class IndigoGenerators(fullyQualifiedPackageName: String, sources: Se
     *   The path to the font file, e.g. a TrueType *.ttf file
     * @param fontOptions
     *   Parameters for the font, such as its identifier (font key), size, and anti-aliasing.
+    * @param imageOut
+    *   The destination directory for the font-sheet image to be written into, typically somewhere in your assets
+    *   directory so that your game can load it.
     */
   def embedFont(
       moduleName: String,
       font: os.Path,
-      fontOptions: FontOptions
+      fontOptions: FontOptions,
+      imageOut: os.Path
   ): IndigoGenerators =
     this.copy(
       sources = sources :+
@@ -294,7 +298,8 @@ final case class IndigoGenerators(fullyQualifiedPackageName: String, sources: Se
           moduleName,
           fullyQualifiedPackageName,
           font,
-          fontOptions
+          fontOptions,
+          imageOut
         )
     )
 
