@@ -5,6 +5,7 @@ import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
 import com.example.sandbox.SandboxViewModel
+import example.TestFont
 import indigo._
 import indigo.scenes._
 
@@ -53,7 +54,9 @@ object TextScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxView
         Layer(
           Batch(
             Text("The quick brown fox\njumps over the\nlazy dog.", Fonts.fontKey, textMaterial)
-              .moveTo(10, 10)
+              .moveTo(10, 10),
+            Text("The quick brown fox\njumps over the\nlazy dog.", TestFont.fontKey, SandboxAssets.testFontMaterial)
+              .moveTo(10, 100)
           )
         ).withMagnification(1)
       )
