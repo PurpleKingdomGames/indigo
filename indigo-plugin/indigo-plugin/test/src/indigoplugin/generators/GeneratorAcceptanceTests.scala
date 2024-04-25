@@ -1,6 +1,9 @@
 package indigoplugin.generators
 
 import indigoplugin.IndigoGenerators
+import indigoplugin.FontOptions
+import indigoplugin.CharSet
+import indigoplugin.RGB
 
 class GeneratorAcceptanceTests extends munit.FunSuite {
 

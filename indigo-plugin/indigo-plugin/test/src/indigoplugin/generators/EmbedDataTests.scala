@@ -1,5 +1,7 @@
 package indigoplugin.generators
 
+import indigoplugin.DataType
+
 class EmbedDataTests extends munit.FunSuite {
 
   test("Create a DataFrame") {

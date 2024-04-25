@@ -131,13 +131,12 @@ lazy val sandbox =
           .embedFont(
             "TestFont",
             os.pwd / "sandbox" / "assets" / "fonts" / "pixelated.ttf",
-            indigoplugin.generators
-              .FontOptions(
+              FontOptions(
                 "test font",
                 32,
-                indigoplugin.generators.CharSet.fromUniqueString("The quick brown fox\njumps over the\nlazy dog.")
+                CharSet.fromUniqueString("The quick brown fox\njumps over the\nlazy dog.")
               )
-              .withColor(indigoplugin.generators.RGB.White)
+              .withColor(RGB.White)
               .withMaxCharactersPerLine(16)
               .noAntiAliasing,
             os.pwd / "sandbox" / "assets" / "generated"
