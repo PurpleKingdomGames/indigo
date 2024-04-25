@@ -47,8 +47,8 @@ object FontGen {
       initialCharDetails
         .filter(cd => filterUnsupportedChars(cd.char, cd.code))
 
-    if (initialCharDetails.length > filteredCharDetails.length)
-      println("WARNING: Some unsupported characters were filtered out.")
+    // if (initialCharDetails.length > filteredCharDetails.length)
+    // println("WARNING: Some unsupported characters were filtered out.")
 
     val charDetails =
       layout(
