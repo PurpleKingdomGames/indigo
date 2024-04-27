@@ -57,22 +57,23 @@ enum Layer derives CanEqual:
       depth: Option[Depth],
       visible: Option[Boolean],
       blending: Option[Blending],
+      cloneBlanks: Batch[CloneBlank],
       camera: Option[Camera]
   )
 
-  /** Apply a magnification to this content layer, or all of the layers in this stack.
+  /** Apply a magnification to this layer and all it's child layers
     *
     * @param level
     */
-  def withMagnification(level: Int): Layer =
+  def withMagnificationForAll(level: Int): Layer =
     this match
       case l: Layer.Stack =>
         l.copy(
-          layers = l.layers.map(_.withMagnification(level))
+          layers = l.layers.map(_.withMagnificationForAll(level))
         )
 
       case l: Layer.Content =>
-        l.copy(magnification = Option(Math.max(1, Math.min(256, level))))
+        l.withMagnification(level)
 
   def toBatch: Batch[Layer.Content] =
     @tailrec
@@ -88,6 +89,23 @@ enum Layer derives CanEqual:
 
           case l: Layer.Content =>
             rec(t, acc :+ l)
+
+    rec(Batch(this), Batch.empty)
+
+  def gatherCloneBlanks: Batch[CloneBlank] =
+    @tailrec
+    def rec(remaining: Batch[Layer], acc: Batch[CloneBlank]): Batch[CloneBlank] =
+      if remaining.isEmpty then acc
+      else
+        val h = remaining.head
+        val t = remaining.tail
+
+        h match
+          case Layer.Stack(layers) =>
+            rec(layers ++ t, acc)
+
+          case l: Layer.Content =>
+            rec(t, acc ++ l.cloneBlanks)
 
     rec(Batch(this), Batch.empty)
 
@@ -116,16 +134,16 @@ object Layer:
   object Content:
 
     val empty: Layer.Content =
-      Layer.Content(Batch.empty, Batch.empty, None, None, None, None, None)
+      Layer.Content(Batch.empty, Batch.empty, None, None, None, None, Batch.empty, None)
 
     def apply(nodes: SceneNode*): Layer.Content =
-      Layer.Content(Batch.fromSeq(nodes), Batch.empty, None, None, None, None, None)
+      Layer.Content(Batch.fromSeq(nodes), Batch.empty, None, None, None, None, Batch.empty, None)
 
     def apply(nodes: Batch[SceneNode]): Layer.Content =
-      Layer.Content(nodes, Batch.empty, None, None, None, None, None)
+      Layer.Content(nodes, Batch.empty, None, None, None, None, Batch.empty, None)
 
     def apply(maybeNode: Option[SceneNode]): Layer.Content =
-      Layer.Content(Batch.fromOption(maybeNode), Batch.empty, None, None, None, None, None)
+      Layer.Content(Batch.fromOption(maybeNode), Batch.empty, None, None, None, None, Batch.empty, None)
 
   extension (ls: Layer.Stack)
     def combine(other: Layer.Stack): Layer.Stack =
@@ -155,6 +173,7 @@ object Layer:
       a.depth.orElse(b.depth),
       a.visible.orElse(b.visible),
       a.blending.orElse(b.blending),
+      a.cloneBlanks ++ b.cloneBlanks,
       a.camera.orElse(b.camera)
     )
 
@@ -217,6 +236,23 @@ object Layer:
       lc.copy(camera = Option(modifier(lc.camera.getOrElse(Camera.default))))
     def noCamera: Layer.Content =
       lc.copy(camera = None)
+
+    def withCloneBlanks(blanks: Batch[CloneBlank]): Layer.Content =
+      lc.copy(cloneBlanks = blanks)
+    def withCloneBlanks(blanks: CloneBlank*): Layer.Content =
+      lc.withCloneBlanks(Batch.fromSeq(blanks))
+
+    def addCloneBlanks(blanks: Batch[CloneBlank]): Layer.Content =
+      lc.copy(cloneBlanks = lc.cloneBlanks ++ blanks)
+    def addCloneBlanks(blanks: CloneBlank*): Layer.Content =
+      lc.addCloneBlanks(Batch.fromSeq(blanks))
+
+    /** Apply a magnification to this content layer
+      *
+      * @param level
+      */
+    def withMagnification(level: Int): Layer.Content =
+      lc.copy(magnification = Option(Math.max(1, Math.min(256, level))))
 
     def ::(stack: Layer.Stack): Layer.Stack =
       stack.prepend(lc)

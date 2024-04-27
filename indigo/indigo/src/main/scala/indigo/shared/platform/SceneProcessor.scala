@@ -4,6 +4,7 @@ import indigo.shared.AnimationsRegister
 import indigo.shared.BoundaryLocator
 import indigo.shared.FontRegister
 import indigo.shared.QuickCache
+import indigo.shared.collections.Batch
 import indigo.shared.config.RenderingTechnology
 import indigo.shared.datatypes.Depth
 import indigo.shared.datatypes.RGBA
@@ -94,8 +95,11 @@ final class SceneProcessor(
         case _ =>
           None
 
+    val gatheredCloneBlanks: Batch[CloneBlank] =
+      scene.cloneBlanks ++ scene.layers.flatMap(_.layer.gatherCloneBlanks)
+
     val cloneBlankDisplayObjects: scalajs.js.Dictionary[DisplayObject] =
-      scene.cloneBlanks.foldLeft(scalajs.js.Dictionary.empty[DisplayObject]) { (acc, blank) =>
+      gatheredCloneBlanks.foldLeft(scalajs.js.Dictionary.empty[DisplayObject]) { (acc, blank) =>
         val maybeDO =
           if blank.isStatic then
             QuickCache(blank.id.toString) {
