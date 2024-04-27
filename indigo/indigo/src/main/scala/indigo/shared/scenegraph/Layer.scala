@@ -131,17 +131,21 @@ object Layer:
     def combine(other: Layer.Stack): Layer.Stack =
       ls.copy(layers = ls.layers ++ other.layers)
     def ++(other: Layer.Stack): Layer.Stack =
-      ls.copy(layers = ls.layers ++ other.layers)
+      ls.combine(other)
 
-    def append(content: Layer.Content): Layer.Stack =
-      ls.copy(layers = ls.layers :+ content)
-    def :+(content: Layer.Content): Layer.Stack =
-      ls.append(content)
+    def append(layer: Layer): Layer.Stack =
+      ls.copy(layers = ls.layers :+ layer)
+    def :+(layer: Layer): Layer.Stack =
+      ls.append(layer)
+    def append(layers: Batch[Layer]): Layer.Stack =
+      ls.copy(layers = ls.layers ++ layers)
+    def ++(layers: Batch[Layer]): Layer.Stack =
+      ls.append(layers)
 
-    def prepend(content: Layer.Content): Layer.Stack =
-      ls.copy(layers = content :: ls.layers)
-    def cons(content: Layer.Content): Layer.Stack =
-      ls.prepend(content)
+    def prepend(layer: Layer): Layer.Stack =
+      ls.copy(layers = layer :: ls.layers)
+    def cons(layer: Layer): Layer.Stack =
+      ls.prepend(layer)
 
   def mergeContentLayers(a: Layer.Content, b: Layer.Content): Layer.Content =
     a.copy(

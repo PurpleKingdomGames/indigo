@@ -55,4 +55,31 @@ class LayerTests extends munit.FunSuite {
         fail("match failed")
   }
 
+  test("Layer.Stack combine ops") {
+    assertEquals(
+      Layer.Stack(Layer.Content.empty).combine(Layer.Stack(Layer.Content.empty)),
+      Layer.Stack(Layer.Content.empty, Layer.Content.empty)
+    )
+    assertEquals(
+      Layer.Stack(Layer.Content.empty) ++ Layer.Stack(Layer.Content.empty),
+      Layer.Stack(Layer.Content.empty, Layer.Content.empty)
+    )
+    assertEquals(
+      Layer.Stack(Layer.Content.empty) ++ Batch(Layer.Content.empty),
+      Layer.Stack(Layer.Content.empty, Layer.Content.empty)
+    )
+    assertEquals(
+      Layer.Stack(Layer.Content.empty) :+ Layer.Content.empty,
+      Layer.Stack(Layer.Content.empty, Layer.Content.empty)
+    )
+    assertEquals(
+      Layer.Content.empty +: Layer.Stack(Layer.Content.empty),
+      Layer.Stack(Layer.Content.empty, Layer.Content.empty)
+    )
+    assertEquals(
+      Layer.Content.empty :: Layer.Stack(Layer.Content.empty),
+      Layer.Stack(Layer.Content.empty, Layer.Content.empty)
+    )
+  }
+
 }
