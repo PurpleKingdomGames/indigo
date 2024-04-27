@@ -114,11 +114,15 @@ final case class SceneUpdateFragment(
   def withAudio(sceneAudio: SceneAudio): SceneUpdateFragment =
     this.copy(audio = Some(sceneAudio))
 
-  def addCloneBlanks(blanks: CloneBlank*): SceneUpdateFragment =
-    addCloneBlanks(blanks.toBatch)
+  def withCloneBlanks(blanks: Batch[CloneBlank]): SceneUpdateFragment =
+    this.copy(cloneBlanks = blanks)
+  def withCloneBlanks(blanks: CloneBlank*): SceneUpdateFragment =
+    withCloneBlanks(blanks.toBatch)
 
   def addCloneBlanks(blanks: Batch[CloneBlank]): SceneUpdateFragment =
     this.copy(cloneBlanks = cloneBlanks ++ blanks)
+  def addCloneBlanks(blanks: CloneBlank*): SceneUpdateFragment =
+    addCloneBlanks(blanks.toBatch)
 
   def withBlendMaterial(newBlendMaterial: BlendMaterial): SceneUpdateFragment =
     this.copy(blendMaterial = Option(newBlendMaterial))
@@ -127,7 +131,7 @@ final case class SceneUpdateFragment(
 
   def withMagnification(level: Int): SceneUpdateFragment =
     this.copy(
-      layers = layers.map(_.withMagnification(level))
+      layers = layers.map(_.withMagnificationForAll(level))
     )
 
   def withCamera(newCamera: Camera): SceneUpdateFragment =

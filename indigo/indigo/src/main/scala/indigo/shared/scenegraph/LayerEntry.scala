@@ -38,10 +38,14 @@ enum LayerEntry:
       case l: LayerEntry.Untagged => l.copy(layer = f(l.layer))
       case l: LayerEntry.Tagged   => l.copy(layer = f(l.layer))
 
-  def withMagnification(level: Int): LayerEntry =
+  /** Apply a magnification to this layer entry's layer, and all it's child layers.
+    *
+    * @param level
+    */
+  def withMagnificationForAll(level: Int): LayerEntry =
     this match
-      case l: LayerEntry.Untagged => l.copy(layer = l.layer.withMagnification(level))
-      case l: LayerEntry.Tagged   => l.copy(layer = l.layer.withMagnification(level))
+      case l: LayerEntry.Untagged => l.copy(layer = l.layer.withMagnificationForAll(level))
+      case l: LayerEntry.Tagged   => l.copy(layer = l.layer.withMagnificationForAll(level))
 
   def toBatch: Batch[Layer.Content] =
     layer.toBatch
