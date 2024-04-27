@@ -165,7 +165,7 @@ class SceneUpdateFragmentTests extends munit.FunSuite {
           fail("Should have been a tagged layer entry")
 
         case l @ LayerEntry.Tagged(key, layer) =>
-          l.withTag(BindingKey(key.toString + "?")).withMagnification(2)
+          l.withTag(BindingKey(key.toString + "?")).withMagnificationForAll(2)
       }
 
     assert(actual.layers.flatMap(_.toBatch).length == 2)
