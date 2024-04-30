@@ -216,20 +216,20 @@
         <div id="mdoc-html-run4" data-mdoc-js></div>
         <p>However, you may want to merge scenes and have all the elements end up on the same layer, in which case you need to name the layers:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">val</span><span> </span><span class="identifier">c</span><span> = </span><span class="type-name">SceneUpdateFragment</span><span>(
-  </span><span class="type-name">Layer</span><span>(</span><span class="type-name">BindingKey</span><span>(</span><span class="string-literal">&quot;my layer&quot;</span><span>), </span><span class="identifier">graphicA</span><span>, </span><span class="identifier">graphicA</span><span>, </span><span class="identifier">graphicA</span><span>)
+  </span><span class="type-name">BindingKey</span><span>(</span><span class="string-literal">&quot;my layer&quot;</span><span>) -&gt; </span><span class="type-name">Layer</span><span>(</span><span class="identifier">graphicA</span><span>, </span><span class="identifier">graphicA</span><span>, </span><span class="identifier">graphicA</span><span>)
 )
 </span><span class="keyword">val</span><span> </span><span class="identifier">d</span><span> = </span><span class="type-name">SceneUpdateFragment</span><span>(
-  </span><span class="type-name">Layer</span><span>(</span><span class="type-name">BindingKey</span><span>(</span><span class="string-literal">&quot;my layer&quot;</span><span>), </span><span class="identifier">graphicB</span><span>, </span><span class="identifier">graphicB</span><span>, </span><span class="identifier">graphicB</span><span>)
+  </span><span class="type-name">BindingKey</span><span>(</span><span class="string-literal">&quot;my layer&quot;</span><span>) -&gt; </span><span class="type-name">Layer</span><span>(</span><span class="identifier">graphicB</span><span>, </span><span class="identifier">graphicB</span><span>, </span><span class="identifier">graphicB</span><span>)
 )
 
 </span><span class="identifier">c</span><span> |+| </span><span class="identifier">d</span></code></pre>
         <div id="mdoc-html-run5" data-mdoc-js></div>
         <p>Results in:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="type-name">SceneUpdateFragment</span><span>(
-  </span><span class="type-name">Layer</span><span>(
-    </span><span class="type-name">BindingKey</span><span>(</span><span class="string-literal">&quot;my layer&quot;</span><span>),
-    </span><span class="type-name">Batch</span><span>(</span><span class="identifier">graphicA</span><span>, </span><span class="identifier">graphicA</span><span>, </span><span class="identifier">graphicA</span><span>, </span><span class="identifier">graphicB</span><span>, </span><span class="identifier">graphicB</span><span>, </span><span class="identifier">graphicB</span><span>)
-  )
+  </span><span class="type-name">BindingKey</span><span>(</span><span class="string-literal">&quot;my layer&quot;</span><span>) -&gt;
+    </span><span class="type-name">Layer</span><span>.</span><span class="type-name">Content</span><span>(
+      </span><span class="type-name">Batch</span><span>(</span><span class="identifier">graphicA</span><span>, </span><span class="identifier">graphicA</span><span>, </span><span class="identifier">graphicA</span><span>, </span><span class="identifier">graphicB</span><span>, </span><span class="identifier">graphicB</span><span>, </span><span class="identifier">graphicB</span><span>)
+    )
 )</span></code></pre>
         <div id="mdoc-html-run6" data-mdoc-js></div>
         <p>Layers can be merged to!</p>

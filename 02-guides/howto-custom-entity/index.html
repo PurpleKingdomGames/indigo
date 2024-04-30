@@ -254,7 +254,7 @@
         <p>To use this shiny new entity, we have to do two things:</p>
         <p>First, tell indigo about the new shader:</p>
         <p>In the sandbox this would be a game field just like assets and fonts, i.e. <code>val shaders: Set[Shader] = Set(MyColoredEntity.shader)</code>, and there is an equivalent for the <code>BootResult</code> type as follows:</p>
-        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">boot</span><span>(</span><span class="identifier">flags</span><span>: </span><span class="type-name">Map</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">String</span><span>]): </span><span class="type-name">Outcome</span><span>[</span><span class="type-name">BootResult</span><span>[</span><span class="type-name">Unit</span><span>]] =
+        <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">boot</span><span>(</span><span class="identifier">flags</span><span>: </span><span class="type-name">Map</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">String</span><span>]): </span><span class="type-name">Outcome</span><span>[</span><span class="type-name">BootResult</span><span>[</span><span class="type-name">Unit</span><span>, </span><span class="type-name">Unit</span><span>]] =
   </span><span class="type-name">Outcome</span><span>(
     </span><span class="type-name">BootResult</span><span>
       .</span><span class="identifier">noData</span><span>(</span><span class="type-name">GameConfig</span><span>.</span><span class="keyword">default</span><span>)

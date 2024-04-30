@@ -189,7 +189,7 @@
 
 </span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">BootData</span><span>(</span><span class="identifier">myData</span><span>: </span><span class="type-name">String</span><span>)
 
-</span><span class="keyword">def</span><span> </span><span class="declaration-name">boot</span><span>(</span><span class="identifier">flags</span><span>: </span><span class="type-name">Map</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">String</span><span>]): </span><span class="type-name">Outcome</span><span>[</span><span class="type-name">BootResult</span><span>[</span><span class="type-name">BootData</span><span>]] = ???</span></code></pre>
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">boot</span><span>(</span><span class="identifier">flags</span><span>: </span><span class="type-name">Map</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">String</span><span>]): </span><span class="type-name">Outcome</span><span>[</span><span class="type-name">BootResult</span><span>[</span><span class="type-name">BootData</span><span>, </span><span class="type-name">Unit</span><span>]] = ???</span></code></pre>
         
         <h4 id="flags" class="section"><a class="anchor-link left" href="#flags"><i class="icofont-laika link">&#xef71;</i></a>Flags</h4>
         <blockquote>Flags are an opportunity to change your games settings based on the environment in which it is being run.</blockquote>
@@ -199,7 +199,7 @@
         <p>Well we use a flag, like this:</p>
         <pre class="keep-together pdf epub"><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">indigo</span><span>.*
 
-</span><span class="keyword">def</span><span> </span><span class="declaration-name">boot</span><span>(</span><span class="identifier">flags</span><span>: </span><span class="type-name">Map</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">String</span><span>]): </span><span class="type-name">Outcome</span><span>[</span><span class="type-name">BootResult</span><span>[</span><span class="type-name">GameViewport</span><span>]] = {
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">boot</span><span>(</span><span class="identifier">flags</span><span>: </span><span class="type-name">Map</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">String</span><span>]): </span><span class="type-name">Outcome</span><span>[</span><span class="type-name">BootResult</span><span>[</span><span class="type-name">GameViewport</span><span>, </span><span class="type-name">Unit</span><span>]] = {
   </span><span class="keyword">val</span><span> </span><span class="identifier">assetPath</span><span>: </span><span class="type-name">String</span><span> =
     </span><span class="identifier">flags</span><span>.</span><span class="identifier">getOrElse</span><span>(</span><span class="string-literal">&quot;baseUrl&quot;</span><span>, </span><span class="string-literal">&quot;&quot;</span><span>)
 

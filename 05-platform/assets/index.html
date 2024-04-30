@@ -217,7 +217,7 @@
   )
 
 </span><span class="comment">// Or if you&#39;re using the IndigoDemo` or `IndigoGame` entry points
-</span><span class="keyword">def</span><span> </span><span class="declaration-name">boot</span><span>(</span><span class="identifier">flags</span><span>: </span><span class="type-name">Map</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">String</span><span>]): </span><span class="type-name">BootResult</span><span>[</span><span class="type-name">Unit</span><span>] =
+</span><span class="keyword">def</span><span> </span><span class="declaration-name">boot</span><span>(</span><span class="identifier">flags</span><span>: </span><span class="type-name">Map</span><span>[</span><span class="type-name">String</span><span>, </span><span class="type-name">String</span><span>]): </span><span class="type-name">BootResult</span><span>[</span><span class="type-name">Unit</span><span>, </span><span class="type-name">Unit</span><span>] =
   </span><span class="type-name">BootResult</span><span>.</span><span class="identifier">noData</span><span>(</span><span class="type-name">GameConfig</span><span>.</span><span class="keyword">default</span><span>)
     .</span><span class="identifier">withAssets</span><span>(
       </span><span class="type-name">Set</span><span>(

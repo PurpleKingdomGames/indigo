@@ -174,9 +174,10 @@
         <blockquote><a href="https://github.com/PurpleKingdomGames/indigo-examples/blob/master/demos/pirate/src/main/scala/pirate/scenes/level/subsystems/CloudsSubSystem.scala">&quot;The Cursed Pirate&quot;</a> uses an alternative and arguable cleaner SubSystem construction method than the one below.</blockquote>
         <pre><code class="nohighlight"><span class="keyword">import</span><span> </span><span class="identifier">indigo</span><span>.*
 
-</span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">PointsTrackerExample</span><span>(</span><span class="identifier">startingPoints</span><span>: </span><span class="type-name">Int</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">SubSystem</span><span>:
+</span><span class="keyword">final</span><span> </span><span class="keyword">case</span><span> </span><span class="keyword">class</span><span> </span><span class="type-name">PointsTrackerExample</span><span>(</span><span class="identifier">startingPoints</span><span>: </span><span class="type-name">Int</span><span>) </span><span class="keyword">extends</span><span> </span><span class="type-name">SubSystem</span><span>[</span><span class="type-name">Unit</span><span>]:
   </span><span class="keyword">type</span><span> </span><span class="type-name">EventType</span><span>      = </span><span class="type-name">PointsTrackerEvent</span><span>
   </span><span class="keyword">type</span><span> </span><span class="type-name">SubSystemModel</span><span> = </span><span class="type-name">Int</span><span>
+  </span><span class="keyword">type</span><span> </span><span class="type-name">ReferenceData</span><span>  = </span><span class="type-name">Unit</span><span>
 
   </span><span class="keyword">val</span><span> </span><span class="identifier">id</span><span>: </span><span class="type-name">SubSystemId</span><span> = </span><span class="type-name">SubSystemId</span><span>(</span><span class="string-literal">&quot;points tracker&quot;</span><span>)
 
@@ -185,10 +186,12 @@
     </span><span class="keyword">case</span><span> </span><span class="identifier">_</span><span>                                =&gt; </span><span class="type-name">None</span><span>
   }
 
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">reference</span><span>(</span><span class="identifier">model</span><span>: </span><span class="type-name">Unit</span><span>): </span><span class="type-name">Unit</span><span> = ()
+
   </span><span class="keyword">def</span><span> </span><span class="declaration-name">initialModel</span><span>: </span><span class="type-name">Outcome</span><span>[</span><span class="type-name">Int</span><span>] =
     </span><span class="type-name">Outcome</span><span>(</span><span class="identifier">startingPoints</span><span>)
 
-  </span><span class="keyword">def</span><span> </span><span class="declaration-name">update</span><span>(</span><span class="identifier">context</span><span>: </span><span class="type-name">SubSystemFrameContext</span><span>, </span><span class="identifier">points</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">PointsTrackerEvent</span><span> =&gt; </span><span class="type-name">Outcome</span><span>[</span><span class="type-name">Int</span><span>] = {
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">update</span><span>(</span><span class="identifier">context</span><span>: </span><span class="type-name">SubSystemFrameContext</span><span>[</span><span class="type-name">Unit</span><span>], </span><span class="identifier">points</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">PointsTrackerEvent</span><span> =&gt; </span><span class="type-name">Outcome</span><span>[</span><span class="type-name">Int</span><span>] = {
     </span><span class="keyword">case</span><span> </span><span class="type-name">PointsTrackerEvent</span><span>.</span><span class="type-name">Add</span><span>(</span><span class="identifier">pts</span><span>) =&gt;
       </span><span class="type-name">Outcome</span><span>(</span><span class="identifier">points</span><span> + </span><span class="identifier">pts</span><span>)
 
@@ -197,7 +200,7 @@
         .</span><span class="identifier">addGlobalEvents</span><span>(</span><span class="type-name">GameOver</span><span>)
   }
 
-  </span><span class="keyword">def</span><span> </span><span class="declaration-name">present</span><span>(</span><span class="identifier">context</span><span>: </span><span class="type-name">SubSystemFrameContext</span><span>, </span><span class="identifier">points</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">Outcome</span><span>[</span><span class="type-name">SceneUpdateFragment</span><span>] =
+  </span><span class="keyword">def</span><span> </span><span class="declaration-name">present</span><span>(</span><span class="identifier">context</span><span>: </span><span class="type-name">SubSystemFrameContext</span><span>[</span><span class="type-name">Unit</span><span>], </span><span class="identifier">points</span><span>: </span><span class="type-name">Int</span><span>): </span><span class="type-name">Outcome</span><span>[</span><span class="type-name">SceneUpdateFragment</span><span>] =
     </span><span class="type-name">Outcome</span><span>(
       </span><span class="type-name">SceneUpdateFragment</span><span>(</span><span class="type-name">Text</span><span>(</span><span class="identifier">points</span><span>.</span><span class="identifier">toString</span><span>, </span><span class="type-name">FontKey</span><span>(</span><span class="string-literal">&quot;&quot;</span><span>), </span><span class="type-name">Material</span><span>.</span><span class="type-name">Bitmap</span><span>(</span><span class="type-name">AssetName</span><span>(</span><span class="string-literal">&quot;font&quot;</span><span>))))
     )

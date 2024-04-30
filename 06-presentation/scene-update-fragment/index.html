@@ -173,7 +173,7 @@
     .</span><span class="identifier">withLighting</span><span>(</span><span class="type-name">LightingModel</span><span>.</span><span class="type-name">Lit</span><span>.</span><span class="identifier">flat</span><span>))
 
 </span><span class="type-name">SceneUpdateFragment</span><span>(
-    </span><span class="type-name">Layer</span><span>(</span><span class="type-name">BindingKey</span><span>(</span><span class="string-literal">&quot;game layer&quot;</span><span>), </span><span class="identifier">graphic</span><span>)
+    </span><span class="type-name">BindingKey</span><span>(</span><span class="string-literal">&quot;game layer&quot;</span><span>) -&gt; </span><span class="type-name">Layer</span><span>(</span><span class="identifier">graphic</span><span>)
   )
   .</span><span class="identifier">withLights</span><span>(
     </span><span class="type-name">AmbientLight</span><span>(</span><span class="type-name">RGBA</span><span>.</span><span class="type-name">White</span><span>.</span><span class="identifier">withAmount</span><span>(</span><span class="number-literal">0.25</span><span>)),

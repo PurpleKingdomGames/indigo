@@ -460,7 +460,7 @@ A lot of game engines still talk about radians in terms of PI, but it&#39;s far 
         <pre><code class="nohighlight"><span class="keyword">def</span><span> </span><span class="declaration-name">drawDots</span><span>(
     </span><span class="identifier">center</span><span>: </span><span class="type-name">Point</span><span>,
     </span><span class="identifier">dots</span><span>: </span><span class="type-name">Batch</span><span>[</span><span class="type-name">Dot</span><span>]
-): </span><span class="type-name">Batch</span><span>[</span><span class="type-name">Graphic</span><span>[</span><span class="identifier">_</span><span>]] =
+): </span><span class="type-name">Batch</span><span>[</span><span class="type-name">Graphic</span><span>[?]] =
   </span><span class="identifier">dots</span><span>.</span><span class="identifier">map</span><span> { </span><span class="identifier">dot</span><span> =&gt;
     </span><span class="keyword">val</span><span> </span><span class="identifier">position</span><span> = </span><span class="type-name">Point</span><span>(
       </span><span class="identifier">x</span><span> = (</span><span class="type-name">Math</span><span>.</span><span class="identifier">sin</span><span>(</span><span class="identifier">dot</span><span>.</span><span class="identifier">angle</span><span>.</span><span class="identifier">toDouble</span><span>) * </span><span class="identifier">dot</span><span>.</span><span class="identifier">orbitDistance</span><span> + </span><span class="identifier">center</span><span>.</span><span class="identifier">x</span><span>).</span><span class="identifier">toInt</span><span>,
