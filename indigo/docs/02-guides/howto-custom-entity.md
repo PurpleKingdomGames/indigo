@@ -122,7 +122,7 @@ First, tell indigo about the new shader:
 In the sandbox this would be a game field just like assets and fonts, i.e. `val shaders: Set[Shader] = Set(MyColoredEntity.shader)`, and there is an equivalent for the `BootResult` type as follows:
 
 ```scala mdoc:js
-def boot(flags: Map[String, String]): Outcome[BootResult[Unit]] =
+def boot(flags: Map[String, String]): Outcome[BootResult[Unit, Unit]] =
   Outcome(
     BootResult
       .noData(GameConfig.default)

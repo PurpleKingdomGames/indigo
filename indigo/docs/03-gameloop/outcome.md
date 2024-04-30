@@ -51,7 +51,7 @@ Outcome(10).map(_ * 20)                    // Outcome(200)
 Outcome(10).ap(Outcome((i: Int) => i * 5)) // Outcome(50)
 Outcome(10).flatMap(i => Outcome(i * 20))  // Outcome(200)
 Outcome(10).merge(Outcome(20))(_ + _)      // Outcome(30)
-Outcome("a") combine Outcome("b")          // Outcome(("a", "b"))
+Outcome("a") `combine` Outcome("b")          // Outcome(("a", "b"))
 ```
 
 As mentioned, `Outcome`'s map function is bias towards the state, but you can also modify the events with `mapGlobalEvents`.

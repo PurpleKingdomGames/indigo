@@ -49,7 +49,7 @@ Dynamic lighting changes the scene's lighting as the light moves around. It high
 
 ```scala mdoc:js
 SceneUpdateFragment(
-  Layer(BindingKey("my layer")).withLights(PointLight(Point(100, 100), RGBA.Green))
+  Layer.empty.withLights(PointLight(Point(100, 100), RGBA.Green))
 ).withLights(AmbientLight(RGBA.Blue.withAlpha(0.2)))
 ```
 

@@ -64,7 +64,7 @@ val assets: Set[AssetType] =
   )
 
 // Or if you're using the IndigoDemo` or `IndigoGame` entry points
-def boot(flags: Map[String, String]): BootResult[Unit] =
+def boot(flags: Map[String, String]): BootResult[Unit, Unit] =
   BootResult.noData(GameConfig.default)
     .withAssets(
       Set(

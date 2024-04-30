@@ -435,7 +435,7 @@ val model = Model.initial(Point.zero)
 def drawDots(
     center: Point,
     dots: Batch[Dot]
-): Batch[Graphic[_]] =
+): Batch[Graphic[?]] =
   dots.map { dot =>
     val position = Point(
       x = (Math.sin(dot.angle.toDouble) * dot.orbitDistance + center.x).toInt,

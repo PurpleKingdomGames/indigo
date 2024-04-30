@@ -43,7 +43,7 @@ Camera.LookAt(Point(10, 10), Zoom.x2, Radians.fromDegrees(45))
 Cameras can be optionally added to your `SceneUpdateFragment`s or `Layer`s, e.g.:
 
 ```scala mdoc:js
-Layer(BindingKey("my layer"))
+Layer.empty
   .withCamera(Camera.LookAt(Point(10, 10), Zoom.x2, Radians.fromDegrees(45)))
 ```
 
@@ -72,8 +72,8 @@ val sceneB = SceneUpdateFragment.empty.withCamera(Camera.LookAt(Point(20, 20)))
 ..where as here, the camera in `layerA` looking at position `Point(10, 10)` is selected.
 
 ```scala mdoc:js
-val layerA = Layer(BindingKey("Layer A")).withCamera(Camera.LookAt(Point(10, 10)))
-val layerB = Layer(BindingKey("Layer B")).withCamera(Camera.LookAt(Point(20, 20)))
+val layerA = Layer.empty.withCamera(Camera.LookAt(Point(10, 10)))
+val layerB = Layer.empty.withCamera(Camera.LookAt(Point(20, 20)))
 ```
 
 ```scala

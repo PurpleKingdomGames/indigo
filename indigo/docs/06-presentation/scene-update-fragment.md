@@ -12,7 +12,7 @@ val graphic =
     .withLighting(LightingModel.Lit.flat))
 
 SceneUpdateFragment(
-    Layer(BindingKey("game layer"), graphic)
+    BindingKey("game layer") -> Layer(graphic)
   )
   .withLights(
     AmbientLight(RGBA.White.withAmount(0.25)),

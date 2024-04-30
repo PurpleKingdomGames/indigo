@@ -65,7 +65,7 @@ trait Scene[StartUpData, GameModel, ViewModel] derives CanEqual {
   def modelLens: Lens[GameModel, SceneModel]
   def viewModelLens: Lens[ViewModel, SceneViewModel]
   def eventFilters: EventFilters
-  def subSystems: Set[SubSystem]
+  def subSystems: Set[SubSystem[GameModel]]
 
   def updateModel(context: SceneContext[StartUpData], model: SceneModel): GlobalEvent => Outcome[SceneModel]
   def updateViewModel(context: SceneContext[StartUpData], model: SceneModel, viewModel: SceneViewModel): GlobalEvent => Outcome[SceneViewModel]
@@ -164,7 +164,7 @@ object LevelScene extends Scene[Unit, DungeonGameModel, Unit]:
   def modelLens: Lens[DungeonGameModel, LevelModel] = Lens(_.level, (m, lvl) => m.copy(level = lvl))
   def viewModelLens: Lens[Unit, Unit] = Lens.unit
   def name: SceneName = SceneName("level")
-  def subSystems: Set[SubSystem] = Set()
+  def subSystems: Set[SubSystem[DungeonGameModel]] = Set()
 
   def updateModel(context: SceneContext[Unit], model: LevelModel): GlobalEvent => Outcome[LevelModel] =
     _ => Outcome(model.copy(health = model.health + 1)) // On any event, increase health!
@@ -228,7 +228,7 @@ val inventory     = Inventory(Weapons(Sword(1)))
 val betterSword   = Sword(2)
 
 val mySwordLens = 
-  inventoryLens andThen weaponsLens // Composing lenses!
+  inventoryLens `andThen` weaponsLens // Composing lenses!
 
 mySwordLens.get(inventory) // a sword
 mySwordLens.set(inventory, betterSword) // an inventory with a better sword in it

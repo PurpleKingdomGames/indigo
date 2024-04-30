@@ -70,10 +70,10 @@ However, you may want to merge scenes and have all the elements end up on the sa
 
 ```scala mdoc:js
 val c = SceneUpdateFragment(
-  Layer(BindingKey("my layer"), graphicA, graphicA, graphicA)
+  BindingKey("my layer") -> Layer(graphicA, graphicA, graphicA)
 )
 val d = SceneUpdateFragment(
-  Layer(BindingKey("my layer"), graphicB, graphicB, graphicB)
+  BindingKey("my layer") -> Layer(graphicB, graphicB, graphicB)
 )
 
 c |+| d
@@ -83,10 +83,10 @@ Results in:
 
 ```scala mdoc:js
 SceneUpdateFragment(
-  Layer(
-    BindingKey("my layer"),
-    Batch(graphicA, graphicA, graphicA, graphicB, graphicB, graphicB)
-  )
+  BindingKey("my layer") ->
+    Layer.Content(
+      Batch(graphicA, graphicA, graphicA, graphicB, graphicB, graphicB)
+    )
 )
 ```
 

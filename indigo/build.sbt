@@ -131,11 +131,11 @@ lazy val sandbox =
           .embedFont(
             "TestFont",
             os.pwd / "sandbox" / "assets" / "fonts" / "pixelated.ttf",
-              FontOptions(
-                "test font",
-                32,
-                CharSet.fromUniqueString("The quick brown fox\njumps over the\nlazy dog.")
-              )
+            FontOptions(
+              "test font",
+              32,
+              CharSet.fromUniqueString("The quick brown fox\njumps over the\nlazy dog.")
+            )
               .withColor(RGB.White)
               .withMaxCharactersPerLine(16)
               .noAntiAliasing,
@@ -275,13 +275,11 @@ lazy val jsdocs = project
     organization := "io.indigoengine",
     libraryDependencies ++= Dependencies.jsDocs.value,
     libraryDependencies ++= Seq(
-      "io.indigoengine" %%% "indigo-json-circe" % indigoDocsVersion,
-      "io.indigoengine" %%% "indigo"            % indigoDocsVersion,
-      "io.indigoengine" %%% "indigo-extras"     % indigoDocsVersion,
-      // TODO: After next release (>0.15.2), should be Dependencies.Versions.tyrianVersion
-      "io.indigoengine" %%% "tyrian-io" % tyrianDocsVersion,
-      // TODO: After next release (>0.15.2), should be indigoDocsVersion
-      "io.indigoengine" %%% "tyrian-indigo-bridge" % tyrianDocsVersion
+      "io.indigoengine" %%% "indigo-json-circe"    % indigoDocsVersion,
+      "io.indigoengine" %%% "indigo"               % indigoDocsVersion,
+      "io.indigoengine" %%% "indigo-extras"        % indigoDocsVersion,
+      "io.indigoengine" %%% "tyrian-io"            % tyrianDocsVersion,
+      "io.indigoengine" %%% "tyrian-indigo-bridge" % indigoDocsVersion
     ),
     Compile / tpolecatExcludeOptions ++= Set(
       ScalacOptions.warnValueDiscard,

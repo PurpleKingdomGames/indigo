@@ -16,9 +16,10 @@ As an example, consider this simple (and arguably unhelpful) subsystem that trac
 ```scala mdoc:js
 import indigo.*
 
-final case class PointsTrackerExample(startingPoints: Int) extends SubSystem:
+final case class PointsTrackerExample(startingPoints: Int) extends SubSystem[Unit]:
   type EventType      = PointsTrackerEvent
   type SubSystemModel = Int
+  type ReferenceData  = Unit
 
   val id: SubSystemId = SubSystemId("points tracker")
 
@@ -27,10 +28,12 @@ final case class PointsTrackerExample(startingPoints: Int) extends SubSystem:
     case _                                => None
   }
 
+  def reference(model: Unit): Unit = ()
+
   def initialModel: Outcome[Int] =
     Outcome(startingPoints)
 
-  def update(context: SubSystemFrameContext, points: Int): PointsTrackerEvent => Outcome[Int] = {
+  def update(context: SubSystemFrameContext[Unit], points: Int): PointsTrackerEvent => Outcome[Int] = {
     case PointsTrackerEvent.Add(pts) =>
       Outcome(points + pts)
 
@@ -39,7 +42,7 @@ final case class PointsTrackerExample(startingPoints: Int) extends SubSystem:
         .addGlobalEvents(GameOver)
   }
 
-  def present(context: SubSystemFrameContext, points: Int): Outcome[SceneUpdateFragment] =
+  def present(context: SubSystemFrameContext[Unit], points: Int): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(Text(points.toString, FontKey(""), Material.Bitmap(AssetName("font"))))
     )

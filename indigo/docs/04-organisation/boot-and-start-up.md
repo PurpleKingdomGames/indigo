@@ -28,7 +28,7 @@ import indigo.*
 
 final case class BootData(myData: String)
 
-def boot(flags: Map[String, String]): Outcome[BootResult[BootData]] = ???
+def boot(flags: Map[String, String]): Outcome[BootResult[BootData, Unit]] = ???
 ```
 
 #### Flags
@@ -46,7 +46,7 @@ Well we use a flag, like this:
 ```scala mdoc:js
 import indigo.*
 
-def boot(flags: Map[String, String]): Outcome[BootResult[GameViewport]] = {
+def boot(flags: Map[String, String]): Outcome[BootResult[GameViewport, Unit]] = {
   val assetPath: String =
     flags.getOrElse("baseUrl", "")
 
