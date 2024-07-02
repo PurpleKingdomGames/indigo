@@ -26,6 +26,7 @@ import com.example.sandbox.scenes.TextureTileScene
 import com.example.sandbox.scenes.TimelineScene
 import com.example.sandbox.scenes.UVShaders
 import com.example.sandbox.scenes.UiScene
+import com.example.sandbox.scenes.UiSceneViewModel
 import com.example.sandbox.scenes.UltravioletScene
 import example.TestFont
 import indigo.*
@@ -49,7 +50,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
   val viewportHeight: Int     = gameHeight * magnificationLevel // 256
 
   def initialScene(bootData: SandboxBootData): Option[SceneName] =
-    Some(CameraWithCloneTilesScene.name)
+    Some(UiScene.name)
 
   def scenes(bootData: SandboxBootData): NonEmptyList[Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]] =
     NonEmptyList(
@@ -177,38 +178,13 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
           .withCrop(188, 78, 14, 23)
       )
 
-    val buttonAssets: ButtonAssets =
-      ButtonAssets(
-        up = Graphic(0, 0, 16, 16, 2, Material.Bitmap(AssetName("dots"))).withCrop(0, 0, 16, 16),
-        over = Graphic(0, 0, 16, 16, 2, Material.Bitmap(AssetName("dots"))).withCrop(16, 0, 16, 16),
-        down = Graphic(0, 0, 16, 16, 2, Material.Bitmap(AssetName("dots"))).withCrop(16, 16, 16, 16)
-      )
-
     Outcome(
       SandboxViewModel(
         Point.zero,
         InputField("single", assets).withKey(BindingKey("single")).makeSingleLine,
         InputField("multi\nline", assets).withKey(BindingKey("multi")).makeMultiLine.moveTo(5, 5),
         true,
-        HitArea(Polygon.Closed(UiScene.points.map(Vertex.fromPoint)))
-          .moveTo(175, 10)
-          .withUpActions(Log("Up!"))
-          .withClickActions(Log("Click!"))
-          .withDownActions(Log("Down!"))
-          .withHoverOverActions(Log("Over!"))
-          .withHoverOutActions(Log("Out!"))
-          .withHoldDownActions(Log("Hold down!")),
-        Button(
-          buttonAssets = buttonAssets,
-          bounds = Rectangle(10, 10, 16, 16),
-          depth = Depth(2)
-        )
-          .withUpActions(Log("Up!"))
-          .withClickActions(Log("Click!"))
-          .withDownActions(Log("Down!"))
-          .withHoverOverActions(Log("Over!"))
-          .withHoverOutActions(Log("Out!"))
-          .withHoldDownActions(Log("Hold down!"))
+        UiSceneViewModel.initial
       )
     )
   }
@@ -306,13 +282,9 @@ final case class SandboxViewModel(
     single: InputField,
     multi: InputField,
     useLightingLayer: Boolean,
-    hitArea: HitArea,
-    button: Button
+    uiScene: UiSceneViewModel
 ):
   def update(mouse: Mouse): Outcome[SandboxViewModel] =
-    for {
-      bn <- button.update(mouse)
-      ha <- hitArea.update(mouse)
-    } yield this.copy(hitArea = ha, button = bn)
+    uiScene.update(mouse).map(ui => this.copy(uiScene = ui))
 
 final case class Log(message: String) extends GlobalEvent
