@@ -283,8 +283,6 @@ final case class SandboxViewModel(
     multi: InputField,
     useLightingLayer: Boolean,
     uiScene: UiSceneViewModel
-):
-  def update(mouse: Mouse): Outcome[SandboxViewModel] =
-    uiScene.update(mouse).map(ui => this.copy(uiScene = ui))
+)
 
 final case class Log(message: String) extends GlobalEvent

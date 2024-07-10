@@ -8,6 +8,7 @@ import indigo.*
 import indigo.scenes.*
 import indigoextras.ui.Button
 import indigoextras.ui.ButtonAssets
+import indigoextras.ui.ButtonState
 import indigoextras.ui.HitArea
 
 object UiScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel] {
@@ -45,7 +46,7 @@ object UiScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewMo
       viewModel: UiSceneViewModel
   ): GlobalEvent => Outcome[UiSceneViewModel] =
     case FrameTick =>
-      viewModel.update(context.mouse)
+      viewModel.update(context.mouse, context.frameContext.inputState.pointers)
 
     case Log(msg) =>
       println(msg)
@@ -90,12 +91,12 @@ final case class UiSceneViewModel(
     button2: Button,
     button3: Button
 ):
-  def update(mouse: Mouse): Outcome[UiSceneViewModel] =
+  def update(mouse: Mouse, pointers: Pointers): Outcome[UiSceneViewModel] =
     for {
       ha  <- hitArea.update(mouse)
       bn1 <- button1.update(mouse)
       bn2 <- button2.update(mouse)
-      bn3 <- button3.update(mouse)
+      bn3 <- button3.updateFromPointers(pointers)
     } yield this.copy(hitArea = ha, button1 = bn1, button2 = bn2, button3 = bn3)
 
 object UiSceneViewModel:
@@ -154,3 +155,57 @@ object UiSceneViewModel:
         .withHoldDownActions(Log("Hold down! 3"))
         .moveTo(80, 16)
     )
+
+/** This is a workaround to show a way to make buttons support simple pointer events. It is a simplified version of the
+  * standard Button update function.
+  */
+extension (b: Button)
+  def updateFromPointers(p: Pointers): Outcome[Button] =
+    val inBounds = b.bounds.isPointWithin(p.position)
+
+    val upEvents: Batch[GlobalEvent] =
+      if inBounds && p.released then b.onUp()
+      else Batch.empty
+
+    val downEvents: Batch[GlobalEvent] =
+      if inBounds && p.pressed then b.onDown()
+      else Batch.empty
+
+    val pointerEvents: Batch[GlobalEvent] =
+      downEvents ++ upEvents
+
+    b.state match
+      // Stay in Down state
+      case ButtonState.Down if inBounds && p.pressed =>
+        Outcome(b).addGlobalEvents(b.onHoldDown() ++ pointerEvents)
+
+      // Move to Down state
+      case ButtonState.Up if inBounds && p.pressed =>
+        Outcome(b.toDownState).addGlobalEvents(b.onHoverOver() ++ pointerEvents)
+
+      // Out of Down state
+      case ButtonState.Down if !inBounds && (p.pressed || p.released) =>
+        Outcome(b.toUpState).addGlobalEvents(b.onHoverOut() ++ pointerEvents)
+
+      case ButtonState.Down if inBounds && p.released =>
+        Outcome(b.toUpState).addGlobalEvents(pointerEvents)
+
+      // Unaccounted for states.
+      case _ =>
+        Outcome(b).addGlobalEvents(pointerEvents)
+
+/** This is a workaround to make up for Pointer not exposing any convenience methods.
+  */
+extension (p: Pointers)
+
+  def pressed: Boolean =
+    p.pointerEvents.exists {
+      case _: PointerEvent.PointerDown => true
+      case _                           => false
+    }
+
+  def released: Boolean =
+    p.pointerEvents.exists {
+      case _: PointerEvent.PointerUp => true
+      case _                         => false
+    }
