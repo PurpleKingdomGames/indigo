@@ -3,6 +3,8 @@ package indigo.shared.datatypes
 import indigo.shared.dice.Dice
 import indigo.shared.time.Seconds
 
+import scala.math
+
 import annotation.targetName
 
 opaque type Radians = Double
@@ -74,11 +76,17 @@ object Radians:
     def invert: Radians =
       negative
 
+    def `unary_-`: Radians = negative
+
     def ~==(other: Radians): Boolean =
       Math.abs(r.toDouble - other.toDouble) < 0.001
 
     def toDouble: Double =
       r
+
+    def max(other: Radians): Radians = math.max(r, other)
+
+    def min(other: Radians): Radians = math.min(r, other)
 
     def toFloat: Float =
       r.toFloat

@@ -52,6 +52,14 @@ class RadiansTests extends munit.FunSuite {
     assert(clue(Radians.mod(Radians(-11), Radians(-10))) ~== clue(Radians(-1)))
   }
 
+  test("max") {
+    assert(clue(Radians.PI.max(Radians.zero)) ~== Radians.PI)
+  }
+
+  test("min") {
+    assert(clue(Radians.PI.min(Radians.zero)) ~== -Radians.zero)
+  }
+
   def doubleCloseEnough(r1: Double, r2: Double): Boolean =
     r1 - 0.01 < r2 && r1 + 0.01 > r2
 
