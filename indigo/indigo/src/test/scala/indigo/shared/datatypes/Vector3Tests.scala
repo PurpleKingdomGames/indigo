@@ -135,6 +135,12 @@ class Vector3Tests extends munit.FunSuite {
     assert(clue(Vector3.mod(Vector3(-11), Vector3(-10))) ~== clue(Vector3(-1)))
   }
 
+  test("cross product") {
+    assertEquals(Vector3.unitX.cross(Vector3.unitY), Vector3.unitZ)
+    assertEquals(Vector3.unitY.cross(Vector3.unitZ), Vector3.unitX)
+    assertEquals(Vector3.unitX.cross(Vector3.unitZ), -Vector3.unitY)
+  }
+
   def to2dp(d: Double): Double =
     Math.round(d * 100).toDouble / 100
 
