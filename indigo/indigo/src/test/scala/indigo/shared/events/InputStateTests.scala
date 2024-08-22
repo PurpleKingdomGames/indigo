@@ -351,7 +351,8 @@ class InputStateTests extends munit.FunSuite {
       true,
       new GamepadAnalogControls(
         new AnalogAxis(-1.0, -1.0, false),
-        new AnalogAxis(0.5, 0.0, true)
+        new AnalogAxis(0.5, 0.0, true),
+        2
       ),
       new GamepadDPad(true, false, true, false),
       new GamepadButtons(
