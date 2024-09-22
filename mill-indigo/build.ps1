@@ -1,4 +1,6 @@
-mill -i clean
-mill -i clean mill-indigo[2.13]
-mill -i mill-indigo[2.13].compile
-mill -i mill-indigo[2.13].publishLocal
+.\millw.bat clean
+.\millw.bat clean mill-indigo[2.13]
+.\millw.bat mill-indigo[2.13].compile
+.\millw.bat mill-indigo[2.13].test
+.\millw.bat mill-indigo[2.13].checkFormat
+.\millw.bat mill-indigo[2.13].publishLocal

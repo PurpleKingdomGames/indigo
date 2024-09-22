@@ -1,1 +1,1 @@
-sbt crossCleanAll crossTestAllNoClean crossLocalPublishNoClean
+sbt crossCleanAll scalafmtCheckAll crossTestAllNoClean crossLocalPublishNoClean

@@ -257,7 +257,7 @@ addCommandAlias(
 )
 addCommandAlias(
   "crossLocalPublishIndigo",
-  applyCrossCommand(allProjects, "publishLocal")
+  applyCrossCommand(releaseProjects, "publishLocal")
 )
 addCommandAlias(
   "crossLocalPublishNoClean",
