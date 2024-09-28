@@ -64,12 +64,18 @@ object GamepadInputCaptureImpl {
     // Filter won't work here since some browsers like Chromium return `null` values in the gamepads array
     gamepads.find(Option(_).exists(_.connected)) match {
       case Some(gp) =>
+        val gameAnalogControls = {
+          val numberOfAxes = gp.axes.length / 2
+          GamepadAnalogControls(
+            AnalogAxis(gp.axes(0), gp.axes(1), gp.buttons(10).pressed),
+            if numberOfAxes >= 2 then AnalogAxis(gp.axes(2), gp.axes(3), gp.buttons(11).pressed)
+            else AnalogAxis.default,
+            numberOfAxes
+          )
+        }
         new Gamepad(
           connected = true,
-          new GamepadAnalogControls(
-            new AnalogAxis(gp.axes(0), gp.axes(1), gp.buttons(10).pressed),
-            new AnalogAxis(gp.axes(2), gp.axes(3), gp.buttons(11).pressed)
-          ),
+          gameAnalogControls,
           new GamepadDPad(
             gp.buttons(12).pressed,
             gp.buttons(13).pressed,

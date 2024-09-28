@@ -83,10 +83,10 @@ object GamepadDPad {
     GamepadDPad(false, false, false, false)
 }
 
-final case class GamepadAnalogControls(left: AnalogAxis, right: AnalogAxis)
+final case class GamepadAnalogControls(left: AnalogAxis, right: AnalogAxis, numberOfAxes: Int)
 object GamepadAnalogControls {
   val default: GamepadAnalogControls =
-    GamepadAnalogControls(AnalogAxis.default, AnalogAxis.default)
+    GamepadAnalogControls(AnalogAxis.default, AnalogAxis.default, 0)
 }
 
 final case class AnalogAxis(x: Double, y: Double, pressed: Boolean)
