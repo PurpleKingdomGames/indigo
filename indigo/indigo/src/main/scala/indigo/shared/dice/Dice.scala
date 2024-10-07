@@ -168,9 +168,7 @@ object Dice:
 
       val r: Random = new Random(seed)
 
-      def roll: Int =
-        r.nextInt(sanitise(sides)) + 1
-
+      def roll: Int = roll(sides)
       def roll(sides: Int): Int =
         r.nextInt(sanitise(sides)) + 1
 
