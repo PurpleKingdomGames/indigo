@@ -62,9 +62,10 @@ class DiceTests extends munit.FunSuite {
   }
 
   test("all dice rolls have an approximately uniform distribution") {
-    val diceSides = 64
-    val numRuns   = 200_000_000
-    val dice      = Dice.diceSidesN(diceSides, 0)
+    val diceSides            = 63
+    val numRuns              = 200_000_000
+    val dice                 = Dice.diceSidesN(diceSides, 0)
+    val expectedDistribution = 1.0 / diceSides
     val generatedNums =
       Array
         .range(0, numRuns)
@@ -73,11 +74,12 @@ class DiceTests extends munit.FunSuite {
           acc.updated(roll, acc.getOrElse(roll, 0) + 1)
         }
 
+    // Ensure that we have the right numbers generated (they should all have been created)
     assertEquals(generatedNums.size, diceSides)
     assertEquals(generatedNums.head._1, 1)
     assertEquals(generatedNums.last._1, diceSides)
 
-    val expectedDistribution = 1.0 / diceSides
+    // Check the even distribution of the generated numbers
     generatedNums.foreach { case (num, count) =>
       val distribution = count.toDouble / numRuns
       assert(
@@ -88,10 +90,11 @@ class DiceTests extends munit.FunSuite {
   }
 
   test("all dice rolls in rollRange have an approximately uniform distribution") {
-    val diceSides = 64
-    val halfSides = diceSides / 2
-    val numRuns   = 200_000_000
-    val dice      = Dice.diceSidesN(diceSides, 0)
+    val diceSides            = 63
+    val halfSides            = Math.floor(diceSides / 2.0).toInt
+    val numRuns              = 200_000_000
+    val dice                 = Dice.diceSidesN(diceSides, 0)
+    val expectedDistribution = 1.0 / halfSides
     val generatedNums =
       Array
         .range(0, numRuns)
@@ -100,11 +103,12 @@ class DiceTests extends munit.FunSuite {
           acc.updated(roll, acc.getOrElse(roll, 0) + 1)
         }
 
-    assertEquals(generatedNums.size, halfSides + 1)
+    // Ensure that we have the right numbers generated (only numbers from just before half way through the number of sides should have een created)
+    assertEquals(generatedNums.size, (diceSides - halfSides) + 1)
     assertEquals(generatedNums.head._1, halfSides)
     assertEquals(generatedNums.last._1, diceSides)
 
-    val expectedDistribution = 1.0 / halfSides
+    // Check the even distribution of the generated numbers
     generatedNums.foreach { case (num, count) =>
       val distribution = count.toDouble / numRuns
       assert(
@@ -115,8 +119,9 @@ class DiceTests extends munit.FunSuite {
   }
 
   test("all dice rolls in rollRange(1, 4) have an approximately uniform distribution") {
-    val numRuns = 200_000_000
-    val dice    = Dice.diceSidesN(4, 0)
+    val numRuns              = 200_000_000
+    val dice                 = Dice.diceSidesN(4, 0)
+    val expectedDistribution = 0.25
     val generatedNums =
       Array
         .range(0, numRuns)
@@ -125,11 +130,12 @@ class DiceTests extends munit.FunSuite {
           acc.updated(roll, acc.getOrElse(roll, 0) + 1)
         }
 
+    // Ensure that we have the right numbers generated (they should all have been created)
     assertEquals(generatedNums.size, 4)
     assertEquals(generatedNums.head._1, 1)
     assertEquals(generatedNums.last._1, 4)
 
-    val expectedDistribution = 0.25
+    // Check the even distribution of the generated numbers
     generatedNums.foreach { case (num, count) =>
       val distribution = count.toDouble / numRuns
       assert(
