@@ -168,33 +168,81 @@ object Dice:
 
       val r: Random = new Random(seed)
 
-      def roll: Int = roll(sides)
+      /** Roll an Int from 1 to the number of sides on the dice (inclusive)
+        *
+        * @return
+        */
+      def roll: Int =
+        roll(sides)
+
+      /** Roll an Int from 1 to the specified number of sides (inclusive)
+        *
+        * @param sides
+        * @return
+        */
       def roll(sides: Int): Int =
         r.nextInt(sanitise(sides)) + 1
 
+      /** Roll an Int from 0 to the number of sides on the dice (exclusive)
+        *
+        * @return
+        */
       def rollFromZero: Int =
-        roll - 1
+        rollFromZero(sides)
 
+      /** Roll an Int from 0 to the specified number of sides (exclusive)
+        *
+        * @param sides
+        * @return
+        */
       def rollFromZero(sides: Int): Int =
         roll(sides) - 1
 
+      /** Roll an Int from the range provided (inclusive)
+        *
+        * @param from
+        * @param to
+        * @return
+        */
       def rollRange(from: Int, to: Int): Int =
         val f = Math.min(from, to)
         val t = Math.max(from, to)
         roll(t - f + 1) + f - 1
 
+      /** Produces a random Float from 0.0 to 1.0
+        *
+        * @return
+        */
       def rollFloat: Float =
         r.nextFloat()
 
+      /** Produces a random Double from 0.0 to 1.0
+        *
+        * @return
+        */
       def rollDouble: Double =
         r.nextDouble()
 
+      /** Produces a random alphanumeric string of the specified length
+        *
+        * @param length
+        * @return
+        */
       def rollAlphaNumeric(length: Int): String =
         r.alphanumeric.take(length).mkString
 
+      /** Produces a random alphanumeric string 16 characters long
+        *
+        * @return
+        */
       def rollAlphaNumeric: String =
         rollAlphaNumeric(16)
 
+      /** Shuffles a list of values into a random order
+        *
+        * @param items
+        * @return
+        */
       def shuffle[A](items: List[A]): List[A] =
         r.shuffle(items)
     }

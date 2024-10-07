@@ -21,7 +21,10 @@ import indigo.shared.time.Millis
 import indigo.shared.time.Seconds
 
 import scala.collection.mutable
+import scala.scalajs.js.Date
 import scala.scalajs.js.JSConverters._
+
+val initialDate = new Date()
 
 final class GameLoop[StartUpData, GameModel, ViewModel](
     rebuildGameLoop: AssetCollection => Unit,
@@ -35,7 +38,7 @@ final class GameLoop[StartUpData, GameModel, ViewModel](
     startFrameLocked: Boolean,
     renderer: => Renderer
 ):
-
+  val initialSeed = initialDate.valueOf()
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var _gameModelState: GameModel = initialModel
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
@@ -131,7 +134,7 @@ final class GameLoop[StartUpData, GameModel, ViewModel](
         gameTime,
         events,
         _inputState,
-        Dice.fromSeconds(gameTime.running),
+        Dice.fromSeconds(gameTime.running + initialSeed),
         boundaryLocator,
         renderer
       )

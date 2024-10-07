@@ -178,7 +178,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
 
       audioPlayer.addAudioAssets(accumulatedAssetCollection.sounds)
 
-      val time = if (firstRun) 0 else gameLoopInstance.runningTimeReference
+      val time = (if (firstRun) 0 else gameLoopInstance.runningTimeReference) + gameLoopInstance.initialSeed
 
       if (firstRun)
         platform = new Platform(parentElement, gameConfig, globalEventStream, dynamicText)
