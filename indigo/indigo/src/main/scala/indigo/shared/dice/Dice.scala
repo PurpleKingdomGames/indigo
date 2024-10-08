@@ -188,7 +188,7 @@ object Dice:
         * @return
         */
       def rollFromZero: Int =
-        roll(sides)
+        rollFromZero(sides)
 
       /** Roll an Int from 0 to the specified number of sides (exclusive)
         *
