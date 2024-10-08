@@ -2,6 +2,8 @@ package indigo.shared.dice
 
 import indigo.shared.collections.NonEmptyList
 
+import scala.collection.immutable.SortedMap
+
 @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
 class DiceTests extends munit.FunSuite {
 
@@ -9,6 +11,8 @@ class DiceTests extends munit.FunSuite {
 
   def checkDice(roll: Int, to: Int): Boolean =
     roll >= 1 && roll <= to
+
+  def almostEquals(d: Double, d2: Double, p: Double) = (d - d2).abs <= p
 
   test("diceSidesN") {
     val roll: Int = Dice.diceSidesN(1, 0).roll(10)
@@ -57,4 +61,87 @@ class DiceTests extends munit.FunSuite {
     assertEquals(actual, expected)
   }
 
+  test("all dice rolls have an approximately uniform distribution") {
+    val diceSides            = 63
+    val numRuns              = 200_000_000
+    val dice                 = Dice.diceSidesN(diceSides, 0)
+    val expectedDistribution = 1.0 / diceSides
+    val generatedNums =
+      Array
+        .range(0, numRuns)
+        .foldLeft(SortedMap[Int, Int]()) { (acc, _) =>
+          val roll = dice.roll
+          acc.updated(roll, acc.getOrElse(roll, 0) + 1)
+        }
+
+    // Ensure that we have the right numbers generated (they should all have been created)
+    assertEquals(generatedNums.size, diceSides)
+    assertEquals(generatedNums.head._1, 1)
+    assertEquals(generatedNums.last._1, diceSides)
+
+    // Check the even distribution of the generated numbers
+    generatedNums.foreach { case (num, count) =>
+      val distribution = count.toDouble / numRuns
+      assert(
+        almostEquals(distribution, expectedDistribution, 0.01),
+        s"""The distribution for $num was $distribution, but expected $expectedDistribution"""
+      )
+    }
+  }
+
+  test("all dice rolls in rollRange have an approximately uniform distribution") {
+    val diceSides            = 63
+    val halfSides            = Math.floor(diceSides / 2.0).toInt
+    val numRuns              = 200_000_000
+    val dice                 = Dice.diceSidesN(diceSides, 0)
+    val expectedDistribution = 1.0 / halfSides
+    val generatedNums =
+      Array
+        .range(0, numRuns)
+        .foldLeft(SortedMap[Int, Int]()) { (acc, _) =>
+          val roll = dice.rollRange(halfSides, diceSides)
+          acc.updated(roll, acc.getOrElse(roll, 0) + 1)
+        }
+
+    // Ensure that we have the right numbers generated (only numbers from just before half way through the number of sides should have een created)
+    assertEquals(generatedNums.size, (diceSides - halfSides) + 1)
+    assertEquals(generatedNums.head._1, halfSides)
+    assertEquals(generatedNums.last._1, diceSides)
+
+    // Check the even distribution of the generated numbers
+    generatedNums.foreach { case (num, count) =>
+      val distribution = count.toDouble / numRuns
+      assert(
+        almostEquals(distribution, expectedDistribution, 0.01),
+        s"""The distribution for $num was $distribution, but expected $expectedDistribution"""
+      )
+    }
+  }
+
+  test("all dice rolls in rollRange(1, 4) have an approximately uniform distribution") {
+    val numRuns              = 200_000_000
+    val dice                 = Dice.diceSidesN(4, 0)
+    val expectedDistribution = 0.25
+    val generatedNums =
+      Array
+        .range(0, numRuns)
+        .foldLeft(SortedMap[Int, Int]()) { (acc, _) =>
+          val roll = dice.rollRange(1, 4)
+          acc.updated(roll, acc.getOrElse(roll, 0) + 1)
+        }
+
+    // Ensure that we have the right numbers generated (they should all have been created)
+    assertEquals(generatedNums.size, 4)
+    assertEquals(generatedNums.head._1, 1)
+    assertEquals(generatedNums.last._1, 4)
+
+    // Check the even distribution of the generated numbers
+    generatedNums.foreach { case (num, count) =>
+      val distribution = count.toDouble / numRuns
+      assert(
+        almostEquals(distribution, expectedDistribution, 0.01),
+        s"""The distribution for $num was $distribution, but expected $expectedDistribution"""
+      )
+    }
+  }
 }
