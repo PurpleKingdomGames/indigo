@@ -27,9 +27,14 @@ import org.scalajs.dom.WebGLProgram
 import org.scalajs.dom.WebGLRenderingContext
 import org.scalajs.dom.WebGLRenderingContext._
 import org.scalajs.dom.WebGLUniformLocation
+import org.scalajs.dom
 import org.scalajs.dom.html
 
 import scala.scalajs.js.typedarray.Float32Array
+import indigo.shared.datatypes.Rectangle
+import indigo.shared.datatypes.Size
+import indigo.shared.collections.Batch
+import indigo.shared.datatypes.BindingKey
 
 final class RendererWebGL1(
     config: RendererConfig,
@@ -48,6 +53,12 @@ final class RendererWebGL1(
   var lastHeight: Int = 0
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   var orthographicProjectionMatrix: CheapMatrix4 = CheapMatrix4.identity
+
+  // Store previous data in order to take screenshots
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+  private var _prevSceneData: ProcessedSceneData = null
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  private var _prevGameRuntime: Seconds = Seconds.zero
 
   def screenWidth: Int  = lastWidth
   def screenHeight: Int = lastWidth
@@ -90,6 +101,42 @@ final class RendererWebGL1(
   }
 
   private given CanEqual[Option[Int], Option[Int]] = CanEqual.derived
+
+  def captureScreen(
+      clippingRect: Rectangle = Rectangle(Size(screenWidth, screenHeight)),
+      excludeLayers: Batch[BindingKey] = Batch.empty
+  ): Batch[Byte] = {
+    val canvas = dom.document.createElement("canvas").asInstanceOf[html.Canvas]
+    val ctx    = canvas.getContext("webgl1", cNc.context.getContextAttributes()).asInstanceOf[WebGLRenderingContext]
+
+    val renderer = new RendererWebGL1(
+      config,
+      loadedTextureAssets,
+      ContextAndCanvas(ctx, canvas, cNc.magnification),
+      globalEventStream
+    )
+
+    renderer.drawScene(_prevSceneData, _prevGameRuntime)
+
+    val imageData = Batch.fromArray(
+      canvas
+        .getContext("2d")
+        .asInstanceOf[dom.CanvasRenderingContext2D]
+        .getImageData(
+          clippingRect.x,
+          clippingRect.y,
+          clippingRect.width,
+          clippingRect.height
+        )
+        .data
+        .map(_.toByte)
+        .toArray
+    )
+
+    canvas.remove()
+
+    imageData
+  }
 
   def drawScene(sceneData: ProcessedSceneData, runningTime: Seconds): Unit = {
     resize(cNc.canvas, cNc.magnification)
@@ -162,6 +209,10 @@ final class RendererWebGL1(
 
       drawLayer(layer.entities, standardShaderProgram, projection)
     }
+
+    // Store the data for screenshots
+    _prevSceneData = sceneData
+    _prevGameRuntime = runningTime
   }
 
   def drawLayer(
