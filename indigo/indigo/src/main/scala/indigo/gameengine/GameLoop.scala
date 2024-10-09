@@ -20,6 +20,7 @@ import indigo.shared.time.Seconds
 
 import scala.collection.mutable
 import scala.scalajs.js.JSConverters._
+import indigo.shared.platform.ProcessedSceneData
 
 final class GameLoop[StartUpData, GameModel, ViewModel](
     rebuildGameLoop: AssetCollection => Unit,
