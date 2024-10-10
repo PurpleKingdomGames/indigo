@@ -1,5 +1,6 @@
 package indigo.shared.subsystems
 
+import indigo.platform.renderer.Renderer
 import indigo.shared.BoundaryLocator
 import indigo.shared.FrameContext
 import indigo.shared.datatypes.Rectangle
@@ -52,7 +53,8 @@ final case class SubSystemFrameContext[ReferenceData](
       dice,
       inputState,
       boundaryLocator,
-      ()
+      (),
+      Renderer.blackHole
     )
 
 object SubSystemFrameContext {

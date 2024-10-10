@@ -51,12 +51,12 @@ trait IndigoGame[BootData, StartUpData, Model, ViewModel] extends GameLauncher[S
   def eventFilters: EventFilters
 
   /** `boot` provides the initial boot up function for your game, accepting commandline-like arguments and allowing you
-    * to declare pre-requist assets assets and data that must be in place for your game to get going.
+    * to declare pre-request assets assets and data that must be in place for your game to get going.
     *
     * @param flags
     *   A simply key-value object/map passed in during initial boot.
     * @return
-    *   Bootup data consisting of a custom data type, animations, subsytems, assets, fonts, and the game's config.
+    *   Bootup data consisting of a custom data type, animations, subsystems, assets, fonts, and the game's config.
     */
   def boot(flags: Map[String, String]): Outcome[BootResult[BootData, Model]]
 
@@ -70,7 +70,7 @@ trait IndigoGame[BootData, StartUpData, Model, ViewModel] extends GameLauncher[S
     * @param assetCollection
     *   Access to the Asset collection in order to, for example, parse text files.
     * @param dice
-    *   Psuedorandom number generator
+    *   Pseudorandom number generator
     * @return
     *   Return start up data, which can include animations and fonts that could not be declared at boot time.
     */
@@ -102,7 +102,7 @@ trait IndigoGame[BootData, StartUpData, Model, ViewModel] extends GameLauncher[S
     * @param model
     *   The latest version of the model to read from.
     * @return
-    *   A function that maps GlobalEvent's to the next version of your model, and encapsuates failures or resulting
+    *   A function that maps GlobalEvent's to the next version of your model, and encapsulates failures or resulting
     *   events within the Outcome wrapper.
     */
   def updateModel(context: FrameContext[StartUpData], model: Model): GlobalEvent => Outcome[Model]
@@ -118,8 +118,8 @@ trait IndigoGame[BootData, StartUpData, Model, ViewModel] extends GameLauncher[S
     * @param viewModel
     *   The latest version of the view model to read from.
     * @return
-    *   A function that maps GlobalEvent's to the next version of your view model, and encapsuates failures or resulting
-    *   events within the Outcome wrapper.
+    *   A function that maps GlobalEvent's to the next version of your view model, and encapsulates failures or
+    *   resulting events within the Outcome wrapper.
     */
   def updateViewModel(
       context: FrameContext[StartUpData],
@@ -138,7 +138,7 @@ trait IndigoGame[BootData, StartUpData, Model, ViewModel] extends GameLauncher[S
     * @param viewModel
     *   The latest version of the view model to read from.
     * @return
-    *   A function that produces a description of what to present next, and encapsuates failures or resulting events
+    *   A function that produces a description of what to present next, and encapsulates failures or resulting events
     *   within the Outcome wrapper.
     */
   def present(context: FrameContext[StartUpData], model: Model, viewModel: ViewModel): Outcome[SceneUpdateFragment]
