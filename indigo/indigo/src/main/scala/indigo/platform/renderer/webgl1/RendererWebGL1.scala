@@ -8,9 +8,13 @@ import indigo.platform.renderer.shared.ContextAndCanvas
 import indigo.platform.renderer.shared.LoadedTextureAsset
 import indigo.platform.renderer.shared.TextureLookupResult
 import indigo.platform.renderer.shared.WebGLHelper
+import indigo.shared.collections.Batch
 import indigo.shared.config.GameViewport
 import indigo.shared.config.RenderingTechnology
+import indigo.shared.datatypes.BindingKey
 import indigo.shared.datatypes.Radians
+import indigo.shared.datatypes.Rectangle
+import indigo.shared.datatypes.Size
 import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.shared.display.DisplayEntity
 import indigo.shared.display.DisplayGroup
@@ -22,19 +26,15 @@ import indigo.shared.platform.RendererConfig
 import indigo.shared.scenegraph.Camera
 import indigo.shared.shader.RawShaderCode
 import indigo.shared.time.Seconds
+import org.scalajs.dom
 import org.scalajs.dom.WebGLBuffer
 import org.scalajs.dom.WebGLProgram
 import org.scalajs.dom.WebGLRenderingContext
 import org.scalajs.dom.WebGLRenderingContext._
 import org.scalajs.dom.WebGLUniformLocation
-import org.scalajs.dom
 import org.scalajs.dom.html
 
 import scala.scalajs.js.typedarray.Float32Array
-import indigo.shared.datatypes.Rectangle
-import indigo.shared.datatypes.Size
-import indigo.shared.collections.Batch
-import indigo.shared.datatypes.BindingKey
 
 final class RendererWebGL1(
     config: RendererConfig,

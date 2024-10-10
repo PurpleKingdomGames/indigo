@@ -39,6 +39,7 @@ import indigoextras.subsystems.FPSCounter
 import indigoextras.ui.*
 
 import scala.scalajs.js.annotation.*
+import com.example.sandbox.scenes.CaptureScreenScene
 
 @JSExportTopLevel("IndigoGame")
 object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, SandboxGameModel, SandboxViewModel]:
@@ -77,7 +78,8 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
       BoundingCircleScene,
       LineReflectionScene,
       CameraWithCloneTilesScene,
-      PathFindingScene
+      PathFindingScene,
+      CaptureScreenScene
     )
 
   val eventFilters: EventFilters = EventFilters.Permissive

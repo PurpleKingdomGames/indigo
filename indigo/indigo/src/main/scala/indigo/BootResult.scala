@@ -4,7 +4,7 @@ import indigo.shared.shader.Shader
 import indigo.shared.subsystems.SubSystem
 
 /** The game bootstrapping process results in a `BootResult`, which only occurs once on initial game load. The boot
-  * result decribes all of the initial values of your game such as it's configuration, data, animations, assets, fonts,
+  * result describes all of the initial values of your game such as it's configuration, data, animations, assets, fonts,
   * subsystems, and shaders. You can add additional assets, animations, fonts, and shaders later during the setup
   * process, so it is recommended that you only load the bare minimum needed to get your game going during the boot
   * phase.

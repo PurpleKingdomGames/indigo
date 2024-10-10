@@ -1,5 +1,6 @@
 package indigo.shared
 
+import indigo.platform.renderer.Renderer
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.dice.Dice
 import indigo.shared.events.InputState
@@ -29,10 +30,12 @@ final class FrameContext[StartUpData](
     val dice: Dice,
     val inputState: InputState,
     val boundaryLocator: BoundaryLocator,
-    _startUpData: => StartUpData
+    _startUpData: => StartUpData,
+    _renderer: => Renderer
 ):
 
-  lazy val startUpData = _startUpData
+  lazy val startUpData      = _startUpData
+  lazy private val renderer = _renderer
 
   export gameTime.running
   export gameTime.delta
@@ -41,3 +44,4 @@ final class FrameContext[StartUpData](
   export inputState.gamepad
   export boundaryLocator.findBounds
   export boundaryLocator.bounds
+  export renderer.captureScreen

@@ -1,5 +1,7 @@
 package indigo.platform.renderer.webgl2
 
+import indigo.BindingKey
+import indigo.Rectangle
 import indigo.facades.WebGL2RenderingContext
 import indigo.platform.assets.DynamicText
 import indigo.platform.events.GlobalEventStream
@@ -12,10 +14,12 @@ import indigo.platform.renderer.shared.LoadedTextureAsset
 import indigo.platform.renderer.shared.TextureLookupResult
 import indigo.platform.renderer.shared.WebGLHelper
 import indigo.shared.QuickCache
+import indigo.shared.collections.Batch
 import indigo.shared.config.GameViewport
 import indigo.shared.config.RenderingTechnology
 import indigo.shared.datatypes.RGBA
 import indigo.shared.datatypes.Radians
+import indigo.shared.datatypes.Size
 import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.shared.events.ViewportResize
 import indigo.shared.platform.ProcessedSceneData
@@ -37,10 +41,6 @@ import org.scalajs.dom.html
 
 import scala.scalajs.js.Dynamic
 import scala.scalajs.js.typedarray.Float32Array
-import indigo.Rectangle
-import indigo.BindingKey
-import indigo.shared.collections.Batch
-import indigo.shared.datatypes.Size
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
 final class RendererWebGL2(
