@@ -103,7 +103,9 @@ final class RendererWebGL1(
   private given CanEqual[Option[Int], Option[Int]] = CanEqual.derived
 
   def captureScreen(
+      @SuppressWarnings(Array("scalafix:DisableSyntax.defaultArgs"))
       clippingRect: Rectangle = Rectangle(Size(screenWidth, screenHeight)),
+      @SuppressWarnings(Array("scalafix:DisableSyntax.defaultArgs"))
       excludeLayers: Batch[BindingKey] = Batch.empty
   ): Batch[Byte] = {
     val canvas = dom.document.createElement("canvas").asInstanceOf[html.Canvas]

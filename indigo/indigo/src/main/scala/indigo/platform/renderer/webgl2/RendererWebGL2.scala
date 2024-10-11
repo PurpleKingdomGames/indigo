@@ -102,7 +102,7 @@ final class RendererWebGL2(
   var orthographicProjectionMatrixNoMagFlipped: scalajs.js.Array[Float] = null
 
   // Store previous data in order to take screenshots
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var _prevSceneData: ProcessedSceneData = null
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var _prevGameRuntime: Seconds = Seconds.zero
@@ -233,7 +233,9 @@ final class RendererWebGL2(
   private given CanEqual[Option[Int], Option[Int]] = CanEqual.derived
 
   def captureScreen(
+      @SuppressWarnings(Array("scalafix:DisableSyntax.defaultArgs"))
       clippingRect: Rectangle = Rectangle(Size(screenWidth, screenHeight)),
+      @SuppressWarnings(Array("scalafix:DisableSyntax.defaultArgs"))
       excludeLayers: Batch[BindingKey] = Batch.empty
   ): Batch[Byte] = {
     val canvas = dom.document.createElement("canvas").asInstanceOf[html.Canvas]

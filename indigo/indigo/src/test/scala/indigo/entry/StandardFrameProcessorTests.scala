@@ -1,6 +1,7 @@
 package indigo.entry
 
 import indigo.platform.assets.DynamicText
+import indigo.platform.renderer.Renderer
 import indigo.shared.AnimationsRegister
 import indigo.shared.BoundaryLocator
 import indigo.shared.FontRegister
@@ -34,7 +35,8 @@ class StandardFrameProcessorTests extends munit.FunSuite {
       Batch(EventsOnlyEvent.Increment),
       InputState.default,
       Dice.loaded(0),
-      boundaryLocator
+      boundaryLocator,
+      Renderer.blackHole
     )
 
     val outModel     = outcome.unsafeGet._1
