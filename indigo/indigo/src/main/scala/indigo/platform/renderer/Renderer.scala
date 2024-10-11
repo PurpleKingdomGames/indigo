@@ -9,6 +9,8 @@ import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.shared.platform.ProcessedSceneData
 import indigo.shared.shader.RawShaderCode
 import indigo.shared.time.Seconds
+import indigo.shared.ImageData
+import indigo.shared.ImageType
 
 trait Renderer:
   def renderingTechnology: RenderingTechnology
@@ -20,8 +22,9 @@ trait Renderer:
   def drawScene(sceneData: ProcessedSceneData, runningTime: Seconds): Unit
   def captureScreen(
       clippingRect: Rectangle = Rectangle(Size(screenWidth, screenHeight)),
-      excludeLayers: Batch[BindingKey] = Batch.empty
-  ): Batch[Byte]
+      excludeLayers: Batch[BindingKey] = Batch.empty,
+      imageType: ImageType = ImageType.PNG
+  ): ImageData
 
 object Renderer:
   def blackHole = new Renderer {
@@ -30,7 +33,11 @@ object Renderer:
     def screenHeight: Int                          = 0
     def orthographicProjectionMatrix: CheapMatrix4 = CheapMatrix4.identity
 
-    def init(shaders: Set[RawShaderCode]): Unit                                               = ()
-    def drawScene(sceneData: ProcessedSceneData, runningTime: Seconds): Unit                  = ()
-    def captureScreen(clippingRect: Rectangle, excludeLayers: Batch[BindingKey]): Batch[Byte] = Batch.empty
+    def init(shaders: Set[RawShaderCode]): Unit                              = ()
+    def drawScene(sceneData: ProcessedSceneData, runningTime: Seconds): Unit = ()
+    def captureScreen(
+        clippingRect: Rectangle,
+        excludeLayers: Batch[BindingKey],
+        imageType: ImageType = ImageType.PNG
+    ): ImageData = ImageData(0, ImageType.PNG, Array.emptyByteArray)
   }

@@ -35,6 +35,8 @@ import org.scalajs.dom.WebGLUniformLocation
 import org.scalajs.dom.html
 
 import scala.scalajs.js.typedarray.Float32Array
+import indigo.shared.ImageData
+import indigo.shared.ImageType
 
 final class RendererWebGL1(
     config: RendererConfig,
@@ -106,11 +108,13 @@ final class RendererWebGL1(
       @SuppressWarnings(Array("scalafix:DisableSyntax.defaultArgs"))
       clippingRect: Rectangle = Rectangle(Size(screenWidth, screenHeight)),
       @SuppressWarnings(Array("scalafix:DisableSyntax.defaultArgs"))
-      excludeLayers: Batch[BindingKey] = Batch.empty
-  ): Batch[Byte] = {
+      excludeLayers: Batch[BindingKey] = Batch.empty,
+      @SuppressWarnings(Array("scalafix:DisableSyntax.defaultArgs"))
+      imageType: ImageType = ImageType.PNG
+  ): ImageData = {
     val canvas = dom.document.createElement("canvas").asInstanceOf[html.Canvas]
     val ctx    = canvas.getContext("webgl1", cNc.context.getContextAttributes()).asInstanceOf[WebGLRenderingContext]
-
+    val ctx2d  = canvas.getContext("2d").asInstanceOf[dom.CanvasRenderingContext2D]
     val renderer = new RendererWebGL1(
       config,
       loadedTextureAssets,
@@ -120,24 +124,22 @@ final class RendererWebGL1(
 
     renderer.drawScene(_prevSceneData, _prevGameRuntime)
 
-    val imageData = Batch.fromArray(
-      canvas
-        .getContext("2d")
-        .asInstanceOf[dom.CanvasRenderingContext2D]
+    val imageData =
+      ctx2d
         .getImageData(
           clippingRect.x,
           clippingRect.y,
           clippingRect.width,
           clippingRect.height
         )
-        .data
-        .map(_.toByte)
-        .toArray
-    )
 
+    ctx2d.clearRect(0, 0, canvas.width.toDouble, canvas.height.toDouble)
+    ctx2d.putImageData(imageData, 0, 0)
+
+    val data = canvas.toDataURL(imageType.toString()).split(",")(1).grouped(4).map(_.toInt.toByte).toArray
     canvas.remove()
 
-    imageData
+    ImageData(data.length, imageType, data)
   }
 
   def drawScene(sceneData: ProcessedSceneData, runningTime: Seconds): Unit = {
