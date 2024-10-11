@@ -1,6 +1,7 @@
 package indigoextras.ui
 
 import indigo.platform.assets.DynamicText
+import indigo.platform.renderer.Renderer
 import indigo.shared.AnimationsRegister
 import indigo.shared.BoundaryLocator
 import indigo.shared.FontRegister
@@ -281,7 +282,8 @@ class InputFieldTests extends munit.FunSuite {
       Dice.loaded(1),
       new InputState(Mouse.default, new Keyboard(keysUp, Batch.empty, None), Gamepad.default, Pointers.default),
       new BoundaryLocator(new AnimationsRegister, new FontRegister, new DynamicText),
-      ()
+      (),
+      Renderer.blackHole
     )
 
   object Samples {
