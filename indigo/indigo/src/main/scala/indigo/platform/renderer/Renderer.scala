@@ -1,5 +1,7 @@
 package indigo.platform.renderer
 
+import indigo.shared.ImageData
+import indigo.shared.ImageType
 import indigo.shared.collections.Batch
 import indigo.shared.config.RenderingTechnology
 import indigo.shared.datatypes.BindingKey
@@ -9,8 +11,6 @@ import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.shared.platform.ProcessedSceneData
 import indigo.shared.shader.RawShaderCode
 import indigo.shared.time.Seconds
-import indigo.shared.ImageData
-import indigo.shared.ImageType
 
 trait Renderer:
   def renderingTechnology: RenderingTechnology
@@ -36,8 +36,11 @@ object Renderer:
     def init(shaders: Set[RawShaderCode]): Unit                              = ()
     def drawScene(sceneData: ProcessedSceneData, runningTime: Seconds): Unit = ()
     def captureScreen(
-        clippingRect: Rectangle,
-        excludeLayers: Batch[BindingKey],
+        @SuppressWarnings(Array("scalafix:DisableSyntax.defaultArgs"))
+        clippingRect: Rectangle = Rectangle(Size(screenWidth, screenHeight)),
+        @SuppressWarnings(Array("scalafix:DisableSyntax.defaultArgs"))
+        excludeLayers: Batch[BindingKey] = Batch.empty,
+        @SuppressWarnings(Array("scalafix:DisableSyntax.defaultArgs"))
         imageType: ImageType = ImageType.PNG
     ): ImageData = ImageData(0, ImageType.PNG, Array.emptyByteArray)
   }
