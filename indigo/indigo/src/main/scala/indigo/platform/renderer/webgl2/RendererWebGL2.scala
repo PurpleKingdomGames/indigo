@@ -13,6 +13,8 @@ import indigo.platform.renderer.shared.FrameBufferFunctions
 import indigo.platform.renderer.shared.LoadedTextureAsset
 import indigo.platform.renderer.shared.TextureLookupResult
 import indigo.platform.renderer.shared.WebGLHelper
+import indigo.shared.ImageData
+import indigo.shared.ImageType
 import indigo.shared.QuickCache
 import indigo.shared.collections.Batch
 import indigo.shared.config.GameViewport
@@ -41,8 +43,6 @@ import org.scalajs.dom.html
 
 import scala.scalajs.js.Dynamic
 import scala.scalajs.js.typedarray.Float32Array
-import indigo.shared.ImageType
-import indigo.shared.ImageData
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
 final class RendererWebGL2(

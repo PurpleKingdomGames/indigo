@@ -8,6 +8,8 @@ import indigo.platform.renderer.shared.ContextAndCanvas
 import indigo.platform.renderer.shared.LoadedTextureAsset
 import indigo.platform.renderer.shared.TextureLookupResult
 import indigo.platform.renderer.shared.WebGLHelper
+import indigo.shared.ImageData
+import indigo.shared.ImageType
 import indigo.shared.collections.Batch
 import indigo.shared.config.GameViewport
 import indigo.shared.config.RenderingTechnology
@@ -35,8 +37,6 @@ import org.scalajs.dom.WebGLUniformLocation
 import org.scalajs.dom.html
 
 import scala.scalajs.js.typedarray.Float32Array
-import indigo.shared.ImageData
-import indigo.shared.ImageType
 
 final class RendererWebGL1(
     config: RendererConfig,
