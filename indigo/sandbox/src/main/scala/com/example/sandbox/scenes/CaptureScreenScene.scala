@@ -22,9 +22,10 @@ object CaptureScreenScene extends Scene[SandboxStartupData, SandboxGameModel, Sa
   type SceneModel     = SandboxGameModel
   type SceneViewModel = SandboxViewModel
 
-  val uiKey       = BindingKey("ui")
-  val defaultKey  = BindingKey("default")
-  val dudeCloneId = CloneId("Dude")
+  val uiKey        = BindingKey("ui")
+  val defaultKey   = BindingKey("default")
+  val dudeCloneId  = CloneId("Dude")
+  val clippingRect = Rectangle(25, 25, 150, 100)
 
   def eventFilters: EventFilters =
     EventFilters.Restricted
@@ -48,6 +49,7 @@ object CaptureScreenScene extends Scene[SandboxStartupData, SandboxGameModel, Sa
     case MouseEvent.Click(x, y) if x >= 250 && x <= 266 && y >= 165 && y <= 181 =>
       // Open a window with the captured image
       println(context.captureScreen(Batch(uiKey)).getDataUrl)
+      println(context.captureScreen(clippingRect).getDataUrl)
       Outcome(model)
     case _ => Outcome(model)
   }
@@ -68,7 +70,7 @@ object CaptureScreenScene extends Scene[SandboxStartupData, SandboxGameModel, Sa
       SceneUpdateFragment(
         uiKey -> Layer(
           Graphic(Rectangle(0, 0, 16, 16), Material.Bitmap(SandboxAssets.cameraIcon)).moveTo(250, 165),
-          Shape.Box(Rectangle(0, 0, 150, 100), Fill.None, Stroke(1, RGBA.SlateGray)).moveTo(25, 25)
+          Shape.Box(clippingRect, Fill.None, Stroke(1, RGBA.SlateGray))
         ),
         defaultKey -> Layer(gameLayer(model, viewModel))
       )

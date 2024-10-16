@@ -263,16 +263,17 @@ final class RendererWebGL2(
       _prevGameRuntime
     )
 
+    println(s"magnification: ${cNc.magnification}, config magnification: ${config.magnification}")
     ctx2d.drawImage(
       cNc.canvas,
-      clippingRect.x,
-      clippingRect.y,
-      clippingRect.width,
-      clippingRect.height,
+      clippingRect.x * cNc.magnification,
+      clippingRect.y * cNc.magnification,
+      clippingRect.width * cNc.magnification,
+      clippingRect.height * cNc.magnification,
       0,
       0,
-      clippingRect.width,
-      clippingRect.height
+      clippingRect.width * cNc.magnification,
+      clippingRect.height * cNc.magnification
     )
     val dataUrl = canvas.toDataURL(imageType.toString())
     canvas.remove()

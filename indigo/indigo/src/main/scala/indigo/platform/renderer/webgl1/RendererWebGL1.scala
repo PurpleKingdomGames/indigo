@@ -36,8 +36,8 @@ import org.scalajs.dom.WebGLRenderingContext._
 import org.scalajs.dom.WebGLUniformLocation
 import org.scalajs.dom.html
 
-import scala.scalajs.js.typedarray.Float32Array
 import java.util.Base64
+import scala.scalajs.js.typedarray.Float32Array
 
 final class RendererWebGL1(
     config: RendererConfig,
