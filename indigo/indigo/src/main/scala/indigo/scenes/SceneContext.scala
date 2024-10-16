@@ -39,6 +39,7 @@ final class SceneContext[StartUpData](
   export frameContext.inputState.gamepad
   export frameContext.findBounds
   export frameContext.bounds
+  export frameContext.captureScreen
 
   /** The running time of the current scene calculated as the game's total running time minus time the scene was
     * entered.
