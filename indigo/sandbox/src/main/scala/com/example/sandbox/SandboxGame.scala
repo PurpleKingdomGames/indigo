@@ -6,6 +6,7 @@ import com.example.sandbox.scenes.BoundsScene
 import com.example.sandbox.scenes.BoxesScene
 import com.example.sandbox.scenes.CameraScene
 import com.example.sandbox.scenes.CameraWithCloneTilesScene
+import com.example.sandbox.scenes.CaptureScreenScene
 import com.example.sandbox.scenes.ClipScene
 import com.example.sandbox.scenes.ConfettiScene
 import com.example.sandbox.scenes.CratesScene
@@ -39,7 +40,6 @@ import indigoextras.subsystems.FPSCounter
 import indigoextras.ui.*
 
 import scala.scalajs.js.annotation.*
-import com.example.sandbox.scenes.CaptureScreenScene
 
 @JSExportTopLevel("IndigoGame")
 object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, SandboxGameModel, SandboxViewModel]:

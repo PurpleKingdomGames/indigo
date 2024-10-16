@@ -37,6 +37,7 @@ import org.scalajs.dom.WebGLUniformLocation
 import org.scalajs.dom.html
 
 import scala.scalajs.js.typedarray.Float32Array
+import java.util.Base64
 
 final class RendererWebGL1(
     config: RendererConfig,
@@ -105,40 +106,47 @@ final class RendererWebGL1(
   private given CanEqual[Option[Int], Option[Int]] = CanEqual.derived
 
   def captureScreen(
-      @SuppressWarnings(Array("scalafix:DisableSyntax.defaultArgs"))
-      clippingRect: Rectangle = Rectangle(Size(screenWidth, screenHeight)),
-      @SuppressWarnings(Array("scalafix:DisableSyntax.defaultArgs"))
-      excludeLayers: Batch[BindingKey] = Batch.empty,
-      @SuppressWarnings(Array("scalafix:DisableSyntax.defaultArgs"))
-      imageType: ImageType = ImageType.PNG
+      clippingRect: Rectangle,
+      excludeLayers: Batch[BindingKey],
+      imageType: ImageType
   ): ImageData = {
     val canvas = dom.document.createElement("canvas").asInstanceOf[html.Canvas]
-    val ctx    = canvas.getContext("webgl1", cNc.context.getContextAttributes()).asInstanceOf[WebGLRenderingContext]
-    val ctx2d  = canvas.getContext("2d").asInstanceOf[dom.CanvasRenderingContext2D]
-    val renderer = new RendererWebGL1(
-      config,
-      loadedTextureAssets,
-      ContextAndCanvas(ctx, canvas, cNc.magnification),
-      globalEventStream
+    val ctx2d  = canvas.getContext("2d", cNc.context.getContextAttributes()).asInstanceOf[dom.CanvasRenderingContext2D]
+
+    canvas.width = clippingRect.width
+    canvas.height = clippingRect.height
+
+    drawScene(
+      ProcessedSceneData(
+        _prevSceneData.layers.filter(l =>
+          l.bindingKey match {
+            case Some(bk) => excludeLayers.exists(_ == bk) == false
+            case None     => true
+          }
+        ),
+        _prevSceneData.cloneBlankDisplayObjects,
+        _prevSceneData.shaderId,
+        _prevSceneData.shaderUniformData,
+        _prevSceneData.camera
+      ),
+      _prevGameRuntime
     )
 
-    renderer.drawScene(_prevSceneData, _prevGameRuntime)
-
-    val imageData =
-      ctx2d
-        .getImageData(
-          clippingRect.x,
-          clippingRect.y,
-          clippingRect.width,
-          clippingRect.height
-        )
-
-    ctx2d.clearRect(0, 0, canvas.width.toDouble, canvas.height.toDouble)
-    ctx2d.putImageData(imageData, 0, 0)
-
-    val data = canvas.toDataURL(imageType.toString()).split(",")(1).grouped(4).map(_.toInt.toByte).toArray
+    ctx2d.drawImage(
+      cNc.canvas,
+      clippingRect.x,
+      clippingRect.y,
+      clippingRect.width,
+      clippingRect.height,
+      0,
+      0,
+      clippingRect.width,
+      clippingRect.height
+    )
+    val dataUrl = canvas.toDataURL(imageType.toString())
     canvas.remove()
 
+    val data = Base64.getDecoder().decode(dataUrl.split(",")(1).map { case '-' => '+'; case '_' => '/'; case c => c })
     ImageData(data.length, imageType, data)
   }
 
