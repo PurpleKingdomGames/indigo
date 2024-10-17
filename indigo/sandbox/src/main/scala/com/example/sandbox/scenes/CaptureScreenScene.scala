@@ -49,7 +49,7 @@ object CaptureScreenScene extends Scene[SandboxStartupData, SandboxGameModel, Sa
     case MouseEvent.Click(x, y) if x >= 250 && x <= 266 && y >= 165 && y <= 181 =>
       // Open a window with the captured image
       println(context.captureScreen(Batch(uiKey)).getDataUrl)
-      println(context.captureScreen(clippingRect).getDataUrl)
+      println(context.captureScreen(clippingRect.expand(Size(1, 1))).getDataUrl)
       Outcome(model)
     case _ => Outcome(model)
   }
