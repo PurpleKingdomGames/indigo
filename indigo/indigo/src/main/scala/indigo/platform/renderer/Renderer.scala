@@ -25,13 +25,50 @@ trait Renderer:
       excludeLayers: Batch[BindingKey],
       imageType: ImageType
   ): ImageData
-  def captureScreen(): ImageData                        = captureScreen(None, Batch.empty, ImageType.PNG)
+
+  /** Capture the screen as a WebP image
+    *
+    * @return
+    */
+  def captureScreen(): ImageData = captureScreen(None, Batch.empty, ImageType.WEBP)
+
+  /** Capture the screen as a WebP image, only capturing the specified rectangle
+    *
+    * @param clippingRect
+    * @return
+    */
   def captureScreen(clippingRect: Rectangle): ImageData = captureScreen(Some(clippingRect), Batch.empty, ImageType.PNG)
+
+  /** Capture the screen as an image, only capturing the specified rectangle, with the specified image type
+    *
+    * @param clippingRect
+    * @param imageType
+    * @return
+    */
   def captureScreen(clippingRect: Rectangle, imageType: ImageType): ImageData =
     captureScreen(Some(clippingRect), Batch.empty, imageType)
+
+  /** Capture the screen as an image, excluding the specified layers
+    *
+    * @param excludeLayers
+    * @return
+    */
   def captureScreen(excludeLayers: Batch[BindingKey]): ImageData = captureScreen(None, excludeLayers, ImageType.PNG)
+
+  /** Capture the screen as an image, excluding the specified layers, with the specified image type
+    *
+    * @param excludeLayers
+    * @param imageType
+    * @return
+    */
   def captureScreen(excludeLayers: Batch[BindingKey], imageType: ImageType): ImageData =
     captureScreen(None, excludeLayers, imageType)
+
+  /** Capture the screen as an image, with the specified image type
+    *
+    * @param imageType
+    * @return
+    */
   def captureScreen(imageType: ImageType): ImageData = captureScreen(None, Batch.empty, imageType)
 
 object Renderer:
