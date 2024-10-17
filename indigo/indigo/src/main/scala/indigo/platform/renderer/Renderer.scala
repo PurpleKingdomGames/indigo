@@ -21,20 +21,18 @@ trait Renderer:
   def init(shaders: Set[RawShaderCode]): Unit
   def drawScene(sceneData: ProcessedSceneData, runningTime: Seconds): Unit
   def captureScreen(
-      clippingRect: Rectangle,
+      clippingRect: Option[Rectangle],
       excludeLayers: Batch[BindingKey],
       imageType: ImageType
   ): ImageData
-  def captureScreen(): ImageData = captureScreen(Rectangle(Size(screenWidth, screenHeight)), Batch.empty, ImageType.PNG)
-  def captureScreen(clippingRect: Rectangle): ImageData = captureScreen(clippingRect, Batch.empty, ImageType.PNG)
+  def captureScreen(): ImageData                        = captureScreen(None, Batch.empty, ImageType.PNG)
+  def captureScreen(clippingRect: Rectangle): ImageData = captureScreen(Some(clippingRect), Batch.empty, ImageType.PNG)
   def captureScreen(clippingRect: Rectangle, imageType: ImageType): ImageData =
-    captureScreen(clippingRect, Batch.empty, imageType)
-  def captureScreen(excludeLayers: Batch[BindingKey]): ImageData =
-    captureScreen(Rectangle(Size(screenWidth, screenHeight)), excludeLayers, ImageType.PNG)
+    captureScreen(Some(clippingRect), Batch.empty, imageType)
+  def captureScreen(excludeLayers: Batch[BindingKey]): ImageData = captureScreen(None, excludeLayers, ImageType.PNG)
   def captureScreen(excludeLayers: Batch[BindingKey], imageType: ImageType): ImageData =
-    captureScreen(Rectangle(Size(screenWidth, screenHeight)), excludeLayers, imageType)
-  def captureScreen(imageType: ImageType): ImageData =
-    captureScreen(Rectangle(Size(screenWidth, screenHeight)), Batch.empty, imageType)
+    captureScreen(None, excludeLayers, imageType)
+  def captureScreen(imageType: ImageType): ImageData = captureScreen(None, Batch.empty, imageType)
 
 object Renderer:
   def blackHole = new Renderer {
@@ -46,7 +44,7 @@ object Renderer:
     def init(shaders: Set[RawShaderCode]): Unit                              = ()
     def drawScene(sceneData: ProcessedSceneData, runningTime: Seconds): Unit = ()
     def captureScreen(
-        clippingRect: Rectangle,
+        clippingRect: Option[Rectangle],
         excludeLayers: Batch[BindingKey],
         imageType: ImageType
     ): ImageData = ImageData(0, ImageType.PNG, Array.emptyByteArray)

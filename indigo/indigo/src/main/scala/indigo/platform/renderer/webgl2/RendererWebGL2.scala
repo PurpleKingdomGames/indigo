@@ -237,15 +237,22 @@ final class RendererWebGL2(
   private given CanEqual[Option[Int], Option[Int]] = CanEqual.derived
 
   def captureScreen(
-      clippingRect: Rectangle,
+      clippingRect: Option[Rectangle],
       excludeLayers: Batch[BindingKey],
       imageType: ImageType
   ): ImageData = {
     val canvas = dom.document.createElement("canvas").asInstanceOf[html.Canvas]
     val ctx2d  = canvas.getContext("2d", cNc.context.getContextAttributes()).asInstanceOf[dom.CanvasRenderingContext2D]
+    val magnifiedClip = clippingRect match {
+      case Some(rect) => rect * cNc.magnification
+      case None       => Rectangle(0, 0, screenWidth, screenHeight)
+    }
 
-    canvas.width = clippingRect.width
-    canvas.height = clippingRect.height
+    canvas.width = magnifiedClip.width
+    canvas.height = magnifiedClip.height
+
+    val prevSceneData   = _prevSceneData
+    val prevGameRuntime = _prevGameRuntime
 
     drawScene(
       ProcessedSceneData(
@@ -263,17 +270,19 @@ final class RendererWebGL2(
       _prevGameRuntime
     )
 
-    println(s"magnification: ${cNc.magnification}, config magnification: ${config.magnification}")
+    _prevSceneData = prevSceneData
+    _prevGameRuntime = prevGameRuntime
+
     ctx2d.drawImage(
       cNc.canvas,
-      clippingRect.x * cNc.magnification,
-      clippingRect.y * cNc.magnification,
-      clippingRect.width * cNc.magnification,
-      clippingRect.height * cNc.magnification,
+      magnifiedClip.x,
+      magnifiedClip.y,
+      magnifiedClip.width,
+      magnifiedClip.height,
       0,
       0,
-      clippingRect.width * cNc.magnification,
-      clippingRect.height * cNc.magnification
+      magnifiedClip.width,
+      magnifiedClip.height
     )
     val dataUrl = canvas.toDataURL(imageType.toString())
     canvas.remove()
