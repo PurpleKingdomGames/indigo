@@ -953,10 +953,12 @@ object AssetEvent {
     *
     * @param key
     *   The requested tracking key
+    * @param assets
+    *   The assets that were loaded
     * @param available
     *   Whether or not the asset has been made available for the game to use.
     */
-  final case class AssetBatchLoaded(key: BindingKey, available: Boolean) extends AssetEvent
+  final case class AssetBatchLoaded(key: BindingKey, assets: Set[AssetType], available: Boolean) extends AssetEvent
 
   /** If an error occurs during load, the game will be sent this event.
     *
