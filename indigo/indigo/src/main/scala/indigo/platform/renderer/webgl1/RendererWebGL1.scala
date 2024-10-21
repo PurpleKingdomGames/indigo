@@ -157,7 +157,8 @@ final class RendererWebGL1(
     canvas.remove()
 
     val data = Base64.getDecoder().decode(dataUrl.split(",")(1).map { case '-' => '+'; case '_' => '/'; case c => c })
-    ImageData(data.length, imageType, data)
+    val name = s"capture-${System.currentTimeMillis()}"
+    ImageData(name, data.length, imageType, data)
   }
 
   def drawScene(sceneData: ProcessedSceneData, runningTime: Seconds): Unit = {

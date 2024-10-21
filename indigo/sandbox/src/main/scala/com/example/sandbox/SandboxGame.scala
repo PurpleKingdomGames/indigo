@@ -7,6 +7,7 @@ import com.example.sandbox.scenes.BoxesScene
 import com.example.sandbox.scenes.CameraScene
 import com.example.sandbox.scenes.CameraWithCloneTilesScene
 import com.example.sandbox.scenes.CaptureScreenScene
+import com.example.sandbox.scenes.CaptureScreenScene.CaptureScreenSceneViewModel
 import com.example.sandbox.scenes.ClipScene
 import com.example.sandbox.scenes.ConfettiScene
 import com.example.sandbox.scenes.CratesScene
@@ -154,7 +155,8 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
                 .withMaterial(SandboxAssets.dudeMaterial),
               clips
             ),
-            screenCenter
+            screenCenter,
+            bootData.gameViewport
           )
         )
         .addAnimations(spriteAndAnimations.animations)
@@ -186,7 +188,8 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
         InputField("single", assets).withKey(BindingKey("single")).makeSingleLine,
         InputField("multi\nline", assets).withKey(BindingKey("multi")).makeMultiLine.moveTo(5, 5),
         true,
-        UiSceneViewModel.initial
+        UiSceneViewModel.initial,
+        CaptureScreenSceneViewModel(None, None, Point.zero)
       )
     )
   }
@@ -278,13 +281,14 @@ final case class Dude(
     clips: Map[CycleLabel, Clip[Material.Bitmap]]
 )
 final case class SandboxBootData(message: String, gameViewport: GameViewport)
-final case class SandboxStartupData(dude: Dude, viewportCenter: Point)
+final case class SandboxStartupData(dude: Dude, viewportCenter: Point, gameViewport: GameViewport)
 final case class SandboxViewModel(
     offset: Point,
     single: InputField,
     multi: InputField,
     useLightingLayer: Boolean,
-    uiScene: UiSceneViewModel
+    uiScene: UiSceneViewModel,
+    captureScreenScene: CaptureScreenSceneViewModel
 )
 
 final case class Log(message: String) extends GlobalEvent

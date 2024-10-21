@@ -84,5 +84,5 @@ object Renderer:
         clippingRect: Option[Rectangle],
         excludeLayers: Batch[BindingKey],
         imageType: ImageType
-    ): ImageData = ImageData(0, ImageType.PNG, Array.emptyByteArray)
+    ): ImageData = ImageData("empty", 0, ImageType.PNG, Array.emptyByteArray)
   }

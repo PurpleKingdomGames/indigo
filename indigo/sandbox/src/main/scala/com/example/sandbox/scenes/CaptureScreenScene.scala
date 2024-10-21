@@ -12,6 +12,7 @@ import com.example.sandbox.SandboxStartupData
 import com.example.sandbox.SandboxViewModel
 import indigo.*
 import indigo.scenes.*
+import indigo.shared.assets.AssetTypePrimitive
 import indigo.shared.datatypes.RGB.Green
 import indigo.shared.scenegraph.Shape
 import indigo.syntax.*
@@ -20,7 +21,7 @@ import org.scalajs.dom.document
 object CaptureScreenScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
 
   type SceneModel     = SandboxGameModel
-  type SceneViewModel = SandboxViewModel
+  type SceneViewModel = CaptureScreenSceneViewModel
 
   val uiKey        = BindingKey("ui")
   val defaultKey   = BindingKey("default")
@@ -28,13 +29,16 @@ object CaptureScreenScene extends Scene[SandboxStartupData, SandboxGameModel, Sa
   val clippingRect = Rectangle(25, 25, 150, 100)
 
   def eventFilters: EventFilters =
-    EventFilters.Restricted
+    EventFilters.Permissive
 
   def modelLens: Lens[SandboxGameModel, SandboxGameModel] =
     Lens.keepOriginal
 
-  def viewModelLens: Lens[SandboxViewModel, SandboxViewModel] =
-    Lens.keepOriginal
+  def viewModelLens: Lens[SandboxViewModel, CaptureScreenSceneViewModel] =
+    Lens(
+      _.captureScreenScene,
+      (m, vm) => m.copy(captureScreenScene = vm)
+    )
 
   def name: SceneName =
     SceneName("captureScreen")
@@ -45,38 +49,63 @@ object CaptureScreenScene extends Scene[SandboxStartupData, SandboxGameModel, Sa
   def updateModel(
       context: SceneContext[SandboxStartupData],
       model: SandboxGameModel
-  ): GlobalEvent => Outcome[SandboxGameModel] = {
-    case MouseEvent.Click(x, y) if x >= 250 && x <= 266 && y >= 165 && y <= 181 =>
-      // Open a window with the captured image
-      println(context.captureScreen(Batch(uiKey)).getDataUrl)
-      println(context.captureScreen(clippingRect.expand(Size(1, 1))).getDataUrl)
-      Outcome(model)
-    case _ => Outcome(model)
-  }
+  ): GlobalEvent => Outcome[SandboxGameModel] = _ => Outcome(model)
 
   def updateViewModel(
       context: SceneContext[SandboxStartupData],
       model: SandboxGameModel,
-      viewModel: SandboxViewModel
-  ): GlobalEvent => Outcome[SandboxViewModel] =
-    _ => Outcome(viewModel)
+      viewModel: CaptureScreenSceneViewModel
+  ): GlobalEvent => Outcome[CaptureScreenSceneViewModel] = {
+    case MouseEvent.Click(x, y) if x >= 250 && x <= 266 && y >= 165 && y <= 181 =>
+      // Open a window with the captured image
+      val image1 = context.captureScreen(Batch(uiKey)).toAsset
+      val image2 = context.captureScreen(clippingRect.expand(Size(1, 1))).toAsset
+      println(image1.toString())
+      Outcome(viewModel)
+        .addGlobalEvents(
+          AssetEvent.LoadAssetBatch(Set(image1, image2), BindingKey("captureScreen"), true)
+        )
+    case AssetEvent.AssetBatchLoaded(key, assets, loaded) if key == BindingKey("captureScreen") && loaded =>
+      (assets.headOption, assets.drop(1).headOption) match {
+        case (Some(image1: AssetTypePrimitive), Some(image2: AssetTypePrimitive)) =>
+          Outcome(viewModel.copy(screenshot1 = Some(image1.name), screenshot2 = Some(image2.name)))
+        case _ => Outcome(viewModel)
+      }
+    case _ => Outcome(viewModel)
+  }
 
   def present(
       context: SceneContext[SandboxStartupData],
       model: SandboxGameModel,
-      viewModel: SandboxViewModel
+      viewModel: CaptureScreenSceneViewModel
   ): Outcome[SceneUpdateFragment] =
+    println(viewModel.screenshot1.toString())
     Outcome(
       SceneUpdateFragment(
         uiKey -> Layer(
-          Graphic(Rectangle(0, 0, 16, 16), Material.Bitmap(SandboxAssets.cameraIcon)).moveTo(250, 165),
-          Shape.Box(clippingRect, Fill.None, Stroke(1, RGBA.SlateGray))
+          Batch(
+            Graphic(Rectangle(0, 0, 16, 16), Material.Bitmap(SandboxAssets.cameraIcon)).moveTo(250, 165),
+            Shape.Box(clippingRect, Fill.None, Stroke(1, RGBA.SlateGray))
+          ) ++ ((viewModel.screenshot1, viewModel.screenshot2) match {
+            case (Some(image1), Some(image2)) =>
+              Batch(
+                Graphic(
+                  Rectangle(0, 0, context.startUpData.gameViewport.width, context.startUpData.gameViewport.height),
+                  Material.Bitmap(image1)
+                ),
+                Graphic(
+                  clippingRect.moveTo(0, 0),
+                  Material.Bitmap(image2)
+                )
+              )
+            case _ => Batch.empty
+          })
         ),
         defaultKey -> Layer(gameLayer(model, viewModel))
       )
     )
 
-  def gameLayer(currentState: SandboxGameModel, viewModel: SandboxViewModel): Batch[SceneNode] =
+  def gameLayer(currentState: SandboxGameModel, viewModel: CaptureScreenSceneViewModel): Batch[SceneNode] =
     Batch(
       currentState.dude.walkDirection match {
         case d @ DudeLeft =>
@@ -117,3 +146,9 @@ object CaptureScreenScene extends Scene[SandboxStartupData, SandboxGameModel, Sa
         .modifyMaterial(_.withAlpha(0.5).withTint(RGBA.Red.withAmount(0.75))),
       CloneBatch(dudeCloneId, CloneBatchData(16, 64, Radians.zero, -1.0, 1.0))
     )
+
+  final case class CaptureScreenSceneViewModel(
+      screenshot1: Option[AssetName],
+      screenshot2: Option[AssetName],
+      offset: Point
+  )
