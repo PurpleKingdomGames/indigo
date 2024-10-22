@@ -37,7 +37,7 @@ trait Renderer:
     * @param clippingRect
     * @return
     */
-  def captureScreen(clippingRect: Rectangle): ImageData = captureScreen(Some(clippingRect), Batch.empty, ImageType.PNG)
+  def captureScreen(clippingRect: Rectangle): ImageData = captureScreen(Some(clippingRect), Batch.empty, ImageType.WEBP)
 
   /** Capture the screen as an image, only capturing the specified rectangle, with the specified image type
     *
@@ -53,7 +53,7 @@ trait Renderer:
     * @param excludeLayers
     * @return
     */
-  def captureScreen(excludeLayers: Batch[BindingKey]): ImageData = captureScreen(None, excludeLayers, ImageType.PNG)
+  def captureScreen(excludeLayers: Batch[BindingKey]): ImageData = captureScreen(None, excludeLayers, ImageType.WEBP)
 
   /** Capture the screen as an image, excluding the specified layers, with the specified image type
     *
