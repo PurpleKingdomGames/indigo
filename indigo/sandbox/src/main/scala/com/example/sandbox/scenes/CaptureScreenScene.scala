@@ -79,7 +79,6 @@ object CaptureScreenScene extends Scene[SandboxStartupData, SandboxGameModel, Sa
       model: SandboxGameModel,
       viewModel: CaptureScreenSceneViewModel
   ): Outcome[SceneUpdateFragment] =
-    println(viewModel.screenshot1.toString())
     Outcome(
       SceneUpdateFragment(
         uiKey -> Layer(
