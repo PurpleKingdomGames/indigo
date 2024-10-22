@@ -971,4 +971,4 @@ object AssetEvent {
 }
 
 enum IndigoSystemEvent extends GlobalEvent:
-  case Rebuild(assetCollection: AssetCollection)
+  case Rebuild(assetCollection: AssetCollection, nextEvent: GlobalEvent)
