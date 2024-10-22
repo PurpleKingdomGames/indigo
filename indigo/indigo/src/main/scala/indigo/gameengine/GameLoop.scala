@@ -175,7 +175,8 @@ final class GameLoop[StartUpData, GameModel, ViewModel](
       .foreach(systemActions.enqueue)
 
   def performSystemActions(systemEvents: List[IndigoSystemEvent]): Unit =
-    systemEvents.foreach { case IndigoSystemEvent.Rebuild(assetCollection) =>
+    systemEvents.foreach { case IndigoSystemEvent.Rebuild(assetCollection, nextEvent) =>
       IndigoLogger.info("Rebuilding game loop from new asset collection.")
       rebuildGameLoop(assetCollection)
+      gameEngine.globalEventStream.pushGlobalEvent(nextEvent)
     }
