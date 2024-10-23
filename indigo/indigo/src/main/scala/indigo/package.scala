@@ -604,6 +604,9 @@ val AnalogAxis: shared.input.AnalogAxis.type = shared.input.AnalogAxis
 type GamepadButtons = shared.input.GamepadButtons
 val GamepadButtons: shared.input.GamepadButtons.type = shared.input.GamepadButtons
 
+type ImageType = shared.ImageType
+val ImageType: shared.ImageType.type = shared.ImageType
+
 type BoundaryLocator = shared.BoundaryLocator
 
 type FrameContext[StartUpData]            = shared.FrameContext[StartUpData]

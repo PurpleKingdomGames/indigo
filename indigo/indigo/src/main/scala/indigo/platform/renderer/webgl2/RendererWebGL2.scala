@@ -1,9 +1,12 @@
 package indigo.platform.renderer.webgl2
 
+import indigo.BindingKey
+import indigo.Rectangle
 import indigo.facades.WebGL2RenderingContext
 import indigo.platform.assets.DynamicText
 import indigo.platform.events.GlobalEventStream
 import indigo.platform.renderer.Renderer
+import indigo.platform.renderer.ScreenCaptureConfig
 import indigo.platform.renderer.shared.CameraHelper
 import indigo.platform.renderer.shared.ContextAndCanvas
 import indigo.platform.renderer.shared.FrameBufferComponents
@@ -11,11 +14,18 @@ import indigo.platform.renderer.shared.FrameBufferFunctions
 import indigo.platform.renderer.shared.LoadedTextureAsset
 import indigo.platform.renderer.shared.TextureLookupResult
 import indigo.platform.renderer.shared.WebGLHelper
+import indigo.shared.ImageType
 import indigo.shared.QuickCache
+import indigo.shared.assets.AssetName
+import indigo.shared.assets.AssetPath
+import indigo.shared.assets.AssetType
+import indigo.shared.collections.Batch
 import indigo.shared.config.GameViewport
 import indigo.shared.config.RenderingTechnology
 import indigo.shared.datatypes.RGBA
 import indigo.shared.datatypes.Radians
+import indigo.shared.datatypes.Size
+import indigo.shared.datatypes.Vector2
 import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.shared.events.ViewportResize
 import indigo.shared.platform.ProcessedSceneData
@@ -28,6 +38,7 @@ import indigo.shared.shader.StandardShaders
 import indigo.shared.time.Seconds
 import org.scalajs.dom
 import org.scalajs.dom.Element
+import org.scalajs.dom.OffscreenCanvas
 import org.scalajs.dom.WebGLBuffer
 import org.scalajs.dom.WebGLFramebuffer
 import org.scalajs.dom.WebGLProgram
@@ -35,6 +46,7 @@ import org.scalajs.dom.WebGLRenderingContext
 import org.scalajs.dom.WebGLRenderingContext._
 import org.scalajs.dom.html
 
+import java.util.Base64
 import scala.scalajs.js.Dynamic
 import scala.scalajs.js.typedarray.Float32Array
 
@@ -97,6 +109,12 @@ final class RendererWebGL2(
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   var orthographicProjectionMatrixNoMagFlipped: scalajs.js.Array[Float] = null
 
+  // Store previous data in order to take screenshots
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  private var _prevSceneData: ProcessedSceneData = null
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  private var _prevGameRuntime: Seconds = Seconds.zero
+
   def screenWidth: Int  = lastWidth
   def screenHeight: Int = lastHeight
 
@@ -117,19 +135,19 @@ final class RendererWebGL2(
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var layerEntityFrameBuffer: FrameBufferComponents.SingleOutput =
-    FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
+    FrameBufferFunctions.createFrameBufferSingle(gl, cNc.width, cNc.height)
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var scalingFrameBuffer: FrameBufferComponents.SingleOutput =
-    FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
+    FrameBufferFunctions.createFrameBufferSingle(gl, cNc.width, cNc.height)
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var greenDstFrameBuffer: FrameBufferComponents.SingleOutput =
-    FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
+    FrameBufferFunctions.createFrameBufferSingle(gl, cNc.width, cNc.height)
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var blueDstFrameBuffer: FrameBufferComponents.SingleOutput =
-    FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
+    FrameBufferFunctions.createFrameBufferSingle(gl, cNc.width, cNc.height)
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var emptyFrameBuffer: FrameBufferComponents.SingleOutput =
-    FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
+    FrameBufferFunctions.createFrameBufferSingle(gl, cNc.width, cNc.height)
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var greenIsTarget: Boolean = true
@@ -221,6 +239,72 @@ final class RendererWebGL2(
   }
 
   private given CanEqual[Option[Int], Option[Int]] = CanEqual.derived
+
+  def captureScreen(captureOptions: Batch[ScreenCaptureConfig]): Batch[Either[String, AssetType.Image]] =
+    _prevSceneData match {
+      case null => captureOptions.map(_ => Left("No scene data to capture"))
+      case _ =>
+        val prevSceneData   = _prevSceneData
+        val prevGameRuntime = _prevGameRuntime
+
+        captureOptions.map(option =>
+          val canvas = dom.document.createElement("canvas").asInstanceOf[html.Canvas]
+          val ctx2d =
+            canvas.getContext("2d", cNc.context.getContextAttributes()).asInstanceOf[dom.CanvasRenderingContext2D]
+          val magnifiedClip = option.croppingRect match {
+            case Some(rect) => rect * cNc.magnification
+            case None       => Rectangle(0, 0, screenWidth, screenHeight)
+          }
+          val imageSize = Size(
+            (magnifiedClip.width * option.scale.getOrElse(Vector2.one).x).toInt,
+            (magnifiedClip.height * option.scale.getOrElse(Vector2.one).y).toInt
+          )
+
+          canvas.width = imageSize.width
+          canvas.height = imageSize.height
+          ctx2d.imageSmoothingEnabled = false
+
+          drawScene(
+            ProcessedSceneData(
+              _prevSceneData.layers.filter(l =>
+                l.bindingKey match {
+                  case Some(bk) => option.excludeLayers.exists(_ == bk) == false
+                  case None     => true
+                }
+              ),
+              _prevSceneData.cloneBlankDisplayObjects,
+              _prevSceneData.shaderId,
+              _prevSceneData.shaderUniformData,
+              _prevSceneData.camera
+            ),
+            _prevGameRuntime
+          )
+
+          _prevSceneData = prevSceneData
+          _prevGameRuntime = prevGameRuntime
+
+          ctx2d.drawImage(
+            cNc.canvas,
+            magnifiedClip.x,
+            magnifiedClip.y,
+            magnifiedClip.width,
+            magnifiedClip.height,
+            0,
+            0,
+            imageSize.width,
+            imageSize.height
+          )
+          val dataUrl = canvas.toDataURL(option.imageType.toString())
+          canvas.remove()
+
+          Right(
+            AssetType.Image(
+              AssetName(option.name.getOrElse(s"capture-${System.currentTimeMillis()}")),
+              AssetPath(dataUrl)
+            )
+          )
+        )
+    }
 
   def drawScene(sceneData: ProcessedSceneData, runningTime: Seconds): Unit = {
 
@@ -370,6 +454,10 @@ final class RendererWebGL2(
     clearBuffer(blueDstFrameBuffer.frameBuffer)
     clearBuffer(greenDstFrameBuffer.frameBuffer)
     clearBuffer(emptyFrameBuffer.frameBuffer)
+
+    // Store the data for screenshots
+    _prevSceneData = sceneData
+    _prevGameRuntime = runningTime
   }
 
   def blitBuffers(from: WebGLFramebuffer, to: WebGLFramebuffer): Unit = {
@@ -396,8 +484,7 @@ final class RendererWebGL2(
   }
 
   def resize(canvas: html.Canvas, magnification: Int): Unit = {
-    val actualWidth  = canvas.width
-    val actualHeight = canvas.height
+    val (actualWidth, actualHeight) = (canvas.width, canvas.height)
 
     if (!resizeRun || (lastWidth != actualWidth) || (lastHeight != actualHeight)) {
       resizeRun = true

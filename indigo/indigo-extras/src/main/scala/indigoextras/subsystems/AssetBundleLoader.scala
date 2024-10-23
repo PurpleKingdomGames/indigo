@@ -51,11 +51,11 @@ final class AssetBundleLoader[Model] extends SubSystem[Model]:
       }
 
     // Asset Response Events
-    case AssetEvent.AssetBatchLoaded(key, true) if tracker.containsBundle(key) =>
+    case AssetEvent.AssetBatchLoaded(key, _, true) if tracker.containsBundle(key) =>
       Outcome(tracker)
         .addGlobalEvents(AssetBundleLoaderEvent.Success(key))
 
-    case AssetEvent.AssetBatchLoaded(key, false) if tracker.containsAssetFromKey(key) =>
+    case AssetEvent.AssetBatchLoaded(key, _, false) if tracker.containsAssetFromKey(key) =>
       // In this case the "batch" will consist of one item and
       // the BindingKey is actually the AssetPath value and we
       // know the asset is in one of our bundles.

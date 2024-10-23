@@ -24,6 +24,7 @@ import indigo.shared.scenegraph.DirectionLight
 import indigo.shared.scenegraph.EntityNode
 import indigo.shared.scenegraph.Falloff
 import indigo.shared.scenegraph.Graphic
+import indigo.shared.scenegraph.LayerEntry
 import indigo.shared.scenegraph.Light
 import indigo.shared.scenegraph.PointLight
 import indigo.shared.scenegraph.SceneUpdateFragment
@@ -116,17 +117,27 @@ final class SceneProcessor(
 
     val displayLayers: scalajs.js.Array[(DisplayLayer, scalajs.js.Array[(String, DisplayObject)])] =
       scene.layers
-        .flatMap(_.toBatch)
+        .flatMap(l =>
+          l.toBatch.map(
+            (
+              l match {
+                case LayerEntry.Tagged(tag, _) => Some(tag)
+                case _                         => None
+              },
+              _
+            )
+          )
+        )
         .toJSArray
-        .filter(l => l.visible.getOrElse(true))
+        .filter(l => l._2.visible.getOrElse(true))
         .zipWithIndex
         .map { case (l, i) =>
-          val blending   = l.blending.getOrElse(Blending.Normal)
+          val blending   = l._2.blending.getOrElse(Blending.Normal)
           val shaderData = blending.blendMaterial.toShaderData
 
           val conversionResults = displayObjectConverter
             .processSceneNodes(
-              l.nodes.toJSArray,
+              l._2.nodes.toJSArray,
               gameTime,
               assetMapping,
               cloneBlankDisplayObjects,
@@ -137,16 +148,17 @@ final class SceneProcessor(
             )
 
           val layer = DisplayLayer(
+            l._1,
             conversionResults._1,
-            SceneProcessor.makeLightsData((scene.lights ++ l.lights).toJSArray),
+            SceneProcessor.makeLightsData((scene.lights ++ l._2.lights).toJSArray),
             blending.clearColor.getOrElse(RGBA.Zero),
-            l.magnification,
-            l.depth.getOrElse(Depth(i)),
+            l._2.magnification,
+            l._2.depth.getOrElse(Depth(i)),
             blending.entity,
             blending.layer,
             shaderData.shaderId,
             SceneProcessor.mergeShaderToUniformData(shaderData),
-            l.camera
+            l._2.camera
           )
 
           (layer, conversionResults._2)

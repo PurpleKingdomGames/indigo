@@ -19,7 +19,6 @@ class AssetBundleLoaderTests extends munit.FunSuite {
     )
 
   test("AssetBundleLoader - Journey (happy path)") {
-
     val loader  = AssetBundleLoader[Unit]
     val tracker = AssetBundleTracker.empty
 
@@ -40,28 +39,51 @@ class AssetBundleLoaderTests extends munit.FunSuite {
 
     // As each asset comes in, the status is checked and events are emitted.
     val nextLoader1 =
-      loader.update(context(0), loadOutcome.unsafeGet)(AssetEvent.AssetBatchLoaded(BindingKey("/image_1.png"), false))
+      loader.update(context(0), loadOutcome.unsafeGet)(
+        AssetEvent.AssetBatchLoaded(
+          BindingKey("/image_1.png"),
+          Set(defaultAssets.find(a => a.path == AssetPath("/image_1.png")).get),
+          false
+        )
+      )
     assertEquals(nextLoader1.unsafeGlobalEvents.length, 1)
     assertEquals(nextLoader1.unsafeGlobalEvents.contains(AssetBundleLoaderEvent.LoadProgress(key, 33, 1, 3)), true)
 
     val nextLoader2 =
-      loader.update(context(0), nextLoader1.unsafeGet)(AssetEvent.AssetBatchLoaded(BindingKey("/image_2.png"), false))
+      loader.update(context(0), nextLoader1.unsafeGet)(
+        AssetEvent.AssetBatchLoaded(
+          BindingKey("/image_2.png"),
+          Set(defaultAssets.find(a => a.path == AssetPath("/image_2.png")).get),
+          false
+        )
+      )
     assertEquals(nextLoader2.unsafeGlobalEvents.length, 1)
     assertEquals(nextLoader2.unsafeGlobalEvents.contains(AssetBundleLoaderEvent.LoadProgress(key, 67, 2, 3)), true)
 
     // Eventually all assets are loaded individually, and an event is emmitted to
     // load the whole bundle and also to process it.
     val nextLoader3 =
-      loader.update(context(0), nextLoader2.unsafeGet)(AssetEvent.AssetBatchLoaded(BindingKey("/image_3.png"), false))
+      loader.update(context(0), nextLoader2.unsafeGet)(
+        AssetEvent.AssetBatchLoaded(
+          BindingKey("/image_3.png"),
+          Set(defaultAssets.find(a => a.path == AssetPath("/image_3.png")).get),
+          false
+        )
+      )
     assertEquals(nextLoader3.unsafeGlobalEvents.length, 2)
     assertEquals(nextLoader3.unsafeGlobalEvents.contains(AssetBundleLoaderEvent.LoadProgress(key, 100, 3, 3)), true)
     assertEquals(
       nextLoader3.unsafeGlobalEvents.contains(AssetEvent.LoadAssetBatch(defaultAssets.toSet, key, true)),
       true
     )
-
     // Once the whole bundle has finished, a completion event is emitted.
-    val finalLoader = loader.update(context(0), nextLoader3.unsafeGet)(AssetEvent.AssetBatchLoaded(key, true))
+    val finalLoader = loader.update(context(0), nextLoader3.unsafeGet)(
+      AssetEvent.AssetBatchLoaded(
+        key,
+        defaultAssets.find(a => a.path == AssetPath(key.toString())).map(Set(_)).getOrElse(Set.empty),
+        true
+      )
+    )
     assertEquals(finalLoader.unsafeGlobalEvents.length, 1)
     assertEquals(finalLoader.unsafeGlobalEvents.contains(AssetBundleLoaderEvent.Success(key)), true)
     val asset2 = finalLoader.unsafeGet.findBundleByKey(key).get.giveAssetLoadState(AssetPath("/image_2.png")).get
@@ -76,7 +98,6 @@ class AssetBundleLoaderTests extends munit.FunSuite {
     val tracker = AssetBundleTracker.empty
 
     val key = BindingKey("test")
-
     // Someone requests that a bundle of assets be loaded.
     val loadOutcome = loader.update(context(0), tracker)(AssetBundleLoaderEvent.Load(key, defaultAssets.toSet))
 
@@ -89,18 +110,27 @@ class AssetBundleLoaderTests extends munit.FunSuite {
       true
     )
     assertEquals(loadOutcome.unsafeGlobalEvents.contains(AssetBundleLoaderEvent.Started(key)), true)
-
     // As each asset comes in, the status is checked and events are emitted.
     val nextLoader1 =
-      loader.update(context(0), loadOutcome.unsafeGet)(AssetEvent.AssetBatchLoaded(BindingKey("/image_1.png"), false))
+      loader.update(context(0), loadOutcome.unsafeGet)(
+        AssetEvent.AssetBatchLoaded(
+          BindingKey("/image_1.png"),
+          Set(defaultAssets.find(a => a.path == AssetPath("/image_1.png")).get),
+          false
+        )
+      )
     assertEquals(nextLoader1.unsafeGlobalEvents.length, 1)
     assertEquals(nextLoader1.unsafeGlobalEvents.contains(AssetBundleLoaderEvent.LoadProgress(key, 33, 1, 3)), true)
-
     val nextLoader2 =
-      loader.update(context(0), nextLoader1.unsafeGet)(AssetEvent.AssetBatchLoaded(BindingKey("/image_2.png"), false))
+      loader.update(context(0), nextLoader1.unsafeGet)(
+        AssetEvent.AssetBatchLoaded(
+          BindingKey("/image_2.png"),
+          Set(defaultAssets.find(a => a.path == AssetPath("/image_2.png")).get),
+          false
+        )
+      )
     assertEquals(nextLoader2.unsafeGlobalEvents.length, 1)
     assertEquals(nextLoader2.unsafeGlobalEvents.contains(AssetBundleLoaderEvent.LoadProgress(key, 67, 2, 3)), true)
-
     // All assets are loaded individually, but one of them fails.
     val nextLoader3 = loader.update(context(0), nextLoader2.unsafeGet)(
       AssetEvent.AssetBatchLoadError(BindingKey("/image_3.png"), "error")
@@ -113,7 +143,6 @@ class AssetBundleLoaderTests extends munit.FunSuite {
       ),
       true
     )
-
     // Eventually the whole bundle is complete, but in a failed state, and
     // a completion event is emitted listing the errors.
     val finalLoader = loader.update(context(0), nextLoader3.unsafeGet)(

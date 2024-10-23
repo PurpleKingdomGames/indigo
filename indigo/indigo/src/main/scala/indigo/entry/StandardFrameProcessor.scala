@@ -1,6 +1,7 @@
 package indigo.entry
 
 import indigo.gameengine.FrameProcessor
+import indigo.platform.renderer.Renderer
 import indigo.shared.BoundaryLocator
 import indigo.shared.FrameContext
 import indigo.shared.Outcome
@@ -31,9 +32,10 @@ final class StandardFrameProcessor[StartUpData, Model, ViewModel](
       globalEvents: Batch[GlobalEvent],
       inputState: InputState,
       dice: Dice,
-      boundaryLocator: BoundaryLocator
+      boundaryLocator: BoundaryLocator,
+      renderer: => Renderer
   ): Outcome[(Model, ViewModel, SceneUpdateFragment)] =
-    val frameContext = new FrameContext[StartUpData](gameTime, dice, inputState, boundaryLocator, startUpData)
+    val frameContext = new FrameContext[StartUpData](gameTime, dice, inputState, boundaryLocator, startUpData, renderer)
     Outcome.join(
       for {
         m  <- processModel(frameContext, model, globalEvents)

@@ -1,5 +1,6 @@
 package indigo.gameengine
 
+import indigo.platform.renderer.Renderer
 import indigo.shared.BoundaryLocator
 import indigo.shared.Outcome
 import indigo.shared.collections.Batch
@@ -18,5 +19,6 @@ trait FrameProcessor[StartUpData, Model, ViewModel]:
       globalEvents: Batch[GlobalEvent],
       inputState: InputState,
       dice: Dice,
-      boundaryLocator: BoundaryLocator
+      boundaryLocator: BoundaryLocator,
+      renderer: => Renderer
   ): Outcome[(Model, ViewModel, SceneUpdateFragment)]

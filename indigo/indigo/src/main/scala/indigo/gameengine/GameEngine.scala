@@ -227,7 +227,8 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
                 m,
                 vm,
                 frameProccessor,
-                !firstRun // If this isn't the first run, start with it frame locked.
+                !firstRun, // If this isn't the first run, start with it frame locked.
+                renderer
               )
             } yield {
               renderer = rendererAndAssetMapping._1
@@ -363,7 +364,8 @@ object GameEngine {
       initialModel: GameModel,
       initialViewModel: GameModel => ViewModel,
       frameProccessor: FrameProcessor[StartUpData, GameModel, ViewModel],
-      startFrameLocked: Boolean
+      startFrameLocked: Boolean,
+      renderer: => Renderer
   ): Outcome[GameLoop[StartUpData, GameModel, ViewModel]] =
     Outcome(
       new GameLoop[StartUpData, GameModel, ViewModel](
@@ -375,7 +377,8 @@ object GameEngine {
         initialModel,
         initialViewModel(initialModel),
         frameProccessor,
-        startFrameLocked
+        startFrameLocked,
+        renderer
       )
     )
 

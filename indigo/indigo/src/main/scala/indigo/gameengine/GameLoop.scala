@@ -1,6 +1,7 @@
 package indigo.gameengine
 
 import indigo.platform.assets.AssetCollection
+import indigo.platform.renderer.Renderer
 import indigo.shared.BoundaryLocator
 import indigo.shared.IndigoLogger
 import indigo.shared.Outcome
@@ -12,6 +13,7 @@ import indigo.shared.events.GlobalEvent
 import indigo.shared.events.IndigoSystemEvent
 import indigo.shared.events.InputEvent
 import indigo.shared.events.InputState
+import indigo.shared.platform.ProcessedSceneData
 import indigo.shared.platform.SceneProcessor
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.time.GameTime
@@ -30,7 +32,8 @@ final class GameLoop[StartUpData, GameModel, ViewModel](
     initialModel: GameModel,
     initialViewModel: ViewModel,
     frameProcessor: FrameProcessor[StartUpData, GameModel, ViewModel],
-    startFrameLocked: Boolean
+    startFrameLocked: Boolean,
+    renderer: => Renderer
 ):
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
@@ -129,7 +132,8 @@ final class GameLoop[StartUpData, GameModel, ViewModel](
         events,
         _inputState,
         Dice.fromSeconds(gameTime.running),
-        boundaryLocator
+        boundaryLocator,
+        renderer
       )
 
     // Persist frame state
@@ -171,7 +175,8 @@ final class GameLoop[StartUpData, GameModel, ViewModel](
       .foreach(systemActions.enqueue)
 
   def performSystemActions(systemEvents: List[IndigoSystemEvent]): Unit =
-    systemEvents.foreach { case IndigoSystemEvent.Rebuild(assetCollection) =>
+    systemEvents.foreach { case IndigoSystemEvent.Rebuild(assetCollection, nextEvent) =>
       IndigoLogger.info("Rebuilding game loop from new asset collection.")
       rebuildGameLoop(assetCollection)
+      gameEngine.globalEventStream.pushGlobalEvent(nextEvent)
     }

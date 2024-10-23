@@ -39,11 +39,12 @@ object AssetLoader {
     loadAssets(assets)
       .onComplete {
         case Success(ac) if makeAvailable =>
-          globalEventStream.pushGlobalEvent(AssetEvent.AssetBatchLoaded(key, true))
-          globalEventStream.pushGlobalEvent(IndigoSystemEvent.Rebuild(ac))
+          globalEventStream.pushGlobalEvent(
+            IndigoSystemEvent.Rebuild(ac, AssetEvent.AssetBatchLoaded(key, assets, true))
+          )
 
         case Success(_) =>
-          globalEventStream.pushGlobalEvent(AssetEvent.AssetBatchLoaded(key, false))
+          globalEventStream.pushGlobalEvent(AssetEvent.AssetBatchLoaded(key, assets, false))
 
         case Failure(e) =>
           globalEventStream.pushGlobalEvent(AssetEvent.AssetBatchLoadError(key, e.getMessage()))
