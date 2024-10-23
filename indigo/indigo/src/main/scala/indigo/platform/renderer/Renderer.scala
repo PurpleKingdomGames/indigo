@@ -1,7 +1,7 @@
 package indigo.platform.renderer
 
-import indigo.shared.ImageData
 import indigo.shared.ImageType
+import indigo.shared.assets.AssetType
 import indigo.shared.collections.Batch
 import indigo.shared.config.RenderingTechnology
 import indigo.shared.datatypes.BindingKey
@@ -20,56 +20,28 @@ trait Renderer:
 
   def init(shaders: Set[RawShaderCode]): Unit
   def drawScene(sceneData: ProcessedSceneData, runningTime: Seconds): Unit
-  def captureScreen(
-      clippingRect: Option[Rectangle],
-      excludeLayers: Batch[BindingKey],
-      imageType: ImageType
-  ): ImageData
 
-  /** Capture the screen as a WebP image
+  /** Capture the screen as a number of images, each with the specified configuration
     *
+    * @param captureConfig
+    *   The configurations to use when capturing the screen
     * @return
+    *   A batch containing either the captured images, or error messages
     */
-  def captureScreen(): ImageData = captureScreen(None, Batch.empty, ImageType.WEBP)
+  def captureScreen(captureConfig: Batch[ScreenCaptureConfig]): Batch[Either[String, AssetType.Image]]
 
-  /** Capture the screen as a WebP image, only capturing the specified rectangle
+  /** Capture the screen as an image, with the specified configuration
     *
-    * @param clippingRect
+    * @param captureOption
+    *   The configuration to use when capturing the screen
     * @return
+    *   The captured image, or an error message
     */
-  def captureScreen(clippingRect: Rectangle): ImageData = captureScreen(Some(clippingRect), Batch.empty, ImageType.WEBP)
-
-  /** Capture the screen as an image, only capturing the specified rectangle, with the specified image type
-    *
-    * @param clippingRect
-    * @param imageType
-    * @return
-    */
-  def captureScreen(clippingRect: Rectangle, imageType: ImageType): ImageData =
-    captureScreen(Some(clippingRect), Batch.empty, imageType)
-
-  /** Capture the screen as an image, excluding the specified layers
-    *
-    * @param excludeLayers
-    * @return
-    */
-  def captureScreen(excludeLayers: Batch[BindingKey]): ImageData = captureScreen(None, excludeLayers, ImageType.WEBP)
-
-  /** Capture the screen as an image, excluding the specified layers, with the specified image type
-    *
-    * @param excludeLayers
-    * @param imageType
-    * @return
-    */
-  def captureScreen(excludeLayers: Batch[BindingKey], imageType: ImageType): ImageData =
-    captureScreen(None, excludeLayers, imageType)
-
-  /** Capture the screen as an image, with the specified image type
-    *
-    * @param imageType
-    * @return
-    */
-  def captureScreen(imageType: ImageType): ImageData = captureScreen(None, Batch.empty, imageType)
+  def captureScreen(captureConfig: ScreenCaptureConfig): Either[String, AssetType.Image] =
+    captureScreen(Batch(captureConfig)).headOption match {
+      case Some(v) => v
+      case None    => Left("Could not capture image")
+    }
 
 object Renderer:
   def blackHole = new Renderer {
@@ -80,9 +52,7 @@ object Renderer:
 
     def init(shaders: Set[RawShaderCode]): Unit                              = ()
     def drawScene(sceneData: ProcessedSceneData, runningTime: Seconds): Unit = ()
-    def captureScreen(
-        clippingRect: Option[Rectangle],
-        excludeLayers: Batch[BindingKey],
-        imageType: ImageType
-    ): ImageData = ImageData("empty", 0, ImageType.PNG, Array.emptyByteArray)
+    def captureScreen(captureOptions: Batch[ScreenCaptureConfig]): Batch[Either[String, AssetType.Image]] = Batch(
+      Left("No renderer available")
+    )
   }

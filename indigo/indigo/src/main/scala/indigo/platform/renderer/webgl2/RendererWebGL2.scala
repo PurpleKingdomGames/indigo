@@ -6,6 +6,7 @@ import indigo.facades.WebGL2RenderingContext
 import indigo.platform.assets.DynamicText
 import indigo.platform.events.GlobalEventStream
 import indigo.platform.renderer.Renderer
+import indigo.platform.renderer.ScreenCaptureConfig
 import indigo.platform.renderer.shared.CameraHelper
 import indigo.platform.renderer.shared.ContextAndCanvas
 import indigo.platform.renderer.shared.FrameBufferComponents
@@ -13,15 +14,18 @@ import indigo.platform.renderer.shared.FrameBufferFunctions
 import indigo.platform.renderer.shared.LoadedTextureAsset
 import indigo.platform.renderer.shared.TextureLookupResult
 import indigo.platform.renderer.shared.WebGLHelper
-import indigo.shared.ImageData
 import indigo.shared.ImageType
 import indigo.shared.QuickCache
+import indigo.shared.assets.AssetName
+import indigo.shared.assets.AssetPath
+import indigo.shared.assets.AssetType
 import indigo.shared.collections.Batch
 import indigo.shared.config.GameViewport
 import indigo.shared.config.RenderingTechnology
 import indigo.shared.datatypes.RGBA
 import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.Size
+import indigo.shared.datatypes.Vector2
 import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.shared.events.ViewportResize
 import indigo.shared.platform.ProcessedSceneData
@@ -236,61 +240,71 @@ final class RendererWebGL2(
 
   private given CanEqual[Option[Int], Option[Int]] = CanEqual.derived
 
-  def captureScreen(
-      clippingRect: Option[Rectangle],
-      excludeLayers: Batch[BindingKey],
-      imageType: ImageType
-  ): ImageData = {
-    val canvas = dom.document.createElement("canvas").asInstanceOf[html.Canvas]
-    val ctx2d  = canvas.getContext("2d", cNc.context.getContextAttributes()).asInstanceOf[dom.CanvasRenderingContext2D]
-    val magnifiedClip = clippingRect match {
-      case Some(rect) => rect * cNc.magnification
-      case None       => Rectangle(0, 0, screenWidth, screenHeight)
-    }
+  def captureScreen(captureOptions: Batch[ScreenCaptureConfig]): Batch[Either[String, AssetType.Image]] =
+    _prevSceneData match {
+      case null => captureOptions.map(_ => Left("No scene data to capture"))
+      case _ =>
+        val prevSceneData   = _prevSceneData
+        val prevGameRuntime = _prevGameRuntime
 
-    canvas.width = magnifiedClip.width
-    canvas.height = magnifiedClip.height
-
-    val prevSceneData   = _prevSceneData
-    val prevGameRuntime = _prevGameRuntime
-
-    drawScene(
-      ProcessedSceneData(
-        _prevSceneData.layers.filter(l =>
-          l.bindingKey match {
-            case Some(bk) => excludeLayers.exists(_ == bk) == false
-            case None     => true
+        captureOptions.map(option =>
+          val canvas = dom.document.createElement("canvas").asInstanceOf[html.Canvas]
+          val ctx2d =
+            canvas.getContext("2d", cNc.context.getContextAttributes()).asInstanceOf[dom.CanvasRenderingContext2D]
+          val magnifiedClip = option.croppingRect match {
+            case Some(rect) => rect * cNc.magnification
+            case None       => Rectangle(0, 0, screenWidth, screenHeight)
           }
-        ),
-        _prevSceneData.cloneBlankDisplayObjects,
-        _prevSceneData.shaderId,
-        _prevSceneData.shaderUniformData,
-        _prevSceneData.camera
-      ),
-      _prevGameRuntime
-    )
+          val imageSize = Size(
+            (magnifiedClip.width * option.scale.getOrElse(Vector2.one).x).toInt,
+            (magnifiedClip.height * option.scale.getOrElse(Vector2.one).y).toInt
+          )
 
-    _prevSceneData = prevSceneData
-    _prevGameRuntime = prevGameRuntime
+          canvas.width = imageSize.width
+          canvas.height = imageSize.height
+          ctx2d.imageSmoothingEnabled = false
 
-    ctx2d.drawImage(
-      cNc.canvas,
-      magnifiedClip.x,
-      magnifiedClip.y,
-      magnifiedClip.width,
-      magnifiedClip.height,
-      0,
-      0,
-      magnifiedClip.width,
-      magnifiedClip.height
-    )
-    val dataUrl = canvas.toDataURL(imageType.toString())
-    canvas.remove()
+          drawScene(
+            ProcessedSceneData(
+              _prevSceneData.layers.filter(l =>
+                l.bindingKey match {
+                  case Some(bk) => option.excludeLayers.exists(_ == bk) == false
+                  case None     => true
+                }
+              ),
+              _prevSceneData.cloneBlankDisplayObjects,
+              _prevSceneData.shaderId,
+              _prevSceneData.shaderUniformData,
+              _prevSceneData.camera
+            ),
+            _prevGameRuntime
+          )
 
-    val data = Base64.getDecoder().decode(dataUrl.split(",")(1).map { case '-' => '+'; case '_' => '/'; case c => c })
-    val name = s"capture-${System.currentTimeMillis()}"
-    ImageData(name, data.length, imageType, data)
-  }
+          _prevSceneData = prevSceneData
+          _prevGameRuntime = prevGameRuntime
+
+          ctx2d.drawImage(
+            cNc.canvas,
+            magnifiedClip.x,
+            magnifiedClip.y,
+            magnifiedClip.width,
+            magnifiedClip.height,
+            0,
+            0,
+            imageSize.width,
+            imageSize.height
+          )
+          val dataUrl = canvas.toDataURL(option.imageType.toString())
+          canvas.remove()
+
+          Right(
+            AssetType.Image(
+              AssetName(option.name.getOrElse(s"capture-${System.currentTimeMillis()}")),
+              AssetPath(dataUrl)
+            )
+          )
+        )
+    }
 
   def drawScene(sceneData: ProcessedSceneData, runningTime: Seconds): Unit = {
 
