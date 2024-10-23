@@ -7,16 +7,21 @@ import com.example.sandbox.DudeRight
 import com.example.sandbox.DudeUp
 import com.example.sandbox.Fonts
 import com.example.sandbox.SandboxAssets
+import com.example.sandbox.SandboxGame
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
 import com.example.sandbox.SandboxViewModel
 import indigo.*
+import indigo.platform.renderer.ScreenCaptureConfig
 import indigo.scenes.*
 import indigo.shared.assets.AssetTypePrimitive
 import indigo.shared.datatypes.RGB.Green
+import indigo.shared.datatypes.RGB.Indigo
 import indigo.shared.scenegraph.Shape
+import indigo.shared.scenegraph.Shape.Box
 import indigo.syntax.*
 import org.scalajs.dom.document
+import org.w3c.dom.css.Rect
 
 object CaptureScreenScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
 
@@ -57,13 +62,32 @@ object CaptureScreenScene extends Scene[SandboxStartupData, SandboxGameModel, Sa
       viewModel: CaptureScreenSceneViewModel
   ): GlobalEvent => Outcome[CaptureScreenSceneViewModel] = {
     case MouseEvent.Click(x, y) if x >= 250 && x <= 266 && y >= 165 && y <= 181 =>
-      // Open a window with the captured image
-      val image1 = context.captureScreen(Batch(uiKey)).toAsset
-      val image2 = context.captureScreen(clippingRect.expand(Size(1, 1))).toAsset
-      println(image1.toString())
+      val screenshots: Set[AssetType] = context
+        // Capture 2 screenshots, 1 of the full screen and the other of the clipping rectangle
+        // These are reduced by 0.125 so that it sits a quarter size of the real screen without further scaling
+        .captureScreen(
+          Batch(
+            // Get the full screen and scale it
+            ScreenCaptureConfig.default
+              .withName("screenshot1")
+              .withScale(0.5)
+              .withExcludeLayers(Batch(uiKey)),
+            // Get the screen inside the clipping rectangle and scale it. We don't remove the UI layer here
+            ScreenCaptureConfig.default
+              .withName("screenshot2")
+              .withScale(0.5)
+              .withCrop(clippingRect)
+          )
+        )
+        .collect { case Right(image) => image }
+        .toSet
+
+      // Output each image data URL to the console
+      screenshots.foreach(a => IndigoLogger.info(a.asInstanceOf[AssetType.Image].path.toString()))
+
       Outcome(viewModel)
         .addGlobalEvents(
-          AssetEvent.LoadAssetBatch(Set(image1, image2), BindingKey("captureScreen"), true)
+          AssetEvent.LoadAssetBatch(screenshots, BindingKey("captureScreen"), true)
         )
     case AssetEvent.AssetBatchLoaded(key, assets, loaded) if key == BindingKey("captureScreen") && loaded =>
       (assets.headOption, assets.drop(1).headOption) match {
@@ -79,6 +103,15 @@ object CaptureScreenScene extends Scene[SandboxStartupData, SandboxGameModel, Sa
       model: SandboxGameModel,
       viewModel: CaptureScreenSceneViewModel
   ): Outcome[SceneUpdateFragment] =
+    val screenshotScale = 0.3
+    val viewPort        = context.frameContext.startUpData.gameViewport.size / SandboxGame.magnificationLevel
+    val bigRect         = Rectangle((viewPort.width * screenshotScale).toInt, (viewPort.height * screenshotScale).toInt)
+    val smallRect = Rectangle(
+      0,
+      0,
+      (clippingRect.width * screenshotScale).toInt,
+      (clippingRect.height * screenshotScale).toInt
+    )
     Outcome(
       SceneUpdateFragment(
         uiKey -> Layer(
@@ -89,13 +122,25 @@ object CaptureScreenScene extends Scene[SandboxStartupData, SandboxGameModel, Sa
             case (Some(image1), Some(image2)) =>
               Batch(
                 Graphic(
-                  Rectangle(0, 0, context.startUpData.gameViewport.width, context.startUpData.gameViewport.height),
+                  Rectangle(viewPort),
                   Material.Bitmap(image1)
-                ),
+                ).scaleBy(Vector2(screenshotScale))
+                  .moveTo(viewPort.width - (viewPort.width * screenshotScale).toInt - 5, 5),
+                Box(bigRect, Fill.None, Stroke(1, RGBA.Black))
+                  .moveTo(viewPort.width - (viewPort.width * screenshotScale).toInt - 5, 5),
                 Graphic(
-                  clippingRect.moveTo(0, 0),
+                  clippingRect,
                   Material.Bitmap(image2)
-                )
+                ).scaleBy(Vector2(screenshotScale))
+                  .moveTo(
+                    viewPort.width - (clippingRect.width * screenshotScale).toInt - 5,
+                    (viewPort.height * screenshotScale).toInt + 10
+                  ),
+                Box(smallRect, Fill.None, Stroke(1, RGBA.Black))
+                  .moveTo(
+                    viewPort.width - (clippingRect.width * screenshotScale).toInt - 5,
+                    (viewPort.height * screenshotScale).toInt + 10
+                  )
               )
             case _ => Batch.empty
           })
