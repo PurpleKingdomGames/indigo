@@ -3,6 +3,8 @@ package indigo.platform.events
 import indigo.shared.collections.Batch
 import indigo.shared.config.ResizePolicy
 import indigo.shared.constants.Key
+import indigo.shared.constants.KeyCode
+import indigo.shared.constants.KeyLocation
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.Size
@@ -164,10 +166,36 @@ final class WorldEvents:
         globalEventStream.pushGlobalEvent(wheel)
       },
       onKeyDown = { e =>
-        globalEventStream.pushGlobalEvent(KeyboardEvent.KeyDown(Key(e.keyCode, e.key)))
+        globalEventStream.pushGlobalEvent(
+          KeyboardEvent.KeyDown(
+            Key(
+              KeyCode.fromString(e.code),
+              e.key,
+              KeyLocation.fromInt(e.location)
+            ),
+            e.repeat,
+            e.altKey,
+            e.ctrlKey,
+            e.metaKey,
+            e.shiftKey
+          )
+        )
       },
       onKeyUp = { e =>
-        globalEventStream.pushGlobalEvent(KeyboardEvent.KeyUp(Key(e.keyCode, e.key)))
+        globalEventStream.pushGlobalEvent(
+          KeyboardEvent.KeyUp(
+            Key(
+              KeyCode.fromString(e.code),
+              e.key,
+              KeyLocation.fromInt(e.location)
+            ),
+            e.repeat,
+            e.altKey,
+            e.ctrlKey,
+            e.metaKey,
+            e.shiftKey
+          )
+        )
       },
       // Prevent right mouse button from popping up the context menu
       onContextMenu = if disableContextMenu then Some((e: dom.MouseEvent) => e.preventDefault()) else None,
@@ -442,51 +470,54 @@ final class WorldEvents:
       resizeObserver = new dom.ResizeObserver((entries, _) =>
         entries.foreach { entry =>
           entry.target.childNodes.foreach { child =>
-            if child.attributes.getNamedItem("id").value == canvas.attributes.getNamedItem("id").value then
-              val containerSize = new Size(
-                Math.floor(entry.contentRect.width).toInt,
-                Math.floor(entry.contentRect.height).toInt
-              )
-              val canvasSize = new Size(canvas.width, canvas.height)
-              if resizePolicy != ResizePolicy.NoResize then
-                val newSize = resizePolicy match {
-                  case ResizePolicy.Resize => containerSize
-                  case ResizePolicy.ResizePreserveAspect =>
-                    val width       = canvas.width.toDouble
-                    val height      = canvas.height.toDouble
-                    val aspectRatio = Math.min(width, height) / Math.max(width, height)
+            child match {
+              case child: dom.Element
+                  if child.attributes.getNamedItem("id").value == canvas.attributes.getNamedItem("id").value =>
+                val containerSize = new Size(
+                  Math.floor(entry.contentRect.width).toInt,
+                  Math.floor(entry.contentRect.height).toInt
+                )
+                val canvasSize = new Size(canvas.width, canvas.height)
+                if resizePolicy != ResizePolicy.NoResize then
+                  val newSize = resizePolicy match {
+                    case ResizePolicy.Resize => containerSize
+                    case ResizePolicy.ResizePreserveAspect =>
+                      val width       = canvas.width.toDouble
+                      val height      = canvas.height.toDouble
+                      val aspectRatio = Math.min(width, height) / Math.max(width, height)
 
-                    if width > height then
-                      val newHeight = containerSize.width.toDouble * aspectRatio
-                      if newHeight > containerSize.height then
-                        Size(
-                          (containerSize.height / aspectRatio).toInt,
-                          containerSize.height
-                        )
+                      if width > height then
+                        val newHeight = containerSize.width.toDouble * aspectRatio
+                        if newHeight > containerSize.height then
+                          Size(
+                            (containerSize.height / aspectRatio).toInt,
+                            containerSize.height
+                          )
+                        else
+                          Size(
+                            containerSize.width,
+                            newHeight.toInt
+                          )
                       else
-                        Size(
-                          containerSize.width,
-                          newHeight.toInt
-                        )
-                    else
-                      val newWidth = containerSize.height.toDouble * aspectRatio
-                      if newWidth > containerSize.width then
-                        Size(
-                          containerSize.width,
-                          (containerSize.width / aspectRatio).toInt
-                        )
-                      else
-                        Size(
-                          newWidth.toInt,
-                          containerSize.height
-                        )
-                  case _ => canvasSize
-                }
+                        val newWidth = containerSize.height.toDouble * aspectRatio
+                        if newWidth > containerSize.width then
+                          Size(
+                            containerSize.width,
+                            (containerSize.width / aspectRatio).toInt
+                          )
+                        else
+                          Size(
+                            newWidth.toInt,
+                            containerSize.height
+                          )
+                    case _ => canvasSize
+                  }
 
-                if (newSize != canvasSize) {
-                  canvas.width = Math.min(newSize.width, containerSize.width)
-                  canvas.height = Math.min(newSize.height, containerSize.height)
-                }
+                  if (newSize != canvasSize) {
+                    canvas.width = Math.min(newSize.width, containerSize.width)
+                    canvas.height = Math.min(newSize.height, containerSize.height)
+                  }
+            }
           }
         }
       )
