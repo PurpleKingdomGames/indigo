@@ -1,22 +1,25 @@
 package indigo.shared.input
 
+import indigo.KeyCode
 import indigo.shared.collections.Batch
 import indigo.shared.constants.Key
 import indigo.shared.events.KeyboardEvent
 
 import scala.annotation.tailrec
-import indigo.shared.constants.KeyCode
+import scala.annotation.targetName
 
-final class Keyboard(
-    keyboardEvents: Batch[KeyboardEvent],
-    val keysDown: Batch[KeyCode],
-    val lastKeyHeldDown: Option[KeyCode]
-) {
+final class Keyboard(keyboardEvents: Batch[KeyboardEvent], val keysDown: Batch[Key], val lastKeyHeldDown: Option[Key]) {
 
-  lazy val keysReleased: Batch[KeyCode] = keyboardEvents.collect { case k: KeyboardEvent.KeyUp => k.key.code }
+  lazy val keysReleased: Batch[Key] = keyboardEvents.collect { case k: KeyboardEvent.KeyUp => k.key }
 
-  def keysAreDown(keys: KeyCode*): Boolean = keys.forall(keyCode => keysDown.contains(keyCode))
-  def keysAreUp(keys: KeyCode*): Boolean   = keys.forall(keyCode => keysReleased.contains(keyCode))
+  def keysAreDown(keys: Key*): Boolean = keys.forall(keyCode => keysDown.contains(keyCode))
+  def keysAreUp(keys: Key*): Boolean   = keys.forall(keyCode => keysReleased.contains(keyCode))
+
+  @targetName("keysAreDownKeyCodes")
+  def keysAreDown(keys: KeyCode*): Boolean = keys.forall(keyCode => keysDown.exists(k => k.code == keyCode))
+
+  @targetName("keysAreUpKeyCodes")
+  def keysAreUp(keys: KeyCode*): Boolean = keys.forall(keyCode => keysReleased.exists(k => k.code == keyCode))
 
 }
 object Keyboard {
@@ -36,18 +39,18 @@ object Keyboard {
 
   private given CanEqual[Batch[KeyboardEvent], Batch[KeyboardEvent]] = CanEqual.derived
 
-  def calculateKeysDown(keyboardEvents: Batch[KeyboardEvent], previousKeysDown: Batch[KeyCode]): Batch[KeyCode] = {
+  def calculateKeysDown(keyboardEvents: Batch[KeyboardEvent], previousKeysDown: Batch[Key]): Batch[Key] = {
     @tailrec
-    def rec(remaining: List[KeyboardEvent], keysDownAcc: List[KeyCode]): Batch[KeyCode] =
+    def rec(remaining: List[KeyboardEvent], keysDownAcc: List[Key]): Batch[Key] =
       remaining match {
         case Nil =>
           Batch.fromList(keysDownAcc.reverse)
 
         case KeyboardEvent.KeyDown(k) :: tl =>
-          rec(tl, k.code :: keysDownAcc)
+          rec(tl, k :: keysDownAcc)
 
         case KeyboardEvent.KeyUp(k) :: tl =>
-          rec(tl, keysDownAcc.filterNot(p => p == k.code))
+          rec(tl, keysDownAcc.filterNot(p => p === k))
 
         case _ => rec(remaining.tail, keysDownAcc)
       }

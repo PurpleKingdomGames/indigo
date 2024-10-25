@@ -300,6 +300,12 @@ val Outcome: shared.Outcome.type = shared.Outcome
 type Key = shared.constants.Key
 val Key: shared.constants.Key.type = shared.constants.Key
 
+type KeyCode = shared.constants.KeyCode
+val KeyCode: shared.constants.KeyCode.type = shared.constants.KeyCode
+
+type KeyLocation = shared.constants.KeyLocation
+val KeyLocation: shared.constants.KeyLocation.type = shared.constants.KeyLocation
+
 type Batch[A] = shared.collections.Batch[A]
 val Batch: shared.collections.Batch.type = shared.collections.Batch
 
