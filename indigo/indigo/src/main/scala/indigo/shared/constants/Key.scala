@@ -4,6 +4,15 @@ final case class Key(code: KeyCode, key: String, location: KeyLocation) derives 
   def isPrintable: Boolean =
     (key != "") && KeyCode.printable.contains(this.code)
 
+  def isNumber: Boolean =
+    code match {
+      case KeyCode.Digit0 | KeyCode.Digit1 | KeyCode.Digit2 | KeyCode.Digit3 | KeyCode.Digit4 | KeyCode.Digit5 |
+          KeyCode.Digit6 | KeyCode.Digit7 | KeyCode.Digit8 | KeyCode.Digit9 =>
+        true
+      case _ =>
+        false
+    }
+
   // DO NOT REMOVE
   def ===(other: Key): Boolean =
     code == other.code
