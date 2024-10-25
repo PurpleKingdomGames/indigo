@@ -1,8 +1,8 @@
 package indigo.shared.constants
 
-final case class Key(code: Int, key: String) derives CanEqual {
+final case class Key(code: KeyCode, key: String, location: KeyLocation) derives CanEqual {
   def isPrintable: Boolean =
-    (key != "") && Key.printable.map(_.code).contains(this.code)
+    (key != "") && KeyCode.printable.contains(this.code)
 
   // DO NOT REMOVE
   def ===(other: Key): Boolean =
@@ -20,181 +20,114 @@ final case class Key(code: Int, key: String) derives CanEqual {
       case _ => false
     }
 
-  override def hashCode: Int = code
+  override def hashCode: Int = code.hashCode()
 }
 
 object Key {
 
-  implicit private def intToKey(i: Int): Key =
-    Key(i, "")
+  implicit private def keyCodeToKey(i: KeyCode): Key =
+    Key(i, "", KeyLocation.Standard)
 
-  implicit private def intToKey(t: (Int, String)): Key =
-    Key(t._1, t._2)
+  implicit private def keyCodeToKey(t: (KeyCode, String)): Key =
+    Key(t._1, t._2, KeyLocation.Standard)
 
-  val BACKSPACE: Key        = 8
-  val TAB: Key              = 9
-  val ENTER: Key            = 13  -> "\n"
-  val SHIFT: Key            = 16
-  val CTRL: Key             = 17
-  val ALT: Key              = 18
-  val PAUSE_BREAK: Key      = 19
-  val CAPS_LOCK: Key        = 20
-  val ESCAPE: Key           = 27
-  val SPACE: Key            = 32  -> " "
-  val PAGE_UP: Key          = 33
-  val PAGE_DOWN: Key        = 34
-  val END: Key              = 35
-  val HOME: Key             = 36
-  val LEFT_ARROW: Key       = 37
-  val UP_ARROW: Key         = 38
-  val RIGHT_ARROW: Key      = 39
-  val DOWN_ARROW: Key       = 40
-  val INSERT: Key           = 45
-  val DELETE: Key           = 46
-  val KEY_0: Key            = 48  -> "0"
-  val KEY_1: Key            = 49  -> "1"
-  val KEY_2: Key            = 50  -> "2"
-  val KEY_3: Key            = 51  -> "3"
-  val KEY_4: Key            = 52  -> "4"
-  val KEY_5: Key            = 53  -> "5"
-  val KEY_6: Key            = 54  -> "6"
-  val KEY_7: Key            = 55  -> "7"
-  val KEY_8: Key            = 56  -> "8"
-  val KEY_9: Key            = 57  -> "9"
-  val KEY_A: Key            = 65  -> "A"
-  val KEY_B: Key            = 66  -> "B"
-  val KEY_C: Key            = 67  -> "C"
-  val KEY_D: Key            = 68  -> "D"
-  val KEY_E: Key            = 69  -> "E"
-  val KEY_F: Key            = 70  -> "F"
-  val KEY_G: Key            = 71  -> "G"
-  val KEY_H: Key            = 72  -> "H"
-  val KEY_I: Key            = 73  -> "I"
-  val KEY_J: Key            = 74  -> "J"
-  val KEY_K: Key            = 75  -> "K"
-  val KEY_L: Key            = 76  -> "L"
-  val KEY_M: Key            = 77  -> "M"
-  val KEY_N: Key            = 78  -> "N"
-  val KEY_O: Key            = 79  -> "O"
-  val KEY_P: Key            = 80  -> "P"
-  val KEY_Q: Key            = 81  -> "Q"
-  val KEY_R: Key            = 82  -> "R"
-  val KEY_S: Key            = 83  -> "S"
-  val KEY_T: Key            = 84  -> "T"
-  val KEY_U: Key            = 85  -> "U"
-  val KEY_V: Key            = 86  -> "V"
-  val KEY_W: Key            = 87  -> "W"
-  val KEY_X: Key            = 88  -> "X"
-  val KEY_Y: Key            = 89  -> "Y"
-  val KEY_Z: Key            = 90  -> "Z"
-  val LEFT_WINDOW_KEY: Key  = 91
-  val RIGHT_WINDOW_KEY: Key = 92
-  val SELECT_KEY: Key       = 93
-  val NUMPAD_0: Key         = 96  -> "0"
-  val NUMPAD_1: Key         = 97  -> "1"
-  val NUMPAD_2: Key         = 98  -> "2"
-  val NUMPAD_3: Key         = 99  -> "3"
-  val NUMPAD_4: Key         = 100 -> "4"
-  val NUMPAD_5: Key         = 101 -> "5"
-  val NUMPAD_6: Key         = 102 -> "6"
-  val NUMPAD_7: Key         = 103 -> "7"
-  val NUMPAD_8: Key         = 104 -> "8"
-  val NUMPAD_9: Key         = 105 -> "9"
-  val MULTIPLY: Key         = 106 -> "*"
-  val ADD: Key              = 107 -> "+"
-  val SUBTRACT: Key         = 109 -> "-"
-  val DECIMAL_POINT: Key    = 110 -> "."
-  val DIVIDE: Key           = 111 -> "/"
-  val F1: Key               = 112
-  val F2: Key               = 113
-  val F3: Key               = 114
-  val F4: Key               = 115
-  val F5: Key               = 116
-  val F6: Key               = 117
-  val F7: Key               = 118
-  val F8: Key               = 119
-  val F9: Key               = 120
-  val F10: Key              = 121
-  val F11: Key              = 122
-  val F12: Key              = 123
-  val NUM_LOCK: Key         = 144
-  val SCROLL_LOCK: Key      = 145
-  val SEMI_COLON: Key       = 186 -> ";"
-  val EQUAL_SIGN: Key       = 187 -> "="
-  val COMMA: Key            = 188 -> ","
-  val DASH: Key             = 189 -> "-"
-  val PERIOD: Key           = 190 -> "."
-  val FORWARD_SLASH: Key    = 191 -> "/"
-  val GRAVE_ACCENT: Key     = 192
-  val OPEN_BRACKET: Key     = 219 -> "("
-  val BACK_SLASH: Key       = 220 -> "\\"
-  val CLOSE_BRACKET: Key    = 221 -> ")"
-  val SINGLE_QUOTE: Key     = 222 -> "\'"
-
-  val printable: List[Key] =
-    List(
-      SPACE,
-      KEY_0,
-      KEY_1,
-      KEY_2,
-      KEY_3,
-      KEY_4,
-      KEY_5,
-      KEY_6,
-      KEY_7,
-      KEY_8,
-      KEY_9,
-      KEY_A,
-      KEY_B,
-      KEY_C,
-      KEY_D,
-      KEY_E,
-      KEY_F,
-      KEY_G,
-      KEY_H,
-      KEY_I,
-      KEY_J,
-      KEY_K,
-      KEY_L,
-      KEY_M,
-      KEY_N,
-      KEY_O,
-      KEY_P,
-      KEY_Q,
-      KEY_R,
-      KEY_S,
-      KEY_T,
-      KEY_U,
-      KEY_V,
-      KEY_W,
-      KEY_X,
-      KEY_Y,
-      KEY_Z,
-      NUMPAD_0,
-      NUMPAD_1,
-      NUMPAD_2,
-      NUMPAD_3,
-      NUMPAD_4,
-      NUMPAD_5,
-      NUMPAD_6,
-      NUMPAD_7,
-      NUMPAD_8,
-      NUMPAD_9,
-      MULTIPLY,
-      ADD,
-      SUBTRACT,
-      DECIMAL_POINT,
-      DIVIDE,
-      SEMI_COLON,
-      EQUAL_SIGN,
-      COMMA,
-      DASH,
-      PERIOD,
-      FORWARD_SLASH,
-      GRAVE_ACCENT,
-      OPEN_BRACKET,
-      BACK_SLASH,
-      CLOSE_BRACKET,
-      SINGLE_QUOTE
-    )
+  val BACKSPACE: Key        = KeyCode.Backspace
+  val TAB: Key              = KeyCode.Tab            -> "\t"
+  val ENTER: Key            = KeyCode.Enter          -> "\n"
+  val SHIFT: Key            = KeyCode.ShiftLeft
+  val CTRL: Key             = KeyCode.ControlLeft
+  val ALT: Key              = KeyCode.AltLeft
+  val PAUSE_BREAK: Key      = KeyCode.Pause
+  val CAPS_LOCK: Key        = KeyCode.CapsLock
+  val ESCAPE: Key           = KeyCode.Escape
+  val SPACE: Key            = KeyCode.Space          -> " "
+  val PAGE_UP: Key          = KeyCode.PageUp
+  val PAGE_DOWN: Key        = KeyCode.PageDown
+  val END: Key              = KeyCode.End
+  val HOME: Key             = KeyCode.Home
+  val LEFT_ARROW: Key       = KeyCode.ArrowLeft
+  val UP_ARROW: Key         = KeyCode.ArrowUp
+  val RIGHT_ARROW: Key      = KeyCode.ArrowRight
+  val DOWN_ARROW: Key       = KeyCode.ArrowDown
+  val INSERT: Key           = KeyCode.Insert
+  val DELETE: Key           = KeyCode.Delete
+  val KEY_0: Key            = KeyCode.Digit0         -> "0"
+  val KEY_1: Key            = KeyCode.Digit1         -> "1"
+  val KEY_2: Key            = KeyCode.Digit2         -> "2"
+  val KEY_3: Key            = KeyCode.Digit3         -> "3"
+  val KEY_4: Key            = KeyCode.Digit4         -> "4"
+  val KEY_5: Key            = KeyCode.Digit5         -> "5"
+  val KEY_6: Key            = KeyCode.Digit6         -> "6"
+  val KEY_7: Key            = KeyCode.Digit7         -> "7"
+  val KEY_8: Key            = KeyCode.Digit8         -> "8"
+  val KEY_9: Key            = KeyCode.Digit9         -> "9"
+  val KEY_A: Key            = KeyCode.KeyA           -> "A"
+  val KEY_B: Key            = KeyCode.KeyB           -> "B"
+  val KEY_C: Key            = KeyCode.KeyC           -> "C"
+  val KEY_D: Key            = KeyCode.KeyD           -> "D"
+  val KEY_E: Key            = KeyCode.KeyE           -> "E"
+  val KEY_F: Key            = KeyCode.KeyF           -> "F"
+  val KEY_G: Key            = KeyCode.KeyG           -> "G"
+  val KEY_H: Key            = KeyCode.KeyH           -> "H"
+  val KEY_I: Key            = KeyCode.KeyI           -> "I"
+  val KEY_J: Key            = KeyCode.KeyJ           -> "J"
+  val KEY_K: Key            = KeyCode.KeyK           -> "K"
+  val KEY_L: Key            = KeyCode.KeyL           -> "L"
+  val KEY_M: Key            = KeyCode.KeyM           -> "M"
+  val KEY_N: Key            = KeyCode.KeyN           -> "N"
+  val KEY_O: Key            = KeyCode.KeyO           -> "O"
+  val KEY_P: Key            = KeyCode.KeyP           -> "P"
+  val KEY_Q: Key            = KeyCode.KeyQ           -> "Q"
+  val KEY_R: Key            = KeyCode.KeyR           -> "R"
+  val KEY_S: Key            = KeyCode.KeyS           -> "S"
+  val KEY_T: Key            = KeyCode.KeyT           -> "T"
+  val KEY_U: Key            = KeyCode.KeyU           -> "U"
+  val KEY_V: Key            = KeyCode.KeyV           -> "V"
+  val KEY_W: Key            = KeyCode.KeyW           -> "W"
+  val KEY_X: Key            = KeyCode.KeyX           -> "X"
+  val KEY_Y: Key            = KeyCode.KeyY           -> "Y"
+  val KEY_Z: Key            = KeyCode.KeyZ           -> "Z"
+  val LEFT_META_KEY: Key    = KeyCode.MetaLeft
+  val RIGHT_WINDOW_KEY: Key = KeyCode.MetaRight
+  val SELECT_KEY: Key       = KeyCode.Select
+  val NUMPAD_0: Key         = KeyCode.Numpad0        -> "0"
+  val NUMPAD_1: Key         = KeyCode.Numpad1        -> "1"
+  val NUMPAD_2: Key         = KeyCode.Numpad2        -> "2"
+  val NUMPAD_3: Key         = KeyCode.Numpad3        -> "3"
+  val NUMPAD_4: Key         = KeyCode.Numpad4        -> "4"
+  val NUMPAD_5: Key         = KeyCode.Numpad5        -> "5"
+  val NUMPAD_6: Key         = KeyCode.Numpad6        -> "6"
+  val NUMPAD_7: Key         = KeyCode.Numpad7        -> "7"
+  val NUMPAD_8: Key         = KeyCode.Numpad8        -> "8"
+  val NUMPAD_9: Key         = KeyCode.Numpad9        -> "9"
+  val MULTIPLY: Key         = KeyCode.NumpadMultiply -> "*"
+  val ADD: Key              = KeyCode.NumpadAdd      -> "+"
+  val SUBTRACT: Key         = KeyCode.NumpadSubtract -> "-"
+  val DECIMAL_POINT: Key    = KeyCode.NumpadDecimal  -> "."
+  val DIVIDE: Key           = KeyCode.NumpadDivide   -> "/"
+  val F1: Key               = KeyCode.F1
+  val F2: Key               = KeyCode.F2
+  val F3: Key               = KeyCode.F3
+  val F4: Key               = KeyCode.F4
+  val F5: Key               = KeyCode.F5
+  val F6: Key               = KeyCode.F6
+  val F7: Key               = KeyCode.F7
+  val F8: Key               = KeyCode.F8
+  val F9: Key               = KeyCode.F9
+  val F10: Key              = KeyCode.F10
+  val F11: Key              = KeyCode.F11
+  val F12: Key              = KeyCode.F12
+  val NUM_LOCK: Key         = KeyCode.NumLock
+  val SCROLL_LOCK: Key      = KeyCode.ScrollLock
+  val SEMI_COLON: Key       = KeyCode.Semicolon      -> ";"
+  val EQUAL_SIGN: Key       = KeyCode.Equal          -> "="
+  val COMMA: Key            = KeyCode.Comma          -> ","
+  val DASH: Key             = KeyCode.Minus          -> "-"
+  val PERIOD: Key           = KeyCode.Period         -> "."
+  val FORWARD_SLASH: Key    = KeyCode.Slash          -> "/"
+  val BACK_QUOTE: Key       = KeyCode.Backquote      -> "`"
+  val OPEN_BRACKET: Key     = KeyCode.BracketLeft    -> "("
+  val BACK_SLASH: Key       = KeyCode.Backslash      -> "\\"
+  val CLOSE_BRACKET: Key    = KeyCode.BracketRight   -> ")"
+  val SINGLE_QUOTE: Key     = KeyCode.Quote          -> "\'"
 }

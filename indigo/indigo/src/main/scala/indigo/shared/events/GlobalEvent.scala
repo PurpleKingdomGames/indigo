@@ -8,6 +8,7 @@ import indigo.shared.collections.Batch
 import indigo.shared.config.GameViewport
 import indigo.shared.config.RenderingTechnology
 import indigo.shared.constants.Key
+import indigo.shared.constants.KeyLocation
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.RGBA
@@ -655,23 +656,86 @@ object PointerEvent:
 /** Represents all keyboard events
   */
 sealed trait KeyboardEvent extends InputEvent {
-  val keyCode: Key
+  val key: Key
+  val isRepeat: Boolean
+  val isAltKeyDown: Boolean
+  val isCtrlKeyDown: Boolean
+  val isMetaKeyDown: Boolean
+  val isShiftKeyDown: Boolean
 }
 object KeyboardEvent {
 
   /** A key was released during the last frame
     *
-    * @param keyCode
-    *   The code and the JavaScript `String` representation
+    * @param key
+    *   A `Key` instance representing the key that was released
+    * @param isRepeat
+    *   Whether the key was pressed repeatedly since the last frame
+    * @param isAltKeyDown
+    *   Whether the `alt` key was pressed when the event was fired
+    * @param isCtrlKeyDown
+    *   Whether the `ctrl` key was pressed when the event was fired
+    * @param isMetaKeyDown
+    *   Whether the meta button (Windows key, or Cmd Key) key was pressed when the event was fired
+    * @param isShiftKeyDown
+    *   Whether the `shift` key was pressed when the event was fired
     */
-  final case class KeyUp(keyCode: Key) extends KeyboardEvent
+  final case class KeyUp(
+      key: Key,
+      isRepeat: Boolean,
+      isAltKeyDown: Boolean,
+      isCtrlKeyDown: Boolean,
+      isMetaKeyDown: Boolean,
+      isShiftKeyDown: Boolean
+  ) extends KeyboardEvent
+  object KeyUp:
+    def apply(key: Key): KeyUp =
+      KeyUp(
+        key,
+        isRepeat = false,
+        isAltKeyDown = false,
+        isCtrlKeyDown = false,
+        isMetaKeyDown = false,
+        isShiftKeyDown = false
+      )
+    def unapply(e: KeyUp): Option[Key] =
+      Option(e.key)
 
   /** A key was pressed down during the last frame
     *
-    * @param keyCode
-    *   The code and the JavaScript `String` representation
+    * @param key
+    *   A `Key` instance representing the key that was pressed
+    * @param isRepeat
+    *   Whether the key was pressed repeatedly since the last frame
+    * @param isAltKeyDown
+    *   Whether the `alt` key was pressed when the event was fired
+    * @param isCtrlKeyDown
+    *   Whether the `ctrl` key was pressed when the event was fired
+    * @param isMetaKeyDown
+    *   Whether the meta button (Windows key, or Cmd Key) key was pressed when the event was fired
+    * @param isShiftKeyDown
+    *   Whether the `shift` key was pressed when the event was fired
     */
-  final case class KeyDown(keyCode: Key) extends KeyboardEvent
+  final case class KeyDown(
+      key: Key,
+      isRepeat: Boolean,
+      isAltKeyDown: Boolean,
+      isCtrlKeyDown: Boolean,
+      isMetaKeyDown: Boolean,
+      isShiftKeyDown: Boolean
+  ) extends KeyboardEvent
+  object KeyDown:
+    def apply(key: Key): KeyDown =
+      KeyDown(
+        key,
+        isRepeat = false,
+        isAltKeyDown = false,
+        isCtrlKeyDown = false,
+        isMetaKeyDown = false,
+        isShiftKeyDown = false
+      )
+    def unapply(e: KeyDown): Option[Key] =
+      Option(e.key)
 }
 
 /** Can be emitted to trigger the one time play back of a sound asset.
