@@ -37,6 +37,7 @@ final class SceneContext[StartUpData](
   export frameContext.inputState.mouse
   export frameContext.inputState.keyboard
   export frameContext.inputState.gamepad
+  export frameContext.inputState.pointers
   export frameContext.findBounds
   export frameContext.bounds
   export frameContext.captureScreen
