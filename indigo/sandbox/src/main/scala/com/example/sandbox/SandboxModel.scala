@@ -69,7 +69,7 @@ object SandboxModel {
           Outcome(state)
       }
 
-    case KeyboardEvent.KeyDown(Key.LEFT_ARROW) =>
+    case KeyboardEvent.KeyDown(Key.ARROW_LEFT) =>
       println("left")
       Outcome(
         state.copy(
@@ -77,21 +77,21 @@ object SandboxModel {
         )
       )
 
-    case KeyboardEvent.KeyDown(Key.RIGHT_ARROW) =>
+    case KeyboardEvent.KeyDown(Key.ARROW_RIGHT) =>
       Outcome(
         state.copy(
           dude = state.dude.walkRight
         )
       )
 
-    case KeyboardEvent.KeyDown(Key.UP_ARROW) =>
+    case KeyboardEvent.KeyDown(Key.ARROW_UP) =>
       Outcome(
         state.copy(
           dude = state.dude.walkUp
         )
       )
 
-    case KeyboardEvent.KeyDown(Key.DOWN_ARROW) =>
+    case KeyboardEvent.KeyDown(Key.ARROW_DOWN) =>
       Outcome(
         state.copy(
           dude = state.dude.walkDown
