@@ -5,7 +5,7 @@ enum KeyLocation derives CanEqual:
   case Left
   case Right
   case Numpad
-  case Unknown
+  case Invariant
 
 object KeyLocation:
   def fromInt(i: Int): KeyLocation =
@@ -14,4 +14,4 @@ object KeyLocation:
       case 1 => KeyLocation.Left
       case 2 => KeyLocation.Right
       case 3 => KeyLocation.Numpad
-      case _ => KeyLocation.Unknown
+      case _ => KeyLocation.Invariant

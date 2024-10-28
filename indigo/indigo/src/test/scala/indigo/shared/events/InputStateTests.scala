@@ -370,7 +370,7 @@ class InputStateTests extends munit.FunSuite {
     val mappings: InputMapping[Int] =
       InputMapping[Int]()
         .add(
-          Combo.KeyInputs(Key.UP_ARROW) -> 10
+          Combo.KeyInputs(Key.ARROW_UP) -> 10
         )
 
     val state = InputState.calculateNext(inputState, events3, gamepadState2)
@@ -469,7 +469,7 @@ class InputStateTests extends munit.FunSuite {
 
     val comboB =
       Combo
-        .withKeyInputs(Key.UP_ARROW, Key.RIGHT_ARROW)
+        .withKeyInputs(Key.ARROW_UP, Key.ARROW_RIGHT)
 
     val mappings: InputMapping[String] =
       InputMapping[String](comboA -> "Combo A met", comboB -> "Combo B met")
@@ -483,14 +483,14 @@ class InputStateTests extends munit.FunSuite {
       InputState
         .calculateNext(
           inputState,
-          Batch(KeyboardEvent.KeyDown(Key.UP_ARROW), KeyboardEvent.KeyDown(Key.RIGHT_ARROW)),
+          Batch(KeyboardEvent.KeyDown(Key.ARROW_UP), KeyboardEvent.KeyDown(Key.ARROW_RIGHT)),
           gamepadState2
         )
         .mapInputs(mappings, "Combo not met! (2)")
 
     val mappingResult3 =
       InputState
-        .calculateNext(inputState, Batch(KeyboardEvent.KeyDown(Key.LEFT_ARROW)), gamepadState2)
+        .calculateNext(inputState, Batch(KeyboardEvent.KeyDown(Key.ARROW_LEFT)), gamepadState2)
         .mapInputs(mappings, "Combo not met! (3)")
 
     assertEquals(mappingResult1, "Combo A met")

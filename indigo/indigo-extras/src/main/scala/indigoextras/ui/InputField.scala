@@ -188,10 +188,10 @@ final case class InputField(
           val next = acc.delete
           rec(ks, next, true, acc.key.map(key => InputFieldChange(key, next.text)))
 
-        case Key.LEFT_ARROW :: ks =>
+        case Key.ARROW_LEFT :: ks =>
           rec(ks, acc.cursorLeft, true, changeEvent)
 
-        case Key.RIGHT_ARROW :: ks =>
+        case Key.ARROW_RIGHT :: ks =>
           rec(ks, acc.cursorRight, true, changeEvent)
 
         case Key.HOME :: ks =>

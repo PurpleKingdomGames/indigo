@@ -32,10 +32,10 @@ object LineReflectionScene extends Scene[SandboxStartupData, SandboxGameModel, S
       context: SceneContext[SandboxStartupData],
       rotation: Radians
   ): GlobalEvent => Outcome[Radians] =
-    case KeyboardEvent.KeyDown(Key.LEFT_ARROW) =>
+    case KeyboardEvent.KeyDown(Key.ARROW_LEFT) =>
       Outcome(rotation - Radians(0.05))
 
-    case KeyboardEvent.KeyDown(Key.RIGHT_ARROW) =>
+    case KeyboardEvent.KeyDown(Key.ARROW_RIGHT) =>
       Outcome(rotation + Radians(0.05))
 
     case _ =>

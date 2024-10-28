@@ -30,7 +30,10 @@ final case class Key(code: KeyCode, key: String, location: KeyLocation) derives 
 
   // DO NOT REMOVE
   def ===(other: Key): Boolean =
-    code == other.code
+    if (other.location == KeyLocation.Invariant || location == KeyLocation.Invariant)
+      code == other.code
+    else
+      other.code == this.code && other.location == this.location
 
   // DO NOT REMOVE
   // This is not an accident, or it was, but now it's a feature...
@@ -40,7 +43,7 @@ final case class Key(code: KeyCode, key: String, location: KeyLocation) derives 
   override def equals(that: Any): Boolean =
     that match {
       case that: Key =>
-        that.isInstanceOf[Key] && this.code == that.code
+        that.isInstanceOf[Key] && this === that
       case _ => false
     }
 
@@ -48,12 +51,17 @@ final case class Key(code: KeyCode, key: String, location: KeyLocation) derives 
 }
 
 object Key {
+  def apply(code: KeyCode): Key =
+    Key(code, "", KeyLocation.Invariant)
+
+  def apply(code: KeyCode, location: KeyLocation): Key =
+    Key(code, "", location)
 
   implicit private def keyCodeToKey(i: KeyCode): Key =
-    Key(i, "", KeyLocation.Standard)
+    Key(i, "", KeyLocation.Invariant)
 
   implicit private def keyCodeToKey(t: (KeyCode, String)): Key =
-    Key(t._1, t._2, KeyLocation.Standard)
+    Key(t._1, t._2, KeyLocation.Invariant)
 
   val BACKSPACE: Key        = KeyCode.Backspace
   val TAB: Key              = KeyCode.Tab            -> "\t"
@@ -69,10 +77,10 @@ object Key {
   val PAGE_DOWN: Key        = KeyCode.PageDown
   val END: Key              = KeyCode.End
   val HOME: Key             = KeyCode.Home
-  val LEFT_ARROW: Key       = KeyCode.ArrowLeft
-  val UP_ARROW: Key         = KeyCode.ArrowUp
-  val RIGHT_ARROW: Key      = KeyCode.ArrowRight
-  val DOWN_ARROW: Key       = KeyCode.ArrowDown
+  val ARROW_LEFT: Key       = KeyCode.ArrowLeft
+  val ARROW_UP: Key         = KeyCode.ArrowUp
+  val ARROW_RIGHT: Key      = KeyCode.ArrowRight
+  val ARROW_DOWN: Key       = KeyCode.ArrowDown
   val INSERT: Key           = KeyCode.Insert
   val DELETE: Key           = KeyCode.Delete
   val KEY_0: Key            = KeyCode.Digit0         -> "0"
