@@ -43,6 +43,7 @@ final class FrameContext[StartUpData](
   export inputState.mouse
   export inputState.keyboard
   export inputState.gamepad
+  export inputState.pointers
   export boundaryLocator.findBounds
   export boundaryLocator.bounds
 
