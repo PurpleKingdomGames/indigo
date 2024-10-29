@@ -1,17 +1,17 @@
 package indigo.shared.input
 
+import indigo.MouseButton
 import indigo.shared.collections.Batch
+import indigo.shared.collections.Batch.toBatch
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.events.PointerEvent
 import indigo.shared.events.PointerEvent.PointerId
-import indigo.shared.collections.Batch.toBatch
-import indigo.MouseButton
 import indigo.shared.events.PointerType
 
 final class Pointers(
     private val pointerBatch: Batch[Pointer],
-    private val pointerEvents: Batch[PointerEvent]
+    val pointerEvents: Batch[PointerEvent]
 ) {
   def isButtonDown(button: MouseButton): Boolean = pointerBatch.map(_.buttonsDown).contains(button)
 
@@ -25,12 +25,14 @@ final class Pointers(
   lazy val pointersUpAt: Batch[Point]   = upAtPositionsWith(None)
   lazy val pointersDownAt: Batch[Point] = downAtPositionsWith(None)
 
+  def pressed: Boolean = pressed(MouseButton.LeftMouseButton)
   def pressed(button: MouseButton): Boolean =
     pointerEvents.exists {
       case md: PointerEvent.PointerDown if md.button == Some(button) => true
       case _                                                         => false
     }
 
+  def released: Boolean = released(MouseButton.LeftMouseButton)
   def released(button: MouseButton): Boolean =
     pointerEvents.exists {
       case mu: PointerEvent.PointerUp if mu.button == Some(button) => true
@@ -61,6 +63,8 @@ final class Pointers(
   private def wasPointerWithin(bounds: Rectangle, pt: Point): Boolean =
     bounds.isPointWithin(pt)
 
+  def isPointerWithin(bounds: Rectangle)                 = getPointerWithin(bounds).nonEmpty
+  def getPointerWithin(bounds: Rectangle): Option[Point] = pointerBatch.map(_.position).find(bounds.isPointWithin)
   def wasPointerUpWithin(bounds: Rectangle, button: MouseButton): Boolean =
     upAtPositionsWith(Some(button)).exists(wasPointerWithin(bounds, _))
   def wasPointerUpWithin(x: Int, y: Int, width: Int, height: Int, button: MouseButton): Boolean =
@@ -96,7 +100,7 @@ object Pointers:
       })
       .map(_.pointerId)
 
-    var pointersToAdd = events
+    val pointersToAdd = events
       .filter(_ match {
         case _: (PointerEvent.PointerCancel | PointerEvent.PointerOut) => false
         case e                                                         => true

@@ -1,5 +1,6 @@
 package indigo.shared.config
 
+import indigo.Millis
 import indigo.shared.config.RenderingTechnology.WebGL1
 import indigo.shared.config.RenderingTechnology.WebGL2
 import indigo.shared.config.RenderingTechnology.WebGL2WithFallback
@@ -27,7 +28,8 @@ final case class AdvancedGameConfig(
     batchSize: Int,
     premultipliedAlpha: Boolean,
     autoLoadStandardShaders: Boolean,
-    disableContextMenu: Boolean
+    disableContextMenu: Boolean,
+    clickTime: Millis
 ) derives CanEqual {
 
   def withRenderingTechnology(tech: RenderingTechnology): AdvancedGameConfig =
@@ -81,7 +83,8 @@ object AdvancedGameConfig {
       premultipliedAlpha = true,
       batchSize = 256,
       autoLoadStandardShaders = true,
-      disableContextMenu = true
+      disableContextMenu = true,
+      clickTime = Millis(200)
     )
 }
 
