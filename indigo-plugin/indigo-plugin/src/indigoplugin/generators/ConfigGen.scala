@@ -33,13 +33,9 @@ object ConfigGen {
       |      magnification = 1,
       |      transparentBackground = false,
       |      resizePolicy = ResizePolicy.Resize,
-      |      advanced = AdvancedGameConfig(
-      |        renderingTechnology = RenderingTechnology.WebGL2WithFallback,
-      |        antiAliasing = ${indigoOptions.metadata.antiAliasing.toString},
-      |        premultipliedAlpha = true,
-      |        batchSize = 256,
-      |        autoLoadStandardShaders = true,
-      |        disableContextMenu = true
+      |      advanced = AdvancedGameConfig
+      |            .default
+      |           .withAntiAliasing(${extractBgColor(indigoOptions.metadata.backgroundColor)})
       |      )
       |    )
       |""".stripMargin
