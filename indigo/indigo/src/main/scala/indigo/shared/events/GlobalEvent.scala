@@ -653,6 +653,35 @@ object PointerEvent:
     def unapply(e: PointerCancel): Option[Point] =
       Option(e.position)
 
+  /** The pointer is no longer sending events because:
+    *   - the pointing device is moved out of the hit boundaries
+    *   - the PointerUp event was fired on a device that doesn't support hover
+    *   - after firing the PointerCancel event
+    *   - when a pen stylus leaves the hover range detectable by the digitizer.
+    */
+  final case class PointerOut(
+      position: Point,
+      buttons: Batch[MouseButton],
+      isAltKeyDown: Boolean,
+      isCtrlKeyDown: Boolean,
+      isMetaKeyDown: Boolean,
+      isShiftKeyDown: Boolean,
+      movementPosition: Point,
+      pointerId: PointerId,
+      width: Int,
+      height: Int,
+      pressure: Double,
+      tangentialPressure: Double,
+      tiltX: Radians,
+      tiltY: Radians,
+      twist: Radians,
+      pointerType: PointerType,
+      isPrimary: Boolean
+  ) extends PointerEvent
+  object PointerOut:
+    def unapply(e: PointerOut): Option[Point] =
+      Option(e.position)
+
 /** Represents all keyboard events
   */
 sealed trait KeyboardEvent extends InputEvent {
