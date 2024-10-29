@@ -35,7 +35,7 @@ object ConfigGen {
       |      resizePolicy = ResizePolicy.Resize,
       |      advanced = AdvancedGameConfig
       |            .default
-      |           .withAntiAliasing(${extractBgColor(indigoOptions.metadata.backgroundColor)})
+      |           .withAntiAliasing(${indigoOptions.metadata.antiAliasing.toString})
       |      )
       |    )
       |""".stripMargin
