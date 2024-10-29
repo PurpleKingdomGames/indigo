@@ -7,6 +7,7 @@ import indigo.shared.events.PointerEvent
 import indigo.shared.events.PointerEvent.PointerId
 import indigo.shared.collections.Batch.toBatch
 import indigo.MouseButton
+import indigo.shared.events.PointerType
 
 final class Pointers(
     private val pointerBatch: Batch[Pointer],
@@ -90,20 +91,20 @@ object Pointers:
   private def updatePointers(events: Batch[PointerEvent], previous: Pointers): Batch[Pointer] =
     val pointersToRemove = events
       .filter(_ match {
-        case e: PointerEvent.PointerOut => true
+        case _: PointerEvent.PointerOut => true
         case _                          => false
       })
       .map(_.pointerId)
 
     var pointersToAdd = events
       .filter(_ match {
-        case e: PointerEvent.PointerCancel => false
-        case e                             => true
+        case _: (PointerEvent.PointerCancel | PointerEvent.PointerOut) => false
+        case e                                                         => true
       })
-      .map(e => Pointer(e.pointerId, e.buttons, e.position))
+      .map(e => Pointer(e.pointerId, e.pointerType, e.buttons, e.position))
 
     previous.pointerBatch
       .filterNot(p => pointersToRemove.contains(p.id) || pointersToAdd.exists(_.id == p.id))
       ++ pointersToAdd
 
-final case class Pointer(id: PointerId, buttonsDown: Batch[MouseButton], position: Point)
+final case class Pointer(id: PointerId, pointerType: PointerType, buttonsDown: Batch[MouseButton], position: Point)

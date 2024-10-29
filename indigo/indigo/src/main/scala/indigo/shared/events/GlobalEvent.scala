@@ -599,6 +599,31 @@ object PointerEvent:
     def unapply(e: PointerUp): Option[Point] =
       Option(e.position)
 
+  /** Pointing device button has been clicked */
+  final case class PointerClick(
+      position: Point,
+      buttons: Batch[MouseButton],
+      isAltKeyDown: Boolean,
+      isCtrlKeyDown: Boolean,
+      isMetaKeyDown: Boolean,
+      isShiftKeyDown: Boolean,
+      movementPosition: Point,
+      pointerId: PointerId,
+      width: Int,
+      height: Int,
+      pressure: Double,
+      tangentialPressure: Double,
+      tiltX: Radians,
+      tiltY: Radians,
+      twist: Radians,
+      pointerType: PointerType,
+      isPrimary: Boolean,
+      button: Option[MouseButton]
+  ) extends PointerEvent
+  object PointerClick:
+    def unapply(e: PointerClick): Option[Point] =
+      Option(e.position)
+
   /** Pointing device changed coordinates.
     */
   final case class PointerMove(

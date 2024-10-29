@@ -24,6 +24,9 @@ import org.scalajs.dom
 import org.scalajs.dom.document
 import org.scalajs.dom.html
 import org.scalajs.dom.window
+import scala.scalajs.js.Date
+
+var pointerButtons: Map[Double, Batch[(Int, Date)]] = Map.empty
 
 final class WorldEvents:
 
@@ -59,6 +62,7 @@ final class WorldEvents:
       onPointerLeave: dom.PointerEvent => Unit,
       onPointerDown: dom.PointerEvent => Unit,
       onPointerUp: dom.PointerEvent => Unit,
+      onPointerClick: dom.PointerEvent => Unit,
       onPointerMove: dom.PointerEvent => Unit,
       onPointerCancel: dom.PointerEvent => Unit,
       onPointerOut: dom.PointerEvent => Unit,
@@ -66,14 +70,49 @@ final class WorldEvents:
       onFocus: dom.FocusEvent => Unit,
       onOnline: dom.Event => Unit,
       onOffline: dom.Event => Unit,
-      resizeObserver: dom.ResizeObserver
+      resizeObserver: dom.ResizeObserver,
+      clickTimeMs: Int
   ) {
     canvas.addEventListener("click", onClick)
     canvas.addEventListener("wheel", onWheel)
     canvas.addEventListener("pointerenter", onPointerEnter)
     canvas.addEventListener("pointerleave", onPointerLeave)
-    canvas.addEventListener("pointerdown", onPointerDown)
-    canvas.addEventListener("pointerup", onPointerUp)
+    canvas.addEventListener(
+      "pointerdown",
+      e =>
+        e match {
+          case e: dom.PointerEvent =>
+            onPointerDown(e)
+            pointerButtons = pointerButtons.updated(
+              e.pointerId,
+              pointerButtons
+                .getOrElse(e.pointerId, Batch.empty) :+ (e.button -> new Date(Date.now()))
+            )
+          case _ => ()
+        }
+    )
+    canvas.addEventListener(
+      "pointerup",
+      e =>
+        e match {
+          case e: dom.PointerEvent =>
+            onPointerUp(e)
+
+            pointerButtons.getOrElse(e.pointerId, Batch.empty).find(_._1 == e.button) match {
+              case Some((btn, downTime)) if btn == e.button && Date.now() - downTime.getTime() <= clickTimeMs =>
+                onPointerClick(e)
+              case _ => ()
+            }
+
+            pointerButtons = pointerButtons.updated(
+              e.pointerId,
+              pointerButtons
+                .getOrElse(e.pointerId, Batch.empty)
+                .filterNot(_._1 == e.button)
+            )
+          case _ => ()
+        }
+    )
     canvas.addEventListener("pointermove", onPointerMove)
     canvas.addEventListener("pointercancel", onPointerCancel)
     canvas.addEventListener("pointerout", onPointerOut)
@@ -117,7 +156,8 @@ final class WorldEvents:
         resizePolicy: ResizePolicy,
         magnification: Int,
         disableContextMenu: Boolean,
-        globalEventStream: GlobalEventStream
+        globalEventStream: GlobalEventStream,
+        clickTimeMs: Int
     ): Handlers = Handlers(
       canvas = canvas,
       resizePolicy,
@@ -143,7 +183,7 @@ final class WorldEvents:
       },
       /*
           Follows the most conventional, basic definition of wheel.
-          To be fair, the wheel event doesn't necessarily means that the device is a mouse, or even that the
+          To be fair, the wheel event doesn't necessarily mean that the device is a mouse, or even that the
           deltaY represents the direction of the vertical scrolling (usually negative is upwards and positive downwards).
           For the sake of simplicity, we're assuming a common mouse with a simple wheel.
 
@@ -380,6 +420,37 @@ final class WorldEvents:
         }
         e.preventDefault()
       },
+      onPointerClick = { e =>
+        val position         = e.position(magnification, canvas)
+        val buttons          = e.indigoButtons
+        val movementPosition = e.movementPosition(magnification)
+        val pointerType      = e.toPointerType
+
+        globalEventStream.pushGlobalEvent(
+          PointerClick(
+            position,
+            buttons,
+            e.altKey,
+            e.ctrlKey,
+            e.metaKey,
+            e.shiftKey,
+            movementPosition,
+            PointerId(e.pointerId),
+            e.width(magnification),
+            e.height(magnification),
+            e.pressure,
+            e.tangentialPressure,
+            Radians.fromDegrees(e.tiltX),
+            Radians.fromDegrees(e.tiltY),
+            Radians.fromDegrees(e.twist),
+            pointerType,
+            e.isPrimary,
+            MouseButton.fromOrdinalOpt(e.button)
+          )
+        )
+
+        e.preventDefault()
+      },
       onPointerMove = { e =>
         val position         = e.position(magnification, canvas)
         val buttons          = e.indigoButtons
@@ -552,7 +623,8 @@ final class WorldEvents:
             }
           }
         }
-      )
+      ),
+      clickTimeMs
     )
   }
 
@@ -564,10 +636,13 @@ final class WorldEvents:
       resizePolicy: ResizePolicy,
       magnification: Int,
       disableContextMenu: Boolean,
-      globalEventStream: GlobalEventStream
+      globalEventStream: GlobalEventStream,
+      clickTimeMs: Int = 200
   ): Unit =
     if (_handlers.isEmpty)
-      _handlers = Some(Handlers(canvas, resizePolicy, magnification, disableContextMenu, globalEventStream))
+      _handlers = Some(
+        Handlers(canvas, resizePolicy, magnification, disableContextMenu, globalEventStream, clickTimeMs)
+      )
 
   def kill(): Unit = _handlers.foreach { x =>
     x.unbind()
