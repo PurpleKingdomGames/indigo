@@ -161,7 +161,7 @@ object UiSceneViewModel:
   */
 extension (b: Button)
   def updateFromPointers(p: Pointers): Outcome[Button] =
-    val inBounds = b.bounds.isPointWithin(p.position)
+    val inBounds = p.isPointerWithin(b.bounds)
 
     val upEvents: Batch[GlobalEvent] =
       if inBounds && p.released then b.onUp()
@@ -193,19 +193,3 @@ extension (b: Button)
       // Unaccounted for states.
       case _ =>
         Outcome(b).addGlobalEvents(pointerEvents)
-
-/** This is a workaround to make up for Pointer not exposing any convenience methods.
-  */
-extension (p: Pointers)
-
-  def pressed: Boolean =
-    p.pointerEvents.exists {
-      case _: PointerEvent.PointerDown => true
-      case _                           => false
-    }
-
-  def released: Boolean =
-    p.pointerEvents.exists {
-      case _: PointerEvent.PointerUp => true
-      case _                         => false
-    }

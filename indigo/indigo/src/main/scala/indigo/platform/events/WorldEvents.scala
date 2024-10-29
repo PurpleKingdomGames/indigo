@@ -24,8 +24,10 @@ import org.scalajs.dom
 import org.scalajs.dom.document
 import org.scalajs.dom.html
 import org.scalajs.dom.window
+
 import scala.scalajs.js.Date
 
+@SuppressWarnings(Array("scalafix:DisableSyntax.var"))
 var pointerButtons: Map[Double, Batch[(Int, Date)]] = Map.empty
 
 final class WorldEvents:
@@ -71,7 +73,7 @@ final class WorldEvents:
       onOnline: dom.Event => Unit,
       onOffline: dom.Event => Unit,
       resizeObserver: dom.ResizeObserver,
-      clickTimeMs: Int
+      clickTimeMs: Long
   ) {
     canvas.addEventListener("click", onClick)
     canvas.addEventListener("wheel", onWheel)
@@ -147,6 +149,7 @@ final class WorldEvents:
       window.removeEventListener("online", onOnline)
       window.removeEventListener("offline", onOffline)
       resizeObserver.disconnect()
+      pointerButtons = Map.empty
     }
   }
 
@@ -157,7 +160,7 @@ final class WorldEvents:
         magnification: Int,
         disableContextMenu: Boolean,
         globalEventStream: GlobalEventStream,
-        clickTimeMs: Int
+        clickTimeMs: Long
     ): Handlers = Handlers(
       canvas = canvas,
       resizePolicy,
@@ -637,7 +640,7 @@ final class WorldEvents:
       magnification: Int,
       disableContextMenu: Boolean,
       globalEventStream: GlobalEventStream,
-      clickTimeMs: Int = 200
+      clickTimeMs: Long
   ): Unit =
     if (_handlers.isEmpty)
       _handlers = Some(
