@@ -61,6 +61,7 @@ final class WorldEvents:
       onPointerUp: dom.PointerEvent => Unit,
       onPointerMove: dom.PointerEvent => Unit,
       onPointerCancel: dom.PointerEvent => Unit,
+      onPointerOut: dom.PointerEvent => Unit,
       onBlur: dom.FocusEvent => Unit,
       onFocus: dom.FocusEvent => Unit,
       onOnline: dom.Event => Unit,
@@ -75,6 +76,7 @@ final class WorldEvents:
     canvas.addEventListener("pointerup", onPointerUp)
     canvas.addEventListener("pointermove", onPointerMove)
     canvas.addEventListener("pointercancel", onPointerCancel)
+    canvas.addEventListener("pointerout", onPointerOut)
     canvas.addEventListener("focus", onFocus)
     canvas.addEventListener("blur", onBlur)
     window.addEventListener("focus", onFocus)
@@ -95,6 +97,7 @@ final class WorldEvents:
       canvas.removeEventListener("pointerup", onPointerUp)
       canvas.removeEventListener("pointermove", onPointerMove)
       canvas.removeEventListener("pointercancel", onPointerCancel)
+      canvas.removeEventListener("pointerout", onPointerOut)
       canvas.removeEventListener("focus", onFocus)
       canvas.removeEventListener("blur", onBlur)
       window.removeEventListener("focus", onFocus)
@@ -428,6 +431,35 @@ final class WorldEvents:
 
         globalEventStream.pushGlobalEvent(
           PointerCancel(
+            position,
+            buttons,
+            e.altKey,
+            e.ctrlKey,
+            e.metaKey,
+            e.shiftKey,
+            movementPosition,
+            PointerId(e.pointerId),
+            e.width(magnification),
+            e.height(magnification),
+            e.pressure,
+            e.tangentialPressure,
+            Radians.fromDegrees(e.tiltX),
+            Radians.fromDegrees(e.tiltY),
+            Radians.fromDegrees(e.twist),
+            pointerType,
+            e.isPrimary
+          )
+        )
+        e.preventDefault()
+      },
+      onPointerOut = { e =>
+        val position         = e.position(magnification, canvas)
+        val buttons          = e.indigoButtons
+        val movementPosition = e.movementPosition(magnification)
+        val pointerType      = e.toPointerType
+
+        globalEventStream.pushGlobalEvent(
+          PointerOut(
             position,
             buttons,
             e.altKey,

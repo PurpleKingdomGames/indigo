@@ -88,31 +88,22 @@ object Pointers:
     Pointers(updatePointers(events, previous), events)
 
   private def updatePointers(events: Batch[PointerEvent], previous: Pointers): Batch[Pointer] =
-    events
-      .map(_ match {
-        case e: PointerEvent.PointerCancel => None
-        case e                             => Some(e)
+    val pointersToRemove = events
+      .filter(_ match {
+        case e: PointerEvent.PointerOut => true
+        case _                          => false
       })
-      .collect { case Some(e) => e }
-      .map(e => updatePointer(e, previous.pointerBatch.find(_.id == e.pointerId)))
+      .map(_.pointerId)
 
-  private def updatePointer(event: PointerEvent, previous: Option[Pointer]): Pointer =
-    previous match
-      case None =>
-        Pointer(
-          event.pointerId,
-          event match {
-            case e: PointerEvent.PointerDown => e.buttons
-            case _                           => Batch.empty
-          },
-          event.position
-        )
+    var pointersToAdd = events
+      .filter(_ match {
+        case e: PointerEvent.PointerCancel => false
+        case e                             => true
+      })
+      .map(e => Pointer(e.pointerId, e.buttons, e.position))
 
-      case Some(p) =>
-        Pointer(
-          p.id,
-          event.buttons,
-          event.position
-        )
+    previous.pointerBatch
+      .filterNot(p => pointersToRemove.contains(p.id) || pointersToAdd.exists(_.id == p.id))
+      ++ pointersToAdd
 
 final case class Pointer(id: PointerId, buttonsDown: Batch[MouseButton], position: Point)
