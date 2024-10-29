@@ -42,15 +42,11 @@ object PerfGame extends IndigoDemo[Unit, Dude, DudeModel, Unit] {
             magnification = magnificationLevel,
             resizePolicy = ResizePolicy.NoResize,
             transparentBackground = false,
-            advanced = AdvancedGameConfig(
-              renderingTechnology = RenderingTechnology.WebGL2,
-              antiAliasing = false,
-              premultipliedAlpha = true,
-              batchSize = 512,
-              autoLoadStandardShaders = false,
-              disableContextMenu = true,
-              clickTime = Millis(200)
-            )
+            advanced = AdvancedGameConfig.default
+              .withRenderingTechnology(RenderingTechnology.WebGL2)
+              .withBatchSize(512)
+              .withAutoLoadStandardShaders(false)
+              .withContextMenu
           )
         )
         .withAssets(PerfAssets.assets)

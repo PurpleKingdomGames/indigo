@@ -66,12 +66,19 @@ final case class AdvancedGameConfig(
   def noContextMenu: AdvancedGameConfig =
     this.copy(disableContextMenu = true)
 
+  def withClickTime(millis: Millis): AdvancedGameConfig =
+    this.copy(clickTime = millis)
+
   val asString: String =
     s"""
        |Advanced settings
        |- Rendering technology:        ${renderingTechnology.name}
        |- AntiAliasing enabled:        ${antiAliasing.toString}
        |- Render batch size:           ${batchSize.toString}
+       |- Pre-Multiplied Alpha:        ${premultipliedAlpha.toString}
+       |- Auto-Load Shaders:           ${autoLoadStandardShaders.toString}
+       |- Disable Context Menu:        ${disableContextMenu.toString}
+       |- Click Time (ms):             ${clickTime.toString}
        |""".stripMargin
 }
 
