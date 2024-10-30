@@ -64,7 +64,6 @@ final class WorldEvents:
       onPointerLeave: dom.PointerEvent => Unit,
       onPointerDown: dom.PointerEvent => Unit,
       onPointerUp: dom.PointerEvent => Unit,
-      onPointerClick: dom.PointerEvent => Unit,
       onPointerMove: dom.PointerEvent => Unit,
       onPointerCancel: dom.PointerEvent => Unit,
       onPointerOut: dom.PointerEvent => Unit,
@@ -79,42 +78,8 @@ final class WorldEvents:
     canvas.addEventListener("wheel", onWheel)
     canvas.addEventListener("pointerenter", onPointerEnter)
     canvas.addEventListener("pointerleave", onPointerLeave)
-    canvas.addEventListener(
-      "pointerdown",
-      e =>
-        e match {
-          case e: dom.PointerEvent =>
-            onPointerDown(e)
-            pointerButtons = pointerButtons.updated(
-              e.pointerId,
-              pointerButtons
-                .getOrElse(e.pointerId, Batch.empty) :+ (e.button -> new Date(Date.now()))
-            )
-          case _ => ()
-        }
-    )
-    canvas.addEventListener(
-      "pointerup",
-      e =>
-        e match {
-          case e: dom.PointerEvent =>
-            onPointerUp(e)
-
-            pointerButtons.getOrElse(e.pointerId, Batch.empty).find(_._1 == e.button) match {
-              case Some((btn, downTime)) if btn == e.button && Date.now() - downTime.getTime() <= clickTimeMs =>
-                onPointerClick(e)
-              case _ => ()
-            }
-
-            pointerButtons = pointerButtons.updated(
-              e.pointerId,
-              pointerButtons
-                .getOrElse(e.pointerId, Batch.empty)
-                .filterNot(_._1 == e.button)
-            )
-          case _ => ()
-        }
-    )
+    canvas.addEventListener("pointerdown", onPointerDown)
+    canvas.addEventListener("pointerup", onPointerUp)
     canvas.addEventListener("pointermove", onPointerMove)
     canvas.addEventListener("pointercancel", onPointerCancel)
     canvas.addEventListener("pointerout", onPointerOut)
@@ -335,6 +300,13 @@ final class WorldEvents:
         val movementPosition = e.movementPosition(magnification)
         val pointerType      = e.toPointerType
 
+        // Add the button to the list of buttons that are down, to check later when the button is released
+        pointerButtons = pointerButtons.updated(
+          e.pointerId,
+          pointerButtons
+            .getOrElse(e.pointerId, Batch.empty) :+ (e.button -> new Date(Date.now()))
+        )
+
         globalEventStream.pushGlobalEvent(
           PointerDown(
             position,
@@ -382,6 +354,40 @@ final class WorldEvents:
         val movementPosition = e.movementPosition(magnification)
         val pointerType      = e.toPointerType
 
+        // Check to see if this button is up within the clickTimeMs, and if so fire a click event
+        pointerButtons.getOrElse(e.pointerId, Batch.empty).find(_._1 == e.button) match {
+          case Some((btn, downTime)) if btn == e.button && Date.now() - downTime.getTime() <= clickTimeMs =>
+            PointerClick(
+              position,
+              buttons,
+              e.altKey,
+              e.ctrlKey,
+              e.metaKey,
+              e.shiftKey,
+              movementPosition,
+              PointerId(e.pointerId),
+              e.width(magnification),
+              e.height(magnification),
+              e.pressure,
+              e.tangentialPressure,
+              Radians.fromDegrees(e.tiltX),
+              Radians.fromDegrees(e.tiltY),
+              Radians.fromDegrees(e.twist),
+              pointerType,
+              e.isPrimary,
+              MouseButton.fromOrdinalOpt(e.button)
+            )
+          case _ => ()
+        }
+
+        // Remove the button from the list of buttons that are down
+        pointerButtons = pointerButtons.updated(
+          e.pointerId,
+          pointerButtons
+            .getOrElse(e.pointerId, Batch.empty)
+            .filterNot(_._1 == e.button)
+        )
+
         globalEventStream.pushGlobalEvent(
           PointerUp(
             position,
@@ -421,37 +427,6 @@ final class WorldEvents:
             )
           }
         }
-        e.preventDefault()
-      },
-      onPointerClick = { e =>
-        val position         = e.position(magnification, canvas)
-        val buttons          = e.indigoButtons
-        val movementPosition = e.movementPosition(magnification)
-        val pointerType      = e.toPointerType
-
-        globalEventStream.pushGlobalEvent(
-          PointerClick(
-            position,
-            buttons,
-            e.altKey,
-            e.ctrlKey,
-            e.metaKey,
-            e.shiftKey,
-            movementPosition,
-            PointerId(e.pointerId),
-            e.width(magnification),
-            e.height(magnification),
-            e.pressure,
-            e.tangentialPressure,
-            Radians.fromDegrees(e.tiltX),
-            Radians.fromDegrees(e.tiltY),
-            Radians.fromDegrees(e.twist),
-            pointerType,
-            e.isPrimary,
-            MouseButton.fromOrdinalOpt(e.button)
-          )
-        )
-
         e.preventDefault()
       },
       onPointerMove = { e =>
