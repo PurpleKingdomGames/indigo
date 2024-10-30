@@ -120,7 +120,7 @@ trait IndigoShader extends GameLauncher[IndigoShaderModel, IndigoShaderModel, Un
       model: IndigoShaderModel
   ): GlobalEvent => Outcome[IndigoShaderModel] = {
     case ViewportResize(vp) =>
-      Outcome(model.copy(viewport = vp.size))
+      Outcome(model.copy(viewport = vp))
 
     case KeyboardEvent.KeyUp(Key.KEY_F) =>
       Outcome(model, Batch(ToggleFullScreen))

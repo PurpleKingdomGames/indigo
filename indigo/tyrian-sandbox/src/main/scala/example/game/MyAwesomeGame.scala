@@ -21,10 +21,10 @@ final case class MyAwesomeGame(tyrianSubSystem: TyrianSubSystem[IO, String, Unit
     val gameViewport =
       (flags.get("width"), flags.get("height")) match {
         case (Some(w), Some(h)) =>
-          GameViewport(w.toInt, h.toInt)
+          Size(w.toInt, h.toInt)
 
         case _ =>
-          GameViewport(300, 300)
+          Size(300, 300)
       }
 
     Outcome(

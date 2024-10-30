@@ -4,6 +4,7 @@ import indigo.shared.datatypes.RGBA
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Size
 import indigo.shared.time.FPS
+import indigo.syntax.*
 
 import scala.annotation.targetName
 
@@ -26,7 +27,7 @@ import scala.annotation.targetName
   *   Additional settings to help tune your game.
   */
 final case class GameConfig(
-    viewport: GameViewport,
+    viewport: Size,
     frameRateLimit: Option[FPS],
     clearColor: RGBA,
     magnification: Int,
@@ -53,11 +54,9 @@ final case class GameConfig(
        |""".stripMargin
 
   def withViewport(width: Int, height: Int): GameConfig =
-    this.copy(viewport = GameViewport(width, height))
+    this.copy(viewport = Size(width, height))
   def withViewport(size: Size): GameConfig =
-    this.copy(viewport = GameViewport(size.width, size.height))
-  def withViewport(newViewport: GameViewport): GameConfig =
-    this.copy(viewport = newViewport)
+    this.copy(viewport = size)
 
   def withFrameRateLimit(limit: FPS): GameConfig =
     this.copy(frameRateLimit = Option(limit))
@@ -104,7 +103,7 @@ object GameConfig:
 
   val default: GameConfig =
     GameConfig(
-      viewport = GameViewport(550, 400),
+      viewport = Size(550, 400),
       frameRateLimit = Option(FPS.`60`),
       clearColor = RGBA.Black,
       magnification = 1,
@@ -115,7 +114,7 @@ object GameConfig:
 
   def apply(width: Int, height: Int): GameConfig =
     GameConfig(
-      viewport = GameViewport(width, height),
+      viewport = Size(width, height),
       frameRateLimit = Option(FPS.`60`),
       clearColor = RGBA.Black,
       magnification = 1,
@@ -124,7 +123,7 @@ object GameConfig:
       advanced = AdvancedGameConfig.default
     )
 
-  def apply(viewport: GameViewport, clearColor: RGBA, magnification: Int): GameConfig =
+  def apply(viewport: Size, clearColor: RGBA, magnification: Int): GameConfig =
     GameConfig(
       viewport = viewport,
       frameRateLimit = Option(FPS.`60`),
@@ -137,7 +136,7 @@ object GameConfig:
 
   def apply(width: Int, height: Int, clearColor: RGBA, magnification: Int): GameConfig =
     GameConfig(
-      viewport = GameViewport(width, height),
+      viewport = Size(width, height),
       frameRateLimit = Option(FPS.`60`),
       clearColor = clearColor,
       magnification = magnification,

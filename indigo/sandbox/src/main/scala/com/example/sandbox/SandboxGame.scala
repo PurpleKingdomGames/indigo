@@ -86,10 +86,10 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
     val gameViewport =
       (flags.get("width"), flags.get("height")) match {
         case (Some(w), Some(h)) =>
-          GameViewport(w.toInt, h.toInt)
+          Size(w.toInt, h.toInt)
 
         case _ =>
-          GameViewport(viewportWidth, viewportHeight)
+          Size(viewportWidth, viewportHeight)
       }
 
     Outcome(
@@ -275,7 +275,7 @@ final case class Dude(
     sprite: Sprite[Material.ImageEffects],
     clips: Map[CycleLabel, Clip[Material.Bitmap]]
 )
-final case class SandboxBootData(message: String, gameViewport: GameViewport)
+final case class SandboxBootData(message: String, gameViewport: Size)
 final case class SandboxStartupData(dude: Dude, viewportCenter: Point)
 final case class SandboxViewModel(
     offset: Point,

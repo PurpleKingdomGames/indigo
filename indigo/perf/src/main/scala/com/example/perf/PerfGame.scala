@@ -36,7 +36,7 @@ object PerfGame extends IndigoDemo[Unit, Dude, DudeModel, Unit] {
       BootResult
         .noData(
           GameConfig(
-            viewport = GameViewport(viewportWidth, viewportHeight),
+            viewport = Size(viewportWidth, viewportHeight),
             frameRateLimit = None,
             clearColor = RGBA(0.4, 0.2, 0.5, 1),
             magnification = magnificationLevel,
