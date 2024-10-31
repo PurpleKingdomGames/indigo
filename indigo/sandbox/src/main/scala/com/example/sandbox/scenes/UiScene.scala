@@ -161,7 +161,7 @@ object UiSceneViewModel:
   */
 extension (b: Button)
   def updateFromPointers(p: Pointers): Outcome[Button] =
-    val inBounds = p.isPointerWithin(b.bounds)
+    val inBounds = p.isWithin(b.bounds)
 
     val upEvents: Batch[GlobalEvent] =
       if inBounds && p.released then b.onUp()
