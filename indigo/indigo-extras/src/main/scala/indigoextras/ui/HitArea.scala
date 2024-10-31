@@ -7,7 +7,7 @@ import indigo.shared.datatypes.Rectangle
 import indigo.shared.events.GlobalEvent
 import indigo.shared.geometry.Polygon
 import indigo.shared.geometry.Vertex
-import indigo.shared.input.Mouse
+import indigo.shared.input.PointerState
 
 final case class HitArea(
     area: Polygon.Closed,
@@ -20,42 +20,42 @@ final case class HitArea(
     onHoldDown: () => Batch[GlobalEvent]
 ) derives CanEqual:
 
-  def update(mouse: Mouse): Outcome[HitArea] = {
-    val mouseInBounds = area.contains(Vertex.fromPoint(mouse.position))
+  def update(pointers: PointerState): Outcome[HitArea] = {
+    val pointerInBounds = pointers.positions.exists(p => area.contains(Vertex.fromPoint(p)))
 
     val upEvents: Batch[GlobalEvent] =
-      if mouseInBounds && mouse.mouseReleased then onUp()
+      if pointerInBounds && pointers.released then onUp()
       else Batch.empty
 
     val clickEvents: Batch[GlobalEvent] =
-      if mouseInBounds && mouse.mouseClicked then onClick()
+      if pointerInBounds && pointers.isClicked then onClick()
       else Batch.empty
 
     val downEvents: Batch[GlobalEvent] =
-      if mouseInBounds && mouse.mousePressed then onDown()
+      if pointerInBounds && pointers.pressed then onDown()
       else Batch.empty
 
-    val mouseButtonEvents: Batch[GlobalEvent] =
+    val pointerButtonEvents: Batch[GlobalEvent] =
       downEvents ++ upEvents ++ clickEvents
 
     state match
-      case ButtonState.Down if mouseInBounds && mouse.isLeftDown =>
-        Outcome(this).addGlobalEvents(onHoldDown() ++ mouseButtonEvents)
+      case ButtonState.Down if pointerInBounds && pointers.isLeftDown =>
+        Outcome(this).addGlobalEvents(onHoldDown() ++ pointerButtonEvents)
 
-      case ButtonState.Up if mouseInBounds =>
-        Outcome(toOverState).addGlobalEvents(onHoverOver() ++ mouseButtonEvents)
+      case ButtonState.Up if pointerInBounds =>
+        Outcome(toOverState).addGlobalEvents(onHoverOver() ++ pointerButtonEvents)
 
-      case ButtonState.Over if mouseInBounds && mouse.mousePressed =>
-        Outcome(toDownState).addGlobalEvents(mouseButtonEvents)
+      case ButtonState.Over if pointerInBounds && pointers.pressed =>
+        Outcome(toDownState).addGlobalEvents(pointerButtonEvents)
 
-      case ButtonState.Down if mouseInBounds && !mouse.isLeftDown =>
-        Outcome(toOverState).addGlobalEvents(onHoverOver() ++ mouseButtonEvents)
+      case ButtonState.Down if pointerInBounds && !pointers.isLeftDown =>
+        Outcome(toOverState).addGlobalEvents(onHoverOver() ++ pointerButtonEvents)
 
-      case ButtonState.Over if !mouseInBounds =>
-        Outcome(toUpState).addGlobalEvents(onHoverOut() ++ mouseButtonEvents)
+      case ButtonState.Over if !pointerInBounds =>
+        Outcome(toUpState).addGlobalEvents(onHoverOut() ++ pointerButtonEvents)
 
       case _ =>
-        Outcome(this).addGlobalEvents(mouseButtonEvents)
+        Outcome(this).addGlobalEvents(pointerButtonEvents)
   }
 
   def withUpActions(actions: GlobalEvent*): HitArea =

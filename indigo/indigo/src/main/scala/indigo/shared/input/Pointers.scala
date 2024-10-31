@@ -15,6 +15,9 @@ final class Pointers(
   val pointers: Pointers               = this
   val pointerType: Option[PointerType] = None
 
+  def pointerPositions(pointerType: Option[PointerType]): Batch[Point] =
+    pointersOfType(pointerType).map(_.position)
+
   /** Whether the specified button is down on any pointer
     *
     * @param button
@@ -22,7 +25,7 @@ final class Pointers(
     * @return
     */
   def isButtonDown(button: MouseButton, pointerType: Option[PointerType]): Boolean =
-    pointersOfType(pointerType).map(_.buttonsDown).contains(button)
+    pointersOfType(pointerType).flatMap(_.buttonsDown).contains(button)
 
   /** Whether the left button is down on any pointer
     */
@@ -43,6 +46,11 @@ final class Pointers(
   /** Whether the left button was released in this frame
     */
   def pointerReleased(pointerType: Option[PointerType]): Boolean = released(MouseButton.LeftMouseButton, pointerType)
+
+  def pointerClicked(pointerType: Option[PointerType]): Boolean = pointerEventsOfType(pointerType).exists {
+    case _: PointerEvent.PointerClick => true
+    case _                            => false
+  }
 
   def pointersClickedAt(pointerType: Option[PointerType]): Batch[Point] =
     pointerEventsOfType(pointerType)
@@ -127,22 +135,6 @@ final class Pointers(
       case m: PointerEvent.PointerDown if button == None || m.button == button => m.position
     }
 
-  /** Whether the pointer button was up at the specified position in this frame
-    *
-    * @param position
-    */
-  def wasPointerUpAt(position: Point, pointerType: Option[PointerType]): Boolean =
-    pointersUpAt(pointerType).contains(position)
-
-  /** Whether the pointer button was up at the specified position in this frame
-    *
-    * @param x
-    * @param y
-    * @return
-    */
-  def wasPointerUpAt(x: Int, y: Int, pointerType: Option[PointerType]): Boolean =
-    wasPointerUpAt(Point(x, y), pointerType)
-
   /** Whether the specified button was up at the specified position in this frame
     *
     * @param position
@@ -160,23 +152,6 @@ final class Pointers(
     */
   def wasUpAt(x: Int, y: Int, button: MouseButton, pointerType: Option[PointerType]): Boolean =
     wasUpAt(Point(x, y), button, pointerType)
-
-  /** Whether the pointer button was down at the specified position in this frame
-    *
-    * @param position
-    * @return
-    */
-  def wasPointerDownAt(position: Point, pointerType: Option[PointerType]): Boolean =
-    pointersDownAt(pointerType).contains(position)
-
-  /** Whether the pointer button was down at the specified position in this frame
-    *
-    * @param x
-    * @param y
-    * @return
-    */
-  def wasPointerDownAt(x: Int, y: Int, pointerType: Option[PointerType]): Boolean =
-    wasPointerDownAt(Point(x, y), pointerType)
 
   /** Whether the specified button was down at the specified position in this frame
     *
@@ -333,14 +308,16 @@ final class Pointers(
 
   private def pointersOfType(pointerType: Option[PointerType]): Batch[Pointer] =
     pointerType match {
-      case Some(t) => pointerBatch.filter(_.pointerType == t)
-      case None    => pointerBatch
+      case Some(t) =>
+        pointerBatch.filter(_.pointerType == t)
+      case None => pointerBatch
     }
 
   private def pointerEventsOfType(pointerType: Option[PointerType]): Batch[PointerEvent] =
     pointerType match {
-      case Some(t) => pointerEvents.filter(_.pointerType == t)
-      case None    => pointerEvents
+      case Some(t) =>
+        pointerEvents.filter(_.pointerType == t)
+      case None => pointerEvents
     }
 }
 

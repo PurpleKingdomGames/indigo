@@ -43,6 +43,10 @@ trait PointerState:
   lazy val isUpAt: Boolean   = pointers.upPositionsWith(None, pointerType).nonEmpty
   lazy val isDownAt: Boolean = pointers.downPositionsWith(None, pointerType).nonEmpty
 
+  lazy val positions: Batch[Point] = pointers.pointerPositions(pointerType)
+  lazy val position: Option[Point] = positions.headOption
+  lazy val isClicked: Boolean      = pointers.pointerClicked(pointerType)
+
   /** Whether the left button was pressed in this frame
     *
     * @return
