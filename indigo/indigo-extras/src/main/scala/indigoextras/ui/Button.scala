@@ -7,7 +7,7 @@ import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Size
 import indigo.shared.events.GlobalEvent
-import indigo.shared.input.Mouse
+import indigo.shared.input.PointerState
 import indigo.shared.scenegraph.EntityNode
 import indigo.shared.scenegraph.Graphic
 import indigo.shared.scenegraph.Group
@@ -51,52 +51,55 @@ final case class Button(
   def withDepth(newDepth: Depth): Button =
     this.copy(depth = newDepth)
 
-  def update(mouse: Mouse): Outcome[Button] = {
-    val mouseInBounds = bounds.isPointWithin(mouse.position)
+  def update(pointer: PointerState): Outcome[Button] = {
+    val pointerInBounds = pointer.positions.exists(p => bounds.isPointWithin(p))
 
+    println(
+      s"Pointer in bounds: $pointerInBounds released: ${pointer.isReleased} clicked: ${pointer.isClicked} pressed: ${pointer.isPressed}"
+    )
     val upEvents: Batch[GlobalEvent] =
-      if mouseInBounds && mouse.mouseReleased then onUp()
+      if pointerInBounds && pointer.released then onUp()
       else Batch.empty
 
     val clickEvents: Batch[GlobalEvent] =
-      if mouseInBounds && mouse.mouseClicked then onClick()
+      if pointerInBounds && pointer.isClicked then onClick()
       else Batch.empty
 
     val downEvents: Batch[GlobalEvent] =
-      if mouseInBounds && mouse.mousePressed then onDown()
+      if pointerInBounds && pointer.pressed then onDown()
       else Batch.empty
 
-    val mouseButtonEvents: Batch[GlobalEvent] =
+    val pointerButtonEvents: Batch[GlobalEvent] =
       downEvents ++ upEvents ++ clickEvents
 
     state match
       // Stay in Down state
-      case ButtonState.Down if mouseInBounds && mouse.isLeftDown =>
-        Outcome(this).addGlobalEvents(onHoldDown() ++ mouseButtonEvents)
+      case ButtonState.Down if pointerInBounds && pointer.isLeftDown =>
+        Outcome(this).addGlobalEvents(onHoldDown() ++ pointerButtonEvents)
 
       // Move to Down state
-      case ButtonState.Up if mouseInBounds && mouse.mousePressed =>
-        Outcome(toDownState).addGlobalEvents(onHoverOver() ++ mouseButtonEvents)
+      case ButtonState.Up if pointerInBounds && pointer.pressed =>
+        Outcome(toDownState).addGlobalEvents(onHoverOver() ++ pointerButtonEvents)
 
-      case ButtonState.Over if mouseInBounds && mouse.mousePressed =>
-        Outcome(toDownState).addGlobalEvents(mouseButtonEvents)
+      case ButtonState.Over if pointerInBounds && pointer.pressed =>
+        Outcome(toDownState).addGlobalEvents(pointerButtonEvents)
 
       // Out of Down state
-      case ButtonState.Down if mouseInBounds && !mouse.isLeftDown =>
-        Outcome(toOverState).addGlobalEvents(onHoverOver() ++ mouseButtonEvents)
+      case ButtonState.Down if pointerInBounds && !pointer.isLeftDown =>
+        Outcome(toOverState).addGlobalEvents(onHoverOver() ++ pointerButtonEvents)
 
-      case ButtonState.Down if !mouseInBounds && !mouse.isLeftDown =>
-        Outcome(toUpState).addGlobalEvents(onHoverOut() ++ mouseButtonEvents)
+      case ButtonState.Down if !pointerInBounds && !pointer.isLeftDown =>
+        Outcome(toUpState).addGlobalEvents(onHoverOut() ++ pointerButtonEvents)
 
       //
-      case ButtonState.Up if mouseInBounds =>
-        Outcome(toOverState).addGlobalEvents(onHoverOver() ++ mouseButtonEvents)
+      case ButtonState.Up if pointerInBounds =>
+        Outcome(toOverState).addGlobalEvents(onHoverOver() ++ pointerButtonEvents)
 
-      case ButtonState.Over if !mouseInBounds =>
-        Outcome(toUpState).addGlobalEvents(onHoverOut() ++ mouseButtonEvents)
+      case ButtonState.Over if !pointerInBounds =>
+        Outcome(toUpState).addGlobalEvents(onHoverOut() ++ pointerButtonEvents)
 
       case _ =>
-        Outcome(this).addGlobalEvents(mouseButtonEvents)
+        Outcome(this).addGlobalEvents(pointerButtonEvents)
   }
 
   private def applyPositionAndDepth(sceneNode: SceneNode, pt: Point, d: Depth): SceneNode =

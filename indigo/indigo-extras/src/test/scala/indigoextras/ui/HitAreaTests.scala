@@ -12,7 +12,6 @@ import indigo.shared.events.MouseEvent
 import indigo.shared.events.PointerEvent.PointerDown
 import indigo.shared.events.PointerEvent.PointerId
 import indigo.shared.events.PointerType
-import indigo.shared.input.Mouse
 import indigo.shared.input.Pointer
 import indigo.shared.input.PointerState
 import indigo.shared.input.Pointers
@@ -52,7 +51,6 @@ class HitAreaTests extends munit.FunSuite {
       val pointerType = Some(PointerType.Mouse)
     }
 
-    val mouse2 = new Mouse(Batch.empty, bounds.position, false)
     val actual = hitArea.toDownState.update(mouse).unsafeGet
     assert(actual.state == ButtonState.Over)
   }
@@ -62,26 +60,7 @@ class HitAreaTests extends munit.FunSuite {
       val pointers = new Pointers(
         Batch(Pointer(PointerId(1), PointerType.Mouse, Batch(MouseButton.LeftMouseButton), bounds.position)),
         Batch(
-          PointerDown(
-            bounds.position,
-            Batch(MouseButton.LeftMouseButton),
-            false,
-            false,
-            false,
-            false,
-            Point.zero,
-            PointerId(1),
-            0,
-            0,
-            0,
-            0,
-            Radians.zero,
-            Radians.zero,
-            Radians.zero,
-            PointerType.Mouse,
-            true,
-            Some(MouseButton.LeftMouseButton)
-          )
+          PointerDown(bounds.position, MouseButton.LeftMouseButton, PointerType.Mouse)
         )
       )
       val pointerType = Some(PointerType.Mouse)

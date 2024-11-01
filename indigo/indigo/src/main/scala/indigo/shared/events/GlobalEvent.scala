@@ -570,6 +570,91 @@ object PointerEvent:
       button: Option[MouseButton]
   ) extends PointerEvent
   object PointerDown:
+    def apply(position: Point, pointerType: PointerType): PointerDown =
+      PointerDown(
+        position = position,
+        buttons = Batch.empty,
+        isAltKeyDown = false,
+        isCtrlKeyDown = false,
+        isMetaKeyDown = false,
+        isShiftKeyDown = false,
+        movementPosition = Point.zero,
+        button = Some(MouseButton.LeftMouseButton),
+        pointerId = 0,
+        width = 0,
+        height = 0,
+        pressure = 0,
+        tangentialPressure = 0,
+        tiltX = Radians.zero,
+        tiltY = Radians.zero,
+        twist = Radians.zero,
+        pointerType = pointerType,
+        isPrimary = true
+      )
+    def apply(x: Int, y: Int, pointerType: PointerType): PointerDown =
+      PointerDown(
+        position = Point(x, y),
+        buttons = Batch.empty,
+        isAltKeyDown = false,
+        isCtrlKeyDown = false,
+        isMetaKeyDown = false,
+        isShiftKeyDown = false,
+        movementPosition = Point.zero,
+        button = Some(MouseButton.LeftMouseButton),
+        pointerId = 0,
+        width = 0,
+        height = 0,
+        pressure = 0,
+        tangentialPressure = 0,
+        tiltX = Radians.zero,
+        tiltY = Radians.zero,
+        twist = Radians.zero,
+        pointerType = pointerType,
+        isPrimary = true
+      )
+    def apply(position: Point, button: MouseButton, pointerType: PointerType): PointerDown =
+      PointerDown(
+        position = position,
+        buttons = Batch.empty,
+        isAltKeyDown = false,
+        isCtrlKeyDown = false,
+        isMetaKeyDown = false,
+        isShiftKeyDown = false,
+        movementPosition = Point.zero,
+        button = Some(MouseButton.LeftMouseButton),
+        pointerId = 0,
+        width = 0,
+        height = 0,
+        pressure = 0,
+        tangentialPressure = 0,
+        tiltX = Radians.zero,
+        tiltY = Radians.zero,
+        twist = Radians.zero,
+        pointerType = pointerType,
+        isPrimary = true
+      )
+    def apply(x: Int, y: Int, button: MouseButton, pointerType: PointerType): PointerDown =
+      PointerDown(
+        position = Point(x, y),
+        buttons = Batch.empty,
+        isAltKeyDown = false,
+        isCtrlKeyDown = false,
+        isMetaKeyDown = false,
+        isShiftKeyDown = false,
+        movementPosition = Point.zero,
+        button = Some(MouseButton.LeftMouseButton),
+        pointerId = 0,
+        width = 0,
+        height = 0,
+        pressure = 0,
+        tangentialPressure = 0,
+        tiltX = Radians.zero,
+        tiltY = Radians.zero,
+        twist = Radians.zero,
+        pointerType = pointerType,
+        isPrimary = true
+      )
+
     def unapply(e: PointerDown): Option[Point] =
       Option(e.position)
 
@@ -596,6 +681,70 @@ object PointerEvent:
       button: Option[MouseButton]
   ) extends PointerEvent
   object PointerUp:
+    def apply(position: Point, pointerType: PointerType): PointerUp =
+      PointerUp(
+        position = position,
+        buttons = Batch.empty,
+        isAltKeyDown = false,
+        isCtrlKeyDown = false,
+        isMetaKeyDown = false,
+        isShiftKeyDown = false,
+        movementPosition = Point.zero,
+        button = Some(MouseButton.LeftMouseButton),
+        pointerId = 0,
+        width = 0,
+        height = 0,
+        pressure = 0,
+        tangentialPressure = 0,
+        tiltX = Radians.zero,
+        tiltY = Radians.zero,
+        twist = Radians.zero,
+        pointerType = pointerType,
+        isPrimary = true
+      )
+    def apply(x: Int, y: Int, pointerType: PointerType): PointerUp =
+      PointerUp(
+        position = Point(x, y),
+        buttons = Batch.empty,
+        isAltKeyDown = false,
+        isCtrlKeyDown = false,
+        isMetaKeyDown = false,
+        isShiftKeyDown = false,
+        movementPosition = Point.zero,
+        button = Some(MouseButton.LeftMouseButton),
+        pointerId = 0,
+        width = 0,
+        height = 0,
+        pressure = 0,
+        tangentialPressure = 0,
+        tiltX = Radians.zero,
+        tiltY = Radians.zero,
+        twist = Radians.zero,
+        pointerType = pointerType,
+        isPrimary = true
+      )
+    def apply(x: Int, y: Int, button: MouseButton, pointerType: PointerType): PointerUp =
+      PointerUp(
+        position = Point(x, y),
+        buttons = Batch.empty,
+        isAltKeyDown = false,
+        isCtrlKeyDown = false,
+        isMetaKeyDown = false,
+        isShiftKeyDown = false,
+        movementPosition = Point.zero,
+        button = Some(MouseButton.LeftMouseButton),
+        pointerId = 0,
+        width = 0,
+        height = 0,
+        pressure = 0,
+        tangentialPressure = 0,
+        tiltX = Radians.zero,
+        tiltY = Radians.zero,
+        twist = Radians.zero,
+        pointerType = pointerType,
+        isPrimary = true
+      )
+
     def unapply(e: PointerUp): Option[Point] =
       Option(e.position)
 
