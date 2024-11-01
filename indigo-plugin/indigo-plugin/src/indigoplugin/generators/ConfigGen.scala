@@ -36,7 +36,6 @@ object ConfigGen {
       |      advanced = AdvancedGameConfig
       |            .default
       |           .withAntiAliasing(${indigoOptions.metadata.antiAliasing.toString})
-      |      )
       |    )
       |""".stripMargin
 

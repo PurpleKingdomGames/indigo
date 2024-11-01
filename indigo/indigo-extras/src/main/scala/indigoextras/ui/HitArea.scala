@@ -20,35 +20,35 @@ final case class HitArea(
     onHoldDown: () => Batch[GlobalEvent]
 ) derives CanEqual:
 
-  def update(pointers: PointerState): Outcome[HitArea] = {
-    val pointerInBounds = pointers.positions.exists(p => area.contains(Vertex.fromPoint(p)))
+  def update(pointer: PointerState): Outcome[HitArea] = {
+    val pointerInBounds = pointer.positions.exists(p => area.contains(Vertex.fromPoint(p)))
 
     val upEvents: Batch[GlobalEvent] =
-      if pointerInBounds && pointers.released then onUp()
+      if pointerInBounds && pointer.released then onUp()
       else Batch.empty
 
     val clickEvents: Batch[GlobalEvent] =
-      if pointerInBounds && pointers.isClicked then onClick()
+      if pointerInBounds && pointer.isClicked then onClick()
       else Batch.empty
 
     val downEvents: Batch[GlobalEvent] =
-      if pointerInBounds && pointers.pressed then onDown()
+      if pointerInBounds && pointer.pressed then onDown()
       else Batch.empty
 
     val pointerButtonEvents: Batch[GlobalEvent] =
       downEvents ++ upEvents ++ clickEvents
 
     state match
-      case ButtonState.Down if pointerInBounds && pointers.isLeftDown =>
+      case ButtonState.Down if pointerInBounds && pointer.isLeftDown =>
         Outcome(this).addGlobalEvents(onHoldDown() ++ pointerButtonEvents)
 
       case ButtonState.Up if pointerInBounds =>
         Outcome(toOverState).addGlobalEvents(onHoverOver() ++ pointerButtonEvents)
 
-      case ButtonState.Over if pointerInBounds && pointers.pressed =>
+      case ButtonState.Over if pointerInBounds && pointer.pressed =>
         Outcome(toDownState).addGlobalEvents(pointerButtonEvents)
 
-      case ButtonState.Down if pointerInBounds && !pointers.isLeftDown =>
+      case ButtonState.Down if pointerInBounds && !pointer.isLeftDown =>
         Outcome(toOverState).addGlobalEvents(onHoverOver() ++ pointerButtonEvents)
 
       case ButtonState.Over if !pointerInBounds =>
