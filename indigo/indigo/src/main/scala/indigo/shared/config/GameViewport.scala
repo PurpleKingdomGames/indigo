@@ -26,8 +26,8 @@ object GameViewport:
     @deprecated("use 'toRectangle' instead")
     def asRectangle: Rectangle = toRectangle
     def toRectangle: Rectangle = Rectangle(Point.zero, a)
-    def size: Size = a
-    def toSize: Size = a
-    def bounds: Rectangle = toRectangle
+    def size: Size             = a
+    def toSize: Size           = a
+    def bounds: Rectangle      = toRectangle
     def giveDimensions(magnification: Int): Rectangle =
       Rectangle(0, 0, a.width / magnification, a.height / magnification)

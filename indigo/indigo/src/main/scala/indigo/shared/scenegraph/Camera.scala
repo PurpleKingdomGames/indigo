@@ -12,7 +12,7 @@ sealed trait Camera:
   def position: Point
   def topLeft(viewport: Size): Point
   def bounds(viewport: Size): Rectangle
-  def frustum(viewport: Size): Rectangle         = bounds(viewport)
+  def frustum(viewport: Size): Rectangle = bounds(viewport)
   def zoom: Zoom
   def rotation: Radians
   def isLookAt: Boolean
@@ -28,9 +28,9 @@ object Camera:
     * while controlling the position, zoom and rotation.
     */
   final case class Fixed(position: Point, zoom: Zoom, rotation: Radians) extends Camera:
-    def topLeft(viewport: Size): Point            = position
-    def bounds(viewport: Size): Rectangle         = Rectangle(position, viewport)
-    val isLookAt: Boolean                         = false
+    def topLeft(viewport: Size): Point    = position
+    def bounds(viewport: Size): Rectangle = Rectangle(position, viewport)
+    val isLookAt: Boolean                 = false
 
     def withX(newX: Int): Fixed =
       this.copy(position = position.withX(newX))
