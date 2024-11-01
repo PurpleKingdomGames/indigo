@@ -12,10 +12,10 @@ import indigo.platform.renderer.shared.LoadedTextureAsset
 import indigo.platform.renderer.shared.TextureLookupResult
 import indigo.platform.renderer.shared.WebGLHelper
 import indigo.shared.QuickCache
+import indigo.shared.config.GameViewport
 import indigo.shared.config.RenderingTechnology
 import indigo.shared.datatypes.RGBA
 import indigo.shared.datatypes.Radians
-import indigo.shared.datatypes.Size
 import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.shared.events.ViewportResize
 import indigo.shared.platform.ProcessedSceneData
@@ -32,7 +32,7 @@ import org.scalajs.dom.WebGLBuffer
 import org.scalajs.dom.WebGLFramebuffer
 import org.scalajs.dom.WebGLProgram
 import org.scalajs.dom.WebGLRenderingContext
-import org.scalajs.dom.WebGLRenderingContext.*
+import org.scalajs.dom.WebGLRenderingContext._
 import org.scalajs.dom.html
 
 import scala.scalajs.js.Dynamic
@@ -419,7 +419,7 @@ final class RendererWebGL2(
 
       gl.viewport(0, 0, actualWidth.toDouble, actualHeight.toDouble)
 
-      globalEventStream.pushGlobalEvent(ViewportResize(Size(actualWidth, actualHeight)))
+      globalEventStream.pushGlobalEvent(ViewportResize(GameViewport(actualWidth, actualHeight)))
 
       ()
     }

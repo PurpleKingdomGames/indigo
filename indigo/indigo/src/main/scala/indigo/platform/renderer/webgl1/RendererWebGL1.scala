@@ -8,9 +8,9 @@ import indigo.platform.renderer.shared.ContextAndCanvas
 import indigo.platform.renderer.shared.LoadedTextureAsset
 import indigo.platform.renderer.shared.TextureLookupResult
 import indigo.platform.renderer.shared.WebGLHelper
+import indigo.shared.config.GameViewport
 import indigo.shared.config.RenderingTechnology
 import indigo.shared.datatypes.Radians
-import indigo.shared.datatypes.Size
 import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.shared.display.DisplayEntity
 import indigo.shared.display.DisplayGroup
@@ -255,7 +255,7 @@ final class RendererWebGL1(
 
       gl.viewport(0, 0, actualWidth.toDouble, actualHeight.toDouble)
 
-      globalEventStream.pushGlobalEvent(ViewportResize(Size(actualWidth, actualHeight)))
+      globalEventStream.pushGlobalEvent(ViewportResize(GameViewport(actualWidth, actualHeight)))
 
       ()
     }

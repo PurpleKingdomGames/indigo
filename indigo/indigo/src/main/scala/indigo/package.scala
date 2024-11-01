@@ -47,10 +47,6 @@ object syntax:
     def point: Point = Point(t._1, t._2)
     def size: Size   = Size(t._1, t._2)
 
-  extension (s: Size)
-    def giveDimensions(magnification: Int): Rectangle =
-      Rectangle(0, 0, s.width / magnification, s.height / magnification)
-
   extension [A](values: scalajs.js.Array[A]) def toBatch: Batch[A] = Batch.fromJSArray(values)
   extension [A](values: Array[A]) def toBatch: Batch[A]            = Batch.fromArray(values)
   extension [A](values: List[A]) def toBatch: Batch[A]             = Batch.fromList(values)
@@ -560,6 +556,9 @@ val ResizePolicy: shared.config.ResizePolicy.type = shared.config.ResizePolicy
 
 type GameConfig = shared.config.GameConfig
 val GameConfig: shared.config.GameConfig.type = shared.config.GameConfig
+
+type GameViewport = shared.config.GameViewport
+val GameViewport: shared.config.GameViewport.type = shared.config.GameViewport
 
 type AdvancedGameConfig = shared.config.AdvancedGameConfig
 val AdvancedGameConfig: shared.config.AdvancedGameConfig.type = shared.config.AdvancedGameConfig

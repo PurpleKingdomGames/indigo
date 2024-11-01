@@ -3,6 +3,7 @@ package indigo.shared.scenegraph
 import indigo.Point
 import indigo.Rectangle
 import indigo.Size
+import indigo.shared.config.GameViewport
 
 class CameraTests extends munit.FunSuite {
 

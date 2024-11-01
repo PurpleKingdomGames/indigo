@@ -22,7 +22,7 @@ object IndigoPhysics extends IndigoGame[Unit, Unit, Model, Unit]:
   def boot(flags: Map[String, String]): Outcome[BootResult[Unit, Model]] =
     Outcome(
       BootResult
-        .noData(Config.config.withViewport(Config.config.viewport + Config.config.viewport))
+        .noData(Config.config)
         .withSubSystems(FPSCounter(Point(10)))
     )
 
