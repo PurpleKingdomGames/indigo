@@ -11,13 +11,6 @@ ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports"
 ThisBuild / scalaVersion                                   := scala3Version
 
 lazy val indigoVersion = IndigoVersion.getVersion
-// For the docs site
-lazy val indigoDocsVersion  = "0.17.0"
-lazy val tyrianDocsVersion  = "0.11.0"
-lazy val scalaJsDocsVersion = "1.16.0"
-lazy val scalaDocsVersion   = "3.4.1"
-lazy val sbtDocsVersion     = "1.9.9"
-lazy val millDocsVersion    = "0.11.7"
 
 lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
   version            := indigoVersion,
@@ -61,22 +54,14 @@ lazy val publishSettings = {
 // Root
 lazy val indigoProject =
   (project in file("."))
-    .enablePlugins(ScalaJSPlugin, ScalaUnidocPlugin)
+    .enablePlugins(ScalaJSPlugin)
     .settings(
       neverPublish,
       commonSettings,
       name        := "IndigoProject",
       code        := codeTaskDefinition,
       usefulTasks := customTasksAliases,
-      presentationSettings(version),
-      ScalaUnidoc / unidoc / unidocProjectFilter := inAnyProject -- inProjects(
-        tyrianIndigoBridge, // TODO: After next release (>0.15.2), try removing tyrianIndigoBridge from unidoc filter
-        sandbox,
-        perf,
-        shader,
-        physics,
-        docs
-      )
+      presentationSettings(version)
     )
     .aggregate(
       indigo,
@@ -87,7 +72,6 @@ lazy val indigoProject =
       perf,
       shader,
       physics,
-      docs,
       benchmarks,
       tyrianSandbox
     )
@@ -268,61 +252,6 @@ lazy val benchmarks =
       libraryDependencies ++= Dependencies.benchmark.value,
       jsDependencies ++= Dependencies.benchmarkJs.value
     )
-
-lazy val jsdocs = project
-  .settings(
-    neverPublish,
-    organization := "io.indigoengine",
-    libraryDependencies ++= Dependencies.jsDocs.value,
-    libraryDependencies ++= Seq(
-      "io.indigoengine" %%% "indigo-json-circe"    % indigoDocsVersion,
-      "io.indigoengine" %%% "indigo"               % indigoDocsVersion,
-      "io.indigoengine" %%% "indigo-extras"        % indigoDocsVersion,
-      "io.indigoengine" %%% "tyrian-io"            % tyrianDocsVersion,
-      "io.indigoengine" %%% "tyrian-indigo-bridge" % indigoDocsVersion
-    ),
-    Compile / tpolecatExcludeOptions ++= Set(
-      ScalacOptions.warnValueDiscard,
-      ScalacOptions.warnUnusedImports,
-      ScalacOptions.warnUnusedLocals
-    )
-  )
-  .enablePlugins(ScalaJSPlugin)
-
-lazy val docs = project
-  .in(file("indigo-docs"))
-  .enablePlugins(MdocPlugin)
-  .settings(
-    neverPublish,
-    organization       := "io.indigoengine",
-    mdocJS             := Some(jsdocs),
-    mdocExtraArguments := List("--no-link-hygiene"),
-    mdocVariables := Map(
-      "VERSION"         -> indigoDocsVersion,
-      "SCALAJS_VERSION" -> scalaJsDocsVersion,
-      "SCALA_VERSION"   -> scalaDocsVersion,
-      "SBT_VERSION"     -> sbtDocsVersion,
-      "MILL_VERSION"    -> millDocsVersion,
-      "js-opt"          -> "fast"
-    ),
-    Compile / tpolecatExcludeOptions ++= Set(
-      ScalacOptions.warnValueDiscard,
-      ScalacOptions.warnUnusedImports,
-      ScalacOptions.warnUnusedLocals
-    )
-  )
-  .settings(
-    run / fork := true
-  )
-
-addCommandAlias(
-  "gendocs",
-  List(
-    "cleanAll",
-    "unidoc",   // Docs in ./target/scala-3.3.1/unidoc/
-    "docs/mdoc" // Docs in ./indigo/indigo-docs/target/mdoc
-  ).mkString(";", ";", "")
-)
 
 addCommandAlias(
   "tyrianSandboxBuild",

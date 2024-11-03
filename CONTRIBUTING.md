@@ -20,7 +20,7 @@ How to report via the [issue tracker](https://github.com/PurpleKingdomGames/indi
 
 ## Updating documentation
 
-Game engines are complicated, especially for new people, and so are only as good as their documentation. If you like to help update our docs, please raise a Pull Request against the [documentation website repo](https://github.com/PurpleKingdomGames/indigo-website).
+Game engines are complicated, especially for new people, and so are only as good as their documentation. If you like to help update our docs, please raise a Pull Request against the [documentation website repo](https://github.com/PurpleKingdomGames/indigo-docs).
 
 ## Writing code for Indigo
 
