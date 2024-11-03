@@ -59,7 +59,6 @@ lazy val indigoProject =
       neverPublish,
       commonSettings,
       name        := "IndigoProject",
-      code        := codeTaskDefinition,
       usefulTasks := customTasksAliases,
       presentationSettings(version)
     )
