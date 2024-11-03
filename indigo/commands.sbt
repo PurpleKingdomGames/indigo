@@ -41,17 +41,6 @@ def applyCrossToAllReleaseable(command: String): String =
     applyCrossCommand(releaseProjects, command)
   ).mkString
 
-// Rebuild ScalaDocs and open in Firefox
-addCommandAlias(
-  "readdocs",
-  applyCommand(coreProjects, "doc") +
-    List(
-      "openshareddocs",
-      "openindigodocs",
-      "openindigoextsdocs"
-    ).mkString(";", ";", "")
-)
-
 addCommandAlias(
   "cleanAll",
   applyToAll("clean")
