@@ -54,9 +54,6 @@ final case class Button(
   def update(pointer: PointerState): Outcome[Button] = {
     val pointerInBounds = pointer.positions.exists(p => bounds.isPointWithin(p))
 
-    println(
-      s"Pointer in bounds: $pointerInBounds released: ${pointer.isReleased} clicked: ${pointer.isClicked} pressed: ${pointer.isPressed}"
-    )
     val upEvents: Batch[GlobalEvent] =
       if pointerInBounds && pointer.released then onUp()
       else Batch.empty
