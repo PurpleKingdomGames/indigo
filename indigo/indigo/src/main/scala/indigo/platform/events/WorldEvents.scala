@@ -357,25 +357,27 @@ final class WorldEvents:
         // Check to see if this button is up within the clickTimeMs, and if so fire a click event
         pointerButtons.getOrElse(e.pointerId, Batch.empty).find(_._1 == e.button) match {
           case Some((btn, downTime)) if btn == e.button && Date.now() - downTime.getTime() <= clickTimeMs =>
-            PointerClick(
-              position,
-              buttons,
-              e.altKey,
-              e.ctrlKey,
-              e.metaKey,
-              e.shiftKey,
-              movementPosition,
-              PointerId(e.pointerId),
-              e.width(magnification),
-              e.height(magnification),
-              e.pressure,
-              e.tangentialPressure,
-              Radians.fromDegrees(e.tiltX),
-              Radians.fromDegrees(e.tiltY),
-              Radians.fromDegrees(e.twist),
-              pointerType,
-              e.isPrimary,
-              MouseButton.fromOrdinalOpt(e.button)
+            globalEventStream.pushGlobalEvent(
+              PointerClick(
+                position,
+                buttons,
+                e.altKey,
+                e.ctrlKey,
+                e.metaKey,
+                e.shiftKey,
+                movementPosition,
+                PointerId(e.pointerId),
+                e.width(magnification),
+                e.height(magnification),
+                e.pressure,
+                e.tangentialPressure,
+                Radians.fromDegrees(e.tiltX),
+                Radians.fromDegrees(e.tiltY),
+                Radians.fromDegrees(e.twist),
+                pointerType,
+                e.isPrimary,
+                MouseButton.fromOrdinalOpt(e.button)
+              )
             )
           case _ => ()
         }
