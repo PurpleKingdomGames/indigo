@@ -4,9 +4,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v4
     - uses: coursier/cache-action@v6
-    - uses: olafurpg/setup-scala@v11
+    - uses: coursier/setup-action@v1
       with:
         java-version: adopt@1.11
     - name: Indigo Compile & Test
