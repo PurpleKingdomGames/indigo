@@ -38,14 +38,33 @@ trait PointerState:
     */
   lazy val isReleased: Boolean = released(MouseButton.LeftMouseButton)
 
+  /** Thw positions that the pointer was clicked at in this frame
+    */
   lazy val isClickedAt: Batch[Point] = pointers.pointersClickedAt(pointerType)
 
-  lazy val isUpAt: Boolean   = pointers.upPositionsWith(None, pointerType).nonEmpty
-  lazy val isDownAt: Boolean = pointers.downPositionsWith(None, pointerType).nonEmpty
+  /** The positions that the pointer was up at in this frame
+    */
+  lazy val isUpAt: Batch[Point] = pointers.upPositionsWith(Some(MouseButton.LeftMouseButton), pointerType)
 
+  /** The positions that the pointer was down at in this frame
+    */
+  lazy val isDownAt: Batch[Point] = pointers.downPositionsWith(Some(MouseButton.LeftMouseButton), pointerType)
+
+  /** The positions of the pointer in this frame
+    */
   lazy val positions: Batch[Point] = pointers.pointerPositions(pointerType)
-  lazy val position: Option[Point] = positions.headOption
-  lazy val isClicked: Boolean      = pointers.pointerClicked(pointerType)
+
+  /** The first position of the pointer in this frame, defaulting to 0,0
+    */
+  lazy val position: Point = maybePosition.getOrElse(Point.zero)
+
+  /** The first position of the pointer in this frame
+    */
+  lazy val maybePosition: Option[Point] = positions.headOption
+
+  /** Whether the pointer was clicked this frame
+    */
+  lazy val isClicked: Boolean = pointers.pointerClicked(pointerType)
 
   /** Whether the left button was pressed in this frame
     *
@@ -74,6 +93,22 @@ trait PointerState:
     * @return
     */
   def released(button: MouseButton): Boolean = pointers.released(button, pointerType)
+
+  /** The first position where the specified button was up on this frame
+    *
+    * @param button
+    * @return
+    */
+  def maybeUpAtPositionWith(button: MouseButton): Option[Point] =
+    pointers.upPositionsWith(Some(button), pointerType).headOption
+
+  /** The first position where the specified button was down on this frame
+    *
+    * @param button
+    * @return
+    */
+  def maybeDownAtPositionWith(button: MouseButton): Option[Point] =
+    pointers.downPositionsWith(Some(button), pointerType).headOption
 
   /** Was any pointer clicked at this position in this frame
     *
@@ -243,6 +278,55 @@ trait PointerState:
       button,
       pointerType
     )
+
+  /** Whether the pointer was clicked within the specified bounds in this frame
+    *
+    * @param bounds
+    * @return
+    */
+  def wasClickedWithin(bounds: Rectangle): Boolean = wasClickedWithin(bounds, None)
+
+  /** Whether the pointer button was clicked within the specified bounds in this frame
+    *
+    * @param bounds
+    * @param button
+    * @return
+    */
+  def wasClickedWithin(bounds: Rectangle, button: MouseButton): Boolean = wasClickedWithin(bounds, Some(button))
+
+  /** Whether the pointer was clicked within the specified bounds in this frame
+    *
+    * @param x
+    * @param y
+    * @param width
+    * @param height
+    * @param button
+    * @return
+    */
+  def wasClickedWithin(x: Int, y: Int, width: Int, height: Int): Boolean = wasClickedWithin(
+    Rectangle(x, y, width, height)
+  )
+
+  /** Whether the pointer button was clicked within the specified bounds in this frame
+    *
+    * @param x
+    * @param y
+    * @param width
+    * @param height
+    * @param button
+    * @return
+    */
+  def wasClickedWithin(x: Int, y: Int, width: Int, height: Int, button: MouseButton): Boolean =
+    wasClickedWithin(Rectangle(x, y, width, height), Some(button))
+
+  /** Whether the pointer was clicked within the specified bounds in this frame
+    *
+    * @param bounds
+    * @param button
+    * @return
+    */
+  def wasClickedWithin(bounds: Rectangle, button: Option[MouseButton]): Boolean =
+    pointers.clickedPositionsWith(button, pointerType).exists(bounds.isPointWithin)
 
   /** Whether the pointer position was within the specified bounds in this frame
     *

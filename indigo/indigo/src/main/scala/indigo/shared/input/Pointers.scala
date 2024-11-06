@@ -1,6 +1,7 @@
 package indigo.shared.input
 
 import indigo.MouseButton
+import indigo.shared.IndigoLogger
 import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
@@ -133,6 +134,15 @@ final class Pointers(
   def downPositionsWith(button: Option[MouseButton], pointerType: Option[PointerType]): Batch[Point] =
     pointerEventsOfType(pointerType).collect {
       case m: PointerEvent.PointerDown if button == None || m.button == button => m.position
+    }
+
+  /** All the positions where the specified button was clicked in this frame
+    *
+    * @param button
+    */
+  def clickedPositionsWith(button: Option[MouseButton], pointerType: Option[PointerType]): Batch[Point] =
+    pointerEventsOfType(pointerType).collect {
+      case m: PointerEvent.PointerClick if button == None || m.button == button => m.position
     }
 
   /** Whether the specified button was up at the specified position in this frame
@@ -336,15 +346,26 @@ object Pointers:
       })
       .map(_.pointerId)
 
-    val pointersToAdd = events
-      .filter(_ match {
-        case _: (PointerEvent.PointerCancel | PointerEvent.PointerOut) => false
-        case e                                                         => true
-      })
-      .map(e => Pointer(e.pointerId, e.pointerType, e.buttons, e.position))
+    val pointersToAdd = Batch.fromArray(
+      events
+        .filter(_ match {
+          case _: (PointerEvent.PointerCancel | PointerEvent.PointerOut) => false
+          case e                                                         => true
+        })
+        .foldLeft(Map.empty[PointerId, Pointer])((acc, e) =>
+          acc + (e.pointerId -> Pointer(e.pointerId, e.pointerType, e.buttons, e.position))
+        )
+        .values
+        .toArray
+    )
 
     previous.pointerBatch
       .filterNot(p => pointersToRemove.contains(p.id) || pointersToAdd.exists(_.id == p.id))
       ++ pointersToAdd
 
 final case class Pointer(id: PointerId, pointerType: PointerType, buttonsDown: Batch[MouseButton], position: Point)
+object Pointer:
+  def apply(position: Point, pointerType: PointerType): Pointer =
+    Pointer(PointerId(0), pointerType, Batch.empty, position)
+  def apply(position: Point, pointerType: PointerType, button: MouseButton): Pointer =
+    Pointer(PointerId(0), pointerType, Batch(button), position)

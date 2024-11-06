@@ -5,8 +5,11 @@ import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.events.GlobalEvent
-import indigo.shared.events.MouseEvent
-import indigo.shared.input.Mouse
+import indigo.shared.events.MouseButton
+import indigo.shared.events.PointerEvent
+import indigo.shared.events.PointerType
+import indigo.shared.input.Pointer
+import indigo.shared.input.Pointers
 import indigo.shared.materials.Material
 import indigo.shared.scenegraph.Graphic
 
@@ -47,7 +50,10 @@ class RadioButtonGroupTests extends munit.FunSuite {
   test("No mouse interaction") {
 
     val mouse =
-      new Mouse(Batch.empty, Point(-10, -10), false)
+      new Pointers(
+        Batch(Pointer(Point(-10, -10), PointerType.Mouse)),
+        Batch.empty
+      )
 
     val actual = radioButtons.update(mouse)
 
@@ -61,7 +67,10 @@ class RadioButtonGroupTests extends munit.FunSuite {
   test("hover over unselected button") {
 
     val mouse =
-      new Mouse(Batch.empty, Point(5, 25), false)
+      new Pointers(
+        Batch(Pointer(Point(5, 25), PointerType.Mouse)),
+        Batch.empty
+      )
 
     val actual = radioButtons.update(mouse)
 
@@ -81,7 +90,10 @@ class RadioButtonGroupTests extends munit.FunSuite {
   test("hover out unselected button") {
 
     val mouse =
-      new Mouse(Batch.empty, Point(-5, 25), false)
+      new Pointers(
+        Batch(Pointer(Point(-5, 25), PointerType.Mouse)),
+        Batch.empty
+      )
 
     val actual =
       radioButtons
@@ -110,7 +122,10 @@ class RadioButtonGroupTests extends munit.FunSuite {
   test("selecting a hovered button") {
 
     val mouse =
-      new Mouse(Batch(MouseEvent.Click(5, 25)), Point(5, 25), true)
+      new Pointers(
+        Batch(Pointer(Point(5, 25), PointerType.Mouse, MouseButton.LeftMouseButton)),
+        Batch(PointerEvent.PointerClick(5, 25, PointerType.Mouse))
+      )
 
     val actual =
       radioButtons
@@ -138,7 +153,10 @@ class RadioButtonGroupTests extends munit.FunSuite {
 
   test("selecting a hovered button, existing selected is de-selected") {
     val mouse =
-      new Mouse(Batch(MouseEvent.Click(5, 25)), Point(5, 25), true)
+      new Pointers(
+        Batch(Pointer(Point(5, 25), PointerType.Mouse, MouseButton.LeftMouseButton)),
+        Batch(PointerEvent.PointerClick(5, 25, PointerType.Mouse))
+      )
 
     val actual =
       radioButtons

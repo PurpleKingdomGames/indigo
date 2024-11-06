@@ -7,6 +7,7 @@ import indigo.shared.collections.Batch
 import indigo.shared.constants.Key
 import indigo.shared.datatypes._
 import indigo.shared.events.GlobalEvent
+import indigo.shared.events.MouseButton
 import indigo.shared.scenegraph.Graphic
 import indigo.shared.scenegraph.SceneNode
 import indigo.shared.scenegraph.Text
@@ -217,10 +218,11 @@ final case class InputField(
         rec(frameContext.inputState.keyboard.keysReleased.toList, this, false, None)
       else Outcome(this)
 
-    if (frameContext.inputState.mouse.mouseReleased)
+    if (frameContext.inputState.pointers.isReleased)
       bounds(frameContext.boundaryLocator) match
         case Some(bounds) =>
-          if frameContext.inputState.mouse.wasMouseUpWithin(bounds) then updated.flatMap(_.giveFocus)
+          if frameContext.inputState.pointers.wasUpWithin(bounds, MouseButton.LeftMouseButton) then
+            updated.flatMap(_.giveFocus)
           else updated.flatMap(_.loseFocus)
         case _ =>
           updated

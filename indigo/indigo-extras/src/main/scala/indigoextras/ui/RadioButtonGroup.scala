@@ -6,7 +6,7 @@ import indigo.shared.datatypes.Depth
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.events.GlobalEvent
-import indigo.shared.input.Mouse
+import indigo.shared.input.PointerState
 import indigo.shared.scenegraph.EntityNode
 import indigo.shared.scenegraph.Graphic
 import indigo.shared.scenegraph.Group
@@ -318,25 +318,27 @@ final case class RadioButtonGroup(
     rec(radioButtons, false, Nil)
   }
 
-  /** Update all the option buttons according to the newest state of mouse input.
+  /** Update all the option buttons according to the newest state of pointer input.
     *
-    * @param mouse
-    *   The current mouse state
+    * @param pointer
+    *   The current pointer state
     * @return
     *   An Outcome[RadioButtonGroup] with this radio button's new state
     */
-  def update(mouse: Mouse): Outcome[RadioButtonGroup] = {
+  def update(pointer: PointerState): Outcome[RadioButtonGroup] = {
     val indexedOptions = options.zipWithIndex
 
     val selected: Option[Int] =
-      indexedOptions.flatMap {
-        case (o, i)
-            if mouse.isLeftDown && o.hitArea.getOrElse(hitArea).moveBy(o.position).isPointWithin(mouse.position) =>
-          Batch(i)
+      pointer.maybePosition.flatMap(pointerPos =>
+        indexedOptions.flatMap {
+          case (o, i)
+              if pointer.isLeftDown && o.hitArea.getOrElse(hitArea).moveBy(o.position).isPointWithin(pointerPos) =>
+            Batch(i)
 
-        case _ =>
-          Batch.empty
-      }.headOption
+          case _ =>
+            Batch.empty
+        }.headOption
+      )
 
     val updatedOptions: Batch[Outcome[RadioButton]] =
       indexedOptions.map {
@@ -344,7 +346,7 @@ final case class RadioButtonGroup(
         case (o, _) if o.inSelectedState && selected.isEmpty =>
           Outcome(o)
 
-        // Selected already after some mouse selection
+        // Selected already after some pointer selection
         case (o, i) if o.inSelectedState && selected.isDefined && selected.contains(i) =>
           Outcome(o)
 
@@ -356,15 +358,15 @@ final case class RadioButtonGroup(
         case (o, i) if o.inSelectedState && selected.isDefined && !selected.contains(i) =>
           Outcome(o.copy(state = RadioButtonState.Normal), o.onUnselected())
 
-        // Not selected, no mouse click, mouse within, should be in hover state.
+        // Not selected, no pointer click, pointer within, should be in hover state.
         case (o, _)
-            if !o.inSelectedState && !mouse.isLeftDown && o.hitArea
+            if pointer.maybePosition != None && !o.inSelectedState && !pointer.isLeftDown && o.hitArea
               .getOrElse(hitArea)
               .moveBy(o.position)
-              .isPointWithin(mouse.position) =>
+              .isPointWithin(pointer.position) =>
           Outcome(o.copy(state = RadioButtonState.Hover), o.onHoverOver())
 
-        // Hovered, but mouse outside so revert to normal
+        // Hovered, but pointer outside so revert to normal
         case (o, _) if o.inHoverState =>
           Outcome(o.copy(state = RadioButtonState.Normal), o.onHoverOut())
 
