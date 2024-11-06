@@ -1,5 +1,6 @@
 package indigo.shared.events
 
+import indigo.MouseButton
 import indigo.shared.collections.Batch
 import indigo.shared.constants.Key
 import indigo.shared.datatypes.Point
@@ -23,17 +24,18 @@ class InputStateTests extends munit.FunSuite {
 
   test("The default state object does the expected thing") {
     assertEquals(inputState.mouse.isLeftDown, false)
+    assertEquals(inputState.mouse.maybePosition, None)
     assertEquals(inputState.mouse.position, Point.zero)
 
-    assertEquals(inputState.mouse.wasMouseClickedWithin(bounds), false)
+    assertEquals(inputState.mouse.wasClickedWithin(bounds), false)
   }
 
-  val events1: Batch[MouseEvent] =
+  val events1: Batch[PointerEvent] =
     Batch(
-      MouseEvent.Move(10, 10),
-      MouseEvent.MouseDown(10, 10),
-      MouseEvent.MouseUp(10, 10),
-      MouseEvent.Click(10, 10)
+      PointerEvent.PointerMove(10, 10),
+      PointerEvent.PointerDown(10, 10),
+      PointerEvent.PointerUp(10, 10),
+      PointerEvent.PointerClick(10, 10)
     )
 
   val state = InputState.calculateNext(inputState, events1, gamepadState1)
@@ -42,108 +44,112 @@ class InputStateTests extends munit.FunSuite {
     assertEquals(state.mouse.position == Point(10, 10), true)
   }
 
-  test("Mouse state.mousePressed") {
-    assertEquals(state.mouse.mousePressed, true)
+  test("Mouse state.maybePosition") {
+    assertEquals(state.mouse.maybePosition == Some(Point(10, 10)), true)
   }
 
-  test("Mouse state.mouseReleased") {
-    assertEquals(state.mouse.mouseReleased, true)
+  test("Mouse state.isPressed") {
+    assertEquals(state.mouse.isPressed, true)
   }
 
-  test("Mouse state.mouseClicked") {
-    assertEquals(state.mouse.mouseClicked, true)
+  test("Mouse state.isReleased") {
+    assertEquals(state.mouse.isReleased, true)
+  }
+
+  test("Mouse state.isClicked") {
+    assertEquals(state.mouse.isClicked, true)
 
     assertEquals(
-      InputState.calculateNext(inputState, Batch(MouseEvent.MouseDown(0, 0)), gamepadState1).mouse.mouseClicked,
+      InputState.calculateNext(inputState, Batch(PointerEvent.PointerDown(0, 0)), gamepadState1).mouse.isClicked,
       false
     )
   }
 
-  test("Mouse state.mouseClickAt") {
-    assertEquals(state.mouse.mouseClickAt, Some(Point(10, 10)))
+  test("Mouse state.isClickedAt") {
+    assertEquals(state.mouse.isClickedAt, Batch(Point(10, 10)))
 
     assertEquals(
-      InputState.calculateNext(inputState, Batch(MouseEvent.MouseDown(0, 0)), gamepadState1).mouse.mouseClickAt,
-      None
+      InputState.calculateNext(inputState, Batch(PointerEvent.PointerDown(0, 0)), gamepadState1).mouse.isClickedAt,
+      Batch.empty
     )
   }
 
-  test("Mouse state.mouseUpAt") {
-    assertEquals(state.mouse.mouseUpAt, Some(Point(10, 10)))
+  test("Mouse state.isUpAt") {
+    assertEquals(state.mouse.isUpAt, Batch(Point(10, 10)))
 
     assertEquals(
-      InputState.calculateNext(inputState, Batch(MouseEvent.MouseDown(0, 0)), gamepadState1).mouse.mouseUpAt,
-      None
+      InputState.calculateNext(inputState, Batch(PointerEvent.PointerDown(0, 0)), gamepadState1).mouse.isUpAt,
+      Batch.empty
     )
   }
 
-  test("Mouse state.mouseDownAt") {
-    assertEquals(state.mouse.mouseDownAt, Some(Point(10, 10)))
+  test("Mouse state.isDownAt") {
+    assertEquals(state.mouse.isDownAt, Batch(Point(10, 10)))
 
     assertEquals(
-      InputState.calculateNext(inputState, Batch(MouseEvent.MouseUp(0, 0)), gamepadState1).mouse.mouseDownAt,
-      None
+      InputState.calculateNext(inputState, Batch(PointerEvent.PointerUp(0, 0)), gamepadState1).mouse.isDownAt,
+      Batch.empty
     )
   }
 
-  test("Mouse state.wasMouseClickedAt") {
-    assertEquals(state.mouse.wasMouseClickedAt(10, 10), true)
-    assertEquals(state.mouse.wasMouseClickedAt(20, 10), false)
+  test("Mouse state.wasClickedAt") {
+    assertEquals(state.mouse.wasClickedAt(10, 10), true)
+    assertEquals(state.mouse.wasClickedAt(20, 10), false)
   }
 
-  test("Mouse state.wasMouseUpAt") {
-    assertEquals(state.mouse.wasMouseUpAt(10, 10), true)
-    assertEquals(state.mouse.wasMouseUpAt(20, 10), false)
+  test("Mouse state.wasUpAt") {
+    assertEquals(state.mouse.wasUpAt(10, 10), true)
+    assertEquals(state.mouse.wasUpAt(20, 10), false)
   }
 
-  test("Mouse state.wasMouseDownAt") {
-    assertEquals(state.mouse.wasMouseDownAt(10, 10), true)
-    assertEquals(state.mouse.wasMouseDownAt(20, 10), false)
+  test("Mouse state.wasDownAt") {
+    assertEquals(state.mouse.wasDownAt(10, 10), true)
+    assertEquals(state.mouse.wasDownAt(20, 10), false)
   }
 
-  test("Mouse state.wasMousePositionAt") {
-    assertEquals(state.mouse.wasMousePositionAt(Point.zero), false)
-    assertEquals(state.mouse.wasMousePositionAt(Point(10, 10)), true)
+  test("Mouse state.wasPositionAt") {
+    assertEquals(state.mouse.wasPositionAt(Point.zero), false)
+    assertEquals(state.mouse.wasPositionAt(Point(10, 10)), true)
   }
 
-  test("Mouse state.wasMouseClickedWithin") {
-    assertEquals(state.mouse.wasMouseClickedWithin(Rectangle(0, 0, 5, 5)), false)
-    assertEquals(state.mouse.wasMouseClickedWithin(Rectangle(50, 50, 5, 5)), false)
-    assertEquals(state.mouse.wasMouseClickedWithin(Rectangle(5, 5, 10, 10)), true)
+  test("Mouse state.wasClickedWithin") {
+    assertEquals(state.mouse.wasClickedWithin(Rectangle(0, 0, 5, 5)), false)
+    assertEquals(state.mouse.wasClickedWithin(Rectangle(50, 50, 5, 5)), false)
+    assertEquals(state.mouse.wasClickedWithin(Rectangle(5, 5, 10, 10)), true)
   }
 
-  test("Mouse state.wasMouseUpWithin") {
-    assertEquals(state.mouse.wasMouseUpWithin(Rectangle(0, 0, 5, 5)), false)
-    assertEquals(state.mouse.wasMouseUpWithin(Rectangle(50, 50, 5, 5)), false)
-    assertEquals(state.mouse.wasMouseUpWithin(Rectangle(5, 5, 10, 10)), true)
+  test("Mouse state.wasUpWithin") {
+    assertEquals(state.mouse.wasUpWithin(Rectangle(0, 0, 5, 5), MouseButton.LeftMouseButton), false)
+    assertEquals(state.mouse.wasUpWithin(Rectangle(50, 50, 5, 5), MouseButton.LeftMouseButton), false)
+    assertEquals(state.mouse.wasUpWithin(Rectangle(5, 5, 10, 10), MouseButton.LeftMouseButton), true)
   }
 
-  test("Mouse state.wasMouseDownWithin") {
-    assertEquals(state.mouse.wasMouseDownWithin(Rectangle(0, 0, 5, 5)), false)
-    assertEquals(state.mouse.wasMouseDownWithin(Rectangle(50, 50, 5, 5)), false)
-    assertEquals(state.mouse.wasMouseDownWithin(Rectangle(5, 5, 10, 10)), true)
+  test("Mouse state.wasDownWithin") {
+    assertEquals(state.mouse.wasDownWithin(Rectangle(0, 0, 5, 5), MouseButton.LeftMouseButton), false)
+    assertEquals(state.mouse.wasDownWithin(Rectangle(50, 50, 5, 5), MouseButton.LeftMouseButton), false)
+    assertEquals(state.mouse.wasDownWithin(Rectangle(5, 5, 10, 10), MouseButton.LeftMouseButton), true)
   }
 
-  test("Mouse state.wasMousePositionWithin") {
-    assertEquals(state.mouse.wasMousePositionWithin(Rectangle(0, 0, 5, 5)), false)
-    assertEquals(state.mouse.wasMousePositionWithin(Rectangle(50, 50, 5, 5)), false)
-    assertEquals(state.mouse.wasMousePositionWithin(Rectangle(5, 5, 10, 10)), true)
+  test("Mouse state.wasWithin") {
+    assertEquals(state.mouse.wasWithin(Rectangle(0, 0, 5, 5)), false)
+    assertEquals(state.mouse.wasWithin(Rectangle(50, 50, 5, 5)), false)
+    assertEquals(state.mouse.wasWithin(Rectangle(5, 5, 10, 10)), true)
   }
 
   test("Mouse state.isLeftDown") {
 
-    val state2 = InputState.calculateNext(state, Batch(MouseEvent.MouseDown(0, 0)), gamepadState1)    // true
-    val state3 = InputState.calculateNext(state2, Batch.empty, gamepadState1)                         // still true
-    val state4 = InputState.calculateNext(state3, Batch(MouseEvent.MouseDown(20, 20)), gamepadState1) // still true
+    val state2 = InputState.calculateNext(state, Batch(PointerEvent.PointerDown(0, 0)), gamepadState1)    // true
+    val state3 = InputState.calculateNext(state2, Batch.empty, gamepadState1)                             // still true
+    val state4 = InputState.calculateNext(state3, Batch(PointerEvent.PointerDown(20, 20)), gamepadState1) // still true
     val state5 = InputState.calculateNext( // Still true
       state4,
-      Batch(MouseEvent.MouseUp(20, 20), MouseEvent.MouseDown(20, 20)),
+      Batch(PointerEvent.PointerUp(20, 20), PointerEvent.PointerDown(20, 20)),
       gamepadState1
     )
-    val state6 = InputState.calculateNext(state5, Batch(MouseEvent.MouseUp(20, 20)), gamepadState1) // false
+    val state6 = InputState.calculateNext(state5, Batch(PointerEvent.PointerUp(20, 20)), gamepadState1) // false
     val state7 = InputState.calculateNext( // Still false
       state6,
-      Batch(MouseEvent.MouseDown(20, 20), MouseEvent.MouseUp(20, 20)),
+      Batch(PointerEvent.PointerDown(20, 20), PointerEvent.PointerUp(20, 20)),
       gamepadState1
     )
 
@@ -160,23 +166,23 @@ class InputStateTests extends munit.FunSuite {
     import MouseButton._
 
     val state2 =
-      InputState.calculateNext(state, Batch(MouseEvent.MouseDown(0, 0, RightMouseButton)), gamepadState1) // true
+      InputState.calculateNext(state, Batch(PointerEvent.PointerDown(0, 0, RightMouseButton)), gamepadState1) // true
     val state3 = InputState.calculateNext(state2, Batch.empty, gamepadState1) // still true
     val state4 = InputState.calculateNext( // still true
       state3,
-      Batch(MouseEvent.MouseDown(20, 20, RightMouseButton)),
+      Batch(PointerEvent.PointerDown(20, 20, RightMouseButton)),
       gamepadState1
     )
     val state5 = InputState.calculateNext( // Still true
       state4,
-      Batch(MouseEvent.MouseUp(20, 20, RightMouseButton), MouseEvent.MouseDown(20, 20, RightMouseButton)),
+      Batch(PointerEvent.PointerUp(20, 20, RightMouseButton), PointerEvent.PointerDown(20, 20, RightMouseButton)),
       gamepadState1
     )
     val state6 = // false
-      InputState.calculateNext(state5, Batch(MouseEvent.MouseUp(20, 20, RightMouseButton)), gamepadState1)
+      InputState.calculateNext(state5, Batch(PointerEvent.PointerUp(20, 20, RightMouseButton)), gamepadState1)
     val state7 = InputState.calculateNext( // Still false
       state6,
-      Batch(MouseEvent.MouseDown(20, 20, RightMouseButton), MouseEvent.MouseUp(20, 20, RightMouseButton)),
+      Batch(PointerEvent.PointerDown(20, 20, RightMouseButton), PointerEvent.PointerUp(20, 20, RightMouseButton)),
       gamepadState1
     )
 
@@ -196,9 +202,13 @@ class InputStateTests extends munit.FunSuite {
       Batch(MouseEvent.Wheel(0, 0, -5), MouseEvent.Wheel(0, 0, 10)),
       gamepadState1
     )
-    val state3 = InputState.calculateNext(state2, Batch.empty[MouseEvent], gamepadState1)
+    val state3 = InputState.calculateNext(state2, Batch.empty[PointerEvent], gamepadState1)
     val state4 =
-      InputState.calculateNext(state3, Batch(MouseEvent.Wheel(0, 0, -10), MouseEvent.Wheel(0, 0, 10)), gamepadState1)
+      InputState.calculateNext(
+        state3,
+        Batch(MouseEvent.Wheel(0, 0, -10), MouseEvent.Wheel(0, 0, 10)),
+        gamepadState1
+      )
 
     assertEquals(initialState.mouse.scrolled, Some(MouseWheel.ScrollUp))
     assertEquals(state2.mouse.scrolled, Some(MouseWheel.ScrollDown))
@@ -331,8 +341,8 @@ class InputStateTests extends munit.FunSuite {
       KeyboardEvent.KeyDown(Key.KEY_B),
       KeyboardEvent.KeyDown(Key.KEY_C),
       KeyboardEvent.KeyDown(Key.KEY_D),
-      MouseEvent.Move(10, 10),
-      MouseEvent.MouseDown(10, 10),
+      PointerEvent.PointerMove(10, 10),
+      PointerEvent.PointerDown(10, 10),
       MouseEvent.Wheel(10, 10, -15)
     )
 

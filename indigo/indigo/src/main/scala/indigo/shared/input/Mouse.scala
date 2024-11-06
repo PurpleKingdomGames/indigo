@@ -6,163 +6,99 @@ import indigo.shared.datatypes.Rectangle
 import indigo.shared.events.MouseButton
 import indigo.shared.events.MouseEvent
 import indigo.shared.events.MouseWheel
+import indigo.shared.events.PointerEvent
+import indigo.shared.events.PointerEvent.PointerId
+import indigo.shared.events.PointerType
 
 import scala.annotation.tailrec
 
-final class Mouse(
-    mouseEvents: Batch[MouseEvent],
-    val position: Point,
-    @deprecated("use `isButtonDown` function instead of this value", "0.12.0") val leftMouseIsDown: Boolean,
-    val buttonsDown: Set[MouseButton]
-) {
+final class Mouse(val pointers: Pointers, val wheelEvents: Batch[MouseEvent.Wheel]) extends PointerState {
+  val pointerType: Option[PointerType] = Some(PointerType.Mouse)
 
-  def this(mouseEvents: Batch[MouseEvent], position: Point, leftMouseIsDown: Boolean) =
-    this(
-      mouseEvents,
-      position,
-      leftMouseIsDown,
-      buttonsDown = if (leftMouseIsDown) Set(MouseButton.LeftMouseButton) else Set.empty
-    )
+  @deprecated("Use `isClicked` instead.", "0.18.0")
+  lazy val mouseClicked: Boolean = isClicked
 
-  def isButtonDown(button: MouseButton): Boolean = buttonsDown.contains(button)
+  @deprecated("Use `isPressed` instead.", "0.18.0")
+  lazy val mousePressed: Boolean = pressed(MouseButton.LeftMouseButton)
 
-  lazy val isLeftDown: Boolean  = isButtonDown(MouseButton.LeftMouseButton)
-  lazy val isRightDown: Boolean = isButtonDown(MouseButton.RightMouseButton)
-
-  lazy val mouseClicked: Boolean = mouseEvents.exists {
-    case _: MouseEvent.Click => true
-    case _                   => false
-  }
-  lazy val mousePressed: Boolean  = pressed(MouseButton.LeftMouseButton)
+  @deprecated("Use `isReleased` instead.", "0.18.0")
   lazy val mouseReleased: Boolean = released(MouseButton.LeftMouseButton)
 
-  def pressed(button: MouseButton): Boolean =
-    mouseEvents.exists {
-      case md: MouseEvent.MouseDown if md.button == button => true
-      case _                                               => false
-    }
-
-  def released(button: MouseButton): Boolean =
-    mouseEvents.exists {
-      case mu: MouseEvent.MouseUp if mu.button == button => true
-      case _                                             => false
-    }
-
   lazy val scrolled: Option[MouseWheel] =
-    val amount = mouseEvents.foldLeft(0d) {
-      case (acc, MouseEvent.Wheel(_, deltaY)) => acc + deltaY
-      case (acc, _)                           => acc
+    val amount = wheelEvents.foldLeft(0d) { case (acc, e) =>
+      acc + e.deltaY
     }
 
     if amount == 0 then Option.empty[MouseWheel]
     else if amount < 0 then Some(MouseWheel.ScrollUp)
     else Some(MouseWheel.ScrollDown)
 
-  lazy val mouseClickAt: Option[Point] = mouseEvents.collectFirst { case m: MouseEvent.Click =>
-    m.position
-  }
-  lazy val mouseUpAt: Option[Point]   = maybeUpAtPositionWith(MouseButton.LeftMouseButton)
-  lazy val mouseDownAt: Option[Point] = maybeDownAtPositionWith(MouseButton.LeftMouseButton)
+  @deprecated("Use `isClickedAt` instead.", "0.18.0")
+  lazy val mouseClickAt: Option[Point] = isClickedAt.headOption
 
-  def maybeUpAtPositionWith(button: MouseButton): Option[Point] = mouseEvents.collectFirst {
-    case m: MouseEvent.MouseUp if m.button == button => m.position
-  }
-  def maybeDownAtPositionWith(button: MouseButton): Option[Point] = mouseEvents.collectFirst {
-    case m: MouseEvent.MouseDown if m.button == button => m.position
-  }
+  @deprecated("Use `isUpAt` instead.", "0.18.0")
+  lazy val mouseUpAt: Option[Point] = isUpAt.headOption
 
-  private def wasMouseAt(position: Point, maybePosition: Option[Point]): Boolean =
-    maybePosition match
-      case Some(pt) => position == pt
-      case None     => false
+  @deprecated("Use `isDownAt` instead.", "0.18.0")
+  lazy val mouseDownAt: Option[Point] = isDownAt.headOption
 
-  def wasMouseClickedAt(position: Point): Boolean = wasMouseAt(position, mouseClickAt)
-  def wasMouseClickedAt(x: Int, y: Int): Boolean  = wasMouseClickedAt(Point(x, y))
+  @deprecated("Use `wasClickedAt` instead.", "0.18.0")
+  def wasMouseClickedAt(position: Point): Boolean = wasClickedAt(position)
 
-  def wasMouseUpAt(position: Point): Boolean = wasMouseAt(position, mouseUpAt)
-  def wasMouseUpAt(x: Int, y: Int): Boolean  = wasMouseUpAt(Point(x, y))
-  def wasUpAt(position: Point, button: MouseButton): Boolean =
-    wasMouseAt(position, maybeUpAtPositionWith(button))
-  def wasUpAt(x: Int, y: Int, button: MouseButton): Boolean =
-    wasUpAt(Point(x, y), button)
+  @deprecated("Use `wasClickedAt` instead.", "0.18.0")
+  def wasMouseClickedAt(x: Int, y: Int): Boolean = wasClickedAt(Point(x, y))
 
-  def wasMouseDownAt(position: Point): Boolean = wasMouseAt(position, mouseDownAt)
-  def wasMouseDownAt(x: Int, y: Int): Boolean  = wasMouseDownAt(Point(x, y))
-  def wasDownAt(position: Point, button: MouseButton): Boolean =
-    wasMouseAt(position, maybeDownAtPositionWith(button))
-  def wasDownAt(x: Int, y: Int, button: MouseButton): Boolean =
-    wasDownAt(Point(x, y), button)
+  @deprecated("Use `wasUpAt` instead.", "0.18.0")
+  def wasMouseUpAt(position: Point): Boolean = wasUpAt(position, MouseButton.LeftMouseButton)
 
-  def wasMousePositionAt(target: Point): Boolean  = target == position
-  def wasMousePositionAt(x: Int, y: Int): Boolean = wasMousePositionAt(Point(x, y))
+  @deprecated("Use `wasUpAt` instead.", "0.18.0")
+  def wasMouseUpAt(x: Int, y: Int): Boolean = wasUpAt(Point(x, y), MouseButton.LeftMouseButton)
 
-  // Within
-  private def wasMouseWithin(bounds: Rectangle, maybePosition: Option[Point]): Boolean =
-    maybePosition match {
-      case Some(pt) => bounds.isPointWithin(pt)
-      case None     => false
-    }
+  @deprecated("Use `wasDownAt` instead.", "0.18.0")
+  def wasMouseDownAt(position: Point): Boolean = wasDownAt(position, MouseButton.LeftMouseButton)
 
-  def wasMouseClickedWithin(bounds: Rectangle): Boolean = wasMouseWithin(bounds, mouseClickAt)
-  def wasMouseClickedWithin(x: Int, y: Int, width: Int, height: Int): Boolean =
-    wasMouseClickedWithin(Rectangle(x, y, width, height))
+  @deprecated("Use `wasDownAt` instead.", "0.18.0")
+  def wasMouseDownAt(x: Int, y: Int): Boolean = wasDownAt(Point(x, y), MouseButton.LeftMouseButton)
 
-  def wasMouseUpWithin(bounds: Rectangle): Boolean = wasMouseWithin(bounds, mouseUpAt)
-  def wasMouseUpWithin(x: Int, y: Int, width: Int, height: Int): Boolean = wasMouseUpWithin(
-    Rectangle(x, y, width, height)
+  @deprecated("Use `wasPositionAt` instead.", "0.18.0")
+  def wasMousePositionAt(target: Point): Boolean = wasPositionAt(target)
+
+  @deprecated("Use `wasPositionAt` instead.", "0.18.0")
+  def wasMousePositionAt(x: Int, y: Int): Boolean = wasPositionAt(Point(x, y))
+
+  @deprecated("Use `wasClickedWithin` instead.", "0.18.0")
+  def wasMouseClickedWithin(bounds: Rectangle): Boolean = wasClickedWithin(bounds, MouseButton.LeftMouseButton)
+
+  @deprecated("Use `wasClickedWithin` instead.", "0.18.0")
+  def wasMouseClickedWithin(x: Int, y: Int, width: Int, height: Int): Boolean = wasClickedWithin(
+    Rectangle(x, y, width, height),
+    MouseButton.LeftMouseButton
   )
-  def wasUpWithin(bounds: Rectangle, button: MouseButton): Boolean =
-    wasMouseWithin(bounds, maybeUpAtPositionWith(button))
-  def wasUpWithin(x: Int, y: Int, width: Int, height: Int, button: MouseButton): Boolean =
-    wasUpWithin(Rectangle(x, y, width, height), button)
 
-  def wasMouseDownWithin(bounds: Rectangle): Boolean = wasMouseWithin(bounds, mouseDownAt)
-  def wasMouseDownWithin(x: Int, y: Int, width: Int, height: Int): Boolean = wasMouseDownWithin(
-    Rectangle(x, y, width, height)
+  @deprecated("Use `wasUpWithin` instead.", "0.18.0")
+  def wasMouseUpWithin(bounds: Rectangle): Boolean = wasUpWithin(bounds, MouseButton.LeftMouseButton)
+
+  @deprecated("Use `wasUpWithin` instead.", "0.18.0")
+  def wasMouseUpWithin(x: Int, y: Int, width: Int, height: Int): Boolean = wasUpWithin(
+    Rectangle(x, y, width, height),
+    MouseButton.LeftMouseButton
   )
-  def wasDownWithin(bounds: Rectangle, button: MouseButton): Boolean =
-    wasMouseWithin(bounds, maybeDownAtPositionWith(button))
-  def wasDownWithin(x: Int, y: Int, width: Int, height: Int, button: MouseButton): Boolean =
-    wasDownWithin(Rectangle(x, y, width, height), button)
 
-  def wasMousePositionWithin(bounds: Rectangle): Boolean = bounds.isPointWithin(position)
+  @deprecated("Use `wasDownWithin` instead.", "0.18.0")
+  def wasMouseDownWithin(bounds: Rectangle): Boolean = wasDownWithin(bounds, MouseButton.LeftMouseButton)
+
+  @deprecated("Use `wasDownWithin` instead.", "0.18.0")
+  def wasMouseDownWithin(x: Int, y: Int, width: Int, height: Int): Boolean = wasDownWithin(
+    Rectangle(x, y, width, height),
+    MouseButton.LeftMouseButton
+  )
+
+  @deprecated("Use `wasWithin` instead.", "0.18.0")
+  def wasMousePositionWithin(bounds: Rectangle): Boolean = wasWithin(bounds)
+
+  @deprecated("Use `wasWithin` instead.", "0.18.0")
   def wasMousePositionWithin(x: Int, y: Int, width: Int, height: Int): Boolean =
-    wasMousePositionWithin(Rectangle(x, y, width, height))
-
+    wasWithin(Rectangle(x, y, width, height))
 }
 object Mouse:
-  val default: Mouse =
-    Mouse(Batch.empty, Point.zero, false)
-
-  def calculateNext(previous: Mouse, events: Batch[MouseEvent]): Mouse =
-    val newButtonsDown = calculateButtonsDown(events, previous.buttonsDown)
-    Mouse(
-      events,
-      lastMousePosition(previous.position, events),
-      newButtonsDown.contains(MouseButton.LeftMouseButton),
-      newButtonsDown
-    )
-
-  private def lastMousePosition(previous: Point, events: Batch[MouseEvent]): Point =
-    events.collect { case mp: MouseEvent.Move => mp.position }.lastOption.fold(previous)(identity)
-
-  private given CanEqual[Batch[MouseEvent], Batch[MouseEvent]] = CanEqual.derived
-
-  // Similar strategy as followed for `Keyboard`, this one uses Set (no button order preserved)
-  private def calculateButtonsDown(
-      mouseEvents: Batch[MouseEvent],
-      previousButtonsDown: Set[MouseButton]
-  ): Set[MouseButton] =
-    @tailrec
-    def rec(remaining: List[MouseEvent], buttonsDownAcc: Set[MouseButton]): Set[MouseButton] =
-      remaining match
-        case Nil =>
-          buttonsDownAcc
-        case (e: MouseEvent.MouseDown) :: moreEvents =>
-          rec(moreEvents, buttonsDownAcc + e.button)
-        case (e: MouseEvent.MouseUp) :: moreEvents =>
-          rec(moreEvents, buttonsDownAcc - e.button)
-        case _ :: moreEvents =>
-          rec(moreEvents, buttonsDownAcc)
-
-    rec(mouseEvents.toList, previousButtonsDown)
+  val default: Mouse = Mouse(Pointers.default, Batch.empty)

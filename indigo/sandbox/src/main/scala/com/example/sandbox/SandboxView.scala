@@ -12,7 +12,7 @@ object SandboxView:
       mouse: Mouse,
       bl: BoundaryLocator
   ): SceneUpdateFragment = {
-    mouse.mouseClickAt match {
+    mouse.isClickedAt.headOption match {
       case Some(position) => println("Mouse clicked at: " + position.toString())
       case None           => ()
     }
