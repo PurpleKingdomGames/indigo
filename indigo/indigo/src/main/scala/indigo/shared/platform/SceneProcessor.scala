@@ -118,18 +118,19 @@ final class SceneProcessor(
     val displayLayers: scalajs.js.Array[(DisplayLayer, scalajs.js.Array[(String, DisplayObject)])] =
       scene.layers
         .flatMap(l =>
-          l.toBatch.map(
-            (
-              l match {
-                case LayerEntry.Tagged(tag, _) => Some(tag)
-                case _                         => None
-              },
-              _
+          l.toBatch
+            .filter(content => content.visible.getOrElse(true))
+            .map(
+              (
+                l match {
+                  case LayerEntry.Tagged(tag, _) => Some(tag)
+                  case _                         => None
+                },
+                _
+              )
             )
-          )
         )
         .toJSArray
-        .filter(l => l._2.visible.getOrElse(true))
         .zipWithIndex
         .map { case (l, i) =>
           val blending   = l._2.blending.getOrElse(Blending.Normal)
