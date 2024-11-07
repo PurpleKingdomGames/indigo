@@ -40,7 +40,8 @@ final class ScenesFrameProcessor[StartUpData, Model, ViewModel](
       renderer: => Renderer
   ): Outcome[(Model, ViewModel, SceneUpdateFragment)] = {
 
-    val frameContext = new FrameContext[StartUpData](gameTime, dice, inputState, boundaryLocator, startUpData, renderer)
+    val frameContext =
+      new FrameContext[StartUpData](gameTime, dice, inputState, boundaryLocator, startUpData, renderer.captureScreen)
 
     val processSceneViewModel: (Model, ViewModel) => Outcome[ViewModel] = (m, vm) =>
       globalEvents

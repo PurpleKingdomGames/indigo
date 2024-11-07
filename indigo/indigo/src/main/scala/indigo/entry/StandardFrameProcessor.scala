@@ -35,7 +35,8 @@ final class StandardFrameProcessor[StartUpData, Model, ViewModel](
       boundaryLocator: BoundaryLocator,
       renderer: => Renderer
   ): Outcome[(Model, ViewModel, SceneUpdateFragment)] =
-    val frameContext = new FrameContext[StartUpData](gameTime, dice, inputState, boundaryLocator, startUpData, renderer)
+    val frameContext =
+      new FrameContext[StartUpData](gameTime, dice, inputState, boundaryLocator, startUpData, renderer.captureScreen)
     Outcome.join(
       for {
         m  <- processModel(frameContext, model, globalEvents)

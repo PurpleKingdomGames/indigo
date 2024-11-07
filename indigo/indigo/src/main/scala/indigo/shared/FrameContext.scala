@@ -1,6 +1,8 @@
 package indigo.shared
 
-import indigo.platform.renderer.Renderer
+import indigo.platform.renderer.ScreenCaptureConfig
+import indigo.shared.assets.AssetType
+import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.dice.Dice
 import indigo.shared.events.InputState
@@ -31,11 +33,10 @@ final class FrameContext[StartUpData](
     val inputState: InputState,
     val boundaryLocator: BoundaryLocator,
     _startUpData: => StartUpData,
-    _renderer: => Renderer
+    _captureScreen: Batch[ScreenCaptureConfig] => Batch[Either[String, AssetType.Image]]
 ):
 
-  lazy val startUpData      = _startUpData
-  lazy private val renderer = _renderer
+  lazy val startUpData = _startUpData
 
   export gameTime.running
   export gameTime.delta
@@ -44,4 +45,26 @@ final class FrameContext[StartUpData](
   export inputState.gamepad
   export boundaryLocator.findBounds
   export boundaryLocator.bounds
-  export renderer.captureScreen
+
+  /** Capture the screen as a number of images, each with the specified configuration
+    *
+    * @param captureConfig
+    *   The configurations to use when capturing the screen
+    * @return
+    *   A batch containing either the captured images, or error messages
+    */
+  def captureScreen(captureConfig: Batch[ScreenCaptureConfig]): Batch[Either[String, AssetType.Image]] =
+    _captureScreen(captureConfig)
+
+  /** Capture the screen as an image, with the specified configuration
+    *
+    * @param captureConfig
+    *   The configuration to use when capturing the screen
+    * @return
+    *   The captured image, or an error message
+    */
+  def captureScreen(captureConfig: ScreenCaptureConfig): Either[String, AssetType.Image] =
+    captureScreen(Batch(captureConfig)).headOption match {
+      case Some(v) => v
+      case None    => Left("Could not capture image")
+    }
