@@ -64,13 +64,12 @@ class DiceTests extends munit.FunSuite {
   test("all dice rolls have an approximately uniform distribution") {
     val diceSides            = 63
     val numRuns              = 200_000_000
-    val dice                 = Dice.diceSidesN(diceSides, 0)
     val expectedDistribution = 1.0 / diceSides
     val generatedNums =
       Array
         .range(0, numRuns)
         .foldLeft(SortedMap[Int, Int]()) { (acc, _) =>
-          val roll = dice.roll
+          val roll = Dice.diceSidesN(diceSides, scala.util.Random.nextLong()).roll
           acc.updated(roll, acc.getOrElse(roll, 0) + 1)
         }
 
@@ -93,13 +92,12 @@ class DiceTests extends munit.FunSuite {
     val diceSides            = 63
     val halfSides            = Math.floor(diceSides / 2.0).toInt
     val numRuns              = 200_000_000
-    val dice                 = Dice.diceSidesN(diceSides, 0)
     val expectedDistribution = 1.0 / halfSides
     val generatedNums =
       Array
         .range(0, numRuns)
         .foldLeft(SortedMap[Int, Int]()) { (acc, _) =>
-          val roll = dice.rollRange(halfSides, diceSides)
+          val roll = Dice.diceSidesN(diceSides, scala.util.Random.nextLong()).rollRange(halfSides, diceSides)
           acc.updated(roll, acc.getOrElse(roll, 0) + 1)
         }
 
@@ -120,13 +118,12 @@ class DiceTests extends munit.FunSuite {
 
   test("all dice rolls in rollRange(1, 4) have an approximately uniform distribution") {
     val numRuns              = 200_000_000
-    val dice                 = Dice.diceSidesN(4, 0)
     val expectedDistribution = 0.25
     val generatedNums =
       Array
         .range(0, numRuns)
         .foldLeft(SortedMap[Int, Int]()) { (acc, _) =>
-          val roll = dice.rollRange(1, 4)
+          val roll = Dice.diceSidesN(4, scala.util.Random.nextLong()).rollRange(1, 4)
           acc.updated(roll, acc.getOrElse(roll, 0) + 1)
         }
 
