@@ -30,19 +30,6 @@ trait Renderer:
     */
   def captureScreen(captureConfig: Batch[ScreenCaptureConfig]): Batch[Either[String, AssetType.Image]]
 
-  /** Capture the screen as an image, with the specified configuration
-    *
-    * @param captureOption
-    *   The configuration to use when capturing the screen
-    * @return
-    *   The captured image, or an error message
-    */
-  def captureScreen(captureConfig: ScreenCaptureConfig): Either[String, AssetType.Image] =
-    captureScreen(Batch(captureConfig)).headOption match {
-      case Some(v) => v
-      case None    => Left("Could not capture image")
-    }
-
 object Renderer:
   def blackHole = new Renderer {
     def renderingTechnology: RenderingTechnology   = RenderingTechnology.WebGL1

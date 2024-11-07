@@ -54,7 +54,7 @@ final case class SubSystemFrameContext[ReferenceData](
       inputState,
       boundaryLocator,
       (),
-      Renderer.blackHole
+      Renderer.blackHole.captureScreen
     )
 
 object SubSystemFrameContext {
