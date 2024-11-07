@@ -33,7 +33,7 @@ final case class ScreenCaptureConfig(
     * @return
     */
   def withName(name: String): ScreenCaptureConfig =
-    this.copy(name = Some(name))
+    this.copy(name = Option(name))
 
   /** Set the cropping rectangle of the capture
     *
@@ -41,7 +41,7 @@ final case class ScreenCaptureConfig(
     * @return
     */
   def withCrop(rect: Rectangle): ScreenCaptureConfig =
-    this.copy(croppingRect = Some(rect))
+    this.copy(croppingRect = Option(rect))
 
   /** Set the scale of the capture
     *
@@ -57,7 +57,7 @@ final case class ScreenCaptureConfig(
     * @return
     */
   def withScale(scale: Vector2): ScreenCaptureConfig =
-    this.copy(scale = Some(scale))
+    this.copy(scale = Option(scale))
 
   /** Set the image type of the capture
     *
