@@ -283,7 +283,7 @@ class InputFieldTests extends munit.FunSuite {
       new InputState(Mouse.default, new Keyboard(keysUp, Batch.empty, None), Gamepad.default, Pointers.default),
       new BoundaryLocator(new AnimationsRegister, new FontRegister, new DynamicText),
       (),
-      Renderer.blackHole
+      Renderer.blackHole.captureScreen
     )
 
   object Samples {

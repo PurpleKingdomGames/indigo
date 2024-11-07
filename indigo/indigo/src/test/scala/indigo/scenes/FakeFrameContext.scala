@@ -20,7 +20,7 @@ object FakeFrameContext {
       InputState.default,
       new BoundaryLocator(new AnimationsRegister, new FontRegister, new DynamicText),
       (),
-      Renderer.blackHole
+      Renderer.blackHole.captureScreen
     )
 
   def context(sides: Int, time: Seconds): FrameContext[Unit] =
@@ -30,7 +30,7 @@ object FakeFrameContext {
       InputState.default,
       new BoundaryLocator(new AnimationsRegister, new FontRegister, new DynamicText),
       (),
-      Renderer.blackHole
+      Renderer.blackHole.captureScreen
     )
 
   def context(sides: Int, time: Seconds, delta: Seconds): FrameContext[Unit] =
@@ -40,7 +40,7 @@ object FakeFrameContext {
       InputState.default,
       new BoundaryLocator(new AnimationsRegister, new FontRegister, new DynamicText),
       (),
-      Renderer.blackHole
+      Renderer.blackHole.captureScreen
     )
 
 }
