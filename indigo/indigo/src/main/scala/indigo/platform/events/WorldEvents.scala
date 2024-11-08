@@ -27,10 +27,9 @@ import org.scalajs.dom.window
 
 import scala.scalajs.js.Date
 
-@SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-var pointerButtons: Map[Double, Batch[(Int, Date)]] = Map.empty
-
 final class WorldEvents:
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  private var pointerButtons: Map[Double, Batch[(Int, Date)]] = Map.empty
 
   def absoluteCoordsX(relativeX: Double): Int = {
     val offset: Double =
