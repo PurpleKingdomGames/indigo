@@ -10,12 +10,9 @@ import indigo.shared.datatypes.Size
   */
 sealed trait Camera:
   def position: Point
-  def topLeft(viewport: GameViewport): Point
   def topLeft(viewport: Size): Point
-  def bounds(viewport: GameViewport): Rectangle
   def bounds(viewport: Size): Rectangle
-  def frustum(viewport: GameViewport): Rectangle = bounds(viewport)
-  def frustum(viewport: Size): Rectangle         = bounds(viewport)
+  def frustum(viewport: Size): Rectangle = bounds(viewport)
   def zoom: Zoom
   def rotation: Radians
   def isLookAt: Boolean
@@ -31,11 +28,9 @@ object Camera:
     * while controlling the position, zoom and rotation.
     */
   final case class Fixed(position: Point, zoom: Zoom, rotation: Radians) extends Camera:
-    def topLeft(viewport: GameViewport): Point    = position
-    def topLeft(viewport: Size): Point            = position
-    def bounds(viewport: GameViewport): Rectangle = Rectangle(position, viewport.size)
-    def bounds(viewport: Size): Rectangle         = Rectangle(position, viewport)
-    val isLookAt: Boolean                         = false
+    def topLeft(viewport: Size): Point    = position
+    def bounds(viewport: Size): Rectangle = Rectangle(position, viewport)
+    val isLookAt: Boolean                 = false
 
     def withX(newX: Int): Fixed =
       this.copy(position = position.withX(newX))
@@ -78,12 +73,8 @@ object Camera:
   final case class LookAt(target: Point, zoom: Zoom, rotation: Radians) extends Camera:
     val isLookAt: Boolean = true
     val position: Point   = target
-    def topLeft(viewport: GameViewport): Point =
-      topLeft(viewport.size)
     def topLeft(viewport: Size): Point =
       target - (viewport.toPoint / 2) / zoom.toDouble.toInt
-    def bounds(viewport: GameViewport): Rectangle =
-      bounds(viewport.size)
     def bounds(viewport: Size): Rectangle =
       Rectangle(topLeft(viewport), viewport)
 
