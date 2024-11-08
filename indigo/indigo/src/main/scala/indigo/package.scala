@@ -74,8 +74,7 @@ object syntax:
   extension [A](l: List[Option[A]]) def sequence: Option[List[A]]                   = NonEmptyList.sequenceListOption(l)
   extension [A](l: NonEmptyList[Option[A]]) def sequence: Option[NonEmptyList[A]]   = NonEmptyList.sequenceOption(l)
 
-  extension (s: Size)
-    def toGameViewport: GameViewport = GameViewport(s)
+  extension (s: Size) def toGameViewport: GameViewport = GameViewport(s)
 
   // Timeline animations
   object animations:
