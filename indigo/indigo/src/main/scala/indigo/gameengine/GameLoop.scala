@@ -24,8 +24,6 @@ import scala.collection.mutable
 import scala.scalajs.js.Date
 import scala.scalajs.js.JSConverters._
 
-val initialDate = new Date()
-
 final class GameLoop[StartUpData, GameModel, ViewModel](
     rebuildGameLoop: AssetCollection => Unit,
     boundaryLocator: BoundaryLocator,
@@ -38,7 +36,9 @@ final class GameLoop[StartUpData, GameModel, ViewModel](
     startFrameLocked: Boolean,
     renderer: => Renderer
 ):
-  val initialSeed = initialDate.valueOf()
+
+  val initialSeed = new Date().valueOf()
+
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var _gameModelState: GameModel = initialModel
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
