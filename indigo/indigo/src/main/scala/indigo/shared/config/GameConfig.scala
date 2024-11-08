@@ -54,8 +54,8 @@ final case class GameConfig(
 
   def withViewport(width: Int, height: Int): GameConfig =
     this.copy(viewport = GameViewport(width, height))
-  def withViewport(size: Size): GameConfig =
-    this.copy(viewport = GameViewport(size.width, size.height))
+  def withViewport(newViewport: GameViewport): GameConfig =
+    this.copy(viewport = newViewport)
 
   def withFrameRateLimit(limit: FPS): GameConfig =
     this.copy(frameRateLimit = Option(limit))
