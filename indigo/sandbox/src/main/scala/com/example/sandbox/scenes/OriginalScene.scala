@@ -49,11 +49,11 @@ object OriginalScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
   ): Outcome[SceneUpdateFragment] = {
     val scene: SceneUpdateFragment =
       SandboxView
-        .updateView(model, viewModel, context.inputState.mouse, context.boundaryLocator)
+        .updateView(model, viewModel, context.frame.input.mouse, context.services.bounds)
         .addLayer(
           Layer(
             // viewModel.single.draw(gameTime, boundaryLocator) //|+|
-            viewModel.multi.draw(context.gameTime, context.boundaryLocator)
+            viewModel.multi.draw(context.frame.time, context.services.bounds)
           ).withDepth(Depth(1000))
         )
 

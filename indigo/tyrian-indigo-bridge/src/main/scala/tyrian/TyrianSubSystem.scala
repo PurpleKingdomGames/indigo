@@ -7,7 +7,7 @@ import indigo.shared.events.FrameTick
 import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.subsystems.SubSystem
-import indigo.shared.subsystems.SubSystemFrameContext
+import indigo.shared.subsystems.SubSystemContext
 import indigo.shared.subsystems.SubSystemId
 
 import scala.collection.mutable
@@ -52,7 +52,7 @@ final case class TyrianSubSystem[F[_]: Async, A, Model](
   def initialModel: Outcome[Unit] =
     Outcome(())
 
-  def update(context: SubSystemFrameContext[ReferenceData], model: Unit): GlobalEvent => Outcome[Unit] =
+  def update(context: SubSystemContext[ReferenceData], model: Unit): GlobalEvent => Outcome[Unit] =
     case TyrianEvent.Send(value) =>
       bridge.eventTarget.dispatchEvent(TyrianIndigoBridge.BridgeToTyrian(indigoGameId, value))
       Outcome(model)
@@ -63,7 +63,7 @@ final case class TyrianSubSystem[F[_]: Async, A, Model](
     case _ =>
       Outcome(model)
 
-  def present(context: SubSystemFrameContext[ReferenceData], model: Unit): Outcome[SceneUpdateFragment] =
+  def present(context: SubSystemContext[ReferenceData], model: Unit): Outcome[SceneUpdateFragment] =
     Outcome(SceneUpdateFragment.empty)
 
   enum TyrianEvent extends GlobalEvent:

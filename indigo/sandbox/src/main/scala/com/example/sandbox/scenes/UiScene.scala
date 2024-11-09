@@ -46,7 +46,7 @@ object UiScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewMo
       viewModel: UiSceneViewModel
   ): GlobalEvent => Outcome[UiSceneViewModel] =
     case FrameTick =>
-      viewModel.update(context.mouse, context.frameContext.inputState.pointers)
+      viewModel.update(context.frame.input.mouse, context.frame.input.pointers)
 
     case Log(msg) =>
       println(msg)

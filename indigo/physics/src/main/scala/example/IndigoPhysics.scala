@@ -40,7 +40,7 @@ object IndigoPhysics extends IndigoGame[Unit, Unit, Model, Unit]:
     Outcome(Startup.Success(()))
 
   def updateModel(
-      context: FrameContext[Unit],
+      context: Context[Unit],
       model: Model
   ): GlobalEvent => Outcome[Model] =
     case KeyboardEvent.KeyUp(Key.PAGE_UP) =>
@@ -53,14 +53,14 @@ object IndigoPhysics extends IndigoGame[Unit, Unit, Model, Unit]:
       Outcome(model)
 
   def updateViewModel(
-      context: FrameContext[Unit],
+      context: Context[Unit],
       model: Model,
       viewModel: Unit
   ): GlobalEvent => Outcome[Unit] =
     _ => Outcome(viewModel)
 
   def present(
-      context: FrameContext[Unit],
+      context: Context[Unit],
       model: Model,
       viewModel: Unit
   ): Outcome[SceneUpdateFragment] =

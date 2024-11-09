@@ -17,7 +17,7 @@ import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.scenegraph.Shape
 import indigo.shared.scenegraph.TextBox
 import indigo.shared.subsystems.SubSystem
-import indigo.shared.subsystems.SubSystemFrameContext
+import indigo.shared.subsystems.SubSystemContext
 import indigo.shared.subsystems.SubSystemId
 import indigo.shared.time.FPS
 import indigo.shared.time.Seconds
@@ -56,15 +56,15 @@ final case class FPSCounter[Model](
     Outcome(FPSCounterState.initial(startPosition))
 
   def update(
-      context: SubSystemFrameContext[ReferenceData],
+      context: SubSystemContext[ReferenceData],
       model: FPSCounterState
   ): GlobalEvent => Outcome[FPSCounterState] = {
     case FrameTick =>
-      if (context.gameTime.running >= (model.lastInterval + Seconds(1)))
+      if (context.time.running >= (model.lastInterval + Seconds(1)))
         Outcome(
           model.copy(
             fps = decideNextFps(model.frameCountSinceInterval),
-            lastInterval = context.gameTime.running,
+            lastInterval = context.time.running,
             frameCountSinceInterval = 0
           )
         )
@@ -82,7 +82,7 @@ final case class FPSCounter[Model](
       .withFontFamily(fontFamily)
       .withFontSize(fontSize)
 
-  def present(context: SubSystemFrameContext[ReferenceData], model: FPSCounterState): Outcome[SceneUpdateFragment] =
+  def present(context: SubSystemContext[ReferenceData], model: FPSCounterState): Outcome[SceneUpdateFragment] =
     val text: TextBox =
       textBox
         .withText(s"""FPS ${model.fps.toString}""")
@@ -90,8 +90,7 @@ final case class FPSCounter[Model](
         .moveTo(model.position + 2)
 
     val size: Rectangle =
-      context.boundaryLocator
-        .measureText(text)
+      context.bounds.measureText(text)
 
     val boxSize =
       ({ (s: Size) =>

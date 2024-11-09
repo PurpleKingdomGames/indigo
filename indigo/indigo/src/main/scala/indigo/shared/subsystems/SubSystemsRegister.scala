@@ -5,7 +5,7 @@ import indigo.shared.Outcome
 import indigo.shared.collections.Batch
 import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.SceneUpdateFragment
-import indigo.shared.subsystems.SubSystemFrameContext
+import indigo.shared.subsystems.SubSystemContext
 
 import scalajs.js
 
@@ -44,7 +44,7 @@ final class SubSystemsRegister[Model] {
 
   // @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
   def update(
-      frameContext: SubSystemFrameContext[Unit],
+      frameContext: SubSystemContext[Unit],
       gameModel: Model,
       globalEvents: js.Array[GlobalEvent]
   ): Outcome[SubSystemsRegister[Model]] = {
@@ -88,7 +88,7 @@ final class SubSystemsRegister[Model] {
   }
 
   // @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
-  def present(frameContext: SubSystemFrameContext[Unit], gameModel: Model): Outcome[SceneUpdateFragment] =
+  def present(frameContext: SubSystemContext[Unit], gameModel: Model): Outcome[SceneUpdateFragment] =
     registeredSubSystems
       .map { rss =>
         rss.subSystem.present(

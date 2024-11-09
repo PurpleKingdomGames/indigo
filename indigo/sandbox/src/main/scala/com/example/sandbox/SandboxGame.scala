@@ -195,13 +195,13 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
   }
 
   def updateModel(
-      context: FrameContext[SandboxStartupData],
+      context: Context[SandboxStartupData],
       model: SandboxGameModel
   ): GlobalEvent => Outcome[SandboxGameModel] =
     SandboxModel.updateModel(model)
 
   def updateViewModel(
-      context: FrameContext[SandboxStartupData],
+      context: Context[SandboxStartupData],
       model: SandboxGameModel,
       viewModel: SandboxViewModel
   ): GlobalEvent => Outcome[SandboxViewModel] = {
@@ -210,7 +210,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
 
     case FrameTick =>
       val updateOffset: Point =
-        context.inputState.gamepad.dpad match {
+        context.frame.input.gamepad.dpad match {
           case GamepadDPad(true, _, _, _) =>
             viewModel.offset + Point(0, -1)
 
@@ -262,7 +262,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
   }
 
   def present(
-      context: FrameContext[SandboxStartupData],
+      context: Context[SandboxStartupData],
       model: SandboxGameModel,
       viewModel: SandboxViewModel
   ): Outcome[SceneUpdateFragment] =

@@ -116,7 +116,7 @@ trait IndigoShader extends GameLauncher[IndigoShaderModel, IndigoShaderModel, Un
     Outcome(startupData)
 
   private def updateModel(
-      context: FrameContext[IndigoShaderModel],
+      context: Context[IndigoShaderModel],
       model: IndigoShaderModel
   ): GlobalEvent => Outcome[IndigoShaderModel] = {
     case ViewportResize(vp) =>
@@ -130,7 +130,7 @@ trait IndigoShader extends GameLauncher[IndigoShaderModel, IndigoShaderModel, Un
   }
 
   private def present(
-      context: FrameContext[IndigoShaderModel],
+      context: Context[IndigoShaderModel],
       model: IndigoShaderModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(
@@ -155,7 +155,7 @@ trait IndigoShader extends GameLauncher[IndigoShaderModel, IndigoShaderModel, Un
       boot: BootResult[IndigoShaderModel, IndigoShaderModel]
   ): GameEngine[IndigoShaderModel, IndigoShaderModel, Unit] = {
 
-    val updateViewModel: (FrameContext[IndigoShaderModel], IndigoShaderModel, Unit) => GlobalEvent => Outcome[Unit] =
+    val updateViewModel: (Context[IndigoShaderModel], IndigoShaderModel, Unit) => GlobalEvent => Outcome[Unit] =
       (_, _, vm) => _ => Outcome(vm)
 
     val eventFilters: EventFilters =

@@ -4,7 +4,7 @@ import indigo.gameengine.FrameProcessor
 import indigo.platform.renderer.Renderer
 import indigo.scenes.SceneManager
 import indigo.shared.BoundaryLocator
-import indigo.shared.FrameContext
+import indigo.shared.Context
 import indigo.shared.Outcome
 import indigo.shared.collections.Batch
 import indigo.shared.datatypes.BindingKey
@@ -14,7 +14,7 @@ import indigo.shared.events.EventFilters
 import indigo.shared.events.GlobalEvent
 import indigo.shared.events.InputState
 import indigo.shared.scenegraph.SceneUpdateFragment
-import indigo.shared.subsystems.SubSystemFrameContext._
+import indigo.shared.subsystems.SubSystemContext.*
 import indigo.shared.subsystems.SubSystemsRegister
 import indigo.shared.time.GameTime
 
@@ -22,9 +22,9 @@ final class ScenesFrameProcessor[StartUpData, Model, ViewModel](
     val subSystemsRegister: SubSystemsRegister[Model],
     val sceneManager: SceneManager[StartUpData, Model, ViewModel],
     val eventFilters: EventFilters,
-    val modelUpdate: (FrameContext[StartUpData], Model) => GlobalEvent => Outcome[Model],
-    val viewModelUpdate: (FrameContext[StartUpData], Model, ViewModel) => GlobalEvent => Outcome[ViewModel],
-    val viewUpdate: (FrameContext[StartUpData], Model, ViewModel) => Outcome[SceneUpdateFragment]
+    val modelUpdate: (Context[StartUpData], Model) => GlobalEvent => Outcome[Model],
+    val viewModelUpdate: (Context[StartUpData], Model, ViewModel) => GlobalEvent => Outcome[ViewModel],
+    val viewUpdate: (Context[StartUpData], Model, ViewModel) => Outcome[SceneUpdateFragment]
 ) extends FrameProcessor[StartUpData, Model, ViewModel]
     with StandardFrameProcessorFunctions[StartUpData, Model, ViewModel]:
 
@@ -40,8 +40,8 @@ final class ScenesFrameProcessor[StartUpData, Model, ViewModel](
       renderer: => Renderer
   ): Outcome[(Model, ViewModel, SceneUpdateFragment)] = {
 
-    val frameContext =
-      new FrameContext[StartUpData](gameTime, dice, inputState, boundaryLocator, startUpData, renderer.captureScreen)
+    val context =
+      Context[StartUpData](gameTime, dice, inputState, boundaryLocator, startUpData, renderer.captureScreen)
 
     val processSceneViewModel: (Model, ViewModel) => Outcome[ViewModel] = (m, vm) =>
       globalEvents
@@ -49,30 +49,30 @@ final class ScenesFrameProcessor[StartUpData, Model, ViewModel](
         .collect { case Some(e) => e }
         .foldLeft(Outcome(vm)) { (acc, e) =>
           acc.flatMap { next =>
-            sceneManager.updateViewModel(frameContext, m, next)(e)
+            sceneManager.updateViewModel(context, m, next)(e)
           }
         }
 
     val processSceneView: (Model, ViewModel) => Outcome[SceneUpdateFragment] = (m, vm) =>
       Outcome.merge(
-        processView(frameContext, m, vm),
-        sceneManager.updateView(frameContext, m, vm)
+        processView(context, m, vm),
+        sceneManager.updateView(context, m, vm)
       )(_ |+| _)
 
     Outcome.join(
       for {
-        m   <- processModel(frameContext, model, globalEvents)
-        sm  <- processSceneModel(frameContext, m, globalEvents)
-        vm  <- processViewModel(frameContext, sm, viewModel, globalEvents)
+        m   <- processModel(context, model, globalEvents)
+        sm  <- processSceneModel(context, m, globalEvents)
+        vm  <- processViewModel(context, sm, viewModel, globalEvents)
         svm <- processSceneViewModel(sm, vm)
-        e   <- processSubSystems(frameContext, m, globalEvents).eventsAsOutcome
+        e   <- processSubSystems(context, m, globalEvents).eventsAsOutcome
         v   <- processSceneView(sm, svm)
       } yield Outcome((sm, svm, v), e)
     )
   }
 
   def processSceneModel(
-      frameContext: FrameContext[StartUpData],
+      context: Context[StartUpData],
       model: Model,
       globalEvents: Batch[GlobalEvent]
   ): Outcome[Model] =
@@ -81,16 +81,16 @@ final class ScenesFrameProcessor[StartUpData, Model, ViewModel](
       .collect { case Some(e) => e }
       .foldLeft(Outcome(model)) { (acc, e) =>
         acc.flatMap { next =>
-          sceneManager.updateModel(frameContext, next)(e)
+          sceneManager.updateModel(context, next)(e)
         }
       }
 
   def processSubSystems(
-      frameContext: FrameContext[StartUpData],
+      context: Context[StartUpData],
       model: Model,
       globalEvents: Batch[GlobalEvent]
   ): Outcome[Unit] =
     Outcome.merge(
-      subSystemsRegister.update(frameContext.forSubSystems, model, globalEvents.toJSArray),
-      sceneManager.updateSubSystems(frameContext.forSubSystems, model, globalEvents)
+      subSystemsRegister.update(context.forSubSystems, model, globalEvents.toJSArray),
+      sceneManager.updateSubSystems(context.forSubSystems, model, globalEvents)
     )((_, _) => ())

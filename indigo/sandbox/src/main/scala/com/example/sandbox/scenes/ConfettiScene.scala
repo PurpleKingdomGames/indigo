@@ -42,11 +42,11 @@ object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
   ): GlobalEvent => Outcome[ConfettiModel] =
 
     case FrameTick =>
-      val pos = Signal.Orbit(context.startUpData.viewportCenter * 2, 100).at(context.running * 0.5).toPoint
+      val pos = Signal.Orbit(context.startUpData.viewportCenter * 2, 100).at(context.frame.time.running * 0.5).toPoint
       Outcome(
         model
           .spawn(
-            context.dice,
+            context.frame.dice,
             pos.x,
             pos.y,
             spawnCount

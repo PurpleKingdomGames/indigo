@@ -617,8 +617,11 @@ val ImageType: shared.ImageType.type = shared.ImageType
 
 type BoundaryLocator = shared.BoundaryLocator
 
-type FrameContext[StartUpData]            = shared.FrameContext[StartUpData]
-type SubSystemFrameContext[ReferenceData] = shared.subsystems.SubSystemFrameContext[ReferenceData]
+type Context[StartUpData] = shared.Context[StartUpData]
+val Context: shared.Context.type = shared.Context
+
+type SubSystemContext[ReferenceData] = shared.subsystems.SubSystemContext[ReferenceData]
+val SubSystemContext: shared.subsystems.SubSystemContext.type = shared.subsystems.SubSystemContext
 
 //WebSockets
 

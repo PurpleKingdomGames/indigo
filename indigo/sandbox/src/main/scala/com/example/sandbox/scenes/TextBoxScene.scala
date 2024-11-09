@@ -63,7 +63,7 @@ object TextBoxScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxV
             4,
             LightingAssets.junctionBoxMaterialOn.modifyLighting(_ => LightingModel.Unlit)
           ).moveTo(10, 10),
-          Shape.Box(context.findBounds(tb).getOrElse(Rectangle.zero), Fill.None).withStroke(Stroke(1, RGBA.Cyan)),
+          Shape.Box(context.services.bounds.get(tb), Fill.None).withStroke(Stroke(1, RGBA.Cyan)),
           tb.withDepth(Depth(3)).bold,
           tb.moveTo(50, 65).withDepth(Depth(3)),
           tb.moveTo(50, 80)
@@ -73,7 +73,7 @@ object TextBoxScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxV
             .withStroke(TextStroke(RGBA.Red, Pixels(1))),
           hello
             .modifyStyle(_.withSize(Pixels(20)))
-            .moveTo(Signal.Orbit(Point(180, 70), 20).affectTime(0.25).at(context.running).toPoint)
+            .moveTo(Signal.Orbit(Point(180, 70), 20).affectTime(0.25).at(context.frame.time.running).toPoint)
             .withDepth(Depth(2)),
           model.dude.dude.sprite.play().withDepth(Depth(1)),
           tb.moveTo(50, 120).withDepth(Depth(3)).alignLeft,

@@ -1,6 +1,6 @@
 package com.example.sandbox
 
-import indigo._
+import indigo.*
 
 object SandboxView:
 
@@ -10,7 +10,7 @@ object SandboxView:
       model: SandboxGameModel,
       viewModel: SandboxViewModel,
       mouse: Mouse,
-      bl: BoundaryLocator
+      bl: Context.Services.Bounds
   ): SceneUpdateFragment = {
     mouse.isClickedAt.headOption match {
       case Some(position) => println("Mouse clicked at: " + position.toString())
@@ -92,13 +92,13 @@ object SandboxView:
         .moveTo(mouse.position.x, mouse.position.y)
     )
 
-  def uiLayer(bl: BoundaryLocator): Batch[SceneNode] =
+  def uiLayer(bl: Context.Services.Bounds): Batch[SceneNode] =
     Batch(
       Text("AB!\n!C", 2, 2, 5, Fonts.fontKey, SandboxAssets.fontMaterial.withAlpha(0.5)).alignLeft,
       Text("AB!\n!C", 100, 2, 5, Fonts.fontKey, SandboxAssets.fontMaterial.withAlpha(0.5)).alignCenter,
       Text("AB!\n\n!C", 200, 2, 5, Fonts.fontKey, SandboxAssets.fontMaterial.withAlpha(0.5)).alignRight
         .withEventHandler {
-          case (txt, MouseEvent.Click(pt)) if bl.bounds(txt).contains(pt) =>
+          case (txt, MouseEvent.Click(pt)) if bl.get(txt).contains(pt) =>
             println("Clicked me!")
             None
 
