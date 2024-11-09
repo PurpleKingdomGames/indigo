@@ -11,14 +11,14 @@ import indigo.shared.events.FrameTick
 import indigo.shared.events.InputState
 import indigo.shared.scenegraph.SceneAudio
 import indigo.shared.subsystems
-import indigo.shared.subsystems.SubSystemFrameContext
+import indigo.shared.subsystems.SubSystemContext
 import indigo.shared.subsystems.SubSystemId
 import indigo.shared.time.GameTime
 
 class JobMarketTests extends munit.FunSuite {
 
   val context =
-    SubSystemFrameContext[Unit](
+    SubSystemContext[Unit](
       GameTime.zero,
       Dice.loaded(6),
       InputState.default,

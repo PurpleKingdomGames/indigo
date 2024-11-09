@@ -11,7 +11,7 @@ import indigo.shared.events.GlobalEvent
 import indigo.shared.events.SubSystemEvent
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.subsystems.SubSystem
-import indigo.shared.subsystems.SubSystemFrameContext
+import indigo.shared.subsystems.SubSystemContext
 import indigo.shared.subsystems.SubSystemId
 
 // Provides "at least once" message delivery for updates on a bundle's loading status.
@@ -37,7 +37,7 @@ final class AssetBundleLoader[Model] extends SubSystem[Model]:
   private given CanEqual[Option[Set[AssetType]], Option[Set[AssetType]]] = CanEqual.derived
 
   def update(
-      frameContext: SubSystemFrameContext[ReferenceData],
+      frameContext: SubSystemContext[ReferenceData],
       tracker: AssetBundleTracker
   ): GlobalEvent => Outcome[AssetBundleTracker] =
     // Asset Bundle Loader Commands
@@ -76,7 +76,7 @@ final class AssetBundleLoader[Model] extends SubSystem[Model]:
       Outcome(tracker)
 
   def present(
-      frameContext: SubSystemFrameContext[ReferenceData],
+      frameContext: SubSystemContext[ReferenceData],
       model: AssetBundleTracker
   ): Outcome[SceneUpdateFragment] =
     Outcome(SceneUpdateFragment.empty)

@@ -30,7 +30,7 @@ trait PhysicsScene extends Scene[Unit, Model, Unit]:
       world: World[MyTag]
   ): GlobalEvent => Outcome[World[MyTag]] =
     case FrameTick =>
-      world.update(context.delta)
+      world.update(context.frame.time.delta)
 
     case _ =>
       Outcome(world)

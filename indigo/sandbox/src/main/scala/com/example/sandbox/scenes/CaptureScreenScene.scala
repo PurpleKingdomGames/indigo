@@ -65,7 +65,7 @@ object CaptureScreenScene extends Scene[SandboxStartupData, SandboxGameModel, Sa
       val screenshots: Set[AssetType] = context
         // Capture 2 screenshots, 1 of the full screen and the other of the clipping rectangle
         // These are reduced by 0.125 so that it sits a quarter size of the real screen without further scaling
-        .captureScreen(
+        .services.screenCapture.captureScreen(
           Batch(
             // Get the full screen and scale it
             ScreenCaptureConfig.default
@@ -104,7 +104,7 @@ object CaptureScreenScene extends Scene[SandboxStartupData, SandboxGameModel, Sa
       viewModel: CaptureScreenSceneViewModel
   ): Outcome[SceneUpdateFragment] =
     val screenshotScale = 0.3
-    val viewPort        = context.frameContext.startUpData.gameViewport.size / SandboxGame.magnificationLevel
+    val viewPort        = context.startUpData.gameViewport.size / SandboxGame.magnificationLevel
     val bigRect         = Rectangle((viewPort.width * screenshotScale).toInt, (viewPort.height * screenshotScale).toInt)
     val smallRect = Rectangle(
       0,

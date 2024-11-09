@@ -7,7 +7,7 @@ import indigo.shared.events.GlobalEvent
 import indigo.shared.materials.Material
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.scenegraph.Text
-import indigo.shared.subsystems.SubSystemFrameContext
+import indigo.shared.subsystems.SubSystemContext
 
 final case class PointsTrackerExample(num: Int, startingPoints: Int) extends SubSystem[Int] {
   type EventType      = PointsTrackerEvent
@@ -27,7 +27,7 @@ final case class PointsTrackerExample(num: Int, startingPoints: Int) extends Sub
   def initialModel: Outcome[Int] =
     Outcome(startingPoints)
 
-  def update(context: SubSystemFrameContext[Int], points: Int): PointsTrackerEvent => Outcome[Int] = {
+  def update(context: SubSystemContext[Int], points: Int): PointsTrackerEvent => Outcome[Int] = {
     case PointsTrackerEvent.Add(pts) =>
       Outcome(points + pts + context.reference)
 
@@ -36,7 +36,7 @@ final case class PointsTrackerExample(num: Int, startingPoints: Int) extends Sub
         .addGlobalEvents(GameOver)
   }
 
-  def present(context: SubSystemFrameContext[Int], points: Int): Outcome[SceneUpdateFragment] =
+  def present(context: SubSystemContext[Int], points: Int): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(Text(points.toString, 0, 0, 1, FontKey(""), Material.Bitmap(AssetName("Testing"))))
     )

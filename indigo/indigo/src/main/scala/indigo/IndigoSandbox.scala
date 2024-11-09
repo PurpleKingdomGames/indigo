@@ -75,7 +75,7 @@ trait IndigoSandbox[StartUpData, Model] extends GameLauncher[StartUpData, Model,
     *   A function that maps GlobalEvent's to the next version of your model, and encapsuates failures or resulting
     *   events within the Outcome wrapper.
     */
-  def updateModel(context: FrameContext[StartUpData], model: Model): GlobalEvent => Outcome[Model]
+  def updateModel(context: Context[StartUpData], model: Model): GlobalEvent => Outcome[Model]
 
   /** A pure function for presenting your game. The result is a side effect free declaration of what you intend to be
     * presented to the player next.
@@ -91,11 +91,11 @@ trait IndigoSandbox[StartUpData, Model] extends GameLauncher[StartUpData, Model,
     *   A function that produces a description of what to present next, and encapsuates failures or resulting events
     *   within the Outcome wrapper.
     */
-  def present(context: FrameContext[StartUpData], model: Model): Outcome[SceneUpdateFragment]
+  def present(context: Context[StartUpData], model: Model): Outcome[SceneUpdateFragment]
 
   private def indigoGame: GameEngine[StartUpData, Model, Unit] = {
 
-    val updateViewModel: (FrameContext[StartUpData], Model, Unit) => GlobalEvent => Outcome[Unit] =
+    val updateViewModel: (Context[StartUpData], Model, Unit) => GlobalEvent => Outcome[Unit] =
       (_, _, vm) => _ => Outcome(vm)
 
     val eventFilters: EventFilters =

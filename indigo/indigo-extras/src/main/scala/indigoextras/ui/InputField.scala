@@ -1,7 +1,7 @@
 package indigoextras.ui
 
 import indigo.shared.BoundaryLocator
-import indigo.shared.FrameContext
+import indigo.shared.Context
 import indigo.shared.Outcome
 import indigo.shared.collections.Batch
 import indigo.shared.constants.Key
@@ -35,8 +35,8 @@ final case class InputField(
     onLoseFocus: () => Batch[GlobalEvent]
 ) derives CanEqual:
 
-  def bounds(boundaryLocator: BoundaryLocator): Option[Rectangle] =
-    boundaryLocator.findBounds(assets.text.withText(text).moveTo(position))
+  def bounds(_bounds: Context.Services.Bounds): Option[Rectangle] =
+    _bounds.find(assets.text.withText(text).moveTo(position))
 
   def withText(newText: String): InputField =
     this.copy(
@@ -166,7 +166,7 @@ final case class InputField(
   def withLoseFocusActions(actions: => Batch[GlobalEvent]): InputField =
     this.copy(onLoseFocus = () => actions)
 
-  def update(frameContext: FrameContext[?]): Outcome[InputField] = {
+  def update(context: Context[?]): Outcome[InputField] = {
     @tailrec
     def rec(
         keysReleased: List[Key],
@@ -177,7 +177,7 @@ final case class InputField(
       keysReleased match {
         case Nil =>
           if (touched)
-            Outcome(acc.copy(lastCursorMove = frameContext.gameTime.running), Batch.fromOption(changeEvent))
+            Outcome(acc.copy(lastCursorMove = context.frame.time.running), Batch.fromOption(changeEvent))
           else
             Outcome(acc, Batch.fromOption(changeEvent))
 
@@ -215,13 +215,13 @@ final case class InputField(
 
     val updated: Outcome[InputField] =
       if (hasFocus)
-        rec(frameContext.inputState.keyboard.keysReleased.toList, this, false, None)
+        rec(context.frame.input.keyboard.keysReleased.toList, this, false, None)
       else Outcome(this)
 
-    if (frameContext.inputState.pointers.isReleased)
-      bounds(frameContext.boundaryLocator) match
+    if (context.frame.input.pointers.isReleased)
+      bounds(context.services.bounds) match
         case Some(bounds) =>
-          if frameContext.inputState.pointers.wasUpWithin(bounds, MouseButton.LeftMouseButton) then
+          if context.frame.input.pointers.wasUpWithin(bounds, MouseButton.LeftMouseButton) then
             updated.flatMap(_.giveFocus)
           else updated.flatMap(_.loseFocus)
         case _ =>
@@ -231,7 +231,7 @@ final case class InputField(
 
   def draw(
       gameTime: GameTime,
-      boundaryLocator: BoundaryLocator
+      boundaryLocator: Context.Services.Bounds
   ): Batch[SceneNode] = {
     val field =
       assets.text

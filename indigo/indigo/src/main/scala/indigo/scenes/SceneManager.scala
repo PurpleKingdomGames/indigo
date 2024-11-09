@@ -1,6 +1,6 @@
 package indigo.scenes
 
-import indigo.shared.FrameContext
+import indigo.shared.Context
 import indigo.shared.IndigoLogger
 import indigo.shared.Outcome
 import indigo.shared.collections.Batch
@@ -8,8 +8,8 @@ import indigo.shared.collections.NonEmptyList
 import indigo.shared.events.EventFilters
 import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.SceneUpdateFragment
-import indigo.shared.subsystems.SubSystemFrameContext
-import indigo.shared.subsystems.SubSystemFrameContext._
+import indigo.shared.subsystems.SubSystemContext
+import indigo.shared.subsystems.SubSystemContext._
 import indigo.shared.subsystems.SubSystemsRegister
 import indigo.shared.time.Seconds
 
@@ -42,9 +42,9 @@ class SceneManager[StartUpData, GameModel, ViewModel](
 
   // Scene delegation
 
-  def updateModel(frameContext: FrameContext[StartUpData], model: GameModel): GlobalEvent => Outcome[GameModel] =
+  def updateModel(ctx: Context[StartUpData], model: GameModel): GlobalEvent => Outcome[GameModel] =
     case SceneEvent.First =>
-      lastSceneChangeAt = frameContext.gameTime.running
+      lastSceneChangeAt = ctx.frame.time.running
 
       val from = finderInstance.current.name
       finderInstance = finderInstance.first
@@ -57,7 +57,7 @@ class SceneManager[StartUpData, GameModel, ViewModel](
       Outcome(model, events)
 
     case SceneEvent.Last =>
-      lastSceneChangeAt = frameContext.gameTime.running
+      lastSceneChangeAt = ctx.frame.time.running
 
       val from = finderInstance.current.name
       finderInstance = finderInstance.last
@@ -70,7 +70,7 @@ class SceneManager[StartUpData, GameModel, ViewModel](
       Outcome(model, events)
 
     case SceneEvent.Next =>
-      lastSceneChangeAt = frameContext.gameTime.running
+      lastSceneChangeAt = ctx.frame.time.running
 
       val from = finderInstance.current.name
       finderInstance = finderInstance.forward
@@ -83,7 +83,7 @@ class SceneManager[StartUpData, GameModel, ViewModel](
       Outcome(model, events)
 
     case SceneEvent.LoopNext =>
-      lastSceneChangeAt = frameContext.gameTime.running
+      lastSceneChangeAt = ctx.frame.time.running
 
       val from = finderInstance.current.name
       finderInstance = finderInstance.forwardLoop
@@ -96,7 +96,7 @@ class SceneManager[StartUpData, GameModel, ViewModel](
       Outcome(model, events)
 
     case SceneEvent.Previous =>
-      lastSceneChangeAt = frameContext.gameTime.running
+      lastSceneChangeAt = ctx.frame.time.running
 
       val from = finderInstance.current.name
       finderInstance = finderInstance.backward
@@ -109,7 +109,7 @@ class SceneManager[StartUpData, GameModel, ViewModel](
       Outcome(model, events)
 
     case SceneEvent.LoopPrevious =>
-      lastSceneChangeAt = frameContext.gameTime.running
+      lastSceneChangeAt = ctx.frame.time.running
 
       val from = finderInstance.current.name
       finderInstance = finderInstance.backwardLoop
@@ -122,7 +122,7 @@ class SceneManager[StartUpData, GameModel, ViewModel](
       Outcome(model, events)
 
     case SceneEvent.JumpTo(name) =>
-      lastSceneChangeAt = frameContext.gameTime.running
+      lastSceneChangeAt = ctx.frame.time.running
 
       val from = finderInstance.current.name
       finderInstance = finderInstance.jumpToSceneByName(name)
@@ -144,12 +144,12 @@ class SceneManager[StartUpData, GameModel, ViewModel](
           Scene
             .updateModel(
               scene,
-              SceneContext(scene.name, lastSceneChangeAt, frameContext),
+              SceneContext(scene.name, lastSceneChangeAt, ctx),
               model
             )(event)
 
   def updateSubSystems(
-      frameContext: SubSystemFrameContext[Unit],
+      ctx: SubSystemContext[Unit],
       model: GameModel,
       globalEvents: Batch[GlobalEvent]
   ): Outcome[SubSystemsRegister[GameModel]] =
@@ -159,7 +159,7 @@ class SceneManager[StartUpData, GameModel, ViewModel](
         subSystemStates
           .get(scene.name.toString)
           .map {
-            _.update(frameContext, model, globalEvents.toJSArray)
+            _.update(ctx, model, globalEvents.toJSArray)
           }
       }
       .getOrElse(
@@ -169,7 +169,7 @@ class SceneManager[StartUpData, GameModel, ViewModel](
       )
 
   def updateViewModel(
-      frameContext: FrameContext[StartUpData],
+      ctx: Context[StartUpData],
       model: GameModel,
       viewModel: ViewModel
   ): GlobalEvent => Outcome[ViewModel] =
@@ -181,13 +181,13 @@ class SceneManager[StartUpData, GameModel, ViewModel](
       case Some(scene) =>
         Scene.updateViewModel(
           scene,
-          SceneContext(scene.name, lastSceneChangeAt, frameContext),
+          SceneContext(scene.name, lastSceneChangeAt, ctx),
           model,
           viewModel
         )
 
   def updateView(
-      frameContext: FrameContext[StartUpData],
+      ctx: Context[StartUpData],
       model: GameModel,
       viewModel: ViewModel
   ): Outcome[SceneUpdateFragment] =
@@ -200,14 +200,14 @@ class SceneManager[StartUpData, GameModel, ViewModel](
         val subsystemView = subSystemStates
           .get(scene.name.toString)
           .map { ssr =>
-            ssr.present(frameContext.forSubSystems, model)
+            ssr.present(ctx.forSubSystems, model)
           }
           .getOrElse(Outcome(SceneUpdateFragment.empty))
 
         Outcome.merge(
           Scene.updateView(
             scene,
-            SceneContext(scene.name, lastSceneChangeAt, frameContext),
+            SceneContext(scene.name, lastSceneChangeAt, ctx),
             model,
             viewModel
           ),

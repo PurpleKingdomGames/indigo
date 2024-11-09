@@ -77,5 +77,5 @@ object CratesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
           )
         )
       ).addCloneBlanks(cloneBlanks)
-        .addLights(lights(move.at(context.running * 0.5)))
+        .addLights(lights(move.at(context.frame.time.running * 0.5)))
     )

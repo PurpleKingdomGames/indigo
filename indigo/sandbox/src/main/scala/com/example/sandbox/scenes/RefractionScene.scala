@@ -85,13 +85,13 @@ object RefractionScene extends Scene[SandboxStartupData, SandboxGameModel, Sandb
             .withBlending(Blending.Lighting(RGBA(0.2, 0.5, 0.3, 0.5))),
           Layer(
             distortion.moveTo(viewCenter + Point(50, 0)),
-            sliding.affectTime(0.3).at(context.gameTime.running)
+            sliding.affectTime(0.3).at(context.frame.time.running)
           ).withBlending(
             Refraction.blending(
               Signal.SmoothPulse
                 .map(d => 0.25 * d)
                 .affectTime(0.25)
-                .at(context.running)
+                .at(context.frame.time.running)
             )
           )
         )

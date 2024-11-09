@@ -5,7 +5,7 @@ import indigo.platform.renderer.Renderer
 import indigo.shared.AnimationsRegister
 import indigo.shared.BoundaryLocator
 import indigo.shared.FontRegister
-import indigo.shared.FrameContext
+import indigo.shared.Context
 import indigo.shared.assets.AssetName
 import indigo.shared.collections.Batch
 import indigo.shared.constants.Key
@@ -276,8 +276,8 @@ class InputFieldTests extends munit.FunSuite {
       KeyboardEvent.KeyUp(Key.KEY_C)
     )
 
-  def context: FrameContext[Unit] =
-    new FrameContext[Unit](
+  def context: Context[Unit] =
+    new Context[Unit](
       GameTime.zero,
       Dice.loaded(1),
       new InputState(Mouse.default, new Keyboard(keysUp, Batch.empty, None), Gamepad.default, Pointers.default),

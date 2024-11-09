@@ -81,7 +81,7 @@ object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
           DirectionLight(RGBA.Cyan.withAmount(0.1), RGBA.Cyan, Radians.zero),
           PointLight.default
             .withSpecular(RGBA.White)
-            .moveTo(context.mouse.position)
+            .moveTo(context.frame.input.mouse.position)
             .withColor(RGBA.Red.mix(RGBA.White, 0.1))
             .withIntensity(2)
             .withFalloff(Falloff.smoothQuadratic.withRange(0, 80)),
@@ -101,7 +101,7 @@ object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
               Signal
                 .Orbit(context.startUpData.viewportCenter, 80, Radians(0))
                 .affectTime(0.1)
-                .at(context.running)
+                .at(context.frame.time.running)
                 .toPoint
             )
             .modifyFalloff(_.withRange(0, 50)),
@@ -113,7 +113,7 @@ object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
               Signal
                 .Orbit(context.startUpData.viewportCenter, 80, Radians(Radians.TAU.toDouble / 3))
                 .affectTime(0.1)
-                .at(context.running)
+                .at(context.frame.time.running)
                 .toPoint
             )
             .modifyFalloff(_.withRange(0, 50)),
@@ -125,7 +125,7 @@ object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
               Signal
                 .Orbit(context.startUpData.viewportCenter, 80, Radians(Radians.TAU.toDouble / 3 * 2))
                 .affectTime(0.1)
-                .at(context.running)
+                .at(context.frame.time.running)
                 .toPoint
             )
             .modifyFalloff(_.withRange(0, 50))

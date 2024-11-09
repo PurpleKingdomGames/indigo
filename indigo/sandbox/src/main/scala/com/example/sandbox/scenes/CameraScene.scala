@@ -72,14 +72,14 @@ object CameraScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
       ).modifyCamera {
         case c: Camera.Fixed =>
           c.toLookAt
-            .lookAt(context.mouse.position)
-            .rotateBy(Radians.fromSeconds(context.running * 0.2))
+            .lookAt(context.frame.input.mouse.position)
+            .rotateBy(Radians.fromSeconds(context.frame.time.running * 0.2))
             .withZoom(Zoom(0.75))
 
         case c =>
           c
-        // _.moveTo(orbit.at(context.running * 0.3))
-        // .withZoom(zoom.at(context.running * 0.35))
+        // _.moveTo(orbit.at(context.frame.time.running * 0.3))
+        // .withZoom(zoom.at(context.frame.time.running * 0.35))
       }
     )
   }

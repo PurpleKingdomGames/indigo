@@ -64,16 +64,16 @@ object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
   ): Outcome[SceneUpdateFragment] = {
 
     val circleGradient: Int =
-      Signal.SmoothPulse.map(d => 2 + (10 * d).toInt).at(context.running)
+      Signal.SmoothPulse.map(d => 2 + (10 * d).toInt).at(context.frame.time.running)
 
     val circlePosition: Point =
-      Signal.Orbit(Point(200, 150), 10).map(_.toPoint).affectTime(0.25).at(context.running)
+      Signal.Orbit(Point(200, 150), 10).map(_.toPoint).affectTime(0.25).at(context.frame.time.running)
 
     val lineThickness: Int =
-      Signal.SmoothPulse.map(d => (10 * d).toInt).at(context.running)
+      Signal.SmoothPulse.map(d => (10 * d).toInt).at(context.frame.time.running)
 
     val squareSize: Size =
-      val signal = Signal.SmoothPulse.map(d => (100 * d).toInt).affectTime(0.25).at(context.running)
+      val signal = Signal.SmoothPulse.map(d => (100 * d).toInt).affectTime(0.25).at(context.frame.time.running)
 
       Size(
         signal,
@@ -115,21 +115,21 @@ object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
               Fill.LinearGradient(Point(0), RGBA.Magenta, Point(45), RGBA.Cyan),
               Stroke(4, RGBA.Black.withAlpha(0.75))
             )(
-              Point(10, 10) - (Math.cos(Radians.fromSeconds(context.running).toDouble) * 5).toInt,
-              Point(20, 70) + (Math.sin(Radians.fromSeconds(context.running * Seconds(1.2)).toDouble) * 10).toInt,
-              Point(90, 90) + (Math.sin(Radians.fromSeconds(context.running * Seconds(0.8)).toDouble) * 6).toInt,
-              Point(70, 20) - (Math.cos(Radians.fromSeconds(context.running * Seconds(1.5)).toDouble) * 8).toInt
+              Point(10, 10) - (Math.cos(Radians.fromSeconds(context.frame.time.running).toDouble) * 5).toInt,
+              Point(20, 70) + (Math.sin(Radians.fromSeconds(context.frame.time.running * Seconds(1.2)).toDouble) * 10).toInt,
+              Point(90, 90) + (Math.sin(Radians.fromSeconds(context.frame.time.running * Seconds(0.8)).toDouble) * 6).toInt,
+              Point(70, 20) - (Math.cos(Radians.fromSeconds(context.frame.time.running * Seconds(1.5)).toDouble) * 8).toInt
             )
             .moveTo(175, 10),
           blue,
           Shape.Box(
-            context.findBounds(blue).getOrElse(Rectangle.zero),
+            context.services.bounds.get(blue),
             Fill.None,
             Stroke(1, RGBA.Blue)
           ), // outline blue
           red,
           Shape.Box(
-            context.findBounds(red).getOrElse(Rectangle.zero),
+            context.services.bounds.get(red),
             Fill.None,
             Stroke(1, RGBA.Red)
           ), // outline red

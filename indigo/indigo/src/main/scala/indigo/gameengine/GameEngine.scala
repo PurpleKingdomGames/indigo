@@ -178,7 +178,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
 
       audioPlayer.addAudioAssets(accumulatedAssetCollection.sounds)
 
-      val randomSeed = (if (firstRun) 0 else gameLoopInstance.runningTimeReference) + gameLoopInstance.initialSeed
+      val randomSeed = (if (firstRun) 0 else gameLoopInstance.runningTimeReference) // + gameLoopInstance.initialSeed // TODO: Bug here. Black screen of no-render death.
 
       if (firstRun)
         platform = new Platform(parentElement, gameConfig, globalEventStream, dynamicText)

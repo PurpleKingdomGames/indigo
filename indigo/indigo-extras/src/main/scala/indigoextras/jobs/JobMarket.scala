@@ -5,7 +5,7 @@ import indigo.shared.datatypes.BindingKey
 import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.subsystems.SubSystem
-import indigo.shared.subsystems.SubSystemFrameContext
+import indigo.shared.subsystems.SubSystemContext
 import indigo.shared.subsystems.SubSystemId
 
 /** The JobMarket is a subsystem that manages a global pool of available jobs.
@@ -36,7 +36,7 @@ final case class JobMarket[Model](id: SubSystemId, availableJobs: List[Job]) ext
   private given CanEqual[Option[Job], Option[Job]] = CanEqual.derived
 
   def update(
-      frameContext: SubSystemFrameContext[ReferenceData],
+      frameContext: SubSystemContext[ReferenceData],
       jobs: List[Job]
   ): JobMarketEvent => Outcome[List[Job]] = {
     case JobMarketEvent.Post(job) =>
@@ -57,7 +57,7 @@ final case class JobMarket[Model](id: SubSystemId, availableJobs: List[Job]) ext
       Outcome(jobs)
   }
 
-  def present(frameContext: SubSystemFrameContext[ReferenceData], jobs: List[Job]): Outcome[SceneUpdateFragment] =
+  def present(frameContext: SubSystemContext[ReferenceData], jobs: List[Job]): Outcome[SceneUpdateFragment] =
     Outcome(SceneUpdateFragment.empty)
 }
 

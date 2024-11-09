@@ -51,7 +51,7 @@ final case class MyAwesomeGame(tyrianSubSystem: TyrianSubSystem[IO, String, Unit
     Outcome(Startup.Success(()))
 
   def updateModel(
-      context: FrameContext[Unit],
+      context: Context[Unit],
       model: Unit
   ): GlobalEvent => Outcome[Unit] =
     case tyrianSubSystem.TyrianEvent.Receive(msg) =>
@@ -67,14 +67,14 @@ final case class MyAwesomeGame(tyrianSubSystem: TyrianSubSystem[IO, String, Unit
       Outcome(model)
 
   def updateViewModel(
-      context: FrameContext[Unit],
+      context: Context[Unit],
       model: Unit,
       viewModel: Unit
   ): GlobalEvent => Outcome[Unit] =
     _ => Outcome(viewModel)
 
   def present(
-      context: FrameContext[Unit],
+      context: Context[Unit],
       model: Unit,
       viewModel: Unit
   ): Outcome[SceneUpdateFragment] =

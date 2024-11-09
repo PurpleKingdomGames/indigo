@@ -24,11 +24,11 @@ trait SubSystem[Model]:
   def initialModel: Outcome[SubSystemModel]
 
   def update(
-      context: SubSystemFrameContext[ReferenceData],
+      context: SubSystemContext[ReferenceData],
       model: SubSystemModel
   ): EventType => Outcome[SubSystemModel]
 
   def present(
-      context: SubSystemFrameContext[ReferenceData],
+      context: SubSystemContext[ReferenceData],
       model: SubSystemModel
   ): Outcome[SceneUpdateFragment]

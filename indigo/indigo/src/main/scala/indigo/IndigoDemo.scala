@@ -84,7 +84,7 @@ trait IndigoDemo[BootData, StartUpData, Model, ViewModel] extends GameLauncher[S
     *   A function that maps GlobalEvent's to the next version of your model, and encapsuates failures or resulting
     *   events within the Outcome wrapper.
     */
-  def updateModel(context: FrameContext[StartUpData], model: Model): GlobalEvent => Outcome[Model]
+  def updateModel(context: Context[StartUpData], model: Model): GlobalEvent => Outcome[Model]
 
   /** A pure function for updating your game's view model in the context of the running frame and the events acting upon
     * it.
@@ -101,7 +101,7 @@ trait IndigoDemo[BootData, StartUpData, Model, ViewModel] extends GameLauncher[S
     *   events within the Outcome wrapper.
     */
   def updateViewModel(
-      context: FrameContext[StartUpData],
+      context: Context[StartUpData],
       model: Model,
       viewModel: ViewModel
   ): GlobalEvent => Outcome[ViewModel]
@@ -120,7 +120,7 @@ trait IndigoDemo[BootData, StartUpData, Model, ViewModel] extends GameLauncher[S
     *   A function that produces a description of what to present next, and encapsuates failures or resulting events
     *   within the Outcome wrapper.
     */
-  def present(context: FrameContext[StartUpData], model: Model, viewModel: ViewModel): Outcome[SceneUpdateFragment]
+  def present(context: Context[StartUpData], model: Model, viewModel: ViewModel): Outcome[SceneUpdateFragment]
 
   private val subSystemsRegister: SubSystemsRegister[Model] =
     new SubSystemsRegister()
