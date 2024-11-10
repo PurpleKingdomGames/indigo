@@ -282,6 +282,9 @@ class InputFieldTests extends munit.FunSuite {
     Context.initial
       .modifyFrame(
         _.withDice(Dice.loaded(1))
+          .withInput(
+            new InputState(Mouse.default, new Keyboard(keysUp, Batch.empty, None), Gamepad.default, Pointers.default)
+          )
       )
 
   object Samples {
