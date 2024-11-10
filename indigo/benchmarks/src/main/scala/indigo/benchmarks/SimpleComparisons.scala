@@ -1,12 +1,11 @@
 package indigo.benchmarks
 
 import indigo.*
-
+import indigo.platform.assets.DynamicText
+import indigo.shared.AnimationsRegister
+import indigo.shared.FontRegister
 import japgolly.scalajs.benchmark._
 import japgolly.scalajs.benchmark.gui._
-import indigo.shared.FontRegister
-import indigo.shared.AnimationsRegister
-import indigo.platform.assets.DynamicText
 
 object SimpleComparisons:
 
