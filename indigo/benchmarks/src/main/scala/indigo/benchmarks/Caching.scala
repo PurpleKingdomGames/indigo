@@ -1,11 +1,11 @@
 package indigo.benchmarks
 
 import indigo.*
-
+import indigo.facades.WeakMap
+import indigo.shared.QuickCache
 import japgolly.scalajs.benchmark._
 import japgolly.scalajs.benchmark.gui._
-import indigo.shared.QuickCache
-import indigo.facades.WeakMap
+
 import scala.scalajs.js
 
 object Caching:

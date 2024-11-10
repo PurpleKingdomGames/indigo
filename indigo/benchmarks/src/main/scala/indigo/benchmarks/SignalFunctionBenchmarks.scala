@@ -2,7 +2,6 @@ package indigo.benchmarks
 
 import indigo.*
 import indigo.syntax.*
-
 import japgolly.scalajs.benchmark._
 import japgolly.scalajs.benchmark.gui._
 

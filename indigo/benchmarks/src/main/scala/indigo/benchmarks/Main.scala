@@ -1,7 +1,7 @@
 package indigo.benchmarks
 
-import org.scalajs.dom.document
 import japgolly.scalajs.benchmark.gui.BenchmarkGUI
+import org.scalajs.dom.document
 
 import scala.scalajs.js.annotation.JSExportTopLevel
 

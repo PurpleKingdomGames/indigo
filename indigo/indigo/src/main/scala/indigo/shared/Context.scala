@@ -113,14 +113,14 @@ object Context:
         _captureScreen: Batch[ScreenCaptureConfig] => Batch[Either[String, AssetType.Image]]
     ): Services =
       new Services:
-        def bounds: Services.Bounds        = Bounds(boundaryLocator)
-        def random: Services.Random        = Random(_random)
+        def bounds: Services.Bounds = Bounds(boundaryLocator)
+        def random: Services.Random = Random(_random)
         def screen: Services.Screen = Screen(_captureScreen)
 
     def noop: Services =
       new Services:
-        def bounds: Bounds        = Bounds.noop
-        def random: Random        = Random.noop
+        def bounds: Bounds = Bounds.noop
+        def random: Random = Random.noop
         def screen: Screen = Screen.noop
 
     trait Bounds:
