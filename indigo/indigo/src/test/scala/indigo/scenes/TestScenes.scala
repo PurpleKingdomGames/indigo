@@ -1,7 +1,7 @@
 package indigo.scenes
 
 import indigo.*
-import indigo.shared.FrameContext
+import indigo.shared.Context
 import indigo.shared.events.EventFilters
 import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.SceneUpdateFragment

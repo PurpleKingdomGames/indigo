@@ -116,9 +116,12 @@ object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
               Stroke(4, RGBA.Black.withAlpha(0.75))
             )(
               Point(10, 10) - (Math.cos(Radians.fromSeconds(context.frame.time.running).toDouble) * 5).toInt,
-              Point(20, 70) + (Math.sin(Radians.fromSeconds(context.frame.time.running * Seconds(1.2)).toDouble) * 10).toInt,
-              Point(90, 90) + (Math.sin(Radians.fromSeconds(context.frame.time.running * Seconds(0.8)).toDouble) * 6).toInt,
-              Point(70, 20) - (Math.cos(Radians.fromSeconds(context.frame.time.running * Seconds(1.5)).toDouble) * 8).toInt
+              Point(20, 70) + (Math
+                .sin(Radians.fromSeconds(context.frame.time.running * Seconds(1.2)).toDouble) * 10).toInt,
+              Point(90, 90) + (Math
+                .sin(Radians.fromSeconds(context.frame.time.running * Seconds(0.8)).toDouble) * 6).toInt,
+              Point(70, 20) - (Math
+                .cos(Radians.fromSeconds(context.frame.time.running * Seconds(1.5)).toDouble) * 8).toInt
             )
             .moveTo(175, 10),
           blue,

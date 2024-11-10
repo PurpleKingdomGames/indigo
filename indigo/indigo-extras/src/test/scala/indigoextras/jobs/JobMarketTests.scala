@@ -3,6 +3,7 @@ package indigoextras.jobs
 import indigo.platform.assets.DynamicText
 import indigo.shared.AnimationsRegister
 import indigo.shared.BoundaryLocator
+import indigo.shared.Context
 import indigo.shared.FontRegister
 import indigo.shared.collections.Batch
 import indigo.shared.datatypes.BindingKey
@@ -18,12 +19,11 @@ import indigo.shared.time.GameTime
 class JobMarketTests extends munit.FunSuite {
 
   val context =
-    SubSystemContext[Unit](
-      GameTime.zero,
-      Dice.loaded(6),
-      InputState.default,
-      new BoundaryLocator(new AnimationsRegister, new FontRegister, new DynamicText),
-      ()
+    SubSystemContext.fromContext(
+      Context.initial
+        .modifyFrame(
+          _.withDice(Dice.loaded(6))
+        )
     )
 
   val workContext =

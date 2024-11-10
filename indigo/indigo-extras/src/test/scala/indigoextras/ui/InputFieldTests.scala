@@ -4,8 +4,8 @@ import indigo.platform.assets.DynamicText
 import indigo.platform.renderer.Renderer
 import indigo.shared.AnimationsRegister
 import indigo.shared.BoundaryLocator
-import indigo.shared.FontRegister
 import indigo.shared.Context
+import indigo.shared.FontRegister
 import indigo.shared.assets.AssetName
 import indigo.shared.collections.Batch
 import indigo.shared.constants.Key
@@ -45,6 +45,8 @@ class InputFieldTests extends munit.FunSuite {
 
   val boundaryLocator: BoundaryLocator =
     new BoundaryLocator(new AnimationsRegister, fontRegister, new DynamicText())
+  val bounds: Context.Services.Bounds =
+    Context.Services.Bounds(boundaryLocator)
 
   val atCommaPosition =
     InputField("Hello, world!", assets).cursorHome.cursorRight.cursorRight.cursorRight.cursorRight.cursorRight
@@ -153,7 +155,7 @@ class InputFieldTests extends munit.FunSuite {
 
   test("Multi line boxes have bounds correctly caluculated") {
     val actual =
-      InputField("ab\nc", assets).moveTo(50, 50).bounds(boundaryLocator).get
+      InputField("ab\nc", assets).moveTo(50, 50).bounds(bounds).get
 
     val expected =
       Rectangle(50, 50, 26, 36)
@@ -170,7 +172,7 @@ class InputFieldTests extends munit.FunSuite {
 
   def extractCursorPosition(field: InputField): Point =
     field
-      .draw(GameTime.zero, boundaryLocator)
+      .draw(GameTime.zero, bounds)
       .collect { case g: Graphic[_] => g }
       .head
       .position
@@ -277,14 +279,10 @@ class InputFieldTests extends munit.FunSuite {
     )
 
   def context: Context[Unit] =
-    new Context[Unit](
-      GameTime.zero,
-      Dice.loaded(1),
-      new InputState(Mouse.default, new Keyboard(keysUp, Batch.empty, None), Gamepad.default, Pointers.default),
-      new BoundaryLocator(new AnimationsRegister, new FontRegister, new DynamicText),
-      (),
-      Renderer.blackHole.captureScreen
-    )
+    Context.initial
+      .modifyFrame(
+        _.withDice(Dice.loaded(1))
+      )
 
   object Samples {
     val material = Material.Bitmap(AssetName("font-sheet"))
