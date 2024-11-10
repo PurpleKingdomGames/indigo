@@ -29,19 +29,11 @@ final class ScenesFrameProcessor[StartUpData, Model, ViewModel](
     with StandardFrameProcessorFunctions[StartUpData, Model, ViewModel]:
 
   def run(
-      startUpData: => StartUpData,
       model: => Model,
       viewModel: => ViewModel,
-      gameTime: GameTime,
       globalEvents: Batch[GlobalEvent],
-      inputState: InputState,
-      dice: Dice,
-      boundaryLocator: BoundaryLocator,
-      renderer: => Renderer
+      context: => Context[StartUpData]
   ): Outcome[(Model, ViewModel, SceneUpdateFragment)] = {
-
-    val context =
-      Context[StartUpData](gameTime, dice, inputState, boundaryLocator, startUpData, renderer.captureScreen)
 
     val processSceneViewModel: (Model, ViewModel) => Outcome[ViewModel] = (m, vm) =>
       globalEvents

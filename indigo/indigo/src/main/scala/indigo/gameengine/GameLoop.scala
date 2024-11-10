@@ -3,6 +3,7 @@ package indigo.gameengine
 import indigo.platform.assets.AssetCollection
 import indigo.platform.renderer.Renderer
 import indigo.shared.BoundaryLocator
+import indigo.shared.Context
 import indigo.shared.IndigoLogger
 import indigo.shared.Outcome
 import indigo.shared.collections.Batch
@@ -37,8 +38,6 @@ final class GameLoop[StartUpData, GameModel, ViewModel](
     renderer: => Renderer
 ):
 
-  val initialSeed = new Date().valueOf()
-
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var _gameModelState: GameModel = initialModel
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
@@ -56,6 +55,11 @@ final class GameLoop[StartUpData, GameModel, ViewModel](
     new mutable.Queue[IndigoSystemEvent]()
 
   private val frameDeltaRecord: scala.scalajs.js.Array[Double] = scala.scalajs.js.Array(0.0d, 0.0d, 0.0d, 0.0d, 0.0d)
+
+  private val _randomInstance: scala.util.Random = new scala.util.Random()
+
+  private lazy val _services: Context.Services =
+    Context.Services(boundaryLocator, _randomInstance, renderer.captureScreen)
 
   def gameModelState: GameModel    = _gameModelState
   def viewModelState: ViewModel    = _viewModelState
@@ -125,18 +129,20 @@ final class GameLoop[StartUpData, GameModel, ViewModel](
       gameEngine.gamepadInputCapture.giveGamepadState
     )
 
+    val context =
+      new Context[StartUpData](
+        gameEngine.startUpData,
+        Context.Frame(Dice.fromSeconds(gameTime.running), gameTime, _inputState),
+        _services
+      )
+
     // Run the frame processor
     val processedFrame: Outcome[(GameModel, ViewModel, SceneUpdateFragment)] =
       frameProcessor.run(
-        gameEngine.startUpData,
         _gameModelState,
         _viewModelState,
-        gameTime,
         events,
-        _inputState,
-        Dice.fromSeconds(gameTime.running + initialSeed),
-        boundaryLocator,
-        renderer
+        context
       )
 
     // Persist frame state
