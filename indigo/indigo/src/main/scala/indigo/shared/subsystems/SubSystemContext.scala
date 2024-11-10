@@ -37,14 +37,29 @@ final case class SubSystemContext[ReferenceData](
   def toContext: Context[Unit] =
     new Context[Unit]((), frame, services)
 
-object SubSystemContext {
+  def withReference[A](newReference: A): SubSystemContext[A] =
+    new SubSystemContext(
+      newReference,
+      frame,
+      services
+    )
+
+  def unit: SubSystemContext[Unit] =
+    new SubSystemContext(
+      (),
+      frame,
+      services
+    )
+
+object SubSystemContext:
+
+  def fromContext[A](ctx: Context[A]): SubSystemContext[A] =
+    new SubSystemContext(
+      ctx.startUpData,
+      ctx.frame,
+      ctx.services
+    )
 
   extension (ctx: Context[?])
     def forSubSystems: SubSystemContext[Unit] =
-      new SubSystemContext(
-        (),
-        ctx.frame,
-        ctx.services
-      )
-
-}
+      SubSystemContext.fromContext(ctx).unit

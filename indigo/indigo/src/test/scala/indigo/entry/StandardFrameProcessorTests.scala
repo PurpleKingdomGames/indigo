@@ -4,8 +4,8 @@ import indigo.platform.assets.DynamicText
 import indigo.platform.renderer.Renderer
 import indigo.shared.AnimationsRegister
 import indigo.shared.BoundaryLocator
+import indigo.shared.Context
 import indigo.shared.FontRegister
-import indigo.shared.FrameContext
 import indigo.shared.Outcome
 import indigo.shared.collections.Batch
 import indigo.shared.datatypes.RGBA
@@ -72,7 +72,7 @@ object TestFixtures {
   val viewModel: Int =
     0
 
-  val modelUpdate: (FrameContext[Unit], GameModel) => GlobalEvent => Outcome[GameModel] =
+  val modelUpdate: (Context[Unit], GameModel) => GlobalEvent => Outcome[GameModel] =
     (_, m) => {
       case EventsOnlyEvent.Increment =>
         val newCount = m.count + 1
@@ -85,10 +85,10 @@ object TestFixtures {
         Outcome(m)
     }
 
-  val viewModelUpdate: (FrameContext[Unit], GameModel, Int) => GlobalEvent => Outcome[Int] =
+  val viewModelUpdate: (Context[Unit], GameModel, Int) => GlobalEvent => Outcome[Int] =
     (_, _, vm) => _ => Outcome(vm + 10).addGlobalEvents(EventsOnlyEvent.Increment)
 
-  val viewUpdate: (FrameContext[Unit], GameModel, Int) => Outcome[SceneUpdateFragment] =
+  val viewUpdate: (Context[Unit], GameModel, Int) => Outcome[SceneUpdateFragment] =
     (_, _, _) => Outcome(SceneUpdateFragment.empty.withBlendMaterial(BlendMaterial.Lighting(RGBA.Red.withAlpha(0.5))))
 
   val standardFrameProcessor: StandardFrameProcessor[Unit, GameModel, Int] =

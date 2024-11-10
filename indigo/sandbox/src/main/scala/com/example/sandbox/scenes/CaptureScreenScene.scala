@@ -62,25 +62,26 @@ object CaptureScreenScene extends Scene[SandboxStartupData, SandboxGameModel, Sa
       viewModel: CaptureScreenSceneViewModel
   ): GlobalEvent => Outcome[CaptureScreenSceneViewModel] = {
     case MouseEvent.Click(x, y) if x >= 250 && x <= 266 && y >= 165 && y <= 181 =>
-      val screenshots: Set[AssetType] = context
+      val screenshots: Set[AssetType] =
         // Capture 2 screenshots, 1 of the full screen and the other of the clipping rectangle
         // These are reduced by 0.125 so that it sits a quarter size of the real screen without further scaling
-        .services.screenCapture.captureScreen(
-          Batch(
-            // Get the full screen and scale it
-            ScreenCaptureConfig.default
-              .withName("screenshot1")
-              .withScale(0.5)
-              .withExcludeLayers(Batch(uiKey)),
-            // Get the screen inside the clipping rectangle and scale it. We don't remove the UI layer here
-            ScreenCaptureConfig.default
-              .withName("screenshot2")
-              .withScale(0.5)
-              .withCrop(clippingRect)
+        context.services.screen
+          .capture(
+            Batch(
+              // Get the full screen and scale it
+              ScreenCaptureConfig.default
+                .withName("screenshot1")
+                .withScale(0.5)
+                .withExcludeLayers(Batch(uiKey)),
+              // Get the screen inside the clipping rectangle and scale it. We don't remove the UI layer here
+              ScreenCaptureConfig.default
+                .withName("screenshot2")
+                .withScale(0.5)
+                .withCrop(clippingRect)
+            )
           )
-        )
-        .collect { case Right(image) => image }
-        .toSet
+          .collect { case Right(image) => image }
+          .toSet
 
       // Output each image data URL to the console
       screenshots.foreach(a => IndigoLogger.info(a.asInstanceOf[AssetType.Image].path.toString()))
