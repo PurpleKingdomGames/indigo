@@ -28,15 +28,10 @@ class StandardFrameProcessorTests extends munit.FunSuite {
   test("standard frame processor") {
 
     val outcome = standardFrameProcessor.run(
-      (),
       model,
       viewModel,
-      GameTime.zero,
       Batch(EventsOnlyEvent.Increment),
-      InputState.default,
-      Dice.loaded(0),
-      boundaryLocator,
-      Renderer.blackHole
+      Context.initial
     )
 
     val outModel     = outcome.unsafeGet._1
