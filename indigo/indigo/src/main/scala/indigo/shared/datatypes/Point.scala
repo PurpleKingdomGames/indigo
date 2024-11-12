@@ -131,10 +131,16 @@ object Point:
     )
 
   def random(dice: Dice, max: Int): Point =
-    Point(dice.rollFromZero(max), dice.rollFromZero(max))
+    Point(
+      if max <= 0 then 0 else dice.rollFromZero(max),
+      if max <= 0 then 0 else dice.rollFromZero(max)
+    )
 
   def random(dice: Dice, max: Point): Point =
-    Point(dice.rollFromZero(max.x), dice.rollFromZero(max.y))
+    Point(
+      if max.x <= 0 then 0 else dice.rollFromZero(max.x),
+      if max.y <= 0 then 0 else dice.rollFromZero(max.y)
+    )
 
   def random(dice: Dice, min: Int, max: Int): Point =
     Point(dice.rollFromZero(max - min) + min, dice.rollFromZero(max - min) + min)

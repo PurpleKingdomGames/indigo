@@ -83,10 +83,16 @@ object Size:
     )
 
   def random(dice: Dice, max: Int): Size =
-    Size(dice.rollFromZero(max), dice.rollFromZero(max))
+    Size(
+      if max <= 0 then 0 else dice.rollFromZero(max),
+      if max <= 0 then 0 else dice.rollFromZero(max)
+    )
 
   def random(dice: Dice, max: Size): Size =
-    Size(dice.rollFromZero(max.width), dice.rollFromZero(max.height))
+    Size(
+      if max.width <= 0 then 0 else dice.rollFromZero(max.width),
+      if max.height <= 0 then 0 else dice.rollFromZero(max.height)
+    )
 
   def random(dice: Dice, min: Int, max: Int): Size =
     Size(dice.rollFromZero(max - min) + min, dice.rollFromZero(max - min) + min)
