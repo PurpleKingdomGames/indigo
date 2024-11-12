@@ -12,14 +12,14 @@ import indigo.shared.scenegraph.SceneNode
 import indigo.shared.time.GameTime
 import indigo.shared.time.Seconds
 
-/** SceneContext is a Scene specific equivalent of `FrameContext`, and exposes all of the fields and methods or a normal
-  * `FrameContext` object. It adds information about the scene currently running.
+/** SceneContext is a Scene specific equivalent of `Context`, and exposes all of the fields and methods of a normal
+  * `Context` object. It adds information about the scene currently running.
   *
   * @param sceneName
   *   The name of the current scene.
   * @param sceneStartTime
   *   The time that the current scene was entered.
-  * @param frameContext
+  * @param context
   *   The normal frame context object that all other fields delegate to.
   */
 final class SceneContext[StartUpData](

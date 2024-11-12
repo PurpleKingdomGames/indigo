@@ -37,7 +37,7 @@ final class AssetBundleLoader[Model] extends SubSystem[Model]:
   private given CanEqual[Option[Set[AssetType]], Option[Set[AssetType]]] = CanEqual.derived
 
   def update(
-      frameContext: SubSystemContext[ReferenceData],
+      context: SubSystemContext[ReferenceData],
       tracker: AssetBundleTracker
   ): GlobalEvent => Outcome[AssetBundleTracker] =
     // Asset Bundle Loader Commands
@@ -76,7 +76,7 @@ final class AssetBundleLoader[Model] extends SubSystem[Model]:
       Outcome(tracker)
 
   def present(
-      frameContext: SubSystemContext[ReferenceData],
+      context: SubSystemContext[ReferenceData],
       model: AssetBundleTracker
   ): Outcome[SceneUpdateFragment] =
     Outcome(SceneUpdateFragment.empty)

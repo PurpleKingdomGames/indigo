@@ -57,20 +57,20 @@ final case class Automata[Model](
   private given CanEqual[Option[Int], Option[Int]] = CanEqual.derived
 
   def update(
-      frameContext: SubSystemContext[ReferenceData],
+      context: SubSystemContext[ReferenceData],
       state: AutomataState
   ): AutomataEvent => Outcome[AutomataState] =
     case Spawn(key, position, lifeSpan, payload) if key == poolKey =>
       val spawned =
         SpawnedAutomaton(
-          automaton.node.giveNode(state.totalSpawned, frameContext.dice),
+          automaton.node.giveNode(state.totalSpawned, context.dice),
           automaton.modifier,
           automaton.onCull,
           new AutomatonSeedValues(
             position,
-            frameContext.time.running,
+            context.time.running,
             lifeSpan.getOrElse(automaton.lifespan),
-            frameContext.dice.roll,
+            context.dice.roll,
             payload
           )
         )
@@ -108,12 +108,12 @@ final case class Automata[Model](
 
     case Update(key) if key == poolKey =>
       val cullEvents = state.pool
-        .filterNot(_.isAlive(frameContext.time.running))
+        .filterNot(_.isAlive(context.time.running))
         .flatMap(sa => sa.onCull(sa.seedValues))
 
       Outcome(
         state.copy(
-          pool = state.pool.filter(_.isAlive(frameContext.time.running))
+          pool = state.pool.filter(_.isAlive(context.time.running))
         ),
         Batch(cullEvents)
       )
@@ -121,8 +121,8 @@ final case class Automata[Model](
     case _ =>
       Outcome(state)
 
-  def present(frameContext: SubSystemContext[ReferenceData], state: AutomataState): Outcome[SceneUpdateFragment] =
-    val updated = Automata.renderNoLayer(state.pool, frameContext.time)
+  def present(context: SubSystemContext[ReferenceData], state: AutomataState): Outcome[SceneUpdateFragment] =
+    val updated = Automata.renderNoLayer(state.pool, context.time)
 
     Outcome(
       SceneUpdateFragment(
