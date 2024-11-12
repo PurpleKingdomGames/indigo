@@ -60,11 +60,11 @@ final case class FPSCounter[Model](
       model: FPSCounterState
   ): GlobalEvent => Outcome[FPSCounterState] = {
     case FrameTick =>
-      if (context.time.running >= (model.lastInterval + Seconds(1)))
+      if (context.frame.time.running >= (model.lastInterval + Seconds(1)))
         Outcome(
           model.copy(
             fps = decideNextFps(model.frameCountSinceInterval),
-            lastInterval = context.time.running,
+            lastInterval = context.frame.time.running,
             frameCountSinceInterval = 0
           )
         )
@@ -90,7 +90,7 @@ final case class FPSCounter[Model](
         .moveTo(model.position + 2)
 
     val size: Rectangle =
-      context.bounds.measureText(text)
+      context.services.bounds.measureText(text)
 
     val boxSize =
       ({ (s: Size) =>
