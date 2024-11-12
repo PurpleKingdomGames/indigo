@@ -21,7 +21,7 @@ class PathFindingTests extends munit.FunSuite {
 
     val searchGrid = SearchGrid.generate(start, end, List(impassable), 3, 3)
 
-    val path: List[Coords] = searchGrid.locatePath(Dice.fromSeed(0))
+    val path: List[Coords] = searchGrid.locatePath(Dice.default)
 
     val possiblePaths: List[List[Coords]] = List(
       List(start, Coords(2, 2), Coords(1, 2), end),
@@ -45,7 +45,7 @@ class PathFindingTests extends munit.FunSuite {
 
     val searchGrid = SearchGrid.generate(start, end, List(impassable), 3, 3)
 
-    val path: List[Coords] = searchGrid.locatePath(Dice.fromSeed(0))
+    val path: List[Coords] = searchGrid.locatePath(Dice.default)
 
     val possiblePaths: List[List[Coords]] = List(
       List(start, Coords(0, 2), Coords(1, 2), Coords(2, 2), end),
@@ -67,7 +67,7 @@ class PathFindingTests extends munit.FunSuite {
 
     val searchGrid = SearchGrid.generate(start, end, List(impassable), 3, 3)
 
-    val path: List[Coords] = searchGrid.locatePath(Dice.fromSeed(0))
+    val path: List[Coords] = searchGrid.locatePath(Dice.default)
 
     val possiblePaths: List[List[Coords]] = List(
       List(start, Coords(2, 0), Coords(2, 1), Coords(2, 2), end),
@@ -89,7 +89,7 @@ class PathFindingTests extends munit.FunSuite {
 
     val searchGrid = SearchGrid.generate(start, end, List(impassable), 3, 3)
 
-    val path: List[Coords] = searchGrid.locatePath(Dice.fromSeed(0))
+    val path: List[Coords] = searchGrid.locatePath(Dice.default)
 
     val possiblePaths: List[List[Coords]] = List(
       List(start, Coords(2, 2), Coords(2, 1), Coords(2, 0), end),
@@ -111,7 +111,7 @@ class PathFindingTests extends munit.FunSuite {
 
     val searchGrid = SearchGrid.generate(start, end, List(impassable), 3, 3)
 
-    val path: List[Coords] = searchGrid.locatePath(Dice.fromSeed(0))
+    val path: List[Coords] = searchGrid.locatePath(Dice.default)
 
     val possiblePaths: List[List[Coords]] = List(
       List(start, Coords(2, 2), Coords(1, 2), Coords(0, 2), end),

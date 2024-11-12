@@ -178,7 +178,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
 
       audioPlayer.addAudioAssets(accumulatedAssetCollection.sounds)
 
-      val dice = Dice.fromSeed((if firstRun then 0 else gameLoopInstance.runningTimeReference).toLong)
+      val dice = if firstRun then Dice.default else Dice.fromSeed(gameLoopInstance.runningTimeReference.toLong)
 
       if firstRun then platform = new Platform(parentElement, gameConfig, globalEventStream, dynamicText)
 

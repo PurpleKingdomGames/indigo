@@ -61,7 +61,7 @@ object BoxesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVie
     )
 
   val shapes: Batch[Shape[?]] =
-    val d = Dice.fromSeed(0)
+    val d = Dice.default
     Batch.fromList(
       (1 to 30).toList.flatMap { _ =>
         List(makeLine(d), makeBox(d))
