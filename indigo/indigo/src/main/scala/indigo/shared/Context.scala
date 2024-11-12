@@ -13,7 +13,20 @@ import indigo.shared.scenegraph.TextLine
 import indigo.shared.time.GameTime
 import org.scalajs.dom.Screen
 
-// TODO: Add documentation
+/** The Context is the context in which the current frame will be processed.
+  *
+  * This is divided into three main areas:
+  *
+  *   1. StartUpData: The data that was passed into the game at the start, and is available globally.
+  *
+  * 2. Frame: The data that is specific to the current frame, such as the current time, input state, and dice (pseudo
+  * random number generated seeded on the game's running time at the beginning of the frame), and if only frame values
+  * are used, then calls to functions like `updateModel` can be considered referentially transparent.
+  *
+  * 3. Services: The services that are available to the game, such as the ability to capture the screen, measure text,
+  * find the bounds of on-screen elements, or access a long running Random instance. Services are side-effecting, long
+  * running, and / or stateful.
+  */
 final class Context[StartUpData](
     _startUpData: => StartUpData,
     val frame: Context.Frame,
@@ -72,6 +85,8 @@ object Context:
       )
     )
 
+  /** The data that is specific to the current frame, such as the current time, input state, and dice.
+    */
   final class Frame(
       val dice: Dice,
       val time: GameTime,
@@ -100,6 +115,10 @@ object Context:
     val initial: Frame =
       new Frame(Dice.default, GameTime.zero, InputState.default)
 
+  /** The services that are available to the game, such as the ability to capture the screen, measure text, find the
+    * bounds of anything on screen, or access a long running Random instance. Services are side-effecting, long running,
+    * and / or stateful.
+    */
   trait Services:
     def bounds: Services.Bounds
     def random: Services.Random
