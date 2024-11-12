@@ -27,7 +27,7 @@ object IndigoPhysics extends IndigoGame[Unit, Unit, Model, Unit]:
     )
 
   def initialModel(startupData: Unit): Outcome[Model] =
-    Outcome(Model.initial(Dice.fromSeed(0)))
+    Outcome(Model.initial(Dice.default))
 
   def initialViewModel(startupData: Unit, model: Model): Outcome[Unit] =
     Outcome(())

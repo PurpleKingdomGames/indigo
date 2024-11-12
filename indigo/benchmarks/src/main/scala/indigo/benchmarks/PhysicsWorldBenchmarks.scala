@@ -50,7 +50,7 @@ object PhysicsWorldBenchmarks:
 
 object TestWorlds:
 
-  val dice: Dice = Dice.fromSeed(0)
+  val dice: Dice = Dice.default
 
   val basicWorld: World[MyTag] =
     val circles =

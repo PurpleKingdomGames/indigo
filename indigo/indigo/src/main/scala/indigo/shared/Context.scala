@@ -67,7 +67,7 @@ object Context:
       ),
       Services(
         boundaryLocator,
-        scala.util.Random(),
+        scala.util.Random(Dice.DefaultSeed),
         _captureScreen
       )
     )
@@ -98,7 +98,7 @@ object Context:
       new Frame(dice, time, input)
 
     val initial: Frame =
-      new Frame(Dice.fromSeed(0), GameTime.zero, InputState.default)
+      new Frame(Dice.default, GameTime.zero, InputState.default)
 
   trait Services:
     def bounds: Services.Bounds
@@ -180,7 +180,8 @@ object Context:
       def nextString(length: Int): String
       def nextPrintableChar(): Char
       def setSeed(seed: Long): Unit
-      def shuffle[T](xs: List[T]): List[T]
+      def shuffle[A](xs: List[A]): List[A]
+      def shuffle[A](xs: Batch[A]): Batch[A]
       def alphanumeric(take: Int): List[Char]
 
     object Random:
@@ -201,7 +202,8 @@ object Context:
           def nextString(length: Int): String                             = _random.nextString(length)
           def nextPrintableChar(): Char                                   = _random.nextPrintableChar()
           def setSeed(seed: Long): Unit                                   = _random.setSeed(seed)
-          def shuffle[T](xs: List[T]): List[T]                            = _random.shuffle(xs)
+          def shuffle[A](xs: List[A]): List[A]                            = _random.shuffle(xs)
+          def shuffle[A](xs: Batch[A]): Batch[A]                          = Batch.fromList(_random.shuffle(xs.toList))
           def alphanumeric(take: Int): List[Char]                         = _random.alphanumeric.take(take).toList
 
       val noop: Random =
@@ -220,7 +222,8 @@ object Context:
           def nextString(length: Int): String                             = ""
           def nextPrintableChar(): Char                                   = ' '
           def setSeed(seed: Long): Unit                                   = ()
-          def shuffle[T](xs: List[T]): List[T]                            = xs
+          def shuffle[A](xs: List[A]): List[A]                            = xs
+          def shuffle[A](xs: Batch[A]): Batch[A]                          = xs
           def alphanumeric(take: Int): List[Char]                         = List.fill(take)(' ')
 
     trait Screen:

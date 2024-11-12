@@ -15,7 +15,7 @@ class DiceTests extends munit.FunSuite {
   def almostEquals(d: Double, d2: Double, p: Double) = (d - d2).abs <= p
 
   test("diceSidesN") {
-    val roll: Int = Dice.diceSidesN(1, 0).roll(10)
+    val roll: Int = Dice.diceSidesN(1, 1000).roll(10)
 
     assertEquals(checkDice(roll, 10), true)
   }
@@ -38,26 +38,108 @@ class DiceTests extends munit.FunSuite {
   }
 
   test("should be able to produce an alphanumeric string") {
-    val dice   = Dice.fromSeed(0)
+    val dice   = Dice.default
     val actual = dice.rollAlphaNumeric
 
-    // Psuedorandom! Seed of 0 produces "CCzLNHBFHuRvbI1i"
     val expected =
-      "CCzLNHBFHuRvbI1i"
+      "IoLMAKmKvLY5MSfL"
 
     assertEquals(actual.length(), 16)
     assertEquals(actual, expected)
   }
 
   test("shuffle") {
-    val dice   = Dice.fromSeed(0)
+    val dice   = Dice.default
     val actual = dice.shuffle(List(1, 2, 3, 4, 5))
 
-    // Psuedorandom! Seed of 0 produces List(5, 3, 2, 4, 1)
     val expected =
-      List(5, 3, 2, 4, 1)
+      List(2, 5, 4, 1, 3)
 
     assertEquals(actual.length, 5)
+    assertEquals(actual, expected)
+  }
+
+  test("should be able to produce boolean values") {
+    val dice   = Dice.default
+    val actual = List.fill(10)(dice.rollBoolean)
+
+    val expected: List[Boolean] =
+      List(
+        true, true, false, true, true, true, true, true, false, false
+      )
+
+    assertEquals(actual, expected)
+  }
+
+  test("should be able to produce Int values") {
+    val dice   = Dice.default
+    val actual = List.fill(10)(dice.roll)
+
+    val expected: List[Int] =
+      List(
+        11355433, 1458948949, 476557060, 646921281, 534983741, 1441438135, 581500457, 1863322963, 1174750318, 1067267640
+      )
+
+    assertEquals(actual, expected)
+  }
+
+  test("should be able to produce Long values") {
+    val dice   = Dice.default
+    val actual = List.fill(10)(dice.rollLong)
+
+    val expected: List[Long] =
+      List(
+        711245566, 306192841, 1776012994, 878840226, 1282232996, 1380324889, 1361527385, 705894190, 1128366901,
+        1044750824
+      )
+
+    assertEquals(actual, expected)
+  }
+
+  test("should be able to produce Double values") {
+    val dice   = Dice.default
+    val actual = List.fill(10)(dice.rollDouble)
+
+    val expected: List[Double] =
+      List(
+        0.005287785390537222, 0.2219141739650522, 0.7508787830991721, 0.729217749352642, 0.4529642552363186,
+        0.39186976607271856, 0.4249471892873046, 0.9117737604549992, 0.25252137333629515, 0.6249562369807594
+      )
+
+    assertEquals(actual, expected)
+  }
+
+  test("should be able to produce Float values") {
+    val dice   = Dice.default
+    val actual = List.fill(10)(dice.rollFloat)
+
+    val expected: List[Float] =
+      List(
+        0.002643892541527748f, 0.6603119969367981f, 0.1109570860862732f, 0.849376916885376f, 0.8754394054412842f,
+        0.335610955953598f, 0.864608883857727f, 0.5661613345146179f, 0.7264821529388428f, 0.24849261343479156f
+      )
+
+    def floatsEqual(a: Float, b: Float): Boolean =
+      Math.abs(a - b) < 0.0001
+
+    assert(actual.length == expected.length)
+    assert(
+      actual.zip(expected).forall { case (a, b) =>
+        floatsEqual(a, b)
+      }
+    )
+  }
+
+  test("should be able to roll within a range") {
+    val dice   = Dice.default
+    val actual = List.fill(10)(dice.rollRange(10, 20))
+
+    val expected: List[Int] =
+      List(
+        10, 16, 10, 15, 15, 14, 19, 16, 14, 19
+      )
+
+    assert(actual.forall(i => i >= 10 && i <= 20))
     assertEquals(actual, expected)
   }
 
