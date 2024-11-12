@@ -30,8 +30,6 @@ final case class SubSystemContext[ReferenceData](
     frame: Context.Frame,
     services: Context.Services
 ):
-  export frame.*
-  export services.*
 
   def toContext: Context[Unit] =
     new Context[Unit]((), frame, services)

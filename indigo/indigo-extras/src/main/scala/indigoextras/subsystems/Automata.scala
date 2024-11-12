@@ -63,14 +63,14 @@ final case class Automata[Model](
     case Spawn(key, position, lifeSpan, payload) if key == poolKey =>
       val spawned =
         SpawnedAutomaton(
-          automaton.node.giveNode(state.totalSpawned, context.dice),
+          automaton.node.giveNode(state.totalSpawned, context.frame.dice),
           automaton.modifier,
           automaton.onCull,
           new AutomatonSeedValues(
             position,
-            context.time.running,
+            context.frame.time.running,
             lifeSpan.getOrElse(automaton.lifespan),
-            context.dice.roll,
+            context.frame.dice.roll,
             payload
           )
         )
@@ -108,12 +108,12 @@ final case class Automata[Model](
 
     case Update(key) if key == poolKey =>
       val cullEvents = state.pool
-        .filterNot(_.isAlive(context.time.running))
+        .filterNot(_.isAlive(context.frame.time.running))
         .flatMap(sa => sa.onCull(sa.seedValues))
 
       Outcome(
         state.copy(
-          pool = state.pool.filter(_.isAlive(context.time.running))
+          pool = state.pool.filter(_.isAlive(context.frame.time.running))
         ),
         Batch(cullEvents)
       )
@@ -122,7 +122,7 @@ final case class Automata[Model](
       Outcome(state)
 
   def present(context: SubSystemContext[ReferenceData], state: AutomataState): Outcome[SceneUpdateFragment] =
-    val updated = Automata.renderNoLayer(state.pool, context.time)
+    val updated = Automata.renderNoLayer(state.pool, context.frame.time)
 
     Outcome(
       SceneUpdateFragment(
