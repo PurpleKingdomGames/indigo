@@ -92,13 +92,6 @@ object Context:
       val time: GameTime,
       val input: InputState
   ):
-    export time.running
-    export time.delta
-    export input.mouse
-    export input.keyboard
-    export input.gamepad
-    export input.pointers
-
     def withDice(newDice: Dice): Frame =
       new Frame(newDice, time, input)
 
