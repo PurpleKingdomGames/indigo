@@ -13,9 +13,8 @@ import indigo.shared.scenegraph.SceneNode
 import indigo.shared.time.GameTime
 import indigo.shared.time.Seconds
 
-/** Similar to [FrameContext] but without access to start up data. The SubSystemContext is the context in which the
-  * current frame will be processed. In includes values that are unique to this frame, and also globally available
-  * services.
+/** Similar to `Context` but without access to start up data. The SubSystemContext is the context in which the current
+  * frame will be processed. In includes values that are unique to this frame, and also globally available services.
   *
   * @param gameTime
   *   A sampled instance of time that you should use everywhere that you need a time value.

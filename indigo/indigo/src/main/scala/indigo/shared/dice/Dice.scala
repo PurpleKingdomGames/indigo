@@ -9,16 +9,16 @@ import scala.annotation.tailrec
 
 /** The Dice primitive supplies a consistent way to get psuedo-random values into your game.
   *
-  * A dice instance can be found in the FrameContext object with 'max int' sides, and every frame the dice's seed value
-  * is set to the current running time of the game in milliseconds.
+  * A dice instance can be found in the Context object with 'max int' sides, and every frame the dice's seed value is
+  * set to the current running time of the game in milliseconds.
   *
   * Dice also serve as a handy proxy to a number of functions found on a normal `Random` instance, like alphanumeric,
   * but with a predicatable seed.
   */
 trait Dice:
 
-  /** The seed value of the dice. The dice supplied in the `FrameContext` has the seed set to the current running time
-    * of the game in milliseconds.
+  /** The seed value of the dice. The dice supplied in the `Context` has the seed set to the current running time of the
+    * game in milliseconds.
     *
     * If the seed value is 0, it is replaced with the `DefaultSeed` value in order for the underlying PRNG to work
     * correctly.
@@ -102,8 +102,7 @@ object Dice:
   def fromMillis(time: Millis): Dice =
     Sides.MaxInt(time.toLong)
 
-  /** Construct a 'max int' sided dice from a given seed value. This is the default dice presented by the
-    * `FrameContext`.
+  /** Construct a 'max int' sided dice from a given seed value. This is the default dice presented by the `Context`.
     *
     * The implementation of this method uses the Xorshift algorithm to generate random numbers, which has a problem: A
     * seed value of 0 will produce a value of 0. This is a known issue with the algorithm, and while it is not a bug, it
