@@ -10,7 +10,7 @@ final class ShaderRegister:
   def kill(): Unit =
     clearRegister()
 
-  def register(shader: Shader): Unit =
+  def register(shader: ShaderProgram): Unit =
     shader match
       case s: EntityShader.Source =>
         registerEntityShader(s)

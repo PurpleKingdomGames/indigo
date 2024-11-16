@@ -3,7 +3,7 @@ package indigo.shared
 import indigo.Batch
 import indigo.shared.animation.Animation
 import indigo.shared.datatypes.FontInfo
-import indigo.shared.shader.Shader
+import indigo.shared.shader.ShaderProgram
 
 /** The Startup data type describes either a successful or failed start up sequence. It can hold a value, as well as new
   * shaders, animations and fonts to be added to Indigo's registers. A new Startup instance is created each time the
@@ -28,7 +28,7 @@ sealed trait Startup[+SuccessType] extends Product with Serializable derives Can
         f
     }
 
-  def additionalShaders: Set[Shader] =
+  def additionalShaders: Set[ShaderProgram] =
     this match
       case Startup.Failure(_) =>
         Set()
@@ -52,7 +52,7 @@ object Startup:
       success: SuccessType,
       animations: Set[Animation],
       fonts: Set[FontInfo],
-      shaders: Set[Shader]
+      shaders: Set[ShaderProgram]
   ) extends Startup[SuccessType]
       derives CanEqual:
     def addAnimations(value: Animation*): Success[SuccessType] =
@@ -69,11 +69,11 @@ object Startup:
     def addFonts(value: Batch[FontInfo]): Success[SuccessType] =
       Success(success, animations, fonts ++ value.toSet, shaders)
 
-    def addShaders(value: Shader*): Success[SuccessType] =
+    def addShaders(value: ShaderProgram*): Success[SuccessType] =
       addShaders(value.toList)
-    def addShaders(value: List[Shader]): Success[SuccessType] =
+    def addShaders(value: List[ShaderProgram]): Success[SuccessType] =
       Success(success, animations, fonts, shaders ++ value)
-    def addShaders(value: Batch[Shader]): Success[SuccessType] =
+    def addShaders(value: Batch[ShaderProgram]): Success[SuccessType] =
       Success(success, animations, fonts, shaders ++ value.toSet)
 
   object Success:

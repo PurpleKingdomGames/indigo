@@ -10,10 +10,10 @@ import indigo.shared.scenegraph.Blend
 import indigo.shared.scenegraph.Blending
 import indigo.shared.shader.BlendShader
 import indigo.shared.shader.EntityShader
-import indigo.shared.shader.Shader
 import indigo.shared.shader.ShaderData
 import indigo.shared.shader.ShaderId
 import indigo.shared.shader.ShaderPrimitive.float
+import indigo.shared.shader.ShaderProgram
 import indigo.shared.shader.UltravioletShader
 import indigo.shared.shader.Uniform
 import indigo.shared.shader.UniformBlock
@@ -43,7 +43,7 @@ object Refraction:
       )
     )
 
-  val shaders: Set[Shader] =
+  val shaders: Set[ShaderProgram] =
     Set(entityShader, blendShader)
 
   /** Replicates Indigo's original refraction/distortion layer behaviour

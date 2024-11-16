@@ -183,7 +183,7 @@ val BlendMaterial: shared.materials.BlendMaterial.type = shared.materials.BlendM
 type ShaderData = shared.shader.ShaderData
 val ShaderData: shared.shader.ShaderData.type = shared.shader.ShaderData
 
-type Shader = shared.shader.Shader
+type ShaderProgram = shared.shader.ShaderProgram
 
 type BlendShader = shared.shader.BlendShader
 val BlendShader: shared.shader.BlendShader.type = shared.shader.BlendShader

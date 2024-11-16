@@ -1,6 +1,6 @@
 package indigo
 
-import indigo.shared.shader.Shader
+import indigo.shared.shader.ShaderProgram
 import indigo.shared.subsystems.SubSystem
 
 /** The game bootstrapping process results in a `BootResult`, which only occurs once on initial game load. The boot
@@ -16,7 +16,7 @@ final case class BootResult[A, Model](
     assets: Set[AssetType],
     fonts: Set[FontInfo],
     subSystems: Set[SubSystem[Model]],
-    shaders: Set[Shader]
+    shaders: Set[ShaderProgram]
 ) derives CanEqual {
 
   def addAnimations(newAnimations: Set[Animation]): BootResult[A, Model] =
@@ -55,13 +55,13 @@ final case class BootResult[A, Model](
   def withSubSystems(newSubSystems: SubSystem[Model]*): BootResult[A, Model] =
     withSubSystems(newSubSystems.toSet)
 
-  def addShaders(newShaders: Set[Shader]): BootResult[A, Model] =
+  def addShaders(newShaders: Set[ShaderProgram]): BootResult[A, Model] =
     this.copy(shaders = shaders ++ newShaders)
-  def addShaders(newShaders: Shader*): BootResult[A, Model] =
+  def addShaders(newShaders: ShaderProgram*): BootResult[A, Model] =
     addShaders(newShaders.toSet)
-  def withShaders(newShaders: Set[Shader]): BootResult[A, Model] =
+  def withShaders(newShaders: Set[ShaderProgram]): BootResult[A, Model] =
     this.copy(shaders = newShaders)
-  def withShaders(newShaders: Shader*): BootResult[A, Model] =
+  def withShaders(newShaders: ShaderProgram*): BootResult[A, Model] =
     withShaders(newShaders.toSet)
 
 }

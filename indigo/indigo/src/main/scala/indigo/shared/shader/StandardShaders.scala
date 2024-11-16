@@ -4,7 +4,7 @@ import indigo.shared.shader.library
 
 object StandardShaders {
 
-  def all: Set[Shader] =
+  def all: Set[ShaderProgram] =
     Set(
       Bitmap,
       LitBitmap,

@@ -27,7 +27,7 @@ import indigo.shared.platform.AssetMapping
 import indigo.shared.platform.SceneProcessor
 import indigo.shared.shader.BlendShader
 import indigo.shared.shader.EntityShader
-import indigo.shared.shader.Shader
+import indigo.shared.shader.ShaderProgram
 import indigo.shared.shader.ShaderRegister
 import indigo.shared.shader.StandardShaders
 import indigo.shared.shader.UltravioletShader
@@ -40,7 +40,7 @@ import scala.concurrent.Future
 final class GameEngine[StartUpData, GameModel, ViewModel](
     fonts: Set[FontInfo],
     animations: Set[Animation],
-    shaders: Set[Shader],
+    shaders: Set[ShaderProgram],
     initialise: AssetCollection => Dice => Outcome[Startup[StartUpData]],
     initialModel: StartUpData => Outcome[GameModel],
     initialViewModel: StartUpData => GameModel => Outcome[ViewModel],
@@ -268,7 +268,11 @@ object GameEngine {
   def registerFonts(fontRegister: FontRegister, fonts: Set[FontInfo]): Unit =
     fonts.foreach(fontRegister.register)
 
-  def registerShaders(shaderRegister: ShaderRegister, shaders: Set[Shader], assetCollection: AssetCollection): Unit =
+  def registerShaders(
+      shaderRegister: ShaderRegister,
+      shaders: Set[ShaderProgram],
+      assetCollection: AssetCollection
+  ): Unit =
     shaders.foreach {
       case s: EntityShader.Source =>
         shaderRegister.remove(s.id)
@@ -299,19 +303,19 @@ object GameEngine {
       id = external.id,
       vertex = external.vertex
         .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-vertex", a))
-        .getOrElse(Shader.defaultVertexProgram),
+        .getOrElse(ShaderProgram.defaultVertexProgram),
       fragment = external.fragment
         .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-fragment", a))
-        .getOrElse(Shader.defaultFragmentProgram),
+        .getOrElse(ShaderProgram.defaultFragmentProgram),
       prepare = external.prepare
         .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-prepare", a))
-        .getOrElse(Shader.defaultPrepareProgram),
+        .getOrElse(ShaderProgram.defaultPrepareProgram),
       light = external.light
         .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-light", a))
-        .getOrElse(Shader.defaultLightProgram),
+        .getOrElse(ShaderProgram.defaultLightProgram),
       composite = external.composite
         .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-composite", a))
-        .getOrElse(Shader.defaultCompositeProgram)
+        .getOrElse(ShaderProgram.defaultCompositeProgram)
     )
 
   def externalBlendShaderToSource(
@@ -322,10 +326,10 @@ object GameEngine {
       id = external.id,
       vertex = external.vertex
         .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-vertex", a))
-        .getOrElse(Shader.defaultVertexProgram),
+        .getOrElse(ShaderProgram.defaultVertexProgram),
       fragment = external.fragment
         .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-fragment", a))
-        .getOrElse(Shader.defaultFragmentProgram)
+        .getOrElse(ShaderProgram.defaultFragmentProgram)
     )
 
   private given CanEqual[Option[String], Option[String]] = CanEqual.derived
