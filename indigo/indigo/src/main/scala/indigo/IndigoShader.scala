@@ -1,6 +1,5 @@
 package indigo
 
-import indigo.*
 import indigo.entry.StandardFrameProcessor
 import indigo.gameengine.GameEngine
 import indigo.shared.shader.library
@@ -55,7 +54,7 @@ trait IndigoShader extends GameLauncher[IndigoShaderModel, IndigoShaderModel, Un
 
   /** The shader you want to render
     */
-  def shader: Shader
+  def shader: ShaderProgram
 
   private def boot(flags: Map[String, String]): Outcome[BootResult[IndigoShaderModel, IndigoShaderModel]] =
     val width  = flags.get("width").map(_.toInt).getOrElse(config.viewport.width)

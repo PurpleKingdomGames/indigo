@@ -12,7 +12,7 @@ object ShaderGame extends IndigoShader:
   val channel2: Option[AssetPath] = None
   val channel3: Option[AssetPath] = None
 
-  val shader: Shader =
+  val shader: ShaderProgram =
     // ShowImage.shader
     SeascapeShader.shader
 
@@ -49,7 +49,7 @@ object SeascapeShader:
 
 object VoronoiShader:
 
-  val shader: Shader =
+  val shader: ShaderProgram =
     UltravioletShader.entityFragment(
       ShaderId("my shader"),
       EntityShader.fragment[FragmentEnv](voronoi, FragmentEnv.reference)

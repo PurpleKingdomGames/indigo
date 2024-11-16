@@ -8,10 +8,10 @@ import ultraviolet.datatypes.ShaderResult
 import ultraviolet.syntax.vec4
 import ultraviolet.syntax.Shader as UVShader
 
-sealed trait Shader derives CanEqual:
+sealed trait ShaderProgram derives CanEqual:
   def id: ShaderId
 
-object Shader:
+object ShaderProgram:
   val defaultVertexProgram: String =
     """vec4 vertex(vec4 v){
     |  return v;
@@ -29,7 +29,7 @@ object Shader:
   val defaultCompositeProgram: String =
     """void composite(){}"""
 
-final case class UltravioletShader(id: ShaderId, vertex: ShaderResult, fragment: ShaderResult) extends Shader
+final case class UltravioletShader(id: ShaderId, vertex: ShaderResult, fragment: ShaderResult) extends ShaderProgram
 object UltravioletShader:
 
   inline def noopVertex: UVShader[IndigoUV.VertexEnv, Unit] =
@@ -52,7 +52,7 @@ object UltravioletShader:
       fragment
     )
 
-sealed trait EntityShader extends Shader
+sealed trait EntityShader extends ShaderProgram
 object EntityShader extends BaseEntityShader:
 
   final case class Source(
@@ -86,11 +86,11 @@ object EntityShader extends BaseEntityShader:
     def apply(id: ShaderId): Source =
       Source(
         id,
-        Shader.defaultVertexProgram,
-        Shader.defaultFragmentProgram,
-        Shader.defaultPrepareProgram,
-        Shader.defaultLightProgram,
-        Shader.defaultCompositeProgram
+        ShaderProgram.defaultVertexProgram,
+        ShaderProgram.defaultFragmentProgram,
+        ShaderProgram.defaultPrepareProgram,
+        ShaderProgram.defaultLightProgram,
+        ShaderProgram.defaultCompositeProgram
       )
 
   final case class External(
@@ -131,7 +131,7 @@ object EntityShader extends BaseEntityShader:
         None
       )
 
-sealed trait BlendShader extends Shader
+sealed trait BlendShader extends ShaderProgram
 object BlendShader extends BaseBlendShader:
 
   final case class Source(
@@ -153,8 +153,8 @@ object BlendShader extends BaseBlendShader:
     def apply(id: ShaderId): Source =
       Source(
         id,
-        Shader.defaultVertexProgram,
-        Shader.defaultFragmentProgram
+        ShaderProgram.defaultVertexProgram,
+        ShaderProgram.defaultFragmentProgram
       )
 
   final case class External(

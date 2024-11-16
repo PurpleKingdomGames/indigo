@@ -1,6 +1,5 @@
 package indigo
 
-import indigo._
 import indigo.entry.StandardFrameProcessor
 import indigo.gameengine.GameEngine
 import indigo.shared.subsystems.SubSystemsRegister
@@ -39,7 +38,7 @@ trait IndigoSandbox[StartUpData, Model] extends GameLauncher[StartUpData, Model,
 
   /** A fixed set of custom shaders you will be able to render with
     */
-  def shaders: Set[Shader]
+  def shaders: Set[ShaderProgram]
 
   /** The `setup` function is your only opportunity to do an initial work to set up your game. For example, perhaps one
     * of your assets was a JSON description of a map or an animation sequence, you could process that now, which is why

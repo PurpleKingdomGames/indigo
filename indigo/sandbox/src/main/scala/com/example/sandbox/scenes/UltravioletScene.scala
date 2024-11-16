@@ -7,6 +7,7 @@ import com.example.sandbox.SandboxView
 import com.example.sandbox.SandboxViewModel
 import indigo.*
 import indigo.scenes.*
+import ultraviolet.syntax.*
 
 object UltravioletScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel] {
 
@@ -65,8 +66,6 @@ case object MakeRedBlend extends BlendMaterial derives CanEqual {
 }
 
 object UVShaders:
-
-  import ultraviolet.syntax.*
 
   // Blend
 
