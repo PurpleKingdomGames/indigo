@@ -19,19 +19,17 @@ object syntax:
   extension (l: Long) def millis: Millis = Millis(l)
 
   extension (s: String)
-    def animationKey: AnimationKey         = AnimationKey(s)
-    def assetName: AssetName               = AssetName(s)
-    def assetPath: AssetPath               = AssetPath(s)
-    def assetTag: AssetTag                 = AssetTag(s)
-    def cloneId: CloneId                   = CloneId(s)
-    def cycleLabel: CycleLabel             = CycleLabel(s)
-    def fontKey: FontKey                   = FontKey(s)
-    def fontFamily: FontFamily             = FontFamily(s)
-    def bindingKey: BindingKey             = BindingKey(s)
-    def scene: scenes.SceneName            = scenes.SceneName(s)
-    def shaderId: ShaderId                 = ShaderId(s)
-    def uniform: Uniform                   = Uniform(s)
-    def uniformBlockName: UniformBlockName = UniformBlockName(s)
+    def animationKey: AnimationKey = AnimationKey(s)
+    def assetName: AssetName       = AssetName(s)
+    def assetPath: AssetPath       = AssetPath(s)
+    def assetTag: AssetTag         = AssetTag(s)
+    def cloneId: CloneId           = CloneId(s)
+    def cycleLabel: CycleLabel     = CycleLabel(s)
+    def fontKey: FontKey           = FontKey(s)
+    def fontFamily: FontFamily     = FontFamily(s)
+    def bindingKey: BindingKey     = BindingKey(s)
+    def scene: scenes.SceneName    = scenes.SceneName(s)
+    def shaderId: ShaderId         = ShaderId(s)
 
   extension (t: (Double, Double)) def vector2: Vector2 = Vector2(t._1, t._2)
 
@@ -121,44 +119,6 @@ object syntax:
     export SignalFunction.multiply
   end animations
 
-  // Shaders
-  object shaders:
-
-    extension (c: RGBA) def asVec4: vec4 = vec4.fromRGBA(c)
-    extension (c: RGB)
-      def asVec4: vec4 = vec4.fromRGB(c)
-      def asVec3: vec3 = vec3.fromRGB(c)
-    extension (p: Point) def asVec2: vec2     = vec2.fromPoint(p)
-    extension (s: Size) def asVec2: vec2      = vec2.fromSize(s)
-    extension (v: Vector2) def asVec2: vec2   = vec2.fromVector2(v)
-    extension (v: Vector3) def asVec3: vec3   = vec3.fromVector3(v)
-    extension (v: Vector4) def asVec4: vec4   = vec4.fromVector4(v)
-    extension (r: Rectangle) def asVec4: vec4 = vec4.fromRectangle(r)
-    extension (m: Matrix4) def asMat4: mat4   = mat4.fromMatrix4(m)
-    extension (d: Depth) def asFloat: float   = float.fromDepth(d)
-    extension (m: Millis) def asFloat: float  = float.fromMillis(m)
-    extension (r: Radians) def asFloat: float = float.fromRadians(r)
-    extension (s: Seconds)
-      @targetName("ext_Seconds_asFloat")
-      def asFloat: float = float.fromSeconds(s)
-    extension (d: Double)
-      @targetName("ext_Double_asFloat")
-      def asFloat: float = float(d)
-    extension (i: Int)
-      @targetName("ext_Int_asFloat")
-      def asFloat: float = float(i)
-    extension (l: Long)
-      @targetName("ext_Long_asFloat")
-      def asFloat: float = float(l)
-    extension (a: Array[Float])
-      def asMat4: mat4         = mat4(a)
-      def asRawArray: rawArray = rawArray(a)
-    extension (a: scalajs.js.Array[Float])
-      def asMat4: mat4           = mat4(a.toArray)
-      def asRawArray: rawJSArray = rawJSArray(a)
-
-  end shaders
-
 end syntax
 
 object mutable:
@@ -220,11 +180,8 @@ val Texture: shared.materials.Texture.type = shared.materials.Texture
 type BlendMaterial = shared.materials.BlendMaterial
 val BlendMaterial: shared.materials.BlendMaterial.type = shared.materials.BlendMaterial
 
-type ShaderData = shared.materials.ShaderData
-val ShaderData: shared.materials.ShaderData.type = shared.materials.ShaderData
-
-type BlendShaderData = shared.materials.BlendShaderData
-val BlendShaderData: shared.materials.BlendShaderData.type = shared.materials.BlendShaderData
+type ShaderData = shared.shader.ShaderData
+val ShaderData: shared.shader.ShaderData.type = shared.shader.ShaderData
 
 type Shader = shared.shader.Shader
 
@@ -258,41 +215,8 @@ type BlendFragmentEnvReference = shared.shader.library.IndigoUV.BlendFragmentEnv
 type ShaderId = shared.shader.ShaderId
 val ShaderId: shared.shader.ShaderId.type = shared.shader.ShaderId
 
-type Uniform = shared.shader.Uniform
-val Uniform: shared.shader.Uniform.type = shared.shader.Uniform
-
-type UniformBlockName = shared.shader.UniformBlockName
-val UniformBlockName: shared.shader.UniformBlockName.type = shared.shader.UniformBlockName
-
-type UniformBlock = shared.shader.UniformBlock
-val UniformBlock: shared.shader.UniformBlock.type = shared.shader.UniformBlock
-
-type ShaderPrimitive = shared.shader.ShaderPrimitive
-val ShaderPrimitive: shared.shader.ShaderPrimitive.type = shared.shader.ShaderPrimitive
-
-type float = shared.shader.ShaderPrimitive.float
-val float: shared.shader.ShaderPrimitive.float.type = shared.shader.ShaderPrimitive.float
-
-type vec2 = shared.shader.ShaderPrimitive.vec2
-val vec2: shared.shader.ShaderPrimitive.vec2.type = shared.shader.ShaderPrimitive.vec2
-
-type vec3 = shared.shader.ShaderPrimitive.vec3
-val vec3: shared.shader.ShaderPrimitive.vec3.type = shared.shader.ShaderPrimitive.vec3
-
-type vec4 = shared.shader.ShaderPrimitive.vec4
-val vec4: shared.shader.ShaderPrimitive.vec4.type = shared.shader.ShaderPrimitive.vec4
-
-type mat4 = shared.shader.ShaderPrimitive.mat4
-val mat4: shared.shader.ShaderPrimitive.mat4.type = shared.shader.ShaderPrimitive.mat4
-
-type array[T] = shared.shader.ShaderPrimitive.array[T]
-val array: shared.shader.ShaderPrimitive.array.type = shared.shader.ShaderPrimitive.array
-
-type rawArray = shared.shader.ShaderPrimitive.rawArray
-val rawArray: shared.shader.ShaderPrimitive.rawArray.type = shared.shader.ShaderPrimitive.rawArray
-
-type rawJSArray = shared.shader.ShaderPrimitive.rawJSArray
-val rawJSArray: shared.shader.ShaderPrimitive.rawJSArray.type = shared.shader.ShaderPrimitive.rawJSArray
+type ToUniformBlock[A] = shared.shader.ToUniformBlock[A]
+val ToUniformBlock: shared.shader.ToUniformBlock.type = shared.shader.ToUniformBlock
 
 val StandardShaders: shared.shader.StandardShaders.type = shared.shader.StandardShaders
 

@@ -246,5 +246,5 @@ object SceneBlendShader:
 
   val material: BlendMaterial =
     new BlendMaterial:
-      def toShaderData: BlendShaderData =
-        BlendShaderData(shader.id)
+      def toShaderData: ShaderData =
+        ShaderData(shader.id)

@@ -9,7 +9,7 @@ import indigo.shared.collections.Batch
 import indigo.shared.datatypes._
 import indigo.shared.events.GlobalEvent
 import indigo.shared.materials.Material
-import indigo.shared.materials.ShaderData
+import indigo.shared.shader.ShaderData
 
 /** Sprites are used to represented key-frame animated screen elements.
   */

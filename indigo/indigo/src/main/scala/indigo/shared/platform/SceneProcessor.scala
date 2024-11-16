@@ -13,7 +13,6 @@ import indigo.shared.display.DisplayObject
 import indigo.shared.display.DisplayObjectUniformData
 import indigo.shared.events.GlobalEvent
 import indigo.shared.materials.BlendMaterial
-import indigo.shared.materials.BlendShaderData
 import indigo.shared.platform.AssetMapping
 import indigo.shared.platform.ProcessedSceneData
 import indigo.shared.scenegraph.AmbientLight
@@ -31,6 +30,7 @@ import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.scenegraph.Shape
 import indigo.shared.scenegraph.SpotLight
 import indigo.shared.scenegraph.Sprite
+import indigo.shared.shader.ShaderData
 import indigo.shared.time.GameTime
 
 import scala.scalajs.js.JSConverters._
@@ -326,7 +326,7 @@ object SceneProcessor {
     }
 
   def mergeShaderToUniformData(
-      shaderData: BlendShaderData
+      shaderData: ShaderData
   )(using QuickCache[scalajs.js.Array[Float]]): scalajs.js.Array[DisplayObjectUniformData] =
     shaderData.uniformBlocks.toJSArray.map { ub =>
       DisplayObjectUniformData(

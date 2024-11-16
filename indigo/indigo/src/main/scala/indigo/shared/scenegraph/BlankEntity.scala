@@ -9,7 +9,7 @@ import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Size
 import indigo.shared.datatypes.Vector2
 import indigo.shared.events.GlobalEvent
-import indigo.shared.materials.ShaderData
+import indigo.shared.shader.ShaderData
 
 final case class BlankEntity(
     size: Size,

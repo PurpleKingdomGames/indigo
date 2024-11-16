@@ -10,7 +10,7 @@ import indigo.shared.datatypes.Size
 import indigo.shared.datatypes.Vector2
 import indigo.shared.events.GlobalEvent
 import indigo.shared.materials.Material
-import indigo.shared.materials.ShaderData
+import indigo.shared.shader.ShaderData
 
 /** Graphics are used to draw images on the screen, in a cheap efficient but expressive way. Graphic's party trick is
   * it's ability to crop images.

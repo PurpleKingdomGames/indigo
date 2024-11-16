@@ -7,8 +7,8 @@ import indigo.shared.datatypes.RGB
 import indigo.shared.datatypes.RGBA
 import indigo.shared.materials.FillType
 import indigo.shared.materials.Material
-import indigo.shared.materials.ShaderData
 import indigo.shared.shader.EntityShader
+import indigo.shared.shader.ShaderData
 import indigo.shared.shader.ShaderId
 import indigo.shared.shader.ShaderPrimitive
 import indigo.shared.shader.ShaderPrimitive.rawJSArray

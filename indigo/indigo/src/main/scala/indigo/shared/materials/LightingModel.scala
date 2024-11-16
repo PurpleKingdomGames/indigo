@@ -2,6 +2,7 @@ package indigo.shared.materials
 
 import indigo.shared.assets.AssetName
 import indigo.shared.collections.Batch
+import indigo.shared.shader.ShaderData
 import indigo.shared.shader.ShaderId
 import indigo.shared.shader.ShaderPrimitive.vec2
 import indigo.shared.shader.Uniform

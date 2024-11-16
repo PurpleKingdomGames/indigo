@@ -60,11 +60,8 @@ object UltravioletScene extends Scene[SandboxStartupData, SandboxGameModel, Sand
 }
 
 case object MakeRedBlend extends BlendMaterial derives CanEqual {
-  lazy val toShaderData: BlendShaderData =
-    BlendShaderData(
-      UVShaders.redBlendId,
-      Batch.empty
-    )
+  lazy val toShaderData: ShaderData =
+    ShaderData(UVShaders.redBlendId)
 }
 
 object UVShaders:
