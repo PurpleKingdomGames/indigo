@@ -17,7 +17,7 @@ import indigo.shared.events.GlobalEvent
 import indigo.shared.materials.LightingModel
 import indigo.shared.materials.LightingModel.Lit
 import indigo.shared.materials.LightingModel.Unlit
-import indigo.shared.materials.ShaderData
+import indigo.shared.shader.ShaderData
 import indigo.shared.shader.ShaderId
 import indigo.shared.shader.ShaderPrimitive._
 import indigo.shared.shader.StandardShaders
@@ -737,7 +737,7 @@ object Shape:
           case Unlit =>
             ShaderData(
               s.shaderId.getOrElse(StandardShaders.ShapeBox.id),
-              shapeUniformBlock
+              Batch(shapeUniformBlock)
             )
 
           case l: Lit =>
@@ -769,7 +769,7 @@ object Shape:
           case Unlit =>
             ShaderData(
               s.shaderId.getOrElse(StandardShaders.ShapeCircle.id),
-              shapeUniformBlock
+              Batch(shapeUniformBlock)
             )
 
           case l: Lit =>
@@ -815,7 +815,7 @@ object Shape:
           case Unlit =>
             ShaderData(
               s.shaderId.getOrElse(StandardShaders.ShapeLine.id),
-              shapeUniformBlock
+              Batch(shapeUniformBlock)
             )
 
           case l: Lit =>
@@ -861,7 +861,7 @@ object Shape:
           case Unlit =>
             ShaderData(
               s.shaderId.getOrElse(StandardShaders.ShapePolygon.id),
-              shapeUniformBlock
+              Batch(shapeUniformBlock)
             )
 
           case l: Lit =>

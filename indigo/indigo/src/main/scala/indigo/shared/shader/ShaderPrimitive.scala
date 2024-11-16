@@ -12,6 +12,7 @@ import indigo.shared.datatypes.Vector2
 import indigo.shared.datatypes.Vector3
 import indigo.shared.datatypes.Vector4
 import indigo.shared.datatypes.mutable.CheapMatrix4
+import indigo.shared.geometry.Vertex
 import indigo.shared.time.Millis
 import indigo.shared.time.Seconds
 
@@ -103,6 +104,7 @@ object ShaderPrimitive:
     def fromPoint(pt: Point): vec2    = vec2(pt.x.toFloat, pt.y.toFloat)
     def fromSize(s: Size): vec2       = vec2(s.width.toFloat, s.height.toFloat)
     def fromVector2(v: Vector2): vec2 = vec2(v.x, v.y)
+    def fromVertex(v: Vertex): vec2   = vec2(v.x, v.y)
 
     given IsShaderValue[vec2] =
       IsShaderValue.create[vec2](length, _.toArray)

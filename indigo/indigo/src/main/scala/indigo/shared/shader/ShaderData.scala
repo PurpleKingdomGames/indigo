@@ -1,4 +1,4 @@
-package indigo.shared.materials
+package indigo.shared.shader
 
 import indigo.shared.assets.AssetName
 import indigo.shared.collections.Batch
@@ -12,20 +12,16 @@ final case class ShaderData(
     channel1: Option[AssetName],
     channel2: Option[AssetName],
     channel3: Option[AssetName]
-) extends Material
-    derives CanEqual:
+) derives CanEqual:
 
   def withShaderId(newShaderId: ShaderId): ShaderData =
     this.copy(shaderId = newShaderId)
 
+  def addUniformData[A](ubo: A)(using toUBO: ToUniformBlock[A]): ShaderData =
+    this.copy(uniformBlocks = uniformBlocks :+ toUBO.toUniformBlock(ubo))
+
   def withUniformBlocks(newUniformBlocks: Batch[UniformBlock]): ShaderData =
     this.copy(uniformBlocks = newUniformBlocks)
-  def withUniformBlocks(newUniformBlocks: UniformBlock*): ShaderData =
-    withUniformBlocks(Batch.fromSeq(newUniformBlocks))
-  def addUniformBlock(additional: Batch[UniformBlock]): ShaderData =
-    this.copy(uniformBlocks = uniformBlocks ++ additional)
-  def addUniformBlock(additional: UniformBlock*): ShaderData =
-    addUniformBlock(Batch.fromSeq(additional))
 
   def withChannel0(assetName: AssetName): ShaderData =
     this.copy(channel0 = Some(assetName))
@@ -36,16 +32,16 @@ final case class ShaderData(
   def withChannel3(assetName: AssetName): ShaderData =
     this.copy(channel3 = Some(assetName))
 
-  lazy val toShaderData: ShaderData =
-    this
-
 object ShaderData:
 
   def apply(shaderId: ShaderId): ShaderData =
     ShaderData(shaderId, Batch.empty, None, None, None, None)
 
-  def apply(shaderId: ShaderId, uniformBlocks: UniformBlock*): ShaderData =
-    ShaderData(shaderId, Batch.fromSeq(uniformBlocks), None, None, None, None)
+  def apply[A](shaderId: ShaderId, uniformData: A)(using toUBO: ToUniformBlock[A]): ShaderData =
+    ShaderData(shaderId, Batch(toUBO.toUniformBlock(uniformData)), None, None, None, None)
+
+  def apply(shaderId: ShaderId, uniformBlocks: Batch[UniformBlock]): ShaderData =
+    ShaderData(shaderId, uniformBlocks, None, None, None, None)
 
   def apply(
       shaderId: ShaderId,

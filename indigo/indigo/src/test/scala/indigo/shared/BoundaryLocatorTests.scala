@@ -131,7 +131,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
   import indigo.shared.datatypes.Vector2
   import indigo.shared.datatypes.Depth
   import indigo.shared.datatypes.Flip
-  import indigo.shared.materials.ShaderData
+  import indigo.shared.shader.ShaderData
   import indigo.shared.shader.ShaderId
 
   final case class TestEntity(

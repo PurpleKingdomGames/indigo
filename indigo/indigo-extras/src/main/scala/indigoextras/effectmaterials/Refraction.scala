@@ -4,15 +4,14 @@ import indigo.shared.assets.AssetName
 import indigo.shared.collections.Batch
 import indigo.shared.datatypes.RGBA
 import indigo.shared.materials.BlendMaterial
-import indigo.shared.materials.BlendShaderData
 import indigo.shared.materials.FillType
 import indigo.shared.materials.Material
-import indigo.shared.materials.ShaderData
 import indigo.shared.scenegraph.Blend
 import indigo.shared.scenegraph.Blending
 import indigo.shared.shader.BlendShader
 import indigo.shared.shader.EntityShader
 import indigo.shared.shader.Shader
+import indigo.shared.shader.ShaderData
 import indigo.shared.shader.ShaderId
 import indigo.shared.shader.ShaderPrimitive.float
 import indigo.shared.shader.UltravioletShader
@@ -104,8 +103,8 @@ object RefractionEntity:
     RefractionEntity(diffuse, FillType.Normal)
 
 final case class RefractionBlend(multiplier: Double) extends BlendMaterial derives CanEqual:
-  lazy val toShaderData: BlendShaderData =
-    BlendShaderData(
+  lazy val toShaderData: ShaderData =
+    ShaderData(
       Refraction.blendShader.id,
       Batch(
         UniformBlock(

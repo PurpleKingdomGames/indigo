@@ -5,7 +5,6 @@ import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
 import com.example.sandbox.SandboxView
 import com.example.sandbox.SandboxViewModel
-import indigo.ShaderPrimitive._
 import indigo._
 import indigo.scenes._
 
@@ -73,32 +72,16 @@ object OriginalScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
               50,
               32,
               32,
-              ShaderData(
-                Shaders.externalId,
-                UniformBlock(
-                  UniformBlockName("CustomData"),
-                  Batch(
-                    Uniform("ALPHA")        -> float(0.75),
-                    Uniform("BORDER_COLOR") -> vec3(1.0, 1.0, 0.0)
-                  )
-                )
-              )
+              ShaderData(Shaders.externalId)
+                .addUniformData(CustomData(0.75, RGB(1.0, 1.0, 0.0)))
             ),
             BlankEntity(
               150,
               60,
               32,
               32,
-              ShaderData(
-                Shaders.externalId,
-                UniformBlock(
-                  UniformBlockName("CustomData"),
-                  Batch(
-                    Uniform("ALPHA")        -> float(0.5),
-                    Uniform("BORDER_COLOR") -> vec3(1.0, 0.0, 1.0)
-                  )
-                )
-              )
+              ShaderData(Shaders.externalId)
+                .addUniformData(CustomData(0.5, RGB(1.0, 0.0, 1.0)))
             )
           )
         )
@@ -106,6 +89,8 @@ object OriginalScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
   }
 
 }
+
+final case class CustomData(ALPHA: Float, BORDER_COLOR: RGB) derives ToUniformBlock
 
 object Shaders:
 

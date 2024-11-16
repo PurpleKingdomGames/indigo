@@ -4,7 +4,7 @@ import indigo.shared.BoundaryLocator
 import indigo.shared.datatypes._
 import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.shared.events.GlobalEvent
-import indigo.shared.materials.ShaderData
+import indigo.shared.shader.ShaderData
 
 /** The parent type of all nodes a user might use or create. Defines the fields needed to draw something onto the
   * screen.

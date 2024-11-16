@@ -11,9 +11,10 @@ import indigo.shared.datatypes.Size
 import indigo.shared.datatypes.Vector2
 import indigo.shared.events.GlobalEvent
 import indigo.shared.materials.Material
-import indigo.shared.materials.ShaderData
+import indigo.shared.shader.ShaderData
 import indigo.shared.shader.ShaderPrimitive.float
 import indigo.shared.shader.StandardShaders
+import indigo.shared.shader.ToUniformBlock
 import indigo.shared.shader.Uniform
 import indigo.shared.shader.UniformBlock
 import indigo.shared.shader.UniformBlockName
@@ -157,19 +158,16 @@ final case class Clip[M <: Material](
     val data = material.toShaderData
     data
       .withShaderId(StandardShaders.shaderIdToClipShaderId(data.shaderId))
-      .addUniformBlock(
-        UniformBlock(
-          UniformBlockName("IndigoClipData"),
-          Batch(
-            Uniform("CLIP_SHEET_FRAME_COUNT")    -> float(sheet.frameCount),
-            Uniform("CLIP_SHEET_FRAME_DURATION") -> float.fromSeconds(sheet.frameDuration),
-            Uniform("CLIP_SHEET_WRAP_AT")        -> float(sheet.wrapAt),
-            Uniform("CLIP_SHEET_ARRANGEMENT")    -> float(sheet.arrangement.toInt),
-            Uniform("CLIP_SHEET_START_OFFSET")   -> float(sheet.startOffset),
-            Uniform("CLIP_PLAY_DIRECTION")       -> float(playMode.direction.toInt),
-            Uniform("CLIP_PLAYMODE_START_TIME")  -> float.fromSeconds(playMode.giveStartTime),
-            Uniform("CLIP_PLAYMODE_TIMES")       -> float(playMode.giveTimes)
-          )
+      .addUniformData(
+        Clip.IndigoClipData(
+          sheet.frameCount,
+          sheet.frameDuration,
+          sheet.wrapAt,
+          sheet.arrangement.toInt,
+          sheet.startOffset,
+          playMode.direction.toInt,
+          playMode.giveStartTime,
+          playMode.giveTimes
         )
       )
 
@@ -227,6 +225,17 @@ final case class Clip[M <: Material](
     )
 
 object Clip:
+
+  final case class IndigoClipData(
+      CLIP_SHEET_FRAME_COUNT: Int,
+      CLIP_SHEET_FRAME_DURATION: Seconds,
+      CLIP_SHEET_WRAP_AT: Int,
+      CLIP_SHEET_ARRANGEMENT: Int,
+      CLIP_SHEET_START_OFFSET: Int,
+      CLIP_PLAY_DIRECTION: Int,
+      CLIP_PLAYMODE_START_TIME: Seconds,
+      CLIP_PLAYMODE_TIMES: Int
+  ) derives ToUniformBlock
 
   def apply[M <: Material](
       width: Int,

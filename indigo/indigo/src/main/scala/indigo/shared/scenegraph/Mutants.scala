@@ -4,6 +4,7 @@ import indigo.shared.BoundaryLocator
 import indigo.shared.collections.Batch
 import indigo.shared.datatypes._
 import indigo.shared.events.GlobalEvent
+import indigo.shared.shader.ToUniformBlock
 import indigo.shared.shader.UniformBlock
 
 /** Represents many identical clones of the same clone blank, differentiated only by their shader data. Intended for use
@@ -43,9 +44,23 @@ object Mutants:
       uniformBlocks
     )
 
+  def apply[A](id: CloneId, uniformBlocks: Array[Batch[A]])(using toUBO: ToUniformBlock[A]): Mutants =
+    Mutants(
+      id,
+      Depth.zero,
+      uniformBlocks.map(_.map(toUBO.toUniformBlock))
+    )
+
   def apply(id: CloneId, uniformBlocks: Batch[UniformBlock]): Mutants =
     Mutants(
       id,
       Depth.zero,
       Array(uniformBlocks)
+    )
+
+  def apply[A](id: CloneId, uniformBlocks: Batch[A])(using toUBO: ToUniformBlock[A]): Mutants =
+    Mutants(
+      id,
+      Depth.zero,
+      Array(uniformBlocks.map(toUBO.toUniformBlock))
     )

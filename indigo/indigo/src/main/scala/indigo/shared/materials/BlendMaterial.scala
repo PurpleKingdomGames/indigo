@@ -4,6 +4,7 @@ import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Fill
 import indigo.shared.datatypes.RGB
 import indigo.shared.datatypes.RGBA
+import indigo.shared.shader.ShaderData
 import indigo.shared.shader.ShaderPrimitive
 import indigo.shared.shader.ShaderPrimitive.rawJSArray
 import indigo.shared.shader.StandardShaders
@@ -12,21 +13,18 @@ import indigo.shared.shader.UniformBlock
 import indigo.shared.shader.UniformBlockName
 
 trait BlendMaterial:
-  def toShaderData: BlendShaderData
+  def toShaderData: ShaderData
 
 object BlendMaterial {
 
   case object Normal extends BlendMaterial derives CanEqual {
-    lazy val toShaderData: BlendShaderData =
-      BlendShaderData(
-        StandardShaders.NormalBlend.id,
-        Batch.empty
-      )
+    lazy val toShaderData: ShaderData =
+      ShaderData(StandardShaders.NormalBlend.id)
   }
 
   final case class Lighting(ambient: RGBA) extends BlendMaterial derives CanEqual {
-    lazy val toShaderData: BlendShaderData =
-      BlendShaderData(
+    lazy val toShaderData: ShaderData =
+      ShaderData(
         StandardShaders.LightingBlend.id,
         Batch(
           UniformBlock(
@@ -74,7 +72,7 @@ object BlendMaterial {
     def ignoreBackground: BlendMaterial =
       this.copy(affectsBackground = false)
 
-    lazy val toShaderData: BlendShaderData = {
+    lazy val toShaderData: ShaderData = {
       val overlayType: Float =
         overlay match {
           case _: Fill.Color          => 0.0
@@ -82,7 +80,7 @@ object BlendMaterial {
           case _: Fill.RadialGradient => 2.0
         }
 
-      BlendShaderData(
+      ShaderData(
         StandardShaders.BlendEffects.id,
         Batch(
           UniformBlock(

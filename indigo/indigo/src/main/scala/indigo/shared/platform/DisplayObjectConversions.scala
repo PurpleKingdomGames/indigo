@@ -31,7 +31,6 @@ import indigo.shared.display.DisplayTextLetters
 import indigo.shared.display.SpriteSheetFrame
 import indigo.shared.display.SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets
 import indigo.shared.events.GlobalEvent
-import indigo.shared.materials.ShaderData
 import indigo.shared.platform.AssetMapping
 import indigo.shared.scenegraph.CloneBatch
 import indigo.shared.scenegraph.CloneId
@@ -49,6 +48,7 @@ import indigo.shared.scenegraph.Sprite
 import indigo.shared.scenegraph.Text
 import indigo.shared.scenegraph.TextBox
 import indigo.shared.scenegraph.TextLine
+import indigo.shared.shader.ShaderData
 import indigo.shared.shader.ShaderPrimitive
 import indigo.shared.shader.Uniform
 import indigo.shared.shader.UniformBlock
