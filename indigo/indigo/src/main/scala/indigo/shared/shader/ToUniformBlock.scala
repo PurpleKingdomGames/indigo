@@ -38,7 +38,7 @@ object ToUniformBlock:
         case given ShaderTypeOf[T] => summonInline[ShaderTypeOf[T]]
         case _ =>
           error(
-            "Unsupported type. Only supported types in Indigo shaders are: Int, Long, Float, Double, RGBA, RGB, Point, Size, Vertex, Vector2, Vector3, Vector4, Rectangle, Matrix4, Depth, Radians, Millis, Seconds, Array[Float], js.Array[Float]"
+            "Unsupported shader uniform type. Supported types From Scala (Int, Long, Float, Double), Indigo [RGBA, RGB, Point, Size, Vertex, Vector2, Vector3, Vector4, Rectangle, Matrix4, Depth, Radians, Millis, Seconds, Array[Float], js.Array[Float]], and UltraViolet [vec2, vec3, vec4, mat4]. However, if you intend to use the same case class for both Indigo and UltraViolet, you should stick to Float + the UltraViolet types."
           )
       }
 
@@ -61,6 +61,22 @@ object ToUniformBlock:
     def toShaderPrimitive(value: A): ShaderPrimitive
 
   object ShaderTypeOf:
+
+    given ShaderTypeOf[ultraviolet.syntax.vec2] with
+      def toShaderPrimitive(value: ultraviolet.syntax.vec2): ShaderPrimitive =
+        ShaderPrimitive.vec2(value.x, value.y)
+
+    given ShaderTypeOf[ultraviolet.syntax.vec3] with
+      def toShaderPrimitive(value: ultraviolet.syntax.vec3): ShaderPrimitive =
+        ShaderPrimitive.vec3(value.x, value.y, value.z)
+
+    given ShaderTypeOf[ultraviolet.syntax.vec4] with
+      def toShaderPrimitive(value: ultraviolet.syntax.vec4): ShaderPrimitive =
+        ShaderPrimitive.vec4(value.x, value.y, value.z, value.w)
+
+    given ShaderTypeOf[ultraviolet.syntax.mat4] with
+      def toShaderPrimitive(value: ultraviolet.syntax.mat4): ShaderPrimitive =
+        ShaderPrimitive.mat4(value.mat)
 
     given ShaderTypeOf[Int] with
       def toShaderPrimitive(value: Int): ShaderPrimitive =

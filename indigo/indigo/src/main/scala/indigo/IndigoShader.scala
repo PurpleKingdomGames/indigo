@@ -2,6 +2,7 @@ package indigo
 
 import indigo.entry.StandardFrameProcessor
 import indigo.gameengine.GameEngine
+import indigo.shared.shader.UniformBlock
 import indigo.shared.shader.library
 import indigo.shared.shader.library.IndigoUV.BlendFragmentEnvReference
 import indigo.shared.subsystems.SubSystemsRegister
@@ -11,17 +12,11 @@ import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits._
 import scala.concurrent.Future
 
 /** A trait representing a shader that fills the available window.
-  *
-  * You can override a number of the details in this trait using launch flags, including:
-  *
-  *   - width - starting width of the shader
-  *   - height - starting height of the shader
-  *   - channel0 - path to an image
-  *   - channel1 - path to an image
-  *   - channel2 - path to an image
-  *   - channel3 - path to an image
   */
 trait IndigoShader extends GameLauncher[IndigoShaderModel, IndigoShaderModel, Unit] {
+
+  given [A](using toUBO: ToUniformBlock[A]): Conversion[A, UniformBlock] with
+    def apply(value: A): UniformBlock = toUBO.toUniformBlock(value)
 
   private val Channel0Name: String = "channel0"
   private val Channel1Name: String = "channel1"
@@ -51,6 +46,15 @@ trait IndigoShader extends GameLauncher[IndigoShaderModel, IndigoShaderModel, Un
   /** An optional path to an image asset you would like to be mapped to channel 3 for your shader to use.
     */
   def channel3: Option[AssetPath]
+
+  /** The uniform blocks (data) you want to pass to your shader. Example:
+    *
+    * ```scala
+    * final case class CustomData(color: RGBA, customTime: Seconds) extends FragmentEnvReference derives ToUniformBlock
+    * def uniformBlocks: Batch[UniformBlock] = Batch(CustomData(RGBA.Magenta, 0.seconds))
+    * ```
+    */
+  def uniformBlocks: Batch[UniformBlock]
 
   /** The shader you want to render
     */
@@ -139,7 +143,7 @@ trait IndigoShader extends GameLauncher[IndigoShaderModel, IndigoShaderModel, Un
             model.viewport,
             ShaderData(
               shader.id,
-              Batch.empty,
+              uniformBlocks,
               model.channel0,
               model.channel1,
               model.channel2,

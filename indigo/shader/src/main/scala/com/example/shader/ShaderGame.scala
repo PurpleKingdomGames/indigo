@@ -1,4 +1,5 @@
 import indigo.*
+import ultraviolet.syntax.*
 
 import scala.scalajs.js.annotation._
 
@@ -12,9 +13,34 @@ object ShaderGame extends IndigoShader:
   val channel2: Option[AssetPath] = None
   val channel3: Option[AssetPath] = None
 
+  val uniformBlocks: Batch[UniformBlock] =
+    Batch(CustomData.reference)
+
   val shader: ShaderProgram =
-    // ShowImage.shader
-    SeascapeShader.shader
+    ShaderWithData.shader
+// ShowImage.shader
+// SeascapeShader.shader
+
+final case class CustomData(CUSTOM_COLOR: vec4) extends FragmentEnvReference derives ToUniformBlock
+object CustomData:
+  val reference =
+    CustomData(vec4(1.0f, 0.0f, 1.0f, 1.0f))
+
+object ShaderWithData:
+
+  val shader: UltravioletShader =
+    UltravioletShader.entityFragment(
+      ShaderId("shader with data"),
+      EntityShader.fragment[CustomData](shaderWithData, CustomData.reference)
+    )
+
+  inline def shaderWithData: Shader[CustomData, Unit] =
+    Shader[CustomData] { env =>
+      ubo[CustomData]
+
+      def fragment(color: vec4): vec4 =
+        env.CUSTOM_COLOR
+    }
 
 object ShowImage:
 
@@ -23,8 +49,6 @@ object ShowImage:
       ShaderId("image shader"),
       EntityShader.fragment[FragmentEnv](showImage, FragmentEnv.reference)
     )
-
-  import ultraviolet.syntax.*
 
   inline def showImage: Shader[FragmentEnv, Unit] =
     Shader[FragmentEnv] { env =>
@@ -54,8 +78,6 @@ object VoronoiShader:
       ShaderId("my shader"),
       EntityShader.fragment[FragmentEnv](voronoi, FragmentEnv.reference)
     )
-
-  import ultraviolet.syntax.*
 
   // Ported from: https://www.youtube.com/watch?v=l-07BXzNdPw&feature=youtu.be
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
