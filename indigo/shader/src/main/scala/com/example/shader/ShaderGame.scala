@@ -15,7 +15,7 @@ object ShaderGame extends IndigoShader:
   val channel3: Option[AssetPath] = None
 
   val uniformBlocks: Batch[UniformBlock] =
-    Batch(CustomData.reference)
+    Batch(CustomData(RGBA.Magenta.toUVVec4))
 
   val shader: ShaderProgram =
     ShaderWithData.shader
@@ -25,7 +25,7 @@ object ShaderGame extends IndigoShader:
 final case class CustomData(CUSTOM_COLOR: vec4) extends FragmentEnvReference derives ToUniformBlock
 object CustomData:
   val reference =
-    CustomData(RGBA.Magenta.toUVVec4)
+    CustomData(vec4(0.0f))
 
 object ShaderWithData:
 
