@@ -50,8 +50,26 @@ trait IndigoShader extends GameLauncher[IndigoShaderModel, IndigoShaderModel, Un
   /** The uniform blocks (data) you want to pass to your shader. Example:
     *
     * ```scala
-    * final case class CustomData(color: RGBA, customTime: Seconds) extends FragmentEnvReference derives ToUniformBlock
-    * def uniformBlocks: Batch[UniformBlock] = Batch(CustomData(RGBA.Magenta, 0.seconds))
+    * import indigo.*
+    * import indigo.syntax.shaders.*
+    * import ultraviolet.syntax.*
+    *
+    * final case class CustomData(color: vec4, customTime: Float) extends FragmentEnvReference derives ToUniformBlock
+    * def uniformBlocks: Batch[UniformBlock] = Batch(CustomData(RGBA.Magenta.toUVVec4, 0.seconds.toFloat))
+    * ```
+    *
+    * As long as the field types in your case class are ultraviolet types, you can pass them to your shader, see
+    * Ultraviolet docs for more info.
+    *
+    * Many standard Indigo types are supported for the data fields, but you will need a separate case class for the
+    * Shader side of the data contract definition, i.e. This is valid too:
+    *
+    * ```scala
+    * // For use with Indigo's shader setup. Note: derives ToUniformBlock, but doesn't need to extend FragmentEnvReference
+    * final case class CustomDataIndigo(color: RGBA, customTime: Seconds) derives ToUniformBlock
+    *
+    * // For use with Ultraviolet's UBO definitions. Note extends FragmentEnvReference, but doesn't derive ToUniformBlock
+    * final case class CustomDataUV(color: vec4, customTime: Float) extends FragmentEnvReference
     * ```
     */
   def uniformBlocks: Batch[UniformBlock]

@@ -1,4 +1,5 @@
 import indigo.*
+import indigo.syntax.shaders.*
 import ultraviolet.syntax.*
 
 import scala.scalajs.js.annotation._
@@ -24,7 +25,7 @@ object ShaderGame extends IndigoShader:
 final case class CustomData(CUSTOM_COLOR: vec4) extends FragmentEnvReference derives ToUniformBlock
 object CustomData:
   val reference =
-    CustomData(vec4(1.0f, 0.0f, 1.0f, 1.0f))
+    CustomData(RGBA.Magenta.toUVVec4)
 
 object ShaderWithData:
 
