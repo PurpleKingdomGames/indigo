@@ -218,6 +218,9 @@ val ShaderId: shared.shader.ShaderId.type = shared.shader.ShaderId
 type ToUniformBlock[A] = shared.shader.ToUniformBlock[A]
 val ToUniformBlock: shared.shader.ToUniformBlock.type = shared.shader.ToUniformBlock
 
+type UniformBlock = shared.shader.UniformBlock
+val UniformBlock: shared.shader.UniformBlock.type = shared.shader.UniformBlock
+
 val StandardShaders: shared.shader.StandardShaders.type = shared.shader.StandardShaders
 
 type Outcome[T] = shared.Outcome[T]
