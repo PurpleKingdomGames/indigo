@@ -119,6 +119,59 @@ object syntax:
     export SignalFunction.multiply
   end animations
 
+  object shaders:
+
+    extension (c: RGBA)
+      def toUVVec4: ultraviolet.syntax.vec4 =
+        ultraviolet.syntax.vec4(c.r.toFloat, c.g.toFloat, c.b.toFloat, c.a.toFloat)
+    extension (c: RGB)
+      def toUVVec3: ultraviolet.syntax.vec3 =
+        ultraviolet.syntax.vec3(c.r.toFloat, c.g.toFloat, c.b.toFloat)
+    extension (p: Point)
+      def toUVVec2: ultraviolet.syntax.vec2 =
+        ultraviolet.syntax.vec2(p.x.toFloat, p.y.toFloat)
+    extension (s: Size)
+      def toUVVec2: ultraviolet.syntax.vec2 =
+        ultraviolet.syntax.vec2(s.width.toFloat, s.height.toFloat)
+    extension (v: Vector2)
+      def toUVVec2: ultraviolet.syntax.vec2 =
+        ultraviolet.syntax.vec2(v.x.toFloat, v.y.toFloat)
+    extension (v: Vector3)
+      def toUVVec3: ultraviolet.syntax.vec3 =
+        ultraviolet.syntax.vec3(v.x.toFloat, v.y.toFloat, v.z.toFloat)
+    extension (v: Vector4)
+      def toUVVec4: ultraviolet.syntax.vec4 =
+        ultraviolet.syntax.vec4(v.x.toFloat, v.y.toFloat, v.z.toFloat, v.w.toFloat)
+    extension (r: Rectangle)
+      def toUVVec4: ultraviolet.syntax.vec4 =
+        ultraviolet.syntax.vec4(r.x.toFloat, r.y.toFloat, r.width.toFloat, r.height.toFloat)
+    extension (m: Matrix4)
+      def toUVMat4: ultraviolet.syntax.mat4 =
+        ultraviolet.syntax.mat4(m.toArray.map(_.toFloat))
+    extension (d: Depth) def toUVFloat: Float   = d.toFloat
+    extension (m: Millis) def toUVFloat: Float  = m.toFloat
+    extension (r: Radians) def toUVFloat: Float = r.toFloat
+    extension (s: Seconds)
+      @targetName("ext_Seconds_toUVFloat")
+      def toUVFloat: Float = s.toFloat
+    extension (d: Double)
+      @targetName("ext_Double_toUVFloat")
+      def toUVFloat: Float = d.toFloat
+    extension (i: Int)
+      @targetName("ext_Int_toUVFloat")
+      def toUVFloat: Float = i.toFloat
+    extension (l: Long)
+      @targetName("ext_Long_toUVFloat")
+      def toUVFloat: Float = l.toFloat
+    extension (a: Array[Float])
+      def toUVArray: ultraviolet.syntax.array[Singleton & Int, Float] =
+        ultraviolet.syntax.array(a)
+    extension (a: scalajs.js.Array[Float])
+      def toUVArray: ultraviolet.syntax.array[Singleton & Int, Float] =
+        ultraviolet.syntax.array(a.toArray)
+
+  end shaders
+
 end syntax
 
 object mutable:
