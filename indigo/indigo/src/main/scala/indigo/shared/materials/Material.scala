@@ -16,13 +16,13 @@ import indigo.shared.shader.Uniform
 import indigo.shared.shader.UniformBlock
 import indigo.shared.shader.UniformBlockName
 
-trait Material {
+trait Material:
   def toShaderData: ShaderData
-}
-object Material {
+
+object Material:
 
   final case class Bitmap(diffuse: AssetName, lighting: LightingModel, shaderId: Option[ShaderId], fillType: FillType)
-      extends Material derives CanEqual {
+      extends Material derives CanEqual:
 
     def withDiffuse(newDiffuse: AssetName): Bitmap =
       this.copy(diffuse = newDiffuse)
@@ -61,14 +61,13 @@ object Material {
         fillType
       )
 
-    lazy val toShaderData: ShaderData = {
+    lazy val toShaderData: ShaderData =
 
       val imageFillType: Float =
-        fillType match {
+        fillType match
           case FillType.Normal  => 0.0
           case FillType.Stretch => 1.0
           case FillType.Tile    => 2.0
-        }
 
       val uniformBlock: UniformBlock =
         UniformBlock(
@@ -78,7 +77,7 @@ object Material {
           )
         )
 
-      lighting match {
+      lighting match
         case Unlit =>
           ShaderData(
             shaderId.getOrElse(StandardShaders.Bitmap.id),
@@ -91,16 +90,13 @@ object Material {
 
         case l: Lit =>
           l.toShaderData(shaderId.getOrElse(StandardShaders.LitBitmap.id), Some(diffuse), Batch(uniformBlock))
-      }
-    }
-  }
-  object Bitmap {
+
+  object Bitmap:
     def apply(diffuse: AssetName): Bitmap =
       Bitmap(diffuse, LightingModel.Unlit, None, FillType.Normal)
 
     def apply(diffuse: AssetName, lighting: LightingModel): Bitmap =
       Bitmap(diffuse, lighting, None, FillType.Normal)
-  }
 
   final case class ImageEffects(
       diffuse: AssetName,
@@ -112,7 +108,7 @@ object Material {
       shaderId: Option[ShaderId],
       fillType: FillType
   ) extends Material
-      derives CanEqual {
+      derives CanEqual:
 
     def withDiffuse(newDiffuse: AssetName): ImageEffects =
       this.copy(diffuse = newDiffuse)
@@ -156,7 +152,7 @@ object Material {
     def toBitmap: Material.Bitmap =
       Material.Bitmap(diffuse, lighting, shaderId, fillType)
 
-    lazy val toShaderData: ShaderData = {
+    lazy val toShaderData: ShaderData =
       val overlayType: Float =
         overlay match {
           case _: Fill.Color          => 0.0
@@ -191,7 +187,7 @@ object Material {
           ) ++ overlay.toUniformData("ImageEffects")
         )
 
-      lighting match {
+      lighting match
         case Unlit =>
           ShaderData(
             shaderId.getOrElse(StandardShaders.ImageEffects.id),
@@ -208,10 +204,8 @@ object Material {
             Some(diffuse),
             Batch(effectsUniformBlock)
           )
-      }
-    }
-  }
-  object ImageEffects {
+
+  object ImageEffects:
     def apply(diffuse: AssetName): ImageEffects =
       ImageEffects(diffuse, 1.0, RGBA.None, Fill.Color.default, 1.0, LightingModel.Unlit, None, FillType.Normal)
 
@@ -223,9 +217,6 @@ object Material {
 
     def apply(diffuse: AssetName, lighting: LightingModel, shaderId: Option[ShaderId]): ImageEffects =
       ImageEffects(diffuse, 1.0, RGBA.None, Fill.Color.default, 1.0, lighting, shaderId, FillType.Normal)
-  }
-
-}
 
 enum FillType derives CanEqual:
   case Normal, Stretch, Tile
