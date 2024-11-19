@@ -72,13 +72,13 @@ final case class RefractionEntity(diffuse: AssetName, fillType: FillType) extend
   def tile: RefractionEntity =
     withFillType(FillType.Tile)
 
-  lazy val toShaderData: ShaderData = {
+  lazy val toShaderData: ShaderData =
     val imageFillType: Double =
-      fillType match {
-        case FillType.Normal  => 0.0
-        case FillType.Stretch => 1.0
-        case FillType.Tile    => 2.0
-      }
+      fillType match
+        case FillType.Normal    => 0.0
+        case FillType.Stretch   => 1.0
+        case FillType.Tile      => 2.0
+        case FillType.NineSlice => 3.0
 
     val uniformBlock: UniformBlock =
       UniformBlock(
@@ -96,7 +96,6 @@ final case class RefractionEntity(diffuse: AssetName, fillType: FillType) extend
       None,
       None
     )
-  }
 
 object RefractionEntity:
   def apply(diffuse: AssetName): RefractionEntity =

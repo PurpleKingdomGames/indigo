@@ -48,6 +48,8 @@ object Material:
       withFillType(FillType.Stretch)
     def tile: Bitmap =
       withFillType(FillType.Tile)
+    def nineSlice: Bitmap =
+      withFillType(FillType.NineSlice)
 
     def toImageEffects: Material.ImageEffects =
       Material.ImageEffects(
@@ -65,9 +67,10 @@ object Material:
 
       val imageFillType: Float =
         fillType match
-          case FillType.Normal  => 0.0
-          case FillType.Stretch => 1.0
-          case FillType.Tile    => 2.0
+          case FillType.Normal    => 0.0
+          case FillType.Stretch   => 1.0
+          case FillType.Tile      => 2.0
+          case FillType.NineSlice => 3.0
 
       val uniformBlock: UniformBlock =
         UniformBlock(
@@ -148,6 +151,8 @@ object Material:
       withFillType(FillType.Stretch)
     def tile: ImageEffects =
       withFillType(FillType.Tile)
+    def nineSlice: ImageEffects =
+      withFillType(FillType.NineSlice)
 
     def toBitmap: Material.Bitmap =
       Material.Bitmap(diffuse, lighting, shaderId, fillType)
@@ -161,11 +166,11 @@ object Material:
         }
 
       val imageFillType: Float =
-        fillType match {
-          case FillType.Normal  => 0.0
-          case FillType.Stretch => 1.0
-          case FillType.Tile    => 2.0
-        }
+        fillType match
+          case FillType.Normal    => 0.0
+          case FillType.Stretch   => 1.0
+          case FillType.Tile      => 2.0
+          case FillType.NineSlice => 3.0
 
       // ALPHA_SATURATION_OVERLAYTYPE_FILLTYPE (vec4), TINT (vec4)
       val effectsUniformBlock: UniformBlock =
@@ -219,4 +224,4 @@ object Material:
       ImageEffects(diffuse, 1.0, RGBA.None, Fill.Color.default, 1.0, lighting, shaderId, FillType.Normal)
 
 enum FillType derives CanEqual:
-  case Normal, Stretch, Tile
+  case Normal, Stretch, Tile, NineSlice

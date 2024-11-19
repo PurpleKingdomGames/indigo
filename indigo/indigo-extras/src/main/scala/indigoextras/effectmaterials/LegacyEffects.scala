@@ -69,11 +69,11 @@ final case class LegacyEffects(
         case _: Fill.RadialGradient => 2.0
 
     val imageFillType: Float =
-      fillType match {
-        case FillType.Normal  => 0.0
-        case FillType.Stretch => 1.0
-        case FillType.Tile    => 2.0
-      }
+      fillType match
+        case FillType.Normal    => 0.0
+        case FillType.Stretch   => 1.0
+        case FillType.Tile      => 2.0
+        case FillType.NineSlice => 3.0
 
     ShaderData(
       LegacyEffects.entityShader.id,
