@@ -126,6 +126,9 @@ class TileAndStretchTests extends munit.FunSuite {
       |    case 2:
       |      val0=texture(srcChannel,channelPos+((fract(uv*(entitySize/textureSize)))*channelSize));
       |      break;
+      |    case 3:
+      |      // maddnes ensues
+      |      break;
       |    default:
       |      val0=fallback;
       |      break;
@@ -141,6 +144,44 @@ class TileAndStretchTests extends munit.FunSuite {
       |vec2 entitySize=vec2(5.0);
       |vec2 textureSize=vec2(6.0);
       |def0(fillType,fallback,srcChannel,channelPos,channelSize,uv,entitySize,textureSize);
+      |""".stripMargin.trim
+    )
+
+  }
+
+  test("should correctly render nineslice code") {
+
+    inline def fragment =
+      Shader {
+        import TileAndStretch.*
+
+        val uv: vec2          = vec2(1.0)
+        val channelPos: vec2  = vec2(2.0)
+        val channelSize: vec2 = vec2(3.0)
+        val entitySize: vec2  = vec2(128.0)
+        val textureSize: vec2 = vec2(64.0)
+
+        def doNineSlice(): vec2 =
+          nineSliceUVs(
+            uv,          // env.UV,
+            channelPos,  // env.CHANNEL_0_POSITION,
+            channelSize, // env.CHANNEL_0_SIZE,
+            entitySize,  // env.SIZE,
+            textureSize  // env.TEXTURE_SIZE
+          )
+
+        doNineSlice()
+      }
+
+    val actual =
+      fragment.toGLSL[WebGL2].toOutput.code
+
+    // println(actual)
+
+    assertEquals(
+      actual,
+      s"""
+      |fish
       |""".stripMargin.trim
     )
 

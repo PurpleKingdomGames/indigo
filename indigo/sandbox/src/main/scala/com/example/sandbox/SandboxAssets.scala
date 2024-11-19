@@ -17,6 +17,7 @@ object SandboxAssets {
   val light: AssetName         = AssetName("light")
   val dots: AssetName          = AssetName("dots")
   val cameraIcon: AssetName    = AssetName("camera_icon")
+  val nineSlice: AssetName     = AssetName("nineslice")
 
   val fontMaterial: Material.ImageEffects  = Material.ImageEffects(smallFontName)
   val lightMaterial: Material.ImageEffects = Material.ImageEffects(light)
@@ -96,7 +97,8 @@ object SandboxAssets {
       AssetType.Image(trafficLightsName, AssetPath("assets/" + trafficLightsName + ".png")),
       AssetType.Image(cratesDiffuseName, AssetPath("assets/" + cratesDiffuseName + ".png")),
       AssetType.Image(cratesNormalName, AssetPath("assets/" + cratesNormalName + ".png")),
-      AssetType.Image(cameraIcon, AssetPath("assets/camera_icon.png"))
+      AssetType.Image(cameraIcon, AssetPath("assets/camera_icon.png")),
+      AssetType.Image(nineSlice, AssetPath("assets/nineslice.png"))
     )
 
 }

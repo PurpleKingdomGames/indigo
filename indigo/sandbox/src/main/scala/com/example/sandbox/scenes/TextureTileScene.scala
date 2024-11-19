@@ -62,7 +62,8 @@ object TextureTileScene extends Scene[SandboxStartupData, SandboxGameModel, Sand
               .modifyMaterial(_.withAlpha(0.2)),
             Graphic(64, 64, Material.Bitmap(SandboxAssets.dots).normal).moveTo(10, 90),
             Graphic(200, 75, Material.Bitmap(SandboxAssets.dots).tile).moveTo(10, 10),
-            Graphic(50, 75, Material.Bitmap(SandboxAssets.dots).stretch).moveTo(100, 75)
+            Graphic(50, 75, Material.Bitmap(SandboxAssets.dots).stretch).moveTo(100, 75),
+            Graphic(128, 128, Material.Bitmap(SandboxAssets.nineSlice).nineSlice).moveTo(125, 125)
           )
         )
     )
