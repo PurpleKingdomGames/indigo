@@ -4,7 +4,7 @@ import ultraviolet.syntax.*
 
 object TileAndStretch:
 
-  inline def tileAndStretchChannel: (Int, vec4, sampler2D.type, vec2, vec2, vec2, vec2, vec2) => vec4 =
+  inline def tileAndStretchChannel: (Int, vec4, sampler2D.type, vec2, vec2, vec2, vec2, vec2, vec4) => vec4 =
     (
         fillType: Int,
         fallback: vec4,
@@ -13,8 +13,13 @@ object TileAndStretch:
         channelSize: vec2,
         uv: vec2,
         entitySize: vec2,
-        textureSize: vec2
+        textureSize: vec2,
+        nineSliceCenter: vec4
     ) =>
+      def _nineSliceUVs: (vec2, vec2, vec2, vec2, vec2, vec4) => vec2 =
+        (originalUV, channelPos, channelSize, entitySize, textureSize, nineSliceCenter) =>
+          nineSliceUVs(originalUV, channelPos, channelSize, entitySize, textureSize, nineSliceCenter)
+
       fillType match
         case 1 =>
           texture2D(
@@ -31,7 +36,7 @@ object TileAndStretch:
         case 3 =>
           texture2D(
             srcChannel,
-            nineSliceUVs(uv, channelPos, channelSize, entitySize, textureSize)
+            _nineSliceUVs(uv, channelPos, channelSize, entitySize, textureSize, nineSliceCenter)
           )
 
         case _ =>
@@ -51,7 +56,8 @@ object TileAndStretch:
       channelPos: vec2,
       channelSize: vec2,
       entitySize: vec2,
-      textureSize: vec2
+      textureSize: vec2,
+      nineSliceCenter: vec4
   ): vec2 =
     // Delegates
 
@@ -68,26 +74,26 @@ object TileAndStretch:
 
     def _regionContainsUV: (vec4, vec2) => Boolean = (region, uv) => regionContainsUV(region, uv)
 
-    // TODO: Should be passed in as UBO data
-    // texture is 64x64, slice lines at an even 16 pixels
     // A rectangle inside the texture that defines the center, from which we can work out the other regions.
-    val centerSquare = vec4(16.0f, 16.0f, 48.0f, 48.0f)
+    val centerSquare = nineSliceCenter
 
     // Work out all the texture regions in pixels as rectangles (x,y,w,h)
     val textureRegionTL =
-      vec4(0.0f, 0.0f, centerSquare.x - 0.0f, centerSquare.y - 0.0f)
+      vec4(0.0f, 0.0f, centerSquare.x, centerSquare.y)
     val textureRegionTM =
-      vec4(centerSquare.x, 0.0f, centerSquare.z - centerSquare.x, centerSquare.y - 0.0f)
+      vec4(centerSquare.x, 0.0f, centerSquare.z - centerSquare.x, centerSquare.y)
     val textureRegionTR =
-      vec4(centerSquare.z, 0.0f, textureSize.x - centerSquare.z, centerSquare.y - 0.0f)
+      vec4(centerSquare.z, 0.0f, textureSize.x - centerSquare.z, centerSquare.y)
+
     val textureRegionML =
-      vec4(0.0f, centerSquare.y, centerSquare.x - 0.0f, centerSquare.w - centerSquare.y)
+      vec4(0.0f, centerSquare.y, centerSquare.x, centerSquare.w - centerSquare.y)
     val textureRegionMM =
       vec4(centerSquare.xy, centerSquare.zw - centerSquare.xy)
     val textureRegionMR =
       vec4(centerSquare.z, centerSquare.y, textureSize.x - centerSquare.z, centerSquare.w - centerSquare.y)
+
     val textureRegionBL =
-      vec4(0.0f, centerSquare.w, centerSquare.x - 0.0f, textureSize.y - centerSquare.w)
+      vec4(0.0f, centerSquare.w, centerSquare.x, textureSize.y - centerSquare.w)
     val textureRegionBM =
       vec4(centerSquare.x, centerSquare.w, centerSquare.z - centerSquare.x, textureSize.y - centerSquare.w)
     val textureRegionBR =
@@ -118,28 +124,28 @@ object TileAndStretch:
       vec4(
         0.0f,
         0.0f,
-        entityCenterSquare.x - 0.0f,
-        entityCenterSquare.y - 0.0f
+        entityCenterSquare.x,
+        entityCenterSquare.y
       )
     val entityRegionTM =
       vec4(
         entityCenterSquare.x,
         0.0f,
         entityCenterSquare.z - entityCenterSquare.x,
-        entityCenterSquare.y - 0.0f
+        entityCenterSquare.y
       )
     val entityRegionTR =
       vec4(
         entityCenterSquare.z,
         0.0f,
         entitySafeSize.x - entityCenterSquare.z,
-        entityCenterSquare.y - 0.0f
+        entityCenterSquare.y
       )
     val entityRegionML =
       vec4(
         0.0f,
         entityCenterSquare.y,
-        entityCenterSquare.x - 0.0f,
+        entityCenterSquare.x,
         entityCenterSquare.w - entityCenterSquare.y
       )
     val entityRegionMM =
@@ -155,7 +161,7 @@ object TileAndStretch:
         entityCenterSquare.w - entityCenterSquare.y
       )
     val entityRegionBL =
-      vec4(0.0f, entityCenterSquare.w, entityCenterSquare.x - 0.0f, entitySafeSize.y - entityCenterSquare.w)
+      vec4(0.0f, entityCenterSquare.w, entityCenterSquare.x, entitySafeSize.y - entityCenterSquare.w)
     val entityRegionBM =
       vec4(
         entityCenterSquare.x,

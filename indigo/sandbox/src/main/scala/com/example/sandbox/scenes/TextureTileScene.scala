@@ -44,6 +44,8 @@ object TextureTileScene extends Scene[SandboxStartupData, SandboxGameModel, Sand
   def fit(originalSize: Vector2, screenSize: Vector2): Vector2 =
     Vector2(Math.max(screenSize.x / originalSize.x, screenSize.y / originalSize.y))
 
+  def boxSize(t: Seconds): Int = Signal.SmoothPulse.map(d => (d * 64) + 64).map(_.toInt).at(t)
+
   def present(
       context: SceneContext[SandboxStartupData],
       model: SandboxGameModel,
@@ -63,7 +65,11 @@ object TextureTileScene extends Scene[SandboxStartupData, SandboxGameModel, Sand
             Graphic(64, 64, Material.Bitmap(SandboxAssets.dots).normal).moveTo(10, 90),
             Graphic(200, 75, Material.Bitmap(SandboxAssets.dots).tile).moveTo(10, 10),
             Graphic(50, 75, Material.Bitmap(SandboxAssets.dots).stretch).moveTo(100, 75),
-            Graphic(128, 128, Material.Bitmap(SandboxAssets.nineSlice).nineSlice).moveTo(125, 125)
+            Graphic(
+              boxSize(context.frame.time.running),
+              boxSize(context.frame.time.running),
+              Material.Bitmap(SandboxAssets.nineSlice).nineSlice(Rectangle(16, 16, 32, 32))
+            ).moveTo(125, 125)
           )
         )
     )
