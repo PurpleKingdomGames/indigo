@@ -85,7 +85,7 @@ class TileAndStretchTests extends munit.FunSuite {
         import TileAndStretch.*
 
         // Delegates
-        val _tileAndStretchChannel: (Int, vec4, sampler2D.type, vec2, vec2, vec2, vec2, vec2) => vec4 =
+        val _tileAndStretchChannel: (Int, vec4, sampler2D.type, vec2, vec2, vec2, vec2, vec2, vec4) => vec4 =
           tileAndStretchChannel
 
         val fillType: Int              = 0
@@ -96,16 +96,18 @@ class TileAndStretchTests extends munit.FunSuite {
         val uv: vec2                   = vec2(4.0)
         val entitySize: vec2           = vec2(5.0)
         val textureSize: vec2          = vec2(6.0)
+        val nineSliceCenter: vec4      = vec4(7.0)
 
         _tileAndStretchChannel(
-          fillType,    // env.FILLTYPE.toInt,
-          fallback,    // env.CHANNEL_0,
-          srcChannel,  // env.SRC_CHANNEL,
-          channelPos,  // env.CHANNEL_0_POSITION,
-          channelSize, // env.CHANNEL_0_SIZE,
-          uv,          // env.UV,
-          entitySize,  // env.SIZE,
-          textureSize  // env.TEXTURE_SIZE
+          fillType,       // env.FILLTYPE.toInt,
+          fallback,       // env.CHANNEL_0,
+          srcChannel,     // env.SRC_CHANNEL,
+          channelPos,     // env.CHANNEL_0_POSITION,
+          channelSize,    // env.CHANNEL_0_SIZE,
+          uv,             // env.UV,
+          entitySize,     // env.SIZE,
+          textureSize,    // env.TEXTURE_SIZE
+          nineSliceCenter // env.NINE_SLICE_CENTER
         )
       }
 
@@ -127,7 +129,7 @@ class TileAndStretchTests extends munit.FunSuite {
       |      val0=texture(srcChannel,channelPos+((fract(uv*(entitySize/textureSize)))*channelSize));
       |      break;
       |    case 3:
-      |      // maddnes ensues
+      |      // maddness ensues
       |      break;
       |    default:
       |      val0=fallback;
@@ -155,19 +157,21 @@ class TileAndStretchTests extends munit.FunSuite {
       Shader {
         import TileAndStretch.*
 
-        val uv: vec2          = vec2(1.0)
-        val channelPos: vec2  = vec2(2.0)
-        val channelSize: vec2 = vec2(3.0)
-        val entitySize: vec2  = vec2(128.0)
-        val textureSize: vec2 = vec2(64.0)
+        val uv: vec2              = vec2(1.0)
+        val channelPos: vec2      = vec2(2.0)
+        val channelSize: vec2     = vec2(3.0)
+        val entitySize: vec2      = vec2(128.0)
+        val textureSize: vec2     = vec2(64.0)
+        val nineSliceCenter: vec4 = vec4(16.0f, 16.0f, 32.0f, 32.0f)
 
         def doNineSlice(): vec2 =
           nineSliceUVs(
-            uv,          // env.UV,
-            channelPos,  // env.CHANNEL_0_POSITION,
-            channelSize, // env.CHANNEL_0_SIZE,
-            entitySize,  // env.SIZE,
-            textureSize  // env.TEXTURE_SIZE
+            uv,             // env.UV,
+            channelPos,     // env.CHANNEL_0_POSITION,
+            channelSize,    // env.CHANNEL_0_SIZE,
+            entitySize,     // env.SIZE,
+            textureSize,    // env.TEXTURE_SIZE
+            nineSliceCenter // env.NINE_SLICE_CENTER
           )
 
         doNineSlice()

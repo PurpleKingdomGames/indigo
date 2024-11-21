@@ -5,6 +5,7 @@ import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Fill
 import indigo.shared.datatypes.RGB
 import indigo.shared.datatypes.RGBA
+import indigo.shared.datatypes.Rectangle
 import indigo.shared.materials.LightingModel.Lit
 import indigo.shared.materials.LightingModel.Unlit
 import indigo.shared.shader.ShaderData
@@ -48,8 +49,10 @@ object Material:
       withFillType(FillType.Stretch)
     def tile: Bitmap =
       withFillType(FillType.Tile)
-    def nineSlice: Bitmap =
-      withFillType(FillType.NineSlice)
+    def nineSlice(center: Rectangle): Bitmap =
+      withFillType(FillType.NineSlice(center))
+    def nineSlice(top: Int, right: Int, bottom: Int, left: Int): Bitmap =
+      withFillType(FillType.NineSlice(top, right, bottom, left))
 
     def toImageEffects: Material.ImageEffects =
       Material.ImageEffects(
@@ -67,16 +70,32 @@ object Material:
 
       val imageFillType: Float =
         fillType match
-          case FillType.Normal    => 0.0
-          case FillType.Stretch   => 1.0
-          case FillType.Tile      => 2.0
-          case FillType.NineSlice => 3.0
+          case FillType.Normal       => 0.0
+          case FillType.Stretch      => 1.0
+          case FillType.Tile         => 2.0
+          case FillType.NineSlice(_) => 3.0
+
+      val nineSliceCenter: scalajs.js.Array[Float] =
+        fillType match
+          case FillType.NineSlice(center) =>
+            scalajs.js.Array(
+              center.x.toFloat,
+              center.y.toFloat,
+              center.width.toFloat,
+              center.height.toFloat
+            )
+
+          case _ =>
+            scalajs.js.Array(0.0f, 0.0f, 0.0f, 0.0f)
 
       val uniformBlock: UniformBlock =
         UniformBlock(
           UniformBlockName("IndigoBitmapData"),
           Batch(
-            Uniform("Bitmap_FILLTYPE") -> rawJSArray(scalajs.js.Array(imageFillType))
+            Uniform("Bitmap_FILLTYPE") ->
+              rawJSArray(
+                scalajs.js.Array(imageFillType, 0.0f, 0.0f, 0.0f) ++ nineSliceCenter
+              )
           )
         )
 
@@ -151,8 +170,10 @@ object Material:
       withFillType(FillType.Stretch)
     def tile: ImageEffects =
       withFillType(FillType.Tile)
-    def nineSlice: ImageEffects =
-      withFillType(FillType.NineSlice)
+    def nineSlice(center: Rectangle): ImageEffects =
+      withFillType(FillType.NineSlice(center))
+    def nineSlice(top: Int, right: Int, bottom: Int, left: Int): ImageEffects =
+      withFillType(FillType.NineSlice(top, right, bottom, left))
 
     def toBitmap: Material.Bitmap =
       Material.Bitmap(diffuse, lighting, shaderId, fillType)
@@ -167,12 +188,25 @@ object Material:
 
       val imageFillType: Float =
         fillType match
-          case FillType.Normal    => 0.0
-          case FillType.Stretch   => 1.0
-          case FillType.Tile      => 2.0
-          case FillType.NineSlice => 3.0
+          case FillType.Normal       => 0.0
+          case FillType.Stretch      => 1.0
+          case FillType.Tile         => 2.0
+          case FillType.NineSlice(_) => 3.0
 
-      // ALPHA_SATURATION_OVERLAYTYPE_FILLTYPE (vec4), TINT (vec4)
+      val nineSliceCenter: scalajs.js.Array[Float] =
+        fillType match
+          case FillType.NineSlice(center) =>
+            scalajs.js.Array(
+              center.x.toFloat,
+              center.y.toFloat,
+              center.width.toFloat,
+              center.height.toFloat
+            )
+
+          case _ =>
+            scalajs.js.Array(0.0f, 0.0f, 0.0f, 0.0f)
+
+      // ALPHA_SATURATION_OVERLAYTYPE_FILLTYPE (vec4), NINE_SLICE_CENTER (vec4), TINT (vec4)
       val effectsUniformBlock: UniformBlock =
         UniformBlock(
           UniformBlockName("IndigoImageEffectsData"),
@@ -182,12 +216,15 @@ object Material:
                 alpha.toFloat,
                 saturation.toFloat,
                 overlayType,
-                imageFillType,
-                tint.r.toFloat,
-                tint.g.toFloat,
-                tint.b.toFloat,
-                tint.a.toFloat
-              )
+                imageFillType
+              ) ++
+                nineSliceCenter ++
+                scalajs.js.Array(
+                  tint.r.toFloat,
+                  tint.g.toFloat,
+                  tint.b.toFloat,
+                  tint.a.toFloat
+                )
             )
           ) ++ overlay.toUniformData("ImageEffects")
         )
@@ -222,6 +259,3 @@ object Material:
 
     def apply(diffuse: AssetName, lighting: LightingModel, shaderId: Option[ShaderId]): ImageEffects =
       ImageEffects(diffuse, 1.0, RGBA.None, Fill.Color.default, 1.0, lighting, shaderId, FillType.Normal)
-
-enum FillType derives CanEqual:
-  case Normal, Stretch, Tile, NineSlice

@@ -3,6 +3,7 @@ package indigoextras.effectmaterials
 import indigo.shared.assets.AssetName
 import indigo.shared.collections.Batch
 import indigo.shared.datatypes.RGBA
+import indigo.shared.datatypes.Rectangle
 import indigo.shared.materials.BlendMaterial
 import indigo.shared.materials.FillType
 import indigo.shared.materials.Material
@@ -13,6 +14,7 @@ import indigo.shared.shader.EntityShader
 import indigo.shared.shader.ShaderData
 import indigo.shared.shader.ShaderId
 import indigo.shared.shader.ShaderPrimitive.float
+import indigo.shared.shader.ShaderPrimitive.rawJSArray
 import indigo.shared.shader.ShaderProgram
 import indigo.shared.shader.UltravioletShader
 import indigo.shared.shader.Uniform
@@ -71,20 +73,38 @@ final case class RefractionEntity(diffuse: AssetName, fillType: FillType) extend
     withFillType(FillType.Stretch)
   def tile: RefractionEntity =
     withFillType(FillType.Tile)
+  def nineSlice(center: Rectangle): RefractionEntity =
+    withFillType(FillType.NineSlice(center))
+  def nineSlice(top: Int, right: Int, bottom: Int, left: Int): RefractionEntity =
+    withFillType(FillType.NineSlice(top, right, bottom, left))
 
   lazy val toShaderData: ShaderData =
     val imageFillType: Double =
       fillType match
-        case FillType.Normal    => 0.0
-        case FillType.Stretch   => 1.0
-        case FillType.Tile      => 2.0
-        case FillType.NineSlice => 3.0
+        case FillType.Normal       => 0.0
+        case FillType.Stretch      => 1.0
+        case FillType.Tile         => 2.0
+        case FillType.NineSlice(_) => 3.0
+
+    val nineSliceCenter: scalajs.js.Array[Float] =
+      fillType match
+        case FillType.NineSlice(center) =>
+          scalajs.js.Array(
+            center.x.toFloat,
+            center.y.toFloat,
+            center.width.toFloat,
+            center.height.toFloat
+          )
+
+        case _ =>
+          scalajs.js.Array(0.0f, 0.0f, 0.0f, 0.0f)
 
     val uniformBlock: UniformBlock =
       UniformBlock(
         UniformBlockName("IndigoBitmapData"),
         Batch(
-          Uniform("FILLTYPE") -> float(imageFillType)
+          Uniform("FILLTYPE")          -> float(imageFillType),
+          Uniform("NINE_SLICE_CENTER") -> rawJSArray(nineSliceCenter)
         )
       )
 
