@@ -69,7 +69,7 @@ object TextureTileScene extends Scene[SandboxStartupData, SandboxGameModel, Sand
               boxSize(context.frame.time.running),
               boxSize(context.frame.time.running),
               Material.Bitmap(SandboxAssets.nineSlice).nineSlice(Rectangle(16, 16, 32, 32))
-            ).moveTo(125, 125)
+            ).moveTo(10, 50)
           )
         )
     )

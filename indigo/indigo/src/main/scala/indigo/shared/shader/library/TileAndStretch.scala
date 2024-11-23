@@ -61,13 +61,20 @@ object TileAndStretch:
   ): vec2 =
     // Delegates
 
-    def _mapUVToRegionAndTile: (vec2, vec4, vec4, vec2, vec2) => vec2 =
-      (uv, entityRegion, textureRegion, unscaledEntityRegionSize, unscaledTextureRegionSize) =>
-        mapUVToRegionAndTile(uv, entityRegion, textureRegion, unscaledEntityRegionSize, unscaledTextureRegionSize)
+    def _mapUVToRegionUV: (vec2, vec4) => vec2 =
+      (uv, entityRegionUV) => mapUVToRegionUV(uv, entityRegionUV)
 
-    def _normalisedUVsToTextureCoords: (vec2, vec4, vec2, vec2) => vec2 =
-      (uv, textureRegion, channelPos, channelSize) =>
-        normalisedUVsToTextureCoords(uv, textureRegion, channelPos, channelSize)
+    def _tileUV: (vec2, vec2, vec2) => vec2 =
+      (regionalUV, unscaledEntityRegionSize, unscaledTextureRegionSize) =>
+        tileUV(regionalUV, unscaledEntityRegionSize, unscaledTextureRegionSize)
+
+    def mapUVToRegionAndTile: (vec2, vec4, vec2, vec2) => vec2 =
+      (uv, entityRegionUV, unscaledEntityRegionSize, unscaledTextureRegionSize) =>
+        _tileUV(_mapUVToRegionUV(uv, entityRegionUV), unscaledEntityRegionSize, unscaledTextureRegionSize)
+
+    def _tiledUVsToTextureCoords: (vec2, vec4, vec2, vec2) => vec2 =
+      (tiledUVs, textureRegion, channelPos, channelSize) =>
+        tiledUVsToTextureCoords(tiledUVs, textureRegion, channelPos, channelSize)
 
     // Scale the coords and the size of the region by the size of the entity/texture
     def _regionToUV: (vec4, vec2) => vec4 = (region, size) => regionToUV(region, size)
@@ -190,67 +197,81 @@ object TileAndStretch:
     val coords: vec2 =
       if _regionContainsUV(entityRegionTLUV, originalUV) then
         val uv =
-          _mapUVToRegionAndTile(originalUV, entityRegionTLUV, textureRegionTLUV, entityRegionTL.zw, textureRegionTL.zw)
-        _normalisedUVsToTextureCoords(uv, textureRegionTLUV, channelPos, channelSize)
+          mapUVToRegionAndTile(originalUV, entityRegionTLUV, entityRegionTL.zw, textureRegionTL.zw)
+        _tiledUVsToTextureCoords(uv, textureRegionTLUV, channelPos, channelSize)
       else if _regionContainsUV(entityRegionTMUV, originalUV) then
         val uv =
-          _mapUVToRegionAndTile(originalUV, entityRegionTMUV, textureRegionTMUV, entityRegionTM.zw, textureRegionTM.zw)
-        _normalisedUVsToTextureCoords(uv, textureRegionTMUV, channelPos, channelSize)
+          mapUVToRegionAndTile(originalUV, entityRegionTMUV, entityRegionTM.zw, textureRegionTM.zw)
+        _tiledUVsToTextureCoords(uv, textureRegionTMUV, channelPos, channelSize)
       else if _regionContainsUV(entityRegionTRUV, originalUV) then
         val uv =
-          _mapUVToRegionAndTile(originalUV, entityRegionTRUV, textureRegionTRUV, entityRegionTR.zw, textureRegionTR.zw)
-        _normalisedUVsToTextureCoords(uv, textureRegionTRUV, channelPos, channelSize)
+          mapUVToRegionAndTile(originalUV, entityRegionTRUV, entityRegionTR.zw, textureRegionTR.zw)
+        _tiledUVsToTextureCoords(uv, textureRegionTRUV, channelPos, channelSize)
       else if _regionContainsUV(entityRegionMLUV, originalUV) then
         val uv =
-          _mapUVToRegionAndTile(originalUV, entityRegionMLUV, textureRegionMLUV, entityRegionML.zw, textureRegionML.zw)
-        _normalisedUVsToTextureCoords(uv, textureRegionMLUV, channelPos, channelSize)
-      else if regionContainsUV(entityRegionMMUV, originalUV) then
+          mapUVToRegionAndTile(originalUV, entityRegionMLUV, entityRegionML.zw, textureRegionML.zw)
+        _tiledUVsToTextureCoords(uv, textureRegionMLUV, channelPos, channelSize)
+      else if _regionContainsUV(entityRegionMMUV, originalUV) then
         val uv =
-          _mapUVToRegionAndTile(originalUV, entityRegionMMUV, textureRegionMMUV, entityRegionMM.zw, textureRegionMM.zw)
-        _normalisedUVsToTextureCoords(uv, textureRegionMMUV, channelPos, channelSize)
+          mapUVToRegionAndTile(originalUV, entityRegionMMUV, entityRegionMM.zw, textureRegionMM.zw)
+        _tiledUVsToTextureCoords(uv, textureRegionMMUV, channelPos, channelSize)
       else if _regionContainsUV(entityRegionMRUV, originalUV) then
         val uv =
-          _mapUVToRegionAndTile(originalUV, entityRegionMRUV, textureRegionMRUV, entityRegionMR.zw, textureRegionMR.zw)
-        _normalisedUVsToTextureCoords(uv, textureRegionMRUV, channelPos, channelSize)
+          mapUVToRegionAndTile(originalUV, entityRegionMRUV, entityRegionMR.zw, textureRegionMR.zw)
+        _tiledUVsToTextureCoords(uv, textureRegionMRUV, channelPos, channelSize)
       else if _regionContainsUV(entityRegionBLUV, originalUV) then
         val uv =
-          _mapUVToRegionAndTile(originalUV, entityRegionBLUV, textureRegionBLUV, entityRegionBL.zw, textureRegionBL.zw)
-        _normalisedUVsToTextureCoords(uv, textureRegionBLUV, channelPos, channelSize)
+          mapUVToRegionAndTile(originalUV, entityRegionBLUV, entityRegionBL.zw, textureRegionBL.zw)
+        _tiledUVsToTextureCoords(uv, textureRegionBLUV, channelPos, channelSize)
       else if _regionContainsUV(entityRegionBMUV, originalUV) then
         val uv =
-          _mapUVToRegionAndTile(originalUV, entityRegionBMUV, textureRegionBMUV, entityRegionBM.zw, textureRegionBM.zw)
-        _normalisedUVsToTextureCoords(uv, textureRegionBMUV, channelPos, channelSize)
+          mapUVToRegionAndTile(originalUV, entityRegionBMUV, entityRegionBM.zw, textureRegionBM.zw)
+        _tiledUVsToTextureCoords(uv, textureRegionBMUV, channelPos, channelSize)
       else if _regionContainsUV(entityRegionBRUV, originalUV) then
         val uv =
-          _mapUVToRegionAndTile(originalUV, entityRegionBRUV, textureRegionBRUV, entityRegionBR.zw, textureRegionBR.zw)
-        _normalisedUVsToTextureCoords(uv, textureRegionBRUV, channelPos, channelSize)
+          mapUVToRegionAndTile(originalUV, entityRegionBRUV, entityRegionBR.zw, textureRegionBR.zw)
+        _tiledUVsToTextureCoords(uv, textureRegionBRUV, channelPos, channelSize)
       else vec2(0.0f)
 
     coords
 
   // Helper functions
 
-  inline def mapUVToRegionAndTile(
+  // Map the original UV to a UV in the region of the entity, so that 0.0 is the start of the region and 1.0 is the end
+  inline def mapUVToRegionUV(
       uv: vec2,
-      entityRegion: vec4,
-      textureRegion: vec4,
+      entityRegionUV: vec4
+  ): vec2 =
+    (uv - entityRegionUV.xy) / entityRegionUV.zw
+
+  // Tile the UVs in the region of the entity so that the texture tiles correctly
+  inline def tileUV(
+      regionalUV: vec2,
       unscaledEntityRegionSize: vec2,
       unscaledTextureRegionSize: vec2
   ): vec2 =
-    val regionalUV = (uv - entityRegion.xy) / entityRegion.zw
-    // scaleToEntityRegion(uv, entityRegion)
-    val tiledUV = fract(regionalUV * (unscaledEntityRegionSize / unscaledTextureRegionSize))
-    // tiledUVs(regionalUV, unscaledEntityRegionSize, unscaledTextureRegionSize)
+    fract(regionalUV * (unscaledEntityRegionSize / unscaledTextureRegionSize))
 
-    tiledUV
+  /** Convert tiled UVs to texture coords
+    *
+    * This is deceptively complicated. At this point we have UVs that are tiling from 0.0 to 1.0 within the region, at
+    * the correct ratio for the segment of the nine slice we care about. We happens here is that those 0-1 UVs are
+    * translated to the UVs in the texture for the region we care about, then, the channel position and size are used to
+    * convert that to the correct texture coords.
+    */
+  inline def tiledUVsToTextureCoords(
+      tiledUVs: vec2,
+      textureRegion: vec4,
+      channelPos: vec2,
+      channelSize: vec2
+  ): vec2 =
+    channelPos + ((textureRegion.xy + (tiledUVs * textureRegion.zw)) * channelSize)
 
-  inline def normalisedUVsToTextureCoords(uv: vec2, textureRegion: vec4, channelPos: vec2, channelSize: vec2): vec2 =
-    channelPos + ((uv * textureRegion.zw + textureRegion.xy) * channelSize)
-
-  // Scale the coords and the size of the region by the size of the entity/texture
+  // Scale the coords and the size of the region by the size of the entity/texture, to get the region in UV space
   inline def regionToUV(region: vec4, size: vec2): vec4 =
     region / vec4(size, size)
 
+  // Check if a UV is inside a region where the region is in UV space
   inline def regionContainsUV(region: vec4, uv: vec2): Boolean =
     uv.x >= region.x && uv.x < region.x + region.z && uv.y >= region.y && uv.y < region.y + region.w
 
