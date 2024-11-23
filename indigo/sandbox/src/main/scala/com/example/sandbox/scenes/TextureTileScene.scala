@@ -53,6 +53,8 @@ object TextureTileScene extends Scene[SandboxStartupData, SandboxGameModel, Sand
   ): Outcome[SceneUpdateFragment] = {
     val viewCenter: Point = context.startUpData.viewportCenter
 
+    val boxSizeValue: Int = boxSize(context.frame.time.running)
+
     Outcome(
       SceneUpdateFragment.empty
         .addLayers(
@@ -66,10 +68,13 @@ object TextureTileScene extends Scene[SandboxStartupData, SandboxGameModel, Sand
             Graphic(200, 75, Material.Bitmap(SandboxAssets.dots).tile).moveTo(10, 10),
             Graphic(50, 75, Material.Bitmap(SandboxAssets.dots).stretch).moveTo(100, 75),
             Graphic(
-              boxSize(context.frame.time.running),
-              boxSize(context.frame.time.running),
+              boxSizeValue,
+              boxSizeValue,
               Material.Bitmap(SandboxAssets.nineSlice).nineSlice(Rectangle(16, 16, 32, 32))
-            ).moveTo(10, 50)
+            ).moveTo(10, 50),
+            Shape
+              .Box(Rectangle(boxSizeValue, boxSizeValue), Fill.None, Stroke(1, RGBA.Green))
+              .moveTo(10, 50)
           )
         )
     )
