@@ -8,7 +8,7 @@ import indigo._
 import indigo.scenes._
 import indigoextras.effectmaterials.Refraction
 
-object TextureTileScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel] {
+object NineSliceScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel] {
 
   type SceneModel     = SandboxGameModel
   type SceneViewModel = SandboxViewModel
@@ -23,7 +23,7 @@ object TextureTileScene extends Scene[SandboxStartupData, SandboxGameModel, Sand
     Lens.keepOriginal
 
   def name: SceneName =
-    SceneName("tiling textures")
+    SceneName("nine slice scene")
 
   def subSystems: Set[SubSystem[SandboxGameModel]] =
     Set()
@@ -44,7 +44,7 @@ object TextureTileScene extends Scene[SandboxStartupData, SandboxGameModel, Sand
   def fit(originalSize: Vector2, screenSize: Vector2): Vector2 =
     Vector2(Math.max(screenSize.x / originalSize.x, screenSize.y / originalSize.y))
 
-  def boxSize(t: Seconds): Int = Signal.SmoothPulse.map(d => (d * 64) + 64).map(_.toInt).at(t)
+  def boxSize(t: Seconds): Int = Signal.SmoothPulse.map(d => (d * 64) + 32).map(_.toInt).at(t)
 
   def present(
       context: SceneContext[SandboxStartupData],
@@ -59,14 +59,30 @@ object TextureTileScene extends Scene[SandboxStartupData, SandboxGameModel, Sand
       SceneUpdateFragment.empty
         .addLayers(
           Layer(
-            Graphic(32, 32, Material.ImageEffects(SandboxAssets.dots))
-              .withRef(16, 16)
-              .moveTo(context.startUpData.viewportCenter)
-              .scaleBy(fit(Vector2(32, 32), (context.startUpData.viewportCenter * 2).toVector))
-              .modifyMaterial(_.withAlpha(0.2)),
-            Graphic(64, 64, Material.Bitmap(SandboxAssets.dots).normal).moveTo(10, 90),
-            Graphic(200, 75, Material.Bitmap(SandboxAssets.dots).tile).moveTo(10, 10),
-            Graphic(50, 75, Material.Bitmap(SandboxAssets.dots).stretch).moveTo(100, 75)
+            Graphic(
+              boxSizeValue,
+              boxSizeValue,
+              Material.Bitmap(SandboxAssets.nineSlice).nineSlice(Rectangle(16, 16, 32, 32))
+            ).moveTo(5, 5),
+            // Shape
+            //   .Box(Rectangle(boxSizeValue, boxSizeValue), Fill.None, Stroke(1, RGBA.Green))
+            //   .moveTo(5, 5),
+            Graphic(
+              boxSizeValue,
+              boxSizeValue,
+              Material.Bitmap(SandboxAssets.platform).nineSlice(Rectangle(8, 20, 112, 40))
+            ).moveTo(100, 5),
+            // Shape
+            //   .Box(Rectangle(boxSizeValue, boxSizeValue), Fill.None, Stroke(1, RGBA.Green))
+            //   .moveTo(75, 5),
+            Graphic(
+              boxSizeValue,
+              boxSizeValue,
+              Material.Bitmap(SandboxAssets.window).nineSlice(Rectangle(3, 15, 121, 41))
+            ).moveTo(5, 100)
+            // Shape
+            //   .Box(Rectangle(boxSizeValue, boxSizeValue), Fill.None, Stroke(1, RGBA.Green))
+            //   .moveTo(5, 75),
           )
         )
     )
