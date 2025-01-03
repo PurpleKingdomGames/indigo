@@ -139,7 +139,7 @@ class InputStateTests extends munit.FunSuite {
   test("Mouse state.isLeftDown") {
 
     val state2 = InputState.calculateNext(state, Batch(PointerEvent.Down(0, 0)), gamepadState1)    // true
-    val state3 = InputState.calculateNext(state2, Batch.empty, gamepadState1)                             // still true
+    val state3 = InputState.calculateNext(state2, Batch.empty, gamepadState1)                      // still true
     val state4 = InputState.calculateNext(state3, Batch(PointerEvent.Down(20, 20)), gamepadState1) // still true
     val state5 = InputState.calculateNext( // Still true
       state4,

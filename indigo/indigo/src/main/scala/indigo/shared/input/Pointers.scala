@@ -50,14 +50,14 @@ final class Pointers(
 
   def pointerClicked(pointerType: Option[PointerType]): Boolean = pointerEventsOfType(pointerType).exists {
     case _: PointerEvent.Click => true
-    case _                            => false
+    case _                     => false
   }
 
   def pointersClickedAt(pointerType: Option[PointerType]): Batch[Point] =
     pointerEventsOfType(pointerType)
       .filter(_ match {
         case _: PointerEvent.Click => true
-        case _                            => false
+        case _                     => false
       })
       .map(_.position)
 
@@ -85,7 +85,7 @@ final class Pointers(
     pointerEventsOfType(pointerType)
       .exists {
         case md: PointerEvent.Down if md.button == Some(button) => true
-        case _                                                         => false
+        case _                                                  => false
       }
 
   /** Whether the specified button was released in this frame
@@ -98,7 +98,7 @@ final class Pointers(
     pointerEventsOfType(pointerType)
       .exists {
         case mu: PointerEvent.Up if mu.button == Some(button) => true
-        case _                                                       => false
+        case _                                                => false
       }
 
   /** Was any pointer clicked at this position in this frame
@@ -342,7 +342,7 @@ object Pointers:
     val pointersToRemove = events
       .filter(_ match {
         case _: PointerEvent.Out => true
-        case _                          => false
+        case _                   => false
       })
       .map(_.pointerId)
 
@@ -350,7 +350,7 @@ object Pointers:
       events
         .filter(_ match {
           case _: (PointerEvent.Cancel | PointerEvent.Out) => false
-          case e                                                         => true
+          case e                                           => true
         })
         .foldLeft(Map.empty[PointerId, Pointer])((acc, e) =>
           acc + (e.pointerId -> Pointer(e.pointerId, e.pointerType, e.buttons, e.position))
