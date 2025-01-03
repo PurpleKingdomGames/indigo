@@ -505,6 +505,8 @@ object PointerEvent:
   type PointerDown = Down
   @deprecated("Use Up", "0.18.0")
   type PointerUp = Up
+  @deprecated("Use Click", "0.18.0")
+  type PointerClick = Click
 
   /** Pointing device is moved into canvas hit test boundaries. It's counterpart is [[Leave]].
     */
@@ -681,7 +683,7 @@ object PointerEvent:
       Option(e.position)
 
   /** Pointing device button has been clicked */
-  final case class PointerClick(
+  final case class Click(
       position: Point,
       buttons: Batch[MouseButton],
       isAltKeyDown: Boolean,
@@ -701,23 +703,23 @@ object PointerEvent:
       isPrimary: Boolean,
       button: Option[MouseButton]
   ) extends PointerEvent
-  object PointerClick:
-    def apply(position: Point): PointerClick =
-      PointerClick(position, MouseButton.LeftMouseButton, PointerType.Mouse)
-    def apply(x: Int, y: Int): PointerClick =
-      PointerClick(Point(x, y), MouseButton.LeftMouseButton, PointerType.Mouse)
-    def apply(position: Point, pointerType: PointerType): PointerClick =
-      PointerClick(position, MouseButton.LeftMouseButton, pointerType)
-    def apply(x: Int, y: Int, pointerType: PointerType): PointerClick =
-      PointerClick(Point(x, y), MouseButton.LeftMouseButton, pointerType)
-    def apply(position: Point, button: MouseButton): PointerClick =
-      PointerClick(position, button, PointerType.Mouse)
-    def apply(x: Int, y: Int, button: MouseButton): PointerClick =
-      PointerClick(Point(x, y), button, PointerType.Mouse)
-    def apply(x: Int, y: Int, button: MouseButton, pointerType: PointerType): PointerClick =
-      PointerClick(Point(x, y), button, pointerType)
-    def apply(position: Point, button: MouseButton, pointerType: PointerType): PointerClick =
-      PointerClick(
+  object Click:
+    def apply(position: Point): Click =
+      Click(position, MouseButton.LeftMouseButton, PointerType.Mouse)
+    def apply(x: Int, y: Int): Click =
+      Click(Point(x, y), MouseButton.LeftMouseButton, PointerType.Mouse)
+    def apply(position: Point, pointerType: PointerType): Click =
+      Click(position, MouseButton.LeftMouseButton, pointerType)
+    def apply(x: Int, y: Int, pointerType: PointerType): Click =
+      Click(Point(x, y), MouseButton.LeftMouseButton, pointerType)
+    def apply(position: Point, button: MouseButton): Click =
+      Click(position, button, PointerType.Mouse)
+    def apply(x: Int, y: Int, button: MouseButton): Click =
+      Click(Point(x, y), button, PointerType.Mouse)
+    def apply(x: Int, y: Int, button: MouseButton, pointerType: PointerType): Click =
+      Click(Point(x, y), button, pointerType)
+    def apply(position: Point, button: MouseButton, pointerType: PointerType): Click =
+      Click(
         position = position,
         buttons = Batch.empty,
         isAltKeyDown = false,
@@ -737,7 +739,7 @@ object PointerEvent:
         pointerType = pointerType,
         isPrimary = true
       )
-    def unapply(e: PointerClick): Option[Point] =
+    def unapply(e: Click): Option[Point] =
       Option(e.position)
 
   /** Pointing device changed coordinates.

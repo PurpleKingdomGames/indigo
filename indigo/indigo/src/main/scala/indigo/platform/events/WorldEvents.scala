@@ -357,7 +357,7 @@ final class WorldEvents:
         pointerButtons.getOrElse(e.pointerId, Batch.empty).find(_._1 == e.button) match {
           case Some((btn, downTime)) if btn == e.button && Date.now() - downTime.getTime() <= clickTimeMs =>
             globalEventStream.pushGlobalEvent(
-              PointerClick(
+              Click(
                 position,
                 buttons,
                 e.altKey,

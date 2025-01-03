@@ -35,7 +35,7 @@ class InputStateTests extends munit.FunSuite {
       PointerEvent.PointerMove(10, 10),
       PointerEvent.Down(10, 10),
       PointerEvent.Up(10, 10),
-      PointerEvent.PointerClick(10, 10)
+      PointerEvent.Click(10, 10)
     )
 
   val state = InputState.calculateNext(inputState, events1, gamepadState1)
