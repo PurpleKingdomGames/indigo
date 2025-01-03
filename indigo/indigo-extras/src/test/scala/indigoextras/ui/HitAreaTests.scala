@@ -9,7 +9,7 @@ import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.events.GlobalEvent
 import indigo.shared.events.MouseEvent
-import indigo.shared.events.PointerEvent.PointerDown
+import indigo.shared.events.PointerEvent.Down
 import indigo.shared.events.PointerEvent.PointerId
 import indigo.shared.events.PointerType
 import indigo.shared.input.Pointer
@@ -60,7 +60,7 @@ class HitAreaTests extends munit.FunSuite {
       val pointers = new Pointers(
         Batch(Pointer(PointerId(1), PointerType.Mouse, Batch(MouseButton.LeftMouseButton), bounds.position)),
         Batch(
-          PointerDown(bounds.position, MouseButton.LeftMouseButton, PointerType.Mouse)
+          Down(bounds.position, MouseButton.LeftMouseButton, PointerType.Mouse)
         )
       )
       val pointerType = Some(PointerType.Mouse)

@@ -49,15 +49,15 @@ final class Pointers(
   def pointerReleased(pointerType: Option[PointerType]): Boolean = released(MouseButton.LeftMouseButton, pointerType)
 
   def pointerClicked(pointerType: Option[PointerType]): Boolean = pointerEventsOfType(pointerType).exists {
-    case _: PointerEvent.PointerClick => true
-    case _                            => false
+    case _: PointerEvent.Click => true
+    case _                     => false
   }
 
   def pointersClickedAt(pointerType: Option[PointerType]): Batch[Point] =
     pointerEventsOfType(pointerType)
       .filter(_ match {
-        case _: PointerEvent.PointerClick => true
-        case _                            => false
+        case _: PointerEvent.Click => true
+        case _                     => false
       })
       .map(_.position)
 
@@ -84,8 +84,8 @@ final class Pointers(
   def pressed(button: MouseButton, pointerType: Option[PointerType]): Boolean =
     pointerEventsOfType(pointerType)
       .exists {
-        case md: PointerEvent.PointerDown if md.button == Some(button) => true
-        case _                                                         => false
+        case md: PointerEvent.Down if md.button == Some(button) => true
+        case _                                                  => false
       }
 
   /** Whether the specified button was released in this frame
@@ -97,8 +97,8 @@ final class Pointers(
   def released(button: MouseButton, pointerType: Option[PointerType]): Boolean =
     pointerEventsOfType(pointerType)
       .exists {
-        case mu: PointerEvent.PointerUp if mu.button == Some(button) => true
-        case _                                                       => false
+        case mu: PointerEvent.Up if mu.button == Some(button) => true
+        case _                                                => false
       }
 
   /** Was any pointer clicked at this position in this frame
@@ -124,7 +124,7 @@ final class Pointers(
     */
   def upPositionsWith(button: Option[MouseButton], pointerType: Option[PointerType]): Batch[Point] =
     pointerEventsOfType(pointerType).collect {
-      case m: PointerEvent.PointerUp if button == None || m.button == button => m.position
+      case m: PointerEvent.Up if button == None || m.button == button => m.position
     }
 
   /** All the positions where the specified button was down in this frame
@@ -133,7 +133,7 @@ final class Pointers(
     */
   def downPositionsWith(button: Option[MouseButton], pointerType: Option[PointerType]): Batch[Point] =
     pointerEventsOfType(pointerType).collect {
-      case m: PointerEvent.PointerDown if button == None || m.button == button => m.position
+      case m: PointerEvent.Down if button == None || m.button == button => m.position
     }
 
   /** All the positions where the specified button was clicked in this frame
@@ -142,7 +142,7 @@ final class Pointers(
     */
   def clickedPositionsWith(button: Option[MouseButton], pointerType: Option[PointerType]): Batch[Point] =
     pointerEventsOfType(pointerType).collect {
-      case m: PointerEvent.PointerClick if button == None || m.button == button => m.position
+      case m: PointerEvent.Click if button == None || m.button == button => m.position
     }
 
   /** Whether the specified button was up at the specified position in this frame
@@ -341,16 +341,16 @@ object Pointers:
   private def updatePointers(events: Batch[PointerEvent], previous: Pointers): Batch[Pointer] =
     val pointersToRemove = events
       .filter(_ match {
-        case _: PointerEvent.PointerOut => true
-        case _                          => false
+        case _: PointerEvent.Out => true
+        case _                   => false
       })
       .map(_.pointerId)
 
     val pointersToAdd = Batch.fromArray(
       events
         .filter(_ match {
-          case _: (PointerEvent.PointerCancel | PointerEvent.PointerOut) => false
-          case e                                                         => true
+          case _: (PointerEvent.Cancel | PointerEvent.Out) => false
+          case e                                           => true
         })
         .foldLeft(Map.empty[PointerId, Pointer])((acc, e) =>
           acc + (e.pointerId -> Pointer(e.pointerId, e.pointerType, e.buttons, e.position))

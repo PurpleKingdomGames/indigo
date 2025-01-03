@@ -124,7 +124,7 @@ class RadioButtonGroupTests extends munit.FunSuite {
     val mouse =
       new Pointers(
         Batch(Pointer(Point(5, 25), PointerType.Mouse, MouseButton.LeftMouseButton)),
-        Batch(PointerEvent.PointerClick(5, 25, PointerType.Mouse))
+        Batch(PointerEvent.Click(5, 25, PointerType.Mouse))
       )
 
     val actual =
@@ -155,7 +155,7 @@ class RadioButtonGroupTests extends munit.FunSuite {
     val mouse =
       new Pointers(
         Batch(Pointer(Point(5, 25), PointerType.Mouse, MouseButton.LeftMouseButton)),
-        Batch(PointerEvent.PointerClick(5, 25, PointerType.Mouse))
+        Batch(PointerEvent.Click(5, 25, PointerType.Mouse))
       )
 
     val actual =
