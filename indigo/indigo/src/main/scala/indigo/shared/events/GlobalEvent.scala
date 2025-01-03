@@ -497,9 +497,12 @@ object PointerEvent:
 
     given CanEqual[PointerId, PointerId] = CanEqual.derived
 
+  @deprecated("Use Enter", "0.18.0")
+  type PointerEnter = Enter
+
   /** Pointing device is moved into canvas hit test boundaries. It's counterpart is [[PointerLeave]].
     */
-  final case class PointerEnter(
+  final case class Enter(
       position: Point,
       buttons: Batch[MouseButton],
       isAltKeyDown: Boolean,
@@ -518,11 +521,11 @@ object PointerEvent:
       pointerType: PointerType,
       isPrimary: Boolean
   ) extends PointerEvent
-  object PointerEnter:
-    def unapply(e: PointerEnter): Option[Point] =
+  object Enter:
+    def unapply(e: Enter): Option[Point] =
       Option(e.position)
 
-  /** Pointing device left canvas hit test boundaries. It's counterpart is [[PointerEnter]].
+  /** Pointing device left canvas hit test boundaries. It's counterpart is [[Enter]].
     */
   final case class PointerLeave(
       position: Point,
