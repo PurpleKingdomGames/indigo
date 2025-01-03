@@ -10,7 +10,7 @@ import indigo.shared.events.GlobalEvent
 import indigo.shared.events.MouseEvent
 import indigo.shared.events.PointerEvent.Down
 import indigo.shared.events.PointerEvent.PointerId
-import indigo.shared.events.PointerEvent.PointerUp
+import indigo.shared.events.PointerEvent.Up
 import indigo.shared.events.PointerType
 import indigo.shared.input.Pointer
 import indigo.shared.input.PointerState
@@ -169,7 +169,7 @@ class ButtonTests extends munit.FunSuite {
     val mouse = new PointerState {
       val pointers = new Pointers(
         Batch(Pointer(PointerId(1), PointerType.Mouse, Batch.empty, Point(20, 20))),
-        Batch(PointerUp(20, 20, PointerType.Mouse))
+        Batch(Up(20, 20, PointerType.Mouse))
       )
       val pointerType = Some(PointerType.Mouse)
     }
@@ -185,7 +185,7 @@ class ButtonTests extends munit.FunSuite {
     val mouse = new PointerState {
       val pointers = new Pointers(
         Batch(Pointer(PointerId(1), PointerType.Mouse, Batch.empty, Point(20, 20))),
-        Batch(PointerUp(20, 20, PointerType.Mouse))
+        Batch(Up(20, 20, PointerType.Mouse))
       )
       val pointerType = Some(PointerType.Mouse)
     }
@@ -215,7 +215,7 @@ class ButtonTests extends munit.FunSuite {
     val mouse3 = new PointerState {
       val pointers = new Pointers(
         Batch(Pointer(PointerId(1), PointerType.Mouse, Batch.empty, Point(200, 200))),
-        Batch(PointerUp(200, 200, PointerType.Mouse))
+        Batch(Up(200, 200, PointerType.Mouse))
       )
       val pointerType = Some(PointerType.Mouse)
     }
@@ -250,7 +250,7 @@ class ButtonTests extends munit.FunSuite {
     val mouse3 = new PointerState {
       val pointers = new Pointers(
         Batch(Pointer(PointerId(1), PointerType.Mouse, Batch.empty, Point(200, 200))),
-        Batch(PointerUp(200, 200, PointerType.Mouse))
+        Batch(Up(200, 200, PointerType.Mouse))
       )
       val pointerType = Some(PointerType.Mouse)
     }
