@@ -499,8 +499,10 @@ object PointerEvent:
 
   @deprecated("Use Enter", "0.18.0")
   type PointerEnter = Enter
+  @deprecated("Use Leave", "0.18.0")
+  type PointerLeave = Leave
 
-  /** Pointing device is moved into canvas hit test boundaries. It's counterpart is [[PointerLeave]].
+  /** Pointing device is moved into canvas hit test boundaries. It's counterpart is [[Leave]].
     */
   final case class Enter(
       position: Point,
@@ -527,7 +529,7 @@ object PointerEvent:
 
   /** Pointing device left canvas hit test boundaries. It's counterpart is [[Enter]].
     */
-  final case class PointerLeave(
+  final case class Leave(
       position: Point,
       buttons: Batch[MouseButton],
       isAltKeyDown: Boolean,
@@ -546,8 +548,8 @@ object PointerEvent:
       pointerType: PointerType,
       isPrimary: Boolean
   ) extends PointerEvent
-  object PointerLeave:
-    def unapply(e: PointerLeave): Option[Point] =
+  object Leave:
+    def unapply(e: Leave): Option[Point] =
       Option(e.position)
 
   /** Pointing device is in active buttons state.
