@@ -37,7 +37,7 @@ object PointersScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
       context: SceneContext[SandboxStartupData],
       model: PointersModel
   ): GlobalEvent => Outcome[PointersModel] =
-    case e: PointerEvent.PointerDown =>
+    case e: PointerEvent.Down =>
       Outcome(
         model.copy(isPainting = true).append(e.position)
       )
