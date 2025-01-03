@@ -41,7 +41,7 @@ object PointersScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
       Outcome(
         model.copy(isPainting = true).append(e.position)
       )
-    case e: (PointerEvent.PointerUp | PointerEvent.PointerCancel | PointerEvent.Leave) =>
+    case e: (PointerEvent.Up | PointerEvent.PointerCancel | PointerEvent.Leave) =>
       Outcome(
         model.copy(isPainting = false)
       )

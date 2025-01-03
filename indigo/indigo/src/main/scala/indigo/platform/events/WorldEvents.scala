@@ -390,7 +390,7 @@ final class WorldEvents:
         )
 
         globalEventStream.pushGlobalEvent(
-          PointerUp(
+          Up(
             position,
             buttons,
             e.altKey,
