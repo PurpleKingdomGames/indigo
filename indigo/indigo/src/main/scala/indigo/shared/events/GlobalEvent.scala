@@ -511,6 +511,8 @@ object PointerEvent:
   type PointerMove = Move
   @deprecated("Use Cancel", "0.18.0")
   type PointerCancel = Cancel
+  @deprecated("Use Out", "0.18.0")
+  type PointerOut = Out
 
   /** Pointing device is moved into canvas hit test boundaries. It's counterpart is [[Leave]].
     */
@@ -833,7 +835,7 @@ object PointerEvent:
     *   - after firing the PointerCancel event
     *   - when a pen stylus leaves the hover range detectable by the digitizer.
     */
-  final case class PointerOut(
+  final case class Out(
       position: Point,
       buttons: Batch[MouseButton],
       isAltKeyDown: Boolean,
@@ -852,8 +854,8 @@ object PointerEvent:
       pointerType: PointerType,
       isPrimary: Boolean
   ) extends PointerEvent
-  object PointerOut:
-    def unapply(e: PointerOut): Option[Point] =
+  object Out:
+    def unapply(e: Out): Option[Point] =
       Option(e.position)
 
 /** Represents all keyboard events
