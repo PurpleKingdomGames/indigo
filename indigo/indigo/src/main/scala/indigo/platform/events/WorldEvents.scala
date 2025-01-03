@@ -258,7 +258,7 @@ final class WorldEvents:
         val pointerType      = e.toPointerType
 
         globalEventStream.pushGlobalEvent(
-          PointerLeave(
+          Leave(
             position,
             buttons,
             e.altKey,
