@@ -509,6 +509,8 @@ object PointerEvent:
   type PointerClick = Click
   @deprecated("Use Move", "0.18.0")
   type PointerMove = Move
+  @deprecated("Use Cancel", "0.18.0")
+  type PointerCancel = Cancel
 
   /** Pointing device is moved into canvas hit test boundaries. It's counterpart is [[Leave]].
     */
@@ -802,7 +804,7 @@ object PointerEvent:
     *   - palm rejection
     *   - the browser taking over the manipulations like scroll, drag & drop, pinch & zoom or other
     */
-  final case class PointerCancel(
+  final case class Cancel(
       position: Point,
       buttons: Batch[MouseButton],
       isAltKeyDown: Boolean,
@@ -821,8 +823,8 @@ object PointerEvent:
       pointerType: PointerType,
       isPrimary: Boolean
   ) extends PointerEvent
-  object PointerCancel:
-    def unapply(e: PointerCancel): Option[Point] =
+  object Cancel:
+    def unapply(e: Cancel): Option[Point] =
       Option(e.position)
 
   /** The pointer is no longer sending events because:

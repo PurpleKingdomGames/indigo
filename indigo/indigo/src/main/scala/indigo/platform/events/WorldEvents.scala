@@ -480,7 +480,7 @@ final class WorldEvents:
         val pointerType      = e.toPointerType
 
         globalEventStream.pushGlobalEvent(
-          PointerCancel(
+          Cancel(
             position,
             buttons,
             e.altKey,

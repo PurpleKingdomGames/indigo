@@ -349,7 +349,7 @@ object Pointers:
     val pointersToAdd = Batch.fromArray(
       events
         .filter(_ match {
-          case _: (PointerEvent.PointerCancel | PointerEvent.PointerOut) => false
+          case _: (PointerEvent.Cancel | PointerEvent.PointerOut) => false
           case e                                                         => true
         })
         .foldLeft(Map.empty[PointerId, Pointer])((acc, e) =>
