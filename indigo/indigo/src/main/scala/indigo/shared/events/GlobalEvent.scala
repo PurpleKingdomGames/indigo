@@ -507,6 +507,8 @@ object PointerEvent:
   type PointerUp = Up
   @deprecated("Use Click", "0.18.0")
   type PointerClick = Click
+  @deprecated("Use Move", "0.18.0")
+  type PointerMove = Move
 
   /** Pointing device is moved into canvas hit test boundaries. It's counterpart is [[Leave]].
     */
@@ -744,7 +746,7 @@ object PointerEvent:
 
   /** Pointing device changed coordinates.
     */
-  final case class PointerMove(
+  final case class Move(
       position: Point,
       buttons: Batch[MouseButton],
       isAltKeyDown: Boolean,
@@ -763,15 +765,15 @@ object PointerEvent:
       pointerType: PointerType,
       isPrimary: Boolean
   ) extends PointerEvent
-  object PointerMove:
-    def apply(position: Point): PointerMove =
-      PointerMove(position, PointerType.Mouse)
-    def apply(x: Int, y: Int): PointerMove =
-      PointerMove(Point(x, y), PointerType.Mouse)
-    def apply(x: Int, y: Int, pointerType: PointerType): PointerMove =
-      PointerMove(Point(x, y), pointerType)
-    def apply(position: Point, pointerType: PointerType): PointerMove =
-      PointerMove(
+  object Move:
+    def apply(position: Point): Move =
+      Move(position, PointerType.Mouse)
+    def apply(x: Int, y: Int): Move =
+      Move(Point(x, y), PointerType.Mouse)
+    def apply(x: Int, y: Int, pointerType: PointerType): Move =
+      Move(Point(x, y), pointerType)
+    def apply(position: Point, pointerType: PointerType): Move =
+      Move(
         position = position,
         buttons = Batch.empty,
         isAltKeyDown = false,
@@ -791,7 +793,7 @@ object PointerEvent:
         isPrimary = true
       )
 
-    def unapply(e: PointerMove): Option[Point] =
+    def unapply(e: Move): Option[Point] =
       Option(e.position)
 
   /** The ongoing interactions was cancelled due to:

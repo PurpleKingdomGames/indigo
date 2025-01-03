@@ -32,7 +32,7 @@ class InputStateTests extends munit.FunSuite {
 
   val events1: Batch[PointerEvent] =
     Batch(
-      PointerEvent.PointerMove(10, 10),
+      PointerEvent.Move(10, 10),
       PointerEvent.Down(10, 10),
       PointerEvent.Up(10, 10),
       PointerEvent.Click(10, 10)
@@ -341,7 +341,7 @@ class InputStateTests extends munit.FunSuite {
       KeyboardEvent.KeyDown(Key.KEY_B),
       KeyboardEvent.KeyDown(Key.KEY_C),
       KeyboardEvent.KeyDown(Key.KEY_D),
-      PointerEvent.PointerMove(10, 10),
+      PointerEvent.Move(10, 10),
       PointerEvent.Down(10, 10),
       MouseEvent.Wheel(10, 10, -15)
     )
