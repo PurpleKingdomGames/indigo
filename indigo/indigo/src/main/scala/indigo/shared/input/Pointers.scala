@@ -49,14 +49,14 @@ final class Pointers(
   def pointerReleased(pointerType: Option[PointerType]): Boolean = released(MouseButton.LeftMouseButton, pointerType)
 
   def pointerClicked(pointerType: Option[PointerType]): Boolean = pointerEventsOfType(pointerType).exists {
-    case _: PointerEvent.PointerClick => true
+    case _: PointerEvent.Click => true
     case _                            => false
   }
 
   def pointersClickedAt(pointerType: Option[PointerType]): Batch[Point] =
     pointerEventsOfType(pointerType)
       .filter(_ match {
-        case _: PointerEvent.PointerClick => true
+        case _: PointerEvent.Click => true
         case _                            => false
       })
       .map(_.position)
@@ -142,7 +142,7 @@ final class Pointers(
     */
   def clickedPositionsWith(button: Option[MouseButton], pointerType: Option[PointerType]): Batch[Point] =
     pointerEventsOfType(pointerType).collect {
-      case m: PointerEvent.PointerClick if button == None || m.button == button => m.position
+      case m: PointerEvent.Click if button == None || m.button == button => m.position
     }
 
   /** Whether the specified button was up at the specified position in this frame
