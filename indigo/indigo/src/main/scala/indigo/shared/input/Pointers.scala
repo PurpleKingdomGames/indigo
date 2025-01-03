@@ -84,7 +84,7 @@ final class Pointers(
   def pressed(button: MouseButton, pointerType: Option[PointerType]): Boolean =
     pointerEventsOfType(pointerType)
       .exists {
-        case md: PointerEvent.PointerDown if md.button == Some(button) => true
+        case md: PointerEvent.Down if md.button == Some(button) => true
         case _                                                         => false
       }
 
@@ -133,7 +133,7 @@ final class Pointers(
     */
   def downPositionsWith(button: Option[MouseButton], pointerType: Option[PointerType]): Batch[Point] =
     pointerEventsOfType(pointerType).collect {
-      case m: PointerEvent.PointerDown if button == None || m.button == button => m.position
+      case m: PointerEvent.Down if button == None || m.button == button => m.position
     }
 
   /** All the positions where the specified button was clicked in this frame

@@ -501,6 +501,8 @@ object PointerEvent:
   type PointerEnter = Enter
   @deprecated("Use Leave", "0.18.0")
   type PointerLeave = Leave
+  @deprecated("Use Down", "0.18.0")
+  type PointerDown = Down
 
   /** Pointing device is moved into canvas hit test boundaries. It's counterpart is [[Leave]].
     */
@@ -554,7 +556,7 @@ object PointerEvent:
 
   /** Pointing device is in active buttons state.
     */
-  final case class PointerDown(
+  final case class Down(
       position: Point,
       buttons: Batch[MouseButton],
       isAltKeyDown: Boolean,
@@ -574,23 +576,23 @@ object PointerEvent:
       isPrimary: Boolean,
       button: Option[MouseButton]
   ) extends PointerEvent
-  object PointerDown:
-    def apply(position: Point): PointerDown =
-      PointerDown(position, MouseButton.LeftMouseButton, PointerType.Mouse)
-    def apply(x: Int, y: Int): PointerDown =
-      PointerDown(Point(x, y), MouseButton.LeftMouseButton, PointerType.Mouse)
-    def apply(position: Point, pointerType: PointerType): PointerDown =
-      PointerDown(position, MouseButton.LeftMouseButton, pointerType)
-    def apply(x: Int, y: Int, pointerType: PointerType): PointerDown =
-      PointerDown(Point(x, y), MouseButton.LeftMouseButton, pointerType)
-    def apply(position: Point, button: MouseButton): PointerDown =
-      PointerDown(position, button, PointerType.Mouse)
-    def apply(x: Int, y: Int, button: MouseButton): PointerDown =
-      PointerDown(Point(x, y), button, PointerType.Mouse)
-    def apply(x: Int, y: Int, button: MouseButton, pointerType: PointerType): PointerDown =
-      PointerDown(Point(x, y), button, pointerType)
-    def apply(position: Point, button: MouseButton, pointerType: PointerType): PointerDown =
-      PointerDown(
+  object Down:
+    def apply(position: Point): Down =
+      Down(position, MouseButton.LeftMouseButton, PointerType.Mouse)
+    def apply(x: Int, y: Int): Down =
+      Down(Point(x, y), MouseButton.LeftMouseButton, PointerType.Mouse)
+    def apply(position: Point, pointerType: PointerType): Down =
+      Down(position, MouseButton.LeftMouseButton, pointerType)
+    def apply(x: Int, y: Int, pointerType: PointerType): Down =
+      Down(Point(x, y), MouseButton.LeftMouseButton, pointerType)
+    def apply(position: Point, button: MouseButton): Down =
+      Down(position, button, PointerType.Mouse)
+    def apply(x: Int, y: Int, button: MouseButton): Down =
+      Down(Point(x, y), button, PointerType.Mouse)
+    def apply(x: Int, y: Int, button: MouseButton, pointerType: PointerType): Down =
+      Down(Point(x, y), button, pointerType)
+    def apply(position: Point, button: MouseButton, pointerType: PointerType): Down =
+      Down(
         position = position,
         buttons = Batch(button),
         isAltKeyDown = false,
@@ -611,7 +613,7 @@ object PointerEvent:
         isPrimary = true
       )
 
-    def unapply(e: PointerDown): Option[Point] =
+    def unapply(e: Down): Option[Point] =
       Option(e.position)
 
   /** Pointing device is no longer in active buttons state.
