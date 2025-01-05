@@ -209,4 +209,3 @@ object Switch:
               parentDimensions.height - padding.top - padding.bottom
             )
           )
-
