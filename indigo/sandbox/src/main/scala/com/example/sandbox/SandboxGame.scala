@@ -1,36 +1,6 @@
 package com.example.sandbox
 
-import com.example.sandbox.scenes.Archetype
-import com.example.sandbox.scenes.BoundingCircleScene
-import com.example.sandbox.scenes.BoundsScene
-import com.example.sandbox.scenes.BoxesScene
-import com.example.sandbox.scenes.CameraScene
-import com.example.sandbox.scenes.CameraWithCloneTilesScene
-import com.example.sandbox.scenes.CaptureScreenScene
-import com.example.sandbox.scenes.CaptureScreenScene.CaptureScreenSceneViewModel
-import com.example.sandbox.scenes.ClipScene
-import com.example.sandbox.scenes.ConfettiScene
-import com.example.sandbox.scenes.CratesScene
-import com.example.sandbox.scenes.LegacyEffectsScene
-import com.example.sandbox.scenes.LightsScene
-import com.example.sandbox.scenes.LineReflectionScene
-import com.example.sandbox.scenes.ManyEventHandlers
-import com.example.sandbox.scenes.MutantsScene
-import com.example.sandbox.scenes.NineSliceScene
-import com.example.sandbox.scenes.OriginalScene
-import com.example.sandbox.scenes.PathFindingScene
-import com.example.sandbox.scenes.PointersScene
-import com.example.sandbox.scenes.RefractionScene
-import com.example.sandbox.scenes.Shaders
-import com.example.sandbox.scenes.ShapesScene
-import com.example.sandbox.scenes.TextBoxScene
-import com.example.sandbox.scenes.TextScene
-import com.example.sandbox.scenes.TextureTileScene
-import com.example.sandbox.scenes.TimelineScene
-import com.example.sandbox.scenes.UVShaders
-import com.example.sandbox.scenes.UiScene
-import com.example.sandbox.scenes.UiSceneViewModel
-import com.example.sandbox.scenes.UltravioletScene
+import com.example.sandbox.scenes.*
 import example.TestFont
 import indigo.*
 import indigo.json.Json
@@ -53,7 +23,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
   val viewportHeight: Int     = gameHeight * magnificationLevel // 256
 
   def initialScene(bootData: SandboxBootData): Option[SceneName] =
-    Some(NineSliceScene.name)
+    Some(ComponentUIScene.name)
 
   def scenes(bootData: SandboxBootData): NonEmptyList[Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]] =
     NonEmptyList(
@@ -82,7 +52,8 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
       CameraWithCloneTilesScene,
       PathFindingScene,
       CaptureScreenScene,
-      NineSliceScene
+      NineSliceScene,
+      ComponentUIScene
     )
 
   val eventFilters: EventFilters = EventFilters.Permissive
@@ -191,7 +162,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
         InputField("multi\nline", assets).withKey(BindingKey("multi")).makeMultiLine.moveTo(5, 5),
         true,
         UiSceneViewModel.initial,
-        CaptureScreenSceneViewModel(None, None, Point.zero)
+        CaptureScreenScene.ViewModel(None, None, Point.zero)
       )
     )
   }
@@ -290,7 +261,7 @@ final case class SandboxViewModel(
     multi: InputField,
     useLightingLayer: Boolean,
     uiScene: UiSceneViewModel,
-    captureScreenScene: CaptureScreenSceneViewModel
+    captureScreenScene: CaptureScreenScene.ViewModel
 )
 
 final case class Log(message: String) extends GlobalEvent

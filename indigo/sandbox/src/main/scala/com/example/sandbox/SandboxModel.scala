@@ -1,9 +1,12 @@
 package com.example.sandbox
 
+import com.example.sandbox.scenes.ChangeValue
 import com.example.sandbox.scenes.ConfettiModel
 import com.example.sandbox.scenes.PathFindingModel
 import com.example.sandbox.scenes.PointersModel
 import indigo.*
+import indigo.syntax.*
+import indigoextras.ui.*
 import indigoextras.ui.simple.InputFieldChange
 
 object SandboxModel {
@@ -18,8 +21,182 @@ object SandboxModel {
       ConfettiModel.empty,
       PointersModel.empty,
       PathFindingModel.empty,
-      Radians.zero
+      Radians.zero,
+      0,
+      components
     )
+
+  def components: ComponentGroup[Int] =
+    ComponentGroup(BoundsMode.fixed(200, 300))
+      .add(
+        ComponentList(Dimensions(200, 40)) { (_: Int) =>
+          (1 to 3).toBatch.map { i =>
+            ComponentId("lbl" + i) -> Label[Int](
+              "Custom rendered label " + i,
+              (_, label) => Bounds(0, 0, 150, 10)
+            ) { case (offset, label, dimensions) =>
+              Outcome(
+                Layer(
+                  TextBox(label)
+                    .withColor(RGBA.Red)
+                    .moveTo(offset.unsafeToPoint)
+                    .withSize(dimensions.unsafeToSize)
+                )
+              )
+            }
+          }
+        }
+      )
+      .add(
+        Label[Int](
+          "Another label",
+          (_, label) => Bounds(0, 0, 150, 10)
+        ) { case (offset, label, dimensions) =>
+          Outcome(
+            Layer(
+              TextBox(label)
+                .withColor(RGBA.White)
+                .moveTo(offset.unsafeToPoint)
+                .withSize(dimensions.unsafeToSize)
+            )
+          )
+        }
+      )
+      .add(
+        Switch[Int, Int](BoundsType.fixed(40, 40))(
+          (coords, bounds, _) =>
+            Outcome(
+              Layer(
+                Shape
+                  .Box(
+                    bounds.unsafeToRectangle,
+                    Fill.Color(RGBA.Green.mix(RGBA.Black)),
+                    Stroke(1, RGBA.Green)
+                  )
+                  .moveTo(coords.unsafeToPoint)
+              )
+            ),
+          (coords, bounds, _) =>
+            Outcome(
+              Layer(
+                Shape
+                  .Box(
+                    bounds.unsafeToRectangle,
+                    Fill.Color(RGBA.Red.mix(RGBA.Black)),
+                    Stroke(1, RGBA.Red)
+                  )
+                  .moveTo(coords.unsafeToPoint)
+              )
+            )
+        )
+          .onSwitch(value => Batch(Log("Switched to: " + value)))
+          .switchOn
+      )
+      .add(
+        Button[Int](Bounds(32, 32)) { (coords, bounds, _) =>
+          Outcome(
+            Layer(
+              Shape
+                .Box(
+                  bounds.unsafeToRectangle,
+                  Fill.Color(RGBA.Magenta.mix(RGBA.Black)),
+                  Stroke(1, RGBA.Magenta)
+                )
+                .moveTo(coords.unsafeToPoint)
+            )
+          )
+        }
+          .presentDown { (coords, bounds, _) =>
+            Outcome(
+              Layer(
+                Shape
+                  .Box(
+                    bounds.unsafeToRectangle,
+                    Fill.Color(RGBA.Cyan.mix(RGBA.Black)),
+                    Stroke(1, RGBA.Cyan)
+                  )
+                  .moveTo(coords.unsafeToPoint)
+              )
+            )
+          }
+          .presentOver((coords, bounds, _) =>
+            Outcome(
+              Layer(
+                Shape
+                  .Box(
+                    bounds.unsafeToRectangle,
+                    Fill.Color(RGBA.Yellow.mix(RGBA.Black)),
+                    Stroke(1, RGBA.Yellow)
+                  )
+                  .moveTo(coords.unsafeToPoint)
+              )
+            )
+          )
+          .onClick(Log("Button clicked"))
+          .onPress(Log("Button pressed"))
+          .onRelease(Log("Button released"))
+      )
+      .add(
+        ComponentList(Dimensions(200, 150)) { (_: Int) =>
+          (1 to 3).toBatch.map { i =>
+            ComponentId("radio-" + i) ->
+              ComponentGroup(BoundsMode.fixed(200, 30))
+                .withLayout(ComponentLayout.Horizontal(Padding.right(10)))
+                .add(
+                  Switch[Int, Int](BoundsType.fixed(20, 20))(
+                    (coords, bounds, _) =>
+                      Outcome(
+                        Layer(
+                          Shape
+                            .Circle(
+                              bounds.unsafeToRectangle.toIncircle,
+                              Fill.Color(RGBA.Green.mix(RGBA.Black)),
+                              Stroke(1, RGBA.Green)
+                            )
+                            .moveTo(coords.unsafeToPoint + Point(10))
+                        )
+                      ),
+                    (coords, bounds, _) =>
+                      Outcome(
+                        Layer(
+                          Shape
+                            .Circle(
+                              bounds.unsafeToRectangle.toIncircle,
+                              Fill.Color(RGBA.Red.mix(RGBA.Black)),
+                              Stroke(1, RGBA.Red)
+                            )
+                            .moveTo(coords.unsafeToPoint + Point(10))
+                        )
+                      )
+                  )
+                    .onSwitch { value =>
+                      Batch(
+                        Log("Selected: " + i),
+                        ChangeValue(i)
+                      )
+                    }
+                    .withAutoToggle { (_, ref) =>
+                      if ref == i then Option(SwitchState.On) else Option(SwitchState.Off)
+                    }
+                )
+                .add(
+                  Label[Int](
+                    "Radio " + i,
+                    (_, label) => Bounds(0, 0, 150, 10)
+                  ) { case (offset, label, dimensions) =>
+                    Outcome(
+                      Layer(
+                        TextBox(label)
+                          .withColor(RGBA.Red)
+                          .moveTo(offset.unsafeToPoint)
+                          .withSize(dimensions.unsafeToSize)
+                      )
+                    )
+                  }
+                )
+          }
+        }
+      )
 
   def updateModel(state: SandboxGameModel): GlobalEvent => Outcome[SandboxGameModel] = {
     case rd @ RendererDetails(_, _, _) =>
@@ -141,7 +318,9 @@ final case class SandboxGameModel(
     confetti: ConfettiModel,
     pointers: PointersModel,
     pathfinding: PathFindingModel,
-    rotation: Radians
+    rotation: Radians,
+    num: Int,
+    components: ComponentGroup[Int]
 )
 
 final case class DudeModel(dude: Dude, walkDirection: DudeDirection) {
