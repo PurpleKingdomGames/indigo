@@ -7,7 +7,7 @@ import com.example.sandbox.SandboxStartupData
 import com.example.sandbox.SandboxViewModel
 import indigo.*
 import indigo.scenes.*
-import indigoextras.ui.HitArea
+import indigoextras.ui.simple.HitArea
 
 import scala.annotation.tailrec
 

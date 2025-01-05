@@ -1,4 +1,4 @@
-package indigoextras.ui
+package indigoextras.ui.simple
 
 import indigo.MouseButton
 import indigo.shared.assets.AssetName
