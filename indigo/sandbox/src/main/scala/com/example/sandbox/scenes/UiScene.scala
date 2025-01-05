@@ -6,10 +6,10 @@ import com.example.sandbox.SandboxStartupData
 import com.example.sandbox.SandboxViewModel
 import indigo.*
 import indigo.scenes.*
-import indigoextras.ui.Button
-import indigoextras.ui.ButtonAssets
-import indigoextras.ui.ButtonState
-import indigoextras.ui.HitArea
+import indigoextras.ui.simple.Button
+import indigoextras.ui.simple.ButtonAssets
+import indigoextras.ui.simple.ButtonState
+import indigoextras.ui.simple.HitArea
 
 object UiScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel] {
 

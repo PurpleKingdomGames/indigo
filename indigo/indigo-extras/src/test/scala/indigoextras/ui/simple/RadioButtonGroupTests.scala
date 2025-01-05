@@ -1,4 +1,4 @@
-package indigoextras.ui
+package indigoextras.ui.simple
 
 import indigo.shared.assets.AssetName
 import indigo.shared.collections.Batch

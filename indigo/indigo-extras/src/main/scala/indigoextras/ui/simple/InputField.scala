@@ -1,4 +1,4 @@
-package indigoextras.ui
+package indigoextras.ui.simple
 
 import indigo.shared.BoundaryLocator
 import indigo.shared.Context

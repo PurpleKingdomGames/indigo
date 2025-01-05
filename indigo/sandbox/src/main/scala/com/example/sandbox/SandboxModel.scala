@@ -4,7 +4,7 @@ import com.example.sandbox.scenes.ConfettiModel
 import com.example.sandbox.scenes.PathFindingModel
 import com.example.sandbox.scenes.PointersModel
 import indigo.*
-import indigoextras.ui.InputFieldChange
+import indigoextras.ui.simple.InputFieldChange
 
 object SandboxModel {
 

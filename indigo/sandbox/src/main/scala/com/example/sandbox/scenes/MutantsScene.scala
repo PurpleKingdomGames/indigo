@@ -9,7 +9,7 @@ import com.example.sandbox.SandboxViewModel
 import indigo.*
 import indigo.scenes.*
 import indigo.syntax.*
-import indigoextras.ui.HitArea
+import indigoextras.ui.simple.HitArea
 
 object MutantsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
 

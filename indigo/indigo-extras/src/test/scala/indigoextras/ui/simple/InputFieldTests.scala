@@ -1,4 +1,4 @@
-package indigoextras.ui
+package indigoextras.ui.simple
 
 import indigo.platform.assets.DynamicText
 import indigo.platform.renderer.Renderer

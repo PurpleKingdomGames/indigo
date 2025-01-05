@@ -39,7 +39,7 @@ import indigo.syntax.*
 import indigoextras.effectmaterials.LegacyEffects
 import indigoextras.effectmaterials.Refraction
 import indigoextras.subsystems.FPSCounter
-import indigoextras.ui.*
+import indigoextras.ui.simple.*
 
 import scala.scalajs.js.annotation.*
 
