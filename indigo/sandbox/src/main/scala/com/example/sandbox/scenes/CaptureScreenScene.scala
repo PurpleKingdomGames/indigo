@@ -26,7 +26,7 @@ import org.w3c.dom.css.Rect
 object CaptureScreenScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
 
   type SceneModel     = SandboxGameModel
-  type SceneViewModel = CaptureScreenSceneViewModel
+  type SceneViewModel = ViewModel
 
   val uiKey        = BindingKey("ui")
   val defaultKey   = BindingKey("default")
@@ -39,7 +39,7 @@ object CaptureScreenScene extends Scene[SandboxStartupData, SandboxGameModel, Sa
   def modelLens: Lens[SandboxGameModel, SandboxGameModel] =
     Lens.keepOriginal
 
-  def viewModelLens: Lens[SandboxViewModel, CaptureScreenSceneViewModel] =
+  def viewModelLens: Lens[SandboxViewModel, ViewModel] =
     Lens(
       _.captureScreenScene,
       (m, vm) => m.copy(captureScreenScene = vm)
@@ -59,8 +59,8 @@ object CaptureScreenScene extends Scene[SandboxStartupData, SandboxGameModel, Sa
   def updateViewModel(
       context: SceneContext[SandboxStartupData],
       model: SandboxGameModel,
-      viewModel: CaptureScreenSceneViewModel
-  ): GlobalEvent => Outcome[CaptureScreenSceneViewModel] = {
+      viewModel: ViewModel
+  ): GlobalEvent => Outcome[ViewModel] = {
     case MouseEvent.Click(x, y) if x >= 250 && x <= 266 && y >= 165 && y <= 181 =>
       val screenshots: Set[AssetType] =
         // Capture 2 screenshots, 1 of the full screen and the other of the clipping rectangle
@@ -102,7 +102,7 @@ object CaptureScreenScene extends Scene[SandboxStartupData, SandboxGameModel, Sa
   def present(
       context: SceneContext[SandboxStartupData],
       model: SandboxGameModel,
-      viewModel: CaptureScreenSceneViewModel
+      viewModel: ViewModel
   ): Outcome[SceneUpdateFragment] =
     val screenshotScale = 0.3
     val viewPort        = context.startUpData.gameViewport.size / SandboxGame.magnificationLevel
@@ -150,7 +150,7 @@ object CaptureScreenScene extends Scene[SandboxStartupData, SandboxGameModel, Sa
       )
     )
 
-  def gameLayer(currentState: SandboxGameModel, viewModel: CaptureScreenSceneViewModel): Batch[SceneNode] =
+  def gameLayer(currentState: SandboxGameModel, viewModel: ViewModel): Batch[SceneNode] =
     Batch(
       currentState.dude.walkDirection match {
         case d @ DudeLeft =>
@@ -192,7 +192,7 @@ object CaptureScreenScene extends Scene[SandboxStartupData, SandboxGameModel, Sa
       CloneBatch(dudeCloneId, CloneBatchData(16, 64, Radians.zero, -1.0, 1.0))
     )
 
-  final case class CaptureScreenSceneViewModel(
+  final case class ViewModel(
       screenshot1: Option[AssetName],
       screenshot2: Option[AssetName],
       offset: Point
