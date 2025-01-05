@@ -76,7 +76,8 @@ package object ui {
     indigoextras.ui.components.datatypes.ScrollOptions
 
   type SwitchState = indigoextras.ui.components.datatypes.SwitchState
-  val SwitchState: indigoextras.ui.components.datatypes.SwitchState.type = indigoextras.ui.components.datatypes.SwitchState
+  val SwitchState: indigoextras.ui.components.datatypes.SwitchState.type =
+    indigoextras.ui.components.datatypes.SwitchState
 
   // Datatypes
 
