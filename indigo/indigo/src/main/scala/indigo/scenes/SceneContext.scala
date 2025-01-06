@@ -40,5 +40,5 @@ final class SceneContext[StartUpData](
 
 object SceneContext:
 
-  def fromFrameContext[A](sceneName: SceneName, sceneStartTime: Seconds, ctx: Context[A]): SceneContext[A] =
+  def fromContext[A](sceneName: SceneName, sceneStartTime: Seconds, ctx: Context[A]): SceneContext[A] =
     new SceneContext(sceneName, sceneStartTime, ctx)
