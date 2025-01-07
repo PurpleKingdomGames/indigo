@@ -90,7 +90,7 @@ object UIContext:
       ctx: SceneContext[?],
       reference: ReferenceData
   ): UIContext[ReferenceData] =
-    fromContext(ctx.toFrameContext, reference)
+    fromContext(ctx.toContext, reference)
 
   def fromSubSystemContext[ReferenceData](
       ctx: SubSystemContext[?],

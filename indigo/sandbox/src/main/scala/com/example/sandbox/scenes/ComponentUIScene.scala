@@ -38,7 +38,7 @@ object ComponentUIScene extends Scene[SandboxStartupData, SandboxGameModel, Sand
 
     case e =>
       val ctx =
-        UIContext(context.toFrameContext.forSubSystems.copy(reference = model.num), Size(1), 1)
+        UIContext(context.toContext.forSubSystems.copy(reference = model.num), Size(1), 1)
       summon[Component[ComponentGroup[Int], Int]].updateModel(ctx, model.components)(e).map { cl =>
         model.copy(components = cl)
       }
@@ -56,7 +56,7 @@ object ComponentUIScene extends Scene[SandboxStartupData, SandboxGameModel, Sand
       viewModel: SandboxViewModel
   ): Outcome[SceneUpdateFragment] =
     model.components
-      .present(UIContext(context.toFrameContext.forSubSystems.copy(reference = 0), Size(1), 1))
+      .present(UIContext(context.toContext.forSubSystems.copy(reference = 0), Size(1), 1))
       .map(l => SceneUpdateFragment(l))
 
 final case class ChangeValue(value: Int) extends GlobalEvent
