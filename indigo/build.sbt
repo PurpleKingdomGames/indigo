@@ -4,11 +4,10 @@ import Misc._
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
-val scala3Version = "3.4.1"
+val scala3Version = "3.6.2"
 
-ThisBuild / versionScheme                                  := Some("early-semver")
-ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.6.0"
-ThisBuild / scalaVersion                                   := scala3Version
+ThisBuild / versionScheme := Some("early-semver")
+ThisBuild / scalaVersion  := scala3Version
 
 lazy val indigoVersion = IndigoVersion.getVersion
 
@@ -47,7 +46,9 @@ lazy val publishSettings = {
         email = "indigo@purplekingdomgames.com",
         url = url("https://github.com/davesmith00000")
       )
-    )
+    ),
+    sonatypeCredentialHost := "oss.sonatype.org",
+    sonatypeRepository     := "https://oss.sonatype.org/service/local"
   )
 }
 

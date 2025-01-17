@@ -5,15 +5,15 @@ import sbt.{Def, _}
 object Dependencies {
 
   object Versions {
-    val circe            = "0.14.1"
-    val scalaCheck       = "1.16.0"
+    val circe            = "0.14.10"
+    val scalaCheck       = "1.18.1"
     val scalajsDom       = "2.8.0"
-    val scalajsMacroTask = "1.0.0"
+    val scalajsMacroTask = "1.1.1"
     val scalajsBenchmark = "0.10.0"
     val chartjs          = "1.0.2"
-    val munit            = "0.7.29"
-    val ultraviolet      = "0.3.0"
-    val tyrianVersion    = "0.11.0"
+    val munit            = "1.0.4"
+    val ultraviolet      = "0.4.0"
+    val tyrianVersion    = "0.12.0"
   }
 
   object Shared {
