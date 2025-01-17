@@ -9,28 +9,26 @@ import mill.scalalib.scalafmt._
 import coursier.maven.MavenRepository
 import publish._
 
-import $ivy.`io.github.davidgregory084::mill-tpolecat::0.3.5`
-import io.github.davidgregory084.TpolecatModule
-
 object `indigo-plugin` extends Cross[IndigoPluginModule]("2.12", "2.13")
 
-trait IndigoPluginModule extends CrossScalaModule with PublishModule with ScalafmtModule with TpolecatModule {
+trait IndigoPluginModule extends CrossScalaModule with PublishModule with ScalafmtModule {
+
   def indigoVersion = T.input(IndigoVersion.getVersion)
 
   def scalaVersion =
     crossScalaVersion match {
-      case "2.12" => "2.12.17"
-      case "2.13" => "2.13.10"
-      case _      => "2.13.10"
+      case "2.12" => "2.12.20"
+      case "2.13" => "2.13.16"
+      case _      => "2.13.16"
     }
 
   def artifactName = "indigo-plugin"
 
   def ivyDeps =
     Agg(
-      ivy"com.lihaoyi::os-lib:0.8.0",
-      ivy"io.circe::circe-core:0.14.1",
-      ivy"io.circe::circe-parser:0.14.1"
+      ivy"com.lihaoyi::os-lib:0.11.3",
+      ivy"io.circe::circe-core:0.14.10",
+      ivy"io.circe::circe-parser:0.14.10"
     )
 
   def repositoriesTask = T.task {
@@ -42,7 +40,7 @@ trait IndigoPluginModule extends CrossScalaModule with PublishModule with Scalaf
   object test extends ScalaTests {
     def ivyDeps =
       Agg(
-        ivy"org.scalameta::munit:0.7.29"
+        ivy"org.scalameta::munit:1.0.4"
       )
 
     def testFramework = "munit.Framework"
