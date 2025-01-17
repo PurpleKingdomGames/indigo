@@ -11,12 +11,12 @@ trait IndigoPluginModule extends CrossScalaModule with PublishModule with Scalaf
 
   def scalaVersion =
     crossScalaVersion match {
-      case _ => "2.13.10"
+      case _ => "2.13.16"
     }
 
-  def millLibVersion = "0.11.1"
+  def millLibVersion = "0.12.5"
 
-  def indigoVersion = T.input { IndigoVersion.getVersion }
+  def indigoVersion = T.input { IndigoVersion.getVersion(T.workspace) }
 
   def ivyDeps = Agg(
     ivy"com.lihaoyi::mill-main:${millLibVersion}",
@@ -24,7 +24,7 @@ trait IndigoPluginModule extends CrossScalaModule with PublishModule with Scalaf
     ivy"com.lihaoyi::mill-scalalib:${millLibVersion}",
     ivy"com.lihaoyi::mill-scalajslib:${millLibVersion}",
     ivy"com.lihaoyi::mill-scalalib-api:${millLibVersion}",
-    ivy"com.lihaoyi::os-lib:0.8.0",
+    ivy"com.lihaoyi::os-lib:0.11.3",
     ivy"io.indigoengine::indigo-plugin:${indigoVersion()}"
   )
 
@@ -35,7 +35,7 @@ trait IndigoPluginModule extends CrossScalaModule with PublishModule with Scalaf
   }
 
   object test extends ScalaTests {
-    def ivyDeps = Agg(ivy"org.scalameta::munit:0.7.29")
+    def ivyDeps = Agg(ivy"org.scalameta::munit:1.0.4")
 
     def testFramework = "munit.Framework"
   }
@@ -56,8 +56,8 @@ trait IndigoPluginModule extends CrossScalaModule with PublishModule with Scalaf
 }
 
 object IndigoVersion {
-  def getVersion: String = {
-    def rec(path: String, levels: Int, version: Option[String]): String = {
+  def getVersion(workspaceDir: os.Path): String = {
+    def rec(wd: os.Path, file: String, levels: Int, version: Option[String]): String = {
       val msg = "ERROR: Couldn't find indigo version."
       version match {
         case Some(v) =>
@@ -66,11 +66,11 @@ object IndigoVersion {
 
         case None if levels < 3 =>
           try {
-            val v = scala.io.Source.fromFile(path).getLines().toList.head
-            rec(path, levels, Some(v))
+            val v = os.read.lines(wd / file).head
+            rec(wd, file, levels, Some(v))
           } catch {
             case _: Throwable =>
-              rec("../" + path, levels + 1, None)
+              rec(wd / os.RelPath.up, file, levels + 1, None)
           }
 
         case None =>
@@ -79,6 +79,6 @@ object IndigoVersion {
       }
     }
 
-    rec(".indigo-version", 0, None)
+    rec(workspaceDir, ".indigo-version", 0, None)
   }
 }
