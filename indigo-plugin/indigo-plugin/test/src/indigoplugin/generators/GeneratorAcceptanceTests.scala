@@ -4,15 +4,18 @@ import indigoplugin.IndigoGenerators
 import indigoplugin.FontOptions
 import indigoplugin.CharSet
 import indigoplugin.RGB
+import indigoplugin.utils.Utils
 
 class GeneratorAcceptanceTests extends munit.FunSuite {
 
-  val sourceCSV     = os.pwd / "test-assets" / "data" / "stats.csv"
-  val sourceMD      = os.pwd / "test-assets" / "data" / "stats.md"
-  val sourceColours = os.pwd / "test-assets" / "data" / "colours.txt"
-  val sourceFontTTF = os.pwd / "test-files" / "VCR_OSD_MONO_1.001.ttf"
+  val workspaceDir = Utils.findWorkspace
 
-  val targetDir = os.pwd / "out" / "indigo-plugin-generator-acceptance-test-output"
+  val sourceCSV     = workspaceDir / "test-assets" / "data" / "stats.csv"
+  val sourceMD      = workspaceDir / "test-assets" / "data" / "stats.md"
+  val sourceColours = workspaceDir / "test-assets" / "data" / "colours.txt"
+  val sourceFontTTF = workspaceDir / "test-files" / "VCR_OSD_MONO_1.001.ttf"
+
+  val targetDir = workspaceDir / "out" / "indigo-plugin-generator-acceptance-test-output"
 
   private def cleanUp(): Unit = {
     if (os.exists(targetDir)) {
@@ -126,7 +129,7 @@ class GeneratorAcceptanceTests extends munit.FunSuite {
 
     val files =
       IndigoGenerators("com.example.test").embedMarkdownTable
-        .asEnum("Armour", os.pwd / "test-assets" / "data" / "armour.md")
+        .asEnum("Armour", workspaceDir / "test-assets" / "data" / "armour.md")
         .toSourcePaths(targetDir)
 
     files.headOption match {
@@ -192,7 +195,7 @@ class GeneratorAcceptanceTests extends munit.FunSuite {
 
   test("Can generate Aseprite Data") {
 
-    val jsonFile = os.pwd / "test-assets" / "captain" / "Captain Clown Nose Data.json"
+    val jsonFile = workspaceDir / "test-assets" / "captain" / "Captain Clown Nose Data.json"
 
     val files =
       IndigoGenerators("com.example.test")

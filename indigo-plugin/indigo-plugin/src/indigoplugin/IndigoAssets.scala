@@ -1,5 +1,7 @@
 package indigoplugin
 
+import indigoplugin.utils.Utils
+
 /** Represents you game's assets processing. All assets and details are based around a single asset directory and it's
   * sub-tree.
   *
@@ -13,11 +15,13 @@ final case class IndigoAssets(
     rename: Option[(String, String) => String]
 ) {
 
+  val workspaceDir = Utils.findWorkspace
+
   /** Sets the asset directory path */
   def withAssetDirectory(path: String): IndigoAssets =
     this.copy(
       gameAssetsDirectory =
-        if (path.startsWith("/")) os.Path(path).relativeTo(os.pwd)
+        if (path.startsWith("/")) os.Path(path).relativeTo(workspaceDir)
         else os.RelPath(path)
     )
 
@@ -67,7 +71,7 @@ final case class IndigoAssets(
       .toList
       .filter(path => isCopyAllowed(path.relativeTo(baseDirectory / gameAssetsDirectory)))
   def filesToCopy: List[os.Path] =
-    filesToCopy(os.pwd)
+    filesToCopy(workspaceDir)
 
   /** List all relative paths that will be available to the game. */
   def listAssetFiles(baseDirectory: os.Path): List[os.RelPath] =
@@ -75,7 +79,7 @@ final case class IndigoAssets(
       .filterNot(os.isDir)
       .map(_.relativeTo(baseDirectory / gameAssetsDirectory / os.RelPath.up))
   def listAssetFiles: List[os.RelPath] =
-    listAssetFiles(os.pwd)
+    listAssetFiles(workspaceDir)
 
 }
 
