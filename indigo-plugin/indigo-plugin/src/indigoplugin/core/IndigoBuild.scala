@@ -14,6 +14,8 @@ import indigoplugin.IndigoTemplate.Default
 
 object IndigoBuild {
 
+  private val workspaceDir = Utils.findWorkspace
+
   def build(
       scriptPathBase: Path,
       options: IndigoOptions,
@@ -184,7 +186,7 @@ object IndigoBuild {
       }
   }
   def copyAssets(indigoAssets: IndigoAssets, destAssetsFolder: Path): Unit =
-    copyAssets(os.pwd, indigoAssets, destAssetsFolder)
+    copyAssets(workspaceDir, indigoAssets, destAssetsFolder)
 
   @SuppressWarnings(Array("org.wartremover.warts.Throw"))
   def copyScript(scriptPathBase: Path, destScriptsFolder: Path, fileName: String): Unit = {

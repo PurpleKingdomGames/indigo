@@ -8,17 +8,18 @@ import indigoplugin.generators.ConfigGen
 import indigoplugin.generators.EmbedData
 import indigoplugin.generators.EmbedAseprite
 import indigoplugin.generators.FontGen
+import indigoplugin.utils.Utils
 
 /** Assists with setting up source code generators for Indigo projects
   *
-  * @param outDirectory
-  *   The base output directory, for Mill this will be `os.pwd / "out"`, and sbt will be `Compile / sourceManaged`
   * @param fullyQualifiedPackageName
   *   The package all generated sources will be placed under
   * @param sources
   *   Accumulated source paths
   */
 final case class IndigoGenerators(fullyQualifiedPackageName: String, sources: Seq[os.Path => Seq[os.Path]]) {
+
+  val workspaceDir = Utils.findWorkspace
 
   def toSourcePaths(destination: os.Path): Seq[os.Path] = sources.flatMap(_(destination))
   def toSourcePaths(destination: File): Seq[os.Path]    = sources.flatMap(_(os.Path(destination)))
@@ -60,7 +61,7 @@ final case class IndigoGenerators(fullyQualifiedPackageName: String, sources: Se
   def embed(moduleName: String, file: File)(present: String => String): IndigoGenerators =
     this.copy(
       sources = sources :+
-        EmbedText.generate(moduleName, fullyQualifiedPackageName, os.RelPath(file).resolveFrom(os.pwd), present)
+        EmbedText.generate(moduleName, fullyQualifiedPackageName, os.RelPath(file).resolveFrom(workspaceDir), present)
     )
 
   /** Takes the contents of a text file, and leaves it to you to decide how to turn it into Scala code. The template
@@ -77,7 +78,7 @@ final case class IndigoGenerators(fullyQualifiedPackageName: String, sources: Se
   def embed(moduleName: String, file: String)(present: String => String): IndigoGenerators =
     this.copy(
       sources = sources :+
-        EmbedText.generate(moduleName, fullyQualifiedPackageName, os.RelPath(file).resolveFrom(os.pwd), present)
+        EmbedText.generate(moduleName, fullyQualifiedPackageName, os.RelPath(file).resolveFrom(workspaceDir), present)
     )
 
   /** Embed raw text into a static variable.
@@ -116,7 +117,7 @@ final case class IndigoGenerators(fullyQualifiedPackageName: String, sources: Se
   def embedText(moduleName: String, file: String): IndigoGenerators =
     this.copy(
       sources = sources :+
-        EmbedText.generate(moduleName, fullyQualifiedPackageName, os.RelPath(file).resolveFrom(os.pwd))
+        EmbedText.generate(moduleName, fullyQualifiedPackageName, os.RelPath(file).resolveFrom(workspaceDir))
     )
 
   /** Embed a GLSL shader pair into a Scala module.
@@ -227,8 +228,8 @@ final case class IndigoGenerators(fullyQualifiedPackageName: String, sources: Se
         EmbedGLSLShaderPair.generate(
           moduleName,
           fullyQualifiedPackageName,
-          os.RelPath(vertexShaderPath).resolveFrom(os.pwd),
-          os.RelPath(fragmentShaderPath).resolveFrom(os.pwd),
+          os.RelPath(vertexShaderPath).resolveFrom(workspaceDir),
+          os.RelPath(fragmentShaderPath).resolveFrom(workspaceDir),
           validate
         )
     )
@@ -424,7 +425,7 @@ final case class IndigoGenerators(fullyQualifiedPackageName: String, sources: Se
           EmbedData.generate(
             moduleName,
             fullyQualifiedPackageName,
-            os.RelPath(file).resolveFrom(os.pwd),
+            os.RelPath(file).resolveFrom(workspaceDir),
             delimiter,
             rowFilter,
             embedMode = EmbedData.Mode.AsEnum(None)
@@ -438,7 +439,7 @@ final case class IndigoGenerators(fullyQualifiedPackageName: String, sources: Se
           EmbedData.generate(
             moduleName,
             fullyQualifiedPackageName,
-            os.RelPath(file).resolveFrom(os.pwd),
+            os.RelPath(file).resolveFrom(workspaceDir),
             delimiter,
             rowFilter,
             embedMode = EmbedData.Mode.AsEnum(Option(extendsFrom))
@@ -480,7 +481,7 @@ final case class IndigoGenerators(fullyQualifiedPackageName: String, sources: Se
           EmbedData.generate(
             moduleName,
             fullyQualifiedPackageName,
-            os.RelPath(file).resolveFrom(os.pwd),
+            os.RelPath(file).resolveFrom(workspaceDir),
             delimiter,
             rowFilter,
             embedMode = EmbedData.Mode.AsMap
@@ -573,7 +574,7 @@ final case class IndigoGenerators(fullyQualifiedPackageName: String, sources: Se
           EmbedData.generate(
             moduleName,
             fullyQualifiedPackageName,
-            os.RelPath(file).resolveFrom(os.pwd),
+            os.RelPath(file).resolveFrom(workspaceDir),
             delimiter,
             rowFilter,
             embedMode = EmbedData.Mode.AsCustom(present)
@@ -626,7 +627,7 @@ final case class IndigoGenerators(fullyQualifiedPackageName: String, sources: Se
         EmbedAseprite.generate(
           moduleName,
           fullyQualifiedPackageName,
-          os.RelPath(file).resolveFrom(os.pwd)
+          os.RelPath(file).resolveFrom(workspaceDir)
         )
     )
 
