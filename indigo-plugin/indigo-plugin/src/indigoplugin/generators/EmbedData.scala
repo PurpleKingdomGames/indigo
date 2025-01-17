@@ -202,8 +202,8 @@ final case class DataFrame(data: Array[Array[DataType]], columnCount: Int) {
       rows
         .map { r =>
           s"""  case ${toSafeName(r.head.asString)} extends $moduleName(${r.tail
-            .map(_.asString)
-            .mkString(", ")})"""
+              .map(_.asString)
+              .mkString(", ")})"""
         }
         .mkString("\n")
 
