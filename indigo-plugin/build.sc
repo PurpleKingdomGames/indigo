@@ -13,7 +13,7 @@ object `indigo-plugin` extends Cross[IndigoPluginModule]("2.12", "2.13")
 
 trait IndigoPluginModule extends CrossScalaModule with PublishModule with ScalafmtModule {
 
-  def indigoVersion = T.input(IndigoVersion.getVersion)
+  def indigoVersion = T.input(IndigoVersion.getVersion(T.workspace))
 
   def scalaVersion =
     crossScalaVersion match {
@@ -63,8 +63,8 @@ trait IndigoPluginModule extends CrossScalaModule with PublishModule with Scalaf
 }
 
 object IndigoVersion {
-  def getVersion: String = {
-    def rec(path: String, levels: Int, version: Option[String]): String = {
+  def getVersion(workspaceDir: os.Path): String = {
+    def rec(wd: os.Path, file: String, levels: Int, version: Option[String]): String = {
       val msg = "ERROR: Couldn't find indigo version."
       version match {
         case Some(v) =>
@@ -73,11 +73,11 @@ object IndigoVersion {
 
         case None if levels < 3 =>
           try {
-            val v = scala.io.Source.fromFile(path).getLines().toList.head
-            rec(path, levels, Some(v))
+            val v = os.read.lines(wd / file).head
+            rec(wd, file, levels, Some(v))
           } catch {
             case _: Throwable =>
-              rec("../" + path, levels + 1, None)
+              rec(wd / os.RelPath.up, file, levels + 1, None)
           }
 
         case None =>
@@ -86,6 +86,6 @@ object IndigoVersion {
       }
     }
 
-    rec(".indigo-version", 0, None)
+    rec(workspaceDir, ".indigo-version", 0, None)
   }
 }
