@@ -94,9 +94,9 @@ object AssetListing {
       val msg =
         s"""
         |${BOLD}${RED}Generated asset name collision${if (errors.length == 1) "" else "s"} in asset folder '${if (
-          folderName.isEmpty
-        ) "."
-        else folderName}'${RESET}
+            folderName.isEmpty
+          ) "."
+          else folderName}'${RESET}
         |${YELLOW}You have one or more conflicting asset names. Please change these names, or move them to separate sub-folders within your assets directory.
         |The following assets would have the same names in your generated asset listings code:${RESET}
         |
@@ -189,7 +189,7 @@ object AssetListing {
             (vals, loadable, named)
         }
 
-    val assetSeq: String = {
+    val assetSeq: String =
       if (files.isEmpty) ""
       else
         s"""${renderedFiles.map(_._1).mkString("\n")}
@@ -206,7 +206,6 @@ object AssetListing {
         |${indentSpacesNext}  )
         |
         |""".stripMargin
-    }
 
     val contents =
       s"""${children.map(renderTree(indent + 1, toSafeName)).mkString}""".stripMargin + assetSeq

@@ -63,7 +63,7 @@ final case class IndigoOptions(
     */
   def includeAssetPaths(rules: PartialFunction[String, Boolean]): IndigoOptions = {
     val default: PartialFunction[String, Boolean] = { case _ => false }
-    val pf: os.RelPath => Boolean                 = (r: os.RelPath) => (rules.orElse(default))(r.toString())
+    val pf: os.RelPath => Boolean                 = (r: os.RelPath) => rules.orElse(default)(r.toString())
     this.copy(assets = assets.withInclude(pf))
   }
 
@@ -84,7 +84,7 @@ final case class IndigoOptions(
     */
   def excludeAssetPaths(rules: PartialFunction[String, Boolean]): IndigoOptions = {
     val default: PartialFunction[String, Boolean] = { case _ => false }
-    val pf: os.RelPath => Boolean                 = (r: os.RelPath) => (rules.orElse(default))(r.toString())
+    val pf: os.RelPath => Boolean                 = (r: os.RelPath) => rules.orElse(default)(r.toString())
     this.copy(assets = assets.withExclude(pf))
   }
 
