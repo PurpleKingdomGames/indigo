@@ -9,5 +9,6 @@ jobs:
     - uses: coursier/setup-action@v1
       with:
         java-version: adopt@1.11
+    - uses: sbt/setup-sbt@v1
     - name: Indigo Compile & Test
       run: bash build.sh
