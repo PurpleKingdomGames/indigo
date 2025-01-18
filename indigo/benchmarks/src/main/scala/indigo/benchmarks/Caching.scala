@@ -3,8 +3,8 @@ package indigo.benchmarks
 import indigo.*
 import indigo.facades.WeakMap
 import indigo.shared.QuickCache
-import japgolly.scalajs.benchmark._
-import japgolly.scalajs.benchmark.gui._
+import japgolly.scalajs.benchmark.*
+import japgolly.scalajs.benchmark.gui.*
 
 import scala.scalajs.js
 

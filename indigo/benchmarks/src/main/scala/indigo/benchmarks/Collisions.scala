@@ -1,8 +1,8 @@
 package indigo.benchmarks
 
 import indigo.*
-import japgolly.scalajs.benchmark._
-import japgolly.scalajs.benchmark.gui._
+import japgolly.scalajs.benchmark.*
+import japgolly.scalajs.benchmark.gui.*
 
 object Collisions:
 

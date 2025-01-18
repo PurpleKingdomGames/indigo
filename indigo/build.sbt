@@ -9,6 +9,15 @@ val scala3Version = "3.6.2"
 ThisBuild / versionScheme := Some("early-semver")
 ThisBuild / scalaVersion  := scala3Version
 
+inThisBuild(
+  List(
+    scalaVersion := scala3Version,
+    semanticdbEnabled := true,
+    semanticdbVersion := scalafixSemanticdb.revision,
+    scalafixOnCompile := true
+  )
+)
+
 lazy val indigoVersion = IndigoVersion.getVersion
 
 lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
@@ -19,9 +28,6 @@ lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
   testFrameworks += new TestFramework("munit.Framework"),
   Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
   scalacOptions ++= Seq("-language:strictEquality"),
-  scalafixOnCompile := true,
-  semanticdbEnabled := true,
-  semanticdbVersion := scalafixSemanticdb.revision,
   autoAPIMappings   := true,
   logo              := name.value
 )
