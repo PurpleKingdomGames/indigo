@@ -49,7 +49,7 @@ object TextureTileScene extends Scene[SandboxStartupData, SandboxGameModel, Sand
       context: SceneContext[SandboxStartupData],
       model: SandboxGameModel,
       viewModel: SandboxViewModel
-  ): Outcome[SceneUpdateFragment] = {
+  ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment.empty
         .addLayers(
@@ -65,6 +65,5 @@ object TextureTileScene extends Scene[SandboxStartupData, SandboxGameModel, Sand
           )
         )
     )
-  }
 
 }
