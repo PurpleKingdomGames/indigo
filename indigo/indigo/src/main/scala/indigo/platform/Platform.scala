@@ -28,8 +28,9 @@ import indigo.shared.shader.RawShaderCode
 import org.scalajs.dom
 import org.scalajs.dom.Element
 import org.scalajs.dom.html.Canvas
-import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits._
+import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits.*
 
+import scala.annotation.nowarn
 import scala.util.Failure
 import scala.util.Success
 
@@ -64,10 +65,12 @@ class Platform(
       _ = _canvas = canvas
     } yield (renderer, assetMapping)
 
+  @nowarn("msg=discarded")
   def tick(loop: Double => Unit): Unit =
     if _running then dom.window.requestAnimationFrame(loop)
     ()
 
+  @nowarn("msg=discarded")
   def delay(amount: Double, thunk: () => Unit): Unit =
     dom.window.setTimeout(thunk, amount)
 

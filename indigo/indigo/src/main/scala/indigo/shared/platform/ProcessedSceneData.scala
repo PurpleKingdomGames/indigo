@@ -4,7 +4,6 @@ import indigo.shared.display.DisplayLayer
 import indigo.shared.display.DisplayObject
 import indigo.shared.display.DisplayObjectUniformData
 import indigo.shared.scenegraph.Camera
-import indigo.shared.scenegraph.CloneId
 import indigo.shared.shader.ShaderId
 
 final class ProcessedSceneData(

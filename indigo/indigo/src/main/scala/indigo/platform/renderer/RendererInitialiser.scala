@@ -1,6 +1,5 @@
 package indigo.platform.renderer
 
-import indigo.GameLauncher
 import indigo.facades.WebGL2RenderingContext
 import indigo.platform.assets.DynamicText
 import indigo.platform.events.GlobalEventStream
@@ -18,8 +17,9 @@ import org.scalajs.dom.Element
 import org.scalajs.dom.WebGLRenderingContext
 import org.scalajs.dom.html
 
+import scala.annotation.nowarn
 import scala.scalajs.js.Dynamic
-import scala.scalajs.js.JSConverters._
+import scala.scalajs.js.JSConverters.*
 
 final class RendererInitialiser(
     renderingTechnology: RenderingTechnology,
@@ -79,18 +79,19 @@ final class RendererInitialiser(
       "scalafix:DisableSyntax.var"
     )
   )
+  @nowarn("msg=unused")
   def createNamedCanvas(width: Int, height: Int, name: String, appendToParent: Option[Element]): html.Canvas = {
     var canvas: html.Canvas = dom.document.getElementById(name).asInstanceOf[html.Canvas]
 
     if (canvas == null) {
       canvas = dom.document.createElement("canvas").asInstanceOf[html.Canvas]
 
-      appendToParent match {
+      appendToParent match
         case Some(parent) =>
           parent.appendChild(canvas)
+
         case None =>
           ()
-      }
 
       canvas.id = name
       canvas.width = width

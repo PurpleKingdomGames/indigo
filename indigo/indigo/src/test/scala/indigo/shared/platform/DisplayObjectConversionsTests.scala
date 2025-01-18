@@ -9,13 +9,8 @@ import indigo.shared.QuickCache
 import indigo.shared.assets.AssetName
 import indigo.shared.collections.Batch
 import indigo.shared.config.RenderingTechnology
-import indigo.shared.datatypes.Depth
-import indigo.shared.datatypes.Point
-import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Vector2
-import indigo.shared.datatypes.Vector3
-import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.shared.display.DisplayCloneBatch
 import indigo.shared.display.DisplayCloneTiles
 import indigo.shared.display.DisplayGroup
@@ -25,16 +20,13 @@ import indigo.shared.display.DisplayText
 import indigo.shared.display.DisplayTextLetters
 import indigo.shared.events.GlobalEvent
 import indigo.shared.materials.Material
-import indigo.shared.scenegraph.CloneId
 import indigo.shared.scenegraph.Graphic
-import indigo.shared.scenegraph.Group
-import indigo.shared.scenegraph.RenderNode
 import indigo.shared.scenegraph.SceneNode
 import indigo.shared.shader.Uniform
 import indigo.shared.time.GameTime
 import indigo.shared.time.Seconds
 
-import scala.scalajs.js.JSConverters._
+import scala.scalajs.js.JSConverters.*
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
 class DisplayObjectConversionsTests extends munit.FunSuite {
@@ -70,7 +62,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
         RenderingTechnology.WebGL2,
         256,
         scalajs.js.Array[GlobalEvent](),
-        (e: GlobalEvent) => ()
+        (_: GlobalEvent) => ()
       )
       ._1
       .head match {

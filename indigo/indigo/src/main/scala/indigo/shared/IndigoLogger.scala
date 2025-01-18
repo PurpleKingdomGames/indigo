@@ -1,5 +1,7 @@
 package indigo.shared
 
+import scala.annotation.nowarn
+
 /** A very, very simple logger that logs to the Browsers console with a few standard headers and the log message.
   */
 object IndigoLogger:
@@ -20,6 +22,7 @@ object IndigoLogger:
 
   private val errorString: String => Unit = message => println(formatMessage(ERROR, message))
 
+  @nowarn("msg=unused")
   private val errorOnceString: String => Unit = message =>
     if !errorLogs.contains(message) then
       errorLogs += message
@@ -27,6 +30,7 @@ object IndigoLogger:
 
   private val debugString: String => Unit = message => println(formatMessage(DEBUG, message))
 
+  @nowarn("msg=unused")
   private val debugOnceString: String => Unit = message =>
     if !debugLogs.contains(message) then
       debugLogs += message

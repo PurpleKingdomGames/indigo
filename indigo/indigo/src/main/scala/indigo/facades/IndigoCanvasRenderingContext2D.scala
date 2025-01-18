@@ -3,7 +3,7 @@ package indigo.facades
 import org.scalajs.dom.CanvasRenderingContext2D
 
 import scala.scalajs.js
-import scala.scalajs.js.annotation._
+import scala.scalajs.js.annotation.*
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
 @js.native

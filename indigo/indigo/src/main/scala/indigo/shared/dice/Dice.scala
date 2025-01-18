@@ -117,9 +117,6 @@ object Dice:
   private val isPositive: Int => Boolean =
     _ > 0
 
-  private val sanitise: Int => Int =
-    i => Math.max(1, Math.abs(i))
-
   /** Rolls a number of dice.
     *
     * @param numberOfDice

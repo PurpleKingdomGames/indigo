@@ -1,6 +1,6 @@
 package indigo.shared.datatypes
 
-import util.control.Breaks._
+import util.control.Breaks.*
 
 opaque type Matrix4 = Array[Double]
 

@@ -4,7 +4,7 @@ import com.example.sandbox.scenes.*
 import example.TestFont
 import indigo.*
 import indigo.json.Json
-import indigo.scenes._
+import indigo.scenes.*
 import indigo.syntax.*
 import indigoextras.effectmaterials.LegacyEffects
 import indigoextras.effectmaterials.Refraction
@@ -241,7 +241,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
-        "fps counter".bindingKey ->
+        "fps counter".toBindingKey ->
           Layer.empty
             .withDepth(200.depth)
             .withCamera(Camera.default)

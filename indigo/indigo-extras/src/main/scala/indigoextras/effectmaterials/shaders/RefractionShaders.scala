@@ -5,6 +5,8 @@ import indigo.shared.shader.library.Lighting
 import indigo.shared.shader.library.TileAndStretch
 import ultraviolet.syntax.*
 
+import scala.annotation.nowarn
+
 object RefractionShaders:
 
   trait BlendEnv extends BlendFragmentEnvReference {
@@ -22,6 +24,7 @@ object RefractionShaders:
 
   final case class IndigoRefractionBlendData(REFRACTION_AMOUNT: Float)
 
+  @nowarn("msg=unused")
   inline def refractionFragment =
     Shader[BlendEnv] { env =>
       ubo[IndigoRefractionBlendData]
@@ -38,6 +41,7 @@ object RefractionShaders:
       NINE_SLICE_CENTER: highp[vec4]
   )
 
+  @nowarn("msg=unused")
   inline def normalMinusBlue =
     Shader[FragEnv] { env =>
       import TileAndStretch.*

@@ -1,7 +1,6 @@
 package indigo.platform.events
 
 import indigo.platform.PlatformFullScreen
-import indigo.platform.assets.AssetCollection
 import indigo.platform.assets.AssetLoader
 import indigo.platform.audio.AudioPlayer
 import indigo.platform.networking.Http

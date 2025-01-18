@@ -1,10 +1,10 @@
 package com.example.perf
 
-import indigo._
+import indigo.*
 import indigo.json.Json
 import indigoextras.subsystems.FPSCounter
 
-import scala.scalajs.js.annotation._
+import scala.scalajs.js.annotation.*
 
 @JSExportTopLevel("IndigoGame")
 object PerfGame extends IndigoDemo[Unit, Dude, DudeModel, Unit] {

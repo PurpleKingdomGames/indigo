@@ -1,7 +1,10 @@
 package indigo.shared.dice
 
-import org.scalacheck._
+import org.scalacheck.*
 
+import scala.annotation.nowarn
+
+@nowarn("msg=unused")
 class DiceSpecification extends Properties("Dice") {
 
   property("all dice rolls are in range (fixed sides)") = Prop.forAll(Gen.choose(1, 500)) { noOfSides =>

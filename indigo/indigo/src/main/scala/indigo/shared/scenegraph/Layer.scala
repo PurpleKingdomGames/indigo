@@ -1,7 +1,6 @@
 package indigo.shared.scenegraph
 
 import indigo.shared.collections.Batch
-import indigo.shared.datatypes.BindingKey
 import indigo.shared.datatypes.Depth
 import indigo.shared.materials.BlendMaterial
 

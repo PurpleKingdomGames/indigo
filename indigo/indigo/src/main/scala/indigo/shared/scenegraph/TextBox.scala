@@ -17,8 +17,6 @@ import indigo.shared.datatypes.TextStroke
 import indigo.shared.datatypes.TextStyle
 import indigo.shared.datatypes.Vector2
 import indigo.shared.events.GlobalEvent
-import indigo.shared.shader.ShaderData
-import indigo.shared.shader.StandardShaders
 
 /** Used to draw text on the screen quickly based on a font. Much quicker and eaiser to use that `Text`, however suffers
   * from all the problems of browser rendered fonts, most notably, you cannot have pixel perfect fonts (fine for

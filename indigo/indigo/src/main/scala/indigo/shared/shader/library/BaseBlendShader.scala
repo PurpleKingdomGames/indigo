@@ -1,9 +1,9 @@
 package indigo.shared.shader.library
 
-import indigo.shared.shader.RawShaderCode
-import indigo.shared.shader.ShaderId
 import ultraviolet.datatypes.ShaderResult
 import ultraviolet.syntax.*
+
+import scala.annotation.nowarn
 
 trait BaseBlendShader:
 
@@ -21,6 +21,7 @@ trait BaseBlendShader:
     def fragment(v: vec4): vec4 = v
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+  @nowarn("msg=unused")
   inline def vertexShader[E](
       inline userVertexFn: Shader[E, Unit],
       reference: E
@@ -88,6 +89,7 @@ trait BaseBlendShader:
       ShaderHeader.PrecisionMediumPFloat
     )
 
+  @nowarn("msg=discarded")
   val vertexTemplate: String => String =
     inline def tag = "//vertex_placeholder"
     inline def placeholder = Shader[IndigoUV.VertexEnv]{_ => RawGLSL(tag)}
@@ -103,6 +105,7 @@ trait BaseBlendShader:
     (insert: String) => start + insert + end
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+  @nowarn("msg=unused")
   inline def fragmentShader[E](inline userFragmentFn: Shader[E, Unit], reference: E): Shader[UserDefined, Unit] =
     Shader[UserDefined] { env =>
 
@@ -157,6 +160,7 @@ trait BaseBlendShader:
       ShaderHeader.PrecisionMediumPFloat
     )
 
+  @nowarn("msg=discarded")
   val fragmentTemplate: String => String =
     inline def tag = "//fragment_placeholder"
     inline def placeholder = Shader[IndigoUV.BlendFragmentEnv]{_ => RawGLSL(tag)}

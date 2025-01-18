@@ -7,7 +7,6 @@ import indigo.shared.events.GlobalEvent
 import indigo.shared.materials.Material
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.scenegraph.Text
-import indigo.shared.subsystems.SubSystemContext
 
 final case class PointsTrackerExample(num: Int, startingPoints: Int) extends SubSystem[Int] {
   type EventType      = PointsTrackerEvent

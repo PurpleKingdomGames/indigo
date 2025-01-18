@@ -1,8 +1,11 @@
 package indigo.shared.datatypes
 
 import indigo.shared.dice.Dice
-import org.scalacheck._
+import org.scalacheck.*
 
+import scala.annotation.nowarn
+
+@nowarn("msg=unused")
 class RadiansSpecification extends Properties("Dice") {
 
   property("all random values are within the range of TAU / 2*PI") = Prop.forAll(Gen.long) { seed =>

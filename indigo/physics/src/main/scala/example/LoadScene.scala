@@ -1,6 +1,5 @@
 package example
 
-import example.BallsScene
 import indigo.*
 import indigo.scenes.*
 import indigo.shared.scenegraph.TextBox

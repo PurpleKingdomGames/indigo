@@ -1,6 +1,6 @@
 package indigo.platform.assets
 
-import indigo.platform.assets._
+import indigo.platform.assets.*
 import indigo.shared.PowerOfTwo
 import indigo.shared.assets.AssetName
 import indigo.shared.assets.AssetTag

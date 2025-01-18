@@ -1,6 +1,5 @@
 package indigo.platform.renderer.webgl2
 
-import indigo.BindingKey
 import indigo.Rectangle
 import indigo.facades.WebGL2RenderingContext
 import indigo.platform.assets.DynamicText
@@ -14,7 +13,6 @@ import indigo.platform.renderer.shared.FrameBufferFunctions
 import indigo.platform.renderer.shared.LoadedTextureAsset
 import indigo.platform.renderer.shared.TextureLookupResult
 import indigo.platform.renderer.shared.WebGLHelper
-import indigo.shared.ImageType
 import indigo.shared.QuickCache
 import indigo.shared.assets.AssetName
 import indigo.shared.assets.AssetPath
@@ -33,21 +31,17 @@ import indigo.shared.platform.RendererConfig
 import indigo.shared.scenegraph.Blend
 import indigo.shared.scenegraph.BlendFactor
 import indigo.shared.shader.RawShaderCode
-import indigo.shared.shader.ShaderId
 import indigo.shared.shader.StandardShaders
 import indigo.shared.time.Seconds
 import org.scalajs.dom
-import org.scalajs.dom.Element
-import org.scalajs.dom.OffscreenCanvas
 import org.scalajs.dom.WebGLBuffer
 import org.scalajs.dom.WebGLFramebuffer
 import org.scalajs.dom.WebGLProgram
 import org.scalajs.dom.WebGLRenderingContext
-import org.scalajs.dom.WebGLRenderingContext._
+import org.scalajs.dom.WebGLRenderingContext.*
 import org.scalajs.dom.html
 
-import java.util.Base64
-import scala.scalajs.js.Dynamic
+import scala.annotation.nowarn
 import scala.scalajs.js.typedarray.Float32Array
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
@@ -162,6 +156,7 @@ final class RendererWebGL2(
 
   private given CanEqual[(BlendFactor, BlendFactor), (BlendFactor, BlendFactor)] = CanEqual.derived
 
+  @nowarn("msg=discarded")
   def init(shaders: Set[RawShaderCode]): Unit = {
 
     shaders.foreach { shader =>

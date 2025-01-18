@@ -10,16 +10,14 @@ import indigo.shared.datatypes.BindingKey
 import indigo.shared.events.AssetEvent
 import indigo.shared.events.IndigoSystemEvent
 import org.scalajs.dom
-import org.scalajs.dom.HTMLImageElement
-import org.scalajs.dom._
-import org.scalajs.dom.ext.Ajax
+import org.scalajs.dom.*
 import org.scalajs.dom.html
-import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits._
+import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits.*
 
+import scala.annotation.nowarn
 import scala.concurrent.Future
 import scala.concurrent.Promise
 import scala.scalajs.js
-import scala.scalajs.js.typedarray.ArrayBuffer
 import scala.util.Failure
 import scala.util.Success
 
@@ -177,6 +175,7 @@ object AssetLoader {
     fontAssets => Future.sequence(fontAssets.map(loadFontAsset))
 
   // @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
+  @nowarn("msg=unused")
   def loadFontAsset(fontAsset: AssetType.Font): Future[LoadedFontAsset] =
     IndigoLogger.info(s"[Font] Loading ${fontAsset.path}")
 

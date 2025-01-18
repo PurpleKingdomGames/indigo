@@ -9,10 +9,9 @@ import indigo.shared.display.DisplayObjectUniformData
 import indigo.shared.shader.ShaderId
 import org.scalajs.dom.WebGLBuffer
 import org.scalajs.dom.WebGLProgram
-import org.scalajs.dom.WebGLRenderingContext._
-import org.scalajs.dom.WebGLTexture
+import org.scalajs.dom.WebGLRenderingContext.*
 
-import scala.scalajs.js.JSConverters._
+import scala.scalajs.js.JSConverters.*
 
 class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => WebGLBuffer):
 

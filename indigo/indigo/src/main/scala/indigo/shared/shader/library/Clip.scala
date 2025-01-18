@@ -3,6 +3,8 @@ package indigo.shared.shader.library
 import indigo.shared.shader.library.IndigoUV.*
 import ultraviolet.syntax.*
 
+import scala.annotation.nowarn
+
 object Clip:
 
   trait Env extends VertexEnvReference {
@@ -29,6 +31,7 @@ object Clip:
       CLIP_PLAYMODE_TIMES: highp[Float]
   )
 
+  @nowarn("msg=unused")
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   inline def vertex =
     Shader[Env] { env =>

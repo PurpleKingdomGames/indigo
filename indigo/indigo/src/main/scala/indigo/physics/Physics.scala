@@ -1,12 +1,9 @@
 package indigo.physics
 
 import indigo.*
-import indigo.physics.Collider
-import indigo.physics.Displacement
 import indigo.physics.Friction
 import indigo.physics.Mass
 import indigo.physics.Resistance
-import indigo.physics.World
 import indigo.shared.geometry.LineSegment
 
 import scala.annotation.tailrec
@@ -99,7 +96,6 @@ object Physics:
     def moveCollider[A](timeDelta: Seconds, worldForces: Vector2, worldResistance: Resistance)(
         colliderWithIndex: (Collider[A], Int)
     ): IndexedCollider[A] =
-      val t                 = timeDelta.toDouble
       val (collider, index) = colliderWithIndex
 
       collider match

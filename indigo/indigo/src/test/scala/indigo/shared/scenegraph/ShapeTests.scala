@@ -1,6 +1,6 @@
 package indigo.shared.scenegraph
 
-import indigo._
+import indigo.*
 import indigo.platform.assets.DynamicText
 import indigo.shared.AnimationsRegister
 import indigo.shared.BoundaryLocator

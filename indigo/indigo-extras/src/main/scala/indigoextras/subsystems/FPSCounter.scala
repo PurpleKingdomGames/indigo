@@ -1,6 +1,5 @@
 package indigoextras.subsystems
 
-import indigo.LayerEntry
 import indigo.shared.Outcome
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.datatypes.Fill

@@ -2,14 +2,13 @@ package indigoextras.pathfinding
 
 import indigo.*
 import indigo.shared.dice.Dice
-import indigoextras.pathfinding.PathBuilder
 import indigoextras.pathfinding.PathBuilder.DefaultDiagonalCost
 import indigoextras.pathfinding.PathBuilder.DefaultMaxHeuristicFactor
 import indigoextras.pathfinding.PathBuilder.DefaultSideCost
 import indigoextras.pathfinding.PathBuilder.Movements.*
-import indigoextras.pathfinding.PathFinder
 import org.scalacheck.*
 
+import scala.annotation.nowarn
 import scala.annotation.tailrec
 import scala.scalajs.js
 
@@ -77,6 +76,7 @@ final case class PointWithUserContext(point: Point, ctx: String) derives CanEqua
 object PointWithUserContext:
   def fromPoint(p: Point): PointWithUserContext = PointWithUserContext(p, s"(${p.x},${p.y})")
 
+@nowarn("msg=unused")
 final class PathFinderTests extends Properties("PathFinder") {
 
   private def adjacent(p1: Point, p2: Point): Boolean = Math.abs(p1.x - p2.x) <= 1 && Math.abs(p1.y - p2.y) <= 1

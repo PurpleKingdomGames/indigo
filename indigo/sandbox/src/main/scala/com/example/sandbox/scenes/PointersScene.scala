@@ -9,6 +9,9 @@ import indigo.*
 import indigo.scenes.*
 import org.scalajs.dom
 
+import scala.annotation.nowarn
+
+@nowarn("msg=unused")
 object PointersScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
   // disabling default browser touch actions
   val style = dom.document.createElement("style")

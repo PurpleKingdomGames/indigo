@@ -6,8 +6,8 @@ import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
 import com.example.sandbox.SandboxViewModel
 import example.TestFont
-import indigo._
-import indigo.scenes._
+import indigo.*
+import indigo.scenes.*
 
 object TextScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel] {
 

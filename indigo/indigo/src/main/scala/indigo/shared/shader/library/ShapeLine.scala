@@ -1,7 +1,8 @@
 package indigo.shared.shader.library
 
-import indigo.shared.shader.library.IndigoUV.*
 import ultraviolet.syntax.*
+
+import scala.annotation.nowarn
 
 object ShapeLine:
 
@@ -21,6 +22,7 @@ object ShapeLine:
       END: vec2
   )
 
+  @nowarn("msg=unused")
   inline def fragment =
     Shader[Env] { env =>
       ubo[IndigoShapeData]

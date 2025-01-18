@@ -76,7 +76,7 @@ object Model:
       BoxesAndBallsScene.world(dice)
     )
 
-enum MyTag:
+enum MyTag derives CanEqual:
   case Platform
   case StaticCircle
   case Ball

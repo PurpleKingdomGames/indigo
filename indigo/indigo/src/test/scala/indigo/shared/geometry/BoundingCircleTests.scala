@@ -1,6 +1,5 @@
 package indigo.shared.geometry
 
-import indigo.Radians
 import indigo.Vector2
 import indigo.shared.collections.Batch
 

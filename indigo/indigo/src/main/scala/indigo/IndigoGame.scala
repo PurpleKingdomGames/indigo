@@ -7,7 +7,7 @@ import indigo.scenes.SceneManager
 import indigo.scenes.SceneName
 import indigo.shared.subsystems.SubSystemsRegister
 import org.scalajs.dom.Element
-import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits._
+import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits.*
 
 import scala.concurrent.Future
 

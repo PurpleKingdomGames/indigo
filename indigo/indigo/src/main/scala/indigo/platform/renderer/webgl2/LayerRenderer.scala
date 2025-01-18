@@ -19,17 +19,14 @@ import indigo.shared.display.DisplayText
 import indigo.shared.display.DisplayTextLetters
 import indigo.shared.scenegraph.CloneBatchData
 import indigo.shared.scenegraph.CloneId
-import indigo.shared.scenegraph.CloneTileData
 import indigo.shared.shader.ShaderId
 import org.scalajs.dom
 import org.scalajs.dom.WebGLBuffer
 import org.scalajs.dom.WebGLProgram
 import org.scalajs.dom.WebGLRenderingContext
-import org.scalajs.dom.WebGLRenderingContext._
+import org.scalajs.dom.WebGLRenderingContext.*
 import org.scalajs.dom.WebGLTexture
 
-import scala.annotation.tailrec
-import scala.collection.immutable
 import scala.scalajs.js
 import scala.scalajs.js.typedarray.Float32Array
 
@@ -476,7 +473,6 @@ class LayerRenderer(
     var atlasName: Option[AtlasId]          = None
     var currentShader: ShaderId             = ShaderId("")
     var currentShaderHash: js.Array[String] = new js.Array()
-    var currentBaseTransformHash: Int       = 0
 
     // Clones
     var currentCloneId: CloneId        = CloneId("")

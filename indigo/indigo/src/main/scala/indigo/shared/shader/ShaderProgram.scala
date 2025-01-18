@@ -5,8 +5,10 @@ import indigo.shared.shader.library.BaseBlendShader
 import indigo.shared.shader.library.BaseEntityShader
 import indigo.shared.shader.library.IndigoUV
 import ultraviolet.datatypes.ShaderResult
-import ultraviolet.syntax.vec4
 import ultraviolet.syntax.Shader as UVShader
+import ultraviolet.syntax.vec4
+
+import scala.annotation.nowarn
 
 sealed trait ShaderProgram derives CanEqual:
   def id: ShaderId
@@ -32,6 +34,7 @@ object ShaderProgram:
 final case class UltravioletShader(id: ShaderId, vertex: ShaderResult, fragment: ShaderResult) extends ShaderProgram
 object UltravioletShader:
 
+  @nowarn("msg=unused")
   inline def noopVertex: UVShader[IndigoUV.VertexEnv, Unit] =
     UVShader[IndigoUV.VertexEnv] { _ =>
       def vertex(v: vec4): vec4 =

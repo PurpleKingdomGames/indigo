@@ -8,7 +8,6 @@ import indigo.*
 import indigo.scenes.*
 import indigoextras.ui.simple.Button
 import indigoextras.ui.simple.ButtonAssets
-import indigoextras.ui.simple.ButtonState
 import indigoextras.ui.simple.HitArea
 
 object UiScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel] {

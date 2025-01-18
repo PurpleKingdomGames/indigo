@@ -1,6 +1,5 @@
 package indigo.shared.platform
 
-import indigo.platform.assets.AtlasId
 import indigo.shared.AnimationsRegister
 import indigo.shared.BoundaryLocator
 import indigo.shared.FontRegister
@@ -17,7 +16,6 @@ import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.TextAlignment
 import indigo.shared.datatypes.Vector2
-import indigo.shared.datatypes.Vector3
 import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.shared.display.DisplayCloneBatch
 import indigo.shared.display.DisplayCloneTiles
@@ -31,7 +29,6 @@ import indigo.shared.display.DisplayTextLetters
 import indigo.shared.display.SpriteSheetFrame
 import indigo.shared.display.SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets
 import indigo.shared.events.GlobalEvent
-import indigo.shared.platform.AssetMapping
 import indigo.shared.scenegraph.CloneBatch
 import indigo.shared.scenegraph.CloneId
 import indigo.shared.scenegraph.CloneTileData
@@ -54,8 +51,9 @@ import indigo.shared.shader.Uniform
 import indigo.shared.shader.UniformBlock
 import indigo.shared.time.GameTime
 
+import scala.annotation.nowarn
 import scala.annotation.tailrec
-import scala.scalajs.js.JSConverters._
+import scala.scalajs.js.JSConverters.*
 
 final class DisplayObjectConversions(
     boundaryLocator: BoundaryLocator,
@@ -872,6 +870,7 @@ final class DisplayObjectConversions(
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var accCharDetails: scalajs.js.Array[(FontChar, Int)] = new scalajs.js.Array()
 
+  @nowarn("msg=unused")
   private def zipWithCharDetails(
       charList: Array[Char],
       fontInfo: FontInfo,

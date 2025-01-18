@@ -8,10 +8,8 @@ import indigo.shared.datatypes.Size
 import indigo.shared.geometry.LineSegment
 import indigoextras.utils.Bresenham
 
-import scala.annotation.tailrec
-
 import scalajs.js
-import js.JSConverters._
+import js.JSConverters.*
 
 /** SparseGrid is a collection for managing grid of values where grid squares may or may not actually contain a value.
   */

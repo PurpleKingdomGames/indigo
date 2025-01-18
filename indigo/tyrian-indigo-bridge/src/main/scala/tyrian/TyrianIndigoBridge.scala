@@ -5,6 +5,7 @@ import org.scalajs.dom.Event
 import org.scalajs.dom.EventTarget
 import util.Functions
 
+import scala.annotation.nowarn
 import scala.scalajs.js
 
 final class TyrianIndigoBridge[F[_]: Async, A, Model]:
@@ -26,6 +27,7 @@ final class TyrianIndigoBridge[F[_]: Async, A, Model]:
   def subSystem(indigoGame: IndigoGameId): TyrianSubSystem[F, A, Model] =
     TyrianSubSystem(Option(indigoGame), this)
 
+  @nowarn("msg=unused")
   private def publishToBridge(indigoGameId: Option[IndigoGameId], value: A): Cmd[F, Nothing] =
     Cmd.SideEffect {
       eventTarget.dispatchEvent(TyrianIndigoBridge.BridgeToIndigo(indigoGameId, value))

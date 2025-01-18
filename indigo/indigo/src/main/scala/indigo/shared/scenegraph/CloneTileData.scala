@@ -1,8 +1,6 @@
 package indigo.shared.scenegraph
 
-import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Radians
-import indigo.shared.datatypes.Vector2
 
 /** Represents the allowable transformations of a tile clone.
   */

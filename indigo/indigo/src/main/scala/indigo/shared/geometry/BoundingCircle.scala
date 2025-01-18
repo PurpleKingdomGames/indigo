@@ -2,9 +2,7 @@ package indigo.shared.geometry
 
 import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Circle
-import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
-import indigo.shared.datatypes.Size
 import indigo.shared.datatypes.Vector2
 
 final case class BoundingCircle(position: Vertex, radius: Double) derives CanEqual:

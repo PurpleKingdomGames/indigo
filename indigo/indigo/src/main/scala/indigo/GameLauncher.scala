@@ -4,7 +4,7 @@ import indigo.gameengine.GameEngine
 import org.scalajs.dom.Element
 import org.scalajs.dom.document
 
-import scala.scalajs.js.annotation._
+import scala.scalajs.js.annotation.*
 
 trait GameLauncher[StartUpData, Model, ViewModel]:
 

@@ -3,6 +3,8 @@ package indigo.shared.shader.library
 import indigo.shared.shader.library.IndigoUV.*
 import ultraviolet.syntax.*
 
+import scala.annotation.nowarn
+
 object Lighting:
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
@@ -36,6 +38,7 @@ object Lighting:
   )
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null", "scalafix:DisableSyntax.var"))
+  @nowarn("msg=unused")
   inline def prepare[Env <: LightEnv] =
     Shader[Env] { env =>
 
@@ -105,6 +108,7 @@ object Lighting:
     }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  @nowarn("msg=unused")
   inline def light[Env <: LightEnv] =
     Shader[Env] { env =>
       def light: Unit =
@@ -203,6 +207,7 @@ object Lighting:
         }
     }
 
+  @nowarn("msg=unused")
   inline def composite[Env <: LightEnv] =
     Shader[Env] { env =>
       def composite: Unit =

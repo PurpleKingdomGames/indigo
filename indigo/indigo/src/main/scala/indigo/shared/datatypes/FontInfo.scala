@@ -3,7 +3,6 @@ package indigo.shared.datatypes
 import indigo.shared.QuickCache
 import indigo.shared.collections.Batch
 import indigo.shared.collections.NonEmptyBatch
-import indigo.shared.materials.Material
 
 final case class FontInfo(
     fontKey: FontKey,

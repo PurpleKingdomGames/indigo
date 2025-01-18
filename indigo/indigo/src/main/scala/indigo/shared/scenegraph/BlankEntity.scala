@@ -1,6 +1,5 @@
 package indigo.shared.scenegraph
 
-import indigo.shared.BoundaryLocator
 import indigo.shared.datatypes.Depth
 import indigo.shared.datatypes.Flip
 import indigo.shared.datatypes.Point

@@ -11,7 +11,6 @@ import indigo.shared.scenegraph.SceneNode
 import indigo.shared.scenegraph.TextBox
 import indigo.shared.scenegraph.TextLine
 import indigo.shared.time.GameTime
-import org.scalajs.dom.Screen
 
 /** The Context is the context in which the current frame will be processed.
   *

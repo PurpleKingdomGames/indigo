@@ -3,6 +3,8 @@ package indigo.shared.shader
 import indigo.shared.CacheKey
 import indigo.shared.QuickCache
 
+import scala.annotation.nowarn
+
 final class ShaderRegister:
 
   private given cache: QuickCache[RawShaderCode] = QuickCache.empty
@@ -27,21 +29,25 @@ final class ShaderRegister:
       case s: UltravioletShader =>
         registerUVShader(s)
 
+  @nowarn("msg=discarded")
   def remove(id: ShaderId): Unit =
     cache.purge(CacheKey(id.toString))
 
+  @nowarn("msg=unused")
   def registerEntityShader(shader: EntityShader.Source): Unit =
     QuickCache(shader.id.toString) {
       RawShaderCode.fromEntityShader(shader)
     }
     ()
 
+  @nowarn("msg=unused")
   def registerBlendShader(shader: BlendShader.Source): Unit =
     QuickCache(shader.id.toString) {
       RawShaderCode.fromBlendShader(shader)
     }
     ()
 
+  @nowarn("msg=unused")
   def registerUVShader(shader: UltravioletShader): Unit =
     QuickCache(shader.id.toString) {
       RawShaderCode.fromUltravioletShader(shader)
@@ -51,6 +57,7 @@ final class ShaderRegister:
   def toSet: Set[RawShaderCode] =
     cache.all.map(_._2).toSet
 
+  @nowarn("msg=unused")
   def clearRegister(): Unit =
     cache.purgeAll()
     ()

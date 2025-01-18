@@ -1,7 +1,10 @@
 package indigo.shared
 
-import org.scalacheck._
+import org.scalacheck.*
 
+import scala.annotation.nowarn
+
+@nowarn("msg=unused")
 object PowerOfTwoSpecification extends Properties("PowerOfTwo") {
 
   val validValues: Seq[Int] =

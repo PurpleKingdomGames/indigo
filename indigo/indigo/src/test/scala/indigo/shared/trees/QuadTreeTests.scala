@@ -8,8 +8,6 @@ import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Point
 import indigo.shared.geometry.BoundingBox
 import indigo.shared.geometry.Vertex
-import indigo.shared.trees.QuadTree
-import indigo.shared.trees.QuadTreeValue
 
 class QuadTreeTests extends munit.FunSuite {
   given CanEqual[Option[String], Option[String]] = CanEqual.derived
@@ -560,45 +558,45 @@ class QuadTreeTests extends munit.FunSuite {
           (BoundingBox(2, 0, 2, 4), "b")
         )
 
-    val expected =
-      QuadTree.Branch(
-        BoundingBox(0, 0, 5, 5),
-        QuadTree.Branch(
-          BoundingBox(Vertex(0, 0), Vertex(2.5, 2.5)),
-          QuadTree.Leaf(BoundingBox(Vertex(0, 0), Vertex(1.25, 1.25)), BoundingBox(0.5, 0.5, 1, 1), "a"),
-          QuadTree.Branch(
-            BoundingBox(Vertex(1.25, 0), Vertex(1.25, 1.25)),
-            QuadTree.Leaf(BoundingBox(Vertex(1.25, 0), Vertex(0.625, 0.625)), BoundingBox(0.5, 0.5, 1, 1), "a"),
-            QuadTree
-              .Leaf(BoundingBox(Vertex(1.875, 0), Vertex(0.625, 0.625)), BoundingBox(Vertex(2, 0), Vertex(2, 4)), "b"),
-            QuadTree.Leaf(BoundingBox(Vertex(1.25, 0.625), Vertex(0.625, 0.625)), BoundingBox(0.5, 0.5, 1, 1), "a"),
-            QuadTree.Leaf(
-              BoundingBox(Vertex(1.875, 0.625), Vertex(0.625, 0.625)),
-              BoundingBox(Vertex(2, 0), Vertex(2, 4)),
-              "b"
-            )
-          ),
-          QuadTree.Leaf(BoundingBox(Vertex(0, 1.25), Vertex(1.25, 1.25)), BoundingBox(0.5, 0.5, 1, 1), "a"),
-          QuadTree.Branch(
-            BoundingBox(Vertex(1.25, 1.25), Vertex(1.25, 1.25)),
-            QuadTree.Leaf(BoundingBox(Vertex(1.25, 1.25), Vertex(0.625, 0.625)), BoundingBox(0.5, 0.5, 1, 1), "a"),
-            QuadTree.Leaf(
-              BoundingBox(Vertex(1.875, 1.25), Vertex(0.625, 0.625)),
-              BoundingBox(Vertex(2, 0), Vertex(2, 4)),
-              "b"
-            ),
-            QuadTree.Empty(BoundingBox(Vertex(1.25, 1.875), Vertex(0.625, 0.625))),
-            QuadTree.Leaf(
-              BoundingBox(Vertex(1.875, 1.875), Vertex(0.625, 0.625)),
-              BoundingBox(Vertex(2, 0), Vertex(2, 4)),
-              "b"
-            )
-          )
-        ),
-        QuadTree.Leaf(BoundingBox(Vertex(2.5, 0), Vertex(2.5, 2.5)), BoundingBox(Vertex(2, 0), Vertex(2, 4)), "b"),
-        QuadTree.Leaf(BoundingBox(Vertex(0, 2.5), Vertex(2.5, 2.5)), BoundingBox(Vertex(2, 0), Vertex(2, 4)), "b"),
-        QuadTree.Leaf(BoundingBox(Vertex(2.5, 2.5), Vertex(2.5, 2.5)), BoundingBox(Vertex(2, 0), Vertex(2, 4)), "b")
-      )
+    // val expected =
+    //   QuadTree.Branch(
+    //     BoundingBox(0, 0, 5, 5),
+    //     QuadTree.Branch(
+    //       BoundingBox(Vertex(0, 0), Vertex(2.5, 2.5)),
+    //       QuadTree.Leaf(BoundingBox(Vertex(0, 0), Vertex(1.25, 1.25)), BoundingBox(0.5, 0.5, 1, 1), "a"),
+    //       QuadTree.Branch(
+    //         BoundingBox(Vertex(1.25, 0), Vertex(1.25, 1.25)),
+    //         QuadTree.Leaf(BoundingBox(Vertex(1.25, 0), Vertex(0.625, 0.625)), BoundingBox(0.5, 0.5, 1, 1), "a"),
+    //         QuadTree
+    //           .Leaf(BoundingBox(Vertex(1.875, 0), Vertex(0.625, 0.625)), BoundingBox(Vertex(2, 0), Vertex(2, 4)), "b"),
+    //         QuadTree.Leaf(BoundingBox(Vertex(1.25, 0.625), Vertex(0.625, 0.625)), BoundingBox(0.5, 0.5, 1, 1), "a"),
+    //         QuadTree.Leaf(
+    //           BoundingBox(Vertex(1.875, 0.625), Vertex(0.625, 0.625)),
+    //           BoundingBox(Vertex(2, 0), Vertex(2, 4)),
+    //           "b"
+    //         )
+    //       ),
+    //       QuadTree.Leaf(BoundingBox(Vertex(0, 1.25), Vertex(1.25, 1.25)), BoundingBox(0.5, 0.5, 1, 1), "a"),
+    //       QuadTree.Branch(
+    //         BoundingBox(Vertex(1.25, 1.25), Vertex(1.25, 1.25)),
+    //         QuadTree.Leaf(BoundingBox(Vertex(1.25, 1.25), Vertex(0.625, 0.625)), BoundingBox(0.5, 0.5, 1, 1), "a"),
+    //         QuadTree.Leaf(
+    //           BoundingBox(Vertex(1.875, 1.25), Vertex(0.625, 0.625)),
+    //           BoundingBox(Vertex(2, 0), Vertex(2, 4)),
+    //           "b"
+    //         ),
+    //         QuadTree.Empty(BoundingBox(Vertex(1.25, 1.875), Vertex(0.625, 0.625))),
+    //         QuadTree.Leaf(
+    //           BoundingBox(Vertex(1.875, 1.875), Vertex(0.625, 0.625)),
+    //           BoundingBox(Vertex(2, 0), Vertex(2, 4)),
+    //           "b"
+    //         )
+    //       )
+    //     ),
+    //     QuadTree.Leaf(BoundingBox(Vertex(2.5, 0), Vertex(2.5, 2.5)), BoundingBox(Vertex(2, 0), Vertex(2, 4)), "b"),
+    //     QuadTree.Leaf(BoundingBox(Vertex(0, 2.5), Vertex(2.5, 2.5)), BoundingBox(Vertex(2, 0), Vertex(2, 4)), "b"),
+    //     QuadTree.Leaf(BoundingBox(Vertex(2.5, 2.5), Vertex(2.5, 2.5)), BoundingBox(Vertex(2, 0), Vertex(2, 4)), "b")
+    //   )
 
     // Searching
     assertEquals(actual.searchByLine(Vertex(0, 2), Vertex(1, 0)).map(_.value), Batch("a", "a"))

@@ -3,6 +3,8 @@ package indigo.shared.shader.library
 import indigo.shared.shader.library.IndigoUV.*
 import ultraviolet.syntax.*
 
+import scala.annotation.nowarn
+
 object LightingBlend:
 
   trait Env extends BlendFragmentEnvReference {
@@ -13,6 +15,7 @@ object LightingBlend:
 
   case class IndigoLightingBlendData(AMBIENT_LIGHT_COLOR: vec4)
 
+  @nowarn("msg=unused")
   inline def fragment =
     Shader[Env] { env =>
       ubo[IndigoLightingBlendData]

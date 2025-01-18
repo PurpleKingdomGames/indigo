@@ -3,7 +3,6 @@ package example
 import indigo.*
 import indigo.physics.*
 import indigo.scenes.*
-import indigo.syntax.*
 
 trait PhysicsScene extends Scene[Unit, Model, Unit]:
 

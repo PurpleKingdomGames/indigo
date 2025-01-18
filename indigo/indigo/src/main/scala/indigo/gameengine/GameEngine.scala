@@ -1,8 +1,7 @@
 package indigo.gameengine
 
 import indigo.platform.Platform
-import indigo.platform.assets.DynamicText
-import indigo.platform.assets._
+import indigo.platform.assets.*
 import indigo.platform.audio.AudioPlayer
 import indigo.platform.events.GlobalEventStream
 import indigo.platform.input.GamepadInputCaptureImpl
@@ -14,7 +13,7 @@ import indigo.shared.FontRegister
 import indigo.shared.IndigoLogger
 import indigo.shared.Outcome
 import indigo.shared.Startup
-import indigo.shared.animation._
+import indigo.shared.animation.*
 import indigo.shared.assets.AssetName
 import indigo.shared.assets.AssetType
 import indigo.shared.collections.Batch
@@ -32,7 +31,7 @@ import indigo.shared.shader.ShaderRegister
 import indigo.shared.shader.StandardShaders
 import indigo.shared.shader.UltravioletShader
 import org.scalajs.dom.Element
-import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits._
+import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits.*
 
 import scala.compiletime.uninitialized
 import scala.concurrent.Future

@@ -4,21 +4,15 @@ import indigo.facades.IndigoCanvasRenderingContext2D
 import indigo.facades.IndigoTextMetrics
 import indigo.shared.datatypes.Font
 import indigo.shared.datatypes.FontFamily
-import indigo.shared.datatypes.FontStyle
-import indigo.shared.datatypes.FontVariant
-import indigo.shared.datatypes.FontWeight
 import indigo.shared.datatypes.Pixels
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.TextAlign
-import indigo.shared.datatypes.TextBaseLine
-import indigo.shared.datatypes.TextDirection
 import indigo.shared.datatypes.TextStyle
 import org.scalajs.dom
 import org.scalajs.dom.HTMLCanvasElement
 import org.scalajs.dom.html
 
 import scala.scalajs.js.Dynamic
-import scala.scalajs.js.undefined
 
 final class DynamicText:
 
@@ -30,7 +24,7 @@ final class DynamicText:
     val weight  = f.weight.toCSS
     s"$style $variant $weight ${f.size.toInt}px ${f.family.name}"
 
-  private def setupText(text: String, style: TextStyle, width: Int, height: Int): Unit =
+  private def setupText(style: TextStyle, width: Int, height: Int): Unit =
     textContext.canvas.width = width
     textContext.canvas.height = height
     textContext.font = toFontStatement(style.font)
@@ -55,7 +49,7 @@ final class DynamicText:
       .asInstanceOf[IndigoCanvasRenderingContext2D]
 
   def makeTextImageData(text: String, style: TextStyle, width: Int, height: Int): HTMLCanvasElement =
-    setupText(text, style, width, height)
+    setupText(style, width, height)
 
     val x: Int =
       style.alignment match
@@ -77,7 +71,7 @@ final class DynamicText:
 
   // @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
   def measureText(text: String, style: TextStyle, width: Int, height: Int): Rectangle =
-    setupText(text, style, width, height)
+    setupText(style, width, height)
 
     val textMetrics: IndigoTextMetrics =
       textContext.measureText(text).asInstanceOf[IndigoTextMetrics]

@@ -1,8 +1,7 @@
 package indigo.shared.scenegraph
 
 import indigo.shared.BoundaryLocator
-import indigo.shared.datatypes._
-import indigo.shared.datatypes.mutable.CheapMatrix4
+import indigo.shared.datatypes.*
 import indigo.shared.events.GlobalEvent
 import indigo.shared.shader.ShaderData
 

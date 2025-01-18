@@ -4,8 +4,8 @@ import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
 import com.example.sandbox.SandboxViewModel
-import indigo._
-import indigo.scenes._
+import indigo.*
+import indigo.scenes.*
 
 object CameraScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel] {
 
@@ -52,9 +52,7 @@ object CameraScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
       context: SceneContext[SandboxStartupData],
       model: SandboxGameModel,
       viewModel: SandboxViewModel
-  ): Outcome[SceneUpdateFragment] = {
-    val viewCenter: Point = context.startUpData.viewportCenter
-
+  ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
         Layer(
@@ -82,6 +80,5 @@ object CameraScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
         // .withZoom(zoom.at(context.frame.time.running * 0.35))
       }
     )
-  }
 
 }

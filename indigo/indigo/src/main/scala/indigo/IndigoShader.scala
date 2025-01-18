@@ -7,8 +7,9 @@ import indigo.shared.shader.library
 import indigo.shared.shader.library.IndigoUV.BlendFragmentEnvReference
 import indigo.shared.subsystems.SubSystemsRegister
 import org.scalajs.dom.Element
-import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits._
+import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits.*
 
+import scala.annotation.nowarn
 import scala.concurrent.Future
 
 /** A trait representing a shader that fills the available window.
@@ -123,9 +124,7 @@ trait IndigoShader extends GameLauncher[IndigoShaderModel, IndigoShaderModel, Un
     )
 
   private def setup(
-      bootData: IndigoShaderModel,
-      assetCollection: AssetCollection,
-      dice: Dice
+      bootData: IndigoShaderModel
   ): Outcome[Startup[IndigoShaderModel]] =
     Outcome(
       Startup.Success(
@@ -137,7 +136,6 @@ trait IndigoShader extends GameLauncher[IndigoShaderModel, IndigoShaderModel, Un
     Outcome(startupData)
 
   private def updateModel(
-      context: Context[IndigoShaderModel],
       model: IndigoShaderModel
   ): GlobalEvent => Outcome[IndigoShaderModel] = {
     case ViewportResize(vp) =>
@@ -151,7 +149,6 @@ trait IndigoShader extends GameLauncher[IndigoShaderModel, IndigoShaderModel, Un
   }
 
   private def present(
-      context: Context[IndigoShaderModel],
       model: IndigoShaderModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(
@@ -200,16 +197,16 @@ trait IndigoShader extends GameLauncher[IndigoShaderModel, IndigoShaderModel, Un
       new StandardFrameProcessor(
         new SubSystemsRegister(),
         eventFilters,
-        (ctx, m) => (e: GlobalEvent) => updateModel(ctx, m)(e),
+        (_, m) => (e: GlobalEvent) => updateModel(m)(e),
         updateViewModel,
-        (ctx, m, _) => present(ctx, m)
+        (_, m, _) => present(m)
       )
 
     new GameEngine[IndigoShaderModel, IndigoShaderModel, Unit](
       Set(),
       Set(),
       boot.shaders,
-      (ac: AssetCollection) => (d: Dice) => setup(boot.bootData, ac, d),
+      (_: AssetCollection) => (_: Dice) => setup(boot.bootData),
       (sd: IndigoShaderModel) => initialModel(sd),
       (_: IndigoShaderModel) => (_: IndigoShaderModel) => Outcome(()),
       frameProcessor,
@@ -259,6 +256,7 @@ object SceneBlendShader:
   object Env:
     val reference: Env = new Env {}
 
+  @nowarn
   inline def fragment =
     Shader[Env] { env =>
       def fragment(color: vec4): vec4 =

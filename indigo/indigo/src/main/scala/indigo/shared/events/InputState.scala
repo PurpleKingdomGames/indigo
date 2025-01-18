@@ -1,7 +1,6 @@
 package indigo.shared.events
 
 import indigo.shared.collections.Batch
-import indigo.shared.events.MouseEvent
 import indigo.shared.input.Gamepad
 import indigo.shared.input.Keyboard
 import indigo.shared.input.Mouse

@@ -9,9 +9,11 @@ import indigo.shared.events.EventFilters
 import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.subsystems.SubSystemContext
-import indigo.shared.subsystems.SubSystemContext._
+import indigo.shared.subsystems.SubSystemContext.*
 import indigo.shared.subsystems.SubSystemsRegister
 import indigo.shared.time.Seconds
+
+import scala.annotation.nowarn
 
 class SceneManager[StartUpData, GameModel, ViewModel](
     scenes: NonEmptyList[Scene[StartUpData, GameModel, ViewModel]],
@@ -29,6 +31,7 @@ class SceneManager[StartUpData, GameModel, ViewModel](
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var lastSceneChangeAt: Seconds = Seconds.zero
 
+  @nowarn("msg=unused")
   private val subSystemStates: scalajs.js.Dictionary[SubSystemsRegister[GameModel]] =
     scalajs.js.Dictionary
       .empty[SubSystemsRegister[GameModel]]

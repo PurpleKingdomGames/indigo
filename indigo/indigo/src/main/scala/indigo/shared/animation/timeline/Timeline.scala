@@ -2,7 +2,6 @@ package indigo.shared.animation.timeline
 
 import indigo.shared.collections.Batch
 import indigo.shared.temporal.Signal
-import indigo.shared.temporal.SignalFunction
 import indigo.shared.time.Seconds
 
 import scala.annotation.tailrec

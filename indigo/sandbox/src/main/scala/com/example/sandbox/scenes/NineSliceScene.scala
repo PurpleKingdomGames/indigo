@@ -4,9 +4,8 @@ import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
 import com.example.sandbox.SandboxViewModel
-import indigo._
-import indigo.scenes._
-import indigoextras.effectmaterials.Refraction
+import indigo.*
+import indigo.scenes.*
 
 object NineSliceScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel] {
 
@@ -51,8 +50,6 @@ object NineSliceScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbo
       model: SandboxGameModel,
       viewModel: SandboxViewModel
   ): Outcome[SceneUpdateFragment] = {
-    val viewCenter: Point = context.startUpData.viewportCenter
-
     val boxSizeValue: Int = boxSize(context.frame.time.running)
 
     Outcome(

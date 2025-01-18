@@ -3,7 +3,6 @@ package indigo.shared.shader
 import indigo.shared.assets.AssetName
 import indigo.shared.collections.Batch
 import indigo.shared.shader.ShaderId
-import indigo.shared.shader.UniformBlock
 
 final case class ShaderData(
     shaderId: ShaderId,

@@ -1,7 +1,8 @@
 package indigo.shared.shader.library
 
-import indigo.shared.shader.library.IndigoUV.*
 import ultraviolet.syntax.*
+
+import scala.annotation.nowarn
 
 object Blit:
 
@@ -17,6 +18,7 @@ object Blit:
       NINE_SLICE_CENTER: highp[vec4]
   )
 
+  @nowarn("msg=unused")
   inline def fragment =
     Shader[Env] { env =>
       import TileAndStretch.*

@@ -1,6 +1,6 @@
 package indigo.shared.formats
 
-import indigo._
+import indigo.*
 
 class TileSheetTests extends munit.FunSuite:
   private val tileWidth  = 16

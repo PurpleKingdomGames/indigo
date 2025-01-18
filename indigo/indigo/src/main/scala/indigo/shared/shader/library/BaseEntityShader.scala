@@ -1,9 +1,9 @@
 package indigo.shared.shader.library
 
-import indigo.shared.shader.RawShaderCode
-import indigo.shared.shader.ShaderId
 import ultraviolet.datatypes.ShaderResult
 import ultraviolet.syntax.*
+
+import scala.annotation.nowarn
 
 trait BaseEntityShader:
 
@@ -46,6 +46,7 @@ trait BaseEntityShader:
     UserDefined
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+  @nowarn("msg=unused")
   inline def vertexShader[E](inline userVertexFn: Shader[E, Unit], reference: E): Shader[VertexEnv, Unit] =
     Shader[VertexEnv] { env =>
       @layout(0) @in val a_verticesAndCoords: vec4    = null
@@ -239,6 +240,7 @@ trait BaseEntityShader:
       ShaderHeader.PrecisionMediumPFloat
     )
 
+  @nowarn("msg=discarded")
   val vertexTemplate: String => String =
     inline def tag = "//vertex_placeholder"
     inline def placeholder = Shader[IndigoUV.VertexEnv] {_ => RawGLSL(tag)}
@@ -257,6 +259,8 @@ trait BaseEntityShader:
   protected type FragmentEnv = IndigoDynamicLightingData & UserDefined
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+  @nowarn("msg=unused")
+  @nowarn("msg=unset")
   inline def fragmentShader[E](
     inline userFragmentFn: Shader[E, Unit],
     inline userPrepareFn: Shader[E, Unit],
@@ -410,16 +414,19 @@ trait BaseEntityShader:
         fragColor = COLOR
       }
 
+  @nowarn("msg=unused")
   inline def noopPrepare[E]: Shader[E, Unit] =
     Shader[E] { _ =>
       def prepare: Unit = ()
     }
 
+  @nowarn("msg=unused")
   inline def noopLight[E]: Shader[E, Unit] =
     Shader[E] { _ =>
       def light: Unit = ()
     }
 
+  @nowarn("msg=unused")
   inline def noopComposite[E]: Shader[E, Unit] =
     Shader[E] { _ =>
       def composite: Unit = ()
@@ -489,6 +496,7 @@ trait BaseEntityShader:
       ShaderHeader.PrecisionMediumPFloat
     )
 
+  @nowarn("msg=discarded")
   val fragmentTemplate: String => String =
     inline def tag = "//fragment_placeholder"
     inline def placeholder = Shader[IndigoUV.FragmentEnv]{_ => RawGLSL(tag)}

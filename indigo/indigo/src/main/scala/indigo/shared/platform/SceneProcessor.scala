@@ -13,12 +13,9 @@ import indigo.shared.display.DisplayObject
 import indigo.shared.display.DisplayObjectUniformData
 import indigo.shared.events.GlobalEvent
 import indigo.shared.materials.BlendMaterial
-import indigo.shared.platform.AssetMapping
-import indigo.shared.platform.ProcessedSceneData
 import indigo.shared.scenegraph.AmbientLight
 import indigo.shared.scenegraph.Blending
 import indigo.shared.scenegraph.CloneBlank
-import indigo.shared.scenegraph.CloneId
 import indigo.shared.scenegraph.DirectionLight
 import indigo.shared.scenegraph.EntityNode
 import indigo.shared.scenegraph.Falloff
@@ -33,7 +30,8 @@ import indigo.shared.scenegraph.Sprite
 import indigo.shared.shader.ShaderData
 import indigo.shared.time.GameTime
 
-import scala.scalajs.js.JSConverters._
+import scala.annotation.nowarn
+import scala.scalajs.js.JSConverters.*
 
 final class SceneProcessor(
     boundaryLocator: BoundaryLocator,
@@ -55,6 +53,7 @@ final class SceneProcessor(
     uniformsCache.purgeAllNow()
   }
 
+  @nowarn("msg=unused")
   def processScene(
       gameTime: GameTime,
       scene: SceneUpdateFragment,

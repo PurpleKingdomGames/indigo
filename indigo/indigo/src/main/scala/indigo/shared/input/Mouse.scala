@@ -6,11 +6,7 @@ import indigo.shared.datatypes.Rectangle
 import indigo.shared.events.MouseButton
 import indigo.shared.events.MouseEvent
 import indigo.shared.events.MouseWheel
-import indigo.shared.events.PointerEvent
-import indigo.shared.events.PointerEvent.PointerId
 import indigo.shared.events.PointerType
-
-import scala.annotation.tailrec
 
 final class Mouse(val pointers: Pointers, val wheelEvents: Batch[MouseEvent.Wheel]) extends PointerState {
   val pointerType: Option[PointerType] = Some(PointerType.Mouse)

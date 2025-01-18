@@ -11,7 +11,7 @@ import org.scalajs.dom.html
 
 import scala.annotation.tailrec
 
-import scalajs.js.JSConverters._
+import scalajs.js.JSConverters.*
 
 object TextureAtlas {
 
