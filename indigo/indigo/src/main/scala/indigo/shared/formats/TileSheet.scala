@@ -1,6 +1,6 @@
 package indigo.shared.formats
 
-import indigo._
+import indigo.*
 
 /** Utility for working with generic sprite sheets. The sheet must be uniform, with each sprite having the same width
   * and height, and a (possibly zero-pixel) inner margin.

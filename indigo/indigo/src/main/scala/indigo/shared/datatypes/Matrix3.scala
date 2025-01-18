@@ -1,6 +1,6 @@
 package indigo.shared.datatypes
 
-import util.control.Breaks._
+import util.control.Breaks.*
 
 final case class Matrix3(private val mat: Array[Double]) derives CanEqual:
 

@@ -1,6 +1,5 @@
 package com.example.sandbox.scenes
 
-import com.example.sandbox.Log
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGame
 import com.example.sandbox.SandboxGameModel
@@ -9,7 +8,6 @@ import com.example.sandbox.SandboxViewModel
 import indigo.*
 import indigo.scenes.*
 import indigo.syntax.*
-import indigoextras.ui.simple.HitArea
 
 object MutantsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
 

@@ -95,7 +95,7 @@ object BoundsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
         .scaleBy(2, 2)
         .moveTo(50, 120)
         .rotateTo(Radians.fromSeconds(context.frame.time.running * speed))
-        .withBindingKey("Sprite bounds anim".bindingKey)
+        .withBindingKey("Sprite bounds anim".toBindingKey)
 
     val group: Group =
       Group(

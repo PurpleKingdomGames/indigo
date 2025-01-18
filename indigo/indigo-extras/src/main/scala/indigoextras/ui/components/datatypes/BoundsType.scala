@@ -1,6 +1,5 @@
 package indigoextras.ui.components.datatypes
 
-import indigoextras.ui.components.datatypes.Padding
 import indigoextras.ui.datatypes.Bounds
 
 /** Describes how a component should be sized within its parent.

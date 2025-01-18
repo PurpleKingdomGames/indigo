@@ -1,8 +1,11 @@
 package indigo.shared.datatypes
 
 import indigo.shared.dice.Dice
-import org.scalacheck._
+import org.scalacheck.*
 
+import scala.annotation.nowarn
+
+@nowarn("msg=unused")
 class PointSpecification extends Properties("Dice") {
 
   property("all random values are within the max range and >= 0") = Prop.forAll(Gen.choose(0, 500)) { max =>

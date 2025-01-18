@@ -6,7 +6,7 @@ import indigo.shared.JsonSupportFunctions
 import indigo.shared.datatypes.FontChar
 import indigo.shared.formats.Aseprite
 import indigo.shared.formats.TiledMap
-import io.circe.parser._
+import io.circe.parser.*
 
 object Json extends JsonSupportFunctions {
 

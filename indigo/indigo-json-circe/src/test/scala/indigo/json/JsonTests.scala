@@ -2,7 +2,7 @@ package indigo.json
 
 import indigo.shared.datatypes.FontChar
 import indigo.shared.datatypes.Rectangle
-import indigo.shared.formats._
+import indigo.shared.formats.*
 
 class JsonTests extends munit.FunSuite {
 

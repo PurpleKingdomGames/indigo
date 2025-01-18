@@ -6,8 +6,8 @@ import indigo.shared.geometry.Vertex
 import indigo.shared.time.Millis
 import indigo.shared.time.Seconds
 
+import scala.annotation.nowarn
 import scala.compiletime.*
-import scala.deriving.Mirror
 
 trait ToUniformBlock[T]:
   def toUniformBlock(value: T): UniformBlock
@@ -16,6 +16,7 @@ object ToUniformBlock:
   import scala.deriving.*
   import scala.compiletime.{erasedValue, summonInline}
 
+  @nowarn("msg=duplicated")
   inline given derived[T](using m: Mirror.ProductOf[T]): ToUniformBlock[T] =
     new ToUniformBlock[T]:
       def toUniformBlock(value: T): UniformBlock =

@@ -2,7 +2,6 @@ package indigo.shared.config
 
 import indigo.shared.datatypes.RGBA
 import indigo.shared.datatypes.Rectangle
-import indigo.shared.datatypes.Size
 import indigo.shared.time.FPS
 
 import scala.annotation.targetName

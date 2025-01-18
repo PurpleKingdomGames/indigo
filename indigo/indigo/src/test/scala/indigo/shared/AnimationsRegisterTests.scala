@@ -18,6 +18,9 @@ import indigo.shared.time.GameTime
 import indigo.shared.time.Millis
 import indigo.shared.time.Seconds
 
+import scala.annotation.nowarn
+
+@nowarn("msg=unused")
 class AnimationsRegisterTests extends munit.FunSuite {
 
   given CanEqual[Option[AnimationMemento], Option[AnimationMemento]] = CanEqual.derived

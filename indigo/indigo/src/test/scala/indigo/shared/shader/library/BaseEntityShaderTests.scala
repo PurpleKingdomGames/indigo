@@ -3,6 +3,10 @@ package indigo.shared.shader.library
 import indigo.shared.shader.EntityShader
 import ultraviolet.syntax.*
 
+import scala.annotation.nowarn
+
+@nowarn("msg=unused")
+@nowarn("msg=discarded")
 class BaseEntityShaderTests extends munit.FunSuite {
 
   test("Base WebGL 2.0 vertex shader") {

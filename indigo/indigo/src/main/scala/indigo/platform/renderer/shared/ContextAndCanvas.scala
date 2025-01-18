@@ -1,6 +1,5 @@
 package indigo.platform.renderer.shared
 
-import org.scalajs.dom.OffscreenCanvas
 import org.scalajs.dom.WebGLRenderingContext
 import org.scalajs.dom.html
 

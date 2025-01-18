@@ -1,12 +1,8 @@
 package indigo.platform.renderer
 
-import indigo.shared.ImageType
 import indigo.shared.assets.AssetType
 import indigo.shared.collections.Batch
 import indigo.shared.config.RenderingTechnology
-import indigo.shared.datatypes.BindingKey
-import indigo.shared.datatypes.Rectangle
-import indigo.shared.datatypes.Size
 import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.shared.platform.ProcessedSceneData
 import indigo.shared.shader.RawShaderCode

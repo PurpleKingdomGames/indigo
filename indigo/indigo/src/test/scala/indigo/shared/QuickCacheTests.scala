@@ -1,6 +1,9 @@
 package indigo.shared
 
+import scala.annotation.nowarn
+
 @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+@nowarn("msg=unused")
 class QuickCacheTests extends munit.FunSuite {
 
   test("cache behaviour checks") {

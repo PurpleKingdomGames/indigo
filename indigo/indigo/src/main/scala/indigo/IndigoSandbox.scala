@@ -4,7 +4,7 @@ import indigo.entry.StandardFrameProcessor
 import indigo.gameengine.GameEngine
 import indigo.shared.subsystems.SubSystemsRegister
 import org.scalajs.dom.Element
-import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits._
+import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits.*
 
 import scala.concurrent.Future
 

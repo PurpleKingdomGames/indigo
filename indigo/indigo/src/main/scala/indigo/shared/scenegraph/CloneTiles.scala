@@ -1,8 +1,7 @@
 package indigo.shared.scenegraph
 
-import indigo.shared.BoundaryLocator
 import indigo.shared.collections.Batch
-import indigo.shared.datatypes._
+import indigo.shared.datatypes.*
 import indigo.shared.events.GlobalEvent
 
 /** Represents many clones of the same cloneblank, differentiated by their transform data and which part of the texture

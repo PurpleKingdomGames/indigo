@@ -1,7 +1,8 @@
 package indigo.shared.shader.library
 
-import indigo.shared.shader.library.IndigoUV.*
 import ultraviolet.syntax.*
+
+import scala.annotation.nowarn
 
 object ShapePolygon:
 
@@ -32,6 +33,7 @@ object ShapePolygon:
   @SuppressWarnings(
     Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null", "scalafix:DisableSyntax.while")
   )
+  @nowarn("msg=unused")
   inline def fragment =
     Shader[Env] { env =>
       import ShapeShaderFunctions.*

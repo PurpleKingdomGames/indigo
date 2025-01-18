@@ -18,7 +18,6 @@ import indigo.shared.shader.Uniform
 import indigo.shared.shader.UniformBlock
 import indigo.shared.shader.UniformBlockName
 import indigo.shared.shader.library.IndigoUV.VertexEnv
-import indigo.shared.shader.library.NoOp
 import indigoextras.effectmaterials.shaders.LegacyEffectsShaders
 
 final case class LegacyEffects(

@@ -1,8 +1,7 @@
 package indigo.shared.scenegraph
 
-import indigo.shared.BoundaryLocator
 import indigo.shared.collections.Batch
-import indigo.shared.datatypes._
+import indigo.shared.datatypes.*
 import indigo.shared.events.GlobalEvent
 
 /** Used to group elements to allow them to be manipulated as a collection.

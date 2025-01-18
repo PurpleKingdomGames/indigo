@@ -1,6 +1,6 @@
 package com.example.perf
 
-import indigo._
+import indigo.*
 
 object PerfModel {
 

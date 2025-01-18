@@ -2,8 +2,9 @@ package indigo.shared.shader.library
 
 import indigo.shared.shader.RawShaderCode
 import indigo.shared.shader.ShaderId
-import indigo.shared.shader.library.IndigoUV.*
 import ultraviolet.syntax.*
+
+import scala.annotation.nowarn
 
 object WebGL1 extends RawShaderCode:
 
@@ -18,6 +19,7 @@ object WebGL1 extends RawShaderCode:
 object WebGL1BaseShaders:
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null", "scalafix:DisableSyntax.var"))
+  @nowarn("msg=unused")
   object vertex:
     inline def shader =
       Shader[WebGL1Env] { env =>
@@ -75,6 +77,7 @@ object WebGL1BaseShaders:
     val output = shader.toGLSL[WebGL1]
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
+  @nowarn("msg=unused")
   object fragment:
     inline def shader =
       Shader[WebGL1Env] { env =>

@@ -5,7 +5,6 @@ import com.example.sandbox.DudeIdle
 import com.example.sandbox.DudeLeft
 import com.example.sandbox.DudeRight
 import com.example.sandbox.DudeUp
-import com.example.sandbox.Fonts
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGame
 import com.example.sandbox.SandboxGameModel
@@ -15,13 +14,9 @@ import indigo.*
 import indigo.platform.renderer.ScreenCaptureConfig
 import indigo.scenes.*
 import indigo.shared.assets.AssetTypePrimitive
-import indigo.shared.datatypes.RGB.Green
-import indigo.shared.datatypes.RGB.Indigo
 import indigo.shared.scenegraph.Shape
 import indigo.shared.scenegraph.Shape.Box
 import indigo.syntax.*
-import org.scalajs.dom.document
-import org.w3c.dom.css.Rect
 
 object CaptureScreenScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
 

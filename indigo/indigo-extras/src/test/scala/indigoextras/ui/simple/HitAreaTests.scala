@@ -1,22 +1,14 @@
 package indigoextras.ui.simple
 
 import indigo.MouseButton
-import indigo.Radians
-import indigo.shared.assets.AssetName
 import indigo.shared.collections.Batch
-import indigo.shared.datatypes.Depth
-import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
-import indigo.shared.events.GlobalEvent
-import indigo.shared.events.MouseEvent
 import indigo.shared.events.PointerEvent.Down
 import indigo.shared.events.PointerEvent.PointerId
 import indigo.shared.events.PointerType
 import indigo.shared.input.Pointer
 import indigo.shared.input.PointerState
 import indigo.shared.input.Pointers
-import indigo.shared.materials.Material
-import indigo.shared.scenegraph.Graphic
 
 class HitAreaTests extends munit.FunSuite {
   val bounds        = Rectangle(10, 10, 100, 100)

@@ -1,11 +1,10 @@
 package indigoextras.ui.simple
 
-import indigo.shared.BoundaryLocator
 import indigo.shared.Context
 import indigo.shared.Outcome
 import indigo.shared.collections.Batch
 import indigo.shared.constants.Key
-import indigo.shared.datatypes._
+import indigo.shared.datatypes.*
 import indigo.shared.events.GlobalEvent
 import indigo.shared.events.MouseButton
 import indigo.shared.scenegraph.Graphic

@@ -1,9 +1,12 @@
 package indigo.shared.trees
 
 import indigo.shared.geometry.BoundingBox
+import org.scalacheck.*
 import org.scalacheck.Prop.propBoolean
-import org.scalacheck._
 
+import scala.annotation.nowarn
+
+@nowarn("msg=unused")
 object QuadTreeSpecification extends Properties("QuadTree") {
 
   val gen: Gen[Double] = Gen.choose(1, 100)

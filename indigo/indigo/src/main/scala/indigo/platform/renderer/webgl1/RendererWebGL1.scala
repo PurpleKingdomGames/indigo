@@ -11,7 +11,6 @@ import indigo.platform.renderer.shared.ContextAndCanvas
 import indigo.platform.renderer.shared.LoadedTextureAsset
 import indigo.platform.renderer.shared.TextureLookupResult
 import indigo.platform.renderer.shared.WebGLHelper
-import indigo.shared.ImageType
 import indigo.shared.assets.AssetType
 import indigo.shared.collections.Batch
 import indigo.shared.config.GameViewport
@@ -36,11 +35,9 @@ import org.scalajs.dom
 import org.scalajs.dom.WebGLBuffer
 import org.scalajs.dom.WebGLProgram
 import org.scalajs.dom.WebGLRenderingContext
-import org.scalajs.dom.WebGLRenderingContext._
-import org.scalajs.dom.WebGLUniformLocation
+import org.scalajs.dom.WebGLRenderingContext.*
 import org.scalajs.dom.html
 
-import java.util.Base64
 import scala.scalajs.js.typedarray.Float32Array
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.null"))

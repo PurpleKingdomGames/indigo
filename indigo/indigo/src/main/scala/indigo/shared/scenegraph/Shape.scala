@@ -2,6 +2,7 @@ package indigo.shared.scenegraph
 
 import indigo.shared.BoundaryLocator
 import indigo.shared.collections.Batch
+import indigo.shared.datatypes.Circle as C
 import indigo.shared.datatypes.Depth
 import indigo.shared.datatypes.Fill
 import indigo.shared.datatypes.Flip
@@ -12,14 +13,13 @@ import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Size
 import indigo.shared.datatypes.Stroke
 import indigo.shared.datatypes.Vector2
-import indigo.shared.datatypes.Circle as C
 import indigo.shared.events.GlobalEvent
 import indigo.shared.materials.LightingModel
 import indigo.shared.materials.LightingModel.Lit
 import indigo.shared.materials.LightingModel.Unlit
 import indigo.shared.shader.ShaderData
 import indigo.shared.shader.ShaderId
-import indigo.shared.shader.ShaderPrimitive._
+import indigo.shared.shader.ShaderPrimitive.*
 import indigo.shared.shader.StandardShaders
 import indigo.shared.shader.Uniform
 import indigo.shared.shader.UniformBlock

@@ -1,5 +1,7 @@
 package indigo.shared
 
+import scala.annotation.nowarn
+
 /** QuickCache is a handy way to avoid expensive re-calculation of data. It is a side-effecting arrangement that Indigo
   * uses a lot internally, that can also be used by cautious game devs. Simple example:
   *
@@ -37,6 +39,7 @@ final class QuickCache[A](private val cache: scalajs.js.Dictionary[A]):
     this
   }
 
+  @nowarn("msg=unused")
   def purge(key: CacheKey): QuickCache[A] = {
     cache.remove(key.toString)
     this

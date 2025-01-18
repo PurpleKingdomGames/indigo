@@ -1,15 +1,6 @@
 package indigo.scenes
 
-import indigo.shared.BoundaryLocator
 import indigo.shared.Context
-import indigo.shared.datatypes.Rectangle
-import indigo.shared.dice.Dice
-import indigo.shared.events.InputState
-import indigo.shared.input.Gamepad
-import indigo.shared.input.Keyboard
-import indigo.shared.input.Mouse
-import indigo.shared.scenegraph.SceneNode
-import indigo.shared.time.GameTime
 import indigo.shared.time.Seconds
 
 /** SceneContext is a Scene specific equivalent of `Context`, and exposes all of the fields and methods of a normal

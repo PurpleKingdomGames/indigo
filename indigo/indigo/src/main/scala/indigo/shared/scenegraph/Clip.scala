@@ -1,7 +1,5 @@
 package indigo.shared.scenegraph
 
-import indigo.shared.BoundaryLocator
-import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Depth
 import indigo.shared.datatypes.Flip
 import indigo.shared.datatypes.Point
@@ -12,12 +10,9 @@ import indigo.shared.datatypes.Vector2
 import indigo.shared.events.GlobalEvent
 import indigo.shared.materials.Material
 import indigo.shared.shader.ShaderData
-import indigo.shared.shader.ShaderPrimitive.float
 import indigo.shared.shader.StandardShaders
 import indigo.shared.shader.ToUniformBlock
-import indigo.shared.shader.Uniform
 import indigo.shared.shader.UniformBlock
-import indigo.shared.shader.UniformBlockName
 import indigo.shared.time.FPS
 import indigo.shared.time.Seconds
 

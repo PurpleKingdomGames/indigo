@@ -3,6 +3,8 @@ package indigo.shared.shader.library
 import indigo.shared.shader.library.IndigoUV.*
 import ultraviolet.syntax.*
 
+import scala.annotation.nowarn
+
 object BlendEffects:
 
   trait Env extends BlendFragmentEnvReference {
@@ -23,6 +25,7 @@ object BlendEffects:
       GRADIENT_TO_COLOR: vec4
   )
 
+  @nowarn("msg=unused")
   inline def fragment =
     Shader[Env] { env =>
       import ImageEffectFunctions.*

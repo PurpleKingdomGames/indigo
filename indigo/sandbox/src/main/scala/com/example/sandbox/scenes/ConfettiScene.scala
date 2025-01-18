@@ -1,15 +1,11 @@
 package com.example.sandbox.scenes
 
-import com.example.sandbox.Log
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
 import com.example.sandbox.SandboxViewModel
 import indigo.*
 import indigo.scenes.*
-import indigoextras.ui.simple.HitArea
-
-import scala.annotation.tailrec
 
 import scalajs.js
 import scalajs.js.JSConverters.*

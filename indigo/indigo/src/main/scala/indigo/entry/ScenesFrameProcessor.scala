@@ -1,22 +1,15 @@
 package indigo.entry
 
 import indigo.gameengine.FrameProcessor
-import indigo.platform.renderer.Renderer
 import indigo.scenes.SceneManager
-import indigo.shared.BoundaryLocator
 import indigo.shared.Context
 import indigo.shared.Outcome
 import indigo.shared.collections.Batch
-import indigo.shared.datatypes.BindingKey
-import indigo.shared.datatypes.Rectangle
-import indigo.shared.dice.Dice
 import indigo.shared.events.EventFilters
 import indigo.shared.events.GlobalEvent
-import indigo.shared.events.InputState
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.subsystems.SubSystemContext.*
 import indigo.shared.subsystems.SubSystemsRegister
-import indigo.shared.time.GameTime
 
 final class ScenesFrameProcessor[StartUpData, Model, ViewModel](
     val subSystemsRegister: SubSystemsRegister[Model],

@@ -9,8 +9,7 @@ import indigo.shared.dice.Dice
 import indigo.shared.events.FrameTick
 import indigo.shared.events.GlobalEvent
 import indigo.shared.events.SubSystemEvent
-import indigo.shared.scenegraph.SceneNode
-import indigo.shared.scenegraph._
+import indigo.shared.scenegraph.*
 import indigo.shared.subsystems.SubSystem
 import indigo.shared.subsystems.SubSystemContext
 import indigo.shared.subsystems.SubSystemId
@@ -18,7 +17,7 @@ import indigo.shared.temporal.Signal
 import indigo.shared.temporal.SignalReader
 import indigo.shared.time.GameTime
 import indigo.shared.time.Seconds
-import indigoextras.subsystems.AutomataEvent._
+import indigoextras.subsystems.AutomataEvent.*
 
 import scalajs.js
 import scalajs.js.JSConverters.*

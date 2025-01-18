@@ -8,7 +8,6 @@ import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Size
 import indigo.shared.events.GlobalEvent
 import indigo.shared.input.PointerState
-import indigo.shared.scenegraph.EntityNode
 import indigo.shared.scenegraph.Graphic
 import indigo.shared.scenegraph.Group
 import indigo.shared.scenegraph.SceneNode

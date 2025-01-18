@@ -3,11 +3,9 @@ package com.example.sandbox.scenes
 import com.example.sandbox.*
 import indigo.*
 import indigo.scenes.*
-import indigo.scenes.*
-import indigo.syntax.*
-import indigoextras.pathfinding.PathBuilder.Movements.*
-import indigoextras.pathfinding.PathBuilder.*
 import indigoextras.pathfinding.*
+import indigoextras.pathfinding.PathBuilder.*
+import indigoextras.pathfinding.PathBuilder.Movements.*
 
 import scala.scalajs.js
 import scala.scalajs.js.JSConverters.*

@@ -1,10 +1,8 @@
 package indigo.shared.datatypes.mutable
 
 import indigo.shared.datatypes.Matrix4
-import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.Vector3
 import indigo.shared.datatypes.mutable
-import indigo.shared.datatypes.mutable.CheapMatrix4
 
 import scala.scalajs.js
 

@@ -1,7 +1,6 @@
 package indigo.physics
 
 import indigo.*
-import indigo.physics.Collider
 import indigo.physics.Resistance
 import indigo.syntax.*
 
@@ -182,11 +181,6 @@ final case class World[A](
       render: Collider[A] => SceneNode
   ): Batch[SceneNode] =
     (colliders ++ transient).filterNot(filterNot).map(render)
-
-  private val minSize: Double =
-    colliders.map(_.boundingBox.size.x).foldLeft(Double.MaxValue) { case (acc, next) =>
-      if next < acc then next else acc
-    }
 
   def update(timeDelta: Seconds): Outcome[World[A]] =
     Physics.update(timeDelta, this, Batch.empty, settings)

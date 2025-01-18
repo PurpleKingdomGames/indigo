@@ -4,9 +4,6 @@ import indigo.shared.assets.AssetName
 import indigo.shared.collections.Batch
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.datatypes.Point
-import indigo.shared.formats.TileSet
-import indigo.shared.formats.TiledLayer
-import indigo.shared.formats.TiledMap
 import indigo.shared.scenegraph.Graphic
 import indigo.shared.scenegraph.Group
 

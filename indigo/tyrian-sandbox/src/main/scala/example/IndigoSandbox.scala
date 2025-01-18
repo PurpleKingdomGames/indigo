@@ -3,8 +3,8 @@ package example
 import cats.effect.IO
 import example.game.MyAwesomeGame
 import org.scalajs.dom.document
-import tyrian.Html.*
 import tyrian.*
+import tyrian.Html.*
 import tyrian.cmds.Logger
 import tyrian.cmds.Random
 

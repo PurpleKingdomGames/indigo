@@ -8,12 +8,10 @@ import indigo.shared.collections.Batch
 import indigo.shared.config.GameViewport
 import indigo.shared.config.RenderingTechnology
 import indigo.shared.constants.Key
-import indigo.shared.constants.KeyLocation
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.RGBA
 import indigo.shared.datatypes.Radians
-import indigo.shared.datatypes.Size
 
 /** A trait that tells Indigo to allow this instance into the event loop for the duration of one frame.
   */

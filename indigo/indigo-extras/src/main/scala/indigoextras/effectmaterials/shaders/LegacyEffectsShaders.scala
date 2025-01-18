@@ -6,9 +6,12 @@ import indigo.shared.shader.library.Lighting
 import indigo.shared.shader.library.TileAndStretch
 import ultraviolet.syntax.*
 
+import scala.annotation.nowarn
+
 object LegacyEffectsShaders:
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null", "scalafix:DisableSyntax.var"))
+  @nowarn("msg=unused")
   inline def vertex =
     Shader[VertexEnv] { env =>
       @out var v_offsetTL: vec2 = null
@@ -90,6 +93,7 @@ object LegacyEffectsShaders:
   )
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
+  @nowarn("msg=unused")
   inline def fragment =
     Shader[Env] { env =>
       import ImageEffectFunctions.*

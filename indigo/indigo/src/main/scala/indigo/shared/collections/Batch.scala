@@ -1,7 +1,6 @@
 package indigo.shared.collections
 
 import scala.annotation.tailrec
-import scala.annotation.targetName
 import scala.reflect.ClassTag
 import scala.util.control.NonFatal
 
@@ -415,7 +414,6 @@ object Batch:
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def sequenceOption[A](b: Batch[Option[A]]): Option[Batch[A]] =
-    import indigo.syntax.==:
     @tailrec
     def rec(remaining: Batch[Option[A]], acc: Batch[A]): Option[Batch[A]] =
       if remaining.isEmpty then Option(acc.reverse)

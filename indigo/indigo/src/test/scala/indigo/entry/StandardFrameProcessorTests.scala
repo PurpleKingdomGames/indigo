@@ -1,7 +1,6 @@
 package indigo.entry
 
 import indigo.platform.assets.DynamicText
-import indigo.platform.renderer.Renderer
 import indigo.shared.AnimationsRegister
 import indigo.shared.BoundaryLocator
 import indigo.shared.Context
@@ -9,14 +8,11 @@ import indigo.shared.FontRegister
 import indigo.shared.Outcome
 import indigo.shared.collections.Batch
 import indigo.shared.datatypes.RGBA
-import indigo.shared.dice.Dice
 import indigo.shared.events.EventFilters
 import indigo.shared.events.GlobalEvent
-import indigo.shared.events.InputState
 import indigo.shared.materials.BlendMaterial
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.subsystems.SubSystemsRegister
-import indigo.shared.time.GameTime
 
 class StandardFrameProcessorTests extends munit.FunSuite {
 

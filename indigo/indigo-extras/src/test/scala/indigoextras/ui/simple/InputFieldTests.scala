@@ -1,7 +1,6 @@
 package indigoextras.ui.simple
 
 import indigo.platform.assets.DynamicText
-import indigo.platform.renderer.Renderer
 import indigo.shared.AnimationsRegister
 import indigo.shared.BoundaryLocator
 import indigo.shared.Context

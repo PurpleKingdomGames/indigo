@@ -1,7 +1,5 @@
 package indigo.physics
 
-import indigo.physics.*
-import indigo.shared.datatypes.Vector2
 import indigo.shared.geometry.BoundingBox
 import indigo.shared.geometry.BoundingCircle
 import indigo.shared.geometry.Vertex

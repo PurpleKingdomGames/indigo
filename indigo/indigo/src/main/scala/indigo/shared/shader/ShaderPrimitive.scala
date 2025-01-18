@@ -18,7 +18,7 @@ import indigo.shared.time.Seconds
 
 import scala.collection.immutable.ArraySeq
 import scala.reflect.ClassTag
-import scala.scalajs.js.JSConverters._
+import scala.scalajs.js.JSConverters.*
 
 sealed trait ShaderPrimitive derives CanEqual:
   def length: Int

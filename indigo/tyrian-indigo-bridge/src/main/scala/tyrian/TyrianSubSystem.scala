@@ -10,6 +10,7 @@ import indigo.shared.subsystems.SubSystem
 import indigo.shared.subsystems.SubSystemContext
 import indigo.shared.subsystems.SubSystemId
 
+import scala.annotation.nowarn
 import scala.collection.mutable
 
 final case class TyrianSubSystem[F[_]: Async, A, Model](
@@ -52,6 +53,7 @@ final case class TyrianSubSystem[F[_]: Async, A, Model](
   def initialModel: Outcome[Unit] =
     Outcome(())
 
+  @nowarn("msg=unused")
   def update(context: SubSystemContext[ReferenceData], model: Unit): GlobalEvent => Outcome[Unit] =
     case TyrianEvent.Send(value) =>
       bridge.eventTarget.dispatchEvent(TyrianIndigoBridge.BridgeToTyrian(indigoGameId, value))

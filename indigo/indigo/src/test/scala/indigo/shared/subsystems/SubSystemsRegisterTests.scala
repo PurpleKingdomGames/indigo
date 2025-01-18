@@ -3,7 +3,10 @@ package indigo.shared.subsystems
 import indigo.shared.collections.Batch
 import indigo.shared.scenegraph.Text
 
+import scala.annotation.nowarn
+
 // @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
+@nowarn("msg=unused")
 class SubSystemsRegisterTests extends munit.FunSuite {
 
   import FakeSubSystemFrameContext._

@@ -3,7 +3,6 @@ package indigoextras.ui
 import indigo.shared.Outcome
 import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.Layer
-import indigo.shared.shader.ShaderProgram
 
 object syntax:
 

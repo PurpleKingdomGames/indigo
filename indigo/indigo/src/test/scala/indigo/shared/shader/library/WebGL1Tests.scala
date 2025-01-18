@@ -1,7 +1,5 @@
 package indigo.shared.shader.library
 
-import ultraviolet.syntax.*
-
 class WebGL1Tests extends munit.FunSuite {
 
   test("Base WebGL 1.0 vertex shader") {

@@ -3,6 +3,9 @@ package indigo.shared.shader.library
 import indigo.shared.shader.BlendShader
 import ultraviolet.syntax.*
 
+import scala.annotation.nowarn
+
+@nowarn("msg=unused")
 class BaseBlendShaderTests extends munit.FunSuite {
 
   test("Merge WebGL 2.0 vertex shader") {

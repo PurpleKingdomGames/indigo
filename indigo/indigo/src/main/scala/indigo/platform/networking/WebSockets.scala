@@ -2,20 +2,22 @@ package indigo.platform.networking
 
 import indigo.platform.events.GlobalEventStream
 import indigo.shared.IndigoLogger
-import indigo.shared.events._
+import indigo.shared.events.*
 import indigo.shared.networking.WebSocketConfig
 import indigo.shared.networking.WebSocketEvent
-import indigo.shared.networking.WebSocketId
 import indigo.shared.networking.WebSocketReadyState
 import indigo.shared.networking.WebSocketReadyState.CLOSED
 import indigo.shared.networking.WebSocketReadyState.CLOSING
 import org.scalajs.dom
+
+import scala.annotation.nowarn
 
 object WebSockets:
 
   private val connections: scalajs.js.Dictionary[dom.WebSocket] = scalajs.js.Dictionary.empty
   private val configs: scalajs.js.Dictionary[WebSocketConfig]   = scalajs.js.Dictionary.empty
 
+  @nowarn("msg=unused")
   def processSendEvent(event: WebSocketEvent & NetworkSendEvent, globalEventStream: GlobalEventStream): Unit =
     try
       event match {
@@ -37,6 +39,7 @@ object WebSockets:
         globalEventStream.pushGlobalEvent(WebSocketEvent.Error(event.giveId, e.getMessage))
     }
 
+  @nowarn("msg=unused")
   private def insertUpdateConfig(config: WebSocketConfig): WebSocketConfig = {
     val maybeConfig = configs.get(config.id.id)
 
@@ -51,6 +54,7 @@ object WebSockets:
       .getOrElse(config)
   }
 
+  @nowarn("msg=unused")
   private def reEstablishConnection(
       config: WebSocketConfig,
       onOpenSendMessage: Option[String],

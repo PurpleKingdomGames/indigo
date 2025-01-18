@@ -1,11 +1,6 @@
 package indigo.shared.shader
 
-import indigo.shared.shader.BlendShader
-import indigo.shared.shader.EntityShader
-import indigo.shared.shader.library.IndigoUV
-import ultraviolet.datatypes.RawGLSL
 import ultraviolet.datatypes.ShaderResult
-import ultraviolet.syntax.Shader as UVShader
 
 trait RawShaderCode {
   val id: ShaderId

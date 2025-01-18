@@ -1,7 +1,6 @@
 package indigo.physics
 
 import indigo.*
-import indigo.physics.Displacement
 import indigo.physics.Friction
 import indigo.physics.Mass
 import indigo.physics.Restitution

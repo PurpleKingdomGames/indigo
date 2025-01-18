@@ -2,7 +2,6 @@ package indigo.shared.geometry
 
 import indigo.shared.collections.Batch
 import indigo.shared.collections.NonEmptyBatch
-import indigo.shared.collections.NonEmptyList
 import indigo.shared.temporal.Signal
 import indigo.shared.time.Seconds
 

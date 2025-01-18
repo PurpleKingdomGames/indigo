@@ -8,10 +8,9 @@ import org.scalajs.dom.ImageData
 import org.scalajs.dom.WebGLBuffer
 import org.scalajs.dom.WebGLProgram
 import org.scalajs.dom.WebGLRenderingContext
-import org.scalajs.dom.WebGLRenderingContext._
+import org.scalajs.dom.WebGLRenderingContext.*
 import org.scalajs.dom.WebGLTexture
 
-import scala.scalajs.js.JSConverters._
 import scala.scalajs.js.typedarray.Float32Array
 
 object WebGLHelper {

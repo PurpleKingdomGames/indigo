@@ -1,7 +1,6 @@
 package indigo.physics
 
 import indigo.*
-import indigo.physics.Collider
 import indigo.physics.Mass
 
 final case class Displacement(amount: Double, normal: Vector2, contact: LineSegment, massA: Mass, massB: Option[Mass]):
@@ -55,14 +54,6 @@ object Displacement:
     val contact = LineSegment(a.bounds.center, b.bounds.center)
 
     Displacement(amount, normal, contact, a.mass, if b.isStatic then None else Option(b.mass))
-
-  private val cornerNormals =
-    Batch(
-      Vector2(-1, -1), // top left
-      Vector2(1, -1),  // top right
-      Vector2(1, 1),   // bottom right
-      Vector2(-1, 1)   // bottom left
-    )
 
   def calculateDisplacement(circle: Collider.Circle[?], box: Collider.Box[?]): Displacement =
     val shortestSide = Math.min(box.bounds.halfSize.x, box.bounds.halfSize.y)

@@ -4,8 +4,8 @@ import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
 import com.example.sandbox.SandboxViewModel
-import indigo._
-import indigo.scenes._
+import indigo.*
+import indigo.scenes.*
 import indigoextras.effectmaterials.Refraction
 import indigoextras.effectmaterials.RefractionEntity
 

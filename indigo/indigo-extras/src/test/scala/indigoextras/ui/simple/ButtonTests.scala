@@ -6,8 +6,6 @@ import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Depth
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
-import indigo.shared.events.GlobalEvent
-import indigo.shared.events.MouseEvent
 import indigo.shared.events.PointerEvent.Down
 import indigo.shared.events.PointerEvent.PointerId
 import indigo.shared.events.PointerEvent.Up

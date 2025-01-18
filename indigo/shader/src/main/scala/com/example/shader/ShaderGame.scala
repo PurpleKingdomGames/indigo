@@ -2,7 +2,8 @@ import indigo.*
 import indigo.syntax.shaders.*
 import ultraviolet.syntax.*
 
-import scala.scalajs.js.annotation._
+import scala.annotation.nowarn
+import scala.scalajs.js.annotation.*
 
 @JSExportTopLevel("IndigoGame")
 object ShaderGame extends IndigoShader:
@@ -35,6 +36,7 @@ object ShaderWithData:
       EntityShader.fragment[CustomData](shaderWithData, CustomData.reference)
     )
 
+  @nowarn("msg=unused")
   inline def shaderWithData: Shader[CustomData, Unit] =
     Shader[CustomData] { env =>
       ubo[CustomData]
@@ -51,6 +53,7 @@ object ShowImage:
       EntityShader.fragment[FragmentEnv](showImage, FragmentEnv.reference)
     )
 
+  @nowarn("msg=unused")
   inline def showImage: Shader[FragmentEnv, Unit] =
     Shader[FragmentEnv] { env =>
       def fragment(color: vec4): vec4 =
@@ -82,6 +85,7 @@ object VoronoiShader:
 
   // Ported from: https://www.youtube.com/watch?v=l-07BXzNdPw&feature=youtu.be
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  @nowarn("msg=unused")
   inline def voronoi: Shader[FragmentEnv, Unit] =
     Shader[FragmentEnv] { env =>
 

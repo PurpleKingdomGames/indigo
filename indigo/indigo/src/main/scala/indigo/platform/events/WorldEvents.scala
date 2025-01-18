@@ -16,7 +16,6 @@ import indigo.shared.events.KeyboardEvent
 import indigo.shared.events.MouseButton
 import indigo.shared.events.MouseEvent
 import indigo.shared.events.NetworkEvent
-import indigo.shared.events.NetworkEvent.*
 import indigo.shared.events.PointerEvent
 import indigo.shared.events.PointerEvent.*
 import indigo.shared.events.PointerType

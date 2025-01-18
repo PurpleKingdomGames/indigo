@@ -1,6 +1,5 @@
 package indigo.shared.scenegraph
 
-import indigo.shared.config.GameViewport
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.Rectangle

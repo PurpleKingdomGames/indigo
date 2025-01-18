@@ -1,7 +1,5 @@
 package indigo.shared.shader
 
-import indigo.shared.shader.library
-
 object StandardShaders {
 
   def all: Set[ShaderProgram] =

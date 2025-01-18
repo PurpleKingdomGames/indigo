@@ -1,8 +1,5 @@
 package indigoextras.datatypes
 
-import indigoextras.datatypes.UpdateList
-import indigoextras.datatypes.UpdatePattern
-
 class UpdateListTests extends munit.FunSuite {
 
   test("trivial updating") {

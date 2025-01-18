@@ -6,6 +6,7 @@ import japgolly.scalajs.benchmark.gui._
 
 import scalajs.js
 import scalajs.js.JSConverters.*
+import scala.annotation.nowarn
 
 object BatchBenchmarks:
 
@@ -28,6 +29,7 @@ object BatchBenchmarks:
     Batch(a1.head) |+| (Batch(a1.tail) |+| (Batch(a2) |+| Batch(a3) |+| Batch(a4)) |+| Batch.empty)
   }
 
+  @nowarn("msg=discarded")
   val suite = GuiSuite(
     Suite("Batch Benchmarks")(
       Benchmark("concat - list") {
