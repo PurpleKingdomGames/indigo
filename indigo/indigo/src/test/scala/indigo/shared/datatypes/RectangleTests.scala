@@ -265,4 +265,28 @@ class RectangleTests extends munit.FunSuite {
     assertEquals(Rectangle(10, 10, 10, 10).resizeBy(20, 20), Rectangle(10, 10, 30, 30))
     assertEquals(Rectangle(10, 10, 10, 10).resizeBy(20), Rectangle(10, 10, 30, 30))
   }
+
+  test("min") {
+    assertEquals(Rectangle(10, 10, 10, 10).min(20, 20), Rectangle(10, 10, 10, 10))
+    assertEquals(Rectangle(10, 10, 10, 10).min(5, 6), Rectangle(10, 10, 5, 6))
+    assertEquals(Rectangle(10, 10, 10, 10).min(5, 20), Rectangle(10, 10, 5, 10))
+  }
+
+  test("minSize") {
+    assertEquals(Rectangle(10, 10, 10, 10).minSize(Size(20, 20)), Rectangle(10, 10, 20, 20))
+    assertEquals(Rectangle(10, 10, 10, 10).minSize(20, 20), Rectangle(10, 10, 20, 20))
+    assertEquals(Rectangle(10, 10, 10, 10).minSize(5, 20), Rectangle(10, 10, 10, 20))
+  }
+
+  test("max") {
+    assertEquals(Rectangle(10, 10, 10, 10).max(Size(20, 20)), Rectangle(10, 10, 20, 20))
+    assertEquals(Rectangle(10, 10, 10, 10).max(20, 20), Rectangle(10, 10, 20, 20))
+    assertEquals(Rectangle(10, 10, 10, 10).max(5, 20), Rectangle(10, 10, 10, 20))
+  }
+
+  test("maxSize") {
+    assertEquals(Rectangle(10, 10, 10, 10).maxSize(Size(20, 20)), Rectangle(10, 10, 10, 10))
+    assertEquals(Rectangle(10, 10, 10, 10).maxSize(5, 5), Rectangle(10, 10, 5, 5))
+    assertEquals(Rectangle(10, 10, 10, 10).maxSize(5, 20), Rectangle(10, 10, 5, 10))
+  }
 }
