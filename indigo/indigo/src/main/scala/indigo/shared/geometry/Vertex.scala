@@ -141,7 +141,7 @@ final case class Vertex(x: Double, y: Double) derives CanEqual:
     Vector2(x, y)
 
   def makeVectorWith(other: Vertex): Vector2 =
-    Vector2((other.x - x), (other.y - y))
+    Vector2(other.x - x, other.y - y)
 
   def ~==(other: Vertex): Boolean =
     Math.abs(x - other.x) < 0.0001 && Math.abs(y - other.y) < 0.0001

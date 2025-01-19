@@ -88,7 +88,7 @@ trait IndigoShader extends GameLauncher[IndigoShaderModel, IndigoShaderModel, Un
     val c3     = flags.get(Channel3Name).map(p => AssetPath(p)).orElse(channel3)
 
     val channelAssets: Set[AssetType] =
-      (c0.toSet.map(Channel0Name  -> _) ++
+      (c0.toSet.map(Channel0Name -> _) ++
         c1.toSet.map(Channel1Name -> _) ++
         c2.toSet.map(Channel2Name -> _) ++
         c3.toSet.map(Channel3Name -> _)).map { case (channel, path) =>

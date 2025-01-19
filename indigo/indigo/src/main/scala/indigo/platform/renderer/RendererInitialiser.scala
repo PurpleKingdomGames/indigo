@@ -153,7 +153,7 @@ final class RendererInitialiser(
     }
 
     def useWebGL2(): (WebGLRenderingContext, RenderingTechnology) = {
-      val gl2 = (canvas.getContext("webgl2", args)).asInstanceOf[WebGLRenderingContext]
+      val gl2 = canvas.getContext("webgl2", args).asInstanceOf[WebGLRenderingContext]
       (gl2, RenderingTechnology.WebGL2)
     }
 
@@ -188,7 +188,7 @@ final class RendererInitialiser(
         RenderingTechnology.WebGL1
 
       case RenderingTechnology.WebGL2 =>
-        val gl2 = (tempCanvas.getContext("webgl2", args)).asInstanceOf[WebGLRenderingContext]
+        val gl2 = tempCanvas.getContext("webgl2", args).asInstanceOf[WebGLRenderingContext]
 
         if (gl2 == null)
           throw new Exception("WebGL 2.0 required by indigo game. This browser does not appear to support WebGL 2.0.")
@@ -202,7 +202,7 @@ final class RendererInitialiser(
         }
 
       case RenderingTechnology.WebGL2WithFallback =>
-        var gl2 = (tempCanvas.getContext("webgl2", args)).asInstanceOf[WebGLRenderingContext]
+        var gl2 = tempCanvas.getContext("webgl2", args).asInstanceOf[WebGLRenderingContext]
 
         if (gl2 == null) {
           IndigoLogger.info("This browser does not appear to support WebGL 2.0, trying WebGL 1.0.")

@@ -13,8 +13,7 @@ final case class Mutants(
     id: CloneId,
     depth: Depth,
     uniformBlocks: Array[Batch[UniformBlock]]
-) extends DependentNode[Mutants]
-    derives CanEqual:
+) extends DependentNode[Mutants] derives CanEqual:
 
   lazy val scale: Vector2    = Vector2.one
   lazy val rotation: Radians = Radians.zero

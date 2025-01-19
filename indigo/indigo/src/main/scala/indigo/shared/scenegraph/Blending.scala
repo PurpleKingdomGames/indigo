@@ -79,4 +79,4 @@ object Blend {
 
 enum BlendFactor derives CanEqual:
   case Zero, One, SrcColor, DstColor, SrcAlpha, DstAlpha, OneMinusSrcColor, OneMinusDstColor, OneMinusSrcAlpha,
-  OneMinusDstAlpha, SrcAlphaSaturate
+    OneMinusDstAlpha, SrcAlphaSaturate

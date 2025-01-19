@@ -23,8 +23,7 @@ final case class BlankEntity(
     flip: Flip
 ) extends EntityNode[BlankEntity]
     with Cloneable
-    with SpatialModifiers[BlankEntity]
-    derives CanEqual:
+    with SpatialModifiers[BlankEntity] derives CanEqual:
 
   lazy val x: Int      = position.x
   lazy val y: Int      = position.y

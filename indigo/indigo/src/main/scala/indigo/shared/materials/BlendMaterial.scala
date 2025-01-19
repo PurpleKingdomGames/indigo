@@ -48,8 +48,7 @@ object BlendMaterial {
       overlay: Fill,
       saturation: Double,
       affectsBackground: Boolean
-  ) extends BlendMaterial
-      derives CanEqual {
+  ) extends BlendMaterial derives CanEqual {
 
     def withAlpha(newAlpha: Double): BlendEffects =
       this.copy(alpha = newAlpha)

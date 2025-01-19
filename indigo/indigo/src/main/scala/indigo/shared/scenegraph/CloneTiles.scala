@@ -12,8 +12,7 @@ final case class CloneTiles(
     depth: Depth,
     cloneData: Batch[CloneTileData],
     staticBatchKey: Option[BindingKey]
-) extends DependentNode[CloneTiles]
-    derives CanEqual:
+) extends DependentNode[CloneTiles] derives CanEqual:
 
   lazy val scale: Vector2    = Vector2.one
   lazy val rotation: Radians = Radians.zero

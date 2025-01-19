@@ -205,7 +205,7 @@ trait BaseEntityShader:
         CHANNEL_3_POSITION = scaleCoordsWithOffset(vec2(0.0f), CHANNEL_3_ATLAS_OFFSET)
         CHANNEL_0_SIZE = TEXTURE_SIZE / ATLAS_SIZE
 
-        val transform: mat4 = 
+        val transform: mat4 =
           translate2d(POSITION) *
           rotate2d(-1.0f * ROTATION) *
           scale2d(SIZE * SCALE) *
@@ -243,7 +243,7 @@ trait BaseEntityShader:
   @nowarn("msg=discarded")
   val vertexTemplate: String => String =
     inline def tag = "//vertex_placeholder"
-    inline def placeholder = Shader[IndigoUV.VertexEnv] {_ => RawGLSL(tag)}
+    inline def placeholder = Shader[IndigoUV.VertexEnv]{_ => RawGLSL(tag)}
     val renderedCode =
       vertexShader[IndigoUV.VertexEnv](placeholder, IndigoUV.VertexEnv.reference).toGLSL[WebGL2](
         ShaderHeader.Version300ES,

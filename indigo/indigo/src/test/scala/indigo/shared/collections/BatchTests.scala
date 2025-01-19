@@ -317,7 +317,7 @@ class BatchTests extends munit.FunSuite {
   }
 
   test("monoid append") {
-    assertEquals((Batch(1) |+| Batch(2, 3)), Batch(1, 2, 3))
+    assertEquals(Batch(1) |+| Batch(2, 3), Batch(1, 2, 3))
   }
 
   test("cons") {

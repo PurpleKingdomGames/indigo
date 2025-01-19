@@ -24,8 +24,7 @@ object Fill:
       fromColor: RGBA,
       toPoint: Point,
       toColor: RGBA
-  ) extends Fill
-      derives CanEqual:
+  ) extends Fill derives CanEqual:
 
     def withFromColor(newColor: RGBA): LinearGradient =
       this.copy(fromColor = newColor)

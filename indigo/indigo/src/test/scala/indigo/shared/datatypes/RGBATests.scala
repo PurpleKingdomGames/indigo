@@ -10,7 +10,7 @@ class RGBATests extends munit.FunSuite {
     assertEquals(RGBA.fromColorInts(0, 0, 255, 255), RGBA.Blue)
 
     val transparent = RGBA.fromColorInts(255, 255, 255, 127)
-    assertEquals((transparent.a > 0.48 && transparent.a < 0.52), true)
+    assertEquals(transparent.a > 0.48 && transparent.a < 0.52, true)
   }
 
   test("Creating RGBA instances.should convert from RGB int values") {
@@ -37,7 +37,7 @@ class RGBATests extends munit.FunSuite {
     assertEquals(RGBA.fromHexString("#0000FF"), RGBA.Blue)
 
     val transparent = RGBA.fromHexString("0xFF000080")
-    assertEquals((transparent.a > 0.48 && transparent.a < 0.52), true)
+    assertEquals(transparent.a > 0.48 && transparent.a < 0.52, true)
   }
 
   test("Can convert RGBA to Hex") {

@@ -129,8 +129,7 @@ object Material:
       lighting: LightingModel,
       shaderId: Option[ShaderId],
       fillType: FillType
-  ) extends Material
-      derives CanEqual:
+  ) extends Material derives CanEqual:
 
     def withDiffuse(newDiffuse: AssetName): ImageEffects =
       this.copy(diffuse = newDiffuse)

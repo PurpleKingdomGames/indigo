@@ -28,8 +28,7 @@ final case class Graphic[M <: Material](
     flip: Flip
 ) extends RenderNode[Graphic[M]]
     with Cloneable
-    with SpatialModifiers[Graphic[M]]
-    derives CanEqual:
+    with SpatialModifiers[Graphic[M]] derives CanEqual:
 
   def bounds: Rectangle =
     BoundaryLocator.findBounds(this, position, crop.size, ref)

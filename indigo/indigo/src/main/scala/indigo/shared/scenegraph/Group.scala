@@ -17,8 +17,7 @@ final case class Group(
     ref: Point,
     flip: Flip
 ) extends DependentNode[Group]
-    with SpatialModifiers[Group]
-    derives CanEqual:
+    with SpatialModifiers[Group] derives CanEqual:
 
   lazy val x: Int = position.x
   lazy val y: Int = position.y

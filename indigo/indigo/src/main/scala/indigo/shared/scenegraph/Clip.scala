@@ -31,8 +31,7 @@ final case class Clip[M <: Material](
     flip: Flip
 ) extends EntityNode[Clip[M]]
     with Cloneable
-    with SpatialModifiers[Clip[M]]
-    derives CanEqual:
+    with SpatialModifiers[Clip[M]] derives CanEqual:
 
   export sheet.frameCount
   export sheet.frameDuration

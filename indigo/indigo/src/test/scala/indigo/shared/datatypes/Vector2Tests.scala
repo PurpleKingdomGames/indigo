@@ -41,7 +41,7 @@ class Vector2Tests extends munit.FunSuite {
   }
 
   test("Basic vector operation.should be able to calculate the dot product between two Vector2s.parallel") {
-    assertEquals((Vector2(0, 0) `dot` Vector2(0, 0)), 0.0)
+    assertEquals(Vector2(0, 0) `dot` Vector2(0, 0), 0.0)
   }
 
   test("Basic vector operation.should be able to calculate the dot product between two Vector2s.facing") {
@@ -53,7 +53,7 @@ class Vector2Tests extends munit.FunSuite {
   }
 
   test("Basic vector operation.should be able to calculate the dot product between two Vector2s.value") {
-    assertEquals(Math.round((Vector2(-6.0, 8.0) `dot` Vector2(5.0, 12.0))).toDouble, 66.0d)
+    assertEquals(Math.round(Vector2(-6.0, 8.0) `dot` Vector2(5.0, 12.0)).toDouble, 66.0d)
   }
 
   test("Construction.build a vector from two points") {

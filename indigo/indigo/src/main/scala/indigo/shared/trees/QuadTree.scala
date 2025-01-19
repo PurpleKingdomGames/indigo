@@ -503,7 +503,9 @@ object QuadTree:
   /** Traverses the whole tree to find the element that is closest to the vertex specified. Slower than `searchAt`, but
     * it will find a value assuming the tree has values in it.
     */
-  def findClosestTo[S, T](quadTree: QuadTree[S, T], vertex: Vertex)(using CanEqual[T, T])(using
+  def findClosestTo[S, T](quadTree: QuadTree[S, T], vertex: Vertex)(using
+      CanEqual[T, T]
+  )(using
       s: SpatialOps[S]
   ): Option[QuadTreeValue[S, T]] =
     @tailrec
@@ -608,7 +610,9 @@ object QuadTree:
     * `removeAt`, but it will find a value to remove, assuming the tree has values in it. On removal, all instances of
     * that value are deleted from the tree.
     */
-  def removeClosestTo[S, T](quadTree: QuadTree[S, T], vertex: Vertex)(using CanEqual[T, T])(using
+  def removeClosestTo[S, T](quadTree: QuadTree[S, T], vertex: Vertex)(using
+      CanEqual[T, T]
+  )(using
       s: SpatialOps[S]
   ): QuadTree[S, T] =
     def rec(quadTree: QuadTree[S, T], target: QuadTreeValue[S, T]): QuadTree[S, T] =

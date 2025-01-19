@@ -13,7 +13,7 @@ class QuickCacheTests extends munit.FunSuite {
 
     assertEquals(cache.keys.map(_.toString), List("ten"))
 
-    assertEquals(cache.all.map(p => (p._1.toString, p._2)), List(("ten" -> 10)))
+    assertEquals(cache.all.map(p => (p._1.toString, p._2)), List("ten" -> 10))
 
     assertEquals(cache.fetch(CacheKey("ten")), Some(10))
 
@@ -84,7 +84,7 @@ class QuickCacheTests extends munit.FunSuite {
 
     assertEquals(cache.keys.map(_.toString), List("ten"))
 
-    assertEquals(cache.all.map(p => (p._1.toString, p._2)), List(("ten" -> 10)))
+    assertEquals(cache.all.map(p => (p._1.toString, p._2)), List("ten" -> 10))
   }
 
 }

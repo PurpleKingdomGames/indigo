@@ -23,8 +23,7 @@ final case class Text[M <: Material](
     ref: Point,
     flip: Flip
 ) extends DependentNode[Text[M]]
-    with SpatialModifiers[Text[M]]
-    derives CanEqual:
+    with SpatialModifiers[Text[M]] derives CanEqual:
 
   lazy val x: Int = position.x
   lazy val y: Int = position.y

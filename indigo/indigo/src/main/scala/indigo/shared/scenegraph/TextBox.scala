@@ -35,8 +35,7 @@ final case class TextBox(
     ref: Point,
     flip: Flip
 ) extends RenderNode[TextBox]
-    with SpatialModifiers[TextBox]
-    derives CanEqual:
+    with SpatialModifiers[TextBox] derives CanEqual:
 
   def bounds: Rectangle =
     BoundaryLocator.findBounds(this, position, size, ref)
