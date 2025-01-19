@@ -11,8 +11,7 @@ final case class CloneBatch(
     depth: Depth,
     cloneData: Batch[CloneBatchData],
     staticBatchKey: Option[BindingKey]
-) extends DependentNode[CloneBatch]
-    derives CanEqual:
+) extends DependentNode[CloneBatch] derives CanEqual:
 
   lazy val scale: Vector2    = Vector2.one
   lazy val rotation: Radians = Radians.zero

@@ -23,7 +23,7 @@ final case class LineSegment(start: Vertex, end: Vertex) derives CanEqual:
   def sdf(vertex: Vertex): Double =
     val pa: Vertex = vertex - start
     val ba: Vertex = end - start
-    val h: Double  = Math.min(1.0, Math.max(0.0, (pa.dot(ba) / ba.dot(ba))))
+    val h: Double  = Math.min(1.0, Math.max(0.0, pa.dot(ba) / ba.dot(ba)))
     (pa - (ba * h)).length
 
   def distanceToBoundary(vertex: Vertex): Double =

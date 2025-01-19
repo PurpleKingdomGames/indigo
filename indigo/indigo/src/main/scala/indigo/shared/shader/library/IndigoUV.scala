@@ -360,7 +360,7 @@ object IndigoUV:
           case ShaderAST.Function(
                 "vertex",
                 List(
-                  (ShaderAST.DataTypes.ident("vec4") -> _)
+                  ShaderAST.DataTypes.ident("vec4") -> _
                 ),
                 _,
                 ShaderAST.DataTypes.ident("vec4")
@@ -404,7 +404,7 @@ object IndigoUV:
             case ShaderAST.Function(
                   "fragment",
                   List(
-                    (ShaderAST.DataTypes.ident("vec4") -> _)
+                    ShaderAST.DataTypes.ident("vec4") -> _
                   ),
                   _,
                   ShaderAST.DataTypes.ident("vec4")
@@ -471,7 +471,7 @@ object IndigoUV:
           case ShaderAST.Function(
                 "fragment",
                 List(
-                  (ShaderAST.DataTypes.ident("vec4") -> _)
+                  ShaderAST.DataTypes.ident("vec4") -> _
                 ),
                 _,
                 ShaderAST.DataTypes.ident("vec4")

@@ -25,8 +25,7 @@ object LightingModel {
       emissive: Option[Texture],
       normal: Option[Texture],
       roughness: Option[Texture]
-  ) extends LightingModel
-      derives CanEqual {
+  ) extends LightingModel derives CanEqual {
 
     def enableLighting: LightingModel = this
     def disableLighting: Unlit.type   = Unlit

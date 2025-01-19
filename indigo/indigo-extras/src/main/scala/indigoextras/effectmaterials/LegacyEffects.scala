@@ -29,8 +29,7 @@ final case class LegacyEffects(
     border: Border,
     glow: Glow,
     fillType: FillType
-) extends Material
-    derives CanEqual:
+) extends Material derives CanEqual:
 
   def withAlpha(newAlpha: Double): LegacyEffects =
     this.copy(alpha = newAlpha)

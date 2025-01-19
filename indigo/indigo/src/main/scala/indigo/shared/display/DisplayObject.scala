@@ -17,8 +17,7 @@ final case class DisplayGroup(
     transform: CheapMatrix4,
     z: Double,
     entities: scalajs.js.Array[DisplayEntity]
-) extends DisplayEntity
-    derives CanEqual
+) extends DisplayEntity derives CanEqual
 object DisplayGroup:
   val empty: DisplayGroup =
     DisplayGroup(CheapMatrix4.identity, 0.0d, scalajs.js.Array())
@@ -33,22 +32,19 @@ final case class DisplayCloneBatch(
     id: CloneId,
     z: Double,
     cloneData: scalajs.js.Array[CloneBatchData]
-) extends DisplayEntity
-    derives CanEqual
+) extends DisplayEntity derives CanEqual
 
 final case class DisplayCloneTiles(
     id: CloneId,
     z: Double,
     cloneData: scalajs.js.Array[CloneTileData]
-) extends DisplayEntity
-    derives CanEqual
+) extends DisplayEntity derives CanEqual
 
 final case class DisplayMutants(
     id: CloneId,
     z: Double,
     cloneData: scalajs.js.Array[scalajs.js.Array[DisplayObjectUniformData]]
-) extends DisplayEntity
-    derives CanEqual
+) extends DisplayEntity derives CanEqual
 
 final case class DisplayObject(
     x: Float,
@@ -82,8 +78,7 @@ final case class DisplayObject(
     atlasHeight: Float,
     shaderId: ShaderId,
     shaderUniformData: scalajs.js.Array[DisplayObjectUniformData]
-) extends DisplayEntity
-    derives CanEqual
+) extends DisplayEntity derives CanEqual
 object DisplayObject:
 
   given CanEqual[Option[DisplayObject], Option[DisplayObject]] = CanEqual.derived
@@ -164,5 +159,4 @@ final case class DisplayText(
     z: Double,
     width: Int,
     height: Int
-) extends DisplayEntity
-    derives CanEqual
+) extends DisplayEntity derives CanEqual

@@ -53,8 +53,7 @@ object Startup:
       animations: Set[Animation],
       fonts: Set[FontInfo],
       shaders: Set[ShaderProgram]
-  ) extends Startup[SuccessType]
-      derives CanEqual:
+  ) extends Startup[SuccessType] derives CanEqual:
     def addAnimations(value: Animation*): Success[SuccessType] =
       addAnimations(value.toList)
     def addAnimations(value: List[Animation]): Success[SuccessType] =

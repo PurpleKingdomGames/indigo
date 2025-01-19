@@ -48,7 +48,7 @@ final case class Vector4(x: Double, y: Double, z: Double, w: Double) derives Can
   def invert: Vector4 =
     Vector4(-x, -y, -z, -w)
 
-  def `unary_-` : Vector4 = invert
+  def `unary_-`: Vector4 = invert
 
   def translate(vec: Vector4): Vector4 =
     Vector4.add(this, vec)

@@ -166,7 +166,7 @@ object Signal {
 
   def affectSignalTime[A](sa: Signal[A], multiplyBy: Double): Signal[A] =
     Signal { t =>
-      sa.at(Seconds((t.toDouble * multiplyBy)))
+      sa.at(Seconds(t.toDouble * multiplyBy))
     }
 
   def fixed[A](a: A): Signal[A] =

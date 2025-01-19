@@ -45,7 +45,7 @@ final case class GameConfig(
        |- Framerate Limit: ${frameRateLimit.map(_.toString()).getOrElse("Unlimited")}
        |- Framerate Delta: ${frameRateDeltaMillis.toString()}
        |- Clear color:     {red: ${clearColor.r.toString()}, green: ${clearColor.g.toString()}, blue: ${clearColor.b
-      .toString()}, alpha: ${clearColor.a.toString()}}
+        .toString()}, alpha: ${clearColor.a.toString()}}
        |- Magnification:   ${magnification.toString()}
        |- Resize Policy:   ${resizePolicy.toString()}
        |${advanced.asString}

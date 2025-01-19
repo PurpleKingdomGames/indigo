@@ -228,7 +228,7 @@ object BoundaryLocator:
     shape match
       case s: Shape.Box =>
         Rectangle(
-          (s.dimensions.position - (s.stroke.width / 2)),
+          s.dimensions.position - (s.stroke.width / 2),
           s.dimensions.size + s.stroke.width
         )
 

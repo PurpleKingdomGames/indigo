@@ -160,7 +160,7 @@ final case class AssetBundleTracker(val register: List[AssetBundle]):
           key,
           assets.size,
           assets.map { assetType =>
-            (assetType.path -> AssetToLoad(assetType, false, false))
+            assetType.path -> AssetToLoad(assetType, false, false)
           }.toMap
         )
 

@@ -40,7 +40,7 @@ final case class Vector3(x: Double, y: Double, z: Double) derives CanEqual:
   def invert: Vector3 =
     Vector3(-x, -y, -z)
 
-  def `unary_-` : Vector3 = invert
+  def `unary_-`: Vector3 = invert
 
   def translate(vec: Vector3): Vector3 =
     Vector3.add(this, vec)

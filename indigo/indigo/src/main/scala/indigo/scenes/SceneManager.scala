@@ -39,7 +39,7 @@ class SceneManager[StartUpData, GameModel, ViewModel](
         scenes.toList.map { s =>
           val r = new SubSystemsRegister[GameModel]()
           r.register(Batch.fromSet(s.subSystems))
-          (s.name.toString -> r)
+          s.name.toString -> r
         }
       )
 

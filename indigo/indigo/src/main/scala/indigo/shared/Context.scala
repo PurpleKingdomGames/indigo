@@ -18,13 +18,12 @@ import indigo.shared.time.GameTime
   *
   *   1. StartUpData: The data that was passed into the game at the start, and is available globally.
   *
-  * 2. Frame: The data that is specific to the current frame, such as the current time, input state, and dice (pseudo
-  * random number generated seeded on the game's running time at the beginning of the frame), and if only frame values
-  * are used, then calls to functions like `updateModel` can be considered referentially transparent.
-  *
-  * 3. Services: The services that are available to the game, such as the ability to capture the screen, measure text,
-  * find the bounds of on-screen elements, or access a long running Random instance. Services are side-effecting, long
-  * running, and / or stateful.
+  *   2. Frame: The data that is specific to the current frame, such as the current time, input state, and dice (pseudo
+  *      random number generated seeded on the game's running time at the beginning of the frame), and if only frame
+  *      values are used, then calls to functions like `updateModel` can be considered referentially transparent.
+  *   3. Services: The services that are available to the game, such as the ability to capture the screen, measure text,
+  *      find the bounds of on-screen elements, or access a long running Random instance. Services are side-effecting,
+  *      long running, and / or stateful.
   */
 final class Context[StartUpData](
     _startUpData: => StartUpData,

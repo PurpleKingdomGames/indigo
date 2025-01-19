@@ -60,7 +60,7 @@ class SceneUpdateFragmentTests extends munit.FunSuite {
   test("Adding a layer with an existing key merges magnification down (some, some)") {
 
     val scene =
-      SceneUpdateFragment.empty.addLayer((BindingKey("key A") -> Layer.empty.withMagnification(2)))
+      SceneUpdateFragment.empty.addLayer(BindingKey("key A") -> Layer.empty.withMagnification(2))
 
     val actual =
       scene.addLayer(LayerEntry(BindingKey("key A"), Layer.empty.withMagnification(1)))

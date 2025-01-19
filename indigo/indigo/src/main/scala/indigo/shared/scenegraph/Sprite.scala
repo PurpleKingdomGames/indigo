@@ -26,8 +26,7 @@ final case class Sprite[M <: Material](
     flip: Flip
 ) extends DependentNode[Sprite[M]]
     with Cloneable
-    with SpatialModifiers[Sprite[M]]
-    derives CanEqual:
+    with SpatialModifiers[Sprite[M]] derives CanEqual:
 
   lazy val x: Int = position.x
   lazy val y: Int = position.y

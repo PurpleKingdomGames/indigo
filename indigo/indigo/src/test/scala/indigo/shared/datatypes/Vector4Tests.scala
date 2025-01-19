@@ -23,7 +23,7 @@ class Vector4Tests extends munit.FunSuite {
   }
 
   test("Basic vector operation.should be able to calculate the dot product between two Vector4s.parallel") {
-    assertEquals((Vector4(0, 0, 0, 0) `dot` Vector4(0, 0, 0, 0)), 0.0)
+    assertEquals(Vector4(0, 0, 0, 0) `dot` Vector4(0, 0, 0, 0), 0.0)
   }
 
   test("Basic vector operation.should be able to calculate the dot product between two Vector4s.facing") {
@@ -35,7 +35,7 @@ class Vector4Tests extends munit.FunSuite {
   }
 
   test("Basic vector operation.should be able to calculate the dot product between two Vector4s.value") {
-    assertEquals(Math.round((Vector4(-6.0, 8.0, 1, 1) `dot` Vector4(5.0, 12.0, 2, 2))).toDouble, 70d)
+    assertEquals(Math.round(Vector4(-6.0, 8.0, 1, 1) `dot` Vector4(5.0, 12.0, 2, 2)).toDouble, 70d)
   }
 
   test("dot product") {
