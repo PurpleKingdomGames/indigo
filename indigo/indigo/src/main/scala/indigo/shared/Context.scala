@@ -17,7 +17,6 @@ import indigo.shared.time.GameTime
   * This is divided into three main areas:
   *
   *   1. StartUpData: The data that was passed into the game at the start, and is available globally.
-  *
   *   2. Frame: The data that is specific to the current frame, such as the current time, input state, and dice (pseudo
   *      random number generated seeded on the game's running time at the beginning of the frame), and if only frame
   *      values are used, then calls to functions like `updateModel` can be considered referentially transparent.
