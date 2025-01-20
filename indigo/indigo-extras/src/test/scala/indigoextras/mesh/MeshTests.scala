@@ -21,8 +21,7 @@ class MeshTests extends munit.FunSuite {
     Mesh(
       vertices = Batch(0 -> Vertex(0, 0), 1 -> Vertex(0, 1), 2 -> Vertex(1, 0), 3 -> Vertex(1, 1)),
       vertexNext = 4,
-      edges =
-        Batch(0 -> Edge(0, 1), 1 -> Edge(1, 2), 2 -> Edge(2, 0), 3 -> Edge(1, 3), 4 -> Edge(3, 2)),
+      edges = Batch(0 -> Edge(0, 1), 1 -> Edge(1, 2), 2 -> Edge(2, 0), 3 -> Edge(1, 3), 4 -> Edge(3, 2)),
       edgeNext = 5,
       tris = Batch(0 -> Tri(0, 1, 2), 1 -> Tri(4, 3, 1)),
       triNext = 2
@@ -162,8 +161,7 @@ class MeshTests extends munit.FunSuite {
 
     val expected =
       Mesh(
-        vertices =
-          Batch(0 -> Vertex(0, 0), 1 -> Vertex(0, 1), 2 -> Vertex(1, 0), 3 -> Vertex(1, 1)),
+        vertices = Batch(0 -> Vertex(0, 0), 1 -> Vertex(0, 1), 2 -> Vertex(1, 0), 3 -> Vertex(1, 1)),
         vertexNext = 4,
         edges = Batch(0 -> Edge(0, 1), 1 -> Edge(1, 2), 2 -> Edge(2, 0), 3 -> Edge(1, 3)),
         edgeNext = 5,
@@ -187,8 +185,7 @@ class MeshTests extends munit.FunSuite {
 
     val expected =
       Mesh(
-        vertices =
-          Batch(0 -> Vertex(0, 0), 1 -> Vertex(0, 1), 2 -> Vertex(1, 0), 3 -> Vertex(1, 1)),
+        vertices = Batch(0 -> Vertex(0, 0), 1 -> Vertex(0, 1), 2 -> Vertex(1, 0), 3 -> Vertex(1, 1)),
         vertexNext = 4,
         edges = Batch(0 -> Edge(0, 1), 1 -> Edge(1, 2), 2 -> Edge(2, 0), 3 -> Edge(1, 3)),
         edgeNext = 5,
@@ -236,8 +233,7 @@ class MeshTests extends munit.FunSuite {
 
     val expected =
       Mesh(
-        vertices =
-          Batch(0 -> Vertex(0, 0), 1 -> Vertex(0, 1), 2 -> Vertex(1, 0), 3 -> Vertex(1, 1)),
+        vertices = Batch(0 -> Vertex(0, 0), 1 -> Vertex(0, 1), 2 -> Vertex(1, 0), 3 -> Vertex(1, 1)),
         vertexNext = 4,
         edges = Batch(
           0 -> Edge(0, 1),
@@ -267,8 +263,7 @@ class MeshTests extends munit.FunSuite {
 
     val expected =
       Mesh(
-        vertices =
-          Batch(0 -> Vertex(0, 0), 1 -> Vertex(0, 1), 2 -> Vertex(1, 0), 3 -> Vertex(1, 1)),
+        vertices = Batch(0 -> Vertex(0, 0), 1 -> Vertex(0, 1), 2 -> Vertex(1, 0), 3 -> Vertex(1, 1)),
         vertexNext = 4,
         edges = Batch(
           0 -> Edge(0, 1),
@@ -287,7 +282,8 @@ class MeshTests extends munit.FunSuite {
 
   test("addTriangle") {
     val actual =
-      Mesh.fromTriangle(
+      Mesh
+        .fromTriangle(
           Triangle(
             Vertex(0, 0),
             Vertex(0, 1),

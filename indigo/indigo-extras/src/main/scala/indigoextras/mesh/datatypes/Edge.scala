@@ -6,8 +6,7 @@ final case class Edge(vertexA: Int, vertexB: Int):
   def indices: Batch[Int] =
     Batch(vertexA, vertexB)
 
-  /** Approx. equals of an edge means that if you reverse one of the edges, they end up being the
-    * same.
+  /** Approx. equals of an edge means that if you reverse one of the edges, they end up being the same.
     */
   def ~==(other: Edge): Boolean =
     (this.vertexA == other.vertexA && this.vertexB == other.vertexB) ||
