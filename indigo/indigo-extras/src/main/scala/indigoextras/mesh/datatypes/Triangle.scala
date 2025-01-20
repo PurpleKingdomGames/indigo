@@ -35,8 +35,7 @@ object Triangle:
   def fromVertices(vertices: Vertex*): Option[Triangle] =
     fromVertices(vertices.toList)
 
-  /** Make a triangle big enough to comfortably contain a point cloud by calculating a suitable
-    * padding value.
+  /** Make a triangle big enough to comfortably contain a point cloud by calculating a suitable padding value.
     */
   def encompassing(pointCloud: Batch[Vertex]): Triangle =
     val bb      = BoundingBox.fromVertexCloud(pointCloud)
