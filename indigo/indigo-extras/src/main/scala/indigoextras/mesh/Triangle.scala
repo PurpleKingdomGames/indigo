@@ -1,4 +1,4 @@
-package indigoextras.mesh.datatypes
+package indigoextras.mesh
 
 import indigo.shared.collections.Batch
 import indigo.shared.geometry.BoundingBox

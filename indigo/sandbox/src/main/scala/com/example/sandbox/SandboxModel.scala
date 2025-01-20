@@ -6,6 +6,7 @@ import com.example.sandbox.scenes.PathFindingModel
 import com.example.sandbox.scenes.PointersModel
 import indigo.*
 import indigo.syntax.*
+import indigoextras.mesh.*
 import indigoextras.ui.*
 import indigoextras.ui.simple.InputFieldChange
 
@@ -13,7 +14,16 @@ object SandboxModel {
 
   private given CanEqual[Option[String], Option[String]] = CanEqual.derived
 
+  def randomPoint(dice: Dice, offset: Point): Point =
+    Point(dice.rollFromZero(100), dice.rollFromZero(100)).moveBy(offset)
+
   def initialModel(startupData: SandboxStartupData): SandboxGameModel =
+    val dice          = Dice.fromSeed(1)
+    val offset        = Point(75, 75)
+    val points        = List.fill(10)(randomPoint(dice, offset)).toBatch
+    val superTriangle = Triangle.encompassing(points.map(_.toVertex), 10)
+    val mesh          = Mesh.fromVertices(points.map(_.toVertex), superTriangle)
+
     SandboxGameModel(
       DudeModel(startupData.dude, DudeIdle),
       SaveLoadPhases.NotStarted,
@@ -23,7 +33,12 @@ object SandboxModel {
       PathFindingModel.empty,
       Radians.zero,
       0,
-      components
+      components,
+      MeshData(
+        points,
+        superTriangle,
+        mesh
+      )
     )
 
   def components: ComponentGroup[Int] =
@@ -320,7 +335,14 @@ final case class SandboxGameModel(
     pathfinding: PathFindingModel,
     rotation: Radians,
     num: Int,
-    components: ComponentGroup[Int]
+    components: ComponentGroup[Int],
+    meshData: MeshData
+)
+
+final case class MeshData(
+    points: Batch[Point],
+    superTriangle: Triangle,
+    mesh: Mesh
 )
 
 final case class DudeModel(dude: Dude, walkDirection: DudeDirection) {
