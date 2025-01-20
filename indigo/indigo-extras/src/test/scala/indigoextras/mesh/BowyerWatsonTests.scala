@@ -1,7 +1,6 @@
 package indigoextras.mesh
 
 import indigo.*
-import indigoextras.mesh.datatypes.*
 
 class BowyerWatsonTests extends munit.FunSuite:
 

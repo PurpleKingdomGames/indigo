@@ -3,9 +3,6 @@ package indigoextras.mesh
 import indigo.shared.collections.Batch
 import indigo.shared.geometry.LineSegment
 import indigo.shared.geometry.Vertex
-import indigoextras.mesh.datatypes.Edge
-import indigoextras.mesh.datatypes.Tri
-import indigoextras.mesh.datatypes.Triangle
 
 import scala.annotation.tailrec
 
@@ -308,7 +305,7 @@ object Mesh:
       .flatMap(_._2.indices)
       .toSet
     if vSet.size == 3 then
-      datatypes.Triangle.fromVertices(
+      Triangle.fromVertices(
         vSet.toList.flatMap(i => mesh.vertices.find(_._1 == i).toList).map(_._2)
       )
     else None

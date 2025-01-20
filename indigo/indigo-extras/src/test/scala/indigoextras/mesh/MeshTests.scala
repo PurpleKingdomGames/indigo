@@ -4,10 +4,6 @@ import indigo.Batch
 import indigo.Vertex
 import indigo.shared.geometry.LineSegment
 
-import datatypes.Triangle
-import datatypes.Tri
-import datatypes.Edge
-
 class MeshTests extends munit.FunSuite {
 
   /*

@@ -2,9 +2,6 @@ package indigoextras.mesh
 
 import indigo.shared.collections.Batch
 import indigo.shared.geometry.Vertex
-import indigoextras.mesh.datatypes.Edge
-import indigoextras.mesh.datatypes.Tri
-import indigoextras.mesh.datatypes.Triangle
 
 import scala.annotation.tailrec
 
@@ -12,7 +9,7 @@ import scala.annotation.tailrec
 object BowyerWatson:
 
   def triangulation(pointList: Batch[Vertex]): Mesh =
-    val superTriangle = datatypes.Triangle.encompassing(pointList)
+    val superTriangle = Triangle.encompassing(pointList)
     triangulation(pointList, superTriangle)
 
   def triangulation(pointList: Batch[Vertex], superTriangle: Triangle): Mesh =
@@ -100,7 +97,7 @@ object BowyerWatson:
 
   def edgeToTriangle(edge: Edge, mesh: Mesh, point: Vertex): Batch[Triangle] =
     Batch.fromOption(
-      datatypes.Triangle.fromVertices(
+      Triangle.fromVertices(
         point :: mesh.vertices.filter(v => edge.indices.contains(v._1)).map(_._2)
       )
     )
