@@ -21,6 +21,8 @@ final case class UIContext[ReferenceData](
 
   def moveBoundsBy(offset: Coords): UIContext[ReferenceData] =
     this.copy(bounds = bounds.moveBy(offset))
+  def moveBoundsBy(x: Int, y: Int): UIContext[ReferenceData] =
+    this.copy(bounds = bounds.moveBy(x, y))
 
   val isActive: Boolean =
     state == UIState.Active
@@ -30,6 +32,8 @@ final case class UIContext[ReferenceData](
 
   def withAdditionalOffset(offset: Coords): UIContext[ReferenceData] =
     this.copy(additionalOffset = offset)
+  def withAdditionalOffset(x: Int, y: Int): UIContext[ReferenceData] =
+    withAdditionalOffset(Coords(x, y))
 
 object UIContext:
 
