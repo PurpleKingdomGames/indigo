@@ -77,6 +77,18 @@ final case class BlankEntity(
   def withRef(x: Int, y: Int): BlankEntity =
     withRef(Point(x, y))
 
+  def resizeTo(newSize: Size): BlankEntity =
+    this.copy(size = newSize)
+  def resizeTo(w: Int, h: Int): BlankEntity =
+    resizeTo(Size(width, height))
+  def withSize(newSize: Size): BlankEntity =
+    resizeTo(newSize)
+
+  def resizeBy(amount: Size): BlankEntity =
+    this.copy(size = size * amount)
+  def resizeBy(w: Int, h: Int): BlankEntity =
+    resizeBy(Size(w, h))
+
   lazy val toShaderData: ShaderData =
     shaderData
 
