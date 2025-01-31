@@ -85,7 +85,7 @@ final case class BlankEntity(
     resizeTo(newSize)
 
   def resizeBy(amount: Size): BlankEntity =
-    this.copy(size = size * amount)
+    this.copy(size = size + amount)
   def resizeBy(w: Int, h: Int): BlankEntity =
     resizeBy(Size(w, h))
 
