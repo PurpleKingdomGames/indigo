@@ -78,7 +78,7 @@ object SandboxModel {
         }
       )
       .add(
-        Switch[Int, Int](BoundsType.fixed(40, 40))(
+        Switch[Int](BoundsType.fixed(40, 40))(
           (coords, bounds, _) =>
             Outcome(
               Layer(
