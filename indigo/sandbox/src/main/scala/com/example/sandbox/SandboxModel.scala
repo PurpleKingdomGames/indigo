@@ -78,7 +78,7 @@ object SandboxModel {
         }
       )
       .add(
-        Switch[Int](BoundsType.fixed(40, 40))(
+        Switch[Int](BoundsType.fixed[Int](40, 40))(
           (coords, bounds, _) =>
             Outcome(
               Layer(
@@ -158,7 +158,7 @@ object SandboxModel {
               ComponentGroup(BoundsMode.fixed(200, 30))
                 .withLayout(ComponentLayout.Horizontal(Padding.right(10)))
                 .add(
-                  Switch[Int, Int](BoundsType.fixed(20, 20))(
+                  Switch[Int](BoundsType.fixed[Int](20, 20))(
                     (coords, bounds, _) =>
                       Outcome(
                         Layer(
