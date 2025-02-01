@@ -10,12 +10,12 @@ import indigoextras.ui.datatypes.UIContext
 object Helper:
 
   extension [A, ReferenceData](component: A)(using c: Component[A, ReferenceData])
-    def update[StartupData, ContextData](
+    def update(
         context: UIContext[ReferenceData]
     ): GlobalEvent => Outcome[A] =
       c.updateModel(context, component)
 
-    def present[StartupData, ContextData](
+    def present(
         context: UIContext[ReferenceData]
     ): Outcome[Layer] =
       c.present(context, component)

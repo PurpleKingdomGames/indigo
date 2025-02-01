@@ -61,7 +61,7 @@ object Switch:
 
   /** Minimal button constructor with custom rendering function
     */
-  def apply[ReferenceData, A](boundsType: BoundsType[ReferenceData, Unit])(
+  def apply[ReferenceData](boundsType: BoundsType[ReferenceData, Unit])(
       on: (Coords, Bounds, ReferenceData) => Outcome[Layer],
       off: (Coords, Bounds, ReferenceData) => Outcome[Layer]
   ): Switch[ReferenceData] =

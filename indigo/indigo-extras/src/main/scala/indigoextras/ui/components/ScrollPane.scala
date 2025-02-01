@@ -185,7 +185,7 @@ object ScrollPane:
       case e =>
         updateComponents(context, model)(e)
 
-    private def updateComponents[StartupData, ContextData](
+    private def updateComponents(
         context: UIContext[ReferenceData],
         model: ScrollPane[A, ReferenceData]
     ): GlobalEvent => Outcome[ScrollPane[A, ReferenceData]] =

@@ -123,7 +123,7 @@ object MaskedPane:
       case e =>
         updateComponents(context, model)(e)
 
-    private def updateComponents[StartupData, ContextData](
+    private def updateComponents(
         context: UIContext[ReferenceData],
         model: MaskedPane[A, ReferenceData]
     ): GlobalEvent => Outcome[MaskedPane[A, ReferenceData]] =
