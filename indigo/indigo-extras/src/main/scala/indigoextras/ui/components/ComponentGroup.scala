@@ -150,7 +150,7 @@ object ComponentGroup:
       case e =>
         updateComponents(context, model)(e)
 
-    private def updateComponents[StartupData, ContextData](
+    private def updateComponents(
         context: UIContext[ReferenceData],
         model: ComponentGroup[ReferenceData]
     ): GlobalEvent => Outcome[ComponentGroup[ReferenceData]] =

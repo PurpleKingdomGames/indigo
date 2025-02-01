@@ -30,5 +30,5 @@ final case class WindowManagerViewModel[ReferenceData](
     )
 
 object WindowManagerViewModel:
-  def initial[A, ReferenceData](magnification: Int): WindowManagerViewModel[ReferenceData] =
+  def initial[ReferenceData](magnification: Int): WindowManagerViewModel[ReferenceData] =
     WindowManagerViewModel(Batch.empty, magnification)
