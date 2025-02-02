@@ -62,13 +62,13 @@ final case class WindowManager[StartUpData, Model, RefData](
   /** Registers a window with the WindowManager. All Window's must be registered before the scene starts.
     */
   def register(
-      windowModels: Window[?, ReferenceData]*
+      windows: Window[?, ReferenceData]*
   ): WindowManager[StartUpData, Model, ReferenceData] =
-    register(Batch.fromSeq(windowModels))
+    register(Batch.fromSeq(windows))
   def register(
-      windowModels: Batch[Window[?, ReferenceData]]
+      windows: Batch[Window[?, ReferenceData]]
   ): WindowManager[StartUpData, Model, ReferenceData] =
-    this.copy(windows = windows ++ windowModels)
+    this.copy(windows = windows ++ windows)
 
   /** Sets which windows are initially open. Once the scene is running, opening and closing is managed by the
     * WindowManagerModel via events.
