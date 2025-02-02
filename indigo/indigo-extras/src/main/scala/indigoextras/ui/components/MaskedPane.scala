@@ -15,7 +15,6 @@ import indigoextras.ui.shaders.LayerMask
   * the content outside of the pane. Like a ScrollPane without the scrolling!
   */
 final case class MaskedPane[A, ReferenceData] private[components] (
-    bindingKey: BindingKey,
     boundsMode: BoundsMode,
     dimensions: Dimensions, // The actual cached dimensions of the scroll pane
     contentBounds: Bounds,  // The calculated and cached bounds of the content
@@ -50,11 +49,9 @@ object MaskedPane:
     )
 
   def apply[A, ReferenceData](
-      bindingKey: BindingKey,
       content: A
   )(using c: Component[A, ReferenceData]): MaskedPane[A, ReferenceData] =
     MaskedPane(
-      bindingKey,
       indigoextras.ui.components.datatypes.BoundsMode.default,
       Dimensions.zero,
       Bounds.zero,
@@ -62,14 +59,12 @@ object MaskedPane:
     )
 
   def apply[A, ReferenceData](
-      bindingKey: BindingKey,
       boundsMode: BoundsMode,
       content: A
   )(using
       c: Component[A, ReferenceData]
   ): MaskedPane[A, ReferenceData] =
     MaskedPane(
-      bindingKey,
       boundsMode,
       Dimensions.zero,
       Bounds.zero,
@@ -77,14 +72,12 @@ object MaskedPane:
     )
 
   def apply[A, ReferenceData](
-      bindingKey: BindingKey,
       dimensions: Dimensions,
       content: A
   )(using
       c: Component[A, ReferenceData]
   ): MaskedPane[A, ReferenceData] =
     MaskedPane(
-      bindingKey,
       indigoextras.ui.components.datatypes.BoundsMode.fixed(dimensions),
       dimensions,
       Bounds.zero,
@@ -92,7 +85,6 @@ object MaskedPane:
     )
 
   def apply[A, ReferenceData](
-      bindingKey: BindingKey,
       width: Int,
       height: Int,
       content: A
@@ -100,7 +92,6 @@ object MaskedPane:
       c: Component[A, ReferenceData]
   ): MaskedPane[A, ReferenceData] =
     MaskedPane(
-      bindingKey,
       Dimensions(width, height),
       content
     )
