@@ -10,7 +10,7 @@ import indigoextras.ui.datatypes.UIContext
 
 import scala.annotation.targetName
 
-/** TextAreas are a simple `StatelessComponent` that render text.
+/** `TextArea`s are a simple stateless component that render multi-line text.
   */
 final case class TextArea[ReferenceData](
     text: ReferenceData => List[String],
@@ -44,6 +44,28 @@ object TextArea:
       (r: ReferenceData) => text(r).split("\n").toList,
       present,
       calculateBounds
+    )
+
+  def apply[ReferenceData](text: String, bounds: Bounds)(
+      present: (Coords, List[String], Dimensions) => Outcome[Layer]
+  ): TextArea[ReferenceData] =
+    TextArea(
+      (_: ReferenceData) => text.split("\n").toList,
+      present,
+      (_, _) => bounds
+    )
+
+  @targetName("TextAreaRefToStringFixedBounds")
+  def apply[ReferenceData](
+      text: ReferenceData => String,
+      bounds: Bounds
+  )(
+      present: (Coords, List[String], Dimensions) => Outcome[Layer]
+  ): TextArea[ReferenceData] =
+    TextArea(
+      (r: ReferenceData) => text(r).split("\n").toList,
+      present,
+      (_, _) => bounds
     )
 
   given [ReferenceData]: Component[TextArea[ReferenceData], ReferenceData] with
