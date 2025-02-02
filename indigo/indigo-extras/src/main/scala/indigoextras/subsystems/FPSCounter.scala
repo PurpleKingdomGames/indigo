@@ -1,7 +1,6 @@
 package indigoextras.subsystems
 
 import indigo.shared.Outcome
-import indigo.shared.datatypes.BindingKey
 import indigo.shared.datatypes.Fill
 import indigo.shared.datatypes.FontFamily
 import indigo.shared.datatypes.Pixels
@@ -12,6 +11,7 @@ import indigo.shared.datatypes.Size
 import indigo.shared.events.FrameTick
 import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.Layer
+import indigo.shared.scenegraph.LayerKey
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.scenegraph.Shape
 import indigo.shared.scenegraph.TextBox
@@ -25,7 +25,7 @@ final case class FPSCounter[Model](
     id: SubSystemId,
     startPosition: Point,
     targetFPS: Option[FPS],
-    layerKey: Option[BindingKey],
+    layerKey: Option[LayerKey],
     fontFamily: FontFamily,
     fontSize: Pixels
 ) extends SubSystem[Model]:
@@ -124,10 +124,10 @@ object FPSCounter:
   def apply[Model](position: Point, targetFPS: FPS): SubSystem[Model] =
     FPSCounter(DefaultId, position, Option(targetFPS), None, FontFamily.sansSerif, Pixels(12))
 
-  def apply[Model](position: Point, layerKey: BindingKey): SubSystem[Model] =
+  def apply[Model](position: Point, layerKey: LayerKey): SubSystem[Model] =
     FPSCounter(DefaultId, position, None, Option(layerKey), FontFamily.sansSerif, Pixels(12))
 
-  def apply[Model](position: Point, targetFPS: FPS, layerKey: BindingKey): SubSystem[Model] =
+  def apply[Model](position: Point, targetFPS: FPS, layerKey: LayerKey): SubSystem[Model] =
     FPSCounter(DefaultId, position, Option(targetFPS), Option(layerKey), FontFamily.sansSerif, Pixels(12))
 
   def apply[Model](id: SubSystemId, position: Point): SubSystem[Model] =
@@ -136,10 +136,10 @@ object FPSCounter:
   def apply[Model](id: SubSystemId, position: Point, targetFPS: FPS): SubSystem[Model] =
     FPSCounter(id, position, Option(targetFPS), None, FontFamily.sansSerif, Pixels(12))
 
-  def apply[Model](id: SubSystemId, position: Point, layerKey: BindingKey): SubSystem[Model] =
+  def apply[Model](id: SubSystemId, position: Point, layerKey: LayerKey): SubSystem[Model] =
     FPSCounter(id, position, None, Option(layerKey), FontFamily.sansSerif, Pixels(12))
 
-  def apply[Model](id: SubSystemId, position: Point, targetFPS: FPS, layerKey: BindingKey): SubSystem[Model] =
+  def apply[Model](id: SubSystemId, position: Point, targetFPS: FPS, layerKey: LayerKey): SubSystem[Model] =
     FPSCounter(id, position, Option(targetFPS), Option(layerKey), FontFamily.sansSerif, Pixels(12))
 
   final case class Move(to: Point) extends GlobalEvent

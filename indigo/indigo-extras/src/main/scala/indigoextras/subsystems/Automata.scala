@@ -3,7 +3,6 @@ package indigoextras.subsystems
 import indigo.shared.Outcome
 import indigo.shared.collections.Batch
 import indigo.shared.collections.NonEmptyList
-import indigo.shared.datatypes.BindingKey
 import indigo.shared.datatypes.Point
 import indigo.shared.dice.Dice
 import indigo.shared.events.FrameTick
@@ -25,7 +24,7 @@ import scalajs.js.JSConverters.*
 final case class Automata[Model](
     poolKey: AutomataPoolKey,
     automaton: Automaton,
-    layerKey: Option[BindingKey],
+    layerKey: Option[LayerKey],
     maxPoolSize: Option[Int]
 ) extends SubSystem[Model]:
   type EventType      = AutomataEvent
@@ -135,7 +134,7 @@ object Automata:
   def apply[Model](poolKey: AutomataPoolKey, automaton: Automaton): Automata[Model] =
     Automata(poolKey, automaton, None, None)
 
-  def apply[Model](poolKey: AutomataPoolKey, automaton: Automaton, layerKey: BindingKey): Automata[Model] =
+  def apply[Model](poolKey: AutomataPoolKey, automaton: Automaton, layerKey: LayerKey): Automata[Model] =
     Automata(poolKey, automaton, Some(layerKey), None)
 
   def renderNoLayer(pool: js.Array[SpawnedAutomaton], gameTime: GameTime): AutomatonUpdate =

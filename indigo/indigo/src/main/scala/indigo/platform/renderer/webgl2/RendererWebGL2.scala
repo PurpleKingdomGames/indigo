@@ -262,9 +262,9 @@ final class RendererWebGL2(
           drawScene(
             ProcessedSceneData(
               _prevSceneData.layers.filter(l =>
-                l.bindingKey match {
-                  case Some(bk) => option.excludeLayers.exists(_ == bk) == false
-                  case None     => true
+                l.layerKey match {
+                  case Some(key) => option.excludeLayers.exists(_ == key) == false
+                  case None      => true
                 }
               ),
               _prevSceneData.cloneBlankDisplayObjects,

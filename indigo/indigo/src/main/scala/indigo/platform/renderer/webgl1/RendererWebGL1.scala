@@ -15,7 +15,6 @@ import indigo.shared.assets.AssetType
 import indigo.shared.collections.Batch
 import indigo.shared.config.GameViewport
 import indigo.shared.config.RenderingTechnology
-import indigo.shared.datatypes.BindingKey
 import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Size
@@ -133,9 +132,9 @@ final class RendererWebGL1(
           drawScene(
             ProcessedSceneData(
               _prevSceneData.layers.filter(l =>
-                l.bindingKey match {
-                  case Some(bk) => option.excludeLayers.exists(_ == bk) == false
-                  case None     => true
+                l.layerKey match {
+                  case Some(key) => option.excludeLayers.exists(_ == key) == false
+                  case None      => true
                 }
               ),
               _prevSceneData.cloneBlankDisplayObjects,

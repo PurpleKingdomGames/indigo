@@ -1,14 +1,14 @@
 package indigo.shared.display
 
-import indigo.BindingKey
 import indigo.shared.datatypes.Depth
 import indigo.shared.datatypes.RGBA
 import indigo.shared.scenegraph.Blend
 import indigo.shared.scenegraph.Camera
+import indigo.shared.scenegraph.LayerKey
 import indigo.shared.shader.ShaderId
 
 final case class DisplayLayer(
-    bindingKey: Option[BindingKey],
+    layerKey: Option[LayerKey],
     entities: scalajs.js.Array[DisplayEntity],
     lightsData: scalajs.js.Array[Float],
     bgColor: RGBA,

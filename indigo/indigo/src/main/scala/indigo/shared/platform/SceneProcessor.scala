@@ -122,8 +122,8 @@ final class SceneProcessor(
             .map(
               (
                 l match {
-                  case LayerEntry.Tagged(tag, _) => Some(tag)
-                  case _                         => None
+                  case LayerEntry.Keyed(tag, _) => Some(tag)
+                  case _                        => None
                 },
                 _
               )

@@ -35,6 +35,7 @@ object syntax:
     def toAssetPath: AssetPath       = AssetPath(s)
     def toAssetTag: AssetTag         = AssetTag(s)
     def toBindingKey: BindingKey     = BindingKey(s)
+    def toLayerKey: LayerKey         = LayerKey(s)
     def toCloneId: CloneId           = CloneId(s)
     def toCycleLabel: CycleLabel     = CycleLabel(s)
     def toFontFamily: FontFamily     = FontFamily(s)
@@ -659,6 +660,9 @@ val Layer: shared.scenegraph.Layer.type = shared.scenegraph.Layer
 
 type LayerEntry = shared.scenegraph.LayerEntry
 val LayerEntry: shared.scenegraph.LayerEntry.type = shared.scenegraph.LayerEntry
+
+type LayerKey = shared.scenegraph.LayerKey
+val LayerKey: shared.scenegraph.LayerKey.type = shared.scenegraph.LayerKey
 
 type Blending = shared.scenegraph.Blending
 val Blending: shared.scenegraph.Blending.type = shared.scenegraph.Blending

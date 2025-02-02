@@ -3,12 +3,12 @@ package indigoextras.subsystems
 import indigo.shared.assets.AssetName
 import indigo.shared.collections.Batch
 import indigo.shared.collections.NonEmptyList
-import indigo.shared.datatypes.BindingKey
 import indigo.shared.datatypes.Point
 import indigo.shared.dice.Dice
 import indigo.shared.events.GlobalEvent
 import indigo.shared.materials.Material
 import indigo.shared.scenegraph.Graphic
+import indigo.shared.scenegraph.LayerKey
 import indigo.shared.scenegraph.RenderNode
 import indigo.shared.scenegraph.SceneNode
 import indigo.shared.temporal.Signal
@@ -40,7 +40,7 @@ class AutomataTests extends munit.FunSuite {
       .withModifier(ModiferFunctions.signal)
 
   val layerKey =
-    BindingKey("test layer")
+    LayerKey("test layer")
 
   val automata: Automata[Unit] =
     Automata(poolKey, automaton, layerKey)
@@ -95,7 +95,7 @@ class AutomataTests extends munit.FunSuite {
         .present(ctx, nextState)
         .unsafeGet
         .layers
-        .find(l => l.hasTag(layerKey))
+        .find(l => l.hasKey(layerKey))
         .get
         .toBatch
         .head

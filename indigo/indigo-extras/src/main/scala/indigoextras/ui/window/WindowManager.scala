@@ -11,7 +11,7 @@ final case class WindowManager[StartUpData, Model, RefData](
     snapGrid: Size,
     extractReference: Model => RefData,
     startUpData: StartUpData,
-    layerKey: Option[BindingKey],
+    layerKey: Option[LayerKey],
     windows: Batch[Window[?, RefData]]
 ) extends SubSystem[Model]:
   type EventType      = GlobalEvent
@@ -105,7 +105,7 @@ final case class WindowManager[StartUpData, Model, RefData](
 
   /** Allows you to set the layer key that the WindowManager will use to present the windows.
     */
-  def withLayerKey(newLayerKey: BindingKey): WindowManager[StartUpData, Model, ReferenceData] =
+  def withLayerKey(newLayerKey: LayerKey): WindowManager[StartUpData, Model, ReferenceData] =
     this.copy(layerKey = Option(newLayerKey))
 
 object WindowManager:
@@ -155,7 +155,7 @@ object WindowManager:
       snapGrid: Size,
       extractReference: Model => ReferenceData,
       startUpData: StartUpData,
-      layerKey: BindingKey
+      layerKey: LayerKey
   ): WindowManager[StartUpData, Model, ReferenceData] =
     WindowManager(
       id,
@@ -319,7 +319,7 @@ object WindowManager:
       updated.sequence.map(vm => viewModel.copy(windows = vm))
 
   private[window] def present[ReferenceData](
-      layerKey: Option[BindingKey],
+      layerKey: Option[LayerKey],
       context: UIContext[ReferenceData],
       model: WindowManagerModel[ReferenceData],
       viewModel: WindowManagerViewModel[ReferenceData]

@@ -2,9 +2,9 @@ package indigo.platform.renderer
 
 import indigo.shared.ImageType
 import indigo.shared.collections.Batch
-import indigo.shared.datatypes.BindingKey
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Vector2
+import indigo.shared.scenegraph.LayerKey
 
 /** Configuration for a screen capture
   *
@@ -23,7 +23,7 @@ final case class ScreenCaptureConfig(
     name: Option[String],
     croppingRect: Option[Rectangle],
     scale: Option[Vector2],
-    excludeLayers: Batch[BindingKey],
+    excludeLayers: Batch[LayerKey],
     imageType: ImageType
 ) {
 
@@ -72,7 +72,7 @@ final case class ScreenCaptureConfig(
     * @param excludeLayers
     * @return
     */
-  def withExcludeLayers(excludeLayers: Batch[BindingKey]): ScreenCaptureConfig =
+  def withExcludeLayers(excludeLayers: Batch[LayerKey]): ScreenCaptureConfig =
     this.copy(excludeLayers = excludeLayers)
 
   /** Add a layer to exclude from the capture
@@ -80,7 +80,7 @@ final case class ScreenCaptureConfig(
     * @param excludeLayer
     * @return
     */
-  def addExcludeLayer(excludeLayer: BindingKey): ScreenCaptureConfig =
+  def addExcludeLayer(excludeLayer: LayerKey): ScreenCaptureConfig =
     this.copy(excludeLayers = excludeLayers :+ excludeLayer)
 
   /** Add layers to exclude from the capture
@@ -88,7 +88,7 @@ final case class ScreenCaptureConfig(
     * @param excludeLayers
     * @return
     */
-  def addExcludeLayers(excludeLayers: Batch[BindingKey]): ScreenCaptureConfig =
+  def addExcludeLayers(excludeLayers: Batch[LayerKey]): ScreenCaptureConfig =
     this.copy(excludeLayers = this.excludeLayers ++ excludeLayers)
 }
 
@@ -140,7 +140,7 @@ object ScreenCaptureConfig {
     * @param excludeLayers
     * @return
     */
-  def apply(name: String, excludeLayers: Batch[BindingKey]): ScreenCaptureConfig =
+  def apply(name: String, excludeLayers: Batch[LayerKey]): ScreenCaptureConfig =
     ScreenCaptureConfig(Some(name), None, None, excludeLayers, ImageType.WEBP)
 
   /** Create a configuration with a name and image type
@@ -181,7 +181,7 @@ object ScreenCaptureConfig {
     * @param excludeLayers
     * @return
     */
-  def apply(excludeLayers: Batch[BindingKey]): ScreenCaptureConfig =
+  def apply(excludeLayers: Batch[LayerKey]): ScreenCaptureConfig =
     ScreenCaptureConfig(None, None, None, excludeLayers, ImageType.WEBP)
 
   /** Create a configuration with an image type

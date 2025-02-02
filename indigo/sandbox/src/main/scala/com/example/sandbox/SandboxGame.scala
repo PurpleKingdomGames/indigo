@@ -87,7 +87,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
       ).withSubSystems(
         FPSCounter[SandboxGameModel](
           Point(5, 165),
-          BindingKey("fps counter")
+          LayerKey("fps counter")
         )
       ).withShaders(
         Shaders.circle,
@@ -242,7 +242,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
-        "fps counter".toBindingKey ->
+        "fps counter".toLayerKey ->
           Layer.empty
             .withDepth(200.depth)
             .withCamera(Camera.default)

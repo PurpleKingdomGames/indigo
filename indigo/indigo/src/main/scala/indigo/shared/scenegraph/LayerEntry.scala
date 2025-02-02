@@ -1,42 +1,41 @@
 package indigo.shared.scenegraph
 
 import indigo.shared.collections.Batch
-import indigo.shared.datatypes.BindingKey
 
 /** Layer entries are holders for Layers, that can either be tagged or untagged. If a layer entry is tagged with a
-  * `BindingKey`, then if two SceneUpdateFragements are merged together, two entries will the same tag will be combined
-  * at the depth of the original.
+  * `LayerKey`, then if two SceneUpdateFragements are merged together, two entries will the same layerKey will be
+  * combined at the depth of the original.
   */
 enum LayerEntry:
   def layer: Layer
 
-  case Untagged(layer: Layer)
-  case Tagged(tag: BindingKey, layer: Layer)
+  case NoKey(layer: Layer)
+  case Keyed(layerKey: LayerKey, layer: Layer)
 
-  def hasTag(tag: BindingKey): Boolean =
+  def hasKey(layerKey: LayerKey): Boolean =
     this match
-      case _: LayerEntry.Untagged => false
-      case l: LayerEntry.Tagged   => l.tag == tag
+      case _: LayerEntry.NoKey => false
+      case l: LayerEntry.Keyed => l.layerKey == layerKey
 
-  def giveTag: Option[BindingKey] =
+  def giveKey: Option[LayerKey] =
     this match
-      case Untagged(_)    => None
-      case Tagged(tag, _) => Option(tag)
+      case NoKey(_)           => None
+      case Keyed(layerKey, _) => Option(layerKey)
 
-  def withTag(newKey: BindingKey): LayerEntry =
-    LayerEntry.Tagged(newKey, this.layer)
+  def withKey(newKey: LayerKey): LayerEntry =
+    LayerEntry.Keyed(newKey, this.layer)
 
   def withLayer(newLayer: Layer): LayerEntry =
     this match
-      case l: LayerEntry.Untagged => l.copy(layer = newLayer)
-      case l: LayerEntry.Tagged   => l.copy(layer = newLayer)
+      case l: LayerEntry.NoKey => l.copy(layer = newLayer)
+      case l: LayerEntry.Keyed => l.copy(layer = newLayer)
 
   def modify(f: LayerEntry => LayerEntry): LayerEntry =
     f(this)
   def modifyLayer(f: Layer => Layer): LayerEntry =
     this match
-      case l: LayerEntry.Untagged => l.copy(layer = f(l.layer))
-      case l: LayerEntry.Tagged   => l.copy(layer = f(l.layer))
+      case l: LayerEntry.NoKey => l.copy(layer = f(l.layer))
+      case l: LayerEntry.Keyed => l.copy(layer = f(l.layer))
 
   /** Apply a magnification to this layer entry's layer, and all it's child layers.
     *
@@ -44,22 +43,22 @@ enum LayerEntry:
     */
   def withMagnificationForAll(level: Int): LayerEntry =
     this match
-      case l: LayerEntry.Untagged => l.copy(layer = l.layer.withMagnificationForAll(level))
-      case l: LayerEntry.Tagged   => l.copy(layer = l.layer.withMagnificationForAll(level))
+      case l: LayerEntry.NoKey => l.copy(layer = l.layer.withMagnificationForAll(level))
+      case l: LayerEntry.Keyed => l.copy(layer = l.layer.withMagnificationForAll(level))
 
   def toBatch: Batch[Layer.Content] =
     layer.toBatch
 
 object LayerEntry:
 
-  def apply(tag: BindingKey, layer: Layer): LayerEntry =
-    LayerEntry.Tagged(tag, layer)
+  def apply(layerKey: LayerKey, layer: Layer): LayerEntry =
+    LayerEntry.Keyed(layerKey, layer)
 
-  def apply(maybeKey: Option[BindingKey], layer: Layer): LayerEntry =
-    maybeKey.fold(LayerEntry(layer))(tag => LayerEntry(tag, layer))
+  def apply(maybeKey: Option[LayerKey], layer: Layer): LayerEntry =
+    maybeKey.fold(LayerEntry(layer))(layerKey => LayerEntry(layerKey, layer))
 
-  def apply(keyAndLayer: (BindingKey, Layer)): LayerEntry =
-    LayerEntry.Tagged(keyAndLayer._1, keyAndLayer._2)
+  def apply(keyAndLayer: (LayerKey, Layer)): LayerEntry =
+    LayerEntry.Keyed(keyAndLayer._1, keyAndLayer._2)
 
   def apply(layer: Layer): LayerEntry =
-    LayerEntry.Untagged(layer)
+    LayerEntry.NoKey(layer)

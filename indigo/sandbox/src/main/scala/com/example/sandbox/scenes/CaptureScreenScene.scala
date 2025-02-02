@@ -23,8 +23,8 @@ object CaptureScreenScene extends Scene[SandboxStartupData, SandboxGameModel, Sa
   type SceneModel     = SandboxGameModel
   type SceneViewModel = ViewModel
 
-  val uiKey        = BindingKey("ui")
-  val defaultKey   = BindingKey("default")
+  val uiKey        = LayerKey("ui")
+  val defaultKey   = LayerKey("default")
   val dudeCloneId  = CloneId("Dude")
   val clippingRect = Rectangle(25, 25, 150, 100)
 
