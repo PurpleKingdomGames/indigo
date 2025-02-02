@@ -246,6 +246,9 @@ sealed trait Batch[+A]:
   def zip[B](other: Batch[B]): Batch[(A, B)] =
     Batch.Wrapped(_jsArray.zip(other.toJSArray))
 
+  override def hashCode(): Int =
+    _jsArray.foldLeft(31)((acc, v) => 31 * acc + v.hashCode())
+
 object Batch:
 
   extension [A](s: Seq[A]) def toBatch: Batch[A] = Batch.fromSeq(s)
@@ -371,10 +374,6 @@ object Batch:
 
     lazy val size: Int = batch1.size + batch2.size
 
-    override def hashCode(): Int =
-      val t = batch1.foldLeft(31)((acc, v) => 31 * acc + v.hashCode())
-      batch2.foldLeft(t)((acc, v) => 31 * acc + v.hashCode())
-
     override def equals(that: Any): Boolean =
       given CanEqual[Combine[?], Any] = CanEqual.derived
       given CanEqual[Wrapped[?], Any] = CanEqual.derived
@@ -400,8 +399,6 @@ object Batch:
     def toJSArray[B >: A]: js.Array[B] = values.asInstanceOf[js.Array[B]]
 
     lazy val size: Int = values.length
-
-    override def hashCode: Int = values.foldLeft(31)((acc, v) => 31 * acc + v.hashCode())
 
     override def equals(that: Any): Boolean =
       given CanEqual[Combine[?], Any] = CanEqual.derived
