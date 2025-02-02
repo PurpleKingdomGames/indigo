@@ -100,6 +100,9 @@ object UIContext:
       subSystemContext.services
     )
 
+  def apply(ctx: Context[?]): UIContext[Unit] =
+    fromContext(ctx, ())
+
   def fromContext[ReferenceData](
       ctx: Context[?],
       reference: ReferenceData
