@@ -19,21 +19,47 @@ final case class UIContext[ReferenceData](
   lazy val screenSpaceBounds: Rectangle =
     bounds.toScreenSpace(snapGrid)
 
-  def moveBoundsBy(offset: Coords): UIContext[ReferenceData] =
-    this.copy(bounds = bounds.moveBy(offset))
-  def moveBoundsBy(x: Int, y: Int): UIContext[ReferenceData] =
-    this.copy(bounds = bounds.moveBy(x, y))
-
   val isActive: Boolean =
     state == UIState.Active
 
-  def unitReference: UIContext[Unit] =
-    this.copy(reference = ())
+  def withBounds(newBounds: Bounds): UIContext[ReferenceData] =
+    this.copy(bounds = newBounds)
+  def moveTo(newPosition: Coords): UIContext[ReferenceData] =
+    this.copy(bounds = bounds.moveTo(newPosition))
+  def moveTo(x: Int, y: Int): UIContext[ReferenceData] =
+    this.copy(bounds = bounds.moveTo(x, y))
+  def moveBy(offset: Coords): UIContext[ReferenceData] =
+    this.copy(bounds = bounds.moveBy(offset))
+  def moveBy(x: Int, y: Int): UIContext[ReferenceData] =
+    this.copy(bounds = bounds.moveBy(x, y))
+
+  def withSnapGrid(newSnapGrid: Size): UIContext[ReferenceData] =
+    this.copy(snapGrid = newSnapGrid)
+  def clearSnapGrid: UIContext[ReferenceData] =
+    this.copy(snapGrid = Size(1))
+
+  def withPointerCoords(coords: Coords): UIContext[ReferenceData] =
+    this.copy(pointerCoords = coords)
+
+  def withState(newState: UIState): UIContext[ReferenceData] =
+    this.copy(state = newState)
+  def makeActive: UIContext[ReferenceData] =
+    withState(UIState.Active)
+  def makeInActive: UIContext[ReferenceData] =
+    withState(UIState.InActive)
+
+  def withMagnification(newMagnification: Int): UIContext[ReferenceData] =
+    this.copy(magnification = newMagnification)
 
   def withAdditionalOffset(offset: Coords): UIContext[ReferenceData] =
     this.copy(additionalOffset = offset)
   def withAdditionalOffset(x: Int, y: Int): UIContext[ReferenceData] =
     withAdditionalOffset(Coords(x, y))
+
+  def withReferenceData[NewReferenceData](newReference: NewReferenceData): UIContext[NewReferenceData] =
+    this.copy(reference = newReference)
+  def unitReference: UIContext[Unit] =
+    this.copy(reference = ())
 
 object UIContext:
 

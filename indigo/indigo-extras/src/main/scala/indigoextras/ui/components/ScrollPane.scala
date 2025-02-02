@@ -222,7 +222,7 @@ object ScrollPane:
 
           c.updateModel(
             unitContext
-              .moveBoundsBy(
+              .moveBy(
                 Coords(
                   model.dimensions.width - model.scrollBar.bounds.width,
                   0
@@ -264,7 +264,7 @@ object ScrollPane:
       val content =
         ContainerLikeFunctions
           .present(
-            ctx.moveBoundsBy(scrollOffset),
+            ctx.moveBy(scrollOffset),
             model.dimensions,
             Batch(model.content)
           )
@@ -275,7 +275,7 @@ object ScrollPane:
           val unitContext: UIContext[Unit]     = ctx.copy(reference = ())
           val scrollbar =
             c.present(
-              unitContext.moveBoundsBy(
+              unitContext.moveBy(
                 Coords(
                   model.dimensions.width - model.scrollBar.bounds.width,
                   ((model.dimensions.height - 1).toDouble * model.scrollAmount).toInt
