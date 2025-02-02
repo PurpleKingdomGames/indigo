@@ -95,6 +95,7 @@ object Point:
     Point(xy, xy)
 
   val zero: Point = Point(0, 0)
+  val one: Point  = Point(1, 1)
 
   def tuple2ToPoint(t: (Int, Int)): Point = Point(t._1, t._2)
 

@@ -16,6 +16,7 @@ object Bounds:
     Rectangle(coords.toPoint, dimensions.toSize)
 
   val zero: Bounds = Bounds(0, 0, 0, 0)
+  val one: Bounds  = Bounds(0, 0, 1, 1)
 
   extension (r: Bounds)
     inline def unsafeToRectangle: Rectangle = r

@@ -64,6 +64,7 @@ object Size:
     Size(xy, xy)
 
   val zero: Size = Size(0, 0)
+  val one: Size  = Size(1, 1)
 
   def tuple2ToSize(t: (Int, Int)): Size = Size(t._1, t._2)
 

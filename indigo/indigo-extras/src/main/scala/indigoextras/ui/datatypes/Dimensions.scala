@@ -13,6 +13,7 @@ object Dimensions:
   inline def apply(size: Size): Dimensions              = size
 
   val zero: Dimensions = Dimensions(0, 0)
+  val one: Dimensions  = Dimensions(1, 1)
 
   extension (d: Dimensions)
     private[datatypes] inline def toSize: Size     = d

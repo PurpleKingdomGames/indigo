@@ -16,6 +16,7 @@ object Coords:
     Coords(pt / charSize.toPoint)
 
   val zero: Coords = Coords(0, 0)
+  val one: Coords  = Coords(1, 1)
 
   extension (c: Coords)
     private[datatypes] inline def toPoint: Point    = c
