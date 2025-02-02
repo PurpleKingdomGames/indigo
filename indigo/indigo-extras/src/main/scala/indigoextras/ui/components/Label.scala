@@ -29,6 +29,27 @@ object Label:
   ): Label[ReferenceData] =
     Label(_ => text, present, calculateBounds)
 
+  /** Minimal label constructor with custom rendering function for dynamic text
+    */
+  def apply[ReferenceData](dynamicText: ReferenceData => String, calculateBounds: (ReferenceData, String) => Bounds)(
+      present: (Coords, String, Dimensions) => Outcome[Layer]
+  ): Label[ReferenceData] =
+    Label(dynamicText, present, calculateBounds)
+
+  /** Minimal label constructor with custom rendering function with fixed bounds
+    */
+  def apply[ReferenceData](text: String, bounds: Bounds)(
+      present: (Coords, String, Dimensions) => Outcome[Layer]
+  ): Label[ReferenceData] =
+    Label(_ => text, present, (_, _) => bounds)
+
+  /** Minimal label constructor with custom rendering function for dynamic text with fixed bounds
+    */
+  def apply[ReferenceData](dynamicText: ReferenceData => String, bounds: Bounds)(
+      present: (Coords, String, Dimensions) => Outcome[Layer]
+  ): Label[ReferenceData] =
+    Label(dynamicText, present, (_, _) => bounds)
+
   given [ReferenceData]: Component[Label[ReferenceData], ReferenceData] with
     def bounds(reference: ReferenceData, model: Label[ReferenceData]): Bounds =
       model.calculateBounds(reference, model.text(reference))
