@@ -10,6 +10,9 @@ import indigoextras.ui.datatypes.UIContext
 object Helper:
 
   extension [A, ReferenceData](component: A)(using c: Component[A, ReferenceData])
+    def bounds(context: UIContext[ReferenceData]): Bounds =
+      c.bounds(context, component)
+
     def update(
         context: UIContext[ReferenceData]
     ): GlobalEvent => Outcome[A] =
@@ -21,7 +24,7 @@ object Helper:
       c.present(context, component)
 
     def refresh(
-        reference: ReferenceData,
+        context: UIContext[ReferenceData],
         parentDimensions: Dimensions
     ): A =
-      c.refresh(reference, component, parentDimensions)
+      c.refresh(context, component, parentDimensions)

@@ -84,10 +84,10 @@ final case class Window[A, ReferenceData](
   def isClosed: Boolean =
     state == WindowState.Closed
 
-  def refresh(reference: ReferenceData): Window[A, ReferenceData] =
+  def refresh(context: UIContext[ReferenceData]): Window[A, ReferenceData] =
     this.copy(content =
       component.refresh(
-        reference,
+        context,
         content,
         bounds.dimensions
       )

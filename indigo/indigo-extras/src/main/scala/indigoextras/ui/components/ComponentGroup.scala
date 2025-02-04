@@ -133,7 +133,7 @@ object ComponentGroup:
 
   given [ReferenceData]: Component[ComponentGroup[ReferenceData], ReferenceData] with
 
-    def bounds(reference: ReferenceData, model: ComponentGroup[ReferenceData]): Bounds =
+    def bounds(context: UIContext[ReferenceData], model: ComponentGroup[ReferenceData]): Bounds =
       Bounds(model.dimensions)
 
     def updateModel(
@@ -143,7 +143,7 @@ object ComponentGroup:
       case FrameTick =>
         // Sub-groups will naturally refresh themselves as needed
         updateComponents(context, model)(FrameTick).map { updated =>
-          if model.dirty then refresh(context.reference, updated, context.bounds.dimensions)
+          if model.dirty then refresh(context, updated, context.bounds.dimensions)
           else updated
         }
 
@@ -184,7 +184,7 @@ object ComponentGroup:
       }
 
     def refresh(
-        reference: ReferenceData,
+        context: UIContext[ReferenceData],
         model: ComponentGroup[ReferenceData],
         parentDimensions: Dimensions
     ): ComponentGroup[ReferenceData] =
@@ -284,7 +284,7 @@ object ComponentGroup:
       // Next, loop over all the children, calling refresh on each one, and supplying the best guess for the bounds
       val updatedComponents =
         model.components.map { c =>
-          val refreshed = c.component.refresh(reference, c.model, boundsWithoutContent)
+          val refreshed = c.component.refresh(context, c.model, boundsWithoutContent)
           c.copy(model = refreshed)
         }
 
@@ -297,7 +297,7 @@ object ComponentGroup:
                 ContainerLikeFunctions.calculateNextOffset[ReferenceData](
                   boundsWithoutContent,
                   model.layout
-                )(reference, acc)
+                )(context, acc)
 
               acc :+ next.copy(offset = nextOffset)
 
@@ -308,7 +308,7 @@ object ComponentGroup:
       // Now we can calculate the content bounds
       val contentBounds: Bounds =
         withOffsets.foldLeft(Bounds.zero) { (acc, c) =>
-          val bounds = c.component.bounds(reference, c.model).moveTo(c.offset)
+          val bounds = c.component.bounds(context, c.model).moveTo(c.offset)
           acc.expandToInclude(bounds)
         }
 
@@ -335,7 +335,7 @@ object ComponentGroup:
               c
 
             case Some(a) =>
-              val componentBounds = c.component.bounds(reference, c.model)
+              val componentBounds = c.component.bounds(context, c.model)
               val offset          = a.calculatePosition(updatedBounds, componentBounds.dimensions)
 
               c.copy(offset = offset)

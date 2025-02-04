@@ -12,7 +12,7 @@ trait Component[A, ReferenceData]:
 
   /** The position and size of the component
     */
-  def bounds(reference: ReferenceData, model: A): Bounds
+  def bounds(context: UIContext[ReferenceData], model: A): Bounds
 
   /** Update this componenets model.
     */
@@ -31,13 +31,13 @@ trait Component[A, ReferenceData]:
   /** Used internally to instruct the component that the layout has changed in some way, and that it should
     * reflow/refresh it's contents - whatever that means in the context of this component type.
     */
-  def refresh(reference: ReferenceData, model: A, parentDimensions: Dimensions): A
+  def refresh(context: UIContext[ReferenceData], model: A, parentDimensions: Dimensions): A
 
 object Component:
 
   given [ReferenceData]: Component[Unit, ReferenceData] =
     new Component[Unit, ReferenceData]:
-      def bounds(reference: ReferenceData, model: Unit): Bounds =
+      def bounds(context: UIContext[ReferenceData], model: Unit): Bounds =
         Bounds.zero
 
       def updateModel(
@@ -52,5 +52,5 @@ object Component:
       ): Outcome[Layer] =
         Outcome(Layer.empty)
 
-      def refresh(reference: ReferenceData, model: Unit, parentDimensions: Dimensions): Unit =
+      def refresh(context: UIContext[ReferenceData], model: Unit, parentDimensions: Dimensions): Unit =
         ()

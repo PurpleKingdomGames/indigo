@@ -164,7 +164,7 @@ object ScrollPane:
 
   given [A, ReferenceData]: Component[ScrollPane[A, ReferenceData], ReferenceData] with
 
-    def bounds(reference: ReferenceData, model: ScrollPane[A, ReferenceData]): Bounds =
+    def bounds(context: UIContext[ReferenceData], model: ScrollPane[A, ReferenceData]): Bounds =
       Bounds(model.dimensions)
 
     def updateModel(
@@ -174,7 +174,7 @@ object ScrollPane:
       case FrameTick =>
         // Sub-groups will naturally refresh themselves as needed
         updateComponents(context, model)(FrameTick).map { updated =>
-          refresh(context.reference, updated, context.bounds.dimensions)
+          refresh(context, updated, context.bounds.dimensions)
         }
 
       case ScrollPaneEvent.Scroll(bindingKey, yPos) if bindingKey == model.bindingKey =>
@@ -318,7 +318,7 @@ object ScrollPane:
         }
 
     def refresh(
-        reference: ReferenceData,
+        context: UIContext[ReferenceData],
         model: ScrollPane[A, ReferenceData],
         parentDimensions: Dimensions
     ): ScrollPane[A, ReferenceData] =
@@ -420,12 +420,12 @@ object ScrollPane:
       val updatedComponent =
         model.content.copy(
           model = model.content.component
-            .refresh(reference, model.content.model, boundsWithoutContent)
+            .refresh(context, model.content.model, boundsWithoutContent)
         )
 
       // Now we can calculate the content bounds
       val contentBounds: Bounds =
-        model.content.component.bounds(reference, updatedComponent.model)
+        model.content.component.bounds(context, updatedComponent.model)
 
       // We can now calculate the boundsWithoutContent updating in the FitMode.Content cases and leaving as-is in others
       val updatedBounds =

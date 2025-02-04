@@ -111,7 +111,7 @@ final case class HitArea[ReferenceData](
     Button(
       bounds,
       state,
-      (_, _, _) => Outcome(Layer.empty),
+      (_, _) => Outcome(Layer.empty),
       None,
       None,
       click,
@@ -166,8 +166,8 @@ object HitArea:
     HitArea[ReferenceData],
     ReferenceData
   ] with
-    def bounds(reference: ReferenceData, model: HitArea[ReferenceData]): Bounds =
-      btn.bounds(reference, model.toButton)
+    def bounds(context: UIContext[ReferenceData], model: HitArea[ReferenceData]): Bounds =
+      btn.bounds(context, model.toButton)
 
     def updateModel(
         context: UIContext[ReferenceData],
@@ -219,10 +219,10 @@ object HitArea:
           Outcome(Layer.empty)
 
     def refresh(
-        reference: ReferenceData,
+        context: UIContext[ReferenceData],
         model: HitArea[ReferenceData],
         parentDimensions: Dimensions
     ): HitArea[ReferenceData] =
       val f = model.fill
       val s = model.stroke
-      btn.refresh(reference, model.toButton, parentDimensions).toHitArea.copy(fill = f, stroke = s)
+      btn.refresh(context, model.toButton, parentDimensions).toHitArea.copy(fill = f, stroke = s)

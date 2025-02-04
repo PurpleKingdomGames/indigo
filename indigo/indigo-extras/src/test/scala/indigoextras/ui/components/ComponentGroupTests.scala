@@ -10,8 +10,11 @@ import indigoextras.ui.datatypes.UIContext
 
 class ComponentGroupTests extends munit.FunSuite:
 
+  val ctx =
+    UIContext(Context.initial)
+
   given Component[String, Unit] with
-    def bounds(reference: Unit, model: String): Bounds =
+    def bounds(context: UIContext[Unit], model: String): Bounds =
       Bounds(0, 0, model.length, 1)
 
     def updateModel(
@@ -26,10 +29,7 @@ class ComponentGroupTests extends munit.FunSuite:
     ): Outcome[Layer] =
       Outcome(Layer.empty)
 
-    def refresh(reference: Unit, model: String, parentDimensions: Dimensions): String =
-      model
-
-    def cascade(model: String, parentDimensions: Bounds): String =
+    def refresh(context: UIContext[Unit], model: String, parentDimensions: Dimensions): String =
       model
 
   test("ComponentGroup.calculateContentBounds should return the correct bounds (Vertical)") {
@@ -45,7 +45,7 @@ class ComponentGroupTests extends munit.FunSuite:
       summon[Component[ComponentGroup[Unit], Unit]]
 
     // This normally happens as part of the update process
-    val processed = instance.refresh((), group, Dimensions(100, 100))
+    val processed = instance.refresh(ctx, group, Dimensions(100, 100))
 
     val actual =
       processed.contentBounds
@@ -69,7 +69,7 @@ class ComponentGroupTests extends munit.FunSuite:
       summon[Component[ComponentGroup[Unit], Unit]]
 
     // This normally happens as part of the update process
-    val processed = instance.refresh((), group, Dimensions(100, 100))
+    val processed = instance.refresh(ctx, group, Dimensions(100, 100))
 
     val actual =
       processed.contentBounds
@@ -95,7 +95,7 @@ class ComponentGroupTests extends munit.FunSuite:
 
     // This normally happens as part of the update process
     val processed =
-      instance.refresh((), group, Dimensions(100, 100))
+      instance.refresh(ctx, group, Dimensions(100, 100))
 
     val actualFixed =
       processed.dimensions
@@ -105,7 +105,7 @@ class ComponentGroupTests extends munit.FunSuite:
     val actualDefault =
       val c = summon[Component[ComponentGroup[Unit], Unit]]
       c.refresh(
-        (),
+        ctx,
         group.withBoundsMode(indigoextras.ui.components.datatypes.BoundsMode.default),
         Dimensions(100, 100)
       ).dimensions
@@ -124,7 +124,7 @@ class ComponentGroupTests extends munit.FunSuite:
 
     val actual =
       summon[Component[ComponentGroup[Unit], Unit]]
-        .refresh((), group, Dimensions(3, 5))
+        .refresh(ctx, group, Dimensions(3, 5))
         .components
         .toList
         .map(_.offset)
@@ -145,7 +145,7 @@ class ComponentGroupTests extends munit.FunSuite:
 
     val actual =
       summon[Component[ComponentGroup[Unit], Unit]]
-        .refresh((), group, Dimensions(3, 5))
+        .refresh(ctx, group, Dimensions(3, 5))
         .components
         .toList
         .map(_.offset)
@@ -166,7 +166,7 @@ class ComponentGroupTests extends munit.FunSuite:
 
     val actual =
       summon[Component[ComponentGroup[Unit], Unit]]
-        .refresh((), group, Dimensions(3, 5))
+        .refresh(ctx, group, Dimensions(3, 5))
         .components
         .toList
         .map(_.offset)
@@ -189,7 +189,7 @@ class ComponentGroupTests extends munit.FunSuite:
 
     val actual =
       summon[Component[ComponentGroup[Unit], Unit]]
-        .refresh((), group, Dimensions(3, 5))
+        .refresh(ctx, group, Dimensions(3, 5))
         .components
         .toList
         .map(_.offset)
@@ -212,7 +212,7 @@ class ComponentGroupTests extends munit.FunSuite:
 
     val actual =
       summon[Component[ComponentGroup[Unit], Unit]]
-        .refresh((), group, Dimensions(3, 5))
+        .refresh(ctx, group, Dimensions(3, 5))
         .components
         .toList
         .map(_.offset)
@@ -235,7 +235,7 @@ class ComponentGroupTests extends munit.FunSuite:
 
     val actual =
       summon[Component[ComponentGroup[Unit], Unit]]
-        .refresh((), group, Dimensions(3, 5))
+        .refresh(ctx, group, Dimensions(3, 5))
         .components
         .toList
         .map(_.offset)
@@ -258,7 +258,7 @@ class ComponentGroupTests extends munit.FunSuite:
 
     val actual =
       summon[Component[ComponentGroup[Unit], Unit]]
-        .refresh((), group, Dimensions(3, 5))
+        .refresh(ctx, group, Dimensions(3, 5))
         .components
         .toList
         .map(_.offset)
@@ -281,7 +281,7 @@ class ComponentGroupTests extends munit.FunSuite:
 
     val actual =
       summon[Component[ComponentGroup[Unit], Unit]]
-        .refresh((), group, Dimensions(3, 5))
+        .refresh(ctx, group, Dimensions(3, 5))
         .components
         .toList
         .map(_.offset)
@@ -304,7 +304,7 @@ class ComponentGroupTests extends munit.FunSuite:
 
     val actual =
       summon[Component[ComponentGroup[Unit], Unit]]
-        .refresh((), group, Dimensions(3, 5))
+        .refresh(ctx, group, Dimensions(3, 5))
         .components
         .toList
         .map(_.offset)
@@ -327,7 +327,7 @@ class ComponentGroupTests extends munit.FunSuite:
 
     val actual =
       summon[Component[ComponentGroup[Unit], Unit]]
-        .refresh((), group, Dimensions(3, 5))
+        .refresh(ctx, group, Dimensions(3, 5))
         .components
         .toList
         .map(_.offset)
@@ -353,7 +353,7 @@ class ComponentGroupTests extends munit.FunSuite:
         .add("abc", "def")
 
     val updated: ComponentGroup[Unit] =
-      c.refresh((), group, Dimensions(100, 100))
+      c.refresh(ctx, group, Dimensions(100, 100))
 
     assertEquals(updated.contentBounds, Bounds(0, 0, 3, 12))
     assertEquals(updated.dimensions, Dimensions(100, 12))
@@ -372,7 +372,7 @@ class ComponentGroupTests extends munit.FunSuite:
       .add("abc")
 
     val actual =
-      c.refresh((), group, Dimensions(100, 100))
+      c.refresh(ctx, group, Dimensions(100, 100))
         .components
         .toList
         .map(_.offset)

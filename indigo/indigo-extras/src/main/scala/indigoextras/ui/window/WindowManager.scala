@@ -232,7 +232,7 @@ object WindowManager:
       model: WindowManagerModel[ReferenceData]
   ): WindowEvent => Outcome[WindowManagerModel[ReferenceData]] =
     case WindowEvent.Refresh(id) =>
-      model.refresh(id, context.reference)
+      model.refresh(context, id)
 
     case WindowEvent.Focus(id) =>
       Outcome(model.focusOn(id))
@@ -260,10 +260,10 @@ object WindowManager:
       Outcome(model.moveTo(id, coords, space))
 
     case WindowEvent.Resize(id, dimensions, space) =>
-      model.resizeTo(id, dimensions, space).refresh(id, context.reference)
+      model.resizeTo(id, dimensions, space).refresh(context, id)
 
     case WindowEvent.Transform(id, bounds, space) =>
-      model.transformTo(id, bounds, space).refresh(id, context.reference)
+      model.transformTo(id, bounds, space).refresh(context, id)
 
     case WindowEvent.Opened(_) =>
       Outcome(model)

@@ -13,10 +13,10 @@ import scala.annotation.tailrec
 
 /** Input components allow the user to input text information.
   */
-final case class Input(
+final case class Input[ReferenceData](
     text: String,
     dimensions: Dimensions,
-    render: (Coords, Bounds, Input, Seconds) => Outcome[Layer],
+    render: (UIContext[ReferenceData], Input[ReferenceData]) => Outcome[Layer],
     change: String => Batch[GlobalEvent],
     //
     characterLimit: Int,
@@ -27,67 +27,67 @@ final case class Input(
 ):
   lazy val length: Int = text.length
 
-  def withText(value: String): Input =
+  def withText(value: String): Input[ReferenceData] =
     this.copy(text = value)
 
-  def withDimensions(value: Dimensions): Input =
+  def withDimensions(value: Dimensions): Input[ReferenceData] =
     this.copy(dimensions = value)
 
-  def withWidth(value: Int): Input =
+  def withWidth(value: Int): Input[ReferenceData] =
     this.copy(dimensions = dimensions.withWidth(value))
 
-  def onChange(events: String => Batch[GlobalEvent]): Input =
+  def onChange(events: String => Batch[GlobalEvent]): Input[ReferenceData] =
     this.copy(change = events)
-  def onChange(events: Batch[GlobalEvent]): Input =
+  def onChange(events: Batch[GlobalEvent]): Input[ReferenceData] =
     onChange(_ => events)
-  def onChange(events: GlobalEvent*): Input =
+  def onChange(events: GlobalEvent*): Input[ReferenceData] =
     onChange(Batch.fromSeq(events))
 
-  def noCursorBlink: Input =
+  def noCursorBlink: Input[ReferenceData] =
     this.copy(cursor = cursor.noCursorBlink)
-  def withCursorBlinkRate(interval: Seconds): Input =
+  def withCursorBlinkRate(interval: Seconds): Input[ReferenceData] =
     this.copy(cursor = cursor.withCursorBlinkRate(interval))
 
-  def giveFocus: Outcome[Input] =
+  def giveFocus: Outcome[Input[ReferenceData]] =
     Outcome(
       this.copy(hasFocus = true),
       onFocus()
     )
 
-  def loseFocus: Outcome[Input] =
+  def loseFocus: Outcome[Input[ReferenceData]] =
     Outcome(
       this.copy(hasFocus = false),
       onLoseFocus()
     )
 
-  def withCharacterLimit(limit: Int): Input =
+  def withCharacterLimit(limit: Int): Input[ReferenceData] =
     this.copy(characterLimit = limit)
 
-  def withLastCursorMove(value: Seconds): Input =
+  def withLastCursorMove(value: Seconds): Input[ReferenceData] =
     this.copy(cursor = cursor.withLastCursorMove(value))
 
-  def cursorLeft: Input =
+  def cursorLeft: Input[ReferenceData] =
     this.copy(cursor = cursor.cursorLeft)
 
-  def cursorRight: Input =
+  def cursorRight: Input[ReferenceData] =
     this.copy(cursor = cursor.cursorRight(length))
 
-  def cursorHome: Input =
+  def cursorHome: Input[ReferenceData] =
     this.copy(cursor = cursor.cursorHome)
 
-  def moveCursorTo(newCursorPosition: Int): Input =
+  def moveCursorTo(newCursorPosition: Int): Input[ReferenceData] =
     this.copy(cursor = cursor.moveCursorTo(newCursorPosition, length))
 
-  def cursorEnd: Input =
+  def cursorEnd: Input[ReferenceData] =
     this.copy(cursor = cursor.cursorEnd(length))
 
-  def delete: Input =
+  def delete: Input[ReferenceData] =
     if cursor.position == length then this
     else
       val splitString = text.splitAt(cursor.position)
       copy(text = splitString._1 + splitString._2.substring(1))
 
-  def backspace: Input =
+  def backspace: Input[ReferenceData] =
     val splitString = text.splitAt(cursor.position)
 
     this.copy(
@@ -97,12 +97,12 @@ final case class Input(
       )
     )
 
-  def addCharacter(char: Char): Input =
+  def addCharacter(char: Char): Input[ReferenceData] =
     addCharacterText(char.toString())
 
-  def addCharacterText(textToInsert: String): Input = {
+  def addCharacterText(textToInsert: String): Input[ReferenceData] = {
     @tailrec
-    def rec(remaining: List[Char], textHead: String, textTail: String, position: Int): Input =
+    def rec(remaining: List[Char], textHead: String, textTail: String, position: Int): Input[ReferenceData] =
       remaining match
         case Nil =>
           this.copy(
@@ -124,24 +124,24 @@ final case class Input(
     rec(textToInsert.toCharArray().toList, splitString._1, splitString._2, cursor.position)
   }
 
-  def withFocusActions(actions: GlobalEvent*): Input =
+  def withFocusActions(actions: GlobalEvent*): Input[ReferenceData] =
     withFocusActions(Batch.fromSeq(actions))
-  def withFocusActions(actions: => Batch[GlobalEvent]): Input =
+  def withFocusActions(actions: => Batch[GlobalEvent]): Input[ReferenceData] =
     this.copy(onFocus = () => actions)
 
-  def withLoseFocusActions(actions: GlobalEvent*): Input =
+  def withLoseFocusActions(actions: GlobalEvent*): Input[ReferenceData] =
     withLoseFocusActions(Batch.fromSeq(actions))
-  def withLoseFocusActions(actions: => Batch[GlobalEvent]): Input =
+  def withLoseFocusActions(actions: => Batch[GlobalEvent]): Input[ReferenceData] =
     this.copy(onLoseFocus = () => actions)
 
 object Input:
 
   /** Minimal input constructor with custom rendering function
     */
-  def apply(dimensions: Dimensions)(
-      present: (Coords, Bounds, Input, Seconds) => Outcome[Layer]
-  ): Input =
-    Input(
+  def apply[ReferenceData](dimensions: Dimensions)(
+      present: (UIContext[ReferenceData], Input[ReferenceData]) => Outcome[Layer]
+  ): Input[ReferenceData] =
+    Input[ReferenceData](
       "",
       dimensions,
       present,
@@ -154,14 +154,14 @@ object Input:
       () => Batch.empty
     )
 
-  given [ReferenceData]: Component[Input, ReferenceData] with
-    def bounds(reference: ReferenceData, model: Input): Bounds =
+  given [ReferenceData]: Component[Input[ReferenceData], ReferenceData] with
+    def bounds(context: UIContext[ReferenceData], model: Input[ReferenceData]): Bounds =
       Bounds(model.dimensions).resizeBy(2, 2)
 
     def updateModel(
         context: UIContext[ReferenceData],
-        model: Input
-    ): GlobalEvent => Outcome[Input] =
+        model: Input[ReferenceData]
+    ): GlobalEvent => Outcome[Input[ReferenceData]] =
       case _: PointerEvent.Click
           if context.isActive && Bounds(model.dimensions)
             .resizeBy(2, 2)
@@ -210,14 +210,16 @@ object Input:
 
     def present(
         context: UIContext[ReferenceData],
-        model: Input
+        model: Input[ReferenceData]
     ): Outcome[Layer] =
       model.render(
-        context.bounds.coords,
-        Bounds(model.dimensions),
-        model,
-        context.frame.time.running
+        context,
+        model
       )
 
-    def refresh(reference: ReferenceData, model: Input, parentDimensions: Dimensions): Input =
+    def refresh(
+        context: UIContext[ReferenceData],
+        model: Input[ReferenceData],
+        parentDimensions: Dimensions
+    ): Input[ReferenceData] =
       model

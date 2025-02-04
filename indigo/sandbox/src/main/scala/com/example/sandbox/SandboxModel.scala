@@ -48,11 +48,11 @@ object SandboxModel {
             ComponentId("lbl" + i) -> Label[Int](
               "Custom rendered label " + i,
               (_, label) => Bounds(0, 0, 150, 10)
-            ) { case (offset, label, dimensions) =>
+            ) { case (ctx, label) =>
               Outcome(
                 Layer(
-                  Text(label, Fonts.fontKey, SandboxAssets.fontMaterial.withTint(RGBA.Red))
-                    .moveTo(offset.unsafeToPoint)
+                  Text(label.text(ctx), Fonts.fontKey, SandboxAssets.fontMaterial.withTint(RGBA.Red))
+                    .moveTo(ctx.bounds.coords.unsafeToPoint)
                 )
               )
             }
@@ -63,39 +63,39 @@ object SandboxModel {
         Label[Int](
           "Another label",
           (_, label) => Bounds(0, 0, 150, 10)
-        ) { case (offset, label, dimensions) =>
+        ) { case (ctx, label) =>
           Outcome(
             Layer(
-              Text(label, Fonts.fontKey, SandboxAssets.fontMaterial)
-                .moveTo(offset.unsafeToPoint)
+              Text(label.text(ctx), Fonts.fontKey, SandboxAssets.fontMaterial)
+                .moveTo(ctx.bounds.coords.unsafeToPoint)
             )
           )
         }
       )
       .add(
         Switch[Int](BoundsType.fixed[Int](40, 40))(
-          (coords, bounds, _) =>
+          (context, switch) =>
             Outcome(
               Layer(
                 Shape
                   .Box(
-                    bounds.unsafeToRectangle,
+                    switch.bounds.unsafeToRectangle,
                     Fill.Color(RGBA.Green.mix(RGBA.Black)),
                     Stroke(1, RGBA.Green)
                   )
-                  .moveTo(coords.unsafeToPoint)
+                  .moveTo(context.coords.unsafeToPoint)
               )
             ),
-          (coords, bounds, _) =>
+          (context, switch) =>
             Outcome(
               Layer(
                 Shape
                   .Box(
-                    bounds.unsafeToRectangle,
+                    switch.bounds.unsafeToRectangle,
                     Fill.Color(RGBA.Red.mix(RGBA.Black)),
                     Stroke(1, RGBA.Red)
                   )
-                  .moveTo(coords.unsafeToPoint)
+                  .moveTo(context.coords.unsafeToPoint)
               )
             )
         )
@@ -103,42 +103,42 @@ object SandboxModel {
           .switchOn
       )
       .add(
-        Button[Int](Bounds(32, 32)) { (coords, bounds, _) =>
+        Button[Int](Bounds(32, 32)) { (context, button) =>
           Outcome(
             Layer(
               Shape
                 .Box(
-                  bounds.unsafeToRectangle,
+                  button.bounds.unsafeToRectangle,
                   Fill.Color(RGBA.Magenta.mix(RGBA.Black)),
                   Stroke(1, RGBA.Magenta)
                 )
-                .moveTo(coords.unsafeToPoint)
+                .moveTo(context.coords.unsafeToPoint)
             )
           )
         }
-          .presentDown { (coords, bounds, _) =>
+          .presentDown { (context, button) =>
             Outcome(
               Layer(
                 Shape
                   .Box(
-                    bounds.unsafeToRectangle,
+                    button.bounds.unsafeToRectangle,
                     Fill.Color(RGBA.Cyan.mix(RGBA.Black)),
                     Stroke(1, RGBA.Cyan)
                   )
-                  .moveTo(coords.unsafeToPoint)
+                  .moveTo(context.coords.unsafeToPoint)
               )
             )
           }
-          .presentOver((coords, bounds, _) =>
+          .presentOver((context, button) =>
             Outcome(
               Layer(
                 Shape
                   .Box(
-                    bounds.unsafeToRectangle,
+                    button.bounds.unsafeToRectangle,
                     Fill.Color(RGBA.Yellow.mix(RGBA.Black)),
                     Stroke(1, RGBA.Yellow)
                   )
-                  .moveTo(coords.unsafeToPoint)
+                  .moveTo(context.coords.unsafeToPoint)
               )
             )
           )
@@ -154,28 +154,28 @@ object SandboxModel {
                 .withLayout(ComponentLayout.Horizontal(Padding.right(10)))
                 .add(
                   Switch[Int](BoundsType.fixed[Int](20, 20))(
-                    (coords, bounds, _) =>
+                    (context, switch) =>
                       Outcome(
                         Layer(
                           Shape
                             .Circle(
-                              bounds.unsafeToRectangle.toIncircle,
+                              switch.bounds.unsafeToRectangle.toIncircle,
                               Fill.Color(RGBA.Green.mix(RGBA.Black)),
                               Stroke(1, RGBA.Green)
                             )
-                            .moveTo(coords.unsafeToPoint + Point(10))
+                            .moveTo(context.coords.unsafeToPoint + Point(10))
                         )
                       ),
-                    (coords, bounds, _) =>
+                    (context, switch) =>
                       Outcome(
                         Layer(
                           Shape
                             .Circle(
-                              bounds.unsafeToRectangle.toIncircle,
+                              switch.bounds.unsafeToRectangle.toIncircle,
                               Fill.Color(RGBA.Red.mix(RGBA.Black)),
                               Stroke(1, RGBA.Red)
                             )
-                            .moveTo(coords.unsafeToPoint + Point(10))
+                            .moveTo(context.coords.unsafeToPoint + Point(10))
                         )
                       )
                   )
@@ -193,11 +193,11 @@ object SandboxModel {
                   Label[Int](
                     "Radio " + i,
                     (_, label) => Bounds(0, 0, 150, 10)
-                  ) { case (offset, label, dimensions) =>
+                  ) { case (ctx, label) =>
                     Outcome(
                       Layer(
-                        Text(label, Fonts.fontKey, SandboxAssets.fontMaterial.withTint(RGBA.Red))
-                          .moveTo(offset.unsafeToPoint)
+                        Text(label.text(ctx), Fonts.fontKey, SandboxAssets.fontMaterial.withTint(RGBA.Red))
+                          .moveTo(ctx.bounds.coords.unsafeToPoint)
                       )
                     )
                   }

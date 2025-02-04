@@ -17,8 +17,8 @@ import datatypes.SwitchState
 final case class Switch[ReferenceData](
     bounds: Bounds,
     state: SwitchState,
-    on: (Coords, Bounds, ReferenceData) => Outcome[Layer],
-    off: (Coords, Bounds, ReferenceData) => Outcome[Layer],
+    on: (UIContext[ReferenceData], Switch[ReferenceData]) => Outcome[Layer],
+    off: (UIContext[ReferenceData], Switch[ReferenceData]) => Outcome[Layer],
     switch: (SwitchState, ReferenceData) => Batch[GlobalEvent],
     boundsType: BoundsType[ReferenceData, Unit],
     isDown: Boolean,
@@ -32,12 +32,12 @@ final case class Switch[ReferenceData](
     withSwitchState(SwitchState.Off)
 
   def presentOn(
-      on: (Coords, Bounds, ReferenceData) => Outcome[Layer]
+      on: (UIContext[ReferenceData], Switch[ReferenceData]) => Outcome[Layer]
   ): Switch[ReferenceData] =
     this.copy(on = on)
 
   def presentOff(
-      off: (Coords, Bounds, ReferenceData) => Outcome[Layer]
+      off: (UIContext[ReferenceData], Switch[ReferenceData]) => Outcome[Layer]
   ): Switch[ReferenceData] =
     this.copy(off = off)
 
@@ -62,8 +62,8 @@ object Switch:
   /** Minimal button constructor with custom rendering function
     */
   def apply[ReferenceData](boundsType: BoundsType[ReferenceData, Unit])(
-      on: (Coords, Bounds, ReferenceData) => Outcome[Layer],
-      off: (Coords, Bounds, ReferenceData) => Outcome[Layer]
+      on: (UIContext[ReferenceData], Switch[ReferenceData]) => Outcome[Layer],
+      off: (UIContext[ReferenceData], Switch[ReferenceData]) => Outcome[Layer]
   ): Switch[ReferenceData] =
     Switch(
       Bounds.zero,
@@ -79,8 +79,8 @@ object Switch:
   /** Minimal button constructor with custom rendering function
     */
   def apply[ReferenceData](bounds: Bounds)(
-      on: (Coords, Bounds, ReferenceData) => Outcome[Layer],
-      off: (Coords, Bounds, ReferenceData) => Outcome[Layer]
+      on: (UIContext[ReferenceData], Switch[ReferenceData]) => Outcome[Layer],
+      off: (UIContext[ReferenceData], Switch[ReferenceData]) => Outcome[Layer]
   ): Switch[ReferenceData] =
     Switch(
       bounds,
@@ -96,8 +96,8 @@ object Switch:
   /** Minimal button constructor with custom rendering function and dynamic sizing
     */
   def apply[ReferenceData](calculateBounds: ReferenceData => Bounds)(
-      on: (Coords, Bounds, ReferenceData) => Outcome[Layer],
-      off: (Coords, Bounds, ReferenceData) => Outcome[Layer]
+      on: (UIContext[ReferenceData], Switch[ReferenceData]) => Outcome[Layer],
+      off: (UIContext[ReferenceData], Switch[ReferenceData]) => Outcome[Layer]
   ): Switch[ReferenceData] =
     Switch(
       Bounds.zero,
@@ -111,7 +111,7 @@ object Switch:
     )
 
   given [ReferenceData]: Component[Switch[ReferenceData], ReferenceData] with
-    def bounds(reference: ReferenceData, model: Switch[ReferenceData]): Bounds =
+    def bounds(context: UIContext[ReferenceData], model: Switch[ReferenceData]): Bounds =
       model.bounds
 
     def updateModel(
@@ -167,13 +167,13 @@ object Switch:
     ): Outcome[Layer] =
       model.state match
         case SwitchState.On =>
-          model.on(context.bounds.coords, model.bounds, context.reference)
+          model.on(context, model)
 
         case SwitchState.Off =>
-          model.off(context.bounds.coords, model.bounds, context.reference)
+          model.off(context, model)
 
     def refresh(
-        reference: ReferenceData,
+        context: UIContext[ReferenceData],
         model: Switch[ReferenceData],
         parentDimensions: Dimensions
     ): Switch[ReferenceData] =

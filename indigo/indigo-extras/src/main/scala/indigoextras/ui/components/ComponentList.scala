@@ -117,7 +117,7 @@ object ComponentList:
   given [ReferenceData]: Component[ComponentList[ReferenceData], ReferenceData] with
 
     def bounds(
-        context: ReferenceData,
+        context: UIContext[ReferenceData],
         model: ComponentList[ReferenceData]
     ): Bounds =
       Bounds(model.dimensions)
@@ -141,7 +141,7 @@ object ComponentList:
           entries
             .foldLeft(Outcome(Batch.empty[ComponentEntry[?, ReferenceData]])) { (accum, entry) =>
               accum.flatMap { acc =>
-                val offset = nextOffset(context.reference, acc)
+                val offset = nextOffset(context, acc)
 
                 val updated =
                   model.stateMap.get(entry.id) match
@@ -195,7 +195,7 @@ object ComponentList:
         .present(
           context,
           model.dimensions,
-          contentReflow(context.reference, model.dimensions, model.layout, entries)
+          contentReflow(context, model.dimensions, model.layout, entries)
         )
         .map { components =>
           val background = model.background(Bounds(context.bounds.coords, model.dimensions))
@@ -206,14 +206,14 @@ object ComponentList:
     // and since this component's size doesn't change, nor do we need to
     // propagate further.
     def refresh(
-        reference: ReferenceData,
+        context: UIContext[ReferenceData],
         model: ComponentList[ReferenceData],
         parentDimensions: Dimensions
     ): ComponentList[ReferenceData] =
       model
 
     private def contentReflow(
-        reference: ReferenceData,
+        context: UIContext[ReferenceData],
         dimensions: Dimensions,
         layout: ComponentLayout,
         entries: Batch[ComponentEntry[?, ReferenceData]]
@@ -224,7 +224,7 @@ object ComponentList:
 
       entries.foldLeft(Batch.empty[ComponentEntry[?, ReferenceData]]) { (acc, entry) =>
         val reflowed = entry.copy(
-          offset = nextOffset(reference, acc)
+          offset = nextOffset(context, acc)
         )
 
         acc :+ reflowed
