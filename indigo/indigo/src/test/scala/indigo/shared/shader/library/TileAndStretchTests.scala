@@ -28,9 +28,7 @@ class TileAndStretchTests extends munit.FunSuite {
     val actual =
       fragment.toGLSL[WebGL2].toOutput.code
 
-    // println(actual)
-
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |vec2 uv=vec2(1.0);
@@ -39,7 +37,7 @@ class TileAndStretchTests extends munit.FunSuite {
       |vec2 entitySize=vec2(4.0);
       |vec2 textureSize=vec2(5.0);
       |channelPos+((fract(uv*(entitySize/textureSize)))*channelSize);
-      |""".stripMargin.trim
+      |""".stripMargin
     )
 
   }
@@ -64,16 +62,14 @@ class TileAndStretchTests extends munit.FunSuite {
     val actual =
       fragment.toGLSL[WebGL2].toOutput.code
 
-    // println(actual)
-
-    assertEquals(
+    assertNoDiff(
       actual,
       s"""
       |vec2 uv=vec2(1.0);
       |vec2 channelPos=vec2(2.0);
       |vec2 channelSize=vec2(3.0);
       |channelPos+(uv*channelSize);
-      |""".stripMargin.trim
+      |""".stripMargin
     )
 
   }

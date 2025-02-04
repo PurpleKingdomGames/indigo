@@ -47,9 +47,9 @@ class WebGL1Tests extends munit.FunSuite {
       |  gl_Position=((u_projection*u_baseTransform)*transform)*vertices;
       |  v_texcoord=scaleTexCoords(texcoords);
       |}
-      |""".stripMargin.trim
+      |""".stripMargin
 
-    assertEquals(actual, expected)
+    assertNoDiff(actual, expected)
   }
 
   test("Base WebGL 1.0 fragment shader") {
@@ -65,9 +65,9 @@ class WebGL1Tests extends munit.FunSuite {
       |void main(){
       |  gl_FragColor=texture2D(u_texture,v_texcoord);
       |}
-      |""".stripMargin.trim
+      |""".stripMargin
 
-    assertEquals(actual, expected)
+    assertNoDiff(actual, expected)
   }
 
 }

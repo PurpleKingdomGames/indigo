@@ -47,7 +47,7 @@ object RawShaderCode {
           |${customShader.light}
           |
           |${customShader.composite}
-          |""".stripMargin.trim
+          |"""
         )
     }
 

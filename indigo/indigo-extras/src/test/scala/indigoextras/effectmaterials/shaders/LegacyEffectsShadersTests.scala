@@ -40,7 +40,7 @@ class LegacyEffectsShadersTests extends munit.FunSuite {
       |}
       |""".stripMargin.trim
 
-    assertEquals(actual, expected)
+    assertNoDiff(actual, expected)
   }
 
 }

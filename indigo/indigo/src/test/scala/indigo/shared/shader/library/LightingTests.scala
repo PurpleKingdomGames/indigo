@@ -59,9 +59,9 @@ class LightingTests extends munit.FunSuite {
       |    roughnessColor=mix(roughnessColor,CHANNEL_3,CHANNEL_3.w*LIGHT_ROUGHNESS.y);
       |  }
       |}
-      |""".stripMargin.trim
+      |""".stripMargin
 
-    assertEquals(actual, expected)
+    assertNoDiff(actual, expected)
   }
 
   test("Lighting light") {
@@ -150,9 +150,9 @@ class LightingTests extends munit.FunSuite {
       |    lightAcc=lightAcc+lightResult;
       |  }
       |}
-      |""".stripMargin.trim
+      |""".stripMargin
 
-    assertEquals(actual, expected)
+    assertNoDiff(actual, expected)
   }
 
   test("Lighting composite") {
@@ -168,9 +168,9 @@ class LightingTests extends munit.FunSuite {
       |  vec4 colorLightSpec=vec4(COLOR.xyz*(lightAcc.xyz+specularAcc.xyz),COLOR.w);
       |  COLOR=mix(colorLightSpec,emissiveResult,emissiveResult.w);
       |}
-      |""".stripMargin.trim
+      |""".stripMargin
 
-    assertEquals(actual, expected)
+    assertNoDiff(actual, expected)
   }
 
 }

@@ -84,7 +84,7 @@ void fragment(){
         )
       )
 
-    assertEquals(actual, expected)
+    assertNoDiff(actual.toString(), expected.toString())
   }
 
   val sampleVertexProgram: String =

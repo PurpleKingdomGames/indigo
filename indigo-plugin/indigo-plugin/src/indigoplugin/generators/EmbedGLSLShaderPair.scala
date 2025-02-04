@@ -97,8 +97,8 @@ object EmbedGLSLShaderPair {
     """.stripMargin
 
   def extractShaderCode(text: String, tag: String, newName: String): List[ShaderSnippet] =
-    s"""//<indigo-$tag>\n((.|\n|\r)*)//</indigo-$tag>""".r
-      .findAllIn(text)
+    s"""//<indigo-$tag>\\n((.|\\n|\\r)*)//</indigo-$tag>""".r
+      .findAllIn(text.replaceAll("\\R", "\n"))
       .toList
       .map(_.toString)
       .map(_.split('\n').drop(1).dropRight(1).mkString("\n"))

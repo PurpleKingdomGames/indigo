@@ -17,19 +17,25 @@ class BaseBlendShaderTests extends munit.FunSuite {
       }
 
     val actual =
-      BlendShader.vertex(modifyVertex, IndigoUV.VertexEnv.reference).toOutput.code
+      BlendShader
+        .vertex(modifyVertex, IndigoUV.VertexEnv.reference)
+        .toOutput
+        .code
+        .stripMargin
+        .trim
+        .replaceAll("\\R", "\n")
 
     val expected1: String =
       """
       |vec4 vertex(in vec4 v){
       |  return v+vec4(1.0);
       |}
-      |""".stripMargin.trim
+      |""".stripMargin.trim.replaceAll("\\R", "\n")
 
     val expected2: String =
       """
       |VERTEX=vertex(VERTEX);
-      |""".stripMargin.trim
+      |""".stripMargin.trim.replaceAll("\\R", "\n")
 
     assert(clue(actual).contains(clue(expected1)))
     assert(clue(actual).contains(clue(expected2)))
@@ -59,19 +65,23 @@ class BaseBlendShaderTests extends munit.FunSuite {
       }
 
     val actual =
-      BlendShader.fragment(modifyColor, IndigoUV.BlendFragmentEnv.reference).toOutput.code
+      BlendShader
+        .fragment(modifyColor, IndigoUV.BlendFragmentEnv.reference)
+        .toOutput
+        .code
+        .replaceAll("\\R", "\n")
 
     val expected1: String =
       """
       |vec4 fragment(in vec4 v){
       |  return v+vec4(1.0);
       |}
-      |""".stripMargin.trim
+      |""".stripMargin.trim.replaceAll("\\R", "\n")
 
     val expected2: String =
       """
       |COLOR=fragment(COLOR);
-      |""".stripMargin.trim
+      |""".stripMargin.trim.replaceAll("\\R", "\n")
 
     assert(clue(actual).contains(clue(expected1)))
     assert(clue(actual).contains(clue(expected2)))

@@ -18,19 +18,19 @@ class BaseEntityShaderTests extends munit.FunSuite {
       }
 
     val actual =
-      EntityShader.vertex(modifyVertex, IndigoUV.VertexEnv.reference).toOutput.code
+      EntityShader.vertex(modifyVertex, IndigoUV.VertexEnv.reference).toOutput.code.replaceAll("\\R", "\n")
 
     val expected1: String =
       """
       |vec4 vertex(in vec4 v){
       |  return v+vec4(1.0);
       |}
-      |""".stripMargin.trim
+      |""".stripMargin.trim.replaceAll("\\R", "\n")
 
     val expected2: String =
       """
       |VERTEX=vertex(VERTEX);
-      |""".stripMargin.trim
+      |""".stripMargin.trim.replaceAll("\\R", "\n")
 
     assert(clue(actual).contains(clue(expected1)))
     assert(clue(actual).contains(clue(expected2)))
@@ -86,33 +86,34 @@ vec4 vertex(vec4 v){
         .fragment(modifyColor, IndigoUV.FragmentEnv.reference)
         .toOutput
         .code
+        .replaceAll("\\R", "\n")
 
     val expected1: String =
       """
       |vec4 fragment(in vec4 v){
       |  return v+vec4(1.0);
       |}
-      |""".stripMargin.trim
+      |""".stripMargin.trim.replaceAll("\\R", "\n")
 
     val expected2: String =
       """
       |COLOR=fragment(COLOR);
-      |""".stripMargin.trim
+      |""".stripMargin.trim.replaceAll("\\R", "\n")
 
     val expected3: String =
       """
       |void prepare(){}
-      |""".stripMargin.trim
+      |""".stripMargin.trim.replaceAll("\\R", "\n")
 
     val expected4: String =
       """
       |void light(){}
-      |""".stripMargin.trim
+      |""".stripMargin.trim.replaceAll("\\R", "\n")
 
     val expected5: String =
       """
       |void composite(){}
-      |""".stripMargin.trim
+      |""".stripMargin.trim.replaceAll("\\R", "\n")
 
     assert(clue(actual).contains(clue(expected1)))
     assert(clue(actual).contains(clue(expected2)))

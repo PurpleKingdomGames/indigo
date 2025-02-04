@@ -85,7 +85,7 @@ class GeneratorAcceptanceTests extends munit.FunSuite {
           |  case Fortitude extends StatsEnum(4, 1, Some(false))
           |""".stripMargin
 
-        assertEquals(actual.trim, expected.trim)
+        assertNoDiff(actual, expected)
     }
   }
 
@@ -121,7 +121,7 @@ class GeneratorAcceptanceTests extends munit.FunSuite {
           |    )
           |""".stripMargin
 
-        assertEquals(actual.trim, expected.trim)
+        assertNoDiff(actual, expected)
     }
   }
 
@@ -152,7 +152,7 @@ class GeneratorAcceptanceTests extends munit.FunSuite {
           |  case ChainMail extends Armour(3)
           |""".stripMargin
 
-        assertEquals(actual.trim, expected.trim)
+        assertNoDiff(actual, expected)
     }
   }
 
@@ -189,7 +189,7 @@ class GeneratorAcceptanceTests extends munit.FunSuite {
           |*/
           |""".stripMargin
 
-        assertEquals(actual.trim, expected.trim)
+        assertNoDiff(actual, expected)
     }
   }
 
@@ -268,7 +268,7 @@ class GeneratorAcceptanceTests extends munit.FunSuite {
     val files =
       IndigoGenerators("com.example.test")
         .embed("ColoursList", sourceColours) { text =>
-          "val colours: List[String] = " + text.split("\n").map(t => s"""\"$t\"""").mkString("List(", ", ", ")")
+          "val colours: List[String] = " + text.replaceAll("\\R","\n").split("\n").map(t => s"""\"$t\"""").mkString("List(", ", ", ")")
         }
         .toSourcePaths(targetDir)
 
