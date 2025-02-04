@@ -16,9 +16,9 @@ import datatypes.BoundsType
 final case class Button[ReferenceData](
     bounds: Bounds,
     state: ButtonState,
-    up: (Coords, Bounds, ReferenceData) => Outcome[Layer],
-    over: Option[(Coords, Bounds, ReferenceData) => Outcome[Layer]],
-    down: Option[(Coords, Bounds, ReferenceData) => Outcome[Layer]],
+    up: (UIContext[ReferenceData], Button[ReferenceData]) => Outcome[Layer],
+    over: Option[(UIContext[ReferenceData], Button[ReferenceData]) => Outcome[Layer]],
+    down: Option[(UIContext[ReferenceData], Button[ReferenceData]) => Outcome[Layer]],
     click: ReferenceData => Batch[GlobalEvent],
     press: ReferenceData => Batch[GlobalEvent],
     release: ReferenceData => Batch[GlobalEvent],
@@ -31,17 +31,17 @@ final case class Button[ReferenceData](
   val isDragged: Boolean = dragStart.isDefined
 
   def presentUp(
-      up: (Coords, Bounds, ReferenceData) => Outcome[Layer]
+      up: (UIContext[ReferenceData], Button[ReferenceData]) => Outcome[Layer]
   ): Button[ReferenceData] =
     this.copy(up = up)
 
   def presentOver(
-      over: (Coords, Bounds, ReferenceData) => Outcome[Layer]
+      over: (UIContext[ReferenceData], Button[ReferenceData]) => Outcome[Layer]
   ): Button[ReferenceData] =
     this.copy(over = Option(over))
 
   def presentDown(
-      down: (Coords, Bounds, ReferenceData) => Outcome[Layer]
+      down: (UIContext[ReferenceData], Button[ReferenceData]) => Outcome[Layer]
   ): Button[ReferenceData] =
     this.copy(down = Option(down))
 
@@ -128,7 +128,7 @@ object Button:
   /** Minimal button constructor with custom rendering function
     */
   def apply[ReferenceData](boundsType: BoundsType[ReferenceData, Unit])(
-      present: (Coords, Bounds, ReferenceData) => Outcome[Layer]
+      present: (UIContext[ReferenceData], Button[ReferenceData]) => Outcome[Layer]
   ): Button[ReferenceData] =
     Button(
       Bounds.zero,
@@ -149,7 +149,7 @@ object Button:
   /** Minimal button constructor with custom rendering function
     */
   def apply[ReferenceData](bounds: Bounds)(
-      present: (Coords, Bounds, ReferenceData) => Outcome[Layer]
+      present: (UIContext[ReferenceData], Button[ReferenceData]) => Outcome[Layer]
   ): Button[ReferenceData] =
     Button(
       bounds,
@@ -170,7 +170,7 @@ object Button:
   /** Minimal button constructor with custom rendering function and dynamic sizing
     */
   def apply[ReferenceData](calculateBounds: ReferenceData => Bounds)(
-      present: (Coords, Bounds, ReferenceData) => Outcome[Layer]
+      present: (UIContext[ReferenceData], Button[ReferenceData]) => Outcome[Layer]
   ): Button[ReferenceData] =
     Button(
       Bounds.zero,
@@ -189,7 +189,7 @@ object Button:
     )
 
   given [ReferenceData]: Component[Button[ReferenceData], ReferenceData] with
-    def bounds(reference: ReferenceData, model: Button[ReferenceData]): Bounds =
+    def bounds(context: UIContext[ReferenceData], model: Button[ReferenceData]): Bounds =
       model.bounds
 
     def updateModel(
@@ -301,18 +301,18 @@ object Button:
       model.state match
         case ButtonState.Up =>
           model
-            .up(context.bounds.coords, b, context.reference)
+            .up(context, model.copy(bounds = b))
 
         case ButtonState.Over =>
           model.over
-            .getOrElse(model.up)(context.bounds.coords, b, context.reference)
+            .getOrElse(model.up)(context, model.copy(bounds = b))
 
         case ButtonState.Down =>
           model.down
-            .getOrElse(model.up)(context.bounds.coords, b, context.reference)
+            .getOrElse(model.up)(context, model.copy(bounds = b))
 
     def refresh(
-        reference: ReferenceData,
+        context: UIContext[ReferenceData],
         model: Button[ReferenceData],
         parentDimensions: Dimensions
     ): Button[ReferenceData] =

@@ -4,55 +4,60 @@ import indigo.*
 import indigo.syntax.*
 import indigoextras.ui.component.Component
 import indigoextras.ui.datatypes.Bounds
-import indigoextras.ui.datatypes.Coords
 import indigoextras.ui.datatypes.Dimensions
 import indigoextras.ui.datatypes.UIContext
+
+import scala.annotation.targetName
 
 /** Labels are a simple `Component` that render text.
   */
 final case class Label[ReferenceData](
-    text: ReferenceData => String,
-    render: (Coords, String, Dimensions) => Outcome[Layer],
-    calculateBounds: (ReferenceData, String) => Bounds
+    text: UIContext[ReferenceData] => String,
+    render: (UIContext[ReferenceData], Label[ReferenceData]) => Outcome[Layer],
+    calculateBounds: (UIContext[ReferenceData], String) => Bounds
 ):
   def withText(value: String): Label[ReferenceData] =
     this.copy(text = _ => value)
-  def withText(f: ReferenceData => String): Label[ReferenceData] =
+  def withText(f: UIContext[ReferenceData] => String): Label[ReferenceData] =
     this.copy(text = f)
 
 object Label:
 
   /** Minimal label constructor with custom rendering function
     */
-  def apply[ReferenceData](text: String, calculateBounds: (ReferenceData, String) => Bounds)(
-      present: (Coords, String, Dimensions) => Outcome[Layer]
+  def apply[ReferenceData](text: String, calculateBounds: (UIContext[ReferenceData], String) => Bounds)(
+      present: (UIContext[ReferenceData], Label[ReferenceData]) => Outcome[Layer]
   ): Label[ReferenceData] =
     Label(_ => text, present, calculateBounds)
 
   /** Minimal label constructor with custom rendering function for dynamic text
     */
-  def apply[ReferenceData](dynamicText: ReferenceData => String, calculateBounds: (ReferenceData, String) => Bounds)(
-      present: (Coords, String, Dimensions) => Outcome[Layer]
+  @targetName("LabelApplyDynamicText")
+  def apply[ReferenceData](
+      dynamicText: UIContext[ReferenceData] => String,
+      calculateBounds: (UIContext[ReferenceData], String) => Bounds
+  )(
+      present: (UIContext[ReferenceData], Label[ReferenceData]) => Outcome[Layer]
   ): Label[ReferenceData] =
     Label(dynamicText, present, calculateBounds)
 
   /** Minimal label constructor with custom rendering function with fixed bounds
     */
   def apply[ReferenceData](text: String, bounds: Bounds)(
-      present: (Coords, String, Dimensions) => Outcome[Layer]
+      present: (UIContext[ReferenceData], Label[ReferenceData]) => Outcome[Layer]
   ): Label[ReferenceData] =
     Label(_ => text, present, (_, _) => bounds)
 
   /** Minimal label constructor with custom rendering function for dynamic text with fixed bounds
     */
-  def apply[ReferenceData](dynamicText: ReferenceData => String, bounds: Bounds)(
-      present: (Coords, String, Dimensions) => Outcome[Layer]
+  def apply[ReferenceData](dynamicText: UIContext[ReferenceData] => String, bounds: Bounds)(
+      present: (UIContext[ReferenceData], Label[ReferenceData]) => Outcome[Layer]
   ): Label[ReferenceData] =
     Label(dynamicText, present, (_, _) => bounds)
 
   given [ReferenceData]: Component[Label[ReferenceData], ReferenceData] with
-    def bounds(reference: ReferenceData, model: Label[ReferenceData]): Bounds =
-      model.calculateBounds(reference, model.text(reference))
+    def bounds(context: UIContext[ReferenceData], model: Label[ReferenceData]): Bounds =
+      model.calculateBounds(context, model.text(context))
 
     def updateModel(
         context: UIContext[ReferenceData],
@@ -64,11 +69,10 @@ object Label:
         context: UIContext[ReferenceData],
         model: Label[ReferenceData]
     ): Outcome[Layer] =
-      val t = model.text(context.reference)
-      model.render(context.bounds.coords, t, model.calculateBounds(context.reference, t).dimensions)
+      model.render(context, model)
 
     def refresh(
-        reference: ReferenceData,
+        context: UIContext[ReferenceData],
         model: Label[ReferenceData],
         parentDimensions: Dimensions
     ): Label[ReferenceData] =

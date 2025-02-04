@@ -22,6 +22,10 @@ final case class UIContext[ReferenceData](
   val isActive: Boolean =
     state == UIState.Active
 
+  /** The coordinate offset for the current component */
+  val coords: Coords =
+    bounds.coords + additionalOffset
+
   def withBounds(newBounds: Bounds): UIContext[ReferenceData] =
     this.copy(bounds = newBounds)
   def moveTo(newPosition: Coords): UIContext[ReferenceData] =

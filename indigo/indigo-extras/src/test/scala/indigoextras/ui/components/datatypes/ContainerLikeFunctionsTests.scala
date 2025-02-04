@@ -8,8 +8,11 @@ class ContainerLikeFunctionsTests extends munit.FunSuite:
 
   import indigoextras.ui.Helper.*
 
-  val present: (Coords, String, Dimensions) => Outcome[Layer] =
-    (c, s, d) => Outcome(Layer.empty)
+  val present: (UIContext[Unit], Label[Unit]) => Outcome[Layer] =
+    (c, l) => Outcome(Layer.empty)
+
+  val ctx =
+    UIContext(Context.initial)
 
   test("calculateNextOffset labels") {
 
@@ -25,13 +28,13 @@ class ContainerLikeFunctionsTests extends munit.FunSuite:
         )
 
     val updated: ComponentGroup[Unit] =
-      group.refresh((), Dimensions(100, 100))
+      group.refresh(ctx, Dimensions(100, 100))
 
     val actual =
       ContainerLikeFunctions.calculateNextOffset[Unit](
         Dimensions(20, 20),
         updated.layout
-      )((), updated.components)
+      )(ctx, updated.components)
 
     val expected =
       Coords(0, 3)
@@ -61,7 +64,7 @@ class ContainerLikeFunctionsTests extends munit.FunSuite:
     val parentDimensions = Dimensions(100, 100)
 
     val updated: ComponentGroup[Unit] =
-      group.refresh((), parentDimensions)
+      group.refresh(ctx, parentDimensions)
 
     assertEquals(updated.contentBounds, Bounds(0, 0, 100, 3))
     assertEquals(updated.dimensions, Dimensions(100, 3))
@@ -70,7 +73,7 @@ class ContainerLikeFunctionsTests extends munit.FunSuite:
       ContainerLikeFunctions.calculateNextOffset[Unit](
         Dimensions(100, 0), // The layout is dynamic and horizontal, so we'll only know the width
         updated.layout
-      )((), updated.components)
+      )(ctx, updated.components)
 
     val expected =
       Coords(0, 3)

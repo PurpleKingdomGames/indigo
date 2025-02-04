@@ -13,7 +13,7 @@ object ContainerLikeFunctions:
       b.moveBy(p.left, p.top).resize(b.width + p.right, b.height + p.bottom)
 
   def calculateNextOffset[ReferenceData](containerDimensions: Dimensions, layout: ComponentLayout)(
-      reference: ReferenceData,
+      context: UIContext[ReferenceData],
       components: Batch[ComponentEntry[?, ReferenceData]]
   ): Coords =
     layout match
@@ -21,12 +21,12 @@ object ContainerLikeFunctions:
         components
           .takeRight(1)
           .headOption
-          .map(c => c.offset + Coords(c.component.bounds(reference, c.model).withPadding(padding).right, 0))
+          .map(c => c.offset + Coords(c.component.bounds(context, c.model).withPadding(padding).right, 0))
           .getOrElse(Coords(padding.left, padding.top))
 
       case ComponentLayout.Horizontal(padding, Overflow.Wrap) =>
         val maxY = components
-          .map(c => c.offset.y + c.component.bounds(reference, c.model).withPadding(padding).height)
+          .map(c => c.offset.y + c.component.bounds(context, c.model).withPadding(padding).height)
           .sortWith(_ > _)
           .headOption
           .getOrElse(0)
@@ -35,7 +35,7 @@ object ContainerLikeFunctions:
           .takeRight(1)
           .headOption
           .map { c =>
-            val padded      = c.component.bounds(reference, c.model).withPadding(padding)
+            val padded      = c.component.bounds(context, c.model).withPadding(padding)
             val maybeOffset = c.offset + Coords(padded.right, 0)
 
             if padded.moveBy(maybeOffset).right < containerDimensions.width then maybeOffset
@@ -47,7 +47,7 @@ object ContainerLikeFunctions:
         components
           .takeRight(1)
           .headOption
-          .map(c => c.offset + Coords(0, c.component.bounds(reference, c.model).withPadding(padding).bottom))
+          .map(c => c.offset + Coords(0, c.component.bounds(context, c.model).withPadding(padding).bottom))
           .getOrElse(Coords(padding.left, padding.top))
 
   def present[ReferenceData](
