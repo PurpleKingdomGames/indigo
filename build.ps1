@@ -1,15 +1,16 @@
-Set-Location -Path indigo-plugin -PassThru
-& .\build.ps1
-Set-Location -Path .. -PassThru
+function build {
+    param (
+        [string]$ProjectPath
+    )
 
-Set-Location -Path sbt-indigo -PassThru
-& .\build.ps1
-Set-Location -Path .. -PassThru
+    echo ">>> $ProjectPath"
+    Set-Location -Path $ProjectPath -PassThru
+    & .\build.ps1
+    Set-Location -Path .. -PassThru
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+}
 
-Set-Location -Path mill-indigo -PassThru
-& .\build.ps1
-Set-Location -Path .. -PassThru
-
-Set-Location -Path indigo -PassThru
-& .\build.ps1
-Set-Location -Path .. -PassThru
+build "indigo-plugin"
+build "sbt-indigo"
+build "mill-indigo"
+build "indigo"
