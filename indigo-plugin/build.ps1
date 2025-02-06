@@ -1,22 +1,18 @@
-function mill {
-    param (
-        [string]$Command
-    )
-
-    .\millw.bat -i $Command
+function RunMill {
+    .\millw.bat -i @Args
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 }
 
 Remove-Item -Recurse -Force -Path .\out
 
-mill clean
-mill clean indigo-plugin[2.12]
-mill clean indigo-plugin[2.13]
-mill indigo-plugin[2.12].compile
-mill indigo-plugin[2.13].compile
-mill indigo-plugin[2.12].test
-mill indigo-plugin[2.13].test
-mill indigo-plugin[2.12].checkFormat
-mill indigo-plugin[2.13].checkFormat
-mill indigo-plugin[2.12].publishLocal
-mill indigo-plugin[2.13].publishLocal
+RunMill -i clean
+RunMill -i clean indigo-plugin[2.12]
+RunMill -i clean indigo-plugin[2.13]
+RunMill -i indigo-plugin[2.12].compile
+RunMill -i indigo-plugin[2.13].compile
+RunMill -i indigo-plugin[2.12].test
+RunMill -i indigo-plugin[2.13].test
+RunMill -i indigo-plugin[2.12].checkFormat
+RunMill -i indigo-plugin[2.13].checkFormat
+RunMill -i indigo-plugin[2.12].publishLocal
+RunMill -i indigo-plugin[2.13].publishLocal
