@@ -1,15 +1,11 @@
-function mill {
-    param (
-        [string]$Command
-    )
-
-    .\millw.bat -i $Command
+function RunMill {
+    .\millw.bat @Args
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 }
 
-mill clean
-mill clean mill-indigo[2.13]
-mill mill-indigo[2.13].compile
-mill mill-indigo[2.13].test
-mill mill-indigo[2.13].checkFormat
-mill mill-indigo[2.13].publishLocal
+RunMill -i clean
+RunMill -i clean mill-indigo[2.13]
+RunMill -i mill-indigo[2.13].compile
+RunMill -i mill-indigo[2.13].test
+RunMill -i mill-indigo[2.13].checkFormat
+RunMill -i mill-indigo[2.13].publishLocal
