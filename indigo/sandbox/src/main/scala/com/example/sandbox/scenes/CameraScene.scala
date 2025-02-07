@@ -58,7 +58,6 @@ object CameraScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
         Layer(
           Graphic(
             Rectangle(Point.zero, (context.startUpData.viewportCenter * 4).toSize),
-            1,
             SandboxAssets.foliageMaterial
           ),
           Graphic(32, 32, Material.Bitmap(SandboxAssets.dots)).moveTo(-16, -16)

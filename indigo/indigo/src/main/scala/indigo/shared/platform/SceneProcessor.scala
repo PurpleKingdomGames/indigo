@@ -6,7 +6,6 @@ import indigo.shared.FontRegister
 import indigo.shared.QuickCache
 import indigo.shared.collections.Batch
 import indigo.shared.config.RenderingTechnology
-import indigo.shared.datatypes.Depth
 import indigo.shared.datatypes.RGBA
 import indigo.shared.display.DisplayLayer
 import indigo.shared.display.DisplayObject
@@ -153,7 +152,6 @@ final class SceneProcessor(
             SceneProcessor.makeLightsData((scene.lights ++ l._2.lights).toJSArray),
             blending.clearColor.getOrElse(RGBA.Zero),
             l._2.magnification,
-            l._2.depth.getOrElse(Depth(i)),
             blending.entity,
             blending.layer,
             shaderData.shaderId,
@@ -163,7 +161,6 @@ final class SceneProcessor(
 
           (layer, conversionResults._2)
         }
-        .sortBy(_._1.depth.toInt)
 
     val sceneBlend = scene.blendMaterial.getOrElse(BlendMaterial.Normal).toShaderData
 

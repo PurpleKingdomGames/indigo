@@ -1,6 +1,5 @@
 package indigo.shared.display
 
-import indigo.shared.datatypes.Depth
 import indigo.shared.datatypes.RGBA
 import indigo.shared.scenegraph.Blend
 import indigo.shared.scenegraph.Camera
@@ -13,7 +12,6 @@ final case class DisplayLayer(
     lightsData: scalajs.js.Array[Float],
     bgColor: RGBA,
     magnification: Option[Int],
-    depth: Depth,
     entityBlend: Blend,
     layerBlend: Blend,
     shaderId: ShaderId,

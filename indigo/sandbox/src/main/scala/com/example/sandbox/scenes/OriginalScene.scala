@@ -53,19 +53,19 @@ object OriginalScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
           Layer(
             // viewModel.single.draw(gameTime, boundaryLocator) //|+|
             viewModel.multi.draw(context.frame.time, context.services.bounds)
-          ).withDepth(Depth(1000))
+          )
         )
 
     Outcome(
       scene
         .addLayer(
           LayerKey("bg") -> Layer(
-            BlankEntity(0, 0, 228 * 3, 140 * 3, Depth(10), ShaderData(Shaders.seaId))
+            BlankEntity(0, 0, 228 * 3, 140 * 3, ShaderData(Shaders.seaId))
           ).withMagnification(1)
         )
         .addLayer(
           Layer(
-            Graphic(120, 10, 32, 32, 1, SandboxAssets.dotsMaterial),
+            Graphic(120, 10, 32, 32, SandboxAssets.dotsMaterial),
             BlankEntity(140, 50, 32, 32, ShaderData(Shaders.circleId)),
             BlankEntity(
               140,

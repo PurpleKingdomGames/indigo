@@ -292,7 +292,6 @@ final class RendererWebGL1(
         case l: DisplayTextLetters =>
           (l, AtlasId(""))
       }
-      .sortWith((d1, d2) => d1._1.z > d2._1.z)
       .foreach {
         case (letters: DisplayTextLetters, _) =>
           renderEntities(letters.letters, shaderProgram, baseTransform)

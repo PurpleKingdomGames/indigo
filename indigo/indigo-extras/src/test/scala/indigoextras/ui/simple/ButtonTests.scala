@@ -3,7 +3,6 @@ package indigoextras.ui.simple
 import indigo.MouseButton
 import indigo.shared.assets.AssetName
 import indigo.shared.collections.Batch
-import indigo.shared.datatypes.Depth
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.events.PointerEvent.Down
@@ -26,12 +25,11 @@ class ButtonTests extends munit.FunSuite {
   val button =
     Button(
       ButtonAssets(
-        Graphic(bounds, 1, Material.Bitmap(AssetName("up"))),
-        Graphic(bounds, 1, Material.Bitmap(AssetName("over"))),
-        Graphic(bounds, 1, Material.Bitmap(AssetName("down")))
+        Graphic(bounds, Material.Bitmap(AssetName("up"))),
+        Graphic(bounds, Material.Bitmap(AssetName("over"))),
+        Graphic(bounds, Material.Bitmap(AssetName("down")))
       ),
-      bounds,
-      Depth.zero
+      bounds
     ).withHoverOverActions(FakeEvent("mouse over"))
       .withHoverOutActions(FakeEvent("mouse out"))
       .withDownActions(FakeEvent("mouse down"))

@@ -1,7 +1,6 @@
 package indigo.shared.scenegraph
 
 import indigo.shared.BoundaryLocator
-import indigo.shared.datatypes.Depth
 import indigo.shared.datatypes.Flip
 import indigo.shared.datatypes.FontFamily
 import indigo.shared.datatypes.FontStyle
@@ -31,7 +30,6 @@ final case class TextBox(
     position: Point,
     rotation: Radians,
     scale: Vector2,
-    depth: Depth,
     ref: Point,
     flip: Flip
 ) extends RenderNode[TextBox]
@@ -122,9 +120,6 @@ final case class TextBox(
   def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): TextBox =
     transformTo(position + positionDiff, rotation + rotationDiff, scale * scaleDiff)
 
-  def withDepth(newDepth: Depth): TextBox =
-    this.copy(depth = newDepth)
-
   def flipHorizontal(isFlipped: Boolean): TextBox =
     this.copy(flip = flip.withHorizontalFlip(isFlipped))
   def flipVertical(isFlipped: Boolean): TextBox =
@@ -157,7 +152,6 @@ object TextBox:
       Point.zero,
       Radians.zero,
       Vector2.one,
-      Depth.zero,
       Point.zero,
       Flip.default
     )
@@ -172,7 +166,6 @@ object TextBox:
       Point.zero,
       Radians.zero,
       Vector2.one,
-      Depth.zero,
       Point.zero,
       Flip.default
     )

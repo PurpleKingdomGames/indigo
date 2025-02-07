@@ -1,7 +1,6 @@
 package indigo.shared.scenegraph
 
 import indigo.shared.BoundaryLocator
-import indigo.shared.datatypes.Depth
 import indigo.shared.datatypes.Flip
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Radians
@@ -23,7 +22,6 @@ final case class Graphic[M <: Material](
     position: Point,
     rotation: Radians,
     scale: Vector2,
-    depth: Depth,
     ref: Point,
     flip: Flip
 ) extends RenderNode[Graphic[M]]
@@ -77,9 +75,6 @@ final case class Graphic[M <: Material](
   def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): Graphic[M] =
     transformTo(position + positionDiff, rotation + rotationDiff, scale * scaleDiff)
 
-  def withDepth(newDepth: Depth): Graphic[M] =
-    this.copy(depth = newDepth)
-
   def flipHorizontal(isFlipped: Boolean): Graphic[M] =
     this.copy(flip = flip.withHorizontalFlip(isFlipped))
   def flipVertical(isFlipped: Boolean): Graphic[M] =
@@ -111,20 +106,6 @@ final case class Graphic[M <: Material](
 
 object Graphic:
 
-  def apply[M <: Material](x: Int, y: Int, width: Int, height: Int, depth: Int, material: M): Graphic[M] =
-    Graphic(
-      eventHandlerEnabled = false,
-      eventHandler = Function.const(None),
-      position = Point(x, y),
-      rotation = Radians.zero,
-      scale = Vector2.one,
-      depth = Depth(depth),
-      ref = Point.zero,
-      flip = Flip.default,
-      crop = Rectangle(0, 0, width, height),
-      material = material
-    )
-
   def apply[M <: Material](x: Int, y: Int, width: Int, height: Int, material: M): Graphic[M] =
     Graphic(
       eventHandlerEnabled = false,
@@ -132,24 +113,9 @@ object Graphic:
       position = Point(x, y),
       rotation = Radians.zero,
       scale = Vector2.one,
-      depth = Depth.zero,
       ref = Point.zero,
       flip = Flip.default,
       crop = Rectangle(0, 0, width, height),
-      material = material
-    )
-
-  def apply[M <: Material](bounds: Rectangle, depth: Int, material: M): Graphic[M] =
-    Graphic(
-      eventHandlerEnabled = false,
-      eventHandler = Function.const(None),
-      position = bounds.position,
-      rotation = Radians.zero,
-      scale = Vector2.one,
-      depth = Depth(depth),
-      ref = Point.zero,
-      flip = Flip.default,
-      crop = bounds,
       material = material
     )
 
@@ -160,7 +126,6 @@ object Graphic:
       position = bounds.position,
       rotation = Radians.zero,
       scale = Vector2.one,
-      depth = Depth.zero,
       ref = Point.zero,
       flip = Flip.default,
       crop = bounds,
@@ -174,7 +139,6 @@ object Graphic:
       position = Point.zero,
       rotation = Radians.zero,
       scale = Vector2.one,
-      depth = Depth.zero,
       ref = Point.zero,
       flip = Flip.default,
       crop = Rectangle(0, 0, width, height),
@@ -188,7 +152,6 @@ object Graphic:
       position = Point.zero,
       rotation = Radians.zero,
       scale = Vector2.one,
-      depth = Depth.zero,
       ref = Point.zero,
       flip = Flip.default,
       crop = Rectangle(Point.zero, size),

@@ -123,7 +123,6 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
             Dude(
               aseprite,
               spriteAndAnimations.sprite
-                .withDepth(Depth(3))
                 .withRef(16, 16)      // Initial offset, so when talk about his position it's the center of the sprite
                 .moveTo(screenCenter) // Also place him in the middle of the screen initially
                 .withMaterial(SandboxAssets.dudeMaterial),
@@ -152,7 +151,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
     val assets =
       InputFieldAssets(
         Text("placeholder", 0, 0, 0, Fonts.fontKey, SandboxAssets.fontMaterial).alignLeft,
-        Graphic(0, 0, 16, 16, 2, Material.ImageEffects(SandboxAssets.smallFontName).withTint(RGB(0, 0, 1)))
+        Graphic(0, 0, 16, 16, Material.ImageEffects(SandboxAssets.smallFontName).withTint(RGB(0, 0, 1)))
           .withCrop(188, 78, 14, 23)
       )
 
@@ -244,7 +243,6 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
       SceneUpdateFragment(
         "fps counter".toLayerKey ->
           Layer.empty
-            .withDepth(200.depth)
             .withCamera(Camera.default)
       )
     )

@@ -25,7 +25,6 @@ final case class InputField(
     assets: InputFieldAssets,
     cursorBlinkRate: Option[Seconds],
     position: Point,
-    depth: Depth,
     hasFocus: Boolean,
     cursorPosition: Int,
     lastCursorMove: Seconds,
@@ -60,12 +59,6 @@ final case class InputField(
     moveBy(Point(x, y))
   def moveBy(positionDiff: Point): InputField =
     this.copy(position = position + positionDiff)
-
-  def withDepth(newDepth: Depth): InputField =
-    this.copy(
-      depth = newDepth,
-      assets = assets.withText(assets.text.withDepth(newDepth))
-    )
 
   def withKey(newKey: BindingKey): InputField =
     this.copy(key = Option(newKey))
@@ -236,7 +229,6 @@ final case class InputField(
       assets.text
         .withText(this.text)
         .moveTo(position)
-        .withDepth(depth)
 
     if (hasFocus) {
 
@@ -263,7 +255,6 @@ final case class InputField(
             field,
             assets.cursor
               .moveTo(cursorPositionPoint)
-              .withDepth(Depth(-(depth.toInt + 100000)))
           )
 
         case Some(seconds) =>
@@ -279,7 +270,6 @@ final case class InputField(
                   field,
                   assets.cursor
                     .moveTo(cursorPositionPoint)
-                    .withDepth(Depth(-(depth.toInt + 100000)))
                 )
             }
             .at(gameTime.running)
@@ -298,7 +288,6 @@ object InputField:
       assets,
       Some(Millis(400).toSeconds),
       Point.zero,
-      Depth.zero,
       false,
       text.length(),
       Seconds.zero,
@@ -315,7 +304,6 @@ object InputField:
       assets,
       Some(Millis(400).toSeconds),
       Point.zero,
-      Depth.zero,
       false,
       text.length(),
       Seconds.zero,

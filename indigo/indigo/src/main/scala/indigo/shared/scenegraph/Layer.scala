@@ -1,7 +1,6 @@
 package indigo.shared.scenegraph
 
 import indigo.shared.collections.Batch
-import indigo.shared.datatypes.Depth
 import indigo.shared.materials.BlendMaterial
 
 import scala.annotation.tailrec
@@ -53,7 +52,6 @@ enum Layer derives CanEqual:
       nodes: Batch[SceneNode],
       lights: Batch[Light],
       magnification: Option[Int],
-      depth: Option[Depth],
       visible: Option[Boolean],
       blending: Option[Blending],
       cloneBlanks: Batch[CloneBlank],
@@ -133,16 +131,16 @@ object Layer:
   object Content:
 
     val empty: Layer.Content =
-      Layer.Content(Batch.empty, Batch.empty, None, None, None, None, Batch.empty, None)
+      Layer.Content(Batch.empty, Batch.empty, None, None, None, Batch.empty, None)
 
     def apply(nodes: SceneNode*): Layer.Content =
-      Layer.Content(Batch.fromSeq(nodes), Batch.empty, None, None, None, None, Batch.empty, None)
+      Layer.Content(Batch.fromSeq(nodes), Batch.empty, None, None, None, Batch.empty, None)
 
     def apply(nodes: Batch[SceneNode]): Layer.Content =
-      Layer.Content(nodes, Batch.empty, None, None, None, None, Batch.empty, None)
+      Layer.Content(nodes, Batch.empty, None, None, None, Batch.empty, None)
 
     def apply(maybeNode: Option[SceneNode]): Layer.Content =
-      Layer.Content(Batch.fromOption(maybeNode), Batch.empty, None, None, None, None, Batch.empty, None)
+      Layer.Content(Batch.fromOption(maybeNode), Batch.empty, None, None, None, Batch.empty, None)
 
   extension (ls: Layer.Stack)
     def combine(other: Layer.Stack): Layer.Stack =
@@ -169,7 +167,6 @@ object Layer:
       a.nodes ++ b.nodes,
       a.lights ++ b.lights,
       a.magnification.orElse(b.magnification),
-      a.depth.orElse(b.depth),
       a.visible.orElse(b.visible),
       a.blending.orElse(b.blending),
       a.cloneBlanks ++ b.cloneBlanks,
@@ -205,9 +202,6 @@ object Layer:
       addLights(Batch.fromSeq(newLights))
     def addLights(newLights: Batch[Light]): Layer.Content =
       withLights(lc.lights ++ newLights)
-
-    def withDepth(newDepth: Depth): Layer.Content =
-      lc.copy(depth = Option(newDepth))
 
     def withVisibility(isVisible: Boolean): Layer.Content =
       lc.copy(visible = Option(isVisible))

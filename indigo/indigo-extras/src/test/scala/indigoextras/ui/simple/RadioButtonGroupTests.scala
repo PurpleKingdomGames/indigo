@@ -17,9 +17,9 @@ class RadioButtonGroupTests extends munit.FunSuite {
 
   val assets =
     ButtonAssets(
-      Graphic(Rectangle(0, 0, 10, 10), 1, Material.Bitmap(AssetName("up"))),
-      Graphic(Rectangle(0, 0, 10, 10), 1, Material.Bitmap(AssetName("over"))),
-      Graphic(Rectangle(0, 0, 10, 10), 1, Material.Bitmap(AssetName("down")))
+      Graphic(Rectangle(0, 0, 10, 10), Material.Bitmap(AssetName("up"))),
+      Graphic(Rectangle(0, 0, 10, 10), Material.Bitmap(AssetName("over"))),
+      Graphic(Rectangle(0, 0, 10, 10), Material.Bitmap(AssetName("down")))
     )
 
   val option1 =

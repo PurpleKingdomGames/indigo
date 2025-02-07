@@ -478,10 +478,6 @@ class LayerRenderer(
     var currentCloneId: CloneId        = CloneId("")
     var currentCloneRef: DisplayObject = null
 
-    //
-    val sortedEntities: js.Array[DisplayEntity] =
-      displayEntities.sortWith((d1, d2) => d1.z > d2.z)
-
     while (i <= count)
       if i == count then
         drawBuffer(batchCount)
@@ -490,7 +486,7 @@ class LayerRenderer(
         drawBuffer(batchCount)
         batchCount = 0
       else
-        sortedEntities(i) match {
+        displayEntities(i) match {
           case d: DisplayTextLetters if d.letters.isEmpty =>
             i += 1
 

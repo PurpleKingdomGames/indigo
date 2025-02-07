@@ -10,39 +10,33 @@ import indigo.shared.scenegraph.CloneId
 import indigo.shared.scenegraph.CloneTileData
 import indigo.shared.shader.ShaderId
 
-sealed trait DisplayEntity:
-  def z: Double
+sealed trait DisplayEntity
 
 final case class DisplayGroup(
     transform: CheapMatrix4,
-    z: Double,
     entities: scalajs.js.Array[DisplayEntity]
 ) extends DisplayEntity derives CanEqual
 object DisplayGroup:
   val empty: DisplayGroup =
-    DisplayGroup(CheapMatrix4.identity, 0.0d, scalajs.js.Array())
+    DisplayGroup(CheapMatrix4.identity, scalajs.js.Array())
 
-final case class DisplayTextLetters(letters: scalajs.js.Array[DisplayEntity]) extends DisplayEntity derives CanEqual:
-  val z: Double = 0.0d // Not used
+final case class DisplayTextLetters(letters: scalajs.js.Array[DisplayEntity]) extends DisplayEntity derives CanEqual
 object DisplayTextLetters:
   val empty: DisplayTextLetters =
     DisplayTextLetters(scalajs.js.Array())
 
 final case class DisplayCloneBatch(
     id: CloneId,
-    z: Double,
     cloneData: scalajs.js.Array[CloneBatchData]
 ) extends DisplayEntity derives CanEqual
 
 final case class DisplayCloneTiles(
     id: CloneId,
-    z: Double,
     cloneData: scalajs.js.Array[CloneTileData]
 ) extends DisplayEntity derives CanEqual
 
 final case class DisplayMutants(
     id: CloneId,
-    z: Double,
     cloneData: scalajs.js.Array[scalajs.js.Array[DisplayObjectUniformData]]
 ) extends DisplayEntity derives CanEqual
 
@@ -56,7 +50,6 @@ final case class DisplayObject(
     flipX: Float,
     flipY: Float,
     rotation: Radians,
-    z: Double,
     width: Float,
     height: Float,
     atlasName: Option[AtlasId],
@@ -93,7 +86,6 @@ object DisplayObject:
       flipX: Float,
       flipY: Float,
       rotation: Radians,
-      z: Double,
       width: Int,
       height: Int,
       atlasName: Option[AtlasId],
@@ -117,7 +109,6 @@ object DisplayObject:
       flipX,
       flipY,
       rotation,
-      z,
       width.toFloat,
       height.toFloat,
       atlasName,
@@ -156,7 +147,6 @@ final case class DisplayText(
     flipX: Float,
     flipY: Float,
     rotation: Radians,
-    z: Double,
     width: Int,
     height: Int
 ) extends DisplayEntity derives CanEqual

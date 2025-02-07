@@ -51,7 +51,7 @@ object BoundsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
     val speed = 0.25
 
     val graphic: Graphic[Material.Bitmap] =
-      Graphic(Rectangle(0, 0, 40, 40), 1, BoundsAssets.junctionBoxMaterialOff)
+      Graphic(Rectangle(0, 0, 40, 40), BoundsAssets.junctionBoxMaterialOff)
         .moveTo(context.startUpData.viewportCenter)
         .rotateTo(Radians.fromSeconds(context.frame.time.running * speed))
 
@@ -99,8 +99,8 @@ object BoundsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
 
     val group: Group =
       Group(
-        Graphic(Rectangle(0, 0, 40, 40), 1, BoundsAssets.junctionBoxMaterialOff),
-        Graphic(Rectangle(0, 0, 40, 40), 1, BoundsAssets.junctionBoxMaterialOff).moveBy(15, 15)
+        Graphic(Rectangle(0, 0, 40, 40), BoundsAssets.junctionBoxMaterialOff),
+        Graphic(Rectangle(0, 0, 40, 40), BoundsAssets.junctionBoxMaterialOff).moveBy(15, 15)
       )
         .moveTo(200, 120)
         .rotateTo(Radians.fromSeconds(context.frame.time.running * speed))

@@ -8,7 +8,6 @@ import indigo.shared.events.GlobalEvent
   */
 final case class CloneBatch(
     id: CloneId,
-    depth: Depth,
     cloneData: Batch[CloneBatchData],
     staticBatchKey: Option[BindingKey]
 ) extends DependentNode[CloneBatch] derives CanEqual:
@@ -21,9 +20,6 @@ final case class CloneBatch(
 
   def withCloneId(newCloneId: CloneId): CloneBatch =
     this.copy(id = newCloneId)
-
-  def withDepth(newDepth: Depth): CloneBatch =
-    this.copy(depth = newDepth)
 
   def addClones(additionalClones: Batch[CloneBatchData]): CloneBatch =
     this.copy(cloneData = cloneData ++ additionalClones)
@@ -51,7 +47,6 @@ object CloneBatch:
   def apply(id: CloneId, cloneData: Batch[CloneBatchData]): CloneBatch =
     CloneBatch(
       id,
-      Depth.zero,
       cloneData,
       None
     )
@@ -59,7 +54,6 @@ object CloneBatch:
   def apply(id: CloneId, cloneData: CloneBatchData): CloneBatch =
     CloneBatch(
       id,
-      Depth.zero,
       Batch(cloneData),
       None
     )
@@ -67,7 +61,6 @@ object CloneBatch:
   def apply(id: CloneId, cloneData: CloneBatchData*): CloneBatch =
     CloneBatch(
       id,
-      Depth.zero,
       Batch.fromSeq(cloneData),
       None
     )

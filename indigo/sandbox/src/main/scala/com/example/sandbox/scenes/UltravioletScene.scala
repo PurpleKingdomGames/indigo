@@ -51,8 +51,8 @@ object UltravioletScene extends Scene[SandboxStartupData, SandboxGameModel, Sand
       SceneUpdateFragment.empty
         .addLayer(
           Layer(
-            BlankEntity(10, 10, 150, 150, Depth.zero, ShaderData(UVShaders.voronoiId)),
-            BlankEntity(140, 50, 32, 32, Depth.zero, ShaderData(UVShaders.circleId))
+            BlankEntity(10, 10, 150, 150, ShaderData(UVShaders.voronoiId)),
+            BlankEntity(140, 50, 32, 32, ShaderData(UVShaders.circleId))
           )
         )
         .withBlendMaterial(MakeRedBlend)

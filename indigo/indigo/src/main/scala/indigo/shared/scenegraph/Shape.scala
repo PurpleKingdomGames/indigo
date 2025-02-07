@@ -3,7 +3,6 @@ package indigo.shared.scenegraph
 import indigo.shared.BoundaryLocator
 import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Circle as C
-import indigo.shared.datatypes.Depth
 import indigo.shared.datatypes.Fill
 import indigo.shared.datatypes.Flip
 import indigo.shared.datatypes.Point
@@ -48,8 +47,6 @@ sealed trait Shape[T <: Shape[?]] extends RenderNode[T] with Cloneable with Spat
   def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): T
   def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): T
 
-  def withDepth(newDepth: Depth): T
-
   def flipHorizontal(isFlipped: Boolean): T
   def flipVertical(isFlipped: Boolean): T
   def withFlip(newFlip: Flip): T
@@ -70,7 +67,6 @@ object Shape:
       eventHandler: ((Box, GlobalEvent)) => Option[GlobalEvent],
       rotation: Radians,
       scale: Vector2,
-      depth: Depth,
       ref: Point,
       flip: Flip,
       shaderId: Option[ShaderId]
@@ -140,9 +136,6 @@ object Shape:
     def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): Box =
       transformTo(position + positionDiff, rotation + rotationDiff, scale * scaleDiff)
 
-    def withDepth(newDepth: Depth): Box =
-      this.copy(depth = newDepth)
-
     def withRef(newRef: Point): Box =
       this.copy(ref = newRef)
     def withRef(x: Int, y: Int): Box =
@@ -179,7 +172,6 @@ object Shape:
         Function.const(None),
         Radians.zero,
         Vector2.one,
-        Depth.zero,
         Point.zero,
         Flip.default,
         None
@@ -195,7 +187,6 @@ object Shape:
         Function.const(None),
         Radians.zero,
         Vector2.one,
-        Depth.zero,
         Point.zero,
         Flip.default,
         None
@@ -214,7 +205,6 @@ object Shape:
       eventHandler: ((Circle, GlobalEvent)) => Option[GlobalEvent],
       rotation: Radians,
       scale: Vector2,
-      depth: Depth,
       ref: Point,
       flip: Flip,
       shaderId: Option[ShaderId]
@@ -288,9 +278,6 @@ object Shape:
     def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): Circle =
       transformTo(position + positionDiff, rotation + rotationDiff, scale * scaleDiff)
 
-    def withDepth(newDepth: Depth): Circle =
-      this.copy(depth = newDepth)
-
     def withRef(newRef: Point): Circle =
       this.copy(ref = newRef)
     def withRef(x: Int, y: Int): Circle =
@@ -328,7 +315,6 @@ object Shape:
         Function.const(None),
         Radians.zero,
         Vector2.one,
-        Depth.zero,
         Point.zero,
         Flip.default,
         None
@@ -344,7 +330,6 @@ object Shape:
         Function.const(None),
         Radians.zero,
         Vector2.one,
-        Depth.zero,
         Point.zero,
         Flip.default,
         None
@@ -360,7 +345,6 @@ object Shape:
         Function.const(None),
         Radians.zero,
         Vector2.one,
-        Depth.zero,
         Point.zero,
         Flip.default,
         None
@@ -376,7 +360,6 @@ object Shape:
         Function.const(None),
         Radians.zero,
         Vector2.one,
-        Depth.zero,
         Point.zero,
         Flip.default,
         None
@@ -395,7 +378,6 @@ object Shape:
       eventHandler: ((Line, GlobalEvent)) => Option[GlobalEvent],
       rotation: Radians,
       scale: Vector2,
-      depth: Depth,
       ref: Point,
       flip: Flip,
       shaderId: Option[ShaderId]
@@ -479,9 +461,6 @@ object Shape:
     def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): Line =
       transformTo(position + positionDiff, rotation + rotationDiff, scale * scaleDiff)
 
-    def withDepth(newDepth: Depth): Line =
-      this.copy(depth = newDepth)
-
     def withRef(newRef: Point): Line =
       this.copy(ref = newRef)
     def withRef(x: Int, y: Int): Line =
@@ -518,7 +497,6 @@ object Shape:
         Function.const(None),
         Radians.zero,
         Vector2.one,
-        Depth.zero,
         Point.zero,
         Flip.default,
         None
@@ -537,7 +515,6 @@ object Shape:
       eventHandler: ((Polygon, GlobalEvent)) => Option[GlobalEvent],
       rotation: Radians,
       scale: Vector2,
-      depth: Depth,
       ref: Point,
       flip: Flip,
       shaderId: Option[ShaderId]
@@ -611,9 +588,6 @@ object Shape:
     def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): Polygon =
       transformTo(position + positionDiff, rotation + rotationDiff, scale * scaleDiff)
 
-    def withDepth(newDepth: Depth): Polygon =
-      this.copy(depth = newDepth)
-
     def withRef(newRef: Point): Polygon =
       this.copy(ref = newRef)
     def withRef(x: Int, y: Int): Polygon =
@@ -651,7 +625,6 @@ object Shape:
         Function.const(None),
         Radians.zero,
         Vector2.one,
-        Depth.zero,
         Point.zero,
         Flip.default,
         None
@@ -667,7 +640,6 @@ object Shape:
         Function.const(None),
         Radians.zero,
         Vector2.one,
-        Depth.zero,
         Point.zero,
         Flip.default,
         None
@@ -683,7 +655,6 @@ object Shape:
         Function.const(None),
         Radians.zero,
         Vector2.one,
-        Depth.zero,
         Point.zero,
         Flip.default,
         None

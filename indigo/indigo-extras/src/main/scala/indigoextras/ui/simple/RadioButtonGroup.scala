@@ -2,7 +2,6 @@ package indigoextras.ui.simple
 
 import indigo.shared.Outcome
 import indigo.shared.collections.Batch
-import indigo.shared.datatypes.Depth
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.events.GlobalEvent
@@ -233,7 +232,6 @@ object RadioButton:
 final case class RadioButtonGroup(
     buttonAssets: ButtonAssets,
     hitArea: Rectangle,
-    depth: Depth,
     options: Batch[RadioButton]
 ) derives CanEqual:
 
@@ -246,16 +244,6 @@ final case class RadioButtonGroup(
     */
   def withHitArea(newHitArea: Rectangle): RadioButtonGroup =
     this.copy(hitArea = newHitArea)
-
-  /** Specify a new depth to draw the radio buttons at.
-    *
-    * @param newDepth
-    *   the new depth to render the radio buttons at
-    * @return
-    *   RadioButtonGroup
-    */
-  def withDepth(newDepth: Depth): RadioButtonGroup =
-    this.copy(depth = newDepth)
 
   /** Replace the radio buttons in this group
     *
@@ -377,14 +365,14 @@ final case class RadioButtonGroup(
     updatedOptions.sequence.map(opts => this.copy(options = opts))
   }
 
-  private def applyPositionAndDepth(sceneNode: SceneNode, pt: Point, d: Depth): SceneNode =
+  private def applyPosition(sceneNode: SceneNode, pt: Point): SceneNode =
     sceneNode match {
-      case n: Shape[_]   => n.withPosition(pt).withDepth(d)
-      case n: Graphic[_] => n.withPosition(pt).withDepth(d)
-      case n: Sprite[_]  => n.withPosition(pt).withDepth(d)
-      case n: Text[_]    => n.withPosition(pt).withDepth(d)
-      case n: TextBox    => n.withPosition(pt).withDepth(d)
-      case n: Group      => n.withPosition(pt).withDepth(d)
+      case n: Shape[_]   => n.withPosition(pt)
+      case n: Graphic[_] => n.withPosition(pt)
+      case n: Sprite[_]  => n.withPosition(pt)
+      case n: Text[_]    => n.withPosition(pt)
+      case n: TextBox    => n.withPosition(pt)
+      case n: Group      => n.withPosition(pt)
       case n             => n
     }
 
@@ -398,24 +386,21 @@ final case class RadioButtonGroup(
       options.map { option =>
         option.state.toButtonState match {
           case ButtonState.Up =>
-            applyPositionAndDepth(
+            applyPosition(
               option.buttonAssets.getOrElse(buttonAssets).up,
-              option.position,
-              depth
+              option.position
             )
 
           case ButtonState.Over =>
-            applyPositionAndDepth(
+            applyPosition(
               option.buttonAssets.getOrElse(buttonAssets).over,
-              option.position,
-              depth
+              option.position
             )
 
           case ButtonState.Down =>
-            applyPositionAndDepth(
+            applyPosition(
               option.buttonAssets.getOrElse(buttonAssets).down,
-              option.position,
-              depth
+              option.position
             )
         }
       }
@@ -439,7 +424,7 @@ object RadioButtonGroup:
       width: Int,
       height: Int
   ): RadioButtonGroup =
-    RadioButtonGroup(buttonAssets, Rectangle(0, 0, width, height), Depth.zero, Batch.empty)
+    RadioButtonGroup(buttonAssets, Rectangle(0, 0, width, height), Batch.empty)
 
   /** Construct a bare bones radio button group, with no buttons in it.
     *
@@ -454,7 +439,7 @@ object RadioButtonGroup:
       buttonAssets: ButtonAssets,
       hitArea: Rectangle
   ): RadioButtonGroup =
-    RadioButtonGroup(buttonAssets, hitArea, Depth.zero, Batch.empty)
+    RadioButtonGroup(buttonAssets, hitArea, Batch.empty)
 
 sealed trait RadioButtonState derives CanEqual:
   def toButtonState: ButtonState =

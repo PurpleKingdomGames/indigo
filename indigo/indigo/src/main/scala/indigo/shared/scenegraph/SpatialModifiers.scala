@@ -1,6 +1,5 @@
 package indigo.shared.scenegraph
 
-import indigo.shared.datatypes.Depth
 import indigo.shared.datatypes.Flip
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Radians
@@ -10,7 +9,6 @@ trait BasicSpatialModifiers[T <: SceneNode] {
   def withPosition(newPosition: Point): T
   def withRotation(newRotation: Radians): T
   def withScale(newScale: Vector2): T
-  def withDepth(newDepth: Depth): T
   def withFlip(newFlip: Flip): T
 }
 

@@ -22,13 +22,11 @@ object SandboxView:
         Layer(
           gameLayer(model, viewModel) ++ uiLayer(bl)
         )
-          .withDepth(Depth(300))
-          // .withBlendMaterial(BlendMaterial.BlendEffects.None.withSaturation(0.1))
+        // .withBlendMaterial(BlendMaterial.BlendEffects.None.withSaturation(0.1))
       )
       .addLayer(
         if (viewModel.useLightingLayer)
           Layer(lightingLayer(mouse))
-            .withDepth(Depth(301))
             .withBlending(Blending.Lighting(RGBA.White.withAlpha(0.25)))
         else
           Layer.empty
@@ -81,13 +79,13 @@ object SandboxView:
 
   def lightingLayer(mouse: Mouse): Batch[SceneNode] =
     Batch(
-      Graphic(114, 64 - 20, 320, 240, 1, SandboxAssets.lightMaterial.withTint(RGBA.Red))
+      Graphic(114, 64 - 20, 320, 240, SandboxAssets.lightMaterial.withTint(RGBA.Red))
         .withRef(Point(160, 120)),
-      Graphic(114 - 20, 64 + 20, 320, 240, 1, SandboxAssets.lightMaterial.withTint(RGBA.Green))
+      Graphic(114 - 20, 64 + 20, 320, 240, SandboxAssets.lightMaterial.withTint(RGBA.Green))
         .withRef(Point(160, 120)),
-      Graphic(114 + 20, 64 + 20, 320, 240, 1, SandboxAssets.lightMaterial.withTint(RGBA.Blue))
+      Graphic(114 + 20, 64 + 20, 320, 240, SandboxAssets.lightMaterial.withTint(RGBA.Blue))
         .withRef(Point(160, 120)),
-      Graphic(0, 0, 320, 240, 1, SandboxAssets.lightMaterial.withTint(RGBA(1, 1, 0.0, 1)).withAlpha(1))
+      Graphic(0, 0, 320, 240, SandboxAssets.lightMaterial.withTint(RGBA(1, 1, 0.0, 1)).withAlpha(1))
         .withRef(Point(160, 120))
         .moveTo(mouse.position.x, mouse.position.y)
     )

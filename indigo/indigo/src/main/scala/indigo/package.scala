@@ -16,8 +16,6 @@ object syntax:
     def zoom: Zoom         = Zoom(d)
 
   extension (i: Int)
-    def toDepth: Depth   = Depth(i)
-    def depth: Depth     = Depth(i)
     def toFPS: FPS       = FPS(i)
     def fps: FPS         = FPS(i)
     def toPixels: Pixels = Pixels(i)
@@ -160,7 +158,6 @@ object syntax:
     extension (m: Matrix4)
       def toUVMat4: ultraviolet.syntax.mat4 =
         ultraviolet.syntax.mat4(m.toArray.map(_.toFloat))
-    extension (d: Depth) def toUVFloat: Float   = d.toFloat
     extension (m: Millis) def toUVFloat: Float  = m.toFloat
     extension (r: Radians) def toUVFloat: Float = r.toFloat
     extension (s: Seconds)
@@ -521,9 +518,6 @@ val Matrix3: shared.datatypes.Matrix3.type = shared.datatypes.Matrix3
 
 type Matrix4 = shared.datatypes.Matrix4
 val Matrix4: shared.datatypes.Matrix4.type = shared.datatypes.Matrix4
-
-type Depth = shared.datatypes.Depth
-val Depth: shared.datatypes.Depth.type = shared.datatypes.Depth
 
 type Radians = shared.datatypes.Radians
 val Radians: shared.datatypes.Radians.type = shared.datatypes.Radians

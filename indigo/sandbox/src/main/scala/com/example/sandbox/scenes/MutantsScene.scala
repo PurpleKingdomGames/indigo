@@ -96,14 +96,12 @@ object MutantsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxV
     )
 
 final case class Archetype() extends EntityNode[Archetype] with Cloneable:
-  val position: Point                       = Point.zero
-  val rotation: Radians                     = Radians.zero
-  val scale: Vector2                        = Vector2.one
-  val depth: Depth                          = Depth.zero
-  val flip: Flip                            = Flip.default
-  val ref: Point                            = Point.zero
-  val size: Size                            = Size(16)
-  def withDepth(newDepth: Depth): Archetype = this
+  val position: Point   = Point.zero
+  val rotation: Radians = Radians.zero
+  val scale: Vector2    = Vector2.one
+  val flip: Flip        = Flip.default
+  val ref: Point        = Point.zero
+  val size: Size        = Size(16)
 
   lazy val toShaderData: ShaderData =
     ShaderData(Archetype.shaderId)
