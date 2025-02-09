@@ -24,7 +24,6 @@ import indigo.shared.display.DisplayGroup
 import indigo.shared.display.DisplayMutants
 import indigo.shared.display.DisplayObject
 import indigo.shared.display.DisplayObjectUniformData
-import indigo.shared.display.DisplayText
 import indigo.shared.display.DisplayTextLetters
 import indigo.shared.display.SpriteSheetFrame
 import indigo.shared.display.SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets
@@ -43,7 +42,6 @@ import indigo.shared.scenegraph.SceneNode
 import indigo.shared.scenegraph.Shape
 import indigo.shared.scenegraph.Sprite
 import indigo.shared.scenegraph.Text
-import indigo.shared.scenegraph.TextBox
 import indigo.shared.scenegraph.TextLine
 import indigo.shared.shader.ShaderData
 import indigo.shared.shader.ShaderPrimitive
@@ -227,9 +225,6 @@ final class DisplayObjectConversions(
 
       case s: Shape[_] =>
         (shapeToDisplayObject(s), noClones)
-
-      case t: TextBox =>
-        (textBoxToDisplayText(t), noClones)
 
       case s: EntityNode[_] =>
         (sceneEntityToDisplayObject(s, assetMapping), noClones)
@@ -527,23 +522,6 @@ final class DisplayObjectConversions(
       shaderUniformData = uniformData
     )
   }
-
-  def textBoxToDisplayText(leaf: TextBox): DisplayText =
-    DisplayText(
-      text = leaf.text,
-      style = leaf.style,
-      x = leaf.position.x.toFloat,
-      y = leaf.position.y.toFloat,
-      scaleX = leaf.scale.x.toFloat,
-      scaleY = leaf.scale.y.toFloat,
-      refX = leaf.ref.x.toFloat,
-      refY = leaf.ref.y.toFloat,
-      flipX = if leaf.flip.horizontal then -1.0 else 1.0,
-      flipY = if leaf.flip.vertical then -1.0 else 1.0,
-      rotation = leaf.rotation,
-      width = leaf.size.width,
-      height = leaf.size.height
-    )
 
   def graphicToDisplayObject(leaf: Graphic[?], assetMapping: AssetMapping): DisplayObject = {
     val shaderData     = leaf.material.toShaderData

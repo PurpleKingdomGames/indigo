@@ -31,7 +31,6 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
       LightsScene,
       RefractionScene,
       LegacyEffectsScene,
-      TextBoxScene,
       BoundsScene,
       CameraScene,
       TextureTileScene,
@@ -85,6 +84,8 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
       ).withSubSystems(
         FPSCounter[SandboxGameModel](
           Point(5, 165),
+          Fonts.fontKey,
+          SandboxAssets.smallFontName,
           LayerKey("fps counter")
         )
       ).withShaders(

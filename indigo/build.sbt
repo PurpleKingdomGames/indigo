@@ -191,6 +191,20 @@ lazy val physics =
       Compile / sourceGenerators += Def.task {
         IndigoGenerators("example")
           .generateConfig("Config", physicsOptions)
+          .embedFont(
+            moduleName = "PixelatedFont",
+            font = os.pwd / "physics" / "generator-data" / "pixelated.ttf",
+            fontOptions = FontOptions(
+              fontKey = "Pixelated",
+              fontSize = 20,
+              charSet = CharSet.ASCII,
+              color = RGB.White,
+              antiAlias = false,
+              maxCharactersPerLine = 16
+            ),
+            imageOut = os.pwd / "physics" / "assets" / "generated"
+          )
+          .listAssets("Assets", physicsOptions.assets)
           .toSourceFiles((Compile / sourceManaged).value)
       }
     )

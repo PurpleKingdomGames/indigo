@@ -2,7 +2,6 @@ package indigo.platform.renderer.webgl2
 
 import indigo.facades.WebGL2RenderingContext
 import indigo.platform.assets.AtlasId
-import indigo.platform.assets.DynamicText
 import indigo.platform.renderer.shared.FrameBufferComponents
 import indigo.platform.renderer.shared.FrameBufferFunctions
 import indigo.platform.renderer.shared.TextureLookupResult
@@ -15,7 +14,6 @@ import indigo.shared.display.DisplayEntity
 import indigo.shared.display.DisplayGroup
 import indigo.shared.display.DisplayMutants
 import indigo.shared.display.DisplayObject
-import indigo.shared.display.DisplayText
 import indigo.shared.display.DisplayTextLetters
 import indigo.shared.scenegraph.CloneBatchData
 import indigo.shared.scenegraph.CloneId
@@ -25,7 +23,6 @@ import org.scalajs.dom.WebGLBuffer
 import org.scalajs.dom.WebGLProgram
 import org.scalajs.dom.WebGLRenderingContext
 import org.scalajs.dom.WebGLRenderingContext.*
-import org.scalajs.dom.WebGLTexture
 
 import scala.scalajs.js
 import scala.scalajs.js.typedarray.Float32Array
@@ -37,9 +34,7 @@ class LayerRenderer(
     projectionUBOBuffer: => WebGLBuffer,
     frameDataUBOBuffer: => WebGLBuffer,
     cloneReferenceUBOBuffer: => WebGLBuffer,
-    lightDataUBOBuffer: => WebGLBuffer,
-    dynamicText: DynamicText,
-    textTexture: WebGLTexture
+    lightDataUBOBuffer: => WebGLBuffer
 ) {
 
   private val customDataUBOBuffers: js.Dictionary[WebGLBuffer] =
@@ -165,40 +160,6 @@ class LayerRenderer(
     channelOffsets23Data((i * 4) + 3) = channelOffset3Y
 
     rotationData(i) = rotation
-  }
-
-  private def updateTextData(d: DisplayText, i: Int): Unit = {
-    translateScaleData((i * 4) + 0) = d.x
-    translateScaleData((i * 4) + 1) = d.y
-    translateScaleData((i * 4) + 2) = d.scaleX
-    translateScaleData((i * 4) + 3) = d.scaleY
-
-    refFlipData((i * 4) + 0) = d.refX
-    refFlipData((i * 4) + 1) = d.refY
-    refFlipData((i * 4) + 2) = d.flipX
-    refFlipData((i * 4) + 3) = d.flipY
-
-    rotationData(i) = d.rotation.toFloat
-
-    sizeAndFrameScaleData((i * 4) + 0) = d.width.toFloat
-    sizeAndFrameScaleData((i * 4) + 1) = d.height.toFloat
-    sizeAndFrameScaleData((i * 4) + 2) = 1
-    sizeAndFrameScaleData((i * 4) + 3) = 1
-
-    channelOffsets01Data((i * 4) + 0) = 0
-    channelOffsets01Data((i * 4) + 1) = 0
-    channelOffsets01Data((i * 4) + 2) = 0
-    channelOffsets01Data((i * 4) + 3) = 0
-
-    channelOffsets23Data((i * 4) + 0) = 0
-    channelOffsets23Data((i * 4) + 1) = 0
-    channelOffsets23Data((i * 4) + 2) = 0
-    channelOffsets23Data((i * 4) + 3) = 0
-
-    textureSizeAtlasSizeData((i * 4) + 0) = 0
-    textureSizeAtlasSizeData((i * 4) + 1) = 0
-    textureSizeAtlasSizeData((i * 4) + 2) = 0
-    textureSizeAtlasSizeData((i * 4) + 3) = 0
   }
 
   private val refData: js.Array[Float] =
@@ -649,65 +610,6 @@ class LayerRenderer(
               currentShader = currentCloneRef.shaderId
               currentShaderHash = currentCloneRef.shaderUniformData.map(_.uniformHash)
 
-            i += 1
-
-          case t: DisplayText =>
-            drawBuffer(batchCount)
-
-            // Change context
-            val shaderId = indigo.shared.shader.StandardShaders.Bitmap.id
-            val activeShader: WebGLProgram =
-              if (currentShader != shaderId) {
-                customShaders.get(shaderId.toString) match {
-                  case Some(s) =>
-                    currentProgram = s
-                    setupShader(s)
-                    s
-
-                  case None =>
-                    throw new Exception(
-                      s"(TextBox) Missing entity shader '$shaderId'. Have you remembered to add the shader to the boot sequence or disabled auto-loading of default shaders?"
-                    )
-                }
-              } else currentProgram
-            //
-
-            // Base transform
-            if shaderId != currentShader then
-              setBaseTransform(baseTransform)
-              lastRenderMode = 0
-              setMode(0)
-              currentShader = shaderId
-            else if lastRenderMode != 0 then
-              lastRenderMode = 0
-              setMode(0)
-
-            // UBO data
-            val buff = customDataUBOBuffers.getOrElseUpdate("[indigo_internal_buffer_textbox]", gl2.createBuffer())
-            WebGLHelper.attachUBOData(gl2, js.Array[Float](0), buff)
-            WebGLHelper.bindUBO(
-              gl2,
-              activeShader,
-              RendererWebGL2Constants.customDataBlockOffsetPointer,
-              buff,
-              gl2.getUniformBlockIndex(activeShader, "IndigoBitmapData")
-            )
-            //
-
-            gl2.bindTexture(TEXTURE_2D, textTexture)
-            gl2.texImage2D(
-              TEXTURE_2D,
-              0,
-              WebGLRenderingContext.RGBA,
-              WebGLRenderingContext.RGBA,
-              UNSIGNED_BYTE,
-              dynamicText.makeTextImageData(t.text, t.style, t.width, t.height)
-            )
-
-            updateTextData(t, 0)
-            batchCount = 1
-            atlasName = None
-            currentShaderHash = new js.Array()
             i += 1
         }
   }

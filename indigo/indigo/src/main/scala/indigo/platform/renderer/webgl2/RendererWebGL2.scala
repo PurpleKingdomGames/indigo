@@ -2,7 +2,6 @@ package indigo.platform.renderer.webgl2
 
 import indigo.Rectangle
 import indigo.facades.WebGL2RenderingContext
-import indigo.platform.assets.DynamicText
 import indigo.platform.events.GlobalEventStream
 import indigo.platform.renderer.Renderer
 import indigo.platform.renderer.ScreenCaptureConfig
@@ -49,8 +48,7 @@ final class RendererWebGL2(
     config: RendererConfig,
     loadedTextureAssets: scalajs.js.Array[LoadedTextureAsset],
     cNc: ContextAndCanvas,
-    globalEventStream: GlobalEventStream,
-    dynamicText: DynamicText
+    globalEventStream: GlobalEventStream
 ) extends Renderer {
 
   val renderingTechnology: RenderingTechnology = RenderingTechnology.WebGL2
@@ -120,9 +118,7 @@ final class RendererWebGL2(
       projectionUBOBuffer,
       frameDataUBOBuffer,
       cloneReferenceUBOBuffer,
-      lightDataUBOBuffer,
-      dynamicText,
-      WebGLHelper.createAndBindTexture(gl2)
+      lightDataUBOBuffer
     ).init()
   private val layerMergeRenderInstance: LayerMergeRenderer =
     new LayerMergeRenderer(gl2, frameDataUBOBuffer)

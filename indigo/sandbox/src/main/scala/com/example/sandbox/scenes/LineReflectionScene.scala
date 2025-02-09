@@ -1,11 +1,12 @@
 package com.example.sandbox.scenes
 
+import com.example.sandbox.Fonts
+import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
 import com.example.sandbox.SandboxViewModel
 import indigo.*
 import indigo.scenes.*
-import indigo.shared.scenegraph.TextBox
 import indigo.syntax.*
 
 object LineReflectionScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
@@ -112,12 +113,8 @@ object LineReflectionScene extends Scene[SandboxStartupData, SandboxGameModel, S
     val nrml = LineSegment(surface.center, surface.center + (surface.normal.toVertex * 30))
 
     val textTemplate =
-      TextBox("")
+      Text("", Fonts.fontKey, SandboxAssets.fontMaterial)
         .moveTo((context.startUpData.viewportCenter.x * 2) - 40, 10)
-        .withColor(RGBA.White)
-        .bold
-        .withFontSize(Pixels(14))
-        .withSize(Size(300, 50))
         .alignRight
 
     val text =

@@ -51,7 +51,7 @@ object PerfGame extends IndigoDemo[Unit, Dude, DudeModel, Unit] {
         )
         .withAssets(PerfAssets.assets)
         .withFonts(Fonts.fontInfo)
-        .withSubSystems(FPSCounter(Point(10, 565)))
+        .withSubSystems(FPSCounter(Point(10, 565), Fonts.fontKey, PerfAssets.smallFontName))
         .withShaders(
           StandardShaders.Bitmap,
           StandardShaders.ImageEffects,

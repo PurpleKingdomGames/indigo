@@ -54,10 +54,8 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
   val shaderRegister: ShaderRegister =
     new ShaderRegister()
 
-  val dynamicText: DynamicText =
-    new DynamicText()
   val boundaryLocator: BoundaryLocator =
-    new BoundaryLocator(animationsRegister, fontRegister, dynamicText)
+    new BoundaryLocator(animationsRegister, fontRegister)
   val sceneProcessor: SceneProcessor =
     new SceneProcessor(boundaryLocator, animationsRegister, fontRegister)
 
@@ -179,7 +177,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
 
       val dice = if firstRun then Dice.default else Dice.fromSeed(gameLoopInstance.runningTimeReference.toLong)
 
-      if firstRun then platform = new Platform(parentElement, gameConfig, globalEventStream, dynamicText)
+      if firstRun then platform = new Platform(parentElement, gameConfig, globalEventStream)
 
       initialise(accumulatedAssetCollection)(dice) match {
         case oe @ Outcome.Error(error, _) =>

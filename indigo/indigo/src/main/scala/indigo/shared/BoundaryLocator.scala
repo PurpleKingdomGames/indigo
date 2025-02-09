@@ -1,6 +1,5 @@
 package indigo.shared
 
-import indigo.platform.assets.DynamicText
 import indigo.shared.collections.Batch
 import indigo.shared.datatypes.FontInfo
 import indigo.shared.datatypes.FontKey
@@ -20,13 +19,11 @@ import indigo.shared.scenegraph.SceneNode
 import indigo.shared.scenegraph.Shape
 import indigo.shared.scenegraph.Sprite
 import indigo.shared.scenegraph.Text
-import indigo.shared.scenegraph.TextBox
 import indigo.shared.scenegraph.TextLine
 
 final class BoundaryLocator(
     animationsRegister: AnimationsRegister,
-    fontRegister: FontRegister,
-    dynamicText: DynamicText
+    fontRegister: FontRegister
 ):
 
   implicit private val maybeBoundsCache: QuickCache[Option[Rectangle]]      = QuickCache.empty
@@ -41,21 +38,6 @@ final class BoundaryLocator(
     textAllLineBoundsCache.purgeAllNow()
   }
 
-  /** Measures the size of a `TextBox` using the browsers canvas APIs. This is a slow operation.
-    */
-  def measureText(textBox: TextBox): Rectangle =
-    val rect =
-      dynamicText
-        .measureText(
-          textBox.text,
-          textBox.style,
-          textBox.size.width,
-          textBox.size.height
-        )
-        .moveTo(textBox.position)
-
-    BoundaryLocator.findBounds(textBox, rect.position, rect.size, textBox.ref)
-
   /** Safely finds the bounds of any given scene node, if the node has bounds. It is not possible to sensibly measure
     * the bounds of some node types, such as clones, and some nodes are dependant on external data that may be missing.
     */
@@ -66,9 +48,6 @@ final class BoundaryLocator(
 
       case g: Graphic[_] =>
         Option(g.bounds)
-
-      case t: TextBox =>
-        Option(t.bounds)
 
       case s: EntityNode[_] =>
         Option(BoundaryLocator.findBounds(s, s.position, s.size, s.ref))

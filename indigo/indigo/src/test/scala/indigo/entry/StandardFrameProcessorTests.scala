@@ -1,6 +1,5 @@
 package indigo.entry
 
-import indigo.platform.assets.DynamicText
 import indigo.shared.AnimationsRegister
 import indigo.shared.BoundaryLocator
 import indigo.shared.Context
@@ -19,7 +18,7 @@ class StandardFrameProcessorTests extends munit.FunSuite {
   import TestFixtures._
 
   val boundaryLocator: BoundaryLocator =
-    new BoundaryLocator(new AnimationsRegister, new FontRegister, new DynamicText)
+    new BoundaryLocator(new AnimationsRegister, new FontRegister)
 
   test("standard frame processor") {
 

@@ -1,10 +1,8 @@
 package indigo.platform.assets
 
-import indigo.facades.FontFace
 import indigo.platform.audio.AudioPlayer
 import indigo.platform.events.GlobalEventStream
 import indigo.shared.IndigoLogger
-import indigo.shared.assets.AssetName
 import indigo.shared.assets.AssetType
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.events.AssetEvent
@@ -14,14 +12,13 @@ import org.scalajs.dom.*
 import org.scalajs.dom.html
 import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits.*
 
-import scala.annotation.nowarn
 import scala.concurrent.Future
 import scala.concurrent.Promise
 import scala.scalajs.js
 import scala.util.Failure
 import scala.util.Success
 
-object AssetLoader {
+object AssetLoader:
 
   def backgroundLoadAssets(
       globalEventStream: GlobalEventStream,
@@ -61,8 +58,7 @@ object AssetLoader {
       t <- loadTextAssets(filterOutTextAssets(assetList))
       i <- loadImageAssets(filterOutImageAssets(assetList))
       a <- loadAudioAssets(filterOutAudioAssets(assetList))
-      f <- loadFontAssets(filterOutFontAssets(assetList))
-    } yield new AssetCollection(i.toSet, t.toSet, a.toSet, f.toSet)
+    } yield new AssetCollection(i.toSet, t.toSet, a.toSet)
   }
 
   def filterOutTextAssets(l: List[AssetType]): List[AssetType.Text] =
@@ -168,27 +164,3 @@ object AssetLoader {
       }
     }
   }
-
-  // Fonts
-
-  val loadFontAssets: List[AssetType.Font] => Future[List[LoadedFontAsset]] =
-    fontAssets => Future.sequence(fontAssets.map(loadFontAsset))
-
-  // @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
-  @nowarn("msg=unused")
-  def loadFontAsset(fontAsset: AssetType.Font): Future[LoadedFontAsset] =
-    IndigoLogger.info(s"[Font] Loading ${fontAsset.path}")
-
-    val font = new FontFace(fontAsset.name.toString, s"url(${fontAsset.path.toString})")
-
-    font.load().toFuture.map { fontFace =>
-      IndigoLogger.info(s"[Font] Success ${fontAsset.path}")
-
-      // add font to document
-      js.Dynamic.global.document.fonts.add(font)
-      // enable font with CSS class
-      js.Dynamic.global.document.body.classList.add("indigo-fonts-loaded")
-
-      LoadedFontAsset(AssetName(fontFace.family))
-    }
-}
