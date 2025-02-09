@@ -241,7 +241,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
-        "bg".toLayerKey -> Layer.Stack.empty,
+        "bg".toLayerKey   -> Layer.Stack.empty,
         "game".toLayerKey -> Layer.Stack.empty,
         "fps counter".toLayerKey ->
           Layer.empty
