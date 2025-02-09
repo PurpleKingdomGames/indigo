@@ -19,19 +19,19 @@ object SandboxView:
 
     SceneUpdateFragment.empty
       .addLayer(
-        Layer(
-          gameLayer(model, viewModel) ++ uiLayer(bl)
-        )
-        // .withBlendMaterial(BlendMaterial.BlendEffects.None.withSaturation(0.1))
+        LayerKey("game") ->
+          Layer.Stack(
+            Layer.Content(
+              gameLayer(model, viewModel)
+            ),
+            if (viewModel.useLightingLayer)
+              Layer(lightingLayer(mouse))
+                .withBlending(Blending.Lighting(RGBA.White.withAlpha(0.25)))
+            else
+              Layer.empty,
+            Layer(uiLayer(bl))
+          )
       )
-      .addLayer(
-        if (viewModel.useLightingLayer)
-          Layer(lightingLayer(mouse))
-            .withBlending(Blending.Lighting(RGBA.White.withAlpha(0.25)))
-        else
-          Layer.empty
-      )
-      // .addLayer(Layer(uiLayer(mouse)))
       .addCloneBlanks(CloneBlank(dudeCloneId, model.dude.dude.sprite))
   }
 

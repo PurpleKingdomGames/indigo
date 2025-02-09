@@ -23,7 +23,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
   val viewportHeight: Int     = gameHeight * magnificationLevel // 256
 
   def initialScene(bootData: SandboxBootData): Option[SceneName] =
-    Some(MeshScene.name)
+    Some(OriginalScene.name)
 
   def scenes(bootData: SandboxBootData): NonEmptyList[Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]] =
     NonEmptyList(
@@ -241,6 +241,8 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
+        "bg".toLayerKey -> Layer.Stack.empty,
+        "game".toLayerKey -> Layer.Stack.empty,
         "fps counter".toLayerKey ->
           Layer.empty
             .withCamera(Camera.default)
