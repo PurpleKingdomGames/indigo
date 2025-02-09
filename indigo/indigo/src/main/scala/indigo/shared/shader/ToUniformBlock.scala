@@ -39,7 +39,7 @@ object ToUniformBlock:
         case given ShaderTypeOf[T] => summonInline[ShaderTypeOf[T]]
         case _ =>
           error(
-            "Unsupported shader uniform type. Supported types From Scala (Int, Long, Float, Double), Indigo [RGBA, RGB, Point, Size, Vertex, Vector2, Vector3, Vector4, Rectangle, Matrix4, Depth, Radians, Millis, Seconds, Array[Float], js.Array[Float]], and UltraViolet [vec2, vec3, vec4, mat4]. However, if you intend to use the same case class for both Indigo and UltraViolet, you should stick to Float + the UltraViolet types."
+            "Unsupported shader uniform type. Supported types From Scala (Int, Long, Float, Double), Indigo [RGBA, RGB, Point, Size, Vertex, Vector2, Vector3, Vector4, Rectangle, Matrix4, Radians, Millis, Seconds, Array[Float], js.Array[Float]], and UltraViolet [vec2, vec3, vec4, mat4]. However, if you intend to use the same case class for both Indigo and UltraViolet, you should stick to Float + the UltraViolet types."
           )
       }
 
@@ -134,10 +134,6 @@ object ToUniformBlock:
     given ShaderTypeOf[Matrix4] with
       def toShaderPrimitive(value: Matrix4): ShaderPrimitive =
         ShaderPrimitive.mat4.fromMatrix4(value)
-
-    given ShaderTypeOf[Depth] with
-      def toShaderPrimitive(value: Depth): ShaderPrimitive =
-        ShaderPrimitive.float.fromDepth(value)
 
     given ShaderTypeOf[Radians] with
       def toShaderPrimitive(value: Radians): ShaderPrimitive =

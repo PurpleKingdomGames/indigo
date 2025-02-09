@@ -1,6 +1,5 @@
 package indigo.shared.scenegraph
 
-import indigo.shared.datatypes.Depth
 import indigo.shared.datatypes.Flip
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Radians
@@ -18,7 +17,6 @@ final case class BlankEntity(
     position: Point,
     rotation: Radians,
     scale: Vector2,
-    depth: Depth,
     ref: Point,
     flip: Flip
 ) extends EntityNode[BlankEntity]
@@ -61,9 +59,6 @@ final case class BlankEntity(
 
   def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): BlankEntity =
     transformTo(position + positionDiff, rotation + rotationDiff, scale * scaleDiff)
-
-  def withDepth(newDepth: Depth): BlankEntity =
-    this.copy(depth = newDepth)
 
   def flipHorizontal(isFlipped: Boolean): BlankEntity =
     this.copy(flip = flip.withHorizontalFlip(isFlipped))
@@ -118,21 +113,6 @@ object BlankEntity:
       position = Point.zero,
       rotation = Radians.zero,
       scale = Vector2.one,
-      depth = Depth.zero,
-      ref = Point.zero,
-      flip = Flip.default
-    )
-
-  def apply(x: Int, y: Int, width: Int, height: Int, depth: Depth, shaderData: ShaderData): BlankEntity =
-    BlankEntity(
-      size = Size(width, height),
-      eventHandlerEnabled = false,
-      eventHandler = Function.const(None),
-      shaderData = shaderData,
-      position = Point(x, y),
-      rotation = Radians.zero,
-      scale = Vector2.one,
-      depth = depth,
       ref = Point.zero,
       flip = Flip.default
     )
@@ -146,21 +126,6 @@ object BlankEntity:
       position = Point(x, y),
       rotation = Radians.zero,
       scale = Vector2.one,
-      depth = Depth.zero,
-      ref = Point.zero,
-      flip = Flip.default
-    )
-
-  def apply(bounds: Rectangle, depth: Depth, shaderData: ShaderData): BlankEntity =
-    BlankEntity(
-      size = bounds.size,
-      eventHandlerEnabled = false,
-      eventHandler = Function.const(None),
-      shaderData = shaderData,
-      position = bounds.position,
-      rotation = Radians.zero,
-      scale = Vector2.one,
-      depth = depth,
       ref = Point.zero,
       flip = Flip.default
     )
@@ -174,7 +139,6 @@ object BlankEntity:
       position = bounds.position,
       rotation = Radians.zero,
       scale = Vector2.one,
-      depth = Depth.zero,
       ref = Point.zero,
       flip = Flip.default
     )
@@ -188,7 +152,6 @@ object BlankEntity:
       position = Point.zero,
       rotation = Radians.zero,
       scale = Vector2.one,
-      depth = Depth.zero,
       ref = Point.zero,
       flip = Flip.default
     )
@@ -202,7 +165,6 @@ object BlankEntity:
       position = Point.zero,
       rotation = Radians.zero,
       scale = Vector2.one,
-      depth = Depth.zero,
       ref = Point.zero,
       flip = Flip.default
     )

@@ -102,9 +102,9 @@ object UiSceneViewModel:
 
   val buttonAssets: ButtonAssets =
     ButtonAssets(
-      up = Graphic(0, 0, 16, 16, 2, Material.Bitmap(AssetName("dots"))).withCrop(0, 0, 16, 16),
-      over = Graphic(0, 0, 16, 16, 2, Material.Bitmap(AssetName("dots"))).withCrop(16, 0, 16, 16),
-      down = Graphic(0, 0, 16, 16, 2, Material.Bitmap(AssetName("dots"))).withCrop(16, 16, 16, 16)
+      up = Graphic(0, 0, 16, 16, Material.Bitmap(AssetName("dots"))).withCrop(0, 0, 16, 16),
+      over = Graphic(0, 0, 16, 16, Material.Bitmap(AssetName("dots"))).withCrop(16, 0, 16, 16),
+      down = Graphic(0, 0, 16, 16, Material.Bitmap(AssetName("dots"))).withCrop(16, 16, 16, 16)
     )
 
   val initial: UiSceneViewModel =
@@ -119,8 +119,7 @@ object UiSceneViewModel:
         .withHoldDownActions(Log("Hold down!")),
       Button(
         buttonAssets = buttonAssets,
-        bounds = Rectangle(0, 0, 16, 16),
-        depth = Depth(2)
+        bounds = Rectangle(0, 0, 16, 16)
       )
         .withUpActions(Log("Up! 1"))
         .withClickActions(Log("Click! 1"))
@@ -131,8 +130,7 @@ object UiSceneViewModel:
         .moveTo(16, 16),
       Button(
         buttonAssets = buttonAssets,
-        bounds = Rectangle(0, 0, 16, 16),
-        depth = Depth(2)
+        bounds = Rectangle(0, 0, 16, 16)
       )
         .withUpActions(Log("Up! 2"))
         .withClickActions(Log("Click! 2"))
@@ -143,8 +141,7 @@ object UiSceneViewModel:
         .moveTo(48, 16),
       Button(
         buttonAssets = buttonAssets,
-        bounds = Rectangle(0, 0, 16, 16),
-        depth = Depth(2)
+        bounds = Rectangle(0, 0, 16, 16)
       )
         .withUpActions(Log("Up! 3"))
         .withClickActions(Log("Click! 3"))

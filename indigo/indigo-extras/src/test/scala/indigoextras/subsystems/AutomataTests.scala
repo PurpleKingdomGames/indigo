@@ -27,7 +27,7 @@ class AutomataTests extends munit.FunSuite {
   val poolKey: AutomataPoolKey =
     AutomataPoolKey("test")
 
-  val graphic = Graphic(0, 0, 10, 10, 1, Material.Bitmap(AssetName("fish")))
+  val graphic = Graphic(0, 0, 10, 10, Material.Bitmap(AssetName("fish")))
 
   val onCull: AutomatonSeedValues => List[GlobalEvent] =
     _ => List(eventInstance)

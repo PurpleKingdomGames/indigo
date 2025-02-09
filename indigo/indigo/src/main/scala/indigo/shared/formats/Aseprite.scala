@@ -10,7 +10,6 @@ import indigo.shared.assets.AssetName
 import indigo.shared.collections.Batch
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.datatypes.BindingKey
-import indigo.shared.datatypes.Depth
 import indigo.shared.datatypes.Flip
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Radians
@@ -91,7 +90,6 @@ object Aseprite:
               position = Point(0, 0),
               rotation = Radians.zero,
               scale = Vector2.one,
-              depth = Depth.zero,
               ref = Point(0, 0),
               flip = Flip.default
             ),
@@ -115,7 +113,6 @@ object Aseprite:
               position = Point.zero,
               rotation = Radians.zero,
               scale = Vector2.one,
-              depth = Depth.zero,
               ref = Point.zero,
               flip = Flip.default
             )

@@ -45,7 +45,7 @@ object LegacyEffectsScene extends Scene[SandboxStartupData, SandboxGameModel, Sa
     _ => Outcome(viewModel)
 
   val graphic: Graphic[LegacyEffects] =
-    Graphic(Rectangle(0, 0, 40, 40), 1, SandboxAssets.junctionBoxEffectsMaterial)
+    Graphic(Rectangle(0, 0, 40, 40), SandboxAssets.junctionBoxEffectsMaterial)
       .withRef(20, 20)
 
   def present(

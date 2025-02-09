@@ -13,7 +13,6 @@ final case class Group(
     position: Point,
     rotation: Radians,
     scale: Vector2,
-    depth: Depth,
     ref: Point,
     flip: Flip
 ) extends DependentNode[Group]
@@ -21,9 +20,6 @@ final case class Group(
 
   lazy val x: Int = position.x
   lazy val y: Int = position.y
-
-  def withDepth(newDepth: Depth): Group =
-    this.copy(depth = newDepth)
 
   def withRef(newRef: Point): Group =
     this.copy(ref = newRef)
@@ -96,7 +92,6 @@ object Group:
       Point.zero,
       Radians.zero,
       Vector2.one,
-      Depth.zero,
       Point.zero,
       Flip.default
     )
@@ -109,7 +104,6 @@ object Group:
       Point.zero,
       Radians.zero,
       Vector2.one,
-      Depth.zero,
       Point.zero,
       Flip.default
     )

@@ -32,7 +32,7 @@ import scala.scalajs.js.JSConverters.*
 class DisplayObjectConversionsTests extends munit.FunSuite {
 
   val graphic: Graphic[?] =
-    Graphic(Rectangle(10, 20, 200, 100), 2, Material.Bitmap(AssetName("texture")))
+    Graphic(Rectangle(10, 20, 200, 100), Material.Bitmap(AssetName("texture")))
 
   val animationRegister = new AnimationsRegister
   val fontRegister      = new FontRegister
@@ -98,7 +98,6 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
 
     assertEquals(actual.x, 10.0f)
     assertEquals(actual.y, 20.0f)
-    assertEquals(actual.z.toFloat, 2.0f)
     assertEquals(actual.width, 200.0f)
     assertEquals(actual.height, 100.0f)
   }

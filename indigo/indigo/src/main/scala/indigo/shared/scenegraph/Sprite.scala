@@ -21,7 +21,6 @@ final case class Sprite[M <: Material](
     position: Point,
     rotation: Radians,
     scale: Vector2,
-    depth: Depth,
     ref: Point,
     flip: Flip
 ) extends DependentNode[Sprite[M]]
@@ -30,9 +29,6 @@ final case class Sprite[M <: Material](
 
   lazy val x: Int = position.x
   lazy val y: Int = position.y
-
-  def withDepth(newDepth: Depth): Sprite[M] =
-    this.copy(depth = newDepth)
 
   def withMaterial[MB <: Material](newMaterial: MB): Sprite[MB] =
     this.copy(material = newMaterial)
@@ -126,11 +122,11 @@ final case class Sprite[M <: Material](
     this.copy(eventHandlerEnabled = false)
 
 object Sprite:
+
   def apply[M <: Material](
       bindingKey: BindingKey,
       x: Int,
       y: Int,
-      depth: Int,
       animationKey: AnimationKey,
       material: M
   ): Sprite[M] =
@@ -138,7 +134,6 @@ object Sprite:
       position = Point(x, y),
       rotation = Radians.zero,
       scale = Vector2.one,
-      depth = Depth(depth),
       ref = Point.zero,
       flip = Flip.default,
       bindingKey = bindingKey,
@@ -152,7 +147,6 @@ object Sprite:
   def apply[M <: Material](
       bindingKey: BindingKey,
       position: Point,
-      depth: Depth,
       rotation: Radians,
       scale: Vector2,
       animationKey: AnimationKey,
@@ -164,7 +158,6 @@ object Sprite:
       position = position,
       rotation = rotation,
       scale = scale,
-      depth = depth,
       ref = ref,
       flip = Flip.default,
       bindingKey = bindingKey,
@@ -180,7 +173,6 @@ object Sprite:
       position = Point.zero,
       rotation = Radians.zero,
       scale = Vector2.one,
-      depth = Depth.zero,
       ref = Point.zero,
       flip = Flip.default,
       bindingKey = bindingKey,

@@ -2,7 +2,6 @@ package indigoextras.ui.simple
 
 import indigo.shared.Outcome
 import indigo.shared.collections.Batch
-import indigo.shared.datatypes.Depth
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Size
@@ -19,7 +18,6 @@ import indigo.shared.scenegraph.TextBox
 final case class Button(
     buttonAssets: ButtonAssets,
     bounds: Rectangle,
-    depth: Depth,
     state: ButtonState,
     onUp: () => Batch[GlobalEvent],
     onDown: () => Batch[GlobalEvent],
@@ -46,9 +44,6 @@ final case class Button(
 
   def withBounds(newBounds: Rectangle): Button =
     this.copy(bounds = newBounds)
-
-  def withDepth(newDepth: Depth): Button =
-    this.copy(depth = newDepth)
 
   def update(pointer: PointerState): Outcome[Button] = {
     val pointerInBounds = pointer.positions.exists(p => bounds.isPointWithin(p))
@@ -98,27 +93,27 @@ final case class Button(
         Outcome(this).addGlobalEvents(pointerButtonEvents)
   }
 
-  private def applyPositionAndDepth(sceneNode: SceneNode, pt: Point, d: Depth): SceneNode =
+  private def applyPosition(sceneNode: SceneNode, pt: Point): SceneNode =
     sceneNode match {
-      case n: Shape[_]   => n.withPosition(pt).withDepth(d)
-      case n: Graphic[_] => n.withPosition(pt).withDepth(d)
-      case n: Sprite[_]  => n.withPosition(pt).withDepth(d)
-      case n: Text[_]    => n.withPosition(pt).withDepth(d)
-      case n: TextBox    => n.withPosition(pt).withDepth(d)
-      case n: Group      => n.withPosition(pt).withDepth(d)
+      case n: Shape[_]   => n.withPosition(pt)
+      case n: Graphic[_] => n.withPosition(pt)
+      case n: Sprite[_]  => n.withPosition(pt)
+      case n: Text[_]    => n.withPosition(pt)
+      case n: TextBox    => n.withPosition(pt)
+      case n: Group      => n.withPosition(pt)
       case n             => n
     }
 
   def draw: SceneNode =
     state match {
       case ButtonState.Up =>
-        applyPositionAndDepth(buttonAssets.up, bounds.position, depth)
+        applyPosition(buttonAssets.up, bounds.position)
 
       case ButtonState.Over =>
-        applyPositionAndDepth(buttonAssets.over, bounds.position, depth)
+        applyPosition(buttonAssets.over, bounds.position)
 
       case ButtonState.Down =>
-        applyPositionAndDepth(buttonAssets.down, bounds.position, depth)
+        applyPosition(buttonAssets.down, bounds.position)
     }
 
   def withUpActions(actions: GlobalEvent*): Button =
@@ -168,11 +163,10 @@ final case class Button(
 
 object Button:
 
-  def apply(buttonAssets: ButtonAssets, bounds: Rectangle, depth: Depth): Button =
+  def apply(buttonAssets: ButtonAssets, bounds: Rectangle): Button =
     Button(
       buttonAssets,
       bounds,
-      depth,
       ButtonState.Up,
       onUp = () => Batch.empty,
       onDown = () => Batch.empty,

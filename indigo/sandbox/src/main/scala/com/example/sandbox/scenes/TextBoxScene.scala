@@ -60,25 +60,22 @@ object TextBoxScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxV
           tb.moveTo(0, 0),
           Graphic(
             Rectangle(0, 0, 40, 40),
-            4,
             LightingAssets.junctionBoxMaterialOn.modifyLighting(_ => LightingModel.Unlit)
           ).moveTo(10, 10),
           Shape.Box(context.services.bounds.get(tb), Fill.None).withStroke(Stroke(1, RGBA.Cyan)),
-          tb.withDepth(Depth(3)).bold,
-          tb.moveTo(50, 65).withDepth(Depth(3)),
+          tb.bold,
+          tb.moveTo(50, 65),
           tb.moveTo(50, 80)
-            .withDepth(Depth(3))
             .withFontFamily(FontFamily.cursive)
             .withFontSize(Pixels(16))
             .withStroke(TextStroke(RGBA.Red, Pixels(1))),
           hello
             .modifyStyle(_.withSize(Pixels(20)))
-            .moveTo(Signal.Orbit(Point(180, 70), 20).affectTime(0.25).at(context.frame.time.running).toPoint)
-            .withDepth(Depth(2)),
-          model.dude.dude.sprite.play().withDepth(Depth(1)),
-          tb.moveTo(50, 120).withDepth(Depth(3)).alignLeft,
-          tb.moveTo(50, 135).withDepth(Depth(3)).alignCenter.withFontSize(Pixels(8)),
-          tb.moveTo(50, 150).withDepth(Depth(3)).alignRight,
+            .moveTo(Signal.Orbit(Point(180, 70), 20).affectTime(0.25).at(context.frame.time.running).toPoint),
+          model.dude.dude.sprite.play(),
+          tb.moveTo(50, 120).alignLeft,
+          tb.moveTo(50, 135).alignCenter.withFontSize(Pixels(8)),
+          tb.moveTo(50, 150).alignRight,
           Shape
             .Box(Rectangle(50, 120, tb.size.width, 14 * 3), Fill.None)
             .withStroke(Stroke(1, RGBA.Cyan))

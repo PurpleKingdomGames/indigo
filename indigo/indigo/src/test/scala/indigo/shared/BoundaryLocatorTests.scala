@@ -119,7 +119,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
     val fontInfo = FontInfo(fontKey, 256, 256, FontChar("?", 0, 0, 16, 16)).addChars(chars)
 
     val text: Text[?] =
-      Text("<test>", 50, 50, 1, fontKey, material)
+      Text("<test>", 50, 50, fontKey, material)
   }
 
   // Standard bounds calculation
@@ -129,7 +129,6 @@ class BoundaryLocatorTests extends munit.FunSuite {
   import indigo.shared.datatypes.Size
   import indigo.shared.datatypes.Radians
   import indigo.shared.datatypes.Vector2
-  import indigo.shared.datatypes.Depth
   import indigo.shared.datatypes.Flip
   import indigo.shared.shader.ShaderData
   import indigo.shared.shader.ShaderId
@@ -139,12 +138,10 @@ class BoundaryLocatorTests extends munit.FunSuite {
       size: Size,
       rotation: Radians,
       scale: Vector2,
-      depth: Depth,
       flip: Flip,
       ref: Point
   ) extends EntityNode[TestEntity]:
     def toShaderData: ShaderData                                         = ShaderData(ShaderId("test shader"))
-    def withDepth(newDepth: Depth): TestEntity                           = this
     val eventHandlerEnabled: Boolean                                     = false
     def eventHandler: ((TestEntity, GlobalEvent)) => Option[GlobalEvent] = Function.const(None)
 
@@ -154,7 +151,6 @@ class BoundaryLocatorTests extends munit.FunSuite {
       Size(40, 40),
       Radians.zero,
       Vector2.one,
-      Depth.zero,
       Flip.default,
       Point.zero
     )
@@ -171,7 +167,6 @@ class BoundaryLocatorTests extends munit.FunSuite {
       Size(40, 40),
       Radians.zero,
       Vector2.one,
-      Depth.zero,
       Flip.default,
       Point.zero
     )
@@ -188,7 +183,6 @@ class BoundaryLocatorTests extends munit.FunSuite {
       Size(40, 40),
       Radians.zero,
       Vector2.one,
-      Depth.zero,
       Flip(true, true),
       Point.zero
     )
@@ -205,7 +199,6 @@ class BoundaryLocatorTests extends munit.FunSuite {
       Size(40, 40),
       Radians.zero,
       Vector2.one,
-      Depth.zero,
       Flip.default,
       Point(20, 20)
     )
@@ -222,7 +215,6 @@ class BoundaryLocatorTests extends munit.FunSuite {
       Size(40, 40),
       Radians.zero,
       Vector2.one,
-      Depth.zero,
       Flip.default,
       Point(40, 40)
     )
@@ -239,7 +231,6 @@ class BoundaryLocatorTests extends munit.FunSuite {
       Size(40, 40),
       Radians.zero,
       Vector2.one,
-      Depth.zero,
       Flip.default,
       Point(-10, 0)
     )
@@ -256,7 +247,6 @@ class BoundaryLocatorTests extends munit.FunSuite {
       Size(40, 40),
       Radians.zero,
       Vector2(1, 1),
-      Depth.zero,
       Flip.default,
       Point.zero
     )
@@ -273,7 +263,6 @@ class BoundaryLocatorTests extends munit.FunSuite {
       Size(40, 40),
       Radians.zero,
       Vector2(2, 2),
-      Depth.zero,
       Flip.default,
       Point.zero
     )
@@ -290,7 +279,6 @@ class BoundaryLocatorTests extends munit.FunSuite {
       Size(40, 40),
       Radians.zero,
       Vector2(3, 3),
-      Depth.zero,
       Flip.default,
       Point(20, 20)
     )
@@ -307,7 +295,6 @@ class BoundaryLocatorTests extends munit.FunSuite {
       Size(20, 40),
       Radians.TAUby2,
       Vector2(2, 2),
-      Depth.zero,
       Flip.default,
       Point.zero
     )

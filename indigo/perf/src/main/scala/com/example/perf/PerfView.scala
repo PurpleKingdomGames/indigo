@@ -92,11 +92,10 @@ object PerfView {
         (herdCount + 1).toString + " Naked dudes!",
         PerfGame.viewportWidth / 2,
         40,
-        5,
         Fonts.fontKey,
         PerfAssets.fontMaterial
       ).alignCenter,
-      Text("Thundering Herd!", PerfGame.viewportWidth / 2, 10, 5, Fonts.fontKey, PerfAssets.fontMaterial).alignCenter
+      Text("Thundering Herd!", PerfGame.viewportWidth / 2, 10, Fonts.fontKey, PerfAssets.fontMaterial).alignCenter
     )
 
 }

@@ -49,41 +49,40 @@ object OriginalScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
     val scene: SceneUpdateFragment =
       SandboxView
         .updateView(model, viewModel, context.frame.input.mouse, context.services.bounds)
-        .addLayer(
-          Layer(
-            // viewModel.single.draw(gameTime, boundaryLocator) //|+|
-            viewModel.multi.draw(context.frame.time, context.services.bounds)
-          ).withDepth(Depth(1000))
-        )
 
     Outcome(
       scene
         .addLayer(
-          LayerKey("bg") -> Layer(
-            BlankEntity(0, 0, 228 * 3, 140 * 3, Depth(10), ShaderData(Shaders.seaId))
-          ).withMagnification(1)
+          LayerKey("bg") ->
+            Layer(
+              BlankEntity(0, 0, 228 * 3, 140 * 3, ShaderData(Shaders.seaId))
+            ).withMagnification(1)
         )
         .addLayer(
-          Layer(
-            Graphic(120, 10, 32, 32, 1, SandboxAssets.dotsMaterial),
-            BlankEntity(140, 50, 32, 32, ShaderData(Shaders.circleId)),
-            BlankEntity(
-              140,
-              50,
-              32,
-              32,
-              ShaderData(Shaders.externalId)
-                .addUniformData(CustomData(0.75, RGB(1.0, 1.0, 0.0)))
-            ),
-            BlankEntity(
-              150,
-              60,
-              32,
-              32,
-              ShaderData(Shaders.externalId)
-                .addUniformData(CustomData(0.5, RGB(1.0, 0.0, 1.0)))
+          LayerKey("game") ->
+            Layer(
+              Batch(
+                Graphic(120, 10, 32, 32, SandboxAssets.dotsMaterial),
+                BlankEntity(140, 50, 32, 32, ShaderData(Shaders.circleId)),
+                BlankEntity(
+                  140,
+                  50,
+                  32,
+                  32,
+                  ShaderData(Shaders.externalId)
+                    .addUniformData(CustomData(0.75, RGB(1.0, 1.0, 0.0)))
+                ),
+                BlankEntity(
+                  150,
+                  60,
+                  32,
+                  32,
+                  ShaderData(Shaders.externalId)
+                    .addUniformData(CustomData(0.5, RGB(1.0, 0.0, 1.0)))
+                )
+              ) ++
+                viewModel.multi.draw(context.frame.time, context.services.bounds)
             )
-          )
         )
     )
   }

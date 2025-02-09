@@ -11,7 +11,6 @@ import indigo.shared.shader.UniformBlock
   */
 final case class Mutants(
     id: CloneId,
-    depth: Depth,
     uniformBlocks: Array[Batch[UniformBlock]]
 ) extends DependentNode[Mutants] derives CanEqual:
 
@@ -24,9 +23,6 @@ final case class Mutants(
   def withCloneId(newCloneId: CloneId): Mutants =
     this.copy(id = newCloneId)
 
-  def withDepth(newDepth: Depth): Mutants =
-    this.copy(depth = newDepth)
-
   def addBlocks(additionalBlocks: Array[Batch[UniformBlock]]): Mutants =
     this.copy(uniformBlocks = uniformBlocks ++ additionalBlocks)
 
@@ -35,30 +31,20 @@ final case class Mutants(
 
 object Mutants:
 
-  def apply(id: CloneId, uniformBlocks: Array[Batch[UniformBlock]]): Mutants =
-    Mutants(
-      id,
-      Depth.zero,
-      uniformBlocks
-    )
-
   def apply[A](id: CloneId, uniformBlocks: Array[Batch[A]])(using toUBO: ToUniformBlock[A]): Mutants =
     Mutants(
       id,
-      Depth.zero,
       uniformBlocks.map(_.map(toUBO.toUniformBlock))
     )
 
   def apply(id: CloneId, uniformBlocks: Batch[UniformBlock]): Mutants =
     Mutants(
       id,
-      Depth.zero,
       Array(uniformBlocks)
     )
 
   def apply[A](id: CloneId, uniformBlocks: Batch[A])(using toUBO: ToUniformBlock[A]): Mutants =
     Mutants(
       id,
-      Depth.zero,
       Array(uniformBlocks.map(toUBO.toUniformBlock))
     )

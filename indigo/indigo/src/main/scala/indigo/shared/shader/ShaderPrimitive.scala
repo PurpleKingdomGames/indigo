@@ -1,6 +1,5 @@
 package indigo.shared.shader
 
-import indigo.shared.datatypes.Depth
 import indigo.shared.datatypes.Matrix4
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.RGB
@@ -67,9 +66,6 @@ object ShaderPrimitive:
 
     def apply(fill: Long): float =
       float(fill.toFloat)
-
-    def fromDepth(depth: Depth): float =
-      float(depth.toDouble)
 
     def fromMillis(millis: Millis): float =
       float(millis.toDouble)

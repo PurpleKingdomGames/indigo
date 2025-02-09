@@ -73,7 +73,6 @@ object PerfGame extends IndigoDemo[Unit, Dude, DudeModel, Unit] {
           Dude(
             aseprite,
             spriteAndAnimations.sprite
-              .withDepth(Depth(3))
               .withRef(16, 16) // Initial offset, so when talk about his position it's the center of the sprite
               .moveTo(
                 viewportWidth / 2 / magnificationLevel,

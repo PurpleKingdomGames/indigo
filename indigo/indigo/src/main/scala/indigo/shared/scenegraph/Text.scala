@@ -19,7 +19,6 @@ final case class Text[M <: Material](
     position: Point,
     rotation: Radians,
     scale: Vector2,
-    depth: Depth,
     ref: Point,
     flip: Flip
 ) extends DependentNode[Text[M]]
@@ -65,9 +64,6 @@ final case class Text[M <: Material](
 
   def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): Text[M] =
     transformTo(position + positionDiff, rotation + rotationDiff, scale * scaleDiff)
-
-  def withDepth(newDepth: Depth): Text[M] =
-    this.copy(depth = newDepth)
 
   def withRef(newRef: Point): Text[M] =
     this.copy(ref = newRef)
@@ -118,12 +114,11 @@ final case class Text[M <: Material](
 
 object Text:
 
-  def apply[M <: Material](text: String, x: Int, y: Int, depth: Int, fontKey: FontKey, material: M): Text[M] =
+  def apply[M <: Material](text: String, x: Int, y: Int, fontKey: FontKey, material: M): Text[M] =
     Text(
       position = Point(x, y),
       rotation = Radians.zero,
       scale = Vector2.one,
-      depth = Depth(depth),
       ref = Point.zero,
       flip = Flip.default,
       text = text,
@@ -141,7 +136,6 @@ object Text:
       position = Point.zero,
       rotation = Radians.zero,
       scale = Vector2.one,
-      depth = Depth.zero,
       ref = Point.zero,
       flip = Flip.default,
       text = text,

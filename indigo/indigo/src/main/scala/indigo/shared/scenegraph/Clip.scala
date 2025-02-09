@@ -1,6 +1,5 @@
 package indigo.shared.scenegraph
 
-import indigo.shared.datatypes.Depth
 import indigo.shared.datatypes.Flip
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Radians
@@ -26,7 +25,6 @@ final case class Clip[M <: Material](
     position: Point,
     rotation: Radians,
     scale: Vector2,
-    depth: Depth,
     ref: Point,
     flip: Flip
 ) extends EntityNode[Clip[M]]
@@ -133,9 +131,6 @@ final case class Clip[M <: Material](
   def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): Clip[M] =
     transformTo(position + positionDiff, rotation + rotationDiff, scale * scaleDiff)
 
-  def withDepth(newDepth: Depth): Clip[M] =
-    this.copy(depth = newDepth)
-
   def flipHorizontal(isFlipped: Boolean): Clip[M] =
     this.copy(flip = flip.withHorizontalFlip(isFlipped))
   def flipVertical(isFlipped: Boolean): Clip[M] =
@@ -200,7 +195,6 @@ final case class Clip[M <: Material](
       position = position,
       rotation = rotation,
       scale = scale,
-      depth = depth,
       ref = ref,
       flip = flip,
       crop = Rectangle(framePositon * size.toPoint, size),
@@ -248,7 +242,6 @@ object Clip:
       position = Point.zero,
       rotation = Radians.zero,
       scale = Vector2.one,
-      depth = Depth.zero,
       ref = Point.zero,
       flip = Flip.default
     )
@@ -269,7 +262,6 @@ object Clip:
       position = Point.zero,
       rotation = Radians.zero,
       scale = Vector2.one,
-      depth = Depth.zero,
       ref = Point.zero,
       flip = Flip.default
     )
@@ -293,7 +285,6 @@ object Clip:
       position = Point(x, y),
       rotation = Radians.zero,
       scale = Vector2.one,
-      depth = Depth.zero,
       ref = Point.zero,
       flip = Flip.default
     )
@@ -316,7 +307,6 @@ object Clip:
       position = Point(x, y),
       rotation = Radians.zero,
       scale = Vector2.one,
-      depth = Depth.zero,
       ref = Point.zero,
       flip = Flip.default
     )
@@ -337,7 +327,6 @@ object Clip:
       position = Point.zero,
       rotation = Radians.zero,
       scale = Vector2.one,
-      depth = Depth.zero,
       ref = Point.zero,
       flip = Flip.default
     )
@@ -357,7 +346,6 @@ object Clip:
       position = Point.zero,
       rotation = Radians.zero,
       scale = Vector2.one,
-      depth = Depth.zero,
       ref = Point.zero,
       flip = Flip.default
     )
@@ -379,7 +367,6 @@ object Clip:
       position = position,
       rotation = Radians.zero,
       scale = Vector2.one,
-      depth = Depth.zero,
       ref = Point.zero,
       flip = Flip.default
     )
@@ -400,7 +387,6 @@ object Clip:
       position = position,
       rotation = Radians.zero,
       scale = Vector2.one,
-      depth = Depth.zero,
       ref = Point.zero,
       flip = Flip.default
     )

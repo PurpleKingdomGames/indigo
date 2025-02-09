@@ -54,8 +54,6 @@ class AsepriteTests extends munit.FunSuite {
 
 object AsepriteSampleData {
 
-  val depth: Depth = Depth.zero
-
   val imageAssetRef: AssetName = AssetName("trafficlights")
 
   val json: String =
@@ -182,7 +180,6 @@ object AsepriteSampleData {
     Sprite(
       bindingKey = BindingKey("0000000000000000"),
       position = Point.zero,
-      depth = depth,
       rotation = Radians.zero,
       scale = Vector2.one,
       animationKey = animationKey,
