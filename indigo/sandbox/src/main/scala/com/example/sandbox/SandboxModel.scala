@@ -8,7 +8,6 @@ import indigo.*
 import indigo.syntax.*
 import indigoextras.mesh.*
 import indigoextras.ui.*
-import indigoextras.ui.simple.InputFieldChange
 
 object SandboxModel {
 
@@ -216,10 +215,6 @@ object SandboxModel {
   def updateModel(state: SandboxGameModel): GlobalEvent => Outcome[SandboxGameModel] = {
     case rd @ RendererDetails(_, _, _) =>
       println(rd)
-      Outcome(state)
-
-    case InputFieldChange(key, value) =>
-      println(s"Input field '${key.toString()}' changed: " + value)
       Outcome(state)
 
     case FrameTick =>
