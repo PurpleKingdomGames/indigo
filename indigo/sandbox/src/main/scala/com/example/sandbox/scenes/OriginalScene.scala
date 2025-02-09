@@ -80,8 +80,7 @@ object OriginalScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
                   ShaderData(Shaders.externalId)
                     .addUniformData(CustomData(0.5, RGB(1.0, 0.0, 1.0)))
                 )
-              ) ++
-                viewModel.multi.draw(context.frame.time, context.services.bounds)
+              )
             )
         )
     )

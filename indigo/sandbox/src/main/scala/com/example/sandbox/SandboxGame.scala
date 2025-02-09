@@ -9,7 +9,6 @@ import indigo.syntax.*
 import indigoextras.effectmaterials.LegacyEffects
 import indigoextras.effectmaterials.Refraction
 import indigoextras.subsystems.FPSCounter
-import indigoextras.ui.simple.*
 
 import scala.scalajs.js.annotation.*
 
@@ -36,7 +35,6 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
       BoundsScene,
       CameraScene,
       TextureTileScene,
-      UiScene,
       ConfettiScene,
       MutantsScene,
       CratesScene,
@@ -147,25 +145,14 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
   def initialModel(startupData: SandboxStartupData): Outcome[SandboxGameModel] =
     Outcome(SandboxModel.initialModel(startupData))
 
-  def initialViewModel(startupData: SandboxStartupData, model: SandboxGameModel): Outcome[SandboxViewModel] = {
-    val assets =
-      InputFieldAssets(
-        Text("placeholder", 0, 0, Fonts.fontKey, SandboxAssets.fontMaterial).alignLeft,
-        Graphic(0, 0, 16, 16, Material.ImageEffects(SandboxAssets.smallFontName).withTint(RGB(0, 0, 1)))
-          .withCrop(188, 78, 14, 23)
-      )
-
+  def initialViewModel(startupData: SandboxStartupData, model: SandboxGameModel): Outcome[SandboxViewModel] =
     Outcome(
       SandboxViewModel(
         Point.zero,
-        InputField("single", assets).withKey(BindingKey("single")).makeSingleLine,
-        InputField("multi\nline", assets).withKey(BindingKey("multi")).makeMultiLine.moveTo(5, 5),
         true,
-        UiSceneViewModel.initial,
         CaptureScreenScene.ViewModel(None, None, Point.zero)
       )
     )
-  }
 
   def updateModel(
       context: Context[SandboxStartupData],
@@ -200,11 +187,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
             viewModel.offset
         }
 
-      // more stuff
-      for {
-        single <- viewModel.single.update(context)
-        multi  <- viewModel.multi.update(context)
-      } yield viewModel.copy(updateOffset, single, multi)
+      Outcome(viewModel.copy(offset = updateOffset))
 
     case FullScreenEntered =>
       println("Entered full screen mode")
@@ -258,10 +241,7 @@ final case class SandboxBootData(message: String, gameViewport: GameViewport)
 final case class SandboxStartupData(dude: Dude, viewportCenter: Point, gameViewport: GameViewport)
 final case class SandboxViewModel(
     offset: Point,
-    single: InputField,
-    multi: InputField,
     useLightingLayer: Boolean,
-    uiScene: UiSceneViewModel,
     captureScreenScene: CaptureScreenScene.ViewModel
 )
 
