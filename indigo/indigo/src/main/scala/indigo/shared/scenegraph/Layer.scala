@@ -24,7 +24,7 @@ enum Layer derives CanEqual:
 
   /** Content layers are used to stack collections of screen elements on top of one another.
     *
-    * During the scene render, each layer in depth order is _blended_ into the one below it, a bit like doing a foldLeft
+    * During the scene render, each layer in order is _blended_ into the one below it, a bit like doing a foldLeft
     * over a list. You can control how the blend is performed to create effects.
     *
     * Layer fields are all either Batchs or options to denote that you _can_ have them but that it isn't necessary.
@@ -39,8 +39,6 @@ enum Layer derives CanEqual:
     *   Layer level dynamic lights
     * @param magnification
     *   Optionally set the magnification, defaults to scene magnification.
-    * @param depth
-    *   Specifically set the depth, defaults to scene order.
     * @param visible
     *   Optionally set the visiblity, defaults to visible
     * @param blending

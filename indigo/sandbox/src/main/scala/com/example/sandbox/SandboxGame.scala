@@ -150,7 +150,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
   def initialViewModel(startupData: SandboxStartupData, model: SandboxGameModel): Outcome[SandboxViewModel] = {
     val assets =
       InputFieldAssets(
-        Text("placeholder", 0, 0, 0, Fonts.fontKey, SandboxAssets.fontMaterial).alignLeft,
+        Text("placeholder", 0, 0, Fonts.fontKey, SandboxAssets.fontMaterial).alignLeft,
         Graphic(0, 0, 16, 16, Material.ImageEffects(SandboxAssets.smallFontName).withTint(RGB(0, 0, 1)))
           .withCrop(188, 78, 14, 23)
       )

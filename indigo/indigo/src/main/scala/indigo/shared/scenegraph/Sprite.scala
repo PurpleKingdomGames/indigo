@@ -127,7 +127,6 @@ object Sprite:
       bindingKey: BindingKey,
       x: Int,
       y: Int,
-      depth: Int,
       animationKey: AnimationKey,
       material: M
   ): Sprite[M] =

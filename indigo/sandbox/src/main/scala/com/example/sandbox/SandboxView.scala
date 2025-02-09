@@ -92,9 +92,9 @@ object SandboxView:
 
   def uiLayer(bl: Context.Services.Bounds): Batch[SceneNode] =
     Batch(
-      Text("AB!\n!C", 2, 2, 5, Fonts.fontKey, SandboxAssets.fontMaterial.withAlpha(0.5)).alignLeft,
-      Text("AB!\n!C", 100, 2, 5, Fonts.fontKey, SandboxAssets.fontMaterial.withAlpha(0.5)).alignCenter,
-      Text("AB!\n\n!C", 200, 2, 5, Fonts.fontKey, SandboxAssets.fontMaterial.withAlpha(0.5)).alignRight
+      Text("AB!\n!C", 2, 2, Fonts.fontKey, SandboxAssets.fontMaterial.withAlpha(0.5)).alignLeft,
+      Text("AB!\n!C", 100, 2, Fonts.fontKey, SandboxAssets.fontMaterial.withAlpha(0.5)).alignCenter,
+      Text("AB!\n\n!C", 200, 2, Fonts.fontKey, SandboxAssets.fontMaterial.withAlpha(0.5)).alignRight
         .withEventHandler {
           case (txt, MouseEvent.Click(pt)) if bl.get(txt).contains(pt) =>
             println("Clicked me!")

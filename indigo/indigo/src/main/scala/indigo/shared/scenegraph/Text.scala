@@ -114,7 +114,7 @@ final case class Text[M <: Material](
 
 object Text:
 
-  def apply[M <: Material](text: String, x: Int, y: Int, depth: Int, fontKey: FontKey, material: M): Text[M] =
+  def apply[M <: Material](text: String, x: Int, y: Int, fontKey: FontKey, material: M): Text[M] =
     Text(
       position = Point(x, y),
       rotation = Radians.zero,

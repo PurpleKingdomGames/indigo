@@ -226,8 +226,6 @@ object RadioButton:
   *   The hit area of the radio button relative to the button's position
   * @param options
   *   A list individual radio buttons that comprise this group
-  * @param depth
-  *   The depth at which to present the buttons
   */
 final case class RadioButtonGroup(
     buttonAssets: ButtonAssets,

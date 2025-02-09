@@ -53,7 +53,6 @@ class AnimationStateTests extends munit.FunSuite {
 //        y = 0,
 //        width = 10,
 //        height = 10,
-//        depth = 1,
 //        imageAssetRef = "...",
 //        animations = animations
 //      )

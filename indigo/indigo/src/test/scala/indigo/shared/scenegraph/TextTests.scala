@@ -37,7 +37,7 @@ class TextTests extends munit.FunSuite {
 
     fontRegister.register(fontInfo)
 
-    val t = Text("abc", 10, 20, 1, fontKey, material)
+    val t = Text("abc", 10, 20, fontKey, material)
 
     assertEquals(
       boundaryLocator.findBounds(t).get,
@@ -61,7 +61,7 @@ class TextTests extends munit.FunSuite {
 
     fontRegister.register(fontInfo)
 
-    val t = Text("abc", 10, 20, 1, fontKey, material)
+    val t = Text("abc", 10, 20, fontKey, material)
 
     val actual   = boundaryLocator.findBounds(t).get   // 48 x 16
     val expected = Rectangle(10, 20, 10 + 20 + 30, 30) // 60 x 30
@@ -85,7 +85,7 @@ class TextTests extends munit.FunSuite {
 
     fontRegister.register(fontInfo)
 
-    val t = Text("abc", 10, 20, 1, fontKey, material).alignCenter
+    val t = Text("abc", 10, 20, fontKey, material).alignCenter
 
     val width = 16 * 3
 
@@ -111,7 +111,7 @@ class TextTests extends munit.FunSuite {
 
     fontRegister.register(fontInfo)
 
-    val t = Text("abc", 10, 20, 1, fontKey, material).alignRight
+    val t = Text("abc", 10, 20, fontKey, material).alignRight
 
     val width = 16 * 3
 
@@ -138,7 +138,7 @@ class TextTests extends munit.FunSuite {
 
     fontRegister.register(fontInfo)
 
-    val t = Text("abc", 0, 0, 1, fontKey, material).alignRight
+    val t = Text("abc", 0, 0, fontKey, material).alignRight
       .rotateTo(Radians.TAUby2)
 
     val width = 16 * 3
