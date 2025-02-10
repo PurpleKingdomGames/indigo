@@ -114,8 +114,7 @@ object LineReflectionScene extends Scene[SandboxStartupData, SandboxGameModel, S
 
     val textTemplate =
       Text("", Fonts.fontKey, SandboxAssets.fontMaterial)
-        .moveTo((context.startUpData.viewportCenter.x * 2) - 40, 10)
-        .alignRight
+        .moveTo(10, 10)
 
     val text =
       reflectionData match
@@ -127,11 +126,11 @@ object LineReflectionScene extends Scene[SandboxStartupData, SandboxGameModel, S
         case Some(rd) =>
           Batch(
             textTemplate.withText("Left + Right arrows to rotate").moveBy(0, 0),
-            textTemplate.withText(s"Incident: ${round2dp(rd.incident)}").moveBy(0, 20),
-            textTemplate.withText(s"Normal: ${round2dp(rd.normal)}").moveBy(0, 40),
-            textTemplate.withText(s"Reflected: ${round2dp(rd.reflected)}").moveBy(0, 60),
-            textTemplate.withText(s"I.N: ${round2dp(rd.incident.dot(rd.normal))}").moveBy(0, 80),
-            textTemplate.withText(s"N.R: ${round2dp(rd.normal.dot(rd.reflected))}").moveBy(0, 100)
+            textTemplate.withText(s"Incident: ${round2dp(rd.incident)}").moveBy(0, 30),
+            textTemplate.withText(s"Normal: ${round2dp(rd.normal)}").moveBy(0, 60),
+            textTemplate.withText(s"Reflected: ${round2dp(rd.reflected)}").moveBy(0, 90),
+            textTemplate.withText(s"I.N: ${round2dp(rd.incident.dot(rd.normal))}").moveBy(0, 120),
+            textTemplate.withText(s"N.R: ${round2dp(rd.normal.dot(rd.reflected))}").moveBy(0, 150)
           )
 
     Outcome(
@@ -160,6 +159,12 @@ object LineReflectionScene extends Scene[SandboxStartupData, SandboxGameModel, S
             reflection
         )
         .addLayer(
-          Layer(text).withMagnification(1)
+          Layer(text)
+            .withMagnification(1)
+            .withCamera(
+              Camera
+                .Fixed(context.startUpData.viewportCenter * 2)
+                .withZoom(Zoom.x05)
+            )
         )
     )

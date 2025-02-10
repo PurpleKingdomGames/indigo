@@ -98,7 +98,7 @@ object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
         ).withMagnification(1),
         Layer(
           count.withText(s"count: ${model.particles.length * spawnCount}")
-        )
+        ).withMagnification(1)
       ).addCloneBlanks(cloneBlanks)
     )
 

@@ -1,5 +1,6 @@
 package com.example.sandbox.scenes
 
+import com.example.sandbox.Constants
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
 import com.example.sandbox.SandboxViewModel
@@ -57,6 +58,19 @@ object ComponentUIScene extends Scene[SandboxStartupData, SandboxGameModel, Sand
   ): Outcome[SceneUpdateFragment] =
     model.components
       .present(UIContext(context.toContext.forSubSystems.copy(reference = 0), Size(1), 1))
-      .map(l => SceneUpdateFragment(l))
+      .map {
+        case l: Layer.Stack =>
+          SceneUpdateFragment(
+            Constants.LayerKeys.game -> Layer.Stack(
+              l.layers.map {
+                case l: Layer.Content => l.withMagnification(1)
+                case l                => l
+              }
+            )
+          )
+
+        case l: Layer.Content =>
+          SceneUpdateFragment.empty
+      }
 
 final case class ChangeValue(value: Int) extends GlobalEvent

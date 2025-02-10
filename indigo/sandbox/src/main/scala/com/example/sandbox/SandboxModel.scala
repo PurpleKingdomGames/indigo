@@ -51,7 +51,7 @@ object SandboxModel {
             ) { case (offset, label, dimensions) =>
               Outcome(
                 Layer(
-                  Text(label, Fonts.fontKey, SandboxAssets.fontMaterial.withOverlay(Fill.Color(RGBA.Red)))
+                  Text(label, Fonts.fontKey, SandboxAssets.fontMaterial.withTint(RGBA.Red))
                     .moveTo(offset.unsafeToPoint)
                 )
               )
@@ -196,7 +196,7 @@ object SandboxModel {
                   ) { case (offset, label, dimensions) =>
                     Outcome(
                       Layer(
-                        Text(label, Fonts.fontKey, SandboxAssets.fontMaterial.withOverlay(Fill.Color(RGBA.Red)))
+                        Text(label, Fonts.fontKey, SandboxAssets.fontMaterial.withTint(RGBA.Red))
                           .moveTo(offset.unsafeToPoint)
                       )
                     )
