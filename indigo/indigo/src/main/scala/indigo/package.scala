@@ -18,8 +18,6 @@ object syntax:
   extension (i: Int)
     def toFPS: FPS       = FPS(i)
     def fps: FPS         = FPS(i)
-    def toPixels: Pixels = Pixels(i)
-    def pixels: Pixels   = Pixels(i)
     def toMillis: Millis = Millis(i)
     def millis: Millis   = Millis(i)
 
@@ -36,7 +34,6 @@ object syntax:
     def toLayerKey: LayerKey         = LayerKey(s)
     def toCloneId: CloneId           = CloneId(s)
     def toCycleLabel: CycleLabel     = CycleLabel(s)
-    def toFontFamily: FontFamily     = FontFamily(s)
     def toFontKey: FontKey           = FontKey(s)
     def toScene: scenes.SceneName    = scenes.SceneName(s)
     def toShaderId: ShaderId         = ShaderId(s)
@@ -742,9 +739,6 @@ val Graphic: shared.scenegraph.Graphic.type = shared.scenegraph.Graphic
 type Group = shared.scenegraph.Group
 val Group: shared.scenegraph.Group.type = shared.scenegraph.Group
 
-type TextBox = shared.scenegraph.TextBox
-val TextBox: shared.scenegraph.TextBox.type = shared.scenegraph.TextBox
-
 type Clip[M <: Material] = shared.scenegraph.Clip[M]
 val Clip: shared.scenegraph.Clip.type = shared.scenegraph.Clip
 
@@ -759,41 +753,6 @@ val ClipPlayDirection: shared.scenegraph.ClipPlayDirection.type = shared.scenegr
 
 type ClipPlayMode = shared.scenegraph.ClipPlayMode
 val ClipPlayMode: shared.scenegraph.ClipPlayMode.type = shared.scenegraph.ClipPlayMode
-
-// TextStyle
-
-type TextStyle = shared.datatypes.TextStyle
-val TextStyle: shared.datatypes.TextStyle.type = shared.datatypes.TextStyle
-
-type Font = shared.datatypes.Font
-val Font: shared.datatypes.Font.type = shared.datatypes.Font
-
-type FontFamily = shared.datatypes.FontFamily
-val FontFamily: shared.datatypes.FontFamily.type = shared.datatypes.FontFamily
-
-type FontVariant = shared.datatypes.FontVariant
-val FontVariant: shared.datatypes.FontVariant.type = shared.datatypes.FontVariant
-
-type FontStyle = shared.datatypes.FontStyle
-val FontStyle: shared.datatypes.FontStyle.type = shared.datatypes.FontStyle
-
-type FontWeight = shared.datatypes.FontWeight
-val FontWeight: shared.datatypes.FontWeight.type = shared.datatypes.FontWeight
-
-type TextStroke = shared.datatypes.TextStroke
-val TextStroke: shared.datatypes.TextStroke.type = shared.datatypes.TextStroke
-
-type Pixels = shared.datatypes.Pixels
-val Pixels: shared.datatypes.Pixels.type = shared.datatypes.Pixels
-
-type TextAlign = shared.datatypes.TextAlign
-val TextAlign: shared.datatypes.TextAlign.type = shared.datatypes.TextAlign
-
-type TextBaseLine = shared.datatypes.TextBaseLine
-val TextBaseLine: shared.datatypes.TextBaseLine.type = shared.datatypes.TextBaseLine
-
-type TextDirection = shared.datatypes.TextDirection
-val TextDirection: shared.datatypes.TextDirection.type = shared.datatypes.TextDirection
 
 // Clones
 type Cloneable = shared.scenegraph.Cloneable

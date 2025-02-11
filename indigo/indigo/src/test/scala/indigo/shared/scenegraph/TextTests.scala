@@ -1,6 +1,5 @@
 package indigo.shared.scenegraph
 
-import indigo.platform.assets.DynamicText
 import indigo.shared.AnimationsRegister
 import indigo.shared.BoundaryLocator
 import indigo.shared.FontRegister
@@ -21,7 +20,7 @@ class TextTests extends munit.FunSuite {
     new FontRegister
 
   val boundaryLocator: BoundaryLocator =
-    new BoundaryLocator(new AnimationsRegister, fontRegister, new DynamicText())
+    new BoundaryLocator(new AnimationsRegister, fontRegister)
 
   test("Text entities should be able to correctly calculate the bounds where all are equal") {
 

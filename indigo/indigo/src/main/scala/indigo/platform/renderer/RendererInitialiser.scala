@@ -1,7 +1,6 @@
 package indigo.platform.renderer
 
 import indigo.facades.WebGL2RenderingContext
-import indigo.platform.assets.DynamicText
 import indigo.platform.events.GlobalEventStream
 import indigo.platform.renderer.shared.ContextAndCanvas
 import indigo.platform.renderer.shared.LoadedTextureAsset
@@ -23,8 +22,7 @@ import scala.scalajs.js.JSConverters.*
 
 final class RendererInitialiser(
     renderingTechnology: RenderingTechnology,
-    globalEventStream: GlobalEventStream,
-    dynamicText: DynamicText
+    globalEventStream: GlobalEventStream
 ) {
 
   def setup(
@@ -49,10 +47,10 @@ final class RendererInitialiser(
           new RendererWebGL1(config, loadedTextureAssets.toJSArray, cNc, globalEventStream)
 
         case RenderingTechnology.WebGL2 =>
-          new RendererWebGL2(config, loadedTextureAssets.toJSArray, cNc, globalEventStream, dynamicText)
+          new RendererWebGL2(config, loadedTextureAssets.toJSArray, cNc, globalEventStream)
 
         case RenderingTechnology.WebGL2WithFallback =>
-          new RendererWebGL2(config, loadedTextureAssets.toJSArray, cNc, globalEventStream, dynamicText)
+          new RendererWebGL2(config, loadedTextureAssets.toJSArray, cNc, globalEventStream)
       }
 
     r.init(shaders)

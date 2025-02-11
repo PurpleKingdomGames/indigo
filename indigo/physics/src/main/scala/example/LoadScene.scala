@@ -2,7 +2,6 @@ package example
 
 import indigo.*
 import indigo.scenes.*
-import indigo.shared.scenegraph.TextBox
 
 object LoadScene extends Scene[Unit, Model, Unit]:
 
@@ -48,13 +47,17 @@ object LoadScene extends Scene[Unit, Model, Unit]:
       viewModel: Unit
   ): Outcome[SceneUpdateFragment] =
     val tb =
-      TextBox("Hit space to start")
-        .withColor(RGBA.White)
-        .alignCenter
-        .withFontSize(Pixels(20))
+      Text(
+        "Hit space to start",
+        PixelatedFont.fontKey,
+        Assets.assets.generated.PixelatedFontMaterial.toImageEffects.withOverlay(Fill.Color(RGBA.Red))
+      ).alignCenter
+
+    val bounds =
+      context.services.bounds.find(tb).getOrElse(Rectangle(0, 0, 0, 0))
 
     Outcome(
       SceneUpdateFragment(
-        tb.moveTo(400 - (tb.bounds.width / 2), 10)
+        tb.moveTo(400 - (bounds.width / 2), 10)
       )
     )

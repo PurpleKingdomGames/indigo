@@ -23,7 +23,9 @@ object IndigoPhysics extends IndigoGame[Unit, Unit, Model, Unit]:
     Outcome(
       BootResult
         .noData(Config.config)
-        .withSubSystems(FPSCounter(Point(10)))
+        .withSubSystems(FPSCounter(Point(10), PixelatedFont.fontKey, Assets.assets.generated.PixelatedFont))
+        .withAssets(Assets.assets.generated.assetSet)
+        .withFonts(PixelatedFont.fontInfo)
     )
 
   def initialModel(startupData: Unit): Outcome[Model] =

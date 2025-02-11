@@ -1,6 +1,5 @@
 package indigo.shared
 
-import indigo.platform.assets.DynamicText
 import indigo.shared.assets.AssetName
 import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Fill
@@ -25,7 +24,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
   fontRegister.register(fontInfo)
 
   val boundaryLocator: BoundaryLocator =
-    new BoundaryLocator(new AnimationsRegister, fontRegister, new DynamicText)
+    new BoundaryLocator(new AnimationsRegister, fontRegister)
 
   test("Text boundary calculations.Text as lines with bounds.empty") {
     val actual = boundaryLocator.textAsLinesWithBounds("", fontKey, 0, 0)

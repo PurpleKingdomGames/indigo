@@ -2,7 +2,6 @@ package indigo.platform
 
 import indigo.platform.assets.AssetCollection
 import indigo.platform.assets.AtlasId
-import indigo.platform.assets.DynamicText
 import indigo.platform.assets.ImageRef
 import indigo.platform.assets.TextureAtlas
 import indigo.platform.assets.TextureAtlasFunctions
@@ -37,12 +36,11 @@ import scala.util.Success
 class Platform(
     parentElement: Element,
     gameConfig: GameConfig,
-    globalEventStream: GlobalEventStream,
-    dynamicText: DynamicText
+    globalEventStream: GlobalEventStream
 ) extends PlatformFullScreen {
 
   val rendererInit: RendererInitialiser =
-    new RendererInitialiser(gameConfig.advanced.renderingTechnology, globalEventStream, dynamicText)
+    new RendererInitialiser(gameConfig.advanced.renderingTechnology, globalEventStream)
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null", "scalafix:DisableSyntax.var"))
   private var _canvas: Canvas = null

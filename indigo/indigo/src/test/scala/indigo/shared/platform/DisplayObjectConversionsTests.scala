@@ -1,7 +1,6 @@
 package indigo.shared.platform
 
 import indigo.platform.assets.AtlasId
-import indigo.platform.assets.DynamicText
 import indigo.shared.AnimationsRegister
 import indigo.shared.BoundaryLocator
 import indigo.shared.FontRegister
@@ -16,7 +15,6 @@ import indigo.shared.display.DisplayCloneTiles
 import indigo.shared.display.DisplayGroup
 import indigo.shared.display.DisplayMutants
 import indigo.shared.display.DisplayObject
-import indigo.shared.display.DisplayText
 import indigo.shared.display.DisplayTextLetters
 import indigo.shared.events.GlobalEvent
 import indigo.shared.materials.Material
@@ -36,7 +34,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
 
   val animationRegister = new AnimationsRegister
   val fontRegister      = new FontRegister
-  val boundaryLocator   = new BoundaryLocator(animationRegister, fontRegister, new DynamicText)
+  val boundaryLocator   = new BoundaryLocator(animationRegister, fontRegister)
   val texture = new TextureRefAndOffset(AtlasId("texture"), Vector2(100, 100), Vector2.zero, Vector2(200, 100))
   val assetMapping: AssetMapping = new AssetMapping(scalajs.js.Dictionary("texture" -> texture))
 
@@ -74,9 +72,6 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
 
       case _: DisplayMutants =>
         throw new Exception("failed (DisplayMutants)")
-
-      case _: DisplayText =>
-        throw new Exception("failed (DisplayText)")
 
       case _: DisplayTextLetters =>
         throw new Exception("failed (DisplayTextLetters)")

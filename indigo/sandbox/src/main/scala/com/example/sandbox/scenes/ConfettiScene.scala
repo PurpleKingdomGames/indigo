@@ -1,5 +1,6 @@
 package com.example.sandbox.scenes
 
+import com.example.sandbox.Fonts
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
@@ -73,10 +74,8 @@ object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
       Array[Int](16, 16, 16, 16)
     )
 
-  val count: TextBox =
-    TextBox("", 228, 20).alignCenter
-      .withFontSize(Pixels(12))
-      .withColor(RGBA.White)
+  val count: Text[Material.ImageEffects] =
+    Text("", 228, 20, Fonts.fontKey, SandboxAssets.fontMaterial)
 
   def particlesToCloneTiles(particles: js.Array[Particle]): CloneTiles =
     CloneTiles(
@@ -99,7 +98,7 @@ object ConfettiScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
         ).withMagnification(1),
         Layer(
           count.withText(s"count: ${model.particles.length * spawnCount}")
-        )
+        ).withMagnification(1)
       ).addCloneBlanks(cloneBlanks)
     )
 

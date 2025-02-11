@@ -31,7 +31,6 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
       LightsScene,
       RefractionScene,
       LegacyEffectsScene,
-      TextBoxScene,
       BoundsScene,
       CameraScene,
       TextureTileScene,
@@ -85,7 +84,9 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
       ).withSubSystems(
         FPSCounter[SandboxGameModel](
           Point(5, 165),
-          LayerKey("fps counter")
+          Fonts.fontKey,
+          SandboxAssets.smallFontName,
+          Constants.LayerKeys.fps
         )
       ).withShaders(
         Shaders.circle,
@@ -224,11 +225,12 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
-        "bg".toLayerKey   -> Layer.Stack.empty,
-        "game".toLayerKey -> Layer.Stack.empty,
-        "fps counter".toLayerKey ->
+        Constants.LayerKeys.background -> Layer.Stack.empty,
+        Constants.LayerKeys.game       -> Layer.Stack.empty,
+        Constants.LayerKeys.fps ->
           Layer.empty
             .withCamera(Camera.default)
+            .withMagnification(1)
       )
     )
 

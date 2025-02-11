@@ -106,13 +106,6 @@ object BoundsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
         .rotateTo(Radians.fromSeconds(context.frame.time.running * speed))
         .withRef(50, 50)
 
-    val textBox = TextBox("Hello, World!", 100, 10).alignRight
-      .withColor(RGBA.White)
-      .withFontFamily(FontFamily(SandboxAssets.pixelFont.toString))
-      .moveTo(100, 50)
-      .rotateTo(Radians.fromSeconds(context.frame.time.running * speed))
-      .withRef(50, 10)
-
     Outcome(
       SceneUpdateFragment(
         Layer(
@@ -175,12 +168,6 @@ object BoundsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
               context.services.bounds.find(group).getOrElse(Rectangle.zero),
               Fill.None,
               Stroke(1, RGBA.Yellow)
-            ),
-            textBox,
-            Shape.Box(
-              textBox.bounds,
-              Fill.None,
-              Stroke(1, RGBA.Blue)
             )
           )
         )

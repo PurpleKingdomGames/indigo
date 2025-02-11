@@ -8,7 +8,6 @@ import indigo.shared.datatypes.Rectangle
 import indigo.shared.dice.Dice
 import indigo.shared.events.InputState
 import indigo.shared.scenegraph.SceneNode
-import indigo.shared.scenegraph.TextBox
 import indigo.shared.scenegraph.TextLine
 import indigo.shared.time.GameTime
 
@@ -133,8 +132,6 @@ object Context:
         def screen: Screen = Screen.noop
 
     trait Bounds:
-      def measureText(textBox: TextBox): Rectangle
-
       /** Safely finds the bounds of any given scene node, if the node has bounds. It is not possible to sensibly
         * measure the bounds of some node types, such as clones, and some nodes are dependant on external data that may
         * be missing.
@@ -150,7 +147,6 @@ object Context:
     object Bounds:
       def apply(boundaryLocator: BoundaryLocator): Bounds =
         new Bounds:
-          def measureText(textBox: TextBox): Rectangle      = boundaryLocator.measureText(textBox)
           def find(sceneNode: SceneNode): Option[Rectangle] = boundaryLocator.findBounds(sceneNode)
           def get(sceneNode: SceneNode): Rectangle          = boundaryLocator.bounds(sceneNode)
           def textAsLinesWithBounds(
@@ -163,7 +159,6 @@ object Context:
 
       def noop: Bounds =
         new Bounds:
-          def measureText(textBox: TextBox): Rectangle      = Rectangle.zero
           def find(sceneNode: SceneNode): Option[Rectangle] = None
           def get(sceneNode: SceneNode): Rectangle          = Rectangle.zero
           def textAsLinesWithBounds(

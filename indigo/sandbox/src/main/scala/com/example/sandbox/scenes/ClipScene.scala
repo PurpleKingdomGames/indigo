@@ -1,5 +1,6 @@
 package com.example.sandbox.scenes
 
+import com.example.sandbox.Fonts
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
@@ -41,11 +42,7 @@ object ClipScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxView
   ): GlobalEvent => Outcome[SandboxViewModel] =
     _ => Outcome(viewModel)
 
-  val label: String => TextBox =
-    TextBox(_)
-      .withFontSize(Pixels(8))
-      .withColor(RGBA.White)
-      .withFontFamily(FontFamily.uiMonospace)
+  val label: String => Text[Material.ImageEffects] = lbl => Text(lbl, Fonts.fontKey, SandboxAssets.fontMaterial)
 
   def present(
       context: SceneContext[SandboxStartupData],

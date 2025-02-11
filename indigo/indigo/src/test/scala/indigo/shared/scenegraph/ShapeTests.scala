@@ -1,7 +1,6 @@
 package indigo.shared.scenegraph
 
 import indigo.*
-import indigo.platform.assets.DynamicText
 import indigo.shared.AnimationsRegister
 import indigo.shared.BoundaryLocator
 import indigo.shared.FontRegister
@@ -9,7 +8,7 @@ import indigo.shared.FontRegister
 class ShapeTests extends munit.FunSuite:
 
   val boundaryLocator: BoundaryLocator =
-    new BoundaryLocator(new AnimationsRegister, new FontRegister, new DynamicText)
+    new BoundaryLocator(new AnimationsRegister, new FontRegister)
 
   test("Bounds calculation - box") {
 

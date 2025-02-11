@@ -51,10 +51,8 @@ object SandboxModel {
             ) { case (offset, label, dimensions) =>
               Outcome(
                 Layer(
-                  TextBox(label)
-                    .withColor(RGBA.Red)
+                  Text(label, Fonts.fontKey, SandboxAssets.fontMaterial.withTint(RGBA.Red))
                     .moveTo(offset.unsafeToPoint)
-                    .withSize(dimensions.unsafeToSize)
                 )
               )
             }
@@ -68,10 +66,8 @@ object SandboxModel {
         ) { case (offset, label, dimensions) =>
           Outcome(
             Layer(
-              TextBox(label)
-                .withColor(RGBA.White)
+              Text(label, Fonts.fontKey, SandboxAssets.fontMaterial)
                 .moveTo(offset.unsafeToPoint)
-                .withSize(dimensions.unsafeToSize)
             )
           )
         }
@@ -200,10 +196,8 @@ object SandboxModel {
                   ) { case (offset, label, dimensions) =>
                     Outcome(
                       Layer(
-                        TextBox(label)
-                          .withColor(RGBA.Red)
+                        Text(label, Fonts.fontKey, SandboxAssets.fontMaterial.withTint(RGBA.Red))
                           .moveTo(offset.unsafeToPoint)
-                          .withSize(dimensions.unsafeToSize)
                       )
                     )
                   }

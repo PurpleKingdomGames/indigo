@@ -2,7 +2,6 @@ package indigo.shared.display
 
 import indigo.platform.assets.AtlasId
 import indigo.shared.datatypes.Radians
-import indigo.shared.datatypes.TextStyle
 import indigo.shared.datatypes.Vector2
 import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.shared.scenegraph.CloneBatchData
@@ -134,19 +133,3 @@ object DisplayObject:
 
 final case class DisplayObjectUniformData(uniformHash: String, blockName: String, data: scalajs.js.Array[Float])
     derives CanEqual
-
-final case class DisplayText(
-    text: String,
-    style: TextStyle,
-    x: Float,
-    y: Float,
-    scaleX: Float,
-    scaleY: Float,
-    refX: Float,
-    refY: Float,
-    flipX: Float,
-    flipY: Float,
-    rotation: Radians,
-    width: Int,
-    height: Int
-) extends DisplayEntity derives CanEqual
