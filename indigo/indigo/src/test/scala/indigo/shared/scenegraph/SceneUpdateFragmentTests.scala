@@ -153,14 +153,14 @@ class SceneUpdateFragmentTests extends munit.FunSuite {
         fail("match failed")
   }
 
-  test("Map over layers") {
+  test("Modify layers") {
     val scene =
       SceneUpdateFragment.empty
         .addLayer(LayerKey("key A") -> Layer.empty.withMagnification(1))
         .addLayer(LayerKey("key B") -> Layer.empty.withMagnification(1))
 
     val actual =
-      scene.mapLayers {
+      scene.modifyLayers {
         case LayerEntry.NoKey(_) =>
           fail("Should have been a tagged layer entry")
 
@@ -174,6 +174,18 @@ class SceneUpdateFragmentTests extends munit.FunSuite {
       actual.layers.map(_.giveKey.get).toList,
       List(LayerKey("key A?"), LayerKey("key B?"))
     )
+    assertEquals(actual.layers.flatMap(_.toBatch).map(_.magnification.get).toList, List(2, 2))
+  }
+
+  test("Setting the magnification for all layers") {
+    val scene =
+      SceneUpdateFragment.empty
+        .addLayer(LayerKey("key A") -> Layer.empty.withMagnification(1))
+        .addLayer(LayerKey("key B") -> Layer.empty.withMagnification(1))
+
+    val actual =
+      scene.withMagnification(2)
+
     assertEquals(actual.layers.flatMap(_.toBatch).map(_.magnification.get).toList, List(2, 2))
   }
 

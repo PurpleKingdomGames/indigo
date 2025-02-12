@@ -32,19 +32,17 @@ enum LayerEntry:
 
   def modify(f: LayerEntry => LayerEntry): LayerEntry =
     f(this)
-  def modifyLayer(f: Layer => Layer): LayerEntry =
+  def modifyLayer(pf: PartialFunction[Layer, Layer]): LayerEntry =
     this match
-      case l: LayerEntry.NoKey => l.copy(layer = f(l.layer))
-      case l: LayerEntry.Keyed => l.copy(layer = f(l.layer))
+      case l: LayerEntry.NoKey => l.copy(layer = layer.modify(pf))
+      case l: LayerEntry.Keyed => l.copy(layer = layer.modify(pf))
 
   /** Apply a magnification to this layer entry's layer, and all it's child layers.
     *
     * @param level
     */
   def withMagnificationForAll(level: Int): LayerEntry =
-    this match
-      case l: LayerEntry.NoKey => l.copy(layer = l.layer.withMagnificationForAll(level))
-      case l: LayerEntry.Keyed => l.copy(layer = l.layer.withMagnificationForAll(level))
+    this.modifyLayer(_.withMagnificationForAll(level))
 
   def toBatch: Batch[Layer.Content] =
     layer.toBatch

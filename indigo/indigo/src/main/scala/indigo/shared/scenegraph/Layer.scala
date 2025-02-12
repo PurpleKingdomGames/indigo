@@ -61,14 +61,7 @@ enum Layer derives CanEqual:
     * @param level
     */
   def withMagnificationForAll(level: Int): Layer =
-    this match
-      case l: Layer.Stack =>
-        l.copy(
-          layers = l.layers.map(_.withMagnificationForAll(level))
-        )
-
-      case l: Layer.Content =>
-        l.withMagnification(level)
+    this.modify { case l: Layer.Content => l.withMagnification(level) }
 
   def toBatch: Batch[Layer.Content] =
     @tailrec
@@ -139,6 +132,15 @@ object Layer:
 
     def apply(maybeNode: Option[SceneNode]): Layer.Content =
       Layer.Content(Batch.fromOption(maybeNode), Batch.empty, None, None, None, Batch.empty, None)
+
+  extension (l: Layer)
+    /** Modifies this layer, and then in the case of Layer.Stack subsequently modifies all child layers using the
+      * partial function defined. Any layer that is not modified by the partial function is returned unchanged.
+      */
+    def modify(pf: PartialFunction[Layer, Layer]): Layer =
+      pf.applyOrElse(l, identity[Layer]) match
+        case Stack(layers) => Stack(layers.map(_.modify(pf)))
+        case l             => l
 
   extension (ls: Layer.Stack)
     def combine(other: Layer.Stack): Layer.Stack =
