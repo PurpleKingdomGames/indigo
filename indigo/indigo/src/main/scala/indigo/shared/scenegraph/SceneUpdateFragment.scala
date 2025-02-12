@@ -92,7 +92,7 @@ final case class SceneUpdateFragment(
   def withLayers(layers: Layer*): SceneUpdateFragment =
     withLayers(layers.toBatch.map(LayerEntry.apply))
 
-  def mapLayers(f: LayerEntry => LayerEntry): SceneUpdateFragment =
+  def modifyLayers(f: LayerEntry => LayerEntry): SceneUpdateFragment =
     this.copy(layers = layers.map(_.modify(f)))
 
   def noLights: SceneUpdateFragment =

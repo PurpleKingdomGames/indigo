@@ -81,4 +81,49 @@ class LayerTests extends munit.FunSuite {
     )
   }
 
+  test("modify - Content layer") {
+    val l = Layer.Content.empty.withMagnification(1)
+
+    val actual   = l.modify { case l: Layer.Content => l.withMagnification(2) }
+    val expected = Layer.Content.empty.withMagnification(2)
+
+    assertEquals(actual, expected)
+  }
+
+  test("modify - Stack layer") {
+    val l = Layer.Stack(Layer.Content.empty, Layer.Content.empty, Layer.Content.empty)
+
+    val actual   = l.modify { case ll: Layer.Stack => Layer.Stack(ll.layers.take(1)) }
+    val expected = Layer.Stack(Layer.Content.empty)
+
+    assertEquals(actual, expected)
+  }
+
+  test("modify - perform a deep modification") {
+    val l = Layer.Stack(
+      Layer.Stack(
+        Layer.Content.empty.withMagnification(1),
+        Layer.Content.empty.withMagnification(1),
+        Layer.Content.empty.withMagnification(1)
+      ),
+      Layer.Content.empty.withMagnification(1),
+      Layer.Content.empty.withMagnification(1),
+      Layer.Content.empty.withMagnification(1)
+    )
+
+    val actual = l.modify { case l: Layer.Content => l.withMagnification(2) }
+    val expected = Layer.Stack(
+      Layer.Stack(
+        Layer.Content.empty.withMagnification(2),
+        Layer.Content.empty.withMagnification(2),
+        Layer.Content.empty.withMagnification(2)
+      ),
+      Layer.Content.empty.withMagnification(2),
+      Layer.Content.empty.withMagnification(2),
+      Layer.Content.empty.withMagnification(2)
+    )
+
+    assertEquals(actual, expected)
+  }
+
 }
