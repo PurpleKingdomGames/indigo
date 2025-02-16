@@ -21,6 +21,7 @@ final case class Parent(_bounds: Bounds, additionalOffset: Coords):
 
   def withBounds(newBounds: Bounds): Parent =
     this.copy(_bounds = newBounds)
+
   def moveTo(newPosition: Coords): Parent =
     this.copy(_bounds = bounds.moveTo(newPosition))
   def moveTo(x: Int, y: Int): Parent =
@@ -29,6 +30,15 @@ final case class Parent(_bounds: Bounds, additionalOffset: Coords):
     this.copy(_bounds = bounds.moveBy(offset))
   def moveBy(x: Int, y: Int): Parent =
     this.copy(_bounds = bounds.moveBy(x, y))
+
+  def resize(newDimensions: Dimensions): Parent =
+    this.copy(_bounds = bounds.resize(newDimensions))
+  def resize(width: Int, height: Int): Parent =
+    this.copy(_bounds = bounds.resize(width, height))
+  def resizeBy(amount: Dimensions): Parent =
+    this.copy(_bounds = bounds.resizeBy(amount))
+  def resizeBy(width: Int, height: Int): Parent =
+    this.copy(_bounds = bounds.resizeBy(width, height))
 
   def withAdditionalOffset(offset: Coords): Parent =
     this.copy(additionalOffset = offset)

@@ -25,6 +25,24 @@ final case class UIContext[ReferenceData](
   def withParentBounds(newBounds: Bounds): UIContext[ReferenceData] =
     withParent(parent.withBounds(newBounds))
 
+  def moveParentTo(newPosition: Coords): UIContext[ReferenceData] =
+    withParent(parent.moveTo(newPosition))
+  def moveParentTo(x: Int, y: Int): UIContext[ReferenceData] =
+    withParent(parent.moveTo(x, y))
+  def moveParentBy(offset: Coords): UIContext[ReferenceData] =
+    withParent(parent.moveBy(offset))
+  def moveParentBy(x: Int, y: Int): UIContext[ReferenceData] =
+    withParent(parent.moveBy(x, y))
+
+  def resizeParentTo(newDimensions: Dimensions): UIContext[ReferenceData] =
+    withParent(parent.resize(newDimensions))
+  def resizeParentTo(width: Int, height: Int): UIContext[ReferenceData] =
+    withParent(parent.resize(width, height))
+  def resizeParentBy(amount: Dimensions): UIContext[ReferenceData] =
+    withParent(parent.resizeBy(amount))
+  def resizeParentBy(width: Int, height: Int): UIContext[ReferenceData] =
+    withParent(parent.resizeBy(width, height))
+
   def withSnapGrid(newSnapGrid: Size): UIContext[ReferenceData] =
     this.copy(snapGrid = newSnapGrid)
   def clearSnapGrid: UIContext[ReferenceData] =
