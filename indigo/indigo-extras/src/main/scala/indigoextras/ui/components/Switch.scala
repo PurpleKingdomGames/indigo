@@ -17,10 +17,10 @@ final case class Switch[ReferenceData](
     state: SwitchState,
     on: (UIContext[ReferenceData], Switch[ReferenceData]) => Outcome[Layer],
     off: (UIContext[ReferenceData], Switch[ReferenceData]) => Outcome[Layer],
-    switch: (SwitchState, ReferenceData) => Batch[GlobalEvent],
+    switch: (UIContext[ReferenceData], Switch[ReferenceData]) => Batch[GlobalEvent],
     boundsType: BoundsType[ReferenceData, Unit],
     isDown: Boolean,
-    autoToggle: (SwitchState, ReferenceData) => Option[SwitchState]
+    autoToggle: (UIContext[ReferenceData], Switch[ReferenceData]) => Option[SwitchState]
 ):
   def withSwitchState(value: SwitchState): Switch[ReferenceData] =
     this.copy(state = value)
@@ -39,10 +39,8 @@ final case class Switch[ReferenceData](
   ): Switch[ReferenceData] =
     this.copy(off = off)
 
-  def onSwitch(events: (SwitchState, ReferenceData) => Batch[GlobalEvent]): Switch[ReferenceData] =
+  def onSwitch(events: (UIContext[ReferenceData], Switch[ReferenceData]) => Batch[GlobalEvent]): Switch[ReferenceData] =
     this.copy(switch = events)
-  def onSwitch(events: SwitchState => Batch[GlobalEvent]): Switch[ReferenceData] =
-    onSwitch((ss, _) => events(ss))
 
   def withBoundsType(value: BoundsType[ReferenceData, Unit]): Switch[ReferenceData] =
     this.copy(boundsType = value)
@@ -51,7 +49,7 @@ final case class Switch[ReferenceData](
     * `None` is returned the switch will not change state.
     */
   def withAutoToggle(
-      f: (SwitchState, ReferenceData) => Option[SwitchState]
+      f: (UIContext[ReferenceData], Switch[ReferenceData]) => Option[SwitchState]
   ): Switch[ReferenceData] =
     this.copy(autoToggle = f)
 
@@ -129,7 +127,7 @@ object Switch:
               model.bounds
 
         val nextState =
-          model.autoToggle(model.state, context.reference).getOrElse(model.state)
+          model.autoToggle(context, model).getOrElse(model.state)
 
         Outcome(
           model.copy(
@@ -148,9 +146,10 @@ object Switch:
           if context.isActive && model.isDown && model.bounds
             .moveBy(context.parent.coords)
             .contains(context.pointerCoords) =>
-        val next = model.state.toggle
-        Outcome(model.copy(state = next, isDown = false))
-          .addGlobalEvents(model.switch(next, context.reference))
+        val next    = model.state.toggle
+        val updated = model.copy(state = next, isDown = false)
+        Outcome(updated)
+          .addGlobalEvents(model.switch(context, updated))
 
       case _: PointerEvent.Up =>
         // Released Outside.
