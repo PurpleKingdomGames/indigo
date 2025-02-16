@@ -4,8 +4,6 @@ import indigo.*
 import indigo.syntax.*
 import indigoextras.ui.component.Component
 import indigoextras.ui.datatypes.Bounds
-import indigoextras.ui.datatypes.Coords
-import indigoextras.ui.datatypes.Dimensions
 import indigoextras.ui.datatypes.UIContext
 
 import scala.annotation.targetName
@@ -14,7 +12,7 @@ import scala.annotation.targetName
   */
 final case class TextArea[ReferenceData](
     text: UIContext[ReferenceData] => List[String],
-    render: (Coords, List[String], Dimensions) => Outcome[Layer],
+    render: (UIContext[ReferenceData], TextArea[ReferenceData]) => Outcome[Layer],
     calculateBounds: (UIContext[ReferenceData], List[String]) => Bounds
 ):
   def withText(value: String): TextArea[ReferenceData] =
@@ -25,7 +23,7 @@ final case class TextArea[ReferenceData](
 object TextArea:
 
   def apply[ReferenceData](text: String, calculateBounds: (UIContext[ReferenceData], List[String]) => Bounds)(
-      present: (Coords, List[String], Dimensions) => Outcome[Layer]
+      present: (UIContext[ReferenceData], TextArea[ReferenceData]) => Outcome[Layer]
   ): TextArea[ReferenceData] =
     TextArea(
       (_: UIContext[ReferenceData]) => text.split("\n").toList,
@@ -38,7 +36,7 @@ object TextArea:
       text: UIContext[ReferenceData] => String,
       calculateBounds: (UIContext[ReferenceData], List[String]) => Bounds
   )(
-      present: (Coords, List[String], Dimensions) => Outcome[Layer]
+      present: (UIContext[ReferenceData], TextArea[ReferenceData]) => Outcome[Layer]
   ): TextArea[ReferenceData] =
     TextArea(
       (r: UIContext[ReferenceData]) => text(r).split("\n").toList,
@@ -47,7 +45,7 @@ object TextArea:
     )
 
   def apply[ReferenceData](text: String, bounds: Bounds)(
-      present: (Coords, List[String], Dimensions) => Outcome[Layer]
+      present: (UIContext[ReferenceData], TextArea[ReferenceData]) => Outcome[Layer]
   ): TextArea[ReferenceData] =
     TextArea(
       (_: UIContext[ReferenceData]) => text.split("\n").toList,
@@ -60,7 +58,7 @@ object TextArea:
       text: UIContext[ReferenceData] => String,
       bounds: Bounds
   )(
-      present: (Coords, List[String], Dimensions) => Outcome[Layer]
+      present: (UIContext[ReferenceData], TextArea[ReferenceData]) => Outcome[Layer]
   ): TextArea[ReferenceData] =
     TextArea(
       (r: UIContext[ReferenceData]) => text(r).split("\n").toList,
@@ -83,9 +81,8 @@ object TextArea:
         model: TextArea[ReferenceData]
     ): Outcome[Layer] =
       model.render(
-        context.parent.coords,
-        model.text(context),
-        bounds(context, model).dimensions
+        context,
+        model
       )
 
     def refresh(
