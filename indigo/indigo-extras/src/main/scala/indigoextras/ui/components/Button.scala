@@ -5,7 +5,6 @@ import indigo.syntax.*
 import indigoextras.ui.component.Component
 import indigoextras.ui.datatypes.Bounds
 import indigoextras.ui.datatypes.Coords
-import indigoextras.ui.datatypes.Dimensions
 import indigoextras.ui.datatypes.UIContext
 
 import datatypes.BoundsType
@@ -211,7 +210,7 @@ object Button:
         def decideState: ButtonState =
           if model.isDown then ButtonState.Down
           else if newBounds
-              .moveBy(context.bounds.coords + context.additionalOffset)
+              .moveBy(context.parent.coords)
               .contains(context.pointerCoords)
           then
             if context.frame.input.pointers.isLeftDown then ButtonState.Down
@@ -229,21 +228,21 @@ object Button:
 
       case _: PointerEvent.Click
           if context.isActive && model.bounds
-            .moveBy(context.bounds.coords + context.additionalOffset)
+            .moveBy(context.parent.coords)
             .contains(context.pointerCoords) =>
         Outcome(model.copy(state = ButtonState.Up, isDown = false, dragStart = None))
           .addGlobalEvents(model.click(context.reference))
 
       case _: PointerEvent.Down
           if context.isActive && model.bounds
-            .moveBy(context.bounds.coords + context.additionalOffset)
+            .moveBy(context.parent.coords)
             .contains(context.pointerCoords) =>
         Outcome(model.copy(state = ButtonState.Down, isDown = true, dragStart = None))
           .addGlobalEvents(model.press(context.reference))
 
       case _: PointerEvent.Up
           if context.isActive && model.bounds
-            .moveBy(context.bounds.coords + context.additionalOffset)
+            .moveBy(context.parent.coords)
             .contains(context.pointerCoords) =>
         Outcome(model.copy(state = ButtonState.Up, isDown = false, dragStart = None))
           .addGlobalEvents(model.release(context.reference))
@@ -255,13 +254,13 @@ object Button:
       case _: PointerEvent.Move
           if (context.isActive || model.isDragged) && model.isDown && model.dragOptions.isDraggable =>
         val dragToCoords =
-          model.dragOptions.constrainCoords(context.pointerCoords, context.bounds)
+          model.dragOptions.constrainCoords(context.pointerCoords, context.parent.bounds)
 
         def makeDragData =
           DragData(
             start = dragToCoords,
             position = dragToCoords,
-            offset = dragToCoords - context.bounds.coords,
+            offset = dragToCoords - context.parent.coords,
             delta = Coords.zero
           )
 
@@ -291,7 +290,7 @@ object Button:
       val b =
         if model.isDragged && model.dragOptions.followPointer then
           val dragCoords =
-            model.dragOptions.constrainCoords(context.pointerCoords, context.bounds)
+            model.dragOptions.constrainCoords(context.pointerCoords, context.parent.bounds)
 
           model.bounds.moveBy(
             model.dragStart.map(dd => dragCoords - dd.start).getOrElse(Coords.zero)
@@ -313,8 +312,7 @@ object Button:
 
     def refresh(
         context: UIContext[ReferenceData],
-        model: Button[ReferenceData],
-        parentDimensions: Dimensions
+        model: Button[ReferenceData]
     ): Button[ReferenceData] =
       model.boundsType match
         case datatypes.BoundsType.Fixed(bounds) =>
@@ -328,7 +326,7 @@ object Button:
         case datatypes.BoundsType.FillWidth(height, padding) =>
           model.copy(
             bounds = Bounds(
-              parentDimensions.width - padding.left - padding.right,
+              context.parent.bounds.width - padding.left - padding.right,
               height
             )
           )
@@ -337,15 +335,15 @@ object Button:
           model.copy(
             bounds = Bounds(
               width,
-              parentDimensions.height - padding.top - padding.bottom
+              context.parent.bounds.height - padding.top - padding.bottom
             )
           )
 
         case datatypes.BoundsType.Fill(padding) =>
           model.copy(
             bounds = Bounds(
-              parentDimensions.width - padding.left - padding.right,
-              parentDimensions.height - padding.top - padding.bottom
+              context.parent.bounds.width - padding.left - padding.right,
+              context.parent.bounds.height - padding.top - padding.bottom
             )
           )
 

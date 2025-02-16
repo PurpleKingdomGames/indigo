@@ -97,7 +97,7 @@ object ComponentGroup:
 
   def apply[ReferenceData](): ComponentGroup[ReferenceData] =
     ComponentGroup(
-      indigoextras.ui.components.datatypes.BoundsMode.default,
+      BoundsMode.default,
       ComponentLayout.Horizontal(Padding.zero, Overflow.Wrap),
       Batch.empty,
       _ => Layer.empty,
@@ -119,7 +119,7 @@ object ComponentGroup:
 
   def apply[ReferenceData](dimensions: Dimensions): ComponentGroup[ReferenceData] =
     ComponentGroup(
-      indigoextras.ui.components.datatypes.BoundsMode.fixed(dimensions),
+      BoundsMode.fixed(dimensions),
       ComponentLayout.Horizontal(Padding.zero, Overflow.Wrap),
       Batch.empty,
       _ => Layer.empty,
@@ -143,7 +143,7 @@ object ComponentGroup:
       case FrameTick =>
         // Sub-groups will naturally refresh themselves as needed
         updateComponents(context, model)(FrameTick).map { updated =>
-          if model.dirty then refresh(context, updated, context.bounds.dimensions)
+          if model.dirty then refresh(context, updated)
           else updated
         }
 
@@ -160,7 +160,7 @@ object ComponentGroup:
             c.component
               .updateModel(
                 context
-                  .copy(bounds = Bounds(context.bounds.moveBy(c.offset).coords, model.dimensions)),
+                  .withParentBounds(Bounds(context.parent.bounds.moveBy(c.offset).coords, model.dimensions)),
                 c.model
               )(e)
               .map { updated =>
@@ -179,14 +179,13 @@ object ComponentGroup:
         model: ComponentGroup[ReferenceData]
     ): Outcome[Layer] =
       ContainerLikeFunctions.present(context, model.dimensions, model.components).map { components =>
-        val background = model.background(Bounds(context.bounds.coords, model.dimensions))
+        val background = model.background(Bounds(context.parent.coords, model.dimensions))
         Layer.Stack(background, components)
       }
 
     def refresh(
         context: UIContext[ReferenceData],
-        model: ComponentGroup[ReferenceData],
-        parentDimensions: Dimensions
+        model: ComponentGroup[ReferenceData]
     ): ComponentGroup[ReferenceData] =
 
       // First, calculate the bounds without content
@@ -196,24 +195,24 @@ object ComponentGroup:
           // Available
 
           case BoundsMode(FitMode.Available, FitMode.Available) =>
-            parentDimensions
+            context.parent.dimensions
 
           case BoundsMode(FitMode.Available, FitMode.Content) =>
-            parentDimensions.withHeight(0)
+            context.parent.dimensions.withHeight(0)
 
           case BoundsMode(FitMode.Available, FitMode.Fixed(height)) =>
-            parentDimensions.withHeight(height)
+            context.parent.dimensions.withHeight(height)
 
           case BoundsMode(FitMode.Available, FitMode.Relative(amountH)) =>
-            parentDimensions.withHeight((parentDimensions.height * amountH).toInt)
+            context.parent.dimensions.withHeight((context.parent.dimensions.height * amountH).toInt)
 
           case BoundsMode(FitMode.Available, FitMode.Offset(amount)) =>
-            parentDimensions.withHeight(parentDimensions.height + amount)
+            context.parent.dimensions.withHeight(context.parent.dimensions.height + amount)
 
           // Content
 
           case BoundsMode(FitMode.Content, FitMode.Available) =>
-            Dimensions(0, parentDimensions.height)
+            Dimensions(0, context.parent.dimensions.height)
 
           case BoundsMode(FitMode.Content, FitMode.Content) =>
             Dimensions.zero
@@ -222,15 +221,15 @@ object ComponentGroup:
             Dimensions(0, height)
 
           case BoundsMode(FitMode.Content, FitMode.Relative(amountH)) =>
-            Dimensions(0, (parentDimensions.height * amountH).toInt)
+            Dimensions(0, (context.parent.dimensions.height * amountH).toInt)
 
           case BoundsMode(FitMode.Content, FitMode.Offset(amount)) =>
-            Dimensions(0, parentDimensions.height + amount)
+            Dimensions(0, context.parent.dimensions.height + amount)
 
           // Fixed
 
           case BoundsMode(FitMode.Fixed(width), FitMode.Available) =>
-            Dimensions(width, parentDimensions.height)
+            Dimensions(width, context.parent.dimensions.height)
 
           case BoundsMode(FitMode.Fixed(width), FitMode.Content) =>
             Dimensions(width, 0)
@@ -239,52 +238,52 @@ object ComponentGroup:
             Dimensions(width, height)
 
           case BoundsMode(FitMode.Fixed(width), FitMode.Relative(amountH)) =>
-            Dimensions(width, (parentDimensions.height * amountH).toInt)
+            Dimensions(width, (context.parent.dimensions.height * amountH).toInt)
 
           case BoundsMode(FitMode.Fixed(width), FitMode.Offset(amount)) =>
-            Dimensions(width, parentDimensions.height + amount)
+            Dimensions(width, context.parent.dimensions.height + amount)
 
           // Relative
 
           case BoundsMode(FitMode.Relative(amountW), FitMode.Available) =>
-            Dimensions((parentDimensions.width * amountW).toInt, parentDimensions.height)
+            Dimensions((context.parent.dimensions.width * amountW).toInt, context.parent.dimensions.height)
 
           case BoundsMode(FitMode.Relative(amountW), FitMode.Content) =>
-            Dimensions((parentDimensions.width * amountW).toInt, 0)
+            Dimensions((context.parent.dimensions.width * amountW).toInt, 0)
 
           case BoundsMode(FitMode.Relative(amountW), FitMode.Fixed(height)) =>
-            Dimensions((parentDimensions.width * amountW).toInt, height)
+            Dimensions((context.parent.dimensions.width * amountW).toInt, height)
 
           case BoundsMode(FitMode.Relative(amountW), FitMode.Relative(amountH)) =>
             Dimensions(
-              (parentDimensions.width * amountW).toInt,
-              (parentDimensions.height * amountH).toInt
+              (context.parent.dimensions.width * amountW).toInt,
+              (context.parent.dimensions.height * amountH).toInt
             )
 
           case BoundsMode(FitMode.Relative(amountW), FitMode.Offset(amount)) =>
-            Dimensions((parentDimensions.width * amountW).toInt, parentDimensions.height + amount)
+            Dimensions((context.parent.dimensions.width * amountW).toInt, context.parent.dimensions.height + amount)
 
           // Offset
 
           case BoundsMode(FitMode.Offset(amount), FitMode.Available) =>
-            parentDimensions.withWidth(parentDimensions.width + amount)
+            context.parent.dimensions.withWidth(context.parent.dimensions.width + amount)
 
           case BoundsMode(FitMode.Offset(amount), FitMode.Content) =>
-            Dimensions(parentDimensions.width + amount, 0)
+            Dimensions(context.parent.dimensions.width + amount, 0)
 
           case BoundsMode(FitMode.Offset(amount), FitMode.Fixed(height)) =>
-            Dimensions(parentDimensions.width + amount, height)
+            Dimensions(context.parent.dimensions.width + amount, height)
 
           case BoundsMode(FitMode.Offset(amount), FitMode.Relative(amountH)) =>
-            Dimensions(parentDimensions.width + amount, (parentDimensions.height * amountH).toInt)
+            Dimensions(context.parent.dimensions.width + amount, (context.parent.dimensions.height * amountH).toInt)
 
           case BoundsMode(FitMode.Offset(w), FitMode.Offset(h)) =>
-            parentDimensions + Dimensions(w, h)
+            context.parent.dimensions + Dimensions(w, h)
 
       // Next, loop over all the children, calling refresh on each one, and supplying the best guess for the bounds
       val updatedComponents =
         model.components.map { c =>
-          val refreshed = c.component.refresh(context, c.model, boundsWithoutContent)
+          val refreshed = c.component.refresh(context, c.model)
           c.copy(model = refreshed)
         }
 

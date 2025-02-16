@@ -52,7 +52,7 @@ object SandboxModel {
               Outcome(
                 Layer(
                   Text(label.text(ctx), Fonts.fontKey, SandboxAssets.fontMaterial.withTint(RGBA.Red))
-                    .moveTo(ctx.bounds.coords.unsafeToPoint)
+                    .moveTo(ctx.parent.coords.unsafeToPoint)
                 )
               )
             }
@@ -67,7 +67,7 @@ object SandboxModel {
           Outcome(
             Layer(
               Text(label.text(ctx), Fonts.fontKey, SandboxAssets.fontMaterial)
-                .moveTo(ctx.bounds.coords.unsafeToPoint)
+                .moveTo(ctx.parent.coords.unsafeToPoint)
             )
           )
         }
@@ -83,7 +83,7 @@ object SandboxModel {
                     Fill.Color(RGBA.Green.mix(RGBA.Black)),
                     Stroke(1, RGBA.Green)
                   )
-                  .moveTo(context.coords.unsafeToPoint)
+                  .moveTo(context.parent.coords.unsafeToPoint)
               )
             ),
           (context, switch) =>
@@ -95,7 +95,7 @@ object SandboxModel {
                     Fill.Color(RGBA.Red.mix(RGBA.Black)),
                     Stroke(1, RGBA.Red)
                   )
-                  .moveTo(context.coords.unsafeToPoint)
+                  .moveTo(context.parent.coords.unsafeToPoint)
               )
             )
         )
@@ -112,7 +112,7 @@ object SandboxModel {
                   Fill.Color(RGBA.Magenta.mix(RGBA.Black)),
                   Stroke(1, RGBA.Magenta)
                 )
-                .moveTo(context.coords.unsafeToPoint)
+                .moveTo(context.parent.coords.unsafeToPoint)
             )
           )
         }
@@ -125,7 +125,7 @@ object SandboxModel {
                     Fill.Color(RGBA.Cyan.mix(RGBA.Black)),
                     Stroke(1, RGBA.Cyan)
                   )
-                  .moveTo(context.coords.unsafeToPoint)
+                  .moveTo(context.parent.coords.unsafeToPoint)
               )
             )
           }
@@ -138,7 +138,7 @@ object SandboxModel {
                     Fill.Color(RGBA.Yellow.mix(RGBA.Black)),
                     Stroke(1, RGBA.Yellow)
                   )
-                  .moveTo(context.coords.unsafeToPoint)
+                  .moveTo(context.parent.coords.unsafeToPoint)
               )
             )
           )
@@ -163,7 +163,7 @@ object SandboxModel {
                               Fill.Color(RGBA.Green.mix(RGBA.Black)),
                               Stroke(1, RGBA.Green)
                             )
-                            .moveTo(context.coords.unsafeToPoint + Point(10))
+                            .moveTo(context.parent.coords.unsafeToPoint + Point(10))
                         )
                       ),
                     (context, switch) =>
@@ -175,7 +175,7 @@ object SandboxModel {
                               Fill.Color(RGBA.Red.mix(RGBA.Black)),
                               Stroke(1, RGBA.Red)
                             )
-                            .moveTo(context.coords.unsafeToPoint + Point(10))
+                            .moveTo(context.parent.coords.unsafeToPoint + Point(10))
                         )
                       )
                   )
@@ -197,7 +197,7 @@ object SandboxModel {
                     Outcome(
                       Layer(
                         Text(label.text(ctx), Fonts.fontKey, SandboxAssets.fontMaterial.withTint(RGBA.Red))
-                          .moveTo(ctx.bounds.coords.unsafeToPoint)
+                          .moveTo(ctx.parent.bounds.coords.unsafeToPoint)
                       )
                     )
                   }

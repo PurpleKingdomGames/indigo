@@ -87,9 +87,8 @@ final case class Window[A, ReferenceData](
   def refresh(context: UIContext[ReferenceData]): Window[A, ReferenceData] =
     this.copy(content =
       component.refresh(
-        context,
-        content,
-        bounds.dimensions
+        context.withParentBounds(bounds),
+        content
       )
     )
 
@@ -156,8 +155,7 @@ object Window:
 
       window.component
         .updateModel(
-          context
-            .copy(bounds = minBounds),
+          context.withParentBounds(minBounds),
           window.content
         )(e)
         .map(m => window.withModel(m).withBounds(minBounds))

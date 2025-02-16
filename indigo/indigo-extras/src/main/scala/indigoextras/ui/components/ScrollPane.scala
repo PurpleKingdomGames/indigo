@@ -174,11 +174,11 @@ object ScrollPane:
       case FrameTick =>
         // Sub-groups will naturally refresh themselves as needed
         updateComponents(context, model)(FrameTick).map { updated =>
-          refresh(context, updated, context.bounds.dimensions)
+          refresh(context, updated)
         }
 
       case ScrollPaneEvent.Scroll(bindingKey, yPos) if bindingKey == model.bindingKey =>
-        val bounds    = Bounds(context.bounds.coords, model.dimensions)
+        val bounds    = Bounds(context.parent.coords, model.dimensions)
         val newAmount = (yPos + 1 - bounds.y).toDouble / bounds.height.toDouble
         Outcome(model.copy(scrollAmount = newAmount))
 
@@ -190,7 +190,7 @@ object ScrollPane:
         model: ScrollPane[A, ReferenceData]
     ): GlobalEvent => Outcome[ScrollPane[A, ReferenceData]] =
       case MouseEvent.Wheel(pos, deltaY)
-          if model.scrollOptions.isEnabled && Bounds(context.bounds.coords, model.dimensions)
+          if model.scrollOptions.isEnabled && Bounds(context.parent.coords, model.dimensions)
             .contains(context.pointerCoords) =>
         val scrollBy =
           val speed =
@@ -214,7 +214,7 @@ object ScrollPane:
       case e =>
         val scrollingActive =
           model.scrollOptions.isEnabled && model.contentBounds.height > model.dimensions.height
-        val ctx = context.copy(bounds = Bounds(context.bounds.coords, model.dimensions))
+        val ctx = context.withParentBounds(Bounds(context.parent.coords, model.dimensions))
 
         def updateScrollBar: Outcome[Button[Unit]] =
           val c: Component[Button[Unit], Unit] = summon[Component[Button[Unit], Unit]]
@@ -222,17 +222,21 @@ object ScrollPane:
 
           c.updateModel(
             unitContext
-              .moveBy(
-                Coords(
-                  model.dimensions.width - model.scrollBar.bounds.width,
-                  0
-                )
-              )
-              .withAdditionalOffset(
-                Coords(
-                  0,
-                  ((model.dimensions.height - 1).toDouble * model.scrollAmount).toInt
-                )
+              .withParentBounds(
+                unitContext.parent
+                  .moveBy(
+                    Coords(
+                      model.dimensions.width - model.scrollBar.bounds.width,
+                      0
+                    )
+                  )
+                  .withAdditionalOffset(
+                    Coords(
+                      0,
+                      ((model.dimensions.height - 1).toDouble * model.scrollAmount).toInt
+                    )
+                  )
+                  .bounds
               ),
             model.scrollBar
           )(e)
@@ -251,8 +255,8 @@ object ScrollPane:
     ): Outcome[Layer] =
       val scrollingActive =
         model.scrollOptions.isEnabled && model.contentBounds.height > model.dimensions.height
-      val adjustBounds = Bounds(context.bounds.coords, model.dimensions)
-      val ctx          = context.copy(bounds = adjustBounds)
+      val adjustBounds = Bounds(context.parent.coords, model.dimensions)
+      val ctx          = context.withParentBounds(adjustBounds)
       val scrollOffset: Coords =
         if scrollingActive then
           Coords(
@@ -264,7 +268,7 @@ object ScrollPane:
       val content =
         ContainerLikeFunctions
           .present(
-            ctx.moveBy(scrollOffset),
+            ctx.withParentBounds(ctx.parent.bounds.moveBy(scrollOffset)),
             model.dimensions,
             Batch(model.content)
           )
@@ -275,12 +279,15 @@ object ScrollPane:
           val unitContext: UIContext[Unit]     = ctx.copy(reference = ())
           val scrollbar =
             c.present(
-              unitContext.moveBy(
-                Coords(
-                  model.dimensions.width - model.scrollBar.bounds.width,
-                  ((model.dimensions.height - 1).toDouble * model.scrollAmount).toInt
-                )
-              ),
+              unitContext
+                .withParentBounds(
+                  unitContext.parent.bounds.moveBy(
+                    Coords(
+                      model.dimensions.width - model.scrollBar.bounds.width,
+                      ((model.dimensions.height - 1).toDouble * model.scrollAmount).toInt
+                    )
+                  )
+                ),
               model.scrollBar
             )
           val scrollBg =
@@ -307,7 +314,7 @@ object ScrollPane:
               _.withBlendMaterial(
                 LayerMask(
                   Bounds(
-                    ctx.bounds.coords,
+                    ctx.parent.coords,
                     model.dimensions
                   ).toScreenSpace(ctx.snapGrid * ctx.magnification)
                 )
@@ -319,8 +326,7 @@ object ScrollPane:
 
     def refresh(
         context: UIContext[ReferenceData],
-        model: ScrollPane[A, ReferenceData],
-        parentDimensions: Dimensions
+        model: ScrollPane[A, ReferenceData]
     ): ScrollPane[A, ReferenceData] =
       // Note: This is note _quite_ the same process as found in ComponentGroup
 
@@ -331,24 +337,24 @@ object ScrollPane:
           // Available
 
           case BoundsMode(FitMode.Available, FitMode.Available) =>
-            parentDimensions
+            context.parent.dimensions
 
           case BoundsMode(FitMode.Available, FitMode.Content) =>
-            parentDimensions.withHeight(0)
+            context.parent.dimensions.withHeight(0)
 
           case BoundsMode(FitMode.Available, FitMode.Fixed(height)) =>
-            parentDimensions.withHeight(height)
+            context.parent.dimensions.withHeight(height)
 
           case BoundsMode(FitMode.Available, FitMode.Relative(amountH)) =>
-            parentDimensions.withHeight((parentDimensions.height * amountH).toInt)
+            context.parent.dimensions.withHeight((context.parent.dimensions.height * amountH).toInt)
 
           case BoundsMode(FitMode.Available, FitMode.Offset(amount)) =>
-            parentDimensions.withHeight(parentDimensions.height + amount)
+            context.parent.dimensions.withHeight(context.parent.dimensions.height + amount)
 
           // Content
 
           case BoundsMode(FitMode.Content, FitMode.Available) =>
-            Dimensions(0, parentDimensions.height)
+            Dimensions(0, context.parent.dimensions.height)
 
           case BoundsMode(FitMode.Content, FitMode.Content) =>
             Dimensions.zero
@@ -357,15 +363,15 @@ object ScrollPane:
             Dimensions(0, height)
 
           case BoundsMode(FitMode.Content, FitMode.Relative(amountH)) =>
-            Dimensions(0, (parentDimensions.height * amountH).toInt)
+            Dimensions(0, (context.parent.dimensions.height * amountH).toInt)
 
           case BoundsMode(FitMode.Content, FitMode.Offset(amount)) =>
-            Dimensions(0, parentDimensions.height + amount)
+            Dimensions(0, context.parent.dimensions.height + amount)
 
           // Fixed
 
           case BoundsMode(FitMode.Fixed(width), FitMode.Available) =>
-            Dimensions(width, parentDimensions.height)
+            Dimensions(width, context.parent.dimensions.height)
 
           case BoundsMode(FitMode.Fixed(width), FitMode.Content) =>
             Dimensions(width, 0)
@@ -374,53 +380,53 @@ object ScrollPane:
             Dimensions(width, height)
 
           case BoundsMode(FitMode.Fixed(width), FitMode.Relative(amountH)) =>
-            Dimensions(width, (parentDimensions.height * amountH).toInt)
+            Dimensions(width, (context.parent.dimensions.height * amountH).toInt)
 
           case BoundsMode(FitMode.Fixed(width), FitMode.Offset(amount)) =>
-            Dimensions(width, parentDimensions.height + amount)
+            Dimensions(width, context.parent.dimensions.height + amount)
 
           // Relative
 
           case BoundsMode(FitMode.Relative(amountW), FitMode.Available) =>
-            Dimensions((parentDimensions.width * amountW).toInt, parentDimensions.height)
+            Dimensions((context.parent.dimensions.width * amountW).toInt, context.parent.dimensions.height)
 
           case BoundsMode(FitMode.Relative(amountW), FitMode.Content) =>
-            Dimensions((parentDimensions.width * amountW).toInt, 0)
+            Dimensions((context.parent.dimensions.width * amountW).toInt, 0)
 
           case BoundsMode(FitMode.Relative(amountW), FitMode.Fixed(height)) =>
-            Dimensions((parentDimensions.width * amountW).toInt, height)
+            Dimensions((context.parent.dimensions.width * amountW).toInt, height)
 
           case BoundsMode(FitMode.Relative(amountW), FitMode.Relative(amountH)) =>
             Dimensions(
-              (parentDimensions.width * amountW).toInt,
-              (parentDimensions.height * amountH).toInt
+              (context.parent.dimensions.width * amountW).toInt,
+              (context.parent.dimensions.height * amountH).toInt
             )
 
           case BoundsMode(FitMode.Relative(amountW), FitMode.Offset(amount)) =>
-            Dimensions((parentDimensions.width * amountW).toInt, parentDimensions.height + amount)
+            Dimensions((context.parent.dimensions.width * amountW).toInt, context.parent.dimensions.height + amount)
 
           // Offset
 
           case BoundsMode(FitMode.Offset(amount), FitMode.Available) =>
-            parentDimensions.withWidth(parentDimensions.width + amount)
+            context.parent.dimensions.withWidth(context.parent.dimensions.width + amount)
 
           case BoundsMode(FitMode.Offset(amount), FitMode.Content) =>
-            Dimensions(parentDimensions.width + amount, 0)
+            Dimensions(context.parent.dimensions.width + amount, 0)
 
           case BoundsMode(FitMode.Offset(amount), FitMode.Fixed(height)) =>
-            Dimensions(parentDimensions.width + amount, height)
+            Dimensions(context.parent.dimensions.width + amount, height)
 
           case BoundsMode(FitMode.Offset(amount), FitMode.Relative(amountH)) =>
-            Dimensions(parentDimensions.width + amount, (parentDimensions.height * amountH).toInt)
+            Dimensions(context.parent.dimensions.width + amount, (context.parent.dimensions.height * amountH).toInt)
 
           case BoundsMode(FitMode.Offset(w), FitMode.Offset(h)) =>
-            parentDimensions + Dimensions(w, h)
+            context.parent.dimensions + Dimensions(w, h)
 
       // Next, call refresh on the component, and supplying the best guess for the bounds
       val updatedComponent =
         model.content.copy(
           model = model.content.component
-            .refresh(context, model.content.model, boundsWithoutContent)
+            .refresh(context, model.content.model)
         )
 
       // Now we can calculate the content bounds

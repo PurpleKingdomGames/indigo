@@ -21,10 +21,9 @@ object syntax:
       c.present(context, component)
 
     def refresh(
-        context: UIContext[ReferenceData],
-        parentDimensions: Dimensions
+        context: UIContext[ReferenceData]
     ): A =
-      c.refresh(context, component, parentDimensions)
+      c.refresh(context, component)
 
 // Component
 

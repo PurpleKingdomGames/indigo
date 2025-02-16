@@ -28,7 +28,7 @@ class ContainerLikeFunctionsTests extends munit.FunSuite:
         )
 
     val updated: ComponentGroup[Unit] =
-      group.refresh(ctx, Dimensions(100, 100))
+      group.refresh(ctx)
 
     val actual =
       ContainerLikeFunctions.calculateNextOffset[Unit](
@@ -46,11 +46,13 @@ class ContainerLikeFunctionsTests extends munit.FunSuite:
 
     val group: ComponentGroup[Unit] =
       ComponentGroup()
+        .withBoundsMode(BoundsMode.fit)
         .withLayout(
           ComponentLayout.Vertical()
         )
         .add(
           ComponentGroup()
+            .withBoundsMode(BoundsMode.fit)
             .withLayout(
               ComponentLayout.Vertical()
             )
@@ -61,13 +63,11 @@ class ContainerLikeFunctionsTests extends munit.FunSuite:
             )
         )
 
-    val parentDimensions = Dimensions(100, 100)
-
     val updated: ComponentGroup[Unit] =
-      group.refresh(ctx, parentDimensions)
+      group.refresh(ctx)
 
-    assertEquals(updated.contentBounds, Bounds(0, 0, 100, 3))
-    assertEquals(updated.dimensions, Dimensions(100, 3))
+    assertEquals(updated.contentBounds, Bounds(0, 0, 7, 3))
+    assertEquals(updated.dimensions, Dimensions(7, 3))
 
     val actual =
       ContainerLikeFunctions.calculateNextOffset[Unit](

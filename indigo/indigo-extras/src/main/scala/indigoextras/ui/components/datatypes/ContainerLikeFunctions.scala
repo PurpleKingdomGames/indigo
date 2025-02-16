@@ -58,7 +58,7 @@ object ContainerLikeFunctions:
     components
       .map { c =>
         c.component.present(
-          context.copy(bounds = Bounds(context.bounds.moveBy(c.offset).coords, dimensions)),
+          context.withParentBounds(Bounds(context.parent.bounds.moveBy(c.offset).coords, dimensions)),
           c.model
         )
       }

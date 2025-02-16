@@ -4,7 +4,6 @@ import indigo.*
 import indigo.syntax.*
 import indigoextras.ui.component.Component
 import indigoextras.ui.datatypes.Bounds
-import indigoextras.ui.datatypes.Dimensions
 import indigoextras.ui.datatypes.UIContext
 
 import scala.annotation.targetName
@@ -73,7 +72,6 @@ object Label:
 
     def refresh(
         context: UIContext[ReferenceData],
-        model: Label[ReferenceData],
-        parentDimensions: Dimensions
+        model: Label[ReferenceData]
     ): Label[ReferenceData] =
       model
