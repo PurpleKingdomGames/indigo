@@ -6,13 +6,15 @@ import indigo.shared.scenegraph.Layer
 
 object syntax:
 
-  extension [A, ReferenceData](component: A)(using c: Component[A, ReferenceData])
+  extension [F[ReferenceData], ReferenceData](
+      component: F[ReferenceData]
+  )(using c: Component[F[ReferenceData], ReferenceData])
     def bounds(context: UIContext[ReferenceData]): Bounds =
       c.bounds(context, component)
 
     def update(
         context: UIContext[ReferenceData]
-    ): GlobalEvent => Outcome[A] =
+    ): GlobalEvent => Outcome[F[ReferenceData]] =
       c.updateModel(context, component)
 
     def present(
@@ -22,7 +24,7 @@ object syntax:
 
     def refresh(
         context: UIContext[ReferenceData]
-    ): A =
+    ): F[ReferenceData] =
       c.refresh(context, component)
 
 // Component
