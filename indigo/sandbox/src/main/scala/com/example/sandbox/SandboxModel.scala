@@ -99,7 +99,7 @@ object SandboxModel {
               )
             )
         )
-          .onSwitch(value => Batch(Log("Switched to: " + value)))
+          .onSwitch((ctx, switch) => Batch(Log("Switched to: " + ctx.reference)))
           .switchOn
       )
       .add(
@@ -179,14 +179,14 @@ object SandboxModel {
                         )
                       )
                   )
-                    .onSwitch { value =>
+                    .onSwitch { (ctx, switch) =>
                       Batch(
                         Log("Selected: " + i),
                         ChangeValue(i)
                       )
                     }
-                    .withAutoToggle { (_, ref) =>
-                      if ref == i then Option(SwitchState.On) else Option(SwitchState.Off)
+                    .withAutoToggle { (ctx, _) =>
+                      if ctx.reference == i then Option(SwitchState.On) else Option(SwitchState.Off)
                     }
                 )
                 .add(
