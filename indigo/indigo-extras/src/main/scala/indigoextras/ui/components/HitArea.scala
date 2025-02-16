@@ -4,7 +4,6 @@ import indigo.*
 import indigo.syntax.*
 import indigoextras.ui.component.Component
 import indigoextras.ui.datatypes.Bounds
-import indigoextras.ui.datatypes.Dimensions
 import indigoextras.ui.datatypes.UIContext
 
 import datatypes.BoundsType
@@ -187,7 +186,7 @@ object HitArea:
           Outcome(
             Layer(
               Shape.Box(
-                model.bounds.unsafeToRectangle.moveTo(context.bounds.coords.unsafeToPoint),
+                model.bounds.unsafeToRectangle.moveTo(context.parent.coords.unsafeToPoint),
                 Fill.Color(fill),
                 stroke
               )
@@ -198,7 +197,7 @@ object HitArea:
           Outcome(
             Layer(
               Shape.Box(
-                model.bounds.unsafeToRectangle.moveTo(context.bounds.coords.unsafeToPoint),
+                model.bounds.unsafeToRectangle.moveTo(context.parent.coords.unsafeToPoint),
                 Fill.Color(fill)
               )
             )
@@ -208,7 +207,7 @@ object HitArea:
           Outcome(
             Layer(
               Shape.Box(
-                model.bounds.unsafeToRectangle.moveTo(context.bounds.coords.unsafeToPoint),
+                model.bounds.unsafeToRectangle.moveTo(context.parent.coords.unsafeToPoint),
                 Fill.None,
                 stroke
               )
@@ -220,9 +219,8 @@ object HitArea:
 
     def refresh(
         context: UIContext[ReferenceData],
-        model: HitArea[ReferenceData],
-        parentDimensions: Dimensions
+        model: HitArea[ReferenceData]
     ): HitArea[ReferenceData] =
       val f = model.fill
       val s = model.stroke
-      btn.refresh(context, model.toButton, parentDimensions).toHitArea.copy(fill = f, stroke = s)
+      btn.refresh(context, model.toButton).toHitArea.copy(fill = f, stroke = s)

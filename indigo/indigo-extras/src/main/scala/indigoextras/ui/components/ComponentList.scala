@@ -149,7 +149,7 @@ object ComponentList:
                       // No entry, so we make one based on the component's default state
                       entry.component
                         .updateModel(
-                          context.copy(bounds = context.bounds.moveBy(offset)),
+                          context.withParentBounds(context.parent.bounds.moveBy(offset)),
                           entry.model
                         )(e)
                         .map(m => entry.copy(offset = offset, model = m))
@@ -158,7 +158,7 @@ object ComponentList:
                       // We have an entry, so we update it
                       entry.component
                         .updateModel(
-                          context.copy(bounds = context.bounds.moveBy(offset)),
+                          context.withParentBounds(context.parent.bounds.moveBy(offset)),
                           savedState.asInstanceOf[entry.Out]
                         )(e)
                         .map(m => entry.copy(offset = offset, model = m))
@@ -198,7 +198,7 @@ object ComponentList:
           contentReflow(context, model.dimensions, model.layout, entries)
         )
         .map { components =>
-          val background = model.background(Bounds(context.bounds.coords, model.dimensions))
+          val background = model.background(Bounds(context.parent.coords, model.dimensions))
           Layer.Stack(background, components)
         }
 
@@ -207,8 +207,7 @@ object ComponentList:
     // propagate further.
     def refresh(
         context: UIContext[ReferenceData],
-        model: ComponentList[ReferenceData],
-        parentDimensions: Dimensions
+        model: ComponentList[ReferenceData]
     ): ComponentList[ReferenceData] =
       model
 

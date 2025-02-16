@@ -5,37 +5,25 @@ import indigo.scenes.SceneContext
 
 final case class UIContext[ReferenceData](
     // Specific to UIContext
-    bounds: Bounds,
+    parent: Parent,
     snapGrid: Size,
     pointerCoords: Coords,
     state: UIState,
     magnification: Int,
-    additionalOffset: Coords,
     // The following are all the same as in SubSystemContext
     reference: ReferenceData,
     frame: Context.Frame,
     services: Context.Services
 ):
-  lazy val screenSpaceBounds: Rectangle =
-    bounds.toScreenSpace(snapGrid)
 
-  val isActive: Boolean =
+  lazy val isActive: Boolean =
     state == UIState.Active
 
-  /** The coordinate offset for the current component */
-  val coords: Coords =
-    bounds.coords + additionalOffset
+  def withParent(newParent: Parent): UIContext[ReferenceData] =
+    this.copy(parent = newParent)
 
-  def withBounds(newBounds: Bounds): UIContext[ReferenceData] =
-    this.copy(bounds = newBounds)
-  def moveTo(newPosition: Coords): UIContext[ReferenceData] =
-    this.copy(bounds = bounds.moveTo(newPosition))
-  def moveTo(x: Int, y: Int): UIContext[ReferenceData] =
-    this.copy(bounds = bounds.moveTo(x, y))
-  def moveBy(offset: Coords): UIContext[ReferenceData] =
-    this.copy(bounds = bounds.moveBy(offset))
-  def moveBy(x: Int, y: Int): UIContext[ReferenceData] =
-    this.copy(bounds = bounds.moveBy(x, y))
+  def withParentBounds(newBounds: Bounds): UIContext[ReferenceData] =
+    withParent(parent.withBounds(newBounds))
 
   def withSnapGrid(newSnapGrid: Size): UIContext[ReferenceData] =
     this.copy(snapGrid = newSnapGrid)
@@ -55,11 +43,6 @@ final case class UIContext[ReferenceData](
   def withMagnification(newMagnification: Int): UIContext[ReferenceData] =
     this.copy(magnification = newMagnification)
 
-  def withAdditionalOffset(offset: Coords): UIContext[ReferenceData] =
-    this.copy(additionalOffset = offset)
-  def withAdditionalOffset(x: Int, y: Int): UIContext[ReferenceData] =
-    withAdditionalOffset(Coords(x, y))
-
   def withReferenceData[NewReferenceData](newReference: NewReferenceData): UIContext[NewReferenceData] =
     this.copy(reference = newReference)
   def unitReference: UIContext[Unit] =
@@ -74,31 +57,11 @@ object UIContext:
   ): UIContext[ReferenceData] =
     val pointerCoords = Coords(subSystemContext.frame.input.pointers.position / snapGrid.toPoint)
     UIContext(
-      Bounds.zero,
+      Parent.default,
       snapGrid,
       pointerCoords,
       UIState.Active,
       magnification,
-      Coords.zero,
-      subSystemContext.reference,
-      subSystemContext.frame,
-      subSystemContext.services
-    )
-
-  def apply[ReferenceData](
-      subSystemContext: SubSystemContext[ReferenceData],
-      snapGrid: Size,
-      magnification: Int,
-      additionalOffset: Coords
-  ): UIContext[ReferenceData] =
-    val pointerCoords = Coords(subSystemContext.frame.input.pointers.position / snapGrid.toPoint)
-    UIContext(
-      Bounds.zero,
-      snapGrid,
-      pointerCoords,
-      UIState.Active,
-      magnification,
-      additionalOffset,
       subSystemContext.reference,
       subSystemContext.frame,
       subSystemContext.services
@@ -112,12 +75,11 @@ object UIContext:
       reference: ReferenceData
   ): UIContext[ReferenceData] =
     UIContext(
-      Bounds.zero,
+      Parent.default,
       Size(1),
       Coords.zero,
       UIState.Active,
       1,
-      Coords.zero,
       reference,
       ctx.frame,
       ctx.services

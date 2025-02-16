@@ -12,7 +12,7 @@ object WindowView:
   ): Outcome[Layer] =
     model.component
       .present(
-        context.copy(bounds = model.bounds),
+        context.withParentBounds(model.bounds),
         model.content
       )
       .flatMap {

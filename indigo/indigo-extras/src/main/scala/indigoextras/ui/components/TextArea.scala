@@ -83,14 +83,13 @@ object TextArea:
         model: TextArea[ReferenceData]
     ): Outcome[Layer] =
       model.render(
-        context.bounds.coords,
+        context.parent.coords,
         model.text(context),
         bounds(context, model).dimensions
       )
 
     def refresh(
         context: UIContext[ReferenceData],
-        model: TextArea[ReferenceData],
-        parentDimensions: Dimensions
+        model: TextArea[ReferenceData]
     ): TextArea[ReferenceData] =
       model

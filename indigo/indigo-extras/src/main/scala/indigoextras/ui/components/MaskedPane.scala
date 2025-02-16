@@ -108,7 +108,7 @@ object MaskedPane:
       case FrameTick =>
         // Sub-groups will naturally refresh themselves as needed
         updateComponents(context, model)(FrameTick).map { updated =>
-          refresh(context, updated, context.bounds.dimensions)
+          refresh(context, updated)
         }
 
       case e =>
@@ -119,7 +119,7 @@ object MaskedPane:
         model: MaskedPane[A, ReferenceData]
     ): GlobalEvent => Outcome[MaskedPane[A, ReferenceData]] =
       case e =>
-        val ctx = context.copy(bounds = Bounds(context.bounds.coords, model.dimensions))
+        val ctx = context.withParentBounds(Bounds(context.parent.bounds.coords, model.dimensions))
 
         model.content.component
           .updateModel(ctx, model.content.model)(e)
@@ -135,8 +135,8 @@ object MaskedPane:
         context: UIContext[ReferenceData],
         model: MaskedPane[A, ReferenceData]
     ): Outcome[Layer] =
-      val adjustBounds = Bounds(context.bounds.coords, model.dimensions)
-      val ctx          = context.copy(bounds = adjustBounds)
+      val adjustBounds = Bounds(context.parent.bounds.coords, model.dimensions)
+      val ctx          = context.withParentBounds(adjustBounds)
 
       val content =
         ContainerLikeFunctions
@@ -156,7 +156,7 @@ object MaskedPane:
               _.withBlendMaterial(
                 LayerMask(
                   Bounds(
-                    ctx.bounds.coords,
+                    ctx.parent.coords,
                     model.dimensions
                   ).toScreenSpace(ctx.snapGrid * ctx.magnification)
                 )
@@ -168,8 +168,7 @@ object MaskedPane:
 
     def refresh(
         context: UIContext[ReferenceData],
-        model: MaskedPane[A, ReferenceData],
-        parentDimensions: Dimensions
+        model: MaskedPane[A, ReferenceData]
     ): MaskedPane[A, ReferenceData] =
       // Note: This is note _quite_ the same process as found in ComponentGroup
 
@@ -180,24 +179,24 @@ object MaskedPane:
           // Available
 
           case BoundsMode(FitMode.Available, FitMode.Available) =>
-            parentDimensions
+            context.parent.dimensions
 
           case BoundsMode(FitMode.Available, FitMode.Content) =>
-            parentDimensions.withHeight(0)
+            context.parent.dimensions.withHeight(0)
 
           case BoundsMode(FitMode.Available, FitMode.Fixed(height)) =>
-            parentDimensions.withHeight(height)
+            context.parent.dimensions.withHeight(height)
 
           case BoundsMode(FitMode.Available, FitMode.Relative(amountH)) =>
-            parentDimensions.withHeight((parentDimensions.height * amountH).toInt)
+            context.parent.dimensions.withHeight((context.parent.dimensions.height * amountH).toInt)
 
           case BoundsMode(FitMode.Available, FitMode.Offset(amount)) =>
-            parentDimensions.withHeight(parentDimensions.height + amount)
+            context.parent.dimensions.withHeight(context.parent.dimensions.height + amount)
 
           // Content
 
           case BoundsMode(FitMode.Content, FitMode.Available) =>
-            Dimensions(0, parentDimensions.height)
+            Dimensions(0, context.parent.dimensions.height)
 
           case BoundsMode(FitMode.Content, FitMode.Content) =>
             Dimensions.zero
@@ -206,15 +205,15 @@ object MaskedPane:
             Dimensions(0, height)
 
           case BoundsMode(FitMode.Content, FitMode.Relative(amountH)) =>
-            Dimensions(0, (parentDimensions.height * amountH).toInt)
+            Dimensions(0, (context.parent.dimensions.height * amountH).toInt)
 
           case BoundsMode(FitMode.Content, FitMode.Offset(amount)) =>
-            Dimensions(0, parentDimensions.height + amount)
+            Dimensions(0, context.parent.dimensions.height + amount)
 
           // Fixed
 
           case BoundsMode(FitMode.Fixed(width), FitMode.Available) =>
-            Dimensions(width, parentDimensions.height)
+            Dimensions(width, context.parent.dimensions.height)
 
           case BoundsMode(FitMode.Fixed(width), FitMode.Content) =>
             Dimensions(width, 0)
@@ -223,53 +222,53 @@ object MaskedPane:
             Dimensions(width, height)
 
           case BoundsMode(FitMode.Fixed(width), FitMode.Relative(amountH)) =>
-            Dimensions(width, (parentDimensions.height * amountH).toInt)
+            Dimensions(width, (context.parent.dimensions.height * amountH).toInt)
 
           case BoundsMode(FitMode.Fixed(width), FitMode.Offset(amount)) =>
-            Dimensions(width, parentDimensions.height + amount)
+            Dimensions(width, context.parent.dimensions.height + amount)
 
           // Relative
 
           case BoundsMode(FitMode.Relative(amountW), FitMode.Available) =>
-            Dimensions((parentDimensions.width * amountW).toInt, parentDimensions.height)
+            Dimensions((context.parent.dimensions.width * amountW).toInt, context.parent.dimensions.height)
 
           case BoundsMode(FitMode.Relative(amountW), FitMode.Content) =>
-            Dimensions((parentDimensions.width * amountW).toInt, 0)
+            Dimensions((context.parent.dimensions.width * amountW).toInt, 0)
 
           case BoundsMode(FitMode.Relative(amountW), FitMode.Fixed(height)) =>
-            Dimensions((parentDimensions.width * amountW).toInt, height)
+            Dimensions((context.parent.dimensions.width * amountW).toInt, height)
 
           case BoundsMode(FitMode.Relative(amountW), FitMode.Relative(amountH)) =>
             Dimensions(
-              (parentDimensions.width * amountW).toInt,
-              (parentDimensions.height * amountH).toInt
+              (context.parent.dimensions.width * amountW).toInt,
+              (context.parent.dimensions.height * amountH).toInt
             )
 
           case BoundsMode(FitMode.Relative(amountW), FitMode.Offset(amount)) =>
-            Dimensions((parentDimensions.width * amountW).toInt, parentDimensions.height + amount)
+            Dimensions((context.parent.dimensions.width * amountW).toInt, context.parent.dimensions.height + amount)
 
           // Offset
 
           case BoundsMode(FitMode.Offset(amount), FitMode.Available) =>
-            parentDimensions.withWidth(parentDimensions.width + amount)
+            context.parent.dimensions.withWidth(context.parent.dimensions.width + amount)
 
           case BoundsMode(FitMode.Offset(amount), FitMode.Content) =>
-            Dimensions(parentDimensions.width + amount, 0)
+            Dimensions(context.parent.dimensions.width + amount, 0)
 
           case BoundsMode(FitMode.Offset(amount), FitMode.Fixed(height)) =>
-            Dimensions(parentDimensions.width + amount, height)
+            Dimensions(context.parent.dimensions.width + amount, height)
 
           case BoundsMode(FitMode.Offset(amount), FitMode.Relative(amountH)) =>
-            Dimensions(parentDimensions.width + amount, (parentDimensions.height * amountH).toInt)
+            Dimensions(context.parent.dimensions.width + amount, (context.parent.dimensions.height * amountH).toInt)
 
           case BoundsMode(FitMode.Offset(w), FitMode.Offset(h)) =>
-            parentDimensions + Dimensions(w, h)
+            context.parent.dimensions + Dimensions(w, h)
 
       // Next, call refresh on the component, and supplying the best guess for the bounds
       val updatedComponent =
         model.content.copy(
           model = model.content.component
-            .refresh(context, model.content.model, boundsWithoutContent)
+            .refresh(context, model.content.model)
         )
 
       // Now we can calculate the content bounds

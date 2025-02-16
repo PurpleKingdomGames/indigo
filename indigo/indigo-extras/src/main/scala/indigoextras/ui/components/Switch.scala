@@ -4,8 +4,6 @@ import indigo.*
 import indigo.syntax.*
 import indigoextras.ui.component.Component
 import indigoextras.ui.datatypes.Bounds
-import indigoextras.ui.datatypes.Coords
-import indigoextras.ui.datatypes.Dimensions
 import indigoextras.ui.datatypes.UIContext
 
 import datatypes.BoundsType
@@ -142,13 +140,13 @@ object Switch:
 
       case _: PointerEvent.Down
           if context.isActive && model.bounds
-            .moveBy(context.bounds.coords + context.additionalOffset)
+            .moveBy(context.parent.coords)
             .contains(context.pointerCoords) =>
         Outcome(model.copy(isDown = true))
 
       case _: PointerEvent.Up
           if context.isActive && model.isDown && model.bounds
-            .moveBy(context.bounds.coords + context.additionalOffset)
+            .moveBy(context.parent.coords)
             .contains(context.pointerCoords) =>
         val next = model.state.toggle
         Outcome(model.copy(state = next, isDown = false))
@@ -174,8 +172,7 @@ object Switch:
 
     def refresh(
         context: UIContext[ReferenceData],
-        model: Switch[ReferenceData],
-        parentDimensions: Dimensions
+        model: Switch[ReferenceData]
     ): Switch[ReferenceData] =
       model.boundsType match
         case datatypes.BoundsType.Fixed(bounds) =>
@@ -189,7 +186,7 @@ object Switch:
         case datatypes.BoundsType.FillWidth(height, padding) =>
           model.copy(
             bounds = Bounds(
-              parentDimensions.width - padding.left - padding.right,
+              context.parent.bounds.width - padding.left - padding.right,
               height
             )
           )
@@ -198,14 +195,14 @@ object Switch:
           model.copy(
             bounds = Bounds(
               width,
-              parentDimensions.height - padding.top - padding.bottom
+              context.parent.bounds.height - padding.top - padding.bottom
             )
           )
 
         case datatypes.BoundsType.Fill(padding) =>
           model.copy(
             bounds = Bounds(
-              parentDimensions.width - padding.left - padding.right,
-              parentDimensions.height - padding.top - padding.bottom
+              context.parent.bounds.width - padding.left - padding.right,
+              context.parent.bounds.height - padding.top - padding.bottom
             )
           )

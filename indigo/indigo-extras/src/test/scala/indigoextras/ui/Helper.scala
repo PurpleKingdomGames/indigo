@@ -4,7 +4,6 @@ import indigo.shared.Outcome
 import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.Layer
 import indigoextras.ui.component.Component
-import indigoextras.ui.datatypes.Dimensions
 import indigoextras.ui.datatypes.UIContext
 
 object Helper:
@@ -24,7 +23,6 @@ object Helper:
       c.present(context, component)
 
     def refresh(
-        context: UIContext[ReferenceData],
-        parentDimensions: Dimensions
+        context: UIContext[ReferenceData]
     ): A =
-      c.refresh(context, component, parentDimensions)
+      c.refresh(context, component)

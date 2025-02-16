@@ -165,10 +165,10 @@ object Input:
       case _: PointerEvent.Click
           if context.isActive && Bounds(model.dimensions)
             .resizeBy(2, 2)
-            .moveBy(context.bounds.coords)
+            .moveBy(context.parent.coords)
             .contains(context.pointerCoords) =>
         model
-          .moveCursorTo(context.pointerCoords.x - context.bounds.coords.x - 1)
+          .moveCursorTo(context.pointerCoords.x - context.parent.coords.x - 1)
           .giveFocus
 
       case _: PointerEvent.Click =>
@@ -219,7 +219,6 @@ object Input:
 
     def refresh(
         context: UIContext[ReferenceData],
-        model: Input[ReferenceData],
-        parentDimensions: Dimensions
+        model: Input[ReferenceData]
     ): Input[ReferenceData] =
       model
