@@ -73,11 +73,10 @@ object UIContext:
       snapGrid: Size,
       magnification: Int
   ): UIContext[ReferenceData] =
-    val pointerCoords = Coords(subSystemContext.frame.input.pointers.position / snapGrid.toPoint)
     UIContext(
       Parent.default,
       snapGrid,
-      pointerCoords,
+      Coords(subSystemContext.frame.input.pointers.position / snapGrid.toPoint),
       UIState.Active,
       magnification,
       subSystemContext.reference,
@@ -94,8 +93,8 @@ object UIContext:
   ): UIContext[ReferenceData] =
     UIContext(
       Parent.default,
-      Size(1),
-      Coords.zero,
+      Size.one,
+      Coords(ctx.frame.input.pointers.position / Point.one),
       UIState.Active,
       1,
       reference,

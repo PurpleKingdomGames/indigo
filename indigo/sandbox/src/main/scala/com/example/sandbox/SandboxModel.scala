@@ -9,6 +9,20 @@ import indigo.syntax.*
 import indigoextras.mesh.*
 import indigoextras.ui.*
 
+final case class SandboxGameModel(
+    dude: DudeModel,
+    saveLoadPhase: SaveLoadPhases,
+    data: Option[String],
+    confetti: ConfettiModel,
+    pointers: PointersModel,
+    pathfinding: PathFindingModel,
+    rotation: Radians,
+    num: Int,
+    components: ComponentGroup[Int],
+    button: Button[Unit],
+    meshData: MeshData
+)
+
 object SandboxModel {
 
   private given CanEqual[Option[String], Option[String]] = CanEqual.derived
@@ -33,12 +47,57 @@ object SandboxModel {
       Radians.zero,
       0,
       components,
+      customButton,
       MeshData(
         points,
         superTriangle,
         mesh
       )
     )
+
+  val customButton: Button[Unit] =
+    Button[Unit](Bounds(32, 32)) { (ctx, btn) =>
+      Outcome(
+        Layer(
+          Shape
+            .Box(
+              btn.bounds.unsafeToRectangle,
+              Fill.Color(RGBA.Magenta.mix(RGBA.Black)),
+              Stroke(1, RGBA.Magenta)
+            )
+            .moveTo(ctx.parent.coords.unsafeToPoint)
+        )
+      )
+    }
+      .presentDown { (ctx, btn) =>
+        Outcome(
+          Layer(
+            Shape
+              .Box(
+                btn.bounds.unsafeToRectangle,
+                Fill.Color(RGBA.Cyan.mix(RGBA.Black)),
+                Stroke(1, RGBA.Cyan)
+              )
+              .moveTo(ctx.parent.coords.unsafeToPoint)
+          )
+        )
+      }
+      .presentOver((ctx, btn) =>
+        Outcome(
+          Layer(
+            Shape
+              .Box(
+                btn.bounds.unsafeToRectangle,
+                Fill.Color(RGBA.Yellow.mix(RGBA.Black)),
+                Stroke(1, RGBA.Yellow)
+              )
+              .moveTo(ctx.parent.coords.unsafeToPoint)
+          )
+        )
+      )
+      .onClick(Log("Button clicked"))
+      .onPress(Log("Button pressed"))
+      .onRelease(Log("Button released"))
 
   def components: ComponentGroup[Int] =
     ComponentGroup(BoundsMode.fixed(200, 300))
@@ -314,19 +373,6 @@ object SandboxModel {
   }
 
 }
-
-final case class SandboxGameModel(
-    dude: DudeModel,
-    saveLoadPhase: SaveLoadPhases,
-    data: Option[String],
-    confetti: ConfettiModel,
-    pointers: PointersModel,
-    pathfinding: PathFindingModel,
-    rotation: Radians,
-    num: Int,
-    components: ComponentGroup[Int],
-    meshData: MeshData
-)
 
 final case class MeshData(
     points: Batch[Point],
