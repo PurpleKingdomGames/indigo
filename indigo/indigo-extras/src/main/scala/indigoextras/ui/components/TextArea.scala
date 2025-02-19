@@ -11,22 +11,22 @@ import scala.annotation.targetName
 /** `TextArea`s are a simple stateless component that render multi-line text.
   */
 final case class TextArea[ReferenceData](
-    text: UIContext[ReferenceData] => List[String],
+    text: UIContext[ReferenceData] => String,
     render: (UIContext[ReferenceData], TextArea[ReferenceData]) => Outcome[Layer],
-    calculateBounds: (UIContext[ReferenceData], List[String]) => Bounds
+    calculateBounds: (UIContext[ReferenceData], String) => Bounds
 ):
   def withText(value: String): TextArea[ReferenceData] =
-    this.copy(text = _ => value.split("\n").toList)
+    this.copy(text = _ => value)
   def withText(f: UIContext[ReferenceData] => String): TextArea[ReferenceData] =
-    this.copy(text = (r: UIContext[ReferenceData]) => f(r).split("\n").toList)
+    this.copy(text = f)
 
 object TextArea:
 
-  def apply[ReferenceData](text: String, calculateBounds: (UIContext[ReferenceData], List[String]) => Bounds)(
+  def apply[ReferenceData](text: String, calculateBounds: (UIContext[ReferenceData], String) => Bounds)(
       present: (UIContext[ReferenceData], TextArea[ReferenceData]) => Outcome[Layer]
   ): TextArea[ReferenceData] =
     TextArea(
-      (_: UIContext[ReferenceData]) => text.split("\n").toList,
+      (_: UIContext[ReferenceData]) => text,
       present,
       calculateBounds
     )
@@ -34,12 +34,12 @@ object TextArea:
   @targetName("TextAreaRefToString")
   def apply[ReferenceData](
       text: UIContext[ReferenceData] => String,
-      calculateBounds: (UIContext[ReferenceData], List[String]) => Bounds
+      calculateBounds: (UIContext[ReferenceData], String) => Bounds
   )(
       present: (UIContext[ReferenceData], TextArea[ReferenceData]) => Outcome[Layer]
   ): TextArea[ReferenceData] =
     TextArea(
-      (r: UIContext[ReferenceData]) => text(r).split("\n").toList,
+      text,
       present,
       calculateBounds
     )
@@ -48,7 +48,7 @@ object TextArea:
       present: (UIContext[ReferenceData], TextArea[ReferenceData]) => Outcome[Layer]
   ): TextArea[ReferenceData] =
     TextArea(
-      (_: UIContext[ReferenceData]) => text.split("\n").toList,
+      (_: UIContext[ReferenceData]) => text,
       present,
       (_, _) => bounds
     )
@@ -61,7 +61,7 @@ object TextArea:
       present: (UIContext[ReferenceData], TextArea[ReferenceData]) => Outcome[Layer]
   ): TextArea[ReferenceData] =
     TextArea(
-      (r: UIContext[ReferenceData]) => text(r).split("\n").toList,
+      text,
       present,
       (_, _) => bounds
     )
