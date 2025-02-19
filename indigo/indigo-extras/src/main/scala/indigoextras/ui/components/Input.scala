@@ -18,7 +18,7 @@ final case class Input[ReferenceData](
     dimensions: Dimensions,
     render: (UIContext[ReferenceData], Input[ReferenceData]) => Outcome[Layer],
     change: String => Batch[GlobalEvent],
-    //
+    calculateLineLength: (UIContext[ReferenceData], String) => Int,
     characterLimit: Int,
     cursor: Cursor,
     hasFocus: Boolean,
@@ -42,6 +42,11 @@ final case class Input[ReferenceData](
     onChange(_ => events)
   def onChange(events: GlobalEvent*): Input[ReferenceData] =
     onChange(Batch.fromSeq(events))
+
+  def withCalculateLineLength(calc: (UIContext[ReferenceData], String) => Int): Input[ReferenceData] =
+    this.copy(calculateLineLength = calc)
+  def calculateLineLength(context: UIContext[ReferenceData]): Int =
+    calculateLineLength(context, text)
 
   def noCursorBlink: Input[ReferenceData] =
     this.copy(cursor = cursor.noCursorBlink)
@@ -97,6 +102,9 @@ final case class Input[ReferenceData](
       )
     )
 
+  def withCursor(newCursor: Cursor): Input[ReferenceData] =
+    this.copy(cursor = newCursor)
+
   def addCharacter(char: Char): Input[ReferenceData] =
     addCharacterText(char.toString())
 
@@ -138,7 +146,10 @@ object Input:
 
   /** Minimal input constructor with custom rendering function
     */
-  def apply[ReferenceData](dimensions: Dimensions)(
+  def apply[ReferenceData](
+      dimensions: Dimensions,
+      calculateLineLength: (UIContext[ReferenceData], String) => Int
+  )(
       present: (UIContext[ReferenceData], Input[ReferenceData]) => Outcome[Layer]
   ): Input[ReferenceData] =
     Input[ReferenceData](
@@ -146,7 +157,7 @@ object Input:
       dimensions,
       present,
       _ => Batch.empty,
-      //
+      calculateLineLength,
       characterLimit = dimensions.width,
       cursor = Cursor.default,
       hasFocus = false,
@@ -167,8 +178,15 @@ object Input:
             .resizeBy(2, 2)
             .moveBy(context.parent.coords)
             .contains(context.pointerCoords) =>
+
+        val cursorPos = Input.findCursorPosition(
+          context.pointerCoords.x - context.parent.coords.x,
+          model.text,
+          model.calculateLineLength.curried(context)
+        )
+
         model
-          .moveCursorTo(context.pointerCoords.x - context.parent.coords.x - 1)
+          .moveCursorTo(cursorPos)
           .giveFocus
 
       case _: PointerEvent.Click =>
@@ -222,3 +240,19 @@ object Input:
         model: Input[ReferenceData]
     ): Input[ReferenceData] =
       model
+
+  def findCursorPosition(mouseX: Int, text: String, calcLineLength: String => Int): Int =
+    @tailrec
+    def rec(current: Int, lastX: Int): Int =
+      val next = calcLineLength(text.take(current))
+      if next > mouseX then
+        val charLength: Double      = next - lastX
+        val mouseWithinChar: Double = mouseX - lastX
+        val threshold               = charLength * 0.5d
+
+        if mouseWithinChar < threshold then current - 1
+        else current
+      else rec(current + 1, next)
+
+    val res = rec(0, 0)
+    res
