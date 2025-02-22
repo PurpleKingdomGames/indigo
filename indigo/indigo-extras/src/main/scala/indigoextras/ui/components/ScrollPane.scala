@@ -186,7 +186,7 @@ object ScrollPane:
 
       case ScrollPaneEvent.Scroll(bindingKey, yPos) if bindingKey == model.bindingKey =>
         val bounds    = Bounds(context.parent.coords, model.dimensions)
-        val newAmount = (yPos - bounds.y).toDouble / bounds.height.toDouble
+        val newAmount = (yPos - bounds.y).toDouble / (bounds.height - model.scrollBar.bounds.height).toDouble
         Outcome(model.copy(scrollAmount = newAmount))
 
       case e =>
@@ -239,7 +239,7 @@ object ScrollPane:
                   .withAdditionalOffset(
                     Coords(
                       0,
-                      (model.dimensions.height.toDouble * model.scrollAmount).toInt
+                      ((model.dimensions.height - model.scrollBar.bounds.height).toDouble * model.scrollAmount).toInt
                     )
                   )
               )
@@ -288,7 +288,7 @@ object ScrollPane:
                   unitContext.parent.bounds.moveBy(
                     Coords(
                       model.dimensions.width - model.scrollBar.bounds.width,
-                      (model.dimensions.height.toDouble * model.scrollAmount).toInt
+                      ((model.dimensions.height - model.scrollBar.bounds.height).toDouble * model.scrollAmount).toInt
                     )
                   )
                 ),
