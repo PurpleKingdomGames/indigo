@@ -13,20 +13,20 @@ import indigoextras.ui.datatypes.*
 /** Describes a dynamic list of components, and their realtive layout.
   */
 final case class ComponentList[ReferenceData] private[components] (
-    content: ReferenceData => Batch[ComponentEntry[?, ReferenceData]],
+    content: UIContext[ReferenceData] => Batch[ComponentEntry[?, ReferenceData]],
     stateMap: Map[ComponentId, Any],
     layout: ComponentLayout,
     dimensions: Dimensions,
     background: Bounds => Layer
 ):
 
-  private def addSingle[A](entry: ReferenceData => (ComponentId, A))(using
+  private def addSingle[A](entry: UIContext[ReferenceData] => (ComponentId, A))(using
       c: Component[A, ReferenceData]
   ): ComponentList[ReferenceData] =
     val f =
-      (r: ReferenceData) =>
-        content(r) :+ {
-          val (id, a) = entry(r)
+      (ctx: UIContext[ReferenceData]) =>
+        content(ctx) :+ {
+          val (id, a) = entry(ctx)
           ComponentEntry(id, Coords.zero, a, c, None)
         }
 
@@ -34,7 +34,7 @@ final case class ComponentList[ReferenceData] private[components] (
       content = f
     )
 
-  def addOne[A](entry: ReferenceData => (ComponentId, A))(using
+  def addOne[A](entry: UIContext[ReferenceData] => (ComponentId, A))(using
       c: Component[A, ReferenceData]
   ): ComponentList[ReferenceData] =
     addSingle(entry)
@@ -44,22 +44,22 @@ final case class ComponentList[ReferenceData] private[components] (
   ): ComponentList[ReferenceData] =
     addSingle(_ => entry)
 
-  def add[A](entries: Batch[ReferenceData => (ComponentId, A)])(using
+  def add[A](entries: Batch[UIContext[ReferenceData] => (ComponentId, A)])(using
       c: Component[A, ReferenceData]
   ): ComponentList[ReferenceData] =
     entries.foldLeft(this) { case (acc, next) => acc.addSingle(next) }
 
-  def add[A](entries: (ReferenceData => (ComponentId, A))*)(using
+  def add[A](entries: (UIContext[ReferenceData] => (ComponentId, A))*)(using
       c: Component[A, ReferenceData]
   ): ComponentList[ReferenceData] =
     Batch.fromSeq(entries).foldLeft(this) { case (acc, next) => acc.addSingle(next) }
 
-  def add[A](entries: ReferenceData => Batch[(ComponentId, A)])(using
+  def add[A](entries: UIContext[ReferenceData] => Batch[(ComponentId, A)])(using
       c: Component[A, ReferenceData]
   ): ComponentList[ReferenceData] =
     this.copy(
-      content =
-        (r: ReferenceData) => content(r) ++ entries(r).map(v => ComponentEntry(v._1, Coords.zero, v._2, c, None))
+      content = (ctx: UIContext[ReferenceData]) =>
+        content(ctx) ++ entries(ctx).map(v => ComponentEntry(v._1, Coords.zero, v._2, c, None))
     )
 
   def withDimensions(value: Dimensions): ComponentList[ReferenceData] =
@@ -84,11 +84,11 @@ object ComponentList:
 
   def apply[ReferenceData, A](
       dimensions: Dimensions
-  )(contents: ReferenceData => Batch[(ComponentId, A)])(using
+  )(contents: UIContext[ReferenceData] => Batch[(ComponentId, A)])(using
       c: Component[A, ReferenceData]
   ): ComponentList[ReferenceData] =
-    val f: ReferenceData => Batch[ComponentEntry[A, ReferenceData]] =
-      r => contents(r).map(v => ComponentEntry(v._1, Coords.zero, v._2, c, None))
+    val f: UIContext[ReferenceData] => Batch[ComponentEntry[A, ReferenceData]] =
+      ctx => contents(ctx).map(v => ComponentEntry(v._1, Coords.zero, v._2, c, None))
 
     ComponentList(
       f,
@@ -103,7 +103,7 @@ object ComponentList:
   )(contents: (ComponentId, A)*)(using
       c: Component[A, ReferenceData]
   ): ComponentList[ReferenceData] =
-    val f: ReferenceData => Batch[ComponentEntry[A, ReferenceData]] =
+    val f: UIContext[ReferenceData] => Batch[ComponentEntry[A, ReferenceData]] =
       _ => Batch.fromSeq(contents).map(v => ComponentEntry(v._1, Coords.zero, v._2, c, None))
 
     ComponentList(
@@ -135,7 +135,7 @@ object ComponentList:
             .calculateNextOffset[ReferenceData](model.dimensions, model.layout)
 
         val entries =
-          model.content(context.reference)
+          model.content(context)
 
         val nextStateMap =
           entries
@@ -179,7 +179,7 @@ object ComponentList:
       // Pull the state out of the stateMap and present it
       val entries =
         model
-          .content(context.reference)
+          .content(context)
           .map { entry =>
             model.stateMap.get(entry.id) match
               case None =>
