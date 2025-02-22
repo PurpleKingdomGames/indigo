@@ -102,7 +102,7 @@ object SandboxModel {
   def components: ComponentGroup[Int] =
     ComponentGroup(BoundsMode.fixed(200, 300))
       .add(
-        ComponentList(Dimensions(200, 40)) { (_: Int) =>
+        ComponentList[Int, Label[Int]](Dimensions(200, 40)) { _ =>
           (1 to 3).toBatch.map { i =>
             ComponentId("lbl" + i) -> Label[Int](
               "Custom rendered label " + i,
@@ -206,7 +206,7 @@ object SandboxModel {
           .onRelease(Log("Button released"))
       )
       .add(
-        ComponentList(Dimensions(200, 150)) { (_: Int) =>
+        ComponentList[Int, ComponentGroup[Int]](Dimensions(200, 150)) { _ =>
           (1 to 3).toBatch.map { i =>
             ComponentId("radio-" + i) ->
               ComponentGroup(BoundsMode.fixed(200, 30))
