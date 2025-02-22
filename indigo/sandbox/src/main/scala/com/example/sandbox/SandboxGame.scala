@@ -99,6 +99,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
         UVShaders.voronoi,
         UVShaders.redBlend
       ).addShaders(Refraction.shaders)
+        .addShaders(indigoextras.ui.shaders.all)
     )
   }
 

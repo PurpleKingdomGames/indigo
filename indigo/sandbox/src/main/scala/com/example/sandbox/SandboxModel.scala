@@ -1,6 +1,7 @@
 package com.example.sandbox
 
 import com.example.sandbox.scenes.ChangeValue
+import com.example.sandbox.scenes.ComponentUIScene2
 import com.example.sandbox.scenes.ConfettiModel
 import com.example.sandbox.scenes.PathFindingModel
 import com.example.sandbox.scenes.PointersModel
@@ -19,7 +20,8 @@ final case class SandboxGameModel(
     rotation: Radians,
     num: Int,
     components: ComponentGroup[Int],
-    button: Button[Unit],
+    scrollPane: ScrollPane[ComponentList[Int], Int],
+    button: Button[Int],
     meshData: MeshData
 )
 
@@ -47,6 +49,7 @@ object SandboxModel {
       Radians.zero,
       0,
       components,
+      ComponentUIScene2.CustomComponents.pane,
       customButton,
       MeshData(
         points,
@@ -55,8 +58,8 @@ object SandboxModel {
       )
     )
 
-  val customButton: Button[Unit] =
-    Button[Unit](Bounds(32, 32)) { (ctx, btn) =>
+  val customButton: Button[Int] =
+    Button[Int](Bounds(32, 32)) { (ctx, btn) =>
       Outcome(
         Layer(
           Shape
