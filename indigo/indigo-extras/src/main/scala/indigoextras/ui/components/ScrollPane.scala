@@ -24,6 +24,7 @@ final case class ScrollPane[A, ReferenceData] private[components] (
     scrollAmount: Double,
     // Components
     content: ComponentEntry[A, ReferenceData],
+    background: Bounds => Layer,
     scrollBar: Button[Unit],
     scrollBarBackground: Bounds => Layer,
     scrollOptions: ScrollOptions
@@ -41,6 +42,9 @@ final case class ScrollPane[A, ReferenceData] private[components] (
 
   def withBoundsMode(value: BoundsMode): ScrollPane[A, ReferenceData] =
     this.copy(boundsMode = value)
+
+  def withBackground(value: Bounds => Layer): ScrollPane[A, ReferenceData] =
+    this.copy(background = value)
 
   def withScrollBar(value: Button[Unit]): ScrollPane[A, ReferenceData] =
     this.copy(scrollBar = value)
@@ -101,6 +105,7 @@ object ScrollPane:
       Bounds.zero,
       0.0,
       ScrollPane.makeComponentEntry(content),
+      _ => Layer.empty,
       setupScrollButton(bindingKey, scrollBar),
       _ => Layer.empty,
       indigoextras.ui.components.datatypes.ScrollOptions.default
@@ -121,6 +126,7 @@ object ScrollPane:
       Bounds.zero,
       0.0,
       ScrollPane.makeComponentEntry(content),
+      _ => Layer.empty,
       setupScrollButton(bindingKey, scrollBar),
       _ => Layer.empty,
       indigoextras.ui.components.datatypes.ScrollOptions.default
@@ -141,6 +147,7 @@ object ScrollPane:
       Bounds.zero,
       0.0,
       ScrollPane.makeComponentEntry(content),
+      _ => Layer.empty,
       setupScrollButton(bindingKey, scrollBar),
       _ => Layer.empty,
       indigoextras.ui.components.datatypes.ScrollOptions.default
@@ -233,7 +240,7 @@ object ScrollPane:
                   .withAdditionalOffset(
                     Coords(
                       0,
-                      ((model.dimensions.height - 1).toDouble * model.scrollAmount).toInt
+                      (model.dimensions.height.toDouble * model.scrollAmount).toInt
                     )
                   )
                   .bounds
@@ -255,8 +262,7 @@ object ScrollPane:
     ): Outcome[Layer] =
       val scrollingActive =
         model.scrollOptions.isEnabled && model.contentBounds.height > model.dimensions.height
-      val adjustBounds = Bounds(context.parent.coords, model.dimensions)
-      val ctx          = context.withParentBounds(adjustBounds)
+      val ctx = context.withParentBounds(Bounds(context.parent.coords, model.dimensions))
       val scrollOffset: Coords =
         if scrollingActive then
           Coords(
@@ -292,14 +298,17 @@ object ScrollPane:
             )
           val scrollBg =
             model.scrollBarBackground(
-              adjustBounds
+              ctx.parent.bounds
                 .moveBy(model.dimensions.width - model.scrollBar.bounds.width, 0)
-                .resize(model.scrollBar.bounds.width, adjustBounds.height)
+                .resize(model.scrollBar.bounds.width, ctx.parent.bounds.height)
             )
+          val bg =
+            model.background(ctx.parent.bounds)
 
           (content, scrollbar)
             .map2 { (c, sb) =>
               Layer.Stack(
+                bg,
                 c,
                 scrollBg,
                 sb
@@ -313,10 +322,7 @@ object ScrollPane:
             stack.toBatch.map {
               _.withBlendMaterial(
                 LayerMask(
-                  Bounds(
-                    ctx.parent.coords,
-                    model.dimensions
-                  ).toScreenSpace(ctx.snapGrid * ctx.magnification)
+                  ctx.parent.bounds.toScreenSpace(ctx.snapGrid * ctx.magnification)
                 )
               )
             }
