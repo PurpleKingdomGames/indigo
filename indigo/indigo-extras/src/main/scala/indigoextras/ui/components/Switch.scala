@@ -91,7 +91,7 @@ object Switch:
 
   /** Minimal button constructor with custom rendering function and dynamic sizing
     */
-  def apply[ReferenceData](calculateBounds: ReferenceData => Bounds)(
+  def apply[ReferenceData](calculateBounds: UIContext[ReferenceData] => Bounds)(
       on: (UIContext[ReferenceData], Switch[ReferenceData]) => Outcome[Layer],
       off: (UIContext[ReferenceData], Switch[ReferenceData]) => Outcome[Layer]
   ): Switch[ReferenceData] =
@@ -121,7 +121,7 @@ object Switch:
               bounds
 
             case datatypes.BoundsType.Calculated(calculate) =>
-              calculate(context.reference, ())
+              calculate(context, ())
 
             case _ =>
               model.bounds

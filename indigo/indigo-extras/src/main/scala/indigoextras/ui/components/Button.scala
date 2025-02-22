@@ -168,7 +168,7 @@ object Button:
 
   /** Minimal button constructor with custom rendering function and dynamic sizing
     */
-  def apply[ReferenceData](calculateBounds: ReferenceData => Bounds)(
+  def apply[ReferenceData](calculateBounds: UIContext[ReferenceData] => Bounds)(
       present: (UIContext[ReferenceData], Button[ReferenceData]) => Outcome[Layer]
   ): Button[ReferenceData] =
     Button(
@@ -202,7 +202,7 @@ object Button:
               bounds
 
             case datatypes.BoundsType.Calculated(calculate) =>
-              calculate(context.reference, ())
+              calculate(context, ())
 
             case _ =>
               model.bounds
