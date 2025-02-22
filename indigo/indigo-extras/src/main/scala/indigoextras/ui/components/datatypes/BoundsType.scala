@@ -1,12 +1,13 @@
 package indigoextras.ui.components.datatypes
 
 import indigoextras.ui.datatypes.Bounds
+import indigoextras.ui.datatypes.UIContext
 
 /** Describes how a component should be sized within its parent.
   */
 enum BoundsType[ReferenceData, A]:
   case Fixed(bounds: Bounds)
-  case Calculated(calculate: (ReferenceData, A) => Bounds)
+  case Calculated(calculate: (UIContext[ReferenceData], A) => Bounds)
   case FillWidth(height: Int, padding: Padding)
   case FillHeight(width: Int, padding: Padding)
   case Fill(padding: Padding)
@@ -25,9 +26,9 @@ object BoundsType:
   def fill[ReferenceData](padding: Padding): BoundsType[ReferenceData, Unit] =
     BoundsType.Fill(padding)
 
-  def calculated[ReferenceData, A](f: (ReferenceData, A) => Bounds): BoundsType[ReferenceData, A] =
+  def calculated[ReferenceData, A](f: (UIContext[ReferenceData], A) => Bounds): BoundsType[ReferenceData, A] =
     BoundsType.Calculated(f)
 
   object Calculated:
-    def apply[ReferenceData](f: ReferenceData => Bounds): BoundsType[ReferenceData, Unit] =
-      BoundsType.Calculated((ref, _) => f(ref))
+    def apply[ReferenceData](f: UIContext[ReferenceData] => Bounds): BoundsType[ReferenceData, Unit] =
+      BoundsType.Calculated((context, _) => f(context))
