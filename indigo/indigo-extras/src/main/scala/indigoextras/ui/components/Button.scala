@@ -210,7 +210,7 @@ object Button:
         def decideState: ButtonState =
           if model.isDown then ButtonState.Down
           else if newBounds
-              .moveBy(context.parent.coords)
+              .moveBy(context.parent.coords + context.parent.additionalOffset)
               .contains(context.pointerCoords)
           then
             if context.frame.input.pointers.isLeftDown then ButtonState.Down
@@ -228,21 +228,21 @@ object Button:
 
       case _: PointerEvent.Click
           if context.isActive && model.bounds
-            .moveBy(context.parent.coords)
+            .moveBy(context.parent.coords + context.parent.additionalOffset)
             .contains(context.pointerCoords) =>
         Outcome(model.copy(state = ButtonState.Up, isDown = false, dragStart = None))
           .addGlobalEvents(model.click(context.reference))
 
       case _: PointerEvent.Down
           if context.isActive && model.bounds
-            .moveBy(context.parent.coords)
+            .moveBy(context.parent.coords + context.parent.additionalOffset)
             .contains(context.pointerCoords) =>
         Outcome(model.copy(state = ButtonState.Down, isDown = true, dragStart = None))
           .addGlobalEvents(model.press(context.reference))
 
       case _: PointerEvent.Up
           if context.isActive && model.bounds
-            .moveBy(context.parent.coords)
+            .moveBy(context.parent.coords + context.parent.additionalOffset)
             .contains(context.pointerCoords) =>
         Outcome(model.copy(state = ButtonState.Up, isDown = false, dragStart = None))
           .addGlobalEvents(model.release(context.reference))

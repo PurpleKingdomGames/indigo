@@ -186,7 +186,7 @@ object ScrollPane:
 
       case ScrollPaneEvent.Scroll(bindingKey, yPos) if bindingKey == model.bindingKey =>
         val bounds    = Bounds(context.parent.coords, model.dimensions)
-        val newAmount = (yPos + 1 - bounds.y).toDouble / bounds.height.toDouble
+        val newAmount = (yPos - bounds.y).toDouble / bounds.height.toDouble
         Outcome(model.copy(scrollAmount = newAmount))
 
       case e =>
@@ -225,12 +225,11 @@ object ScrollPane:
 
         def updateScrollBar: Outcome[Button[Unit]] =
           val c: Component[Button[Unit], Unit] = summon[Component[Button[Unit], Unit]]
-          val unitContext: UIContext[Unit]     = ctx.copy(reference = ())
-
-          c.updateModel(
-            unitContext
-              .withParentBounds(
-                unitContext.parent
+          val unitContext: UIContext[Unit] =
+            ctx
+              .copy(reference = ())
+              .withParent(
+                ctx.parent
                   .moveBy(
                     Coords(
                       model.dimensions.width - model.scrollBar.bounds.width,
@@ -243,10 +242,9 @@ object ScrollPane:
                       (model.dimensions.height.toDouble * model.scrollAmount).toInt
                     )
                   )
-                  .bounds
-              ),
-            model.scrollBar
-          )(e)
+              )
+
+          c.updateModel(unitContext, model.scrollBar)(e)
 
         for {
           updatedContent   <- model.content.component.updateModel(ctx, model.content.model)(e)
@@ -290,7 +288,7 @@ object ScrollPane:
                   unitContext.parent.bounds.moveBy(
                     Coords(
                       model.dimensions.width - model.scrollBar.bounds.width,
-                      ((model.dimensions.height - 1).toDouble * model.scrollAmount).toInt
+                      (model.dimensions.height.toDouble * model.scrollAmount).toInt
                     )
                   )
                 ),
@@ -454,20 +452,20 @@ object ScrollPane:
           case _ =>
             boundsWithoutContent
 
-      // Return the updated model with the new bounds and content bounds and dirty flag reset
+      val dragArea =
+        Bounds(
+          updatedBounds.width - model.scrollBar.bounds.width,
+          0,
+          0,
+          updatedBounds.height - model.scrollBar.bounds.height
+        )
+
+      // Return the updated model with the new bounds and content bounds
       model.copy(
         contentBounds = contentBounds,
         dimensions = updatedBounds,
         content = updatedComponent,
-        scrollBar = model.scrollBar
-          .fixedDragArea(
-            Bounds(
-              updatedBounds.width - model.scrollBar.bounds.width,
-              0,
-              1,
-              updatedBounds.height - 1
-            )
-          )
+        scrollBar = model.scrollBar.fixedDragArea(dragArea)
       )
 
 enum ScrollPaneEvent extends GlobalEvent:

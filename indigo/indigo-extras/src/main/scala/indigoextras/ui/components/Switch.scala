@@ -138,13 +138,13 @@ object Switch:
 
       case _: PointerEvent.Down
           if context.isActive && model.bounds
-            .moveBy(context.parent.coords)
+            .moveBy(context.parent.coords + context.parent.additionalOffset)
             .contains(context.pointerCoords) =>
         Outcome(model.copy(isDown = true))
 
       case _: PointerEvent.Up
           if context.isActive && model.isDown && model.bounds
-            .moveBy(context.parent.coords)
+            .moveBy(context.parent.coords + context.parent.additionalOffset)
             .contains(context.pointerCoords) =>
         val next    = model.state.toggle
         val updated = model.copy(state = next, isDown = false)
