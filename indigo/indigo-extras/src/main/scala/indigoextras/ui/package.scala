@@ -46,7 +46,7 @@ val ComponentList: indigoextras.ui.components.ComponentList.type = indigoextras.
 type HitArea[ReferenceData] = indigoextras.ui.components.HitArea[ReferenceData]
 val HitArea: indigoextras.ui.components.HitArea.type = indigoextras.ui.components.HitArea
 
-type Input = indigoextras.ui.components.Input
+type Input[ReferenceData] = indigoextras.ui.components.Input[ReferenceData]
 val Input: indigoextras.ui.components.Input.type = indigoextras.ui.components.Input
 
 type Label[ReferenceData] = indigoextras.ui.components.Label[ReferenceData]
