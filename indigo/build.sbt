@@ -123,8 +123,8 @@ lazy val sandbox =
             os.pwd / "sandbox" / "assets" / "fonts" / "pixelated.ttf",
             FontOptions(
               "test font",
-              32,
-              CharSet.fromUniqueString("The quick brown fox\njumps over the\nlazy dog.")
+              14,
+              CharSet.ASCII
             )
               .withColor(RGB.White)
               .withMaxCharactersPerLine(16)
