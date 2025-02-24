@@ -221,7 +221,17 @@ object ScrollPane:
       case e =>
         val scrollingActive =
           model.scrollOptions.isEnabled && model.contentBounds.height > model.dimensions.height
-        val ctx = context.withParentBounds(Bounds(context.parent.coords, model.dimensions))
+
+        val ctx =
+          context.withParentBounds(Bounds(context.parent.coords, model.dimensions))
+
+        val scrollOffset: Coords =
+          if scrollingActive then
+            Coords(
+              0,
+              ((model.dimensions.height.toDouble - model.contentBounds.height.toDouble) * model.scrollAmount).toInt
+            )
+          else Coords.zero
 
         def updateScrollBar: Outcome[Button[Unit]] =
           val c: Component[Button[Unit], Unit] = summon[Component[Button[Unit], Unit]]
@@ -247,7 +257,8 @@ object ScrollPane:
           c.updateModel(unitContext, model.scrollBar)(e)
 
         for {
-          updatedContent   <- model.content.component.updateModel(ctx, model.content.model)(e)
+          updatedContent <- model.content.component
+            .updateModel(ctx.withParentBounds(ctx.parent.bounds.moveBy(scrollOffset)), model.content.model)(e)
           updatedScrollBar <- if scrollingActive then updateScrollBar else Outcome(model.scrollBar)
         } yield model.copy(
           content = model.content.copy(model = updatedContent),
@@ -260,7 +271,10 @@ object ScrollPane:
     ): Outcome[Layer] =
       val scrollingActive =
         model.scrollOptions.isEnabled && model.contentBounds.height > model.dimensions.height
-      val ctx = context.withParentBounds(Bounds(context.parent.coords, model.dimensions))
+
+      val ctx =
+        context.withParentBounds(Bounds(context.parent.coords, model.dimensions))
+
       val scrollOffset: Coords =
         if scrollingActive then
           Coords(
