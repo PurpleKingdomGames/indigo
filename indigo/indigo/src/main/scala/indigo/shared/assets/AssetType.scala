@@ -134,8 +134,4 @@ object AssetType {
     def toList: List[AssetType] = List(this)
   }
 
-  final case class Font(name: AssetName, path: AssetPath) extends AssetTypePrimitive derives CanEqual {
-    def toList: List[AssetType] = List(this)
-  }
-
 }

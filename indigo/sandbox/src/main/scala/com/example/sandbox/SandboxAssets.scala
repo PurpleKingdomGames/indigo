@@ -76,12 +76,9 @@ object SandboxAssets {
       .Bitmap(cratesDiffuseName)
       .withLighting(LightingModel.Lit.flat.withNormal(cratesNormalName, 1.0))
 
-  val pixelFont: AssetName = AssetName("Pixelated")
-
   def assets: Set[AssetType] =
     Set(
       AssetType.Image(testFont, AssetPath("assets/generated/TestFont.png")),
-      AssetType.Font(pixelFont, AssetPath(s"assets/fonts/${pixelFont.toString}.woff2")),
       AssetType.Image(smallFontName, AssetPath("assets/boxy_font.png")),
       AssetType.Image(light, AssetPath("assets/light_texture.png")),
       AssetType.Text(AssetName(dudeName.toString + "-json"), AssetPath("assets/" + dudeName + ".json")),

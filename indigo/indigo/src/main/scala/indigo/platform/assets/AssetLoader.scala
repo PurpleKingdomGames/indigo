@@ -85,14 +85,6 @@ object AssetLoader:
       }
     }
 
-  def filterOutFontAssets(l: List[AssetType]): List[AssetType.Font] =
-    l.flatMap { at =>
-      at match {
-        case t: AssetType.Font => List(t)
-        case _                 => Nil
-      }
-    }
-
   val loadImageAssets: List[AssetType.Image] => Future[List[LoadedImageAsset]] =
     imageAssets => Future.sequence(imageAssets.map(loadImageAsset))
 
