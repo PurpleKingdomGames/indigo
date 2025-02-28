@@ -10,36 +10,42 @@ final case class CharSet(characters: String, default: Char) {
   def toCharacterCodes: Array[Int] =
     characters.toCharArray.map(_.toInt)
 
+  def ++(other: CharSet): CharSet =
+    CharSet(characters + other.characters, default)
+
+  def withDefault(newDefault: Char): CharSet =
+    this.copy(default = newDefault)
+
 }
 
 object CharSet {
 
   val DefaultCharacter: Char = ' '
 
+  def fromUniqueString(characters: String, default: Char): CharSet =
+    CharSet((characters + default.toString()).distinct, default)
+  def fromUniqueString(characters: String): CharSet =
+    CharSet((characters + DefaultCharacter).distinct, DefaultCharacter)
+
   def fromString(characters: String, default: Char): CharSet =
-    CharSet(characters, default)
+    fromUniqueString(characters, default)
   def fromString(characters: String): CharSet =
-    fromString(characters + DefaultCharacter, DefaultCharacter)
+    fromUniqueString(characters, DefaultCharacter)
 
   def fromSeq(chars: Seq[Char], default: Char): CharSet =
-    CharSet(chars.mkString, default)
+    fromUniqueString(chars.mkString, default)
   def fromSeq(chars: Seq[Char]): CharSet =
-    fromSeq(chars :+ DefaultCharacter, DefaultCharacter)
+    fromUniqueString(chars.mkString, DefaultCharacter)
 
   def fromCharCodeRange(from: Int, to: Int, default: Char): CharSet =
-    CharSet((from to to).map(_.toChar).mkString, default)
+    fromUniqueString((from to to).map(_.toChar).mkString, default)
   def fromCharCodeRange(from: Int, to: Int): CharSet =
-    CharSet(((from to to).map(_.toChar) :+ DefaultCharacter).mkString, DefaultCharacter)
+    fromCharCodeRange(from, to, DefaultCharacter)
 
   def fromCharRange(start: Char, end: Char, default: Char): CharSet =
     fromCharCodeRange(start.toInt, end.toInt, default)
   def fromCharRange(start: Char, end: Char): CharSet =
     fromCharCodeRange(start.toInt, end.toInt)
-
-  def fromUniqueString(characters: String, default: Char): CharSet =
-    CharSet(characters.distinct, default)
-  def fromUniqueString(characters: String): CharSet =
-    CharSet((characters + DefaultCharacter).distinct, DefaultCharacter)
 
   val ASCII: CharSet           = fromCharCodeRange(0, 127)
   val ExtendedASCII: CharSet   = fromCharCodeRange(0, 255)
