@@ -3,6 +3,9 @@ package indigoplugin.generators
 import indigoplugin.FontOptions
 import indigoplugin.FontLayout
 import scala.annotation.tailrec
+import java.awt.font.FontRenderContext
+import java.awt.font.TextLayout
+import java.awt.font.GlyphVector
 
 /** Provides functionality for generating font images and associated FontInfo instances.
   */
@@ -320,7 +323,7 @@ object FontAWTHelper {
     val font =
       Font
         .createFont(Font.TRUETYPE_FONT, fontFile)
-        .deriveFont(fontSize.toFloat)
+        .deriveFont(Font.PLAIN, fontSize.toFloat)
 
     Helper(font)
   }
@@ -373,17 +376,31 @@ object FontAWTHelper {
 
       val g2d = bufferedImage.createGraphics()
 
-      if (fontOptions.antiAlias) {
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
-      }
-
       g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY)
 
       g2d.setFont(font)
       g2d.setColor(fontOptions.color.toColor)
 
-      charDetails.foreach { c =>
-        g2d.drawString(c.char.toString, c.x, c.y + c.ascent)
+      if (fontOptions.antiAlias) {
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
+        g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
+
+        charDetails.foreach { c =>
+          g2d.drawString(c.char.toString, c.x, c.y + c.ascent)
+        }
+      } else {
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF)
+        g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF)
+        g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_OFF)
+
+        val frc: FontRenderContext = new FontRenderContext(null, false, false)
+
+        charDetails.foreach { c =>
+          val gv    = font.createGlyphVector(frc, c.char.toString)
+          val shape = gv.getOutline(c.x.toFloat, (c.y + c.ascent).toFloat)
+
+          g2d.fill(shape)
+        }
       }
 
       g2d.dispose()
