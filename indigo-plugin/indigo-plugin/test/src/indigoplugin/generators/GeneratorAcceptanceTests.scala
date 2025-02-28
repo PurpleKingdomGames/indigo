@@ -2,6 +2,7 @@ package indigoplugin.generators
 
 import indigoplugin.IndigoGenerators
 import indigoplugin.FontOptions
+import indigoplugin.FontLayout
 import indigoplugin.CharSet
 import indigoplugin.RGB
 import indigoplugin.utils.Utils
@@ -28,27 +29,86 @@ class GeneratorAcceptanceTests extends munit.FunSuite {
   override def beforeAll(): Unit                     = cleanUp()
   override def beforeEach(context: BeforeEach): Unit = cleanUp()
 
-  test("Can generate font bitmap and FontInfo from TTF file") {
+  test("Can generate font bitmap and FontInfo from TTF file - normal layout") {
 
     val imageOutDir = targetDir / Generators.OutputDirName / "images"
 
     os.makeDir.all(imageOutDir)
 
     val options: FontOptions =
-      FontOptions("my font", 16, CharSet.Alphanumeric)
+      FontOptions("my font normal", 16, CharSet.Alphanumeric)
         .withColor(RGB.Green)
-        .withMaxCharactersPerLine(16)
         .noAntiAliasing
+        // .useAntiAliasing
+        .withLayout(FontLayout.Normal(16))
 
     val files =
       IndigoGenerators("com.example.test")
-        .embedFont("MyFont", sourceFontTTF, options, imageOutDir)
+        .embedFont("MyFontNormal", sourceFontTTF, options, imageOutDir)
         .toSourcePaths(targetDir)
 
     files.toList match {
       case fontInfo :: Nil =>
         assert(os.exists(fontInfo))
-        assert(os.exists(imageOutDir / "MyFont.png"))
+        assert(os.exists(imageOutDir / "MyFontNormal.png"))
+
+      case _ =>
+        fail(
+          s"Unexpected number of files generated, got ${files.length} files:\n${files.map(_.toString()).mkString("\n")}"
+        )
+    }
+  }
+
+  test("Can generate font bitmap and FontInfo from TTF file - monospace layout") {
+
+    val imageOutDir = targetDir / Generators.OutputDirName / "images"
+
+    os.makeDir.all(imageOutDir)
+
+    val options: FontOptions =
+      FontOptions("my font mono", 16, CharSet.Alphanumeric)
+        .withColor(RGB.Green)
+        .noAntiAliasing
+        .withLayout(FontLayout.monospace(16))
+
+    val files =
+      IndigoGenerators("com.example.test")
+        .embedFont("MyFontMono", sourceFontTTF, options, imageOutDir)
+        .toSourcePaths(targetDir)
+
+    files.toList match {
+      case fontInfo :: Nil =>
+        assert(os.exists(fontInfo))
+        assert(os.exists(imageOutDir / "MyFontMono.png"))
+
+      case _ =>
+        fail(
+          s"Unexpected number of files generated, got ${files.length} files:\n${files.map(_.toString()).mkString("\n")}"
+        )
+    }
+  }
+
+  test("Can generate font bitmap and FontInfo from TTF file - indexed grid layout") {
+
+    val imageOutDir = targetDir / Generators.OutputDirName / "images"
+
+    os.makeDir.all(imageOutDir)
+
+    val options: FontOptions =
+      FontOptions("my font indexed", 16, CharSet.ExtendedASCII)
+        .withColor(RGB.White)
+        .noAntiAliasing
+        .withLayout(FontLayout.indexedGrid(16))
+
+    val files =
+      IndigoGenerators("com.example.test")
+        .embedFont("MyFontIndexed", sourceFontTTF, options, imageOutDir)
+        .toSourcePaths(targetDir)
+
+    files.toList match {
+      case fontInfo :: Nil =>
+        assert(os.exists(fontInfo))
+        assert(os.exists(imageOutDir / "MyFontIndexed.png"))
 
       case _ =>
         fail(

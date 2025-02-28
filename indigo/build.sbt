@@ -127,7 +127,6 @@ lazy val sandbox =
               CharSet.ASCII
             )
               .withColor(RGB.White)
-              .withMaxCharactersPerLine(16)
               .noAntiAliasing,
             os.pwd / "sandbox" / "assets" / "generated"
           )
@@ -200,7 +199,7 @@ lazy val physics =
               charSet = CharSet.ASCII,
               color = RGB.White,
               antiAlias = false,
-              maxCharactersPerLine = 16
+              layout = FontLayout.default
             ),
             imageOut = os.pwd / "physics" / "assets" / "generated"
           )
