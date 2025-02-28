@@ -1,6 +1,7 @@
 package indigoplugin.generators
 
 import indigoplugin.FontOptions
+import indigoplugin.FontLayout
 import scala.annotation.tailrec
 
 /** Provides functionality for generating font images and associated FontInfo instances.
@@ -47,15 +48,33 @@ object FontGen {
       initialCharDetails
         .filter(cd => filterUnsupportedChars(cd.char, cd.code))
 
-    // if (initialCharDetails.length > filteredCharDetails.length)
-    // println("WARNING: Some unsupported characters were filtered out.")
-
     val charDetails =
-      layout(
-        filteredCharDetails,
-        helper.getBaselineOffset,
-        fontOptions.maxCharactersPerLine
-      )
+      fontOptions.layout match {
+        case FontLayout.Normal(maxCharactersPerLine) =>
+          normalLayout(
+            filteredCharDetails,
+            helper.getBaselineOffset,
+            maxCharactersPerLine
+          )
+
+        case FontLayout.Monospace(maxCharactersPerLine, cellWidth, cellHeight) =>
+          monospaceLayout(
+            filteredCharDetails,
+            helper.getMaxAscent,
+            maxCharactersPerLine,
+            cellWidth,
+            cellHeight
+          )
+
+        case FontLayout.IndexedGrid(maxCharactersPerLine, cellWidth, cellHeight) =>
+          indexedGridLayout(
+            filteredCharDetails,
+            helper.getMaxAscent,
+            maxCharactersPerLine,
+            cellWidth,
+            cellHeight
+          )
+      }
 
     // Write out FontInfo
     val default =
@@ -63,7 +82,18 @@ object FontGen {
         .find(_.char == fontOptions.charSet.default)
         .getOrElse(throw new Exception(s"Couldn't find default character '${fontOptions.charSet.default.toString}'"))
 
-    val (sheetWidth, sheetHeight) = findBounds(charDetails)
+    val (sheetWidth, sheetHeight) =
+      fontOptions.layout match {
+        case FontLayout.Normal(maxCharactersPerLine) =>
+          findFontSheetBounds(charDetails)
+
+        case l @ FontLayout.Monospace(_, _, _) =>
+          (l.fontSheetWidth, l.fontSheetHeight(charDetails.length))
+
+        case l @ FontLayout.IndexedGrid(_, _, _) =>
+          (l.fontSheetWidth, l.fontSheetHeight(charDetails.map(_.code)))
+      }
+
     val fontInfo =
       genFontInfo(moduleName, fullyQualifiedPackage, fontOptions.fontKey, sheetWidth, sheetHeight, default, charDetails)
 
@@ -82,8 +112,7 @@ object FontGen {
     noExt.replaceAll("[^A-Za-z0-9]", "-").split("-").map(_.capitalize).mkString
   }
 
-  // TODO: Does nothing
-  def layout(unplacedChars: List[CharDetail], lineSpacing: Int, maxCharsPerLine: Int): List[CharDetail] = {
+  def normalLayout(unplacedChars: List[CharDetail], lineSpacing: Int, maxCharsPerLine: Int): List[CharDetail] = {
     @tailrec
     def rec(
         remaining: List[CharDetail],
@@ -110,7 +139,67 @@ object FontGen {
     rec(unplacedChars, 0, 0, 0, Nil)
   }
 
-  def findBounds(charDetails: List[CharDetail]): (Int, Int) =
+  def monospaceLayout(
+      unplacedChars: List[CharDetail],
+      maxAscent: Int,
+      maxCharsPerLine: Int,
+      cellWidth: Int,
+      cellHeight: Int
+  ): List[CharDetail] = {
+    @tailrec
+    def rec(
+        remaining: List[CharDetail],
+        lineCount: Int,
+        charCount: Int,
+        nextX: Int,
+        acc: List[CharDetail]
+    ): List[CharDetail] =
+      remaining match {
+        case Nil =>
+          acc.reverse
+
+        case c :: cs if charCount == maxCharsPerLine =>
+          rec(c :: cs, lineCount + 1, 0, 0, acc)
+
+        case c :: cs =>
+          val x    = nextX + ((cellWidth - c.width) / 2) // Center the character in the cell
+          val y    = lineCount * cellHeight - (cellHeight - maxAscent)
+          val newC = c.copy(x = x, y = y)
+
+          rec(cs, lineCount, charCount + 1, nextX + cellWidth, newC :: acc)
+      }
+
+    rec(unplacedChars, 0, 0, 0, Nil)
+  }
+
+  def indexedGridLayout(
+      unplacedChars: List[CharDetail],
+      maxAscent: Int,
+      maxCharsPerLine: Int,
+      cellWidth: Int,
+      cellHeight: Int
+  ): List[CharDetail] = {
+    @tailrec
+    def rec(
+        remaining: List[CharDetail],
+        acc: List[CharDetail]
+    ): List[CharDetail] =
+      remaining match {
+        case Nil =>
+          acc.reverse
+
+        case c :: cs =>
+          val x    = (c.code % maxCharsPerLine) * cellWidth
+          val y    = ((c.code / maxCharsPerLine) * cellHeight) - (cellHeight - maxAscent)
+          val newC = c.copy(x = x, y = y)
+
+          rec(cs, newC :: acc)
+      }
+
+    rec(unplacedChars, Nil)
+  }
+
+  def findFontSheetBounds(charDetails: List[CharDetail]): (Int, Int) =
     charDetails.foldLeft((0, 0)) { case ((w, h), c) =>
       (
         if (c.x + c.width > w) c.x + c.width else w,
@@ -262,6 +351,15 @@ object FontAWTHelper {
       val fontMetrics = tmpG2d.getFontMetrics()
 
       fontMetrics.getLeading() + fontMetrics.getAscent() + fontMetrics.getDescent()
+    }
+
+    def getMaxAscent: Int = {
+      val tmpBuffer = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB)
+      val tmpG2d    = tmpBuffer.createGraphics()
+      tmpG2d.setFont(font)
+      val fontMetrics = tmpG2d.getFontMetrics()
+
+      fontMetrics.getMaxAscent()
     }
 
     def drawFontSheet(
