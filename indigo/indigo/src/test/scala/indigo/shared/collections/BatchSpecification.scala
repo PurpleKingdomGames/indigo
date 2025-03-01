@@ -4,7 +4,6 @@ import org.scalacheck.*
 
 import scala.annotation.nowarn
 
-@SuppressWarnings(Array("scalafix:DisableSyntax.var"))
 @nowarn("msg=unused")
 class BatchSpecification extends Properties("Batch") {
   property("hashCode - both Wrapped") = Prop.forAll { (a: List[Int]) =>
