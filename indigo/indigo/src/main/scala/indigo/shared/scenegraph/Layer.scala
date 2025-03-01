@@ -157,6 +157,8 @@ object Layer:
     def ++(layers: Batch[Layer]): Layer.Stack =
       ls.append(layers)
 
+    def ::(layer: Layer): Layer.Stack =
+      ls.prepend(layer)
     def prepend(layer: Layer): Layer.Stack =
       ls.copy(layers = layer :: ls.layers)
     def cons(layer: Layer): Layer.Stack =

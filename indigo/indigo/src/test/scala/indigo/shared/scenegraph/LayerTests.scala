@@ -126,4 +126,22 @@ class LayerTests extends munit.FunSuite {
     assertEquals(actual, expected)
   }
 
+  test("Layer.Stack cons") {
+    val l = Layer.Stack(Layer.Content.empty, Layer.Content.empty, Layer.Content.empty)
+
+    val actual = Layer.Content.empty.withMagnification(2) :: l
+
+    assertEquals(actual.layers.length, 4)
+
+    actual.layers.head match
+      case Layer.Content(nodes, lights, magnification, visible, blending, cloneBlanks, camera) =>
+        assertEquals(
+          magnification,
+          Some(2)
+        )
+
+      case _ =>
+        fail("match failed")
+  }
+
 }
