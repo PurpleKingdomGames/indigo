@@ -85,29 +85,17 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
   var platform: Platform = null
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def kill(): Unit =
     platform.kill()
     gameLoopInstance.kill()
     animationsRegister.kill()
     fontRegister.kill()
     shaderRegister.kill()
-    shaderRegister.kill()
     boundaryLocator.purgeCache()
     sceneProcessor.purgeCaches()
     audioPlayer.kill()
     globalEventStream.kill()
 
-    gameConfig = null
-    storage = null
-    globalEventStream = null
-    gamepadInputCapture = null
-    gameLoopInstance = null
-    accumulatedAssetCollection = null
-    assetMapping = null
-    renderer = null
-    startUpData = null.asInstanceOf[StartUpData]
-    platform = null
     ()
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))

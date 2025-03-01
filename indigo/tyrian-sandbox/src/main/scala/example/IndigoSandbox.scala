@@ -28,6 +28,33 @@ object IndigoSandbox extends TyrianIOApp[Msg, Model]:
     case Msg.NoOp =>
       (model, Cmd.None)
 
+    case Msg.RegisterGames(game1, game2) =>
+      (model.copy(game1 = Some(game1), game2 = Some(game2)), Cmd.None)
+
+    case Msg.HaltGame1 =>
+      model.game1.foreach(_.halt())
+      (model.copy(game1 = None), Cmd.None)
+
+    case Msg.HaltGame2 =>
+      model.game2.foreach(_.halt())
+      (model.copy(game2 = None), Cmd.None)
+
+    case Msg.RemoveGame1 =>
+      val task: IO[Msg] =
+        IO.delay {
+          document.getElementById(gameDivId1 + "-canvas").remove()
+          Msg.NoOp
+        }
+      (model.copy(ensureGame1Div = false), Cmd.Run(task))
+
+    case Msg.RemoveGame2 =>
+      val task: IO[Msg] =
+        IO.delay {
+          document.getElementById(gameDivId2 + "-canvas").remove()
+          Msg.NoOp
+        }
+      (model.copy(ensureGame2Div = false), Cmd.Run(task))
+
     case Msg.FollowLink(href) =>
       (model, Nav.loadUrl(href))
 
@@ -65,20 +92,25 @@ object IndigoSandbox extends TyrianIOApp[Msg, Model]:
         IO.delay {
           if gameDivsExist(gameDivId1, gameDivId2) then
             println("Indigo container divs ready, launching games.")
-            MyAwesomeGame(model.bridge.subSystem(gameId1), true)
-              .launch(
-                gameDivId1,
-                "width"  -> "200",
-                "height" -> "200"
-              )
-            MyAwesomeGame(model.bridge.subSystem(gameId2), false)
-              .launch(
-                gameDivId2,
-                "width"  -> "200",
-                "height" -> "200"
-              )
+            val game1 =
+              MyAwesomeGame(model.bridge.subSystem(gameId1), true)
 
-            Msg.NoOp
+            game1.launch(
+              gameDivId1,
+              "width"  -> "200",
+              "height" -> "200"
+            )
+
+            val game2 =
+              MyAwesomeGame(model.bridge.subSystem(gameId2), false)
+
+            game2.launch(
+              gameDivId2,
+              "width"  -> "200",
+              "height" -> "200"
+            )
+
+            Msg.RegisterGames(game1, game2)
           else
             println("Indigo container divs not ready, retrying...")
             Msg.RetryIndigo
@@ -103,19 +135,31 @@ object IndigoSandbox extends TyrianIOApp[Msg, Model]:
     ) ++ counters
 
     div(
-      div(hidden(false))("Random number: " + model.randomNumber.toString),
-      div(
-        a(href := "/another-page")("Internal link (will be ignored)"),
-        br,
-        a(href := "http://tyrian.indigoengine.io/")("Tyrian website")
-      ),
-      div(id := gameDivId1)(),
-      div(id := gameDivId2)(),
-      div(
-        input(placeholder := "Text to reverse", onInput(s => Msg.NewContent(s)), myStyle),
-        div(myStyle)(text(model.field.reverse))
-      ),
-      div(elems)
+      List(
+        div(hidden(false))("Random number: " + model.randomNumber.toString),
+        div(
+          a(href := "/another-page")("Internal link (will be ignored)"),
+          br,
+          a(href := "http://tyrian.indigoengine.io/")("Tyrian website")
+        )
+      ) ++
+        (if model.ensureGame1Div then List(div(id := gameDivId1)().setKey("game 1")) else Nil) ++
+        (if model.ensureGame2Div then List(div(id := gameDivId2)().setKey("game 2")) else Nil) ++
+        List(
+          div(
+            button(onClick(Msg.HaltGame1))(text("Halt game 1")),
+            button(onClick(Msg.RemoveGame1))(text("Remove game 1"))
+          ),
+          div(
+            button(onClick(Msg.HaltGame2))(text("Halt game 2")),
+            button(onClick(Msg.RemoveGame2))(text("Remove game 2"))
+          ),
+          div(
+            input(placeholder := "Text to reverse", onInput(s => Msg.NewContent(s)), myStyle),
+            div(myStyle)(text(model.field.reverse))
+          ),
+          div(elems)
+        )
     )
 
   def subscriptions(model: Model): Sub[IO, Msg] =
@@ -156,6 +200,11 @@ enum Msg derives CanEqual:
   case NewRandomInt(i: Int)
   case FollowLink(href: String)
   case NoOp
+  case HaltGame1
+  case HaltGame2
+  case RemoveGame1
+  case RemoveGame2
+  case RegisterGames(game1: MyAwesomeGame, game2: MyAwesomeGame)
 
 object Counter:
 
@@ -182,8 +231,12 @@ final case class Model(
     bridge: TyrianIndigoBridge[IO, String, Unit],
     field: String,
     components: List[Counter.Model],
-    randomNumber: Int
+    randomNumber: Int,
+    ensureGame1Div: Boolean,
+    ensureGame2Div: Boolean,
+    game1: Option[MyAwesomeGame],
+    game2: Option[MyAwesomeGame]
 )
 object Model:
   val init: Model =
-    Model(TyrianIndigoBridge(), "", Nil, 0)
+    Model(TyrianIndigoBridge(), "", Nil, 0, true, true, None, None)

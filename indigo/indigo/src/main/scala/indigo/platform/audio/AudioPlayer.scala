@@ -208,12 +208,9 @@ final class AudioPlayer(context: AudioContextProxy):
   private def needsVolumeChange(playing: AudioSourceState, next: SceneAudioSource): Boolean =
     playing.bindingKey == next.bindingKey && !(playing.volume ~== next.volume)
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def kill(): Unit =
     soundAssets = Set()
-    sourceA = null
-    sourceB = null
-    sourceC = null
+    playAudio(None)
     ()
 
   private class AudioSourceState(val bindingKey: BindingKey, val volume: Volume, val audioNodes: AudioNodes)

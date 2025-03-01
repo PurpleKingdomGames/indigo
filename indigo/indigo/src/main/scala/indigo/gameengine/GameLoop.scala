@@ -95,13 +95,8 @@ final class GameLoop[StartUpData, GameModel, ViewModel](
             gameEngine.platform.tick(gameEngine.gameLoop(t))
           else gameEngine.platform.tick(loop(lastUpdateTime))
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def kill(): Unit =
     _running = false
-    _gameModelState = null.asInstanceOf[GameModel]
-    _viewModelState = null.asInstanceOf[ViewModel]
-    _runningTimeReference = 0
-    _inputState = null
     ()
 
   def loop(lastUpdateTime: Double): Double => Unit = { time =>

@@ -21,11 +21,9 @@ trait GameLauncher[StartUpData, Model, ViewModel]:
       case None =>
         throw new Exception(s"Missing Element! Could not find an element with id '$containerId' on the page.")
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   @JSExport
   def halt(): Unit =
     game.kill()
-    game = null
     ()
 
   @JSExport
