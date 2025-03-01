@@ -417,8 +417,7 @@ class LayerRenderer(
     Array(
       "scalafix:DisableSyntax.null",
       "scalafix:DisableSyntax.while",
-      "scalafix:DisableSyntax.var",
-      "scalafix:DisableSyntax.throw"
+      "scalafix:DisableSyntax.var"
     )
   )
   private def renderEntities(

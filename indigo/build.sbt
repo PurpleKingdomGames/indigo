@@ -11,7 +11,7 @@ ThisBuild / scalaVersion  := scala3Version
 
 inThisBuild(
   List(
-    scalaVersion := scala3Version,
+    scalaVersion      := scala3Version,
     semanticdbEnabled := true,
     semanticdbVersion := scalafixSemanticdb.revision,
     scalafixOnCompile := true
@@ -28,8 +28,8 @@ lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
   testFrameworks += new TestFramework("munit.Framework"),
   Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
   scalacOptions ++= Seq("-language:strictEquality"),
-  autoAPIMappings   := true,
-  logo              := name.value
+  autoAPIMappings := true,
+  logo            := name.value
 )
 
 lazy val neverPublish = Seq(
@@ -120,7 +120,7 @@ lazy val sandbox =
         IndigoGenerators("example")
           .embedFont(
             "TestFont",
-            os.pwd / "sandbox" / "assets" / "fonts" / "pixelated.ttf",
+            os.pwd / "sandbox" / "assets" / "fonts" / "VCR_OSD_MONO_1.001.ttf",
             FontOptions(
               "test font",
               14,
@@ -176,6 +176,10 @@ lazy val physicsOptions =
     .withBackgroundColor("black")
     .withAssetDirectory("physics/assets/")
     .withWindowSize(800, 600)
+    .excludeAssets {
+      case p if p.endsWith(os.RelPath.rel / ".DS_Store") => true
+      case _                                             => false
+    }
 
 lazy val physics =
   project
@@ -195,7 +199,7 @@ lazy val physics =
             font = os.pwd / "physics" / "generator-data" / "pixelated.ttf",
             fontOptions = FontOptions(
               fontKey = "Pixelated",
-              fontSize = 20,
+              fontSize = 32,
               charSet = CharSet.ASCII,
               color = RGB.White,
               antiAlias = false,
