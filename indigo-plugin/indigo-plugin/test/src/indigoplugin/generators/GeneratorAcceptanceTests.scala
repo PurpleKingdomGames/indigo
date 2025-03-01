@@ -30,7 +30,7 @@ class GeneratorAcceptanceTests extends munit.FunSuite {
   override def beforeAll(): Unit                     = cleanUp()
   override def beforeEach(context: BeforeEach): Unit = cleanUp()
 
-  test("Can generate font bitmap and FontInfo from TTF file - normal layout".only) {
+  test("Can generate font bitmap and FontInfo from TTF file - normal layout") {
 
     val imageOutDir = targetDir / Generators.OutputDirName / "images"
     os.makeDir.all(imageOutDir)
