@@ -44,6 +44,7 @@ object FontGen {
     val initialCharDetails =
       fontOptions.charSet.toCharacterCodes.map { c =>
         val (w, h, a) = helper.getCharBounds(c.toChar)
+
         CharDetail(c.toChar, c, 0, 0, w, h, a)
       }.toList
 
@@ -54,10 +55,17 @@ object FontGen {
     val charDetails =
       fontOptions.layout match {
         case FontLayout.Normal(maxCharactersPerLine) =>
+          val (cellWidth, cellHeight) =
+            filteredCharDetails.foldLeft((0, 0)) { case ((w, h), c) =>
+              (if (c.width > w) c.width else w, if (c.height > h) c.height else h)
+            }
+
           normalLayout(
             filteredCharDetails,
-            helper.getBaselineOffset,
-            maxCharactersPerLine
+            helper.getMaxAscent,
+            maxCharactersPerLine,
+            cellWidth,
+            cellHeight
           )
 
         case FontLayout.Monospace(maxCharactersPerLine, cellWidth, cellHeight) =>
@@ -115,7 +123,13 @@ object FontGen {
     noExt.replaceAll("[^A-Za-z0-9]", "-").split("-").map(_.capitalize).mkString
   }
 
-  def normalLayout(unplacedChars: List[CharDetail], lineSpacing: Int, maxCharsPerLine: Int): List[CharDetail] = {
+  def normalLayout(
+      unplacedChars: List[CharDetail],
+      maxAscent: Int,
+      maxCharsPerLine: Int,
+      cellWidth: Int,
+      cellHeight: Int
+  ): List[CharDetail] = {
     @tailrec
     def rec(
         remaining: List[CharDetail],
@@ -132,11 +146,11 @@ object FontGen {
           rec(c :: cs, lineCount + 1, 0, 0, acc)
 
         case c :: cs =>
-          val x    = nextX
-          val y    = lineCount * lineSpacing
+          val x    = nextX                  
+          val y    = lineCount * cellHeight 
           val newC = c.copy(x = x, y = y)
 
-          rec(cs, lineCount, charCount + 1, nextX + c.width, newC :: acc)
+          rec(cs, lineCount, charCount + 1, nextX + cellWidth, newC :: acc)
       }
 
     rec(unplacedChars, 0, 0, 0, Nil)
@@ -336,9 +350,11 @@ object FontAWTHelper {
       val tmpG2d = tmpBuffer.createGraphics()
       tmpG2d.setFont(font)
 
+      val frc         = tmpG2d.getFontRenderContext()
       val fontMetrics = tmpG2d.getFontMetrics()
+      val gv          = font.createGlyphVector(frc, Array(char))
 
-      val w = fontMetrics.charWidth(char)
+      val w = gv.getGlyphMetrics(0).getAdvance.toInt
       val h = fontMetrics.getHeight()
       val a = fontMetrics.getAscent()
 

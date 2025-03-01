@@ -48,6 +48,7 @@ object CharSet {
     fromCharCodeRange(start.toInt, end.toInt)
 
   val ASCII: CharSet           = fromCharCodeRange(0, 127)
+  val ASCIIPrintable: CharSet  = fromCharCodeRange(32, 126)
   val ExtendedASCII: CharSet   = fromCharCodeRange(0, 255)
   val AlphabeticLower: CharSet = fromCharCodeRange('a'.toInt, 'z'.toInt)
   val AlphabeticUpper: CharSet = fromCharCodeRange('A'.toInt, 'Z'.toInt)

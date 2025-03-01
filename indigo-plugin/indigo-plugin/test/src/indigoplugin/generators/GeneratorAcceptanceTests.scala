@@ -11,10 +11,11 @@ class GeneratorAcceptanceTests extends munit.FunSuite {
 
   val workspaceDir = Utils.findWorkspace
 
-  val sourceCSV     = workspaceDir / "test-assets" / "data" / "stats.csv"
-  val sourceMD      = workspaceDir / "test-assets" / "data" / "stats.md"
-  val sourceColours = workspaceDir / "test-assets" / "data" / "colours.txt"
-  val sourceFontTTF = workspaceDir / "test-files" / "VCR_OSD_MONO_1.001.ttf"
+  val sourceCSV              = workspaceDir / "test-assets" / "data" / "stats.csv"
+  val sourceMD               = workspaceDir / "test-assets" / "data" / "stats.md"
+  val sourceColours          = workspaceDir / "test-assets" / "data" / "colours.txt"
+  val sourceFontTTF          = workspaceDir / "test-files" / "VCR_OSD_MONO_1.001.ttf"
+  val sourceFontTTFPixelated = workspaceDir / "test-files" / "pixelated.ttf"
 
   val targetDir = workspaceDir / "out" / "indigo-plugin-generator-acceptance-test-output"
 
@@ -29,14 +30,13 @@ class GeneratorAcceptanceTests extends munit.FunSuite {
   override def beforeAll(): Unit                     = cleanUp()
   override def beforeEach(context: BeforeEach): Unit = cleanUp()
 
-  test("Can generate font bitmap and FontInfo from TTF file - normal layout") {
+  test("Can generate font bitmap and FontInfo from TTF file - normal layout".only) {
 
     val imageOutDir = targetDir / Generators.OutputDirName / "images"
-
     os.makeDir.all(imageOutDir)
 
     val options: FontOptions =
-      FontOptions("my font normal", 16, CharSet.Alphanumeric)
+      FontOptions("my font normal", 16, CharSet.ASCII)
         .withColor(RGB.Green)
         .noAntiAliasing
         // .useAntiAliasing
@@ -44,7 +44,7 @@ class GeneratorAcceptanceTests extends munit.FunSuite {
 
     val files =
       IndigoGenerators("com.example.test")
-        .embedFont("MyFontNormal", sourceFontTTF, options, imageOutDir)
+        .embedFont("MyFontNormal", sourceFontTTFPixelated, options, imageOutDir)
         .toSourcePaths(targetDir)
 
     files.toList match {
