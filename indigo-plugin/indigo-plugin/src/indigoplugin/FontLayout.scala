@@ -3,18 +3,21 @@ package indigoplugin
 sealed trait FontLayout
 object FontLayout {
 
-  /** Each glyph is placed one after another until the maxCharactersPerLine limit is reached (the line is full), then
+  /** Each glyph is placed one after another until the `maxCharactersPerLine` limit is reached (the line is full), then
     * the next glyph is placed on the next line. The size of the final font sheet image is dynamically calculated based
-    * on the size of the glyphs and the maxCharactersPerLine value.
+    * on the size of the largest glyph and the `maxCharactersPerLine` value.
+    *
+    * The size of the largest glyph is used to ensure that the inclusion of non-prinable control characters (e.g. in the
+    * `CharSet.ASCII` set) does not break the layout, even though this results in slightly larger texture sizes.
     */
   final case class Normal(maxCharactersPerLine: Int) extends FontLayout {
     def withMaxCharactersPerLine(newMaxCharactersPerLine: Int): FontLayout.Normal =
       this.copy(maxCharactersPerLine = newMaxCharactersPerLine)
   }
 
-  /** Each glyph is placed in a grid, with each cell being a fixed size. There are no guarantees given, that your choice
+  /** Each glyph is placed in a grid, with each cell being a fixed size. There are no guarantees given that your choice
     * of font will work nicely. Characters are placed one after another. The size of the final font sheet image is
-    * dynamically calculated based on the size of the glyphs and the maxCharactersPerLine value.
+    * dynamically calculated based on the `cellWidth` and the `maxCharactersPerLine` value.
     */
   final case class Monospace(maxCharactersPerLine: Int, cellWidth: Int, cellHeight: Int) extends FontLayout {
     def withMaxCharactersPerLine(newMaxCharactersPerLine: Int): FontLayout.Monospace =
@@ -35,8 +38,8 @@ object FontLayout {
     }
   }
 
-  /** Each glyph is placed in a grid, with each cell being a fixed size. There are no guarantees given that your choice
-    * of font will work nicely. Characters are placed at there index (char integer value). The size of the final font
+  /** Each glyph is placed in a grid with each cell being a fixed size. There are no guarantees given that your choice
+    * of font will work nicely. Characters are placed at their index (char integer value). The size of the final font
     * sheet image is fixed.
     */
   final case class IndexedGrid(maxCharactersPerLine: Int, cellWidth: Int, cellHeight: Int) extends FontLayout {

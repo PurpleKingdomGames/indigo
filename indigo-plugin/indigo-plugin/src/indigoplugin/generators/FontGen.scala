@@ -146,8 +146,8 @@ object FontGen {
           rec(c :: cs, lineCount + 1, 0, 0, acc)
 
         case c :: cs =>
-          val x    = nextX                  
-          val y    = lineCount * cellHeight 
+          val x    = nextX
+          val y    = lineCount * cellHeight
           val newC = c.copy(x = x, y = y)
 
           rec(cs, lineCount, charCount + 1, nextX + cellWidth, newC :: acc)
