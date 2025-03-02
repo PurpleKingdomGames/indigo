@@ -226,6 +226,9 @@ object Button:
           )
         )
 
+      case CanvasLostFocus | ApplicationLostFocus =>
+        Outcome(model.copy(state = ButtonState.Up, isDown = false, dragStart = None))
+
       case _: PointerEvent.Click
           if context.isActive && model.bounds
             .moveBy(context.parent.coords + context.parent.additionalOffset)
@@ -249,6 +252,11 @@ object Button:
 
       case _: PointerEvent.Up =>
         // Released Outside.
+        Outcome(model.copy(state = ButtonState.Up, isDown = false, dragStart = None))
+
+      case _: PointerEvent.Move
+          if (context.isActive || model.isDragged) && model.isDown && !context.frame.input.pointers.isLeftDown =>
+        // Released outside the window at some point.
         Outcome(model.copy(state = ButtonState.Up, isDown = false, dragStart = None))
 
       case _: PointerEvent.Move
