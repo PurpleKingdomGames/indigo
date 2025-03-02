@@ -1,6 +1,7 @@
 package com.example.sandbox.scenes
 
 import com.example.sandbox.Constants
+import com.example.sandbox.Log
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
 import com.example.sandbox.SandboxViewModel
@@ -37,10 +38,15 @@ object ComponentUIScene extends Scene[SandboxStartupData, SandboxGameModel, Sand
     case ChangeValue(value) =>
       Outcome(model.copy(num = value))
 
+    case Log(msg) =>
+      println(msg)
+      Outcome(model)
+
     case e =>
       val ctx =
         UIContext(context.toContext.forSubSystems.copy(reference = model.num), Size(1), 1)
-      summon[Component[ComponentGroup[Int], Int]].updateModel(ctx, model.components)(e).map { cl =>
+
+      model.components.update(ctx)(e).map { cl =>
         model.copy(components = cl)
       }
 
