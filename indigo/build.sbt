@@ -123,7 +123,7 @@ lazy val sandbox =
             os.pwd / "sandbox" / "assets" / "fonts" / "VCR_OSD_MONO_1.001.ttf",
             FontOptions(
               "test font",
-              14,
+              16,
               CharSet.ASCII
             )
               .withColor(RGB.White)
