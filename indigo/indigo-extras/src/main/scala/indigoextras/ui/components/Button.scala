@@ -287,28 +287,29 @@ object Button:
         context: UIContext[ReferenceData],
         model: Button[ReferenceData]
     ): Outcome[Layer] =
-      val b =
+      val movedCtx =
         if model.isDragged && model.dragOptions.followPointer then
           val dragCoords =
             model.dragOptions.constrainCoords(context.pointerCoords, context.parent.bounds)
 
-          model.bounds.moveBy(
+          val moveAmount =
             model.dragStart.map(dd => dragCoords - dd.start).getOrElse(Coords.zero)
-          )
-        else model.bounds
+
+          context.withParent(context.parent.moveBy(moveAmount))
+        else context
 
       model.state match
         case ButtonState.Up =>
           model
-            .up(context, model.copy(bounds = b))
+            .up(movedCtx, model)
 
         case ButtonState.Over =>
           model.over
-            .getOrElse(model.up)(context, model.copy(bounds = b))
+            .getOrElse(model.up)(movedCtx, model)
 
         case ButtonState.Down =>
           model.down
-            .getOrElse(model.up)(context, model.copy(bounds = b))
+            .getOrElse(model.up)(movedCtx, model)
 
     def refresh(
         context: UIContext[ReferenceData],
