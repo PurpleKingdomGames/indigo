@@ -5,6 +5,7 @@ import com.example.sandbox.scenes.ComponentUIScene2
 import com.example.sandbox.scenes.ConfettiModel
 import com.example.sandbox.scenes.PathFindingModel
 import com.example.sandbox.scenes.PointersModel
+import example.TestFont
 import indigo.*
 import indigo.syntax.*
 import indigoextras.mesh.*
@@ -102,18 +103,25 @@ object SandboxModel {
       .onPress(Log("Button pressed"))
       .onRelease(Log("Button released"))
 
+  private val text =
+    Text("", TestFont.fontKey, SandboxAssets.testFontMaterial)
+  private val textRed =
+    Text("", TestFont.fontKey, SandboxAssets.testFontMaterial.withTint(RGBA.Red))
+
   def components: ComponentGroup[Int] =
     ComponentGroup(BoundsMode.fixed(200, 300))
+      .withLayout(ComponentLayout.Horizontal(Padding(4), Overflow.Wrap))
       .add(
-        ComponentList[Int, Label[Int]](Dimensions(200, 40)) { _ =>
+        ComponentList[Int, Label[Int]](Dimensions(200, 64)) { _ =>
           (1 to 3).toBatch.map { i =>
             ComponentId("lbl" + i) -> Label[Int](
               "Custom rendered label " + i,
-              (_, label) => Bounds(0, 0, 150, 10)
+              (ctx, label) => Bounds(ctx.services.bounds.get(textRed.withText(label)))
             ) { case (ctx, label) =>
               Outcome(
                 Layer(
-                  Text(label.text(ctx), Fonts.fontKey, SandboxAssets.fontMaterial.withTint(RGBA.Red))
+                  textRed
+                    .withText(label.text(ctx))
                     .moveTo(ctx.parent.coords.unsafeToPoint)
                 )
               )
@@ -124,11 +132,12 @@ object SandboxModel {
       .add(
         Label[Int](
           "Another label",
-          (_, label) => Bounds(0, 0, 150, 10)
+          (ctx, label) => Bounds(ctx.services.bounds.get(text.withText(label)))
         ) { case (ctx, label) =>
           Outcome(
             Layer(
-              Text(label.text(ctx), Fonts.fontKey, SandboxAssets.fontMaterial)
+              text
+                .withText(label.text(ctx))
                 .moveTo(ctx.parent.coords.unsafeToPoint)
             )
           )
@@ -209,7 +218,7 @@ object SandboxModel {
           .onRelease(Log("Button released"))
       )
       .add(
-        ComponentList[Int, ComponentGroup[Int]](Dimensions(200, 150)) { _ =>
+        ComponentList[Int, ComponentGroup[Int]](Dimensions(200, 64)) { _ =>
           (1 to 3).toBatch.map { i =>
             ComponentId("radio-" + i) ->
               ComponentGroup(BoundsMode.fixed(200, 30))
@@ -254,11 +263,12 @@ object SandboxModel {
                 .add(
                   Label[Int](
                     "Radio " + i,
-                    (_, label) => Bounds(0, 0, 150, 10)
+                    (ctx, label) => Bounds(ctx.services.bounds.get(textRed.withText(label)))
                   ) { case (ctx, label) =>
                     Outcome(
                       Layer(
-                        Text(label.text(ctx), Fonts.fontKey, SandboxAssets.fontMaterial.withTint(RGBA.Red))
+                        textRed
+                          .withText(label.text(ctx))
                           .moveTo(ctx.parent.bounds.coords.unsafeToPoint)
                       )
                     )
@@ -266,6 +276,52 @@ object SandboxModel {
                 )
           }
         }
+      )
+      .add(
+        Button[Int](Bounds(16, 16)) { (context, button) =>
+          Outcome(
+            Layer(
+              Shape
+                .Box(
+                  button.bounds.unsafeToRectangle,
+                  Fill.Color(RGBA.Magenta.mix(RGBA.Black)),
+                  Stroke(1, RGBA.Magenta)
+                )
+                .moveTo(context.parent.coords.unsafeToPoint)
+            )
+          )
+        }
+          .presentDown { (context, button) =>
+            Outcome(
+              Layer(
+                Shape
+                  .Box(
+                    button.bounds.unsafeToRectangle,
+                    Fill.Color(RGBA.Cyan.mix(RGBA.Black)),
+                    Stroke(1, RGBA.Cyan)
+                  )
+                  .moveTo(context.parent.coords.unsafeToPoint)
+              )
+            )
+          }
+          .presentOver((context, button) =>
+            Outcome(
+              Layer(
+                Shape
+                  .Box(
+                    button.bounds.unsafeToRectangle,
+                    Fill.Color(RGBA.Yellow.mix(RGBA.Black)),
+                    Stroke(1, RGBA.Yellow)
+                  )
+                  .moveTo(context.parent.coords.unsafeToPoint)
+              )
+            )
+          )
+          .onClick(Log("Button clicked!"))
+          .onPress(Log("Button pressed!"))
+          .onRelease(Log("Button released!"))
+          .makeDraggable
+          .onDrag(Log("Dragging!"))
       )
 
   def updateModel(state: SandboxGameModel): GlobalEvent => Outcome[SandboxGameModel] = {
