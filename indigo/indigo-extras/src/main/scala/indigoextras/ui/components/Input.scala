@@ -45,8 +45,6 @@ final case class Input[ReferenceData](
 
   def withCalculateLineLength(calc: (UIContext[ReferenceData], String) => Int): Input[ReferenceData] =
     this.copy(calculateLineLength = calc)
-  def calculateLineLength(context: UIContext[ReferenceData]): Int =
-    calculateLineLength(context, text)
 
   def noCursorBlink: Input[ReferenceData] =
     this.copy(cursor = cursor.noCursorBlink)
@@ -87,20 +85,12 @@ final case class Input[ReferenceData](
     this.copy(cursor = cursor.cursorEnd(length))
 
   def delete: Input[ReferenceData] =
-    if cursor.position == length then this
-    else
-      val splitString = text.splitAt(cursor.position)
-      copy(text = splitString._1 + splitString._2.substring(1))
+    val res = Input.deleteAt(text, cursor.position)
+    this.copy(text = res.updatedText, cursor = cursor.moveTo(res.nextCursorPosition))
 
   def backspace: Input[ReferenceData] =
-    val splitString = text.splitAt(cursor.position)
-
-    this.copy(
-      text = splitString._1.take(splitString._1.length - 1) + splitString._2,
-      cursor = cursor.moveTo(
-        if cursor.position > 0 then cursor.position - 1 else cursor.position
-      )
-    )
+    val res = Input.backspaceAt(text, cursor.position)
+    this.copy(text = res.updatedText, cursor = cursor.moveTo(res.nextCursorPosition))
 
   def withCursor(newCursor: Cursor): Input[ReferenceData] =
     this.copy(cursor = newCursor)
@@ -108,29 +98,9 @@ final case class Input[ReferenceData](
   def addCharacter(char: Char): Input[ReferenceData] =
     addCharacterText(char.toString())
 
-  def addCharacterText(textToInsert: String): Input[ReferenceData] = {
-    @tailrec
-    def rec(remaining: List[Char], textHead: String, textTail: String, position: Int): Input[ReferenceData] =
-      remaining match
-        case Nil =>
-          this.copy(
-            text = textHead + textTail,
-            cursor = cursor.moveTo(position)
-          )
-
-        case _ if (textHead + textTail).length >= characterLimit =>
-          rec(Nil, textHead, textTail, position)
-
-        case c :: cs if c != '\n' =>
-          rec(cs, textHead + c.toString(), textTail, position + 1)
-
-        case _ :: cs =>
-          rec(cs, textHead, textTail, position)
-
-    val splitString = text.splitAt(cursor.position)
-
-    rec(textToInsert.toCharArray().toList, splitString._1, splitString._2, cursor.position)
-  }
+  def addCharacterText(textToInsert: String): Input[ReferenceData] =
+    val res = Input.addTextAt(text, cursor.position, textToInsert, characterLimit)
+    this.copy(text = res.updatedText, cursor = cursor.moveTo(res.nextCursorPosition))
 
   def withFocusActions(actions: GlobalEvent*): Input[ReferenceData] =
     withFocusActions(Batch.fromSeq(actions))
@@ -158,7 +128,7 @@ object Input:
       present,
       _ => Batch.empty,
       calculateLineLength,
-      characterLimit = dimensions.width,
+      characterLimit = 128,
       cursor = Cursor.default,
       hasFocus = false,
       () => Batch.empty,
@@ -167,7 +137,7 @@ object Input:
 
   given [ReferenceData]: Component[Input[ReferenceData], ReferenceData] with
     def bounds(context: UIContext[ReferenceData], model: Input[ReferenceData]): Bounds =
-      Bounds(model.dimensions).resizeBy(2, 2)
+      Bounds(model.dimensions)
 
     def updateModel(
         context: UIContext[ReferenceData],
@@ -175,7 +145,6 @@ object Input:
     ): GlobalEvent => Outcome[Input[ReferenceData]] =
       case _: PointerEvent.Click
           if context.isActive && Bounds(model.dimensions)
-            .resizeBy(2, 2)
             .moveBy(context.parent.coords)
             .contains(context.pointerCoords) =>
 
@@ -254,5 +223,62 @@ object Input:
         else current
       else rec(current + 1, next)
 
-    val res = rec(0, 0)
-    res
+    if mouseX >= calcLineLength(text) then text.length
+    else rec(0, 0)
+
+  def deleteAt(text: String, position: Int): InputTextModified =
+    if position >= text.length then
+      InputTextModified(
+        text,
+        position
+      )
+    else
+      val splitString = text.splitAt(position)
+
+      InputTextModified(
+        splitString._1 + splitString._2.drop(1),
+        position
+      )
+
+  def backspaceAt(text: String, position: Int): InputTextModified =
+    val splitString =
+      if position >= text.length then (text, "")
+      else text.splitAt(position)
+
+    val truncated = splitString._1.dropRight(1)
+
+    InputTextModified(
+      truncated + splitString._2,
+      truncated.length
+    )
+
+  def addTextAt(text: String, position: Int, textToInsert: String, characterLimit: Int): InputTextModified = {
+    @tailrec
+    def rec(remaining: List[Char], textHead: String, textTail: String, position: Int): InputTextModified =
+      remaining match
+        case Nil =>
+          InputTextModified(
+            textHead + textTail,
+            position
+          )
+
+        case _ if (textHead + textTail).length >= characterLimit =>
+          rec(Nil, textHead, textTail, position)
+
+        case c :: cs if c != '\n' =>
+          rec(cs, textHead + c.toString(), textTail, position + 1)
+
+        case _ :: cs =>
+          rec(cs, textHead, textTail, position)
+
+    val correctedPosition =
+      if position > text.length then text.length else position
+
+    val splitString =
+      if correctedPosition >= text.length then (text, "")
+      else text.splitAt(correctedPosition)
+
+    rec(textToInsert.toCharArray().toList, splitString._1, splitString._2, correctedPosition)
+  }
+
+final case class InputTextModified(updatedText: String, nextCursorPosition: Int)
