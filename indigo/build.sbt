@@ -4,7 +4,7 @@ import Misc._
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
-val scala3Version = "3.6.2"
+val scala3Version = "3.6.3"
 
 ThisBuild / versionScheme := Some("early-semver")
 ThisBuild / scalaVersion  := scala3Version
