@@ -12,8 +12,8 @@ object Dependencies {
     val scalajsBenchmark = "0.10.0"
     val chartjs          = "1.0.2"
     val munit            = "1.1.0"
-    val ultraviolet      = "0.4.0"
-    val tyrianVersion    = "0.12.0"
+    val ultraviolet      = "0.5.0"
+    val tyrianVersion    = "0.13.0"
   }
 
   object Shared {
