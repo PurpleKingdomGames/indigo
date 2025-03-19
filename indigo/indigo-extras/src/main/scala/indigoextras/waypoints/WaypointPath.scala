@@ -53,9 +53,11 @@ object WaypointPath:
       override def calculatePosition(
           at: Double
       ): (Vector2, Radians) =
-        val coveredDistance =
-          if loop then (at % 1.0) * fullDistance
-          else at.min(1.0) * fullDistance
+        val clampedAt = if loop then at % 1.0 else at.min(1.0)
+
+        val positiveAt = if clampedAt < 0 then 1.0 + clampedAt else clampedAt
+
+        val coveredDistance = positiveAt * fullDistance
 
         findPathPosition(distances, coveredDistance, 0.0)
 
