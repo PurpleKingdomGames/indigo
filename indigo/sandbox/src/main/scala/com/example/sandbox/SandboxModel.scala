@@ -5,7 +5,6 @@ import com.example.sandbox.scenes.ComponentUIScene2
 import com.example.sandbox.scenes.ConfettiModel
 import com.example.sandbox.scenes.PathFindingModel
 import com.example.sandbox.scenes.PointersModel
-import com.example.sandbox.scenes.WaypointModel
 import example.TestFont
 import indigo.*
 import indigo.syntax.*
@@ -24,8 +23,7 @@ final case class SandboxGameModel(
     components: ComponentGroup[Int],
     scrollPane: ScrollPane[ComponentList[Int], Int],
     button: Button[Int],
-    meshData: MeshData,
-    waypointModel: WaypointModel
+    meshData: MeshData
 )
 
 object SandboxModel {
@@ -58,8 +56,7 @@ object SandboxModel {
         points,
         superTriangle,
         mesh
-      ),
-      WaypointModel()
+      )
     )
 
   val customButton: Button[Int] =
