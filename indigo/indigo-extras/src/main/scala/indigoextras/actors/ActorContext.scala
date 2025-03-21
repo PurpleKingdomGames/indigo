@@ -13,3 +13,7 @@ object ActorContext:
 
   def apply(ctx: SubSystemContext[?]): ActorContext =
     Context(ctx.frame, ctx.services)
+
+  extension (ac: ActorContext)
+    def frame: Context.Frame       = ac.frame
+    def services: Context.Services = ac.services
