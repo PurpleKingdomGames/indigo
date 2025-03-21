@@ -95,11 +95,11 @@ final case class Follower(id: ActorId, position: Vertex, divisor: Int, alpha: Do
 
   type ActorModel = Point
 
-  def read(model: SandboxGameModel): Point =
-    model.actorScene.target
+  def read(model: SandboxGameModel): Point = model.actorScene.target
+  def depth(context: ActorContext, model: Point): Int = 0
 
-  override def updateModel(
-      context: Context[Unit],
+  def updateModel(
+      context: ActorContext,
       target: Point
   ): GlobalEvent => Outcome[Follower] =
     case FrameTick =>
@@ -110,8 +110,8 @@ final case class Follower(id: ActorId, position: Vertex, divisor: Int, alpha: Do
     case _ =>
       Outcome(this)
 
-  override def present(
-      context: Context[Unit],
+  def present(
+      context: ActorContext,
       target: Point
   ): Outcome[Batch[SceneNode]] =
     Outcome(
