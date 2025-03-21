@@ -1,5 +1,6 @@
 package com.example.sandbox
 
+import com.example.sandbox.scenes.ActorSceneModel
 import com.example.sandbox.scenes.ChangeValue
 import com.example.sandbox.scenes.ComponentUIScene2
 import com.example.sandbox.scenes.ConfettiModel
@@ -25,7 +26,8 @@ final case class SandboxGameModel(
     components: ComponentGroup[Int],
     scrollPane: ScrollPane[ComponentList[Int], Int],
     button: Button[Int],
-    meshData: MeshData
+    meshData: MeshData,
+    actorScene: ActorSceneModel
 )
 
 object SandboxModel {
@@ -59,7 +61,8 @@ object SandboxModel {
         points,
         superTriangle,
         mesh
-      )
+      ),
+      ActorSceneModel.initial
     )
 
   val customButton: Button[Int] =
