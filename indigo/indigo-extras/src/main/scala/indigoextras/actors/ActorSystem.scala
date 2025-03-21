@@ -50,7 +50,7 @@ final case class ActorSystem[Model](
 
     case e =>
       val ctx =
-        context.toContext
+        ActorContext(context)
 
       model.actors
         .sortBy(ai => ai.depth(ctx, ai.read(context.reference)))
@@ -65,7 +65,7 @@ final case class ActorSystem[Model](
       model: ActorSystemModel[Model]
   ): Outcome[SceneUpdateFragment] =
     val ctx =
-      context.toContext
+      ActorContext(context)
 
     val nodes: Outcome[Batch[SceneNode]] =
       model.actors
