@@ -17,21 +17,18 @@ trait Actor[Model]:
 
   /** The depth of this actor in the scene.
     */
-  def depth(context: ActorContext, model: ActorModel): Int =
-    0
+  def depth(context: ActorContext, model: ActorModel): Int
 
   /** Update this actor's model.
     */
   def updateModel(
       context: ActorContext,
       model: ActorModel
-  ): GlobalEvent => Outcome[Actor[Model]] =
-    _ => Outcome(this)
+  ): GlobalEvent => Outcome[Actor[Model]]
 
   /** Produce a renderable output for this actor, based on the actor's model.
     */
   def present(
       context: ActorContext,
       model: ActorModel
-  ): Outcome[Batch[SceneNode]] =
-    Outcome(Batch.empty)
+  ): Outcome[Batch[SceneNode]]
