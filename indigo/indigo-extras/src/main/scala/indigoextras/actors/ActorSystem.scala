@@ -13,7 +13,7 @@ import indigo.shared.subsystems.SubSystemId
 
 final case class ActorSystem[Model](
     id: SubSystemId,
-    layerKey: Option[String],
+    layerKey: Option[LayerKey],
     initialActors: Batch[Actor[Model]]
 ) extends SubSystem[Model]:
 
@@ -53,9 +53,9 @@ final case class ActorSystem[Model](
         ActorContext(context)
 
       model.actors
-        .sortBy(ai => ai.depth(ctx, ai.read(context.reference)))
+        .sortBy(ai => ai.depth(ctx, ai.reference(context.reference)))
         .map { ai =>
-          ai.updateModel(ctx, ai.read(context.reference))(e)
+          ai.updateModel(ctx, ai.reference(context.reference))(e)
         }
         .sequence
         .map(ActorSystemModel.apply)
@@ -70,7 +70,7 @@ final case class ActorSystem[Model](
     val nodes: Outcome[Batch[SceneNode]] =
       model.actors
         .map { ai =>
-          ai.present(ctx, ai.read(context.reference))
+          ai.present(ctx, ai.reference(context.reference))
         }
         .sequence
         .map(_.flatten)
@@ -86,9 +86,17 @@ final case class ActorSystem[Model](
       case Some(key) =>
         nodes.map { ns =>
           SceneUpdateFragment(
-            LayerKey(key) -> Layer.Content(ns)
+            key -> Layer.Content(ns)
           )
         }
+
+  def withId(id: SubSystemId): ActorSystem[Model] =
+    this.copy(id = id)
+
+  def withLayerKey(key: LayerKey): ActorSystem[Model] =
+    this.copy(layerKey = Some(key))
+  def clearLayerKey: ActorSystem[Model] =
+    this.copy(layerKey = None)
 
   def spawn[A](actors: Batch[Actor[ReferenceData]]): ActorSystem[Model] =
     this.copy(initialActors = initialActors ++ actors)
@@ -101,5 +109,11 @@ object ActorSystem:
       id: SubSystemId
   ): ActorSystem[SandboxGameModel] =
     ActorSystem(id, None, Batch.empty)
+
+  def apply[SandboxGameModel](
+      id: SubSystemId,
+      layerKey: LayerKey
+  ): ActorSystem[SandboxGameModel] =
+    ActorSystem(id, Some(layerKey), Batch.empty)
 
 final case class ActorSystemModel[Model](actors: Batch[Actor[Model]])
