@@ -7,28 +7,32 @@ import indigo.shared.scenegraph.SceneNode
 
 trait Actor[Model]:
 
-  type ActorModel
+  /** The actor's reference data is a snapshot of the game's model that is specific to this actor.
+    */
+  type ReferenceData
 
   /** The unique identifier for this actor.
     */
   def id: ActorId
 
-  def read(model: Model): ActorModel
+  /** Read the game's model and produce the actor's reference model.
+    */
+  def reference(model: Model): ReferenceData
 
   /** The depth of this actor in the scene.
     */
-  def depth(context: ActorContext, model: ActorModel): Int
+  def depth(context: ActorContext, reference: ReferenceData): Int
 
   /** Update this actor's model.
     */
   def updateModel(
       context: ActorContext,
-      model: ActorModel
+      reference: ReferenceData
   ): GlobalEvent => Outcome[Actor[Model]]
 
-  /** Produce a renderable output for this actor, based on the actor's model.
+  /** Draw the actor, based on the actor's model.
     */
   def present(
       context: ActorContext,
-      model: ActorModel
+      reference: ReferenceData
   ): Outcome[Batch[SceneNode]]
