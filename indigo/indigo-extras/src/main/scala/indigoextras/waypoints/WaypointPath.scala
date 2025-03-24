@@ -3,6 +3,7 @@ package indigoextras.waypoints
 import indigo.Batch
 import indigo.Radians
 import indigo.Vertex
+import indigo.syntax.toBatch
 
 import scala.annotation.tailrec
 
@@ -118,6 +119,9 @@ final case class WaypointPath(waypoints: Batch[Vertex], config: WaypointPathConf
 object WaypointPath:
   def apply(waypoints: Batch[Vertex]): WaypointPath =
     WaypointPath(waypoints, WaypointPathConfig.default)
+
+  def apply(waypoints: Vertex*): WaypointPath =
+    WaypointPath(waypoints.toBatch, WaypointPathConfig.default)
 
 /** Configuration parameters for the WaypointPath
   *
