@@ -9,6 +9,7 @@ import indigo.scenes.*
 import indigo.syntax.*
 import indigo.syntax.animations.*
 import indigoextras.waypoints.WaypointPath
+import indigoextras.waypoints.WaypointPathPosition
 
 object WaypointScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
 
@@ -50,8 +51,8 @@ object WaypointScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
       .withRef(16, 16)
 
   val moveAndRotate
-      : Graphic[Material.ImageEffects] => SignalFunction[(Vertex, Radians), Graphic[Material.ImageEffects]] = g =>
-    SignalFunction((v, r) => g.moveTo(v.toPoint).rotateTo(r))
+      : Graphic[Material.ImageEffects] => SignalFunction[WaypointPathPosition, Graphic[Material.ImageEffects]] = g =>
+    SignalFunction(wpp => g.moveTo(wpp.position.toPoint).rotateTo(wpp.direction))
 
   val pentagramWaypoints = (0 until 5).toBatch.map: i =>
     val angle = ((Radians.PI * 4) / 5) * i
@@ -65,12 +66,12 @@ object WaypointScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
     val y     = Math.sin(angle.toDouble) * 60 + 100
     Vertex(x, y)
 
-  def traverseWaypoints(waypoints: Batch[Vertex], loop: Boolean): SignalFunction[Double, (Vertex, Radians)] =
+  def traverseWaypoints(waypoints: Batch[Vertex], loop: Boolean): SignalFunction[Double, WaypointPathPosition] =
     val path = WaypointPath(waypoints, 0.0, loop)
     SignalFunction(over => path.calculatePosition(over))
 
-  val traversePentagram: SignalFunction[Double, (Vertex, Radians)] = traverseWaypoints(pentagramWaypoints, true)
-  val traverseDecagon: SignalFunction[Double, (Vertex, Radians)]   = traverseWaypoints(decagonWaypoints, true)
+  val traversePentagram: SignalFunction[Double, WaypointPathPosition] = traverseWaypoints(pentagramWaypoints, true)
+  val traverseDecagon: SignalFunction[Double, WaypointPathPosition]   = traverseWaypoints(decagonWaypoints, true)
 
   def mult(amount: Double): SignalFunction[Double, Double] =
     SignalFunction(_ * amount)

@@ -6,80 +6,57 @@ import indigo.Vertex
 
 import scala.annotation.tailrec
 
-trait WaypointPath:
-  def waypoints: Batch[Vertex]
+final case class WaypointPath(waypoints: Batch[Vertex], proximityRadius: Double, looping: Boolean):
+  def withProximityRadius(proximityRadius: Double): WaypointPath = this.copy(proximityRadius = proximityRadius)
+  def withLooping(looping: Boolean): WaypointPath                = this.copy(looping = looping)
+  def withLooping(waypoints: Batch[Vertex]): WaypointPath        = this.copy(waypoints = waypoints)
 
-  def effectiveWaypoints: Batch[Vertex]
+  val calculatedWaypoints: Batch[Vertex] =
+    if proximityRadius > 0.0 then waypointsWithRadius(waypoints, proximityRadius, looping)
+    else waypoints
 
-  def loop: Boolean
+  private val zippedWaypoints =
+    if looping then
+      calculatedWaypoints.zip(
+        calculatedWaypoints.tail :+ calculatedWaypoints.head
+      )
+    else calculatedWaypoints.dropRight(1).zip(calculatedWaypoints.tail)
+
+  private val waypointDistances = zippedWaypoints
+    .map: (p1, p2) =>
+      ((p1, p2), p1.distanceTo(p2))
+
+  val pathLength: Double = waypointDistances.map(_._2).sum
 
   def calculatePosition(
       at: Double
-  ): (Vertex, Radians)
+  ): WaypointPathPosition =
+    val clampedAt = if looping then at % 1.0 else at.min(1.0)
 
-object WaypointPath:
-  def apply(
-      waypoints: Batch[Vertex],
-      radius: Double,
-      loop: Boolean
-  ): WaypointPath =
+    val positiveAt = if clampedAt < 0 then 1.0 + clampedAt else clampedAt
 
-    val _effectiveWaypoints =
-      if radius > 0.0 then waypointsWithRadius(waypoints, radius, loop)
-      else waypoints
+    val coveredDistance = positiveAt * pathLength
 
-    val zippedWaypoints =
-      if loop then
-        _effectiveWaypoints.zip(
-          _effectiveWaypoints.tail :+ _effectiveWaypoints.head
-        )
-      else _effectiveWaypoints.dropRight(1).zip(_effectiveWaypoints.tail)
+    findPathPosition(waypointDistances, coveredDistance, 0.0)
 
-    val distances = zippedWaypoints
-      .map: (p1, p2) =>
-        ((p1, p2), p1.distanceTo(p2))
-
-    val fullDistance = distances.map(_._2).sum
-
-    val _waypoints = waypoints
-    val _loop      = loop
-
-    new WaypointPath:
-      override def waypoints: Batch[Vertex] = _waypoints
-
-      override def effectiveWaypoints: Batch[Vertex] = _effectiveWaypoints
-
-      override def loop: Boolean = _loop
-
-      override def calculatePosition(
-          at: Double
-      ): (Vertex, Radians) =
-        val clampedAt = if loop then at % 1.0 else at.min(1.0)
-
-        val positiveAt = if clampedAt < 0 then 1.0 + clampedAt else clampedAt
-
-        val coveredDistance = positiveAt * fullDistance
-
-        findPathPosition(distances, coveredDistance, 0.0)
-
-  // traverse the precalculated list of waypoints and the distances between them and finds where the expected position
+    // traverse the precalculated list of waypoints and the distances between them and finds where the expected position
   @tailrec
   private def findPathPosition(
       distances: Batch[((Vertex, Vertex), Double)],
       coveredDistance: Double,
       acc: Double
-  ): (Vertex, Radians) =
+  ): WaypointPathPosition =
     val ((v1, v2), distance) = distances.head
 
     if (coveredDistance >= acc && coveredDistance <= acc + distance)
       val innerAt   = (coveredDistance - acc) / distance
       val position  = lerpVertex(v1, v2, innerAt)
       val direction = (v2 - v1).angle
-      (position, direction)
+      WaypointPathPosition(position, direction)
     else if (distances.size == 1)
       val position  = v2
       val direction = (v2 - v1).angle
-      (position, direction)
+      WaypointPathPosition(position, direction)
     else findPathPosition(distances.tail, coveredDistance, acc + distance)
 
   private def lerpDouble(start: Double, end: Double, at: Double): Double =
@@ -110,3 +87,14 @@ object WaypointPath:
             case None => Batch(v2)
     if loop then Batch(distances.last) ++ distances.tail.dropRight(1)
     else distances
+
+object WaypointPath:
+
+  def apply(waypoints: Batch[Vertex], proximityRadius: Double): WaypointPath =
+    WaypointPath(waypoints, proximityRadius, looping = false)
+  def apply(waypoints: Batch[Vertex], looping: Boolean): WaypointPath =
+    WaypointPath(waypoints, proximityRadius = 0.0, looping)
+  def apply(waypoints: Batch[Vertex]): WaypointPath =
+    WaypointPath(waypoints, proximityRadius = 0.0, looping = false)
+
+final case class WaypointPathPosition(position: Vertex, direction: Radians)
