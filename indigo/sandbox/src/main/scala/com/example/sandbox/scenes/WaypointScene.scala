@@ -9,7 +9,6 @@ import indigo.scenes.*
 import indigo.syntax.*
 import indigo.syntax.animations.*
 import indigoextras.waypoints.WaypointPath
-import indigoextras.waypoints.WaypointPathConfig
 import indigoextras.waypoints.WaypointPathPosition
 
 object WaypointScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
@@ -55,24 +54,37 @@ object WaypointScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
       : Graphic[Material.ImageEffects] => SignalFunction[WaypointPathPosition, Graphic[Material.ImageEffects]] = g =>
     SignalFunction(wpp => g.moveTo(wpp.position.toPoint).rotateTo(wpp.direction))
 
+  val moveAndRotateShape: Shape[?] => SignalFunction[WaypointPathPosition, Shape[?]] = g =>
+    SignalFunction(wpp => g.moveTo(wpp.position.toPoint))
+
   val pentagramWaypoints = (0 until 5).toBatch.map: i =>
     val angle = ((Radians.PI * 4) / 5) * i
-    val x     = Math.cos(angle.toDouble) * 60 + 137.5
+    val x     = Math.cos(angle.toDouble) * 60 + 200
     val y     = Math.sin(angle.toDouble) * 60 + 100
     Vertex(x, y)
 
   val decagonWaypoints = (0 until 10).toBatch.map: i =>
     val angle = (Radians.PI / 5) * i
-    val x     = Math.cos(angle.toDouble) * 60 + 137.5
+    val x     = Math.cos(angle.toDouble) * 60 + 200
     val y     = Math.sin(angle.toDouble) * 60 + 100
     Vertex(x, y)
 
-  def traverseWaypoints(waypoints: Batch[Vertex], loop: Boolean): SignalFunction[Double, WaypointPathPosition] =
-    val path = WaypointPath(waypoints, WaypointPathConfig(0.0, loop))
+  val simplePathWaypoints = Batch(Vertex(20, 20), Vertex(100, 70), Vertex(20, 120), Vertex(100, 170))
+
+  def traverseWaypoints(path: WaypointPath): SignalFunction[Double, WaypointPathPosition] =
     SignalFunction(over => path.calculatePosition(over))
 
-  val traversePentagram: SignalFunction[Double, WaypointPathPosition] = traverseWaypoints(pentagramWaypoints, true)
-  val traverseDecagon: SignalFunction[Double, WaypointPathPosition]   = traverseWaypoints(decagonWaypoints, true)
+  val traversePentagram: SignalFunction[Double, WaypointPathPosition] =
+    traverseWaypoints(WaypointPath(pentagramWaypoints).withLooping(true))
+  val traverseDecagon: SignalFunction[Double, WaypointPathPosition] =
+    traverseWaypoints(WaypointPath(decagonWaypoints).withLooping(true))
+
+  val directPath       = WaypointPath(simplePathWaypoints)
+  val mediumRadiusPath = WaypointPath(simplePathWaypoints).withProximityRadius(10.0)
+  val largeRadiusPath  = WaypointPath(simplePathWaypoints).withProximityRadius(20.0)
+  val traverseSimplePathDirect: SignalFunction[Double, WaypointPathPosition] = traverseWaypoints(directPath)
+  val traverseSimplePathMedium: SignalFunction[Double, WaypointPathPosition] = traverseWaypoints(mediumRadiusPath)
+  val traverseSimplePathLarge: SignalFunction[Double, WaypointPathPosition]  = traverseWaypoints(largeRadiusPath)
 
   def mult(amount: Double): SignalFunction[Double, Double] =
     SignalFunction(_ * amount)
@@ -120,6 +132,36 @@ object WaypointScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
       )
     )
 
+  val tl5: Timeline[Shape[?]] =
+    timeline(
+      layer(
+        startAfter(delayDuration),
+        animate(animationDuration) {
+          lerp >>> traverseSimplePathDirect >>> moveAndRotateShape(_)
+        }
+      )
+    )
+
+  val tl6: Timeline[Shape[?]] =
+    timeline(
+      layer(
+        startAfter(delayDuration),
+        animate(animationDuration) {
+          lerp >>> traverseSimplePathMedium >>> moveAndRotateShape(_)
+        }
+      )
+    )
+
+  val tl7: Timeline[Shape[?]] =
+    timeline(
+      layer(
+        startAfter(delayDuration),
+        animate(animationDuration) {
+          lerp >>> traverseSimplePathLarge >>> moveAndRotateShape(_)
+        }
+      )
+    )
+
   def present(
       context: SceneContext[SandboxStartupData],
       model: SceneModel,
@@ -152,15 +194,84 @@ object WaypointScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
           Stroke(1, RGBA.Black)
         )
 
+    val simplePathWaypointGraphics = simplePathWaypoints.map: w =>
+      Shape.Circle(
+        w.toPoint,
+        3,
+        Fill.Color(RGBA.Green),
+        Stroke.None
+      )
+
+    val directPathGraphics = directPath.calculatedWaypoints
+      .dropRight(1)
+      .zip(directPath.calculatedWaypoints.tail)
+      .map: (w1, w2) =>
+        Shape.Line(
+          w1.toPoint,
+          w2.toPoint,
+          Stroke(1, RGBA.White)
+        )
+
+    val mediumRadiusPathGraphics = mediumRadiusPath.calculatedWaypoints
+      .dropRight(1)
+      .zip(mediumRadiusPath.calculatedWaypoints.tail)
+      .map: (w1, w2) =>
+        Shape.Line(
+          w1.toPoint,
+          w2.toPoint,
+          Stroke(1, RGBA.DarkBlue)
+        )
+
+    val largeRadiusPathGraphics = largeRadiusPath.calculatedWaypoints
+      .dropRight(1)
+      .zip(largeRadiusPath.calculatedWaypoints.tail)
+      .map: (w1, w2) =>
+        Shape.Line(
+          w1.toPoint,
+          w2.toPoint,
+          Stroke(1, RGBA.Crimson)
+        )
+
+    val smallCircle = Shape
+      .Circle(
+        Point.zero,
+        4,
+        Fill.None,
+        Stroke(1, RGBA.White)
+      )
+
+    val mediumCircle = Shape
+      .Circle(
+        Point.zero,
+        10,
+        Fill.None,
+        Stroke(1, RGBA.DarkBlue)
+      )
+
+    val largeCircle = Shape
+      .Circle(
+        Point.zero,
+        20,
+        Fill.None,
+        Stroke(1, RGBA.Crimson)
+      )
+
     Outcome(
       SceneUpdateFragment(
         pentagramPathGraphics ++
           decagonPathGraphics ++
           waypointGraphics ++
+          directPathGraphics ++
+          mediumRadiusPathGraphics ++
+          largeRadiusPathGraphics ++
+          simplePathWaypointGraphics ++
           tl1(8.0).atOrLast(context.frame.time.running)(dude(RGB.Coral)).toBatch ++
           tl2(8.0).atOrLast(context.frame.time.running)(dude(RGB.Plum)).toBatch ++
           tl3(8.0).atOrLast(context.frame.time.running)(dude(RGB.SeaGreen)).toBatch ++
           tl4(8.0).atOrLast(context.frame.time.running)(dude(RGB.Crimson)).toBatch ++
-          tl4(-8.0).atOrLast(context.frame.time.running)(dude(RGB.Thistle)).toBatch
+          tl4(-8.0).atOrLast(context.frame.time.running)(dude(RGB.Thistle)).toBatch ++
+          Batch(tl5.atOrElse(context.frame.time.running)(smallCircle)) ++
+          Batch(tl6.atOrElse(context.frame.time.running)(mediumCircle)) ++
+          Batch(tl7.atOrElse(context.frame.time.running)(largeCircle))
       )
     )
