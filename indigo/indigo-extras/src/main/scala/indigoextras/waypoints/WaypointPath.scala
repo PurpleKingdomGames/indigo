@@ -12,24 +12,28 @@ import scala.annotation.tailrec
   *
   * @param waypoints
   *   list of positions to traverse through
-  * @param proximityRadius
-  *   distance from each waypoint where it can be considered traversed
-  * @param looping
-  *   whether the path ends at the last position of the batch or at the first
+  * @param config
+  *   set of configurations
   */
-final case class WaypointPath(waypoints: Batch[Vertex], proximityRadius: Double, looping: Boolean):
-  def withProximityRadius(proximityRadius: Double): WaypointPath = this.copy(proximityRadius = proximityRadius)
-  def withLooping(looping: Boolean): WaypointPath                = this.copy(looping = looping)
-  def withLooping(waypoints: Batch[Vertex]): WaypointPath        = this.copy(waypoints = waypoints)
+final case class WaypointPath(waypoints: Batch[Vertex], config: WaypointPathConfig):
+
+  def withWaypoints(waypoints: Batch[Vertex]): WaypointPath =
+    this.copy(waypoints = waypoints)
+
+  def withProximityRadius(proximityRadius: Double): WaypointPath =
+    this.copy(config = config.copy(proximityRadius = proximityRadius))
+
+  def withLooping(looping: Boolean): WaypointPath =
+    this.copy(config = config.copy(looping = looping))
 
   /** The actual waypoints that will be traversed through if radius is greater than 0.0
     */
   val calculatedWaypoints: Batch[Vertex] =
-    if proximityRadius > 0.0 then waypointsWithRadius(waypoints, proximityRadius, looping)
+    if config.proximityRadius > 0.0 then waypointsWithRadius(waypoints, config.proximityRadius, config.looping)
     else waypoints
 
   private val zippedWaypoints =
-    if looping then
+    if config.looping then
       calculatedWaypoints.zip(
         calculatedWaypoints.tail :+ calculatedWaypoints.head
       )
@@ -54,7 +58,7 @@ final case class WaypointPath(waypoints: Batch[Vertex], proximityRadius: Double,
   def calculatePosition(
       at: Double
   ): WaypointPathPosition =
-    val clampedAt = if looping then at % 1.0 else at.min(1.0)
+    val clampedAt = if config.looping then at % 1.0 else at.min(1.0)
 
     val positiveAt = if clampedAt < 0 then 1.0 + clampedAt else clampedAt
 
@@ -112,12 +116,18 @@ final case class WaypointPath(waypoints: Batch[Vertex], proximityRadius: Double,
     else distances
 
 object WaypointPath:
-
-  def apply(waypoints: Batch[Vertex], proximityRadius: Double): WaypointPath =
-    WaypointPath(waypoints, proximityRadius, looping = false)
-  def apply(waypoints: Batch[Vertex], looping: Boolean): WaypointPath =
-    WaypointPath(waypoints, proximityRadius = 0.0, looping)
   def apply(waypoints: Batch[Vertex]): WaypointPath =
-    WaypointPath(waypoints, proximityRadius = 0.0, looping = false)
+    WaypointPath(waypoints, WaypointPathConfig.default)
+
+/** Configuration parameters for the WaypointPath
+  *
+  * @param proximityRadius
+  *   distance from each waypoint where it can be considered traversed
+  * @param looping
+  *   whether the path ends at the last position of the batch or at the first
+  */
+final case class WaypointPathConfig(proximityRadius: Double, looping: Boolean)
+object WaypointPathConfig:
+  val default: WaypointPathConfig = WaypointPathConfig(proximityRadius = 0.0, looping = false)
 
 final case class WaypointPathPosition(position: Vertex, direction: Radians)

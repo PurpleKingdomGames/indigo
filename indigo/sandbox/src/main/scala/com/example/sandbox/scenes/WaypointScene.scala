@@ -9,6 +9,7 @@ import indigo.scenes.*
 import indigo.syntax.*
 import indigo.syntax.animations.*
 import indigoextras.waypoints.WaypointPath
+import indigoextras.waypoints.WaypointPathConfig
 import indigoextras.waypoints.WaypointPathPosition
 
 object WaypointScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
@@ -67,7 +68,7 @@ object WaypointScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
     Vertex(x, y)
 
   def traverseWaypoints(waypoints: Batch[Vertex], loop: Boolean): SignalFunction[Double, WaypointPathPosition] =
-    val path = WaypointPath(waypoints, 0.0, loop)
+    val path = WaypointPath(waypoints, WaypointPathConfig(0.0, loop))
     SignalFunction(over => path.calculatePosition(over))
 
   val traversePentagram: SignalFunction[Double, WaypointPathPosition] = traverseWaypoints(pentagramWaypoints, true)
