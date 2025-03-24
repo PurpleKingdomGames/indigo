@@ -6,11 +6,24 @@ import indigo.Vertex
 
 import scala.annotation.tailrec
 
+/** Structure holding a set of positions (waypoints) to traverse in order with a method to calculate the expected
+  * position. The constructor of this case class pre-calculates distances between waypoints so it's not recommended to
+  * recreate it every frame unless its parameters change.
+  *
+  * @param waypoints
+  *   list of positions to traverse through
+  * @param proximityRadius
+  *   distance from each waypoint where it can be considered traversed
+  * @param looping
+  *   whether the path ends at the last position of the batch or at the first
+  */
 final case class WaypointPath(waypoints: Batch[Vertex], proximityRadius: Double, looping: Boolean):
   def withProximityRadius(proximityRadius: Double): WaypointPath = this.copy(proximityRadius = proximityRadius)
   def withLooping(looping: Boolean): WaypointPath                = this.copy(looping = looping)
   def withLooping(waypoints: Batch[Vertex]): WaypointPath        = this.copy(waypoints = waypoints)
 
+  /** The actual waypoints that will be traversed through if radius is greater than 0.0
+    */
   val calculatedWaypoints: Batch[Vertex] =
     if proximityRadius > 0.0 then waypointsWithRadius(waypoints, proximityRadius, looping)
     else waypoints
@@ -26,8 +39,18 @@ final case class WaypointPath(waypoints: Batch[Vertex], proximityRadius: Double,
     .map: (p1, p2) =>
       ((p1, p2), p1.distanceTo(p2))
 
+  /** The full distance of the path
+    */
   val pathLength: Double = waypointDistances.map(_._2).sum
 
+  /** Calculates the position and direction in the path at a given relative point in time.
+    *
+    * @param at
+    *   the relative point in time from 0.0 to 1.0. If looping is enabled values greater than 1.0 will loop and negative
+    *   values will loop in reverse.
+    * @return
+    *   the position and direction at the specified relative point in time
+    */
   def calculatePosition(
       at: Double
   ): WaypointPathPosition =
