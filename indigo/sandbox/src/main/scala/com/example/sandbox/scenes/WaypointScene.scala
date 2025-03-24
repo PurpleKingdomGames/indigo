@@ -50,27 +50,27 @@ object WaypointScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
       .withRef(16, 16)
 
   val moveAndRotate
-      : Graphic[Material.ImageEffects] => SignalFunction[(Vector2, Radians), Graphic[Material.ImageEffects]] = g =>
+      : Graphic[Material.ImageEffects] => SignalFunction[(Vertex, Radians), Graphic[Material.ImageEffects]] = g =>
     SignalFunction((v, r) => g.moveTo(v.toPoint).rotateTo(r))
 
-  val pentagramWaypoints = (0 until 5).toList.map: i =>
+  val pentagramWaypoints = (0 until 5).toBatch.map: i =>
     val angle = ((Radians.PI * 4) / 5) * i
     val x     = Math.cos(angle.toDouble) * 60 + 137.5
     val y     = Math.sin(angle.toDouble) * 60 + 100
-    Vector2(x, y)
+    Vertex(x, y)
 
-  val decagonWaypoints = (0 until 10).toList.map: i =>
+  val decagonWaypoints = (0 until 10).toBatch.map: i =>
     val angle = (Radians.PI / 5) * i
     val x     = Math.cos(angle.toDouble) * 60 + 137.5
     val y     = Math.sin(angle.toDouble) * 60 + 100
-    Vector2(x, y)
+    Vertex(x, y)
 
-  def traverseWaypoints(waypoints: List[Vector2], loop: Boolean): SignalFunction[Double, (Vector2, Radians)] =
+  def traverseWaypoints(waypoints: Batch[Vertex], loop: Boolean): SignalFunction[Double, (Vertex, Radians)] =
     val path = WaypointPath(waypoints, 0.0, loop)
     SignalFunction(over => path.calculatePosition(over))
 
-  val traversePentagram: SignalFunction[Double, (Vector2, Radians)] = traverseWaypoints(pentagramWaypoints, true)
-  val traverseDecagon: SignalFunction[Double, (Vector2, Radians)]   = traverseWaypoints(decagonWaypoints, true)
+  val traversePentagram: SignalFunction[Double, (Vertex, Radians)] = traverseWaypoints(pentagramWaypoints, true)
+  val traverseDecagon: SignalFunction[Double, (Vertex, Radians)]   = traverseWaypoints(decagonWaypoints, true)
 
   def mult(amount: Double): SignalFunction[Double, Double] =
     SignalFunction(_ * amount)
@@ -133,7 +133,7 @@ object WaypointScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
       )
 
     val pentagramPathGraphics = pentagramWaypoints
-      .zip(pentagramWaypoints.tail.appended(pentagramWaypoints.head))
+      .zip(pentagramWaypoints.tail :+ pentagramWaypoints.head)
       .map: (w1, w2) =>
         Shape.Line(
           w1.toPoint,
@@ -142,7 +142,7 @@ object WaypointScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
         )
 
     val decagonPathGraphics = decagonWaypoints
-      .zip(decagonWaypoints.tail.appended(decagonWaypoints.head))
+      .zip(decagonWaypoints.tail :+ decagonWaypoints.head)
       .map: (w1, w2) =>
         Shape.Line(
           w1.toPoint,
@@ -152,9 +152,9 @@ object WaypointScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
 
     Outcome(
       SceneUpdateFragment(
-        pentagramPathGraphics.toBatch ++
-          decagonPathGraphics.toBatch ++
-          waypointGraphics.toBatch ++
+        pentagramPathGraphics ++
+          decagonPathGraphics ++
+          waypointGraphics ++
           tl1(8.0).atOrLast(context.frame.time.running)(dude(RGB.Coral)).toBatch ++
           tl2(8.0).atOrLast(context.frame.time.running)(dude(RGB.Plum)).toBatch ++
           tl3(8.0).atOrLast(context.frame.time.running)(dude(RGB.SeaGreen)).toBatch ++

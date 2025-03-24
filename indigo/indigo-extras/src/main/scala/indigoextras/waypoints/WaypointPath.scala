@@ -1,24 +1,25 @@
 package indigoextras.waypoints
 
+import indigo.Batch
 import indigo.Radians
-import indigo.Vector2
+import indigo.Vertex
 
 import scala.annotation.tailrec
 
 trait WaypointPath:
-  def waypoints: List[Vector2]
+  def waypoints: Batch[Vertex]
 
-  def effectiveWaypoints: List[Vector2]
+  def effectiveWaypoints: Batch[Vertex]
 
   def loop: Boolean
 
   def calculatePosition(
       at: Double
-  ): (Vector2, Radians)
+  ): (Vertex, Radians)
 
 object WaypointPath:
   def apply(
-      waypoints: List[Vector2],
+      waypoints: Batch[Vertex],
       radius: Double,
       loop: Boolean
   ): WaypointPath =
@@ -30,7 +31,7 @@ object WaypointPath:
     val zippedWaypoints =
       if loop then
         _effectiveWaypoints.zip(
-          _effectiveWaypoints.tail.appended(_effectiveWaypoints.head)
+          _effectiveWaypoints.tail :+ _effectiveWaypoints.head
         )
       else _effectiveWaypoints.dropRight(1).zip(_effectiveWaypoints.tail)
 
@@ -44,15 +45,15 @@ object WaypointPath:
     val _loop      = loop
 
     new WaypointPath:
-      override def waypoints: List[Vector2] = _waypoints
+      override def waypoints: Batch[Vertex] = _waypoints
 
-      override def effectiveWaypoints: List[Vector2] = _effectiveWaypoints
+      override def effectiveWaypoints: Batch[Vertex] = _effectiveWaypoints
 
       override def loop: Boolean = _loop
 
       override def calculatePosition(
           at: Double
-      ): (Vector2, Radians) =
+      ): (Vertex, Radians) =
         val clampedAt = if loop then at % 1.0 else at.min(1.0)
 
         val positiveAt = if clampedAt < 0 then 1.0 + clampedAt else clampedAt
@@ -64,15 +65,15 @@ object WaypointPath:
   // traverse the precalculated list of waypoints and the distances between them and finds where the expected position
   @tailrec
   private def findPathPosition(
-      distances: List[((Vector2, Vector2), Double)],
+      distances: Batch[((Vertex, Vertex), Double)],
       coveredDistance: Double,
       acc: Double
-  ): (Vector2, Radians) =
+  ): (Vertex, Radians) =
     val ((v1, v2), distance) = distances.head
 
     if (coveredDistance >= acc && coveredDistance <= acc + distance)
       val innerAt   = (coveredDistance - acc) / distance
-      val position  = lerpVector2(v1, v2, innerAt)
+      val position  = lerpVertex(v1, v2, innerAt)
       val direction = (v2 - v1).angle
       (position, direction)
     else if (distances.size == 1)
@@ -84,30 +85,28 @@ object WaypointPath:
   private def lerpDouble(start: Double, end: Double, at: Double): Double =
     start + ((end - start) * at)
 
-  private def lerpVector2(start: Vector2, end: Vector2, at: Double): Vector2 =
-    Vector2(lerpDouble(start.x, end.x, at), lerpDouble(start.y, end.y, at))
+  private def lerpVertex(start: Vertex, end: Vertex, at: Double): Vertex =
+    Vertex(lerpDouble(start.x, end.x, at), lerpDouble(start.y, end.y, at))
 
   // Returns the effective waypoints to traverse if the original waypoint is considered visited within the supplied radius
   private def waypointsWithRadius(
-      waypoints: List[Vector2],
+      waypoints: Batch[Vertex],
       radius: Double,
       loop: Boolean
-  ): List[Vector2] =
+  ): Batch[Vertex] =
     val list =
-      if loop then
-        waypoints
-          .appended(waypoints.head)
+      if loop then waypoints :+ waypoints.head
       else waypoints
 
     val distances = list
-      .foldLeft(List.empty[Vector2]):
+      .foldLeft(Batch.empty[Vertex]):
         case (acc, v2) =>
           acc.lastOption match
             case Some(v1) =>
               val fullDistance   = v1.distanceTo(v2)
               val cappedDistance = (fullDistance - radius).max(0.0)
-              val newV2          = lerpVector2(v1, v2, cappedDistance / fullDistance)
+              val newV2          = lerpVertex(v1, v2, cappedDistance / fullDistance)
               acc :+ newV2
-            case None => List(v2)
-    if loop then distances.tail.dropRight(1).prepended(distances.last)
+            case None => Batch(v2)
+    if loop then Batch(distances.last) ++ distances.tail.dropRight(1)
     else distances
