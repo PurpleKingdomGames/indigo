@@ -67,6 +67,9 @@ final case class WindowManagerModel[ReferenceData](windows: Batch[Window[?, Refe
 
     this.copy(windows = reordered)
 
+  def focused: Option[Window[?, ReferenceData]] =
+    windows.find(_.hasFocus)
+
   def windowAt(coords: Coords): Option[WindowId] =
     windows.reverse.find(_.bounds.contains(coords)).map(_.id)
 

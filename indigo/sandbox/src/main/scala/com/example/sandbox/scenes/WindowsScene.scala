@@ -49,7 +49,11 @@ object WindowsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxV
       context: SceneContext[SandboxStartupData],
       model: SandboxGameModel
   ): GlobalEvent => Outcome[SandboxGameModel] =
-    _ => Outcome(model)
+    case KeyboardEvent.KeyUp(Key.KEY_Q) =>
+      Outcome(model).addGlobalEvents(WindowEvent.CloseFocused)
+
+    case _ =>
+      Outcome(model)
 
   def updateViewModel(
       context: SceneContext[SandboxStartupData],
