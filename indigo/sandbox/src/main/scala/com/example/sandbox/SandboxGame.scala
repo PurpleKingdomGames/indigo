@@ -22,7 +22,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
   val viewportHeight: Int     = gameHeight * magnificationLevel // 256
 
   def initialScene(bootData: SandboxBootData): Option[SceneName] =
-    Some(ComponentUIScene.name)
+    Some(ActorScene.name)
 
   def scenes(bootData: SandboxBootData): NonEmptyList[Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]] =
     NonEmptyList(
@@ -53,7 +53,8 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
       ComponentUIScene,
       ComponentUIScene2,
       WindowsScene,
-      MeshScene
+      MeshScene,
+      ActorScene
     )
 
   val eventFilters: EventFilters = EventFilters.Permissive

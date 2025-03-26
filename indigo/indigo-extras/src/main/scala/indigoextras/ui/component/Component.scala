@@ -13,7 +13,7 @@ trait Component[A, ReferenceData]:
     */
   def bounds(context: UIContext[ReferenceData], model: A): Bounds
 
-  /** Update this componenets model.
+  /** Update this componenet's model.
     */
   def updateModel(
       context: UIContext[ReferenceData],
