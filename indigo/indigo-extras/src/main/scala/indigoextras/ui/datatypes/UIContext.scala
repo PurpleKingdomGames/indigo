@@ -87,6 +87,9 @@ object UIContext:
   def apply(ctx: Context[?]): UIContext[Unit] =
     fromContext(ctx, ())
 
+  def apply(ctx: SceneContext[?]): UIContext[Unit] =
+    fromSceneContext(ctx, ())
+
   def fromContext[ReferenceData](
       ctx: Context[?],
       reference: ReferenceData
