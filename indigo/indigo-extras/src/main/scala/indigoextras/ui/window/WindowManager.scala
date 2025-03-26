@@ -283,6 +283,14 @@ object WindowManager:
     case WindowEvent.ChangeMagnification(_) =>
       Outcome(model)
 
+    case WindowEvent.CloseFocused =>
+      model.focused match
+        case None =>
+          Outcome(model)
+
+        case Some(window) =>
+          model.close(window.id)
+
   private[window] def updateViewModel[ReferenceData](
       context: UIContext[ReferenceData],
       model: WindowManagerModel[ReferenceData],

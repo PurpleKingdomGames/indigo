@@ -35,6 +35,9 @@ enum WindowEvent extends GlobalEvent derives CanEqual:
   /** Tells a window to close */
   case Close(id: WindowId)
 
+  /** Closes whichever window is focused */
+  case CloseFocused
+
   /** Tells a window to toggle between open and closed. */
   case Toggle(id: WindowId)
 
@@ -77,3 +80,4 @@ enum WindowEvent extends GlobalEvent derives CanEqual:
       case Focus(id)              => Some(id)
       case GiveFocusAt(_)         => None
       case ChangeMagnification(_) => None
+      case CloseFocused           => None
