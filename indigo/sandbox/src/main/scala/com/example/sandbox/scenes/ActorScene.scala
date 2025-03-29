@@ -31,12 +31,18 @@ object ActorScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVie
 
   def subSystems: Set[SubSystem[SandboxGameModel]] =
     Set(
-      ActorSystem(
+      ActorSystem[SandboxGameModel](
         SubSystemId("actor system"),
         Constants.LayerKeys.game
-      ).spawn(
-        PlayerActor.initial
       )
+        .updateActors { (_, pool) =>
+          { case SpawnFollower(follower) =>
+            Outcome(pool.spawn(follower))
+          }
+        }
+        .spawn(
+          PlayerActor.initial
+        )
     )
 
   def updateModel(
@@ -58,7 +64,7 @@ object ActorScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVie
 
       Outcome(model.copy(spawned = true))
         .addGlobalEvents(
-          followers.map(ActorEvent.Spawn.apply)
+          followers.map(SpawnFollower.apply)
         )
 
     case FrameTick =>
@@ -227,3 +233,5 @@ object PlayerActor:
     PlayerActor(Vector2(135, 100), Radians.zero, Batch.empty, Seconds.zero)
 
 final case class Breadcrumb(position: Point, droppedAt: Seconds)
+
+final case class SpawnFollower(follower: Follower) extends GlobalEvent
