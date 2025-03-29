@@ -11,64 +11,53 @@ import indigo.shared.subsystems.SubSystem
 import indigo.shared.subsystems.SubSystemContext
 import indigo.shared.subsystems.SubSystemId
 
-final case class ActorSystem[Model](
+final case class ActorSystem[Model, RefData](
     id: SubSystemId,
     layerKey: Option[LayerKey],
-    initialActors: Batch[Actor[Model]]
+    initialActors: Batch[Actor[RefData]],
+    extractReference: Model => RefData,
+    updateActorPool: (ActorContext, ActorPool[RefData]) => PartialFunction[GlobalEvent, Outcome[ActorPool[RefData]]]
 ) extends SubSystem[Model]:
 
   type EventType      = GlobalEvent
-  type SubSystemModel = ActorSystemModel[Model]
-  type ReferenceData  = Model
+  type SubSystemModel = ActorPool[RefData]
+  type ReferenceData  = RefData
 
   def eventFilter: GlobalEvent => Option[GlobalEvent] =
     e => Some(e)
 
-  def reference(model: Model): Model =
-    model
+  def reference(model: Model): RefData =
+    extractReference(model)
 
-  def initialModel: Outcome[ActorSystemModel[Model]] =
-    Outcome(ActorSystemModel[Model](initialActors))
+  def initialModel: Outcome[ActorPool[RefData]] =
+    Outcome(ActorPool[RefData](initialActors))
 
   def update(
-      context: SubSystemContext[Model],
-      model: ActorSystemModel[Model]
-  ): GlobalEvent => Outcome[ActorSystemModel[Model]] =
-    case ActorEvent.Spawn(actor) =>
-      Outcome(
-        ActorSystemModel(
-          model.actors :+ actor.asInstanceOf[Actor[Model]]
-        )
-      )
+      context: SubSystemContext[ReferenceData],
+      model: ActorPool[RefData]
+  ): GlobalEvent => Outcome[ActorPool[RefData]] =
+    val ctx = ActorContext(context)
 
-    case ActorEvent.Kill(id) =>
-      Outcome(
-        ActorSystemModel(
-          model.actors.filterNot(ai => ai.id == id)
-        )
-      )
-
-    case e =>
-      val ctx =
-        ActorContext(context)
-
-      model.actors
-        .sortBy(ai => ai.depth(ctx, ai.reference(context.reference)))
-        .map { ai =>
-          ai.updateModel(ctx, ai.reference(context.reference))(e)
-        }
-        .sequence
-        .map(ActorSystemModel.apply)
+    updateActorPool(ctx, model)
+      .orElse { case e =>
+        model.pool
+          .sortBy(ai => ai.depth(ctx, ai.reference(context.reference)))
+          .map { ai =>
+            ai.updateModel(ctx, ai.reference(context.reference))(e)
+          }
+          .sequence
+          .map(ActorPool.apply)
+      }
 
   def present(
-      context: SubSystemContext[Model],
-      model: ActorSystemModel[Model]
+      context: SubSystemContext[ReferenceData],
+      model: ActorPool[RefData]
   ): Outcome[SceneUpdateFragment] =
     val ctx =
       ActorContext(context)
 
     val nodes: Outcome[Batch[SceneNode]] =
-      model.actors
+      model.pool
         .map { ai =>
           ai.present(ctx, ai.reference(context.reference))
         }
@@ -90,30 +79,67 @@ final case class ActorSystem[Model](
           )
         }
 
-  def withId(id: SubSystemId): ActorSystem[Model] =
+  def withId(id: SubSystemId): ActorSystem[Model, RefData] =
     this.copy(id = id)
 
-  def withLayerKey(key: LayerKey): ActorSystem[Model] =
+  def withLayerKey(key: LayerKey): ActorSystem[Model, RefData] =
     this.copy(layerKey = Some(key))
-  def clearLayerKey: ActorSystem[Model] =
+  def clearLayerKey: ActorSystem[Model, RefData] =
     this.copy(layerKey = None)
 
-  def spawn[A](actors: Batch[Actor[ReferenceData]]): ActorSystem[Model] =
+  def spawn(actors: Batch[Actor[ReferenceData]]): ActorSystem[Model, RefData] =
     this.copy(initialActors = initialActors ++ actors)
-  def spawn(actor: Actor[ReferenceData]*): ActorSystem[Model] =
+  def spawn(actor: Actor[ReferenceData]*): ActorSystem[Model, RefData] =
     spawn(Batch.fromSeq(actor))
+
+  def updateActors(
+      f: (ActorContext, ActorPool[RefData]) => PartialFunction[GlobalEvent, Outcome[ActorPool[RefData]]]
+  ): ActorSystem[Model, RefData] =
+    this.copy(updateActorPool = f)
 
 object ActorSystem:
 
-  def apply[SandboxGameModel](
-      id: SubSystemId
-  ): ActorSystem[SandboxGameModel] =
-    ActorSystem(id, None, Batch.empty)
+  private def noUpdate[RD]: (ActorContext, ActorPool[RD]) => PartialFunction[GlobalEvent, Outcome[ActorPool[RD]]] =
+    (_, _) => PartialFunction.empty
 
-  def apply[SandboxGameModel](
+  def apply[Model](
+      id: SubSystemId
+  ): ActorSystem[Model, Model] =
+    ActorSystem(id, None, Batch.empty, identity, noUpdate[Model])
+
+  def apply[Model](
       id: SubSystemId,
       layerKey: LayerKey
-  ): ActorSystem[SandboxGameModel] =
-    ActorSystem(id, Some(layerKey), Batch.empty)
+  ): ActorSystem[Model, Model] =
+    ActorSystem(id, Some(layerKey), Batch.empty, identity, noUpdate[Model])
 
-final case class ActorSystemModel[Model](actors: Batch[Actor[Model]])
+  def apply[Model](
+      id: SubSystemId,
+      layerKey: LayerKey,
+      initialActors: Batch[Actor[Model]]
+  ): ActorSystem[Model, Model] =
+    ActorSystem(id, Some(layerKey), Batch.empty, identity, noUpdate[Model])
+
+  def apply[Model, ReferenceData](
+      id: SubSystemId,
+      layerKey: LayerKey,
+      initialActors: Batch[Actor[Model]],
+      extractReference: Model => ReferenceData
+  ): ActorSystem[Model, ReferenceData] =
+    ActorSystem(id, Some(layerKey), Batch.empty, extractReference, noUpdate[ReferenceData])
+
+final case class ActorPool[ReferenceData](pool: Batch[Actor[ReferenceData]]):
+
+  def spawn(newActors: Batch[Actor[ReferenceData]]): ActorPool[ReferenceData] =
+    ActorPool(
+      pool ++ newActors
+    )
+  def spawn(newActors: Actor[ReferenceData]*): ActorPool[ReferenceData] =
+    spawn(Batch.fromSeq(newActors))
+
+  def kill(ids: Batch[ActorId]): ActorPool[ReferenceData] =
+    ActorPool(
+      pool.filterNot(ai => ids.exists(_ == ai.id))
+    )
+  def kill(ids: ActorId*): ActorPool[ReferenceData] =
+    kill(Batch.fromSeq(ids))
