@@ -31,17 +31,17 @@ object ActorScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVie
 
   def subSystems: Set[SubSystem[SandboxGameModel]] =
     Set(
-      ActorSystem[SandboxGameModel](
+      ActorSystem[SandboxGameModel, GameActor](
         SubSystemId("actor system"),
         Constants.LayerKeys.game
       )
-        .updateActors { (_, pool) =>
+        .updateActors { pool =>
           { case SpawnFollower(follower) =>
             Outcome(pool.spawn(follower))
           }
         }
         .spawn(
-          PlayerActor.initial
+          GameActor.Player.initial
         )
     )
 
@@ -50,10 +50,10 @@ object ActorScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVie
       model: ActorSceneModel
   ): GlobalEvent => Outcome[ActorSceneModel] =
     case FrameTick if !model.spawned =>
-      val followers =
+      val followers: Batch[GameActor.Follower] =
         (0 to 10).toBatch.map { i =>
           val d = Dice.fromSeed(i.toLong)
-          Follower(
+          GameActor.Follower(
             ActorId("follower" + i),
             Vertex.zero,
             d.roll(50),
@@ -104,134 +104,144 @@ object ActorSceneModel:
   val initial: ActorSceneModel =
     ActorSceneModel(false, Point.zero)
 
-final case class Follower(id: ActorId, position: Vertex, divisor: Int, alpha: Double, size: Int)
-    extends Actor[SandboxGameModel]:
+enum GameActor:
+  case Follower(id: ActorId, position: Vertex, divisor: Int, alpha: Double, size: Int)
+  case Player(position: Vector2, direction: Radians, trail: Batch[Breadcrumb], lastDropped: Seconds)
 
-  type ReferenceData = Point
+object GameActor:
 
-  def reference(model: SandboxGameModel): Point       = model.actorScene.target
-  def depth(context: ActorContext, model: Point): Int = 0
+  object Follower:
 
-  def updateModel(
-      context: ActorContext,
-      target: Point
-  ): GlobalEvent => Outcome[Follower] =
-    case FrameTick =>
-      Outcome(
-        this.copy(position = position + ((target.toVertex - position) / divisor.toDouble))
-      )
+    given Actor[SandboxGameModel, GameActor.Follower] with
+      type ReferenceData = Point
 
-    case _ =>
-      Outcome(this)
+      def reference(model: SandboxGameModel): Point =
+        model.actorScene.target
 
-  def present(
-      context: ActorContext,
-      target: Point
-  ): Outcome[Batch[SceneNode]] =
-    Outcome(
-      Batch(
-        Shape.Circle(Circle(position.toPoint, size), Fill.Color(RGBA.Magenta.withAlpha(alpha)))
-      )
-    )
+      def depth(context: ActorContext[Point], actor: GameActor.Follower): Int =
+        0
 
-final case class PlayerActor(position: Vector2, direction: Radians, trail: Batch[Breadcrumb], lastDropped: Seconds)
-    extends Actor[SandboxGameModel]:
+      def updateModel(
+          context: ActorContext[Point],
+          actor: GameActor.Follower
+      ): GlobalEvent => Outcome[GameActor.Follower] =
+        case FrameTick =>
+          val target = context.reference
+          Outcome(
+            actor.copy(position = actor.position + ((target.toVertex - actor.position) / actor.divisor.toDouble))
+          )
 
-  def id: ActorId = ActorId("player")
+        case _ =>
+          Outcome(actor)
 
-  type ReferenceData = Unit
-
-  def reference(model: SandboxGameModel): Unit           = ()
-  def depth(context: ActorContext, reference: Unit): Int = 0
-
-  def updateModel(
-      context: ActorContext,
-      reference: Unit
-  ): GlobalEvent => Outcome[PlayerActor] =
-    case FrameTick =>
-      val moveSpeed   = 2.0
-      val rotateSpeed = 0.1
-
-      def rotateLeft: Radians                 = direction - rotateSpeed
-      def rotateRight: Radians                = direction + rotateSpeed
-      def moveForward(dir: Radians): Vector2  = position + Vector2(0, -1).rotateTo(dir) * moveSpeed
-      def moveBackward(dir: Radians): Vector2 = position - Vector2(0, -1).rotateTo(dir) * moveSpeed
-
-      val (newPosition, newDirection) =
-        context.frame.input.mapInputs(
-          InputMapping(
-            Combo.withKeyInputs(Key.ARROW_DOWN, Key.ARROW_LEFT) -> {
-              val dir = rotateLeft
-              (moveBackward(dir), dir)
-            },
-            Combo.withKeyInputs(Key.ARROW_DOWN, Key.ARROW_RIGHT) -> {
-              val dir = rotateRight
-              (moveBackward(dir), dir)
-            },
-            Combo.withKeyInputs(Key.ARROW_UP, Key.ARROW_LEFT) -> {
-              val dir = rotateLeft
-              (moveForward(dir), dir)
-            },
-            Combo.withKeyInputs(Key.ARROW_UP, Key.ARROW_RIGHT) -> {
-              val dir = rotateRight
-              (moveForward(dir), dir)
-            },
-            Combo.withKeyInputs(Key.ARROW_LEFT)  -> (position, rotateLeft),
-            Combo.withKeyInputs(Key.ARROW_RIGHT) -> (position, rotateRight),
-            Combo.withKeyInputs(Key.ARROW_UP)    -> (moveForward(direction), direction),
-            Combo.withKeyInputs(Key.ARROW_DOWN)  -> (moveBackward(direction), direction)
-          ),
-          (position, direction)
-        )
-
-      val (maybeBreadcrumb, droppedAt) =
-        if context.frame.time.running - lastDropped > Seconds(0.1) then
-          (Batch(Breadcrumb(position.toPoint, context.frame.time.running)), context.frame.time.running)
-        else (Batch.empty, lastDropped)
-
-      Outcome(
-        PlayerActor(
-          newPosition,
-          newDirection,
-          trail.filter(b => (context.frame.time.running - b.droppedAt) < Seconds(2)) ++ maybeBreadcrumb,
-          droppedAt
-        )
-      )
-
-    case _ =>
-      Outcome(this)
-
-  def present(
-      context: ActorContext,
-      reference: Unit
-  ): Outcome[Batch[SceneNode]] =
-    Outcome(
-      trail.map { b =>
-        Shape.Circle(
-          Circle(b.position, 2),
-          Fill.Color(RGBA.White.withAlpha(1.0 - ((context.frame.time.running - b.droppedAt).toDouble / 2.0)))
-        )
-      } ++
-        Batch(
-          Shape.Circle(Circle(position.toPoint, 20), Fill.Color(RGBA.Yellow)),
-          Shape.Circle(
-            Circle(position.toPoint + (Vector2(0, 1).rotateTo(direction) * 20).toPoint, 10),
-            Fill.Color(RGBA.Yellow)
-          ),
-          Shape.Circle(
-            Circle(position.toPoint + (Vector2(0, 1).rotateTo(direction - 0.5) * 15).toPoint, 4),
-            Fill.Color(RGBA.Black)
-          ),
-          Shape.Circle(
-            Circle(position.toPoint + (Vector2(0, 1).rotateTo(direction + 0.5) * 15).toPoint, 4),
-            Fill.Color(RGBA.Black)
+      def present(
+          context: ActorContext[Point],
+          actor: GameActor.Follower
+      ): Outcome[Batch[SceneNode]] =
+        Outcome(
+          Batch(
+            Shape.Circle(Circle(actor.position.toPoint, actor.size), Fill.Color(RGBA.Magenta.withAlpha(actor.alpha)))
           )
         )
-    )
-object PlayerActor:
-  def initial: PlayerActor =
-    PlayerActor(Vector2(135, 100), Radians.zero, Batch.empty, Seconds.zero)
+
+  object Player:
+    val initial: GameActor.Player =
+      Player(Vector2(135, 100), Radians.zero, Batch.empty, Seconds.zero)
+
+    given Actor[SandboxGameModel, GameActor.Player] with
+      type ReferenceData = Unit
+
+      def reference(model: SandboxGameModel): Unit =
+        ()
+
+      def depth(context: ActorContext[Unit], actor: GameActor.Player): Int =
+        0
+
+      def updateModel(
+          context: ActorContext[Unit],
+          player: GameActor.Player
+      ): GlobalEvent => Outcome[GameActor.Player] =
+        case FrameTick =>
+          val moveSpeed   = 2.0
+          val rotateSpeed = 0.1
+
+          def rotateLeft: Radians                 = player.direction - rotateSpeed
+          def rotateRight: Radians                = player.direction + rotateSpeed
+          def moveForward(dir: Radians): Vector2  = player.position + Vector2(0, -1).rotateTo(dir) * moveSpeed
+          def moveBackward(dir: Radians): Vector2 = player.position - Vector2(0, -1).rotateTo(dir) * moveSpeed
+
+          val (newPosition, newDirection) =
+            context.frame.input.mapInputs(
+              InputMapping(
+                Combo.withKeyInputs(Key.ARROW_DOWN, Key.ARROW_LEFT) -> {
+                  val dir = rotateLeft
+                  (moveBackward(dir), dir)
+                },
+                Combo.withKeyInputs(Key.ARROW_DOWN, Key.ARROW_RIGHT) -> {
+                  val dir = rotateRight
+                  (moveBackward(dir), dir)
+                },
+                Combo.withKeyInputs(Key.ARROW_UP, Key.ARROW_LEFT) -> {
+                  val dir = rotateLeft
+                  (moveForward(dir), dir)
+                },
+                Combo.withKeyInputs(Key.ARROW_UP, Key.ARROW_RIGHT) -> {
+                  val dir = rotateRight
+                  (moveForward(dir), dir)
+                },
+                Combo.withKeyInputs(Key.ARROW_LEFT)  -> (player.position, rotateLeft),
+                Combo.withKeyInputs(Key.ARROW_RIGHT) -> (player.position, rotateRight),
+                Combo.withKeyInputs(Key.ARROW_UP)    -> (moveForward(player.direction), player.direction),
+                Combo.withKeyInputs(Key.ARROW_DOWN)  -> (moveBackward(player.direction), player.direction)
+              ),
+              (player.position, player.direction)
+            )
+
+          val (maybeBreadcrumb, droppedAt) =
+            if context.frame.time.running - player.lastDropped > Seconds(0.1) then
+              (Batch(Breadcrumb(player.position.toPoint, context.frame.time.running)), context.frame.time.running)
+            else (Batch.empty, player.lastDropped)
+
+          Outcome(
+            Player(
+              newPosition,
+              newDirection,
+              player.trail.filter(b => (context.frame.time.running - b.droppedAt) < Seconds(2)) ++ maybeBreadcrumb,
+              droppedAt
+            )
+          )
+
+        case _ =>
+          Outcome(player)
+
+      def present(
+          context: ActorContext[Unit],
+          player: GameActor.Player
+      ): Outcome[Batch[SceneNode]] =
+        Outcome(
+          player.trail.map { b =>
+            Shape.Circle(
+              Circle(b.position, 2),
+              Fill.Color(RGBA.White.withAlpha(1.0 - ((context.frame.time.running - b.droppedAt).toDouble / 2.0)))
+            )
+          } ++
+            Batch(
+              Shape.Circle(Circle(player.position.toPoint, 20), Fill.Color(RGBA.Yellow)),
+              Shape.Circle(
+                Circle(player.position.toPoint + (Vector2(0, 1).rotateTo(player.direction) * 20).toPoint, 10),
+                Fill.Color(RGBA.Yellow)
+              ),
+              Shape.Circle(
+                Circle(player.position.toPoint + (Vector2(0, 1).rotateTo(player.direction - 0.5) * 15).toPoint, 4),
+                Fill.Color(RGBA.Black)
+              ),
+              Shape.Circle(
+                Circle(player.position.toPoint + (Vector2(0, 1).rotateTo(player.direction + 0.5) * 15).toPoint, 4),
+                Fill.Color(RGBA.Black)
+              )
+            )
+        )
 
 final case class Breadcrumb(position: Point, droppedAt: Seconds)
 
-final case class SpawnFollower(follower: Follower) extends GlobalEvent
+final case class SpawnFollower(follower: GameActor.Follower) extends GlobalEvent
