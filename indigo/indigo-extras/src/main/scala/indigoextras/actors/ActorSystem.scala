@@ -11,55 +11,68 @@ import indigo.shared.subsystems.SubSystem
 import indigo.shared.subsystems.SubSystemContext
 import indigo.shared.subsystems.SubSystemId
 
-final case class ActorSystem[Model, RefData](
+final case class ActorSystem[GameModel, RefData, A](
     id: SubSystemId,
     layerKey: Option[LayerKey],
-    initialActors: Batch[Actor[RefData]],
-    extractReference: Model => RefData,
-    updateActorPool: (ActorContext, ActorPool[RefData]) => PartialFunction[GlobalEvent, Outcome[ActorPool[RefData]]]
-) extends SubSystem[Model]:
+    extractReference: GameModel => RefData,
+    _initialActors: Batch[ActorInstance[RefData, A]],
+    _updateActorPool: ActorPool[RefData, A] => PartialFunction[GlobalEvent, Outcome[ActorPool[RefData, A]]]
+) extends SubSystem[GameModel]:
 
   type EventType      = GlobalEvent
-  type SubSystemModel = ActorPool[RefData]
+  type SubSystemModel = ActorPool[RefData, A]
   type ReferenceData  = RefData
 
   def eventFilter: GlobalEvent => Option[GlobalEvent] =
     e => Some(e)
 
-  def reference(model: Model): RefData =
+  def reference(model: GameModel): ReferenceData =
     extractReference(model)
 
-  def initialModel: Outcome[ActorPool[RefData]] =
-    Outcome(ActorPool[RefData](initialActors))
+  def initialModel: Outcome[SubSystemModel] =
+    Outcome(ActorPool(_initialActors))
 
   def update(
       context: SubSystemContext[ReferenceData],
-      model: ActorPool[RefData]
-  ): GlobalEvent => Outcome[ActorPool[RefData]] =
-    val ctx = ActorContext(context)
+      model: ActorPool[ReferenceData, A]
+  ): GlobalEvent => Outcome[ActorPool[ReferenceData, A]] =
 
-    updateActorPool(ctx, model)
+    _updateActorPool(model)
       .orElse { case e =>
         model.pool
-          .sortBy(ai => ai.depth(ctx, ai.reference(context.reference)))
           .map { ai =>
-            ai.updateModel(ctx, ai.reference(context.reference))(e)
+            val ctx =
+              ActorContext(context)
+                .withReference(ai.actor.reference(context.reference))
+
+            val instance =
+              ai.actor.updateModel(ctx, ai.instance)(e).map { updated =>
+                ai.copy(instance = updated)
+              }
+
+            (
+              instance,
+              ai.actor.depth(ctx, ai.instance)
+            )
           }
+          .sortBy(_._2)
+          .map(_._1)
           .sequence
-          .map(ActorPool.apply)
+          .map(as => model.copy(pool = as))
       }
 
   def present(
       context: SubSystemContext[ReferenceData],
-      model: ActorPool[RefData]
+      model: ActorPool[ReferenceData, A]
   ): Outcome[SceneUpdateFragment] =
-    val ctx =
-      ActorContext(context)
-
     val nodes: Outcome[Batch[SceneNode]] =
       model.pool
         .map { ai =>
-          ai.present(ctx, ai.reference(context.reference))
+          val ctx =
+            ActorContext(context)
+              .withReference(ai.actor.reference(context.reference))
+
+          ai.actor.present(ctx, ai.instance)
         }
         .sequence
         .map(_.flatten)
@@ -79,67 +92,44 @@ final case class ActorSystem[Model, RefData](
           )
         }
 
-  def withId(id: SubSystemId): ActorSystem[Model, RefData] =
+  def withId(id: SubSystemId): ActorSystem[GameModel, ReferenceData, A] =
     this.copy(id = id)
 
-  def withLayerKey(key: LayerKey): ActorSystem[Model, RefData] =
+  def withLayerKey(key: LayerKey): ActorSystem[GameModel, ReferenceData, A] =
     this.copy(layerKey = Some(key))
-  def clearLayerKey: ActorSystem[Model, RefData] =
+  def clearLayerKey: ActorSystem[GameModel, ReferenceData, A] =
     this.copy(layerKey = None)
 
-  def spawn(actors: Batch[Actor[ReferenceData]]): ActorSystem[Model, RefData] =
-    this.copy(initialActors = initialActors ++ actors)
-  def spawn(actor: Actor[ReferenceData]*): ActorSystem[Model, RefData] =
-    spawn(Batch.fromSeq(actor))
+  def spawn[B <: A](actor: B)(using a: Actor[ReferenceData, B]): ActorSystem[GameModel, ReferenceData, A] =
+    this.copy(_initialActors = _initialActors :+ ActorInstance(actor, a.asInstanceOf[Actor[ReferenceData, A]]))
 
   def updateActors(
-      f: (ActorContext, ActorPool[RefData]) => PartialFunction[GlobalEvent, Outcome[ActorPool[RefData]]]
-  ): ActorSystem[Model, RefData] =
-    this.copy(updateActorPool = f)
+      f: ActorPool[ReferenceData, A] => PartialFunction[GlobalEvent, Outcome[ActorPool[ReferenceData, A]]]
+  ): ActorSystem[GameModel, ReferenceData, A] =
+    this.copy(_updateActorPool = f)
 
 object ActorSystem:
 
-  private def noUpdate[RD]: (ActorContext, ActorPool[RD]) => PartialFunction[GlobalEvent, Outcome[ActorPool[RD]]] =
-    (_, _) => PartialFunction.empty
+  private def noUpdate[ReferenceData, A]
+      : ActorPool[ReferenceData, A] => PartialFunction[GlobalEvent, Outcome[ActorPool[ReferenceData, A]]] =
+    _ => PartialFunction.empty
 
-  def apply[Model](
+  def apply[GameModel, A](
       id: SubSystemId
-  ): ActorSystem[Model, Model] =
-    ActorSystem(id, None, Batch.empty, identity, noUpdate[Model])
+  ): ActorSystem[GameModel, GameModel, A] =
+    ActorSystem(id, None, identity, Batch.empty, noUpdate[GameModel, A])
 
-  def apply[Model](
+  def apply[GameModel, A](
       id: SubSystemId,
       layerKey: LayerKey
-  ): ActorSystem[Model, Model] =
-    ActorSystem(id, Some(layerKey), Batch.empty, identity, noUpdate[Model])
+  ): ActorSystem[GameModel, GameModel, A] =
+    ActorSystem(id, Some(layerKey), identity, Batch.empty, noUpdate[GameModel, A])
 
-  def apply[Model](
+  def apply[GameModel, ReferenceData, A](
       id: SubSystemId,
       layerKey: LayerKey,
-      initialActors: Batch[Actor[Model]]
-  ): ActorSystem[Model, Model] =
-    ActorSystem(id, Some(layerKey), Batch.empty, identity, noUpdate[Model])
+      extractReference: GameModel => ReferenceData
+  ): ActorSystem[GameModel, ReferenceData, A] =
+    ActorSystem(id, Some(layerKey), extractReference, Batch.empty, noUpdate[ReferenceData, A])
 
-  def apply[Model, ReferenceData](
-      id: SubSystemId,
-      layerKey: LayerKey,
-      initialActors: Batch[Actor[Model]],
-      extractReference: Model => ReferenceData
-  ): ActorSystem[Model, ReferenceData] =
-    ActorSystem(id, Some(layerKey), Batch.empty, extractReference, noUpdate[ReferenceData])
-
-final case class ActorPool[ReferenceData](pool: Batch[Actor[ReferenceData]]):
-
-  def spawn(newActors: Batch[Actor[ReferenceData]]): ActorPool[ReferenceData] =
-    ActorPool(
-      pool ++ newActors
-    )
-  def spawn(newActors: Actor[ReferenceData]*): ActorPool[ReferenceData] =
-    spawn(Batch.fromSeq(newActors))
-
-  def kill(ids: Batch[ActorId]): ActorPool[ReferenceData] =
-    ActorPool(
-      pool.filterNot(ai => ids.exists(_ == ai.id))
-    )
-  def kill(ids: ActorId*): ActorPool[ReferenceData] =
-    kill(Batch.fromSeq(ids))
+final case class ActorInstance[ReferenceData, A](instance: A, actor: Actor[ReferenceData, A])
