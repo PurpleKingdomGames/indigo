@@ -53,7 +53,8 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
       ComponentUIScene,
       ComponentUIScene2,
       WindowsScene,
-      MeshScene
+      MeshScene,
+      WaypointScene
     )
 
   val eventFilters: EventFilters = EventFilters.Permissive
