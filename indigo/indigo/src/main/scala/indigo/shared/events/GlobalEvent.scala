@@ -1,6 +1,7 @@
 package indigo.shared.events
 
 import indigo.AssetCollection
+import indigo.platform.audio.SoundSwitch
 import indigo.shared.assets.AssetName
 import indigo.shared.assets.AssetType
 import indigo.shared.audio.Volume
@@ -947,8 +948,11 @@ object KeyboardEvent {
   *   Reference to the loaded asset
   * @param volume
   *   What volume level to play at
+  * @param switch
+  *   How to handle the previous sounds
   */
-final case class PlaySound(assetName: AssetName, volume: Volume) extends GlobalEvent:
+final case class PlaySound(assetName: AssetName, volume: Volume, switch: SoundSwitch = SoundSwitch.Continue)
+    extends GlobalEvent:
   def withVolume(newVolume: Volume): PlaySound =
     this.copy(volume = newVolume)
 

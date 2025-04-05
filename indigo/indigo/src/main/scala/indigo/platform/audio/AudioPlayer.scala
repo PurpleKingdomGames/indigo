@@ -15,6 +15,7 @@ import org.scalajs.dom.AudioDestinationNode
 import org.scalajs.dom.GainNode
 import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits.*
 
+import scala.collection.mutable
 import scala.concurrent.Future
 import scala.scalajs.js
 
@@ -113,9 +114,26 @@ final class AudioPlayer(context: AudioContextProxy):
   private def findAudioDataByName(assetName: AssetName): Option[dom.AudioBuffer] =
     soundAssets.find(a => a.name == assetName).map(_.data)
 
-  def playSound(assetName: AssetName, volume: Volume): Unit =
+  private val soundNodes: mutable.Map[AssetName, AudioNodes] = mutable.HashMap.empty
+
+  private def stopSound(assetName: AssetName): Unit =
+    soundNodes.remove(assetName).foreach { source =>
+      source.audioBufferSourceNode.stop()
+    }
+
+  private def stopAllSound(): Unit =
+    soundNodes.keySet.foreach(stopSound)
+
+  def playSound(assetName: AssetName, volume: Volume, switch: SoundSwitch): Unit =
     findAudioDataByName(assetName).foreach { sound =>
-      setupNodes(sound, volume, loop = false).audioBufferSourceNode.start(0)
+      val node = setupNodes(sound, volume, loop = false)
+      node.audioBufferSourceNode.start(0)
+      switch match {
+        case SoundSwitch.StopAll          => stopAllSound()
+        case SoundSwitch.StopPreviousSame => stopSound(assetName)
+        case SoundSwitch.Continue         => // noop
+      }
+      soundNodes.update(assetName, node)
     }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))

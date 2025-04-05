@@ -42,8 +42,8 @@ final class GlobalEventStream(
       WebSockets.processSendEvent(webSocketEvent, this)
 
     // Audio
-    case PlaySound(assetName, volume) =>
-      audioPlayer.playSound(assetName, volume)
+    case PlaySound(assetName, volume, switch) =>
+      audioPlayer.playSound(assetName, volume, switch)
 
     // Storage
     case StorageEvent.FetchKeyAt(index) =>
