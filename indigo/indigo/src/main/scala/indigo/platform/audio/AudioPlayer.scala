@@ -116,8 +116,10 @@ final class AudioPlayer(context: AudioContextProxy):
 
   private val soundNodes: mutable.Map[AssetName, AudioNodes] = mutable.HashMap.empty
 
+  @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   private def stopSound(assetName: AssetName): Unit =
     soundNodes.remove(assetName).foreach { source =>
+      source.audioBufferSourceNode.onended = null
       source.audioBufferSourceNode.stop()
     }
 
@@ -127,8 +129,8 @@ final class AudioPlayer(context: AudioContextProxy):
   def playSound(assetName: AssetName, volume: Volume, switch: SoundSwitch): Unit =
     findAudioDataByName(assetName).foreach { sound =>
       val node = setupNodes(sound, volume, loop = false)
-      node.audioBufferSourceNode.start(0)
       node.audioBufferSourceNode.onended = _ => soundNodes.remove(assetName)
+      node.audioBufferSourceNode.start(0)
       switch match {
         case SoundSwitch.StopAll          => stopAllSound()
         case SoundSwitch.StopPreviousSame => stopSound(assetName)
