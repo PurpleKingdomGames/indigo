@@ -99,22 +99,30 @@ final case class WaypointPath(waypoints: Batch[Vertex], config: WaypointPathConf
       radius: Double,
       loop: Boolean
   ): Batch[Vertex] =
-    val list =
+    val loopedWaypoints =
       if loop then waypoints :+ waypoints.head
       else waypoints
 
-    val distances = list
-      .foldLeft(Batch.empty[Vertex]):
-        case (acc, v2) =>
-          acc.lastOption match
-            case Some(v1) =>
-              val fullDistance   = v1.distanceTo(v2)
-              val cappedDistance = (fullDistance - radius).max(0.0)
-              val newV2          = lerpVertex(v1, v2, cappedDistance / fullDistance)
-              acc :+ newV2
-            case None => Batch(v2)
-    if loop then Batch(distances.last) ++ distances.tail.dropRight(1)
-    else distances
+    @tailrec
+    def waypointsWithRadiusAux(remainingWaypoints: Batch[Vertex], acc: Batch[Vertex]): Batch[Vertex] =
+      remainingWaypoints.headOption match
+        case Some(nextWaypoint) =>
+          val nextAcc = acc.lastOption match
+            case Some(previousWaypoint) =>
+              val fullDistance    = previousWaypoint.distanceTo(nextWaypoint)
+              val cappedDistance  = (fullDistance - radius).max(0.0)
+              val newNextWaypoint = lerpVertex(previousWaypoint, nextWaypoint, cappedDistance / fullDistance)
+              acc :+ newNextWaypoint
+            case None =>
+              Batch(nextWaypoint)
+          waypointsWithRadiusAux(remainingWaypoints.tail, nextAcc)
+        case None =>
+          acc
+
+    val resolvedWaypoints = waypointsWithRadiusAux(loopedWaypoints, Batch.empty)
+
+    if loop then Batch(resolvedWaypoints.last) ++ resolvedWaypoints.tail.dropRight(1)
+    else resolvedWaypoints
 
 object WaypointPath:
   def apply(waypoints: Batch[Vertex]): WaypointPath =
