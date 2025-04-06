@@ -128,6 +128,7 @@ final class AudioPlayer(context: AudioContextProxy):
     findAudioDataByName(assetName).foreach { sound =>
       val node = setupNodes(sound, volume, loop = false)
       node.audioBufferSourceNode.start(0)
+      node.audioBufferSourceNode.onended = _ => soundNodes.remove(assetName)
       switch match {
         case SoundSwitch.StopAll          => stopAllSound()
         case SoundSwitch.StopPreviousSame => stopSound(assetName)
