@@ -955,6 +955,8 @@ final case class PlaySound(assetName: AssetName, volume: Volume, switch: SoundSw
     extends GlobalEvent:
   def withVolume(newVolume: Volume): PlaySound =
     this.copy(volume = newVolume)
+  def withSwitch(newSwitch: SoundSwitch): PlaySound =
+    this.copy(switch = newSwitch)
 
 /** A class of events representing general networking events
   */
