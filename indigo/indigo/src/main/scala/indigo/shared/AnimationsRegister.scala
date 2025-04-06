@@ -9,8 +9,6 @@ import indigo.shared.collections.Batch
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.time.GameTime
 
-import scala.annotation.nowarn
-
 final class AnimationsRegister:
 
   private val animationRegistry: scalajs.js.Dictionary[AnimationRef]   = scalajs.js.Dictionary.empty
@@ -21,11 +19,8 @@ final class AnimationsRegister:
     animationStates.clear()
     ()
 
-  @nowarn("msg=unused")
-  def register(animation: Animation): Unit = {
-    animationRegistry.put(animation.animationKey.toString, AnimationRef.fromAnimation(animation))
-    ()
-  }
+  def register(animation: Animation): Unit =
+    animationRegistry.update(animation.animationKey.toString, AnimationRef.fromAnimation(animation))
 
   def findByAnimationKey(animationKey: AnimationKey): Option[AnimationRef] =
     animationRegistry.get(animationKey.toString)
@@ -33,7 +28,6 @@ final class AnimationsRegister:
   def findMementoByBindingKey(key: BindingKey): Option[AnimationMemento] =
     animationStates.get(key.toString)
 
-  @nowarn("msg=unused")
   def fetchAnimationForSprite(
       gameTime: GameTime,
       bindingKey: BindingKey,
@@ -43,7 +37,7 @@ final class AnimationsRegister:
     fetchAnimationInLastState(bindingKey, animationKey).map { anim =>
       val newAnim = anim.runActions(animationActions, gameTime)
 
-      animationStates.put(bindingKey.toString, newAnim.saveMemento(bindingKey))
+      animationStates.update(bindingKey.toString, newAnim.saveMemento(bindingKey))
 
       newAnim
     }
