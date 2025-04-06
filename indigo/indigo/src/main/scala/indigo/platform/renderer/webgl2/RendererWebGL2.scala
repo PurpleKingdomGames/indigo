@@ -40,7 +40,6 @@ import org.scalajs.dom.WebGLRenderingContext
 import org.scalajs.dom.WebGLRenderingContext.*
 import org.scalajs.dom.html
 
-import scala.annotation.nowarn
 import scala.scalajs.js.typedarray.Float32Array
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
@@ -152,12 +151,11 @@ final class RendererWebGL2(
 
   private given CanEqual[(BlendFactor, BlendFactor), (BlendFactor, BlendFactor)] = CanEqual.derived
 
-  @nowarn("msg=discarded")
   def init(shaders: Set[RawShaderCode]): Unit = {
 
     shaders.foreach { shader =>
       if (!customShaders.contains(shader.id.toString))
-        customShaders.put(
+        customShaders.update(
           shader.id.toString,
           WebGLHelper.shaderProgramSetup(gl, shader.id.toString, shader)
         )

@@ -29,7 +29,6 @@ import indigo.shared.scenegraph.Sprite
 import indigo.shared.shader.ShaderData
 import indigo.shared.time.GameTime
 
-import scala.annotation.nowarn
 import scala.scalajs.js.JSConverters.*
 
 final class SceneProcessor(
@@ -52,7 +51,6 @@ final class SceneProcessor(
     uniformsCache.purgeAllNow()
   }
 
-  @nowarn("msg=unused")
   def processScene(
       gameTime: GameTime,
       scene: SceneUpdateFragment,
@@ -109,7 +107,7 @@ final class SceneProcessor(
         maybeDO match
           case None => acc
           case Some(displayObject) =>
-            acc.put(blank.id.toString, displayObject)
+            acc.update(blank.id.toString, displayObject)
             acc
       }
 
