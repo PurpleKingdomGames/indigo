@@ -39,7 +39,6 @@ object WebSockets:
         globalEventStream.pushGlobalEvent(WebSocketEvent.Error(event.giveId, e.getMessage))
     }
 
-  @nowarn("msg=unused")
   private def insertUpdateConfig(config: WebSocketConfig): WebSocketConfig = {
     val maybeConfig = configs.get(config.id.id)
 
@@ -47,14 +46,12 @@ object WebSockets:
       .flatMap { c =>
         if (c == config) Option(c)
         else {
-          configs.remove(config.id.id)
           configs.put(config.id.id, config)
         }
       }
       .getOrElse(config)
   }
 
-  @nowarn("msg=unused")
   private def reEstablishConnection(
       config: WebSocketConfig,
       onOpenSendMessage: Option[String],
@@ -66,7 +63,6 @@ object WebSockets:
         WebSocketReadyState.fromInt(conn.readyState) match {
           case CLOSING | CLOSED =>
             newConnection(config, onOpenSendMessage, globalEventStream).flatMap { newConn =>
-              connections.remove(config.id.id)
               connections.put(config.id.id, newConn)
             }
 
@@ -76,7 +72,6 @@ object WebSockets:
       }
       .orElse {
         newConnection(config, onOpenSendMessage, globalEventStream).flatMap { newConn =>
-          connections.remove(config.id.id)
           connections.put(config.id.id, newConn)
         }
       }
