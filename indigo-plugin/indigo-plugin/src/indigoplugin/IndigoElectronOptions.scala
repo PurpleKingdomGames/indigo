@@ -10,6 +10,7 @@ package indigoplugin
   */
 final case class IndigoElectronOptions(
     disableFrameRateLimit: Boolean,
+    openDevTools: Boolean,
     electronInstall: ElectronInstall
 ) {
 
@@ -56,6 +57,7 @@ object IndigoElectronOptions {
   val defaults: IndigoElectronOptions =
     IndigoElectronOptions(
       disableFrameRateLimit = false,
-      electronInstall = indigoplugin.ElectronInstall.Latest
+      electronInstall = indigoplugin.ElectronInstall.Latest,
+      openDevTools = false
     )
 }

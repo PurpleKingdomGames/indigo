@@ -105,7 +105,11 @@ object IndigoRun {
     List(
       FileToWrite(
         "main.js",
-        ElectronTemplates.mainFileTemplate(indigoOptions.metadata.width, indigoOptions.metadata.height)
+        ElectronTemplates.mainFileTemplate(
+          windowWidth = indigoOptions.metadata.width,
+          windowHeight = indigoOptions.metadata.height,
+          openDevTools = indigoOptions.electron.openDevTools
+        )
       ),
       FileToWrite("preload.js", ElectronTemplates.preloadFileTemplate),
       FileToWrite("package.json", ElectronTemplates.packageFileTemplate(indigoOptions.electron))
