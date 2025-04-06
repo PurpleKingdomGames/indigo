@@ -4,7 +4,8 @@ import indigoplugin.IndigoElectronOptions
 
 object ElectronTemplates {
 
-  def mainFileTemplate(windowWidth: Int, windowHeight: Int): String =
+  def mainFileTemplate(windowWidth: Int, windowHeight: Int, openDevTools: Boolean): String =
+    // language=javascript
     s"""
 // Modules to control application life and create native browser window
 const {app, BrowserWindow} = require('electron')
@@ -26,7 +27,11 @@ function createWindow () {
   mainWindow.loadFile('index.html')
 
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+  ${if (openDevTools) {
+        "mainWindow.webContents.openDevTools()"
+      } else {
+        ""
+      }}
 }
 
 // This method will be called when Electron has finished
@@ -34,7 +39,7 @@ function createWindow () {
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
   createWindow()
-  
+
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
