@@ -10,6 +10,7 @@ import java.awt.font.GlyphVector
 /** Provides functionality for generating font images and associated FontInfo instances.
   */
 object FontGen {
+  private val CharBatchSize = 2048
 
   def generate(
       moduleName: String,
@@ -233,17 +234,33 @@ object FontGen {
       default: CharDetail,
       chars: List[CharDetail]
   ): String = {
-
-    val charString = chars
-      .map(cd => "          " + toFontChar(cd) + ",")
+    val charBatches = chars
+      .sliding(CharBatchSize, CharBatchSize)
+      .zipWithIndex
+      .map { case (batch, index) =>
+        val chars = batch
+          .map(cd => "    " + toFontChar(cd) + ",")
+          .mkString("\n")
+          .dropRight(1) // Drops the last ','
+        // language=scala
+        s"""private object CharBatch$index {
+           |  val batch = Batch(
+           |    ${chars}
+           |  )
+           |}
+           |""".stripMargin
+      }
       .mkString("\n")
-      .dropRight(1) // Drops the last ','
+    val charBatchAdditions = (0 until (chars.length / CharBatchSize) + 1)
+      .map(index => s"      .addChars(CharBatch${index}.batch)")
+      .mkString("\n")
 
     val dx = default.x.toString
     val dy = default.y.toString
     val dw = default.width.toString
     val dh = default.height.toString
 
+    // language=scala
     s"""package $fullyQualifiedPackage
     |
     |import indigo.*
@@ -260,13 +277,11 @@ object FontGen {
     |      $sheetHeight,
     |      FontChar("${default.char.toString()}", $dx, $dy, $dw, $dh)
     |    ).isCaseSensitive
-    |      .addChars(
-    |        Batch(
-    |$charString
-    |        )
-    |      )
-    |
+    |    ${charBatchAdditions}
     |}
+    |
+    |$charBatches
+    |
     |""".stripMargin
   }
 
