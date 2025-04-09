@@ -30,8 +30,9 @@ final class Context[StartUpData](
 ):
   lazy val startUpData = _startUpData
 
-  def withStartUpData(newStartUpData: StartUpData): Context[StartUpData] =
+  def withStartUpData[B](newStartUpData: B): Context[B] =
     new Context(newStartUpData, frame, services)
+
   def modifyStartUpData(modify: StartUpData => StartUpData): Context[StartUpData] =
     withStartUpData(modify(startUpData))
 
