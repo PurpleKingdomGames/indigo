@@ -951,12 +951,19 @@ object KeyboardEvent {
   * @param policy
   *   How to handle the previous sounds
   */
-final case class PlaySound(assetName: AssetName, volume: Volume, policy: PlaybackPolicy = PlaybackPolicy.Continue)
-    extends GlobalEvent:
+final case class PlaySound(assetName: AssetName, volume: Volume, policy: PlaybackPolicy) extends GlobalEvent:
   def withVolume(newVolume: Volume): PlaySound =
     this.copy(volume = newVolume)
   def withSwitch(newPolicy: PlaybackPolicy): PlaySound =
     this.copy(policy = newPolicy)
+
+object PlaySound:
+
+  def apply(assetName: AssetName): PlaySound =
+    PlaySound(assetName, Volume.Max, PlaybackPolicy.Continue)
+
+  def apply(assetName: AssetName, volume: Volume): PlaySound =
+    PlaySound(assetName, volume, PlaybackPolicy.Continue)
 
 /** A class of events representing general networking events
   */
