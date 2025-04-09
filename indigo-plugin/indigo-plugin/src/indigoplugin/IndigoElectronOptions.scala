@@ -49,6 +49,13 @@ final case class IndigoElectronOptions(
   def useElectronExecutable(path: String): IndigoElectronOptions =
     withElectronInstallType(ElectronInstall.PathToExecutable(path))
 
+  /** Open the developer tools when the Electron window is created. */
+  def developToolsOpenOnStartUp: IndigoElectronOptions =
+    this.copy(openDevTools = true)
+
+  /** Do not open the developer tools when the Electron window is created. */
+  def developToolsClosedOnStartUp: IndigoElectronOptions =
+    this.copy(openDevTools = false)
 }
 
 object IndigoElectronOptions {
