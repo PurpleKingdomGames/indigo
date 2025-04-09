@@ -1,4 +1,4 @@
-package sbtindigo
+package indigoplugin
 
 import sbt.plugins.JvmPlugin
 import sbt._

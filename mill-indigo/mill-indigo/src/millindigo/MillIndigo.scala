@@ -1,4 +1,4 @@
-package millindigo
+package indigoplugin
 
 import mill._
 import mill.scalalib._
@@ -10,6 +10,8 @@ import mill.define.Persistent
 import indigoplugin.core.IndigoBuildMill
 import indigoplugin.core.IndigoRun
 import indigoplugin.core.IndigoCordova
+import indigoplugin.IndigoGenerators
+import indigoplugin.IndigoOptions
 
 trait MillIndigo extends ScalaJSModule {
 
