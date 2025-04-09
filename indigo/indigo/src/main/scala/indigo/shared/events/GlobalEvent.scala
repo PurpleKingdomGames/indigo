@@ -1,7 +1,7 @@
 package indigo.shared.events
 
 import indigo.AssetCollection
-import indigo.platform.audio.SoundSwitch
+import indigo.platform.audio.PlaybackPolicy
 import indigo.shared.assets.AssetName
 import indigo.shared.assets.AssetType
 import indigo.shared.audio.Volume
@@ -948,15 +948,15 @@ object KeyboardEvent {
   *   Reference to the loaded asset
   * @param volume
   *   What volume level to play at
-  * @param switch
+  * @param policy
   *   How to handle the previous sounds
   */
-final case class PlaySound(assetName: AssetName, volume: Volume, switch: SoundSwitch = SoundSwitch.Continue)
+final case class PlaySound(assetName: AssetName, volume: Volume, policy: PlaybackPolicy = PlaybackPolicy.Continue)
     extends GlobalEvent:
   def withVolume(newVolume: Volume): PlaySound =
     this.copy(volume = newVolume)
-  def withSwitch(newSwitch: SoundSwitch): PlaySound =
-    this.copy(switch = newSwitch)
+  def withSwitch(newPolicy: PlaybackPolicy): PlaySound =
+    this.copy(policy = newPolicy)
 
 /** A class of events representing general networking events
   */
