@@ -7,7 +7,7 @@ final case class UIContext[ReferenceData](
     // Specific to UIContext
     parent: Parent,
     snapGrid: Size,
-    pointerCoords: Coords,
+    _pointerCoords: Coords,
     state: UIState,
     magnification: Int,
     // The following are all the same as in SubSystemContext
@@ -18,6 +18,9 @@ final case class UIContext[ReferenceData](
 
   lazy val isActive: Boolean =
     state == UIState.Active
+
+  lazy val pointerCoords: Coords =
+    Coords(_pointerCoords.unsafeToPoint / snapGrid.toPoint)
 
   def withParent(newParent: Parent): UIContext[ReferenceData] =
     this.copy(parent = newParent)
@@ -49,7 +52,7 @@ final case class UIContext[ReferenceData](
     this.copy(snapGrid = Size(1))
 
   def withPointerCoords(coords: Coords): UIContext[ReferenceData] =
-    this.copy(pointerCoords = coords)
+    this.copy(_pointerCoords = coords)
 
   def withState(newState: UIState): UIContext[ReferenceData] =
     this.copy(state = newState)
@@ -76,7 +79,7 @@ object UIContext:
     UIContext(
       Parent.default,
       snapGrid,
-      Coords(subSystemContext.frame.input.pointers.position / snapGrid.toPoint),
+      Coords(subSystemContext.frame.input.pointers.position),
       UIState.Active,
       magnification,
       subSystemContext.reference,
