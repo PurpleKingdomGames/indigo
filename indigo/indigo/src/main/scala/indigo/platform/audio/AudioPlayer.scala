@@ -134,7 +134,7 @@ final class AudioPlayer(context: AudioContextProxy):
       switch match {
         case SoundSwitch.StopAll          => stopAllSound()
         case SoundSwitch.StopPreviousSame => stopSound(assetName)
-        case SoundSwitch.Continue         => // noop
+        case SoundSwitch.Continue         => ()
       }
       soundNodes.update(assetName, node)
     }
