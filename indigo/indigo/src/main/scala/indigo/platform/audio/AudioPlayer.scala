@@ -126,15 +126,15 @@ final class AudioPlayer(context: AudioContextProxy):
   private def stopAllSound(): Unit =
     soundNodes.keySet.foreach(stopSound)
 
-  def playSound(assetName: AssetName, volume: Volume, switch: SoundSwitch): Unit =
+  def playSound(assetName: AssetName, volume: Volume, policy: PlaybackPolicy): Unit =
     findAudioDataByName(assetName).foreach { sound =>
       val node = setupNodes(sound, volume, loop = false)
       node.audioBufferSourceNode.onended = _ => soundNodes.remove(assetName)
       node.audioBufferSourceNode.start(0)
-      switch match {
-        case SoundSwitch.StopAll          => stopAllSound()
-        case SoundSwitch.StopPreviousSame => stopSound(assetName)
-        case SoundSwitch.Continue         => ()
+      policy match {
+        case PlaybackPolicy.StopAll          => stopAllSound()
+        case PlaybackPolicy.StopPreviousSame => stopSound(assetName)
+        case PlaybackPolicy.Continue         => ()
       }
       soundNodes.update(assetName, node)
     }

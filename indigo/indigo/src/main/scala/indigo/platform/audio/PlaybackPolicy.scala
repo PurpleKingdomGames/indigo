@@ -1,6 +1,6 @@
 package indigo.platform.audio
 
-enum SoundSwitch derives CanEqual:
+enum PlaybackPolicy derives CanEqual:
   /** Stop all sounds, not only the previous same sound
     */
   case StopAll
