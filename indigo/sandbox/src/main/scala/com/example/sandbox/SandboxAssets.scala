@@ -6,6 +6,9 @@ import indigoextras.effectmaterials.RefractionEntity
 
 object SandboxAssets {
 
+  val jumpSound: AssetName     = AssetName("jump")
+  val jumpSoundPath: AssetPath = AssetPath("assets/jump.mp3")
+
   val testFont: AssetName                     = AssetName("test font")
   val testFontMaterial: Material.ImageEffects = Material.ImageEffects(testFont)
 
@@ -101,7 +104,8 @@ object SandboxAssets {
       AssetType.Image(cameraIcon, AssetPath("assets/camera_icon.png")),
       AssetType.Image(nineSlice, AssetPath("assets/nineslice.png")),
       AssetType.Image(platform, AssetPath("assets/platform.png")),
-      AssetType.Image(window, AssetPath("assets/window.png"))
+      AssetType.Image(window, AssetPath("assets/window.png")),
+      AssetType.Audio(jumpSound, jumpSoundPath)
     )
 
 }

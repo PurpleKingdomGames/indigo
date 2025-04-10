@@ -5,6 +5,7 @@ import com.example.sandbox.scenes.ComponentUIScene2
 import com.example.sandbox.scenes.ConfettiModel
 import com.example.sandbox.scenes.PathFindingModel
 import com.example.sandbox.scenes.PointersModel
+import com.example.sandbox.scenes.SfxComponents
 import example.TestFont
 import indigo.*
 import indigo.syntax.*
@@ -20,6 +21,7 @@ final case class SandboxGameModel(
     pathfinding: PathFindingModel,
     rotation: Radians,
     num: Int,
+    sfxComponents: ComponentGroup[Unit],
     components: ComponentGroup[Int],
     scrollPane: ScrollPane[ComponentList[Int], Int],
     button: Button[Int],
@@ -49,6 +51,7 @@ object SandboxModel {
       PathFindingModel.empty,
       Radians.zero,
       0,
+      SfxComponents.components,
       components,
       ComponentUIScene2.CustomComponents.pane,
       customButton,
