@@ -22,7 +22,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
   val viewportHeight: Int     = gameHeight * magnificationLevel // 256
 
   def initialScene(bootData: SandboxBootData): Option[SceneName] =
-    Some(WindowsScene.name)
+    Some(SfxScene.name)
 
   def scenes(bootData: SandboxBootData): NonEmptyList[Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]] =
     NonEmptyList(
@@ -50,6 +50,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
       PathFindingScene,
       CaptureScreenScene,
       NineSliceScene,
+      SfxScene,
       ComponentUIScene,
       ComponentUIScene2,
       WindowsScene,
@@ -86,7 +87,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
         TestFont.fontInfo
       ).withSubSystems(
         FPSCounter[SandboxGameModel](
-          Point(5, 165),
+          Point(5, 370),
           Fonts.fontKey,
           SandboxAssets.smallFontName,
           Constants.LayerKeys.fps
