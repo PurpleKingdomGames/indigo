@@ -96,6 +96,17 @@ final case class IndigoOptions(
   def excludeAssets(rules: os.RelPath => Boolean): IndigoOptions =
     this.copy(assets = assets.withExclude(rules))
 
+  /** Provide a custom asset renaming function (arguments are (name, ext) => new name) used during asset listing
+    * generation to rename assets. The purpose is to avoid name clashes in the generated code where you have two
+    * similarly named items that would normally result in identical names, e.g. character.png and character.json.
+    * Original file names will not be affected.
+    *
+    * Assets names are processed by this function before being 'made safe' by the usual process. So be aware that you
+    * may still not get the exact name you mapped to.
+    */
+  def renameAssets(f: PartialFunction[(String, String), String]): IndigoOptions =
+    this.copy(assets = assets.withRenameFunction(f))
+
   /** Set the window start width */
   def withWindowWidth(value: Int): IndigoOptions =
     this.copy(metadata = metadata.withWindowWidth(value))

@@ -42,7 +42,7 @@ class AcceptanceTests extends munit.FunSuite {
         case p if p.endsWith(os.RelPath("colours.txt"))      => true
         case _                                               => false
       },
-      None
+      IndigoAssets.noRename
     )
 
   val indigoOptions =

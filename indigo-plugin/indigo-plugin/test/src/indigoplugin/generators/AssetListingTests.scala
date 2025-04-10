@@ -3,7 +3,7 @@ package indigoplugin.generators
 class AssetListingTests extends munit.FunSuite {
 
   test("should be able to convert file and folder names into something safe (using default)") {
-    def toSafeName(name: String) = AssetListing.toDefaultSafeName(name, "")
+    def toSafeName(name: String) = AssetListing.toDefaultSafeName((n, _) => n)(name, "")
 
     assertEquals(toSafeName("hello"), "hello")
     assertEquals(toSafeName("hello-there-01"), "helloThere01")
@@ -21,7 +21,7 @@ class AssetListingTests extends munit.FunSuite {
       )
 
     val actual =
-      AssetListing.renderContent(paths, AssetListing.toDefaultSafeName)
+      AssetListing.renderContent(paths, AssetListing.toDefaultSafeName((n, _) => n))
 
     val expected =
       """
@@ -72,8 +72,13 @@ class AssetListingTests extends munit.FunSuite {
         os.RelPath.rel / "assets" / "folderA" / "e.svg"
       )
 
+    val rename: (String, String) => String = {
+      case ("e", "svg") => "ee"
+      case (n, _)       => n
+    }
+
     val actual =
-      AssetListing.renderContent(paths, AssetListing.toDefaultSafeName)
+      AssetListing.renderContent(paths, AssetListing.toDefaultSafeName(rename))
 
     val expected =
       """
@@ -102,18 +107,18 @@ class AssetListingTests extends munit.FunSuite {
             d
           )
 
-      val e: AssetName               = AssetName("e.svg")
-      val eMaterial: Material.Bitmap = Material.Bitmap(e)
+      val ee: AssetName               = AssetName("e.svg")
+      val eeMaterial: Material.Bitmap = Material.Bitmap(ee)
 
       def assetSet(baseUrl: String): Set[AssetType] =
         Set(
-          AssetType.Image(e, AssetPath(baseUrl + "assets/folderA/e.svg"), Option(AssetTag("folderA")))
+          AssetType.Image(ee, AssetPath(baseUrl + "assets/folderA/e.svg"), Option(AssetTag("folderA")))
         )
       def assetSet: Set[AssetType] = assetSet("./")
 
       def assetNameSet: Set[AssetName] =
         Set(
-          e
+          ee
         )
 
     object folderC:
