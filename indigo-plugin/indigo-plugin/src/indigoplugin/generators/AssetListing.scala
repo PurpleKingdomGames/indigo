@@ -12,8 +12,11 @@ object AssetListing {
       indigoAssets: IndigoAssets
   ): os.Path => Seq[os.Path] = outDir => {
 
-    val toSafeName: (String, String) => String =
-      indigoAssets.rename.getOrElse(toDefaultSafeName)
+    val toSafeName: (String, String) => String = {
+      val r = (name: String, ext: String) => indigoAssets.rename.lift(name, ext).getOrElse(name)
+
+      toDefaultSafeName(r)
+    }
 
     val fileContents: String =
       renderContent(indigoAssets.listAssetFiles, toSafeName)
@@ -201,12 +204,13 @@ object AssetListing {
       |${contents}"""
   }
 
-  def toDefaultSafeName: (String, String) => String = { (name: String, _: String) =>
-    name.replaceAll("[^a-zA-Z0-9]", "-").split("-").toList.filterNot(_.isEmpty) match {
-      case h :: t if h.take(1).matches("[0-9]") => ("_" :: h :: t.map(_.capitalize)).mkString
-      case h :: t                               => (h :: t.map(_.capitalize)).mkString
-      case l                                    => l.map(_.capitalize).mkString
-    }
+  def toDefaultSafeName(rename: (String, String) => String): (String, String) => String = {
+    (name: String, ext: String) =>
+      rename(name, ext).replaceAll("[^a-zA-Z0-9]", "-").split("-").toList.filterNot(_.isEmpty) match {
+        case h :: t if h.take(1).matches("[0-9]") => ("_" :: h :: t.map(_.capitalize)).mkString
+        case h :: t                               => (h :: t.map(_.capitalize)).mkString
+        case l                                    => l.map(_.capitalize).mkString
+      }
   }
 
   val AudioFileExtensions: Set[String] =

@@ -12,7 +12,7 @@ final case class IndigoAssets(
     gameAssetsDirectory: os.RelPath,
     include: os.RelPath => Boolean,
     exclude: os.RelPath => Boolean,
-    rename: Option[(String, String) => String]
+    rename: PartialFunction[(String, String), String]
 ) {
 
   val workspaceDir = Utils.findWorkspace
@@ -49,8 +49,8 @@ final case class IndigoAssets(
     * @param f
     *   Function that takes a tuple of Strings, file name and extension, and returns a new 'safe for Scala' name.
     */
-  def withRenameFunction(f: (String, String) => String): IndigoAssets =
-    this.copy(rename = Option(f))
+  def withRenameFunction(f: PartialFunction[(String, String), String]): IndigoAssets =
+    this.copy(rename = f)
 
   /** Decides if a relative path will be included in the assets or not. */
   def isCopyAllowed(rel: os.RelPath): Boolean =
@@ -85,10 +85,19 @@ final case class IndigoAssets(
 
 object IndigoAssets {
 
+  val noRename: PartialFunction[(String, String), String] = { case (name, _) =>
+    name
+  }
+
   /** Default settings for an Indigo game's asset management */
   val defaults: IndigoAssets = {
     val pf: PartialFunction[os.RelPath, Boolean] = { case _ => false }
 
-    IndigoAssets(gameAssetsDirectory = os.RelPath("assets"), pf, pf, None)
+    IndigoAssets(
+      gameAssetsDirectory = os.RelPath("assets"),
+      pf,
+      pf,
+      noRename
+    )
   }
 }

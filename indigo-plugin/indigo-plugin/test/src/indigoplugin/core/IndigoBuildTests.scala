@@ -10,7 +10,7 @@ class IndigoBuildTests extends munit.FunSuite {
     val toCopy: os.RelPath             = os.RelPath("some/path/foo.txt")
     val include: os.RelPath => Boolean = _ => false
     val exclude: os.RelPath => Boolean = _ => false
-    val indigoAssets: IndigoAssets     = IndigoAssets(base, include, exclude, None)
+    val indigoAssets: IndigoAssets     = IndigoAssets(base, include, exclude, IndigoAssets.noRename)
 
     val actual = indigoAssets.isCopyAllowed(toCopy)
 
@@ -23,7 +23,7 @@ class IndigoBuildTests extends munit.FunSuite {
     val toCopy: os.RelPath             = os.RelPath("some/path/foo.txt")
     val include: os.RelPath => Boolean = _ => false
     val exclude: os.RelPath => Boolean = _ == os.RelPath("path/foo.txt")
-    val indigoAssets: IndigoAssets     = IndigoAssets(base, include, exclude, None)
+    val indigoAssets: IndigoAssets     = IndigoAssets(base, include, exclude, IndigoAssets.noRename)
 
     val actual = indigoAssets.isCopyAllowed(toCopy)
 
@@ -36,7 +36,7 @@ class IndigoBuildTests extends munit.FunSuite {
     val toCopy: os.RelPath             = os.RelPath("some/path/foo.txt")
     val include: os.RelPath => Boolean = _ == os.RelPath("path/foo.txt")
     val exclude: os.RelPath => Boolean = _ => false
-    val indigoAssets: IndigoAssets     = IndigoAssets(base, include, exclude, None)
+    val indigoAssets: IndigoAssets     = IndigoAssets(base, include, exclude, IndigoAssets.noRename)
 
     val actual = indigoAssets.isCopyAllowed(toCopy)
 
@@ -49,7 +49,7 @@ class IndigoBuildTests extends munit.FunSuite {
     val toCopy: os.RelPath             = os.RelPath("some/path/foo.txt")
     val include: os.RelPath => Boolean = _ == os.RelPath("path/foo.txt")
     val exclude: os.RelPath => Boolean = _ == os.RelPath("path")
-    val indigoAssets: IndigoAssets     = IndigoAssets(base, include, exclude, None)
+    val indigoAssets: IndigoAssets     = IndigoAssets(base, include, exclude, IndigoAssets.noRename)
 
     val actual = indigoAssets.isCopyAllowed(toCopy)
 
