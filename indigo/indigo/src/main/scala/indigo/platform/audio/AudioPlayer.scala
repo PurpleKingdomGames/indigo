@@ -2,6 +2,7 @@ package indigo.platform.audio
 
 import indigo.platform.assets.LoadedAudioAsset
 import indigo.shared.assets.AssetName
+import indigo.shared.audio.PlaybackPolicy
 import indigo.shared.audio.Volume
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.scenegraph.PlaybackPattern

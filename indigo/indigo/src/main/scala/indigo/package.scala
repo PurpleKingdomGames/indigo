@@ -675,11 +675,14 @@ type RenderNode[T <: shared.scenegraph.SceneNode]    = shared.scenegraph.RenderN
 type SceneAudio = shared.scenegraph.SceneAudio
 val SceneAudio: shared.scenegraph.SceneAudio.type = shared.scenegraph.SceneAudio
 
-type Volume = indigo.shared.audio.Volume
-val Volume: indigo.shared.audio.Volume.type = indigo.shared.audio.Volume
+type PlaybackPolicy = indigo.shared.audio.PlaybackPolicy
+val PlaybackPolicy: indigo.shared.audio.PlaybackPolicy.type = indigo.shared.audio.PlaybackPolicy
 
 type Track = indigo.shared.audio.Track
 val Track: indigo.shared.audio.Track.type = indigo.shared.audio.Track
+
+type Volume = indigo.shared.audio.Volume
+val Volume: indigo.shared.audio.Volume.type = indigo.shared.audio.Volume
 
 type PlaybackPattern = shared.scenegraph.PlaybackPattern
 val PlaybackPattern: shared.scenegraph.PlaybackPattern.type = shared.scenegraph.PlaybackPattern
