@@ -1,4 +1,4 @@
-package indigo.platform.audio
+package indigo.shared.audio
 
 enum PlaybackPolicy derives CanEqual:
   /** Stop all sounds, not only the previous same sound

@@ -1,9 +1,9 @@
 package indigo.shared.events
 
 import indigo.AssetCollection
-import indigo.platform.audio.PlaybackPolicy
 import indigo.shared.assets.AssetName
 import indigo.shared.assets.AssetType
+import indigo.shared.audio.PlaybackPolicy
 import indigo.shared.audio.Volume
 import indigo.shared.collections.Batch
 import indigo.shared.config.GameViewport
@@ -954,7 +954,7 @@ object KeyboardEvent {
 final case class PlaySound(assetName: AssetName, volume: Volume, policy: PlaybackPolicy) extends GlobalEvent:
   def withVolume(newVolume: Volume): PlaySound =
     this.copy(volume = newVolume)
-  def withSwitch(newPolicy: PlaybackPolicy): PlaySound =
+  def withPlaybackPolicy(newPolicy: PlaybackPolicy): PlaySound =
     this.copy(policy = newPolicy)
 
 object PlaySound:
