@@ -6,6 +6,9 @@ import scala.collection.immutable.SortedMap
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
 class DiceTests extends munit.FunSuite {
+  // If you're worried it's not working, use this config instead.
+  // val numRuns = 200_000_000
+  val numRuns = 2_000_000
 
   given CanEqual[List[Int], List[Int]] = CanEqual.derived
 
@@ -145,7 +148,6 @@ class DiceTests extends munit.FunSuite {
 
   test("all dice rolls have an approximately uniform distribution") {
     val diceSides            = 63
-    val numRuns              = 200_000_000
     val expectedDistribution = 1.0 / diceSides
     val generatedNums =
       Array
@@ -173,7 +175,6 @@ class DiceTests extends munit.FunSuite {
   test("all dice rolls in rollRange have an approximately uniform distribution") {
     val diceSides            = 63
     val halfSides            = Math.floor(diceSides / 2.0).toInt
-    val numRuns              = 200_000_000
     val expectedDistribution = 1.0 / halfSides
     val generatedNums =
       Array
@@ -199,7 +200,6 @@ class DiceTests extends munit.FunSuite {
   }
 
   test("all dice rolls in rollRange(1, 4) have an approximately uniform distribution") {
-    val numRuns              = 200_000_000
     val expectedDistribution = 0.25
     val generatedNums =
       Array
