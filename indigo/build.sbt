@@ -113,6 +113,7 @@ lazy val sandbox =
       name := "sandbox",
       indigoOptions :=
         IndigoOptions.defaults
+          .withWindowSize(800, 600)
           .withTitle("Sandbox")
           .withBackgroundColor("black")
           .withAssetDirectory("sandbox/assets/"),
