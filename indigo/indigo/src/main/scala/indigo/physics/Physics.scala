@@ -10,13 +10,13 @@ import scala.annotation.tailrec
 
 object Physics:
 
-  def update[A](
+  def update[Tag](
       timeDelta: Seconds,
-      world: World[A],
-      transient: Batch[Collider[A]],
+      world: World[Tag],
+      transient: Batch[Collider[Tag]],
       settings: SimulationSettings
-  ): Outcome[World[A]] =
-    val moved: Batch[Internal.IndexedCollider[A]] =
+  ): Outcome[World[Tag]] =
+    val moved: Batch[Internal.IndexedCollider[Tag]] =
       Internal.moveColliders(timeDelta, world.colliders, world.combinedForce, world.resistance)
 
     val staticTransient = transient.map(_.makeStatic)
@@ -24,12 +24,12 @@ object Physics:
     @tailrec
     def rec(
         remaining: Int,
-        workingColliders: Batch[Internal.IndexedCollider[A]],
+        workingColliders: Batch[Internal.IndexedCollider[Tag]],
         accEvents: Batch[GlobalEvent]
-    ): (Batch[Internal.IndexedCollider[A]], Batch[GlobalEvent]) =
+    ): (Batch[Internal.IndexedCollider[Tag]], Batch[GlobalEvent]) =
       if remaining == 0 then (workingColliders, accEvents)
       else
-        val collisions: Batch[(Internal.IndexedCollider[A], Batch[Collider[A]])] =
+        val collisions: Batch[(Internal.IndexedCollider[Tag], Batch[Collider[Tag]])] =
           Internal.findCollisionGroups(workingColliders, staticTransient, settings)
 
         if collisions.exists(_._2.nonEmpty) then
@@ -38,7 +38,7 @@ object Physics:
               cs.flatMap(target => c.proposed.onCollisionWith(target))
             }
 
-          val resolved: Batch[Internal.IndexedCollider[A]] =
+          val resolved: Batch[Internal.IndexedCollider[Tag]] =
             Internal.solveAllCollisions(collisions)
 
           rec(remaining - 1, resolved, collisionEvents)
@@ -52,14 +52,14 @@ object Physics:
 
   object Internal:
 
-    given [A]: CanEqual[IndexedCollider[A], IndexedCollider[A]] = CanEqual.derived
+    given [Tag]: CanEqual[IndexedCollider[Tag], IndexedCollider[Tag]] = CanEqual.derived
 
-    def moveColliders[A](
+    def moveColliders[Tag](
         timeDelta: Seconds,
-        colliders: Batch[Collider[A]],
+        colliders: Batch[Collider[Tag]],
         combinedForce: Vector2,
         resistance: Resistance
-    ): Batch[IndexedCollider[A]] =
+    ): Batch[IndexedCollider[Tag]] =
       colliders.zipWithIndex.map(moveCollider(timeDelta, combinedForce, resistance))
 
     def calculateNewMovement(
@@ -93,9 +93,9 @@ object Physics:
       val abs = terminalVelocity.abs
       velocity.clamp(abs.invert, abs)
 
-    def moveCollider[A](timeDelta: Seconds, worldForces: Vector2, worldResistance: Resistance)(
-        colliderWithIndex: (Collider[A], Int)
-    ): IndexedCollider[A] =
+    def moveCollider[Tag](timeDelta: Seconds, worldForces: Vector2, worldResistance: Resistance)(
+        colliderWithIndex: (Collider[Tag], Int)
+    ): IndexedCollider[Tag] =
       val (collider, index) = colliderWithIndex
 
       collider match
@@ -139,22 +139,22 @@ object Physics:
             c.copy(bounds = c.bounds.moveTo(p), velocity = v)
           )
 
-    def combineAndCull[A](
-        indexedColliders: Batch[IndexedCollider[A]],
-        transient: Batch[Collider[A]],
+    def combineAndCull[Tag](
+        indexedColliders: Batch[IndexedCollider[Tag]],
+        transient: Batch[Collider[Tag]],
         simulationBounds: BoundingBox
-    ): Batch[IndexedCollider[A]] =
+    ): Batch[IndexedCollider[Tag]] =
       (
         indexedColliders ++
           transient.zipWithIndex.map { case (t, i) => Internal.IndexedCollider(-i - 1, t, t) }
       ).filter(p => p.proposed.boundingBox.overlaps(simulationBounds))
 
-    def findCollisionGroups[A](
-        indexedColliders: Batch[IndexedCollider[A]],
-        transient: Batch[Collider[A]],
+    def findCollisionGroups[Tag](
+        indexedColliders: Batch[IndexedCollider[Tag]],
+        transient: Batch[Collider[Tag]],
         settings: SimulationSettings
-    ): Batch[(IndexedCollider[A], Batch[Collider[A]])] =
-      val lookup: QuadTree[BoundingBox, Internal.IndexedCollider[A]] =
+    ): Batch[(IndexedCollider[Tag], Batch[Collider[Tag]])] =
+      val lookup: QuadTree[BoundingBox, Internal.IndexedCollider[Tag]] =
         QuadTree
           .empty(settings.bounds)
           .insert(
@@ -182,14 +182,14 @@ object Physics:
           c -> collisions
       }
 
-    def solveAllCollisions[A](
-        collisions: Batch[(IndexedCollider[A], Batch[Collider[A]])]
-    ): Batch[IndexedCollider[A]] =
+    def solveAllCollisions[Tag](
+        collisions: Batch[(IndexedCollider[Tag], Batch[Collider[Tag]])]
+    ): Batch[IndexedCollider[Tag]] =
       collisions.map { case (c, cs) =>
         if c.proposed.isStatic then c else solveCollisions(c, cs)
       }
 
-    def solveCollisions[A](indexed: IndexedCollider[A], collidees: Batch[Collider[A]]): IndexedCollider[A] =
+    def solveCollisions[Tag](indexed: IndexedCollider[Tag], collidees: Batch[Collider[Tag]]): IndexedCollider[Tag] =
       val collider = indexed.proposed
 
       if collidees.isEmpty then indexed
@@ -272,10 +272,10 @@ object Physics:
           proposed = collider.withVelocity(meanVelocity).withPosition(meanPosition)
         )
 
-    def solveCollisionWithCircle[A](
+    def solveCollisionWithCircle[Tag](
         ray: LineSegment,
         position: Vertex,
-        target: Collider.Circle[A],
+        target: Collider.Circle[Tag],
         velocity: Vector2,
         friction: Friction,
         displaceBy: Vector2,
@@ -296,11 +296,11 @@ object Physics:
         case Some(reflected) =>
           Solved(nextPosition + (reflected * continueDistance), reflected * remainingEnergy * frictionAmount)
 
-    def solveCollisionWithBox[A](
+    def solveCollisionWithBox[Tag](
         displacement: Displacement,
         position: Vertex,
         center: Vertex,
-        target: Collider.Box[A],
+        target: Collider.Box[Tag],
         velocity: Vector2,
         friction: Friction,
         displaceBy: Vector2,
@@ -324,7 +324,7 @@ object Physics:
         case Some(reflected) =>
           Solved(nextPosition + (reflected * continueDistance), reflected * remainingEnergy * frictionAmount)
 
-    final case class IndexedCollider[A](index: Int, previous: Collider[A], proposed: Collider[A]):
+    final case class IndexedCollider[Tag](index: Int, previous: Collider[Tag], proposed: Collider[Tag]):
       val safeMove: Boolean = previous.boundingBox.overlaps(proposed.boundingBox)
       val movementBounds: BoundingBox =
         if safeMove then proposed.boundingBox
