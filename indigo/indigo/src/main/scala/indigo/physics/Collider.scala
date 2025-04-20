@@ -6,15 +6,15 @@ import indigo.physics.Mass
 import indigo.physics.Restitution
 import indigo.shared.geometry.ReflectionData
 
-enum Collider[A]:
-  def tag: A
+enum Collider[Tag]:
+  def tag: Tag
   def static: Boolean
   def velocity: Vector2
   def terminalVelocity: Vector2
   def mass: Mass
   def restitution: Restitution
-  def canCollideWith: A => Boolean
-  def onCollisionWith: Collider[A] => Batch[GlobalEvent]
+  def canCollideWith: Tag => Boolean
+  def onCollisionWith: Collider[Tag] => Batch[GlobalEvent]
 
   def boundingBox: BoundingBox =
     this match
@@ -22,7 +22,7 @@ enum Collider[A]:
       case c: Collider.Box[_]    => c.bounds
 
   case Circle(
-      tag: A,
+      tag: Tag,
       bounds: BoundingCircle,
       mass: Mass,
       velocity: Vector2,
@@ -30,11 +30,11 @@ enum Collider[A]:
       restitution: Restitution,
       friction: Friction,
       static: Boolean,
-      canCollideWith: A => Boolean,
-      onCollisionWith: Collider[A] => Batch[GlobalEvent]
-  ) extends Collider[A]
+      canCollideWith: Tag => Boolean,
+      onCollisionWith: Collider[Tag] => Batch[GlobalEvent]
+  ) extends Collider[Tag]
   case Box(
-      tag: A,
+      tag: Tag,
       bounds: BoundingBox,
       mass: Mass,
       velocity: Vector2,
@@ -42,19 +42,19 @@ enum Collider[A]:
       restitution: Restitution,
       friction: Friction,
       static: Boolean,
-      canCollideWith: A => Boolean,
-      onCollisionWith: Collider[A] => Batch[GlobalEvent]
-  ) extends Collider[A]
+      canCollideWith: Tag => Boolean,
+      onCollisionWith: Collider[Tag] => Batch[GlobalEvent]
+  ) extends Collider[Tag]
 
 object Collider:
 
-  def apply[A](tag: A, bounds: BoundingCircle | BoundingBox): Collider[A] =
+  def apply[Tag](tag: Tag, bounds: BoundingCircle | BoundingBox): Collider[Tag] =
     bounds match
       case b: BoundingCircle => Collider.Circle(tag, b)
       case b: BoundingBox    => Collider.Box(tag, b)
 
   object Circle:
-    def apply[A](tag: A, bounds: BoundingCircle): Collider.Circle[A] =
+    def apply[Tag](tag: Tag, bounds: BoundingCircle): Collider.Circle[Tag] =
       Collider.Circle(
         tag,
         bounds,
@@ -69,7 +69,7 @@ object Collider:
       )
 
   object Box:
-    def apply[A](tag: A, bounds: BoundingBox): Collider.Box[A] =
+    def apply[Tag](tag: Tag, bounds: BoundingBox): Collider.Box[Tag] =
       Collider.Box(
         tag,
         bounds,
@@ -83,8 +83,8 @@ object Collider:
         _ => Batch.empty
       )
 
-  extension [A](c: Collider.Circle[A])
-    def toBox: Collider.Box[A] =
+  extension [Tag](c: Collider.Circle[Tag])
+    def toBox: Collider.Box[Tag] =
       Collider.Box(
         c.tag,
         c.bounds.toIncircleBoundingBox,
@@ -98,7 +98,7 @@ object Collider:
         _ => Batch.empty
       )
 
-  extension [A](c: Collider[A])
+  extension [Tag](c: Collider[Tag])
     def isStatic: Boolean = c.static
 
     def position: Vertex =
@@ -111,88 +111,88 @@ object Collider:
         case cc: Circle[_] => cc.bounds.center
         case cc: Box[_]    => cc.bounds.center
 
-    def makeStatic: Collider[A] = c match
+    def makeStatic: Collider[Tag] = c match
       case cc: Circle[_] => cc.copy(static = true)
       case cc: Box[_]    => cc.copy(static = true)
 
-    def makeDynamic: Collider[A] = c match
+    def makeDynamic: Collider[Tag] = c match
       case cc: Circle[_] => cc.copy(static = false)
       case cc: Box[_]    => cc.copy(static = false)
 
-    def withFriction(value: Friction): Collider[A] =
+    def withFriction(value: Friction): Collider[Tag] =
       c match
         case cc: Circle[_] => cc.copy(friction = value)
         case cc: Box[_]    => cc.copy(friction = value)
 
-    def withMass(value: Mass): Collider[A] =
+    def withMass(value: Mass): Collider[Tag] =
       c match
         case cc: Circle[_] => cc.copy(mass = value)
         case cc: Box[_]    => cc.copy(mass = value)
 
-    def withRestitution(value: Restitution): Collider[A] =
+    def withRestitution(value: Restitution): Collider[Tag] =
       c match
         case cc: Circle[_] => cc.copy(restitution = value)
         case cc: Box[_]    => cc.copy(restitution = value)
 
-    def withVelocity(value: Vector2): Collider[A] =
+    def withVelocity(value: Vector2): Collider[Tag] =
       c match
         case cc: Circle[_] => cc.copy(velocity = value)
         case cc: Box[_]    => cc.copy(velocity = value)
-    def withVelocity(x: Double, y: Double): Collider[A] =
+    def withVelocity(x: Double, y: Double): Collider[Tag] =
       withVelocity(Vector2(x, y))
 
-    def withTerminalVelocity(value: Vector2): Collider[A] =
+    def withTerminalVelocity(value: Vector2): Collider[Tag] =
       c match
         case cc: Circle[_] => cc.copy(terminalVelocity = value)
         case cc: Box[_]    => cc.copy(terminalVelocity = value)
-    def withTerminalVelocity(x: Double, y: Double): Collider[A] =
+    def withTerminalVelocity(x: Double, y: Double): Collider[Tag] =
       withTerminalVelocity(Vector2(x, y))
 
-    def withPosition(value: Vertex): Collider[A] =
+    def withPosition(value: Vertex): Collider[Tag] =
       c match
         case cc: Circle[_] => cc.copy(bounds = cc.bounds.moveTo(value))
         case cc: Box[_]    => cc.copy(bounds = cc.bounds.moveTo(value))
-    def withPosition(x: Double, y: Double): Collider[A] =
+    def withPosition(x: Double, y: Double): Collider[Tag] =
       withPosition(Vertex(x, y))
 
-    def collidesWith(tagTest: A => Boolean): Collider[A] =
+    def collidesWith(tagTest: Tag => Boolean): Collider[Tag] =
       c match
         case cc: Circle[_] => cc.copy(canCollideWith = tagTest)
         case cc: Box[_]    => cc.copy(canCollideWith = tagTest)
 
-    def onCollision(produceEvents: Collider[A] => Batch[GlobalEvent]): Collider[A] =
+    def onCollision(produceEvents: Collider[Tag] => Batch[GlobalEvent]): Collider[Tag] =
       c match
         case cc: Circle[_] => cc.copy(onCollisionWith = produceEvents)
         case cc: Box[_]    => cc.copy(onCollisionWith = produceEvents)
 
-    def +(value: Vector2): Collider[A] =
+    def +(value: Vector2): Collider[Tag] =
       withVelocity(c.velocity + value)
-    def -(value: Vector2): Collider[A] =
+    def -(value: Vector2): Collider[Tag] =
       withVelocity(c.velocity - value)
-    def *(value: Vector2): Collider[A] =
+    def *(value: Vector2): Collider[Tag] =
       withVelocity(c.velocity * value)
-    def /(value: Vector2): Collider[A] =
+    def /(value: Vector2): Collider[Tag] =
       withVelocity(c.velocity / value)
 
-    def moveBy(amount: Vertex): Collider[A] =
+    def moveBy(amount: Vertex): Collider[Tag] =
       c match
         case cc: Circle[_] => cc.copy(bounds = cc.bounds.moveBy(amount))
         case cc: Box[_]    => cc.copy(bounds = cc.bounds.moveBy(amount))
-    def moveBy(x: Double, y: Double): Collider[A] =
+    def moveBy(x: Double, y: Double): Collider[Tag] =
       moveBy(Vertex(x, y))
-    def moveBy(amount: Vector2): Collider[A] =
+    def moveBy(amount: Vector2): Collider[Tag] =
       moveBy(Vertex.fromVector2(amount))
 
-    def moveTo(newPosition: Vertex): Collider[A] =
+    def moveTo(newPosition: Vertex): Collider[Tag] =
       c match
         case cc: Circle[_] => cc.copy(bounds = cc.bounds.moveTo(newPosition))
         case cc: Box[_]    => cc.copy(bounds = cc.bounds.moveTo(newPosition))
-    def moveTo(x: Double, y: Double): Collider[A] =
+    def moveTo(x: Double, y: Double): Collider[Tag] =
       moveTo(Vertex(x, y))
-    def moveTo(newPosition: Vector2): Collider[A] =
+    def moveTo(newPosition: Vector2): Collider[Tag] =
       moveTo(Vertex.fromVector2(newPosition))
 
-    def hitTest(other: Collider[A]): Boolean =
+    def hitTest(other: Collider[Tag]): Boolean =
       (c, other) match
         case (a: Collider.Circle[_], b: Collider.Circle[_]) =>
           a.bounds.overlaps(b.bounds)
@@ -206,7 +206,7 @@ object Collider:
         case (a: Collider.Box[_], b: Collider.Box[_]) =>
           a.bounds.overlaps(b.bounds)
 
-    def displacementWith(other: Collider[A]): Displacement =
+    def displacementWith(other: Collider[Tag]): Displacement =
       Displacement.calculate(c, other)
 
     def reflect(ray: LineSegment): Option[ReflectionData] =
@@ -214,7 +214,7 @@ object Collider:
         case Circle(_, bounds, _, _, _, _, _, _, _, _) => bounds.reflect(ray)
         case Box(_, bounds, _, _, _, _, _, _, _, _)    => bounds.reflect(ray)
 
-    def ~==(other: Collider[A])(using CanEqual[A, A]): Boolean =
+    def ~==(other: Collider[Tag])(using CanEqual[Tag, Tag]): Boolean =
       (c, other) match
         case (
               Collider.Circle(aT, a, aM, aV, aTV, aR, aF, aS, _, _),
