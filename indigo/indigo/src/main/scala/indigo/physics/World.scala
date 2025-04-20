@@ -27,6 +27,9 @@ final case class World[Tag](
   def withResistance(newResistance: Resistance): World[Tag] =
     this.copy(resistance = newResistance)
 
+  def collect[B](matching: PartialFunction[Collider[Tag], B]): Batch[B] =
+    colliders.collect(matching)
+
   def findFirstByTag(tag: Tag)(using CanEqual[Tag, Tag]): Option[Collider[Tag]] =
     findByTag(tag).headOption
 
