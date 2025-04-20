@@ -68,6 +68,9 @@ object Collider:
         _ => Batch.empty
       )
 
+    def unapply[Tag](c: Collider.Circle[Tag]): Option[Tag] =
+      Some(c.tag)
+
   object Box:
     def apply[Tag](tag: Tag, bounds: BoundingBox): Collider.Box[Tag] =
       Collider.Box(
@@ -82,6 +85,9 @@ object Collider:
         _ => true,
         _ => Batch.empty
       )
+
+    def unapply[Tag](c: Collider.Box[Tag]): Option[Tag] =
+      Some(c.tag)
 
   extension [Tag](c: Collider.Circle[Tag])
     def toBox: Collider.Box[Tag] =
@@ -211,19 +217,30 @@ object Collider:
 
     def reflect(ray: LineSegment): Option[ReflectionData] =
       c match
-        case Circle(_, bounds, _, _, _, _, _, _, _, _) => bounds.reflect(ray)
-        case Box(_, bounds, _, _, _, _, _, _, _, _)    => bounds.reflect(ray)
+        case c: Circle[?] => c.bounds.reflect(ray)
+        case c: Box[?]    => c.bounds.reflect(ray)
 
     def ~==(other: Collider[Tag])(using CanEqual[Tag, Tag]): Boolean =
       (c, other) match
-        case (
-              Collider.Circle(aT, a, aM, aV, aTV, aR, aF, aS, _, _),
-              Collider.Circle(bT, b, bM, bV, bTV, bR, bF, bS, _, _)
-            ) =>
-          (aT == bT) && (a ~== b) && (aM ~== bM) && (aV ~== bV) && (aTV ~== bTV) && (aR ~== bR) && (aF ~== bF) && aS == bS
+        case (a: Collider.Circle[Tag], b: Collider.Circle[Tag]) =>
+          (a.tag == b.tag) &&
+          (a.bounds ~== b.bounds) &&
+          (a.mass ~== b.mass) &&
+          (a.velocity ~== b.velocity) &&
+          (a.terminalVelocity ~== b.terminalVelocity) &&
+          (a.restitution ~== b.restitution) &&
+          (a.friction ~== b.friction) &&
+          a.static == b.static
 
-        case (Collider.Box(aT, a, aM, aV, aTV, aR, aF, aS, _, _), Collider.Box(bT, b, bM, bV, bTV, bR, bF, bS, _, _)) =>
-          (aT == bT) && (a ~== b) && (aM ~== bM) && (aV ~== bV) && (aTV ~== bTV) && (aR ~== bR) && (aF ~== bF) && aS == bS
+        case (a: Collider.Box[Tag], b: Collider.Box[Tag]) =>
+          (a.tag == b.tag) &&
+          (a.bounds ~== b.bounds) &&
+          (a.mass ~== b.mass) &&
+          (a.velocity ~== b.velocity) &&
+          (a.terminalVelocity ~== b.terminalVelocity) &&
+          (a.restitution ~== b.restitution) &&
+          (a.friction ~== b.friction) &&
+          a.static == b.static
 
         case _ =>
           false

@@ -99,18 +99,18 @@ object Physics:
       val (collider, index) = colliderWithIndex
 
       collider match
-        case c @ Collider.Circle(_, _, _, _, _, _, _, static, _, _) if static =>
+        case c: Collider.Circle[Tag] if c.static =>
           IndexedCollider(index, c, c)
 
-        case c @ Collider.Circle(_, bounds, mass, velocity, terminalVelocity, _, _, _, _, _) =>
+        case c: Collider.Circle[Tag] =>
           val (p, v) = calculateNewMovement(
             timeDelta,
             worldForces,
             worldResistance,
             c.bounds.position,
-            velocity,
-            terminalVelocity,
-            mass
+            c.velocity,
+            c.terminalVelocity,
+            c.mass
           )
 
           IndexedCollider(
@@ -119,18 +119,18 @@ object Physics:
             c.copy(bounds = c.bounds.moveTo(p), velocity = v)
           )
 
-        case c @ Collider.Box(_, _, _, _, _, _, _, static, _, _) if static =>
+        case c: Collider.Box[Tag] if c.static =>
           IndexedCollider(index, c, c)
 
-        case c @ Collider.Box(_, bounds, mass, velocity, terminalVelocity, _, _, _, _, _) =>
+        case c: Collider.Box[Tag] =>
           val (p, v) = calculateNewMovement(
             timeDelta,
             worldForces,
             worldResistance,
             c.bounds.position,
-            velocity,
-            terminalVelocity,
-            mass
+            c.velocity,
+            c.terminalVelocity,
+            c.mass
           )
 
           IndexedCollider(
@@ -205,15 +205,15 @@ object Physics:
             val continueDistance = displacement.displaceAmount * collider.restitution.toDouble
 
             collider match
-              case Collider.Circle(_, bounds, _, velocity, _, _, friction, _, _, _) =>
+              case cc: Collider.Circle[Tag] =>
                 c match
                   case c: Collider.Circle[_] =>
                     solveCollisionWithCircle(
                       ray = displacement.contact,
-                      position = bounds.position,
+                      position = cc.bounds.position,
                       target = c,
-                      velocity = velocity,
-                      friction = c.friction + friction,
+                      velocity = cc.velocity,
+                      friction = c.friction + cc.friction,
                       displaceBy = displaceBy,
                       continueDistance = continueDistance,
                       remainingEnergy = remainingEnergy
@@ -222,25 +222,25 @@ object Physics:
                   case c: Collider.Box[_] =>
                     solveCollisionWithBox(
                       displacement = displacement,
-                      position = bounds.position,
-                      center = bounds.center,
+                      position = cc.bounds.position,
+                      center = cc.bounds.center,
                       target = c,
-                      velocity = velocity,
-                      friction = c.friction + friction,
+                      velocity = cc.velocity,
+                      friction = c.friction + cc.friction,
                       displaceBy = displaceBy,
                       continueDistance = continueDistance,
                       remainingEnergy = remainingEnergy
                     )
 
-              case Collider.Box(_, bounds, _, velocity, _, _, friction, _, _, _) =>
+              case cc: Collider.Box[Tag] =>
                 c match
                   case c: Collider.Circle[_] =>
                     solveCollisionWithCircle(
                       ray = displacement.contact,
-                      position = bounds.position,
+                      position = cc.bounds.position,
                       target = c,
-                      velocity = velocity,
-                      friction = c.friction + friction,
+                      velocity = cc.velocity,
+                      friction = c.friction + cc.friction,
                       displaceBy = displaceBy,
                       continueDistance = continueDistance,
                       remainingEnergy = remainingEnergy
@@ -249,11 +249,11 @@ object Physics:
                   case c: Collider.Box[_] =>
                     solveCollisionWithBox(
                       displacement = displacement,
-                      position = bounds.position,
-                      center = bounds.center,
+                      position = cc.bounds.position,
+                      center = cc.bounds.center,
                       target = c,
-                      velocity = velocity,
-                      friction = c.friction + friction,
+                      velocity = cc.velocity,
+                      friction = c.friction + cc.friction,
                       displaceBy = displaceBy,
                       continueDistance = continueDistance,
                       remainingEnergy = remainingEnergy
