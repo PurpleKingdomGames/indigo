@@ -1,5 +1,6 @@
 package com.example.sandbox
 
+import com.example.sandbox.scenes.ActorPhysicsSceneModel
 import com.example.sandbox.scenes.ActorSceneModel
 import com.example.sandbox.scenes.ChangeValue
 import com.example.sandbox.scenes.ComponentUIScene2
@@ -27,7 +28,8 @@ final case class SandboxGameModel(
     scrollPane: ScrollPane[ComponentList[Int], Int],
     button: Button[Int],
     meshData: MeshData,
-    actorScene: ActorSceneModel
+    actorScene: ActorSceneModel,
+    actorPhysicsScene: ActorPhysicsSceneModel
 )
 
 object SandboxModel {
@@ -62,7 +64,8 @@ object SandboxModel {
         superTriangle,
         mesh
       ),
-      ActorSceneModel.initial
+      ActorSceneModel.initial,
+      ActorPhysicsSceneModel.initial
     )
 
   val customButton: Button[Int] =
