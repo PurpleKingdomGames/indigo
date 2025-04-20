@@ -9,17 +9,17 @@ object View:
     Outcome(
       SceneUpdateFragment(
         world.present {
-          case Collider.Circle(_, bounds, _, _, _, _, _, _, _, _) =>
+          case c: Collider.Circle[MyTag] =>
             Shape.Circle(
-              bounds.position.toPoint,
-              bounds.radius.toInt,
+              c.bounds.position.toPoint,
+              c.bounds.radius.toInt,
               Fill.Color(RGBA.White.withAlpha(0.2)),
               Stroke(1, RGBA.White)
             )
 
-          case Collider.Box(_, bounds, _, _, _, _, _, _, _, _) =>
+          case c: Collider.Box[MyTag] =>
             Shape.Box(
-              bounds.toRectangle,
+              c.bounds.toRectangle,
               Fill.Color(RGBA.White.withAlpha(0.2)),
               Stroke(1, RGBA.White)
             )
