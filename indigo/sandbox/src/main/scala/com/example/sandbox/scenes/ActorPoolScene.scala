@@ -163,7 +163,7 @@ object FollowingActor:
 
   given Actor[Point, FollowingActor] with
 
-    def updateModel(
+    def update(
         context: ActorContext[Point, FollowingActor],
         actor: FollowingActor
     ): GlobalEvent => Outcome[FollowingActor] =

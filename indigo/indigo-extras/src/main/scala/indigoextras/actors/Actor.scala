@@ -7,10 +7,10 @@ import indigo.shared.scenegraph.SceneNode
 
 trait Actor[ReferenceData, ActorType]:
 
-  /** Update this actor's model.
+  /** Update this actor.
     */
-  def updateModel(context: ActorContext[ReferenceData, ActorType], actor: ActorType): GlobalEvent => Outcome[ActorType]
+  def update(context: ActorContext[ReferenceData, ActorType], actor: ActorType): GlobalEvent => Outcome[ActorType]
 
-  /** Draw the actor, based on the actor's model.
+  /** Draw the actor.
     */
   def present(context: ActorContext[ReferenceData, ActorType], actor: ActorType): Outcome[Batch[SceneNode]]

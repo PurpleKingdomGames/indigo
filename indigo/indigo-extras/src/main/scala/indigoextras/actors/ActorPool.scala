@@ -27,7 +27,7 @@ final case class ActorPool[ReferenceData, ActorType](
           .map { ai =>
             val ctx = ActorContext(find, model, context)
 
-            ai.actor.updateModel(ctx, ai.instance)(FrameTick).map { updated =>
+            ai.actor.update(ctx, ai.instance)(FrameTick).map { updated =>
               ai.copy(instance = updated)
             }
           }
@@ -40,7 +40,7 @@ final case class ActorPool[ReferenceData, ActorType](
         actors.map { ai =>
           val ctx = ActorContext(find, model, context)
 
-          ai.actor.updateModel(ctx, ai.instance)(e).map { updated =>
+          ai.actor.update(ctx, ai.instance)(e).map { updated =>
             ai.copy(instance = updated)
           }
         }.sequence
