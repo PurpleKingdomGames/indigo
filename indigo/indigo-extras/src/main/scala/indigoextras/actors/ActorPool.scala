@@ -74,6 +74,18 @@ final case class ActorPool[ReferenceData, ActorType](
       .sequence
       .map(_.flatten)
 
+  def present(
+      context: SceneContext[?],
+      model: ReferenceData
+  ): Outcome[Batch[SceneNode]] =
+    present(context.toContext, model)
+
+  def present(
+      context: SubSystemContext[?],
+      model: ReferenceData
+  ): Outcome[Batch[SceneNode]] =
+    present(context.toContext, model)
+
   /** Finds the first actor in the system that matches the predicate test. */
   def find(p: ActorType => Boolean): Option[ActorType] =
     actors.find(ai => p(ai.instance)).map(_.instance)
