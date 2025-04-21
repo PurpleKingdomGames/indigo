@@ -1,3 +1,3 @@
 package indigoextras.actors
 
-final case class ActorInstance[ReferenceData, A](instance: A, actor: Actor[ReferenceData, A])
+final case class ActorInstance[ReferenceData, ActorType](instance: ActorType, actor: Actor[ReferenceData, ActorType])

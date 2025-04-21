@@ -9,19 +9,19 @@ import indigo.shared.events.FrameTick
 import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.SceneNode
 
-final case class ActorPool[ReferenceData, A](
-    actors: Batch[ActorInstance[ReferenceData, A]]
-)(using Ordering[A]):
+final case class ActorPool[ReferenceData, ActorType](
+    actors: Batch[ActorInstance[ReferenceData, ActorType]]
+)(using Ordering[ActorType]):
 
-  private val orderingInstance: Ordering[ActorInstance[ReferenceData, A]] =
+  private val orderingInstance: Ordering[ActorInstance[ReferenceData, ActorType]] =
     Ordering.by(a => a.instance)
 
   /** Update the actor system, passing in the model and a standard context. */
   def update(
       context: Context[?],
       model: ReferenceData
-  ): GlobalEvent => Outcome[ActorPool[ReferenceData, A]] =
-    val nextPool: GlobalEvent => Outcome[Batch[ActorInstance[ReferenceData, A]]] =
+  ): GlobalEvent => Outcome[ActorPool[ReferenceData, ActorType]] =
+    val nextPool: GlobalEvent => Outcome[Batch[ActorInstance[ReferenceData, ActorType]]] =
       case FrameTick =>
         actors
           .map { ai =>
@@ -33,7 +33,7 @@ final case class ActorPool[ReferenceData, A](
           }
           .sequence
           .map { actorInstances =>
-            actorInstances.sorted[ActorInstance[ReferenceData, A]](orderingInstance)
+            actorInstances.sorted[ActorInstance[ReferenceData, ActorType]](orderingInstance)
           }
 
       case e =>
@@ -51,14 +51,14 @@ final case class ActorPool[ReferenceData, A](
   def update(
       context: SceneContext[?],
       model: ReferenceData
-  ): GlobalEvent => Outcome[ActorPool[ReferenceData, A]] =
+  ): GlobalEvent => Outcome[ActorPool[ReferenceData, ActorType]] =
     update(context.toContext, model)
 
   /** Update the actor system, passing in the model and a subsystem context. */
   def update(
       context: SubSystemContext[?],
       model: ReferenceData
-  ): GlobalEvent => Outcome[ActorPool[ReferenceData, A]] =
+  ): GlobalEvent => Outcome[ActorPool[ReferenceData, ActorType]] =
     update(context.toContext, model)
 
   def present(
@@ -75,37 +75,39 @@ final case class ActorPool[ReferenceData, A](
       .map(_.flatten)
 
   /** Finds the first actor in the system that matches the predicate test. */
-  def find(p: A => Boolean): Option[A] =
+  def find(p: ActorType => Boolean): Option[ActorType] =
     actors.find(ai => p(ai.instance)).map(_.instance)
 
   /** Finds all actors in the system that match the predicate test. */
-  def filter(p: A => Boolean): Batch[A] =
+  def filter(p: ActorType => Boolean): Batch[ActorType] =
     actors.filter(ai => p(ai.instance)).map(_.instance)
 
   /** Finds all actors in the system that do not match the predicate test. */
-  def filterNot(p: A => Boolean): Batch[A] =
+  def filterNot(p: ActorType => Boolean): Batch[ActorType] =
     actors.filterNot(ai => p(ai.instance)).map(_.instance)
 
   /** Spawns a batch of new actor in the system. */
-  def spawn[B <: A](newActors: Batch[B])(using actor: Actor[ReferenceData, B]): ActorPool[ReferenceData, A] =
+  def spawn[B <: ActorType](
+      newActors: Batch[B]
+  )(using actor: Actor[ReferenceData, B]): ActorPool[ReferenceData, ActorType] =
     this.copy(
-      actors = actors ++ newActors.map(a => ActorInstance(a, actor.asInstanceOf[Actor[ReferenceData, A]]))
+      actors = actors ++ newActors.map(a => ActorInstance(a, actor.asInstanceOf[Actor[ReferenceData, ActorType]]))
     )
 
   /** Spawns new actors in the system. */
-  def spawn[B <: A](newActors: B*)(using actor: Actor[ReferenceData, B]): ActorPool[ReferenceData, A] =
+  def spawn[B <: ActorType](newActors: B*)(using actor: Actor[ReferenceData, B]): ActorPool[ReferenceData, ActorType] =
     spawn(Batch.fromSeq(newActors))
 
   /** Kills any actors in the system that match the predicate test. */
-  def kill(p: A => Boolean): ActorPool[ReferenceData, A] =
+  def kill(p: ActorType => Boolean): ActorPool[ReferenceData, ActorType] =
     this.copy(
       actors = actors.filterNot(ai => p(ai.instance))
     )
 
 object ActorPool:
 
-  def empty[ReferenceData, A](using Ordering[A]): ActorPool[ReferenceData, A] =
+  def empty[ReferenceData, ActorType](using Ordering[ActorType]): ActorPool[ReferenceData, ActorType] =
     apply()
 
-  def apply[ReferenceData, A]()(using Ordering[A]): ActorPool[ReferenceData, A] =
+  def apply[ReferenceData, ActorType]()(using Ordering[ActorType]): ActorPool[ReferenceData, ActorType] =
     ActorPool(Batch.empty)
