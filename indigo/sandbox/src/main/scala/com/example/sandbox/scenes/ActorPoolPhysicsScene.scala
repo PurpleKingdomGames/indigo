@@ -183,7 +183,7 @@ object ZombieActor:
 
   given Actor[Map[Int, Point], ZombieActor] with
 
-    def updateModel(
+    def update(
         context: ActorContext[Map[Int, Point], ZombieActor],
         actor: ZombieActor
     ): GlobalEvent => Outcome[ZombieActor] =
