@@ -3,8 +3,8 @@ package indigoextras.actors
 import indigo.*
 import indigo.scenes.SceneContext
 
-final case class ActorContext[ReferenceData, A](
-    find: (A => Boolean) => Option[A],
+final case class ActorContext[ReferenceData, ActorType](
+    find: (ActorType => Boolean) => Option[ActorType],
     reference: ReferenceData,
     frame: Context.Frame,
     services: Context.Services
@@ -14,23 +14,23 @@ final case class ActorContext[ReferenceData, A](
 
 object ActorContext:
 
-  def apply[ReferenceData, A](
-      find: (A => Boolean) => Option[A],
+  def apply[ReferenceData, ActorType](
+      find: (ActorType => Boolean) => Option[ActorType],
       reference: ReferenceData,
       ctx: Context[?]
-  ): ActorContext[ReferenceData, A] =
+  ): ActorContext[ReferenceData, ActorType] =
     ActorContext(find, reference, ctx.frame, ctx.services)
 
-  def apply[ReferenceData, A](
-      find: (A => Boolean) => Option[A],
+  def apply[ReferenceData, ActorType](
+      find: (ActorType => Boolean) => Option[ActorType],
       reference: ReferenceData,
       ctx: SceneContext[?]
-  ): ActorContext[ReferenceData, A] =
+  ): ActorContext[ReferenceData, ActorType] =
     ActorContext(find, reference, ctx.frame, ctx.services)
 
-  def apply[ReferenceData, A](
-      find: (A => Boolean) => Option[A],
+  def apply[ReferenceData, ActorType](
+      find: (ActorType => Boolean) => Option[ActorType],
       reference: ReferenceData,
       ctx: SubSystemContext[?]
-  ): ActorContext[ReferenceData, A] =
+  ): ActorContext[ReferenceData, ActorType] =
     ActorContext(find, reference, ctx.frame, ctx.services)
