@@ -20,55 +20,29 @@ What am I doing?
   1. DONE ~~ spawn / kill via events
   2. DONE ~~ find via context (supplied from ActorSystem, not ActorPool)
   3. DONE ~~ Dumber depth management
-2. Tree of pools? Or just a list?
-  1. Events to reorder / reparent
-  2. Trees render to layers
+2. DONE ~~ Tree of pools? Or just a list?
+  1. DONE ~~ Events to reorder / reparent
+  2. WONTDO ~~ Trees render to layers
 3. Types of actors
   1. Full
   2. Lite
 4. Physics out-of-the-box
   1. Might be another actor type?
 
+Testing is needed.
+
  */
 
 final case class StageManager[GameModel, RefData](
     id: SubSystemId,
-    layerKey: Option[LayerKey],
-    extractReference: GameModel => RefData,
-    _initialPerformers: Batch[ActorInstance[RefData, Performer[RefData]]],
-    _updateActorPool: ActorPool[RefData, Performer[RefData]] => PartialFunction[GlobalEvent, Outcome[
-      ActorPool[RefData, Performer[RefData]]
-    ]]
+    extractReference: GameModel => RefData
 ) extends SubSystem[GameModel]:
 
   type EventType      = GlobalEvent
-  type SubSystemModel = ActorPool[RefData, Performer[RefData]]
+  type SubSystemModel = StageManager.Model[ReferenceData]
   type ReferenceData  = RefData
 
-  private given [ReferenceData] => Ordering[Performer[ReferenceData]] =
-    Ordering.by(_.depth.value)
-
-  def eventFilter: GlobalEvent => Option[GlobalEvent] =
-    e => Some(e)
-
-  def reference(model: GameModel): ReferenceData =
-    extractReference(model)
-
-  def initialModel: Outcome[SubSystemModel] =
-    Outcome(ActorPool(_initialPerformers))
-
-  def update(
-      context: SubSystemContext[ReferenceData],
-      model: ActorPool[ReferenceData, Performer[ReferenceData]]
-  ): GlobalEvent => Outcome[ActorPool[ReferenceData, Performer[ReferenceData]]] =
-    handlePerformerEvents(model).orElse {
-      _updateActorPool(model)
-        .orElse { case e =>
-          model.update(context, context.reference)(e)
-        }
-    }
-
-  private val _performerActorInstance: Actor[ReferenceData, Performer[ReferenceData]] =
+  private given Actor[ReferenceData, Performer[ReferenceData]] =
     new Actor[ReferenceData, Performer[ReferenceData]]:
       def update(
           context: ActorContext[ReferenceData, Performer[ReferenceData]],
@@ -82,84 +56,143 @@ final case class StageManager[GameModel, RefData](
       ): Outcome[Batch[SceneNode]] =
         performer.present(PerformerContext.fromActorContext(context))
 
+  def eventFilter: GlobalEvent => Option[GlobalEvent] =
+    e => Some(e)
+
+  def reference(model: GameModel): ReferenceData =
+    extractReference(model)
+
+  def initialModel: Outcome[SubSystemModel] =
+    Outcome(StageManager.Model.empty[ReferenceData])
+
+  def update(
+      context: SubSystemContext[ReferenceData],
+      model: StageManager.Model[ReferenceData]
+  ): GlobalEvent => Outcome[StageManager.Model[ReferenceData]] = {
+    case e: PerformerEvent =>
+      handlePerformerEvents(model)(e)
+
+    case e =>
+      model.update(context, context.reference)(e)
+  }
+
   private def handlePerformerEvents(
-      model: ActorPool[ReferenceData, Performer[ReferenceData]]
-  ): PartialFunction[GlobalEvent, Outcome[ActorPool[ReferenceData, Performer[ReferenceData]]]] = {
-    case PerformerEvent.Spawn(performer) =>
+      model: StageManager.Model[ReferenceData]
+  ): PerformerEvent => Outcome[StageManager.Model[ReferenceData]] = {
+    case PerformerEvent.Add(layerKey, performer) =>
       Outcome(
-        model.spawn(Batch(performer.asInstanceOf[Performer[ReferenceData]]))(using _performerActorInstance)
+        model.spawn(layerKey, Batch(performer.asInstanceOf[Performer[ReferenceData]]))
       )
 
-    case PerformerEvent.SpawnAll(performers) =>
+    case PerformerEvent.AddAll(layerKey, performers) =>
       Outcome(
-        model.spawn(performers.map(_.asInstanceOf[Performer[ReferenceData]]))(using _performerActorInstance)
+        model.spawn(layerKey, performers.map(_.asInstanceOf[Performer[ReferenceData]]))
       )
 
-    case PerformerEvent.Kill(id) =>
+    case PerformerEvent.Remove(id) =>
       Outcome(
         model.kill(_.id == id)
       )
 
-    case PerformerEvent.KillAll(ids) =>
+    case PerformerEvent.RemoveFrom(layerKey, id) =>
+      Outcome(
+        model.kill(layerKey, _.id == id)
+      )
+
+    case PerformerEvent.RemoveAll(ids) =>
       Outcome(
         model.kill(p => ids.exists(_ == p.id))
+      )
+
+    case PerformerEvent.RemoveAllFrom(layerKey, ids) =>
+      Outcome(
+        model.kill(layerKey, p => ids.exists(_ == p.id))
+      )
+
+    case PerformerEvent.ChangeLayer(id, layerKey) =>
+      Outcome(
+        model.changeLayers(id, layerKey)
       )
   }
 
   def present(
       context: SubSystemContext[ReferenceData],
-      model: ActorPool[ReferenceData, Performer[ReferenceData]]
+      model: StageManager.Model[ReferenceData]
   ): Outcome[SceneUpdateFragment] =
-    model.present(context, context.reference).map { ns =>
-      layerKey match
-        case None =>
-          SceneUpdateFragment(
-            Layer.Content(ns)
-          )
-
-        case Some(key) =>
-          SceneUpdateFragment(
-            key -> Layer.Content(ns)
-          )
+    model.present(context, context.reference).map { layers =>
+      SceneUpdateFragment(
+        layers.map((layerKey, nodes) => layerKey -> Layer.Content(nodes))
+      )
     }
 
   def withId(id: SubSystemId): StageManager[GameModel, ReferenceData] =
     this.copy(id = id)
 
-  def withLayerKey(key: LayerKey): StageManager[GameModel, ReferenceData] =
-    this.copy(layerKey = Some(key))
-  def clearLayerKey: StageManager[GameModel, ReferenceData] =
-    this.copy(layerKey = None)
-
-  def updateActors(
-      f: ActorPool[ReferenceData, Performer[ReferenceData]] => PartialFunction[GlobalEvent, Outcome[
-        ActorPool[ReferenceData, Performer[ReferenceData]]
-      ]]
-  ): StageManager[GameModel, ReferenceData] =
-    this.copy(_updateActorPool = f)
-
 object StageManager:
 
-  private def noUpdate[ReferenceData]: ActorPool[ReferenceData, Performer[ReferenceData]] => PartialFunction[
-    GlobalEvent,
-    Outcome[ActorPool[ReferenceData, Performer[ReferenceData]]]
-  ] =
-    _ => PartialFunction.empty
+  private given [ReferenceData] => Ordering[Performer[ReferenceData]] =
+    Ordering.by(_.depth.value)
 
   def apply[GameModel](
       id: SubSystemId
   ): StageManager[GameModel, GameModel] =
-    StageManager(id, None, identity, Batch.empty, noUpdate[GameModel])
+    StageManager(id, identity[GameModel])
 
-  def apply[GameModel](
-      id: SubSystemId,
-      layerKey: LayerKey
-  ): StageManager[GameModel, GameModel] =
-    StageManager(id, Some(layerKey), identity, Batch.empty, noUpdate[GameModel])
+  final case class Model[ReferenceData](pools: Map[LayerKey, ActorPool[ReferenceData, Performer[ReferenceData]]])(using
+      actor: Actor[ReferenceData, Performer[ReferenceData]]
+  ):
 
-  def apply[GameModel, ReferenceData](
-      id: SubSystemId,
-      layerKey: LayerKey,
-      extractReference: GameModel => ReferenceData
-  ): StageManager[GameModel, ReferenceData] =
-    StageManager(id, Some(layerKey), extractReference, Batch.empty, noUpdate[ReferenceData])
+    def findById(id: PerformerId): Option[Performer[ReferenceData]] =
+      pools.values.flatMap(_.find(_.id == id)).headOption
+
+    def changeLayers(id: PerformerId, layerKey: LayerKey): Model[ReferenceData] =
+      findById(id) match
+        case None =>
+          this
+
+        case Some(performer) =>
+          kill(_.id == id).spawn(layerKey, Batch(performer))
+
+    def spawn(
+        layerKey: LayerKey,
+        newPerformers: Batch[Performer[ReferenceData]]
+    ): Model[ReferenceData] =
+      this.copy(
+        pools = pools.updatedWith(layerKey) {
+          case Some(existing) => Option(existing.spawn(newPerformers))
+          case None           => Option(ActorPool.empty[ReferenceData, Performer[ReferenceData]].spawn(newPerformers))
+        }
+      )
+
+    def kill(p: Performer[ReferenceData] => Boolean): Model[ReferenceData] =
+      this.copy(pools = pools.view.mapValues(_.kill(p)).toMap)
+
+    def kill(layerKey: LayerKey, p: Performer[ReferenceData] => Boolean): Model[ReferenceData] =
+      this.copy(pools = pools.map { (k, pl) =>
+        if k == layerKey then k -> pl.kill(p)
+        else k                  -> pl
+      })
+
+    def update(
+        context: SubSystemContext[?],
+        model: ReferenceData
+    ): GlobalEvent => Outcome[Model[ReferenceData]] = e =>
+      val updated =
+        Batch.fromMap(pools).map((k, p) => p.update(context, model)(e).map(p => k -> p)).sequence
+
+      updated.map(next => this.copy(pools = next.toMap))
+
+    def present(
+        context: SubSystemContext[?],
+        model: ReferenceData
+    ): Outcome[Batch[(LayerKey, Batch[SceneNode])]] =
+      Batch
+        .fromMap(pools)
+        .map { (k, p) =>
+          p.present(context, model).map(ns => k -> ns)
+        }
+        .sequence
+
+  object Model:
+    def empty[ReferenceData](using actor: Actor[ReferenceData, Performer[ReferenceData]]): Model[ReferenceData] =
+      Model(Map.empty[LayerKey, ActorPool[ReferenceData, Performer[ReferenceData]]])
