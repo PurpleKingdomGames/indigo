@@ -19,7 +19,7 @@ What am I doing?
 1. DONE ~~ Restoring a sub system version of Actors, initially just with one ActorPool
   1. DONE ~~ spawn / kill via events
   2. DONE ~~ find via context (supplied from ActorSystem, not ActorPool)
-  3. DONE? Check ~~ Dumber depth management
+  3. DONE ~~ Dumber depth management
 2. Tree of pools? Or just a list?
   1. Events to reorder / reparent
   2. Trees render to layers
