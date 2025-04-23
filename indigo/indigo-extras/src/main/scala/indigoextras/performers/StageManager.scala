@@ -5,6 +5,7 @@ import indigo.shared.collections.Batch
 import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.Layer
 import indigo.shared.scenegraph.LayerKey
+import indigo.shared.scenegraph.SceneNode
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.subsystems.SubSystem
 import indigo.shared.subsystems.SubSystemContext
@@ -17,7 +18,7 @@ What am I doing?
 
 1. DONE ~~ Restoring a sub system version of Actors, initially just with one ActorPool
   1. DONE ~~ spawn / kill via events
-  2. DONE? Check ~~ find via context (supplied from ActorSystem, not ActorPool)
+  2. DONE ~~ find via context (supplied from ActorSystem, not ActorPool)
   3. DONE? Check ~~ Dumber depth management
 2. Tree of pools? Or just a list?
   1. Events to reorder / reparent
@@ -44,6 +45,9 @@ final case class StageManager[GameModel, RefData](
   type SubSystemModel = ActorPool[RefData, Performer[RefData]]
   type ReferenceData  = RefData
 
+  private given [ReferenceData] => Ordering[Performer[ReferenceData]] =
+    Ordering.by(_.depth.value)
+
   def eventFilter: GlobalEvent => Option[GlobalEvent] =
     e => Some(e)
 
@@ -64,15 +68,31 @@ final case class StageManager[GameModel, RefData](
         }
     }
 
+  private val _performerActorInstance: Actor[ReferenceData, Performer[ReferenceData]] =
+    new Actor[ReferenceData, Performer[ReferenceData]]:
+      def update(
+          context: ActorContext[ReferenceData, Performer[ReferenceData]],
+          performer: Performer[ReferenceData]
+      ): GlobalEvent => Outcome[Performer[ReferenceData]] =
+        e => performer.update(PerformerContext.fromActorContext(context))(e)
+
+      def present(
+          context: ActorContext[ReferenceData, Performer[ReferenceData]],
+          performer: Performer[ReferenceData]
+      ): Outcome[Batch[SceneNode]] =
+        performer.present(PerformerContext.fromActorContext(context))
+
   private def handlePerformerEvents(
       model: ActorPool[ReferenceData, Performer[ReferenceData]]
   ): PartialFunction[GlobalEvent, Outcome[ActorPool[ReferenceData, Performer[ReferenceData]]]] = {
     case PerformerEvent.Spawn(performer) =>
-      val p: Actor[ReferenceData, Performer[ReferenceData]] =
-        Performer.makeActor(model.find)
-
       Outcome(
-        model.spawn(Batch(performer.asInstanceOf[Performer[ReferenceData]]))(using p)
+        model.spawn(Batch(performer.asInstanceOf[Performer[ReferenceData]]))(using _performerActorInstance)
+      )
+
+    case PerformerEvent.SpawnAll(performers) =>
+      Outcome(
+        model.spawn(performers.map(_.asInstanceOf[Performer[ReferenceData]]))(using _performerActorInstance)
       )
 
     case PerformerEvent.Kill(id) =>
@@ -111,13 +131,6 @@ final case class StageManager[GameModel, RefData](
   def clearLayerKey: StageManager[GameModel, ReferenceData] =
     this.copy(layerKey = None)
 
-  // Can't do this here, need access to the pool to make the find function.
-  // def spawn(performer: Performer[ReferenceData]): StageManager[GameModel, ReferenceData] =
-  //   val p: Actor[ReferenceData, Performer[ReferenceData]] =
-  //     Performer.makeActor()
-
-  //   this.copy(_initialPerformers = _initialPerformers :+ ActorInstance(performer, p))
-
   def updateActors(
       f: ActorPool[ReferenceData, Performer[ReferenceData]] => PartialFunction[GlobalEvent, Outcome[
         ActorPool[ReferenceData, Performer[ReferenceData]]
@@ -133,18 +146,18 @@ object StageManager:
   ] =
     _ => PartialFunction.empty
 
-  def apply[GameModel, ActorType](
+  def apply[GameModel](
       id: SubSystemId
   ): StageManager[GameModel, GameModel] =
     StageManager(id, None, identity, Batch.empty, noUpdate[GameModel])
 
-  def apply[GameModel, ActorType](
+  def apply[GameModel](
       id: SubSystemId,
       layerKey: LayerKey
   ): StageManager[GameModel, GameModel] =
     StageManager(id, Some(layerKey), identity, Batch.empty, noUpdate[GameModel])
 
-  def apply[GameModel, ReferenceData, ActorType](
+  def apply[GameModel, ReferenceData](
       id: SubSystemId,
       layerKey: LayerKey,
       extractReference: GameModel => ReferenceData

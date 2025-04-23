@@ -31,9 +31,10 @@ object PerformerScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbo
 
   def subSystems: Set[SubSystem[SandboxGameModel]] =
     Set(
-      StageManager[SandboxGameModel, Player](
-        SubSystemId("actor system"),
-        Constants.LayerKeys.game
+      StageManager[SandboxGameModel, Point](
+        SubSystemId("performer system"),
+        Constants.LayerKeys.game,
+        _.performerSceneModel.target
       )
     )
 
@@ -42,8 +43,38 @@ object PerformerScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbo
       model: PerformerSceneModel
   ): GlobalEvent => Outcome[PerformerSceneModel] =
     case FrameTick if !model.spawned =>
+
+      val followers: Batch[Follower] =
+        (0 to 10).toBatch.map { i =>
+          val dice  = Dice.fromSeed(i.toLong)
+          val depth = 10 - i
+
+          Follower(
+            i,
+            depth,
+            Vertex.zero,
+            dice.roll(15),
+            0.1 + (dice.rollDouble * 0.9),
+            dice.roll(30)
+          )
+        }
       Outcome(model.copy(spawned = true))
         .addGlobalEvents(PerformerEvent.Spawn(Player.initial))
+        .addGlobalEvents(PerformerEvent.SpawnAll(followers))
+
+    case FrameTick =>
+      val orbit =
+        Signal.SmoothPulse
+          .affectTime(2.0)
+          .flatMap { d =>
+            Signal.Orbit(context.startUpData.viewportCenter, (100 * d) + 25)
+          }
+          .at(context.frame.time.running * 0.5)
+          .toPoint
+
+      Outcome(
+        model.copy(target = orbit)
+      )
 
     case _ =>
       Outcome(model)
@@ -62,23 +93,30 @@ object PerformerScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbo
   ): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
-        Constants.LayerKeys.game -> Layer.Stack.empty
+        Constants.LayerKeys.background ->
+          Layer.Content(
+            Shape.Circle(Circle(model.target, 8), Fill.Color(RGBA.Cyan))
+          ),
+        Constants.LayerKeys.game ->
+          Layer.Stack.empty
       )
     )
 
-final case class PerformerSceneModel(spawned: Boolean)
+final case class PerformerSceneModel(spawned: Boolean, target: Point)
 object PerformerSceneModel:
   val initial: PerformerSceneModel =
-    PerformerSceneModel(false)
+    PerformerSceneModel(false, Point.zero)
+
+// -- Player --
 
 final case class Player(position: Vector2, direction: Radians, trail: Batch[Breadcrumb], lastDropped: Seconds)
-    extends Performer[SandboxGameModel]:
+    extends Performer[Point]:
 
   def id: PerformerId = PerformerId("player")
 
-  def depth: PerformerDepth = PerformerDepth(0)
+  def depth: PerformerDepth = PerformerDepth(1000)
 
-  def update(context: PerformerContext[SandboxGameModel]): GlobalEvent => Outcome[Player] =
+  def update(context: PerformerContext[Point]): GlobalEvent => Outcome[Player] =
     case FrameTick =>
       val moveSpeed   = 2.0
       val rotateSpeed = 0.1
@@ -132,7 +170,7 @@ final case class Player(position: Vector2, direction: Radians, trail: Batch[Brea
     case _ =>
       Outcome(this)
 
-  def present(context: PerformerContext[SandboxGameModel]): Outcome[Batch[SceneNode]] =
+  def present(context: PerformerContext[Point]): Outcome[Batch[SceneNode]] =
     Outcome(
       trail.map { b =>
         Shape.Circle(
@@ -162,3 +200,43 @@ object Player:
     Player(Vector2(135, 100), Radians.zero, Batch.empty, Seconds.zero)
 
 final case class Breadcrumb(position: Point, droppedAt: Seconds)
+
+// -- Follower --
+
+final case class Follower(
+    num: Int,
+    depthIndex: Int,
+    position: Vertex,
+    divisor: Int,
+    alpha: Double,
+    size: Int
+) extends Performer[Point]:
+
+  def id: PerformerId       = PerformerId("follower" + num)
+  def depth: PerformerDepth = PerformerDepth(depthIndex)
+
+  def update(context: PerformerContext[Point]): GlobalEvent => Outcome[Follower] =
+    case FrameTick =>
+      val target =
+        context.findById(PerformerId("follower" + (num - 1))) match
+          case Some(Follower(_, _, pos, _, _, _)) =>
+            pos
+
+          case _ =>
+            context.reference.toVertex
+
+      val newPosition = position + ((target - position) / divisor)
+
+      Outcome(
+        this.copy(position = newPosition)
+      )
+
+    case _ =>
+      Outcome(this)
+
+  def present(context: PerformerContext[Point]): Outcome[Batch[SceneNode]] =
+    Outcome(
+      Batch(
+        Shape.Circle(Circle(position.toPoint, size), Fill.Color(RGBA.Green.withAlpha(alpha)), Stroke(2, RGBA.Black))
+      )
+    )

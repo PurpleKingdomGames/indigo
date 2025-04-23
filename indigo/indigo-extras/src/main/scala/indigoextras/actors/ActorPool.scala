@@ -116,6 +116,9 @@ final case class ActorPool[ReferenceData, ActorType](
       actors = actors.filterNot(ai => p(ai.instance))
     )
 
+  def toBatch: Batch[ActorType] =
+    actors.map(_.instance)
+
 object ActorPool:
 
   def empty[ReferenceData, ActorType](using Ordering[ActorType]): ActorPool[ReferenceData, ActorType] =

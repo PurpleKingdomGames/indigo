@@ -5,7 +5,7 @@ import indigo.scenes.SceneContext
 import indigoextras.actors.ActorContext
 
 final case class PerformerContext[ReferenceData](
-    find: (Performer[ReferenceData] => Boolean) => Option[Performer[ReferenceData]],
+    findById: PerformerId => Option[Performer[ReferenceData]],
     reference: ReferenceData,
     frame: Context.Frame,
     services: Context.Services
@@ -16,32 +16,34 @@ final case class PerformerContext[ReferenceData](
 object PerformerContext:
 
   def apply[ReferenceData](
-      find: (Performer[ReferenceData] => Boolean) => Option[Performer[ReferenceData]],
+      findById: PerformerId => Option[Performer[ReferenceData]],
       reference: ReferenceData,
       ctx: Context[?]
   ): PerformerContext[ReferenceData] =
-    PerformerContext(find, reference, ctx.frame, ctx.services)
+    PerformerContext(findById, reference, ctx.frame, ctx.services)
 
   def apply[ReferenceData](
-      find: (Performer[ReferenceData] => Boolean) => Option[Performer[ReferenceData]],
+      findById: PerformerId => Option[Performer[ReferenceData]],
       reference: ReferenceData,
       ctx: SceneContext[?]
   ): PerformerContext[ReferenceData] =
-    PerformerContext(find, reference, ctx.frame, ctx.services)
+    PerformerContext(findById, reference, ctx.frame, ctx.services)
 
   def apply[ReferenceData](
-      find: (Performer[ReferenceData] => Boolean) => Option[Performer[ReferenceData]],
+      findById: PerformerId => Option[Performer[ReferenceData]],
       reference: ReferenceData,
       ctx: SubSystemContext[?]
   ): PerformerContext[ReferenceData] =
-    PerformerContext(find, reference, ctx.frame, ctx.services)
+    PerformerContext(findById, reference, ctx.frame, ctx.services)
 
   def fromActorContext[ReferenceData](
-      actorContext: ActorContext[ReferenceData, Performer[ReferenceData]],
-      find: (Performer[ReferenceData] => Boolean) => Option[Performer[ReferenceData]]
+      actorContext: ActorContext[ReferenceData, Performer[ReferenceData]]
   ): PerformerContext[ReferenceData] =
+    def findById: PerformerId => Option[Performer[ReferenceData]] =
+      id => actorContext.find(_.id == id)
+
     PerformerContext(
-      find,
+      findById,
       actorContext.reference,
       actorContext.frame,
       actorContext.services
