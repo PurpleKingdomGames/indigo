@@ -33,7 +33,6 @@ object PerformerScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbo
     Set(
       StageManager[SandboxGameModel, Point](
         SubSystemId("performer system"),
-        Constants.LayerKeys.game,
         _.performerSceneModel.target
       )
     )
@@ -59,8 +58,8 @@ object PerformerScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbo
           )
         }
       Outcome(model.copy(spawned = true))
-        .addGlobalEvents(PerformerEvent.Spawn(Player.initial))
-        .addGlobalEvents(PerformerEvent.SpawnAll(followers))
+        .addGlobalEvents(PerformerEvent.Add(Constants.LayerKeys.game, Player.initial))
+        .addGlobalEvents(PerformerEvent.AddAll(Constants.LayerKeys.game, followers))
 
     case FrameTick =>
       val orbit =
