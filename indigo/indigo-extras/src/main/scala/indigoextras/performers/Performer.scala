@@ -4,8 +4,6 @@ import indigo.shared.Outcome
 import indigo.shared.collections.Batch
 import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.SceneNode
-import indigoextras.actors.Actor
-import indigoextras.actors.ActorContext
 
 // TODO: Might need to remove the ReferenceData type, generally unprovable. Use an 'extract your own' approach instead?
 trait Performer[ReferenceData]:
@@ -28,25 +26,3 @@ trait Performer[ReferenceData]:
   /** Draw the performer
     */
   def present(context: PerformerContext[ReferenceData]): Outcome[Batch[SceneNode]]
-
-object Performer:
-
-  given [ReferenceData] => Ordering[Performer[ReferenceData]] =
-    Ordering.by(_.depth.value)
-
-  def makeActor[ReferenceData](
-      find: (Performer[ReferenceData] => Boolean) => Option[Performer[ReferenceData]]
-  ): Actor[ReferenceData, Performer[ReferenceData]] =
-    new Actor[ReferenceData, Performer[ReferenceData]]:
-
-      def update(
-          context: ActorContext[ReferenceData, Performer[ReferenceData]],
-          performer: Performer[ReferenceData]
-      ): GlobalEvent => Outcome[Performer[ReferenceData]] =
-        e => performer.update(PerformerContext.fromActorContext(context, find))(e)
-
-      def present(
-          context: ActorContext[ReferenceData, Performer[ReferenceData]],
-          performer: Performer[ReferenceData]
-      ): Outcome[Batch[SceneNode]] =
-        performer.present(PerformerContext.fromActorContext(context, find))

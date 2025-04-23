@@ -5,5 +5,6 @@ import indigo.shared.events.GlobalEvent
 
 enum PerformerEvent extends GlobalEvent:
   case Spawn(actor: Performer[?])
+  case SpawnAll(actor: Batch[Performer[?]])
   case Kill(id: PerformerId)
   case KillAll(ids: Batch[PerformerId])
