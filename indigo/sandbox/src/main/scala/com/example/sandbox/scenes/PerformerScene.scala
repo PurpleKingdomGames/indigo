@@ -109,7 +109,7 @@ object PerformerSceneModel:
 // -- Player --
 
 final case class Player(position: Vector2, direction: Radians, trail: Batch[Breadcrumb], lastDropped: Seconds)
-    extends Performer[Point]:
+    extends Performer.Lead[Point]:
 
   def id: PerformerId = PerformerId("player")
 
@@ -213,33 +213,20 @@ final case class Follower(
     divisor: Int,
     alpha: Double,
     size: Int
-) extends Performer[Point]:
+) extends Performer.Extra[Point]:
 
   def id: PerformerId       = PerformerId("follower" + num)
-  def depth: PerformerDepth = PerformerDepth(depthIndex)
+  def depth: PerformerDepth = PerformerDepth.zero
 
-  def update(context: PerformerContext[Point]): GlobalEvent => Outcome[Follower] =
-    case FrameTick =>
-      val target =
-        context.findById(PerformerId("follower" + (num - 1))) match
-          case Some(Follower(_, _, pos, _, _, _)) =>
-            pos
+  def update(context: PerformerContext[Point]): Follower =
+    val target =
+      context
+        .findById(PerformerId("follower" + (num - 1)))
+        .collect { case Follower(_, _, p, _, _, _) => p }
+        .getOrElse(context.reference.toVertex)
+    val newPosition = position + ((target - position) / divisor)
 
-          case _ =>
-            context.reference.toVertex
+    this.copy(position = newPosition)
 
-      val newPosition = position + ((target - position) / divisor)
-
-      Outcome(
-        this.copy(position = newPosition)
-      )
-
-    case _ =>
-      Outcome(this)
-
-  def present(context: PerformerContext[Point]): Outcome[Batch[SceneNode]] =
-    Outcome(
-      Batch(
-        Shape.Circle(Circle(position.toPoint, size), Fill.Color(RGBA.Green.withAlpha(alpha)), Stroke(2, RGBA.Black))
-      )
-    )
+  def present(context: PerformerContext[Point]): SceneNode =
+    Shape.Circle(Circle(position.toPoint, size), Fill.Color(RGBA.Green.withAlpha(alpha)), Stroke(2, RGBA.Black))

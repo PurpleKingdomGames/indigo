@@ -2,6 +2,7 @@ package indigoextras.performers
 
 import indigo.shared.Outcome
 import indigo.shared.collections.Batch
+import indigo.shared.events.FrameTick
 import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.Layer
 import indigo.shared.scenegraph.LayerKey
@@ -23,10 +24,11 @@ What am I doing?
 2. DONE ~~ Tree of pools? Or just a list?
   1. DONE ~~ Events to reorder / reparent
   2. WONTDO ~~ Trees render to layers
-3. Types of actors
-  1. Full
-  2. Lite
-4. Physics out-of-the-box
+3. DONE ~~ Types of performers
+  1. DONE ~~ Lead
+  2. DONE ~~ Extra
+  3. DONE ~~ Narrator
+4. Physics out-of-the-box (Stunt)
   1. Might be another actor type?
 
 Testing is needed.
@@ -48,13 +50,41 @@ final case class StageManager[GameModel, RefData](
           context: ActorContext[ReferenceData, Performer[ReferenceData]],
           performer: Performer[ReferenceData]
       ): GlobalEvent => Outcome[Performer[ReferenceData]] =
-        e => performer.update(PerformerContext.fromActorContext(context))(e)
+        case FrameTick =>
+          performer match
+            case p: Performer.Narrator[ReferenceData] =>
+              p.update(PerformerContext.fromActorContext(context))(FrameTick)
+
+            case p: Performer.Extra[ReferenceData] =>
+              Outcome(p.update(PerformerContext.fromActorContext(context)))
+
+            case p: Performer.Lead[ReferenceData] =>
+              p.update(PerformerContext.fromActorContext(context))(FrameTick)
+
+        case e =>
+          performer match
+            case p: Performer.Narrator[ReferenceData] =>
+              p.update(PerformerContext.fromActorContext(context))(e)
+
+            case p: Performer.Extra[ReferenceData] =>
+              Outcome(p)
+
+            case p: Performer.Lead[ReferenceData] =>
+              p.update(PerformerContext.fromActorContext(context))(e)
 
       def present(
           context: ActorContext[ReferenceData, Performer[ReferenceData]],
           performer: Performer[ReferenceData]
       ): Outcome[Batch[SceneNode]] =
-        performer.present(PerformerContext.fromActorContext(context))
+        performer match
+          case p: Performer.Narrator[ReferenceData] =>
+            Outcome(Batch.empty)
+
+          case p: Performer.Extra[ReferenceData] =>
+            Outcome(Batch(p.present(PerformerContext.fromActorContext(context))))
+
+          case p: Performer.Lead[ReferenceData] =>
+            p.present(PerformerContext.fromActorContext(context))
 
   def eventFilter: GlobalEvent => Option[GlobalEvent] =
     e => Some(e)
