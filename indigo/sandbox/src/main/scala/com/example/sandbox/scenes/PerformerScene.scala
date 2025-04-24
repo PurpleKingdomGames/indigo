@@ -116,6 +116,10 @@ final case class Player(position: Vector2, direction: Radians, trail: Batch[Brea
   def depth: PerformerDepth = PerformerDepth(1000)
 
   def update(context: PerformerContext[Point]): GlobalEvent => Outcome[Player] =
+    case KeyboardEvent.KeyUp(Key.SPACE) =>
+      Outcome(this)
+        .addGlobalEvents(PerformerEvent.ChangeLayer(id, Constants.LayerKeys.background))
+
     case FrameTick =>
       val moveSpeed   = 2.0
       val rotateSpeed = 0.1
