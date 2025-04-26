@@ -33,8 +33,7 @@ object VolumeScene extends PhysicsScene:
           .withTerminalVelocity(Vector2(100))
       }
 
-    World
-      .empty[MyTag](SimulationSettings(BoundingBox(50, 50, 500, 500)))
+    World(SimulationSettings(BoundingBox(50, 50, 500, 500)))
       .withColliders(
         Collider(MyTag.Platform, BoundingBox(50.0, 50.0, 500.0, 20.0)).makeStatic,
         Collider(MyTag.Platform, BoundingBox(500.0 + 50 - 20, 50.0, 20.0, 500.0)).makeStatic,

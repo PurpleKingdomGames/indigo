@@ -154,11 +154,19 @@ object Physics:
         transient: Batch[Collider[Tag]],
         settings: SimulationSettings
     ): Batch[(IndexedCollider[Tag], Batch[Collider[Tag]])] =
+      val bounds =
+        settings.bounds
+          .getOrElse(
+            indexedColliders
+              .map(_.movementBounds)
+              .foldLeft(BoundingBox.zero)(_.expandToInclude(_))
+          )
+
       val lookup: QuadTree[BoundingBox, Internal.IndexedCollider[Tag]] =
         QuadTree
-          .empty(settings.bounds)
+          .empty(bounds)
           .insert(
-            combineAndCull(indexedColliders, transient, settings.bounds).map(m => m.movementBounds -> m),
+            combineAndCull(indexedColliders, transient, bounds).map(m => m.movementBounds -> m),
             settings.idealCount,
             settings.minSize,
             settings.maxDepth

@@ -61,8 +61,7 @@ object TestWorlds:
         ).makeStatic
       }
 
-    World
-      .empty[MyTag](SimulationSettings(BoundingBox(0, 0, 1280, 920)))
+    World(SimulationSettings(BoundingBox(0, 0, 1280, 920)))
       .addForces(Vector2(0, 600))
       .withResistance(Resistance(0.01))
       .withColliders(circles)

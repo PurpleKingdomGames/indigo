@@ -21,8 +21,7 @@ object BoxesScene extends PhysicsScene:
           .withVelocity(dice.roll(200) - 100, -dice.roll(350))
       }
 
-    World
-      .empty[MyTag](SimulationSettings(BoundingBox(0, 0, 800, 600)).withMaxIterations(8))
+    World(SimulationSettings(BoundingBox(0, 0, 800, 600)).withMaxIterations(8))
       .addForces(Vector2(0, 600))
       .withResistance(Resistance(0.01))
       .withColliders(

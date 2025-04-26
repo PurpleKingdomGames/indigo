@@ -201,5 +201,8 @@ final case class World[Tag](
 
 object World:
 
-  def empty[Tag](settings: SimulationSettings): World[Tag] =
+  def empty[Tag]: World[Tag] =
+    World(Batch(), Batch(), Resistance.zero, SimulationSettings.default)
+
+  def apply[Tag](settings: SimulationSettings): World[Tag] =
     World(Batch(), Batch(), Resistance.zero, settings)

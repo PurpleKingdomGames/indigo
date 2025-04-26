@@ -527,14 +527,13 @@ class PhysicsTests extends munit.FunSuite:
     val c1 = Collider.Circle(tag, BoundingCircle(2, 0, 2)).withVelocity(Vector2(1, 0)).withFriction(Friction.zero)
     val c2 = Collider.Circle(tag, BoundingCircle(7, 0, 2)).withVelocity(Vector2(-1, 0)).withFriction(Friction.zero)
 
-    val world = World.empty[String](settings).withColliders(c1, c2)
+    val world = World(settings).withColliders(c1, c2)
 
     val actual =
       Physics.update(Seconds(1), world, Batch.empty, settings)
 
     val expected =
-      World
-        .empty[String](settings)
+      World(settings)
         .withColliders(
           c1.withPosition(2, 0).withVelocity(0, 0),
           c2.withPosition(7, 0).withVelocity(0, 0)
@@ -572,14 +571,13 @@ class PhysicsTests extends munit.FunSuite:
     val c2 =
       Collider.Circle(tag, BoundingCircle(4, 0, 2)).withFriction(Friction.zero).makeStatic
 
-    val world = World.empty[String](settings).withColliders(c1)
+    val world = World(settings).withColliders(c1)
 
     val actual =
       Physics.update(Seconds(1), world, Batch(c2), settings)
 
     val expected =
-      World
-        .empty[String](settings)
+      World(settings)
         .withColliders(
           c1.withPosition(-1, 0).withVelocity(-1, 0)
         )
