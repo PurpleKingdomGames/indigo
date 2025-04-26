@@ -16,6 +16,7 @@ class RadiansTests extends munit.FunSuite {
     assert(Radians.fromDegrees(180) ~== Radians.PI)
     assert(clue(Radians.fromDegrees(359)) ~== clue(clue(Radians.TAU) - Radians(0.0175d)))
     assert(Radians.fromDegrees(360) ~== Radians.zero)
+    assert(clue(Radians.fromDegrees(-90)) ~== (-Radians.PI / 2))
 
   }
 
@@ -32,6 +33,14 @@ class RadiansTests extends munit.FunSuite {
     assert(Radians(-0.1).wrap ~== Radians.TAU - Radians(0.1))
     assert((Radians.TAU + Radians.TAUby4).wrap ~== Radians.TAUby4)
     assert((Radians.TAU - Radians.TAUby4).wrap ~== Radians.TAUby4 * Radians(3))
+  }
+
+  test("Wrap Radians (centered)") {
+    assert(Radians(0.0).centeredWrap ~== Radians(0.0))
+    assert(Radians(0.1).centeredWrap ~== Radians(0.1))
+    assert(Radians(-0.1).centeredWrap ~== Radians(-0.1))
+    assert((Radians.TAU + Radians.TAUby4).centeredWrap ~== Radians.TAUby4)
+    assert((Radians.TAU - Radians.TAUby4).centeredWrap ~== -Radians.PIby2)
   }
 
   test("convert to degrees") {

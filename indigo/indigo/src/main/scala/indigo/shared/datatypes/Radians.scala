@@ -24,6 +24,8 @@ object Radians:
   val TAUby4: Radians = PIby2
   val zero: Radians   = Radians(0)
 
+  /** Converts degrees to radians, allowing negative angles if input is negative.
+    */
   inline def fromDegrees(degrees: Double): Radians =
     degrees % 360d * piBy180
 
@@ -68,7 +70,12 @@ object Radians:
       Radians.mod(r, other)
 
     def wrap: Radians =
-      Radians.mod(r, pi2)
+      val m = r % pi2
+      Radians(if m < 0 then m + pi2 else m)
+
+    def centeredWrap: Radians =
+      val w = (r + pi) % pi2
+      Radians(if w < 0 then w + pi2 else w) - PI
 
     def negative: Radians =
       -r
