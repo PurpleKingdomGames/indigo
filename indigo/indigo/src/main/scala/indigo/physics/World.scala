@@ -42,6 +42,9 @@ final case class World[Tag](
   def removeByTag(tag: Tag)(using CanEqual[Tag, Tag]): World[Tag] =
     this.copy(colliders = colliders.filterNot(_.tag == tag))
 
+  def removeAllByTag(tags: Batch[Tag])(using CanEqual[Tag, Tag]): World[Tag] =
+    this.copy(colliders = colliders.filterNot(c => tags.exists(_ == c.tag)))
+
   def modifyAll(f: Collider[Tag] => Collider[Tag]): World[Tag] =
     this.copy(colliders = colliders.map(f))
 
