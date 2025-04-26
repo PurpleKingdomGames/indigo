@@ -27,6 +27,9 @@ final case class World[Tag](
   def withResistance(newResistance: Resistance): World[Tag] =
     this.copy(resistance = newResistance)
 
+  def withSimulationSettings(newSettings: SimulationSettings): World[Tag] =
+    this.copy(settings = newSettings)
+
   def collect[B](matching: PartialFunction[Collider[Tag], B]): Batch[B] =
     colliders.collect(matching)
 
