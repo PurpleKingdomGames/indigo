@@ -31,8 +31,7 @@ object BallsScene extends PhysicsScene:
           .withRestitution(Restitution(0.8))
       }
 
-    World
-      .empty[MyTag](SimulationSettings(BoundingBox(0, 0, 800, 600)))
+    World.empty
       .addForces(Vector2(0, 600))
       .withResistance(Resistance(0.01))
       .withColliders(circles)

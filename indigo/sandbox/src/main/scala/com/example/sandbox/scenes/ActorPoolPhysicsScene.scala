@@ -165,8 +165,7 @@ object ActorPhysicsSceneModel:
       false,
       Point.zero,
       ActorPool.empty,
-      World
-        .empty(SimulationSettings(BoundingBox(0, 0, 400, 300))) // This is the screen size factoring in magnification
+      World(SimulationSettings(BoundingBox(0, 0, 400, 300))) // This is the screen size factoring in magnification
         .withResistance(Resistance(0.25))
     )
 

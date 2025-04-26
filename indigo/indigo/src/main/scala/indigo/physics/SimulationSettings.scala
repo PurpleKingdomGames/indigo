@@ -20,7 +20,7 @@ import indigo.BoundingBox
   *   Defaults to 4.
   */
 final case class SimulationSettings(
-    bounds: BoundingBox,
+    bounds: Option[BoundingBox],
     idealCount: Int,
     minSize: Double,
     maxDepth: Int,
@@ -28,7 +28,7 @@ final case class SimulationSettings(
 ):
 
   def withBounds(value: BoundingBox): SimulationSettings =
-    this.copy(bounds = value)
+    this.copy(bounds = Option(value))
 
   def withIdealCount(value: Int): SimulationSettings =
     this.copy(idealCount = value)
@@ -49,14 +49,17 @@ object SimulationSettings:
   val DefaultMaxDepth: Int      = 16
   val DefaultMaxIterations: Int = 4
 
+  def default: SimulationSettings =
+    SimulationSettings(None, DefaultIdealCount, DefaultMinSize, DefaultMaxDepth, DefaultMaxIterations)
+
   def apply(bounds: BoundingBox): SimulationSettings =
-    SimulationSettings(bounds, DefaultIdealCount, DefaultMinSize, DefaultMaxDepth, DefaultMaxIterations)
+    SimulationSettings(Option(bounds), DefaultIdealCount, DefaultMinSize, DefaultMaxDepth, DefaultMaxIterations)
 
   def apply(bounds: BoundingBox, idealCount: Int): SimulationSettings =
-    SimulationSettings(bounds, idealCount, DefaultMinSize, DefaultMaxDepth, DefaultMaxIterations)
+    SimulationSettings(Option(bounds), idealCount, DefaultMinSize, DefaultMaxDepth, DefaultMaxIterations)
 
   def apply(bounds: BoundingBox, idealCount: Int, minSize: Double): SimulationSettings =
-    SimulationSettings(bounds, idealCount, minSize, DefaultMaxDepth, DefaultMaxIterations)
+    SimulationSettings(Option(bounds), idealCount, minSize, DefaultMaxDepth, DefaultMaxIterations)
 
   def apply(bounds: BoundingBox, idealCount: Int, minSize: Double, maxDepth: Int): SimulationSettings =
-    SimulationSettings(bounds, idealCount, minSize, maxDepth, DefaultMaxIterations)
+    SimulationSettings(Option(bounds), idealCount, minSize, maxDepth, DefaultMaxIterations)
