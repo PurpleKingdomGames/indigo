@@ -21,6 +21,21 @@ enum Collider[Tag]:
       case c: Collider.Circle[_] => c.bounds.toIncircleBoundingBox
       case c: Collider.Box[_]    => c.bounds
 
+  /** The angle of the velocity vector in radians, normalized to the range (-π, π].
+    *
+    * Important note: The angle is calculated using the arctangent of the y and x components of the velocity vector,
+    * meaning that 0 radians (0 degrees) points directly to the right (positive x direction), and angles increase
+    * counter-clockwise.
+    *
+    * For example:
+    *   - A velocity of (x = 1, y = 0) yields an angle of 0 radians (0 degrees).
+    *   - A velocity of (x = 1, y = -1) yields an angle of -π/4 radians (-45 degrees).
+    *   - A velocity of (x = 0, y = 1) yields an angle of π/2 radians (90 degrees).
+    *   - A velocity of (x = -1, y = 0) yields an angle of π radians (180 degrees).
+    */
+  def velocityDirectionAngle: Radians =
+    Radians(Math.atan2(velocity.y, velocity.x))
+
   case Circle(
       tag: Tag,
       bounds: BoundingCircle,
