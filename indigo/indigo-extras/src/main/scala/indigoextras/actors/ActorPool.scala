@@ -16,7 +16,7 @@ final case class ActorPool[ReferenceData, ActorType](
   private val orderingInstance: Ordering[ActorInstance[ReferenceData, ActorType]] =
     Ordering.by(a => a.instance)
 
-  /** Update the actor system, passing in the model and a standard context. */
+  /** Update the actor pool, passing in the model and a standard context. */
   def update(
       context: Context[?],
       model: ReferenceData
@@ -47,14 +47,14 @@ final case class ActorPool[ReferenceData, ActorType](
 
     (e: GlobalEvent) => nextPool(e).map(n => this.copy(actors = n))
 
-  /** Update the actor system, passing in the model and a scene context. */
+  /** Update the actor pool, passing in the model and a scene context. */
   def update(
       context: SceneContext[?],
       model: ReferenceData
   ): GlobalEvent => Outcome[ActorPool[ReferenceData, ActorType]] =
     update(context.toContext, model)
 
-  /** Update the actor system, passing in the model and a subsystem context. */
+  /** Update the actor pool, passing in the model and a subsystem context. */
   def update(
       context: SubSystemContext[?],
       model: ReferenceData
@@ -86,19 +86,19 @@ final case class ActorPool[ReferenceData, ActorType](
   ): Outcome[Batch[SceneNode]] =
     present(context.toContext, model)
 
-  /** Finds the first actor in the system that matches the predicate test. */
+  /** Finds the first actor in the pool that matches the predicate test. */
   def find(p: ActorType => Boolean): Option[ActorType] =
     actors.find(ai => p(ai.instance)).map(_.instance)
 
-  /** Finds all actors in the system that match the predicate test. */
+  /** Finds all actors in the pool that match the predicate test. */
   def filter(p: ActorType => Boolean): Batch[ActorType] =
     actors.filter(ai => p(ai.instance)).map(_.instance)
 
-  /** Finds all actors in the system that do not match the predicate test. */
+  /** Finds all actors in the pool that do not match the predicate test. */
   def filterNot(p: ActorType => Boolean): Batch[ActorType] =
     actors.filterNot(ai => p(ai.instance)).map(_.instance)
 
-  /** Spawns a batch of new actor in the system. */
+  /** Spawns a batch of new actor in the pool. */
   def spawn[B <: ActorType](
       newActors: Batch[B]
   )(using actor: Actor[ReferenceData, B]): ActorPool[ReferenceData, ActorType] =
@@ -106,11 +106,11 @@ final case class ActorPool[ReferenceData, ActorType](
       actors = actors ++ newActors.map(a => ActorInstance(a, actor.asInstanceOf[Actor[ReferenceData, ActorType]]))
     )
 
-  /** Spawns new actors in the system. */
+  /** Spawns new actors in the pool. */
   def spawn[B <: ActorType](newActors: B*)(using actor: Actor[ReferenceData, B]): ActorPool[ReferenceData, ActorType] =
     spawn(Batch.fromSeq(newActors))
 
-  /** Kills any actors in the system that match the predicate test. */
+  /** Kills any actors in the pool that match the predicate test. */
   def kill(p: ActorType => Boolean): ActorPool[ReferenceData, ActorType] =
     this.copy(
       actors = actors.filterNot(ai => p(ai.instance))
