@@ -1,8 +1,8 @@
 package indigoextras.performers
 
+import indigo.physics.*
 import indigo.shared.Outcome
 import indigo.shared.collections.Batch
-import indigo.shared.events.FrameTick
 import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.Layer
 import indigo.shared.scenegraph.LayerKey
@@ -11,29 +11,6 @@ import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.subsystems.SubSystem
 import indigo.shared.subsystems.SubSystemContext
 import indigo.shared.subsystems.SubSystemId
-import indigoextras.actors.*
-
-/*
-
-What am I doing?
-
-1. DONE ~~ Restoring a sub system version of Actors, initially just with one ActorPool
-  1. DONE ~~ spawn / kill via events
-  2. DONE ~~ find via context (supplied from ActorSystem, not ActorPool)
-  3. DONE ~~ Dumber depth management
-2. DONE ~~ Tree of pools? Or just a list?
-  1. DONE ~~ Events to reorder / reparent
-  2. WONTDO ~~ Trees render to layers
-3. DONE ~~ Types of performers
-  1. DONE ~~ Lead
-  2. DONE ~~ Extra
-  3. DONE ~~ Narrator
-4. Physics out-of-the-box (Stunt)
-  1. Might be another actor type?
-
-Testing is needed.
-
- */
 
 final case class StageManager[GameModel, RefData](
     id: SubSystemId,
@@ -43,48 +20,6 @@ final case class StageManager[GameModel, RefData](
   type EventType      = GlobalEvent
   type SubSystemModel = StageManager.Model[ReferenceData]
   type ReferenceData  = RefData
-
-  private given Actor[ReferenceData, Performer[ReferenceData]] =
-    new Actor[ReferenceData, Performer[ReferenceData]]:
-      def update(
-          context: ActorContext[ReferenceData, Performer[ReferenceData]],
-          performer: Performer[ReferenceData]
-      ): GlobalEvent => Outcome[Performer[ReferenceData]] =
-        case FrameTick =>
-          performer match
-            case p: Performer.Narrator[ReferenceData] =>
-              p.update(PerformerContext.fromActorContext(context))(FrameTick)
-
-            case p: Performer.Extra[ReferenceData] =>
-              Outcome(p.update(PerformerContext.fromActorContext(context)))
-
-            case p: Performer.Lead[ReferenceData] =>
-              p.update(PerformerContext.fromActorContext(context))(FrameTick)
-
-        case e =>
-          performer match
-            case p: Performer.Narrator[ReferenceData] =>
-              p.update(PerformerContext.fromActorContext(context))(e)
-
-            case p: Performer.Extra[ReferenceData] =>
-              Outcome(p)
-
-            case p: Performer.Lead[ReferenceData] =>
-              p.update(PerformerContext.fromActorContext(context))(e)
-
-      def present(
-          context: ActorContext[ReferenceData, Performer[ReferenceData]],
-          performer: Performer[ReferenceData]
-      ): Outcome[Batch[SceneNode]] =
-        performer match
-          case p: Performer.Narrator[ReferenceData] =>
-            Outcome(Batch.empty)
-
-          case p: Performer.Extra[ReferenceData] =>
-            Outcome(Batch(p.present(PerformerContext.fromActorContext(context))))
-
-          case p: Performer.Lead[ReferenceData] =>
-            p.present(PerformerContext.fromActorContext(context))
 
   def eventFilter: GlobalEvent => Option[GlobalEvent] =
     e => Some(e)
@@ -110,33 +45,50 @@ final case class StageManager[GameModel, RefData](
       model: StageManager.Model[ReferenceData]
   ): PerformerEvent => Outcome[StageManager.Model[ReferenceData]] = {
     case PerformerEvent.Add(layerKey, performer) =>
+      val nextWorld =
+        performer match
+          case p: Performer.Stunt[?] =>
+            model.world.addColliders(p.initialCollider)
+
+          case _ =>
+            model.world
+
       Outcome(
-        model.spawn(layerKey, Batch(performer.asInstanceOf[Performer[ReferenceData]]))
+        model
+          .spawn(layerKey, Batch(performer.asInstanceOf[Performer[ReferenceData]]))
+          .withWorld(nextWorld)
       )
 
     case PerformerEvent.AddAll(layerKey, performers) =>
+      val nextWorld =
+        model.world.addColliders(
+          performers.collect { case p: Performer.Stunt[?] => p.initialCollider }
+        )
+
       Outcome(
-        model.spawn(layerKey, performers.map(_.asInstanceOf[Performer[ReferenceData]]))
+        model
+          .spawn(layerKey, performers.asInstanceOf[Batch[Performer[ReferenceData]]])
+          .withWorld(nextWorld)
       )
 
     case PerformerEvent.Remove(id) =>
-      Outcome(
-        model.kill(_.id == id)
-      )
+      val nextWorld =
+        model.world.removeByTag(id)
 
-    case PerformerEvent.RemoveFrom(layerKey, id) =>
       Outcome(
-        model.kill(layerKey, _.id == id)
+        model
+          .kill(_.id == id)
+          .withWorld(nextWorld)
       )
 
     case PerformerEvent.RemoveAll(ids) =>
-      Outcome(
-        model.kill(p => ids.exists(_ == p.id))
-      )
+      val nextWorld =
+        model.world.removeAllByTag(ids)
 
-    case PerformerEvent.RemoveAllFrom(layerKey, ids) =>
       Outcome(
-        model.kill(layerKey, p => ids.exists(_ == p.id))
+        model
+          .kill(p => ids.exists(_ == p.id))
+          .withWorld(nextWorld)
       )
 
     case PerformerEvent.ChangeLayer(id, layerKey) =>
@@ -160,16 +112,14 @@ final case class StageManager[GameModel, RefData](
 
 object StageManager:
 
-  private given [ReferenceData] => Ordering[Performer[ReferenceData]] =
-    Ordering.by(_.depth.value)
-
   def apply[GameModel](
       id: SubSystemId
   ): StageManager[GameModel, GameModel] =
     StageManager(id, identity[GameModel])
 
-  final case class Model[ReferenceData](pools: Map[LayerKey, ActorPool[ReferenceData, Performer[ReferenceData]]])(using
-      actor: Actor[ReferenceData, Performer[ReferenceData]]
+  final case class Model[ReferenceData](
+      pools: Map[LayerKey, PerformerPool[ReferenceData]],
+      world: World[PerformerId]
   ):
 
     def findById(id: PerformerId): Option[Performer[ReferenceData]] =
@@ -190,7 +140,7 @@ object StageManager:
       this.copy(
         pools = pools.updatedWith(layerKey) {
           case Some(existing) => Option(existing.spawn(newPerformers))
-          case None           => Option(ActorPool.empty[ReferenceData, Performer[ReferenceData]].spawn(newPerformers))
+          case None           => Option(PerformerPool.empty[ReferenceData].spawn(newPerformers))
         }
       )
 
@@ -207,22 +157,36 @@ object StageManager:
         context: SubSystemContext[?],
         model: ReferenceData
     ): GlobalEvent => Outcome[Model[ReferenceData]] = e =>
-      val updated =
+      val updatedWorld =
+        world.update(context.frame.time.delta)
+
+      val updatedPools =
         Batch.fromMap(pools).map((k, p) => p.update(context, model)(e).map(p => k -> p)).sequence
 
-      updated.map(next => this.copy(pools = next.toMap))
+      updatedWorld
+        .combine(updatedPools)
+        .map((nextWorld, nextModel) => this.copy(pools = nextModel.toMap, world = nextWorld))
 
     def present(
         context: SubSystemContext[?],
         model: ReferenceData
     ): Outcome[Batch[(LayerKey, Batch[SceneNode])]] =
+      val colliderLookup: PerformerId => Option[Collider[PerformerId]] =
+        id => world.findByTag(id).headOption
+
       Batch
         .fromMap(pools)
         .map { (k, p) =>
-          p.present(context, model).map(ns => k -> ns)
+          p.present(context, colliderLookup, model).map(ns => k -> ns)
         }
         .sequence
 
+    def withWorld(world: World[PerformerId]): Model[ReferenceData] =
+      this.copy(world = world)
+
   object Model:
-    def empty[ReferenceData](using actor: Actor[ReferenceData, Performer[ReferenceData]]): Model[ReferenceData] =
-      Model(Map.empty[LayerKey, ActorPool[ReferenceData, Performer[ReferenceData]]])
+    def empty[ReferenceData]: Model[ReferenceData] =
+      Model(
+        Map.empty[LayerKey, PerformerPool[ReferenceData]],
+        World.empty
+      )

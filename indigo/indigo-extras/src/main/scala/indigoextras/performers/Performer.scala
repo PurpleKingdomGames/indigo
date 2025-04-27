@@ -1,5 +1,6 @@
 package indigoextras.performers
 
+import indigo.physics.Collider
 import indigo.shared.Outcome
 import indigo.shared.collections.Batch
 import indigo.shared.events.GlobalEvent
@@ -25,8 +26,8 @@ sealed trait Performer[ReferenceData]:
 
 object Performer:
 
-  /** Narrators are the storytellers of the performance. In practical terms, they are strictly state holders and message
-    * passers, and have no rendered presence in the scene.
+  /** Narrators are the storytellers of the performance (the performance metaphor breaks down a little here!). In
+    * practical terms, they are strictly state holders and message passers, and have no rendered presence in the scene.
     */
   trait Narrator[ReferenceData] extends Performer[ReferenceData]:
 
@@ -47,6 +48,23 @@ object Performer:
     /** Draw the performer
       */
     def present(context: PerformerContext[ReferenceData]): SceneNode
+
+  /** Stunt performers are like Extras, but they can do their own stunts! In practical terms, they are background
+    * performers like extras, but have their motion controlled by a physics simulation.
+    */
+  trait Stunt[ReferenceData] extends Performer[ReferenceData]:
+
+    /** The collider for the performer, used for collision detection.
+      */
+    def initialCollider: Collider[PerformerId]
+
+    /** Update the performer
+      */
+    def update(context: PerformerContext[ReferenceData]): Performer.Extra[ReferenceData]
+
+    /** Draw the performer
+      */
+    def present(context: PerformerContext[ReferenceData], collider: Collider[PerformerId]): SceneNode
 
   /** Lead performers are the stars of the show. They are responsible for rendering themselves, updating their state,
     * and can also listen to and emit events. They are the most complex type of performer, but also the most powerful.
