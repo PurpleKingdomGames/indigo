@@ -27,7 +27,7 @@ object PerformerScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbo
     Lens.unit
 
   def name: SceneName =
-    SceneName("actor sub system scene")
+    SceneName("performer scene")
 
   def subSystems: Set[SubSystem[SandboxGameModel]] =
     Set(
@@ -57,6 +57,7 @@ object PerformerScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbo
             dice.roll(30)
           )
         }
+
       Outcome(model.copy(spawned = true))
         .addGlobalEvents(PerformerEvent.Add(Constants.LayerKeys.game, Player.initial))
         .addGlobalEvents(PerformerEvent.AddAll(Constants.LayerKeys.game, followers))

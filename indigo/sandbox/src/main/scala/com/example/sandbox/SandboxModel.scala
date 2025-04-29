@@ -6,6 +6,7 @@ import com.example.sandbox.scenes.ChangeValue
 import com.example.sandbox.scenes.ComponentUIScene2
 import com.example.sandbox.scenes.ConfettiModel
 import com.example.sandbox.scenes.PathFindingModel
+import com.example.sandbox.scenes.PerformerPhysicsSceneModel
 import com.example.sandbox.scenes.PerformerSceneModel
 import com.example.sandbox.scenes.PointersModel
 import com.example.sandbox.scenes.SfxComponents
@@ -31,7 +32,8 @@ final case class SandboxGameModel(
     meshData: MeshData,
     actorScene: ActorSceneModel,
     actorPhysicsScene: ActorPhysicsSceneModel,
-    performerSceneModel: PerformerSceneModel
+    performerSceneModel: PerformerSceneModel,
+    performerPhysicsSceneModel: PerformerPhysicsSceneModel
 )
 
 object SandboxModel {
@@ -68,7 +70,8 @@ object SandboxModel {
       ),
       ActorSceneModel.initial,
       ActorPhysicsSceneModel.initial,
-      PerformerSceneModel.initial
+      PerformerSceneModel.initial,
+      PerformerPhysicsSceneModel.initial
     )
 
   val customButton: Button[Int] =

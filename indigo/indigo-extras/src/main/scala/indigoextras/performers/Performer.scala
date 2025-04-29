@@ -54,13 +54,17 @@ object Performer:
     */
   trait Stunt[ReferenceData] extends Performer[ReferenceData]:
 
-    /** The collider for the performer, used for collision detection.
+    /** The physics collider for the performer, used for collision detection.
       */
     def initialCollider: Collider[PerformerId]
 
     /** Update the performer
       */
-    def update(context: PerformerContext[ReferenceData]): Performer.Extra[ReferenceData]
+    def update(context: PerformerContext[ReferenceData]): Performer.Stunt[ReferenceData]
+
+    /** Update the physics collider for the performer
+      */
+    def updateCollider(context: PerformerContext[ReferenceData], collider: Collider[PerformerId]): Collider[PerformerId]
 
     /** Draw the performer
       */

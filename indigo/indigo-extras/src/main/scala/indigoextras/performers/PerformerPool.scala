@@ -13,7 +13,8 @@ import indigo.shared.scenegraph.SceneNode
   * Very similar to the ActorPool, but cut down and specialised for performers.
   */
 final case class PerformerPool[ReferenceData](
-    performers: Batch[Performer[ReferenceData]]
+    performers: Batch[Performer[ReferenceData]],
+    findColliderById: PerformerId => Option[Collider[PerformerId]]
 ):
 
   /** Update the actor pool, passing in the model and a standard context. */
@@ -25,7 +26,7 @@ final case class PerformerPool[ReferenceData](
       case FrameTick =>
         performers
           .map { p =>
-            updatePerformer(PerformerContext(findById, model, context), p)(FrameTick)
+            updatePerformer(PerformerContext(findById, findColliderById, model, context), p)(FrameTick)
           }
           .sequence
           .map { actorInstances =>
@@ -34,7 +35,7 @@ final case class PerformerPool[ReferenceData](
 
       case e =>
         performers.map { p =>
-          updatePerformer(PerformerContext(findById, model, context), p)(e)
+          updatePerformer(PerformerContext(findById, findColliderById, model, context), p)(e)
         }.sequence
 
     (e: GlobalEvent) => nextPool(e).map(n => this.copy(performers = n))
@@ -78,7 +79,7 @@ final case class PerformerPool[ReferenceData](
   ): Outcome[Batch[SceneNode]] =
     performers
       .map { p =>
-        presentPerformer(PerformerContext(findById, model, context), colliderLookup, p)
+        presentPerformer(PerformerContext(findById, findColliderById, model, context), colliderLookup, p)
       }
       .sequence
       .map(_.flatten)
@@ -144,8 +145,7 @@ final case class PerformerPool[ReferenceData](
 
 object PerformerPool:
 
-  def empty[ReferenceData]: PerformerPool[ReferenceData] =
-    apply()
-
-  def apply[ReferenceData](): PerformerPool[ReferenceData] =
-    PerformerPool(Batch.empty)
+  def apply[ReferenceData](
+      findColliderById: PerformerId => Option[Collider[PerformerId]]
+  ): PerformerPool[ReferenceData] =
+    PerformerPool(Batch.empty, findColliderById)

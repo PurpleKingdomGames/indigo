@@ -3,6 +3,7 @@ package indigoextras.performers
 import indigo.physics.*
 import indigo.shared.Outcome
 import indigo.shared.collections.Batch
+import indigo.shared.datatypes.Vector2
 import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.Layer
 import indigo.shared.scenegraph.LayerKey
@@ -14,7 +15,8 @@ import indigo.shared.subsystems.SubSystemId
 
 final case class StageManager[GameModel, RefData](
     id: SubSystemId,
-    extractReference: GameModel => RefData
+    extractReference: GameModel => RefData,
+    worldOptions: WorldOptions
 ) extends SubSystem[GameModel]:
 
   type EventType      = GlobalEvent
@@ -28,7 +30,7 @@ final case class StageManager[GameModel, RefData](
     extractReference(model)
 
   def initialModel: Outcome[SubSystemModel] =
-    Outcome(StageManager.Model.empty[ReferenceData])
+    Outcome(StageManager.Model[ReferenceData](worldOptions))
 
   def update(
       context: SubSystemContext[ReferenceData],
@@ -110,12 +112,32 @@ final case class StageManager[GameModel, RefData](
   def withId(id: SubSystemId): StageManager[GameModel, ReferenceData] =
     this.copy(id = id)
 
+  /** Sets the inital physics world / simulation options */
+  def withWorldOptions(
+      value: WorldOptions
+  ): StageManager[GameModel, ReferenceData] =
+    this.copy(worldOptions = value)
+
+  /** Sets the inital physics world / simulation options */
+  def withWorldOptions(
+      forces: Batch[Vector2],
+      resistance: Resistance,
+      settings: SimulationSettings
+  ): StageManager[GameModel, ReferenceData] =
+    withWorldOptions(WorldOptions(forces, resistance, settings))
+
 object StageManager:
 
   def apply[GameModel](
       id: SubSystemId
   ): StageManager[GameModel, GameModel] =
-    StageManager(id, identity[GameModel])
+    StageManager(id, identity[GameModel], WorldOptions.default)
+
+  def apply[GameModel, ReferenceData](
+      id: SubSystemId,
+      extractReference: GameModel => ReferenceData
+  ): StageManager[GameModel, ReferenceData] =
+    StageManager(id, extractReference, WorldOptions.default)
 
   final case class Model[ReferenceData](
       pools: Map[LayerKey, PerformerPool[ReferenceData]],
@@ -124,6 +146,9 @@ object StageManager:
 
     def findById(id: PerformerId): Option[Performer[ReferenceData]] =
       pools.values.flatMap(_.find(_.id == id)).headOption
+
+    def findColliderById(id: PerformerId): Option[Collider[PerformerId]] =
+      world.findByTag(id).headOption
 
     def changeLayers(id: PerformerId, layerKey: LayerKey): Model[ReferenceData] =
       findById(id) match
@@ -140,7 +165,7 @@ object StageManager:
       this.copy(
         pools = pools.updatedWith(layerKey) {
           case Some(existing) => Option(existing.spawn(newPerformers))
-          case None           => Option(PerformerPool.empty[ReferenceData].spawn(newPerformers))
+          case None           => Option(PerformerPool[ReferenceData](findColliderById).spawn(newPerformers))
         }
       )
 
@@ -157,11 +182,28 @@ object StageManager:
         context: SubSystemContext[?],
         model: ReferenceData
     ): GlobalEvent => Outcome[Model[ReferenceData]] = e =>
-      val updatedWorld =
-        world.update(context.frame.time.delta)
+      val ctx =
+        PerformerContext(
+          findById,
+          findColliderById,
+          model,
+          context
+        )
 
       val updatedPools =
         Batch.fromMap(pools).map((k, p) => p.update(context, model)(e).map(p => k -> p)).sequence
+
+      val updatedWorld =
+        updatedPools
+          .map(_.map(_._2).flatMap(_.performers.collect { case p: Performer.Stunt[?] => p }))
+          .flatMap(
+            _.foldLeft(world) { (w, p) =>
+              w.modifyByTag(p.id) { c =>
+                p.updateCollider(ctx, c)
+              }
+            }
+              .update(context.frame.time.delta)
+          )
 
       updatedWorld
         .combine(updatedPools)
@@ -185,8 +227,8 @@ object StageManager:
       this.copy(world = world)
 
   object Model:
-    def empty[ReferenceData]: Model[ReferenceData] =
+    def apply[ReferenceData](worldOption: WorldOptions): Model[ReferenceData] =
       Model(
         Map.empty[LayerKey, PerformerPool[ReferenceData]],
-        World.empty
+        World(Batch.empty, worldOption.forces, worldOption.resistance, worldOption.settings)
       )
