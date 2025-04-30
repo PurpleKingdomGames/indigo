@@ -24,16 +24,11 @@ sealed trait Performer[ReferenceData]:
     */
   def depth: PerformerDepth
 
-object Performer:
-
-  /** Narrators are the storytellers of the performance (the performance metaphor breaks down a little here!). In
-    * practical terms, they are strictly state holders and message passers, and have no rendered presence in the scene.
+  /** A flag signifying whether the performer is a type of stunt performer or not.
     */
-  trait Narrator[ReferenceData] extends Performer[ReferenceData]:
+  def hasCollider: Boolean
 
-    /** Update the performer
-      */
-    def update(context: PerformerContext[ReferenceData]): GlobalEvent => Outcome[Performer.Narrator[ReferenceData]]
+object Performer:
 
   /** Extra performers are the background characters of the performance. They are responsible for rendering themselves
     * and updating their state, but they cannot interact with the game directly since they have no way to listen to or
@@ -48,6 +43,8 @@ object Performer:
     /** Draw the performer
       */
     def present(context: PerformerContext[ReferenceData]): SceneNode
+
+    val hasCollider: Boolean = false
 
   /** Stunt performers are like Extras, but they can do their own stunts! In practical terms, they are background
     * performers like extras, but have their motion controlled by a physics simulation.
@@ -70,15 +67,43 @@ object Performer:
       */
     def present(context: PerformerContext[ReferenceData], collider: Collider[PerformerId]): SceneNode
 
+    val hasCollider: Boolean = true
+
+  /** Support performers are the main character actors. They are responsible for rendering themselves, updating their
+    * state, and can also listen to and emit events, but they leave physical work to Stunt and Lead performers.
+    */
+  trait Support[ReferenceData] extends Performer[ReferenceData]:
+
+    /** Update the performer
+      */
+    def update(context: PerformerContext[ReferenceData]): GlobalEvent => Outcome[Performer.Support[ReferenceData]]
+
+    /** Draw the performer
+      */
+    def present(context: PerformerContext[ReferenceData]): Outcome[Batch[SceneNode]]
+
+    val hasCollider: Boolean = false
+
   /** Lead performers are the stars of the show. They are responsible for rendering themselves, updating their state,
-    * and can also listen to and emit events. They are the most complex type of performer, but also the most powerful.
+    * listen to and emitting events, and even doing their own stunts! They are the most complex type of performer, but
+    * also the most powerful.
     */
   trait Lead[ReferenceData] extends Performer[ReferenceData]:
+
+    /** The physics collider for the performer, used for collision detection.
+      */
+    def initialCollider: Collider[PerformerId]
 
     /** Update the performer
       */
     def update(context: PerformerContext[ReferenceData]): GlobalEvent => Outcome[Performer.Lead[ReferenceData]]
 
+    /** Update the physics collider for the performer
+      */
+    def updateCollider(context: PerformerContext[ReferenceData], collider: Collider[PerformerId]): Collider[PerformerId]
+
     /** Draw the performer
       */
-    def present(context: PerformerContext[ReferenceData]): Outcome[Batch[SceneNode]]
+    def present(context: PerformerContext[ReferenceData], collider: Collider[PerformerId]): Outcome[Batch[SceneNode]]
+
+    val hasCollider: Boolean = true

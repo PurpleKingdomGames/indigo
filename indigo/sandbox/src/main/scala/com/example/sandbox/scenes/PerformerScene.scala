@@ -110,7 +110,7 @@ object PerformerSceneModel:
 // -- Player --
 
 final case class Player(position: Vector2, direction: Radians, trail: Batch[Breadcrumb], lastDropped: Seconds)
-    extends Performer.Lead[Point]:
+    extends Performer.Support[Point]:
 
   def id: PerformerId = PerformerId("player")
 
