@@ -52,6 +52,9 @@ final case class StageManager[GameModel, RefData](
           case p: Performer.Stunt[?] =>
             model.world.addColliders(p.initialCollider)
 
+          case p: Performer.Lead[?] =>
+            model.world.addColliders(p.initialCollider)
+
           case _ =>
             model.world
 
@@ -64,7 +67,10 @@ final case class StageManager[GameModel, RefData](
     case PerformerEvent.AddAll(layerKey, performers) =>
       val nextWorld =
         model.world.addColliders(
-          performers.collect { case p: Performer.Stunt[?] => p.initialCollider }
+          performers.collect {
+            case p: Performer.Stunt[?] => p.initialCollider
+            case p: Performer.Lead[?]  => p.initialCollider
+          }
         )
 
       Outcome(
@@ -194,12 +200,27 @@ object StageManager:
         Batch.fromMap(pools).map((k, p) => p.update(context, model)(e).map(p => k -> p)).sequence
 
       val updatedWorld =
-        updatedPools
-          .map(_.map(_._2).flatMap(_.performers.collect { case p: Performer.Stunt[?] => p }))
+        val physicalPerformers =
+          updatedPools
+            .map(
+              _.map(_._2).flatMap(
+                _.performers.filter(_.hasCollider)
+              )
+            )
+
+        physicalPerformers
           .flatMap(
             _.foldLeft(world) { (w, p) =>
               w.modifyByTag(p.id) { c =>
-                p.updateCollider(ctx, c)
+                p match
+                  case p: Performer.Stunt[?] =>
+                    p.updateCollider(ctx, c)
+
+                  case p: Performer.Lead[?] =>
+                    p.updateCollider(ctx, c)
+
+                  case _ =>
+                    c
               }
             }
               .update(context.frame.time.delta)

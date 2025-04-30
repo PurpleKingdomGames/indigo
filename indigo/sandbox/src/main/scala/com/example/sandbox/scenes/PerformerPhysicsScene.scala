@@ -134,7 +134,7 @@ final case class ZombiePerformer(
 
     Shape.Circle(Circle(collider.position.toPoint, radius), Fill.Color(color), Stroke(1, RGBA.White))
 
-final case class ZombieTargetPerformer() extends Performer.Stunt[Point]:
+final case class ZombieTargetPerformer() extends Performer.Lead[Point]:
   def id: PerformerId       = ZombieTargetPerformer.id
   def depth: PerformerDepth = PerformerDepth.zero
 
@@ -148,14 +148,18 @@ final case class ZombieTargetPerformer() extends Performer.Stunt[Point]:
       )
       .makeStatic
 
-  def update(context: PerformerContext[Point]): Performer.Stunt[Point] =
-    this
+  def update(context: PerformerContext[Point]): GlobalEvent => Outcome[Performer.Lead[Point]] =
+    _ => Outcome(this)
 
   def updateCollider(context: PerformerContext[Point], collider: Collider[PerformerId]): Collider[PerformerId] =
     collider.moveTo(context.frame.input.mouse.position.toVertex)
 
-  def present(context: PerformerContext[Point], collider: Collider[PerformerId]): SceneNode =
-    Shape.Circle(Circle(collider.position.toPoint, radius), Fill.Color(RGBA.Red), Stroke(1, RGBA.White))
+  def present(context: PerformerContext[Point], collider: Collider[PerformerId]): Outcome[Batch[SceneNode]] =
+    Outcome(
+      Batch(
+        Shape.Circle(Circle(collider.position.toPoint, radius), Fill.Color(RGBA.Red), Stroke(1, RGBA.White))
+      )
+    )
 
 object ZombieTargetPerformer:
   val id: PerformerId =

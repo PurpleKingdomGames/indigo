@@ -46,28 +46,28 @@ final case class PerformerPool[ReferenceData](
   ): GlobalEvent => Outcome[Performer[ReferenceData]] =
     case FrameTick =>
       performer match
-        case p: Performer.Narrator[ReferenceData] =>
-          p.update(context)(FrameTick)
-
         case p: Performer.Extra[ReferenceData] =>
           Outcome(p.update(context))
 
         case p: Performer.Stunt[ReferenceData] =>
           Outcome(p.update(context))
+
+        case p: Performer.Support[ReferenceData] =>
+          p.update(context)(FrameTick)
 
         case p: Performer.Lead[ReferenceData] =>
           p.update(context)(FrameTick)
 
     case e =>
       performer match
-        case p: Performer.Narrator[ReferenceData] =>
-          p.update(context)(e)
-
         case p: Performer.Extra[ReferenceData] =>
           Outcome(p)
 
         case p: Performer.Stunt[ReferenceData] =>
           Outcome(p)
+
+        case p: Performer.Support[ReferenceData] =>
+          p.update(context)(e)
 
         case p: Performer.Lead[ReferenceData] =>
           p.update(context)(e)
@@ -90,9 +90,6 @@ final case class PerformerPool[ReferenceData](
       performer: Performer[ReferenceData]
   ): Outcome[Batch[SceneNode]] =
     performer match
-      case p: Performer.Narrator[ReferenceData] =>
-        Outcome(Batch.empty)
-
       case p: Performer.Extra[ReferenceData] =>
         Outcome(Batch(p.present(context)))
 
@@ -104,8 +101,16 @@ final case class PerformerPool[ReferenceData](
           case Some(c) =>
             Outcome(Batch(p.present(context, c)))
 
-      case p: Performer.Lead[ReferenceData] =>
+      case p: Performer.Support[ReferenceData] =>
         p.present(context)
+
+      case p: Performer.Lead[ReferenceData] =>
+        colliderLookup(p.id) match
+          case None =>
+            Outcome(Batch.empty)
+
+          case Some(c) =>
+            p.present(context, c)
 
   def findById(id: PerformerId): Option[Performer[ReferenceData]] =
     performers.find(_.id == id)
