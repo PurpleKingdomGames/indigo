@@ -2,6 +2,7 @@ package indigo.physics
 
 import indigo.*
 import indigo.physics.Resistance
+import indigo.physics.simulation.Simulation
 import indigo.syntax.*
 
 final case class World[Tag](
@@ -195,12 +196,12 @@ final case class World[Tag](
     (colliders ++ transient).filterNot(filterNot).map(render)
 
   def update(timeDelta: Seconds): Outcome[World[Tag]] =
-    Physics.update(timeDelta, this, Batch.empty, settings)
+    Simulation.updateWorld(this, timeDelta, Batch.empty, settings)
 
   def update(timeDelta: Seconds)(transient: Batch[Collider[Tag]]): Outcome[World[Tag]] =
-    Physics.update(timeDelta, this, transient, settings)
+    Simulation.updateWorld(this, timeDelta, transient, settings)
   def update(timeDelta: Seconds)(transient: Collider[Tag]*): Outcome[World[Tag]] =
-    Physics.update(timeDelta, this, transient.toBatch, settings)
+    Simulation.updateWorld(this, timeDelta, transient.toBatch, settings)
 
 object World:
 
