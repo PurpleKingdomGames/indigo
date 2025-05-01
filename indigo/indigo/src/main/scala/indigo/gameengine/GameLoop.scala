@@ -8,6 +8,7 @@ import indigo.shared.IndigoLogger
 import indigo.shared.Outcome
 import indigo.shared.collections.Batch
 import indigo.shared.config.GameConfig
+import indigo.shared.config.GameViewport
 import indigo.shared.dice.Dice
 import indigo.shared.events.FrameTick
 import indigo.shared.events.GlobalEvent
@@ -126,7 +127,13 @@ final class GameLoop[StartUpData, GameModel, ViewModel](
     val context =
       new Context[StartUpData](
         gameEngine.startUpData,
-        Context.Frame(Dice.fromSeconds(gameTime.running), gameTime, _inputState),
+        Context.Frame(
+          Dice.fromSeconds(gameTime.running),
+          gameTime,
+          _inputState,
+          GameViewport(renderer.screenWidth, renderer.screenHeight),
+          gameConfig.magnification
+        ),
         _services
       )
 
