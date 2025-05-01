@@ -50,6 +50,8 @@ enum WindowEvent extends GlobalEvent derives CanEqual:
   /** Moves a window to the location given */
   case Move(id: WindowId, position: Coords, space: Space)
 
+  // TODO: Anchor window
+
   /** Resizes a window to a given size */
   case Resize(id: WindowId, dimensions: Dimensions, space: Space)
 

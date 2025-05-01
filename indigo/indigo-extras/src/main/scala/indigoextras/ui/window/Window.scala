@@ -6,47 +6,71 @@ import indigoextras.ui.datatypes.Bounds
 import indigoextras.ui.datatypes.Coords
 import indigoextras.ui.datatypes.Dimensions
 import indigoextras.ui.datatypes.UIContext
+import indigoextras.ui.components.datatypes.Anchor
+import indigoextras.ui.components.datatypes.Padding
 
 final case class Window[A, ReferenceData](
     id: WindowId,
     snapGrid: Size,
-    bounds: Bounds,
-    content: A,
+    position: WindowPosition,
+    dimensions: Dimensions,
+    content: A, // TODO: Rename this
     component: Component[A, ReferenceData],
     hasFocus: Boolean,
     minSize: Dimensions,
     maxSize: Option[Dimensions],
     state: WindowState,
     background: WindowContext => Outcome[Layer],
-    mode: WindowMode
+    mode: WindowMode,
+    // internal
+    bounds: Bounds
 ):
 
   def withId(value: WindowId): Window[A, ReferenceData] =
     this.copy(id = value)
 
-  def withBounds(value: Bounds): Window[A, ReferenceData] =
-    this.copy(bounds = value)
-
-  def withPosition(value: Coords): Window[A, ReferenceData] =
-    withBounds(bounds.moveTo(value))
+  def withCoords(value: Coords): Window[A, ReferenceData] =
+    this.copy(position = WindowPosition.Fixed(value))
   def moveTo(position: Coords): Window[A, ReferenceData] =
-    withPosition(position)
+    withCoords(position)
   def moveTo(x: Int, y: Int): Window[A, ReferenceData] =
     moveTo(Coords(x, y))
-  def moveBy(amount: Coords): Window[A, ReferenceData] =
-    withPosition(bounds.coords + amount)
-  def moveBy(x: Int, y: Int): Window[A, ReferenceData] =
-    moveBy(Coords(x, y))
+
+  def withAnchor(value: Anchor): Window[A, ReferenceData] =
+    this.copy(position = WindowPosition.Anchored(value))
+
+  def anchorTopLeft: Window[A, ReferenceData]      = withAnchor(Anchor.TopLeft)
+  def anchorTopCenter: Window[A, ReferenceData]    = withAnchor(Anchor.TopCenter)
+  def anchorTopRight: Window[A, ReferenceData]     = withAnchor(Anchor.TopRight)
+  def anchorCenterLeft: Window[A, ReferenceData]   = withAnchor(Anchor.CenterLeft)
+  def anchorCenter: Window[A, ReferenceData]       = withAnchor(Anchor.Center)
+  def anchorCenterRight: Window[A, ReferenceData]  = withAnchor(Anchor.CenterRight)
+  def anchorBottomLeft: Window[A, ReferenceData]   = withAnchor(Anchor.BottomLeft)
+  def anchorBottomCenter: Window[A, ReferenceData] = withAnchor(Anchor.BottomCenter)
+  def anchorBottomRight: Window[A, ReferenceData]  = withAnchor(Anchor.BottomRight)
+
+  def modifyAnchor(f: Anchor => Anchor): Window[A, ReferenceData] =
+    this.copy(
+      position = position match
+        case WindowPosition.Anchored(anchor) =>
+          WindowPosition.Anchored(f(anchor))
+
+        case WindowPosition.Fixed(_) =>
+          position
+    )
+
+  def withAnchorPadding(padding: Padding): Window[A, ReferenceData] =
+    modifyAnchor(_.withPadding(padding))
 
   def withDimensions(value: Dimensions): Window[A, ReferenceData] =
     val d = value.max(minSize)
-    withBounds(bounds.withDimensions(maxSize.fold(d)(_.min(d))))
+    this.copy(dimensions = maxSize.fold(d)(_.min(d)))
   def resizeTo(size: Dimensions): Window[A, ReferenceData] =
     withDimensions(size)
   def resizeTo(x: Int, y: Int): Window[A, ReferenceData] =
     resizeTo(Dimensions(x, y))
   def resizeBy(amount: Dimensions): Window[A, ReferenceData] =
-    withDimensions(bounds.dimensions + amount)
+    withDimensions(dimensions + amount)
   def resizeBy(x: Int, y: Int): Window[A, ReferenceData] =
     resizeBy(Dimensions(x, y))
 
@@ -85,11 +109,23 @@ final case class Window[A, ReferenceData](
     state == WindowState.Closed
 
   def refresh(context: UIContext[ReferenceData]): Window[A, ReferenceData] =
-    this.copy(content =
-      component.refresh(
+    val bounds: Bounds =
+      position match
+        case WindowPosition.Fixed(coords) =>
+          Bounds(coords, dimensions)
+
+        case WindowPosition.Anchored(anchor) =>
+          Bounds(
+            anchor.calculatePosition(context.parent.dimensions, dimensions),
+            dimensions
+          )
+
+    this.copy(
+      content = component.refresh(
         context.withParentBounds(bounds),
         content
-      )
+      ),
+      bounds = bounds
     )
 
   def withBackground(present: WindowContext => Outcome[Layer]): Window[A, ReferenceData] =
@@ -113,7 +149,8 @@ object Window:
     Window(
       id,
       snapGrid,
-      Bounds(Coords.zero, minSize),
+      WindowPosition.Fixed(Coords.zero),
+      minSize,
       content,
       c,
       false,
@@ -121,7 +158,8 @@ object Window:
       None,
       WindowState.Closed,
       _ => Outcome(Layer.empty),
-      WindowMode.Standard
+      WindowMode.Standard,
+      Bounds(Coords.zero, minSize)
     )
 
   def apply[A, ReferenceData](
@@ -135,7 +173,8 @@ object Window:
     Window(
       id,
       snapGrid,
-      Bounds(Coords.zero, minSize),
+      WindowPosition.Fixed(Coords.zero),
+      minSize,
       content,
       c,
       false,
@@ -143,7 +182,8 @@ object Window:
       None,
       WindowState.Closed,
       background,
-      WindowMode.Standard
+      WindowMode.Standard,
+      Bounds(Coords.zero, minSize)
     )
 
   def updateModel[A, ReferenceData](
@@ -151,11 +191,22 @@ object Window:
       window: Window[A, ReferenceData]
   ): GlobalEvent => Outcome[Window[A, ReferenceData]] =
     case e =>
-      val minBounds = window.bounds.withDimensions(window.bounds.dimensions.max(window.minSize))
+      val minDimensions = window.dimensions.max(window.minSize)
+      val position: Coords =
+        window.position match
+          case WindowPosition.Fixed(coords) =>
+            coords
+
+          case WindowPosition.Anchored(anchor) =>
+            anchor.calculatePosition(context.parent.dimensions, window.dimensions)
 
       window.component
         .updateModel(
-          context.withParentBounds(minBounds),
+          context.withParentBounds(Bounds(position, minDimensions)),
           window.content
         )(e)
-        .map(m => window.withModel(m).withBounds(minBounds))
+        .map(m =>
+          window
+            .withModel(m)
+            .withDimensions(minDimensions)
+        )

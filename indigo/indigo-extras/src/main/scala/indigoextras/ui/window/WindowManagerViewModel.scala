@@ -2,10 +2,12 @@ package indigoextras.ui.window
 
 import indigo.*
 import indigoextras.ui.datatypes.UIContext
+import indigoextras.ui.datatypes.Dimensions
 
 final case class WindowManagerViewModel[ReferenceData](
     windows: Batch[WindowViewModel[ReferenceData]],
-    magnification: Int
+    magnification: Int,
+    viewport: Dimensions
 ):
   def prune(model: WindowManagerModel[ReferenceData]): WindowManagerViewModel[ReferenceData] =
     this.copy(windows = windows.filter(w => model.windows.exists(_.id == w.id)))
@@ -30,5 +32,5 @@ final case class WindowManagerViewModel[ReferenceData](
     )
 
 object WindowManagerViewModel:
-  def initial[ReferenceData](magnification: Int): WindowManagerViewModel[ReferenceData] =
-    WindowManagerViewModel(Batch.empty, magnification)
+  def initial[ReferenceData](magnification: Int, initialViewport: Dimensions): WindowManagerViewModel[ReferenceData] =
+    WindowManagerViewModel(Batch.empty, magnification, initialViewport)
