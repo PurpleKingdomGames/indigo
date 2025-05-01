@@ -4,7 +4,9 @@ import indigo.FontKey
 import indigo.platform.renderer.ScreenCaptureConfig
 import indigo.shared.assets.AssetType
 import indigo.shared.collections.Batch
+import indigo.shared.config.GameViewport
 import indigo.shared.datatypes.Rectangle
+import indigo.shared.datatypes.Size
 import indigo.shared.dice.Dice
 import indigo.shared.events.InputState
 import indigo.shared.scenegraph.SceneNode
@@ -64,6 +66,8 @@ object Context:
       gameTime: GameTime,
       dice: Dice,
       inputState: InputState,
+      viewport: GameViewport,
+      globalMagnification: Int,
       boundaryLocator: BoundaryLocator,
       startUpData: StartUpData,
       _captureScreen: Batch[ScreenCaptureConfig] => Batch[Either[String, AssetType.Image]]
@@ -73,7 +77,9 @@ object Context:
       Frame(
         dice,
         gameTime,
-        inputState
+        inputState,
+        viewport,
+        globalMagnification
       ),
       Services(
         boundaryLocator,
@@ -87,23 +93,31 @@ object Context:
   final class Frame(
       val dice: Dice,
       val time: GameTime,
-      val input: InputState
+      val input: InputState,
+      val viewport: GameViewport,
+      val globalMagnification: Int
   ):
     def withDice(newDice: Dice): Frame =
-      new Frame(newDice, time, input)
+      new Frame(newDice, time, input, viewport, globalMagnification)
 
     def withTime(newTime: GameTime): Frame =
-      new Frame(dice, newTime, input)
+      new Frame(dice, newTime, input, viewport, globalMagnification)
 
     def withInput(newInput: InputState): Frame =
-      new Frame(dice, time, newInput)
+      new Frame(dice, time, newInput, viewport, globalMagnification)
+
+    def withViewport(newViewport: GameViewport): Frame =
+      new Frame(dice, time, input, newViewport, globalMagnification)
+
+    def withGlobalMagnification(newGlobalMagnification: Int): Frame =
+      new Frame(dice, time, input, viewport, newGlobalMagnification)
 
   object Frame:
-    def apply(dice: Dice, time: GameTime, input: InputState): Frame =
-      new Frame(dice, time, input)
+    def apply(dice: Dice, time: GameTime, input: InputState, viewport: GameViewport, globalMagnification: Int): Frame =
+      new Frame(dice, time, input, viewport, globalMagnification)
 
     val initial: Frame =
-      new Frame(Dice.default, GameTime.zero, InputState.default)
+      new Frame(Dice.default, GameTime.zero, InputState.default, GameViewport(Size.zero), 1)
 
   /** The services that are available to the game, such as the ability to capture the screen, measure text, find the
     * bounds of anything on screen, or access a long running Random instance. Services are side-effecting, long running,
