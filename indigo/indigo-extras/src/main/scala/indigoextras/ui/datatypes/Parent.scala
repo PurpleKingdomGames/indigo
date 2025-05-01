@@ -44,5 +44,5 @@ final case class Parent(bounds: Bounds, additionalOffset: Coords):
 
 object Parent:
 
-  val default: Parent =
-    Parent(Bounds.zero, Coords.zero)
+  def apply(dimensions: Dimensions): Parent =
+    Parent(Bounds(dimensions), Coords.zero)
