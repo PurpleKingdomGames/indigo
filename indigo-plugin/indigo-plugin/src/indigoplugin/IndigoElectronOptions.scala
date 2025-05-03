@@ -37,7 +37,7 @@ final case class IndigoElectronOptions(
     this.copy(openDevTools = false)
 
   /** Do not open the developer tools when the Electron window is created. (Alias for developerToolsClosedOnStartUp) */
-  def doNotOpenDevToolsOnStartup: IndigoElectronOptions =
+  def doNotOpenDeveloperTools: IndigoElectronOptions =
     developerToolsClosedOnStartUp
 
   /** Sets the electron installation type. It is recommended that, during development at least, you set this to
