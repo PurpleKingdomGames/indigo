@@ -141,6 +141,22 @@ final case class IndigoOptions(
   def electronUnlimitedFrameRate: IndigoOptions =
     this.copy(electron = electron.electronUnlimitedFrameRate)
 
+  /** Open the developer tools when the Electron window is created. */
+  def electronDeveloperToolsOpenOnStartUp: IndigoOptions =
+    this.copy(electron = electron.developerToolsOpenOnStartUp)
+
+  /** Open the developer tools when the Electron window is created. (Alias for developerToolsOpenOnStartUp) */
+  def electronOpenDeveloperTools: IndigoOptions =
+    electronDeveloperToolsOpenOnStartUp
+
+  /** Do not open the developer tools when the Electron window is created. */
+  def electronDeveloperToolsClosedOnStartUp: IndigoOptions =
+    this.copy(electron = electron.developerToolsClosedOnStartUp)
+
+  /** Do not open the developer tools when the Electron window is created. (Alias for developerToolsClosedOnStartUp) */
+  def electronDoNotOpenDeveloperTools: IndigoOptions =
+    electronDeveloperToolsClosedOnStartUp
+
   /** Sets the electron installation type. It is recommended that, during development at least, you set this to
     * `ElectronInstall.Latest` to take advantage of performance improvements.
     */
