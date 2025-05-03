@@ -4,12 +4,10 @@ import indigo.*
 import indigoextras.ui.datatypes.Coords
 import indigoextras.ui.datatypes.UIContext
 import indigoextras.ui.datatypes.UIState
-import indigoextras.ui.datatypes.Dimensions
 
 final case class WindowManager[StartUpData, Model, RefData](
     id: SubSystemId,
     initialMagnification: Int,
-    initialViewport: Dimensions,
     snapGrid: Size,
     extractReference: Model => RefData,
     startUpData: StartUpData,
@@ -28,7 +26,7 @@ final case class WindowManager[StartUpData, Model, RefData](
 
   def initialModel: Outcome[ModelHolder[ReferenceData]] =
     Outcome(
-      ModelHolder.initial(windows, initialMagnification, initialViewport)
+      ModelHolder.initial(windows, initialMagnification)
     )
 
   def update(
@@ -38,13 +36,13 @@ final case class WindowManager[StartUpData, Model, RefData](
     e =>
       for {
         updatedModel <- WindowManager.updateModel[ReferenceData](
-          UIContext(context, snapGrid, model.viewModel.magnification, model.viewModel.viewport),
+          UIContext(context, snapGrid, model.viewModel.magnification),
           model.model
         )(e)
 
         updatedViewModel <-
           WindowManager.updateViewModel[ReferenceData](
-            UIContext(context, snapGrid, model.viewModel.magnification, model.viewModel.viewport),
+            UIContext(context, snapGrid, model.viewModel.magnification),
             updatedModel,
             model.viewModel
           )(e)
@@ -56,7 +54,7 @@ final case class WindowManager[StartUpData, Model, RefData](
   ): Outcome[SceneUpdateFragment] =
     WindowManager.present(
       layerKey,
-      UIContext(context, snapGrid, model.viewModel.magnification, model.viewModel.viewport),
+      UIContext(context, snapGrid, model.viewModel.magnification),
       model.model,
       model.viewModel
     )
@@ -98,7 +96,6 @@ final case class WindowManager[StartUpData, Model, RefData](
     WindowManager(
       id,
       initialMagnification,
-      initialViewport,
       snapGrid,
       extractReference,
       newStartupData,
@@ -115,41 +112,37 @@ object WindowManager:
 
   /** Creates a WindowManager instance with no snap grid, that respects the magnification specified.
     */
-  def apply[Model](id: SubSystemId, viewport: Size): WindowManager[Unit, Model, Unit] =
-    WindowManager(id, 1, Dimensions(viewport), Size(1), _ => (), (), None, Batch.empty)
+  def apply[Model](id: SubSystemId): WindowManager[Unit, Model, Unit] =
+    WindowManager(id, 1, Size(1), _ => (), (), None, Batch.empty)
 
   /** Creates a WindowManager instance with no snap grid, that respects the magnification specified.
     */
   def apply[Model](
       id: SubSystemId,
-      magnification: Int,
-      viewport: Size
+      magnification: Int
   ): WindowManager[Unit, Model, Unit] =
-    WindowManager(id, magnification, Dimensions(viewport), Size(1), _ => (), (), None, Batch.empty)
+    WindowManager(id, magnification, Size(1), _ => (), (), None, Batch.empty)
 
   /** Creates a WindowManager instance with no snap grid, that respects the magnification specified.
     */
   def apply[Model](
       id: SubSystemId,
       magnification: Int,
-      viewport: Size,
       snapGrid: Size
   ): WindowManager[Unit, Model, Unit] =
-    WindowManager(id, magnification, Dimensions(viewport), Size(1), _ => (), (), None, Batch.empty)
+    WindowManager(id, magnification, Size(1), _ => (), (), None, Batch.empty)
 
   def apply[Model, ReferenceData](
       id: SubSystemId,
       magnification: Int,
-      viewport: Size,
       snapGrid: Size,
       extractReference: Model => ReferenceData
   ): WindowManager[Unit, Model, ReferenceData] =
-    WindowManager(id, magnification, Dimensions(viewport), snapGrid, extractReference, (), None, Batch.empty)
+    WindowManager(id, magnification, snapGrid, extractReference, (), None, Batch.empty)
 
   def apply[StartUpData, Model, ReferenceData](
       id: SubSystemId,
       magnification: Int,
-      viewport: Size,
       snapGrid: Size,
       extractReference: Model => ReferenceData,
       startUpData: StartUpData
@@ -157,7 +150,6 @@ object WindowManager:
     WindowManager(
       id,
       magnification,
-      Dimensions(viewport),
       snapGrid,
       extractReference,
       startUpData,
@@ -168,7 +160,6 @@ object WindowManager:
   def apply[StartUpData, Model, ReferenceData](
       id: SubSystemId,
       magnification: Int,
-      viewport: Size,
       snapGrid: Size,
       extractReference: Model => ReferenceData,
       startUpData: StartUpData,
@@ -177,7 +168,6 @@ object WindowManager:
     WindowManager(
       id,
       magnification,
-      Dimensions(viewport),
       snapGrid,
       extractReference,
       startUpData,
@@ -214,9 +204,6 @@ object WindowManager:
 
         case _id @ Some(id) =>
           updateWindows(context, model, _id)(FrameTick).map(_.focusOn(id))
-
-    case ViewportResize(newViewport) =>
-      ??? // TODO
 
     case e =>
       updateWindows(context, model, modalWindowOpen(model))(e)
@@ -399,10 +386,9 @@ final case class ModelHolder[ReferenceData](
 object ModelHolder:
   def initial[ReferenceData](
       windows: Batch[Window[?, ReferenceData]],
-      magnification: Int,
-      initialViewport: Dimensions
+      magnification: Int
   ): ModelHolder[ReferenceData] =
     ModelHolder(
       WindowManagerModel.initial.register(windows),
-      WindowManagerViewModel.initial(magnification, initialViewport)
+      WindowManagerViewModel.initial(magnification)
     )
