@@ -11,7 +11,7 @@ import indigoextras.ui.datatypes.UIContext
 class ComponentGroupTests extends munit.FunSuite:
 
   val ctx =
-    UIContext(Context.initial)
+    UIContext(Context.initial, 1)
 
   given Component[String, Unit] with
     def bounds(context: UIContext[Unit], model: String): Bounds =

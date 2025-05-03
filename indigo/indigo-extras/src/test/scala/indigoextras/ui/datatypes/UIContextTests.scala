@@ -6,7 +6,7 @@ class UIContextTests extends munit.FunSuite {
 
   test("UIContext should correctly calculate the pointer coords") {
     val uiContext =
-      UIContext(Context.initial)
+      UIContext(Context.initial, 1)
         .withPointerCoords(Coords(10, 20))
 
     assertEquals(uiContext.pointerCoords, Coords(10, 20))
@@ -17,7 +17,7 @@ class UIContextTests extends munit.FunSuite {
       UIContext(SubSystemContext.fromContext(Context.initial), Size(10), 2)
         .withPointerCoords(Coords(10, 20))
     val ctxB =
-      UIContext(Context.initial)
+      UIContext(Context.initial, 1)
         .withSnapGrid(Size(10))
         .withPointerCoords(Coords(10, 20))
 

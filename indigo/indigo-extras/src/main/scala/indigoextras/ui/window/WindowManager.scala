@@ -266,7 +266,10 @@ object WindowManager:
       model.toggle(id)
 
     case WindowEvent.Move(id, coords, space) =>
-      model.moveTo(id, coords, space, context.frame.viewport.toSize, context.magnification).refresh(context, id)
+      Outcome(model.moveTo(id, coords, space, context.frame.viewport.toSize, context.magnification))
+
+    case WindowEvent.Anchor(id, anchor) =>
+      Outcome(model.anchor(id, anchor))
 
     case WindowEvent.Resize(id, dimensions, space) =>
       model.resizeTo(id, dimensions, space, context.frame.viewport.toSize, context.magnification).refresh(context, id)

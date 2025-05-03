@@ -1,6 +1,7 @@
 package indigoextras.ui.window
 
 import indigo.*
+import indigoextras.ui.components.datatypes.Anchor
 import indigoextras.ui.datatypes.Bounds
 import indigoextras.ui.datatypes.Coords
 import indigoextras.ui.datatypes.Dimensions
@@ -94,6 +95,17 @@ final case class WindowManagerModel[ReferenceData](windows: Batch[Window[?, Refe
       }
     )
 
+  def anchor(
+      id: WindowId,
+      anchor: Anchor
+  ): WindowManagerModel[ReferenceData] =
+    this.copy(
+      windows = windows.map { w =>
+        if w.id == id then w.withAnchor(anchor)
+        else w
+      }
+    )
+
   def resizeTo(
       id: WindowId,
       dimensions: Dimensions,
@@ -129,7 +141,8 @@ final case class WindowManagerModel[ReferenceData](windows: Batch[Window[?, Refe
           space match
             case Space.Screen =>
               // See above (moveTo / resizeTo) for the reasoning behind these adjustments.
-              w.moveTo(bounds.coords).resizeTo(bounds.dimensions - w.bounds(viewport, magnification).coords.toDimensions)
+              w.moveTo(bounds.coords)
+                .resizeTo(bounds.dimensions - w.bounds(viewport, magnification).coords.toDimensions)
 
             case Space.Window =>
               // See above (moveTo / resizeTo) for the reasoning behind these adjustments.

@@ -178,8 +178,7 @@ object Window:
       None,
       WindowState.Closed,
       background,
-      WindowMode.Standard // ,
-      // Bounds(Coords.zero, minSize)
+      WindowMode.Standard
     )
 
   def updateModel[A, ReferenceData](
@@ -187,22 +186,14 @@ object Window:
       window: Window[A, ReferenceData]
   ): GlobalEvent => Outcome[Window[A, ReferenceData]] =
     case e =>
-      val minDimensions = window.dimensions.max(window.minSize)
-      val position: Coords =
-        window.position match
-          case WindowPosition.Fixed(coords) =>
-            coords
-
-          case WindowPosition.Anchored(anchor) =>
-            anchor.calculatePosition(context.parent.dimensions, window.dimensions)
+      val bounds =
+        window.bounds(context.frame.viewport.toSize, context.magnification)
+      val minBounds =
+        bounds.withDimensions(bounds.dimensions.max(window.minSize))
 
       window.component
         .updateModel(
-          context.withParentBounds(Bounds(position, minDimensions)),
+          context.withParentBounds(minBounds),
           window.content
         )(e)
-        .map(m =>
-          window
-            .withModel(m)
-            .withDimensions(minDimensions)
-        )
+        .map(m => window.withModel(m).withDimensions(minBounds.dimensions))
