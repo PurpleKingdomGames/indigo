@@ -45,7 +45,7 @@ object SfxScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewM
 
     case e =>
       val ctx =
-        UIContext(context.toContext)
+        UIContext(context.toContext, context.frame.globalMagnification)
 
       model.sfxComponents.update(ctx)(e).map { cl =>
         model.copy(sfxComponents = cl)
@@ -64,7 +64,7 @@ object SfxScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewM
       viewModel: SandboxViewModel
   ): Outcome[SceneUpdateFragment] =
     model.sfxComponents
-      .present(UIContext(context.toContext))
+      .present(UIContext(context.toContext, context.frame.globalMagnification))
       .map {
         case l: Layer.Stack =>
           SceneUpdateFragment(

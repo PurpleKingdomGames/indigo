@@ -45,7 +45,7 @@ object ComponentUIScene2 extends Scene[SandboxStartupData, SandboxGameModel, San
 
     case e =>
       val ctx =
-        UIContext(context.toContext)
+        UIContext(context.toContext, context.frame.globalMagnification)
           .withReferenceData(4)
           .withMagnification(2)
 
@@ -69,10 +69,9 @@ object ComponentUIScene2 extends Scene[SandboxStartupData, SandboxGameModel, San
   ): Outcome[SceneUpdateFragment] =
 
     val ctx =
-      UIContext(context.toContext)
+      UIContext(context.toContext, context.frame.globalMagnification)
         .withReferenceData(4)
         .moveParentTo(50, 10)
-        .withMagnification(2)
 
     val scrollPaneBorder =
       Shape.Box(

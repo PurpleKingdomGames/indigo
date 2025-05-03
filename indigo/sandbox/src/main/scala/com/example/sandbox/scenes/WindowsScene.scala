@@ -37,9 +37,27 @@ object WindowsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxV
         startUpData = (),
         layerKey = LayerKey("windows")
       )
+        .register(CustomUI.windowAnchoredTL)
+        .register(CustomUI.windowAnchoredTC)
+        .register(CustomUI.windowAnchoredTR)
+        .register(CustomUI.windowAnchoredCL)
+        .register(CustomUI.windowAnchoredC)
+        .register(CustomUI.windowAnchoredCR)
+        .register(CustomUI.windowAnchoredBL)
+        .register(CustomUI.windowAnchoredBC)
+        .register(CustomUI.windowAnchoredBR)
         .register(CustomUI.windowA.moveTo(15, 15))
         .register(CustomUI.windowB.moveTo(30, 30))
         .open(
+          CustomUI.windowAnchoredTL.id,
+          CustomUI.windowAnchoredTC.id,
+          CustomUI.windowAnchoredTR.id,
+          CustomUI.windowAnchoredCL.id,
+          CustomUI.windowAnchoredC.id,
+          CustomUI.windowAnchoredCR.id,
+          CustomUI.windowAnchoredBL.id,
+          CustomUI.windowAnchoredBC.id,
+          CustomUI.windowAnchoredBR.id,
           CustomUI.windowA.id,
           CustomUI.windowB.id
         )
@@ -280,3 +298,34 @@ object CustomUI:
           ).addNodes(extraNodes(ctx.parent.coords.unsafeToPoint))
         )
       )
+
+  val windowAnchoredTL: Window[Unit, Int] = makeAnchoredWindow(WindowId("window TL"), Anchor.TopLeft)
+  val windowAnchoredTC: Window[Unit, Int] = makeAnchoredWindow(WindowId("window TC"), Anchor.TopCenter)
+  val windowAnchoredTR: Window[Unit, Int] = makeAnchoredWindow(WindowId("window TR"), Anchor.TopRight)
+  val windowAnchoredCL: Window[Unit, Int] = makeAnchoredWindow(WindowId("window CL"), Anchor.CenterLeft)
+  val windowAnchoredC: Window[Unit, Int]  = makeAnchoredWindow(WindowId("window C"), Anchor.Center)
+  val windowAnchoredCR: Window[Unit, Int] = makeAnchoredWindow(WindowId("window CR"), Anchor.CenterRight)
+  val windowAnchoredBL: Window[Unit, Int] = makeAnchoredWindow(WindowId("window BL"), Anchor.BottomLeft)
+  val windowAnchoredBC: Window[Unit, Int] = makeAnchoredWindow(WindowId("window BC"), Anchor.BottomCenter)
+  val windowAnchoredBR: Window[Unit, Int] = makeAnchoredWindow(WindowId("window BR"), Anchor.BottomRight)
+
+  def makeAnchoredWindow(id: WindowId, achor: Anchor): Window[Unit, Int] =
+    Window(
+      id = id,
+      snapGrid = Size.one,
+      minSize = Dimensions(32, 32),
+      content = ()
+    )
+      .withAnchor(achor)
+      .withBackground { windowContext =>
+        Outcome(
+          Layer.Content(
+            Shape.Box(
+              windowContext.bounds.unsafeToRectangle,
+              if windowContext.hasFocus then Fill.Color(RGBA.Yellow)
+              else Fill.Color(RGBA.Red),
+              Stroke(1, RGBA.Black)
+            )
+          )
+        )
+      }

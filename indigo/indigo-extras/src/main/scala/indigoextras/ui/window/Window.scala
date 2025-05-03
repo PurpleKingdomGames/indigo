@@ -24,14 +24,14 @@ final case class Window[A, ReferenceData](
     mode: WindowMode
 ):
 
-  def bounds(viewport: Size): Bounds =
+  def bounds(viewport: Size, magnification: Int): Bounds =
     position match
       case WindowPosition.Fixed(coords) =>
         Bounds(coords, dimensions)
 
       case WindowPosition.Anchored(anchor) =>
         Bounds(
-          anchor.calculatePosition(Dimensions(viewport), dimensions),
+          anchor.calculatePosition(Dimensions(viewport) / magnification, dimensions),
           dimensions
         )
 
@@ -120,7 +120,7 @@ final case class Window[A, ReferenceData](
   def refresh(context: UIContext[ReferenceData]): Window[A, ReferenceData] =
     this.copy(
       content = component.refresh(
-        context.withParentBounds(bounds(context.frame.viewport.toSize)),
+        context.withParentBounds(bounds(context.frame.viewport.toSize, context.magnification)),
         content
       )
     )

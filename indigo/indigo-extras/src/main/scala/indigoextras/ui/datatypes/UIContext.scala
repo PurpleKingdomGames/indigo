@@ -87,22 +87,23 @@ object UIContext:
       subSystemContext.services
     )
 
-  def apply(ctx: Context[?]): UIContext[Unit] =
-    fromContext(ctx, ())
+  def apply(ctx: Context[?], magnification: Int): UIContext[Unit] =
+    fromContext(ctx, (), magnification)
 
-  def apply(ctx: SceneContext[?]): UIContext[Unit] =
-    fromSceneContext(ctx, ())
+  def apply(ctx: SceneContext[?], magnification: Int): UIContext[Unit] =
+    fromSceneContext(ctx, (), magnification)
 
   def fromContext[ReferenceData](
       ctx: Context[?],
-      reference: ReferenceData
+      reference: ReferenceData,
+      magnification: Int
   ): UIContext[ReferenceData] =
     UIContext(
       Parent.default,
       Size.one,
       Coords(ctx.frame.input.pointers.position / Point.one),
       UIState.Active,
-      1,
+      magnification,
       reference,
       ctx.frame,
       ctx.services
@@ -110,15 +111,17 @@ object UIContext:
 
   def fromSceneContext[ReferenceData](
       ctx: SceneContext[?],
-      reference: ReferenceData
+      reference: ReferenceData,
+      magnification: Int
   ): UIContext[ReferenceData] =
-    fromContext(ctx.toContext, reference)
+    fromContext(ctx.toContext, reference, magnification)
 
   def fromSubSystemContext[ReferenceData](
       ctx: SubSystemContext[?],
-      reference: ReferenceData
+      reference: ReferenceData,
+      magnification: Int
   ): UIContext[ReferenceData] =
-    fromContext(ctx.toContext, reference)
+    fromContext(ctx.toContext, reference, magnification)
 
 enum UIState derives CanEqual:
   case Active, InActive
