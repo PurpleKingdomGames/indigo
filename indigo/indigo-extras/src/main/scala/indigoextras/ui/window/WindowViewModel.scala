@@ -41,14 +41,16 @@ object WindowViewModel:
       Outcome(redraw(model, viewModel))
 
     case PointerEvent.PointerMove(pt)
-        if viewModel.pointerIsOver && !model.bounds
+        if viewModel.pointerIsOver && !model
+          .bounds(context.frame.viewport.toSize)
           .toScreenSpace(context.snapGrid)
           .contains(pt) =>
       Outcome(viewModel.copy(pointerIsOver = false))
         .addGlobalEvents(WindowEvent.PointerOut(model.id))
 
     case PointerEvent.PointerMove(pt)
-        if !viewModel.pointerIsOver && model.bounds
+        if !viewModel.pointerIsOver && model
+          .bounds(context.frame.viewport.toSize)
           .toScreenSpace(context.snapGrid)
           .contains(pt) =>
       Outcome(viewModel.copy(pointerIsOver = true))
