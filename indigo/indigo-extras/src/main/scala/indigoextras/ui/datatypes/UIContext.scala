@@ -74,11 +74,10 @@ object UIContext:
   def apply[ReferenceData](
       subSystemContext: SubSystemContext[ReferenceData],
       snapGrid: Size,
-      magnification: Int,
-      viewport: Dimensions
+      magnification: Int
   ): UIContext[ReferenceData] =
     UIContext(
-      Parent(viewport),
+      Parent.default,
       snapGrid,
       Coords(subSystemContext.frame.input.pointers.position),
       UIState.Active,
@@ -99,7 +98,7 @@ object UIContext:
       reference: ReferenceData
   ): UIContext[ReferenceData] =
     UIContext(
-      Parent(Dimensions.zero),
+      Parent.default,
       Size.one,
       Coords(ctx.frame.input.pointers.position / Point.one),
       UIState.Active,

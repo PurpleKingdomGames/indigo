@@ -2,12 +2,12 @@ package indigoextras.ui.window
 
 import indigo.*
 import indigoextras.ui.component.Component
+import indigoextras.ui.components.datatypes.Anchor
+import indigoextras.ui.components.datatypes.Padding
 import indigoextras.ui.datatypes.Bounds
 import indigoextras.ui.datatypes.Coords
 import indigoextras.ui.datatypes.Dimensions
 import indigoextras.ui.datatypes.UIContext
-import indigoextras.ui.components.datatypes.Anchor
-import indigoextras.ui.components.datatypes.Padding
 
 final case class Window[A, ReferenceData](
     id: WindowId,
