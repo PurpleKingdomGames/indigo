@@ -92,11 +92,13 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
         TestFont.fontInfo
       ).withSubSystems(
         FPSCounter[SandboxGameModel](
-          Point(5, 570),
           Fonts.fontKey,
-          SandboxAssets.smallFontName,
-          Constants.LayerKeys.fps
+          SandboxAssets.smallFontName
         )
+          .withLayerKey(Constants.LayerKeys.fps)
+          .placeAt { (context, bounds) =>
+            Point(0, context.frame.viewport.height - bounds.height)
+          }
       ).withShaders(
         Shaders.circle,
         Shaders.external,
@@ -237,6 +239,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
       SceneUpdateFragment(
         Constants.LayerKeys.background -> Layer.Stack.empty,
         Constants.LayerKeys.game       -> Layer.Stack.empty,
+        Constants.LayerKeys.windows    -> Layer.Stack.empty,
         Constants.LayerKeys.fps ->
           Layer.empty
             .withCamera(Camera.default)

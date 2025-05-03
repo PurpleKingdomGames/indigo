@@ -1,5 +1,6 @@
 package com.example.sandbox.scenes
 
+import com.example.sandbox.Constants
 import com.example.sandbox.SandboxAssets
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxStartupData
@@ -35,7 +36,7 @@ object WindowsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxV
         snapGrid = Size.one,
         extractReference = _.num,
         startUpData = (),
-        layerKey = LayerKey("windows")
+        layerKey = Constants.LayerKeys.windows
       )
         .register(CustomUI.windowAnchoredTL)
         .register(CustomUI.windowAnchoredTC)
