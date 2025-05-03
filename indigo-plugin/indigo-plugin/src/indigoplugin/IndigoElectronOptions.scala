@@ -24,6 +24,22 @@ final case class IndigoElectronOptions(
   def electronUnlimitedFrameRate: IndigoElectronOptions =
     this.copy(disableFrameRateLimit = true)
 
+  /** Open the developer tools when the Electron window is created. */
+  def developerToolsOpenOnStartUp: IndigoElectronOptions =
+    this.copy(openDevTools = true)
+
+  /** Open the developer tools when the Electron window is created. (Alias for developerToolsOpenOnStartUp) */
+  def openDeveloperTools: IndigoElectronOptions =
+    developerToolsOpenOnStartUp
+
+  /** Do not open the developer tools when the Electron window is created. */
+  def developerToolsClosedOnStartUp: IndigoElectronOptions =
+    this.copy(openDevTools = false)
+
+  /** Do not open the developer tools when the Electron window is created. (Alias for developerToolsClosedOnStartUp) */
+  def doNotOpenDevToolsOnStartup: IndigoElectronOptions =
+    developerToolsClosedOnStartUp
+
   /** Sets the electron installation type. It is recommended that, during development at least, you set this to
     * `ElectronInstall.Latest` to take advantage of performance improvements.
     */
@@ -48,14 +64,6 @@ final case class IndigoElectronOptions(
   /** Use an Electron install at the specified path with the `indigoRun` command. */
   def useElectronExecutable(path: String): IndigoElectronOptions =
     withElectronInstallType(ElectronInstall.PathToExecutable(path))
-
-  /** Open the developer tools when the Electron window is created. */
-  def developToolsOpenOnStartUp: IndigoElectronOptions =
-    this.copy(openDevTools = true)
-
-  /** Do not open the developer tools when the Electron window is created. */
-  def developToolsClosedOnStartUp: IndigoElectronOptions =
-    this.copy(openDevTools = false)
 }
 
 object IndigoElectronOptions {
@@ -64,7 +72,7 @@ object IndigoElectronOptions {
   val defaults: IndigoElectronOptions =
     IndigoElectronOptions(
       disableFrameRateLimit = false,
-      electronInstall = indigoplugin.ElectronInstall.Latest,
-      openDevTools = false
+      openDevTools = false,
+      electronInstall = indigoplugin.ElectronInstall.Latest
     )
 }
