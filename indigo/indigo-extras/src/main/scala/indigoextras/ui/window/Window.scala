@@ -14,7 +14,7 @@ final case class Window[A, ReferenceData](
     snapGrid: Size,
     position: WindowPosition,
     dimensions: Dimensions,
-    content: A, // TODO: Rename this
+    content: A,
     component: Component[A, ReferenceData],
     hasFocus: Boolean,
     minSize: Dimensions,
