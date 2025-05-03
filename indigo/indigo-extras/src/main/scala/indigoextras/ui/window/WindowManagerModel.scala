@@ -45,9 +45,9 @@ final case class WindowManagerModel[ReferenceData](windows: Batch[Window[?, Refe
           Batch(if isOpen then WindowEvent.Closed(id) else WindowEvent.Opened(id))
         )
 
-  def focusAt(coords: Coords, viewport: Size): WindowManagerModel[ReferenceData] =
+  def focusAt(coords: Coords, viewport: Size, magnification: Int): WindowManagerModel[ReferenceData] =
     val reordered =
-      windows.reverse.find(w => w.isOpen && w.bounds(viewport).contains(coords)) match
+      windows.reverse.find(w => w.isOpen && w.bounds(viewport, magnification).contains(coords)) match
         case None =>
           windows.map(_.blur)
 
@@ -70,14 +70,15 @@ final case class WindowManagerModel[ReferenceData](windows: Batch[Window[?, Refe
   def focused: Option[Window[?, ReferenceData]] =
     windows.find(_.hasFocus)
 
-  def windowAt(coords: Coords, viewport: Size): Option[WindowId] =
-    windows.reverse.find(_.bounds(viewport).contains(coords)).map(_.id)
+  def windowAt(coords: Coords, viewport: Size, magnification: Int): Option[WindowId] =
+    windows.reverse.find(_.bounds(viewport, magnification).contains(coords)).map(_.id)
 
   def moveTo(
       id: WindowId,
       position: Coords,
       space: Space,
-      viewport: Size
+      viewport: Size,
+      magnification: Int
   ): WindowManagerModel[ReferenceData] =
     this.copy(
       windows = windows.map { w =>
@@ -88,7 +89,7 @@ final case class WindowManagerModel[ReferenceData](windows: Batch[Window[?, Refe
 
             case Space.Window =>
               // The coords are relative to the window, so we need to adjust them to screen coords.
-              w.moveTo(position + w.bounds(viewport).coords)
+              w.moveTo(position + w.bounds(viewport, magnification).coords)
         else w
       }
     )
@@ -97,7 +98,8 @@ final case class WindowManagerModel[ReferenceData](windows: Batch[Window[?, Refe
       id: WindowId,
       dimensions: Dimensions,
       space: Space,
-      viewport: Size
+      viewport: Size,
+      magnification: Int
   ): WindowManagerModel[ReferenceData] =
     this.copy(
       windows = windows.map { w =>
@@ -105,7 +107,7 @@ final case class WindowManagerModel[ReferenceData](windows: Batch[Window[?, Refe
           space match
             case Space.Screen =>
               // The dimensions are relative to the screen, so we need to adjust them to window dimensions.
-              w.resizeTo(dimensions - w.bounds(viewport).coords.toDimensions)
+              w.resizeTo(dimensions - w.bounds(viewport, magnification).coords.toDimensions)
 
             case Space.Window =>
               w.resizeTo(dimensions)
@@ -117,7 +119,8 @@ final case class WindowManagerModel[ReferenceData](windows: Batch[Window[?, Refe
       id: WindowId,
       bounds: Bounds,
       space: Space,
-      viewport: Size
+      viewport: Size,
+      magnification: Int
   ): WindowManagerModel[ReferenceData] =
     this.copy(
       windows = windows.map { w =>
@@ -126,11 +129,11 @@ final case class WindowManagerModel[ReferenceData](windows: Batch[Window[?, Refe
           space match
             case Space.Screen =>
               // See above (moveTo / resizeTo) for the reasoning behind these adjustments.
-              w.moveTo(bounds.coords).resizeTo(bounds.dimensions - w.bounds(viewport).coords.toDimensions)
+              w.moveTo(bounds.coords).resizeTo(bounds.dimensions - w.bounds(viewport, magnification).coords.toDimensions)
 
             case Space.Window =>
               // See above (moveTo / resizeTo) for the reasoning behind these adjustments.
-              w.moveTo(bounds.coords + w.bounds(viewport).coords).resizeTo(bounds.dimensions)
+              w.moveTo(bounds.coords + w.bounds(viewport, magnification).coords).resizeTo(bounds.dimensions)
         else w
       }
     )

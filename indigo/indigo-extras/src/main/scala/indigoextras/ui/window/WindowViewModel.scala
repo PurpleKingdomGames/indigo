@@ -42,7 +42,7 @@ object WindowViewModel:
 
     case PointerEvent.PointerMove(pt)
         if viewModel.pointerIsOver && !model
-          .bounds(context.frame.viewport.toSize)
+          .bounds(context.frame.viewport.toSize, context.magnification)
           .toScreenSpace(context.snapGrid)
           .contains(pt) =>
       Outcome(viewModel.copy(pointerIsOver = false))
@@ -50,7 +50,7 @@ object WindowViewModel:
 
     case PointerEvent.PointerMove(pt)
         if !viewModel.pointerIsOver && model
-          .bounds(context.frame.viewport.toSize)
+          .bounds(context.frame.viewport.toSize, context.magnification)
           .toScreenSpace(context.snapGrid)
           .contains(pt) =>
       Outcome(viewModel.copy(pointerIsOver = true))
