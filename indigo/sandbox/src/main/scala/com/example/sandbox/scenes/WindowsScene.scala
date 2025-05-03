@@ -299,7 +299,7 @@ object CustomUI:
         )
       )
 
-  val windowAnchoredTL: Window[Unit, Int] = makeAnchoredWindow(WindowId("window TL"), Anchor.TopLeft)
+  val windowAnchoredTL: Window[Unit, Int] = makeAnchoredWindow(WindowId("window TL"), Anchor.TopLeft.withPadding(Padding(5)))
   val windowAnchoredTC: Window[Unit, Int] = makeAnchoredWindow(WindowId("window TC"), Anchor.TopCenter)
   val windowAnchoredTR: Window[Unit, Int] = makeAnchoredWindow(WindowId("window TR"), Anchor.TopRight)
   val windowAnchoredCL: Window[Unit, Int] = makeAnchoredWindow(WindowId("window CL"), Anchor.CenterLeft)
@@ -307,7 +307,7 @@ object CustomUI:
   val windowAnchoredCR: Window[Unit, Int] = makeAnchoredWindow(WindowId("window CR"), Anchor.CenterRight)
   val windowAnchoredBL: Window[Unit, Int] = makeAnchoredWindow(WindowId("window BL"), Anchor.BottomLeft)
   val windowAnchoredBC: Window[Unit, Int] = makeAnchoredWindow(WindowId("window BC"), Anchor.BottomCenter)
-  val windowAnchoredBR: Window[Unit, Int] = makeAnchoredWindow(WindowId("window BR"), Anchor.BottomRight)
+  val windowAnchoredBR: Window[Unit, Int] = makeAnchoredWindow(WindowId("window BR"), Anchor.BottomRight.withPadding(Padding(5)))
 
   def makeAnchoredWindow(id: WindowId, achor: Anchor): Window[Unit, Int] =
     Window(
