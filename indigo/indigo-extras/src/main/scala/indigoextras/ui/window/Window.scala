@@ -20,11 +20,20 @@ final case class Window[A, ReferenceData](
     minSize: Dimensions,
     maxSize: Option[Dimensions],
     state: WindowState,
-    background: WindowContext => Outcome[Layer],
-    mode: WindowMode,
-    // internal
-    bounds: Bounds
+    background: WindowContext[ReferenceData] => Outcome[Layer],
+    mode: WindowMode
 ):
+
+  def bounds(viewport: Size): Bounds =
+    position match
+      case WindowPosition.Fixed(coords) =>
+        Bounds(coords, dimensions)
+
+      case WindowPosition.Anchored(anchor) =>
+        Bounds(
+          anchor.calculatePosition(Dimensions(viewport), dimensions),
+          dimensions
+        )
 
   def withId(value: WindowId): Window[A, ReferenceData] =
     this.copy(id = value)
@@ -109,26 +118,14 @@ final case class Window[A, ReferenceData](
     state == WindowState.Closed
 
   def refresh(context: UIContext[ReferenceData]): Window[A, ReferenceData] =
-    val bounds: Bounds =
-      position match
-        case WindowPosition.Fixed(coords) =>
-          Bounds(coords, dimensions)
-
-        case WindowPosition.Anchored(anchor) =>
-          Bounds(
-            anchor.calculatePosition(context.parent.dimensions, dimensions),
-            dimensions
-          )
-
     this.copy(
       content = component.refresh(
-        context.withParentBounds(bounds),
+        context.withParentBounds(bounds(context.frame.viewport.toSize)),
         content
-      ),
-      bounds = bounds
+      )
     )
 
-  def withBackground(present: WindowContext => Outcome[Layer]): Window[A, ReferenceData] =
+  def withBackground(present: WindowContext[ReferenceData] => Outcome[Layer]): Window[A, ReferenceData] =
     this.copy(background = present)
 
   def withWindowMode(value: WindowMode): Window[A, ReferenceData] =
@@ -158,8 +155,7 @@ object Window:
       None,
       WindowState.Closed,
       _ => Outcome(Layer.empty),
-      WindowMode.Standard,
-      Bounds(Coords.zero, minSize)
+      WindowMode.Standard
     )
 
   def apply[A, ReferenceData](
@@ -168,7 +164,7 @@ object Window:
       minSize: Dimensions,
       content: A
   )(
-      background: WindowContext => Outcome[Layer]
+      background: WindowContext[ReferenceData] => Outcome[Layer]
   )(using c: Component[A, ReferenceData]): Window[A, ReferenceData] =
     Window(
       id,
@@ -182,8 +178,8 @@ object Window:
       None,
       WindowState.Closed,
       background,
-      WindowMode.Standard,
-      Bounds(Coords.zero, minSize)
+      WindowMode.Standard // ,
+      // Bounds(Coords.zero, minSize)
     )
 
   def updateModel[A, ReferenceData](
