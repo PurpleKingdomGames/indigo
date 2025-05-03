@@ -20,6 +20,10 @@ final case class IndigoOptions(
   def withGameMetadata(newMetadata: IndigoGameMetadata): IndigoOptions =
     this.copy(metadata = newMetadata)
 
+  /** Modify the existing IndigoGameMetadata */
+  def modifyGameMetadata(modify: IndigoGameMetadata => IndigoGameMetadata): IndigoOptions =
+    this.copy(metadata = modify(metadata))
+
   /** Sets a new title for your game's window / title bar / tab */
   def withTitle(newTitle: String): IndigoOptions =
     this.copy(metadata = metadata.withTitle(newTitle))
@@ -122,6 +126,10 @@ final case class IndigoOptions(
   /** Provide a replacement IndigoElectronOptions instance */
   def withElectronOptions(newElectronOptions: IndigoElectronOptions): IndigoOptions =
     this.copy(electron = newElectronOptions)
+
+  /** Modify the existing IndigoElectronOptions */
+  def modifyElectronOptions(modify: IndigoElectronOptions => IndigoElectronOptions): IndigoOptions =
+    this.copy(electron = modify(electron))
 
   /** Electron will limit the frame rate using the default browser refresh rate, typically it will sync with your
     * monitor's refresh rate. It is recommended that you do this, and set your indigo config to limit the framerate too.
