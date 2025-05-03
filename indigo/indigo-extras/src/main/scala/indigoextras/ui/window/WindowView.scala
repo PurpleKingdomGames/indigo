@@ -12,12 +12,12 @@ object WindowView:
   ): Outcome[Layer] =
     model.component
       .present(
-        context.withParentBounds(model.bounds),
+        context.withParentBounds(model.bounds(context.frame.viewport.toSize)),
         model.content
       )
       .flatMap {
         case l: Layer.Content =>
-          model.background(WindowContext.from(model, viewModel)).map { windowChrome =>
+          model.background(WindowContext.from(context, model, viewModel)).map { windowChrome =>
             Layer.Stack(
               windowChrome,
               l
@@ -25,7 +25,7 @@ object WindowView:
           }
 
         case l: Layer.Stack =>
-          model.background(WindowContext.from(model, viewModel)).map { windowChrome =>
+          model.background(WindowContext.from(context, model, viewModel)).map { windowChrome =>
             l.prepend(windowChrome)
           }
       }

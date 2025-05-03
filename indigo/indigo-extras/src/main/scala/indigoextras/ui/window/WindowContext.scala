@@ -1,8 +1,10 @@
 package indigoextras.ui.window
 
 import indigoextras.ui.datatypes.Bounds
+import indigoextras.ui.datatypes.UIContext
 
-final case class WindowContext(
+final case class WindowContext[ReferenceData](
+    context: UIContext[ReferenceData],
     bounds: Bounds,
     hasFocus: Boolean,
     pointerIsOver: Boolean,
@@ -11,9 +13,14 @@ final case class WindowContext(
 
 object WindowContext:
 
-  def from(model: Window[?, ?], viewModel: WindowViewModel[?]): WindowContext =
+  def from[ReferenceData](
+      context: UIContext[ReferenceData],
+      model: Window[?, ?],
+      viewModel: WindowViewModel[?]
+  ): WindowContext[ReferenceData] =
     WindowContext(
-      model.bounds,
+      context,
+      model.bounds(context.frame.viewport.toSize),
       model.hasFocus,
       viewModel.pointerIsOver,
       viewModel.magnification

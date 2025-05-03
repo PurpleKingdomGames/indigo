@@ -214,7 +214,7 @@ object WindowManager:
       modalWindow: Option[WindowId]
   ): GlobalEvent => Outcome[WindowManagerModel[ReferenceData]] =
     e =>
-      val windowUnderPointer = model.windowAt(context.pointerCoords)
+      val windowUnderPointer = model.windowAt(context.pointerCoords, context.frame.viewport.toSize)
 
       model.windows
         .map { w =>
@@ -246,7 +246,7 @@ object WindowManager:
       Outcome(model.focusOn(id))
 
     case WindowEvent.GiveFocusAt(position) =>
-      Outcome(model.focusAt(position))
+      Outcome(model.focusAt(position, context.frame.viewport.toSize))
         .addGlobalEvents(WindowInternalEvent.Redraw)
 
     case WindowEvent.Open(id) =>
@@ -255,7 +255,7 @@ object WindowManager:
     case WindowEvent.OpenAt(id, coords) =>
       model
         .open(id)
-        .map(_.moveTo(id, coords, Space.Screen))
+        .map(_.moveTo(id, coords, Space.Screen, context.frame.viewport.toSize))
         .addGlobalEvents(WindowEvent.Focus(id))
 
     case WindowEvent.Close(id) =>
@@ -265,13 +265,13 @@ object WindowManager:
       model.toggle(id)
 
     case WindowEvent.Move(id, coords, space) =>
-      Outcome(model.moveTo(id, coords, space))
+      model.moveTo(id, coords, space, context.frame.viewport.toSize).refresh(context, id)
 
     case WindowEvent.Resize(id, dimensions, space) =>
-      model.resizeTo(id, dimensions, space).refresh(context, id)
+      model.resizeTo(id, dimensions, space, context.frame.viewport.toSize).refresh(context, id)
 
     case WindowEvent.Transform(id, bounds, space) =>
-      model.transformTo(id, bounds, space).refresh(context, id)
+      model.transformTo(id, bounds, space, context.frame.viewport.toSize).refresh(context, id)
 
     case WindowEvent.Opened(_) =>
       Outcome(model)
@@ -308,7 +308,7 @@ object WindowManager:
       Outcome(viewModel.changeMagnification(next))
 
     case e =>
-      val windowUnderPointer = model.windowAt(context.pointerCoords)
+      val windowUnderPointer = model.windowAt(context.pointerCoords, context.frame.viewport.toSize)
 
       val updated =
         val prunedVM = viewModel.prune(model)
@@ -340,7 +340,7 @@ object WindowManager:
       model: WindowManagerModel[ReferenceData],
       viewModel: WindowManagerViewModel[ReferenceData]
   ): Outcome[SceneUpdateFragment] =
-    val windowUnderPointer = model.windowAt(context.pointerCoords)
+    val windowUnderPointer = model.windowAt(context.pointerCoords, context.frame.viewport.toSize)
 
     val windowLayers: Outcome[Batch[Layer]] =
       model.windows
