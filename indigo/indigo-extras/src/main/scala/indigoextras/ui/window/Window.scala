@@ -21,7 +21,8 @@ final case class Window[A, ReferenceData](
     maxSize: Option[Dimensions],
     state: WindowState,
     background: WindowContext[ReferenceData] => Outcome[Layer],
-    mode: WindowMode
+    mode: WindowMode,
+    activeCheck: UIContext[ReferenceData] => WindowActive
 ):
 
   def bounds(viewport: Size, magnification: Int): Bounds =
@@ -135,6 +136,13 @@ final case class Window[A, ReferenceData](
   def standard: Window[A, ReferenceData] =
     withWindowMode(WindowMode.Standard)
 
+  def withActiveCheck(check: UIContext[ReferenceData] => WindowActive): Window[A, ReferenceData] =
+    this.copy(activeCheck = check)
+  def makeActive: Window[A, ReferenceData] =
+    withActiveCheck(_ => WindowActive.Active)
+  def makeInActive: Window[A, ReferenceData] =
+    withActiveCheck(_ => WindowActive.InActive)
+
 object Window:
 
   def apply[A, ReferenceData](
@@ -155,7 +163,8 @@ object Window:
       None,
       WindowState.Closed,
       _ => Outcome(Layer.empty),
-      WindowMode.Standard
+      WindowMode.Standard,
+      _ => WindowActive.Active
     )
 
   def apply[A, ReferenceData](
@@ -178,7 +187,8 @@ object Window:
       None,
       WindowState.Closed,
       background,
-      WindowMode.Standard
+      WindowMode.Standard,
+      _ => WindowActive.Active
     )
 
   def updateModel[A, ReferenceData](

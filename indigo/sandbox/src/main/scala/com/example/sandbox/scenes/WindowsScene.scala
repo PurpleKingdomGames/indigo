@@ -77,6 +77,9 @@ object WindowsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxV
     case KeyboardEvent.KeyUp(Key.KEY_M) =>
       Outcome(model).addGlobalEvents(WindowEvent.Move(CustomUI.windowA.id, Coords(10), Space.Screen))
 
+    case KeyboardEvent.KeyUp(Key.SPACE) =>
+      Outcome(model.copy(num = if model.num == 0 then 1 else 0))
+
     case _ =>
       Outcome(model)
 
@@ -142,6 +145,10 @@ object CustomUI:
             )
           )
         )
+      }
+      .withActiveCheck { context =>
+        if context.reference == 0 then WindowActive.Active
+        else WindowActive.InActive
       }
 
   def windowChrome(windowId: WindowId, title: String): ComponentGroup[Int] =

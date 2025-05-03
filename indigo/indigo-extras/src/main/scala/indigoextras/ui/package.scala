@@ -146,5 +146,8 @@ val WindowManager: indigoextras.ui.window.WindowManager.type = indigoextras.ui.w
 type WindowMode = indigoextras.ui.window.WindowMode
 val WindowMode: indigoextras.ui.window.WindowMode.type = indigoextras.ui.window.WindowMode
 
+type WindowActive = indigoextras.ui.window.WindowActive
+val WindowActive: indigoextras.ui.window.WindowActive.type = indigoextras.ui.window.WindowActive
+
 type Space = indigoextras.ui.window.Space
 val Space: indigoextras.ui.window.Space.type = indigoextras.ui.window.Space

@@ -219,19 +219,33 @@ object WindowManager:
 
       model.windows
         .map { w =>
-          Window.updateModel(
-            context.copy(state = modalWindow match
-              case Some(id) if id == w.id =>
-                UIState.Active
+          val windowActive =
+            w.activeCheck(context)
 
-              case Some(_) =>
-                UIState.InActive
+          val ctx =
+            windowActive match
+              case WindowActive.Active =>
+                context.withState(
+                  modalWindow match
+                    case Some(id) if id == w.id =>
+                      UIState.Active
 
-              case None =>
-                if w.hasFocus || windowUnderPointer.exists(_ == w.id) then UIState.Active
-                else UIState.InActive),
-            w
-          )(e)
+                    case Some(_) =>
+                      UIState.InActive
+
+                    case None =>
+                      if w.hasFocus || windowUnderPointer.exists(_ == w.id) then UIState.Active
+                      else UIState.InActive
+                )
+
+              case WindowActive.InActive =>
+                context.withState(UIState.InActive)
+
+          val windowUpdateFocus =
+            if w.hasFocus && windowActive.isInActive then w.blur
+            else w
+
+          Window.updateModel(ctx, windowUpdateFocus)(e)
         }
         .sequence
         .map(m => model.copy(windows = m))
@@ -247,7 +261,7 @@ object WindowManager:
       Outcome(model.focusOn(id))
 
     case WindowEvent.GiveFocusAt(position) =>
-      Outcome(model.focusAt(position, context.frame.viewport.toSize, context.magnification))
+      Outcome(model.focusAt(position, context))
         .addGlobalEvents(WindowInternalEvent.Redraw)
 
     case WindowEvent.Open(id) =>

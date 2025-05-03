@@ -46,9 +46,16 @@ final case class WindowManagerModel[ReferenceData](windows: Batch[Window[?, Refe
           Batch(if isOpen then WindowEvent.Closed(id) else WindowEvent.Opened(id))
         )
 
-  def focusAt(coords: Coords, viewport: Size, magnification: Int): WindowManagerModel[ReferenceData] =
+  def focusAt(
+      coords: Coords,
+      context: UIContext[ReferenceData]
+  ): WindowManagerModel[ReferenceData] =
     val reordered =
-      windows.reverse.find(w => w.isOpen && w.bounds(viewport, magnification).contains(coords)) match
+      windows.reverse.find { w =>
+        w.isOpen &&
+        w.activeCheck(context).isActive &&
+        w.bounds(context.frame.viewport.toSize, context.magnification).contains(coords)
+      } match
         case None =>
           windows.map(_.blur)
 
