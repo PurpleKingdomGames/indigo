@@ -1,6 +1,7 @@
 package indigoextras.ui.window
 
 import indigo.*
+import indigoextras.ui.components.datatypes.Anchor as Ankor
 import indigoextras.ui.datatypes.Bounds
 import indigoextras.ui.datatypes.Coords
 import indigoextras.ui.datatypes.Dimensions
@@ -50,7 +51,8 @@ enum WindowEvent extends GlobalEvent derives CanEqual:
   /** Moves a window to the location given */
   case Move(id: WindowId, position: Coords, space: Space)
 
-  // TODO: Anchor window
+  /** Anchors a window on the screen */
+  case Anchor(id: WindowId, anchor: Ankor)
 
   /** Resizes a window to a given size */
   case Resize(id: WindowId, dimensions: Dimensions, space: Space)
@@ -76,6 +78,7 @@ enum WindowEvent extends GlobalEvent derives CanEqual:
       case Close(id)              => Some(id)
       case Toggle(id)             => Some(id)
       case Move(id, _, _)         => Some(id)
+      case Anchor(id, _)          => Some(id)
       case Resize(id, _, _)       => Some(id)
       case Transform(id, _, _)    => Some(id)
       case Refresh(id)            => Some(id)

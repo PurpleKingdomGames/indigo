@@ -12,7 +12,7 @@ class ContainerLikeFunctionsTests extends munit.FunSuite:
     (c, l) => Outcome(Layer.empty)
 
   val ctx =
-    UIContext(Context.initial)
+    UIContext(Context.initial, 1)
 
   test("calculateNextOffset labels") {
 

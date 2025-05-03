@@ -70,6 +70,12 @@ object WindowsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxV
     case KeyboardEvent.KeyUp(Key.KEY_Q) =>
       Outcome(model).addGlobalEvents(WindowEvent.CloseFocused)
 
+    case KeyboardEvent.KeyUp(Key.KEY_A) =>
+      Outcome(model).addGlobalEvents(WindowEvent.Anchor(CustomUI.windowA.id, Anchor.BottomLeft))
+
+    case KeyboardEvent.KeyUp(Key.KEY_M) =>
+      Outcome(model).addGlobalEvents(WindowEvent.Move(CustomUI.windowA.id, Coords(10), Space.Screen))
+
     case _ =>
       Outcome(model)
 
@@ -299,7 +305,8 @@ object CustomUI:
         )
       )
 
-  val windowAnchoredTL: Window[Unit, Int] = makeAnchoredWindow(WindowId("window TL"), Anchor.TopLeft.withPadding(Padding(5)))
+  val windowAnchoredTL: Window[Unit, Int] =
+    makeAnchoredWindow(WindowId("window TL"), Anchor.TopLeft.withPadding(Padding(5)))
   val windowAnchoredTC: Window[Unit, Int] = makeAnchoredWindow(WindowId("window TC"), Anchor.TopCenter)
   val windowAnchoredTR: Window[Unit, Int] = makeAnchoredWindow(WindowId("window TR"), Anchor.TopRight)
   val windowAnchoredCL: Window[Unit, Int] = makeAnchoredWindow(WindowId("window CL"), Anchor.CenterLeft)
@@ -307,7 +314,8 @@ object CustomUI:
   val windowAnchoredCR: Window[Unit, Int] = makeAnchoredWindow(WindowId("window CR"), Anchor.CenterRight)
   val windowAnchoredBL: Window[Unit, Int] = makeAnchoredWindow(WindowId("window BL"), Anchor.BottomLeft)
   val windowAnchoredBC: Window[Unit, Int] = makeAnchoredWindow(WindowId("window BC"), Anchor.BottomCenter)
-  val windowAnchoredBR: Window[Unit, Int] = makeAnchoredWindow(WindowId("window BR"), Anchor.BottomRight.withPadding(Padding(5)))
+  val windowAnchoredBR: Window[Unit, Int] =
+    makeAnchoredWindow(WindowId("window BR"), Anchor.BottomRight.withPadding(Padding(5)))
 
   def makeAnchoredWindow(id: WindowId, achor: Anchor): Window[Unit, Int] =
     Window(
