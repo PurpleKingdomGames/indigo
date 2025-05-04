@@ -450,21 +450,9 @@ final class RendererWebGL2(
   }
 
   def blitBuffers(from: WebGLFramebuffer, to: WebGLFramebuffer): Unit = {
-
-    gl2.clearColor(0, 0, 0, 0)
-
-    // Bind and clear 'to'
-    gl2.bindFramebuffer(FRAMEBUFFER, to)
-    gl2.clear(COLOR_BUFFER_BIT)
-
-    // Blit 'from' to 'to'
     gl2.bindFramebuffer(WebGL2RenderingContext.READ_FRAMEBUFFER, from)
     gl2.bindFramebuffer(WebGL2RenderingContext.DRAW_FRAMEBUFFER, to)
     gl2.blitFramebuffer(0, lastHeight, lastWidth, 0, 0, lastHeight, lastWidth, 0, COLOR_BUFFER_BIT, NEAREST)
-    gl2.bindFramebuffer(WebGL2RenderingContext.READ_FRAMEBUFFER, null)
-    gl2.bindFramebuffer(WebGL2RenderingContext.DRAW_FRAMEBUFFER, null)
-
-    gl2.bindFramebuffer(FRAMEBUFFER, to)
   }
 
   def clearBuffer(buffer: WebGLFramebuffer): Unit = {
