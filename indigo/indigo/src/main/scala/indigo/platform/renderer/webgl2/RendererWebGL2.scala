@@ -30,7 +30,6 @@ import indigo.shared.platform.RendererConfig
 import indigo.shared.scenegraph.Blend
 import indigo.shared.scenegraph.BlendFactor
 import indigo.shared.shader.RawShaderCode
-import indigo.shared.shader.StandardShaders
 import indigo.shared.time.Seconds
 import org.scalajs.dom
 import org.scalajs.dom.WebGLBuffer
@@ -378,18 +377,13 @@ final class RendererWebGL2(
       }
 
       // Merge the layer buffer onto the staging buffer, this clears the magnification
-      layerMergeRenderInstance.merge(
+      layerMergeRenderInstance.mergeToStagingBuffer(
         projection,
         layerEntityFrameBuffer,
-        emptyFrameBuffer,
-        Some(scalingFrameBuffer),
+        scalingFrameBuffer,
         lastWidth,
         lastHeight,
-        transparentBlack,
-        false,
-        customShaders,
-        StandardShaders.NormalBlend.id,
-        scalajs.js.Array()
+        customShaders
       )
 
       // Set the layer blend mode
@@ -408,16 +402,13 @@ final class RendererWebGL2(
       }
 
       // Merge the layer buffer onto the back buffer
-      layerMergeRenderInstance.merge(
+      layerMergeRenderInstance.mergeToBackBuffer(
         orthographicProjectionMatrixNoMag,
         scalingFrameBuffer,
         if (!greenIsTarget) blueDstFrameBuffer
         else greenDstFrameBuffer, // Inverted condition, because by now it's flipped.
-        None,
         lastWidth,
         lastHeight,
-        transparentBlack,
-        false,
         customShaders,
         layer.shaderId,
         layer.shaderUniformData
@@ -426,15 +417,13 @@ final class RendererWebGL2(
 
     // transfer the back buffer to the canvas
     WebGLHelper.setNormalBlend(gl)
-    layerMergeRenderInstance.merge(
+
+    layerMergeRenderInstance.mergeToCanvas(
       orthographicProjectionMatrixNoMagFlipped,
       if (!greenIsTarget) greenDstFrameBuffer else blueDstFrameBuffer, // Inverted condition, because outside the loop.
-      emptyFrameBuffer,                                                // just giving it something to use...
-      None,
       lastWidth,
       lastHeight,
       clearColor,
-      true,
       customShaders,
       sceneData.shaderId,
       sceneData.shaderUniformData
