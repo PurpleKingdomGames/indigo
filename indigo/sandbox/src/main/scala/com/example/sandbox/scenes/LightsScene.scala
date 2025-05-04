@@ -73,6 +73,9 @@ object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
       model: SandboxGameModel,
       viewModel: SandboxViewModel
   ): Outcome[SceneUpdateFragment] =
+    val centerPoint: Point =
+      Point(550, 400) / 2 / 2
+
     Outcome(
       SceneUpdateFragment(graphic, graphic2, shape)
         .withMagnification(2)
@@ -99,7 +102,7 @@ object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
             .withIntensity(1)
             .moveTo(
               Signal
-                .Orbit(context.startUpData.viewportCenter, 80, Radians(0))
+                .Orbit(centerPoint, 80, Radians(0))
                 .affectTime(0.1)
                 .at(context.frame.time.running)
                 .toPoint
@@ -111,7 +114,7 @@ object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
             .withIntensity(1)
             .moveTo(
               Signal
-                .Orbit(context.startUpData.viewportCenter, 80, Radians(Radians.TAU.toDouble / 3))
+                .Orbit(centerPoint, 80, Radians(Radians.TAU.toDouble / 3))
                 .affectTime(0.1)
                 .at(context.frame.time.running)
                 .toPoint
@@ -123,7 +126,7 @@ object LightsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
             .withIntensity(1)
             .moveTo(
               Signal
-                .Orbit(context.startUpData.viewportCenter, 80, Radians(Radians.TAU.toDouble / 3 * 2))
+                .Orbit(centerPoint, 80, Radians(Radians.TAU.toDouble / 3 * 2))
                 .affectTime(0.1)
                 .at(context.frame.time.running)
                 .toPoint
