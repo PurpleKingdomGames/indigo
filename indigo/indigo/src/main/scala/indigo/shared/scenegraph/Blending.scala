@@ -5,6 +5,17 @@ import indigo.shared.materials.BlendMaterial
 
 /** Blending instances tell Indigo how to blend the entities onto a layer, and then how to blend the layer onto the
   * layers below it.
+  *
+  * @param entity
+  *   The blending mode to use when blending the entities in this layer onto the layer below.
+  * @param layer
+  *   The blending mode to use when blending this layer onto the layers below it.
+  * @param blendMaterial
+  *   The blending material to use when blending the entities in this layer onto the layer below.
+  * @param clearColor
+  *   The color to use when clearing the layer before blending. If None, a transparent value will be used. The purpose
+  *   of clear colour is to allow effect that require the layer to be a uniform colour before merge, for example, in the
+  *   image based lighting blend mode.
   */
 final case class Blending(entity: Blend, layer: Blend, blendMaterial: BlendMaterial, clearColor: Option[RGBA])
     derives CanEqual {
