@@ -125,14 +125,16 @@ final case class ZombiePerformer(
 
     collider.withVelocity(collider.velocity + (toTarget * acceleration))
 
-  def present(context: PerformerContext[Point], collider: Collider[PerformerId]): SceneNode =
+  def present(context: PerformerContext[Point], collider: Collider[PerformerId]): Batch[SceneNode] =
     val color =
       index % 3 match
         case 0 => RGBA.Cyan
         case 1 => RGBA.Yellow
         case _ => RGBA.SlateGray
 
-    Shape.Circle(Circle(collider.position.toPoint, radius), Fill.Color(color), Stroke(1, RGBA.White))
+    Batch(
+      Shape.Circle(Circle(collider.position.toPoint, radius), Fill.Color(color), Stroke(1, RGBA.White))
+    )
 
 final case class ZombieTargetPerformer() extends Performer.Lead[Point]:
   def id: PerformerId       = ZombieTargetPerformer.id

@@ -10,9 +10,6 @@ import indigo.shared.scenegraph.SceneNode
   * different levels of performer complexity. It’s meant to be fun, but also to suggest how much responsibility each
   * type takes on in the simulation. From Leads who take the starring roles, to silent Extras filling the background, to
   * Narrators who influence events without being seen — each has a role to play.
-  *
-  * @tparam ReferenceData
-  *   The type of reference data used by the performer.
   */
 sealed trait Performer[ReferenceData]:
 
@@ -42,7 +39,7 @@ object Performer:
 
     /** Draw the performer
       */
-    def present(context: PerformerContext[ReferenceData]): SceneNode
+    def present(context: PerformerContext[ReferenceData]): Batch[SceneNode]
 
     val hasCollider: Boolean = false
 
@@ -65,7 +62,7 @@ object Performer:
 
     /** Draw the performer
       */
-    def present(context: PerformerContext[ReferenceData], collider: Collider[PerformerId]): SceneNode
+    def present(context: PerformerContext[ReferenceData], collider: Collider[PerformerId]): Batch[SceneNode]
 
     val hasCollider: Boolean = true
 

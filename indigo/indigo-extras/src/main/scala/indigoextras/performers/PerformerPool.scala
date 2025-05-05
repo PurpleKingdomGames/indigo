@@ -91,7 +91,7 @@ final case class PerformerPool[ReferenceData](
   ): Outcome[Batch[SceneNode]] =
     performer match
       case p: Performer.Extra[ReferenceData] =>
-        Outcome(Batch(p.present(context)))
+        Outcome(p.present(context))
 
       case p: Performer.Stunt[ReferenceData] =>
         colliderLookup(p.id) match
@@ -99,7 +99,7 @@ final case class PerformerPool[ReferenceData](
             Outcome(Batch.empty)
 
           case Some(c) =>
-            Outcome(Batch(p.present(context, c)))
+            Outcome(p.present(context, c))
 
       case p: Performer.Support[ReferenceData] =>
         p.present(context)

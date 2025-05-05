@@ -229,5 +229,7 @@ final case class Follower(
 
     this.copy(position = newPosition)
 
-  def present(context: PerformerContext[Point]): SceneNode =
-    Shape.Circle(Circle(position.toPoint, size), Fill.Color(RGBA.Green.withAlpha(alpha)), Stroke(2, RGBA.Black))
+  def present(context: PerformerContext[Point]): Batch[SceneNode] =
+    Batch(
+      Shape.Circle(Circle(position.toPoint, size), Fill.Color(RGBA.Green.withAlpha(alpha)), Stroke(2, RGBA.Black))
+    )
