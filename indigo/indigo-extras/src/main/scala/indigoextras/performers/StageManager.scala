@@ -4,6 +4,7 @@ import indigo.physics.*
 import indigo.shared.Outcome
 import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Vector2
+import indigo.shared.events.FrameTick
 import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.Layer
 import indigo.shared.scenegraph.LayerKey
@@ -187,48 +188,56 @@ object StageManager:
     def update(
         context: SubSystemContext[?],
         model: ReferenceData
-    ): GlobalEvent => Outcome[Model[ReferenceData]] = e =>
-      val ctx =
-        PerformerContext(
-          findById,
-          findColliderById,
-          model,
-          context
-        )
-
-      val updatedPools =
-        Batch.fromMap(pools).map((k, p) => p.update(context, model)(e).map(p => k -> p)).sequence
-
-      val updatedWorld =
-        val physicalPerformers =
-          updatedPools
-            .map(
-              _.map(_._2).flatMap(
-                _.performers.filter(_.hasCollider)
-              )
-            )
-
-        physicalPerformers
-          .flatMap(
-            _.foldLeft(world) { (w, p) =>
-              w.modifyByTag(p.id) { c =>
-                p match
-                  case p: Performer.Stunt[?] =>
-                    p.updateCollider(ctx, c)
-
-                  case p: Performer.Lead[?] =>
-                    p.updateCollider(ctx, c)
-
-                  case _ =>
-                    c
-              }
-            }
-              .update(context.frame.time.delta)
+    ): GlobalEvent => Outcome[Model[ReferenceData]] =
+      case FrameTick =>
+        val ctx =
+          PerformerContext(
+            findById,
+            findColliderById,
+            model,
+            context
           )
 
-      updatedWorld
-        .combine(updatedPools)
-        .map((nextWorld, nextModel) => this.copy(pools = nextModel.toMap, world = nextWorld))
+        val updatedPools =
+          Batch.fromMap(pools).map((k, p) => p.update(context, model)(FrameTick).map(p => k -> p)).sequence
+
+        val updatedWorld =
+          val physicalPerformers =
+            updatedPools
+              .map(
+                _.map(_._2).flatMap(
+                  _.performers.filter(_.hasCollider)
+                )
+              )
+
+          physicalPerformers
+            .flatMap(
+              _.foldLeft(world) { (w, p) =>
+                w.modifyByTag(p.id) { c =>
+                  p match
+                    case p: Performer.Stunt[?] =>
+                      p.updateCollider(ctx, c)
+
+                    case p: Performer.Lead[?] =>
+                      p.updateCollider(ctx, c)
+
+                    case _ =>
+                      c
+                }
+              }
+                .update(context.frame.time.delta)
+            )
+
+        updatedWorld
+          .combine(updatedPools)
+          .map((nextWorld, nextModel) => this.copy(pools = nextModel.toMap, world = nextWorld))
+
+      case e =>
+        val updatedPools =
+          Batch.fromMap(pools).map((k, p) => p.update(context, model)(e).map(p => k -> p)).sequence
+
+        updatedPools
+          .map(nextModel => this.copy(pools = nextModel.toMap))
 
     def present(
         context: SubSystemContext[?],
