@@ -42,7 +42,7 @@ enum Layer derives CanEqual:
     * @param visible
     *   Optionally set the visiblity, defaults to visible
     * @param blending
-    *   Optionally describes how to blend this layer onto the one below, by default, simply overlays on onto the other.
+    *   Optionally describes how to blend this layer onto the one below, by default, simply overlays one onto the other.
     * @param camera
     *   Optional camera specifically for this layer. If None, fallback to scene camera, or default camera.
     */
