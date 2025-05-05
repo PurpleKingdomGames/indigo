@@ -80,6 +80,9 @@ sealed trait Batch[+A]:
   def dropRight(count: Int): Batch[A] =
     Batch.Wrapped(_jsArray.dropRight(count))
 
+  def dropWhile(p: A => Boolean): Batch[A] =
+    Batch.Wrapped(_jsArray.dropWhile(p))
+
   def exists(p: A => Boolean): Boolean =
     _jsArray.exists(p)
 
