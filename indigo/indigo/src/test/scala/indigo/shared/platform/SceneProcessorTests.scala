@@ -1,11 +1,6 @@
 package indigo.shared.platform
 
-import indigo.shared.collections.Batch
-import indigo.shared.datatypes.RGBA
-import indigo.shared.datatypes.Radians
-import indigo.shared.scenegraph.AmbientLight
-import indigo.shared.scenegraph.DirectionLight
-import indigo.shared.scenegraph.Light
+import indigo.*
 
 class SceneProcessorTests extends munit.FunSuite {
 
@@ -107,7 +102,70 @@ class SceneProcessorTests extends munit.FunSuite {
     assertEquals(actual.toList.map(to2dp), expected.toList.map(to2dp))
   }
 
+  test("Layer compacting") {
+    val layers: Batch[LayerEntry] =
+      SceneProcessorTestData.uncompacted
+
+    val actual =
+      SceneProcessor.compactLayers(layers)
+
+    val expected =
+      SceneProcessorTestData.compacted
+
+    assertEquals(clue(actual), clue(expected))
+  }
+
   def to2dp(d: Float): Double =
     Math.round(d.toDouble * 100).toDouble / 100.0
 
 }
+
+object SceneProcessorTestData:
+
+  val shape: Shape.Box =
+    Shape.Box(Rectangle(0, 0, 100, 100), Fill.Color(RGBA.Red))
+
+  val uncompacted: Batch[LayerEntry] =
+    Batch(
+      LayerEntry(Layer.empty),
+      LayerEntry(LayerKey("b"), Layer.empty),
+      LayerEntry(
+        LayerKey("c"),
+        Layer.Stack(
+          Layer.Content(shape),
+          Layer.Content(shape)
+        )
+      ),
+      LayerEntry(
+        LayerKey("d"),
+        Layer.Stack(
+          Layer.empty.withCamera(Camera.Fixed(Point.zero)),
+          Layer.Content(shape).withCamera(Camera.Fixed(Point.zero)),
+          Layer.Content(shape).withCamera(Camera.Fixed(Point(10))),
+          Layer.Stack(
+            Layer(shape).withCamera(Camera.Fixed(Point(10))),
+            Layer(shape)
+          )
+        )
+      )
+    )
+
+  val compacted: Batch[(Option[LayerKey], Batch[Layer.Content])] =
+    Batch(
+      (None, Batch(Layer.Content.empty)),
+      (Some(LayerKey("b")), Batch(Layer.Content.empty)),
+      (
+        Some(LayerKey("c")),
+        Batch(
+          Layer.Content(shape, shape)
+        )
+      ),
+      (
+        Some(LayerKey("d")),
+        Batch(
+          Layer.Content(shape).withCamera(Camera.Fixed(Point.zero)),
+          Layer.Content(shape, shape).withCamera(Camera.Fixed(Point(10))),
+          Layer.Content(shape)
+        )
+      )
+    )
