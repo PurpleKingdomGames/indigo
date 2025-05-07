@@ -9,7 +9,6 @@ import indigo.shared.events.AssetEvent
 import indigo.shared.events.IndigoSystemEvent
 import org.scalajs.dom
 import org.scalajs.dom.*
-import org.scalajs.dom.html
 import org.scalajs.macrotaskexecutor.MacrotaskExecutor.Implicits.*
 
 import scala.concurrent.Future

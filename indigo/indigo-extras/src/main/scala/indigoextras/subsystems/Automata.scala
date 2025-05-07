@@ -19,7 +19,6 @@ import indigo.shared.time.Seconds
 import indigoextras.subsystems.AutomataEvent.*
 
 import scalajs.js
-import scalajs.js.JSConverters.*
 
 final case class Automata[Model](
     poolKey: AutomataPoolKey,
