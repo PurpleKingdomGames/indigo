@@ -198,38 +198,37 @@ object StageManager:
             context
           )
 
-        val updatedPools =
-          Batch.fromMap(pools).map((k, p) => p.update(context, model)(FrameTick).map(p => k -> p)).sequence
+        Batch
+          .fromMap(pools)
+          .map((k, p) => p.update(context, model)(FrameTick).map(p => k -> p))
+          .sequence
+          .flatMap { updatedPools =>
+            val updatedWorld =
+              val physicalPerformers =
+                updatedPools
+                  .map(_._2)
+                  .flatMap(
+                    _.performers.filter(_.hasCollider)
+                  )
 
-        val updatedWorld =
-          val physicalPerformers =
-            updatedPools
-              .map(
-                _.map(_._2).flatMap(
-                  _.performers.filter(_.hasCollider)
-                )
-              )
+              physicalPerformers
+                .foldLeft(world) { (w, p) =>
+                  w.modifyByTag(p.id) { c =>
+                    p match
+                      case p: Performer.Stunt[?] =>
+                        p.updateCollider(ctx, c)
 
-          physicalPerformers
-            .flatMap(
-              _.foldLeft(world) { (w, p) =>
-                w.modifyByTag(p.id) { c =>
-                  p match
-                    case p: Performer.Stunt[?] =>
-                      p.updateCollider(ctx, c)
+                      case p: Performer.Lead[?] =>
+                        p.updateCollider(ctx, c)
 
-                    case p: Performer.Lead[?] =>
-                      p.updateCollider(ctx, c)
-
-                    case _ =>
-                      c
+                      case _ =>
+                        c
+                  }
                 }
-              }
                 .update(context.frame.time.delta)
-            )
 
-        updatedWorld
-          .combine(updatedPools)
+            updatedWorld.map(_ -> updatedPools)
+          }
           .map((nextWorld, nextModel) => this.copy(pools = nextModel.toMap, world = nextWorld))
 
       case e =>
@@ -252,6 +251,9 @@ object StageManager:
           p.present(context, colliderLookup, model).map(ns => k -> ns)
         }
         .sequence
+        .map { layers =>
+          layers.filter(_._2.nonEmpty)
+        }
 
     def withWorld(world: World[PerformerId]): Model[ReferenceData] =
       this.copy(world = world)

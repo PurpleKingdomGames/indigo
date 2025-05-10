@@ -17,7 +17,10 @@ final case class PerformerPool[ReferenceData](
     findColliderById: PerformerId => Option[Collider[PerformerId]]
 ):
 
-  /** Update the actor pool, passing in the model and a standard context. */
+  private lazy val _currentIds: Batch[PerformerId] =
+    performers.map(_.id)
+
+  /** Update the performer pool, passing in the model and a standard context. */
   def update(
       context: SubSystemContext[?],
       model: ReferenceData
@@ -29,8 +32,8 @@ final case class PerformerPool[ReferenceData](
             updatePerformer(PerformerContext(findById, findColliderById, model, context), p)(FrameTick)
           }
           .sequence
-          .map { actorInstances =>
-            actorInstances.sortBy(_.depth.value)
+          .map { performerInstances =>
+            performerInstances.sortBy(_.depth.value)
           }
 
       case e =>
@@ -129,10 +132,10 @@ final case class PerformerPool[ReferenceData](
 
   /** Spawns a batch of new performers into the pool. */
   def spawn(
-      newActors: Batch[Performer[ReferenceData]]
+      newPerformers: Batch[Performer[ReferenceData]]
   ): PerformerPool[ReferenceData] =
     this.copy(
-      performers = performers ++ newActors
+      performers = performers ++ newPerformers.filterNot(p => _currentIds.exists(_ == p.id))
     )
 
   /** Spawns new performers in the pool. */
