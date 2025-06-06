@@ -97,6 +97,20 @@ object Context:
       val viewport: GameViewport,
       val globalMagnification: Int
   ):
+    /** Provides the unscaled viewport size, which is the available screen space in pixels
+      */
+    val screenSize: Size =
+      viewport.bounds.size
+
+    /** Provides the scaled viewport size using the global magnification value, which is the magnified screen size in
+      * pixels.
+      *
+      * If your layer sets a custom magnification, then you will need to use
+      * `context.frame.viewport.giveDimenstions(<custom magnification>)`, instead.
+      */
+    val viewportSize: Size =
+      viewport.giveDimensions(globalMagnification).size
+
     def withDice(newDice: Dice): Frame =
       new Frame(newDice, time, input, viewport, globalMagnification)
 
