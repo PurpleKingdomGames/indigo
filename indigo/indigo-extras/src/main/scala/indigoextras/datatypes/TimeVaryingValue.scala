@@ -95,6 +95,33 @@ final case class IncreaseTo(value: Double, unitsPerSecond: Double, limit: Double
     )
 }
 
+/** A TimeVaryingValue instance that progresses from 0.0 to 1.0 over time.
+  */
+final case class Lerp private (_tracker: IncreaseTo) extends TimeVaryingValue {
+  def update(timeDelta: Seconds): Lerp =
+    this.copy(
+      _tracker = _tracker.update(timeDelta)
+    )
+
+  def progress: Double =
+    val p = _tracker.value
+    if p < 0.0 then 0.0 else p
+
+  def progressPercent: Int =
+    (100 * progress).toInt
+
+  val isComplete: Boolean = _tracker.value >= 1.0
+  val inProgress: Boolean = !isComplete
+
+  val unitsPerSecond: Double = _tracker.unitsPerSecond
+  val value: Double          = _tracker.value
+}
+object Lerp:
+  def apply(over: Seconds): Lerp =
+    Lerp(
+      IncreaseTo(0.0, 1.0 / over.toDouble, 1.0)
+    )
+
 /** A value that increases over time and wraps back to zero when it hits the limit
   *
   * @param value

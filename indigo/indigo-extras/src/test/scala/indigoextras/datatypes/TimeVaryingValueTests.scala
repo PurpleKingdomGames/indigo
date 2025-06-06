@@ -40,6 +40,30 @@ class TimeVaryingValueTests extends munit.FunSuite {
     assertEquals(actual, expected)
   }
 
+  test("Lerp should progress over time") {
+    assertEquals(Lerp(Seconds(10)).update(Seconds(-1.0)).progressPercent, 0)
+    assertEquals(Lerp(Seconds(10)).update(Seconds(0.0)).progressPercent, 0)
+    assertEquals(Lerp(Seconds(10)).update(Seconds(1.0)).progressPercent, 10)
+    assertEquals(Lerp(Seconds(10)).update(Seconds(2.0)).progressPercent, 20)
+    assertEquals(Lerp(Seconds(10)).update(Seconds(3.0)).progressPercent, 30)
+    assertEquals(Lerp(Seconds(10)).update(Seconds(4.0)).progressPercent, 40)
+    assertEquals(Lerp(Seconds(10)).update(Seconds(5.0)).progressPercent, 50)
+    assertEquals(Lerp(Seconds(10)).update(Seconds(6.0)).progressPercent, 60)
+    assertEquals(Lerp(Seconds(10)).update(Seconds(7.0)).progressPercent, 70)
+    assertEquals(Lerp(Seconds(10)).update(Seconds(8.0)).progressPercent, 80)
+    assertEquals(Lerp(Seconds(10)).update(Seconds(9.0)).progressPercent, 90)
+    assertEquals(Lerp(Seconds(10)).update(Seconds(10.0)).progressPercent, 100)
+    assertEquals(Lerp(Seconds(10)).update(Seconds(11.0)).progressPercent, 100)
+  }
+
+  test("Lerp should progress over time, and knows when 'in progress' or 'complete'") {
+    assert(Lerp(Seconds(10)).update(Seconds(-1.0)).inProgress)
+    assert(Lerp(Seconds(10)).update(Seconds(0.0)).inProgress)
+    assert(Lerp(Seconds(10)).update(Seconds(9.0)).inProgress)
+    assert(Lerp(Seconds(10)).update(Seconds(10.0)).isComplete)
+    assert(Lerp(Seconds(10)).update(Seconds(11.0)).isComplete)
+  }
+
   test("increasing wrapped.should increase one value over time.Case A") {
     assertEquals(
       IncreaseWrapAt(10, 3)
