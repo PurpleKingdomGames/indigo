@@ -24,8 +24,8 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
   def initialScene(bootData: SandboxBootData): Option[SceneName] =
     Some(ViewportResizeScene.name)
 
-  def scenes(bootData: SandboxBootData): NonEmptyList[Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]] =
-    NonEmptyList(
+  def scenes(bootData: SandboxBootData): NonEmptyBatch[Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]] =
+    NonEmptyBatch(
       OriginalScene,
       ShapesScene,
       LightsScene,

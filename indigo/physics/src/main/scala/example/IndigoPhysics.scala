@@ -13,8 +13,8 @@ object IndigoPhysics extends IndigoGame[Unit, Unit, Model, Unit]:
   def initialScene(bootData: Unit): Option[SceneName] =
     None
 
-  def scenes(bootData: Unit): NonEmptyList[Scene[Unit, Model, Unit]] =
-    NonEmptyList(LoadScene, VolumeScene, BoxesAndBallsScene, BoxesScene, BallsScene)
+  def scenes(bootData: Unit): NonEmptyBatch[Scene[Unit, Model, Unit]] =
+    NonEmptyBatch(LoadScene, VolumeScene, BoxesAndBallsScene, BoxesScene, BallsScene)
 
   val eventFilters: EventFilters =
     EventFilters.Permissive

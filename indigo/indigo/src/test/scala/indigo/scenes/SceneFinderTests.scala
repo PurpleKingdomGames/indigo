@@ -1,19 +1,20 @@
 package indigo.scenes
 
-import indigo.shared.collections.NonEmptyList
+import indigo.shared.collections.Batch
+import indigo.shared.collections.NonEmptyBatch
 
 class SceneFinderTests extends munit.FunSuite {
 
   import TestScenes._
 
-  val scenes: NonEmptyList[Scene[Unit, TestGameModel, TestViewModel]] =
-    NonEmptyList(sceneA, sceneB)
+  val scenes: NonEmptyBatch[Scene[Unit, TestGameModel, TestViewModel]] =
+    NonEmptyBatch(sceneA, sceneB)
 
   val sceneFinder: SceneFinder =
     SceneFinder(
-      Nil,
+      Batch.empty,
       ScenePosition(0, sceneA.name),
-      List(ScenePosition(1, sceneB.name))
+      Batch(ScenePosition(1, sceneB.name))
     )
 
   test("managing the scenes list.should be able to construct a SceneFinder from a Scenes object") {
@@ -33,7 +34,7 @@ class SceneFinderTests extends munit.FunSuite {
 
   test("managing the scenes list.should be able to produce a non-empty list of ScenePositions") {
     val a = SceneFinder.fromScenes(scenes).toNel
-    val b = NonEmptyList(ScenePosition(0, sceneA.name), ScenePosition(1, sceneB.name))
+    val b = NonEmptyBatch(ScenePosition(0, sceneA.name), ScenePosition(1, sceneB.name))
 
     assertEquals(a, b)
   }
@@ -81,8 +82,8 @@ class SceneFinderTests extends munit.FunSuite {
   }
 
   test("scene finder can move to the first and last scenes") {
-    val moreScenes: NonEmptyList[Scene[Unit, TestGameModel, TestViewModel]] =
-      NonEmptyList(TestSceneA("a"), TestSceneA("b"), TestSceneA("c"), TestSceneA("d"))
+    val moreScenes: NonEmptyBatch[Scene[Unit, TestGameModel, TestViewModel]] =
+      NonEmptyBatch(TestSceneA("a"), TestSceneA("b"), TestSceneA("c"), TestSceneA("d"))
 
     val sf = SceneFinder.fromScenes(moreScenes).jumpToSceneByName(SceneName("c"))
 

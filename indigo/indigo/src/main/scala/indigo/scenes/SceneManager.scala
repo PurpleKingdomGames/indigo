@@ -4,7 +4,7 @@ import indigo.shared.Context
 import indigo.shared.IndigoLogger
 import indigo.shared.Outcome
 import indigo.shared.collections.Batch
-import indigo.shared.collections.NonEmptyList
+import indigo.shared.collections.NonEmptyBatch
 import indigo.shared.events.EventFilters
 import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.SceneUpdateFragment
@@ -16,7 +16,7 @@ import indigo.shared.time.Seconds
 import scala.annotation.nowarn
 
 class SceneManager[StartUpData, GameModel, ViewModel](
-    scenes: NonEmptyList[Scene[StartUpData, GameModel, ViewModel]],
+    scenes: NonEmptyBatch[Scene[StartUpData, GameModel, ViewModel]],
     scenesFinder: SceneFinder
 ):
 
@@ -229,7 +229,7 @@ class SceneManager[StartUpData, GameModel, ViewModel](
 object SceneManager:
 
   def apply[StartUpData, GameModel, ViewModel](
-      scenes: NonEmptyList[Scene[StartUpData, GameModel, ViewModel]],
+      scenes: NonEmptyBatch[Scene[StartUpData, GameModel, ViewModel]],
       initialScene: SceneName
   ): SceneManager[StartUpData, GameModel, ViewModel] =
     new SceneManager[StartUpData, GameModel, ViewModel](

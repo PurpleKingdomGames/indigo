@@ -11,8 +11,8 @@ final case class MyAwesomeGame(tyrianSubSystem: TyrianSubSystem[IO, String, Unit
   def initialScene(bootData: Unit): Option[SceneName] =
     None
 
-  def scenes(bootData: Unit): NonEmptyList[Scene[Unit, Unit, Unit]] =
-    NonEmptyList(GameScene(clockwise))
+  def scenes(bootData: Unit): NonEmptyBatch[Scene[Unit, Unit, Unit]] =
+    NonEmptyBatch(GameScene(clockwise))
 
   val eventFilters: EventFilters =
     EventFilters.Permissive

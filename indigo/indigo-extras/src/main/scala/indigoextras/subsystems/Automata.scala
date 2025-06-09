@@ -2,7 +2,7 @@ package indigoextras.subsystems
 
 import indigo.shared.Outcome
 import indigo.shared.collections.Batch
-import indigo.shared.collections.NonEmptyList
+import indigo.shared.collections.NonEmptyBatch
 import indigo.shared.datatypes.Point
 import indigo.shared.dice.Dice
 import indigo.shared.events.FrameTick
@@ -214,28 +214,28 @@ object AutomatonNode:
     def giveNode(totalSpawned: Long, dice: Dice): SceneNode =
       node
 
-  final case class OneOf(nodes: NonEmptyList[SceneNode]) extends AutomatonNode:
+  final case class OneOf(nodes: NonEmptyBatch[SceneNode]) extends AutomatonNode:
     def giveNode(totalSpawned: Long, dice: Dice): SceneNode =
-      val nodeList = nodes.toList
+      val nodeList = nodes.toBatch
       nodeList(dice.rollFromZero(nodeList.length - 1))
 
   object OneOf:
     def apply(node: SceneNode, nodes: SceneNode*): OneOf =
-      OneOf(NonEmptyList(node, nodes.toList))
+      OneOf(NonEmptyBatch(node, Batch.fromSeq(nodes)))
 
-  final case class Cycle(nodes: NonEmptyList[SceneNode]) extends AutomatonNode:
+  final case class Cycle(nodes: NonEmptyBatch[SceneNode]) extends AutomatonNode:
     private def correctMod(dividend: Double, divisor: Double): Int =
       (((dividend % divisor) + divisor) % divisor).toInt
 
     def giveNode(totalSpawned: Long, dice: Dice): SceneNode = {
-      val nodeList = nodes.toList
+      val nodeList = nodes.toBatch
 
       nodeList(correctMod(totalSpawned.toDouble, nodeList.length.toDouble))
     }
 
   object Cycle:
     def apply(node: SceneNode, nodes: SceneNode*): Cycle =
-      Cycle(NonEmptyList(node, nodes.toList))
+      Cycle(NonEmptyBatch(node, Batch.fromSeq(nodes)))
 
 final case class AutomatonSeedValues(
     spawnedAt: Point,

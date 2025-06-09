@@ -2,7 +2,7 @@ package indigo.shared.formats
 
 import indigo.shared.assets.AssetName
 import indigo.shared.collections.Batch
-import indigo.shared.collections.NonEmptyList
+import indigo.shared.collections.NonEmptyBatch
 import indigo.shared.datatypes.Point
 import indigo.shared.scenegraph.Graphic
 import indigo.shared.scenegraph.Group
@@ -108,7 +108,7 @@ object TiledSamples {
 
   val gridMapInt: TiledGridMap[Int] =
     TiledGridMap(
-      NonEmptyList(
+      NonEmptyBatch(
         TiledGridLayer(
           List(
             TiledGridCell(0, 0, 0),

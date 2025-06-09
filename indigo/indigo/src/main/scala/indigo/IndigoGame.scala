@@ -34,7 +34,7 @@ trait IndigoGame[BootData, StartUpData, Model, ViewModel] extends GameLauncher[S
     * @return
     *   A list of scenes that ensures at least one scene exists.
     */
-  def scenes(bootData: BootData): NonEmptyList[Scene[StartUpData, Model, ViewModel]]
+  def scenes(bootData: BootData): NonEmptyBatch[Scene[StartUpData, Model, ViewModel]]
 
   /** Optional name of the first scene. If None is provided then the first scene is the head of the scenes list.
     *

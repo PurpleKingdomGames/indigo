@@ -2,7 +2,7 @@ package indigo.scenes
 
 import indigo.shared.Outcome
 import indigo.shared.collections.Batch
-import indigo.shared.collections.NonEmptyList
+import indigo.shared.collections.NonEmptyBatch
 import indigo.shared.events.FrameTick
 import indigo.shared.events.GlobalEvent
 import indigo.shared.time.Seconds
@@ -13,8 +13,8 @@ class SceneManagerTests extends munit.FunSuite {
 
   import TestScenes._
 
-  val scenes: NonEmptyList[Scene[Unit, TestGameModel, TestViewModel]] =
-    NonEmptyList(sceneA, sceneB)
+  val scenes: NonEmptyBatch[Scene[Unit, TestGameModel, TestViewModel]] =
+    NonEmptyBatch(sceneA, sceneB)
 
   val sceneFinder: SceneFinder = SceneFinder.fromScenes(scenes)
 
