@@ -2,7 +2,7 @@ package indigoextras.subsystems
 
 import indigo.shared.assets.AssetName
 import indigo.shared.collections.Batch
-import indigo.shared.collections.NonEmptyList
+import indigo.shared.collections.NonEmptyBatch
 import indigo.shared.datatypes.Point
 import indigo.shared.dice.Dice
 import indigo.shared.events.GlobalEvent
@@ -148,8 +148,8 @@ class AutomataTests extends munit.FunSuite {
     }
 
   test("AutomatonNode.one of") {
-    val nodeList: NonEmptyList[SceneNode] =
-      NonEmptyList(
+    val nodeList: NonEmptyBatch[SceneNode] =
+      NonEmptyBatch(
         graphic.moveTo(0, 0),
         graphic.moveTo(0, 10),
         graphic.moveTo(0, 20)
@@ -175,8 +175,8 @@ class AutomataTests extends munit.FunSuite {
   }
 
   test("AutomatonNode.cycle") {
-    val nodeList: NonEmptyList[SceneNode] =
-      NonEmptyList(
+    val nodeList: NonEmptyBatch[SceneNode] =
+      NonEmptyBatch(
         graphic.moveTo(0, 0),
         graphic.moveTo(0, 10),
         graphic.moveTo(0, 20)

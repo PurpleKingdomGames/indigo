@@ -2,7 +2,7 @@ package indigo.shared.formats
 
 import indigo.shared.assets.AssetName
 import indigo.shared.collections.Batch
-import indigo.shared.collections.NonEmptyList
+import indigo.shared.collections.NonEmptyBatch
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Size
@@ -68,7 +68,7 @@ final case class TiledMap(
       case l :: ls =>
         Option(
           TiledGridMap[A](
-            NonEmptyList(toGridLayer(l), ls.map(toGridLayer))
+            NonEmptyBatch(toGridLayer(l), Batch.fromList(ls.map(toGridLayer)))
           )
         )
 
@@ -154,12 +154,12 @@ object TiledMap {
 
 }
 
-final case class TiledGridMap[A](layers: NonEmptyList[TiledGridLayer[A]]) derives CanEqual {
+final case class TiledGridMap[A](layers: NonEmptyBatch[TiledGridLayer[A]]) derives CanEqual {
 
-  lazy val toListPerLayer: NonEmptyList[List[TiledGridCell[A]]] =
+  lazy val toListPerLayer: NonEmptyBatch[List[TiledGridCell[A]]] =
     layers.map(_.grid)
 
-  lazy val toList2DPerLayer: NonEmptyList[List[List[TiledGridCell[A]]]] = {
+  lazy val toList2DPerLayer: NonEmptyBatch[List[List[TiledGridCell[A]]]] = {
     given CanEqual[List[TiledGridCell[A]], List[TiledGridCell[A]]] = CanEqual.derived
 
     @tailrec

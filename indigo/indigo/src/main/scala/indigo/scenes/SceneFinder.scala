@@ -1,59 +1,64 @@
 package indigo.scenes
 
 import indigo.shared.IndigoLogger
-import indigo.shared.collections.NonEmptyList
+import indigo.shared.collections.Batch
+import indigo.shared.collections.NonEmptyBatch
 
 import scala.annotation.tailrec
 
-final case class SceneFinder(previous: List[ScenePosition], current: ScenePosition, next: List[ScenePosition])
+final case class SceneFinder(previous: Batch[ScenePosition], current: ScenePosition, next: Batch[ScenePosition])
     derives CanEqual:
 
   val sceneCount: Int =
     toList.length
 
+  def toBatch: Batch[ScenePosition] =
+    previous ++ Batch(current) ++ next
+
   def toList: List[ScenePosition] =
-    previous ++ List(current) ++ next
+    toBatch.toList
 
-  def toNel: NonEmptyList[ScenePosition] =
-    previous match {
-      case Nil =>
-        NonEmptyList.pure(current, next)
+  def toNel: NonEmptyBatch[ScenePosition] =
+    if previous.isEmpty then NonEmptyBatch.pure(current, next)
+    else
+      val h = previous.head
+      val t = previous.tail
 
-      case x :: xs =>
-        NonEmptyList.pure(x, (xs ++ List(current)) ++ next)
-    }
+      NonEmptyBatch.pure(h, t ++ Batch(current) ++ next)
 
   def forward: SceneFinder =
-    next match
-      case Nil =>
-        this
+    if next.isEmpty then this
+    else
+      val h = next.head
+      val t = next.tail
 
-      case x :: xs =>
-        SceneFinder(previous ++ List(current), x, xs)
+      SceneFinder(previous ++ Batch(current), h, t)
 
   def forwardLoop: SceneFinder =
-    next match
-      case Nil =>
-        first
+    if next.isEmpty then first
+    else
+      val h = next.head
+      val t = next.tail
 
-      case x :: xs =>
-        SceneFinder(previous ++ List(current), x, xs)
+      SceneFinder(previous ++ Batch(current), h, t)
 
   def backward: SceneFinder =
-    previous.reverse match
-      case Nil =>
-        this
+    val p = previous.reverse
+    if p.isEmpty then this
+    else
+      val h = p.head
+      val t = p.tail
 
-      case x :: xs =>
-        SceneFinder(xs.reverse, x, current :: next)
+      SceneFinder(t.reverse, h, current :: next)
 
   def backwardLoop: SceneFinder =
-    previous.reverse match
-      case Nil =>
-        last
+    val p = previous.reverse
+    if p.isEmpty then last
+    else
+      val h = p.head
+      val t = p.tail
 
-      case x :: xs =>
-        SceneFinder(xs.reverse, x, current :: next)
+      SceneFinder(t.reverse, h, current :: next)
 
   @tailrec
   def jumpToSceneByPosition(index: Int): SceneFinder =
@@ -97,9 +102,9 @@ object SceneFinder:
   given CanEqual[Option[SceneFinder], Option[SceneFinder]] = CanEqual.derived
 
   def fromScenes[StartUpData, GameModel, ViewModel](
-      scenesList: NonEmptyList[Scene[StartUpData, GameModel, ViewModel]]
+      scenesList: NonEmptyBatch[Scene[StartUpData, GameModel, ViewModel]]
   ): SceneFinder =
     val a = scenesList.map(_.name).zipWithIndex.map(p => ScenePosition(p._2, p._1))
-    SceneFinder(Nil, a.head, a.tail)
+    SceneFinder(Batch.empty, a.head, a.tail)
 
 final case class ScenePosition(index: Int, name: SceneName) derives CanEqual
