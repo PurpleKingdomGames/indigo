@@ -9,7 +9,7 @@ import indigo.shared.animation.Cycle
 import indigo.shared.animation.CycleLabel
 import indigo.shared.animation.Frame
 import indigo.shared.collections.Batch
-import indigo.shared.collections.NonEmptyList
+import indigo.shared.collections.NonEmptyBatch
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
@@ -201,13 +201,13 @@ object AnimationSample {
     CycleLabel("cycle 2")
 
   val cycle1: Cycle =
-    Cycle.create(cycleLabel1.toString, NonEmptyList(frame1, frame2, frame3))
+    Cycle.create(cycleLabel1.toString, NonEmptyBatch(frame1, frame2, frame3))
 
   val cycle2: Cycle =
-    Cycle.create(cycleLabel2.toString, NonEmptyList(frame4, frame5, frame6))
+    Cycle.create(cycleLabel2.toString, NonEmptyBatch(frame4, frame5, frame6))
 
-  val cycles: NonEmptyList[Cycle] =
-    NonEmptyList(cycle1, cycle2)
+  val cycles: NonEmptyBatch[Cycle] =
+    NonEmptyBatch(cycle1, cycle2)
 
   val key: AnimationKey =
     AnimationKey("test anim")

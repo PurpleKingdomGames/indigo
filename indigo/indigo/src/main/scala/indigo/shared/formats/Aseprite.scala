@@ -8,7 +8,7 @@ import indigo.shared.animation.CycleLabel
 import indigo.shared.animation.Frame
 import indigo.shared.assets.AssetName
 import indigo.shared.collections.Batch
-import indigo.shared.collections.NonEmptyList
+import indigo.shared.collections.NonEmptyBatch
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.datatypes.Flip
 import indigo.shared.datatypes.Point
@@ -76,7 +76,7 @@ object Aseprite:
           Animation(
             animationKey = AnimationKey.fromDice(dice),
             currentCycleLabel = x.label,
-            cycles = NonEmptyList.pure(x, xs)
+            cycles = NonEmptyBatch.pure(x, Batch.fromList(xs))
           )
         Option(
           SpriteAndAnimations(
@@ -129,7 +129,7 @@ object Aseprite:
             None
           case x :: xs =>
             Option(
-              Cycle.create(frameTag.name, NonEmptyList.pure(x, xs))
+              Cycle.create(frameTag.name, NonEmptyBatch.pure(x, Batch.fromList(xs)))
             )
         }
       }
