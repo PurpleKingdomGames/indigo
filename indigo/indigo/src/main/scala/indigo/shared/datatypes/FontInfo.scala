@@ -6,7 +6,6 @@ import indigo.shared.collections.NonEmptyBatch
 
 final case class FontInfo(
     fontKey: FontKey,
-    fontSheetBounds: Size,
     unknownChar: FontChar,
     fontChars: Batch[FontChar],
     caseSensitive: Boolean
@@ -47,10 +46,9 @@ object FontInfo:
 
   implicit val fontCharCache: QuickCache[FontChar] = QuickCache.empty
 
-  def apply(fontKey: FontKey, sheetWidth: Int, sheetHeight: Int, unknownChar: FontChar, chars: FontChar*): FontInfo =
+  def apply(fontKey: FontKey, unknownChar: FontChar, chars: FontChar*): FontInfo =
     FontInfo(
       fontKey = fontKey,
-      fontSheetBounds = Size(sheetWidth, sheetHeight),
       unknownChar = unknownChar,
       fontChars = Batch.fromSeq(chars),
       caseSensitive = false

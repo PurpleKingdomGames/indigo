@@ -115,7 +115,7 @@ object Fonts {
   val fontKey: FontKey = FontKey("Sandbox font")
 
   val fontInfo: FontInfo =
-    FontInfo(fontKey, 320, 230, FontChar(" ", 145, 52, 23, 23)).isCaseInSensitive
+    FontInfo(fontKey, FontChar(" ", 145, 52, 23, 23)).isCaseInSensitive
       .addChar(FontChar("A", 3, 78, 23, 23))
       .addChar(FontChar("B", 26, 78, 23, 23))
       .addChar(FontChar("C", 50, 78, 23, 23))

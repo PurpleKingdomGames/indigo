@@ -107,7 +107,7 @@ object FontGen {
       }
 
     val fontInfo =
-      genFontInfo(moduleName, fullyQualifiedPackage, fontOptions.fontKey, sheetWidth, sheetHeight, default, charDetails)
+      genFontInfo(moduleName, fullyQualifiedPackage, fontOptions.fontKey, default, charDetails)
 
     os.write.over(file, fontInfo)
 
@@ -229,8 +229,6 @@ object FontGen {
       moduleName: String,
       fullyQualifiedPackage: String,
       name: String,
-      sheetWidth: Int,
-      sheetHeight: Int,
       default: CharDetail,
       chars: List[CharDetail]
   ): String = {
@@ -245,7 +243,7 @@ object FontGen {
         // language=scala
         s"""private object CharBatch$index {
            |  val batch = Batch(
-           |    ${chars}
+           |${chars}
            |  )
            |}
            |""".stripMargin
@@ -273,11 +271,9 @@ object FontGen {
     |  val fontInfo: FontInfo =
     |    FontInfo(
     |      fontKey,
-    |      $sheetWidth,
-    |      $sheetHeight,
     |      FontChar("${default.char.toString()}", $dx, $dy, $dw, $dh)
     |    ).isCaseSensitive
-    |    ${charBatchAdditions}
+    |${charBatchAdditions}
     |}
     |
     |$charBatches

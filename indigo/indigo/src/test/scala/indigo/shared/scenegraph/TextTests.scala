@@ -32,7 +32,7 @@ class TextTests extends munit.FunSuite {
 
     val fontKey = FontKey("test1")
 
-    val fontInfo = FontInfo(fontKey, 256, 256, FontChar("?", 0, 0, 16, 16)).addChars(chars)
+    val fontInfo = FontInfo(fontKey, FontChar("?", 0, 0, 16, 16)).addChars(chars)
 
     fontRegister.register(fontInfo)
 
@@ -56,7 +56,7 @@ class TextTests extends munit.FunSuite {
 
     val fontKey = FontKey("test2")
 
-    val fontInfo = FontInfo(fontKey, 256, 256, FontChar("?", 0, 0, 16, 16)).addChars(chars)
+    val fontInfo = FontInfo(fontKey, FontChar("?", 0, 0, 16, 16)).addChars(chars)
 
     fontRegister.register(fontInfo)
 
@@ -80,7 +80,7 @@ class TextTests extends munit.FunSuite {
 
     val fontKey = FontKey("test1")
 
-    val fontInfo = FontInfo(fontKey, 256, 256, FontChar("?", 0, 0, 16, 16)).addChars(chars)
+    val fontInfo = FontInfo(fontKey, FontChar("?", 0, 0, 16, 16)).addChars(chars)
 
     fontRegister.register(fontInfo)
 
@@ -106,7 +106,7 @@ class TextTests extends munit.FunSuite {
 
     val fontKey = FontKey("test1")
 
-    val fontInfo = FontInfo(fontKey, 256, 256, FontChar("?", 0, 0, 16, 16)).addChars(chars)
+    val fontInfo = FontInfo(fontKey, FontChar("?", 0, 0, 16, 16)).addChars(chars)
 
     fontRegister.register(fontInfo)
 
@@ -133,7 +133,7 @@ class TextTests extends munit.FunSuite {
 
     val fontKey = FontKey("test1")
 
-    val fontInfo = FontInfo(fontKey, 256, 256, FontChar("?", 0, 0, 16, 16)).addChars(chars)
+    val fontInfo = FontInfo(fontKey, FontChar("?", 0, 0, 16, 16)).addChars(chars)
 
     fontRegister.register(fontInfo)
 

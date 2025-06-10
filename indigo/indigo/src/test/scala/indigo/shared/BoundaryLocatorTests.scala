@@ -115,7 +115,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
 
     val fontKey = FontKey("boundary locator tests")
 
-    val fontInfo = FontInfo(fontKey, 256, 256, FontChar("?", 0, 0, 16, 16)).addChars(chars)
+    val fontInfo = FontInfo(fontKey, FontChar("?", 0, 0, 16, 16)).addChars(chars)
 
     val text: Text[?] =
       Text("<test>", 50, 50, fontKey, material)

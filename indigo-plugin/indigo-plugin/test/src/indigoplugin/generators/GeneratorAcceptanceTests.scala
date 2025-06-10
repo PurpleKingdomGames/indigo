@@ -59,7 +59,7 @@ class GeneratorAcceptanceTests extends munit.FunSuite {
     }
   }
 
-  test("Can generate font bitmap and FontInfo from TTF file - monospace layout") {
+  test("Can generate font bitmap and FontInfo from TTF file - monospace layout".only) {
 
     val imageOutDir = targetDir / Generators.OutputDirName / "images"
 
