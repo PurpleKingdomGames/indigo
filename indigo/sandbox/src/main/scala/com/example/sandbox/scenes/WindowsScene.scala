@@ -196,22 +196,22 @@ object CustomUI:
         Anchor.TopRight
       )
 
-  val text =
+  def textInstance =
     Text(
       "",
       TestFont.fontKey,
       SandboxAssets.testFontMaterial
     )
 
-  def content: MaskedPane[Label[Int], Int] =
+  def content: MaskedPane[ComponentGroup[Int], Int] =
     val label: Label[Int] =
       Label[Int](
         "Count: 0",
-        (ctx, label) => Bounds(0, 0, 300, 100)
+        (ctx, label) => Bounds(ctx.services.bounds.get(textInstance.withText(label)))
       ) { case (ctx, label) =>
         Outcome(
           Layer(
-            text
+            textInstance
               .withText(label.text(ctx))
               .moveTo(ctx.parent.coords.unsafeToPoint)
           )
@@ -221,7 +221,13 @@ object CustomUI:
 
     MaskedPane(
       BoundsMode.offset(-2, -22),
-      label
+      ComponentGroup(BoundsMode.inherit)
+        .withLayout(ComponentLayout.Vertical())
+        .add(label)
+        .add(
+          Label.fromText(textInstance.withText("Testing")),
+          Label.fromText[Int](textInstance)(ctx => "How many? " + ctx.reference)
+        )
     )
 
   def titleBar(title: String): Button[Int] =
@@ -235,7 +241,7 @@ object CustomUI:
               Stroke(1, RGBA.White)
             )
             .moveTo(ctx.parent.coords.unsafeToPoint),
-          text
+          textInstance
             .withText(title)
             .moveTo(ctx.parent.coords.unsafeToPoint + Point(4, 2))
         )

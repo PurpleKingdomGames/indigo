@@ -54,6 +54,29 @@ object Label:
   ): Label[ReferenceData] =
     Label(dynamicText, present, (_, _) => bounds)
 
+  def fromText[ReferenceData](textInstance: Text[?]): Label[ReferenceData] =
+    Label(
+      _ => textInstance.text,
+      (ctx, _) => Outcome(Layer.Content(textInstance.moveTo(ctx.parent.coords.toScreenSpace(ctx.snapGrid)))),
+      (ctx, _) => Bounds(ctx.services.bounds.get(textInstance))
+    )
+
+  def fromText[ReferenceData](textInstance: Text[?])(
+      dynamicText: UIContext[ReferenceData] => String
+  ): Label[ReferenceData] =
+    Label(
+      dynamicText,
+      (ctx, lbl) =>
+        Outcome(
+          Layer.Content(
+            textInstance
+              .withText(lbl.text(ctx))
+              .moveTo(ctx.parent.coords.toScreenSpace(ctx.snapGrid))
+          )
+        ),
+      (ctx, lbl) => Bounds(ctx.services.bounds.get(textInstance.withText(lbl)))
+    )
+
   given [ReferenceData]: Component[Label[ReferenceData], ReferenceData] with
     def bounds(context: UIContext[ReferenceData], model: Label[ReferenceData]): Bounds =
       model.calculateBounds(context, model.text(context))
