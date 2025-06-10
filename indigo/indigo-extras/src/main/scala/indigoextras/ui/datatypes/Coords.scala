@@ -22,7 +22,7 @@ object Coords:
     private[datatypes] inline def toPoint: Point    = c
     inline def unsafeToPoint: Point                 = c
     inline def toDimensions: Dimensions             = Dimensions(c.toSize)
-    inline def toScreenSpace(charSize: Size): Point = c * charSize.toPoint
+    inline def toScreenSpace(snapGrid: Size): Point = c * snapGrid.toPoint
 
     inline def x: Int = c.x
     inline def y: Int = c.y
