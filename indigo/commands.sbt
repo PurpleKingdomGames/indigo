@@ -136,8 +136,9 @@ addCommandAlias(
   "sandboxRun",
   List(
     "buildAllNoClean",
-    "sandbox/fastOptJS",
-    "sandbox/indigoRun"
+    "sandbox/fastOptJS", // initialize
+    "sandbox/indigoBgRun", // run in background
+    "~sandbox/fastOptJS", // watch
   ).mkString(";", ";", "")
 )
 

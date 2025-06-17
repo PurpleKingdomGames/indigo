@@ -192,9 +192,13 @@ object IndigoBuild {
   def copyScript(scriptPathBase: Path, destScriptsFolder: Path, fileName: String): Unit = {
     val scriptFile = scriptPathBase / fileName
 
-    if (os.exists(scriptFile))
-      os.copy(scriptFile, destScriptsFolder / fileName, true, false, false, false, false)
-    else
+    if (os.exists(scriptFile)) {
+      val out = destScriptsFolder / fileName
+      if (os.exists(out)) {
+        os.remove(out)
+      }
+      os.symlink(out, scriptFile)
+    } else
       throw new Exception("Script file does not exist, have you compiled the JS file? Tried: " + scriptFile.toString())
   }
 

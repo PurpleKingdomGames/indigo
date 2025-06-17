@@ -28,15 +28,24 @@ object IndigoRun {
       os.write.over(outputDir / f.name, f.contents)
     }
 
-    os.list(buildDir).foreach { file =>
-      os.copy(file, outputDir / file.last, true, true, true, true, true)
-    }
+    os.list(buildDir)
+      .filterNot { file =>
+        os.isDir(file) && file.last == "scripts"
+      }
+      .foreach { file =>
+        os.copy(file, outputDir / file.last, true, true, true, true, true)
+      }
 
-    // Write support js script
-    val supportFile = outputDir / "scripts" / "indigo-support.js"
-    val support     = SupportScriptTemplate.template()
-    os.remove(supportFile)
-    os.write(supportFile, support)
+    val outScriptsDir = outputDir / "scripts"
+    if (!os.isLink(outScriptsDir)) {
+      if (os.isDir(outScriptsDir)) {
+        os.remove.all(outScriptsDir)
+      }
+      os.symlink(
+        link = outScriptsDir,
+        dest = buildDir / "scripts"
+      )
+    }
 
     println(s"Starting '${indigoOptions.metadata.title}'")
 
@@ -112,7 +121,8 @@ object IndigoRun {
         )
       ),
       FileToWrite("preload.js", ElectronTemplates.preloadFileTemplate),
-      FileToWrite("package.json", ElectronTemplates.packageFileTemplate(indigoOptions.electron))
+      FileToWrite("package.json", ElectronTemplates.packageFileTemplate(indigoOptions.electron)),
+      FileToWrite("vite.config.ts", ElectronTemplates.viteConfigFileTemplate)
     )
 
 }

@@ -1,8 +1,7 @@
 package indigoplugin
 
 import sbt.plugins.JvmPlugin
-import sbt._
-
+import sbt.*
 import indigoplugin.core.IndigoBuildSBT
 import indigoplugin.core.IndigoCordova
 import indigoplugin.core.IndigoRun
@@ -20,6 +19,7 @@ object SbtIndigo extends sbt.AutoPlugin {
     val indigoBuildFull: TaskKey[String] =
       taskKey[String]("Build an Indigo game using full compression. Returns output directory.")
     val indigoRun: TaskKey[Unit]          = taskKey[Unit]("Run an Indigo game.")
+    val indigoBgRun: InputKey[JobHandle]  = inputKey[JobHandle]("Run an Indigo game.")
     val indigoRunFull: TaskKey[Unit]      = taskKey[Unit]("Run an Indigo game that has been compressed.")
     val indigoCordovaBuild: TaskKey[Unit] = taskKey[Unit]("Build an Indigo game Cordova template.")
     val indigoCordovaBuildFull: TaskKey[Unit] =
@@ -38,6 +38,7 @@ object SbtIndigo extends sbt.AutoPlugin {
     indigoBuildFull        := indigoBuildFullTask.value,
     indigoRun              := indigoRunTask.value,
     indigoRunFull          := indigoRunFullTask.value,
+    indigoBgRun            := indigoBgRunTask.evaluated,
     indigoCordovaBuild     := indigoCordovaBuildTask.value,
     indigoCordovaBuildFull := indigoCordovaBuildFullTask.value,
     indigoOptions          := IndigoOptions.defaults
@@ -133,6 +134,24 @@ object SbtIndigo extends sbt.AutoPlugin {
         buildDir = buildDir,
         indigoOptions = indigoOptions.value
       )
+    }
+
+  lazy val indigoBgRunTask: Def.Initialize[InputTask[JobHandle]] =
+    Def.inputTask {
+      val baseDir: String    = Keys.baseDirectory.value.getCanonicalPath
+      val outputDir: os.Path = os.Path(baseDir) / "target" / "indigoBgRun"
+      val buildDir: os.Path  = os.Path(indigoBuildTask.value)
+
+      val service = Keys.bgJobService.value
+      service.runInBackground(Keys.resolvedScoped.value, Keys.state.value) { (logger, workingDir) =>
+        logger.info(s"Starting Indigo.run in background at ${workingDir}")
+
+        IndigoRun.run(
+          outputDir = outputDir,
+          buildDir = buildDir,
+          indigoOptions = indigoOptions.value
+        )
+      }
     }
 
   lazy val indigoRunFullTask: Def.Initialize[Task[Unit]] =
