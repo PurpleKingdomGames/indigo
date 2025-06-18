@@ -183,7 +183,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
             else "Error during re-initialisation - Halting."
 
           // Emit an event to denote that an error has occurred
-          GameEngineStatusEvent.Error(msg).dispatch(parentElement)
+          GameEngineStatusEvent.Error(msg, oe.reportCrash).dispatch(parentElement)
 
           IndigoLogger.error(msg)
           IndigoLogger.error("Crash report:")
@@ -271,7 +271,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
                 else "Error during engine restart - Halting."
 
               // Emit an event to denote that an error has occurred
-              GameEngineStatusEvent.Error(msg).dispatch(parentElement)
+              GameEngineStatusEvent.Error(msg, oe.reportCrash).dispatch(parentElement)
 
               IndigoLogger.error(msg)
               IndigoLogger.error(oe.reportCrash)

@@ -11,7 +11,7 @@ enum GameEngineStatusEvent derives CanEqual:
   case Initiated
   case Loaded(firstLoad: Boolean)                   extends GameEngineStatusEvent
   case Loading(percent: Double, firstLoad: Boolean) extends GameEngineStatusEvent
-  case Error(val message: String)                   extends GameEngineStatusEvent
+  case Error(message: String, stackTrace: String)   extends GameEngineStatusEvent
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def dispatch(e: Element): Unit =
@@ -21,7 +21,7 @@ enum GameEngineStatusEvent derives CanEqual:
       case Loaded(firstLoad) => (if firstLoad then "loaded" else "reloaded", null)
       case Loading(percent, firstLoad) =>
         (if firstLoad then "loading" else "reloading", js.Dynamic.literal(progress = percent))
-      case Error(msg) => ("error", js.Dynamic.literal(message = msg))
+      case Error(msg, stackTrace) => ("error", js.Dynamic.literal(message = msg, stackTrace = stackTrace))
     }
 
     @nowarn("msg=unused")
