@@ -150,6 +150,8 @@ object ComponentUIScene2 extends Scene[SandboxStartupData, SandboxGameModel, San
                     )
                   }
                   .onClick(_ => Batch(Log("Clicked button: " + i)))
+                  .onEnter(_ => Batch(Log("Over button: " + i)))
+                  .onLeave(_ => Batch(Log("Left button: " + i)))
               )
               .add(
                 Label[Int](

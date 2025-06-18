@@ -255,7 +255,7 @@ object Button:
         Outcome(
           model.copy(
             state = decideState,
-            isOver = decideState == ButtonState.Over,
+            isOver = decideState != ButtonState.Up,
             bounds = newBounds
           )
         ).addGlobalEvents(
@@ -295,7 +295,7 @@ object Button:
       case _: PointerEvent.Move
           if (context.isActive || model.isDragged) && model.isDown && !context.frame.input.pointers.isLeftDown =>
         // Released outside the window at some point.
-        Outcome(model.copy(state = ButtonState.Up, isDown = false, isOver = false, dragStart = None))
+        Outcome(model.copy(state = ButtonState.Up, isDown = false, dragStart = None))
 
       case _: PointerEvent.Move
           if (context.isActive || model.isDragged) && model.isDown && model.dragOptions.isDraggable =>
