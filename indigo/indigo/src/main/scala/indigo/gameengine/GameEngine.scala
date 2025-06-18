@@ -110,6 +110,9 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
 
     IndigoLogger.info("Starting Indigo")
 
+    // emit an event to denote that indigo has started loading
+    GameEngineStatusEvent.Initiated.dispatch(parentElement)
+
     storage = Storage.default
     globalEventStream = new GlobalEventStream(audioPlayer, storage, platform)
     gamepadInputCapture = GamepadInputCaptureImpl()
@@ -136,6 +139,9 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
       // Arrange initial asset load
       IndigoLogger.info("Attempting to load assets")
 
+      // Start the loading event
+      GameEngineStatusEvent.Loading(0.0d, true).dispatch(parentElement)
+
       assetsAsync.flatMap(aa => AssetLoader.loadAssets(aa ++ assets)).foreach { assetCollection =>
         IndigoLogger.info("Asset load complete")
 
@@ -153,7 +159,10 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def rebuildGameLoop(parentElement: Element, firstRun: Boolean): AssetCollection => Unit =
     ac => {
-      if (!firstRun) gameLoopInstance.lock()
+      if !firstRun then
+        // Emit an event to denote a reload
+        GameEngineStatusEvent.Loading(0.0d, false).dispatch(parentElement)
+        gameLoopInstance.lock()
 
       fontRegister.clearRegister()
       boundaryLocator.purgeCache()
@@ -169,10 +178,14 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
 
       initialise(accumulatedAssetCollection)(dice) match {
         case oe @ Outcome.Error(error, _) =>
-          IndigoLogger.error(
+          val msg =
             if (firstRun) "Error during first initialisation - Halting."
             else "Error during re-initialisation - Halting."
-          )
+
+          // Emit an event to denote that an error has occurred
+          GameEngineStatusEvent.Error(msg).dispatch(parentElement)
+
+          IndigoLogger.error(msg)
           IndigoLogger.error("Crash report:")
           IndigoLogger.error(oe.reportCrash)
           throw error
@@ -181,12 +194,23 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
           globalEvents.foreach(globalEventStream.pushGlobalEvent)
 
           GameEngine.registerAnimations(animationsRegister, animations ++ startupData.additionalAnimations)
+
+          // 25% Loaded - emit an event to denote that indigo has loaded 25%
+          GameEngineStatusEvent.Loading(0.25d, firstRun).dispatch(parentElement)
+
           GameEngine.registerFonts(fontRegister, fonts ++ startupData.additionalFonts)
+
+          // 50% Loaded - emit an event to denote that indigo has loaded 50%
+          GameEngineStatusEvent.Loading(0.5d, firstRun).dispatch(parentElement)
+
           GameEngine.registerShaders(
             shaderRegister,
             shaders ++ startupData.additionalShaders,
             accumulatedAssetCollection
           )
+
+          // 75% Loaded - emit an event to denote that indigo has loaded 75%
+          GameEngineStatusEvent.Loading(0.75d, firstRun).dispatch(parentElement)
 
           def modelToUse(startUpSuccessData: => StartUpData): Outcome[GameModel] =
             if (firstRun) initialModel(startUpSuccessData)
@@ -224,6 +248,9 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
 
           loop match {
             case Outcome.Result(firstTick, events) =>
+              // 100% Loaded - emit an event to denote that indigo has loaded 100%
+              GameEngineStatusEvent.Loading(1d, firstRun).dispatch(parentElement)
+
               IndigoLogger.info("Starting main loop, there will be no more info log messages.")
               IndigoLogger.info("You may get first occurrence error logs.")
 
@@ -232,10 +259,21 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
               gameLoop = firstTick
 
               gameLoopInstance.unlock()
+
+              // Fire an event to denote that indigo has finished loading
+              GameEngineStatusEvent.Loaded(firstRun).dispatch(parentElement)
+
               ()
 
             case oe @ Outcome.Error(e, _) =>
-              IndigoLogger.error(if (firstRun) "Error during first engine start up" else "Error during engine restart")
+              val msg =
+                if (firstRun) "Error during first engine start up - Halting."
+                else "Error during engine restart - Halting."
+
+              // Emit an event to denote that an error has occurred
+              GameEngineStatusEvent.Error(msg).dispatch(parentElement)
+
+              IndigoLogger.error(msg)
               IndigoLogger.error(oe.reportCrash)
               throw e
           }
@@ -369,5 +407,4 @@ object GameEngine {
         renderer
       )
     )
-
 }
