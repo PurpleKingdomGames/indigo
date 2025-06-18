@@ -21,9 +21,12 @@ final case class Button[ReferenceData](
     click: ReferenceData => Batch[GlobalEvent],
     press: ReferenceData => Batch[GlobalEvent],
     release: ReferenceData => Batch[GlobalEvent],
+    enter: ReferenceData => Batch[GlobalEvent],
+    leave: ReferenceData => Batch[GlobalEvent],
     drag: (ReferenceData, DragData) => Batch[GlobalEvent],
     boundsType: BoundsType[ReferenceData, Unit],
     isDown: Boolean,
+    isOver: Boolean,
     dragOptions: DragOptions,
     dragStart: Option[DragData]
 ):
@@ -74,6 +77,24 @@ final case class Button[ReferenceData](
   def onDrag(events: GlobalEvent*): Button[ReferenceData] =
     onDrag(Batch.fromSeq(events))
 
+  def onEnter(
+      events: ReferenceData => Batch[GlobalEvent]
+  ): Button[ReferenceData] =
+    this.copy(enter = events)
+  def onEnter(events: Batch[GlobalEvent]): Button[ReferenceData] =
+    onEnter(_ => events)
+  def onEnter(events: GlobalEvent*): Button[ReferenceData] =
+    onEnter(Batch.fromSeq(events))
+
+  def onLeave(
+      events: ReferenceData => Batch[GlobalEvent]
+  ): Button[ReferenceData] =
+    this.copy(leave = events)
+  def onLeave(events: Batch[GlobalEvent]): Button[ReferenceData] =
+    onLeave(_ => events)
+  def onLeave(events: GlobalEvent*): Button[ReferenceData] =
+    onLeave(Batch.fromSeq(events))
+
   def withDragOptions(value: DragOptions): Button[ReferenceData] =
     this.copy(dragOptions = value)
   def makeDraggable: Button[ReferenceData] =
@@ -115,9 +136,12 @@ final case class Button[ReferenceData](
       click,
       press,
       release,
+      enter,
+      leave,
       drag,
       boundsType,
       isDown,
+      isOver,
       dragOptions,
       dragStart
     )
@@ -138,9 +162,12 @@ object Button:
       _ => Batch.empty,
       _ => Batch.empty,
       _ => Batch.empty,
+      _ => Batch.empty,
+      _ => Batch.empty,
       (_, _) => Batch.empty,
       boundsType,
       isDown = false,
+      isOver = false,
       dragOptions = DragOptions.default,
       dragStart = None
     )
@@ -159,9 +186,12 @@ object Button:
       _ => Batch.empty,
       _ => Batch.empty,
       _ => Batch.empty,
+      _ => Batch.empty,
+      _ => Batch.empty,
       (_, _) => Batch.empty,
       datatypes.BoundsType.Fixed(bounds),
       isDown = false,
+      isOver = false,
       dragOptions = DragOptions.default,
       dragStart = None
     )
@@ -180,9 +210,12 @@ object Button:
       _ => Batch.empty,
       _ => Batch.empty,
       _ => Batch.empty,
+      _ => Batch.empty,
+      _ => Batch.empty,
       (_, _) => Batch.empty,
       datatypes.BoundsType.Calculated(calculateBounds),
       isDown = false,
+      isOver = false,
       dragOptions = DragOptions.default,
       dragStart = None
     )
@@ -207,27 +240,32 @@ object Button:
             case _ =>
               model.bounds
 
-        def decideState: ButtonState =
-          if model.isDown then ButtonState.Down
-          else if newBounds
-              .moveBy(context.parent.coords + context.parent.additionalOffset)
-              .contains(context.pointerCoords)
-          then
-            if context.frame.input.pointers.isLeftDown then ButtonState.Down
-            else ButtonState.Over
+        val decideState: ButtonState =
+          if context.isActive || model.isDragged then
+            if model.isDown then ButtonState.Down
+            else if newBounds
+                .moveBy(context.parent.coords + context.parent.additionalOffset)
+                .contains(context.pointerCoords)
+            then
+              if context.frame.input.pointers.isLeftDown then ButtonState.Down
+              else ButtonState.Over
+            else ButtonState.Up
           else ButtonState.Up
 
         Outcome(
           model.copy(
-            state =
-              if context.isActive || model.isDragged then decideState
-              else ButtonState.Up,
+            state = decideState,
+            isOver = decideState == ButtonState.Over,
             bounds = newBounds
           )
+        ).addGlobalEvents(
+          if decideState == ButtonState.Over && !model.isOver then model.enter(context.reference)
+          else if decideState == ButtonState.Up && model.isOver then model.leave(context.reference)
+          else Batch.empty
         )
 
       case CanvasLostFocus | ApplicationLostFocus =>
-        Outcome(model.copy(state = ButtonState.Up, isDown = false, dragStart = None))
+        Outcome(model.copy(state = ButtonState.Up, isDown = false, isOver = false, dragStart = None))
 
       case _: PointerEvent.Click
           if context.isActive && model.bounds
@@ -257,7 +295,7 @@ object Button:
       case _: PointerEvent.Move
           if (context.isActive || model.isDragged) && model.isDown && !context.frame.input.pointers.isLeftDown =>
         // Released outside the window at some point.
-        Outcome(model.copy(state = ButtonState.Up, isDown = false, dragStart = None))
+        Outcome(model.copy(state = ButtonState.Up, isDown = false, isOver = false, dragStart = None))
 
       case _: PointerEvent.Move
           if (context.isActive || model.isDragged) && model.isDown && model.dragOptions.isDraggable =>
