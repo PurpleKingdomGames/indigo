@@ -22,9 +22,12 @@ final case class HitArea[ReferenceData](
     click: ReferenceData => Batch[GlobalEvent],
     press: ReferenceData => Batch[GlobalEvent],
     release: ReferenceData => Batch[GlobalEvent],
+    enter: ReferenceData => Batch[GlobalEvent],
+    leave: ReferenceData => Batch[GlobalEvent],
     drag: (ReferenceData, DragData) => Batch[GlobalEvent],
     boundsType: BoundsType[ReferenceData, Unit],
     isDown: Boolean,
+    isOver: Boolean,
     dragOptions: DragOptions,
     dragStart: Option[DragData],
     fill: Option[RGBA] = None,
@@ -61,6 +64,24 @@ final case class HitArea[ReferenceData](
     onDrag((_, _) => events)
   def onDrag(events: GlobalEvent*): HitArea[ReferenceData] =
     onDrag(Batch.fromSeq(events))
+
+  def onEnter(
+      events: ReferenceData => Batch[GlobalEvent]
+  ): HitArea[ReferenceData] =
+    this.copy(enter = events)
+  def onEnter(events: Batch[GlobalEvent]): HitArea[ReferenceData] =
+    onEnter(_ => events)
+  def onEnter(events: GlobalEvent*): HitArea[ReferenceData] =
+    onEnter(Batch.fromSeq(events))
+
+  def onLeave(
+      events: ReferenceData => Batch[GlobalEvent]
+  ): HitArea[ReferenceData] =
+    this.copy(leave = events)
+  def onLeave(events: Batch[GlobalEvent]): HitArea[ReferenceData] =
+    onLeave(_ => events)
+  def onLeave(events: GlobalEvent*): HitArea[ReferenceData] =
+    onLeave(Batch.fromSeq(events))
 
   def withDragOptions(value: DragOptions): HitArea[ReferenceData] =
     this.copy(dragOptions = value)
@@ -116,9 +137,12 @@ final case class HitArea[ReferenceData](
       click,
       press,
       release,
+      enter,
+      leave,
       drag,
       boundsType,
       isDown,
+      isOver,
       dragOptions,
       dragStart
     )
@@ -134,9 +158,12 @@ object HitArea:
       _ => Batch.empty,
       _ => Batch.empty,
       _ => Batch.empty,
+      _ => Batch.empty,
+      _ => Batch.empty,
       (_, _) => Batch.empty,
       boundsType,
       isDown = false,
+      isOver = false,
       dragOptions = DragOptions.default,
       dragStart = None,
       fill = None,
@@ -152,9 +179,12 @@ object HitArea:
       _ => Batch.empty,
       _ => Batch.empty,
       _ => Batch.empty,
+      _ => Batch.empty,
+      _ => Batch.empty,
       (_, _) => Batch.empty,
       datatypes.BoundsType.Fixed(bounds),
       isDown = false,
+      isOver = false,
       dragOptions = DragOptions.default,
       dragStart = None,
       fill = None,
