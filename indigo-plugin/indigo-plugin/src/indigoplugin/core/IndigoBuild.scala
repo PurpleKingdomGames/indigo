@@ -26,6 +26,8 @@ object IndigoBuild {
       case Custom(inputs, outputs) =>
         println("Building using custom template.")
 
+        val scriptName = findScriptName(scriptNames, scriptPathBase)
+
         if (!os.exists(inputs.templateSource)) {
           throw new Exception(
             s"The supplied path to the template source directory does not exist: ${inputs.templateSource.toString}"
@@ -36,10 +38,27 @@ object IndigoBuild {
           )
         } else {
           println("Copying template files...")
-          os.copy.over(inputs.templateSource, baseDir)
-        }
 
-        val scriptName = findScriptName(scriptNames, scriptPathBase)
+          // Copy the initial files over to the base directory
+          os.copy.over(inputs.templateSource, baseDir)
+
+          // Update any HTML files, replacing tokens with values
+          val htmlFiles = os
+            .walk(inputs.templateSource)
+            .filter(p => p.ext == "html" || p.ext == "htm")
+            .foreach { file =>
+              val content = os
+                .read(file)
+                .replace("$title", options.metadata.title)
+                .replace("$scriptName", scriptName)
+                .replace("$backgroundColor", options.metadata.backgroundColor)
+
+              os.write.over(
+                baseDir / file.relativeTo(inputs.templateSource),
+                content
+              )
+            }
+        }
 
         // copy the game files
         val gameScriptsDest = outputs.gameScripts.resolveFrom(baseDir)
