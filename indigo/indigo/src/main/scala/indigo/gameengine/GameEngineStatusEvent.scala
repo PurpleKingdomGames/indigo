@@ -9,9 +9,9 @@ import scala.scalajs.js
 
 enum GameEngineStatusEvent derives CanEqual:
   case Initiated
-  case Loaded(firstLoad: Boolean)                   extends GameEngineStatusEvent
-  case Loading(percent: Double, firstLoad: Boolean) extends GameEngineStatusEvent
-  case Error(message: String, stackTrace: String)   extends GameEngineStatusEvent
+  case Loaded(firstLoad: Boolean)
+  case Loading(percent: Double, firstLoad: Boolean)
+  case Error(message: String, stackTrace: String)
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def dispatch(e: Element): Unit =
