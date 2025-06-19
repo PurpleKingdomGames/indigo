@@ -26,13 +26,13 @@ object IndigoBuild {
       case Custom(inputs, outputs) =>
         println("Building using custom template.")
 
-        if (!os.isDir(inputs.templateSource)) {
-          throw new Exception(
-            s"The supplied path to the template source directory is not a directory: ${inputs.templateSource.toString}"
-          )
-        } else if (!os.exists(inputs.templateSource)) {
+        if (!os.exists(inputs.templateSource)) {
           throw new Exception(
             s"The supplied path to the template source directory does not exist: ${inputs.templateSource.toString}"
+          )
+        } else if (!os.isDir(inputs.templateSource)) {
+          throw new Exception(
+            s"The supplied path to the template source directory is not a directory: ${inputs.templateSource.toString}"
           )
         } else {
           println("Copying template files...")
