@@ -177,7 +177,7 @@ object IndigoBuild {
       destAssetsFolder: Path
   ): Unit = {
     val from = baseDirectory / indigoAssets.gameAssetsDirectory
-    val to = destAssetsFolder
+    val to   = destAssetsFolder
 
     if (!os.exists(from))
       throw new Exception(
