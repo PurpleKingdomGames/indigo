@@ -26,54 +26,79 @@ object IndigoBuild {
       case Custom(inputs, outputs) =>
         println("Building using custom template.")
 
-        if (!os.isDir(inputs.templateSource)) {
-          throw new Exception(
-            s"The supplied path to the template source directory is not a directory: ${inputs.templateSource.toString}"
-          )
-        } else if (!os.exists(inputs.templateSource)) {
+        val scriptName = findScriptName(scriptNames, scriptPathBase)
+
+        if (!os.exists(inputs.templateSource)) {
           throw new Exception(
             s"The supplied path to the template source directory does not exist: ${inputs.templateSource.toString}"
           )
+        } else if (!os.isDir(inputs.templateSource)) {
+          throw new Exception(
+            s"The supplied path to the template source directory is not a directory: ${inputs.templateSource.toString}"
+          )
         } else {
           println("Copying template files...")
-          os.copy.over(inputs.templateSource, baseDir)
-        }
 
-        val scriptName = findScriptName(scriptNames, scriptPathBase)
+          // Copy the initial files over to the base directory
+          os.copy.over(inputs.templateSource, baseDir)
+
+          // Update any HTML files, replacing tokens with values
+          val htmlFiles = os
+            .walk(inputs.templateSource)
+            .filter(p => p.ext == "html" || p.ext == "htm")
+            .foreach { file =>
+              val content = os
+                .read(file)
+                .replace("$title", options.metadata.title)
+                .replace("$scriptName", scriptName)
+                .replace("$backgroundColor", options.metadata.backgroundColor)
+
+              os.write.over(
+                baseDir / file.relativeTo(inputs.templateSource),
+                content
+              )
+            }
+        }
 
         // copy the game files
         val gameScriptsDest = outputs.gameScripts.resolveFrom(baseDir)
+
+        // If the directory doesn't exist, then create it
+        if (!os.exists(gameScriptsDest))
+          os.makeDir.all(gameScriptsDest)
+
+        // If the directory exists, then check that it is a directory
         if (!os.isDir(gameScriptsDest)) {
           throw new Exception(
             s"The supplied path to the game scripts destination is not a directory: ${gameScriptsDest.toString}"
           )
-        } else if (!os.exists(gameScriptsDest)) {
-          throw new Exception(
-            s"The supplied path to the assets game scripts destination does not exist: ${gameScriptsDest.toString}"
-          )
-        } else {
-          // copy built js file into scripts dir
-          IndigoBuild.copyScript(scriptPathBase, gameScriptsDest, scriptName)
-
-          // copy built js source map file into scripts dir
-          IndigoBuild.copyScript(
-            scriptPathBase,
-            gameScriptsDest,
-            scriptName + ".map"
-          )
         }
+
+        // copy built js file into scripts dir
+        IndigoBuild.copyScript(scriptPathBase, gameScriptsDest, scriptName)
+
+        // copy built js source map file into scripts dir
+        IndigoBuild.copyScript(
+          scriptPathBase,
+          gameScriptsDest,
+          scriptName + ".map"
+        )
 
         // copy assets into folder
         val assetsDest = outputs.assets.resolveFrom(baseDir)
+
+        // If the directory doesn't exist, then create it
+        if (!os.exists(assetsDest))
+          os.makeDir.all(assetsDest)
+
+        // If the directory exists, then check that it is a directory
         if (!os.isDir(assetsDest)) {
-          throw new Exception(s"The supplied path to the assets destination is not a directory: ${assetsDest.toString}")
-        } else if (!os.exists(assetsDest)) {
           throw new Exception(
-            s"The supplied path to the assets destination does not exist: ${assetsDest.toString}"
+            s"The supplied path to the assets destination is not a directory: ${assetsDest.toString}"
           )
-        } else {
-          IndigoBuild.copyAssets(options.assets, assetsDest)
         }
+
+        IndigoBuild.copyAssets(options.assets, assetsDest)
 
         println(s"Built to: ${baseDir.toString}")
 
@@ -83,7 +108,11 @@ object IndigoBuild {
         val scriptName = findScriptName(scriptNames, scriptPathBase)
 
         // copy built js file into scripts dir
-        IndigoBuild.copyScript(scriptPathBase, directoryStructure.artefacts, scriptName)
+        IndigoBuild.copyScript(
+          scriptPathBase,
+          directoryStructure.artefacts,
+          scriptName
+        )
 
         // copy built js source map file into scripts dir
         IndigoBuild.copyScript(
@@ -101,7 +130,10 @@ object IndigoBuild {
 
         // Write support js script
         val support = SupportScriptTemplate.template()
-        os.write(directoryStructure.base / "scripts" / "indigo-support.js", support)
+        os.write(
+          directoryStructure.base / "scripts" / "indigo-support.js",
+          support
+        )
 
         // Fill out html template
         val html = HtmlTemplate.template(
@@ -139,12 +171,19 @@ object IndigoBuild {
   }
 
   @SuppressWarnings(Array("org.wartremover.warts.Throw"))
-  def copyAssets(baseDirectory: os.Path, indigoAssets: IndigoAssets, destAssetsFolder: Path): Unit = {
+  def copyAssets(
+      baseDirectory: os.Path,
+      indigoAssets: IndigoAssets,
+      destAssetsFolder: Path
+  ): Unit = {
     val from = baseDirectory / indigoAssets.gameAssetsDirectory
     val to   = destAssetsFolder
 
     if (!os.exists(from))
-      throw new Exception("Supplied game assets path does not exist: " + indigoAssets.gameAssetsDirectory.toString())
+      throw new Exception(
+        "Supplied game assets path does not exist: " + indigoAssets.gameAssetsDirectory
+          .toString()
+      )
     else if (!os.isDir(from))
       throw new Exception("Supplied game assets path was not a directory")
     else {
@@ -189,13 +228,28 @@ object IndigoBuild {
     copyAssets(workspaceDir, indigoAssets, destAssetsFolder)
 
   @SuppressWarnings(Array("org.wartremover.warts.Throw"))
-  def copyScript(scriptPathBase: Path, destScriptsFolder: Path, fileName: String): Unit = {
+  def copyScript(
+      scriptPathBase: Path,
+      destScriptsFolder: Path,
+      fileName: String
+  ): Unit = {
     val scriptFile = scriptPathBase / fileName
 
     if (os.exists(scriptFile))
-      os.copy(scriptFile, destScriptsFolder / fileName, true, false, false, false, false)
+      os.copy(
+        scriptFile,
+        destScriptsFolder / fileName,
+        true,
+        false,
+        false,
+        false,
+        false
+      )
     else
-      throw new Exception("Script file does not exist, have you compiled the JS file? Tried: " + scriptFile.toString())
+      throw new Exception(
+        "Script file does not exist, have you compiled the JS file? Tried: " + scriptFile
+          .toString()
+      )
   }
 
   def writeHtml(directoryStructure: DirectoryStructure, html: String): Path = {
