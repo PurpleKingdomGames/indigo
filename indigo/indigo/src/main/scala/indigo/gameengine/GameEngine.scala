@@ -46,7 +46,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
     frameProccessor: FrameProcessor[StartUpData, GameModel, ViewModel],
     initialisationEvents: Batch[GlobalEvent]
 ) {
-
+  val stepsToLoad = 4
   val animationsRegister: AnimationsRegister =
     new AnimationsRegister()
   val fontRegister: FontRegister =
@@ -140,7 +140,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
       IndigoLogger.info("Attempting to load assets")
 
       // Start the loading event
-      GameEngineStatusEvent.Loading(0.0d, true).dispatch(parentElement)
+      GameEngineStatusEvent.Loading(0, stepsToLoad, "assets", true).dispatch(parentElement)
 
       assetsAsync.flatMap(aa => AssetLoader.loadAssets(aa ++ assets)).foreach { assetCollection =>
         IndigoLogger.info("Asset load complete")
@@ -161,7 +161,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
     ac => {
       if !firstRun then
         // Emit an event to denote a reload
-        GameEngineStatusEvent.Loading(0.0d, false).dispatch(parentElement)
+        GameEngineStatusEvent.Loading(0, stepsToLoad, "assets", false).dispatch(parentElement)
         gameLoopInstance.lock()
 
       fontRegister.clearRegister()
@@ -196,12 +196,12 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
           GameEngine.registerAnimations(animationsRegister, animations ++ startupData.additionalAnimations)
 
           // 25% Loaded - emit an event to denote that indigo has loaded 25%
-          GameEngineStatusEvent.Loading(0.25d, firstRun).dispatch(parentElement)
+          GameEngineStatusEvent.Loading(1, stepsToLoad, "fonts", true).dispatch(parentElement)
 
           GameEngine.registerFonts(fontRegister, fonts ++ startupData.additionalFonts)
 
           // 50% Loaded - emit an event to denote that indigo has loaded 50%
-          GameEngineStatusEvent.Loading(0.5d, firstRun).dispatch(parentElement)
+          GameEngineStatusEvent.Loading(2, stepsToLoad, "shaders", true).dispatch(parentElement)
 
           GameEngine.registerShaders(
             shaderRegister,
@@ -210,7 +210,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
           )
 
           // 75% Loaded - emit an event to denote that indigo has loaded 75%
-          GameEngineStatusEvent.Loading(0.75d, firstRun).dispatch(parentElement)
+          GameEngineStatusEvent.Loading(3, stepsToLoad, "models", true).dispatch(parentElement)
 
           def modelToUse(startUpSuccessData: => StartUpData): Outcome[GameModel] =
             if (firstRun) initialModel(startUpSuccessData)
@@ -249,7 +249,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
           loop match {
             case Outcome.Result(firstTick, events) =>
               // 100% Loaded - emit an event to denote that indigo has loaded 100%
-              GameEngineStatusEvent.Loading(1d, firstRun).dispatch(parentElement)
+              GameEngineStatusEvent.Loading(stepsToLoad, stepsToLoad, "complete", true).dispatch(parentElement)
 
               IndigoLogger.info("Starting main loop, there will be no more info log messages.")
               IndigoLogger.info("You may get first occurrence error logs.")
