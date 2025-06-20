@@ -1,9 +1,6 @@
 package indigo.shared.input
 
 import indigo.shared.collections.Batch
-import indigo.shared.datatypes.Point
-import indigo.shared.datatypes.Rectangle
-import indigo.shared.events.MouseButton
 import indigo.shared.events.MouseEvent
 import indigo.shared.events.MouseWheel
 import indigo.shared.events.PointerType
