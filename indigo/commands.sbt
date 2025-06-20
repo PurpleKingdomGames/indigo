@@ -10,7 +10,7 @@ lazy val coreProjects: List[String] =
   releaseProjects ++ List(
     "sandbox",
     "perf",
-    "shader",
+    "shader"
   )
 
 val allProjects = List("indigoProject") // the aggregate
