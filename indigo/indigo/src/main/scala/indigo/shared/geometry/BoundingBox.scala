@@ -117,9 +117,6 @@ final case class BoundingBox(position: Vertex, size: Vertex) derives CanEqual:
   def resizeBy(amount: Double): BoundingBox =
     resizeBy(Vertex(amount))
 
-  @deprecated("Please use `toIncircle`, or alternatively `toCircumcircle`.")
-  def toCircle: Circle =
-    Circle.incircle(this.toRectangle)
   def toIncircle: Circle =
     Circle.incircle(this.toRectangle)
   def toCircumcircle: Circle =
@@ -131,9 +128,6 @@ final case class BoundingBox(position: Vertex, size: Vertex) derives CanEqual:
   def toRectangle: Rectangle =
     Rectangle(position.toPoint, Size(size.x.toInt, size.y.toInt))
 
-  @deprecated("Please use `toBoundingIncircle`, or alternatively `toBoundingCircumcircle`.")
-  def toBoundingCircle: BoundingCircle =
-    BoundingCircle.incircle(this)
   def toBoundingIncircle: BoundingCircle =
     BoundingCircle.incircle(this)
   def toBoundingCircumcircle: BoundingCircle =
@@ -214,14 +208,6 @@ object BoundingBox:
       Vertex.fromPoint(rectangle.position),
       Vertex(rectangle.size.width.toDouble, rectangle.size.height.toDouble)
     )
-
-  @deprecated("Please use from `fromIncircle`, or alternatively `fromCircumcircle`")
-  def fromBoundingCircle(boundingCircle: BoundingCircle): BoundingBox =
-    boundingCircle.toBoundingBox
-
-  @deprecated("Please use from `fromIncircle`, or alternatively `fromCircumcircle`")
-  def fromCircle(circle: Circle): BoundingBox =
-    fromBoundingCircle(circle.toBoundingCircle)
 
   def fromIncircle(boundingCircle: BoundingCircle): BoundingBox =
     BoundingBox(Vertex(boundingCircle.left, boundingCircle.top), Vertex(boundingCircle.diameter))

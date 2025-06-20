@@ -84,17 +84,11 @@ final case class BoundingCircle(position: Vertex, radius: Double) derives CanEqu
   def toCircle: Circle =
     Circle(position.toPoint, radius.toInt)
 
-  @deprecated("Please use `toIncircleRectangle`, or alternatively `toCircumcircleRectangle`.")
-  def toRectangle: Rectangle =
-    Rectangle.fromIncircle(this.toCircle)
   def toIncircleRectangle: Rectangle =
     Rectangle.fromIncircle(this.toCircle)
   def toCircumcircleRectangle: Rectangle =
     Rectangle.fromCircumcircle(this.toCircle)
 
-  @deprecated("Please use `toIncircleBoundingBox`, or alternatively `toCircumcircleBoundingBox`.")
-  def toBoundingBox: BoundingBox =
-    BoundingBox.fromIncircle(this)
   def toIncircleBoundingBox: BoundingBox =
     BoundingBox.fromIncircle(this)
   def toCircumcircleBoundingBox: BoundingBox =
@@ -182,19 +176,11 @@ object BoundingCircle:
     val bb = BoundingBox.fromVertices(vertices)
     BoundingCircle(bb.center, bb.center.distanceTo(bb.topLeft))
 
-  @deprecated("Please use `fromVertices` which is functionally the same as `fromVertexCloud`.")
-  def fromVertexCloud(vertices: Batch[Vertex]): BoundingCircle =
-    fromVertices(vertices)
-
   def fromCircle(circle: Circle): BoundingCircle =
     BoundingCircle(
       Vertex.fromPoint(circle.position),
       circle.radius.toDouble
     )
-
-  @deprecated("Please use `BoundingCircle.incircle`, or alternatively `BoundingCircle.circumcircle`.")
-  def fromBoundingBox(boundingBox: BoundingBox): BoundingCircle =
-    incircle(boundingBox)
 
   /** Creates a `Circle` from a square (BoundingBox's are squared off by the max width/height) where the circle fits
     * inside the square.
