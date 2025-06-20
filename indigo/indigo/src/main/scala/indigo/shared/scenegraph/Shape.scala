@@ -215,9 +215,6 @@ object Shape:
     lazy val size: Size =
       Size(circle.radius * 2) + stroke.width
 
-    @deprecated("Use `withFill` instead")
-    def withFillColor(newFill: Fill): Circle =
-      this.copy(fill = newFill)
     def withFill(newFill: Fill): Circle =
       this.copy(fill = newFill)
     def modifyFill(modifier: Fill => Fill): Circle =
@@ -529,9 +526,6 @@ object Shape:
     lazy val size: Size =
       verticesBounds.size
 
-    @deprecated("Use `withFill` instead")
-    def withFillColor(newFill: Fill): Polygon =
-      this.copy(fill = newFill)
     def withFill(newFill: Fill): Polygon =
       this.copy(fill = newFill)
     def modifyFill(modifier: Fill => Fill): Polygon =

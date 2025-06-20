@@ -496,23 +496,6 @@ object PointerEvent:
 
     given CanEqual[PointerId, PointerId] = CanEqual.derived
 
-  @deprecated("Use PointerEvent.Enter", "0.18.0")
-  type PointerEnter = Enter
-  @deprecated("Use PointerEvent.Leave", "0.18.0")
-  type PointerLeave = Leave
-  @deprecated("Use PointerEvent.Down", "0.18.0")
-  type PointerDown = Down
-  @deprecated("Use PointerEvent.Up", "0.18.0")
-  type PointerUp = Up
-  @deprecated("Use PointerEvent.Click", "0.18.0")
-  type PointerClick = Click
-  @deprecated("Use PointerEvent.Move", "0.18.0")
-  type PointerMove = Move
-  @deprecated("Use PointerEvent.Cancel", "0.18.0")
-  type PointerCancel = Cancel
-  @deprecated("Use PointerEvent.Out", "0.18.0")
-  type PointerOut = Out
-
   /** Pointing device is moved into canvas hit test boundaries. It's counterpart is [[Leave]].
     */
   final case class Enter(

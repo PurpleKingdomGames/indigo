@@ -56,9 +56,6 @@ object Bezier:
 
   def fromVerticesNonEmpty(vertices: NonEmptyBatch[Vertex]): Bezier =
     Bezier(vertices.toBatch)
-  @deprecated("Bezier.fromVerticesNel deprecated, use 'fromVerticesNonEmpty' instead.")
-  def fromVerticesNel(vertices: NonEmptyBatch[Vertex]): Bezier =
-    fromVerticesNonEmpty(vertices)
 
   /** Calculate the position of a Bezier curve using the same calculation method regardless of vertex count.
     */

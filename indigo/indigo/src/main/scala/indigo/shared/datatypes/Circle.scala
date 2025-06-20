@@ -78,9 +78,6 @@ final case class Circle(position: Point, radius: Int) derives CanEqual:
   def contract(by: Int): Circle =
     resize(radius - by)
 
-  @deprecated("Please use `toIncircleRectangle`, or alternatively `toCircumcircleRectangle`.")
-  def toRectangle: Rectangle =
-    Rectangle.fromIncircle(this)
   def toIncircleRectangle: Rectangle =
     Rectangle.fromIncircle(this)
   def toCircumcircleRectangle: Rectangle =
@@ -89,9 +86,6 @@ final case class Circle(position: Point, radius: Int) derives CanEqual:
   def toBoundingCircle: BoundingCircle =
     BoundingCircle.fromCircle(this)
 
-  @deprecated("Please use `toIncircleBoundingBox`, or alternatively `toCircumcircleBoundingBox`.")
-  def toBoundingBox: BoundingBox =
-    BoundingBox.fromCircle(this)
   def toIncircleBoundingBox: BoundingBox =
     BoundingBox.fromIncircle(this)
   def toCircumcircleBoundingBox: BoundingBox =
@@ -114,10 +108,6 @@ object Circle:
 
   def fromPointCloud(points: Batch[Point]): Circle =
     fromPoint(points)
-
-  @deprecated("Please use `Circle.incircle`, or alternatively `Circle.circumcircle`.")
-  def fromRectangle(rectangle: Rectangle): Circle =
-    incircle(rectangle)
 
   /** Creates a `Circle` from a square (rectangles are squared off by the max width/height) where the circle fits inside
     * the square.
