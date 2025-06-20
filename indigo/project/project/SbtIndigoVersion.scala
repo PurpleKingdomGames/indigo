@@ -1,4 +1,3 @@
-
 object SbtIndigoVersion {
   def getVersion: String = {
     def rec(path: String, levels: Int, version: Option[String]): String = {
