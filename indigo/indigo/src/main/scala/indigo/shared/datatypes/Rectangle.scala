@@ -160,9 +160,6 @@ final case class Rectangle(position: Point, size: Size) derives CanEqual:
   def toSquare: Rectangle =
     this.copy(size = Size(Math.max(size.width, size.height)))
 
-  @deprecated("Please use `toIncircle`, or alternatively `toCircumcircle`.")
-  def toCircle: Circle =
-    Circle.incircle(this)
   def toIncircle: Circle =
     Circle.incircle(this)
   def toCircumcircle: Circle =
@@ -171,9 +168,6 @@ final case class Rectangle(position: Point, size: Size) derives CanEqual:
   def toBoundingBox: BoundingBox =
     BoundingBox.fromRectangle(this)
 
-  @deprecated("Please use `toBoundingIncircle`, or alternatively `toBoundingCircumcircle`.")
-  def toBoundingCircle: BoundingCircle =
-    BoundingCircle.incircle(this.toBoundingBox)
   def toBoundingIncircle: BoundingCircle =
     BoundingCircle.incircle(this.toBoundingBox)
   def toBoundingCircumcircle: BoundingCircle =
@@ -218,10 +212,6 @@ object Rectangle:
     val h = Math.max(Math.max(Math.max(pt1.y, pt2.y), pt3.y), pt4.y) - y
 
     Rectangle(x, y, w, h)
-
-  @deprecated("Use `fromPoints(pt1, pt2)` instead")
-  def fromTwoPoints(pt1: Point, pt2: Point): Rectangle =
-    fromPoints(pt1, pt2)
 
   def fromPointCloud(points: Batch[Point]): Rectangle =
     @tailrec
