@@ -19,11 +19,13 @@ import indigo.shared.events.NetworkEvent
 import indigo.shared.events.PointerEvent
 import indigo.shared.events.PointerEvent.*
 import indigo.shared.events.PointerType
+import indigo.shared.events.WheelEvent
 import org.scalajs.dom
 import org.scalajs.dom.document
 import org.scalajs.dom.html
 import org.scalajs.dom.window
 
+import scala.annotation.nowarn
 import scala.scalajs.js.Date
 
 final class WorldEvents:
@@ -133,7 +135,9 @@ final class WorldEvents:
           val position         = e.position(magnification, canvas)
           val buttons          = e.indigoButtons
           val movementPosition = e.movementPosition(magnification)
-          globalEventStream.pushGlobalEvent(
+
+          @nowarn("msg=deprecated")
+          val clickEvent =
             MouseEvent.Click(
               position,
               buttons,
@@ -144,7 +148,8 @@ final class WorldEvents:
               movementPosition,
               button
             )
-          )
+
+          globalEventStream.pushGlobalEvent(clickEvent)
         }
       },
       /*
@@ -159,6 +164,8 @@ final class WorldEvents:
         val position         = e.position(magnification, canvas)
         val buttons          = e.indigoButtons
         val movementPosition = e.movementPosition(magnification)
+
+        @nowarn("msg=deprecated")
         val wheel = MouseEvent.Wheel(
           position,
           buttons,
@@ -173,6 +180,30 @@ final class WorldEvents:
         )
 
         globalEventStream.pushGlobalEvent(wheel)
+
+        val deltaMode =
+          e.deltaMode match {
+            case dom.WheelEvent.DOM_DELTA_PIXEL => WheelEvent.DeltaMode.Pixel
+            case dom.WheelEvent.DOM_DELTA_LINE  => WheelEvent.DeltaMode.Line
+            case dom.WheelEvent.DOM_DELTA_PAGE  => WheelEvent.DeltaMode.Page
+            case _                              => WheelEvent.DeltaMode.Page
+          }
+        val newWheel = WheelEvent.Move(
+          e.deltaX,
+          e.deltaY,
+          e.deltaZ,
+          deltaMode
+        )
+        globalEventStream.pushGlobalEvent(newWheel)
+
+        if (e.deltaX != 0)
+          globalEventStream.pushGlobalEvent(WheelEvent.Horizontal(e.deltaX, deltaMode))
+
+        if (e.deltaY != 0)
+          globalEventStream.pushGlobalEvent(WheelEvent.Vertical(e.deltaY, deltaMode))
+
+        if (e.deltaZ != 0)
+          globalEventStream.pushGlobalEvent(WheelEvent.Depth(e.deltaZ, deltaMode))
       },
       onKeyDown = { e =>
         globalEventStream.pushGlobalEvent(
@@ -237,17 +268,18 @@ final class WorldEvents:
         )
 
         if pointerType == PointerType.Mouse then {
-          globalEventStream.pushGlobalEvent(
-            MouseEvent.Enter(
-              position,
-              buttons,
-              e.altKey,
-              e.ctrlKey,
-              e.metaKey,
-              e.shiftKey,
-              movementPosition
-            )
+          @nowarn("msg=deprecated")
+          val enterEvent = MouseEvent.Enter(
+            position,
+            buttons,
+            e.altKey,
+            e.ctrlKey,
+            e.metaKey,
+            e.shiftKey,
+            movementPosition
           )
+
+          globalEventStream.pushGlobalEvent(enterEvent)
         }
       },
       onPointerLeave = { e =>
@@ -279,7 +311,8 @@ final class WorldEvents:
         )
 
         if pointerType == PointerType.Mouse then {
-          globalEventStream.pushGlobalEvent(
+          @nowarn("msg=deprecated")
+          val leaveEvent =
             MouseEvent.Leave(
               position,
               buttons,
@@ -289,7 +322,8 @@ final class WorldEvents:
               e.shiftKey,
               movementPosition
             )
-          )
+
+          globalEventStream.pushGlobalEvent(leaveEvent)
         }
       },
       onPointerDown = { e =>
@@ -330,7 +364,8 @@ final class WorldEvents:
 
         if pointerType == PointerType.Mouse then {
           MouseButton.fromOrdinalOpt(e.button).foreach { button =>
-            globalEventStream.pushGlobalEvent(
+            @nowarn("msg=deprecated")
+            val event =
               MouseEvent.MouseDown(
                 position,
                 buttons,
@@ -341,7 +376,8 @@ final class WorldEvents:
                 movementPosition,
                 button
               )
-            )
+
+            globalEventStream.pushGlobalEvent(event)
           }
         }
         e.preventDefault()
@@ -413,7 +449,8 @@ final class WorldEvents:
 
         if pointerType == PointerType.Mouse then {
           MouseButton.fromOrdinalOpt(e.button).foreach { button =>
-            globalEventStream.pushGlobalEvent(
+            @nowarn("msg=deprecated")
+            val event =
               MouseEvent.MouseUp(
                 position,
                 buttons,
@@ -424,7 +461,8 @@ final class WorldEvents:
                 movementPosition,
                 button
               )
-            )
+
+            globalEventStream.pushGlobalEvent(event)
           }
         }
         e.preventDefault()
@@ -436,7 +474,7 @@ final class WorldEvents:
         val pointerType      = e.toPointerType
 
         globalEventStream.pushGlobalEvent(
-          Move(
+          PointerEvent.Move(
             position,
             buttons,
             e.altKey,
@@ -458,7 +496,8 @@ final class WorldEvents:
         )
 
         if pointerType == PointerType.Mouse then {
-          globalEventStream.pushGlobalEvent(
+          @nowarn("msg=deprecated")
+          val event =
             MouseEvent.Move(
               position,
               buttons,
@@ -468,7 +507,8 @@ final class WorldEvents:
               e.shiftKey,
               movementPosition
             )
-          )
+
+          globalEventStream.pushGlobalEvent(event)
         }
         e.preventDefault()
       },
