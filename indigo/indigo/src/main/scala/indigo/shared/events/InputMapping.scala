@@ -5,6 +5,7 @@ import indigo.shared.datatypes.Point
 import indigo.shared.input.Gamepad
 import indigo.shared.input.Keyboard
 import indigo.shared.input.Mouse
+import indigo.shared.input.Wheel
 
 /** Input mapping instances describe combinations of "live" inputs like key combinations or gamepad buttons, and map
   * them to some user defined value.
@@ -16,7 +17,7 @@ final case class InputMapping[A](oneOf: List[(Combo, A)]) {
   def add(combos: List[(Combo, A)]): InputMapping[A] =
     this.copy(oneOf = oneOf ++ combos)
 
-  def find(mouse: Mouse, keyboard: Keyboard, gamepad: Gamepad): Option[A] =
+  def find(mouse: Mouse, wheel: Wheel, keyboard: Keyboard, gamepad: Gamepad): Option[A] =
     oneOf
       .find { c =>
         c._1.mouseInputs.forall {
@@ -26,8 +27,8 @@ final case class InputMapping[A](oneOf: List[(Combo, A)]) {
           case MouseInput.MouseAt(pt)             => mouse.maybePosition == Some(pt)
           case MouseInput.MouseButtonUp(button)   => mouse.released(button)
           case MouseInput.MouseButtonDown(button) => mouse.pressed(button)
-          case MouseInput.MouseWheelDown          => mouse.scrolled.contains(MouseWheel.ScrollDown)
-          case MouseInput.MouseWheelUp            => mouse.scrolled.contains(MouseWheel.ScrollUp)
+          case MouseInput.MouseWheelDown          => wheel.verticalScroll.contains(ScrollDirection.ScrollDown)
+          case MouseInput.MouseWheelUp            => wheel.verticalScroll.contains(ScrollDirection.ScrollUp)
         } &&
         c._1.keyInputs.forall(k => keyboard.keysDown.contains(k)) &&
         c._1.gamepadInputs.forall {
