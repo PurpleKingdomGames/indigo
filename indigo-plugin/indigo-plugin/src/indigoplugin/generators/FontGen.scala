@@ -241,7 +241,7 @@ object FontGen {
           .mkString("\n")
           .dropRight(1) // Drops the last ','
         // language=scala
-        s"""private object CharBatch$index {
+        s"""private object ${moduleName}CharBatch$index {
            |  val batch = Batch(
            |${chars}
            |  )
@@ -250,7 +250,7 @@ object FontGen {
       }
       .mkString("\n")
     val charBatchAdditions = (0 until (chars.length / CharBatchSize) + 1)
-      .map(index => s"      .addChars(CharBatch${index}.batch)")
+      .map(index => s"      .addChars(${moduleName}CharBatch${index}.batch)")
       .mkString("\n")
 
     val dx = default.x.toString
