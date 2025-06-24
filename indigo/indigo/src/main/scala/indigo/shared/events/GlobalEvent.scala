@@ -131,6 +131,10 @@ object WheelEvent:
 
   final case class Move(deltaX: Double, deltaY: Double, deltaZ: Double, deltaMode: DeltaMode) extends WheelEvent
 
+  object Move:
+    def apply(deltaX: Double, deltaY: Double, deltaZ: Double): Move =
+      Move(deltaX, deltaY, deltaZ, DeltaMode.Pixel)
+
   final case class Vertical(deltaY: Double, deltaMode: DeltaMode) extends WheelEvent {
     val direction =
       if deltaY < 0 then ScrollDirection.ScrollUp
