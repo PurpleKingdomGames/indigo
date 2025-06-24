@@ -56,7 +56,7 @@ object CaptureScreenScene extends Scene[SandboxStartupData, SandboxGameModel, Sa
       model: SandboxGameModel,
       viewModel: ViewModel
   ): GlobalEvent => Outcome[ViewModel] = {
-    case MouseEvent.Click(x, y) if x >= 250 && x <= 266 && y >= 165 && y <= 181 =>
+    case PointerEvent.Click(x, y) if x >= 250 && x <= 266 && y >= 165 && y <= 181 =>
       val screenshots: Set[AssetType] =
         // Capture 2 screenshots, 1 of the full screen and the other of the clipping rectangle
         // These are reduced by 0.125 so that it sits a quarter size of the real screen without further scaling
