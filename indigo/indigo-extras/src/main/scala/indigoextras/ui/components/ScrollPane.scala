@@ -196,7 +196,7 @@ object ScrollPane:
         context: UIContext[ReferenceData],
         model: ScrollPane[A, ReferenceData]
     ): GlobalEvent => Outcome[ScrollPane[A, ReferenceData]] =
-      case MouseEvent.Wheel(pos, deltaY)
+      case WheelEvent.Vertical(deltaY)
           if model.scrollOptions.isEnabled && Bounds(context.parent.coords, model.dimensions)
             .contains(context.pointerCoords) =>
         val scrollBy =
