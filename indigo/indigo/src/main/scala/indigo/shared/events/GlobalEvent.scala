@@ -13,6 +13,10 @@ import indigo.shared.datatypes.BindingKey
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.RGBA
 import indigo.shared.datatypes.Radians
+import indigo.shared.events.MouseEvent.Move
+import indigo.shared.events.MouseEvent.Wheel
+
+import scala.annotation.nowarn
 
 /** A trait that tells Indigo to allow this instance into the event loop for the duration of one frame.
   */
@@ -111,6 +115,47 @@ case object ApplicationLostFocus extends GlobalEvent
   */
 case object CanvasLostFocus extends GlobalEvent
 
+/** Represents a wheel event, such as a mouse wheel or touchpad scroll
+  */
+sealed trait WheelEvent extends InputEvent
+object WheelEvent:
+  enum DeltaMode derives CanEqual:
+    /** The delta values are in pixels */
+    case Pixel
+
+    /** The delta values are in lines */
+    case Line
+
+    /** The delta values are in pages */
+    case Page
+
+  final case class Move(deltaX: Double, deltaY: Double, deltaZ: Double, deltaMode: DeltaMode) extends WheelEvent
+
+  final case class Vertical(deltaY: Double, deltaMode: DeltaMode) extends WheelEvent {
+    val direction =
+      if deltaY < 0 then ScrollDirection.ScrollUp
+      else ScrollDirection.ScrollDown
+  }
+
+  object Vertical:
+    def unapply(e: Vertical): Option[Double] =
+      Option(e.deltaY)
+
+  final case class Horizontal(deltaX: Double, deltaMode: DeltaMode) extends WheelEvent {
+    val direction =
+      if deltaX < 0 then ScrollDirection.ScrollLeft
+      else ScrollDirection.ScrollRight
+  }
+
+  object Horizontal:
+    def unapply(e: Horizontal): Option[Double] =
+      Option(e.deltaX)
+
+  final case class Depth(deltaZ: Double, deltaMode: DeltaMode) extends WheelEvent
+  object Depth:
+    def unapply(e: Depth): Option[Double] =
+      Option(e.deltaZ)
+
 /** Follows the MDN spec values https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/button Relies on the ordinal
   * behavior of Scala 3 enums to match the button number
   */
@@ -120,10 +165,14 @@ enum MouseButton derives CanEqual:
 enum PointerType derives CanEqual:
   case Mouse, Pen, Touch, Unknown
 
-/** Represents in which direction the mouse wheel was rotated
-  */
+@deprecated("Use `ScrollDirection` instead", "0.22.0")
 enum MouseWheel derives CanEqual:
-  case ScrollUp, ScrollDown
+  @nowarn("msg=deprecated") case ScrollUp, ScrollDown
+
+/** Represents in which direction the wheel input was rotated
+  */
+enum ScrollDirection derives CanEqual:
+  case ScrollUp, ScrollDown, ScrollLeft, ScrollRight
 
 object MouseButton:
   def fromOrdinalOpt(ordinal: Int): Option[MouseButton] =
@@ -182,7 +231,10 @@ trait MouseOrPointerEvent:
 
 /** Represents all mouse events
   */
+@deprecated("Use `PointerEvent` instead", "0.22.0")
 sealed trait MouseEvent extends InputEvent with MouseOrPointerEvent
+
+@nowarn("msg=deprecated")
 object MouseEvent:
 
   /** The mouse has been clicked.
@@ -190,6 +242,7 @@ object MouseEvent:
     * @param button
     *   The button that was used for the click
     */
+  @deprecated("Use `PointerEvent.Click` instead", "0.22.0")
   final case class Click(
       position: Point,
       buttons: Batch[MouseButton],
@@ -201,6 +254,7 @@ object MouseEvent:
       button: MouseButton
   ) extends MouseEvent
   object Click:
+    @nowarn("msg=deprecated")
     def apply(x: Int, y: Int): Click =
       Click(
         position = Point(x, y),
@@ -212,6 +266,7 @@ object MouseEvent:
         movementPosition = Point.zero,
         button = MouseButton.LeftMouseButton
       )
+    @nowarn("msg=deprecated")
     def apply(position: Point): Click =
       Click(
         position = position,
@@ -223,6 +278,7 @@ object MouseEvent:
         movementPosition = Point.zero,
         button = MouseButton.LeftMouseButton
       )
+    @nowarn("msg=deprecated")
     def unapply(e: Click): Option[Point] =
       Option(e.position)
 
@@ -230,6 +286,7 @@ object MouseEvent:
     * @param button
     *   The button that was released
     */
+  @deprecated("Use `PointerEvent.Up` instead", "0.22.0")
   final case class MouseUp(
       position: Point,
       buttons: Batch[MouseButton],
@@ -241,6 +298,7 @@ object MouseEvent:
       button: MouseButton
   ) extends MouseEvent
   object MouseUp:
+    @nowarn("msg=deprecated")
     def apply(position: Point): MouseUp =
       MouseUp(
         position = position,
@@ -252,6 +310,7 @@ object MouseEvent:
         movementPosition = Point.zero,
         button = MouseButton.LeftMouseButton
       )
+    @nowarn("msg=deprecated")
     def apply(x: Int, y: Int): MouseUp =
       MouseUp(
         position = Point(x, y),
@@ -263,6 +322,7 @@ object MouseEvent:
         movementPosition = Point.zero,
         button = MouseButton.LeftMouseButton
       )
+    @nowarn("msg=deprecated")
     def apply(x: Int, y: Int, button: MouseButton): MouseUp =
       MouseUp(
         position = Point(x, y),
@@ -274,6 +334,7 @@ object MouseEvent:
         movementPosition = Point.zero,
         button = button
       )
+    @nowarn("msg=deprecated")
     def unapply(e: MouseUp): Option[Point] =
       Option(e.position)
 
@@ -281,6 +342,7 @@ object MouseEvent:
     * @param button
     *   The button that was pressed down
     */
+  @deprecated("Use `PointerEvent.Down` instead", "0.22.0")
   final case class MouseDown(
       position: Point,
       buttons: Batch[MouseButton],
@@ -292,6 +354,7 @@ object MouseEvent:
       button: MouseButton
   ) extends MouseEvent
   object MouseDown:
+    @nowarn("msg=deprecated")
     def apply(position: Point): MouseDown =
       MouseDown(
         position = position,
@@ -303,6 +366,7 @@ object MouseEvent:
         movementPosition = Point.zero,
         button = MouseButton.LeftMouseButton
       )
+    @nowarn("msg=deprecated")
     def apply(x: Int, y: Int): MouseDown =
       MouseDown(
         position = Point(x, y),
@@ -314,6 +378,7 @@ object MouseEvent:
         movementPosition = Point.zero,
         button = MouseButton.LeftMouseButton
       )
+    @nowarn("msg=deprecated")
     def apply(x: Int, y: Int, button: MouseButton): MouseDown =
       MouseDown(
         position = Point(x, y),
@@ -325,11 +390,13 @@ object MouseEvent:
         movementPosition = Point.zero,
         button = button
       )
+    @nowarn("msg=deprecated")
     def unapply(e: MouseDown): Option[Point] =
       Option(e.position)
 
   /** The mouse was moved to a new position.
     */
+  @deprecated("Use `PointerEvent.Move` instead", "0.22.0")
   final case class Move(
       position: Point,
       buttons: Batch[MouseButton],
@@ -340,6 +407,7 @@ object MouseEvent:
       movementPosition: Point
   ) extends MouseEvent
   object Move:
+    @nowarn("msg=deprecated")
     def apply(x: Int, y: Int): Move =
       Move(
         position = Point(x, y),
@@ -350,11 +418,13 @@ object MouseEvent:
         isShiftKeyDown = false,
         movementPosition = Point.zero
       )
+    @nowarn("msg=deprecated")
     def unapply(e: Move): Option[Point] =
       Option(e.position)
 
   /** Mouse has moved into canvas hit test boundaries. It's counterpart is [[Leave]].
     */
+  @deprecated("Use `PointerEvent.Enter` instead", "0.22.0")
   final case class Enter(
       position: Point,
       buttons: Batch[MouseButton],
@@ -365,11 +435,13 @@ object MouseEvent:
       movementPosition: Point
   ) extends MouseEvent
   object Enter:
+    @nowarn("msg=deprecated")
     def unapply(e: Enter): Option[Point] =
       Option(e.position)
 
   /** Mouse has left canvas hit test boundaries. It's counterpart is [[Enter]].
     */
+  @deprecated("Use `PointerEvent.Leave` instead", "0.22.0")
   final case class Leave(
       position: Point,
       buttons: Batch[MouseButton],
@@ -380,6 +452,7 @@ object MouseEvent:
       movementPosition: Point
   ) extends MouseEvent
   object Leave:
+    @nowarn("msg=deprecated")
     def unapply(e: Leave): Option[Point] =
       Option(e.position)
 
@@ -392,6 +465,7 @@ object MouseEvent:
     * @param deltaZ
     *   horizontal amount of pixels, pages or other unit, depending on delta mode, the Z axis was scrolled
     */
+  @deprecated("Use `WheelEvent.Move` instead", "0.22.0")
   final case class Wheel(
       position: Point,
       buttons: Batch[MouseButton],
@@ -405,6 +479,7 @@ object MouseEvent:
       deltaZ: Double
   ) extends MouseEvent
   object Wheel:
+    @nowarn("msg=deprecated")
     def apply(x: Int, y: Int, deltaX: Double, deltaY: Double, deltaZ: Double): Wheel =
       Wheel(
         position = Point(x, y),
@@ -419,6 +494,7 @@ object MouseEvent:
         deltaZ = deltaZ
       )
 
+    @nowarn("msg=deprecated")
     def apply(x: Int, y: Int, deltaY: Double): Wheel =
       Wheel(
         position = Point(x, y),
@@ -432,6 +508,7 @@ object MouseEvent:
         deltaY = deltaY,
         deltaZ = 0
       )
+    @nowarn("msg=deprecated")
     def unapply(e: Wheel): Option[(Point, Double)] =
       Option((e.position, e.deltaY))
 
