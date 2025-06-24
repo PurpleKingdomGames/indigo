@@ -195,25 +195,46 @@ class InputStateTests extends munit.FunSuite {
     assertEquals(state7.mouse.isButtonDown(RightMouseButton), false)
   }
 
-  test("Mouse state.scrolled") {
-    val initialState = InputState.calculateNext(InputState.default, Batch(MouseEvent.Wheel(0, 0, -5)), gamepadState1)
+  test("Wheel state.verticalScroll") {
+    val initialState = InputState.calculateNext(InputState.default, Batch(WheelEvent.Move(10, -5, 0)), gamepadState1)
     val state2 = InputState.calculateNext(
       initialState,
-      Batch(MouseEvent.Wheel(0, 0, -5), MouseEvent.Wheel(0, 0, 10)),
+      Batch(WheelEvent.Move(-5, -5, 0), WheelEvent.Move(-5, 10, 0)),
       gamepadState1
     )
     val state3 = InputState.calculateNext(state2, Batch.empty[PointerEvent], gamepadState1)
     val state4 =
       InputState.calculateNext(
         state3,
-        Batch(MouseEvent.Wheel(0, 0, -10), MouseEvent.Wheel(0, 0, 10)),
+        Batch(WheelEvent.Move(-5, -10, 0), WheelEvent.Move(5, 10, 0)),
         gamepadState1
       )
 
-    assertEquals(initialState.mouse.scrolled, Some(MouseWheel.ScrollUp))
-    assertEquals(state2.mouse.scrolled, Some(MouseWheel.ScrollDown))
-    assertEquals(state3.mouse.scrolled, Option.empty[MouseWheel])
-    assertEquals(state4.mouse.scrolled, Option.empty[MouseWheel])
+    assertEquals(initialState.wheel.verticalScroll, Some(ScrollDirection.ScrollUp))
+    assertEquals(state2.wheel.verticalScroll, Some(ScrollDirection.ScrollDown))
+    assertEquals(state3.wheel.verticalScroll, Option.empty[ScrollDirection])
+    assertEquals(state4.wheel.verticalScroll, Option.empty[ScrollDirection])
+  }
+
+  test("Wheel state.horizontalScroll") {
+    val initialState = InputState.calculateNext(InputState.default, Batch(WheelEvent.Move(10, -5, 0)), gamepadState1)
+    val state2 = InputState.calculateNext(
+      initialState,
+      Batch(WheelEvent.Move(-5, -5, 0), WheelEvent.Move(-5, 10, 0)),
+      gamepadState1
+    )
+    val state3 = InputState.calculateNext(state2, Batch.empty[PointerEvent], gamepadState1)
+    val state4 =
+      InputState.calculateNext(
+        state3,
+        Batch(WheelEvent.Move(-5, -10, 0), WheelEvent.Move(5, 10, 0)),
+        gamepadState1
+      )
+
+    assertEquals(initialState.wheel.horizontalScroll, Some(ScrollDirection.ScrollRight))
+    assertEquals(state2.wheel.horizontalScroll, Some(ScrollDirection.ScrollLeft))
+    assertEquals(state3.wheel.horizontalScroll, Option.empty[ScrollDirection])
+    assertEquals(state4.wheel.horizontalScroll, Option.empty[ScrollDirection])
   }
 
   val events2: Batch[KeyboardEvent] =
@@ -343,7 +364,7 @@ class InputStateTests extends munit.FunSuite {
       KeyboardEvent.KeyDown(Key.KEY_D),
       PointerEvent.Move(10, 10),
       PointerEvent.Down(10, 10),
-      MouseEvent.Wheel(10, 10, -15)
+      WheelEvent.Move(0, -15, 0)
     )
 
   val gamepadState2: Gamepad =
