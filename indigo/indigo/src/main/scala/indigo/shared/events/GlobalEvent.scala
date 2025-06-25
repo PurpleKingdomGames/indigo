@@ -115,6 +115,11 @@ case object ApplicationLostFocus extends GlobalEvent
   */
 case object CanvasLostFocus extends GlobalEvent
 
+/** Represents in which direction the wheel input was rotated
+  */
+enum WheelDirection derives CanEqual:
+  case Up, Down, Left, Right
+
 /** Represents a wheel event, such as a mouse wheel or touchpad scroll
   */
 sealed trait WheelEvent extends InputEvent
@@ -137,8 +142,8 @@ object WheelEvent:
 
   final case class Vertical(deltaY: Double, deltaMode: DeltaMode) extends WheelEvent {
     val direction =
-      if deltaY < 0 then ScrollDirection.ScrollUp
-      else ScrollDirection.ScrollDown
+      if deltaY < 0 then WheelDirection.Up
+      else WheelDirection.Down
   }
 
   object Vertical:
@@ -147,8 +152,8 @@ object WheelEvent:
 
   final case class Horizontal(deltaX: Double, deltaMode: DeltaMode) extends WheelEvent {
     val direction =
-      if deltaX < 0 then ScrollDirection.ScrollLeft
-      else ScrollDirection.ScrollRight
+      if deltaX < 0 then WheelDirection.Left
+      else WheelDirection.Right
   }
 
   object Horizontal:
@@ -169,14 +174,9 @@ enum MouseButton derives CanEqual:
 enum PointerType derives CanEqual:
   case Mouse, Pen, Touch, Unknown
 
-@deprecated("Use `ScrollDirection` instead", "0.22.0")
+@deprecated("Use `WheelDirection` instead", "0.22.0")
 enum MouseWheel derives CanEqual:
   @nowarn("msg=deprecated") case ScrollUp, ScrollDown
-
-/** Represents in which direction the wheel input was rotated
-  */
-enum ScrollDirection derives CanEqual:
-  case ScrollUp, ScrollDown, ScrollLeft, ScrollRight
 
 object MouseButton:
   def fromOrdinalOpt(ordinal: Int): Option[MouseButton] =
