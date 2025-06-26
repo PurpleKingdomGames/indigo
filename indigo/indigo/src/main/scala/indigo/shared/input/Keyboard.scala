@@ -12,6 +12,18 @@ final class Keyboard(keyboardEvents: Batch[KeyboardEvent], val keysDown: Batch[K
 
   lazy val keysReleased: Batch[Key] = keyboardEvents.collect { case k: KeyboardEvent.KeyUp => k.key }
 
+  lazy val isMetaKeyDown: Boolean =
+    keysDown.exists(k => k.code == KeyCode.MetaLeft || k.code == KeyCode.MetaRight)
+
+  lazy val isShiftKeyDown: Boolean =
+    keysDown.exists(k => k.code == KeyCode.ShiftLeft || k.code == KeyCode.ShiftRight)
+
+  lazy val isCtrlKeyDown: Boolean =
+    keysDown.exists(k => k.code == KeyCode.ControlLeft || k.code == KeyCode.ControlRight)
+
+  lazy val isAltKeyDown: Boolean =
+    keysDown.exists(k => k.code == KeyCode.AltLeft || k.code == KeyCode.AltRight)
+
   def keysAreDown(keys: Key*): Boolean = keys.forall(keyCode => keysDown.contains(keyCode))
   def keysAreUp(keys: Key*): Boolean   = keys.forall(keyCode => keysReleased.contains(keyCode))
 

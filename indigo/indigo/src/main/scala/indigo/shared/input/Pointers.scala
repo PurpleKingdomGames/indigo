@@ -5,7 +5,7 @@ import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.events.PointerEvent
-import indigo.shared.events.PointerEvent.PointerId
+import indigo.shared.events.PointerId
 import indigo.shared.events.PointerType
 
 final class Pointers(
