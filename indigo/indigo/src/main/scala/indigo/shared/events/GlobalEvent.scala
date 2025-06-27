@@ -180,6 +180,12 @@ object PointerId:
   val unknown                             = PointerId(0)
   given CanEqual[PointerId, PointerId]    = CanEqual.derived
 
+opaque type FingerId = Double
+object FingerId:
+  inline def apply(id: Double): FingerId = id
+  val unknown                            = FingerId(0)
+  given CanEqual[FingerId, FingerId]     = CanEqual.derived
+
 @deprecated("Use `WheelDirection` instead", "0.22.0")
 enum MouseWheel derives CanEqual:
   @nowarn("msg=deprecated") case ScrollUp, ScrollDown
@@ -307,18 +313,14 @@ object MouseEvent:
     * @param button
     *   The button that was released
     */
+  @deprecated("Use `MouseEvents.Up` instead", "0.22.0")
   final case class MouseUp(
       pointerId: PointerId,
       position: Point,
-      @deprecated("Use `InputState.mouse.buttons` instead", "0.22.0")
       buttons: Batch[MouseButton],
-      @deprecated("Use `InputState.keyboard.isAltKeyDown` instead", "0.22.0")
       isAltKeyDown: Boolean,
-      @deprecated("Use `InputState.keyboard.isCtrlKeyDown` instead", "0.22.0")
       isCtrlKeyDown: Boolean,
-      @deprecated("Use `InputState.keyboard.isMetaKeyDown` instead", "0.22.0")
       isMetaKeyDown: Boolean,
-      @deprecated("Use `InputState.keyboard.isShiftKeyDown` instead", "0.22.0")
       isShiftKeyDown: Boolean,
       movementPosition: Point,
       button: MouseButton
@@ -366,22 +368,49 @@ object MouseEvent:
     def unapply(e: MouseUp): Option[Point] =
       Option(e.position)
 
+  final case class Up(
+      pointerId: PointerId,
+      position: Point,
+      movementPosition: Point,
+      button: MouseButton
+  ) extends MouseEvent
+  object Up:
+    def apply(position: Point): Up =
+      Up(
+        PointerId.unknown,
+        position = position,
+        movementPosition = Point.zero,
+        button = MouseButton.LeftMouseButton
+      )
+    def apply(x: Int, y: Int): Up =
+      Up(
+        PointerId.unknown,
+        position = Point(x, y),
+        movementPosition = Point.zero,
+        button = MouseButton.LeftMouseButton
+      )
+    def apply(x: Int, y: Int, button: MouseButton): Up =
+      Up(
+        PointerId.unknown,
+        position = Point(x, y),
+        movementPosition = Point.zero,
+        button = button
+      )
+    def unapply(e: Up): Option[Point] =
+      Option(e.position)
+
   /** The mouse button was pressed down.
     * @param button
     *   The button that was pressed down
     */
+  @deprecated("Use `MouseEvents.Down` instead", "0.22.0")
   final case class MouseDown(
       pointerId: PointerId,
       position: Point,
-      @deprecated("Use `InputState.mouse.buttons` instead", "0.22.0")
       buttons: Batch[MouseButton],
-      @deprecated("Use `InputState.keyboard.isAltKeyDown` instead", "0.22.0")
       isAltKeyDown: Boolean,
-      @deprecated("Use `InputState.keyboard.isCtrlKeyDown` instead", "0.22.0")
       isCtrlKeyDown: Boolean,
-      @deprecated("Use `InputState.keyboard.isMetaKeyDown` instead", "0.22.0")
       isMetaKeyDown: Boolean,
-      @deprecated("Use `InputState.keyboard.isShiftKeyDown` instead", "0.22.0")
       isShiftKeyDown: Boolean,
       movementPosition: Point,
       button: MouseButton
@@ -427,6 +456,41 @@ object MouseEvent:
         button = button
       )
     def unapply(e: MouseDown): Option[Point] =
+      Option(e.position)
+
+  /** The mouse button was pressed down.
+    * @param button
+    *   The button that was pressed down
+    */
+  final case class Down(
+      pointerId: PointerId,
+      position: Point,
+      movementPosition: Point,
+      button: MouseButton
+  ) extends MouseEvent
+  object Down:
+    def apply(position: Point): Down =
+      Down(
+        PointerId.unknown,
+        position = position,
+        movementPosition = Point.zero,
+        button = MouseButton.LeftMouseButton
+      )
+    def apply(x: Int, y: Int): Down =
+      Down(
+        PointerId.unknown,
+        position = Point(x, y),
+        movementPosition = Point.zero,
+        button = MouseButton.LeftMouseButton
+      )
+    def apply(x: Int, y: Int, button: MouseButton): Down =
+      Down(
+        PointerId.unknown,
+        position = Point(x, y),
+        movementPosition = Point.zero,
+        button = button
+      )
+    def unapply(e: Down): Option[Point] =
       Option(e.position)
 
   /** The mouse was moved to a new position.
@@ -504,6 +568,21 @@ object MouseEvent:
     def unapply(e: Leave): Option[Point] =
       Option(e.position)
 
+  /** The ongoing interactions was cancelled due to:
+    *   - the pointer device being disconnected
+    *   - device orientation change
+    *   - palm rejection
+    *   - switching applications
+    */
+  final case class Cancel(
+      pointerId: PointerId,
+      position: Point,
+      movementPosition: Point
+  ) extends MouseEvent
+  object Cancel:
+    def unapply(e: Cancel): Option[Point] =
+      Option(e.position)
+
   /** The mouse wheel was rotated a certain amount around an axis.
     *
     * @param deltaX
@@ -561,6 +640,401 @@ object MouseEvent:
       Option((e.position, e.deltaY))
 
 end MouseEvent
+
+/** Represents all touch events
+  */
+sealed trait TouchEvent extends PositionalPointerEvent:
+  /** Unique pointer identifier
+    */
+  def pointerId: PointerId
+
+  /** The identifier of the finger that triggered the event */
+  def fingerId: FingerId
+
+  /** Coordinates relative to the magnification level
+    */
+  def position: Point
+
+  /** The X position relative to the magnification level
+    */
+  def x: Int = position.x
+
+  /** The Y position relative to the magnification level
+    */
+  def y: Int = position.y
+
+  /** The delta position between this event and the last event relative to the magnification level
+    */
+  def movementPosition: Point
+
+  /** The delta X position between this event and the last event relative to the magnification level
+    */
+  def movementX: Int = movementPosition.x
+
+  /** The delta Y position between this event and the last event relative to the magnification level
+    */
+  def movementY: Int = movementPosition.y
+
+  /** The normalised pressure of the touch */
+  def pressure: Double
+
+object TouchEvent:
+
+  /** A finger has tapped the screen
+    */
+  final case class Tap(
+      pointerId: PointerId,
+      fingerId: FingerId,
+      position: Point,
+      movementPosition: Point,
+      pressure: Double
+  ) extends MouseEvent
+  object Tap:
+    def apply(x: Int, y: Int): Tap =
+      Tap(
+        PointerId.unknown,
+        FingerId.unknown,
+        position = Point(x, y),
+        movementPosition = Point.zero,
+        pressure = 1
+      )
+    def apply(position: Point): Tap =
+      Tap(
+        PointerId.unknown,
+        FingerId.unknown,
+        position = position,
+        movementPosition = Point.zero,
+        pressure = 1
+      )
+    def unapply(e: Tap): Option[Point] =
+      Option(e.position)
+
+  /** The mouse button was released.
+    * @param button
+    *   The button that was released
+    */
+  final case class Up(
+      pointerId: PointerId,
+      fingerId: FingerId,
+      position: Point,
+      movementPosition: Point,
+      pressure: Double
+  ) extends MouseEvent
+  object Up:
+    def apply(position: Point): Up =
+      Up(
+        PointerId.unknown,
+        FingerId.unknown,
+        position = position,
+        movementPosition = Point.zero,
+        pressure = 0
+      )
+    def apply(x: Int, y: Int): Up =
+      Up(
+        PointerId.unknown,
+        FingerId.unknown,
+        position = Point(x, y),
+        movementPosition = Point.zero,
+        pressure = 0
+      )
+    def apply(x: Int, y: Int, button: MouseButton): Up =
+      Up(
+        PointerId.unknown,
+        FingerId.unknown,
+        position = Point(x, y),
+        movementPosition = Point.zero,
+        pressure = 0
+      )
+    def unapply(e: Up): Option[Point] =
+      Option(e.position)
+
+  /** The mouse button was pressed down.
+    * @param button
+    *   The button that was pressed down
+    */
+  final case class Down(
+      pointerId: PointerId,
+      fingerId: FingerId,
+      position: Point,
+      movementPosition: Point,
+      pressure: Double
+  ) extends MouseEvent
+  object MouseDown:
+    def apply(position: Point): Down =
+      Down(
+        PointerId.unknown,
+        FingerId.unknown,
+        position = position,
+        movementPosition = Point.zero,
+        pressure = 1
+      )
+    def apply(x: Int, y: Int): Down =
+      Down(
+        PointerId.unknown,
+        FingerId.unknown,
+        position = Point(x, y),
+        movementPosition = Point.zero,
+        pressure = 1
+      )
+    def apply(x: Int, y: Int, button: MouseButton): Down =
+      Down(
+        PointerId.unknown,
+        FingerId.unknown,
+        position = Point(x, y),
+        movementPosition = Point.zero,
+        pressure = 1
+      )
+    def unapply(e: Down): Option[Point] =
+      Option(e.position)
+
+  /** The mouse was moved to a new position.
+    */
+  final case class Move(
+      pointerId: PointerId,
+      fingerId: FingerId,
+      position: Point,
+      movementPosition: Point,
+      pressure: Double
+  ) extends TouchEvent
+  object Move:
+    def apply(x: Int, y: Int): Move =
+      Move(
+        PointerId.unknown,
+        FingerId.unknown,
+        position = Point(x, y),
+        movementPosition = Point.zero,
+        pressure = 1
+      )
+    def unapply(e: Move): Option[Point] =
+      Option(e.position)
+
+  /** Mouse has moved into canvas hit test boundaries. It's counterpart is [[Leave]].
+    */
+  final case class Enter(
+      pointerId: PointerId,
+      fingerId: FingerId,
+      position: Point,
+      movementPosition: Point,
+      pressure: Double
+  ) extends TouchEvent
+  object Enter:
+    def unapply(e: Enter): Option[Point] =
+      Option(e.position)
+
+  /** Mouse has left canvas hit test boundaries. It's counterpart is [[Enter]].
+    */
+  final case class Leave(
+      pointerId: PointerId,
+      fingerId: FingerId,
+      position: Point,
+      movementPosition: Point,
+      pressure: Double
+  ) extends TouchEvent
+  object Leave:
+    def unapply(e: Leave): Option[Point] =
+      Option(e.position)
+
+  /** The ongoing interactions was cancelled due to:
+    *   - the pointer device being disconnected
+    *   - device orientation change
+    *   - palm rejection
+    *   - switching applications
+    */
+  final case class Cancel(
+      pointerId: PointerId,
+      fingerId: FingerId,
+      position: Point,
+      movementPosition: Point,
+      pressure: Double
+  ) extends TouchEvent
+  object Cancel:
+    def unapply(e: Cancel): Option[Point] =
+      Option(e.position)
+
+end TouchEvent
+
+sealed trait PenEvent extends PositionalPointerEvent:
+  /** Unique pointer identifier
+    */
+  def pointerId: PointerId
+
+  /** Coordinates relative to the magnification level
+    */
+  def position: Point
+
+  /** The X position relative to the magnification level
+    */
+  def x: Int = position.x
+
+  /** The Y position relative to the magnification level
+    */
+  def y: Int = position.y
+
+  /** The delta position between this event and the last event relative to the magnification level
+    */
+  def movementPosition: Point
+
+  /** The delta X position between this event and the last event relative to the magnification level
+    */
+  def movementX: Int = movementPosition.x
+
+  /** The delta Y position between this event and the last event relative to the magnification level
+    */
+  def movementY: Int = movementPosition.y
+
+object PenEvent:
+
+  /** The pen button has been clicked.
+    *
+    * @param button
+    *   The button that was used for the click
+    */
+  final case class Click(
+      pointerId: PointerId,
+      position: Point,
+      movementPosition: Point,
+      button: Option[MouseButton]
+  ) extends MouseEvent
+  object Click:
+    def apply(x: Int, y: Int): Click =
+      Click(
+        PointerId.unknown,
+        position = Point(x, y),
+        movementPosition = Point.zero,
+        button = Option.empty
+      )
+    def apply(position: Point): Click =
+      Click(
+        PointerId.unknown,
+        position = position,
+        movementPosition = Point.zero,
+        button = Option.empty
+      )
+    def unapply(e: Click): Option[Point] =
+      Option(e.position)
+
+  final case class Up(
+      pointerId: PointerId,
+      position: Point,
+      movementPosition: Point,
+      button: Option[MouseButton]
+  ) extends MouseEvent
+  object Up:
+    def apply(position: Point): Up =
+      Up(
+        PointerId.unknown,
+        position = position,
+        movementPosition = Point.zero,
+        button = Option.empty
+      )
+    def apply(x: Int, y: Int): Up =
+      Up(
+        PointerId.unknown,
+        position = Point(x, y),
+        movementPosition = Point.zero,
+        button = Option.empty
+      )
+    def apply(x: Int, y: Int, button: MouseButton): Up =
+      Up(
+        PointerId.unknown,
+        position = Point(x, y),
+        movementPosition = Point.zero,
+        button = Option.empty
+      )
+    def unapply(e: Up): Option[Point] =
+      Option(e.position)
+
+  /** The mouse button was pressed down.
+    * @param button
+    *   The button that was pressed down
+    */
+  final case class Down(
+      pointerId: PointerId,
+      position: Point,
+      movementPosition: Point,
+      button: Option[MouseButton]
+  ) extends MouseEvent
+  object Down:
+    def apply(position: Point): Down =
+      Down(
+        PointerId.unknown,
+        position = position,
+        movementPosition = Point.zero,
+        button = Option.empty
+      )
+    def apply(x: Int, y: Int): Down =
+      Down(
+        PointerId.unknown,
+        position = Point(x, y),
+        movementPosition = Point.zero,
+        button = Option.empty
+      )
+    def apply(x: Int, y: Int, button: MouseButton): Down =
+      Down(
+        PointerId.unknown,
+        position = Point(x, y),
+        movementPosition = Point.zero,
+        button = Option(button)
+      )
+    def unapply(e: Down): Option[Point] =
+      Option(e.position)
+
+  /** The mouse was moved to a new position.
+    */
+  final case class Move(
+      pointerId: PointerId,
+      position: Point,
+      movementPosition: Point
+  ) extends MouseEvent
+  object Move:
+    @nowarn("msg=deprecated")
+    def apply(x: Int, y: Int): Move =
+      Move(
+        PointerId.unknown,
+        position = Point(x, y),
+        movementPosition = Point.zero
+      )
+    def unapply(e: Move): Option[Point] =
+      Option(e.position)
+
+  /** Mouse has moved into canvas hit test boundaries. It's counterpart is [[Leave]].
+    */
+  final case class Enter(
+      pointerId: PointerId,
+      position: Point,
+      movementPosition: Point
+  ) extends MouseEvent
+  object Enter:
+    def unapply(e: Enter): Option[Point] =
+      Option(e.position)
+
+  /** Mouse has left canvas hit test boundaries. It's counterpart is [[Enter]].
+    */
+  final case class Leave(
+      pointerId: PointerId,
+      position: Point,
+      movementPosition: Point
+  ) extends MouseEvent
+  object Leave:
+    def unapply(e: Leave): Option[Point] =
+      Option(e.position)
+
+  /** The ongoing interactions was cancelled due to:
+    *   - the pointer device being disconnected
+    *   - device orientation change
+    *   - palm rejection
+    *   - switching applications
+    */
+  final case class Cancel(
+      pointerId: PointerId,
+      position: Point,
+      movementPosition: Point
+  ) extends MouseEvent
+  object Cancel:
+    def unapply(e: Cancel): Option[Point] =
+      Option(e.position)
+
+end PenEvent
 
 /** Represents all mouse, pen and touch events
   */
@@ -992,7 +1466,7 @@ object PointerEvent:
     *   - the pointer device being disconnected
     *   - device orientation change
     *   - palm rejection
-    *   - the browser taking over the manipulations like scroll, drag & drop, pinch & zoom or other
+    *   - switching applications
     */
   final case class Cancel(
       pointerId: PointerId,
@@ -1036,6 +1510,8 @@ object PointerEvent:
     *   - after firing the PointerCancel event
     *   - when a pen stylus leaves the hover range detectable by the digitizer.
     */
+
+  @deprecated("Use `PointerEvent.Leave` instead", "0.22.0")
   final case class Out(
       pointerId: PointerId,
       position: Point,

@@ -1,7 +1,5 @@
 package indigo.shared.events
 
-import scala.annotation.nowarn
-
 /** EventFilter's control which events will be processed by your model or view model. You can think of event filters
   * like a firewall for events, that only permit the wanted events into the model and view model update functions to
   * avoid conflicts, duplicate, and needless work.
@@ -33,13 +31,13 @@ final case class EventFilters(
     this.copy(viewModelFilter = filter)
 }
 object EventFilters {
-
-  @nowarn("msg=deprecated")
   private def fromAccessControl(ac: AccessControl): GlobalEvent => Option[GlobalEvent] = {
     case FrameTick              => Option.when(ac.allowFrameTick)(FrameTick)
     case e: KeyboardEvent       => Option.when(ac.allowKeyboardEvents)(e)
     case e: MouseEvent          => Option.when(ac.allowMouseEvents)(e)
     case e: PointerEvent        => Option.when(ac.allowPointerEvents)(e)
+    case e: PenEvent            => Option.when(ac.allowPenEvents)(e)
+    case e: TouchEvent          => Option.when(ac.allowTouchEvents)(e)
     case e: NetworkReceiveEvent => Option.when(ac.allowNetworkEvents)(e)
     case e: StorageEvent        => Option.when(ac.allowStorageEvents)(e)
     case e: SubSystemEvent      => Option.when(ac.allowSubSystemEvents)(e)
@@ -158,8 +156,9 @@ final case class AccessControl(
     allowCustomEvents: Boolean,
     allowFrameTick: Boolean,
     allowKeyboardEvents: Boolean,
-    @deprecated("Use allowPointerEvents instead", "0.22.0")
     allowMouseEvents: Boolean,
+    allowTouchEvents: Boolean,
+    allowPenEvents: Boolean,
     allowPointerEvents: Boolean,
     allowNetworkEvents: Boolean,
     allowStorageEvents: Boolean,
