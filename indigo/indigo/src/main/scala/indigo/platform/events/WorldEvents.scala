@@ -17,9 +17,12 @@ import indigo.shared.events.MouseButton
 import indigo.shared.events.MouseEvent
 import indigo.shared.events.NetworkEvent
 import indigo.shared.events.PointerEvent
+import indigo.shared.events.TouchEvent
+import indigo.shared.events.PenEvent
 import indigo.shared.events.PointerEvent.*
 import indigo.shared.events.PointerType
 import indigo.shared.events.PointerId
+import indigo.shared.events.FingerId
 import indigo.shared.events.WheelEvent
 import org.scalajs.dom
 import org.scalajs.dom.document
@@ -242,20 +245,40 @@ final class WorldEvents:
           )
         )
 
-        if pointerType == PointerType.Mouse then {
-          @nowarn("msg=deprecated")
-          val enterEvent = MouseEvent.Enter(
-            PointerId(e.pointerId),
-            position,
-            buttons,
-            e.altKey,
-            e.ctrlKey,
-            e.metaKey,
-            e.shiftKey,
-            movementPosition
-          )
+        PointerType.Mouse match {
+          case PointerType.Mouse =>
+            @nowarn("msg=deprecated")
+            val enterEvent = MouseEvent.Enter(
+              PointerId(e.pointerId),
+              position,
+              buttons,
+              e.altKey,
+              e.ctrlKey,
+              e.metaKey,
+              e.shiftKey,
+              movementPosition
+            )
 
-          globalEventStream.pushGlobalEvent(enterEvent)
+            globalEventStream.pushGlobalEvent(enterEvent)
+          case PointerType.Touch =>
+            globalEventStream.pushGlobalEvent(
+              TouchEvent.Enter(
+                PointerId(e.pointerId),
+                FingerId(e.pointerId),
+                position,
+                movementPosition,
+                e.pressure
+              )
+            )
+          case PointerType.Pen =>
+            globalEventStream.pushGlobalEvent(
+              PenEvent.Enter(
+                PointerId(e.pointerId),
+                position,
+                movementPosition
+              )
+            )
+          case PointerType.Unknown => ()
         }
       },
       onPointerLeave = { e =>
@@ -286,21 +309,41 @@ final class WorldEvents:
           )
         )
 
-        if pointerType == PointerType.Mouse then {
-          @nowarn("msg=deprecated")
-          val leaveEvent =
-            MouseEvent.Leave(
-              PointerId(e.pointerId),
-              position,
-              buttons,
-              e.altKey,
-              e.ctrlKey,
-              e.metaKey,
-              e.shiftKey,
-              movementPosition
-            )
+        pointerType match {
+          case PointerType.Mouse =>
+            @nowarn("msg=deprecated")
+            val leaveEvent =
+              MouseEvent.Leave(
+                PointerId(e.pointerId),
+                position,
+                buttons,
+                e.altKey,
+                e.ctrlKey,
+                e.metaKey,
+                e.shiftKey,
+                movementPosition
+              )
 
-          globalEventStream.pushGlobalEvent(leaveEvent)
+            globalEventStream.pushGlobalEvent(leaveEvent)
+          case PointerType.Touch =>
+            globalEventStream.pushGlobalEvent(
+              TouchEvent.Leave(
+                PointerId(e.pointerId),
+                FingerId(e.pointerId),
+                position,
+                movementPosition,
+                e.pressure
+              )
+            )
+          case PointerType.Pen =>
+            globalEventStream.pushGlobalEvent(
+              PenEvent.Leave(
+                PointerId(e.pointerId),
+                position,
+                movementPosition
+              )
+            )
+          case PointerType.Unknown => ()
         }
       },
       onPointerDown = { e =>
@@ -339,24 +382,56 @@ final class WorldEvents:
           )
         )
 
-        if pointerType == PointerType.Mouse then {
-          MouseButton.fromOrdinalOpt(e.button).foreach { button =>
-            @nowarn("msg=deprecated")
-            val event =
-              MouseEvent.MouseDown(
+        pointerType match {
+          case PointerType.Mouse =>
+            MouseButton.fromOrdinalOpt(e.button).foreach { button =>
+              @nowarn("msg=deprecated")
+              val event =
+                MouseEvent.MouseDown(
+                  PointerId(e.pointerId),
+                  position,
+                  buttons,
+                  e.altKey,
+                  e.ctrlKey,
+                  e.metaKey,
+                  e.shiftKey,
+                  movementPosition,
+                  button
+                )
+
+              globalEventStream.pushGlobalEvent(event)
+              globalEventStream.pushGlobalEvent(
+                MouseEvent.Down(
+                  PointerId(e.pointerId),
+                  position,
+                  movementPosition,
+                  button
+                )
+              )
+            }
+
+          case PointerType.Touch =>
+            globalEventStream.pushGlobalEvent(
+              TouchEvent.Down(
+                PointerId(e.pointerId),
+                FingerId(e.pointerId),
+                position,
+                movementPosition,
+                e.pressure
+              )
+            )
+
+          case PointerType.Pen =>
+            globalEventStream.pushGlobalEvent(
+              PenEvent.Down(
                 PointerId(e.pointerId),
                 position,
-                buttons,
-                e.altKey,
-                e.ctrlKey,
-                e.metaKey,
-                e.shiftKey,
                 movementPosition,
-                button
+                MouseButton.fromOrdinalOpt(e.button)
               )
+            )
 
-            globalEventStream.pushGlobalEvent(event)
-          }
+          case PointerType.Unknown => ()
         }
         e.preventDefault()
       },
@@ -370,10 +445,34 @@ final class WorldEvents:
         // Check to see if this button is up within the clickTimeMs, and if so fire a click event
         pointerButtons.getOrElse(e.pointerId, Batch.empty).find(_._1 == e.button) match {
           case Some((btn, downTime)) if btn == e.button && Date.now() - downTime.getTime() <= clickTimeMs =>
-            MouseButton.fromOrdinalOpt(e.button) match {
-              case Some(mappedBtn) =>
+            val btn = MouseButton.fromOrdinalOpt(e.button)
+            globalEventStream.pushGlobalEvent(
+              Click(
+                PointerId(e.pointerId),
+                position,
+                buttons,
+                e.altKey,
+                e.ctrlKey,
+                e.metaKey,
+                e.shiftKey,
+                movementPosition,
+                e.width(magnification),
+                e.height(magnification),
+                e.pressure,
+                e.tangentialPressure,
+                Radians.fromDegrees(e.tiltX),
+                Radians.fromDegrees(e.tiltY),
+                Radians.fromDegrees(e.twist),
+                pointerType,
+                e.isPrimary,
+                btn
+              )
+            )
+
+            pointerType match {
+              case PointerType.Mouse if btn.isDefined =>
                 globalEventStream.pushGlobalEvent(
-                  Click(
+                  MouseEvent.Click(
                     PointerId(e.pointerId),
                     position,
                     buttons,
@@ -382,36 +481,32 @@ final class WorldEvents:
                     e.metaKey,
                     e.shiftKey,
                     movementPosition,
-                    e.width(magnification),
-                    e.height(magnification),
-                    e.pressure,
-                    e.tangentialPressure,
-                    Radians.fromDegrees(e.tiltX),
-                    Radians.fromDegrees(e.tiltY),
-                    Radians.fromDegrees(e.twist),
-                    pointerType,
-                    e.isPrimary,
-                    Option(mappedBtn)
+                    btn.get
                   )
                 )
 
-                pointerType match {
-                  case PointerType.Mouse =>
-                    globalEventStream.pushGlobalEvent(
-                      MouseEvent.Click(
-                        PointerId(e.pointerId),
-                        position,
-                        buttons,
-                        e.altKey,
-                        e.ctrlKey,
-                        e.metaKey,
-                        e.shiftKey,
-                        movementPosition,
-                        mappedBtn
-                      )
-                    )
-                }
-              case None => ()
+              case PointerType.Touch =>
+                globalEventStream.pushGlobalEvent(
+                  TouchEvent.Tap(
+                    PointerId(e.pointerId),
+                    FingerId(e.pointerId.toInt),
+                    position,
+                    movementPosition,
+                    e.pressure
+                  )
+                )
+
+              case PointerType.Pen =>
+                globalEventStream.pushGlobalEvent(
+                  PenEvent.Up(
+                    PointerId(e.pointerId),
+                    position,
+                    movementPosition,
+                    MouseButton.fromOrdinalOpt(e.button)
+                  )
+                )
+
+              case PointerType.Unknown => ()
             }
           case _ => ()
         }
@@ -447,24 +542,57 @@ final class WorldEvents:
           )
         )
 
-        if pointerType == PointerType.Mouse then {
-          MouseButton.fromOrdinalOpt(e.button).foreach { button =>
-            @nowarn("msg=deprecated")
-            val event =
-              MouseEvent.MouseUp(
-                PointerId(e.pointerId),
-                position,
-                buttons,
-                e.altKey,
-                e.ctrlKey,
-                e.metaKey,
-                e.shiftKey,
-                movementPosition,
-                button
+        pointerType match {
+          case PointerType.Mouse =>
+            MouseButton.fromOrdinalOpt(e.button).foreach { button =>
+              @nowarn("msg=deprecated")
+              val event =
+                MouseEvent.MouseUp(
+                  PointerId(e.pointerId),
+                  position,
+                  buttons,
+                  e.altKey,
+                  e.ctrlKey,
+                  e.metaKey,
+                  e.shiftKey,
+                  movementPosition,
+                  button
+                )
+
+              globalEventStream.pushGlobalEvent(event)
+              globalEventStream.pushGlobalEvent(
+                MouseEvent.Up(
+                  PointerId(e.pointerId),
+                  position,
+                  movementPosition,
+                  button
+                )
               )
 
-            globalEventStream.pushGlobalEvent(event)
-          }
+            }
+
+          case PointerType.Touch =>
+            globalEventStream.pushGlobalEvent(
+              TouchEvent.Up(
+                PointerId(e.pointerId),
+                FingerId(e.pointerId),
+                position,
+                movementPosition,
+                e.pressure
+              )
+            )
+
+          case PointerType.Pen =>
+            globalEventStream.pushGlobalEvent(
+              PenEvent.Up(
+                PointerId(e.pointerId),
+                position,
+                movementPosition,
+                MouseButton.fromOrdinalOpt(e.button)
+              )
+            )
+
+          case PointerType.Unknown => ()
         }
         e.preventDefault()
       },
@@ -496,21 +624,44 @@ final class WorldEvents:
           )
         )
 
-        if pointerType == PointerType.Mouse then {
-          @nowarn("msg=deprecated")
-          val event =
-            MouseEvent.Move(
-              PointerId(e.pointerId),
-              position,
-              buttons,
-              e.altKey,
-              e.ctrlKey,
-              e.metaKey,
-              e.shiftKey,
-              movementPosition
+        pointerType match {
+          case PointerType.Mouse =>
+            @nowarn("msg=deprecated")
+            val event =
+              MouseEvent.Move(
+                PointerId(e.pointerId),
+                position,
+                buttons,
+                e.altKey,
+                e.ctrlKey,
+                e.metaKey,
+                e.shiftKey,
+                movementPosition
+              )
+
+            globalEventStream.pushGlobalEvent(event)
+
+          case PointerType.Touch =>
+            globalEventStream.pushGlobalEvent(
+              TouchEvent.Move(
+                PointerId(e.pointerId),
+                FingerId(e.pointerId),
+                position,
+                movementPosition,
+                e.pressure
+              )
             )
 
-          globalEventStream.pushGlobalEvent(event)
+          case PointerType.Pen =>
+            globalEventStream.pushGlobalEvent(
+              PenEvent.Move(
+                PointerId(e.pointerId),
+                position,
+                movementPosition
+              )
+            )
+
+          case PointerType.Unknown => ()
         }
         e.preventDefault()
       },
@@ -541,6 +692,39 @@ final class WorldEvents:
             e.isPrimary
           )
         )
+
+        pointerType match {
+          case PointerType.Mouse =>
+            globalEventStream.pushGlobalEvent(
+              MouseEvent.Cancel(
+                PointerId(e.pointerId),
+                position,
+                movementPosition
+              )
+            )
+
+          case PointerType.Touch =>
+            globalEventStream.pushGlobalEvent(
+              TouchEvent.Cancel(
+                PointerId(e.pointerId),
+                FingerId(e.pointerId),
+                position,
+                movementPosition,
+                e.pressure
+              )
+            )
+
+          case PointerType.Pen =>
+            globalEventStream.pushGlobalEvent(
+              PenEvent.Cancel(
+                PointerId(e.pointerId),
+                position,
+                movementPosition
+              )
+            )
+
+          case PointerType.Unknown => ()
+        }
         e.preventDefault()
       },
       onPointerOut = { e =>
@@ -548,28 +732,28 @@ final class WorldEvents:
         val buttons          = e.indigoButtons
         val movementPosition = e.movementPosition(magnification)
         val pointerType      = e.toPointerType
-
-        globalEventStream.pushGlobalEvent(
-          Out(
-            PointerId(e.pointerId),
-            position,
-            buttons,
-            e.altKey,
-            e.ctrlKey,
-            e.metaKey,
-            e.shiftKey,
-            movementPosition,
-            e.width(magnification),
-            e.height(magnification),
-            e.pressure,
-            e.tangentialPressure,
-            Radians.fromDegrees(e.tiltX),
-            Radians.fromDegrees(e.tiltY),
-            Radians.fromDegrees(e.twist),
-            pointerType,
-            e.isPrimary
-          )
+        @nowarn("msg=deprecated")
+        var event = Out(
+          PointerId(e.pointerId),
+          position,
+          buttons,
+          e.altKey,
+          e.ctrlKey,
+          e.metaKey,
+          e.shiftKey,
+          movementPosition,
+          e.width(magnification),
+          e.height(magnification),
+          e.pressure,
+          e.tangentialPressure,
+          Radians.fromDegrees(e.tiltX),
+          Radians.fromDegrees(e.tiltY),
+          Radians.fromDegrees(e.twist),
+          pointerType,
+          e.isPrimary
         )
+
+        globalEventStream.pushGlobalEvent(event)
         e.preventDefault()
       },
       onFocus = { e =>
