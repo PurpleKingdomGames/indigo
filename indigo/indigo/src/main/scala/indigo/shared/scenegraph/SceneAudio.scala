@@ -15,9 +15,9 @@ final case class SceneAudio(
 
   def withMasterVolume(volume: Volume): SceneAudio =
     SceneAudio(
-      sourceA.map(s => s.copy(masterVolume = s.volume * volume)),
-      sourceB.map(s => s.copy(masterVolume = s.volume * volume)),
-      sourceC.map(s => s.copy(masterVolume = s.volume * volume))
+      sourceA.map(s => s.copy(masterVolume = volume)),
+      sourceB.map(s => s.copy(masterVolume = volume)),
+      sourceC.map(s => s.copy(masterVolume = volume))
     )
 
 object SceneAudio:
