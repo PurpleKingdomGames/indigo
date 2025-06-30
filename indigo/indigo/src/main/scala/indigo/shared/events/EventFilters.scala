@@ -31,11 +31,13 @@ final case class EventFilters(
     this.copy(viewModelFilter = filter)
 }
 object EventFilters {
-
   private def fromAccessControl(ac: AccessControl): GlobalEvent => Option[GlobalEvent] = {
     case FrameTick              => Option.when(ac.allowFrameTick)(FrameTick)
     case e: KeyboardEvent       => Option.when(ac.allowKeyboardEvents)(e)
     case e: MouseEvent          => Option.when(ac.allowMouseEvents)(e)
+    case e: PointerEvent        => Option.when(ac.allowPointerEvents)(e)
+    case e: PenEvent            => Option.when(ac.allowPenEvents)(e)
+    case e: TouchEvent          => Option.when(ac.allowTouchEvents)(e)
     case e: NetworkReceiveEvent => Option.when(ac.allowNetworkEvents)(e)
     case e: StorageEvent        => Option.when(ac.allowStorageEvents)(e)
     case e: SubSystemEvent      => Option.when(ac.allowSubSystemEvents)(e)
@@ -155,6 +157,9 @@ final case class AccessControl(
     allowFrameTick: Boolean,
     allowKeyboardEvents: Boolean,
     allowMouseEvents: Boolean,
+    allowTouchEvents: Boolean,
+    allowPenEvents: Boolean,
+    allowPointerEvents: Boolean,
     allowNetworkEvents: Boolean,
     allowStorageEvents: Boolean,
     allowSubSystemEvents: Boolean,

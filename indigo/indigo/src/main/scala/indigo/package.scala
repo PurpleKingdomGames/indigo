@@ -382,6 +382,9 @@ val Combo: shared.events.Combo.type = shared.events.Combo
 type GamepadInput = shared.events.GamepadInput
 val GamepadInput: shared.events.GamepadInput.type = shared.events.GamepadInput
 
+type WheelEvent = shared.events.WheelEvent
+val WheelEvent: shared.events.WheelEvent.type = shared.events.WheelEvent
+
 type Mouse = shared.input.Mouse
 val Mouse: shared.input.Mouse.type = shared.input.Mouse
 
@@ -394,8 +397,25 @@ val MouseEvent: shared.events.MouseEvent.type = shared.events.MouseEvent
 type MouseButton = shared.events.MouseButton
 val MouseButton: shared.events.MouseButton.type = shared.events.MouseButton
 
+@deprecated("Use `ScrollDirection` instead", "0.22.0")
 type MouseWheel = shared.events.MouseWheel
+@deprecated("Use `ScrollDirection` instead", "0.22.0")
 val MouseWheel: shared.events.MouseWheel.type = shared.events.MouseWheel
+
+type Touch = shared.input.Touch
+val Touch: shared.input.Touch.type = shared.input.Touch
+
+type TouchEvent = shared.events.TouchEvent
+val TouchEvent: shared.events.TouchEvent.type = shared.events.TouchEvent
+
+type Pen = shared.input.Pen
+val Pen: shared.input.Pen.type = shared.input.Pen
+
+type PenEvent = shared.events.PenEvent
+val PenEvent: shared.events.PenEvent.type = shared.events.PenEvent
+
+type ScrollDirection = shared.events.WheelDirection
+val ScrollDirection: shared.events.WheelDirection.type = shared.events.WheelDirection
 
 type Pointers = shared.input.Pointers
 val Pointers: shared.input.Pointers.type = shared.input.Pointers
