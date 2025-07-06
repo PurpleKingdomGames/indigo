@@ -180,11 +180,15 @@ object PointerId:
   val unknown                             = PointerId(0)
   given CanEqual[PointerId, PointerId]    = CanEqual.derived
 
+  extension (m: PointerId) inline def toDouble: Double = m
+
 opaque type FingerId = Double
 object FingerId:
   inline def apply(id: Double): FingerId = id
   val unknown                            = FingerId(0)
   given CanEqual[FingerId, FingerId]     = CanEqual.derived
+
+  extension (m: FingerId) inline def toDouble: Double = m
 
 @deprecated("Use `WheelDirection` instead", "0.22.0")
 enum MouseWheel derives CanEqual:
@@ -196,7 +200,7 @@ object MouseButton:
       Some(MouseButton.fromOrdinal(ordinal))
     else Option.empty[MouseButton]
 
-trait PositionalPointerEvent extends InputEvent:
+trait PositionalInputEvent extends InputEvent:
   /** Unique pointer identifier
     */
   def pointerId: PointerId
@@ -227,7 +231,7 @@ trait PositionalPointerEvent extends InputEvent:
 
 /** Represents all mouse events
   */
-sealed trait MouseEvent extends PositionalPointerEvent:
+sealed trait MouseEvent extends PositionalInputEvent:
   /** Unique pointer identifier
     */
   def pointerId: PointerId
@@ -236,26 +240,11 @@ sealed trait MouseEvent extends PositionalPointerEvent:
     */
   def position: Point
 
-  /** The X position relative to the magnification level
-    */
-  def x: Int = position.x
-
-  /** The Y position relative to the magnification level
-    */
-  def y: Int = position.y
-
   /** The delta position between this event and the last event relative to the magnification level
     */
   def movementPosition: Point
 
-  /** The delta X position between this event and the last event relative to the magnification level
-    */
-  def movementX: Int = movementPosition.x
-
-  /** The delta Y position between this event and the last event relative to the magnification level
-    */
-  def movementY: Int = movementPosition.y
-
+@nowarn("msg=deprecated")
 object MouseEvent:
 
   /** The mouse has been clicked.
@@ -604,7 +593,8 @@ object MouseEvent:
       deltaX: Double,
       deltaY: Double,
       deltaZ: Double
-  ) extends MouseEvent
+  ) extends MouseEvent:
+    def pointerId = PointerId.unknown
   object Wheel:
     @nowarn("msg=deprecated")
     def apply(x: Int, y: Int, deltaX: Double, deltaY: Double, deltaZ: Double): Wheel =
@@ -643,7 +633,7 @@ end MouseEvent
 
 /** Represents all touch events
   */
-sealed trait TouchEvent extends PositionalPointerEvent:
+sealed trait TouchEvent extends PositionalInputEvent:
   /** Unique pointer identifier
     */
   def pointerId: PointerId
@@ -655,25 +645,9 @@ sealed trait TouchEvent extends PositionalPointerEvent:
     */
   def position: Point
 
-  /** The X position relative to the magnification level
-    */
-  def x: Int = position.x
-
-  /** The Y position relative to the magnification level
-    */
-  def y: Int = position.y
-
   /** The delta position between this event and the last event relative to the magnification level
     */
   def movementPosition: Point
-
-  /** The delta X position between this event and the last event relative to the magnification level
-    */
-  def movementX: Int = movementPosition.x
-
-  /** The delta Y position between this event and the last event relative to the magnification level
-    */
-  def movementY: Int = movementPosition.y
 
   /** The normalised pressure of the touch */
   def pressure: Double
@@ -688,7 +662,7 @@ object TouchEvent:
       position: Point,
       movementPosition: Point,
       pressure: Double
-  ) extends MouseEvent
+  ) extends TouchEvent
   object Tap:
     def apply(x: Int, y: Int): Tap =
       Tap(
@@ -719,7 +693,7 @@ object TouchEvent:
       position: Point,
       movementPosition: Point,
       pressure: Double
-  ) extends MouseEvent
+  ) extends TouchEvent
   object Up:
     def apply(position: Point): Up =
       Up(
@@ -758,7 +732,7 @@ object TouchEvent:
       position: Point,
       movementPosition: Point,
       pressure: Double
-  ) extends MouseEvent
+  ) extends TouchEvent
   object MouseDown:
     def apply(position: Point): Down =
       Down(
@@ -853,7 +827,7 @@ object TouchEvent:
 
 end TouchEvent
 
-sealed trait PenEvent extends PositionalPointerEvent:
+sealed trait PenEvent extends PositionalInputEvent:
   /** Unique pointer identifier
     */
   def pointerId: PointerId
@@ -862,25 +836,8 @@ sealed trait PenEvent extends PositionalPointerEvent:
     */
   def position: Point
 
-  /** The X position relative to the magnification level
-    */
-  def x: Int = position.x
-
-  /** The Y position relative to the magnification level
-    */
-  def y: Int = position.y
-
-  /** The delta position between this event and the last event relative to the magnification level
-    */
-  def movementPosition: Point
-
-  /** The delta X position between this event and the last event relative to the magnification level
-    */
-  def movementX: Int = movementPosition.x
-
-  /** The delta Y position between this event and the last event relative to the magnification level
-    */
-  def movementY: Int = movementPosition.y
+  /** The normalised pressure of the pen */
+  def pressure: Double
 
 object PenEvent:
 
@@ -893,14 +850,16 @@ object PenEvent:
       pointerId: PointerId,
       position: Point,
       movementPosition: Point,
+      pressure: Double,
       button: Option[MouseButton]
-  ) extends MouseEvent
+  ) extends PenEvent
   object Click:
     def apply(x: Int, y: Int): Click =
       Click(
         PointerId.unknown,
         position = Point(x, y),
         movementPosition = Point.zero,
+        pressure = 1,
         button = Option.empty
       )
     def apply(position: Point): Click =
@@ -908,6 +867,7 @@ object PenEvent:
         PointerId.unknown,
         position = position,
         movementPosition = Point.zero,
+        pressure = 1,
         button = Option.empty
       )
     def unapply(e: Click): Option[Point] =
@@ -917,14 +877,16 @@ object PenEvent:
       pointerId: PointerId,
       position: Point,
       movementPosition: Point,
+      pressure: Double,
       button: Option[MouseButton]
-  ) extends MouseEvent
+  ) extends PenEvent
   object Up:
     def apply(position: Point): Up =
       Up(
         PointerId.unknown,
         position = position,
         movementPosition = Point.zero,
+        pressure = 1,
         button = Option.empty
       )
     def apply(x: Int, y: Int): Up =
@@ -932,6 +894,7 @@ object PenEvent:
         PointerId.unknown,
         position = Point(x, y),
         movementPosition = Point.zero,
+        pressure = 1,
         button = Option.empty
       )
     def apply(x: Int, y: Int, button: MouseButton): Up =
@@ -939,6 +902,7 @@ object PenEvent:
         PointerId.unknown,
         position = Point(x, y),
         movementPosition = Point.zero,
+        pressure = 1,
         button = Option.empty
       )
     def unapply(e: Up): Option[Point] =
@@ -952,14 +916,16 @@ object PenEvent:
       pointerId: PointerId,
       position: Point,
       movementPosition: Point,
+      pressure: Double,
       button: Option[MouseButton]
-  ) extends MouseEvent
+  ) extends PenEvent
   object Down:
     def apply(position: Point): Down =
       Down(
         PointerId.unknown,
         position = position,
         movementPosition = Point.zero,
+        pressure = 1,
         button = Option.empty
       )
     def apply(x: Int, y: Int): Down =
@@ -967,6 +933,7 @@ object PenEvent:
         PointerId.unknown,
         position = Point(x, y),
         movementPosition = Point.zero,
+        pressure = 1,
         button = Option.empty
       )
     def apply(x: Int, y: Int, button: MouseButton): Down =
@@ -974,6 +941,7 @@ object PenEvent:
         PointerId.unknown,
         position = Point(x, y),
         movementPosition = Point.zero,
+        pressure = 1,
         button = Option(button)
       )
     def unapply(e: Down): Option[Point] =
@@ -984,15 +952,17 @@ object PenEvent:
   final case class Move(
       pointerId: PointerId,
       position: Point,
-      movementPosition: Point
-  ) extends MouseEvent
+      movementPosition: Point,
+      pressure: Double
+  ) extends PenEvent
   object Move:
     @nowarn("msg=deprecated")
     def apply(x: Int, y: Int): Move =
       Move(
         PointerId.unknown,
         position = Point(x, y),
-        movementPosition = Point.zero
+        movementPosition = Point.zero,
+        pressure = 1
       )
     def unapply(e: Move): Option[Point] =
       Option(e.position)
@@ -1002,8 +972,9 @@ object PenEvent:
   final case class Enter(
       pointerId: PointerId,
       position: Point,
-      movementPosition: Point
-  ) extends MouseEvent
+      movementPosition: Point,
+      pressure: Double
+  ) extends PenEvent
   object Enter:
     def unapply(e: Enter): Option[Point] =
       Option(e.position)
@@ -1013,8 +984,9 @@ object PenEvent:
   final case class Leave(
       pointerId: PointerId,
       position: Point,
-      movementPosition: Point
-  ) extends MouseEvent
+      movementPosition: Point,
+      pressure: Double
+  ) extends PenEvent
   object Leave:
     def unapply(e: Leave): Option[Point] =
       Option(e.position)
@@ -1028,8 +1000,9 @@ object PenEvent:
   final case class Cancel(
       pointerId: PointerId,
       position: Point,
-      movementPosition: Point
-  ) extends MouseEvent
+      movementPosition: Point,
+      pressure: Double
+  ) extends PenEvent
   object Cancel:
     def unapply(e: Cancel): Option[Point] =
       Option(e.position)
@@ -1038,7 +1011,7 @@ end PenEvent
 
 /** Represents all mouse, pen and touch events
   */
-sealed trait PointerEvent extends PositionalPointerEvent:
+sealed trait PointerEvent extends PositionalInputEvent:
 
   /** The width (magnitude on the X axis), of the contact geometry of the pointer relative to the magnification level
     */
@@ -1089,6 +1062,7 @@ sealed trait PointerEvent extends PositionalPointerEvent:
   @deprecated("Being removed to simplify Input", "0.22.0")
   def isPrimary: Boolean
 
+@nowarn("msg=deprecated")
 object PointerEvent:
   /** Pointing device is moved into canvas hit test boundaries. It's counterpart is [[Leave]].
     */

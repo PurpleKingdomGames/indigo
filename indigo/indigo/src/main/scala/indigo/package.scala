@@ -385,6 +385,9 @@ val GamepadInput: shared.events.GamepadInput.type = shared.events.GamepadInput
 type WheelEvent = shared.events.WheelEvent
 val WheelEvent: shared.events.WheelEvent.type = shared.events.WheelEvent
 
+type MouseState = shared.input.MouseState
+val MouseState: shared.input.MouseState.type = shared.input.MouseState
+
 type Mouse = shared.input.Mouse
 val Mouse: shared.input.Mouse.type = shared.input.Mouse
 
@@ -402,11 +405,17 @@ type MouseWheel = shared.events.MouseWheel
 @deprecated("Use `ScrollDirection` instead", "0.22.0")
 val MouseWheel: shared.events.MouseWheel.type = shared.events.MouseWheel
 
-type Touch = shared.input.Touch
-val Touch: shared.input.Touch.type = shared.input.Touch
+type TouchState = shared.input.TouchState
+val TouchState: shared.input.TouchState.type = shared.input.TouchState
+
+type Finger = shared.input.Finger
+val Finger: shared.input.Finger.type = shared.input.Finger
 
 type TouchEvent = shared.events.TouchEvent
 val TouchEvent: shared.events.TouchEvent.type = shared.events.TouchEvent
+
+type PenState = shared.input.PenState
+val PenState: shared.input.PenState.type = shared.input.PenState
 
 type Pen = shared.input.Pen
 val Pen: shared.input.Pen.type = shared.input.Pen
@@ -417,8 +426,11 @@ val PenEvent: shared.events.PenEvent.type = shared.events.PenEvent
 type ScrollDirection = shared.events.WheelDirection
 val ScrollDirection: shared.events.WheelDirection.type = shared.events.WheelDirection
 
-type Pointers = shared.input.Pointers
-val Pointers: shared.input.Pointers.type = shared.input.Pointers
+type PointerState = shared.input.PointerState
+val PointerState: shared.input.PointerState.type = shared.input.PointerState
+
+type Pointer = shared.input.Pointer
+val Pointer: shared.input.Pointer.type = shared.input.Pointer
 
 type PointerEvent = shared.events.PointerEvent
 val PointerEvent: shared.events.PointerEvent.type = shared.events.PointerEvent

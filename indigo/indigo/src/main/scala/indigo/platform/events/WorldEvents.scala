@@ -12,17 +12,17 @@ import indigo.shared.events.ApplicationGainedFocus
 import indigo.shared.events.ApplicationLostFocus
 import indigo.shared.events.CanvasGainedFocus
 import indigo.shared.events.CanvasLostFocus
+import indigo.shared.events.FingerId
 import indigo.shared.events.KeyboardEvent
 import indigo.shared.events.MouseButton
 import indigo.shared.events.MouseEvent
 import indigo.shared.events.NetworkEvent
-import indigo.shared.events.PointerEvent
-import indigo.shared.events.TouchEvent
 import indigo.shared.events.PenEvent
+import indigo.shared.events.PointerEvent
 import indigo.shared.events.PointerEvent.*
-import indigo.shared.events.PointerType
 import indigo.shared.events.PointerId
-import indigo.shared.events.FingerId
+import indigo.shared.events.PointerType
+import indigo.shared.events.TouchEvent
 import indigo.shared.events.WheelEvent
 import org.scalajs.dom
 import org.scalajs.dom.document
@@ -69,7 +69,6 @@ final class WorldEvents:
       onPointerUp: dom.PointerEvent => Unit,
       onPointerMove: dom.PointerEvent => Unit,
       onPointerCancel: dom.PointerEvent => Unit,
-      onPointerOut: dom.PointerEvent => Unit,
       onBlur: dom.FocusEvent => Unit,
       onFocus: dom.FocusEvent => Unit,
       onOnline: dom.Event => Unit,
@@ -84,7 +83,6 @@ final class WorldEvents:
     canvas.addEventListener("pointerup", onPointerUp)
     canvas.addEventListener("pointermove", onPointerMove)
     canvas.addEventListener("pointercancel", onPointerCancel)
-    canvas.addEventListener("pointerout", onPointerOut)
     canvas.addEventListener("focus", onFocus)
     canvas.addEventListener("blur", onBlur)
     window.addEventListener("focus", onFocus)
@@ -104,7 +102,6 @@ final class WorldEvents:
       canvas.removeEventListener("pointerup", onPointerUp)
       canvas.removeEventListener("pointermove", onPointerMove)
       canvas.removeEventListener("pointercancel", onPointerCancel)
-      canvas.removeEventListener("pointerout", onPointerOut)
       canvas.removeEventListener("focus", onFocus)
       canvas.removeEventListener("blur", onBlur)
       window.removeEventListener("focus", onFocus)
@@ -245,7 +242,7 @@ final class WorldEvents:
           )
         )
 
-        PointerType.Mouse match {
+        pointerType match {
           case PointerType.Mouse =>
             @nowarn("msg=deprecated")
             val enterEvent = MouseEvent.Enter(
@@ -275,7 +272,8 @@ final class WorldEvents:
               PenEvent.Enter(
                 PointerId(e.pointerId),
                 position,
-                movementPosition
+                movementPosition,
+                e.pressure
               )
             )
           case PointerType.Unknown => ()
@@ -309,6 +307,29 @@ final class WorldEvents:
           )
         )
 
+        @nowarn("msg=deprecated")
+        val outEvent = Out(
+          PointerId(e.pointerId),
+          position,
+          buttons,
+          e.altKey,
+          e.ctrlKey,
+          e.metaKey,
+          e.shiftKey,
+          movementPosition,
+          e.width(magnification),
+          e.height(magnification),
+          e.pressure,
+          e.tangentialPressure,
+          Radians.fromDegrees(e.tiltX),
+          Radians.fromDegrees(e.tiltY),
+          Radians.fromDegrees(e.twist),
+          pointerType,
+          e.isPrimary
+        )
+
+        globalEventStream.pushGlobalEvent(outEvent)
+
         pointerType match {
           case PointerType.Mouse =>
             @nowarn("msg=deprecated")
@@ -340,7 +361,8 @@ final class WorldEvents:
               PenEvent.Leave(
                 PointerId(e.pointerId),
                 position,
-                movementPosition
+                movementPosition,
+                e.pressure
               )
             )
           case PointerType.Unknown => ()
@@ -427,6 +449,7 @@ final class WorldEvents:
                 PointerId(e.pointerId),
                 position,
                 movementPosition,
+                e.pressure,
                 MouseButton.fromOrdinalOpt(e.button)
               )
             )
@@ -498,15 +521,16 @@ final class WorldEvents:
 
               case PointerType.Pen =>
                 globalEventStream.pushGlobalEvent(
-                  PenEvent.Up(
+                  PenEvent.Click(
                     PointerId(e.pointerId),
                     position,
                     movementPosition,
+                    e.pressure,
                     MouseButton.fromOrdinalOpt(e.button)
                   )
                 )
 
-              case PointerType.Unknown => ()
+              case (PointerType.Unknown | PointerType.Mouse) => ()
             }
           case _ => ()
         }
@@ -588,6 +612,7 @@ final class WorldEvents:
                 PointerId(e.pointerId),
                 position,
                 movementPosition,
+                e.pressure,
                 MouseButton.fromOrdinalOpt(e.button)
               )
             )
@@ -657,7 +682,8 @@ final class WorldEvents:
               PenEvent.Move(
                 PointerId(e.pointerId),
                 position,
-                movementPosition
+                movementPosition,
+                e.pressure
               )
             )
 
@@ -719,41 +745,13 @@ final class WorldEvents:
               PenEvent.Cancel(
                 PointerId(e.pointerId),
                 position,
-                movementPosition
+                movementPosition,
+                e.pressure
               )
             )
 
           case PointerType.Unknown => ()
         }
-        e.preventDefault()
-      },
-      onPointerOut = { e =>
-        val position         = e.position(magnification, canvas)
-        val buttons          = e.indigoButtons
-        val movementPosition = e.movementPosition(magnification)
-        val pointerType      = e.toPointerType
-        @nowarn("msg=deprecated")
-        var event = Out(
-          PointerId(e.pointerId),
-          position,
-          buttons,
-          e.altKey,
-          e.ctrlKey,
-          e.metaKey,
-          e.shiftKey,
-          movementPosition,
-          e.width(magnification),
-          e.height(magnification),
-          e.pressure,
-          e.tangentialPressure,
-          Radians.fromDegrees(e.tiltX),
-          Radians.fromDegrees(e.tiltY),
-          Radians.fromDegrees(e.twist),
-          pointerType,
-          e.isPrimary
-        )
-
-        globalEventStream.pushGlobalEvent(event)
         e.preventDefault()
       },
       onFocus = { e =>

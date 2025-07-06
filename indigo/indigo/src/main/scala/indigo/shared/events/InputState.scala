@@ -3,10 +3,10 @@ package indigo.shared.events
 import indigo.shared.collections.Batch
 import indigo.shared.input.Gamepad
 import indigo.shared.input.Keyboard
-import indigo.shared.input.Mouse
-import indigo.shared.input.Pen
-import indigo.shared.input.Pointers
-import indigo.shared.input.Touch
+import indigo.shared.input.MouseState
+import indigo.shared.input.PenState
+import indigo.shared.input.PointerState
+import indigo.shared.input.TouchState
 import indigo.shared.input.Wheel
 
 import scala.annotation.nowarn
@@ -23,17 +23,17 @@ import scala.annotation.nowarn
   *   Current state of and touch inputs
   * @param gamepad
   *   Current state of the gamepad
-  * @param pointers
+  * @param pointer
   *   Current state of all pointers, including mouse, pen and touch
   */
 final class InputState(
-    val mouse: Mouse,
+    val mouse: MouseState,
     val keyboard: Keyboard,
     val gamepad: Gamepad,
     val wheel: Wheel,
-    val pen: Pen,
-    val touch: Touch,
-    val pointers: Pointers
+    val pen: PenState,
+    val touch: TouchState,
+    val pointer: PointerState
 ) {
 
   /** Given some input mappings, produce a guaranteed value A based on the current InputState.
@@ -51,13 +51,13 @@ final class InputState(
 object InputState {
   val default: InputState =
     InputState(
-      Mouse.default,
+      MouseState.default,
       Keyboard.default,
       Gamepad.default,
       Wheel.default,
-      Pen.default,
-      Touch.default,
-      Pointers.default
+      PenState.default,
+      TouchState.default,
+      PointerState.default
     )
 
   def calculateNext(
@@ -65,17 +65,15 @@ object InputState {
       events: Batch[InputEvent],
       gamepadState: Gamepad
   ): InputState =
-    val pointers = Pointers.calculateNext(previous.pointers, events.collect { case e: PointerEvent => e });
-
     @nowarn("msg=deprecated")
     val state = InputState(
-      Mouse(pointers, events.collect { case e: MouseEvent.Wheel => e }),
+      previous.mouse.calculateNext(events.collect { case e: MouseEvent => e }),
       Keyboard.calculateNext(previous.keyboard, events.collect { case e: KeyboardEvent => e }),
       gamepadState,
       Wheel(events.collect { case e: WheelEvent.Move => e }),
-      Pen(pointers),
-      Touch(pointers),
-      pointers
+      previous.pen.calculateNext(events.collect { case e: PenEvent => e }),
+      previous.touch.calculateNext(events.collect { case e: TouchEvent => e }),
+      previous.pointer.calculateNext(events.collect { case e: PointerEvent => e })
     )
 
     state
