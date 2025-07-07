@@ -16,11 +16,27 @@ final case class TouchState(fingers: Batch[Finger]) extends PositionalInputState
   val maybePosition = fingers.sortBy(_.pointerId.toDouble).map(_.maybePosition).collect { case Some(p) => p }.headOption
   val isDown        = fingers.exists(_.isDown)
   val isUp          = isDown == false && fingers.exists(_.isUp)
-  val isTap         = fingers.exists(_.isTap)
+  val isTapped      = fingers.exists(_.isTapped)
   val pressure      = fingers.sortBy(_.pressure).headOption.map(_.pressure).getOrElse(0.0)
+
+  lazy val isUpAt   = fingers.filter(_.isUp).map(_.maybePosition).collect { case Some(p) => p }
+  lazy val isDownAt = fingers.filter(_.isDown).map(_.maybePosition).collect { case Some(p) => p }
+
+  def wasTappedAt(position: Point): Boolean =
+    fingers.exists(f => f.isTapped && f.maybePosition.contains(position))
+
+  def wasTappedAt(x: Int, y: Int): Boolean = wasTappedAt(Point(x, y))
+
+  def wasTappedWithin(rectangle: Rectangle): Boolean =
+    fingers.exists(f => f.isTapped && f.maybePosition.exists(rectangle.contains))
+
+  def wasTappedWithin(x: Int, y: Int, width: Int, height: Int): Boolean =
+    wasTappedWithin(Rectangle(x, y, width, height))
 
   def wasDownAt(position: Point): Boolean =
     fingers.exists(f => f.isDown && f.position == position)
+
+  def wasDownAt(x: Int, y: Int): Boolean = wasDownAt(Point(x, y))
 
   def wasDownWithin(rectangle: Rectangle): Boolean =
     fingers.exists(f => f.isDown && rectangle.contains(f.position))
@@ -31,6 +47,8 @@ final case class TouchState(fingers: Batch[Finger]) extends PositionalInputState
   def wasUpAt(position: Point): Boolean =
     fingers.exists(f => f.isUp && f.position == position)
 
+  def wasUpAt(x: Int, y: Int): Boolean = wasUpAt(Point(x, y))
+
   def wasUpWithin(rectangle: Rectangle): Boolean =
     fingers.exists(f => f.isUp && rectangle.contains(f.position))
 
@@ -39,7 +57,7 @@ final case class TouchState(fingers: Batch[Finger]) extends PositionalInputState
 
   def calculateNext(events: Batch[TouchEvent]) =
     val newFingers = events.foldLeft(
-      fingers.map(_.copy(isUp = false, isDown = false, isTap = false))
+      fingers.map(_.copy(isUp = false, isDown = false, isTapped = false))
     )((fingers, event) =>
       if (event.isInstanceOf[TouchEvent.Leave] || event.isInstanceOf[TouchEvent.Cancel])
         fingers.filterNot(_.fingerId == event.fingerId)
@@ -48,7 +66,8 @@ final case class TouchState(fingers: Batch[Finger]) extends PositionalInputState
         val newFinger = event match {
           case e: TouchEvent.Move  => finger.copy(maybePosition = Option(e.position), pressure = e.pressure)
           case e: TouchEvent.Enter => finger.copy(maybePosition = Option(e.position), pressure = e.pressure)
-          case e: TouchEvent.Tap => finger.copy(isTap = true, maybePosition = Option(e.position), pressure = e.pressure)
+          case e: TouchEvent.Tap =>
+            finger.copy(isTapped = true, maybePosition = Option(e.position), pressure = e.pressure)
           case e: TouchEvent.Down =>
             finger.copy(isDown = true, maybePosition = Option(e.position), pressure = e.pressure)
           case e: TouchEvent.Up => finger.copy(isUp = true, maybePosition = Option(e.position), pressure = e.pressure)
@@ -78,6 +97,6 @@ final case class Finger(
     maybePosition: Option[Point],
     isDown: Boolean,
     isUp: Boolean,
-    isTap: Boolean,
+    isTapped: Boolean,
     pressure: Double
 ) extends PositionalInputState

@@ -733,7 +733,7 @@ object TouchEvent:
       movementPosition: Point,
       pressure: Double
   ) extends TouchEvent
-  object MouseDown:
+  object Down:
     def apply(position: Point): Down =
       Down(
         PointerId.unknown,
@@ -862,6 +862,14 @@ object PenEvent:
         pressure = 1,
         button = Option.empty
       )
+    def apply(x: Int, y: Int, button: MouseButton): Click =
+      Click(
+        PointerId.unknown,
+        position = Point(x, y),
+        movementPosition = Point.zero,
+        pressure = 1,
+        button = Option(button)
+      )
     def apply(position: Point): Click =
       Click(
         PointerId.unknown,
@@ -869,6 +877,14 @@ object PenEvent:
         movementPosition = Point.zero,
         pressure = 1,
         button = Option.empty
+      )
+    def apply(position: Point, button: MouseButton): Click =
+      Click(
+        PointerId.unknown,
+        position = position,
+        movementPosition = Point.zero,
+        pressure = 1,
+        button = Option(button)
       )
     def unapply(e: Click): Option[Point] =
       Option(e.position)
@@ -903,7 +919,7 @@ object PenEvent:
         position = Point(x, y),
         movementPosition = Point.zero,
         pressure = 1,
-        button = Option.empty
+        button = Option(button)
       )
     def unapply(e: Up): Option[Point] =
       Option(e.position)
@@ -935,6 +951,14 @@ object PenEvent:
         movementPosition = Point.zero,
         pressure = 1,
         button = Option.empty
+      )
+    def apply(position: Point, button: MouseButton): Down =
+      Down(
+        PointerId.unknown,
+        position = position,
+        movementPosition = Point.zero,
+        pressure = 1,
+        button = Option(button)
       )
     def apply(x: Int, y: Int, button: MouseButton): Down =
       Down(

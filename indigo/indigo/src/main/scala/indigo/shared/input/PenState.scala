@@ -2,6 +2,7 @@ package indigo.shared.input
 
 import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Point
+import indigo.shared.datatypes.Rectangle
 import indigo.shared.events.MouseButton
 import indigo.shared.events.PenEvent
 import indigo.shared.events.PointerId
@@ -18,10 +19,54 @@ final case class PenState(instances: Batch[Pen]) extends ButtonInputState with P
   val downButtons = instances.flatMap(_.downButtons)
   val upButtons   = instances.flatMap(_.upButtons)
 
+  lazy val isUpAt   = instances.filter(_.isUp).map(_.maybePosition).collect { case Some(p) => p }
+  lazy val isDownAt = instances.filter(_.isDown).map(_.maybePosition).collect { case Some(p) => p }
+
   val isDown   = instances.exists(_.isDown)
   val isUp     = isDown == false && instances.exists(_.isUp)
   val isTap    = instances.exists(_.isTap)
   val pressure = instances.sortBy(_.pressure).headOption.map(_.pressure).getOrElse(0.0)
+
+  /** Whether the pointer button was up at the specified position in this frame
+    *
+    * @param position
+    */
+  def wasUpAt(position: Point): Boolean = instances.exists(pen => pen.isUp && pen.maybePosition == Some(position))
+
+  /** Whether the pointer button was up at the specified position in this frame
+    *
+    * @param x
+    * @param y
+    * @return
+    */
+  def wasUpAt(x: Int, y: Int): Boolean = wasUpAt(Point(x, y))
+
+  /** Whether the pointer button was down at the specified position in this frame
+    *
+    * @param position
+    * @return
+    */
+  def wasDownAt(position: Point): Boolean = instances.exists(pen => pen.isDown && pen.maybePosition == Some(position))
+
+  /** Whether the pointer button was down at the specified position in this frame
+    *
+    * @param x
+    * @param y
+    * @return
+    */
+  def wasDownAt(x: Int, y: Int): Boolean = wasDownAt(Point(x, y))
+
+  def wasUpWithin(bounds: Rectangle): Boolean =
+    instances.exists(pen => pen.isUp && pen.maybePosition.map(p => bounds.contains(p)).getOrElse(false))
+
+  def wasUpWithin(x: Int, y: Int, width: Int, height: Int): Boolean = wasUpWithin(Rectangle(x, y, width, height))
+
+  def wasDownWithin(bounds: Rectangle): Boolean =
+    instances.exists(pen => pen.isDown && pen.maybePosition.map(p => bounds.contains(p)).getOrElse(false))
+
+  def wasDownWithin(x: Int, y: Int, width: Int, height: Int): Boolean = wasDownWithin(
+    Rectangle(x, y, width, height)
+  )
 
   def calculateNext(events: Batch[PenEvent]) =
     val newInstances = events.foldLeft(
@@ -53,7 +98,6 @@ final case class PenState(instances: Batch[Pen]) extends ButtonInputState with P
             instance.copy(maybePosition = Some(e.position), pressure = e.pressure, isTap = true)
           case e: PenEvent.Down if e.button.isDefined =>
             instance.copy(
-              isDown = true,
               maybePosition = Some(e.position),
               pressure = e.pressure,
               downButtons = instance.downButtons :+ (e.button.get, e.position),
