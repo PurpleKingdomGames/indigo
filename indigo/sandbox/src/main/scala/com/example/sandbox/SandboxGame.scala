@@ -60,7 +60,8 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
       ActorPoolPhysicsScene,
       PerformerScene,
       PerformerPhysicsScene,
-      ViewportResizeScene
+      ViewportResizeScene,
+      MultiPointScene
     )
 
   val eventFilters: EventFilters = EventFilters.Permissive

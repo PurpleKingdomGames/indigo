@@ -370,15 +370,16 @@ final class WorldEvents:
       },
       onPointerDown = { e =>
         val position         = e.position(magnification, canvas)
-        val buttons          = e.indigoButtons
-        val movementPosition = e.movementPosition(magnification)
         val pointerType      = e.toPointerType
+        val buttons          = e.indigoButtons
+        val button           = if (pointerType == PointerType.Mouse) e.button else e.button - 1
+        val movementPosition = e.movementPosition(magnification)
 
         // Add the button to the list of buttons that are down, to check later when the button is released
         pointerButtons = pointerButtons.updated(
           e.pointerId,
           pointerButtons
-            .getOrElse(e.pointerId, Batch.empty) :+ (e.button -> new Date(Date.now()))
+            .getOrElse(e.pointerId, Batch.empty) :+ (button -> new Date(Date.now()))
         )
 
         globalEventStream.pushGlobalEvent(
@@ -400,13 +401,13 @@ final class WorldEvents:
             Radians.fromDegrees(e.twist),
             pointerType,
             e.isPrimary,
-            MouseButton.fromOrdinalOpt(e.button)
+            MouseButton.fromOrdinalOpt(button)
           )
         )
 
         pointerType match {
           case PointerType.Mouse =>
-            MouseButton.fromOrdinalOpt(e.button).foreach { button =>
+            MouseButton.fromOrdinalOpt(button).foreach { button =>
               @nowarn("msg=deprecated")
               val event =
                 MouseEvent.MouseDown(
@@ -450,7 +451,7 @@ final class WorldEvents:
                 position,
                 movementPosition,
                 e.pressure,
-                MouseButton.fromOrdinalOpt(e.button)
+                MouseButton.fromOrdinalOpt(button)
               )
             )
 
@@ -461,14 +462,15 @@ final class WorldEvents:
       onPointerUp = { e =>
         @nowarn("msg=deprecated")
         val position         = e.position(magnification, canvas)
-        val buttons          = e.indigoButtons
-        val movementPosition = e.movementPosition(magnification)
         val pointerType      = e.toPointerType
+        val buttons          = e.indigoButtons
+        val button           = if (pointerType == PointerType.Mouse) e.button else e.button - 1
+        val movementPosition = e.movementPosition(magnification)
 
         // Check to see if this button is up within the clickTimeMs, and if so fire a click event
-        pointerButtons.getOrElse(e.pointerId, Batch.empty).find(_._1 == e.button) match {
-          case Some((btn, downTime)) if btn == e.button && Date.now() - downTime.getTime() <= clickTimeMs =>
-            val btn = MouseButton.fromOrdinalOpt(e.button)
+        pointerButtons.getOrElse(e.pointerId, Batch.empty).find(_._1 == button) match {
+          case Some((_, downTime)) if Date.now() - downTime.getTime() <= clickTimeMs =>
+            val btn = MouseButton.fromOrdinalOpt(button)
             globalEventStream.pushGlobalEvent(
               Click(
                 PointerId(e.pointerId),
@@ -526,7 +528,7 @@ final class WorldEvents:
                     position,
                     movementPosition,
                     e.pressure,
-                    MouseButton.fromOrdinalOpt(e.button)
+                    btn
                   )
                 )
 
@@ -540,7 +542,7 @@ final class WorldEvents:
           e.pointerId,
           pointerButtons
             .getOrElse(e.pointerId, Batch.empty)
-            .filterNot(_._1 == e.button)
+            .filterNot(_._1 == button)
         )
 
         globalEventStream.pushGlobalEvent(
@@ -562,7 +564,7 @@ final class WorldEvents:
             Radians.fromDegrees(e.twist),
             pointerType,
             e.isPrimary,
-            MouseButton.fromOrdinalOpt(e.button)
+            MouseButton.fromOrdinalOpt(button)
           )
         )
 
@@ -613,7 +615,7 @@ final class WorldEvents:
                 position,
                 movementPosition,
                 e.pressure,
-                MouseButton.fromOrdinalOpt(e.button)
+                MouseButton.fromOrdinalOpt(button)
               )
             )
 

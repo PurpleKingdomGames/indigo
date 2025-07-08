@@ -8,6 +8,7 @@ import indigo.shared.input.PenState
 import indigo.shared.input.PointerState
 import indigo.shared.input.TouchState
 import indigo.shared.input.Wheel
+import indigo.shared.time.Millis
 
 import scala.annotation.nowarn
 
@@ -64,6 +65,17 @@ object InputState {
       previous: InputState,
       events: Batch[InputEvent],
       gamepadState: Gamepad
+  ): InputState = calculateNext(
+    previous,
+    events,
+    gamepadState,
+    Millis.zero
+  )
+  def calculateNext(
+      previous: InputState,
+      events: Batch[InputEvent],
+      gamepadState: Gamepad,
+      time: Millis
   ): InputState =
     @nowarn("msg=deprecated")
     val state = InputState(
@@ -73,7 +85,7 @@ object InputState {
       Wheel(events.collect { case e: WheelEvent.Move => e }),
       previous.pen.calculateNext(events.collect { case e: PenEvent => e }),
       previous.touch.calculateNext(events.collect { case e: TouchEvent => e }),
-      previous.pointer.calculateNext(events.collect { case e: PointerEvent => e })
+      previous.pointer.calculateNext(events.collect { case e: PointerEvent => e }, time)
     )
 
     state
