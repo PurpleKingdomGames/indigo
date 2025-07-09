@@ -124,9 +124,9 @@ class InputStateTests extends munit.FunSuite {
     assertEquals(state.mouse.wasDownAt(20, 10), false)
   }
 
-  test("Mouse state.wasPositionAt") {
-    assertEquals(state.mouse.wasPositionAt(Point.zero), false)
-    assertEquals(state.mouse.wasPositionAt(Point(10, 10)), true)
+  test("Mouse state.wasAt") {
+    assertEquals(state.mouse.wasAt(Point.zero), false)
+    assertEquals(state.mouse.wasAt(Point(10, 10)), true)
   }
 
   test("Mouse state.wasClickedWithin") {
@@ -248,7 +248,7 @@ class InputStateTests extends munit.FunSuite {
 
   test("Pen state.isUpAt") {
     // A Pen is up if the pen itself is up, not a button
-    assertEquals(state.pen.isUpAt, Batch.empty)
+    assertEquals(state.pen.isUpAt, Batch(Point(20, 20)))
 
     // A pen is now up (no button specified)
     assertEquals(
@@ -285,11 +285,11 @@ class InputStateTests extends munit.FunSuite {
 
   test("Pen state.wasUpAt") {
     // A Pen is up if the pen itself is up, not a button
-    assertEquals(state.pen.wasUpAt(20, 20), false)
+    assertEquals(state.pen.wasUpAt(20, 20), true)
 
     // A pen is now up (no button specified)
     assertEquals(
-      InputState.calculateNext(inputState, Batch(PenEvent.Up(20, 20)), gamepadState1).pen.wasUpAt(20, 20),
+      InputState.calculateNext(inputState, Batch(PenEvent.Up(30, 30)), gamepadState1).pen.wasUpAt(30, 30),
       true
     )
 
@@ -315,9 +315,9 @@ class InputStateTests extends munit.FunSuite {
     )
   }
 
-  test("Pen state.wasPositionAt") {
-    assertEquals(state.pen.wasPositionAt(Point.zero), false)
-    assertEquals(state.pen.wasPositionAt(Point(20, 20)), true)
+  test("Pen state.wasAt") {
+    assertEquals(state.pen.wasAt(Point.zero), false)
+    assertEquals(state.pen.wasAt(Point(20, 20)), true)
   }
 
   test("Pen state.wasClickedWithin") {
@@ -427,11 +427,11 @@ class InputStateTests extends munit.FunSuite {
   }
 
   test("Touch state.isDownAt") {
-    assertEquals(state.touch.isDownAt, Batch(Point(30, 30)))
+    assertEquals(state.touch.isDownAt, Batch.empty)
 
     assertEquals(
-      InputState.calculateNext(inputState, Batch(TouchEvent.Up(0, 0)), gamepadState1).touch.isDownAt,
-      Batch.empty
+      InputState.calculateNext(inputState, Batch(TouchEvent.Down(30, 30)), gamepadState1).touch.isDownAt,
+      Batch(Point(30, 30))
     )
   }
 
@@ -441,18 +441,23 @@ class InputStateTests extends munit.FunSuite {
   }
 
   test("Touch state.wasUpAt") {
+
     assertEquals(state.touch.wasUpAt(30, 30), true)
     assertEquals(state.touch.wasUpAt(20, 10), false)
   }
 
   test("Touch state.wasDownAt") {
-    assertEquals(state.touch.wasDownAt(30, 30), true)
-    assertEquals(state.touch.wasDownAt(20, 10), false)
+    assertEquals(state.touch.wasDownAt(30, 30), false)
+
+    assertEquals(
+      InputState.calculateNext(inputState, Batch(TouchEvent.Down(30, 30)), gamepadState1).touch.wasDownAt(30, 30),
+      true
+    )
   }
 
-  test("Touch state.wasPositionAt") {
-    assertEquals(state.touch.wasPositionAt(Point.zero), false)
-    assertEquals(state.touch.wasPositionAt(Point(30, 30)), true)
+  test("Touch state.wasAt") {
+    assertEquals(state.touch.wasAt(Point.zero), false)
+    assertEquals(state.touch.wasAt(Point(30, 30)), true)
   }
 
   test("Touch state.wasTappedWithin") {

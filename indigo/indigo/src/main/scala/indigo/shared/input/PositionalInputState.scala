@@ -2,13 +2,8 @@ package indigo.shared.input
 
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
-import indigo.shared.events.PointerId
 
 trait PositionalInputState:
-  /** Unique pointer identifier
-    */
-  val pointerId: PointerId
-
   /** Coordinates relative to the magnification level, regardless of whether the pointer has a verified position
     */
   def position: Point = maybePosition.getOrElse(Point.zero)
@@ -28,30 +23,54 @@ trait PositionalInputState:
   /** Whether the pointer position was within the specified bounds in this frame
     *
     * @param bounds
+    *   The bounds to check
     * @return
     */
-  def wasWithin(bounds: Rectangle): Boolean =
-    bounds.isPointWithin(position)
+  def wasWithin(bounds: Rectangle): Boolean = bounds.isPointWithin(position)
 
   /** Whether the pointer position was within the specified bounds in this frame
     *
     * @param x
+    *   The x coordinate of the bounds to check
     * @param y
+    *   The y coordinate of the bounds to check
     * @param width
+    *   The width of the bounds to check
     * @param height
+    *   The height of the bounds to check
     * @return
     */
   def wasWithin(x: Int, y: Int, width: Int, height: Int): Boolean =
     wasWithin(Rectangle(x, y, width, height))
 
-  def wasPositionAt(position: Point): Boolean =
-    this.position == position
+  /** Whether the pointer was at the specified position in this frame
+    *
+    * @param position
+    *   The position to check
+    * @return
+    */
+  def wasAt(position: Point): Boolean = this.position == position
 
-  def wasPositionAt(x: Int, y: Int): Boolean =
-    wasPositionAt(Point(x, y))
+  /** Whether the pointer was at the specified position in this frame
+    *
+    * @param x
+    *   The x coordinate of the position to check
+    * @param y
+    *   The y coordinate of the position to check
+    * @return
+    */
+  def wasAt(x: Int, y: Int): Boolean =
+    wasAt(Point(x, y))
 
-  def wasPositionWithin(bounds: Rectangle): Boolean =
-    bounds.isPointWithin(position)
+  @deprecated("Use `wasAt` instead", "0.22.0")
+  def wasPositionAt(position: Point): Boolean = wasAt(position)
 
+  @deprecated("Use `wasAt` instead", "0.22.0")
+  def wasPositionAt(x: Int, y: Int): Boolean = wasAt(Point(x, y))
+
+  @deprecated("Use `wasWithin` instead", "0.22.0")
+  def wasPositionWithin(bounds: Rectangle): Boolean = wasWithin(bounds)
+
+  @deprecated("Use `wasWithin` instead", "0.22.0")
   def wasPositionWithin(x: Int, y: Int, width: Int, height: Int): Boolean =
-    wasPositionWithin(Rectangle(x, y, width, height))
+    wasWithin(Rectangle(x, y, width, height))

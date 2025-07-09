@@ -6,12 +6,27 @@ import indigo.shared.datatypes.Rectangle
 import indigo.shared.events.MouseButton
 
 trait ButtonInputState:
+  /** The buttons that are currently pressed down
+    *
+    * @return
+    */
   val buttons: Batch[MouseButton]
+
+  /** The button clicks that have occurred in this frame
+    *
+    * @return
+    */
   val clicks: Batch[(MouseButton, Point)]
+
+  /** The buttons that were pressed down in this frame
+    */
   val downButtons: Batch[(MouseButton, Point)]
+
+  /** The buttons that were released in this frame
+    */
   val upButtons: Batch[(MouseButton, Point)]
 
-  /** Whether the specified button is down on any pointer
+  /** Whether the specified button is down
     *
     * @param button
     *   The button to check
@@ -19,15 +34,15 @@ trait ButtonInputState:
     */
   def isButtonDown(button: MouseButton): Boolean = buttons.exists(_ == button)
 
-  /** Whether the left button is down on any pointer
+  /** Whether the left button is down
     */
   lazy val isLeftDown: Boolean = isButtonDown(MouseButton.LeftMouseButton)
 
-  /** Whether the right button is down on any pointer
+  /** Whether the right button is down
     */
   lazy val isRightDown: Boolean = isButtonDown(MouseButton.RightMouseButton)
 
-  /** Whether the middle button is down on any pointer
+  /** Whether the middle button is down
     */
   lazy val isMiddleDown: Boolean = isButtonDown(MouseButton.MiddleMouseButton)
 
@@ -39,19 +54,19 @@ trait ButtonInputState:
     */
   lazy val isReleased: Boolean = released(MouseButton.LeftMouseButton)
 
-  /** The positions that the pointer was clicked at in this frame
+  /** The positions that was clicked at in this frame
     */
   lazy val isClickedAt: Batch[Point] = clicks.map(_._2)
 
-  /** The positions that the pointer was up at in this frame
+  /** The positions that the button was up at in this frame
     */
   lazy val isButtonUpAt: Batch[Point] = upButtons.map(_._2)
 
-  /** The positions that the pointer was down at in this frame
+  /** The positions that the button was down at in this frame
     */
   lazy val isButtonDownAt: Batch[Point] = downButtons.map(_._2)
 
-  /** Whether the pointer was clicked this frame
+  /** Whether the button was clicked this frame
     */
   lazy val isClicked: Boolean = clicks.isEmpty == false
 
@@ -99,14 +114,14 @@ trait ButtonInputState:
   def maybeDownAtPositionWith(button: MouseButton): Option[Point] =
     downButtons.filter(_._1 == button).headOption.map(_._2)
 
-  /** Was any pointer clicked at this position in this frame
+  /** Was any button clicked at this position in this frame
     *
     * @param position
     * @return
     */
   def wasClickedAt(position: Point): Boolean = isClickedAt.contains(position)
 
-  /** Was any pointer clicked at this position in this frame
+  /** Was any button clicked at this position in this frame
     *
     * @param x
     * @param y
@@ -149,7 +164,7 @@ trait ButtonInputState:
     */
   def wasButtonDownAt(x: Int, y: Int, button: MouseButton): Boolean = wasButtonDownAt(Point(x, y), button)
 
-  /** Whether the pointer was down within the specified bounds in this frame
+  /** Whether the button was down within the specified bounds in this frame
     *
     * @param bounds
     * @return
@@ -157,7 +172,7 @@ trait ButtonInputState:
   def wasButtonUpWithin(bounds: Rectangle): Boolean =
     upButtons.exists { case (b, position) => bounds.isPointWithin(position) }
 
-  /** Whether the pointer was down within the specified bounds in this frame
+  /** Whether the button was down within the specified bounds in this frame
     *
     * @param x
     * @param y
@@ -169,7 +184,7 @@ trait ButtonInputState:
     Rectangle(x, y, width, height)
   )
 
-  /** Whether the pointer was up within the specified bounds in this frame
+  /** Whether the button was up within the specified bounds in this frame
     *
     * @param bounds
     * @param button
@@ -180,7 +195,7 @@ trait ButtonInputState:
       b == button && bounds.isPointWithin(position)
     }
 
-  /** Whether the pointer was up within the specified bounds in this frame
+  /** Whether the button was up within the specified bounds in this frame
     *
     * @param x
     * @param y
@@ -192,7 +207,7 @@ trait ButtonInputState:
   def wasButtonUpWithin(x: Int, y: Int, width: Int, height: Int, button: MouseButton): Boolean =
     wasButtonUpWithin(Rectangle(x, y, width, height), button)
 
-  /** Whether the pointer was down within the specified bounds in this frame
+  /** Whether the button was down within the specified bounds in this frame
     *
     * @param bounds
     * @return
@@ -200,7 +215,7 @@ trait ButtonInputState:
   def wasButtonDownWithin(bounds: Rectangle): Boolean =
     downButtons.exists { case (b, position) => bounds.isPointWithin(position) }
 
-  /** Whether the pointer was down within the specified bounds in this frame
+  /** Whether the button was down within the specified bounds in this frame
     *
     * @param x
     * @param y
@@ -212,7 +227,7 @@ trait ButtonInputState:
     Rectangle(x, y, width, height)
   )
 
-  /** Whether the pointer was down within the specified bounds in this frame
+  /** Whether the button was down within the specified bounds in this frame
     *
     * @param bounds
     * @param button
@@ -223,7 +238,7 @@ trait ButtonInputState:
       b == button && bounds.isPointWithin(position)
     }
 
-  /** Whether the pointer was down within the specified bounds in this frame
+  /** Whether the button was down within the specified bounds in this frame
     *
     * @param x
     * @param y
@@ -235,14 +250,14 @@ trait ButtonInputState:
   def wasButtonDownWithin(x: Int, y: Int, width: Int, height: Int, button: MouseButton): Boolean =
     wasButtonDownWithin(Rectangle(x, y, width, height), button)
 
-  /** Whether the pointer was clicked within the specified bounds in this frame
+  /** Whether the button was clicked within the specified bounds in this frame
     *
     * @param bounds
     * @return
     */
   def wasClickedWithin(bounds: Rectangle): Boolean = wasClickedWithin(bounds, None)
 
-  /** Whether the pointer button was clicked within the specified bounds in this frame
+  /** Whether the button button was clicked within the specified bounds in this frame
     *
     * @param bounds
     * @param button
@@ -250,7 +265,7 @@ trait ButtonInputState:
     */
   def wasClickedWithin(bounds: Rectangle, button: MouseButton): Boolean = wasClickedWithin(bounds, Some(button))
 
-  /** Whether the pointer was clicked within the specified bounds in this frame
+  /** Whether the button was clicked within the specified bounds in this frame
     *
     * @param x
     * @param y
@@ -263,7 +278,7 @@ trait ButtonInputState:
     Rectangle(x, y, width, height)
   )
 
-  /** Whether the pointer button was clicked within the specified bounds in this frame
+  /** Whether the button was clicked within the specified bounds in this frame
     *
     * @param x
     * @param y
@@ -275,7 +290,7 @@ trait ButtonInputState:
   def wasClickedWithin(x: Int, y: Int, width: Int, height: Int, button: MouseButton): Boolean =
     wasClickedWithin(Rectangle(x, y, width, height), Some(button))
 
-  /** Whether the pointer was clicked within the specified bounds in this frame
+  /** Whether the button was clicked within the specified bounds in this frame
     *
     * @param bounds
     * @param button
