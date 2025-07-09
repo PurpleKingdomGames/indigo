@@ -134,12 +134,25 @@ object WheelEvent:
     /** The delta values are in pages */
     case Page
 
+  /** Represents a wheel event that has moved in one or more directions. This event is always fired when the wheel is
+    * moved, along with it's helper counterparts (Vertical, Horizontal, Depth)
+    *
+    * @param deltaX
+    * @param deltaY
+    * @param deltaZ
+    * @param deltaMode
+    */
   final case class Move(deltaX: Double, deltaY: Double, deltaZ: Double, deltaMode: DeltaMode) extends WheelEvent
 
   object Move:
     def apply(deltaX: Double, deltaY: Double, deltaZ: Double): Move =
       Move(deltaX, deltaY, deltaZ, DeltaMode.Pixel)
 
+  /** Represents a wheel event that has moved vertically, i.e. up or down
+    *
+    * @param deltaY
+    * @param deltaMode
+    */
   final case class Vertical(deltaY: Double, deltaMode: DeltaMode) extends WheelEvent {
     val direction =
       if deltaY < 0 then WheelDirection.Up
@@ -150,6 +163,11 @@ object WheelEvent:
     def unapply(e: Vertical): Option[Double] =
       Option(e.deltaY)
 
+  /** Represents a wheel event that has moved horizontally, i.e. left or right
+    *
+    * @param deltaX
+    * @param deltaMode
+    */
   final case class Horizontal(deltaX: Double, deltaMode: DeltaMode) extends WheelEvent {
     val direction =
       if deltaX < 0 then WheelDirection.Left
@@ -160,20 +178,34 @@ object WheelEvent:
     def unapply(e: Horizontal): Option[Double] =
       Option(e.deltaX)
 
+  /** Represents a wheel event that has moved in the Z axis, i.e. depth
+    *
+    * @param deltaZ
+    * @param deltaMode
+    */
   final case class Depth(deltaZ: Double, deltaMode: DeltaMode) extends WheelEvent
   object Depth:
     def unapply(e: Depth): Option[Double] =
       Option(e.deltaZ)
 
-/** Follows the MDN spec values https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/button Relies on the ordinal
-  * behavior of Scala 3 enums to match the button number
+/** Relies on the ordinal behavior of Scala 3 enums to match the button number
   */
 enum MouseButton derives CanEqual:
   case LeftMouseButton, MiddleMouseButton, RightMouseButton, BrowserBackButton, BrowserForwardButton
 
+object MouseButton:
+  def fromOrdinalOpt(ordinal: Int): Option[MouseButton] =
+    if ordinal >= LeftMouseButton.ordinal && ordinal <= BrowserForwardButton.ordinal then
+      Some(MouseButton.fromOrdinal(ordinal))
+    else Option.empty[MouseButton]
+
+/** The type of pointer that has emitted an input pointer event
+  */
 enum PointerType derives CanEqual:
   case Mouse, Pen, Touch, Unknown
 
+/** The unique identifier for a pointer input
+  */
 opaque type PointerId = Double
 object PointerId:
   inline def apply(id: Double): PointerId = id
@@ -182,6 +214,8 @@ object PointerId:
 
   extension (m: PointerId) inline def toDouble: Double = m
 
+/** The unique identifier for a finger input
+  */
 opaque type FingerId = Double
 object FingerId:
   inline def apply(id: Double): FingerId = id
@@ -193,12 +227,6 @@ object FingerId:
 @deprecated("Use `WheelDirection` instead", "0.22.0")
 enum MouseWheel derives CanEqual:
   @nowarn("msg=deprecated") case ScrollUp, ScrollDown
-
-object MouseButton:
-  def fromOrdinalOpt(ordinal: Int): Option[MouseButton] =
-    if ordinal >= LeftMouseButton.ordinal && ordinal <= BrowserForwardButton.ordinal then
-      Some(MouseButton.fromOrdinal(ordinal))
-    else Option.empty[MouseButton]
 
 trait PositionalInputEvent extends InputEvent:
   /** Unique pointer identifier
@@ -247,10 +275,16 @@ sealed trait MouseEvent extends PositionalInputEvent:
 @nowarn("msg=deprecated")
 object MouseEvent:
 
-  /** The mouse has been clicked.
+  /** The mouse button was clicked
     *
+    * @param pointerId
+    *   The unique identifier for the pointer input
+    * @param position
+    *   The position of the mouse pointer relative to the magnification level
+    * @param movementPosition
+    *   The delta position between this event and the last event relative to the magnification level
     * @param button
-    *   The button that was used for the click
+    *   The button that was clicked
     */
   final case class Click(
       pointerId: PointerId,
@@ -298,10 +332,6 @@ object MouseEvent:
     def unapply(e: Click): Option[Point] =
       Option(e.position)
 
-  /** The mouse button was released.
-    * @param button
-    *   The button that was released
-    */
   @deprecated("Use `MouseEvents.Up` instead", "0.22.0")
   final case class MouseUp(
       pointerId: PointerId,
@@ -357,6 +387,17 @@ object MouseEvent:
     def unapply(e: MouseUp): Option[Point] =
       Option(e.position)
 
+  /** The mouse button was released
+    *
+    * @param pointerId
+    *   The unique identifier for the pointer input
+    * @param position
+    *   The position of the mouse pointer relative to the magnification level
+    * @param movementPosition
+    *   The delta position between this event and the last event relative to the magnification level
+    * @param button
+    *   The button that was released
+    */
   final case class Up(
       pointerId: PointerId,
       position: Point,
@@ -447,7 +488,14 @@ object MouseEvent:
     def unapply(e: MouseDown): Option[Point] =
       Option(e.position)
 
-  /** The mouse button was pressed down.
+  /** The mouse button was pressed down
+    *
+    * @param pointerId
+    *   The unique identifier for the pointer input
+    * @param position
+    *   The position of the mouse pointer relative to the magnification level
+    * @param movementPosition
+    *   The delta position between this event and the last event relative to the magnification level
     * @param button
     *   The button that was pressed down
     */
@@ -482,7 +530,14 @@ object MouseEvent:
     def unapply(e: Down): Option[Point] =
       Option(e.position)
 
-  /** The mouse was moved to a new position.
+  /** The mouse was moved to a new position
+    *
+    * @param pointerId
+    *   The unique identifier for the pointer input
+    * @param position
+    *   The position of the mouse pointer relative to the magnification level
+    * @param movementPosition
+    *   The delta position between this event and the last event relative to the magnification level
     */
   final case class Move(
       pointerId: PointerId,
@@ -515,7 +570,14 @@ object MouseEvent:
     def unapply(e: Move): Option[Point] =
       Option(e.position)
 
-  /** Mouse has moved into canvas hit test boundaries. It's counterpart is [[Leave]].
+  /** Mouse has moved into game boundaries. It's counterpart is [[Leave]]
+    *
+    * @param pointerId
+    *   The unique identifier for the pointer input
+    * @param position
+    *   The position of the mouse pointer relative to the magnification level
+    * @param movementPosition
+    *   The delta position between this event and the last event relative to the magnification level
     */
   final case class Enter(
       pointerId: PointerId,
@@ -536,7 +598,14 @@ object MouseEvent:
     def unapply(e: Enter): Option[Point] =
       Option(e.position)
 
-  /** Mouse has left canvas hit test boundaries. It's counterpart is [[Enter]].
+  /** Mouse has left game boundaries. It's counterpart is [[Enter]].
+    *
+    * @param pointerId
+    *   The unique identifier for the pointer input
+    * @param position
+    *   The position of the mouse pointer relative to the magnification level
+    * @param movementPosition
+    *   The delta position between this event and the last event relative to the magnification level
     */
   final case class Leave(
       pointerId: PointerId,
@@ -557,11 +626,14 @@ object MouseEvent:
     def unapply(e: Leave): Option[Point] =
       Option(e.position)
 
-  /** The ongoing interactions was cancelled due to:
-    *   - the pointer device being disconnected
-    *   - device orientation change
-    *   - palm rejection
-    *   - switching applications
+  /** The ongoing interactions was cancelled, which may occur when:
+    *   - the mouse is disconnected
+    *   - the device orientation changes
+    *   - applications are switched
+    *
+    * @param pointerId
+    * @param position
+    * @param movementPosition
     */
   final case class Cancel(
       pointerId: PointerId,
@@ -649,12 +721,23 @@ sealed trait TouchEvent extends PositionalInputEvent:
     */
   def movementPosition: Point
 
-  /** The normalised pressure of the touch */
+  /** The normalised pressure of the touch (between 0 and 1) */
   def pressure: Double
 
 object TouchEvent:
 
-  /** A finger has tapped the screen
+  /** Represents a tap of the finger on the screen
+    *
+    * @param pointerId
+    *   The unique identifier for the pointer input
+    * @param fingerId
+    *   The unique identifier for the finger input
+    * @param position
+    *   The position of the tap relative to the magnification level
+    * @param movementPosition
+    *   The delta position between this event and the last event relative to the magnification level
+    * @param pressure
+    *   The normalised pressure of the tap (between 0 and 1)
     */
   final case class Tap(
       pointerId: PointerId,
@@ -683,9 +766,18 @@ object TouchEvent:
     def unapply(e: Tap): Option[Point] =
       Option(e.position)
 
-  /** The mouse button was released.
-    * @param button
-    *   The button that was released
+  /** The finger was released fromm the screen
+    *
+    * @param pointerId
+    *   The unique identifier for the pointer input
+    * @param fingerId
+    *   The unique identifier for the finger input
+    * @param position
+    *   The position of the finger release relative to the magnification level
+    * @param movementPosition
+    *   The delta position between this event and the last event relative to the magnification level
+    * @param pressure
+    *   The normalised pressure of the touch (between 0 and 1)
     */
   final case class Up(
       pointerId: PointerId,
@@ -722,9 +814,18 @@ object TouchEvent:
     def unapply(e: Up): Option[Point] =
       Option(e.position)
 
-  /** The mouse button was pressed down.
-    * @param button
-    *   The button that was pressed down
+  /** The finger was pressed down on the screen
+    *
+    * @param pointerId
+    *   The unique identifier for the pointer input
+    * @param fingerId
+    *   The unique identifier for the finger input
+    * @param position
+    *   The position of the finger press relative to the magnification level
+    * @param movementPosition
+    *   The delta position between this event and the last event relative to the magnification level
+    * @param pressure
+    *   The normalised pressure of the touch (between 0 and 1)
     */
   final case class Down(
       pointerId: PointerId,
@@ -761,7 +862,18 @@ object TouchEvent:
     def unapply(e: Down): Option[Point] =
       Option(e.position)
 
-  /** The mouse was moved to a new position.
+  /** The finger was moved on the screen, i.e. dragged
+    *
+    * @param pointerId
+    *   The unique identifier for the pointer input
+    * @param fingerId
+    *   The unique identifier for the finger input
+    * @param position
+    *   The position of the finger relative to the magnification level
+    * @param movementPosition
+    *   The delta position between this event and the last event relative to the magnification level
+    * @param pressure
+    *   The normalised pressure of the touch (between 0 and 1)
     */
   final case class Move(
       pointerId: PointerId,
@@ -782,7 +894,18 @@ object TouchEvent:
     def unapply(e: Move): Option[Point] =
       Option(e.position)
 
-  /** Mouse has moved into canvas hit test boundaries. It's counterpart is [[Leave]].
+  /** A finger has entered the game boundaries. It's counterpart is [[Leave]].
+    *
+    * @param pointerId
+    *   The unique identifier for the pointer input
+    * @param fingerId
+    *   The unique identifier for the finger input
+    * @param position
+    *   The position of the finger relative to the magnification level
+    * @param movementPosition
+    *   The delta position between this event and the last event relative to the magnification level
+    * @param pressure
+    *   The normalised pressure of the touch (between 0 and 1)
     */
   final case class Enter(
       pointerId: PointerId,
@@ -795,7 +918,18 @@ object TouchEvent:
     def unapply(e: Enter): Option[Point] =
       Option(e.position)
 
-  /** Mouse has left canvas hit test boundaries. It's counterpart is [[Enter]].
+  /** A finger has left the game boundaries. It's counterpart is [[Enter]]
+    *
+    * @param pointerId
+    *   The unique identifier for the pointer input
+    * @param fingerId
+    *   The unique identifier for the finger input
+    * @param position
+    *   The position of the finger relative to the magnification level
+    * @param movementPosition
+    *   The delta position between this event and the last event relative to the magnification level
+    * @param pressure
+    *   The normalised pressure of the touch (between 0 and 1)
     */
   final case class Leave(
       pointerId: PointerId,
@@ -808,11 +942,22 @@ object TouchEvent:
     def unapply(e: Leave): Option[Point] =
       Option(e.position)
 
-  /** The ongoing interactions was cancelled due to:
-    *   - the pointer device being disconnected
-    *   - device orientation change
-    *   - palm rejection
-    *   - switching applications
+  /** The ongoing interactions was cancelled, which may occur when:
+    *   - the touch device is disconnected
+    *   - the device orientation changes
+    *   - a palm rejection is detected
+    *   - applications are switched
+    *
+    * @param pointerId
+    *   The unique identifier for the pointer input
+    * @param fingerId
+    *   The unique identifier for the finger input
+    * @param position
+    *   The position of the finger relative to the magnification level
+    * @param movementPosition
+    *   The delta position between this event and the last event relative to the magnification level
+    * @param pressure
+    *   The normalised pressure of the touch (between 0 and 1)
     */
   final case class Cancel(
       pointerId: PointerId,
@@ -841,10 +986,20 @@ sealed trait PenEvent extends PositionalInputEvent:
 
 object PenEvent:
 
-  /** The pen button has been clicked.
+  /** The pen has been pressed and released or a button on the pen has been pressed and released. Where a button is
+    * provided, it indicates which button was pressed on the pen. If a button is not provided, it indicates that the pen
+    * was pressed down on the pad
     *
+    * @param pointerId
+    *   The unique identifier for the pointer input
+    * @param position
+    *   The position of the pen relative to the magnification level
+    * @param movementPosition
+    *   The delta position between this event and the last event relative to the magnification level
+    * @param pressure
+    *   The normalised pressure of the pen (between 0 and 1)
     * @param button
-    *   The button that was used for the click
+    *   The button that was pressed, if any
     */
   final case class Click(
       pointerId: PointerId,
@@ -889,6 +1044,20 @@ object PenEvent:
     def unapply(e: Click): Option[Point] =
       Option(e.position)
 
+  /** The pen has been released or a button on the pen has been released. Where a button is provided, it indicates which
+    * button was released on the pen. If a button is not provided, it indicates that the pen was released from the pad
+    *
+    * @param pointerId
+    *   The unique identifier for the pointer input
+    * @param position
+    *   The position of the pen relative to the magnification level
+    * @param movementPosition
+    *   The delta position between this event and the last event relative to the magnification level
+    * @param pressure
+    *   The normalised pressure of the pen (between 0 and 1)
+    * @param button
+    *   The button that was released, if any
+    */
   final case class Up(
       pointerId: PointerId,
       position: Point,
@@ -924,9 +1093,20 @@ object PenEvent:
     def unapply(e: Up): Option[Point] =
       Option(e.position)
 
-  /** The mouse button was pressed down.
+  /** The pen was pressed down on the pad or a button on the pen was pressed down. Where a button is provided, it
+    * indicates which button was pressed on the pen. If a button is not provided, it indicates that the pen was pressed
+    * down on the pad
+    *
+    * @param pointerId
+    *   The unique identifier for the pointer input
+    * @param position
+    *   The position of the pen relative to the magnification level
+    * @param movementPosition
+    *   The delta position between this event and the last event relative to the magnification level
+    * @param pressure
+    *   The normalised pressure of the pen (between 0 and 1)
     * @param button
-    *   The button that was pressed down
+    *   The button that was pressed, if any
     */
   final case class Down(
       pointerId: PointerId,
@@ -971,7 +1151,16 @@ object PenEvent:
     def unapply(e: Down): Option[Point] =
       Option(e.position)
 
-  /** The mouse was moved to a new position.
+  /** The pen was moved on the pad, i.e. dragged
+    *
+    * @param pointerId
+    *   The unique identifier for the pointer input
+    * @param position
+    *   The position of the pen relative to the magnification level
+    * @param movementPosition
+    *   The delta position between this event and the last event relative to the magnification level
+    * @param pressure
+    *   The normalised pressure of the pen (between 0 and 1)
     */
   final case class Move(
       pointerId: PointerId,
@@ -991,7 +1180,16 @@ object PenEvent:
     def unapply(e: Move): Option[Point] =
       Option(e.position)
 
-  /** Mouse has moved into canvas hit test boundaries. It's counterpart is [[Leave]].
+  /** Pen has entered the game boundaries. It's counterpart is [[Leave]]
+    *
+    * @param pointerId
+    *   The unique identifier for the pointer input
+    * @param position
+    *   The position of the pen relative to the magnification level
+    * @param movementPosition
+    *   The delta position between this event and the last event relative to the magnification level
+    * @param pressure
+    *   The normalised pressure of the pen (between 0 and 1)
     */
   final case class Enter(
       pointerId: PointerId,
@@ -1003,7 +1201,16 @@ object PenEvent:
     def unapply(e: Enter): Option[Point] =
       Option(e.position)
 
-  /** Mouse has left canvas hit test boundaries. It's counterpart is [[Enter]].
+  /** Pen has left the game boundaries. It's counterpart is [[Enter]]
+    *
+    * @param pointerId
+    *   The unique identifier for the pointer input
+    * @param position
+    *   The position of the pen relative to the magnification level
+    * @param movementPosition
+    *   The delta position between this event and the last event relative to the magnification level
+    * @param pressure
+    *   The normalised pressure of the pen (between 0 and 1)
     */
   final case class Leave(
       pointerId: PointerId,
@@ -1015,11 +1222,19 @@ object PenEvent:
     def unapply(e: Leave): Option[Point] =
       Option(e.position)
 
-  /** The ongoing interactions was cancelled due to:
-    *   - the pointer device being disconnected
-    *   - device orientation change
-    *   - palm rejection
-    *   - switching applications
+  /** The ongoing interactions was cancelled, which may occur when:
+    *   - the pen is disconnected
+    *   - the device orientation changes
+    *   - applications are switched
+    *
+    * @param pointerId
+    *   The unique identifier for the pointer input
+    * @param position
+    *   The position of the pen relative to the magnification level
+    * @param movementPosition
+    *   The delta position between this event and the last event relative to the magnification level
+    * @param pressure
+    *   The normalised pressure of the pen (between 0 and 1)
     */
   final case class Cancel(
       pointerId: PointerId,

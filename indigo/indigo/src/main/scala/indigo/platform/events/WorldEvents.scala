@@ -372,8 +372,12 @@ final class WorldEvents:
         val position         = e.position(magnification, canvas)
         val pointerType      = e.toPointerType
         val buttons          = e.indigoButtons
-        val button           = if (pointerType == PointerType.Mouse) e.button else e.button - 1
         val movementPosition = e.movementPosition(magnification)
+
+        // A pen being touched to a touchpad, or a finger touching a screen both result in a left button being registered
+        // This is misleading, and so here we reduce the button count by 1 to remove the left button. This also
+        // has the result of making what was the middle button on a pen to a left button, and a right button to a middle buton
+        val button = if (pointerType == PointerType.Mouse) e.button else e.button - 1
 
         // Add the button to the list of buttons that are down, to check later when the button is released
         pointerButtons = pointerButtons.updated(
@@ -464,8 +468,12 @@ final class WorldEvents:
         val position         = e.position(magnification, canvas)
         val pointerType      = e.toPointerType
         val buttons          = e.indigoButtons
-        val button           = if (pointerType == PointerType.Mouse) e.button else e.button - 1
         val movementPosition = e.movementPosition(magnification)
+
+        // A pen being touched to a touchpad, or a finger touching a screen both result in a left button being registered
+        // This is misleading, and so here we reduce the button count by 1 to remove the left button. This also
+        // has the result of making what was the middle button on a pen to a left button, and a right button to a middle buton
+        val button = if (pointerType == PointerType.Mouse) e.button else e.button - 1
 
         // Check to see if this button is up within the clickTimeMs, and if so fire a click event
         pointerButtons.getOrElse(e.pointerId, Batch.empty).find(_._1 == button) match {
