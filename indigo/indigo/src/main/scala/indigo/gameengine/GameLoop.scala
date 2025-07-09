@@ -121,7 +121,8 @@ final class GameLoop[StartUpData, GameModel, ViewModel](
     _inputState = InputState.calculateNext(
       _inputState,
       events.collect { case e: InputEvent => e },
-      gameEngine.gamepadInputCapture.giveGamepadState
+      gameEngine.gamepadInputCapture.giveGamepadState,
+      gameTime.running.toMillis
     )
 
     val context =

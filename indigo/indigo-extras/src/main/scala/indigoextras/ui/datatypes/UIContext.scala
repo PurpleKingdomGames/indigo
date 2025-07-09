@@ -79,7 +79,7 @@ object UIContext:
     UIContext(
       Parent.default,
       snapGrid,
-      Coords(subSystemContext.frame.input.pointers.position),
+      Coords(subSystemContext.frame.input.pointer.position),
       UIState.Active,
       magnification,
       subSystemContext.reference,
@@ -101,7 +101,7 @@ object UIContext:
     UIContext(
       Parent.default,
       Size.one,
-      Coords(ctx.frame.input.pointers.position / Point.one),
+      Coords(ctx.frame.input.pointer.position / Point.one),
       UIState.Active,
       magnification,
       reference,

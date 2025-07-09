@@ -1,347 +1,146 @@
 package indigo.shared.input
 
+import indigo.MouseButton
 import indigo.shared.collections.Batch
 import indigo.shared.datatypes.Point
-import indigo.shared.datatypes.Rectangle
-import indigo.shared.events.MouseButton
+import indigo.shared.events.PointerEvent
+import indigo.shared.events.PointerId
 import indigo.shared.events.PointerType
+import indigo.shared.time.Millis
 
-trait PointerState:
-  val pointers: Pointers
-  val pointerType: Option[PointerType]
+import scala.annotation.nowarn
 
-  /** Whether the specified button is down on any pointer
-    *
-    * @param button
-    *   The button to check
-    * @return
+final case class PointerState(instances: Batch[Pointer]) extends ButtonInputState with PositionalInputState {
+
+  /** The position of the most recently updated pointer instance, or None if no instances exist
     */
-  def isButtonDown(button: MouseButton): Boolean = pointers.isButtonDown(button, pointerType)
+  val maybePosition = instances
+    .sortBy(_.lastUpdateTime.toDouble)
+    .reverse
+    .map(_.maybePosition)
+    .collect { case Some(p) => p }
+    .headOption
 
-  /** Whether the left button is down on any pointer
+  /** The buttons currently pressed down on the pointer instances
     */
-  lazy val isLeftDown: Boolean = isButtonDown(MouseButton.LeftMouseButton)
+  val buttons = instances.flatMap(_.buttons)
 
-  /** Whether the right button is down on any pointer
+  /** The pointer clicks that have occurred in this frame. This will include any taps from pens or fingers as a left
+    * mouse click
     */
-  lazy val isRightDown: Boolean = isButtonDown(MouseButton.RightMouseButton)
+  val clicks = instances.flatMap(_.clicks) ++ instances
+    .filter(_.isTapped)
+    .map(p => (MouseButton.LeftMouseButton, p.maybePosition.getOrElse(Point.zero)))
 
-  /** Whether the middle button is down on any pointer
+  /** The buttons that were pressed down in this frame
     */
-  lazy val isMiddleDown: Boolean = isButtonDown(MouseButton.MiddleMouseButton)
+  val downButtons = instances.flatMap(_.downButtons)
 
-  /** Whether the left button was pressed in this frame
+  /** The buttons that were released in this frame
     */
-  lazy val isPressed: Boolean = pressed(MouseButton.LeftMouseButton)
+  val upButtons = instances.flatMap(_.upButtons)
 
-  /** Whether the left button was released in this frame
+  /** A batch of positions where the pointer was up in this frame
     */
-  lazy val isReleased: Boolean = released(MouseButton.LeftMouseButton)
+  lazy val isUpAt = instances.filter(_.isDown == false).map(_.maybePosition).collect { case Some(p) => p }
 
-  /** Thw positions that the pointer was clicked at in this frame
+  /** A batch of positions where the pointer was down in this frame
     */
-  lazy val isClickedAt: Batch[Point] = pointers.pointersClickedAt(pointerType)
+  lazy val isDownAt = instances.filter(_.isDown).map(_.maybePosition).collect { case Some(p) => p }
 
-  /** The positions that the pointer was up at in this frame
+  /** Whether the pointer was down in this frame
     */
-  lazy val isUpAt: Batch[Point] = pointers.upPositionsWith(Some(MouseButton.LeftMouseButton), pointerType)
+  val isDown = isDownAt.isEmpty == false
 
-  /** The positions that the pointer was down at in this frame
-    */
-  lazy val isDownAt: Batch[Point] = pointers.downPositionsWith(Some(MouseButton.LeftMouseButton), pointerType)
+  @nowarn("msg=deprecated")
+  def calculateNext(events: Batch[PointerEvent], time: Millis) =
+    val newInstances = events.foldLeft(
+      // Reset the frame state for all instances
+      instances.map(_.copy(upButtons = Batch.empty, downButtons = Batch.empty, clicks = Batch.empty, isTapped = false))
+    )((instances, event) =>
+      // If the event is a leave or cancel, we remove the instance from the state
+      if (event.isInstanceOf[PointerEvent.Leave] || event.isInstanceOf[PointerEvent.Cancel])
+        instances.filterNot(_.pointerId == event.pointerId)
+      else
+        // Otherwise, find or create the instance for the pointerId and update it based on the event
+        val instance = PointerState.getOrCreate(event.pointerId, event.pointerType, instances)
+        val newInstance = event match {
+          case e: PointerEvent.Move  => instance.copy(maybePosition = Some(e.position), lastUpdateTime = time)
+          case e: PointerEvent.Enter => instance.copy(maybePosition = Some(e.position), lastUpdateTime = time)
+          case e: PointerEvent.Click =>
+            e.button match {
+              case Some(value) => instance.copy(clicks = instance.clicks :+ (value, e.position), lastUpdateTime = time)
+              case None => instance.copy(isTapped = true, maybePosition = Some(e.position), lastUpdateTime = time)
+            }
+          case e: PointerEvent.Down =>
+            e.button match {
+              case Some(value) =>
+                instance.copy(
+                  downButtons = instance.downButtons :+ (value, e.position),
+                  buttons = instance.buttons :+ value,
+                  isDown =
+                    (e.pointerType == PointerType.Mouse && value == MouseButton.LeftMouseButton) || instance.isDown,
+                  lastUpdateTime = time
+                )
+              case None => instance.copy(isDown = true, lastUpdateTime = time)
+            }
+          case e: PointerEvent.Up =>
+            e.button match {
+              case Some(value) =>
+                instance.copy(
+                  upButtons = instance.upButtons :+ (value, e.position),
+                  buttons = instance.buttons.filterNot(_ == value),
+                  isDown =
+                    if e.pointerType == PointerType.Mouse && value == MouseButton.LeftMouseButton then false
+                    else instance.isDown,
+                  lastUpdateTime = time
+                )
+              case None => instance.copy(isDown = false, lastUpdateTime = time)
+            }
+          // We should never reach here
+          case _: PointerEvent.Leave => instance
+          // We should never reach here
+          case _: PointerEvent.Cancel => instance
+          // Deprecated
+          case _: PointerEvent.Out => instance
+        }
 
-  /** The positions of the pointer in this frame
-    */
-  lazy val positions: Batch[Point] = pointers.pointerPositions(pointerType)
-
-  /** The first position of the pointer in this frame, defaulting to 0,0
-    */
-  lazy val position: Point = maybePosition.getOrElse(Point.zero)
-
-  /** The first position of the pointer in this frame
-    */
-  lazy val maybePosition: Option[Point] = positions.headOption
-
-  /** Whether the pointer was clicked this frame
-    */
-  lazy val isClicked: Boolean = pointers.pointerClicked(pointerType)
-
-  /** Whether the left button was pressed in this frame
-    *
-    * @return
-    */
-  def pressed: Boolean = pressed(MouseButton.LeftMouseButton)
-
-  /** Whether the specified button was pressed in this frame
-    *
-    * @param button
-    *   The button to check
-    * @return
-    */
-  def pressed(button: MouseButton): Boolean = pointers.pressed(button, pointerType)
-
-  /** Whether the left button was released in this frame
-    *
-    * @return
-    */
-  def released: Boolean = released(MouseButton.LeftMouseButton)
-
-  /** Whether the specified button was released in this frame
-    *
-    * @param button
-    *   The button to check
-    * @return
-    */
-  def released(button: MouseButton): Boolean = pointers.released(button, pointerType)
-
-  /** The first position where the specified button was up on this frame
-    *
-    * @param button
-    * @return
-    */
-  def maybeUpAtPositionWith(button: MouseButton): Option[Point] =
-    pointers.upPositionsWith(Some(button), pointerType).headOption
-
-  /** The first position where the specified button was down on this frame
-    *
-    * @param button
-    * @return
-    */
-  def maybeDownAtPositionWith(button: MouseButton): Option[Point] =
-    pointers.downPositionsWith(Some(button), pointerType).headOption
-
-  /** Was any pointer clicked at this position in this frame
-    *
-    * @param position
-    * @return
-    */
-  def wasClickedAt(position: Point): Boolean = isClickedAt.contains(position)
-
-  /** Was any pointer clicked at this position in this frame
-    *
-    * @param x
-    * @param y
-    * @return
-    */
-  def wasClickedAt(x: Int, y: Int): Boolean = wasClickedAt(Point(x, y))
-
-  /** Whether the pointer button was up at the specified position in this frame
-    *
-    * @param position
-    */
-  def wasUpAt(position: Point): Boolean = pointers.pointersUpAt(pointerType).contains(position)
-
-  /** Whether the pointer button was up at the specified position in this frame
-    *
-    * @param x
-    * @param y
-    * @return
-    */
-  def wasUpAt(x: Int, y: Int): Boolean = wasUpAt(Point(x, y))
-
-  /** Whether the specified button was up at the specified position in this frame
-    *
-    * @param position
-    * @param button
-    */
-  def wasUpAt(position: Point, button: MouseButton): Boolean =
-    pointers.upPositionsWith(Some(button), pointerType).contains(position)
-
-  /** Whether the specified button was up at the specified position in this frame
-    *
-    * @param x
-    * @param y
-    * @param button
-    * @return
-    */
-  def wasUpAt(x: Int, y: Int, button: MouseButton): Boolean = wasUpAt(Point(x, y), button)
-
-  /** Whether the pointer button was down at the specified position in this frame
-    *
-    * @param position
-    * @return
-    */
-  def wasDownAt(position: Point): Boolean = pointers.pointersDownAt(pointerType).contains(position)
-
-  /** Whether the pointer button was down at the specified position in this frame
-    *
-    * @param x
-    * @param y
-    * @return
-    */
-  def wasDownAt(x: Int, y: Int): Boolean = wasDownAt(Point(x, y))
-
-  /** Whether the specified button was down at the specified position in this frame
-    *
-    * @param position
-    * @param button
-    * @return
-    */
-  def wasDownAt(position: Point, button: MouseButton): Boolean =
-    pointers.downPositionsWith(Some(button), pointerType).contains(position)
-
-  /** Whether the specified button was down at the specified position in this frame
-    *
-    * @param x
-    * @param y
-    * @param button
-    * @return
-    */
-  def wasDownAt(x: Int, y: Int, button: MouseButton): Boolean = wasDownAt(Point(x, y), button)
-
-  /** Whether the pointer position was at the specified target in this frame
-    *
-    * @param target
-    * @return
-    */
-  def wasPositionAt(target: Point): Boolean = pointers.wasPointerPositionAt(target, pointerType)
-
-  /** Whether the pointer position was at the specified target in this frame
-    *
-    * @param x
-    * @param y
-    * @return
-    */
-  def wasPositionAt(x: Int, y: Int): Boolean = wasPositionAt(Point(x, y))
-
-  /** Whether the pointer was within the specified bounds in this frame
-    *
-    * @param bounds
-    * @return
-    */
-  def isWithin(bounds: Rectangle) = pointers.getPointerWithin(bounds, pointerType).nonEmpty
-
-  /** Whether the pointer was up within the specified bounds in this frame
-    *
-    * @param bounds
-    * @param button
-    * @return
-    */
-  def wasUpWithin(bounds: Rectangle, button: MouseButton): Boolean =
-    pointers.wasPointerUpWithin(bounds, button, pointerType)
-
-  /** Whether the pointer was up within the specified bounds in this frame
-    *
-    * @param x
-    * @param y
-    * @param width
-    * @param height
-    * @param button
-    * @return
-    */
-  def wasUpWithin(x: Int, y: Int, width: Int, height: Int, button: MouseButton): Boolean =
-    wasUpWithin(Rectangle(x, y, width, height), button)
-
-  /** Whether the pointer was down within the specified bounds in this frame
-    *
-    * @param bounds
-    * @return
-    */
-  def wasDownWithin(bounds: Rectangle): Boolean = pointers.wasPointerDownWithin(bounds, pointerType)
-
-  /** Whether the pointer was down within the specified bounds in this frame
-    *
-    * @param x
-    * @param y
-    * @param width
-    * @param height
-    * @return
-    */
-  def wasDownWithin(x: Int, y: Int, width: Int, height: Int): Boolean = wasDownWithin(
-    Rectangle(x, y, width, height)
-  )
-
-  /** Whether the pointer was down within the specified bounds in this frame
-    *
-    * @param bounds
-    * @param button
-    * @return
-    */
-  def wasDownWithin(bounds: Rectangle, button: MouseButton): Boolean = pointers.wasPointerDownWithin(
-    bounds,
-    button,
-    pointerType
-  )
-
-  /** Whether the pointer was down within the specified bounds in this frame
-    *
-    * @param x
-    * @param y
-    * @param width
-    * @param height
-    * @param button
-    * @return
-    */
-  def wasDownWithin(x: Int, y: Int, width: Int, height: Int, button: MouseButton): Boolean =
-    pointers.wasPointerDownWithin(
-      Rectangle(x, y, width, height),
-      button,
-      pointerType
+        instances.filterNot(_.pointerId == event.pointerId) :+ newInstance
     )
 
-  /** Whether the pointer was clicked within the specified bounds in this frame
-    *
-    * @param bounds
-    * @return
-    */
-  def wasClickedWithin(bounds: Rectangle): Boolean = wasClickedWithin(bounds, None)
+    this.copy(instances = newInstances)
+}
 
-  /** Whether the pointer button was clicked within the specified bounds in this frame
-    *
-    * @param bounds
-    * @param button
-    * @return
-    */
-  def wasClickedWithin(bounds: Rectangle, button: MouseButton): Boolean = wasClickedWithin(bounds, Some(button))
+object PointerState:
+  val default: PointerState = PointerState(Batch.empty)
 
-  /** Whether the pointer was clicked within the specified bounds in this frame
-    *
-    * @param x
-    * @param y
-    * @param width
-    * @param height
-    * @param button
-    * @return
-    */
-  def wasClickedWithin(x: Int, y: Int, width: Int, height: Int): Boolean = wasClickedWithin(
-    Rectangle(x, y, width, height)
-  )
+  private def getOrCreate(id: PointerId, pointerType: PointerType, instances: Batch[Pointer]) =
+    instances
+      .find(p => p.pointerId == id)
+      .getOrElse(
+        Pointer(
+          id,
+          pointerType,
+          None,
+          false,
+          false,
+          Batch.empty,
+          Batch.empty,
+          Batch.empty,
+          Batch.empty,
+          Millis.zero
+        )
+      )
 
-  /** Whether the pointer button was clicked within the specified bounds in this frame
-    *
-    * @param x
-    * @param y
-    * @param width
-    * @param height
-    * @param button
-    * @return
-    */
-  def wasClickedWithin(x: Int, y: Int, width: Int, height: Int, button: MouseButton): Boolean =
-    wasClickedWithin(Rectangle(x, y, width, height), Some(button))
-
-  /** Whether the pointer was clicked within the specified bounds in this frame
-    *
-    * @param bounds
-    * @param button
-    * @return
-    */
-  def wasClickedWithin(bounds: Rectangle, button: Option[MouseButton]): Boolean =
-    pointers.clickedPositionsWith(button, pointerType).exists(bounds.isPointWithin)
-
-  /** Whether the pointer position was within the specified bounds in this frame
-    *
-    * @param bounds
-    * @return
-    */
-  def wasWithin(bounds: Rectangle): Boolean = pointers.wasPointerPositionWithin(bounds, pointerType)
-
-  /** Whether the pointer position was within the specified bounds in this frame
-    *
-    * @param x
-    * @param y
-    * @param width
-    * @param height
-    * @return
-    */
-  def wasWithin(x: Int, y: Int, width: Int, height: Int): Boolean =
-    wasWithin(Rectangle(x, y, width, height))
+final case class Pointer(
+    pointerId: PointerId,
+    pointerType: PointerType,
+    maybePosition: Option[Point],
+    isDown: Boolean,
+    isTapped: Boolean,
+    buttons: Batch[MouseButton],
+    clicks: Batch[(MouseButton, Point)],
+    downButtons: Batch[(MouseButton, Point)],
+    upButtons: Batch[(MouseButton, Point)],
+    lastUpdateTime: Millis
+)

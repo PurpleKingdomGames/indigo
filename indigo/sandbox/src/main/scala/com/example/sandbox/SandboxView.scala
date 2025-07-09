@@ -9,7 +9,7 @@ object SandboxView:
   def updateView(
       model: SandboxGameModel,
       viewModel: SandboxViewModel,
-      mouse: Mouse,
+      mouse: MouseState,
       bl: Context.Services.Bounds
   ): SceneUpdateFragment = {
     mouse.isClickedAt.headOption match {
@@ -77,7 +77,7 @@ object SandboxView:
       CloneBatch(dudeCloneId, CloneBatchData(16, 64, Radians.zero, -1.0, 1.0))
     )
 
-  def lightingLayer(mouse: Mouse): Batch[SceneNode] =
+  def lightingLayer(mouse: MouseState): Batch[SceneNode] =
     Batch(
       Graphic(114, 64 - 20, 320, 240, SandboxAssets.lightMaterial.withTint(RGBA.Red))
         .withRef(Point(160, 120)),
@@ -96,7 +96,7 @@ object SandboxView:
       Text("AB!\n!C", 100, 2, Fonts.fontKey, SandboxAssets.fontMaterial.withAlpha(0.5)).alignCenter,
       Text("AB!\n\n!C", 200, 2, Fonts.fontKey, SandboxAssets.fontMaterial.withAlpha(0.5)).alignRight
         .withEventHandler {
-          case (txt, MouseEvent.Click(pt)) if bl.get(txt).contains(pt) =>
+          case (txt, PointerEvent.Click(pt)) if bl.get(txt).contains(pt) =>
             println("Clicked me!")
             None
 
