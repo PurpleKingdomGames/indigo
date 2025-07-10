@@ -6,6 +6,7 @@ import indigo.shared.audio.Volume
   * audio sources at once.
   */
 final case class SceneAudio(
+    masterVolume: Volume,
     sourceA: Option[SceneAudioSource],
     sourceB: Option[SceneAudioSource],
     sourceC: Option[SceneAudioSource]
@@ -14,21 +15,17 @@ final case class SceneAudio(
     SceneAudio.combine(this, other)
 
   def withMasterVolume(volume: Volume): SceneAudio =
-    SceneAudio(
-      sourceA.map(s => s.copy(masterVolume = volume)),
-      sourceB.map(s => s.copy(masterVolume = volume)),
-      sourceC.map(s => s.copy(masterVolume = volume))
-    )
+    this.copy(masterVolume = volume)
 
 object SceneAudio:
 
-  val Mute: SceneAudio = SceneAudio(None, None, None)
+  val Mute: SceneAudio = SceneAudio(Volume.Max, None, None, None)
 
   def apply(sourceA: SceneAudioSource): SceneAudio =
-    SceneAudio(Some(sourceA), None, None)
+    SceneAudio(Volume.Max, Some(sourceA), None, None)
 
   def apply(sourceA: SceneAudioSource, sourceB: SceneAudioSource): SceneAudio =
-    SceneAudio(Some(sourceA), Some(sourceB), None)
+    SceneAudio(Volume.Max, Some(sourceA), Some(sourceB), None)
 
   def combine(a: SceneAudio, b: SceneAudio): SceneAudio =
-    SceneAudio(b.sourceA.orElse(a.sourceA), b.sourceB.orElse(a.sourceB), b.sourceC.orElse(a.sourceC))
+    SceneAudio(a.masterVolume, b.sourceA.orElse(a.sourceA), b.sourceB.orElse(a.sourceB), b.sourceC.orElse(a.sourceC))
