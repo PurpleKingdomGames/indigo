@@ -5,6 +5,7 @@ import com.example.sandbox.scenes.ActorSceneModel
 import com.example.sandbox.scenes.ChangeValue
 import com.example.sandbox.scenes.ComponentUIScene2
 import com.example.sandbox.scenes.ConfettiModel
+import com.example.sandbox.scenes.InputStateModel
 import com.example.sandbox.scenes.PathFindingModel
 import com.example.sandbox.scenes.PerformerPhysicsSceneModel
 import com.example.sandbox.scenes.PerformerSceneModel
@@ -22,6 +23,7 @@ final case class SandboxGameModel(
     data: Option[String],
     confetti: ConfettiModel,
     pointers: PointersModel,
+    inputStates: InputStateModel,
     pathfinding: PathFindingModel,
     rotation: Radians,
     num: Int,
@@ -56,6 +58,7 @@ object SandboxModel {
       None,
       ConfettiModel.empty,
       PointersModel.empty,
+      InputStateModel.empty,
       PathFindingModel.empty,
       Radians.zero,
       0,

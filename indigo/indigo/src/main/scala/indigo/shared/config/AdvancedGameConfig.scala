@@ -91,7 +91,7 @@ object AdvancedGameConfig {
       batchSize = 256,
       autoLoadStandardShaders = true,
       disableContextMenu = true,
-      clickTime = Millis(200)
+      clickTime = Millis(250)
     )
 }
 

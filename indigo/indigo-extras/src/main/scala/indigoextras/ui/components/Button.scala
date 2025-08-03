@@ -247,7 +247,7 @@ object Button:
                 .moveBy(context.parent.coords + context.parent.additionalOffset)
                 .contains(context.pointerCoords)
             then
-              if context.frame.input.pointers.isLeftDown then ButtonState.Down
+              if context.frame.input.pointer.isDown then ButtonState.Down
               else ButtonState.Over
             else ButtonState.Up
           else ButtonState.Up
@@ -293,7 +293,7 @@ object Button:
         Outcome(model.copy(state = ButtonState.Up, isDown = false, dragStart = None))
 
       case _: PointerEvent.Move
-          if (context.isActive || model.isDragged) && model.isDown && !context.frame.input.pointers.isLeftDown =>
+          if (context.isActive || model.isDragged) && model.isDown && !context.frame.input.pointer.isDown =>
         // Released outside the window at some point.
         Outcome(model.copy(state = ButtonState.Up, isDown = false, dragStart = None))
 
