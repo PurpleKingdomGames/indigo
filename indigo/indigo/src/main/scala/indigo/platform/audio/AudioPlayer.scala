@@ -150,22 +150,23 @@ final class AudioPlayer(context: AudioContextProxy):
   def playAudio(sceneAudioOption: Option[SceneAudio]): Unit =
     val sceneAudio = sceneAudioOption.getOrElse(SceneAudio.Mute)
 
-    updateSource(sceneAudio.sourceA, sourceA).foreach { src =>
+    updateSource(sceneAudio.masterVolume, sceneAudio.sourceA, sourceA).foreach { src =>
       sourceA = src
     }
-    updateSource(sceneAudio.sourceB, sourceB).foreach { src =>
+    updateSource(sceneAudio.masterVolume, sceneAudio.sourceB, sourceB).foreach { src =>
       sourceB = src
     }
-    updateSource(sceneAudio.sourceC, sourceC).foreach { src =>
+    updateSource(sceneAudio.masterVolume, sceneAudio.sourceC, sourceC).foreach { src =>
       sourceC = src
     }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   private def updateSource(
+      masterVolume: Volume,
       sceneAudioSource: Option[SceneAudioSource],
       currentSource: Option[AudioSourceState]
   ): Option[Option[AudioSourceState]] =
-    (currentSource, sceneAudioSource) match
+    (currentSource, sceneAudioSource.map(s => s.copy(masterVolume = s.masterVolume * masterVolume))) match
       case (None, None) =>
         None
 
