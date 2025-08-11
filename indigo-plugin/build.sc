@@ -9,7 +9,7 @@ import mill.scalalib.scalafmt._
 import coursier.maven.MavenRepository
 import publish._
 
-object `indigo-plugin` extends Cross[IndigoPluginModule]("2.12", "2.13")
+object `indigo-plugin` extends Cross[IndigoPluginModule]("2.12", "2.13", "3")
 
 trait IndigoPluginModule extends CrossScalaModule with PublishModule with ScalafmtModule {
 
@@ -19,6 +19,7 @@ trait IndigoPluginModule extends CrossScalaModule with PublishModule with Scalaf
     crossScalaVersion match {
       case "2.12" => "2.12.20"
       case "2.13" => "2.13.16"
+      case "3"    => "3.7.1"
       case _      => "2.13.16"
     }
 
