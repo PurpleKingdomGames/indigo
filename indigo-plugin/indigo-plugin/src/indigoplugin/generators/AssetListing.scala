@@ -44,8 +44,10 @@ object AssetListing {
     Seq(file)
   }
 
-  def renderContent(paths: List[os.RelPath], toSafeName: (String, String) => String): String =
-    (convertPathsToTree _ andThen renderTree(0, toSafeName))(paths)
+  def renderContent(paths: List[os.RelPath], toSafeName: (String, String) => String): String = {
+    val pathTree = convertPathsToTree(paths)
+    renderTree(0, toSafeName)(pathTree)
+  }
 
   def convertPathsToTree(paths: List[os.RelPath]): PathTree =
     PathTree
