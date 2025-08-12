@@ -171,14 +171,14 @@ final case class DataFrame(data: Array[Array[DataType]], columnCount: Int) {
     )
   }
 
-  def toSafeName: String => String = { name: String =>
+  def toSafeName: String => String = { (name: String) =>
     name.replaceAll("[^a-zA-Z0-9]", "-").split("-").toList.filterNot(_.isEmpty) match {
       case h :: t if h.take(1).matches("[0-9]") => ("_" :: h :: t.map(_.capitalize)).mkString
       case l                                    => l.map(_.capitalize).mkString
     }
   }
 
-  def toSafeNameCamel: String => String = { name: String =>
+  def toSafeNameCamel: String => String = { (name: String) =>
     name.replaceAll("[^a-zA-Z0-9]", "-").split("-").toList.filterNot(_.isEmpty) match {
       case h :: t if h.take(1).matches("[0-9]") => ("_" :: h :: t.map(_.capitalize)).mkString
       case h :: t                               => (h.toLowerCase :: t.map(_.capitalize)).mkString

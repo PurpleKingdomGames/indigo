@@ -41,7 +41,7 @@ object IndigoRun {
     println(s"Starting '${indigoOptions.metadata.title}'")
 
     sys.props("os.name").toLowerCase match {
-      case x if x contains "windows" =>
+      case x if x.contains("windows") =>
         indigoOptions.electron.electronInstall match {
           case ElectronInstall.Global =>
             IndigoProc.Windows.npmStart(outputDir)
