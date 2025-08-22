@@ -423,6 +423,9 @@ val Pen: shared.input.Pen.type = shared.input.Pen
 type PenEvent = shared.events.PenEvent
 val PenEvent: shared.events.PenEvent.type = shared.events.PenEvent
 
+type Wheel = shared.input.Wheel
+val Wheel: shared.input.Wheel.type = shared.input.Wheel
+
 type ScrollDirection = shared.events.WheelDirection
 val ScrollDirection: shared.events.WheelDirection.type = shared.events.WheelDirection
 
