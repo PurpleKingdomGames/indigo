@@ -1,13 +1,18 @@
-import $ivy.`com.lihaoyi::mill-contrib-bloop:$MILL_VERSION`
-import mill._
-import mill.scalalib._
-import mill.scalajslib._
-import mill.scalalib.scalafmt._
-import publish._
-import coursier.maven.MavenRepository
+//| mill-version: 1.0.3
+
+// import $mvn.`com.lihaoyi::mill-contrib-bloop:$MILL_VERSION`
+// import mill._
+// import mill.scalalib._
+// import mill.scalajslib._
+import mill.scalalib.scalafmt.*
+// import publish._
+// import coursier.maven.MavenRepository
+
+import mill.*, scalalib.*, publish.*
+import mill.api.BuildCtx
 
 object `mill-indigo` extends Cross[IndigoPluginModule]("2.13")
-trait IndigoPluginModule extends CrossScalaModule with PublishModule with ScalafmtModule {
+trait IndigoPluginModule extends CrossScalaModule with SonatypeCentralPublishModule with ScalafmtModule {
 
   def scalaVersion =
     crossScalaVersion match {
@@ -16,26 +21,26 @@ trait IndigoPluginModule extends CrossScalaModule with PublishModule with Scalaf
 
   def millLibVersion = "0.12.5"
 
-  def indigoVersion = T.input { IndigoVersion.getVersion(T.workspace) }
+  def indigoVersion = Task.Input { IndigoVersion.getVersion(BuildCtx.workspaceRoot) }
 
-  def ivyDeps = Agg(
-    ivy"com.lihaoyi::mill-main:${millLibVersion}",
-    ivy"com.lihaoyi::mill-main-api:${millLibVersion}",
-    ivy"com.lihaoyi::mill-scalalib:${millLibVersion}",
-    ivy"com.lihaoyi::mill-scalajslib:${millLibVersion}",
-    ivy"com.lihaoyi::mill-scalalib-api:${millLibVersion}",
-    ivy"com.lihaoyi::os-lib:0.11.3",
-    ivy"io.indigoengine::indigo-plugin:${indigoVersion()}"
+  def mvnDeps = Seq(
+    mvn"com.lihaoyi::mill-main:${millLibVersion}",
+    mvn"com.lihaoyi::mill-main-api:${millLibVersion}",
+    mvn"com.lihaoyi::mill-scalalib:${millLibVersion}",
+    mvn"com.lihaoyi::mill-scalajslib:${millLibVersion}",
+    mvn"com.lihaoyi::mill-scalalib-api:${millLibVersion}",
+    mvn"com.lihaoyi::os-lib:0.11.3",
+    mvn"io.indigoengine::indigo-plugin:${indigoVersion()}"
   )
 
-  def repositoriesTask = T.task {
-    super.repositoriesTask() ++ Seq(
-      MavenRepository("https://oss.sonatype.org/content/repositories/releases")
-    )
-  }
+  // def repositoriesTask = T.task {
+  //   super.repositoriesTask() ++ Seq(
+  //     MavenRepository("https://oss.sonatype.org/content/repositories/releases")
+  //   )
+  // }
 
   object test extends ScalaTests {
-    def ivyDeps = Agg(ivy"org.scalameta::munit:1.0.4")
+    def mvnDeps = Seq(mvn"org.scalameta::munit:1.0.4")
 
     def testFramework = "munit.Framework"
   }

@@ -234,7 +234,8 @@ addCommandAlias(
     "buildAllNoClean",
     "testAllNoClean",
     "indigoPublishAllSigned",
-    "sonatypeBundleRelease"
+    "sonaUpload",
+    "sonaRelease"
   ).mkString(";", ";", "")
 )
 
@@ -275,7 +276,8 @@ addCommandAlias(
     "crossCleanAll",
     "crossBuildIndigo",
     "crossIndigoPublishAllSigned",
-    "sonatypeBundleRelease"
+    "sonaUpload",
+    "sonaRelease"
   ).mkString(";", ";", "")
 )
 

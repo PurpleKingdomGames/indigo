@@ -4,7 +4,7 @@ set -e
 
 export GPG_TTY=$(tty)
 
-source ../credentials.sh
+source ./credentials.sh
 
 rm -fr out/
 
@@ -22,43 +22,6 @@ rm -fr out/
 ./mill indigo-plugin[3].test
 
 # Build all artifacts
-./mill indigo-plugin[2.12].publishArtifacts
-./mill indigo-plugin[2.13].publishArtifacts
-./mill indigo-plugin[3].publishArtifacts
-
-# Publish all artifacts
-./mill -i \
-    mill.scalalib.PublishModule/publishAll \
-    --sonatypeCreds "$SONATYPE_USERNAME":"$SONATYPE_PASSWORD" \
-    --gpgArgs --passphrase="$PGP_PASSPHRASE",--no-tty,--pinentry-mode,loopback,--batch,--yes,-a,-b \
-    --publishArtifacts indigo-plugin[2.12].publishArtifacts \
-    --readTimeout  3600000 \
-    --awaitTimeout 3600000 \
-    --release true \
-    --signed  true \
-    --sonatypeUri https://oss.sonatype.org/service/local \
-    --sonatypeSnapshotUri https://oss.sonatype.org/content/repositories/snapshots
-
-./mill -i \
-    mill.scalalib.PublishModule/publishAll \
-    --sonatypeCreds "$SONATYPE_USERNAME":"$SONATYPE_PASSWORD" \
-    --gpgArgs --passphrase="$PGP_PASSPHRASE",--no-tty,--pinentry-mode,loopback,--batch,--yes,-a,-b \
-    --publishArtifacts indigo-plugin[2.13].publishArtifacts \
-    --readTimeout  3600000 \
-    --awaitTimeout 3600000 \
-    --release true \
-    --signed  true \
-    --sonatypeUri https://oss.sonatype.org/service/local \
-    --sonatypeSnapshotUri https://oss.sonatype.org/content/repositories/snapshots
-
-./mill -i \
-    mill.scalalib.PublishModule/publishAll \
-    --sonatypeCreds "$SONATYPE_USERNAME":"$SONATYPE_PASSWORD" \
-    --gpgArgs --passphrase="$PGP_PASSPHRASE",--no-tty,--pinentry-mode,loopback,--batch,--yes,-a,-b \
-    --publishArtifacts indigo-plugin[3].publishArtifacts \
-    --readTimeout  3600000 \
-    --awaitTimeout 3600000 \
-    --release true \
-    --signed  true \
-    --sonatypeUri https://oss.sonatype.org/service/local \
-    --sonatypeSnapshotUri https://oss.sonatype.org/content/repositories/snapshots
+./mill indigo-plugin[2.12].publishSonatypeCentral
+./mill indigo-plugin[2.13].publishSonatypeCentral
+./mill indigo-plugin[3].publishSonatypeCentral

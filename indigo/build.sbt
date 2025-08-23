@@ -37,14 +37,17 @@ lazy val neverPublish = Seq(
   publishLocal / skip := true
 )
 
-lazy val publishSettings = {
-  import xerial.sbt.Sonatype._
+lazy val publishSettings =
   Seq(
-    publishTo              := sonatypePublishToBundle.value,
-    publishMavenStyle      := true,
-    sonatypeProfileName    := "io.indigoengine",
-    licenses               := Seq("MIT" -> url("https://opensource.org/licenses/MIT")),
-    sonatypeProjectHosting := Some(GitHubHosting("PurpleKingdomGames", "indigo", "indigo@purplekingdomgames.com")),
+    organization         := "io.indigoengine",
+    organizationName     := "PurpleKingdomGames",
+    organizationHomepage := Some(url("https://purplekingdomgames.com/")),
+    scmInfo := Some(
+      ScmInfo(
+        url("https://github.com/PurpleKingdomGames/indigo"),
+        "scm:git@github.com:PurpleKingdomGames/indigo.git"
+      )
+    ),
     developers := List(
       Developer(
         id = "davesmith00000",
@@ -53,10 +56,23 @@ lazy val publishSettings = {
         url = url("https://github.com/davesmith00000")
       )
     ),
-    sonatypeCredentialHost := "oss.sonatype.org",
-    sonatypeRepository     := "https://oss.sonatype.org/service/local"
+    description := "A 2D game engine for Scala",
+    licenses := List(
+      "MIT" -> url("https://opensource.org/licenses/MIT")
+    ),
+    homepage := Some(url("https://github.com/PurpleKingdomGames/indigo")),
+
+    // Remove all additional repository other than Maven Central from POM
+    pomIncludeRepository := { _ => false },
+    publishMavenStyle    := true,
+
+    // new setting for the Central Portal
+    publishTo := {
+      val centralSnapshots = "https://central.sonatype.com/repository/maven-snapshots/"
+      if (isSnapshot.value) Some("central-snapshots" at centralSnapshots)
+      else localStaging.value
+    }
   )
-}
 
 // Root
 lazy val indigoProject =

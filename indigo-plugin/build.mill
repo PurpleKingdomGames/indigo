@@ -1,19 +1,23 @@
+//| mill-version: 1.0.3
+
 import scala.util.Success
 import scala.util.Try
-import $ivy.`com.lihaoyi::mill-contrib-bloop:$MILL_VERSION`
-import mill._
-import mill.scalalib._
-import mill.scalajslib._
-import mill.scalajslib.api._
-import mill.scalalib.scalafmt._
-import coursier.maven.MavenRepository
-import publish._
+// import $ivy.`com.lihaoyi::mill-contrib-bloop:$MILL_VERSION`
+// import mill._
+// import mill.scalalib._
+// import mill.scalajslib._
+// import mill.scalajslib.api._
+import mill.scalalib.scalafmt.*
+// import coursier.maven.MavenRepository
+// import publish._
+import mill.*, scalalib.*, publish.*
+import mill.api.BuildCtx
 
 object `indigo-plugin` extends Cross[IndigoPluginModule]("2.12", "2.13", "3")
 
-trait IndigoPluginModule extends CrossScalaModule with PublishModule with ScalafmtModule {
+trait IndigoPluginModule extends CrossScalaModule with SonatypeCentralPublishModule with ScalafmtModule {
 
-  def indigoVersion = T.input(IndigoVersion.getVersion(T.workspace))
+  def indigoVersion = Task.Input(IndigoVersion.getVersion(BuildCtx.workspaceRoot))
 
   def scalaVersion =
     crossScalaVersion match {
@@ -25,23 +29,17 @@ trait IndigoPluginModule extends CrossScalaModule with PublishModule with Scalaf
 
   def artifactName = "indigo-plugin"
 
-  def ivyDeps =
-    Agg(
-      ivy"com.lihaoyi::os-lib:0.11.3",
-      ivy"io.circe::circe-core:0.14.10",
-      ivy"io.circe::circe-parser:0.14.10"
+  def mvnDeps =
+    Seq(
+      mvn"com.lihaoyi::os-lib:0.11.5",
+      mvn"io.circe::circe-core:0.14.14",
+      mvn"io.circe::circe-parser:0.14.14"
     )
-
-  def repositoriesTask = T.task {
-    super.repositoriesTask() ++ Seq(
-      MavenRepository("https://oss.sonatype.org/content/repositories/releases")
-    )
-  }
 
   object test extends ScalaTests {
-    def ivyDeps =
-      Agg(
-        ivy"org.scalameta::munit:1.0.4"
+    def mvnDeps =
+      Seq(
+        mvn"org.scalameta::munit:1.0.4"
       )
 
     def testFramework = "munit.Framework"
