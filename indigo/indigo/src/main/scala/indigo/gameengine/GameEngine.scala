@@ -359,7 +359,7 @@ object GameEngine {
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def extractShaderCode(maybeText: Option[String], tag: String, assetName: AssetName): String =
-    maybeText.flatMap(s"""//<$tag>\n((.|\n|\r)*)//</$tag>""".r.findFirstIn) match {
+    maybeText.flatMap(s"""//<$tag>[\r\n|\r|\n]((.|\n|\r)*)//</$tag>""".r.findFirstIn) match {
       case Some(program) =>
         program
 
