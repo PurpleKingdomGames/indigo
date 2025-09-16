@@ -1,4 +1,4 @@
-//| mill-version: 1.0.3
+//| mill-version: 1.0.4
 
 import scala.util.Success
 import scala.util.Try

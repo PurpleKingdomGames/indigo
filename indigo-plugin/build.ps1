@@ -1,5 +1,5 @@
 function RunMill {
-    .\millw.bat @Args
+    .\mill.bat @Args
     if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 }
 

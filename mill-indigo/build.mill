@@ -1,4 +1,4 @@
-//| mill-version: 1.0.3
+//| mill-version: 1.0.4
 
 // import $mvn.`com.lihaoyi::mill-contrib-bloop:$MILL_VERSION`
 // import mill._
