@@ -1,15 +1,11 @@
-//| mill-version: 1.0.4
+//| mill-version: 1.0.5
+//| mvnDeps: ["org.typelevel::scalac-options:0.1.8"]
 
-// import $mvn.`com.lihaoyi::mill-contrib-bloop:$MILL_VERSION`
-// import mill._
-// import mill.scalalib._
-// import mill.scalajslib._
 import mill.scalalib.scalafmt.*
-// import publish._
-// import coursier.maven.MavenRepository
 
 import mill.*, scalalib.*, publish.*
 import mill.api.BuildCtx
+import org.typelevel.scalacoptions.*
 
 object `mill-indigo` extends Cross[IndigoPluginModule]("2.13")
 trait IndigoPluginModule extends CrossScalaModule with SonatypeCentralPublishModule with ScalafmtModule {
@@ -33,11 +29,12 @@ trait IndigoPluginModule extends CrossScalaModule with SonatypeCentralPublishMod
     mvn"io.indigoengine::indigo-plugin:${indigoVersion()}"
   )
 
-  // def repositoriesTask = T.task {
-  //   super.repositoriesTask() ++ Seq(
-  //     MavenRepository("https://oss.sonatype.org/content/repositories/releases")
-  //   )
-  // }
+  override def scalacOptions = Task {
+    super.scalacOptions() ++
+      ScalacOptions.defaultTokensForVersion(
+        ScalaVersion.unsafeFromString(scalaVersion())
+      )
+  }
 
   object test extends ScalaTests {
     def mvnDeps = Seq(mvn"org.scalameta::munit:1.0.4")

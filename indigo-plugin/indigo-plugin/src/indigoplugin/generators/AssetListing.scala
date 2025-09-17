@@ -13,7 +13,7 @@ object AssetListing {
   ): os.Path => Seq[os.Path] = outDir => {
 
     val toSafeName: (String, String) => String = {
-      val r = (name: String, ext: String) => indigoAssets.rename.lift(name, ext).getOrElse(name)
+      val r = (name: String, ext: String) => indigoAssets.rename.lift((name, ext)).getOrElse(name)
 
       toDefaultSafeName(r)
     }

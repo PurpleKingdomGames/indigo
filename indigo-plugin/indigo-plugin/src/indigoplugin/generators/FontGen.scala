@@ -4,8 +4,6 @@ import indigoplugin.FontOptions
 import indigoplugin.FontLayout
 import scala.annotation.tailrec
 import java.awt.font.FontRenderContext
-import java.awt.font.TextLayout
-import java.awt.font.GlyphVector
 
 /** Provides functionality for generating font images and associated FontInfo instances.
   */
@@ -63,7 +61,6 @@ object FontGen {
 
           normalLayout(
             filteredCharDetails,
-            helper.getMaxAscent,
             maxCharactersPerLine,
             cellWidth,
             cellHeight
@@ -96,7 +93,7 @@ object FontGen {
 
     val (sheetWidth, sheetHeight) =
       fontOptions.layout match {
-        case FontLayout.Normal(maxCharactersPerLine) =>
+        case FontLayout.Normal(_) =>
           findFontSheetBounds(charDetails)
 
         case l @ FontLayout.Monospace(_, _, _) =>
@@ -126,7 +123,6 @@ object FontGen {
 
   def normalLayout(
       unplacedChars: List[CharDetail],
-      maxAscent: Int,
       maxCharsPerLine: Int,
       cellWidth: Int,
       cellHeight: Int

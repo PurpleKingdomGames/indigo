@@ -11,11 +11,13 @@ import java.nio.file.StandardCopyOption
 import indigoplugin.IndigoAssets
 import indigoplugin.IndigoTemplate.Custom
 import indigoplugin.IndigoTemplate.Default
+import scala.annotation.nowarn
 
 object IndigoBuild {
 
   private val workspaceDir = Utils.findWorkspace
 
+  @nowarn("msg=interpolator")
   def build(
       scriptPathBase: Path,
       options: IndigoOptions,
@@ -43,8 +45,7 @@ object IndigoBuild {
           os.copy.over(inputs.templateSource, baseDir)
 
           // Update any HTML files, replacing tokens with values
-          val htmlFiles = os
-            .walk(inputs.templateSource)
+          os.walk(inputs.templateSource)
             .filter(p => p.ext == "html" || p.ext == "htm")
             .foreach { file =>
               val content = os

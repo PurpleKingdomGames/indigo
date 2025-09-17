@@ -1,17 +1,12 @@
-//| mill-version: 1.0.4
+//| mill-version: 1.0.5
+//| mvnDeps: ["org.typelevel::scalac-options:0.1.8"]
 
 import scala.util.Success
 import scala.util.Try
-// import $ivy.`com.lihaoyi::mill-contrib-bloop:$MILL_VERSION`
-// import mill._
-// import mill.scalalib._
-// import mill.scalajslib._
-// import mill.scalajslib.api._
 import mill.scalalib.scalafmt.*
-// import coursier.maven.MavenRepository
-// import publish._
 import mill.*, scalalib.*, publish.*
 import mill.api.BuildCtx
+import org.typelevel.scalacoptions.*
 
 object `indigo-plugin` extends Cross[IndigoPluginModule]("2.12", "2.13", "3")
 
@@ -59,6 +54,12 @@ trait IndigoPluginModule extends CrossScalaModule with SonatypeCentralPublishMod
       )
     )
 
+  override def scalacOptions = Task {
+    super.scalacOptions() ++
+      ScalacOptions.defaultTokensForVersion(
+        ScalaVersion.unsafeFromString(scalaVersion())
+      )
+  }
 }
 
 object IndigoVersion {
