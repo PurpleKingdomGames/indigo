@@ -21,7 +21,8 @@ object IndigoBuild {
   def build(
       scriptPathBase: Path,
       options: IndigoOptions,
-      baseDir: Path,
+      assetsDirectory: os.Path,
+      baseDirectory: Path,
       scriptNames: List[String]
   ): Unit =
     options.template match {
@@ -42,7 +43,7 @@ object IndigoBuild {
           println("Copying template files...")
 
           // Copy the initial files over to the base directory
-          os.copy.over(inputs.templateSource, baseDir)
+          os.copy.over(inputs.templateSource, baseDirectory)
 
           // Update any HTML files, replacing tokens with values
           os.walk(inputs.templateSource)
@@ -55,14 +56,14 @@ object IndigoBuild {
                 .replace("$backgroundColor", options.metadata.backgroundColor)
 
               os.write.over(
-                baseDir / file.relativeTo(inputs.templateSource),
+                baseDirectory / file.relativeTo(inputs.templateSource),
                 content
               )
             }
         }
 
         // copy the game files
-        val gameScriptsDest = outputs.gameScripts.resolveFrom(baseDir)
+        val gameScriptsDest = outputs.gameScripts.resolveFrom(baseDirectory)
 
         // If the directory doesn't exist, then create it
         if (!os.exists(gameScriptsDest))
@@ -86,7 +87,7 @@ object IndigoBuild {
         )
 
         // copy assets into folder
-        val assetsDest = outputs.assets.resolveFrom(baseDir)
+        val assetsDest = outputs.assets.resolveFrom(baseDirectory)
 
         // If the directory doesn't exist, then create it
         if (!os.exists(assetsDest))
@@ -99,12 +100,12 @@ object IndigoBuild {
           )
         }
 
-        IndigoBuild.copyAssets(options.assets, assetsDest)
+        IndigoBuild.copyAssets(options.assets, assetsDirectory, assetsDest)
 
-        println(s"Built to: ${baseDir.toString}")
+        println(s"Built to: ${baseDirectory.toString}")
 
       case Default =>
-        val directoryStructure = createDirectoryStructure(baseDir)
+        val directoryStructure = createDirectoryStructure(baseDirectory)
 
         val scriptName = findScriptName(scriptNames, scriptPathBase)
 
@@ -123,7 +124,7 @@ object IndigoBuild {
         )
 
         // copy assets into folder
-        IndigoBuild.copyAssets(options.assets, directoryStructure.assets)
+        IndigoBuild.copyAssets(options.assets, assetsDirectory, directoryStructure.assets)
 
         // Write an empty cordova.js file so the script reference is intact,
         // even though it does nothing here.
@@ -161,28 +162,28 @@ object IndigoBuild {
         )
       )
 
-  def createDirectoryStructure(baseDir: Path): DirectoryStructure = {
-    println("dirPath: " + baseDir.toString())
+  def createDirectoryStructure(baseDirectory: Path): DirectoryStructure = {
+    println("dirPath: " + baseDirectory.toString())
 
     DirectoryStructure(
-      Utils.ensureDirectoryAt(baseDir),
-      Utils.ensureDirectoryAt(baseDir / "assets"),
-      Utils.ensureDirectoryAt(baseDir / "scripts")
+      Utils.ensureDirectoryAt(baseDirectory),
+      Utils.ensureDirectoryAt(baseDirectory / "assets"),
+      Utils.ensureDirectoryAt(baseDirectory / "scripts")
     )
   }
 
   @SuppressWarnings(Array("org.wartremover.warts.Throw"))
   def copyAssets(
-      baseDirectory: os.Path,
       indigoAssets: IndigoAssets,
+      assetsDirectory: os.Path,
       destAssetsFolder: Path
   ): Unit = {
-    val from = baseDirectory / indigoAssets.gameAssetsDirectory
+    val from = assetsDirectory
     val to   = destAssetsFolder
 
     if (!os.exists(from))
       throw new Exception(
-        "Supplied game assets path does not exist: " + indigoAssets.gameAssetsDirectory
+        "Supplied game assets path does not exist: " + assetsDirectory
           .toString()
       )
     else if (!os.isDir(from))
@@ -219,14 +220,12 @@ object IndigoBuild {
     // Ensure destination directories are in place
     makeDir.all(to)
 
-    indigoAssets
-      .filesToCopy(baseDirectory)
+    IndigoAssets
+      .filesToCopy(indigoAssets, assetsDirectory)
       .foreach { path =>
         copyOne(path)
       }
   }
-  def copyAssets(indigoAssets: IndigoAssets, destAssetsFolder: Path): Unit =
-    copyAssets(workspaceDir, indigoAssets, destAssetsFolder)
 
   @SuppressWarnings(Array("org.wartremover.warts.Throw"))
   def copyScript(

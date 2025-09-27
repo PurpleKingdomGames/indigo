@@ -2,20 +2,22 @@ package indigoplugin.generators
 
 import indigoplugin.IndigoOptions
 import scala.util.matching.Regex
+import indigoplugin.IndigoGenerators
 
 object ConfigGen {
 
   def generate(
       moduleName: String,
-      fullyQualifiedPackage: String,
-      indigoOptions: IndigoOptions
-  ): os.Path => Seq[os.Path] = outDir => {
+      fullyQualifiedPackage: String
+  ): IndigoGenerators.SourceParams => Seq[os.Path] = params => {
 
-    val wd = outDir / Generators.OutputDirName
+    val wd = params.destination / Generators.OutputDirName
 
     os.makeDir.all(wd)
 
     val file = wd / s"$moduleName.scala"
+
+    val indigoOptions = params.options
 
     val contents =
       s"""package $fullyQualifiedPackage

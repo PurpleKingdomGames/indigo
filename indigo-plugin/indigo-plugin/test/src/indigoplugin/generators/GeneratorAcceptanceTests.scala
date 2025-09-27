@@ -6,18 +6,22 @@ import indigoplugin.FontLayout
 import indigoplugin.CharSet
 import indigoplugin.RGB
 import indigoplugin.utils.Utils
+import indigoplugin.IndigoOptions
 
 class GeneratorAcceptanceTests extends munit.FunSuite {
 
   val workspaceDir = Utils.findWorkspace
 
-  val sourceCSV              = workspaceDir / "test-assets" / "data" / "stats.csv"
-  val sourceMD               = workspaceDir / "test-assets" / "data" / "stats.md"
-  val sourceColours          = workspaceDir / "test-assets" / "data" / "colours.txt"
+  val assetsDirectory        = workspaceDir / os.RelPath("test-assets")
+  val sourceCSV              = assetsDirectory / "data" / "stats.csv"
+  val sourceMD               = assetsDirectory / "data" / "stats.md"
+  val sourceColours          = assetsDirectory / "data" / "colours.txt"
   val sourceFontTTF          = workspaceDir / "test-files" / "VCR_OSD_MONO_1.001.ttf"
   val sourceFontTTFPixelated = workspaceDir / "test-files" / "pixelated.ttf"
 
-  val targetDir = workspaceDir / "out" / "indigo-plugin-generator-acceptance-test-output"
+  val indigoOptions = IndigoOptions.defaults
+
+  val targetDir = os.pwd / "out" / "indigo-plugin-generator-acceptance-test-output"
 
   private def cleanUp(): Unit = {
     if (os.exists(targetDir)) {
@@ -45,7 +49,7 @@ class GeneratorAcceptanceTests extends munit.FunSuite {
     val files =
       IndigoGenerators("com.example.test")
         .embedFont("MyFontNormal", sourceFontTTFPixelated, options, imageOutDir)
-        .toSourcePaths(targetDir)
+        .toSourcePaths(indigoOptions, assetsDirectory, targetDir)
 
     files.toList match {
       case fontInfo :: Nil =>
@@ -74,7 +78,7 @@ class GeneratorAcceptanceTests extends munit.FunSuite {
     val files =
       IndigoGenerators("com.example.test")
         .embedFont("MyFontMono", sourceFontTTF, options, imageOutDir)
-        .toSourcePaths(targetDir)
+        .toSourcePaths(indigoOptions, assetsDirectory, targetDir)
 
     files.toList match {
       case fontInfo :: Nil =>
@@ -103,7 +107,7 @@ class GeneratorAcceptanceTests extends munit.FunSuite {
     val files =
       IndigoGenerators("com.example.test")
         .embedFont("MyFontIndexed", sourceFontTTF, options, imageOutDir)
-        .toSourcePaths(targetDir)
+        .toSourcePaths(indigoOptions, assetsDirectory, targetDir)
 
     files.toList match {
       case fontInfo :: Nil =>
@@ -122,7 +126,7 @@ class GeneratorAcceptanceTests extends munit.FunSuite {
     val files =
       IndigoGenerators("com.example.test").embedCSV
         .asEnum("StatsEnum", sourceCSV)
-        .toSourcePaths(targetDir)
+        .toSourcePaths(indigoOptions, assetsDirectory, targetDir)
 
     files.headOption match {
       case None =>
@@ -154,7 +158,7 @@ class GeneratorAcceptanceTests extends munit.FunSuite {
     val files =
       IndigoGenerators("com.example.test").embedMarkdownTable
         .asMap("StatsMap", sourceMD)
-        .toSourcePaths(targetDir)
+        .toSourcePaths(indigoOptions, assetsDirectory, targetDir)
 
     files.headOption match {
       case None =>
@@ -189,8 +193,8 @@ class GeneratorAcceptanceTests extends munit.FunSuite {
 
     val files =
       IndigoGenerators("com.example.test").embedMarkdownTable
-        .asEnum("Armour", workspaceDir / "test-assets" / "data" / "armour.md")
-        .toSourcePaths(targetDir)
+        .asEnum("Armour", assetsDirectory / "data" / "armour.md")
+        .toSourcePaths(indigoOptions, assetsDirectory, targetDir)
 
     files.headOption match {
       case None =>
@@ -225,7 +229,7 @@ class GeneratorAcceptanceTests extends munit.FunSuite {
           |${data.map(_.map(cell => s"${cell.asString}: ${cell.giveTypeName}").mkString(",")).mkString("\n")}
           |*/""".stripMargin.trim
         }
-        .toSourcePaths(targetDir)
+        .toSourcePaths(indigoOptions, assetsDirectory, targetDir)
 
     files.headOption match {
       case None =>
@@ -255,12 +259,12 @@ class GeneratorAcceptanceTests extends munit.FunSuite {
 
   test("Can generate Aseprite Data") {
 
-    val jsonFile = workspaceDir / "test-assets" / "captain" / "Captain Clown Nose Data.json"
+    val jsonFile = assetsDirectory / "captain" / "Captain Clown Nose Data.json"
 
     val files =
       IndigoGenerators("com.example.test")
         .embedAseprite("MyAnimation", jsonFile)
-        .toSourcePaths(targetDir)
+        .toSourcePaths(indigoOptions, assetsDirectory, targetDir)
 
     files.headOption match {
       case None =>
@@ -294,7 +298,7 @@ class GeneratorAcceptanceTests extends munit.FunSuite {
     val files =
       IndigoGenerators("com.example.test")
         .embedText("ColoursText", sourceColours)
-        .toSourcePaths(targetDir)
+        .toSourcePaths(indigoOptions, assetsDirectory, targetDir)
 
     files.headOption match {
       case None =>
@@ -330,7 +334,7 @@ class GeneratorAcceptanceTests extends munit.FunSuite {
         .embed("ColoursList", sourceColours) { text =>
           "val colours: List[String] = " + text.split("\n").map(t => s"""\"$t\"""").mkString("List(", ", ", ")")
         }
-        .toSourcePaths(targetDir)
+        .toSourcePaths(indigoOptions, assetsDirectory, targetDir)
 
     files.headOption match {
       case None =>

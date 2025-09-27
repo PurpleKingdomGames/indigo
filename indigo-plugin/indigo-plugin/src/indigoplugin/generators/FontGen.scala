@@ -4,6 +4,7 @@ import indigoplugin.FontOptions
 import indigoplugin.FontLayout
 import scala.annotation.tailrec
 import java.awt.font.FontRenderContext
+import indigoplugin.IndigoGenerators
 
 /** Provides functionality for generating font images and associated FontInfo instances.
   */
@@ -16,7 +17,7 @@ object FontGen {
       fontFilePath: os.Path,
       fontOptions: FontOptions,
       imageOut: os.Path
-  ): os.Path => Seq[os.Path] = outDir => {
+  ): IndigoGenerators.SourceParams => Seq[os.Path] = params => {
 
     // Some director sanity checking...
     if (!os.exists(imageOut)) {
@@ -31,7 +32,7 @@ object FontGen {
       //
     }
 
-    val wd = outDir / Generators.OutputDirName
+    val wd = params.destination / Generators.OutputDirName
 
     os.makeDir.all(wd)
 

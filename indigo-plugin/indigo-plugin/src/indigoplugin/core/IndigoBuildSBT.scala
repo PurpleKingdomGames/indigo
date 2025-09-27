@@ -1,15 +1,15 @@
 package indigoplugin.core
 
-import os._
 import indigoplugin.utils.AsciiLogo
 import indigoplugin.IndigoOptions
 
 object IndigoBuildSBT {
 
   def build(
-      scriptPathBase: Path,
-      baseDir: String,
+      scriptPathBase: os.Path,
       options: IndigoOptions,
+      assetsDirectory: os.Path,
+      baseDirectory: os.Path,
       outputFolderName: String,
       scriptNames: List[String]
   ): Unit = {
@@ -19,7 +19,8 @@ object IndigoBuildSBT {
     IndigoBuild.build(
       scriptPathBase,
       options,
-      Path(baseDir) / "target" / outputFolderName,
+      assetsDirectory,
+      baseDirectory / "target" / outputFolderName,
       scriptNames
     )
   }

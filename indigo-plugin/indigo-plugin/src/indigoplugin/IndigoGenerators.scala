@@ -17,14 +17,23 @@ import indigoplugin.utils.Utils
   * @param sources
   *   Accumulated source paths
   */
-final case class IndigoGenerators(fullyQualifiedPackageName: String, sources: Seq[os.Path => Seq[os.Path]]) {
+final case class IndigoGenerators private (
+    fullyQualifiedPackageName: String,
+    sources: Seq[IndigoGenerators.SourceParams => Seq[os.Path]]
+) {
 
   val workspaceDir = Utils.findWorkspace
 
-  def toSourcePaths(destination: os.Path): Seq[os.Path] = sources.flatMap(_(destination))
-  def toSourcePaths(destination: File): Seq[os.Path]    = sources.flatMap(_(os.Path(destination)))
-  def toSourceFiles(destination: os.Path): Seq[File]    = sources.flatMap(_(destination)).map(_.toIO)
-  def toSourceFiles(destination: File): Seq[File]       = sources.flatMap(_(os.Path(destination))).map(_.toIO)
+  def toSourcePaths(options: IndigoOptions, assetsDirectory: os.Path, destination: os.Path): Seq[os.Path] =
+    sources.flatMap(_(IndigoGenerators.SourceParams(options, assetsDirectory, destination)))
+  def toSourcePaths(options: IndigoOptions, assetsDirectory: File, destination: File): Seq[os.Path] =
+    sources.flatMap(_(IndigoGenerators.SourceParams(options, os.Path(assetsDirectory), os.Path(destination))))
+  def toSourceFiles(options: IndigoOptions, assetsDirectory: os.Path, destination: os.Path): Seq[File] =
+    sources.flatMap(_(IndigoGenerators.SourceParams(options, assetsDirectory, destination))).map(_.toIO)
+  def toSourceFiles(options: IndigoOptions, assetsDirectory: File, destination: File): Seq[File] =
+    sources
+      .flatMap(_(IndigoGenerators.SourceParams(options, os.Path(assetsDirectory), os.Path(destination))))
+      .map(_.toIO)
 
   /** Set a fully qualified package names for your output sources, e.g. com.mycompany.generated.code */
   def withPackage(packageName: String): IndigoGenerators =
@@ -239,19 +248,13 @@ final case class IndigoGenerators(fullyQualifiedPackageName: String, sources: Se
     *
     * @param moduleName
     *   The name for the Scala module, e.g. 'MyModule' would be `object MyModule {}`
-    * @param indigoAssets
-    *   The IndigoAssets config object, used to locate and fitler your assets.
     */
-  def listAssets(
-      moduleName: String,
-      indigoAssets: IndigoAssets
-  ): IndigoGenerators =
+  def listAssets(moduleName: String): IndigoGenerators =
     this.copy(
       sources = sources :+
         AssetListing.generate(
           moduleName,
-          fullyQualifiedPackageName,
-          indigoAssets
+          fullyQualifiedPackageName
         )
     )
 
@@ -259,19 +262,13 @@ final case class IndigoGenerators(fullyQualifiedPackageName: String, sources: Se
     *
     * @param moduleName
     *   The name for the Scala module, e.g. 'MyModule' would be `object MyModule {}`
-    * @param indigoOptions
-    *   The IndigoOptions config object
     */
-  def generateConfig(
-      moduleName: String,
-      indigoOptions: IndigoOptions
-  ): IndigoGenerators =
+  def generateConfig(moduleName: String): IndigoGenerators =
     this.copy(
       sources = sources :+
         ConfigGen.generate(
           moduleName,
-          fullyQualifiedPackageName,
-          indigoOptions
+          fullyQualifiedPackageName
         )
     )
 
@@ -302,6 +299,56 @@ final case class IndigoGenerators(fullyQualifiedPackageName: String, sources: Se
           fontOptions,
           imageOut
         )
+    )
+
+  /** Used to generate a rendered font sheet and `FontInfo` instance based on a supplied font source file.
+    *
+    * @param moduleName
+    *   The name for the Scala module, e.g. 'MyModule' would be `object MyModule {}`
+    * @param font
+    *   The path to the font file, e.g. a TrueType *.ttf file
+    * @param fontOptions
+    *   Parameters for the font, such as its identifier (font key), size, and anti-aliasing.
+    * @param imageOut
+    *   The destination directory for the font-sheet image to be written into, typically somewhere in your assets
+    *   directory so that your game can load it.
+    */
+  def embedFont(
+      moduleName: String,
+      font: File,
+      fontOptions: FontOptions,
+      imageOut: File
+  ): IndigoGenerators =
+    embedFont(
+      moduleName,
+      os.Path(font),
+      fontOptions,
+      os.Path(imageOut)
+    )
+
+  /** Used to generate a rendered font sheet and `FontInfo` instance based on a supplied font source file.
+    *
+    * @param moduleName
+    *   The name for the Scala module, e.g. 'MyModule' would be `object MyModule {}`
+    * @param font
+    *   The path to the font file, e.g. a TrueType *.ttf file
+    * @param fontOptions
+    *   Parameters for the font, such as its identifier (font key), size, and anti-aliasing.
+    * @param imageOut
+    *   The destination directory for the font-sheet image to be written into, typically somewhere in your assets
+    *   directory so that your game can load it.
+    */
+  def embedFont(
+      moduleName: String,
+      font: String,
+      fontOptions: FontOptions,
+      imageOut: String
+  ): IndigoGenerators =
+    embedFont(
+      moduleName,
+      os.RelPath(font).resolveFrom(workspaceDir),
+      fontOptions,
+      os.RelPath(imageOut).resolveFrom(workspaceDir)
     )
 
   /** Used to embed CSV (Comma Separated Value) data, usage: embedCSV.asEnum(moduleName, filePath), or
@@ -640,5 +687,7 @@ object IndigoGenerators {
 
   def apply(fullyQualifiedPackageName: String): IndigoGenerators =
     IndigoGenerators(fullyQualifiedPackageName, Seq())
+
+  final case class SourceParams(options: IndigoOptions, assetsDirectory: os.Path, destination: os.Path)
 
 }

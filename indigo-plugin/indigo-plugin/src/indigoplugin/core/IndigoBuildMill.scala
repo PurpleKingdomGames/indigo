@@ -6,14 +6,15 @@ import indigoplugin.IndigoOptions
 
 object IndigoBuildMill {
 
-  def build(scriptPathBase: Path, baseDir: Path, options: IndigoOptions): Unit = {
+  def build(scriptPathBase: Path, options: IndigoOptions, assetsDirectory: os.Path, baseDirectory: Path): Unit = {
 
     println(AsciiLogo.logo)
 
     IndigoBuild.build(
       scriptPathBase,
       options,
-      baseDir,
+      assetsDirectory,
+      baseDirectory,
       List("main.js", "out.js")
     )
   }
