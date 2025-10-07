@@ -6,7 +6,7 @@ lazy val sbtIndigo =
       name         := "sbt-indigo",
       sbtPlugin    := true,
       version      := IndigoVersion.getVersion,
-      scalaVersion := "2.12.20", // This is a plugin! Only 2.12 is supported!
+      scalaVersion := "2.13.17", // This is a plugin! Only 2.12 is supported!
       scalacOptions ++= Scalac212Options.scala212Compile,
       libraryDependencies ++= Seq(
         "commons-io"       % "commons-io"    % "2.6",
