@@ -3,7 +3,7 @@ package indigo.gameengine
 import indigo.AssetName
 
 class GameEngineTests extends munit.FunSuite {
-  
+
   test("extractShaderCode - indigo-fragment") {
     val actual =
       GameEngine.extractShaderCode(Some(TestData.shader1), "indigo-fragment", AssetName("test asset"))
@@ -13,7 +13,7 @@ class GameEngineTests extends munit.FunSuite {
 
     assertEquals(actual, expected)
   }
-  
+
   test("extractShaderCode - indigo-fragment (sea example)") {
     val actual =
       GameEngine.extractShaderCode(Some(TestData.shader2), "indigo-fragment", AssetName("test asset"))
@@ -23,7 +23,6 @@ class GameEngineTests extends munit.FunSuite {
 
     assertEquals(actual, expected)
   }
-
 
   object TestData {
 
