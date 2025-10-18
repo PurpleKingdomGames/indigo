@@ -2,4 +2,4 @@
 
 set -e
 
-sbt crossCleanAll scalafmtCheckAll crossTestAllNoClean crossLocalPublishNoClean
+sbt -J-Xmx4G crossCleanAll scalafmtCheckAll crossTestAllNoClean crossLocalPublishNoClean
