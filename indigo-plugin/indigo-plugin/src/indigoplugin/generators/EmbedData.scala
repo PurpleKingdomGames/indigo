@@ -1,6 +1,7 @@
 package indigoplugin.generators
 
 import indigoplugin.DataType
+import indigoplugin.IndigoGenerators
 
 object EmbedData {
 
@@ -23,7 +24,7 @@ object EmbedData {
       delimiter: String,
       rowFilter: String => Boolean,
       embedMode: Mode
-  ): os.Path => Seq[os.Path] = outDir => {
+  ): IndigoGenerators.SourceParams => Seq[os.Path] = params => {
 
     val lines =
       if (!os.exists(filePath)) throw new Exception("Path to data file not found: " + filePath.toString())
@@ -37,7 +38,7 @@ object EmbedData {
     val dataFrame =
       DataFrame.fromRows(rows)
 
-    val wd = outDir / Generators.OutputDirName
+    val wd = params.destination / Generators.OutputDirName
 
     os.makeDir.all(wd)
 

@@ -1,18 +1,17 @@
 package indigoplugin.core
 
-import indigoplugin.IndigoAssets
 import indigoplugin.IndigoOptions
 import indigoplugin.IndigoTemplate
 import indigoplugin.utils.Utils
+import indigoplugin.IndigoAssets
 
 class AcceptanceTests extends munit.FunSuite {
 
-  val sourceDir = os.RelPath("test-assets")
+  val workspaceDir    = Utils.findWorkspace
+  val assetsDirectory = workspaceDir / "test-assets"
 
-  val workspaceDir = Utils.findWorkspace
-
-  val targetBaseDir = workspaceDir / "out" / "indigo-plugin-acceptance-test-output"
-  val targetDir     = targetBaseDir / sourceDir
+  val targetBaseDir = os.pwd / "out" / "indigo-plugin-acceptance-test-output"
+  val targetDir     = targetBaseDir / assetsDirectory.last
 
   private def cleanUp(): Unit = {
     if (os.exists(targetBaseDir)) {
@@ -25,44 +24,39 @@ class AcceptanceTests extends munit.FunSuite {
   override def beforeAll(): Unit                     = cleanUp()
   override def beforeEach(context: BeforeEach): Unit = cleanUp()
 
-  val indigoAssets =
-    IndigoAssets(
-      gameAssetsDirectory = sourceDir,
-      include = {
-        case p if p.endsWith(os.RelPath("taken.txt"))      => true
-        case p if p.toString.matches("(.*)also-taken.txt") => true
-        case _                                             => false
-      },
-      exclude = {
-        case p if p.startsWith(os.RelPath("ignored-folder")) => true
-        case p if p.startsWith(os.RelPath("mixed"))          => true
-        case p if p.startsWith(os.RelPath("captain"))        => true
-        case p if p.endsWith(os.RelPath("stats.md"))         => true
-        case p if p.endsWith(os.RelPath("armour.md"))        => true
-        case p if p.endsWith(os.RelPath("colours.txt"))      => true
-        case _                                               => false
-      },
-      IndigoAssets.noRename
-    )
+  val include: os.RelPath => Boolean = {
+    case p if p.endsWith(os.RelPath("taken.txt"))      => true
+    case p if p.toString.matches("(.*)also-taken.txt") => true
+    case _                                             => false
+  }
+  val exclude: os.RelPath => Boolean = {
+    case p if p.startsWith(os.RelPath("ignored-folder")) => true
+    case p if p.startsWith(os.RelPath("mixed"))          => true
+    case p if p.startsWith(os.RelPath("captain"))        => true
+    case p if p.endsWith(os.RelPath("stats.md"))         => true
+    case p if p.endsWith(os.RelPath("armour.md"))        => true
+    case p if p.endsWith(os.RelPath("colours.txt"))      => true
+    case _                                               => false
+  }
 
   val indigoOptions =
     IndigoOptions.defaults
-      .withAssets(indigoAssets)
-      .useDefaultTemplate
+      .includeAssets(include)
+      .excludeAssets(exclude)
 
   test("List assets to copy") {
     val baseDirectory = workspaceDir
 
     val actual: List[os.Path] =
-      indigoAssets.filesToCopy(baseDirectory)
+      IndigoAssets.filesToCopy(indigoOptions.assets, assetsDirectory)
 
     val expected: List[os.Path] =
       List(
-        baseDirectory / sourceDir / "data",
-        baseDirectory / sourceDir / "data" / "stats.csv",
-        baseDirectory / sourceDir / "mixed" / "also-taken.txt",
-        baseDirectory / sourceDir / "mixed" / "taken.txt",
-        baseDirectory / sourceDir / "foo.txt"
+        assetsDirectory / "data",
+        assetsDirectory / "data" / "stats.csv",
+        assetsDirectory / "mixed" / "also-taken.txt",
+        assetsDirectory / "mixed" / "taken.txt",
+        assetsDirectory / "foo.txt"
       )
 
     assertEquals(actual.length, expected.length)
@@ -73,14 +67,14 @@ class AcceptanceTests extends munit.FunSuite {
     val baseDirectory = workspaceDir
 
     val actual: List[os.RelPath] =
-      indigoAssets.listAssetFiles(baseDirectory)
+      IndigoAssets.listAssetFiles(indigoOptions.assets, assetsDirectory)
 
     val expected: List[os.RelPath] =
       List(
-        sourceDir / "data" / "stats.csv",
-        sourceDir / "mixed" / "also-taken.txt",
-        sourceDir / "mixed" / "taken.txt",
-        sourceDir / "foo.txt"
+        os.RelPath.rel / assetsDirectory.last / "data" / "stats.csv",
+        os.RelPath.rel / assetsDirectory.last / "mixed" / "also-taken.txt",
+        os.RelPath.rel / assetsDirectory.last / "mixed" / "taken.txt",
+        os.RelPath.rel / assetsDirectory.last / "foo.txt"
       )
 
     assertEquals(actual.length, expected.length)
@@ -88,10 +82,13 @@ class AcceptanceTests extends munit.FunSuite {
   }
 
   test("List all asset files as relative paths - sub dir") {
+    val baseDirectory = workspaceDir
+
     val actual: List[os.RelPath] =
-      indigoAssets
-        .withAssetDirectory(sourceDir / "mixed")
-        .listAssetFiles
+      IndigoAssets.listAssetFiles(
+        indigoOptions.assets,
+        assetsDirectory / "mixed"
+      )
 
     val expected: List[os.RelPath] =
       List(
@@ -107,7 +104,7 @@ class AcceptanceTests extends munit.FunSuite {
   test("Copy assets and assert expected output files") {
     val baseDirectory = workspaceDir
 
-    IndigoBuild.copyAssets(baseDirectory, indigoAssets, targetDir)
+    IndigoBuild.copyAssets(indigoOptions.assets, assetsDirectory, targetDir)
 
     // Basics
     assert(os.exists(targetDir))
@@ -130,7 +127,8 @@ class AcceptanceTests extends munit.FunSuite {
     IndigoBuild.build(
       scriptPathBase = workspaceDir / "test-files",
       options = indigoOptions,
-      baseDir = targetBaseDir,
+      assetsDirectory = assetsDirectory,
+      baseDirectory = targetBaseDir,
       scriptNames = List("game.js")
     )
 
@@ -171,7 +169,8 @@ class AcceptanceTests extends munit.FunSuite {
     IndigoBuild.build(
       scriptPathBase = workspaceDir / "test-files",
       options = custom,
-      baseDir = targetBaseDir,
+      assetsDirectory = assetsDirectory,
+      baseDirectory = targetBaseDir,
       scriptNames = List("game.js")
     )
 

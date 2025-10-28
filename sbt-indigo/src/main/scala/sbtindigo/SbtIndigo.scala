@@ -2,6 +2,7 @@ package indigoplugin
 
 import sbt.plugins.JvmPlugin
 import sbt._
+import sbt.Keys._
 
 import indigoplugin.core.IndigoBuildSBT
 import indigoplugin.core.IndigoCordova
@@ -25,9 +26,17 @@ object SbtIndigo extends sbt.AutoPlugin {
     val indigoCordovaBuildFull: TaskKey[Unit] =
       taskKey[Unit]("Build an Indigo game Cordova template that has been compressed.")
 
+    /** Location of your Indigo game's assets folder. */
+    val indigoAssets: SettingKey[sbt.File] =
+      settingKey[sbt.File]("Location of your Indigo game's assets folder.")
+
     /** Configuration options for your Indigo game. */
-    val indigoOptions: SettingKey[IndigoOptions] =
-      settingKey[IndigoOptions]("Config options for your Indigo game.")
+    val indigoOptions: SettingKey[sbt.File => IndigoOptions] =
+      settingKey[sbt.File => IndigoOptions]("Configuration options for your Indigo game.")
+
+    /** Indigo source code generators. */
+    val indigoGenerators: SettingKey[sbt.File => IndigoGenerators] =
+      settingKey[sbt.File => IndigoGenerators]("Indigo source code generators.")
 
   }
 
@@ -40,7 +49,17 @@ object SbtIndigo extends sbt.AutoPlugin {
     indigoRunFull          := indigoRunFullTask.value,
     indigoCordovaBuild     := indigoCordovaBuildTask.value,
     indigoCordovaBuildFull := indigoCordovaBuildFullTask.value,
-    indigoOptions          := IndigoOptions.defaults
+    indigoAssets           := new sbt.File(Keys.baseDirectory.value.getCanonicalPath + "/assets"),
+    indigoOptions          := ((_: sbt.File) => IndigoOptions.defaults),
+    indigoGenerators       := ((_: sbt.File) => IndigoGenerators.None),
+    Compile / sourceGenerators += Def.task {
+      val cacheDir     = (Compile / sourceManaged).value / s"indigo-generated-${Keys.projectID.value.name}"
+      val assetsFolder = indigoAssets.value
+
+      indigoGenerators
+        .value(assetsFolder)
+        .toSourceFiles(indigoOptions.value(assetsFolder), assetsFolder, cacheDir)
+    }
   )
 
   private def giveScriptBasePath(
@@ -66,12 +85,13 @@ object SbtIndigo extends sbt.AutoPlugin {
 
   lazy val indigoBuildTask: Def.Initialize[Task[String]] =
     Def.task {
-      val baseDir: String   = Keys.baseDirectory.value.getCanonicalPath
-      val outputDir: String = "indigoBuild"
+      val baseDirectory: os.Path   = os.Path(Keys.baseDirectory.value.getCanonicalPath)
+      val outputDirectory: String  = "indigoBuild"
+      val assetsDirectory: os.Path = os.Path(indigoAssets.value)
 
       val scriptPathBase =
         giveScriptBasePath(
-          baseDir = baseDir,
+          baseDir = baseDirectory.toString(),
           scalaVersion = Keys.scalaVersion.value,
           projectName = Keys.projectID.value.name,
           suffix = "-fastopt"
@@ -81,26 +101,28 @@ object SbtIndigo extends sbt.AutoPlugin {
 
       IndigoBuildSBT.build(
         os.Path(scriptPathBase),
-        baseDir,
-        indigoOptions.value,
-        outputDir,
+        indigoOptions.value(indigoAssets.value),
+        assetsDirectory,
+        baseDirectory,
+        outputDirectory,
         List(
           "main.js",
           Keys.projectID.value.name + "-fastopt.js"
         )
       )
 
-      baseDir + "/target/" + outputDir
+      baseDirectory + "/target/" + outputDirectory
     }
 
   lazy val indigoBuildFullTask: Def.Initialize[Task[String]] =
     Def.task {
-      val baseDir: String   = Keys.baseDirectory.value.getCanonicalPath
-      val outputDir: String = "indigoBuildFull"
+      val baseDirectory: os.Path   = os.Path(Keys.baseDirectory.value.getCanonicalPath)
+      val outputDirectory: String  = "indigoBuildFull"
+      val assetsDirectory: os.Path = os.Path(indigoAssets.value)
 
       val scriptPathBase =
         giveScriptBasePath(
-          baseDir = baseDir,
+          baseDir = baseDirectory.toString(),
           scalaVersion = Keys.scalaVersion.value,
           projectName = Keys.projectID.value.name,
           suffix = "-opt"
@@ -110,16 +132,17 @@ object SbtIndigo extends sbt.AutoPlugin {
 
       IndigoBuildSBT.build(
         os.Path(scriptPathBase),
-        baseDir,
-        indigoOptions.value,
-        outputDir,
+        indigoOptions.value(indigoAssets.value),
+        assetsDirectory,
+        baseDirectory,
+        outputDirectory,
         List(
           "main.js",
           Keys.projectID.value.name + "-opt.js"
         )
       )
 
-      baseDir + "/target/" + outputDir
+      baseDirectory + "/target/" + outputDirectory
     }
 
   lazy val indigoRunTask: Def.Initialize[Task[Unit]] =
@@ -131,7 +154,7 @@ object SbtIndigo extends sbt.AutoPlugin {
       IndigoRun.run(
         outputDir = outputDir,
         buildDir = buildDir,
-        indigoOptions = indigoOptions.value
+        indigoOptions = indigoOptions.value(indigoAssets.value)
       )
     }
 
@@ -144,7 +167,7 @@ object SbtIndigo extends sbt.AutoPlugin {
       IndigoRun.run(
         outputDir = outputDir,
         buildDir = buildDir,
-        indigoOptions = indigoOptions.value
+        indigoOptions = indigoOptions.value(indigoAssets.value)
       )
     }
 
@@ -157,7 +180,7 @@ object SbtIndigo extends sbt.AutoPlugin {
       IndigoCordova.run(
         outputDir = outputDir,
         buildDir = buildDir,
-        metadata = indigoOptions.value.metadata
+        metadata = indigoOptions.value(indigoAssets.value).metadata
       )
     }
 
@@ -170,7 +193,7 @@ object SbtIndigo extends sbt.AutoPlugin {
       IndigoCordova.run(
         outputDir = outputDir,
         buildDir = buildDir,
-        metadata = indigoOptions.value.metadata
+        metadata = indigoOptions.value(indigoAssets.value).metadata
       )
     }
 

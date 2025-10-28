@@ -1,12 +1,14 @@
 package indigoplugin.generators
 
+import indigoplugin.IndigoGenerators
+
 object EmbedText {
 
   def generate(
       moduleName: String,
       fullyQualifiedPackage: String,
       filePath: os.Path
-  ): os.Path => Seq[os.Path] = outDir => {
+  ): IndigoGenerators.SourceParams => Seq[os.Path] = params => {
 
     val text =
       if (!os.exists(filePath)) throw new Exception("Text file to embed not found: " + filePath.toString())
@@ -14,7 +16,7 @@ object EmbedText {
         os.read(filePath)
       }
 
-    val wd = outDir / Generators.OutputDirName
+    val wd = params.destination / Generators.OutputDirName
 
     os.makeDir.all(wd)
 
@@ -40,7 +42,7 @@ object EmbedText {
       fullyQualifiedPackage: String,
       filePath: os.Path,
       present: String => String
-  ): os.Path => Seq[os.Path] = outDir => {
+  ): IndigoGenerators.SourceParams => Seq[os.Path] = params => {
 
     val text =
       if (!os.exists(filePath)) throw new Exception("Text file to embed not found: " + filePath.toString())
@@ -48,7 +50,7 @@ object EmbedText {
         os.read(filePath)
       }
 
-    val wd = outDir / Generators.OutputDirName
+    val wd = params.destination / Generators.OutputDirName
 
     os.makeDir.all(wd)
 

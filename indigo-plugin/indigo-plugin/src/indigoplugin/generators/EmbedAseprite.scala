@@ -2,6 +2,7 @@ package indigoplugin.generators
 
 import io.circe.parser._
 import indigoplugin.datatypes.Aseprite
+import indigoplugin.IndigoGenerators
 
 object EmbedAseprite {
 
@@ -9,7 +10,7 @@ object EmbedAseprite {
       moduleName: String,
       fullyQualifiedPackage: String,
       filePath: os.Path
-  ): os.Path => Seq[os.Path] = outDir => {
+  ): IndigoGenerators.SourceParams => Seq[os.Path] = params => {
 
     val asepriteJson =
       if (!os.exists(filePath))
@@ -29,7 +30,7 @@ object EmbedAseprite {
           )
       }
 
-    val wd = outDir / Generators.OutputDirName
+    val wd = params.destination / Generators.OutputDirName
 
     os.makeDir.all(wd)
 

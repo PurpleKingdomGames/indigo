@@ -9,25 +9,10 @@ import indigoplugin.utils.Utils
   *   Project relative path to a directory that contains all of the assets the game needs to load. Default './assets'.
   */
 final case class IndigoAssets(
-    gameAssetsDirectory: os.RelPath,
     include: os.RelPath => Boolean,
     exclude: os.RelPath => Boolean,
     rename: PartialFunction[(String, String), String]
 ) {
-
-  val workspaceDir = Utils.findWorkspace
-
-  /** Sets the asset directory path */
-  def withAssetDirectory(path: String): IndigoAssets =
-    this.copy(
-      gameAssetsDirectory =
-        if (path.startsWith("/")) os.Path(path).relativeTo(workspaceDir)
-        else os.RelPath(path)
-    )
-
-  /** Sets the asset directory path */
-  def withAssetDirectory(path: os.RelPath): IndigoAssets =
-    this.copy(gameAssetsDirectory = path)
 
   /** Function that decides if a path in the assets folder should specifically be included. Useful for including a file
     * inside a folder that has been excluded.
@@ -65,22 +50,6 @@ final case class IndigoAssets(
       // Otherwise, no specific instruction so assume copy.
       true
 
-  /** List which absolute paths will be copied from the source asset directory. */
-  def filesToCopy(baseDirectory: os.Path): List[os.Path] =
-    os.walk(baseDirectory / gameAssetsDirectory)
-      .toList
-      .filter(path => isCopyAllowed(path.relativeTo(baseDirectory / gameAssetsDirectory)))
-  def filesToCopy: List[os.Path] =
-    filesToCopy(workspaceDir)
-
-  /** List all relative paths that will be available to the game. */
-  def listAssetFiles(baseDirectory: os.Path): List[os.RelPath] =
-    filesToCopy(baseDirectory)
-      .filterNot(os.isDir)
-      .map(_.relativeTo(baseDirectory / gameAssetsDirectory / os.RelPath.up))
-  def listAssetFiles: List[os.RelPath] =
-    listAssetFiles(workspaceDir)
-
 }
 
 object IndigoAssets {
@@ -94,10 +63,24 @@ object IndigoAssets {
     val pf: PartialFunction[os.RelPath, Boolean] = { case _ => false }
 
     IndigoAssets(
-      gameAssetsDirectory = os.RelPath("assets"),
       pf,
       pf,
       noRename
     )
   }
+
+  /** List which absolute paths will be copied from the source asset directory. */
+  def filesToCopy(indigoAssets: IndigoAssets, assetsDirectory: os.Path): List[os.Path] =
+    os.walk(assetsDirectory)
+      .toList
+      .filter(path => indigoAssets.isCopyAllowed(path.relativeTo(assetsDirectory)))
+
+  /** List all relative paths that will be available to the game. */
+  def listAssetFiles(
+      indigoAssets: IndigoAssets,
+      assetsDirectory: os.Path
+  ): List[os.RelPath] =
+    filesToCopy(indigoAssets, assetsDirectory)
+      .filterNot(os.isDir)
+      .map(_.relativeTo(assetsDirectory / os.RelPath.up))
 }

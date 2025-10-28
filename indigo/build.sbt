@@ -126,18 +126,19 @@ lazy val sandbox =
     .settings(
       neverPublish,
       commonSettings,
-      name := "sandbox",
-      indigoOptions :=
+      name         := "sandbox",
+      indigoAssets := baseDirectory.value / "assets",
+      indigoOptions := { _ =>
         IndigoOptions.defaults
           .withWindowSize(800, 600)
           .withTitle("Sandbox")
           .withBackgroundColor("black")
-          .withAssetDirectory("sandbox/assets/"),
-      Compile / sourceGenerators += Def.task {
+      },
+      indigoGenerators := { assetDir =>
         IndigoGenerators("example")
           .embedFont(
             "TestFont",
-            os.pwd / "sandbox" / "assets" / "fonts" / "VCR_OSD_MONO_1.001.ttf",
+            assetDir / "fonts" / "VCR_OSD_MONO_1.001.ttf",
             FontOptions(
               "test font",
               16,
@@ -145,9 +146,8 @@ lazy val sandbox =
             )
               .withColor(RGB.White)
               .noAntiAliasing,
-            os.pwd / "sandbox" / "assets" / "generated"
+            assetDir / "generated"
           )
-          .toSourceFiles((Compile / sourceManaged).value)
       }
     )
 
@@ -159,14 +159,19 @@ lazy val perf =
     .settings(
       neverPublish,
       commonSettings,
-      name := "indigo-perf",
-      indigoOptions :=
+      name         := "indigo-perf",
+      indigoAssets := baseDirectory.value / "assets",
+      indigoOptions := { _ =>
         IndigoOptions.defaults
           .withTitle("Perf")
           .withBackgroundColor("black")
           .withWindowWidth(800)
           .withWindowHeight(600)
-          .withAssetDirectory("perf/assets/")
+      },
+      indigoGenerators := { assetsDir =>
+        IndigoGenerators("example")
+          .generateConfig("Config")
+      }
     )
 
 lazy val shader =
@@ -177,26 +182,20 @@ lazy val shader =
     .settings(
       neverPublish,
       commonSettings,
-      name := "indigo-shader",
-      indigoOptions :=
+      name         := "indigo-shader",
+      indigoAssets := baseDirectory.value / "assets",
+      indigoOptions := { _ =>
         IndigoOptions.defaults
           .withTitle("Shader")
           .withBackgroundColor("black")
           .withWindowWidth(450)
           .withWindowHeight(450)
-          .withAssetDirectory("shader/assets/")
+      },
+      indigoGenerators := { assetsDir =>
+        IndigoGenerators("example")
+          .generateConfig("Config")
+      }
     )
-
-lazy val physicsOptions =
-  IndigoOptions.defaults
-    .withTitle("Physics")
-    .withBackgroundColor("black")
-    .withAssetDirectory("physics/assets/")
-    .withWindowSize(800, 600)
-    .excludeAssets {
-      case p if p.endsWith(os.RelPath.rel / ".DS_Store") => true
-      case _                                             => false
-    }
 
 lazy val physics =
   project
@@ -206,14 +205,24 @@ lazy val physics =
     .settings(
       neverPublish,
       commonSettings,
-      name          := "physics",
-      indigoOptions := physicsOptions,
-      Compile / sourceGenerators += Def.task {
+      name         := "physics",
+      indigoAssets := baseDirectory.value / "assets",
+      indigoOptions := { _ =>
+        IndigoOptions.defaults
+          .withTitle("Physics")
+          .withBackgroundColor("black")
+          .withWindowSize(800, 600)
+          .excludeAssets {
+            case p if p.endsWith(os.RelPath.rel / ".DS_Store") => true
+            case _                                             => false
+          }
+      },
+      indigoGenerators := { assetDir =>
         IndigoGenerators("example")
-          .generateConfig("Config", physicsOptions)
+          .generateConfig("Config")
           .embedFont(
             moduleName = "PixelatedFont",
-            font = os.pwd / "physics" / "generator-data" / "pixelated.ttf",
+            font = baseDirectory.value / "generator-data" / "pixelated.ttf",
             fontOptions = FontOptions(
               fontKey = "Pixelated",
               fontSize = 32,
@@ -222,10 +231,9 @@ lazy val physics =
               antiAlias = false,
               layout = FontLayout.default
             ),
-            imageOut = os.pwd / "physics" / "assets" / "generated"
+            imageOut = assetDir / "generated"
           )
-          .listAssets("Assets", physicsOptions.assets)
-          .toSourceFiles((Compile / sourceManaged).value)
+          .listAssets("Assets")
       }
     )
 

@@ -1,19 +1,14 @@
-//| mill-version: 1.0.4
+//| mill-version: 1.0.5
+//| mvnDeps: ["org.typelevel::scalac-options:0.1.8"]
 
 import scala.util.Success
 import scala.util.Try
-// import $ivy.`com.lihaoyi::mill-contrib-bloop:$MILL_VERSION`
-// import mill._
-// import mill.scalalib._
-// import mill.scalajslib._
-// import mill.scalajslib.api._
 import mill.scalalib.scalafmt.*
-// import coursier.maven.MavenRepository
-// import publish._
 import mill.*, scalalib.*, publish.*
 import mill.api.BuildCtx
+import org.typelevel.scalacoptions.*
 
-object `indigo-plugin` extends Cross[IndigoPluginModule]("2.12", "2.13", "3")
+object `indigo-plugin` extends Cross[IndigoPluginModule]("2.12", "3")
 
 trait IndigoPluginModule extends CrossScalaModule with SonatypeCentralPublishModule with ScalafmtModule {
 
@@ -21,10 +16,8 @@ trait IndigoPluginModule extends CrossScalaModule with SonatypeCentralPublishMod
 
   def scalaVersion =
     crossScalaVersion match {
-      case "2.12" => "2.12.20"
-      case "2.13" => "2.13.16"
-      case "3"    => "3.7.1"
-      case _      => "2.13.16"
+      case "2.12" => "2.12.20" // Sadly required until Scala.js is available for sbt 2.0
+      case _      => "3.7.1"
     }
 
   def artifactName = "indigo-plugin"
@@ -35,15 +28,6 @@ trait IndigoPluginModule extends CrossScalaModule with SonatypeCentralPublishMod
       mvn"io.circe::circe-core:0.14.14",
       mvn"io.circe::circe-parser:0.14.14"
     )
-
-  object test extends ScalaTests {
-    def mvnDeps =
-      Seq(
-        mvn"org.scalameta::munit:1.0.4"
-      )
-
-    def testFramework = "munit.Framework"
-  }
 
   def publishVersion = indigoVersion()
 
@@ -59,6 +43,25 @@ trait IndigoPluginModule extends CrossScalaModule with SonatypeCentralPublishMod
       )
     )
 
+  override def scalacOptions =
+    Task {
+      super.scalacOptions()
+        // Bring back when we can finally remove 2.12 support...
+        // ++
+        // ScalacOptions.tokensForVersion(
+        //   ScalaVersion.unsafeFromString(scalaVersion()),
+        //   ScalacOptions.default ++ ScalacOptions.fatalWarningOptions
+        // )
+    }
+
+  object test extends ScalaTests {
+    def mvnDeps =
+      Seq(
+        mvn"org.scalameta::munit:1.2.0"
+      )
+
+    def testFramework = "munit.Framework"
+  }
 }
 
 object IndigoVersion {

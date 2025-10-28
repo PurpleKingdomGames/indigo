@@ -48,16 +48,6 @@ final case class IndigoOptions(
   def withBackgroundColor(r: Double, g: Double, b: Double): IndigoOptions =
     this.copy(metadata = metadata.withBackgroundColor(r, g, b))
 
-  /** Provide a replacement IndigoAssets instance */
-  def withAssets(newAssets: IndigoAssets): IndigoOptions =
-    this.copy(assets = newAssets)
-
-  /** Sets the asset directory path */
-  def withAssetDirectory(path: String): IndigoOptions =
-    this.copy(assets = assets.withAssetDirectory(path))
-  def withAssetDirectory(path: os.RelPath): IndigoOptions =
-    this.copy(assets = assets.withAssetDirectory(path))
-
   // This is the sbt version, it's encoded differently because otherwise
   // Scala 2.12 sees these as a double definition.
   /** Filter to explicitly include matching assets.

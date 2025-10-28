@@ -1,46 +1,37 @@
-//| mill-version: 1.0.4
+//| mill-version: 1.0.5
+//| mvnDeps: ["org.typelevel::scalac-options:0.1.8"]
 
-// import $mvn.`com.lihaoyi::mill-contrib-bloop:$MILL_VERSION`
-// import mill._
-// import mill.scalalib._
-// import mill.scalajslib._
 import mill.scalalib.scalafmt.*
-// import publish._
-// import coursier.maven.MavenRepository
 
 import mill.*, scalalib.*, publish.*
 import mill.api.BuildCtx
+import org.typelevel.scalacoptions.*
+import mill.util.BuildInfo.{millVersion, millBinPlatform}
 
-object `mill-indigo` extends Cross[IndigoPluginModule]("2.13")
-trait IndigoPluginModule extends CrossScalaModule with SonatypeCentralPublishModule with ScalafmtModule {
+object `mill-indigo` extends ScalaModule, PublishModule, SonatypeCentralPublishModule, ScalafmtModule {
 
-  def scalaVersion =
-    crossScalaVersion match {
-      case _ => "2.13.16"
-    }
+  def scalaVersion = "3.7.3"
 
-  def millLibVersion = "0.12.5"
+  def platformSuffix = s"_mill$millBinPlatform"
 
   def indigoVersion = Task.Input { IndigoVersion.getVersion(BuildCtx.workspaceRoot) }
 
   def mvnDeps = Seq(
-    mvn"com.lihaoyi::mill-main:${millLibVersion}",
-    mvn"com.lihaoyi::mill-main-api:${millLibVersion}",
-    mvn"com.lihaoyi::mill-scalalib:${millLibVersion}",
-    mvn"com.lihaoyi::mill-scalajslib:${millLibVersion}",
-    mvn"com.lihaoyi::mill-scalalib-api:${millLibVersion}",
-    mvn"com.lihaoyi::os-lib:0.11.3",
+    mvn"com.lihaoyi::mill-libs:$millVersion",
+    mvn"com.lihaoyi::os-lib:0.11.5",
     mvn"io.indigoengine::indigo-plugin:${indigoVersion()}"
   )
 
-  // def repositoriesTask = T.task {
-  //   super.repositoriesTask() ++ Seq(
-  //     MavenRepository("https://oss.sonatype.org/content/repositories/releases")
-  //   )
-  // }
+  override def scalacOptions = Task {
+    super.scalacOptions() ++
+      ScalacOptions.tokensForVersion(
+        ScalaVersion.unsafeFromString(scalaVersion()),
+        ScalacOptions.default ++ ScalacOptions.fatalWarningOptions
+      )
+  }
 
   object test extends ScalaTests {
-    def mvnDeps = Seq(mvn"org.scalameta::munit:1.0.4")
+    def mvnDeps = Seq(mvn"org.scalameta::munit:1.2.0")
 
     def testFramework = "munit.Framework"
   }

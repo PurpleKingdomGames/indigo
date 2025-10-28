@@ -3,25 +3,25 @@ package indigoplugin.generators
 import indigoplugin.IndigoAssets
 import scala.annotation.tailrec
 import scala.io.AnsiColor._
+import indigoplugin.IndigoGenerators
 
 object AssetListing {
 
   def generate(
       moduleName: String,
-      fullyQualifiedPackage: String,
-      indigoAssets: IndigoAssets
-  ): os.Path => Seq[os.Path] = outDir => {
+      fullyQualifiedPackage: String
+  ): IndigoGenerators.SourceParams => Seq[os.Path] = params => {
 
     val toSafeName: (String, String) => String = {
-      val r = (name: String, ext: String) => indigoAssets.rename.lift(name, ext).getOrElse(name)
+      val r = (name: String, ext: String) => params.options.assets.rename.lift((name, ext)).getOrElse(name)
 
       toDefaultSafeName(r)
     }
 
     val fileContents: String =
-      renderContent(indigoAssets.listAssetFiles, toSafeName)
+      renderContent(IndigoAssets.listAssetFiles(params.options.assets, params.assetsDirectory), toSafeName)
 
-    val wd = outDir / Generators.OutputDirName
+    val wd = params.destination / Generators.OutputDirName
 
     os.makeDir.all(wd)
 
