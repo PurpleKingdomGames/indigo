@@ -12,5 +12,4 @@ function build {
 
 build "indigo-plugin"
 build "sbt-indigo"
-build "mill-indigo"
 build "indigo"

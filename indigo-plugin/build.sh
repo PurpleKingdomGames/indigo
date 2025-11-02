@@ -2,8 +2,6 @@
 
 set -e
 
-rm -fr out/
-
 ./mill clean
 ./mill __.compile
 ./mill __.test

@@ -1,24 +1,25 @@
-//| mill-version: 1.0.5
+//| mill-version: 1.0.6
 //| mvnDeps: ["org.typelevel::scalac-options:0.1.8"]
+
+package build
 
 import scala.util.Success
 import scala.util.Try
+import mill.*
+import mill.scalalib.*
+import mill.scalalib.publish.*
 import mill.scalalib.scalafmt.*
-import mill.*, scalalib.*, publish.*
 import mill.api.BuildCtx
 import org.typelevel.scalacoptions.*
 
-object `indigo-plugin` extends Cross[IndigoPluginModule]("2.12", "3")
-
-trait IndigoPluginModule extends CrossScalaModule with SonatypeCentralPublishModule with ScalafmtModule {
+trait SharedModule extends CrossScalaModule, SonatypeCentralPublishModule, ScalafmtModule:
 
   def indigoVersion = Task.Input(IndigoVersion.getVersion(BuildCtx.workspaceRoot))
 
   def scalaVersion =
-    crossScalaVersion match {
+    crossScalaVersion match
       case "2.12" => "2.12.20" // Sadly required until Scala.js is available for sbt 2.0
       case _      => "3.7.1"
-    }
 
   def artifactName = "indigo-plugin"
 
@@ -54,18 +55,17 @@ trait IndigoPluginModule extends CrossScalaModule with SonatypeCentralPublishMod
         // )
     }
 
-  object test extends ScalaTests {
+  object test extends ScalaTests:
     def mvnDeps =
       Seq(
-        mvn"org.scalameta::munit:1.2.0"
+        mvn"org.scalameta::munit:1.2.1"
       )
 
     def testFramework = "munit.Framework"
-  }
-}
 
-object IndigoVersion {
-  def getVersion(workspaceDir: os.Path): String = {
+object IndigoVersion:
+
+  def getVersion(workspaceDir: os.Path): String =
     def rec(wd: os.Path, file: String, levels: Int, version: Option[String]): String = {
       val msg = "ERROR: Couldn't find indigo version."
       version match {
@@ -89,5 +89,4 @@ object IndigoVersion {
     }
 
     rec(workspaceDir, ".indigo-version", 0, None)
-  }
-}
+
