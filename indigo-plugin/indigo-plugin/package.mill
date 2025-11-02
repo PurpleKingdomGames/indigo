@@ -1,0 +1,9 @@
+package build.`indigo-plugin`
+
+import build.SharedModule
+
+import mill.*
+import mill.scalalib.*
+import mill.scalalib.publish.*
+
+object `package` extends Cross[SharedModule]("2.12", "3")
