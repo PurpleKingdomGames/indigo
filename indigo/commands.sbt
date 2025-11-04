@@ -1,287 +1,287 @@
-lazy val releaseProjects: List[String] =
-  List(
-    "indigo",
-    "indigoJsonCirce",
-    "indigoExtras",
-    "tyrianIndigoBridge"
-  )
+// lazy val releaseProjects: List[String] =
+//   List(
+//     "indigo",
+//     "indigoJsonCirce",
+//     "indigoExtras",
+//     "tyrianIndigoBridge"
+//   )
 
-lazy val coreProjects: List[String] =
-  releaseProjects ++ List(
-    "sandbox",
-    "perf",
-    "shader"
-  )
+// lazy val coreProjects: List[String] =
+//   releaseProjects ++ List(
+//     "sandbox",
+//     "perf",
+//     "shader"
+//   )
 
-val allProjects = List("indigoProject") // the aggregate
+// val allProjects = List("indigoProject") // the aggregate
 
-def applyCommand(projects: List[String], command: String): String =
-  projects.map(p => p + "/" + command).mkString(";", ";", "")
+// def applyCommand(projects: List[String], command: String): String =
+//   projects.map(p => p + "/" + command).mkString(";", ";", "")
 
-def applyCrossCommand(projects: List[String], command: String): String =
-  projects.map(p => "+" + p + "/" + command).mkString(";", ";", "")
+// def applyCrossCommand(projects: List[String], command: String): String =
+//   projects.map(p => "+" + p + "/" + command).mkString(";", ";", "")
 
-def applyToAll(command: String): String =
-  List(
-    applyCommand(allProjects, command)
-  ).mkString
+// def applyToAll(command: String): String =
+//   List(
+//     applyCommand(allProjects, command)
+//   ).mkString
 
-def applyCrossToAll(command: String): String =
-  List(
-    applyCrossCommand(allProjects, command)
-  ).mkString
+// def applyCrossToAll(command: String): String =
+//   List(
+//     applyCrossCommand(allProjects, command)
+//   ).mkString
 
-def applyToAllReleaseable(command: String): String =
-  List(
-    applyCommand(releaseProjects, command)
-  ).mkString
+// def applyToAllReleaseable(command: String): String =
+//   List(
+//     applyCommand(releaseProjects, command)
+//   ).mkString
 
-def applyCrossToAllReleaseable(command: String): String =
-  List(
-    applyCrossCommand(releaseProjects, command)
-  ).mkString
+// def applyCrossToAllReleaseable(command: String): String =
+//   List(
+//     applyCrossCommand(releaseProjects, command)
+//   ).mkString
 
-addCommandAlias(
-  "cleanAll",
-  applyToAll("clean")
-)
+// addCommandAlias(
+//   "cleanAll",
+//   applyToAll("clean")
+// )
 
-addCommandAlias(
-  "buildAllNoClean",
-  applyToAll("compile")
-)
-addCommandAlias(
-  "buildAll",
-  List(
-    "cleanAll",
-    "buildAllNoClean"
-  ).mkString(";", ";", "")
-)
+// addCommandAlias(
+//   "buildAllNoClean",
+//   applyToAll("compile")
+// )
+// addCommandAlias(
+//   "buildAll",
+//   List(
+//     "cleanAll",
+//     "buildAllNoClean"
+//   ).mkString(";", ";", "")
+// )
 
-addCommandAlias(
-  "testIndigo",
-  applyCommand(coreProjects, "test")
-)
-addCommandAlias(
-  "testAllNoClean",
-  List(
-    "testIndigo"
-  ).mkString(";", ";", "")
-)
-addCommandAlias(
-  "testAll",
-  List(
-    "cleanAll",
-    "testAllNoClean"
-  ).mkString(";", ";", "")
-)
+// addCommandAlias(
+//   "testIndigo",
+//   applyCommand(coreProjects, "test")
+// )
+// addCommandAlias(
+//   "testAllNoClean",
+//   List(
+//     "testIndigo"
+//   ).mkString(";", ";", "")
+// )
+// addCommandAlias(
+//   "testAll",
+//   List(
+//     "cleanAll",
+//     "testAllNoClean"
+//   ).mkString(";", ";", "")
+// )
 
-addCommandAlias(
-  "testCompileAllNoClean",
-  applyToAll("test:compile")
-)
-addCommandAlias(
-  "testCompileAll",
-  List(
-    "cleanAll",
-    "testCompileAllNoClean"
-  ).mkString(";", ";", "")
-)
+// addCommandAlias(
+//   "testCompileAllNoClean",
+//   applyToAll("test:compile")
+// )
+// addCommandAlias(
+//   "testCompileAll",
+//   List(
+//     "cleanAll",
+//     "testCompileAllNoClean"
+//   ).mkString(";", ";", "")
+// )
 
-addCommandAlias(
-  "buildIndigo",
-  applyCommand(coreProjects, "compile")
-)
-addCommandAlias(
-  "localPublishIndigo",
-  applyToAll("publishLocal")
-)
+// addCommandAlias(
+//   "buildIndigo",
+//   applyCommand(coreProjects, "compile")
+// )
+// addCommandAlias(
+//   "localPublishIndigo",
+//   applyToAll("publishLocal")
+// )
 
-addCommandAlias(
-  "localPublish",
-  List(
-    "cleanAll",
-    "buildIndigo",
-    "localPublishIndigo"
-  ).mkString(";", ";", "")
-)
+// addCommandAlias(
+//   "localPublish",
+//   List(
+//     "cleanAll",
+//     "buildIndigo",
+//     "localPublishIndigo"
+//   ).mkString(";", ";", "")
+// )
 
-addCommandAlias(
-  "localPublishNoClean",
-  List(
-    "buildIndigo",
-    "localPublishIndigo"
-  ).mkString(";", ";", "")
-)
+// addCommandAlias(
+//   "localPublishNoClean",
+//   List(
+//     "buildIndigo",
+//     "localPublishIndigo"
+//   ).mkString(";", ";", "")
+// )
 
-addCommandAlias(
-  "sandboxBuild",
-  List(
-    "buildAllNoClean",
-    "sandbox/fastOptJS",
-    "sandbox/indigoBuild"
-  ).mkString(";", ";", "")
-)
+// addCommandAlias(
+//   "sandboxBuild",
+//   List(
+//     "buildAllNoClean",
+//     "sandbox/fastOptJS",
+//     "sandbox/indigoBuild"
+//   ).mkString(";", ";", "")
+// )
 
-addCommandAlias(
-  "sandboxBuildFull",
-  List(
-    "buildAllNoClean",
-    "sandbox/fullOptJS",
-    "sandbox/indigoBuildFull"
-  ).mkString(";", ";", "")
-)
+// addCommandAlias(
+//   "sandboxBuildFull",
+//   List(
+//     "buildAllNoClean",
+//     "sandbox/fullOptJS",
+//     "sandbox/indigoBuildFull"
+//   ).mkString(";", ";", "")
+// )
 
-addCommandAlias(
-  "sandboxRun",
-  List(
-    "buildAllNoClean",
-    "sandbox/fastOptJS",
-    "sandbox/indigoRun"
-  ).mkString(";", ";", "")
-)
+// addCommandAlias(
+//   "sandboxRun",
+//   List(
+//     "buildAllNoClean",
+//     "sandbox/fastOptJS",
+//     "sandbox/indigoRun"
+//   ).mkString(";", ";", "")
+// )
 
-addCommandAlias(
-  "sandboxRunFull",
-  List(
-    "buildAllNoClean",
-    "sandbox/fullOptJS",
-    "sandbox/indigoRunFull"
-  ).mkString(";", ";", "")
-)
+// addCommandAlias(
+//   "sandboxRunFull",
+//   List(
+//     "buildAllNoClean",
+//     "sandbox/fullOptJS",
+//     "sandbox/indigoRunFull"
+//   ).mkString(";", ";", "")
+// )
 
-addCommandAlias(
-  "perfBuild",
-  List(
-    "buildAllNoClean",
-    "perf/fastOptJS",
-    "perf/indigoBuild"
-  ).mkString(";", ";", "")
-)
+// addCommandAlias(
+//   "perfBuild",
+//   List(
+//     "buildAllNoClean",
+//     "perf/fastOptJS",
+//     "perf/indigoBuild"
+//   ).mkString(";", ";", "")
+// )
 
-addCommandAlias(
-  "perfRun",
-  List(
-    "buildAllNoClean",
-    "perf/fastOptJS",
-    "perf/indigoRun"
-  ).mkString(";", ";", "")
-)
+// addCommandAlias(
+//   "perfRun",
+//   List(
+//     "buildAllNoClean",
+//     "perf/fastOptJS",
+//     "perf/indigoRun"
+//   ).mkString(";", ";", "")
+// )
 
-addCommandAlias(
-  "perfRunFull",
-  List(
-    "buildAllNoClean",
-    "perf/fullOptJS",
-    "perf/indigoRunFull"
-  ).mkString(";", ";", "")
-)
+// addCommandAlias(
+//   "perfRunFull",
+//   List(
+//     "buildAllNoClean",
+//     "perf/fullOptJS",
+//     "perf/indigoRunFull"
+//   ).mkString(";", ";", "")
+// )
 
-addCommandAlias(
-  "shaderBuild",
-  List(
-    "buildAllNoClean",
-    "shader/fastOptJS",
-    "shader/indigoBuild"
-  ).mkString(";", ";", "")
-)
+// addCommandAlias(
+//   "shaderBuild",
+//   List(
+//     "buildAllNoClean",
+//     "shader/fastOptJS",
+//     "shader/indigoBuild"
+//   ).mkString(";", ";", "")
+// )
 
-addCommandAlias(
-  "shaderRun",
-  List(
-    "buildAllNoClean",
-    "shader/fastOptJS",
-    "shader/indigoRun"
-  ).mkString(";", ";", "")
-)
+// addCommandAlias(
+//   "shaderRun",
+//   List(
+//     "buildAllNoClean",
+//     "shader/fastOptJS",
+//     "shader/indigoRun"
+//   ).mkString(";", ";", "")
+// )
 
-addCommandAlias(
-  "shaderRunFull",
-  List(
-    "buildAllNoClean",
-    "shader/fullOptJS",
-    "shader/indigoRunFull"
-  ).mkString(";", ";", "")
-)
+// addCommandAlias(
+//   "shaderRunFull",
+//   List(
+//     "buildAllNoClean",
+//     "shader/fullOptJS",
+//     "shader/indigoRunFull"
+//   ).mkString(";", ";", "")
+// )
 
-addCommandAlias(
-  "physicsRun",
-  List(
-    "buildAllNoClean",
-    "physics/fastOptJS",
-    "physics/indigoRun"
-  ).mkString(";", ";", "")
-)
+// addCommandAlias(
+//   "physicsRun",
+//   List(
+//     "buildAllNoClean",
+//     "physics/fastOptJS",
+//     "physics/indigoRun"
+//   ).mkString(";", ";", "")
+// )
 
-addCommandAlias(
-  "physicsRunFull",
-  List(
-    "buildAllNoClean",
-    "physics/fullOptJS",
-    "physics/indigoRunFull"
-  ).mkString(";", ";", "")
-)
+// addCommandAlias(
+//   "physicsRunFull",
+//   List(
+//     "buildAllNoClean",
+//     "physics/fullOptJS",
+//     "physics/indigoRunFull"
+//   ).mkString(";", ";", "")
+// )
 
-addCommandAlias(
-  "indigoPublishAllSigned",
-  applyToAllReleaseable("publishSigned")
-)
+// addCommandAlias(
+//   "indigoPublishAllSigned",
+//   applyToAllReleaseable("publishSigned")
+// )
 
-addCommandAlias(
-  "indigoRelease",
-  List(
-    "cleanAll",
-    "buildAllNoClean",
-    "testAllNoClean",
-    "indigoPublishAllSigned",
-    "sonaUpload",
-    "sonaRelease"
-  ).mkString(";", ";", "")
-)
+// addCommandAlias(
+//   "indigoRelease",
+//   List(
+//     "cleanAll",
+//     "buildAllNoClean",
+//     "testAllNoClean",
+//     "indigoPublishAllSigned",
+//     "sonaUpload",
+//     "sonaRelease"
+//   ).mkString(";", ";", "")
+// )
 
-// -- cross building --
+// // -- cross building --
 
-addCommandAlias(
-  "crossBuildIndigo",
-  applyCrossCommand(allProjects, "compile")
-)
-addCommandAlias(
-  "crossLocalPublishIndigo",
-  applyCrossCommand(releaseProjects, "publishLocal")
-)
-addCommandAlias(
-  "crossLocalPublishNoClean",
-  List("crossLocalPublishIndigo").mkString(";", ";", "")
-)
+// addCommandAlias(
+//   "crossBuildIndigo",
+//   applyCrossCommand(allProjects, "compile")
+// )
+// addCommandAlias(
+//   "crossLocalPublishIndigo",
+//   applyCrossCommand(releaseProjects, "publishLocal")
+// )
+// addCommandAlias(
+//   "crossLocalPublishNoClean",
+//   List("crossLocalPublishIndigo").mkString(";", ";", "")
+// )
 
-addCommandAlias(
-  "crossTestIndigo",
-  applyCrossCommand(allProjects, "test")
-)
-addCommandAlias(
-  "crossTestAllNoClean",
-  List(
-    "crossTestIndigo"
-  ).mkString(";", ";", "")
-)
+// addCommandAlias(
+//   "crossTestIndigo",
+//   applyCrossCommand(allProjects, "test")
+// )
+// addCommandAlias(
+//   "crossTestAllNoClean",
+//   List(
+//     "crossTestIndigo"
+//   ).mkString(";", ";", "")
+// )
 
-addCommandAlias(
-  "crossCleanAll",
-  applyCrossToAll("clean")
-)
+// addCommandAlias(
+//   "crossCleanAll",
+//   applyCrossToAll("clean")
+// )
 
-addCommandAlias(
-  "crossIndigoRelease",
-  List(
-    "crossCleanAll",
-    "crossBuildIndigo",
-    "crossIndigoPublishAllSigned",
-    "sonaUpload",
-    "sonaRelease"
-  ).mkString(";", ";", "")
-)
+// addCommandAlias(
+//   "crossIndigoRelease",
+//   List(
+//     "crossCleanAll",
+//     "crossBuildIndigo",
+//     "crossIndigoPublishAllSigned",
+//     "sonaUpload",
+//     "sonaRelease"
+//   ).mkString(";", ";", "")
+// )
 
-addCommandAlias(
-  "crossIndigoPublishAllSigned",
-  applyCrossToAllReleaseable("publishSigned")
-)
+// addCommandAlias(
+//   "crossIndigoPublishAllSigned",
+//   applyCrossToAllReleaseable("publishSigned")
+// )
