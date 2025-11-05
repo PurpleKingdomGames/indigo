@@ -1,0 +1,28 @@
+package build.benchmarks
+
+// TODO: This module is broken, the jpolly benchmark lib relies heavily on sbt,
+//       and React, so work will need to be done to bring it back to life, sadly.
+
+// import mill.*
+// import mill.scalalib.*
+// import mill.scalalib.publish.*
+// import mill.scalalib.scalafmt.*
+// import mill.scalajslib.*
+
+// import build.SharedJVM
+// import build.SharedJS
+// import build.SharedPublish
+
+// object `package` extends Module:
+
+//   object js extends SharedJS, PlatformScalaModule, SharedPublish:
+
+//     def moduleDeps =
+//       Seq(
+//         build.`indigo-extras`.js,
+//         build.`indigo-json-circe`.js
+//       )
+
+//     def mvnDeps = Seq(
+//       mvn"com.github.japgolly.scalajs-benchmark::benchmark::0.10.0"
+//     )

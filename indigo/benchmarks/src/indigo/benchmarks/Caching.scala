@@ -7,7 +7,9 @@ import japgolly.scalajs.benchmark.*
 import japgolly.scalajs.benchmark.gui.*
 
 import scala.scalajs.js
+import scala.annotation.nowarn
 
+@nowarn("msg=unused")
 object Caching:
 
   val default = Graphic(32, 32, Material.Bitmap(AssetName("test_nada")))
