@@ -1,6 +1,5 @@
 package tyrian
 
-import cats.effect.kernel.Async
 import indigo.shared.Outcome
 import indigo.shared.collections.Batch
 import indigo.shared.events.FrameTick
@@ -13,7 +12,7 @@ import indigo.shared.subsystems.SubSystemId
 import scala.annotation.nowarn
 import scala.collection.mutable
 
-final case class TyrianSubSystem[F[_]: Async, A, Model](
+final case class TyrianSubSystem[F[_], A, Model](
     indigoGameId: Option[IndigoGameId],
     bridge: TyrianIndigoBridge[F, A, Model]
 ) extends SubSystem[Model]:
@@ -75,5 +74,5 @@ final case class TyrianSubSystem[F[_]: Async, A, Model](
   case object TyrianSubSystemEnqueue extends GlobalEvent
 
 object TyrianSubSystem:
-  def apply[F[_]: Async, A, Model](bridge: TyrianIndigoBridge[F, A, Model]): TyrianSubSystem[F, A, Model] =
+  def apply[F[_], A, Model](bridge: TyrianIndigoBridge[F, A, Model]): TyrianSubSystem[F, A, Model] =
     TyrianSubSystem(None, bridge)
