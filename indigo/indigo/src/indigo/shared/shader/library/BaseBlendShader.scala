@@ -7,16 +7,16 @@ import scala.annotation.nowarn
 
 trait BaseBlendShader:
 
-  protected case class IndigoMergeData(u_projection: mat4, u_scale: vec2)
-  protected case class IndigoFrameData(
+  case class IndigoMergeData(u_projection: mat4, u_scale: vec2)
+  case class IndigoFrameData(
       TIME: highp[Float], // Running time
       VIEWPORT_SIZE: vec2 // Size of the viewport in pixels
   )
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  protected case class VertexEnv(var gl_Position: vec4)
+  case class VertexEnv(var gl_Position: vec4)
 
-  protected case class UserDefined():
+  case class UserDefined():
     def vertex(v: vec4): vec4   = v
     def fragment(v: vec4): vec4 = v
 

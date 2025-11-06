@@ -2,6 +2,7 @@
 //| mvnDeps: [
 //|  "com.goyeau::mill-scalafix::0.6.0",
 //|  "org.typelevel::scalac-options:0.1.8",
+//|  "io.indigoengine::mill-indigo::0.22.1-SNAPSHOT",
 //| ]
 
 package build

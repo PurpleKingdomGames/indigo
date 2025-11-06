@@ -156,7 +156,7 @@ object ComponentUIScene2 extends Scene[SandboxStartupData, SandboxGameModel, San
               .add(
                 Label[Int](
                   i.toString,
-                  (_, label) => Bounds(0, 0, 250, 20)
+                  (_, _) => Bounds(0, 0, 250, 20)
                 ) { case (ctx, label) =>
                   Outcome(
                     Layer(

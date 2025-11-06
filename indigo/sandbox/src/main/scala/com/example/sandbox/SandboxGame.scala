@@ -5,7 +5,6 @@ import example.TestFont
 import indigo.*
 import indigo.json.Json
 import indigo.scenes.*
-import indigo.syntax.*
 import indigoextras.effectmaterials.LegacyEffects
 import indigoextras.effectmaterials.Refraction
 import indigoextras.subsystems.FPSCounter

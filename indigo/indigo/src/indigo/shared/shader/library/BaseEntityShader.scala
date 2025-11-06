@@ -7,14 +7,14 @@ import scala.annotation.nowarn
 
 trait BaseEntityShader:
 
-  protected case class IndigoProjectionData(u_projection: mat4)
+  case class IndigoProjectionData(u_projection: mat4)
 
-  protected case class IndigoFrameData(
+  case class IndigoFrameData(
       TIME: highp[Float], // Running time
       VIEWPORT_SIZE: vec2 // Size of the viewport in pixels
   )
 
-  protected case class IndigoCloneReferenceData( // Used during cloning.
+  case class IndigoCloneReferenceData( // Used during cloning.
       u_ref_refFlip: vec4,
       u_ref_sizeAndFrameScale: vec4,
       u_ref_channelOffsets01: vec4,
@@ -22,7 +22,7 @@ trait BaseEntityShader:
       u_ref_textureSizeAtlasSize: vec4
   )
 
-  protected case class IndigoDynamicLightingData(
+  case class IndigoDynamicLightingData(
       numOfLights: Float,
       lightFlags: highp[array[8, vec4]], // vec4(active, type, far cut off, falloff type)
       lightColor: array[8, vec4],
@@ -31,11 +31,11 @@ trait BaseEntityShader:
       lightNearFarAngleIntensity: array[8, vec4] // vec4(near, far, angle, intensity)
   )
 
-  protected case class GLEnv(gl_InstanceID: Int)
+  case class GLEnv(gl_InstanceID: Int)
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  protected case class VertEnv(var gl_Position: vec4)
+  case class VertEnv(var gl_Position: vec4)
 
-  protected case class UserDefined():
+  case class UserDefined():
     def vertex(v: vec4): vec4   = v
     def fragment(v: vec4): vec4 = v
     def prepare(): Unit         = ()

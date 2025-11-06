@@ -40,8 +40,6 @@ final case class SandboxGameModel(
 
 object SandboxModel {
 
-  private given CanEqual[Option[String], Option[String]] = CanEqual.derived
-
   def randomPoint(dice: Dice, offset: Point): Point =
     Point(dice.rollFromZero(100), dice.rollFromZero(100)).moveBy(offset)
 
@@ -188,7 +186,7 @@ object SandboxModel {
               )
             )
         )
-          .onSwitch((ctx, switch) => Batch(Log("Switched to: " + ctx.reference)))
+          .onSwitch((ctx, _) => Batch(Log("Switched to: " + ctx.reference)))
           .switchOn
       )
       .add(
@@ -268,7 +266,7 @@ object SandboxModel {
                         )
                       )
                   )
-                    .onSwitch { (ctx, switch) =>
+                    .onSwitch { (_, _) =>
                       Batch(
                         Log("Selected: " + i),
                         ChangeValue(i)
