@@ -42,8 +42,7 @@ trait BaseEntityShader:
     def light(): Unit           = ()
     def composite(): Unit       = ()
 
-  protected type VertexEnv = GLEnv & VertEnv & IndigoFrameData & IndigoProjectionData & IndigoCloneReferenceData &
-    UserDefined
+  type VertexEnv = GLEnv & VertEnv & IndigoFrameData & IndigoProjectionData & IndigoCloneReferenceData & UserDefined
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
   @nowarn("msg=unused")
@@ -256,7 +255,7 @@ trait BaseEntityShader:
 
     (insert: String) => start + insert + end
 
-  protected type FragmentEnv = IndigoDynamicLightingData & UserDefined
+  type FragmentEnv = IndigoDynamicLightingData & UserDefined
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
   @nowarn("msg=unused")

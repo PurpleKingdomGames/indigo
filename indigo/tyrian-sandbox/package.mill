@@ -1,0 +1,27 @@
+package build.`tyrian-sandbox`
+
+import mill.*
+import mill.scalalib.*
+import mill.scalalib.publish.*
+import mill.scalalib.scalafmt.*
+import mill.scalajslib.*
+import mill.api.BuildCtx
+
+import build.SharedJS
+
+object `package` extends Module:
+
+  object js extends SharedJS, PlatformScalaModule:
+
+    def moduleDeps =
+      Seq(
+        build.`indigo-extras`.js,
+        build.`indigo-json-circe`.js,
+        build.`tyrian-indigo-bridge`.js
+      )
+
+    def mvnDeps = Seq(
+      mvn"io.indigoengine::tyrian-io::0.14.0"
+    )
+
+    override def moduleKind = Task(mill.scalajslib.api.ModuleKind.CommonJSModule)

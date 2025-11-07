@@ -186,7 +186,7 @@ class LayerRenderer(
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  private var currentProgram: WebGLProgram                           = null
+  private var currentProgram: WebGLProgram = null
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   private def setBaseTransform(baseTransform: CheapMatrix4): Unit =

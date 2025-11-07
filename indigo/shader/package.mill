@@ -1,4 +1,4 @@
-package build.sandbox
+package build.shader
 
 import mill.*
 import mill.scalalib.*
@@ -20,29 +20,17 @@ object `package` extends Module:
       BuildCtx.workspaceRoot
 
     def indigoAssets =
-      Task.Source(BuildCtx.workspaceRoot / "sandbox" / "assets")
+      Task.Source(BuildCtx.workspaceRoot / "shader" / "assets")
 
     def indigoOptions(assetsDirectory: os.Path): IndigoOptions =
       IndigoOptions.defaults
-        .withTitle("Sandbox")
-        .withWindowSize(800, 600)
+        .withTitle("Shader")
+        .withWindowSize(450, 450)
         .withBackgroundColor("black")
 
     def indigoGenerators(assetsDirectory: os.Path): IndigoGenerators =
       IndigoGenerators("example")
         .generateConfig("Config")
-        .embedFont(
-          "TestFont",
-          assetsDirectory / "fonts" / "VCR_OSD_MONO_1.001.ttf",
-          FontOptions(
-            "test font",
-            16,
-            CharSet.ASCII
-          )
-            .withColor(RGB.White)
-            .noAntiAliasing,
-          assetsDirectory / "generated"
-        )
 
     def moduleDeps =
       Seq(

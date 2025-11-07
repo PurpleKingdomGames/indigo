@@ -830,7 +830,7 @@ object TouchEvent:
       pressure: Double
   ) extends TouchEvent
   object Down:
-    
+
     def apply(position: Point): Down =
       Down(
         PointerId.unknown,

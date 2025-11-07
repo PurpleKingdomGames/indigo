@@ -25,7 +25,7 @@ object ShaderGame extends IndigoShader:
 
 final case class CustomData(CUSTOM_COLOR: vec4) extends FragmentEnvReference derives ToUniformBlock
 object CustomData:
-  val reference =
+  def reference =
     CustomData(vec4(0.0f))
 
 object ShaderWithData:
@@ -33,7 +33,7 @@ object ShaderWithData:
   val shader: UltravioletShader =
     UltravioletShader.entityFragment(
       ShaderId("shader with data"),
-      EntityShader.fragment[CustomData](shaderWithData, CustomData.reference)
+      EntityShader.fragment[CustomData](shaderWithData, CustomData(vec4(0.0f)))
     )
 
   @nowarn("msg=unused")
