@@ -11,7 +11,7 @@ cd ..
 # SBT Indigo
 echo ">>> SBT-Indigo"
 cd sbt-indigo
-bash bash.sh
+bash build.sh
 cd ..
 
 # Indigo
