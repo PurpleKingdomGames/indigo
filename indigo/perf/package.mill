@@ -1,0 +1,39 @@
+package build.perf
+
+import mill.*
+import mill.scalalib.*
+import mill.scalalib.publish.*
+import mill.scalalib.scalafmt.*
+import mill.scalajslib.*
+import mill.api.BuildCtx
+
+import build.SharedJS
+
+import indigoplugin.*
+
+object `package` extends Module:
+
+  object js extends MillIndigo, SharedJS, PlatformScalaModule:
+
+    // This is the root directory of the workspace / project.
+    private val workspaceDir: os.Path =
+      BuildCtx.workspaceRoot
+
+    def indigoAssets =
+      Task.Source(BuildCtx.workspaceRoot / "perf" / "assets")
+
+    def indigoOptions(assetsDirectory: os.Path): IndigoOptions =
+      IndigoOptions.defaults
+        .withTitle("Perf")
+        .withWindowSize(800, 600)
+        .withBackgroundColor("black")
+
+    def indigoGenerators(assetsDirectory: os.Path): IndigoGenerators =
+      IndigoGenerators("example")
+        .generateConfig("Config")
+
+    def moduleDeps =
+      Seq(
+        build.`indigo-extras`.js,
+        build.`indigo-json-circe`.js
+      )

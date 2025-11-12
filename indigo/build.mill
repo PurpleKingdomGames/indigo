@@ -1,0 +1,100 @@
+//| mill-version: 1.0.6
+//| mvnDeps: [
+//|  "com.goyeau::mill-scalafix::0.6.0",
+//|  "org.typelevel::scalac-options:0.1.8",
+//|  "io.indigoengine::mill-indigo::0.22.1-SNAPSHOT",
+//| ]
+
+package build
+
+import mill.*
+import mill.scalalib.*
+import mill.scalalib.publish.*
+import mill.scalalib.scalafmt.*
+import mill.scalajslib.*
+import mill.api.BuildCtx
+import org.typelevel.scalacoptions.*
+import com.goyeau.mill.scalafix.ScalafixModule
+
+trait Shared extends ScalafmtModule, ScalafixModule:
+  def scalaVersion = "3.7.3"
+
+  override def scalacOptions = Task {
+    super.scalacOptions() ++
+      ScalacOptions.tokensForVersion(
+        ScalaVersion.unsafeFromString(scalaVersion()),
+        ScalacOptions.default ++
+          ScalacOptions.fatalWarningOptions ++
+          Seq(ScalacOptions.languageStrictEquality)
+      )
+  }
+
+trait SharedJVM extends Shared, ScalaModule:
+  object test extends ScalaTests:
+    def mvnDeps = Seq(
+      mvn"org.scalameta::munit::1.2.1",
+      mvn"org.scalacheck::scalacheck::1.18.1"
+    )
+
+    def testFramework = Task("munit.Framework")
+
+trait SharedJS extends Shared, ScalaJSModule:
+  def scalaJSVersion = Task("1.20.1")
+
+  object test extends ScalaJSTests:
+    def mvnDeps = Seq(
+      mvn"org.scalameta::munit::1.2.1",
+      mvn"org.scalacheck::scalacheck::1.18.1"
+    )
+
+    override def moduleKind = Task(mill.scalajslib.api.ModuleKind.CommonJSModule)
+
+    def testFramework = Task("munit.Framework")
+
+trait SharedPublish extends PublishModule:
+
+  def indigoVersion = Task.Input(IndigoVersion.getVersion(BuildCtx.workspaceRoot))
+
+  def publishVersion = indigoVersion()
+
+  def pomSettings =
+    PomSettings(
+      description = "indigo",
+      organization = "io.indigoengine",
+      url = "https://github.com/PurpleKingdomGames/indigo",
+      licenses = Seq(License.MIT),
+      versionControl = VersionControl.github("PurpleKingdomGames", "indigo"),
+      developers = Seq(
+        Developer("davesmith00000", "David Smith", "https://github.com/davesmith00000")
+      )
+    )
+
+// --- Utils ---
+
+object IndigoVersion:
+
+  def getVersion(workspaceDir: os.Path): String = {
+    def rec(wd: os.Path, file: String, levels: Int, version: Option[String]): String = {
+      val msg = "ERROR: Couldn't find Indigo version."
+      version match {
+        case Some(v) =>
+          println(s"""Indigo version set to '$v'""")
+          v
+
+        case None if levels < 3 =>
+          try {
+            val v = os.read.lines(wd / file).head
+            rec(wd, file, levels, Some(v))
+          } catch {
+            case _: Throwable =>
+              rec(wd / os.RelPath.up, file, levels + 1, None)
+          }
+
+        case None =>
+          println(msg)
+          throw new Exception(msg)
+      }
+    }
+
+    rec(workspaceDir, ".indigo-version", 0, None)
+  }

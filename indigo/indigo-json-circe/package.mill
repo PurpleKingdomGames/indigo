@@ -1,0 +1,22 @@
+package build.`indigo-json-circe`
+
+import mill.*
+import mill.scalalib.*
+import mill.scalalib.publish.*
+import mill.scalalib.scalafmt.*
+import mill.scalajslib.*
+
+import build.SharedJVM
+import build.SharedJS
+import build.SharedPublish
+
+object `package` extends Module:
+
+  object js extends SharedJS, PlatformScalaModule, SharedPublish:
+
+    def moduleDeps = Seq(build.indigo.js)
+
+    def mvnDeps = Seq(
+      mvn"io.circe::circe-core::0.14.13",
+      mvn"io.circe::circe-parser::0.14.13"
+    )

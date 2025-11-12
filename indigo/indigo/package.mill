@@ -1,0 +1,21 @@
+package build.indigo
+
+import mill.*
+import mill.scalalib.*
+import mill.scalalib.publish.*
+import mill.scalalib.scalafmt.*
+import mill.scalajslib.*
+
+import build.SharedJVM
+import build.SharedJS
+import build.SharedPublish
+
+object `package` extends Module:
+
+  object js extends SharedJS, PlatformScalaModule, SharedPublish:
+
+    def mvnDeps = Seq(
+      mvn"org.scala-js::scala-js-macrotask-executor::1.1.1",
+      mvn"io.indigoengine::ultraviolet::0.8.0",
+      mvn"org.scala-js::scalajs-dom::2.8.0"
+    )

@@ -16,7 +16,6 @@ import indigo.scenes.*
 import indigo.shared.assets.AssetTypePrimitive
 import indigo.shared.scenegraph.Shape
 import indigo.shared.scenegraph.Shape.Box
-import indigo.syntax.*
 
 object CaptureScreenScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
 

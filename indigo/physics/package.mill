@@ -1,0 +1,57 @@
+package build.physics
+
+import mill.*
+import mill.scalalib.*
+import mill.scalalib.publish.*
+import mill.scalalib.scalafmt.*
+import mill.scalajslib.*
+import mill.api.BuildCtx
+
+import build.SharedJS
+
+import indigoplugin.*
+
+object `package` extends Module:
+
+  object js extends MillIndigo, SharedJS, PlatformScalaModule:
+
+    // This is the root directory of the workspace / project.
+    private val workspaceDir: os.Path =
+      BuildCtx.workspaceRoot
+
+    def indigoAssets =
+      Task.Source(BuildCtx.workspaceRoot / "physics" / "assets")
+
+    def indigoOptions(assetsDirectory: os.Path): IndigoOptions =
+      IndigoOptions.defaults
+        .withTitle("Physics")
+        .withWindowSize(800, 600)
+        .withBackgroundColor("black")
+        .excludeAssets {
+          case p if p.endsWith(os.RelPath.rel / ".DS_Store") => true
+          case _                                             => false
+        }
+
+    def indigoGenerators(assetsDirectory: os.Path): IndigoGenerators =
+      IndigoGenerators("example")
+        .generateConfig("Config")
+        .embedFont(
+          moduleName = "PixelatedFont",
+          font = workspaceDir / "physics" / "generator-data" / "pixelated.ttf",
+          fontOptions = FontOptions(
+            fontKey = "Pixelated",
+            fontSize = 32,
+            charSet = CharSet.ASCII,
+            color = RGB.White,
+            antiAlias = false,
+            layout = FontLayout.default
+          ),
+          imageOut = assetsDirectory / "generated"
+        )
+        .listAssets("Assets")
+
+    def moduleDeps =
+      Seq(
+        build.`indigo-extras`.js,
+        build.`indigo-json-circe`.js
+      )

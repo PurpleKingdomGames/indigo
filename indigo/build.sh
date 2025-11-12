@@ -2,4 +2,10 @@
 
 set -e
 
-sbt -J-Xmx4G crossCleanAll scalafmtCheckAll crossTestAllNoClean crossLocalPublishNoClean
+./mill clean
+./mill __.compile
+./mill -j1 __.fastLinkJS
+./mill -j2 __.test
+./mill -j2 __.checkFormat
+./mill -j1 __.fix --check
+./mill __.publishLocal

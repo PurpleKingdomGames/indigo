@@ -9,7 +9,6 @@ import example.TestFont
 import indigo.*
 import indigo.scenes.*
 import indigoextras.ui.*
-import indigoextras.ui.syntax.*
 
 object WindowsScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]:
 
