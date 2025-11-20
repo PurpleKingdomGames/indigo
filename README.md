@@ -3,7 +3,7 @@
 [![Discord Chat](https://img.shields.io/discord/716435281208672356?color=blue&label=discord)](https://discord.gg/b5CD47g) [![Join the chat at https://gitter.im/Purple-Kingdom-Games/Indigo](https://badges.gitter.im/Purple-Kingdom-Games/Indigo.svg)](https://gitter.im/Purple-Kingdom-Games/Indigo?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![CI](https://github.com/PurpleKingdomGames/indigo/actions/workflows/ci.yml/badge.svg)](https://github.com/PurpleKingdomGames/indigo/actions/workflows/ci.yml)
 
-***INDIO HAS MOVED HOME!!!***
+***INDIGO HAS MOVED HOME!!!***
 
 Please head over to https://github.com/PurpleKingdomGames/indigoengine for the up to date source code.
 
